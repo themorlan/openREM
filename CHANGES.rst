@@ -2,6 +2,10 @@
 OpenREM version history
 =======================
 
+0.6.1 (2015-10-30
+-----------------
+* `#303`_  Corrected name of Store SCP command in docs
+
 0.6.0 (2015-05-14)
 ------------------
 
@@ -282,6 +286,7 @@ Reopened issue
 
 *       Initial version uploaded to bitbucket.org
 
+..  _`#303`: https://bitbucket.org/openrem/openrem/issue/303/
 ..  _`#269`: https://bitbucket.org/openrem/openrem/issue/269/
 ..  _`#268`: https://bitbucket.org/openrem/openrem/issue/268/
 ..  _`#267`: https://bitbucket.org/openrem/openrem/issue/267/
