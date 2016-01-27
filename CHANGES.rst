@@ -5,6 +5,7 @@ OpenREM version history
 0.6.2 (2016-01-27)
 ------------------
 * `#347`_  Django-filter v0.12 has minimum Django version of 1.8, fixed OpenREM 0.6.2 to max django-filter 0.11
+* `#341`_  Changed references to the OpenSkin repository for 0.6 series.
 
 0.6.1 (2015-10-30
 -----------------
