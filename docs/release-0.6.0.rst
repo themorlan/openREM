@@ -13,6 +13,15 @@ Headline changes
 * Mammography import compression force behaviour changed
 * Import of Toshiba planar RDSRs fixed
 
+Changes for 0.6.2
+=================
+
+Minor update due prevent new installs from installing a non-compatible version of ``django-filter``.
+The link to `OpenSkin`_ has also been updated in the fluoroscopy detail page.
+
+**There is no advantage to updating to this version over 0.6.0**
+
+Release 0.6.1 was just a documentation only change to update the link to `OpenSkin`_.
 
 *************************
 Preparing for the upgrade
@@ -174,7 +183,7 @@ Toshiba include Patient Orientation and Patient Orientation Modifier information
 code was deficient for this as the RDSRs previously used didn't have this information. This has now been fixed. There
 might however be an issue with Station Name not being provided - it is not yet clear if this is a configuration issue.
 
-.. _`OpenSkin`: https://bitbucket.org/jacole/openskin
+.. _`OpenSkin`: https://bitbucket.org/openskin/openskin
 .. _`OpenSkin wiki`: https://bitbucket.org/jacole/openskin/wiki/Home
 .. _`Phantom design`: https://bitbucket.org/jacole/openskin/wiki/Phantom%20design
 ..  _`#41`: https://bitbucket.org/openrem/openrem/issue/41/
