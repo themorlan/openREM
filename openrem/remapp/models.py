@@ -899,28 +899,46 @@ class RadiopharmaceuticalAdministrationEventData:  # TID 10022
     administered_activity = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
     radiopharmaceutical_volume = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
     pre_administration_measured_activity = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    # FIXME: how to deal with a field appearing twice?
-    # activity_measurement_device = models.ForeignKey(
-    #    ContextID, blank=True, null=True, related_name='tid10022_device')  # CID 10041
+    pre_activity_measurement_device = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10022_device_pre')  # CID 10041
     post_administration_measured_activity = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    # activity_measurement_device = models.ForeignKey(
-    #    ContextID, blank=True, null=True, related_name='tid10022_device')  # CID 10041
+    post_activity_measurement_device = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10022_device_post')  # CID 10041
     route_of_administration models.ForeignKey(
         ContextID, blank=True, null=True, related_name='tid10022_route')  # CID 11
     site_of = models.ForeignKey(
         ContextID, blank=True, null=True, related_name='tid10022_site')  # CID 3746
     laterality = models.ForeignKey(
         ContextID, blank=True, null=True, related_name='tid10022_laterality') # CID 244
-    # billing_codes = models.ForeignKey(
-    #    ContextID, blank=True, null=True, related_name='tid10022_billing')
-    # drug_product_identifier = models.ForeignKey()
     brand_name = models.TextField(blank=True, null=True)
     radiopharmaceutical_dispense_unit_identifier = models.TextField(blank=True, null=True)
-    # radiopharmaceutical_lot_identifier = models.TextField(blank=True, null=True)
-    # reagent_vial_identifier = models.TextField(blank=True, null=True)
-    # radionuclide_identifier = models.TextField(blank=True, null=True)
     prescription_identifier = models.TextField(blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
+
+
+class BillingCode:
+     radiopharmaceutical_administration_event_data = models.ForeignKey(RadiopharmaceuticalAdministrationEventData)
+     billing_code = models.ForeignKey(ContextID, blank=True, null=True)
+
+
+class DrugProductIdentifier:
+     radiopharmaceutical_administration_event_data = models.ForeignKey(RadiopharmaceuticalAdministrationEventData)
+     drug_product_identifier = models.ForeignKey(ContextID, blank=True, null=True)
+
+
+class RadiopharmaceuticalLotIdentifier:
+    radiopharmaceutical_administration_event_data = models.ForeignKey(RadiopharmaceuticalAdministrationEventData)
+    radiopharmaceutical_lot_identifier = models.TextField(blank=True, null=True)
+
+
+class ReagentVialIdentifier:
+    radiopharmaceutical_administration_event_data = models.ForeignKey(RadiopharmaceuticalAdministrationEventData)
+    reagent_vial_identifier = models.TextField(blank=True, null=True)
+
+
+class RadionuclideIdentifier:
+    radiopharmaceutical_administration_event_data = models.ForeignKey(RadiopharmaceuticalAdministrationEventData)
+    radionuclide_identifier = models.TextField(blank=True, null=True)
 
 
 class OrganDose:  # TID 10023
@@ -939,7 +957,6 @@ class OrganDose:  # TID 10023
 
 class RadiopharmaceuticalAdministrationPatientCharacteristics:
     radiopharmaceutical_radiation_dose = models.ForeignKey(RadiopharmaceuticalRadiationDose)
-    # patient_state??  # CID 10045
     subject_age = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
     subject_sex = models.ForeignKey(
         ContextID, blank=True, null=True, related_name='tid10023_authority')  # CID 7455
@@ -956,11 +973,20 @@ class RadiopharmaceuticalAdministrationPatientCharacteristics:
     hydration_volume = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
     recent_physical_activity = models.TextField(blank=True, null=True)
     serum_creatinine = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    # glomerular_filtration_rate??
-    measurement_method models.ForeignKey(
+    measurement_method = models.ForeignKey(
         ContextID, blank=True, null=True, related_name='tid10023_authority')  # CID 10047
     equivalent_meaning_of_concept_name = models.ForeignKey(
         ContextID, blank=True, null=True, related_name='tid10023_authority')  # CID 10046
+
+
+class PatientState:  # CID 10045
+    radiopharmaceutical_administration_patient_characteristics = models.ForeignKey(RadiopharmaceuticalAdministrationPatientCharacteristics)
+    patient_state = models.ForeignKey(ContextID, blank=True, null=True)
+
+
+class GlomerularFiltrationRate:
+    radiopharmaceutical_administration_patient_characteristics = models.ForeignKey(RadiopharmaceuticalAdministrationPatientCharacteristics)
+    glomerular_filtration_rate = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
 
 
 # CT
