@@ -853,6 +853,116 @@ class GeneralEquipmentModuleAttr(models.Model):  # C.7.5.1
         return self.station_name
 
 
+# Radiopharmaca
+
+class RadiopharmaceuticalRadiationDose(models.Model):  # TID 10021
+    """Radiopharmaceutical Radiation Dose TID 10021
+
+    From DICOM Part 16:
+       This Template defines a container (the root) with subsidiary Content Items, each of which corresponds to a
+       single Radiopharmaceutical Administration Dose event entry. There is a defined recording observer (the
+       system and/or person responsible for recording the assay of the radiopharmaceutical, and the person
+       administered the radiopharmaceutical). Multiple Radiopharmaceutical Radiation Dose objects may be created
+       for one study. Radiopharmaceutical Start DateTime in TID 10022 “Radiopharmaceutical Administration Event
+       Data” will convey the order of administrations.
+    """
+    general_study_module_attributes = models.ForeignKey(GeneralStudyModuleAttr)
+    associated_procedure = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10021_procedure')  # CID 3108
+    has_intent = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10021_intent')  # CID 3629
+    comment = models.TextField(blank=True, null=True)
+
+
+class LanguageofContentItemandDescendants:  # TID 1204
+    radiopharmaceutical_radiation_dose = models.ForeignKey(RadiopharmaceuticalRadiationDose)
+    language_of_contentitem_and_descendants = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid1204_language')  # CID 5000
+    country_of_language = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid1204_country')  # CID 5001
+
+
+class RadiopharmaceuticalAdministrationEventData:  # TID 10022
+    radiopharmaceutical_radiation_dose = models.ForeignKey(RadiopharmaceuticalRadiationDose)
+    radiopharmaceutical_agent = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10022_agent')  # CID 25 & CID 4021
+    radionuclide = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10022_radionuclide')  # CID 18 & CID 4020
+    radionuclide_half_life = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    radiopharmaceutical Specific Activity = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    radiopharmaceutical_administration_event_uid = models.TextField(blank=True, null=True)
+    intravenous_extravasation_symptoms = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10022_symptoms')  # CID 10043
+    estimated_extravasation_activity = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    radiopharmaceutical_start_datetime = models.DateTimeField(blank=True, null=True)
+    radiopharmaceutical_stop_datetime = models.DateTimeField(blank=True, null=True)
+    administered_activity = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    radiopharmaceutical_volume = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    pre_administration_measured_activity = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    # FIXME: how to deal with a field appearing twice?
+    # activity_measurement_device = models.ForeignKey(
+    #    ContextID, blank=True, null=True, related_name='tid10022_device')  # CID 10041
+    post_administration_measured_activity = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    # activity_measurement_device = models.ForeignKey(
+    #    ContextID, blank=True, null=True, related_name='tid10022_device')  # CID 10041
+    route_of_administration models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10022_route')  # CID 11
+    site_of = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10022_site')  # CID 3746
+    laterality = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10022_laterality') # CID 244
+    # billing_codes = models.ForeignKey(
+    #    ContextID, blank=True, null=True, related_name='tid10022_billing')
+    # drug_product_identifier = models.ForeignKey()
+    brand_name = models.TextField(blank=True, null=True)
+    radiopharmaceutical_dispense_unit_identifier = models.TextField(blank=True, null=True)
+    # radiopharmaceutical_lot_identifier = models.TextField(blank=True, null=True)
+    # reagent_vial_identifier = models.TextField(blank=True, null=True)
+    # radionuclide_identifier = models.TextField(blank=True, null=True)
+    prescription_identifier = models.TextField(blank=True, null=True)
+    comment = models.TextField(blank=True, null=True)
+
+
+class OrganDose:  # TID 10023
+    radiopharmaceutical_administration_event_data = models.ForeignKey(RadiopharmaceuticalAdministrationEventData)
+    finding_site = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10023_site') # CID 10044
+    laterality = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10023_laterality') # CID 244
+    mass = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    measurement_method = models.TextField(blank=True, null=True)
+    organ_dose = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    reference_authority_code = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10023_authority')  # CID 10040
+    reference_authority_text = models.TextField(blank=True, null=True)
+
+
+class RadiopharmaceuticalAdministrationPatientCharacteristics:
+    radiopharmaceutical_radiation_dose = models.ForeignKey(RadiopharmaceuticalRadiationDose)
+    # patient_state??  # CID 10045
+    subject_age = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    subject_sex = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10023_authority')  # CID 7455
+    patient_height = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    patient_weight = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    body_surface_area = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    body_surface_area_formula = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10023_authority')  # CID 3663
+    body_mass_index = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    equation =  models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10023_authority')
+    glucose = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    fasting_duration = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    hydration_volume = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    recent_physical_activity = models.TextField(blank=True, null=True)
+    serum_creatinine = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    # glomerular_filtration_rate??
+    measurement_method models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10023_authority')  # CID 10047
+    equivalent_meaning_of_concept_name = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10023_authority')  # CID 10046
+
+
 # CT
 
 class CtRadiationDose(models.Model):  # TID 10011
@@ -1044,6 +1154,8 @@ class ObserverContext(models.Model):  # TID 1002
     """
     projection_xray_radiation_dose = models.ForeignKey(ProjectionXRayRadiationDose, blank=True, null=True)
     ct_radiation_dose = models.ForeignKey(CtRadiationDose, blank=True, null=True)
+    radiopharmaceutical_radiation_dose = models.ForeignKey(RadiopharmaceuticalRadiationDose, blank=True, null=True)
+    radiopharmaceutical_administration_event_data = models.ForeignKey(RadiopharmaceuticalAdministrationEventData, blank=True, null=True)
     observer_type = models.ForeignKey(
         ContextID, blank=True, null=True, related_name='tid1002_observertype')  # CID 270
     person_observer_name = models.TextField(blank=True, null=True)
@@ -1102,6 +1214,7 @@ class PersonParticipant(models.Model):  # TID 1020
         CtDoseCheckDetails, blank=True, null=True, related_name='tid1020_alert')
     ct_dose_check_details_notification = models.ForeignKey(
         CtDoseCheckDetails, blank=True, null=True, related_name='tid1020_notification')
+    radiopharmaceutical_administration_event_data = models.ForeignKey(RadiopharmaceuticalAdministrationEventData, blank=True, null=True)
     person_name = models.TextField(blank=True, null=True)
     # CharField version is a mistake and shouldn't be used
     person_role_in_procedure = models.CharField(max_length=16, blank=True)
