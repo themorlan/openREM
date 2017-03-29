@@ -889,7 +889,7 @@ class RadiopharmaceuticalAdministrationEventData:  # TID 10022
     radionuclide = models.ForeignKey(
         ContextID, blank=True, null=True, related_name='tid10022_radionuclide')  # CID 18 & CID 4020
     radionuclide_half_life = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    radiopharmaceutical Specific Activity = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    radiopharmaceutical_specific_activity = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
     radiopharmaceutical_administration_event_uid = models.TextField(blank=True, null=True)
     intravenous_extravasation_symptoms = models.ForeignKey(
         ContextID, blank=True, null=True, related_name='tid10022_symptoms')  # CID 10043
@@ -904,7 +904,7 @@ class RadiopharmaceuticalAdministrationEventData:  # TID 10022
     post_administration_measured_activity = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
     post_activity_measurement_device = models.ForeignKey(
         ContextID, blank=True, null=True, related_name='tid10022_device_post')  # CID 10041
-    route_of_administration models.ForeignKey(
+    route_of_administration = models.ForeignKey(
         ContextID, blank=True, null=True, related_name='tid10022_route')  # CID 11
     site_of = models.ForeignKey(
         ContextID, blank=True, null=True, related_name='tid10022_site')  # CID 3746
