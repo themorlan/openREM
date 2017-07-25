@@ -120,7 +120,7 @@ def _xray_filters_multiple(xray_filter_material, xray_filter_thickness_maximum, 
             pass
 
 def _xray_filters_prep(dataset, source):
-    from dicom.valuerep import MultiValue
+    from pydicom.valuerep import MultiValue
     from remapp.tools.get_values import get_value_kw
 
     xray_filter_type = get_value_kw('FilterType', dataset)
@@ -794,7 +794,7 @@ def dx(dig_file):
 
     """
 
-    import dicom
+    import pydicom
     from django.core.exceptions import ObjectDoesNotExist
     from remapp.models import DicomDeleteSettings
     try:
@@ -803,7 +803,7 @@ def dx(dig_file):
     except ObjectDoesNotExist:
         del_dx_im = False
 
-    dataset = dicom.read_file(dig_file)
+    dataset = pydicom.read_file(dig_file)
     try:
         dataset.decode()
     except ValueError as e:

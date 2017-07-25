@@ -566,7 +566,7 @@ def mam(mg_file):
     """
 
     import os
-    import dicom
+    import pydicom
     from django.core.exceptions import ObjectDoesNotExist
     from remapp.models import DicomDeleteSettings
     try:
@@ -576,7 +576,7 @@ def mam(mg_file):
     except ObjectDoesNotExist:
         del_mg_im = False
 
-    dataset = dicom.read_file(mg_file)
+    dataset = pydicom.read_file(mg_file)
     dataset.decode()
     ismammo = _test_if_mammo(dataset)
     if not ismammo:

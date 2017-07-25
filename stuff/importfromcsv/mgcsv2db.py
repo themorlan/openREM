@@ -110,9 +110,9 @@ def _irradiationeventxraydata(dataset,proj):
     from remapp.models import IrradEventXRayData
     from remapp.tools.get_values import get_or_create_cid
     from remapp.tools.dcmdatetime import make_date_time
-    import dicom
+    import pydicom
     event = IrradEventXRayData.objects.create(projection_xray_radiation_dose=proj)
-    event.irradiation_event_uid = dicom.UID.generate_uid()
+    event.irradiation_event_uid = pydicom.uid.generate_uid()
     event.date_time_started = make_date_time(str(dataset[5]) + str(dataset[6]))
     event.irradiation_event_type = get_or_create_cid('113611', 'Stationary Acquisition')
     event.acquisition_protocol = dataset[11]
@@ -213,8 +213,8 @@ def _patientmoduleattributes(dataset,g):
 
 def _generalstudymoduleattributes(dataset,g):
     from remapp.tools.dcmdatetime import make_date, make_time
-    import dicom
-    g.study_instance_uid = dicom.UID.generate_uid()
+    import pydicom
+    g.study_instance_uid = pydicom.uid.generate_uid()
     g.study_date = make_date(dataset[5])
     g.study_time = make_time(dataset[6])
     g.accession_number = dataset[7]

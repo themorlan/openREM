@@ -1,7 +1,7 @@
 # This Python file uses the following encoding: utf-8
 
 from __future__ import unicode_literals
-from dicom.dataset import Dataset
+from pydicom.dataset import Dataset
 from django.test import TestCase
 from remapp.models import NotPatientIndicatorsID, NotPatientIndicatorsName
 from remapp.tools.not_patient_indicators import get_not_pt

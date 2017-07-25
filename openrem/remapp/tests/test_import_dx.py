@@ -6,9 +6,9 @@ import os, datetime
 from decimal import Decimal
 from django.contrib.auth.models import User, Group
 from django.test import TestCase
-from dicom.dataelem import RawDataElement
-from dicom.dataset import Dataset
-from dicom.tag import Tag
+from pydicom.dataelem import RawDataElement
+from pydicom.dataset import Dataset
+from pydicom.tag import Tag
 from remapp.extractors.dx import _xray_filters_prep
 from remapp.models import GeneralStudyModuleAttr, ProjectionXRayRadiationDose, IrradEventXRayData, \
     IrradEventXRaySourceData

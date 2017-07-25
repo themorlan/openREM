@@ -359,7 +359,7 @@ def ct_philips(philips_file):
         * Brilliance BigBore v3.5.4.17001.
     """
 
-    import dicom
+    import pydicom
     from django.core.exceptions import ObjectDoesNotExist
     from remapp.models import DicomDeleteSettings
     try:
@@ -368,7 +368,7 @@ def ct_philips(philips_file):
     except ObjectDoesNotExist:
         del_ct_phil = False
 
-    dataset = dicom.read_file(philips_file)
+    dataset = pydicom.read_file(philips_file)
     dataset.decode()
     if dataset.SOPClassUID != '1.2.840.10008.5.1.4.1.1.7' or dataset.Manufacturer != 'Philips' \
             or dataset.SeriesDescription != 'Dose Info':

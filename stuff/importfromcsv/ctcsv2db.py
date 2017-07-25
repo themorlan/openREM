@@ -29,7 +29,7 @@ def _ctxraysourceparameters(dataset,event):
 
 
 def _ctirradiationeventdata(dataset,ct,col):
-    import dicom
+    import pydicom
     from remapp.models import CtIrradiationEventData
     from remapp.tools.get_values import get_or_create_cid
     irr = CtIrradiationEventData.objects.create(ct_radiation_dose=ct)
@@ -38,7 +38,7 @@ def _ctirradiationeventdata(dataset,ct,col):
         irr.ct_acquisition_type = get_or_create_cid("P5-08001","Spiral Acquisition")
     elif dataset[col+2] == "Axial":
         irr.ct_acquisition_type = get_or_create_cid("113804","Sequenced Acquisition")
-    irr.irradiation_event_uid = dicom.UID.generate_uid()
+    irr.irradiation_event_uid = pydicom.uid.generate_uid()
     irr.mean_ctdivol = dataset[col+5]
     irr.dlp = dataset[col+6]
     if dataset[col+12] is "BODY32":
@@ -118,9 +118,9 @@ def _generalequipmentmoduleattributes(dataset,g, sitecode):
 
 
 def _generalstudymoduleattributes(dataset,g):
-    import dicom
+    import pydicom
     from remapp.tools.dcmdatetime import make_date, make_time
-    g.study_instance_uid = dicom.UID.generate_uid()
+    g.study_instance_uid = pydicom.uid.generate_uid()
     g.study_date = make_date(dataset[4])
     g.study_time = make_time(dataset[7])
     g.accession_number = dataset[3]

@@ -2,8 +2,8 @@
 # test_dicom_qr.py
 
 import os
-from dicom.dataset import Dataset, FileDataset
-from dicom.UID import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
+from pydicom.dataset import Dataset, FileDataset
+from pydicom.uid import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
 from django.test import TestCase
 from mock import patch
 from netdicom.applicationentity import AE

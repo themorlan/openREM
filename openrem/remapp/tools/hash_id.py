@@ -37,13 +37,13 @@ def hash_id(id_string, *args, **kwargs):
     :type id_string:          str
     :returns:          str
     """
-    import dicom
+    import pydicom
     from django.utils.encoding import smart_bytes
     import hashlib
 
     if id_string:
         # print("hash_id id_string before is of type {0}".format(type(id_string)))
-        if isinstance(id_string, (dicom.multival.MultiValue, list, dicom.valuerep.PersonNameUnicode)):
+        if isinstance(id_string, (pydicom.multival.MultiValue, list, pydicom.valuerep.PersonNameUnicode)):
             id_string = ''.join(id_string)
         id_string = smart_bytes(id_string, encoding='utf-8')
         return hashlib.sha256(id_string).hexdigest()

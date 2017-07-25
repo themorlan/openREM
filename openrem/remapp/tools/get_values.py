@@ -28,8 +28,8 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-from dicom.valuerep import PersonName
-from dicom import charset
+from pydicom.valuerep import PersonName
+from pydicom import charset
 from django.utils.encoding import smart_text
 import logging
 logger = logging.getLogger(__name__)
@@ -185,7 +185,7 @@ def list_to_string(dicom_value):
     :param dicom_value: returned DICOM value, usually a name field. Might be single (string) or multivalue (list)
     :return: string of name(s)
     """
-    from dicom.dataelem import isMultiValue
+    from pydicom.dataelem import isMultiValue
     if dicom_value:
         if isMultiValue(dicom_value):
             dicom_value = ' | '.join(dicom_value)

@@ -1032,7 +1032,7 @@ def rdsr(rdsr_file):
     :type filename: str.
     """
 
-    import dicom
+    import pydicom
     from django.core.exceptions import ObjectDoesNotExist
     from remapp.models import DicomDeleteSettings
     try:
@@ -1041,7 +1041,7 @@ def rdsr(rdsr_file):
     except ObjectDoesNotExist:
         del_rdsr = False
 
-    dataset = dicom.read_file(rdsr_file)
+    dataset = pydicom.read_file(rdsr_file)
     dataset.decode()
 
     if dataset.SOPClassUID in ('1.2.840.10008.5.1.4.1.1.88.67', '1.2.840.10008.5.1.4.1.1.88.22') and \
