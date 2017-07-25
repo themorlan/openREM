@@ -119,6 +119,7 @@ def _xray_filters_multiple(xray_filter_material, xray_filter_thickness_maximum, 
         except IndexError:
             pass
 
+
 def _xray_filters_prep(dataset, source):
     from pydicom.valuerep import MultiValue
     from remapp.tools.get_values import get_value_kw
@@ -134,12 +135,18 @@ def _xray_filters_prep(dataset, source):
     if xray_filter_material is None:
         return
 
-    # Get multiple filters into dicom MultiValue or lists
-    if ',' in xray_filter_material and not isinstance(xray_filter_material, MultiValue):
-        xray_filter_material = xray_filter_material.split(',')
-
     xray_filter_thickness_minimum = get_value_kw('FilterThicknessMinimum', dataset)
     xray_filter_thickness_maximum = get_value_kw('FilterThicknessMaximum', dataset)
+
+    dont_check_comma_types = (MultiValue, list)  # Added list as one test doesn't come through as MultiValue
+    if ',' in xray_filter_material and not isinstance(xray_filter_material, dont_check_comma_types):
+        xray_filter_material = xray_filter_material.split(',')
+    if ',' in str(xray_filter_thickness_minimum) and not isinstance(
+            xray_filter_thickness_minimum, dont_check_comma_types):
+        xray_filter_thickness_minimum = xray_filter_thickness_minimum.split(',')
+    if ',' in str(xray_filter_thickness_maximum) and not isinstance(
+            xray_filter_thickness_maximum, dont_check_comma_types):
+        xray_filter_thickness_maximum = xray_filter_thickness_maximum.split(',')
 
     if type(xray_filter_material) is list:
         _xray_filters_multiple(
