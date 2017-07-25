@@ -35,14 +35,30 @@ django.setup()
 logger = logging.getLogger('remapp.netdicom.qrscu')  # Explicitly named so that it is still handled when using __main__
 
 
-def _move_req(my_ae, remote_ae, d, study_no, series_no):
+def _move_req(my_ae, remote_ae, d, study_no, series_no, query):
+    stage_message = query.stage
     logger.debug(u"Requesting move association for study {0} and series {1}".format(study_no, series_no))
     assocMove = my_ae.RequestAssociation(remote_ae)
     logger.info(u"Move association requested for study {0} and series {1}".format(study_no, series_no))
     move_generator = assocMove.StudyRootMoveSOPClass.SCU(d, my_ae.getName(), 1)
     try:
-        for move_status in move_generator:
+        for move_status, move_sub_operations in move_generator:
             logger.debug(u"move of study {0}, series {1} status is {2}".format(study_no, series_no, move_status))
+            logger.debug(u"Warnings: {0}, Failed: {1}, Completed: {2}, Remaining: {3}".format(
+                move_sub_operations.NumberOfWarningSubOperations.value,
+                move_sub_operations.NumberOfFailedSubOperations.value,
+                move_sub_operations.NumberOfCompletedSubOperations.value,
+                move_sub_operations.NumberOfRemainingSubOperations.value
+            ))
+            query.stage = u"{0}<br><small><em>This series move request</em> " \
+                          u"Warnings: {1}, Failed: {2}, Completed: {3}, Remaining: {4}</small>".format(
+                            stage_message,
+                            move_sub_operations.NumberOfWarningSubOperations.value,
+                            move_sub_operations.NumberOfFailedSubOperations.value,
+                            move_sub_operations.NumberOfCompletedSubOperations.value,
+                            move_sub_operations.NumberOfRemainingSubOperations.value
+                            )
+            query.save()
     except KeyError as e:
         logger.error(u"{0} in qrscu._move_req. Request is {1}, study {2} series {3}".format(e, d, study_no, series_no))
     logger.debug(u"Releasing move association for study {0} and series {1}".format(study_no, series_no))
@@ -833,7 +849,7 @@ def movescu(query_id):
             ))
             query.save()
             logger.info(u"_move_req launched")
-            _move_req(my_ae, remote_ae, d, study_no, series_no)
+            _move_req(my_ae, remote_ae, d, study_no, series_no, query)
 
     query.move_complete = True
     query.save()
