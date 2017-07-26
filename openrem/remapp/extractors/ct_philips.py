@@ -220,11 +220,29 @@ def _generalequipmentmoduleattributes(dataset,study):
 
 
 def _patientstudymoduleattributes(dataset,g): # C.7.2.2
+    from decimal import Decimal, InvalidOperation
+    import re
     from remapp.models import PatientStudyModuleAttr
     from remapp.tools.get_values import get_value_kw
     patientatt = PatientStudyModuleAttr.objects.create(general_study_module_attributes=g)
     patientatt.patient_age = get_value_kw("PatientAge",dataset)
     patientatt.patient_weight = get_value_kw("PatientWeight",dataset)
+    # ********** RMH Sutton BigBore Hack ********** #
+    if not patientatt.patient_weight and u"HOST-7207" in g.generalequipmentmoduleattr_set.get().station_name:
+        study_description = get_value_kw('StudyDescription', dataset)
+        patient_weight = re.findall(r"\d*\.\d+|\d+", study_description)
+        if patient_weight:
+            if len(patient_weight) > 1:
+                logger.warning("Found more than one number in BigBore Study Description ({0}). "
+                               "Using first number. Study date/time: {1} {2}".format(
+                                patient_weight, g.study_date, g.study_time))
+            try:
+                patientatt.patient_weight = Decimal(patient_weight[0])
+            except InvalidOperation:
+                logger.error("Conversion of number ({0}) to Decimal failed, BigBore Study date/time: {1} {2}".format(
+                    patient_weight[0], g.study_date, g.study_time
+                ))
+    # ********** RMH Sutton BigBore Hack ********** #
     patientatt.save()
 
 
