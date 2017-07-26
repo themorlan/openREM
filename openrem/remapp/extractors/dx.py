@@ -100,7 +100,7 @@ def _xrayfilters(filttype, material, thickmax, thickmin, source):
 
 def _xrayfiltersnone(source):
     from remapp.models import XrayFilters
-    from remapp.tools.get_values import get_value_kw, get_or_create_cid
+    from remapp.tools.get_values import get_or_create_cid
     filters = XrayFilters.objects.create(irradiation_event_xray_source_data=source)
     filters.xray_filter_type = get_or_create_cid('111609', "No filter")
     filters.save()
@@ -148,7 +148,7 @@ def _xray_filters_prep(dataset, source):
             xray_filter_thickness_maximum, dont_check_comma_types):
         xray_filter_thickness_maximum = xray_filter_thickness_maximum.split(',')
 
-    if type(xray_filter_material) is list:
+    if isinstance(xray_filter_material, list):
         _xray_filters_multiple(
             xray_filter_material, xray_filter_thickness_maximum, xray_filter_thickness_minimum, source)
     else:
@@ -689,19 +689,16 @@ def _create_event(dataset):
 
 
 def _dx2db(dataset):
-    import os, sys
     import openrem_settings
     from time import sleep
     from random import random
 
     os.environ['DJANGO_SETTINGS_MODULE'] = 'openrem.openremproject.settings'
-    from django.db import models
 
     openrem_settings.add_project_to_path()
     from remapp.models import GeneralStudyModuleAttr
     from remapp.tools import check_uid
     from remapp.tools.get_values import get_value_kw
-    from remapp.tools.dcmdatetime import make_date_time
 
     study_uid = get_value_kw('StudyInstanceUID', dataset)
     if not study_uid:
@@ -769,7 +766,7 @@ def _fix_kodak_filters(dataset):
     from remapp.tools.get_values import get_value_kw
 
     try:  # Black magic pydicom method suggested by Darcy Mason: https://groups.google.com/forum/?hl=en-GB#!topic/pydicom/x_WsC2gCLck
-        xray_filter_thickness_minimum = get_value_kw('FilterThicknessMinimum', dataset)
+        get_value_kw('FilterThicknessMinimum', dataset)
     except (ValueError):  # Assumes ValueError will be a comma separated pair of numbers, as per Kodak.
         thick = dict.__getitem__(dataset, 0x187052)  # pydicom black magic as suggested by
         thickval = thick.__getattribute__('value')
@@ -779,7 +776,7 @@ def _fix_kodak_filters(dataset):
             dict.__setitem__(dataset, 0x187052, thick2)
 
     try:
-        xray_filter_thickness_maximum = get_value_kw('FilterThicknessMaximum', dataset)
+        get_value_kw('FilterThicknessMaximum', dataset)
     except (ValueError):  # Assumes ValueError will be a comma separated pair of numbers, as per Kodak.
         thick = dict.__getitem__(dataset, 0x187054)  # pydicom black magic as suggested by
         thickval = thick.__getattribute__('value')
@@ -830,7 +827,6 @@ def dx(dig_file):
 
 
 if __name__ == "__main__":
-    import sys
 
     if len(sys.argv) != 2:
         sys.exit(u'Error: Supply exactly one argument - the DICOM DX radiographic image file')
