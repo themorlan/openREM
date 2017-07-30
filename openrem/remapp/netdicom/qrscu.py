@@ -23,6 +23,10 @@ import uuid
 import collections
 from remapp.netdicom.tools import OnAssociateRequest, OnAssociateResponse, _create_ae
 
+from dicom.dataset import Dataset
+from pynetdicom3 import AE
+from pynetdicom3 import QueryRetrieveSOPClassList
+
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -101,7 +105,7 @@ def _filter(query, level, filter_name, filter_list, filter_type):
     logger.info(u'Now have {0} studies'.format(study_rsp.count()))
 
 
-def _prune_series_responses(MyAE, RemoteAE, query, all_mods, filters):
+def _prune_series_responses(MyAE, RemoteAE, query, all_mods, filters, assoc):
     """
     For each study level response, remove any series that we know can't be used.
     :param MyAE: Calling AE Tile
@@ -131,7 +135,7 @@ def _prune_series_responses(MyAE, RemoteAE, query, all_mods, filters):
             study.save()
 
             if 'SR' in study.get_modalities_in_study() and _check_sr_type_in_study(
-                    MyAE, RemoteAE, study, query.query_id) == 'RDSR':
+                    MyAE, RemoteAE, study, query.query_id, assoc) == 'RDSR':
                 logger.debug(u"Found RDSR in MG study, so keep SR and delete all other series")
                 series = study.dicomqrrspseries_set.all()
                 series.exclude(modality__exact='SR').delete()
@@ -147,7 +151,7 @@ def _prune_series_responses(MyAE, RemoteAE, query, all_mods, filters):
             study.save()
 
             if 'SR' in study.get_modalities_in_study() and _check_sr_type_in_study(
-                    MyAE, RemoteAE, study, query.query_id) == 'RDSR':
+                    MyAE, RemoteAE, study, query.query_id, assoc) == 'RDSR':
                 logger.debug(u"Found RDSR in DX study, so keep SR and delete all other series")
                 series = study.dicomqrrspseries_set.all()
                 series.exclude(modality__exact='SR').delete()
@@ -159,7 +163,7 @@ def _prune_series_responses(MyAE, RemoteAE, query, all_mods, filters):
         elif all_mods['FL']['inc'] and any(mod in study.get_modalities_in_study() for mod in ('XA', 'RF')):
             study.modality = 'FL'
             study.save()
-            sr_type = _check_sr_type_in_study(MyAE, RemoteAE, study, query.query_id)
+            sr_type = _check_sr_type_in_study(MyAE, RemoteAE, study, query.query_id, assoc)
             logger.debug(u"FL study, check_sr_type returned {0}".format(sr_type))
             series = study.dicomqrrspseries_set.all()
             series.exclude(modality__exact='SR').delete()
@@ -169,7 +173,7 @@ def _prune_series_responses(MyAE, RemoteAE, query, all_mods, filters):
             study.save()
             series = study.dicomqrrspseries_set.all()
             if 'SR' in study.get_modalities_in_study():
-                SR_type = _check_sr_type_in_study(MyAE, RemoteAE, study, query.query_id)
+                SR_type = _check_sr_type_in_study(MyAE, RemoteAE, study, query.query_id, assoc)
                 if SR_type == 'RDSR':
                     logger.debug(u"Found RDSR in CT study, so keep SR and delete all other series")
                     series.exclude(modality__exact='SR').delete()
@@ -193,7 +197,7 @@ def _prune_series_responses(MyAE, RemoteAE, query, all_mods, filters):
                     series.filter(number_of_series_related_instances__gt=5).delete()
 
         elif all_mods['SR']['inc']:
-            sr_type = _check_sr_type_in_study(MyAE, RemoteAE, study, query.query_id)
+            sr_type = _check_sr_type_in_study(MyAE, RemoteAE, study, query.query_id, assoc)
             if sr_type == 'RDSR':
                 logger.debug(u"SR only query, found RDSR, deleted other SRs")
             elif sr_type == 'ESR':
@@ -236,7 +240,7 @@ def _prune_study_responses(query, filters):
 
 
 # returns SR-type: RDSR or ESR; otherwise returns 'no_dose_report'
-def _check_sr_type_in_study(my_ae, remote_ae, study, query_id):
+def _check_sr_type_in_study(my_ae, remote_ae, study, query_id, assoc):
     """
     Checks at an image level whether SR in study is RDSR, ESR, or something else (Radiologist's report for example)
     :param my_ae: Calling AE Title
@@ -249,7 +253,7 @@ def _check_sr_type_in_study(my_ae, remote_ae, study, query_id):
     logger.info(u"Number of series with SR {0}".format(series_sr.count()))
     sopclasses = set()
     for sr in series_sr:
-        _query_images(my_ae, remote_ae, sr, query_id)
+        _query_images(my_ae, remote_ae, sr, query_id, assoc)
         images = sr.dicomqrrspimage_set.all()
         if images.count() == 0:
             logger.debug(u"Oops, series {0} of study instance UID {1} doesn't have any images in!".format(
@@ -280,7 +284,7 @@ def _check_sr_type_in_study(my_ae, remote_ae, study, query_id):
         return 'no_dose_report'
 
 
-def _query_images(my_ae, remote_ae, seriesrsp, query_id):
+def _query_images(my_ae, remote_ae, seriesrsp, query_id, assoc):
     from time import sleep
     from remapp.models import DicomQRRspImage
     from pydicom.dataset import Dataset
@@ -297,45 +301,47 @@ def _query_images(my_ae, remote_ae, seriesrsp, query_id):
 
     logger.debug(u'Query_id {0}: query is {1}'.format(query_id, d3))
 
-    assoc_images = my_ae.RequestAssociation(remote_ae)
+    # assoc_images = my_ae.RequestAssociation(remote_ae)
 
-    if not assoc_images:
+    if not assoc.is_established:
         logger.warning(u"Query_id {0}: Query series association must have failed, trying again".format(query_id))
-        sleep(2)
-        assoc_images = my_ae.RequestAssociation(remote_ae)
-        if not assoc_images:
-            logger.error(
-               u"Query_id {0}: Query instance association failed. Me: {1}, Remote: {2}, Study UID: {3}, "
-               u"Se UID {4}, Im {5}".format(
-                   query_id, my_ae, remote_ae, d3.SOPInstanceUID, d3.SeriesInstanceUID, d3.InstanceNumber))
-            return
+        # sleep(2)
+        # assoc_images = my_ae.RequestAssociation(remote_ae)
+        # if not assoc_images:
+        #     logger.error(
+        #        u"Query_id {0}: Query instance association failed. Me: {1}, Remote: {2}, Study UID: {3}, "
+        #        u"Se UID {4}, Im {5}".format(
+        #            query_id, my_ae, remote_ae, d3.SOPInstanceUID, d3.SeriesInstanceUID, d3.InstanceNumber))
+        #     return
 
-    st3 = assoc_images.StudyRootFindSOPClass.SCU(d3, 1)
+    # st3 = assoc_images.StudyRootFindSOPClass.SCU(d3, 1)
+    responses = assoc.send_c_find(d3, query_model='S')
 
     query_id = uuid.uuid4()
 
     imRspNo = 0
 
-    for images in st3:
-        if not images[1]:
+    for status, ds in responses:
+        if status.status_type == "Success":
             continue
-        images[1].decode()
-        imRspNo += 1
-        logger.debug(u"Query_id {0}: Image Response {1}: {2}".format(query_id, imRspNo, images[1]))
-        imagesrsp = DicomQRRspImage.objects.create(dicom_qr_rsp_series=seriesrsp)
-        imagesrsp.query_id = query_id
-        # Mandatory tags
-        imagesrsp.sop_instance_uid = images[1].SOPInstanceUID
-        imagesrsp.sop_class_uid = images[1].SOPClassUID
-        imagesrsp.instance_number = images[1].InstanceNumber
-        if not imagesrsp.instance_number:  # just in case!!
-            imagesrsp.instance_number = None  # integer so can't be ''
-        imagesrsp.save()
+        elif status.status_type == "Pending":
+            ds.decode()
+            imRspNo += 1
+            logger.debug(u"Query_id {0}: Image Response {1}: {2}".format(query_id, imRspNo, ds))
+            imagesrsp = DicomQRRspImage.objects.create(dicom_qr_rsp_series=seriesrsp)
+            imagesrsp.query_id = query_id
+            # Mandatory tags
+            imagesrsp.sop_instance_uid = ds.SOPInstanceUID
+            imagesrsp.sop_class_uid = ds.SOPClassUID
+            imagesrsp.instance_number = ds.InstanceNumber
+            if not imagesrsp.instance_number:  # just in case!!
+                imagesrsp.instance_number = None  # integer so can't be ''
+            imagesrsp.save()
 
-    assoc_images.Release(0)
+    # assoc_images.Release(0)
 
 
-def _query_series(my_ae, remote_ae, d2, studyrsp, query_id):
+def _query_series(my_ae, remote_ae, d2, studyrsp, query_id, assoc, query):
     from time import sleep
     from remapp.tools.get_values import get_value_kw
     from remapp.models import DicomQRRspSeries
@@ -351,57 +357,61 @@ def _query_series(my_ae, remote_ae, d2, studyrsp, query_id):
     logger.debug(u'Query_id {0}: In _query_series'.format(query_id))
     logger.debug(u'Query_id {0}: series query is {1}'.format(query_id, d2))
 
-    assoc_series = my_ae.RequestAssociation(remote_ae)
+    # assoc_series = my_ae.RequestAssociation(remote_ae)
 
-    if not assoc_series:
+    if not assoc.is_established:
         logger.warning(u"Query_id {0}: Query series association must have failed, trying again".format(query_id))
-        sleep(2)
-        assoc_series = my_ae.RequestAssociation(remote_ae)
-        if not assoc_series:
-            logger.error(
-                u"Query_id {0}: Query series association has failed. Me: {1}, Remote: {2}, StudyInstanceUID: {3},"
-                u" SeriesInstanceUID: {4}".format(
-                    query_id, my_ae, remote_ae, d2.StudyInstanceUID, d2.SeriesInstanceUID))
-            return
+        # sleep(2)
+        # assoc_series = my_ae.RequestAssociation(remote_ae)
+        # if not assoc_series:
+        #     logger.error(
+        #         u"Query_id {0}: Query series association has failed. Me: {1}, Remote: {2}, StudyInstanceUID: {3},"
+        #         u" SeriesInstanceUID: {4}".format(
+        #             query_id, my_ae, remote_ae, d2.StudyInstanceUID, d2.SeriesInstanceUID))
+        #     return
 
-    st2 = assoc_series.StudyRootFindSOPClass.SCU(d2, 1)
+    # st2 = assoc_series.StudyRootFindSOPClass.SCU(d2, 1)
+    responses = assoc.send_c_find(d2, query_model='S')
 
     series_query_id = uuid.uuid4()
 
     seRspNo = 0
 
-    for series in st2:
-        if not series[1]:
+    for status, ds in responses:
+        if status.status_type == "Success":
             continue
-        series[1].decode()
-        seRspNo += 1
-        seriesrsp = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=studyrsp)
-        seriesrsp.query_id = series_query_id
-        # Mandatory tags
-        seriesrsp.series_instance_uid = series[1].SeriesInstanceUID
-        seriesrsp.modality = series[1].Modality
-        seriesrsp.series_number = series[1].SeriesNumber
-        if not seriesrsp.series_number:  # despite it being mandatory!
-            seriesrsp.series_number = None  # integer so can't be ''
-        # Optional useful tags
-        seriesrsp.series_description = get_value_kw(u'SeriesDescription', series[1])
-        if seriesrsp.series_description:
-            seriesrsp.series_description = ''.join(seriesrsp.series_description).strip().lower()
-        seriesrsp.number_of_series_related_instances = get_value_kw('NumberOfSeriesRelatedInstances', series[1])
-        if not seriesrsp.number_of_series_related_instances:
-            seriesrsp.number_of_series_related_instances = None  # integer so can't be ''
-        seriesrsp.station_name = get_value_kw('StationName', series[1])
-        logger.debug(u"Series Response {0}: Modality {1}, StationName {2}, StudyUID {3}, Series No. {4}, "
-                     u"Series description {5}".format(
-                            seRspNo, seriesrsp.modality, seriesrsp.station_name, d2.StudyInstanceUID,
-                            seriesrsp.series_number, seriesrsp.series_description))
+        elif status.status_type == "Pending":
+            query.stage = status.description
+            query.save()
+            ds.decode()
+            seRspNo += 1
+            seriesrsp = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=studyrsp)
+            seriesrsp.query_id = series_query_id
+            # Mandatory tags
+            seriesrsp.series_instance_uid = ds.SeriesInstanceUID
+            seriesrsp.modality = ds.Modality
+            seriesrsp.series_number = ds.SeriesNumber
+            if not seriesrsp.series_number:  # despite it being mandatory!
+                seriesrsp.series_number = None  # integer so can't be ''
+            # Optional useful tags
+            seriesrsp.series_description = get_value_kw(u'SeriesDescription', ds)
+            if seriesrsp.series_description:
+                seriesrsp.series_description = ''.join(seriesrsp.series_description).strip().lower()
+            seriesrsp.number_of_series_related_instances = get_value_kw('NumberOfSeriesRelatedInstances', ds)
+            if not seriesrsp.number_of_series_related_instances:
+                seriesrsp.number_of_series_related_instances = None  # integer so can't be ''
+            seriesrsp.station_name = get_value_kw('StationName', ds)
+            logger.debug(u"Series Response {0}: Modality {1}, StationName {2}, StudyUID {3}, Series No. {4}, "
+                         u"Series description {5}".format(
+                                seRspNo, seriesrsp.modality, seriesrsp.station_name, d2.StudyInstanceUID,
+                                seriesrsp.series_number, seriesrsp.series_description))
 
-        seriesrsp.save()
+            seriesrsp.save()
 
-    assoc_series.Release(0)
+    # assoc_series.Release(0)
 
 
-def _query_study(my_ae, remote_ae, d, query, query_id):
+def _query_study(my_ae, remote_ae, d, query, query_id, assoc):
     from remapp.models import DicomQRRspStudy
     from remapp.tools.get_values import get_value_kw
     d.QueryRetrieveLevel = "STUDY"
@@ -418,10 +428,10 @@ def _query_study(my_ae, remote_ae, d, query, query_id):
     d.StationName = ''
     d.SpecificCharacterSet = ''
 
-    logger.debug(u'Query_id {0}: Study level association requested'.format(query_id))
-    assoc_study = my_ae.RequestAssociation(remote_ae)
-    st = assoc_study.StudyRootFindSOPClass.SCU(d, 1)
-    logger.debug(u'Query_id {0}: _query_study done with status {1}'.format(query_id, st))
+    # logger.debug(u'Query_id {0}: Study level association requested'.format(query_id))
+    # assoc_study = my_ae.RequestAssociation(remote_ae)
+    # st = assoc_study.StudyRootFindSOPClass.SCU(d, 1)
+    # logger.debug(u'Query_id {0}: _query_study done with status {1}'.format(query_id, st))
 
     # TODO: Replace the code below to deal with find failure
     # if not st:
@@ -432,38 +442,46 @@ def _query_study(my_ae, remote_ae, d, query, query_id):
     #     MyAE.Quit()
     #     return
 
+    if not assoc.is_established:
+        logger.error(u"Lost association")
+    else:
+        responses = assoc.send_c_find(d, query_model='S')
+
     rspno = 0
 
     logger.debug(u'Processing the study level responses')
-    for ss in st:
-        if not ss[1]:
+    for status, ds in responses:
+        if status.status_type == "Success":
             continue
-        ss[1].decode()
-        rspno += 1
-        rsp = DicomQRRspStudy.objects.create(dicom_query=query)
-        rsp.query_id = query_id
-        # Unique key
-        rsp.study_instance_uid = ss[1].StudyInstanceUID
-        # Required keys - none of interest
-        logger.debug(u"Response {0}, StudyUID: {1}".format(rspno, rsp.study_instance_uid))
+        elif status.status_type == "Pending":
+            query.stage = status.description
+            query.save()
+            ds.decode()
+            rspno += 1
+            rsp = DicomQRRspStudy.objects.create(dicom_query=query)
+            rsp.query_id = query_id
+            # Unique key
+            rsp.study_instance_uid = ds.StudyInstanceUID
+            # Required keys - none of interest
+            logger.debug(u"Response {0}, StudyUID: {1}".format(rspno, rsp.study_instance_uid))
 
-        # Optional and special keys
-        rsp.study_description = get_value_kw(u"StudyDescription", ss[1])
-        rsp.station_name = get_value_kw('StationName', ss[1])
-        logger.debug(u"Study Description: {0}; Station Name: {1}".format(rsp.study_description, rsp.station_name))
+            # Optional and special keys
+            rsp.study_description = get_value_kw(u"StudyDescription", ds)
+            rsp.station_name = get_value_kw('StationName', ds)
+            logger.debug(u"Study Description: {0}; Station Name: {1}".format(rsp.study_description, rsp.station_name))
 
-        # Populate modalities_in_study, stored as JSON
-        if isinstance(ss[1].ModalitiesInStudy, str):   # if single modality, then type = string ('XA')
-            rsp.set_modalities_in_study(ss[1].ModalitiesInStudy.split(u','))
-        else:   # if multiple modalities, type = MultiValue (['XA', 'RF'])
-            rsp.set_modalities_in_study(ss[1].ModalitiesInStudy)
-        logger.debug(u"ModalitiesInStudy: {0}".format(rsp.get_modalities_in_study()))
+            # Populate modalities_in_study, stored as JSON
+            if isinstance(ds.ModalitiesInStudy, str):   # if single modality, then type = string ('XA')
+                rsp.set_modalities_in_study(ds.ModalitiesInStudy.split(u','))
+            else:   # if multiple modalities, type = MultiValue (['XA', 'RF'])
+                rsp.set_modalities_in_study(ds.ModalitiesInStudy)
+            logger.debug(u"ModalitiesInStudy: {0}".format(rsp.get_modalities_in_study()))
 
-        rsp.modality = None  # Used later
-        rsp.save()
+            rsp.modality = None  # Used later
+            rsp.save()
 
-    assoc_study.Release(0)
-    logger.debug(u'Query_id {0}: Study level association released'.format(query_id))
+    # assoc_study.Release(0)
+    # logger.debug(u'Query_id {0}: Study level association released'.format(query_id))
 
 
 
@@ -486,12 +504,12 @@ def _create_association(my_ae, remote_host, remote_port, remote_ae, query):
 
 
 def _echo(assoc, query_id):
-    echo = assoc.VerificationSOPClass.SCU(1)
+    echo = assoc.send_c_echo()
     logger.debug(u"Query_id {0}: DICOM echo was returned with status {1}".format(query_id, echo.Type))
     return echo
 
 
-def _query_for_each_modality(all_mods, query, d, MyAE, RemoteAE):
+def _query_for_each_modality(all_mods, query, d, MyAE, RemoteAE, assoc):
     """
     Uses _query_study for each modality we've asked for, and populates study level response data in the database
     :param all_mods: dict of dicts indicating which modalities to request
@@ -519,7 +537,7 @@ def _query_for_each_modality(all_mods, query, d, MyAE, RemoteAE):
                     logger.info(u'Currently querying for {0} studies...'.format(mod))
                     d.ModalitiesInStudy = mod
                     query_id = uuid.uuid4()
-                    _query_study(MyAE, RemoteAE, d, query, query_id)
+                    _query_study(MyAE, RemoteAE, d, query, query_id, assoc)
                     study_rsp = query.dicomqrrspstudy_set.filter(query_id__exact=query_id)
                     logger.debug(u"Queried for {0}, now have {1} study level responses".format(mod, study_rsp.count()))
                     for rsp in study_rsp:  # First check if modalities in study has been populated
@@ -569,9 +587,7 @@ def qrscu(
     """
 
     from datetime import datetime
-
-    from netdicom.applicationentity import AE
-    from netdicom.SOPclass import StudyRootFindSOPClass, StudyRootMoveSOPClass, VerificationSOPClass
+    from time import sleep
     from pydicom.dataset import Dataset
     from pydicom.uid import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
     from remapp.models import GeneralStudyModuleAttr, DicomQuery, DicomRemoteQR, DicomStoreSCP
@@ -619,14 +635,6 @@ def qrscu(
             ExplicitVRBigEndian
         ]
 
-    my_ae = _create_ae(aet.encode('ascii', 'ignore'), transfer_syntax=ts)
-    my_ae.start()
-    logger.debug(u"my_ae {0} started".format(my_ae))
-
-    # remote application entity
-    remote_ae = dict(Address=rh, Port=rp, AET=aec.encode('ascii', 'ignore'))
-    logger.debug(u"Remote AE is {0}".format(remote_ae))
-
     if not query_id:
         query_id = uuid.uuid4()
     logger.debug(u"Query_id is {0}".format(query_id))
@@ -638,24 +646,43 @@ def qrscu(
     query.qr_scp_fk = qr_scp
     query.save()
 
-    assoc = _create_association(my_ae, rh, rp, remote_ae, query)
-    if not assoc:
-        logger.warning(u"Query_id {0}: Query aborted as could not create initial association.")
-        return
+    logger.debug(u"Query_id {0}: Local AET is {1}".format(query_id, aec.encode('ascii', 'ignore')))
+    # remote application entity
+    remote_ae = dict(Address=rh, Port=rp, AET=aec.encode('ascii', 'ignore'))
+    logger.debug(u"Query_id {0}: Remote AE is {1}".format(query_id, remote_ae))
+    my_ae = _create_ae(aet.encode('ascii', 'ignore'), transfer_syntax=ts)
+    assoc = my_ae.associate(rh, rp, ae_title=aec.encode('ascii', 'ignore'))
+    if assoc.is_established:
+        logger.debug(u"Query_id {0}: Established association with {1}".format(query_id, remote_ae))
+    else:
+        logger.warning(u"Query_id {0}: Failed to establish association with {1}. Trying again".format(
+            query_id, remote_ae))
+        sleep(2)
+        assoc = my_ae.associate(rh, rp, ae_title=aec.encode('ascii', 'ignore'))
+        if assoc.is_established:
+            logger.info(u"Query_id {0}: Association established with {1} on second attempt.".format(
+                query_id, remote_ae))
+        else:
+            logger.error(u"Query_id {0}: Failed to establish association with {1}".format(query_id, remote_ae))
+            query.failed = True
+            query.complete = True
+            query.save()
+            assoc.abort()  # Just in case!
+            return
 
     # perform a DICOM ECHO
-    logger.info(u"DICOM Echo ... ")
+    logger.info(u"Query_id {0}: DICOM Echo ... ".format(query_id))
     echo_response = _echo(assoc, query_id)
     if echo_response.Type != u'Success':
         logger.error(u"Echo response was {0} instead of Success. Aborting query".format(echo_response))
-        query.stage = u"Echo response was {0} instead of Success. Aborting query".format(echo_response)
-        query.complete = True
-        query.save()
-        my_ae.Quit()
-        return
+        # query.stage = u"Echo response was {0} instead of Success. Aborting query".format(echo_response)
+        # query.complete = True
+        # query.save()
+        # my_ae.Quit()
+        # return
 
-    logger.info(u"Query_id {0}: Releasing initial association (we'll start another one for C-Find)".format(query_id))
-    assoc.Release(0)
+    # logger.info(u"Query_id {0}: Releasing initial association (we'll start another one for C-Find)".format(query_id))
+    # assoc.Release(0)
 
     logger.info(u"DICOM FindSCU ... ")
     d = Dataset()
@@ -677,7 +704,7 @@ def qrscu(
             all_mods[m]['inc'] = True
 
     # query for all requested studies
-    modalities_returned, modality_matching = _query_for_each_modality(all_mods, query, d, my_ae, remote_ae)
+    modalities_returned, modality_matching = _query_for_each_modality(all_mods, query, d, my_ae, remote_ae, assoc)
 
     # Now we have all our studies. Time to throw duplicates and away any we don't want
     logger.debug(u"Time to throw away any studies or series that are not useful before requesting moves")
@@ -735,7 +762,7 @@ def qrscu(
         # Series level query
         d2 = Dataset()
         d2.StudyInstanceUID = rsp.study_instance_uid
-        _query_series(my_ae, remote_ae, d2, rsp, query_id)
+        _query_series(my_ae, remote_ae, d2, rsp, query_id, assoc, query)
         if not modalities_returned:
             logger.debug(u"modalities_returned = False, so building from series info")
             series_rsp = rsp.dicomqrrspseries_set.all()
@@ -766,13 +793,14 @@ def qrscu(
         logger.info(u'Now have {0} studies'.format(study_rsp.count()))
 
     logger.debug(u"Pruning series responses")
-    _prune_series_responses(my_ae, remote_ae, query, all_mods, filters)
+    _prune_series_responses(my_ae, remote_ae, query, all_mods, filters, assoc)
 
     study_rsp = query.dicomqrrspstudy_set.all()
     logger.info(u'Now have {0} studies'.format(study_rsp.count()))
 
     # done
-    my_ae.Quit()
+    assoc.release()
+    # my_ae.Quit()
     query.complete = True
     query.stage = u"Query complete"
     query.save()

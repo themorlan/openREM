@@ -6,8 +6,8 @@ from pydicom.dataset import Dataset, FileDataset
 from pydicom.uid import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
 from django.test import TestCase
 from mock import patch
-from netdicom.applicationentity import AE
-from netdicom.SOPclass import StudyRootFindSOPClass, StudyRootMoveSOPClass, VerificationSOPClass
+from pynetdicom3.applicationentity import AE
+from pynetdicom3.SOPclass import StudyRootFindSOPClass, StudyRootMoveSOPClass, VerificationSOPClass
 from testfixtures import LogCapture
 import uuid
 from remapp.netdicom import qrscu

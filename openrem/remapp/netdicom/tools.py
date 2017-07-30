@@ -27,9 +27,10 @@
 # anthing else.
 
 import logging
-from netdicom.applicationentity import AE
-from netdicom.SOPclass import StudyRootFindSOPClass, StudyRootMoveSOPClass, VerificationSOPClass
 from pydicom.uid import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
+from pynetdicom3 import AE
+from pynetdicom3 import QueryRetrieveSOPClassList
+from pynetdicom3 import VerificationSOPClass
 
 logger = logging.getLogger(__name__)
 qr_logger = logging.getLogger('remapp.netdicom.qrscu')
@@ -134,16 +135,14 @@ def _create_ae(aet, port=None, sop_scu=None, sop_scp=None, transfer_syntax=None)
     if port is None:
         port = 0
     if sop_scu is None:
-        sop_scu = [StudyRootFindSOPClass, StudyRootMoveSOPClass, VerificationSOPClass]
-    if sop_scp is None:
-        sop_scp = []
+        sop_scu = [QueryRetrieveSOPClassList, VerificationSOPClass]
     if transfer_syntax is None:
         transfer_syntax = [ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian]
 
     qr_logger.debug(u"Creating AE with AET {0}, port {1}, SOP SCUs {2}, SOP SCPs {3} and transfer syntax {4}".format(
         aet, port, sop_scu, sop_scp, transfer_syntax))
-    my_ae = AE(aet, port, sop_scu, sop_scp, transfer_syntax)
-    my_ae.OnAssociateResponse = OnAssociateResponse
-    my_ae.OnAssociateRequest = OnAssociateRequest
+    my_ae = AE(ae_title=aet, port=port, scu_sop_class=sop_scu, scp_sop_class=sop_scp, transfer_syntax=transfer_syntax)
 
     return my_ae
+
+

@@ -18,15 +18,15 @@ if projectpath not in sys.path:
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 django.setup()
 
-try:
-    import netdicom
-    from distutils.version import StrictVersion
-
-    if StrictVersion(netdicom.__version__) <= StrictVersion('0.8.1'):
-        sys.exit(u'Pynedicom > 0.8.1 needs to be installed, see http://docs.openrem.org/en/latest/install.html')
-except ImportError:
-    sys.exit(u'Pynedicom > 0.8.1 needs to be installed, see http://docs.openrem.org/en/latest/install.html')
-from netdicom.SOPclass import StorageSOPClass, VerificationSOPClass
+# try:
+    # import pynetdicom3
+    # from distutils.version import StrictVersion
+    #
+    # if StrictVersion(pynetdicom3.__version__) <= StrictVersion('0.8.1'):
+    #     sys.exit(u'Pynedicom > 0.8.1 needs to be installed, see http://docs.openrem.org/en/latest/install.html')
+# except ImportError:
+#     sys.exit(u'Pynedicom > 0.8.1 needs to be installed, see http://docs.openrem.org/en/latest/install.html')
+from pynetdicom3 import StorageSOPClassList, VerificationSOPClass
 from pydicom.dataset import Dataset, FileDataset
 from django.views.decorators.csrf import csrf_exempt
 
@@ -222,7 +222,7 @@ def web_store(store_pk=None):
 
     # setup AE
     try:
-        my_ae = _create_ae(aet, port=port, sop_scu=[], sop_scp=[StorageSOPClass, VerificationSOPClass])
+        my_ae = _create_ae(aet, port=port, sop_scu=[], sop_scp=[StorageSOPClassList, VerificationSOPClass])
         my_ae.MaxAssociationIdleSeconds = 120
         my_ae.MaxNumberOfAssociations = 25
         my_ae.OnReceiveStore = OnReceiveStore
