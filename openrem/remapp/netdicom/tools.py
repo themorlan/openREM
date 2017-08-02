@@ -56,6 +56,8 @@ def echoscu(scp_pk=None, store_scp=False, qr_scp=False, *args, **kwargs):
     :param kwargs:
     :return: 'AssocFail', Success or ?
     """
+    from pynetdicom3 import AE
+    from pynetdicom3 import VerificationSOPClass
     from remapp.models import DicomRemoteQR, DicomStoreSCP
 
     if store_scp and scp_pk:
@@ -78,47 +80,32 @@ def echoscu(scp_pk=None, store_scp=False, qr_scp=False, *args, **kwargs):
     rp = scp.port
     aec = scp.aetitle
 
-    ts = [
-        ExplicitVRLittleEndian,
-        ImplicitVRLittleEndian,
-        ExplicitVRBigEndian
-        ]
-
-
-
-    # create application entity with just Verification SOP classes as SCU
-    my_ae = AE(aet.encode('ascii', 'ignore'), 0, [VerificationSOPClass], [], ts)
-    my_ae.OnAssociateResponse = OnAssociateResponse
-    my_ae.OnAssociateRequest = OnAssociateRequest
-    my_ae.start()
-
-    # remote application entity
-    remote_ae = dict(Address=rh, Port=rp, AET=aec.encode('ascii', 'ignore'))
+    my_ae = _create_ae(aet.encode('ascii', 'ignore'), sop_scu=[VerificationSOPClass])
 
     # create association with remote AE
     logger.debug(u"Request association with {0} {1} {2}".format(rh, rp, aec))
-    assoc = my_ae.RequestAssociation(remote_ae)
+    assoc = my_ae.associate(rh, rp, ae_title=aec.encode('ascii', 'ignore'))
 
-    if not assoc:
+    if not assoc.is_established:
         logger.info(u"Association with {0} {1} {2} was not successful".format(rh, rp, aec))
         return "AssocFail"
     logger.debug(u"assoc is ... %s", assoc)
 
     # perform a DICOM ECHO
     logger.debug(u"DICOM Echo... {0} {1} {2}".format(rh, rp, aec))
-    echo = assoc.VerificationSOPClass.SCU(1)
-    logger.debug(u'done with status %s', echo)
+    echo = assoc.send_c_echo()
+    logger.debug(u'done with status %s', echo.status_type)
 
     logger.debug(u"Release association from {0} {1} {2}".format(rh, rp, aec))
-    assoc.Release(0)
+    assoc.release()
 
     # done
-    my_ae.Quit()
-    if echo.Type is "Success":
+    if echo.status_type is "Success":
         logger.info(u"Returning Success response from echo to {0} {1} {2}".format(rh, rp, aec))
         return "Success"
     else:
-        logger.info(u"Returning EchoFail response from echo to {0} {1} {2}. Type is {3}.".format(rh, rp, aec, echo.Type))
+        logger.info(u"Returning EchoFail response from echo to {0} {1} {2}. Type is {3}.".format(
+            rh, rp, aec, echo.status_type))
         return "EchoFail"
 
 
