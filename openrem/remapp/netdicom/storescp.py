@@ -295,14 +295,19 @@ def web_store(store_pk=None):
                 my_ae.quit()
                 logger.info(u"Stopped Store SCP AE... AET:%s, port:%s", aet, port)
                 break
-    except socket.error as serr:
-        if serr.errno != errno.EADDRINUSE:
-            conf.status = u"Starting Store SCP AE AET:{0}, port:{1} failed; see logfile".format(aet, port)
-            logger.error(u"Starting Store SCP AE AET:{0}, port:{1} failed: {2}".format(aet, port, serr))
+    except socket.error as socket_err:
+        if socket_err.errno == errno.EADDRINUSE:
+            conf.status = u"Starting Store SCP AE AET:{0}, port:{1} failed; address already in use!".format(aet, port)
+            logger.warning(u"Starting Store SCP AE AET:{0}, port:{1} failed: {2}".format(aet, port, socket_err))
+            conf.save()
+        elif socket_err.errno == errno.EACCES:
+            conf.status = u"Starting Store SCP AE AET:{0}, port:{1} failed; " \
+                          u"permission denied (try above 1024?)!".format(aet, port)
+            logger.warning(u"Starting Store SCP AE AET:{0}, port:{1} failed: {2}".format(aet, port, socket_err))
             conf.save()
         else:
-            conf.status = u"Starting Store SCP AE AET:{0}, port:{1} failed; address already in use!".format(aet, port)
-            logger.warning(u"Starting Store SCP AE AET:{0}, port:{1} failed: {2}".format(aet, port, serr))
+            conf.status = u"Starting Store SCP AE AET:{0}, port:{1} failed; see logfile".format(aet, port)
+            logger.error(u"Starting Store SCP AE AET:{0}, port:{1} failed: {2}".format(aet, port, socket_err))
             conf.save()
 
 
