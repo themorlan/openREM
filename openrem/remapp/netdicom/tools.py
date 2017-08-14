@@ -31,6 +31,7 @@ from pydicom.uid import ExplicitVRLittleEndian, ImplicitVRLittleEndian, Explicit
 from pynetdicom3 import AE
 from pynetdicom3 import QueryRetrieveSOPClassList
 from pynetdicom3 import VerificationSOPClass
+import socket
 
 logger = logging.getLogger(__name__)
 qr_logger = logging.getLogger('remapp.netdicom.qrscu')
@@ -56,18 +57,17 @@ def echoscu(scp_pk=None, store_scp=False, qr_scp=False, *args, **kwargs):
     :param kwargs:
     :return: 'AssocFail', Success or ?
     """
-    from pynetdicom3 import AE
-    from pynetdicom3 import VerificationSOPClass
     from remapp.models import DicomRemoteQR, DicomStoreSCP
 
     if store_scp and scp_pk:
         scp = DicomStoreSCP.objects.get(pk=scp_pk)
         rh = "localhost"
+        rh = socket.gethostbyname(rh)
         aet = "OPENREMECHO"
     elif qr_scp and scp_pk:
         scp = DicomRemoteQR.objects.get(pk=scp_pk)
         if scp.hostname:
-            rh = scp.hostname
+            rh = socket.gethostbyname(scp.hostname)
         else:
             rh = scp.ip
         aet = scp.callingaet
@@ -93,8 +93,10 @@ def echoscu(scp_pk=None, store_scp=False, qr_scp=False, *args, **kwargs):
 
     # perform a DICOM ECHO
     logger.debug(u"DICOM Echo... {0} {1} {2}".format(rh, rp, aec))
+    print(u"DICOM Echo... {0} {1} {2}".format(rh, rp, aec))
     echo = assoc.send_c_echo()
     logger.debug(u'done with status %s', echo.status_type)
+    print(u'done with status %s', echo.status_type)
 
     logger.debug(u"Release association from {0} {1} {2}".format(rh, rp, aec))
     assoc.release()

@@ -266,6 +266,7 @@ def web_store(store_pk=None):
         sys.exit(u"Attempt to start DICOM Store SCP with an invalid database pk")
 
     scp_classes = [x for x in _OPENREM_STORAGE_CLASSES]
+    # scp_classes = [x for x in StorageSOPClassList]
     scp_classes.append(VerificationSOPClass)
     transfer_syntax = [ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian]
 
@@ -274,10 +275,17 @@ def web_store(store_pk=None):
         my_ae = _create_ae(aet,
                            port=port,
                            sop_scu=[],
-                           sop_scp=[_OPENREM_STORAGE_CLASSES, VerificationSOPClass],
+                           sop_scp=scp_classes,
                            transfer_syntax=transfer_syntax)
         my_ae.on_c_store = on_c_store
         # my_ae.OnReceiveEcho = OnReceiveEcho
+
+        my_ae.maximum_pdu_size = 16384
+
+        # Set timeouts
+        my_ae.network_timeout = None
+        my_ae.acse_timeout = 60
+        my_ae.dimse_timeout = None
 
         # start AE
         logger.info(u"Starting  Store SCP AE... AET:{0}, port:{1}".format(aet, port))

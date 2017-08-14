@@ -132,7 +132,7 @@ class DicomStoreSCP(models.Model):
                                verbose_name="AE Title of this node - 16 or fewer letters and numbers, no spaces")
     port = models.IntegerField(blank=True, null=True, verbose_name="Port: 104 is standard for DICOM but over 1024 requires fewer admin rights")
     task_id = models.CharField(max_length=64, blank=True, null=True)
-    status = models.CharField(max_length=64, blank=True, null=True)
+    status = models.TextField(blank=True, null=True)
     run = models.BooleanField(default=False)
     keep_alive = models.BooleanField(default=False, verbose_name="Should this server be kept auto-started and kept alive (using celery beat)")
     controlled = models.BooleanField(default=False, verbose_name="Is this server controlled by OpenREM")

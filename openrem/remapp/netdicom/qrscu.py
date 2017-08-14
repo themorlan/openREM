@@ -19,6 +19,7 @@ import django
 import logging
 import os
 import sys
+import socket
 import uuid
 import collections
 from remapp.netdicom.tools import OnAssociateRequest, OnAssociateResponse, _create_ae
@@ -504,8 +505,9 @@ def _create_association(my_ae, remote_host, remote_port, remote_ae, query):
 
 
 def _echo(assoc, query_id):
+    logger.error(u"we are in _echo")
     echo = assoc.send_c_echo()
-    logger.debug(u"Query_id {0}: DICOM echo was returned with status {1}".format(query_id, echo.Type))
+    logger.debug(u"Query_id {0}: DICOM echo was returned with status {1}".format(query_id, echo.status_type))
     return echo
 
 
@@ -615,7 +617,7 @@ def qrscu(
 
     qr_scp = DicomRemoteQR.objects.get(pk=qr_scp_pk)
     if qr_scp.hostname:
-        rh = qr_scp.hostname
+        rh = socket.gethostbyname(qr_scp.hostname)
     else:
         rh = qr_scp.ip
     rp = qr_scp.port
@@ -673,7 +675,7 @@ def qrscu(
     # perform a DICOM ECHO
     logger.info(u"Query_id {0}: DICOM Echo ... ".format(query_id))
     echo_response = _echo(assoc, query_id)
-    if echo_response.Type != u'Success':
+    if echo_response.status_type != u'Success':
         logger.error(u"Echo response was {0} instead of Success. Aborting query".format(echo_response))
         # query.stage = u"Echo response was {0} instead of Success. Aborting query".format(echo_response)
         # query.complete = True
@@ -837,7 +839,7 @@ def movescu(query_id):
 
     # remote application entity
     if qr_scp.hostname:
-        rh = qr_scp.hostname
+        rh = socket.gethostbyname(qr_scp.hostname)
     else:
         rh = qr_scp.ip
     remote_ae = dict(Address=rh, Port=qr_scp.port, AET=qr_scp.aetitle.encode('ascii', 'ignore'))
