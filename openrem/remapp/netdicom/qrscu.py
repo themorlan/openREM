@@ -27,6 +27,8 @@ from remapp.netdicom.tools import OnAssociateRequest, OnAssociateResponse, _crea
 from dicom.dataset import Dataset
 from pynetdicom3 import AE
 from pynetdicom3 import QueryRetrieveSOPClassList
+from pynetdicom3 import VerificationSOPClass
+from pynetdicom3 import sop_class
 
 
 # setup django/OpenREM
@@ -446,15 +448,19 @@ def _query_study(my_ae, remote_ae, d, query, query_id, assoc):
     if not assoc.is_established:
         logger.error(u"Lost association")
     else:
+        logger.debug(u'about to query at study level, we have association')
         responses = assoc.send_c_find(d, query_model='S')
+
 
     rspno = 0
 
     logger.debug(u'Processing the study level responses')
     for status, ds in responses:
         if status.status_type == "Success":
+            logger.debug(u"response status is Success, nothing more to do")
             continue
         elif status.status_type == "Pending":
+            logger.debug(u"response status is pending. Lets get busy")
             query.stage = status.description
             query.save()
             ds.decode()
@@ -480,6 +486,11 @@ def _query_study(my_ae, remote_ae, d, query, query_id, assoc):
 
             rsp.modality = None  # Used later
             rsp.save()
+        elif status.status_type == "Failure":
+            logger.error(u"Study level query failed with response: {0}".format(status.description))
+            logger.debug(u"SOP Classes used were {0}".format(assoc.scu_supported_sop))
+        else:
+            logger.debug(u"response status is {0}".format(status.status_type))
 
     # assoc_study.Release(0)
     # logger.debug(u'Query_id {0}: Study level association released'.format(query_id))
@@ -652,7 +663,11 @@ def qrscu(
     # remote application entity
     remote_ae = dict(Address=rh, Port=rp, AET=aec.encode('ascii', 'ignore'))
     logger.debug(u"Query_id {0}: Remote AE is {1}".format(query_id, remote_ae))
-    my_ae = _create_ae(aet.encode('ascii', 'ignore'), transfer_syntax=ts)
+    my_ae = _create_ae(aet.encode('ascii', 'ignore'),
+                       sop_scu=[sop_class.StudyRootQueryRetrieveInformationModelFind().UID,
+                                sop_class.StudyRootQueryRetrieveInformationModelMove().UID,
+                                VerificationSOPClass],
+                       transfer_syntax=ts)
     assoc = my_ae.associate(rh, rp, ae_title=aec.encode('ascii', 'ignore'))
     if assoc.is_established:
         logger.debug(u"Query_id {0}: Established association with {1}".format(query_id, remote_ae))
