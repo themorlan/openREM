@@ -124,7 +124,7 @@ def _create_ae(aet, port=None, sop_scu=None, sop_scp=None, transfer_syntax=None)
     if port is None:
         port = 0
     if sop_scu is None:
-        sop_scu = [QueryRetrieveSOPClassList, VerificationSOPClass]
+        sop_scu = QueryRetrieveSOPClassList + [VerificationSOPClass]
     if transfer_syntax is None:
         transfer_syntax = [ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian]
 

@@ -663,11 +663,7 @@ def qrscu(
     # remote application entity
     remote_ae = dict(Address=rh, Port=rp, AET=aec.encode('ascii', 'ignore'))
     logger.debug(u"Query_id {0}: Remote AE is {1}".format(query_id, remote_ae))
-    my_ae = _create_ae(aet.encode('ascii', 'ignore'),
-                       sop_scu=[sop_class.StudyRootQueryRetrieveInformationModelFind().UID,
-                                sop_class.StudyRootQueryRetrieveInformationModelMove().UID,
-                                VerificationSOPClass],
-                       transfer_syntax=ts)
+    my_ae = _create_ae(aet.encode('ascii', 'ignore'), transfer_syntax=ts)
     assoc = my_ae.associate(rh, rp, ae_title=aec.encode('ascii', 'ignore'))
     if assoc.is_established:
         logger.debug(u"Query_id {0}: Established association with {1}".format(query_id, remote_ae))
