@@ -34,7 +34,8 @@ from pynetdicom3 import VerificationSOPClass
 import socket
 
 logger = logging.getLogger(__name__)
-qr_logger = logging.getLogger('remapp.netdicom.qrscu')
+qr_logger = logging.getLogger(name='remapp.netdicom.qrscu')
+storescp_logger = logging.getLogger(name='remapp.netdicom.storescp')
 
 
 # call back
@@ -84,7 +85,10 @@ def echoscu(scp_pk=None, store_scp=False, qr_scp=False, *args, **kwargs):
 
     # create association with remote AE
     logger.debug(u"Request association with {0} {1} {2}".format(rh, rp, aec))
-    assoc = my_ae.associate(rh, rp, ae_title=aec.encode('ascii', 'ignore'))
+    try:
+        assoc = my_ae.associate(rh, rp, ae_title=aec.encode('ascii', 'ignore'))
+    except error as e:
+        logger.error(e)
 
     if not assoc.is_established:
         logger.info(u"Association with {0} {1} {2} was not successful".format(rh, rp, aec))
@@ -111,16 +115,28 @@ def echoscu(scp_pk=None, store_scp=False, qr_scp=False, *args, **kwargs):
         return "EchoFail"
 
 
-def _create_ae(aet, port=None, sop_scu=None, sop_scp=None, transfer_syntax=None):
+def _create_ae(aet, port=None, sop_scu=None, sop_scp=None, transfer_syntax=None, ae_type=None):
     """
     Function to create an application entity
+    :param ae_type:
     :param aet: string, AE Title
-    :param sop_classes: list of supported SOP classes from netdicom.SOPclass to override default set
+    :param port: int, port for application entity to listen on
+    :param sop_scu: list of supported (as user) SOP classes from netdicom.SOPclass to override default set
+    :param sop_scp: list of supported (as provider) SOP classes from netdicom.SOPclass to override default set
     :param transfer_syntax: list of supported transfer syntax from pydicom.uid to override default set
+    :param ae_type: string, either 'qrsu' or 'storescp'. Used for logging.
     :return: application entity object ready to be started
     """
-    qr_logger.debug(u"Create AE called with AET {0}, port {1}, SOP SCUs {2}, SOP SCPs {3} and transfer syntax {4} "
-                 u"(None if default)".format(aet, port, sop_scu, sop_scp, transfer_syntax))
+    if ae_type == 'qrscu':
+        create_ae_logger = qr_logger
+    elif ae_type == 'storescp':
+        create_ae_logger = storescp_logger
+    else:
+        create_ae_logger = logger
+
+    create_ae_logger.debug(u"Create AE called with AET {0}, port {1}, SOP SCUs {2}, SOP SCPs {3} and"
+                           u" transfer syntax {4} (None if default)".format(
+                            aet, port, sop_scu, sop_scp, transfer_syntax))
     if port is None:
         port = 0
     if sop_scu is None:
@@ -128,9 +144,13 @@ def _create_ae(aet, port=None, sop_scu=None, sop_scp=None, transfer_syntax=None)
     if transfer_syntax is None:
         transfer_syntax = [ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian]
 
-    qr_logger.debug(u"Creating AE with AET {0}, port {1}, SOP SCUs {2}, SOP SCPs {3} and transfer syntax {4}".format(
-        aet, port, sop_scu, sop_scp, transfer_syntax))
+    create_ae_logger.debug(u"Creating AE with AET {0}, port {1}, SOP SCUs {2}, SOP SCPs {3} and"
+                           u" transfer syntax {4}".format(aet, port, sop_scu, sop_scp, transfer_syntax))
     my_ae = AE(ae_title=aet, port=port, scu_sop_class=sop_scu, scp_sop_class=sop_scp, transfer_syntax=transfer_syntax)
+
+    create_ae_logger.debug(u"AE created with AET {0}, port {1}, SOP SCUs {2}, SOP SCPs {3} and"
+                           u" transfer syntax {4}".format(my_ae.ae_title, my_ae.port, my_ae.scu_supported_sop,
+                                                          my_ae.scp_supported_sop, my_ae.transfer_syntaxes))
 
     return my_ae
 

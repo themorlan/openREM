@@ -663,7 +663,7 @@ def qrscu(
     # remote application entity
     remote_ae = dict(Address=rh, Port=rp, AET=aec.encode('ascii', 'ignore'))
     logger.debug(u"Query_id {0}: Remote AE is {1}".format(query_id, remote_ae))
-    my_ae = _create_ae(aet.encode('ascii', 'ignore'), transfer_syntax=ts)
+    my_ae = _create_ae(aet.encode('ascii', 'ignore'), transfer_syntax=ts, ae_type='qrscu')
     assoc = my_ae.associate(rh, rp, ae_title=aec.encode('ascii', 'ignore'))
     if assoc.is_established:
         logger.debug(u"Query_id {0}: Established association with {1}".format(query_id, remote_ae))
@@ -844,7 +844,7 @@ def movescu(query_id):
     qr_scp = query.qr_scp_fk
     store_scp = query.store_scp_fk
 
-    my_ae = _create_ae(store_scp.aetitle.encode('ascii', 'ignore'))
+    my_ae = _create_ae(store_scp.aetitle.encode('ascii', 'ignore'), ae_type='qrscu')
     my_ae.start()
     logger.debug(u"Move AE my_ae {0} started".format(my_ae))
 

@@ -272,11 +272,9 @@ def web_store(store_pk=None):
 
     # setup AE
     try:
-        my_ae = _create_ae(aet,
-                           port=port,
-                           sop_scu=[],
-                           sop_scp=scp_classes,
-                           transfer_syntax=transfer_syntax)
+        my_ae = _create_ae(aet, port=port, sop_scu=[], sop_scp=scp_classes, transfer_syntax=transfer_syntax,
+                           ae_type='storescp')
+        logger.debug(u"my_ae should be created, with scp classes {0}".format(my_ae.scp_supported_sop))
         my_ae.on_c_store = on_c_store
         # my_ae.OnReceiveEcho = OnReceiveEcho
 
