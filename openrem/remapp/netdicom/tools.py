@@ -97,17 +97,15 @@ def echoscu(scp_pk=None, store_scp=False, qr_scp=False, *args, **kwargs):
 
     # perform a DICOM ECHO
     logger.debug(u"DICOM Echo... {0} {1} {2}".format(rh, rp, aec))
-    print(u"DICOM Echo... {0} {1} {2}".format(rh, rp, aec))
     echo = assoc.send_c_echo()
     logger.debug(u'done with status %s', echo.status_type)
-    print(u'done with status %s', echo.status_type)
 
     logger.debug(u"Release association from {0} {1} {2}".format(rh, rp, aec))
     assoc.release()
 
     # done
     if echo.status_type is "Success":
-        logger.info(u"Returning Success response from echo to {0} {1} {2}".format(rh, rp, aec))
+        logger.debug(u"Returning Success response from echo to {0} {1} {2}".format(rh, rp, aec))
         return "Success"
     else:
         logger.info(u"Returning EchoFail response from echo to {0} {1} {2}. Type is {3}.".format(
