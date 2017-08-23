@@ -132,9 +132,9 @@ def _create_ae(aet, port=None, sop_scu=None, sop_scp=None, transfer_syntax=None,
     else:
         create_ae_logger = logger
 
-    create_ae_logger.debug(u"Create AE called with AET {0}, port {1}, SOP SCUs {2}, SOP SCPs {3} and"
-                           u" transfer syntax {4} (None if default)".format(
-                            aet, port, sop_scu, sop_scp, transfer_syntax))
+    # create_ae_logger.debug(u"Create AE called with AET {0}, port {1}, SOP SCUs {2}, SOP SCPs {3} and"
+    #                        u" transfer syntax {4} (None if default)".format(
+    #                         aet, port, sop_scu, sop_scp, transfer_syntax))
     if port is None:
         port = 0
     if sop_scu is None:
@@ -142,13 +142,13 @@ def _create_ae(aet, port=None, sop_scu=None, sop_scp=None, transfer_syntax=None,
     if transfer_syntax is None:
         transfer_syntax = [ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian]
 
-    create_ae_logger.debug(u"Creating AE with AET {0}, port {1}, SOP SCUs {2}, SOP SCPs {3} and"
-                           u" transfer syntax {4}".format(aet, port, sop_scu, sop_scp, transfer_syntax))
+    # create_ae_logger.debug(u"Creating AE with AET {0}, port {1}, SOP SCUs {2}, SOP SCPs {3} and"
+    #                        u" transfer syntax {4}".format(aet, port, sop_scu, sop_scp, transfer_syntax))
     my_ae = AE(ae_title=aet, port=port, scu_sop_class=sop_scu, scp_sop_class=sop_scp, transfer_syntax=transfer_syntax)
 
-    create_ae_logger.debug(u"AE created with AET {0}, port {1}, SOP SCUs {2}, SOP SCPs {3} and"
-                           u" transfer syntax {4}".format(my_ae.ae_title, my_ae.port, my_ae.scu_supported_sop,
-                                                          my_ae.scp_supported_sop, my_ae.transfer_syntaxes))
+    # create_ae_logger.debug(u"AE created with AET {0}, port {1}, SOP SCUs {2}, SOP SCPs {3} and"
+    #                        u" transfer syntax {4}".format(my_ae.ae_title, my_ae.port, my_ae.scu_supported_sop,
+    #                                                       my_ae.scp_supported_sop, my_ae.transfer_syntaxes))
 
     return my_ae
 

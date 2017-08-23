@@ -269,12 +269,12 @@ def web_store(store_pk=None):
     scp_classes.append(VerificationSOPClass)
     transfer_syntax = [ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian]
 
+
     # setup AE
     try:
-        my_ae = _create_ae(aet, port=port, sop_scu=[], sop_scp=scp_classes, transfer_syntax=transfer_syntax,
-                           ae_type='storescp')
+        my_ae = _create_ae(aet.encode('ascii', 'ignore'), port=port, sop_scu=[], sop_scp=scp_classes,
+                           transfer_syntax=transfer_syntax, ae_type='storescp')
         my_ae.on_c_store = on_c_store
-        # my_ae.OnReceiveEcho = OnReceiveEcho
 
         my_ae.maximum_pdu_size = 16384
 
@@ -287,10 +287,13 @@ def web_store(store_pk=None):
         logger.info(u"Starting  Store SCP AE... AET:{0}, port:{1}".format(aet, port))
         conf.status = u"Starting Store SCP AE... AET:{0}, port:{1}".format(aet, port)
         conf.save()
-        my_ae.start()
+        try:
+            my_ae.start()
+        except BaseException as e:
+            logger.error(u"Something went wrong with my_ae start. {0} {1}".format(e.message, e.args))
+        logger.info(u"Started Store SCP AE... AET:{0}, port:{1}".format(aet, port))
         conf.status = u"Started Store SCP AE... AET:{0}, port:{1}".format(aet, port)
         conf.save()
-        logger.info(u"Started Store SCP AE... AET:%s, port:%s", aet, port)
 
         while 1:
             time.sleep(1)
