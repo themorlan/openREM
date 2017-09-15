@@ -797,6 +797,7 @@ def dx(dig_file):
     import dicom
     from django.core.exceptions import ObjectDoesNotExist
     from remapp.models import DicomDeleteSettings
+    from hl7.hl7updater import find_message_and_apply
     try:
         del_settings = DicomDeleteSettings.objects.get()
         del_dx_im = del_settings.del_dx_im
@@ -815,6 +816,8 @@ def dx(dig_file):
         return u'{0} is not a DICOM DX radiographic image'.format(dig_file)
 
     _dx2db(dataset)
+    find_message_and_apply(patient_id=dataset.PatientID, accession_number=dataset.AccessionNumber,
+                           study_instance_uid=dataset.StudyInstanceUID)
 
     if del_dx_im:
         os.remove(dig_file)

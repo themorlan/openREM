@@ -14,8 +14,8 @@
 #
 #    Additional permission under section 7 of GPLv3:
 #    You shall not make any use of the name of The Royal Marsden NHS
-#    Foundation trust in connection with this Program in any press or 
-#    other public announcement without the prior written consent of 
+#    Foundation trust in connection with this Program in any press or
+#    other public announcement without the prior written consent of
 #    The Royal Marsden NHS Foundation Trust.
 #
 #    You should have received a copy of the GNU General Public License
@@ -350,10 +350,10 @@ def _philips_ct2db(dataset):
 @shared_task
 def ct_philips(philips_file):
     """Extract radiation dose structured report related data from Philips CT dose report images
-    
+
     :param filename: relative or absolute path to Philips CT dose report DICOM image file.
     :type filename: str.
-    
+
     Tested with:
         * Philips Gemini TF PET-CT v2.3.0
         * Brilliance BigBore v3.5.4.17001.
@@ -362,6 +362,7 @@ def ct_philips(philips_file):
     import dicom
     from django.core.exceptions import ObjectDoesNotExist
     from remapp.models import DicomDeleteSettings
+    from hl7.hl7updater import find_message_and_apply
     try:
         del_settings = DicomDeleteSettings.objects.get()
         del_ct_phil = del_settings.del_ct_phil
@@ -375,6 +376,8 @@ def ct_philips(philips_file):
         return u'{0} is not a Philips CT dose report image'.format(philips_file)
 
     _philips_ct2db(dataset)
+    find_message_and_apply(patient_id=dataset.PatientID, accession_number=dataset.AccessionNumber,
+                           study_instance_uid=dataset.StudyInstanceUID)
 
     if del_ct_phil:
         os.remove(philips_file)

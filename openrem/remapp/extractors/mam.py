@@ -15,7 +15,7 @@
 #    Additional permission under section 7 of GPLv3:
 #    You shall not make any use of the name of The Royal Marsden NHS
 #    Foundation trust in connection with this Program in any press or
-#    other public announcement without the prior written consent of 
+#    other public announcement without the prior written consent of
 #    The Royal Marsden NHS Foundation Trust.
 #
 #    You should have received a copy of the GNU General Public License
@@ -553,7 +553,7 @@ def _mammo2db(dataset):
 @shared_task
 def mam(mg_file):
     """Extract radiation dose structured report related data from mammography images
-    
+
     :param mg_file: relative or absolute path to mammography DICOM image file.
     :type mg_file: str.
 
@@ -562,13 +562,14 @@ def mam(mg_file):
         * Limited testing: GE Senographe Essential
         * Limited testing: Hologic Selenia
         * Limited testing: Siemens Inspiration
-    
+
     """
 
     import os
     import dicom
     from django.core.exceptions import ObjectDoesNotExist
     from remapp.models import DicomDeleteSettings
+    from hl7.hl7updater import find_message_and_apply
     try:
         del_settings = DicomDeleteSettings.objects.get()
         del_mg_im = del_settings.del_mg_im
@@ -586,6 +587,8 @@ def mam(mg_file):
         return (1)
 
     _mammo2db(dataset)
+    find_message_and_apply(patient_id=dataset.PatientID, accession_number=dataset.AccessionNumber,
+                           study_instance_uid=dataset.StudyInstanceUID)
 
     if del_mg_im:
         logger.debug(u"Mammo %s processing complete, deleting file", mg_file)

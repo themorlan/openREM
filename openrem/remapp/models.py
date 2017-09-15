@@ -13,8 +13,8 @@
 #
 #    Additional permission under section 7 of GPLv3:
 #    You shall not make any use of the name of The Royal Marsden NHS
-#    Foundation trust in connection with this Program in any press or 
-#    other public announcement without the prior written consent of 
+#    Foundation trust in connection with this Program in any press or
+#    other public announcement without the prior written consent of
 #    The Royal Marsden NHS Foundation Trust.
 #
 #    You should have received a copy of the GNU General Public License
@@ -28,7 +28,7 @@
 
 """
 
-# Following two lines added so that sphinx autodocumentation works. 
+# Following two lines added so that sphinx autodocumentation works.
 import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 import json
@@ -343,6 +343,16 @@ def create_user_profile(sender, instance, created, **kwargs):
         UserProfile.objects.create(user=instance)
 
 post_save.connect(create_user_profile, sender=User)
+
+
+class Hl7Message(models.Model):
+    receive_datetime = models.DateTimeField(blank=True, null=True)
+    patient_id = models.TextField(blank=True, null=True)
+    accession_number = models.TextField(blank=True, null=True)
+    study_instance_uid = models.TextField(blank=True, null=True)
+    message_type = models.TextField(blank=True, null=True)
+    study_date = models.TextField(blank=True, null=True)
+    message = models.TextField(blank=True, null=True)
 
 
 class UniqueEquipmentNames(models.Model):

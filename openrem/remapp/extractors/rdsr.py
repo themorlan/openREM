@@ -15,7 +15,7 @@
 #    Additional permission under section 7 of GPLv3:
 #    You shall not make any use of the name of The Royal Marsden NHS
 #    Foundation trust in connection with this Program in any press or
-#    other public announcement without the prior written consent of 
+#    other public announcement without the prior written consent of
 #    The Royal Marsden NHS Foundation Trust.
 #
 #    You should have received a copy of the GNU General Public License
@@ -1035,6 +1035,7 @@ def rdsr(rdsr_file):
     import dicom
     from django.core.exceptions import ObjectDoesNotExist
     from remapp.models import DicomDeleteSettings
+    from hl7.hl7updater import find_message_and_apply
     try:
         del_settings = DicomDeleteSettings.objects.get()
         del_rdsr = del_settings.del_rdsr
@@ -1048,6 +1049,8 @@ def rdsr(rdsr_file):
             dataset.ConceptNameCodeSequence[0].CodeValue == '113701':
         logger.debug(u'rdsr.py extracting from {0}'.format(rdsr_file))
         _rsdr2db(dataset)
+        find_message_and_apply(patient_id=dataset.PatientID, accession_number=dataset.AccessionNumber,
+                               study_instance_uid=dataset.StudyInstanceUID)
     else:
         logger.warning(u'rdsr.py not attempting to extract from {0}, not a radiation dose structured report'.format(
             rdsr_file))
