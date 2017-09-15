@@ -175,7 +175,7 @@ class BaseHL7Mapping(object):
         """
         try:
             result = [obx_segment for obx_segment in self._msg.OBX.list
-                      if obx_segment.OBX_3.CE_2.to_er7() == u'BODY WEIGHT']
+                      if obx_segment.OBX_3.CE_2.to_er7() == u'WEIGHT']
             if result:
                 result = result[0].OBX_5
         except ChildNotFound:
@@ -196,7 +196,7 @@ class BaseHL7Mapping(object):
         """
         try:
             result = [obx_segment for obx_segment in self._msg.OBX.list
-                      if obx_segment.OBX_3.CE_1.to_er7() == u'BODY HEIGHT']
+                      if obx_segment.OBX_3.CE_1.to_er7() == u'HEIGHT']
             if result:
                 result = result[0].OBX_5
         except ChildNotFound:
