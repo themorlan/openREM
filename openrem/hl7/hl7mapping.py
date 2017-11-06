@@ -55,9 +55,8 @@ class HL7Mapping(BaseHL7Mapping):
         """
         if ('ORM' in self._msg.name) or ('ORU' in self._msg.name):
             # Family name complex^given name complex^middle name^name prefix^name suffix
-            # Very likely that this HL7 field is used for radiographer / technician
             return (self._get_element_value('OBR.OBR_34.NDL_2') + '^'
-                    + self._get_element_value('OBR.OBR_34.NDL_3')
+                    + self._get_element_value('OBR.OBR_34.NDL_3') + '^'
                     + self._get_element_value('OBR.OBR_34.NDL_4') + '^'
                     + (self._get_element_value('OBR.OBR_34.NDL_5') + ' '
                        + self._get_element_value('OBR.OBR_34.NDL_7')).strip() + '^'
@@ -78,7 +77,7 @@ class HL7Mapping(BaseHL7Mapping):
             # Family name complex^given name complex^middle name^name prefix^name suffix
             # Very likely that this HL7 field is used for radiographer / technician
             return (self._get_element_value('OBR.OBR_32.NDL_2') + '^'
-                    + self._get_element_value('OBR.OBR_32.NDL_3')
+                    + self._get_element_value('OBR.OBR_32.NDL_3') + '^'
                     + self._get_element_value('OBR.OBR_32.NDL_4') + '^'
                     + (self._get_element_value('OBR.OBR_32.NDL_5') + ' '
                        + self._get_element_value('OBR.OBR_32.NDL_7')).strip() + '^'
@@ -137,7 +136,4 @@ class HL7Mapping(BaseHL7Mapping):
 
         :return: Accession number
         """
-        result = self._get_element_value('IPC.IPC_1')
-        if not result:
-            result = self._get_element_value('OBR.OBR_19')
-        return result
+        return self._get_element_value('OBR.OBR_3.CE_1')

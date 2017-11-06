@@ -1,5 +1,5 @@
 import pprint
-
+# TODO: Look at this unicode stuff....doesn't seem to be OK.
 
 class MyPrettyPrinter(pprint.PrettyPrinter):
     """
@@ -56,7 +56,7 @@ def htmlescape(text):
     :param text: text to escape
     :return: escaped text
     """
-    return text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '%gt;')
+    return text.replace(u'&', '&amp;').replace(u'<', '&lt;').replace(u'>', '%gt;')
 
 
 def save_html_report(msg):
@@ -71,63 +71,66 @@ def save_html_report(msg):
 
     hl7_dict = hl7_message_to_dict(msg, False)
     hl7_mapping = HL7Mapping(msg)
-    with open(HL7_HTML_FILENAME, 'w') as filepointer:
-        filepointer.write('<html><head><meta charset="' + HL7_MESSAGE_ENCODING + '"></head><body>')
-        filepointer.write('<h2>Message read:</h2>')
-        filepointer.write('{0}'.format(htmlescape(msg.to_er7().encode(HL7_MESSAGE_ENCODING)).replace('\r', '<br />')))
+    with open(HL7_HTML_FILENAME, 'w', 0) as filepointer:
+        filepointer.write(u'<html><head><meta charset="' + HL7_MESSAGE_ENCODING + '"></head><body>')
+        filepointer.write(u'<h2>Message read:</h2>')
+        filepointer.write(u'{0}'.format(htmlescape(msg.to_er7().encode(HL7_MESSAGE_ENCODING)).replace(u'\r', '<br />')))
 
-        filepointer.write('<h2>Patient information retrieved from message:</h2>')
-        filepointer.write('<table>')
-        filepointer.write('<tr><td><b>Patient name</b></td><td>{0}</td></tr>'.format(hl7_mapping.patient_name))
-        filepointer.write('<tr><td><b>Patient id</b></td><td>{0}</td></tr>'.format(hl7_mapping.patient_id))
-        filepointer.write('<tr><td><b>Patient birthdate</b></td><td>{0}</td></tr>'.format(
+        filepointer.write(u'<h2>Patient information retrieved from message:</h2>')
+        filepointer.write(u'<table>')
+        filepointer.write(u'test')
+        filepointer.write(u'<tr><td><b>Patient name</b></td><td>{0}</td></tr>'.format(str(hl7_mapping.patient_name).encode(HL7_MESSAGE_ENCODING)))
+        filepointer.write(u'test2')
+        filepointer.write(u'<tr><td><b>Patient id</b></td><td>{0}</td></tr>'.format(str(hl7_mapping.patient_id).encode(HL7_MESSAGE_ENCODING)))
+        filepointer.write(u'<tr><td><b>Patient birthdate</b></td><td>{0}</td></tr>'.format(
             hl7_mapping.patient_birthdate))
-        filepointer.write('<tr><td><b>Patient sex</b></td><td>{0}</td></tr>'.format(hl7_mapping.patient_sex))
-        filepointer.write('<tr><td><b>Patient other ids</b></td><td>{0}</td></tr>'.format(
+        filepointer.write(u'<tr><td><b>Patient sex</b></td><td>{0}</td></tr>'.format(hl7_mapping.patient_sex))
+        filepointer.write(u'<tr><td><b>Patient other ids</b></td><td>{0}</td></tr>'.format(
             hl7_mapping.patient_other_ids))
-        filepointer.write('<tr><td><b>Patient merge id</b></td><td>{0}</td></tr>'.format(hl7_mapping.patient_mrg_id))
-        filepointer.write('</table>')
-        filepointer.write('<h2>Patient Study information retrieved from message:</h2>')
-        filepointer.write('<table>')
-        filepointer.write('<tr><td><b>patient weight (kg)</b></td><td>{0}</td></tr>'.format(
+        filepointer.write(u'<tr><td><b>Patient merge id</b></td><td>{0}</td></tr>'.format(str(hl7_mapping.patient_mrg_id).encode(HL7_MESSAGE_ENCODING)))
+        filepointer.write(u'</table>')
+        filepointer.write(u'<h2>Patient Study information retrieved from message:</h2>')
+        filepointer.write(u'<table>')
+        filepointer.write(u'<tr><td><b>patient weight (kg)</b></td><td>{0}</td></tr>'.format(
             hl7_mapping.study_patient_weight))
-        filepointer.write('<tr><td><b>Patient size (m)</b></td><td>{0}</td></tr>'.format(
+        filepointer.write(u'<tr><td><b>Patient size (m)</b></td><td>{0}</td></tr>'.format(
             hl7_mapping.study_patient_size))
-        filepointer.write('</table>')
-        filepointer.write('<h2>Study information retrieved from message:</h2>')
-        filepointer.write('<table>')
-        filepointer.write('<tr><td><b>Study instance UID</b></td><td>{0}</td></tr>'.format(
+        filepointer.write(u'</table>')
+        filepointer.write(u'<h2>Study information retrieved from message:</h2>')
+        filepointer.write(u'<table>')
+        filepointer.write(u'<tr><td><b>Study instance UID</b></td><td>{0}</td></tr>'.format(
             hl7_mapping.study_instance_uid))
-        filepointer.write('<tr><td><b>Study date</b></td><td>{0}</td></tr>'.format(hl7_mapping.study_date))
-        filepointer.write('<tr><td><b>Study time</b></td><td>{0}</td></tr>'.format(hl7_mapping.study_time))
-        filepointer.write('<tr><td><b>Referring physician</b></td><td>{0} ({1})</td></tr>'.format(
-            hl7_mapping.study_referring_physician_name, hl7_mapping.study_referring_physician_id))
-        filepointer.write('<tr><td><b>Study id</b></td><td>{0}</td></tr>'.format(hl7_mapping.study_id))
-        filepointer.write('<tr><td><b>Study accession number</b></td><td>{0}</td></tr>'.format(
-            hl7_mapping.study_accession_number))
-        filepointer.write('<tr><td><b>Study description</b></td><td>{0}</td></tr>'.format(
-            hl7_mapping.study_description))
-        filepointer.write('<tr><td><b>Physician of record</b></td><td>{0}</td></tr>'.format(
-            hl7_mapping.study_physician_of_record))
-        filepointer.write('<tr><td><b>Name of physician reading study</b></td><td>{0}</td></tr>'.format(
-            hl7_mapping.study_name_of_physician_reading_study))
-        filepointer.write('<tr><td><b>Performing physician name</b></td><td>{0}</td></tr>'.format(
-            hl7_mapping.study_performing_physician))
-        filepointer.write('<tr><td><b>Operator</b></td><td>{0}</td></tr>'.format(hl7_mapping.study_operator))
-        filepointer.write('<tr><td><b>Modality</b></td><td>{0}</td></tr>'.format(hl7_mapping.study_modality))
-        filepointer.write('<tr><td><b>Procedure code value</b></td><td>{0}</td></tr>'.format(
-            hl7_mapping.study_procedure_code_value))
-        filepointer.write('<tr><td><b>Procedure code meaning</b></td><td>{0}</td></tr>'.format(
-            hl7_mapping.study_procedure_code_meaning))
-        filepointer.write('<tr><td><b>Requested procedure code value</b></td><td>{0}</td></tr>'.format(
-            hl7_mapping.study_requested_procedure_code_value))
-        filepointer.write('<tr><td><b>Requested procedure code meaning</b></td><td>{0}</td></tr>'.format(
-            hl7_mapping.study_requested_procedure_code_meaning))
-        filepointer.write('</table>')
+        filepointer.write(u'<tr><td><b>Study date</b></td><td>{0}</td></tr>'.format(hl7_mapping.study_date))
+        filepointer.write(u'<tr><td><b>Study time</b></td><td>{0}</td></tr>'.format(hl7_mapping.study_time))
+        filepointer.write(u'<tr><td><b>Referring physician</b></td><td>{0} ({1})</td></tr>'.format(
+            str(hl7_mapping.study_referring_physician_name).encode(HL7_MESSAGE_ENCODING),
+            str(hl7_mapping.study_referring_physician_id).encode(HL7_MESSAGE_ENCODING)))
+        filepointer.write(u'<tr><td><b>Study id</b></td><td>{0}</td></tr>'.format(str(hl7_mapping.study_id.encode(HL7_MESSAGE_ENCODING))))
+        filepointer.write(u'<tr><td><b>Study accession number</b></td><td>{0}</td></tr>'.format(
+            str(hl7_mapping.study_accession_number).encode(HL7_MESSAGE_ENCODING)))
+        filepointer.write(u'<tr><td><b>Study description</b></td><td>{0}</td></tr>'.format(
+            str(hl7_mapping.study_description).encode(HL7_MESSAGE_ENCODING)))
+        filepointer.write(u'<tr><td><b>Physician of record</b></td><td>{0}</td></tr>'.format(
+            str(hl7_mapping.study_physician_of_record).encode(HL7_MESSAGE_ENCODING)))
+        filepointer.write(u'<tr><td><b>Name of physician reading study</b></td><td>{0}</td></tr>'.format(
+            str(hl7_mapping.study_name_of_physician_reading_study).encode(HL7_MESSAGE_ENCODING)))
+        filepointer.write(u'<tr><td><b>Performing physician name</b></td><td>{0}</td></tr>'.format(
+            str(hl7_mapping.study_performing_physician).encode(HL7_MESSAGE_ENCODING)))
+        filepointer.write(u'<tr><td><b>Operator</b></td><td>{0}</td></tr>'.format(str(hl7_mapping.study_operator).encode(HL7_MESSAGE_ENCODING)))
+        filepointer.write(u'<tr><td><b>Modality</b></td><td>{0}</td></tr>'.format(hl7_mapping.study_modality))
+        filepointer.write(u'<tr><td><b>Procedure code value</b></td><td>{0}</td></tr>'.format(
+            str(hl7_mapping.study_procedure_code_value).encode(HL7_MESSAGE_ENCODING)))
+        filepointer.write(u'<tr><td><b>Procedure code meaning</b></td><td>{0}</td></tr>'.format(
+            str(hl7_mapping.study_procedure_code_meaning).encode(HL7_MESSAGE_ENCODING)))
+        filepointer.write(u'<tr><td><b>Requested procedure code value</b></td><td>{0}</td></tr>'.format(
+            str(hl7_mapping.study_requested_procedure_code_value).encode(HL7_MESSAGE_ENCODING)))
+        filepointer.write(u'<tr><td><b>Requested procedure code meaning</b></td><td>{0}</td></tr>'.format(
+            str(hl7_mapping.study_requested_procedure_code_meaning).encode(HL7_MESSAGE_ENCODING)))
+        filepointer.write(u'</table>')
 
-        filepointer.write('<h2>Message in dictionary format:</h2>')
+        filepointer.write(u'<h2>Message in dictionary format:</h2>')
         hl7_dict_string = MyPrettyPrinter().pformat(hl7_dict)
-        filepointer.write(htmlescape(hl7_dict_string).replace('\n', '<br />\n').replace('  ', '&nbsp;'))
-        filepointer.write('<br />')
+        filepointer.write(htmlescape(hl7_dict_string).replace(u'\n', '<br />\n').replace(u'  ', '&nbsp;'))
+        filepointer.write(u'<br />')
 
-        filepointer.write('</body></html>')
+        filepointer.write(u'</body></html>')

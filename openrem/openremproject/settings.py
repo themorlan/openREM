@@ -31,6 +31,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': crontab(minute='*/1'),
         'options': {'expires': 10},   # expire if not run ten seconds after being scheduled
     },
+    'trigger-delete-expired-hl7-messages': {
+        'task': 'hl7.hl7updater.del_old_messages_from_db',
+        'schedule': crontab(hour='3'),
+        'options': {'expires': 10800},  # expires if not run 3 hours after being scheduled
+    },
 }
 
 import os
@@ -214,12 +219,22 @@ LOGGING = {
             'filename': 'openrem_storescp.log',
             'formatter': 'verbose'
         },
+        'hl7_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'openrem_hl7.log',
+            'formatter': 'verbose'
+        },
     },
     'loggers': {
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
+        },
+        'hl7': {
+            'handlers': ['hl7_file'],
+            'level': 'INFO',
         },
         'remapp': {
             'handlers': ['file'],

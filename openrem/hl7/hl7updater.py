@@ -153,7 +153,7 @@ def update_study(mapping):
     from django.db.models import Q
     from datetime import datetime, timedelta
     from decimal import Decimal
-    from hl7settings import HL7_STUDY_DATE_OFFSET
+    from hl7settings import HL7_STUDY_DATE_OFFSET, HL7_ORDER_STATUSSES, HL7_KEEP_FROM_ORDER_STATUS
 
     if HL7_PERFORM_STUDY_UPDATE:
         hash_acc_nr = hash_id(mapping.study_accession_number)
@@ -253,13 +253,24 @@ def update_study(mapping):
                 patientstudy.patient_weight = mapping.study_patient_weight if mapping.study_patient_weight else \
                     patientstudy.patient_weight
             patientstudy.save()
+            logger.info('Study information for studyUID / accession number ({0} / {1}) updated.'.format(
+                        mapping.study_instance_uid, mapping.study_accession_number))
 
             if not HL7_UPDATE_PATIENT_ON_ADT_ONLY:
+                logger.info('Update patient information on basis of order message.')
                 return update_patient(mapping, [patient])
 
         elif nr_of_studies == 0:
             # no studies found, if studydate is larger than or equal to today + offset, save data for later use
-            if mapping.study_date >= (datetime.today() - timedelta(days=HL7_STUDY_DATE_OFFSET)).strftime('%Y%m%d'):
+            logger.debug('study-date: {0}; keep studies from: {1}'.format(mapping.study_date,
+                                        (datetime.today() - timedelta(days=HL7_STUDY_DATE_OFFSET)).strftime('%Y%m%d')))
+            logger.debug('orderstatus: {0}; keep orderstatus {1}'.format(mapping.order_status,
+                                                                         HL7_KEEP_FROM_ORDER_STATUS))
+            if (mapping.study_date >=
+                    (datetime.today() - timedelta(days=HL7_STUDY_DATE_OFFSET)).strftime('%Y%m%d')) and \
+               (HL7_ORDER_STATUSSES.index(mapping.order_status) >=
+                    HL7_ORDER_STATUSSES.index(HL7_KEEP_FROM_ORDER_STATUS) if
+                    mapping.order_status in HL7_ORDER_STATUSSES else False):
                 try:
                     message = Hl7Message(receive_datetime=datetime.now(),
                                          patient_id=mapping.patient_id,
@@ -273,9 +284,8 @@ def update_study(mapping):
                     return -1, None
                 message.save()
                 logger.info(
-                    'Study update not possible. Study with studyUID / accession number ({0} / {1}) not found.'.format(
-                        mapping.study_instance_uid, mapping.study_accession_number) +
-                    ' Message saved for later usage.')
+                    'Study update not possible. Study with studyUID / accession number ({0} / {1}) not found. Message saved for later usage.'.format(
+                        mapping.study_instance_uid, mapping.study_accession_number))
             else:
                 logger.info(
                     'Study update not possible. Study with studyUID / accession number ({0} / {1}) not found.'.format(
@@ -366,7 +376,6 @@ def apply_hl7(message):
     elif ('ORM' in message.name) or ('ORU' in message.name) or ('OMI' in message.name) \
             or ('OMG' in message.name):
         logger.debug('start processing order message')
-        logger.debug('accession_number{0}'.format(hl7_mapping.study_accession_number))
         result_id = update_study(hl7_mapping)
     else:
         return -1, 'hl7-message of type {0} is not supported.'.format(message.name)
@@ -411,9 +420,6 @@ def del_old_messages_from_db():
 
 
 if __name__ == '__main__':
-    from logging import config
-    logging.config.fileConfig('./logging.conf')
-
     # This part is necessary if django is not started via "manage.py"
     # Also add basepath to python-path. It is excepted that this file is in ....\openrem\hl7\
     import django
@@ -424,10 +430,9 @@ if __name__ == '__main__':
     os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
     django.setup()
 
-#    if len(sys.argv) != 2:
-#        sys.exit('Error: Supply exactly one argument - the hl7 message file')
+    if len(sys.argv) != 2:
+        sys.exit('Error: Supply exactly one argument - the hl7 message file')
 
-#    hl7_message = open(sys.argv[1], 'r').read()
-#    resultid, msg = parse_hl7(hl7_message)
-#    apply_hl7(msg)
-    find_message_and_apply('1234', '1235','1.2.3.4.5.6.7.8.9.0')
+    hl7_message = open(sys.argv[1], 'r').read()
+    resultid, msg = parse_hl7(hl7_message)
+    apply_hl7(msg)

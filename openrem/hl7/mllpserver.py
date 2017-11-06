@@ -61,7 +61,7 @@ class Hl7Handler(AbstractHandler):
         :return: er7 response message wrapped with mllp encoding characters
         """
         logger.debug('Handling incoming HL7-message.')
-        logger.debug('Hl7-message: \r\n{0}'.format(self.incoming_message.replace('\r', '\r\n')))
+        logger.debug(u'Hl7-message: \r\n{0}'.format(self.incoming_message.replace('\r', '\r\n')))
         result, msg = parse_hl7(self.incoming_message)
         # Fill MSH from original message
         if result >= 0:
@@ -186,9 +186,6 @@ def stop_server():
 
 
 if __name__ == '__main__':
-    from logging import config
-    logging.config.fileConfig('./logging.conf')
-
     # This part is necessary if django is not started via "manage.py"
     # Also add basepath to python-path. It is excepted that this file is in ....\openrem\hl7\
     import django

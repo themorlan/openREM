@@ -444,3 +444,13 @@ class BaseHL7Mapping:
             return self._get_element_value('OBR.OBR_44.CE_2')
         else:
             return ''
+
+
+    @property
+    def order_status(self):
+        """
+        Return order status
+
+        :return: Order status
+        """
+        return self._get_element_value('ORC.ORC_5')
