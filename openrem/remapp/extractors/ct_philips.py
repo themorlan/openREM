@@ -299,6 +299,8 @@ def _generalstudymoduleattributes(dataset,g):
         g.procedure_code_value = get_seq_code_value('ScheduledProtocolCodeSequence',dataset.RequestAttributesSequence[0])
         g.procedure_code_meaning = get_seq_code_meaning('ScheduledProtocolCodeSequence',dataset.RequestAttributesSequence[0])
     g.requested_procedure_code_meaning = get_value_kw('RequestedProcedureDescription',dataset)
+    if not g.requested_procedure_code_meaning:
+        g.requested_procedure_code_meaning = get_value_kw('StudyDescription', dataset)
     g.save()
     _ctradiationdose(dataset,g)
 
