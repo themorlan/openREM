@@ -138,6 +138,8 @@ def dx_summary_list_filter(request):
             user_profile.plotCharts = chart_options_form.cleaned_data['plotCharts']
             user_profile.plotDXAcquisitionMeanDAP = chart_options_form.cleaned_data['plotDXAcquisitionMeanDAP']
             user_profile.plotDXAcquisitionFreq = chart_options_form.cleaned_data['plotDXAcquisitionFreq']
+            user_profile.plotDXAcquisitionDAPvsIECDDI = chart_options_form.cleaned_data['plotDXAcquisitionDAPvsIECDDI']
+            user_profile.plotDXAcquisitionDAPvsVendorDDI = chart_options_form.cleaned_data['plotDXAcquisitionDAPvsVendorDDI']
             user_profile.plotDXStudyMeanDAP = chart_options_form.cleaned_data['plotDXStudyMeanDAP']
             user_profile.plotDXStudyFreq = chart_options_form.cleaned_data['plotDXStudyFreq']
             user_profile.plotDXRequestMeanDAP = chart_options_form.cleaned_data['plotDXRequestMeanDAP']
@@ -164,6 +166,8 @@ def dx_summary_list_filter(request):
             form_data = {'plotCharts': user_profile.plotCharts,
                          'plotDXAcquisitionMeanDAP': user_profile.plotDXAcquisitionMeanDAP,
                          'plotDXAcquisitionFreq': user_profile.plotDXAcquisitionFreq,
+                         'plotDXAcquisitionDAPvsIECDDI': user_profile.plotDXAcquisitionDAPvsIECDDI,
+                         'plotDXAcquisitionDAPvsVendorDDI': user_profile.plotDXAcquisitionDAPvsVendorDDI,
                          'plotDXStudyMeanDAP': user_profile.plotDXStudyMeanDAP,
                          'plotDXStudyFreq': user_profile.plotDXStudyFreq,
                          'plotDXRequestMeanDAP': user_profile.plotDXRequestMeanDAP,
@@ -241,6 +245,7 @@ def dx_summary_chart_data(request):
 
     return_structure = \
         dx_plot_calculations(f, user_profile.plotDXAcquisitionMeanDAP, user_profile.plotDXAcquisitionFreq,
+                             user_profile.plotDXAcquisitionDAPvsIECDDI, user_profile.plotDXAcquisitionDAPvsVendorDDI,
                              user_profile.plotDXStudyMeanDAP, user_profile.plotDXStudyFreq,
                              user_profile.plotDXRequestMeanDAP, user_profile.plotDXRequestFreq,
                              user_profile.plotDXAcquisitionMeankVpOverTime, user_profile.plotDXAcquisitionMeanmAsOverTime,
@@ -255,6 +260,7 @@ def dx_summary_chart_data(request):
 
 
 def dx_plot_calculations(f, plot_acquisition_mean_dap, plot_acquisition_freq,
+                         plot_acquisition_dap_vs_iec_ddi, plot_acquisition_dap_vs_vendor_ddi,
                          plot_study_mean_dap, plot_study_freq,
                          plot_request_mean_dap, plot_request_freq,
                          plot_acquisition_mean_kvp_over_time, plot_acquisition_mean_mas_over_time,
@@ -263,7 +269,7 @@ def dx_plot_calculations(f, plot_acquisition_mean_dap, plot_acquisition_freq,
                          plot_study_per_day_and_hour,
                          median_available, plot_average_choice, plot_series_per_systems,
                          plot_histogram_bins, plot_histograms, plot_case_insensitive_categories):
-    from interface.chart_functions import average_chart_inc_histogram_data, average_chart_over_time_data, workload_chart_data
+    from interface.chart_functions import average_chart_inc_histogram_data, average_chart_over_time_data, workload_chart_data, scatter_plot_data
     from django.utils.datastructures import MultiValueDictKeyError
 
     return_structure = {}
@@ -328,6 +334,34 @@ def dx_plot_calculations(f, plot_acquisition_mean_dap, plot_acquisition_freq,
         return_structure['acquisitionSummary'] = result['summary']
         if plot_acquisition_mean_dap and plot_histograms:
             return_structure['acquisitionHistogramData'] = result['histogram_data']
+
+    if plot_acquisition_dap_vs_iec_ddi:
+        result = scatter_plot_data(f.qs,
+                                   'projectionxrayradiationdose__irradeventxraydata__irradeventxraydetectordata__exposure_index',
+                                   'projectionxrayradiationdose__irradeventxraydata__dose_area_product',
+                                   1000000,
+                                   plot_series_per_systems,
+                                   'generalequipmentmoduleattr__unique_equipment_name_id__display_name',
+                                   db_series_names='projectionxrayradiationdose__irradeventxraydata__acquisition_protocol',
+                                   case_insensitive_categories=plot_case_insensitive_categories)
+        return_structure['DAPvsIECDDI'] = result['scatterData']
+        return_structure['maxIECDDIAndDAP'] = result['maxXandY']
+        return_structure['DAPvsIECDDISystems'] = result['system_list']
+        return_structure['DAPvsIECDDISeries'] = result['series_names']
+
+    if plot_acquisition_dap_vs_vendor_ddi:
+        result = scatter_plot_data(f.qs,
+                                   'projectionxrayradiationdose__irradeventxraydata__irradeventxraydetectordata__relative_xray_exposure',
+                                   'projectionxrayradiationdose__irradeventxraydata__dose_area_product',
+                                   1000000,
+                                   plot_series_per_systems,
+                                   'generalequipmentmoduleattr__unique_equipment_name_id__display_name',
+                                   db_series_names='projectionxrayradiationdose__irradeventxraydata__acquisition_protocol',
+                                   case_insensitive_categories=plot_case_insensitive_categories)
+        return_structure['DAPvsVendorDDI'] = result['scatterData']
+        return_structure['maxVendorDDIAndDAP'] = result['maxXandY']
+        return_structure['DAPvsVendorDDISystems'] = result['system_list']
+        return_structure['DAPvsVendorDDISeries'] = result['series_names']
 
     if plot_request_mean_dap or plot_request_freq:
         result = average_chart_inc_histogram_data(request_events,
@@ -2100,6 +2134,8 @@ def chart_options_view(request):
 
             user_profile.plotDXAcquisitionMeanDAP = dx_form.cleaned_data['plotDXAcquisitionMeanDAP']
             user_profile.plotDXAcquisitionFreq = dx_form.cleaned_data['plotDXAcquisitionFreq']
+            user_profile.plotDXAcquisitionDAPvsIECDDI = dx_form.cleaned_data['plotDXAcquisitionDAPvsIECDDI']
+            user_profile.plotDXAcquisitionDAPvsVendorDDI = dx_form.cleaned_data['plotDXAcquisitionDAPvsVendorDDI']
             user_profile.plotDXStudyMeanDAP = dx_form.cleaned_data['plotDXStudyMeanDAP']
             user_profile.plotDXStudyFreq = dx_form.cleaned_data['plotDXStudyFreq']
             user_profile.plotDXRequestMeanDAP = dx_form.cleaned_data['plotDXRequestMeanDAP']
@@ -2166,6 +2202,8 @@ def chart_options_view(request):
 
     dx_form_data = {'plotDXAcquisitionMeanDAP': user_profile.plotDXAcquisitionMeanDAP,
                     'plotDXAcquisitionFreq': user_profile.plotDXAcquisitionFreq,
+                    'plotDXAcquisitionDAPvsIECDDI': user_profile.plotDXAcquisitionDAPvsIECDDI,
+                    'plotDXAcquisitionDAPvsVendorDDI': user_profile.plotDXAcquisitionDAPvsVendorDDI,
                     'plotDXStudyMeanDAP': user_profile.plotDXStudyMeanDAP,
                     'plotDXStudyFreq': user_profile.plotDXStudyFreq,
                     'plotDXRequestMeanDAP': user_profile.plotDXRequestMeanDAP,

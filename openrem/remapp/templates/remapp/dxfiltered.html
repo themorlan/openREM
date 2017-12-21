@@ -222,6 +222,7 @@
         <script src="{{ STATIC_URL }}js/chartAverageOverTime.js"></script>
         <script src="{{ STATIC_URL }}js/chartFrequency.js"></script>
         <script src="{{ STATIC_URL }}js/chartWorkload.js"></script>
+        <script src="{{ STATIC_URL }}js/chartScatter.js"></script>
         <script>
             var chartSorting = '{{ request.user.userprofile.plotDXInitialSortingChoice }}';
             var chartSortingDirection = {{ request.user.userprofile.plotInitialSortingDirection }};
@@ -384,6 +385,78 @@
                     fitChartToDiv('piechartProtocolDIV');
                 });
                 result = chartFrequency('piechartProtocolDIV', 'Acquisition protocol frequency');
+            </script>
+        {% endif %}
+
+        {% if request.user.userprofile.plotDXAcquisitionDAPvsIECDDI %}
+            <!-- HTML to include div container for DAP vs IEC DDI scatter plot -->
+            <div class="panel-group" id="accordionScatter1">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordionScatter1" href="#collapseScatter1" onclick="setTimeout(function() {fitChartToDiv('scatterDIV1');}, 0);">
+                                Scatter plot chart showing DAP vs. IEC DDI.
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseScatter1" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <div id="scatterDIV1" style="height: auto; margin: 0 0"></div>
+                            <a onclick="$('#scatterDIV1').highcharts().viewData(false, false, true); enterFullScreen('collapseScatter1', 'scatterDIV1'); $('#toggle_scatter_iec_ddi_data_btn').toggle();" class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
+                            <a onclick="hideOrShowAllSeries('scatterDIV1', 'hide', 'dap_vs_iec_ddi_series_')" class="btn btn-default btn-sm" role="button" id="dap_vs_iec_ddi_series_hide">Hide all series</a>
+                            <a onclick="hideOrShowAllSeries('scatterDIV1', 'show', 'dap_vs_iec_ddi_series_')" class="btn btn-default btn-sm" role="button" id="dap_vs_iec_ddi_series_show">Show all series</a>
+                            <a onclick="toggleAllSeries('scatterDIV1')" class="btn btn-default btn-sm" role="button" id="dap_vs_iec_ddi_series_toggle">Toggle all series</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End of HTML to include div container for scatter plot -->
+
+            <script>
+                $('#dap_vs_iec_ddi_series_show').hide();
+
+                var plotDAPvsIECDDI = true;
+                $(window).resize(function() {
+                    chartSetExportSize('scatterDIV1');
+                    fitChartToDiv('scatterDIV1');
+                });
+                result = chartScatter('DAP vs. IEC DDI', 'scatterDIV1', 'IEC DDI', 'DAP (cGy.cm<sup>2</sup>)');
+            </script>
+        {% endif %}
+
+        {% if request.user.userprofile.plotDXAcquisitionDAPvsVendorDDI %}
+            <!-- HTML to include div container for DAP vs Vendor DDI scatter plot -->
+            <div class="panel-group" id="accordionScatter2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordionScatter2" href="#collapseScatter2" onclick="setTimeout(function() {fitChartToDiv('scatterDIV2');}, 0);">
+                                Scatter plot chart showing DAP vs. vendor DDI.
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseScatter2" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <div id="scatterDIV2" style="height: auto; margin: 0 0"></div>
+                            <a onclick="$('#scatterDIV2').highcharts().viewData(false, false, true); enterFullScreen('collapseScatter2', 'scatterDIV2'); $('#toggle_scatter_vendor_ddi_data_btn').toggle();" class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
+                            <a onclick="hideOrShowAllSeries('scatterDIV2', 'hide', 'dap_vs_vendor_ddi_series_')" class="btn btn-default btn-sm" role="button" id="dap_vs_vendor_ddi_series_hide">Hide all series</a>
+                            <a onclick="hideOrShowAllSeries('scatterDIV2', 'show', 'dap_vs_vendor_ddi_series_')" class="btn btn-default btn-sm" role="button" id="dap_vs_vendor_ddi_series_show">Show all series</a>
+                            <a onclick="toggleAllSeries('scatterDIV2')" class="btn btn-default btn-sm" role="button" id="dap_vs_vendor_ddi_series_toggle">Toggle all series</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End of HTML to include div container for scatter plot -->
+
+            <script>
+                $('#dap_vs_vendor_ddi_series_show').hide();
+
+                var plotDAPvsVendorDDI = true;
+                $(window).resize(function() {
+                    chartSetExportSize('scatterDIV2');
+                    fitChartToDiv('scatterDIV2');
+                });
+                result = chartScatter('DAP vs. vendor DDI', 'scatterDIV2', 'Vendor DDI', 'DAP (cGy.cm<sup>2</sup>)');
             </script>
         {% endif %}
 

@@ -71,6 +71,18 @@ $(document).ready(function() {
                 updateFrequencyChart(json.study_names, json.studySystemList, json.studySummary, urlStartStudy, "piechartStudyDIV", colourScale);
             }
 
+            // DAP vs IEC DDI scatter plot
+            if(typeof plotDAPvsIECDDI !== "undefined") {
+                updateScatterChart(json.DAPvsIECDDI, json.maxIECDDIAndDAP, "scatterDIV1", json.DAPvsIECDDISystems, "none", "cGy.cm<sup>2</sup>", [0,2], colourScale, json.DAPvsIECDDISeries);
+                hideButtonsIfOneSeries("scatterDIV1", "dap_vs_iec_ddi_series_");
+            }
+
+            // DAP vs vendor DDI scatter plot
+            if(typeof plotDAPvsVendorDDI !== "undefined") {
+                updateScatterChart(json.DAPvsVendorDDI, json.maxVendorDDIAndDAP, "scatterDIV2", json.DAPvsVendorDDISystems, "none", "cGy.cm<sup>2</sup>", [0,2], colourScale, json.DAPvsVendorDDISeries);
+                hideButtonsIfOneSeries("scatterDIV2", "dap_vs_vendor_ddi_series_");
+            }
+
             var piechartProtocolDiv;
 
             // DAP over time chart data

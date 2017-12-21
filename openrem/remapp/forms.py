@@ -104,6 +104,8 @@ class DXChartOptionsForm(forms.Form):
     plotCharts = forms.BooleanField(label='Plot charts?', required=False)
     plotDXAcquisitionMeanDAP = forms.BooleanField(label='DAP per acquisition', required=False)
     plotDXAcquisitionFreq = forms.BooleanField(label='Acquisition frequency', required=False)
+    plotDXAcquisitionDAPvsIECDDI = forms.BooleanField(label='Acquisition DAP vs IEC DDI', required=False)
+    plotDXAcquisitionDAPvsVendorDDI = forms.BooleanField(label='Acquisition DAP vs Vendor DDI', required=False)
     plotDXStudyMeanDAP = forms.BooleanField(label='DAP per study', required=False)
     plotDXStudyFreq = forms.BooleanField(label='Study frequency', required=False)
     plotDXRequestMeanDAP = forms.BooleanField(label='DAP per requested procedure', required=False)
@@ -184,6 +186,8 @@ class MGChartOptionsDisplayForm(forms.Form):
 class DXChartOptionsDisplayForm(forms.Form):
     plotDXAcquisitionMeanDAP = forms.BooleanField(label='DAP per acquisition', required=False)
     plotDXAcquisitionFreq = forms.BooleanField(label='Acquisition frequency', required=False)
+    plotDXAcquisitionDAPvsIECDDI = forms.BooleanField(label='Acquisition DAP vs IEC DDI', required=False)
+    plotDXAcquisitionDAPvsVendorDDI = forms.BooleanField(label='Acquisition DAP vs Vendor DDI', required=False)
     plotDXStudyMeanDAP = forms.BooleanField(label='DAP per study', required=False)
     plotDXStudyFreq = forms.BooleanField(label='Study frequency', required=False)
     plotDXRequestMeanDAP = forms.BooleanField(label='DAP per requested procedure', required=False)

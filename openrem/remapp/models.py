@@ -292,6 +292,8 @@ class UserProfile(models.Model):
     plotCharts = models.BooleanField(default=False)
     plotDXAcquisitionMeanDAP = models.BooleanField(default=True)
     plotDXAcquisitionFreq = models.BooleanField(default=False)
+    plotDXAcquisitionDAPvsIECDDI = models.BooleanField(default=False)
+    plotDXAcquisitionDAPvsVendorDDI = models.BooleanField(default=False)
     plotDXStudyMeanDAP = models.BooleanField(default=True)
     plotDXStudyFreq = models.BooleanField(default=True)
     plotDXRequestMeanDAP = models.BooleanField(default=True)

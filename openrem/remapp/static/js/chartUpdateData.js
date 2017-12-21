@@ -377,45 +377,47 @@ function updateAverageChart(nameList, systemList, summaryData, histogramData, av
  * @param tooltipDp -  an array[2] containing the number of decimal places to use for the x and y data in the tooltip
  * @param colourScale - the chroma.js colour scale to use
  */
-function updateScatterChart(scatterData, maxValues, chartDiv, systemList, xAxisUnit, yAxisUnit, tooltipDp, colourScale) {
+function updateScatterChart(scatterData, maxValues, chartDiv, systemList, xAxisUnit, yAxisUnit, tooltipDp, colourScale, seriesList=[""]) {
     var chart = $("#"+chartDiv).highcharts();
-    var colourMax = systemList.length;
-    var i;
+    var colourMax = systemList.length * seriesList.length;
+    var i, j, seriesToUpdate;
     var tooltipPointFormat;
 
     tooltipPointFormat = "{point.x:." + tooltipDp[0] + "f} " + xAxisUnit + "<br>{point.y:." + tooltipDp[1] + "f} " + yAxisUnit;
     for (i = 0; i < systemList.length; i++) {
-        if (chart.series.length > i) {
-            chart.series[i].update({
-                type: "scatter",
-                name: systemList[i],
-                data: scatterData[i],
-                color: colourScale(i/colourMax).alpha(0.5).css(),
-                marker: {
-                    radius: 2
-                },
-                tooltip: {
-                    followPointer: false,
-                    pointFormat: tooltipPointFormat
-                }
-            });
+        for (j = 0; j < seriesList.length; j++) {
+            seriesToUpdate = i*seriesList.length + j;
+            if (chart.series.length > seriesToUpdate) {
+                chart.series[seriesToUpdate].update({
+                    type: "scatter",
+                    name: systemList[i] + ' ' + seriesList[j],
+                    data: scatterData[seriesToUpdate],
+                    color: colourScale(seriesToUpdate / colourMax).alpha(0.5).css(),
+                    marker: {
+                        radius: 2
+                    },
+                    tooltip: {
+                        followPointer: false,
+                        pointFormat: tooltipPointFormat
+                    }
+                });
+            }
+            else {
+                chart.addSeries({
+                    type: "scatter",
+                    name: systemList[i] + ' ' + seriesList[j],
+                    data: scatterData[seriesToUpdate],
+                    color: colourScale(seriesToUpdate / colourMax).alpha(0.5).css(),
+                    marker: {
+                        radius: 2
+                    },
+                    tooltip: {
+                        followPointer: false,
+                        pointFormat: tooltipPointFormat
+                    }
+                });
+            }
         }
-        else {
-            chart.addSeries({
-                type: "scatter",
-                name: systemList[i],
-                data: scatterData[i],
-                color: colourScale(i/colourMax).alpha(0.5).css(),
-                marker: {
-                    radius: 2
-                },
-                tooltip: {
-                    followPointer: false,
-                    pointFormat: tooltipPointFormat
-                }
-            });
-        }
-
     }
 
     chart.xAxis[0].update({

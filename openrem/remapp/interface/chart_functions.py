@@ -315,7 +315,8 @@ def workload_chart_data(database_events):
     return return_structure
 
 
-def scatter_plot_data(database_events, x_field, y_field, y_value_multiplier, plot_series_per_system, db_display_name_relationship):
+def scatter_plot_data(database_events, x_field, y_field, y_value_multiplier, plot_series_per_system,
+                      db_display_name_relationship, db_series_names=False, case_insensitive_categories=False):
     """ This function calculates the data for an OpenREM Highcharts plot of average value vs. a category, as well as a
     histogram of values for each category. It is also used for OpenREM Highcharts frequency plots.
 
@@ -326,16 +327,32 @@ def scatter_plot_data(database_events, x_field, y_field, y_value_multiplier, plo
         y_value_multiplier: float value used to multiply all y_field values by
         plot_series_per_system: boolean to set whether to calculate a series for each value found in db_display_name_relationship
         db_display_name_relationship: database table and field of x-ray system display name, relative to database_events
+        db_series_names: database field to use as categories
 
     Returns:
         A structure containing the x-y data.
     """
     from django.db.models import Q
 
-    # Exclude all zero value events from the calculations
-    database_events = database_events.exclude(Q(**{x_field: 0}) | Q(**{y_field: 0}))
+    # Exclude all zero value and None value events from the calculations
+    database_events = database_events.exclude(Q(**{x_field: 0}) | Q(**{y_field: 0}) | Q(**{x_field: None}) | Q(**{y_field: None}))
+
+    if case_insensitive_categories and db_series_names:
+        from django.db.models.functions import Lower
+        database_events = database_events.annotate(db_series_names_to_use=Lower(db_series_names))
+    elif db_series_names:
+        from django.db.models.functions import Concat
+        database_events = database_events.annotate(db_series_names_to_use=Concat(db_series_names, None))
 
     return_structure = dict()
+
+    if db_series_names:
+        # Obtain a list of series names
+        return_structure['series_names'] = list(
+            database_events.values_list('db_series_names_to_use', flat=True).distinct()
+                .order_by('db_series_names_to_use'))
+    else:
+        return_structure['series_names'] = ['All categories']
 
     if plot_series_per_system:
         return_structure['system_list'] = list(database_events.values_list(db_display_name_relationship, flat=True)
@@ -344,12 +361,25 @@ def scatter_plot_data(database_events, x_field, y_field, y_value_multiplier, plo
         return_structure['system_list'] = ['All systems']
 
     return_structure['scatterData'] = []
+    scatter_filters = {}
     if plot_series_per_system:
         for system in return_structure['system_list']:
-            return_structure['scatterData'].append(database_events.filter(
-                **{db_display_name_relationship: system}).values_list(x_field, y_field))
+            scatter_filters[db_display_name_relationship] = system
+            if db_series_names:
+                for series_i, series_name in enumerate(return_structure['series_names']):
+                    scatter_filters['db_series_names_to_use'] = series_name
+                    return_structure['scatterData'].append(database_events.filter(
+                        **scatter_filters).values_list(x_field, y_field))
+            else:
+                return_structure['scatterData'].append(database_events.filter(
+                    **scatter_filters).values_list(x_field, y_field))
     else:
-        return_structure['scatterData'].append(database_events.values_list(x_field, y_field))
+        if db_series_names:
+            for series_i, series_name in enumerate(return_structure['series_names']):
+                scatter_filters['db_series_names_to_use'] = series_name
+                return_structure['scatterData'].append(database_events.filter(**scatter_filters).values_list(x_field, y_field))
+        else:
+            return_structure['scatterData'].append(database_events.values_list(x_field, y_field))
 
     for index in range(len(return_structure['scatterData'])):
         return_structure['scatterData'][index] = [[floatIfValue(i[0]), floatIfValue(i[1]) * y_value_multiplier] for i in return_structure['scatterData'][index]]
@@ -357,9 +387,10 @@ def scatter_plot_data(database_events, x_field, y_field, y_value_multiplier, plo
     import numpy as np
     max_data = [0, 0]
     for index in range(len(return_structure['scatterData'])):
-        current_max = np.amax(return_structure['scatterData'][index], 0).tolist()
-        if current_max[0] > max_data[0]: max_data[0] = current_max[0]
-        if current_max[1] > max_data[1]: max_data[1] = current_max[1]
+        if len(return_structure['scatterData'][index]):
+            current_max = np.amax(return_structure['scatterData'][index], 0).tolist()
+            if current_max[0] > max_data[0]: max_data[0] = current_max[0]
+            if current_max[1] > max_data[1]: max_data[1] = current_max[1]
     return_structure['maxXandY'] = max_data
 
     return return_structure
