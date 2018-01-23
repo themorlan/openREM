@@ -1,5 +1,6 @@
 from django import forms
 from django.utils.safestring import mark_safe
+from django.forms import TextInput
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, HTML, Div
 from crispy_forms.bootstrap import FormActions, PrependedText, InlineCheckboxes, Accordion, AccordionGroup
@@ -119,6 +120,14 @@ class DXChartOptionsForm(forms.Form):
         plotMeanMedianOrBoth = forms.ChoiceField(label='Average to use', choices=AVERAGES, required=False)
     plotSeriesPerSystem = forms.BooleanField(label='Plot a series per system', required=False)
     plotHistograms = forms.BooleanField(label='Calculate histogram data', required=False)
+
+
+class AdvancedSearchForm(forms.Form):
+    advancedSearchString = forms.CharField(
+        widget=forms.TextInput(attrs={'width': '100%', 'readonly': 'True', 'class': 'form-control',
+                                      'placeholder': 'Build your search string using the builder below.'}),
+        required=False,
+        label='')
 
 
 class CTChartOptionsForm(forms.Form):

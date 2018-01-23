@@ -1223,6 +1223,111 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
     return return_structure
 
 
+def add2json_search_string(json_string, dbfield, label=None, comparison=None):
+    '''
+    All assumed from "top of model": GeneralStudyModuleAttr
+    :param json_string:
+    :param dbfield:
+    :param label:
+    :param comparison:
+    :return:
+    '''
+    from models import GeneralStudyModuleAttr
+
+    dbfieldlist = dbfield.split('__')
+    if comparison is None:
+        childmodel = GeneralStudyModuleAttr
+        for field in dbfieldlist[:-1]:
+            childmodel = childmodel._meta.get_field(field).related_model
+        fieldtype = childmodel._meta.get_field(dbfieldlist[-1]).get_internal_type()
+        if fieldtype == 'TextField':
+            comparison = '["is", "contains", "begins with", "ends with"]'
+        elif fieldtype == 'BooleanField':
+            comparison = '["is"]'
+        else:
+            # at least: DateField, TimeField, DateTimeField, TimeField, DecimalField
+            comparison = \
+                '["is", "greater than", "smaller than", "greater than or equal to", "smaller than or equal to"]'
+    if label is None or len(label) == 0:
+        label = dbfieldlist[-1].replace('_', ' ')
+    if dbfield and label and comparison:
+        return json_string + '{"db_field":"' + dbfield + '",' + \
+                             '"label":"' + label.title() + '",' + \
+                             '"comparison":' + comparison + '},'
+    else:
+        return json_string
+
+
+def add_model2json_search(model, json_search, field_prefix=''):
+    for field in model._meta.get_fields():
+        if not field.is_relation:
+            if not((field.name == 'id') or ('hashed' in field.name)):
+                json_search = add2json_search_string(json_search, field_prefix + field.name, field.verbose_name)
+        else:
+            if field.related_model == remapp.models.ContextID:
+                json_search = add2json_search_string(json_search, field_prefix + field.name + '__code_meaning',
+                                                     field.verbose_name)
+    return json_search
+
+
+@login_required
+def advanced_search(request):
+    """
+    View with advanced search option
+    :param request: URL-request
+    :return:
+    """
+    import json
+    from forms import AdvancedSearchForm
+    from remapp.interface.mod_filters import get_advanced_search_objects
+    from models import GeneralStudyModuleAttr, PatientModuleAttr, PatientStudyModuleAttr,GeneralEquipmentModuleAttr, \
+        CtRadiationDose, CtAccumulatedDoseData, CtIrradiationEventData, CtXRaySourceParameters, ScanningLength, \
+        SizeSpecificDoseEstimation, CtDoseCheckDetails
+
+    exam_query_result = None
+    json_search = ''
+    json_search = add_model2json_search(GeneralStudyModuleAttr, json_search)
+    json_search = add_model2json_search(PatientModuleAttr, json_search, 'patientmoduleattr__')
+    json_search = add_model2json_search(PatientStudyModuleAttr, json_search, 'patientstudymoduleattr__')
+    json_search = add_model2json_search(GeneralEquipmentModuleAttr, json_search, 'generalequipmentmoduleattr__')
+    json_search = add_model2json_search(CtRadiationDose, json_search, 'ctradiationdose__')
+    json_search = add_model2json_search(CtAccumulatedDoseData, json_search, 'ctradiationdose__ctaccumulateddosedata__')
+    json_search = add_model2json_search(CtIrradiationEventData, json_search,
+                                        'ctradiationdose__ctirradiationeventdata__')
+    json_search = add_model2json_search(CtXRaySourceParameters, json_search,
+                                        'ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__')
+    json_search = add_model2json_search(ScanningLength, json_search,
+                                        'ctradiationdose__ctirradiationeventdata__scanninglength__')
+    json_search = add_model2json_search(SizeSpecificDoseEstimation, json_search,
+                                        'ctradiationdose__ctirradiationeventdata__sizespecificdoseestimation__')
+    json_search = add_model2json_search(CtDoseCheckDetails, json_search,
+                                        'ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__')
+
+    json_search = '[' + json_search[:-1] + ']'
+
+    advanced_search_string = request.GET['advancedSearchString'] if 'advancedSearchString' in request.GET else ''
+    advanced_search_form = AdvancedSearchForm({'advancedSearchString': advanced_search_string, })
+
+    if advanced_search_form.is_valid():
+        # Use the form data if the user clicked on the submit button
+        exam_query_result = ""
+        if "submit" in request.GET:
+            exam_query_result = get_advanced_search_objects(GeneralStudyModuleAttr, advanced_search_string,
+                                                            json.loads(json_search))
+
+    admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
+
+    for group in request.user.groups.all():
+        admin[group.name] = True
+
+    return_structure = {'examset': exam_query_result,
+                        'admin': admin,
+                        'json_filter_options': json_search,
+                        'advancedSearchString': advanced_search_form}
+
+
+    return render(request, 'remapp/advancedsearch.html', return_structure)
+
 @login_required
 def ct_detail_view(request, pk=None):
     """Detail view for a CT study

@@ -14,7 +14,7 @@
 #    Additional permission under section 7 of GPLv3:
 #    You shall not make any use of the name of The Royal Marsden NHS
 #    Foundation trust in connection with this Program in any press or
-#    other public announcement without the prior written consent of 
+#    other public announcement without the prior written consent of
 #    The Royal Marsden NHS Foundation Trust.
 #
 #    You should have received a copy of the GNU General Public License
@@ -43,6 +43,8 @@ urlpatterns = patterns('remapp.views',
 
     url(r'^$',
         'openrem_home', name='home'),
+
+    url(r'^advanced_search/$', 'advanced_search', name='advanced_search'),
 
     url(r'^rf/$',
         'rf_summary_list_filter', name='rf_summary_list_filter'),
