@@ -1261,7 +1261,7 @@ def add2json_search_string(json_string, dbfield, label=None, comparison=None):
 def add_model2json_search(model, json_search, field_prefix=''):
     for field in model._meta.get_fields():
         if not field.is_relation:
-            if not((field.name == 'id') or ('hashed' in field.name)):
+            if not((field.name == 'id') or ('hash' in field.name)):
                 json_search = add2json_search_string(json_search, field_prefix + field.name, field.verbose_name)
         else:
             if field.related_model == remapp.models.ContextID:
@@ -1282,7 +1282,7 @@ def advanced_search(request):
     from remapp.interface.mod_filters import get_advanced_search_objects
     from models import GeneralStudyModuleAttr, PatientModuleAttr, PatientStudyModuleAttr,GeneralEquipmentModuleAttr, \
         CtRadiationDose, CtAccumulatedDoseData, CtIrradiationEventData, CtXRaySourceParameters, ScanningLength, \
-        SizeSpecificDoseEstimation, CtDoseCheckDetails
+        SizeSpecificDoseEstimation, CtDoseCheckDetails, UniqueEquipmentNames
 
     exam_query_result = None
     json_search = ''
@@ -1290,6 +1290,8 @@ def advanced_search(request):
     json_search = add_model2json_search(PatientModuleAttr, json_search, 'patientmoduleattr__')
     json_search = add_model2json_search(PatientStudyModuleAttr, json_search, 'patientstudymoduleattr__')
     json_search = add_model2json_search(GeneralEquipmentModuleAttr, json_search, 'generalequipmentmoduleattr__')
+    json_search = add_model2json_search(UniqueEquipmentNames, json_search,
+                                        'generalequipmentmoduleattr__unique_equipment_name__')
     json_search = add_model2json_search(CtRadiationDose, json_search, 'ctradiationdose__')
     json_search = add_model2json_search(CtAccumulatedDoseData, json_search, 'ctradiationdose__ctaccumulateddosedata__')
     json_search = add_model2json_search(CtIrradiationEventData, json_search,
