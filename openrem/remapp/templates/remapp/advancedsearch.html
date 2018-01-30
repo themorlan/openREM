@@ -9,7 +9,7 @@
             div.built_search_string
             {
                 background-color:#E6E6E6;
-                border-width: thin;
+                border-width:thin;
                 border-style:solid;
                 border-color:#7092BE;
             }
@@ -34,11 +34,7 @@
                         <div id="collapseSearch" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingSearch">
                             <div class="advanced_search">
                                <div id="div_search_string" class="built_search_string">
-                                 {{ advancedSearchString.as_p }}
-                               </div>
-                               <div class="edit_search_string">
-                                   <button onclick="gotoEditMode()" id="edit" style="visibility:hidden" >Edit</button>
-                                   <button id="cancel" style="display:none;">Cancel</button>
+                                 {{ advancedSearchForm.as_p }}
                                </div>
                                <div id="search_builder" class="search_builder_class">
                                </div>
@@ -61,6 +57,7 @@
                     </div>
                     {%  if not examset %}
                         <div id="collapseChart" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingChart">
+                        </div>
                     {% else %}
                         <div id="collapseChart" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingChart">
                             {% autopaginate examset request.user.userprofile.itemsPerPage %}
@@ -112,8 +109,9 @@
                                         </td>
                                         <td>
                                             <a href="/openrem/ct/{{ exam.id }}/">
-                                                {{ exam.study_date|date:"Y-m-d" }} {{ exam.study_time|date:"H:i" }}</td>
-                                        </a>
+                                                {{ exam.study_date|date:"Y-m-d" }} {{ exam.study_time|date:"H:i" }}
+                                            </a>
+                                        </td>
                                         <td>
                                             <a href="/openrem/ct/{{ exam.id }}/">
                                             <table onclick="window.location='/openrem/ct/{{ exam.id }}/';">
@@ -154,29 +152,23 @@
 
             </div>
         </div>
-        <script src="{{ STATIC_URL }}js/advancedSearch.js"></script>
-            <script>
-                var filterOptionsJSON = {{ json_filter_options|safe }};
-                $(document).ready(function() {
-                    initializeJSON(filterOptionsJSON, "{{  STATIC_URL|safe }}");
-                    addSearchBuilderLine(-1, true);
-                })
-            </script>
 
     {% endblock %}
 
 
     {% block jsblock %}
-        <!-- {% if request.advancedsearch %}-->
             <script src="{{ STATIC_URL }}js/advancedSearch.js"></script>
             <script>
                 var staticurl = "{{ STATIC_URL|safe }}";
                 var filterOptionsJSON = {{ json_filter_options|safe }};
+                var searchString = "{{ advancedSearchString|safe }}";
                 $(document).ready(function() {
                     initializeJSON(filterOptionsJSON, staticurl);
-                    addSearchBuilderLine(-1, true);
+                    if (!!(searchString.trim()))
+                        createBuilderFromSearchString(searchString);
+                    else
+                        addSearchBuilderLine(-1, true);
+
                 })
             </script>
-            <!--<script src="{{ STATIC_URL }}js/bootstrap-datepicker.js"></script>-->
-        <!-- {%  endif %} -->
     {% endblock %}
