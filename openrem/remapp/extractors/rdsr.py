@@ -71,6 +71,39 @@ def _observercontext(dataset, obs, ch):  # TID 1002
     obs.save()
 
 
+def _person_participant(dataset, event_data_type, foreign_key):
+    """Function to record people involved with study
+
+    :param dataset: DICOM data being parsed
+    :param event_data_type: Which function has called this function
+    :param foreign_key: object of model this modal will link to
+    :return: None
+    """
+    from remapp.models import PersonParticipant
+    from remapp.tools.get_values import get_or_create_cid
+    if event_data_type == 'ct_dose_check_alert':
+        person = PersonParticipant.objects.create(ct_dose_check_details_alert=foreign_key)
+    elif event_data_type == 'ct_dose_check_notification':
+        person = PersonParticipant.objects.create(ct_dose_check_details_notification=foreign_key)
+    else:
+        return
+    person.person_name = dataset.PersonName
+    for cont in dataset.ContentSequence:
+        if cont.ConceptNameCodeSequence[0].CodeMeaning == 'Person Role in Procedure':
+            person.person_role_in_procedure_cid = get_or_create_cid(
+                cont.ConceptCodeSequence[0].CodeValue, cont.ConceptCodeSequence[0].CodeMeaning)
+        elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Person ID':
+            person.person_id = cont.TextValue
+        elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Person ID Issue':
+            person.person_id_issuer = cont.TextValue
+        elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Organization Name':
+            person.organization_name = cont.TextValue
+        elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Person Role in Organization':
+            person.person_role_in_organization_cid = get_or_create_cid(
+                cont.ConceptCodeSequence[0].CodeValue, cont.ConceptCodeSequence[0].CodeMeaning)
+    person.save()
+
+
 def _deviceparticipant(dataset, eventdatatype, foreignkey, ch):
     from remapp.models import DeviceParticipant
     from remapp.tools.get_values import get_or_create_cid, safe_strings
@@ -566,8 +599,7 @@ def _accumulatedfluoroxraydose(dataset, accum):  # TID 10004
             pass
     if accumproj.accumulated_xray_dose.projection_xray_radiation_dose.general_study_module_attributes.modality_type == \
             'RF,DX':
-        if (accumproj.fluoro_dose_area_product_total != "" and accumproj.fluoro_dose_area_product_total is not None) \
-                or (accumproj.total_fluoro_time != "" and accumproj.total_fluoro_time is not None):
+        if accumproj.fluoro_dose_area_product_total or accumproj.total_fluoro_time:
             accumproj.accumulated_xray_dose.projection_xray_radiation_dose.general_study_module_attributes. \
                 modality_type = 'RF'
         else:
@@ -694,10 +726,54 @@ def _ctxraysourceparameters(dataset, event):
     param.save()
 
 
+def _ctdosecheckdetails(dataset, dosecheckdetails, ch, isalertdetails): # TID 10015
+    # PARTLY TESTED CODE (no DSR available that has Reason For Proceeding and/or Forward Estimate)
+    from remapp.tools.get_values import safe_strings
+
+    if isalertdetails:
+        for cont in dataset.ContentSequence:
+            if cont.ConceptNameCodeSequence[0].CodeMeaning == 'DLP Alert Value Configured':
+                dosecheckdetails.dlp_alert_value_configured = (cont.ConceptCodeSequence[0].CodeMeaning == 'Yes')
+            if cont.ConceptNameCodeSequence[0].CodeMeaning == 'DLP Alert Value':
+                dosecheckdetails.dlp_alert_value = cont.MeasuredValueSequence[0].NumericValue
+            if cont.ConceptNameCodeSequence[0].CodeMeaning == 'CTDIvol Alert Value Configured':
+                dosecheckdetails.ctdivol_alert_value_configured = (cont.ConceptCodeSequence[0].CodeMeaning == 'Yes')
+            if cont.ConceptNameCodeSequence[0].CodeMeaning == 'CTDIvol Alert Value':
+                dosecheckdetails.ctdivol_alert_value = cont.MeasuredValueSequence[0].NumericValue
+            if cont.ConceptNameCodeSequence[0].CodeMeaning == 'Accumulated DLP Forward Estimate':
+                dosecheckdetails.accumulated_dlp_forward_estimate = cont.MeasuredValueSequence[0].NumericValue
+            if cont.ConceptNameCodeSequence[0].CodeMeaning == 'Accumulated CTDIvol Forward Estimate':
+                dosecheckdetails.accumulated_ctdivol_forward_estimate = cont.MeasuredValueSequence[0].NumericValue
+            if cont.ConceptNameCodeSequence[0].CodeMeaning == 'Reason For Proceeding':
+                dosecheckdetails.alert_reason_for_proceeding = safe_strings(cont.TextValue, ch)
+            if cont.ConceptNameCodeSequence[0].CodeMeaning == 'Person Name':
+                _person_participant(cont, 'ct_dose_check_alert', dosecheckdetails)
+    else:
+        for cont in dataset.ContentSequence:
+            if cont.ConceptNameCodeSequence[0].CodeMeaning == 'DLP Notification Value Configured':
+                dosecheckdetails.dlp_notification_value_configured = (cont.ConceptCodeSequence[0].CodeMeaning == 'Yes')
+            if cont.ConceptNameCodeSequence[0].CodeMeaning == 'DLP Notification Value':
+                dosecheckdetails.dlp_notification_value = cont.MeasuredValueSequence[0].NumericValue
+            if cont.ConceptNameCodeSequence[0].CodeMeaning == 'CTDIvol Notification Value Configured':
+                dosecheckdetails.ctdivol_notification_value_configured = (cont.ConceptCodeSequence[0].CodeMeaning == 'Yes')
+            if cont.ConceptNameCodeSequence[0].CodeMeaning == 'CTDIvol Notification Value':
+                dosecheckdetails.ctdivol_notification_value = cont.MeasuredValueSequence[0].NumericValue
+            if cont.ConceptNameCodeSequence[0].CodeMeaning == 'DLP Forward Estimate':
+                dosecheckdetails.dlp_forward_estimate = cont.MeasuredValueSequence[0].NumericValue
+            if cont.ConceptNameCodeSequence[0].CodeMeaning == 'CTDIvol Forward Estimate':
+                dosecheckdetails.ctdivol_forward_estimate = cont.MeasuredValueSequence[0].NumericValue
+            if cont.ConceptNameCodeSequence[0].CodeMeaning == 'Reason For Proceeding':
+                dosecheckdetails.notification_reason_for_proceeding = safe_strings(cont.TextValue, ch)
+            if cont.ConceptNameCodeSequence[0].CodeMeaning == 'Person Name':
+                _person_participant(cont, 'ct_dose_check_notification', dosecheckdetails)
+    dosecheckdetails.save()
+
+
 def _ctirradiationeventdata(dataset, ct, ch):  # TID 10013
-    from remapp.models import CtIrradiationEventData
+    from remapp.models import CtIrradiationEventData, CtDoseCheckDetails
     from remapp.tools.get_values import get_or_create_cid, safe_strings
     event = CtIrradiationEventData.objects.create(ct_radiation_dose=ct)
+    ctdosecheckdetails = None
     for cont in dataset.ContentSequence:
         if cont.ConceptNameCodeSequence[0].CodeMeaning == 'Acquisition Protocol':
             event.acquisition_protocol = safe_strings(cont.TextValue, char_set=ch)
@@ -759,7 +835,16 @@ def _ctirradiationeventdata(dataset, ct, ch):  # TID 10013
                     elif cont2.ConceptNameCodeSequence[0].CodeMeaning == 'Effective Dose':
                         event.effective_dose = cont2.MeasuredValueSequence[0].NumericValue
                         ## Effective dose measurement method and conversion factor
-                        ## CT Dose Check details here
+                    ## CT Dose Check Details
+                    ## Dose Check Alert Details and Notifications Details can appear indepently
+                    elif cont2.ConceptNameCodeSequence[0].CodeMeaning == 'Dose Check Alert Details':
+                        if ctdosecheckdetails is None:
+                            ctdosecheckdetails = CtDoseCheckDetails.objects.create(ct_irradiation_event_data=event)
+                        _ctdosecheckdetails(cont2, ctdosecheckdetails, ch, True)
+                    elif cont2.ConceptNameCodeSequence[0].CodeMeaning == 'Dose Check Notification Details':
+                        if ctdosecheckdetails is None:
+                            ctdosecheckdetails = CtDoseCheckDetails.objects.create(ct_irradiation_event_data=event)
+                        _ctdosecheckdetails(cont2, ctdosecheckdetails, ch, False)
         if cont.ConceptNameCodeSequence[0].CodeMeaning.lower() == 'x-ray modulation type':
             event.xray_modulation_type = safe_strings(cont.TextValue)
         if cont.ConceptNameCodeSequence[0].CodeMeaning == 'Comment':
@@ -773,6 +858,8 @@ def _ctirradiationeventdata(dataset, ct, ch):  # TID 10013
 
     ## personparticipant here
     _deviceparticipant(dataset, 'ct_event', event, ch)
+    if ctdosecheckdetails is not None:
+        ctdosecheckdetails.save()
     event.save()
 
 
@@ -823,7 +910,8 @@ def _projectionxrayradiationdose(dataset, g, reporttype, ch):
                                                             cont2.ConceptCodeSequence[0].CodeMeaning)
             if 'Mammography' in proj.procedure_reported.code_meaning:
                 proj.general_study_module_attributes.modality_type = 'MG'
-            elif (not proj.general_study_module_attributes.modality_type) and ('Projection X-Ray' in proj.procedure_reported.code_meaning):
+            elif (not proj.general_study_module_attributes.modality_type) and (
+                    'Projection X-Ray' in proj.procedure_reported.code_meaning):
                 proj.general_study_module_attributes.modality_type = 'RF,DX'
         elif cont.ConceptNameCodeSequence[0].CodeMeaning.lower() == 'acquisition device type':
             proj.acquisition_device_type_cid = get_or_create_cid(cont.ConceptCodeSequence[0].CodeValue,
@@ -849,20 +937,20 @@ def _projectionxrayradiationdose(dataset, g, reporttype, ch):
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Source of Dose Information':
             proj.source_of_dose_information = get_or_create_cid(cont.ConceptCodeSequence[0].CodeValue,
                                                                 cont.ConceptCodeSequence[0].CodeMeaning)
-        if (not equip.unique_equipment_name.user_defined_modality) and (reporttype == 'projection') and (proj.acquisition_device_type_cid):
+        if (not equip.unique_equipment_name.user_defined_modality) and (
+                reporttype == 'projection') and proj.acquisition_device_type_cid:
             if 'Fluoroscopy-Guided' in proj.acquisition_device_type_cid.code_meaning:
                 proj.general_study_module_attributes.modality_type = 'RF'
-            elif 'Integrated' in proj.acquisition_device_type_cid.code_meaning:
-                proj.general_study_module_attributes.modality_type = 'DX'
-            elif 'Cassette-based' in proj.acquisition_device_type_cid.code_meaning:
+            elif any(x in proj.acquisition_device_type_cid.code_meaning for x in ['Integrated', 'Cassette-based']):
                 proj.general_study_module_attributes.modality_type = 'DX'
             else:
                 logging.error(u"Acquisition device type code exists, but the value wasn't matched. Study UID: {0}, "
-                              u"Station name: {1}, Study date, time: {2}, {3} ".format(
+                              u"Station name: {1}, Study date, time: {2}, {3}, device type: {4} ".format(
                     proj.general_study_module_attributes.study_instance_uid,
                     proj.general_study_module_attributes.generalequipmentmoduleattr_set.get().station_name,
                     proj.general_study_module_attributes.study_date,
-                    proj.general_study_module_attributes.study_time
+                    proj.general_study_module_attributes.study_time,
+                    proj.acquisition_device_type_cid.code_meaning
                 ))
 
         proj.save()
@@ -870,7 +958,7 @@ def _projectionxrayradiationdose(dataset, g, reporttype, ch):
         if cont.ConceptNameCodeSequence[0].CodeMeaning == 'Observer Type':
             if reporttype == 'projection':
                 obs = ObserverContext.objects.create(projection_xray_radiation_dose=proj)
-            elif reporttype == 'ct':
+            else:
                 obs = ObserverContext.objects.create(ct_radiation_dose=proj)
             _observercontext(dataset, obs, ch)
 
@@ -1100,7 +1188,7 @@ def _rsdr2db(dataset):
         make_skin_map.delay(g.pk)
 
 
-@shared_task
+@shared_task(name='remapp.extractors.rdsr.rdsr')
 def rdsr(rdsr_file):
     """Extract radiation dose related data from DICOM Radiation SR objects.
 
