@@ -1325,7 +1325,8 @@ def advanced_search(request):
     return_structure = {'examset': exam_query_result,
                         'admin': admin,
                         'json_filter_options': json_search,
-                        'advancedSearchString': advanced_search_form}
+                        'advancedSearchForm': advanced_search_form,
+                        'advancedSearchString': advanced_search_string}
 
 
     return render(request, 'remapp/advancedsearch.html', return_structure)

@@ -115,6 +115,69 @@ function updateSearchString() {
     document.getElementById("id_advancedSearchString").value = builtSearchString;
 }
 
+function createBuilderFromSearchString(searchString) {
+    //delete all builderlines
+    var $searchBuilder = $("#search_builder");
+    $searchBuilder.find("#line_").remove();
+    var indexOfStartBrace = searchString.indexOf("{");
+    var pos = -1;
+    while (indexOfStartBrace > -1)
+    {
+        var indexOfEndBrace = searchString.indexOf("}", indexOfStartBrace);
+        if (indexOfEndBrace === -1)
+            return;
+        var indexOfStartBracket = searchString.indexOf("[", indexOfStartBrace);
+        var indexOfEndBracket = searchString.indexOf("]", indexOfStartBracket);
+        if ((indexOfStartBracket >= indexOfEndBracket) || (indexOfEndBracket > indexOfEndBrace))
+            return;
+        var parameter = searchString.substring(indexOfStartBracket+1, indexOfEndBracket);
+        var indexOfStartSingleQuote = searchString.indexOf("'", indexOfStartBrace);
+        var indexOfEndSingleQuote = searchString.indexOf("'",indexOfStartSingleQuote+1);
+        if ((indexOfStartSingleQuote >= indexOfEndSingleQuote) || (indexOfStartSingleQuote < indexOfStartBracket) ||
+            (indexOfEndSingleQuote > indexOfEndBrace))
+            return;
+        var value = searchString.substring(indexOfStartSingleQuote+1, indexOfEndSingleQuote);
+        var comparison = searchString.substring(indexOfEndBracket+1, indexOfStartSingleQuote).trim();
+        var concatOperator = "";
+        var startRoundBracket = "";
+        if (indexOfStartBrace > 0) {
+            var indexOfLastBrace = searchString.lastIndexOf("}", indexOfStartBrace);
+            var indexOfStartConcatOperator = searchString.indexOf(" ", indexOfLastBrace);
+            var indexOfStartRoundBracket = searchString.indexOf("(", indexOfLastBrace);
+            if ((indexOfStartRoundBracket > -1) && (indexOfStartRoundBracket < indexOfStartBrace)) {
+                startRoundBracket = searchString.substring(indexOfStartRoundBracket, indexOfStartBrace).trim();
+                concatOperator = searchString.substring(indexOfStartConcatOperator, indexOfStartRoundBracket).trim().replace(" ", "_");
+            }
+            else
+                concatOperator = searchString.substring(indexOfStartConcatOperator, indexOfStartBrace).trim().replace(" ", "_");
+        }
+        var endRoundBracket = "";
+        if (indexOfEndBrace !== searchString.trim().length)
+        {
+            var indexOfEndRoundBracket = searchString.indexOf(")", indexOfEndBrace);
+            var indexOfNextStartBrace = searchString.indexOf("{", indexOfEndBrace);
+            if (indexOfEndRoundBracket === -1)
+                endRoundBracket = "";
+            else if (indexOfNextStartBrace === -1)
+                endRoundBracket = searchString.substring(indexOfEndRoundBracket).trim();
+            else if (indexOfNextStartBrace > indexOfEndRoundBracket)
+                endRoundBracket = searchString.substring(indexOfEndRoundBracket, searchString.indexOf(" ", indexOfEndRoundBracket));
+        }
+        addSearchBuilderLine(pos, pos === -1);
+        pos++;
+        $searchBuilder.find("#concatoperator_" + pos).val(concatOperator);
+        $searchBuilder.find("#prebracket_" + pos).val(startRoundBracket);
+        $searchBuilder.find("#parameter_" + pos).val(parameter);
+        updateOperatorCB(document.getElementById("parameter_" + pos));
+        $searchBuilder.find("#operator_" + pos).val(comparison);
+        $searchBuilder.find("#term_" + pos).val(value);
+        $searchBuilder.find("#postbracket_" + pos).val(endRoundBracket);
+
+        indexOfStartBrace = searchString.indexOf("{", indexOfEndBrace);
+    }
+
+}
+
 function initializeJSON(filterJSON, staticPath) {
     jsonData = filterJSON;
     staticUrl = staticPath;
