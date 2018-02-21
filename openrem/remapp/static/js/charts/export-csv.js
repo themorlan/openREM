@@ -68,8 +68,10 @@
             if (series.options.includeInCSVExport !== false && series.visible !== false) { // #55
                 j = 0;
                 while (j < valueCount) {
-                    if (series.points[0].hasOwnProperty(pointArrayMap[j])) {
-                        names.push(columnHeaderFormatter(series, pointArrayMap[j], pointArrayMap.length));
+                    if (series.points.length > 0) {
+                        if (series.points[0].hasOwnProperty(pointArrayMap[j])) {
+                            names.push(columnHeaderFormatter(series, pointArrayMap[j], pointArrayMap.length));
+                        }
                     }
                     j = j + 1;
                 }
