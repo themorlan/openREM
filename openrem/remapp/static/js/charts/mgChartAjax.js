@@ -15,8 +15,8 @@ $(document).ready(function() {
         dataType: "json",
         success: function( json ) {
             // Initialise some colours to use for plotting
-            //var colourScale = chroma.scale("RdYlBu");
-            var colourScale = chroma.scale("Dark2");
+            var colourScale = chroma.scale("RdYlBu");
+            //var colourScale = chroma.scale("Dark2");
 
             // Study workload chart data
             if(typeof plotMGStudyPerDayAndHour !== "undefined") {

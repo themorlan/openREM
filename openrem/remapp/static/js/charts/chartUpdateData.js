@@ -392,7 +392,7 @@ function updateScatterChart(scatterData, maxValues, chartDiv, systemList, xAxisU
                     type: "scatter",
                     name: systemList[i] + ' ' + seriesList[j],
                     data: scatterData[seriesToUpdate],
-                    color: colourScale(seriesToUpdate / colourMax).alpha(0.5).css(),
+                    color: colourScale(seriesToUpdate / colourMax).alpha(0.5).darken(2).css(),
                     marker: {
                         radius: 2
                     },
@@ -407,7 +407,7 @@ function updateScatterChart(scatterData, maxValues, chartDiv, systemList, xAxisU
                     type: "scatter",
                     name: systemList[i] + ' ' + seriesList[j],
                     data: scatterData[seriesToUpdate],
-                    color: colourScale(seriesToUpdate / colourMax).alpha(0.5).css(),
+                    color: colourScale(seriesToUpdate / colourMax).alpha(0.5).darken(2).css(),
                     marker: {
                         radius: 2
                     },
