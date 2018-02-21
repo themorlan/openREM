@@ -2,15 +2,24 @@
 OpenREM version history
 =======================
 
-0.8.0 (?)
----------
+0.8.0b2 (2018-02-??)
+--------------------
+* `#589`_  Exports: now handles zero studies and studies deleted during exports sensibly
+* `#587`_  Documentation: Added instructions for Linux users to rotate logs
+* `#584`_  Import, Interface, Export: RDSR with pulse level data now function
+* `#581`_  Import scripts: Interpreter line now always first, functions imported specifically
+* `#580`_  Imports and Interface: one modality creating both DX and RF can now be handled appropriately
+* `#579`_  Imports: Dummy values for Toshiba CT import function now in settings.py, log file config in docs
 * `#578`_  Exports: Fixed NHSBSP export that was excluding RDSR imported Hologic studies
 * `#575`_  Exports: export page now updates using AJAX and has a select all button
 * `#573`_  Exports: corrected and clarified exposure time and duration units, added number of pulses
 * `#572`_  Interface: Homepage now populates as AJAX to increase responsiveness
+* `#568`_  Imports: Missing DICOM date-time no longer causes an error
+* `#567`_  Celery: Fixed dual-namespace imports of tasks
 * `#566`_  Interface: Correctly show "assumed patient mass" in case of set value of zero
 * `#565`_  Interface: Correctly handle dose area product with zero value
 * `#564`_  Skin dose maps: Text information on skin dose maps now embedded when saving the 2d or 3d map as a graphic
+* `#562`_  Skin dose maps: error message on calculation failure now more explicit
 * `#561`_  Imports: Patient orientation modifier now correctly extracted from RDSR
 * `#560`_  Exports: Added study level comments
 * `#559`_  Interface: Date pickers inconsistent start day fixed
@@ -21,6 +30,7 @@ OpenREM version history
 * `#544`_  Interface: Added procedure, requested procedure to summary listings and details and filtering
 * `#543`_  Interface: Added drop-down box to choose how many studies are displayed on filtered pages
 * `#542`_  Interface: Added display name to all detailed html pages
+* `#536`_  Code quality: reduced javascript duplication and collected file groups into subfolders
 * `#535`_  Interface: Fixed problem where category names that included a plus symbol caused filtering and chart issues
 * `#534`_  Interface: Chart drilldown reported as not working - was actually due to a user's database migrations
 * `#533`_  Query Retrieve: Reduced number of simultaneous associations to one, reused for everything
@@ -68,6 +78,7 @@ OpenREM version history
 * `#472`_  Query Retrieve: Overhauled the query retrieve routines
 * `#470`_  Query Retrieve: Optimised CT filtering
 * `#468`_  Query Retrieve: Station names can now be used for filtering if returned
+* `#467`_  Testing: Added tests for mammography RDSR imports
 * `#466`_  Query Retrieve: RDSR now retrieved in preference to images for MG and DX/CR
 * `#465`_  Added newer SSDE and water equivalent diameter fields to database
 * `#464`_  Imports: DX RDSR now imported properly
@@ -81,6 +92,7 @@ OpenREM version history
 * `#449`_  Exports: Fixed a bug that prevented fluoro exports if protocol names had non-ASCII characters
 * `#448`_  Documentation: Added a diagram showing the relationship between the OpenREM system components
 * `#447`_  Imports: Modified rdsr and ctdetail template to import and display data from Pixelmed generated Toshiba RDSR
+* `#446`_  Import: Extract additional Philips private information for Allura Xper systems, create workaround for missing end angles for rotational acquisitions
 * `#445`_  Interface: Added function for user to determine between DX and fluoro for ambiguous modalities
 * `#444`_  Imports: DX systems that submit RDSRs that look like fluoro can now be reclassified using `#445`_
 * `#443`_  Exports: Accession number and ID are now exported to XLSX as text. Thanks to `@LuukO`_
@@ -93,7 +105,11 @@ OpenREM version history
 * `#431`_  Imports: fixed DX imports with MultiValue filter values (Cu+Al) again!
 * `#430`_  Exports: Fixed DX exports with multiple filters again, added tests
 * `#429`_  Charts: Added new mammo scatter plots. Thanks to `@rijkhorst`_
+* `#414`_  Reduced use of JavaScript global variables and improved JavaScript objects
 * `#411`_  Imports: Fixed laterality and accumulated AGD failure for Hologic DBT proprietary projection images
+* `#318`_  Database management: Display names view can be used to review and delete all studies from one source
+* `#114`_  Imports: Subsequent RDSRs of the same study will now replace existing study in database
+* `#61`_  Skin dose maps: These have been re-enabled, and currently work for Siemens systems
 
 0.7.4 (2016-10-17)
 ------------------

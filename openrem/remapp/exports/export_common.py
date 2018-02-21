@@ -325,6 +325,64 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
     return examdata
 
 
+def get_pulse_data(source_data, modality=None):
+    """Get the pulse level data, which could be a single value or average, or could be per pulse data. Return average.
+
+    :param source_data: IrradEventXRaySourceData table
+    :param modality: RF or DX to limit what we look for
+    :return: dict of values
+    """
+    from django.core.exceptions import MultipleObjectsReturned
+    from django.db.models import Avg
+    from numbers import Number
+
+    try:
+        kvp = source_data.kvp_set.get().kvp
+    except MultipleObjectsReturned:
+        kvp = source_data.kvp_set.all().aggregate(Avg('kvp'))['kvp__avg']
+    except ObjectDoesNotExist:
+        kvp = None
+
+    if modality == "DX":
+        try:
+            exposure_set = source_data.exposure_set.get()
+            uas = exposure_set.exposure
+            if isinstance(uas, Number):
+                mas = exposure_set.convert_uAs_to_mAs()
+            else:
+                mas = None
+        except MultipleObjectsReturned:
+            mas = source_data.exposure_set.all().aggregate(Avg('exposure'))['exposure__avg']
+            mas = mas / 1000.
+        except ObjectDoesNotExist:
+            mas = None
+    else:
+        mas = None
+
+    if modality == "RF":
+        try:
+            xray_tube_current = source_data.xraytubecurrent_set.get().xray_tube_current
+        except MultipleObjectsReturned:
+            xray_tube_current = source_data.xraytubecurrent_set.all().aggregate(
+                Avg('xray_tube_current'))['xray_tube_current__avg']
+        except ObjectDoesNotExist:
+            xray_tube_current = None
+    else:
+        xray_tube_current = None
+
+    if modality == "RF":
+        try:
+            pulse_width = source_data.pulsewidth_set.get().pulse_width
+        except MultipleObjectsReturned:
+            pulse_width = source_data.pulsewidth_set.all().aggregate(Avg('pulse_width'))['pulse_width__avg']
+        except ObjectDoesNotExist:
+            pulse_width = None
+    else:
+        pulse_width = None
+
+    return {'kvp': kvp, 'mas': mas, 'xray_tube_current': xray_tube_current, 'pulse_width': pulse_width}
+
+
 def get_xray_filter_info(source):
     """Compile a string containing details of the filters, and a corresponding string of filter thicknesses
 
@@ -488,7 +546,7 @@ def create_summary_sheet(task, studies, book, summary_sheet, sheet_list):
     titleformat.set_font_color = '#FF0000'
     titleformat.set_bold()
     toplinestring = u'XLSX Export from OpenREM version {0} on {1}'.format(version, str(datetime.datetime.now()))
-    linetwostring = u'OpenREM is copyright 2017 The Royal Marsden NHS Foundation Trust, and available under the GPL. ' \
+    linetwostring = u'OpenREM is copyright 2018 The Royal Marsden NHS Foundation Trust, and available under the GPL. ' \
                     u'See http://openrem.org'
     summary_sheet.write(0, 0, toplinestring, titleformat)
     summary_sheet.write(1, 0, linetwostring)
@@ -523,3 +581,21 @@ def create_summary_sheet(task, studies, book, summary_sheet, sheet_list):
         summary_sheet.write(row+6, 6, u', '.join(item[1]['protocolname'])) # Join as can't write a list to a single cell.
         summary_sheet.write(row+6, 7, item[1]['count'])
     summary_sheet.set_column('G:G', 15)
+
+
+def abort_if_zero_studies(num_studies, tsk):
+    """Function to update progress and status if filter is empty
+
+    :param num_studies: study count in fiilter
+    :param tsk: export task
+    :return: bool - True if should abort
+    """
+    if not num_studies:
+        tsk.status = u"ERROR"
+        tsk.progress = u"Export aborted - zero studies in the filter!"
+        tsk.save()
+        return True
+    else:
+        tsk.progress = u'Required study filter complete.'
+        tsk.save()
+        return False

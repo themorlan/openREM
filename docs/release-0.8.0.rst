@@ -6,26 +6,66 @@ Upgrade to OpenREM 0.8.0
 Headline changes
 ****************
 
-* Imports: Can now create RDSR for import from legacy Toshiba CT studies using Offis DCMTK and Pixelmed
-* Imports: No longer tries to import non-dose report Enhanced Structured Reports
-* Imports: Hologic DBT proprietary projection images now have laterality and accumulated AGD extracted correctly
-* Imports: Format of comment field constructed when importing from Philips Dose Info series no longer uses XML styling
-* Charts: Added mammography scatter plot, thanks to `@rijkhorst`_
-* Exports: Now much faster
-* Exports: DX and RF exports work with multiple filters, and will be displayed to max 4 sf
-* Interface/Imports: Now possible to define a modality as DX or fluoro when RDSR is ambiguous
-* Interface: Detail and filter views now faster, AJAX introduced to home page and exports
-* Interface: Operator's name is now displayed in the details page for each modality, along with the performing
-  physician's name for CT and fluoro
+* This release has extensive automated testing for large parts of the codebase (for the first time)
+* Code quality is much improved, reduced duplication, better documentation, many bugs fixed
+* Imports: RDSR from a wider range of systems now import properly
+* Imports: Better distinction and control over defining RDSR studies as RF or DX
+* Imports: Code and instructions to generate and import RDSR from older Toshiba CT scanners
+* Imports: DICOM Query-Retrieve functionality has been overhauled
+* Imports, display and export: Better handling of non-ASCII characters
+* Interface: More detailed, consistent and faster rendering of the data in the web interface
+* Interface: Maps of fluoroscopy radiation exposure incident on a phantom (Siemens RDSRs only)
+* Interface: More and better charts, including scatter plots for mammography
+* Exports: Much faster, and more consistent
 
 ***************************************************
 Upgrading an OpenREM server with no internet access
 ***************************************************
 
+Follow the instructions found at :doc:`upgrade-offline`, before returning here to update the database and configuration.
 
 ****************************
 Upgrading from version 0.7.4
 ****************************
+
+Upgrade
+=======
+
+* Back up your database
+
+    * For PostgreSQL you can refer to :ref:`backup-psql-db`
+    * For a non-production SQLite3 database, simply make a copy of the database file
+
+* Stop any Celery workers
+
+* If you are using a virtualenv, activate it
+
+* Install the new version of OpenREM:
+
+.. sourcecode:: bash
+
+    pip install openrem==0.8.0b1
+
+..  _upgradefrom074:
+
+Migrate the database
+====================
+
+In a shell/command window, move into the openrem folder:
+
+* Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``
+* Other linux: ``/usr/lib/python2.7/site-packages/openrem/``
+* Linux virtualenv: ``lib/python2.7/site-packages/openrem/``
+* Windows: ``C:\Python27\Lib\site-packages\openrem\``
+* Windows virtualenv: ``Lib\site-packages\openrem\``
+
+.. sourcecode:: bash
+
+    python manage.py makemigrations remapp
+    python manage.py migrate remapp
+
+Update the configuration
+========================
 
 * Set the date format for xlsx exports (need to check csv situation). Copy the following code into your
   ``local_settings.py`` file if you want to change it from ``dd/mm/yyy``:
@@ -38,11 +78,12 @@ Upgrading from version 0.7.4
     # XLSX_DATE = 'mm/dd/yyyy'
 
 * Consider setting the timezone and language in ``local_settings.py``. See ``local_settings.py.example``.
+* Add the new extractor log file configuration to the ``local_settings.py`` - you can copy the 'Logging
+  configuration' section from  ``local_settings.py.example`` if you haven't made many changes to this section. See the
+  :ref:`local_settings_logfile` settings in the install instructions.
 
-
-**************************************
 Adding legacy Toshiba CT functionality
-**************************************
+======================================
 
 If you need to import data from older Toshiba CT scanners into OpenREM then the following tools need to be available
 on the same server as OpenREM:
@@ -72,6 +113,10 @@ for ``DCMMKDIR`` and ``JAVA_EXE``, which might be ``/usr/bin/java``. The pixelme
 the link above, and you will need to provide the path to where you have saved it.
 
 
+Restart all the services
+========================
+
+Follow the guide at :doc:`startservices`.
 
 ..  _@rijkhorst: https://bitbucket.org/rijkhorst/
 .. _`Offis DICOM toolkit`: http://dicom.offis.de/dcmtk.php.en

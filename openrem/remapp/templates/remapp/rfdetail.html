@@ -247,13 +247,13 @@
             <div class="openskin_info" id="openskin_info">Skin dose maps are calculated using openSkin, and are for indication only: openSkin calculations have not
             been validated. Contributions are welcome, see <a href="http://bitbucket.org/openskin/openskin">openSkin website</a> for details.</div>
 
-            <script src="{{ STATIC_URL }}js/rfSkinDoseMapColourScaleObject.js"></script>
-            <script src="{{ STATIC_URL }}js/rfSkinDoseMapObject.js"></script>
-            <script src="{{ STATIC_URL }}js/rfSkinDoseMap3dObject.js"></script>
-            <script src="{{ STATIC_URL }}js/rfSkinDoseMap3dPersonObject.js"></script>
-            <script src="{{ STATIC_URL }}js/rfSkinDoseMap3dHUDObject.js"></script>
-            <script src="{{ STATIC_URL }}js/rfSkinDoseMapping.js"></script>
-            <script src="{{ STATIC_URL }}js/rfSkinDoseMapping3d.js"></script>
+            <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMapColourScaleObject.js"></script>
+            <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMapObject.js"></script>
+            <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMap3dObject.js"></script>
+            <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMap3dPersonObject.js"></script>
+            <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMap3dHUDObject.js"></script>
+            <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMapping.js"></script>
+            <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMapping3d.js"></script>
 
             <script>
                 if (isCanvasSupported()) {
@@ -287,7 +287,7 @@
                 $('#openskin_info').hide();
             </script>
 
-            <script src="{{ STATIC_URL }}js/rfSkinDoseMappingAjax.js"></script>
+            <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMappingAjax.js"></script>
         </div>
         {% else %}
         <div class="col-md-7">
@@ -360,8 +360,16 @@
             <i>n/a</i>
         {% endif %}
         </td>
-        <td>{{ sourcedata.kvp_set.get.kvp|floatformat:0 }}</td>
-        <td>{{ sourcedata.xraytubecurrent_set.get.xray_tube_current|floatformat:1 }}</td>
+        <td>
+          {% for kvp_value in sourcedata.kvp_set.all %}
+            {{ kvp_value.kvp|floatformat:0 }}
+          {% endfor %}
+        </td>
+        <td>
+          {% for tube_current in sourcedata.xraytubecurrent_set.all %}
+            {{ tube_current.xray_tube_current|floatformat:1 }}
+          {% endfor %}
+        </td>
         <td>
             {% for xrayfilt in sourcedata.xrayfilters_set.select_related.all %}
                 {% if xrayfilt.xray_filter_material.code_value == 'C-120F9' %}
