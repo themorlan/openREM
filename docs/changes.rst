@@ -4,6 +4,10 @@ OpenREM version history
 
 0.8.0b2 (2018-02-??)
 --------------------
+* `#603`_  Interface: fixed JavaScript error if there are any None values in fluoro detail irradiation type table
+* `#602`_  Skin dose maps: fixed error when there are multiple kVp values for a single irradiation event
+* `#594`_  Display: corrected display of dual-plane DAP and RP dose in RF filtered view
+* `#593`_  Imports: Properly handles MultiValue filter material tags and permits aluminium spelling
 * `#589`_  Exports: now handles zero studies and studies deleted during exports sensibly
 * `#587`_  Documentation: Added instructions for Linux users to rotate logs
 * `#584`_  Import, Interface, Export: RDSR with pulse level data now function
