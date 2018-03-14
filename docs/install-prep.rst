@@ -70,12 +70,25 @@ For either install, just follow the defaults – no special configurations requi
 
 ..  Note::
 
+    If you encounter problems running RabbitMQ as a service under Windows then try the following:
+
+    * Create a folder called ``c:\rabbitmq``
+    * From an administrator command prompt run Advanced System Properties by typing ``sysdm.cpl``
+    * Create a new system environment variable called ``RABBITMQ_BASE`` and set its value to ``c:\rabbitmq``
+    * In the command prompt navigate to the folder containing the RabbitMQ commands and run::
+
+        rabbitmq_service.bat remove
+        rabbitmq_service.bat install
+        rabbitmq_service.bat start
+
+..  Note::
+
     Before continuing, `consider virtualenv`_
 
 Install NumPy
 =============
 
-Numpy is required for charts. OpenREM will work without NumPy, but charts will not be displayed.
+Numpy is required for charts.
 
 For linux::
 
@@ -87,16 +100,16 @@ For Windows:
 
 Download NumPy from http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
 
-* Find the right version - look for **numpy-x.xx.x+mkl-cp27-cp27m-win32.whl** for 32-bit Windows or
-* **numpy-x.xx.x+mkl-cp27-cp27m-win_amd64.whl** for 64-bit Windows.
-* At the time of writing, ``x.xx.x`` was ``1.11.0`` - choose the latest version
+* Find the right version - look for **numpy-X+mkl-cp27-cp27m-win32.whl** for 32-bit Windows or
+* **numpy-X+mkl-cp27-cp27m-win_amd64.whl** for 64-bit Windows.
+* At the time of writing, ``X`` was ``1.14.0`` - choose the latest version
 * Install using pip:
 
 .. sourcecode:: console
 
-    pip install numpy‑1.11.0+mkl‑cp27-cp27m‑win32.whl
+    pip install numpy‑1.14.0+mkl‑cp27-cp27m‑win32.whl  # update the version number
     # or
-    pip install numpy‑1.11.0+mkl‑cp27‑cp27m‑win_amd64.whl
+    pip install numpy‑1.14.0+mkl‑cp27‑cp27m‑win_amd64.whl  # update the version number
     # changing the filename appropriately
 
 Install pynetdicom (edited version)
@@ -123,6 +136,21 @@ of the in-built SQLite database. However, you should expect to start again when 
 
 * :doc:`postgresql`
 * :doc:`postgresql_windows`
+
+Resources for creating RDSR for older Toshiba CT scanners
+=========================================================
+
+*New in version 0.8.0*
+
+If you need to import data from older Toshiba CT scanners into OpenREM then the following tools need to be available
+on the same server as OpenREM:
+
+    * The `Offis DICOM toolkit`_
+    * `Java`_
+    * pixelmed.jar from the `PixelMed Java DICOM Toolkit`_
+
+For more information see :ref:`toshiba_legacy_imports`. The locations of these executables needs to be configured in the
+``local_settings.py`` - see :ref:`toshiba_configuration`.
 
 Install OpenREM
 ===============
@@ -153,6 +181,9 @@ script (such as `openrem_rdsr.py`) without prefixing it with `python`, the
 system wide Python will be used instead. This doesn't apply to Linux, where
 once activated, the scripts can be called without a `python` prefix from anywhere.
 
-.. _virtualenv: https://pypi.python.org/pypi/virtualenv
+.. _virtualenv: https://virtualenv.pypa.io/
 .. _virtualenvwrapper: http://virtualenvwrapper.readthedocs.org/en/latest/
 .. _consider virtualenv: `Virtualenv and virtualenvwrapper`_
+.. _`Offis DICOM toolkit`: http://dicom.offis.de/dcmtk.php.en
+.. _`Java`: http://java.com/en/download/
+.. _`PixelMed Java DICOM Toolkit`: http://www.pixelmed.com/dicomtoolkit.html

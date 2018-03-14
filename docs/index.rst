@@ -22,9 +22,7 @@ Contents:
 ..  toctree::
     :maxdepth: 2
 
-    install-firsttime
-    release-0.7.0
-    release-0.7.3
+    installation
     startservices
     configuration
     import
@@ -38,6 +36,7 @@ Contents:
     troubleshooting
     code
     releasenotes
+    systemdiagram
 
 ******************
 Indices and tables

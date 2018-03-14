@@ -99,6 +99,9 @@ showing those that correspond to what is contained in the histogram bin.
 
 Clicking on a legend entry toggles the visibility of the corresponding series.
 
+Only data with non-zero and non-blank dose values are included in the chart
+data calculations.
+
 =============================================================
 2. Pie chart showing the frequency of each item in a category
 =============================================================
@@ -118,6 +121,10 @@ Clicking on any of the pie chart segments will filter the displayed studies,
 showing only the studies that correspond to what is contained in that segment.
 As for the bar charts, this doesn't work perfectly, as the category filtering
 isn't exact.
+
+Only data with non-zero and non-blank dose values are included in the chart
+data calculations.
+
 
 ============================================================
 3. Line chart showing how an average value changes over time
@@ -142,6 +149,9 @@ that selection.
 
 Clicking on a legend entry toggles the visibility of the corresponding series.
 
+Only data with non-zero and non-blank dose values are included in the chart
+data calculations.
+
 =============================================================
 4. Pie chart showing the number of events per day of the week
 =============================================================
@@ -161,11 +171,14 @@ Clicking on a legend entry toggles the visibility of the corresponding series.
    :target: _images/ChartCTworkload24hours.png
 
    Figure 10: Pie chart of study workload per hour in a day
-   
+
 Each segment represents a day of the week, and shows the number of events that
 have taken place on that day (figure 9). Clicking on one of the segments will
 take you to a pie chart that shows the number of events per on that day (figure
 10).
+
+All data, including zero blank dose values are included in the data
+calculations for this chart type.
 
 =============================================
 5. Scatter plot showing one value vs. another
@@ -201,6 +214,9 @@ can be seen again.
 Clicking on a system's legend entry toggles the display of the corresponding
 series on the chart.
 
+Only data with non-zero and non-blank dose values are included in the chart
+data calculations.
+
 ********************
 Exporting chart data
 ********************
@@ -208,6 +224,16 @@ Exporting chart data
 An image file of a chart can be saved using the menu in the top-right hand side
 of any of the charts. The same menu can be used to save the data used to plot a
 chart: the data can be downloaded in either csv or xls format.
+
+************
+New in 0.8.0
+************
+
+* Mammography scatter plots of kVp and mAs against compressed breast thickness.
+
+* CT charts of average number of irradiation evens per study and per requested procedure name.
+
+* Histogram and series-per-system options now available on each modality page.
 
 ************
 New in 0.7.0
@@ -268,6 +294,15 @@ summary pages.
 
 The first option, ``Plot charts?``, determines whether any plots are shown.
 This also controls whether the data for the plots is calculated by OpenREM.
+
+Switching ``Case-insensitive categories`` on will force chart categories to be
+lowercase. This can be helpful if several rooms use the same wording but with
+different capitalisation for acquisition protocol, study description or
+requested procedure. With this option switched on then all rooms with the same
+wording, irrespective of capitalisation, will be shown side-by-side under the
+same single category. With the option switched off there will be a seperate
+category for each differently capitalised category.
+
 Some plot data is slow to calculate when there is a large amount of data: some
 users may prefer to leave ``Plot charts?`` off for performance reasons.
 ``Plot charts?`` can be switched on and activated with a click of the
@@ -285,7 +320,7 @@ The user can also switch off chart plotting by clicking on the
 ``Switch charts off`` link in the ``User options`` menu in the navigation bar
 at the top of any OpenREM page, as shown in figure 14.
 
-The user can choose whether the data displayed on the charts is the mean, 
+The user can choose whether the data displayed on the charts is the mean,
 median or both by using the drop-down ``Average to use`` selection. Only the
 bar charts can display both mean and median together. Other charts display just
 median data when this option is selected.
@@ -333,9 +368,13 @@ Chart types - radiography
 
 * Pie chart of the frequency of each study description
 
+* Bar chart of average number of irradiation events for each study description
+
 * Bar chart of average DAP for each requested procedure
 
 * Pie chart of the frequency of each requested procedure
+
+* Bar chart of average number of irradiation events for each requested procedure
 
 * Bar chart of average kVp for each acquisition protocol
 
@@ -364,6 +403,12 @@ Chart types - mammography
 *************************
 
 * Scatter plot of average glandular dose vs. compressed thickness for each
+  acquisition
+
+* Scatter plot of kVp vs. compressed thickness for each
+  acquisition
+
+* Scatter plot of mAs vs. compressed thickness for each
   acquisition
 
 * Pie chart showing the number of studies carried out per weekday

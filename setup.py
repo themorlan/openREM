@@ -10,10 +10,10 @@ exec(open('openrem/remapp/version.py').read())
 
 requires = [
     'django>=1.8,<1.9',
-    'django-filter >= 0.10',
+    'django-filter >= 0.10,<0.15',
     'pytz >= 0a',
     'humanize',
-    'pydicom >= 0.9.9',
+    'pydicom == 0.9.9',
     'django-pagination',
     'xlsxwriter',
     'celery >= 3.1',
@@ -21,7 +21,12 @@ requires = [
     'django-qsstats-magic',
     'python-dateutil',
     'django-solo',
-    'django-crispy-forms'
+    'django-crispy-forms',
+    'pandas',
+    'xlrd',
+    'testfixtures',
+    'mock',
+    'django-debug-toolbar',
     ]
 
 setup(
@@ -39,7 +44,7 @@ setup(
         'openrem/scripts/openrem_store.py',
         'openrem/scripts/openrem_qr.py',
     ],
-    license='GPLv3 with additional permissions',  
+    license='GPLv3 with additional permissions',
 #    description='Radiation Exposure Monitoring for physicists',
     description='Developer beta only',
     long_description=README,

@@ -338,3 +338,19 @@ td.nowrap {
 .highcharts-data-table-contents {
   background: rgba(255,255,255,1.0);
 }
+
+/* Sortable tables */
+table.sortable thead th {
+    vertical-align: top;
+    background-color:#d9edf7;
+    color:#000000;
+    font-weight: bold;
+    cursor: default;
+}
+
+a.vert-offset:before {
+    display: block;
+    content: "";
+    height: 52px;
+    margin: -52px 0 0;
+}
