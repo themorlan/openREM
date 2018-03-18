@@ -1181,16 +1181,25 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
         cf.go_offline()
         df = read_frame(request_events, fieldnames=['requested_procedure_code_meaning',
                                                     'ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total'])
-        df = df.pivot(None, columns='requested_procedure_code_meaning',
+
+        # A box plot
+        box_df = df.pivot(None, columns='requested_procedure_code_meaning',
                       values='ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total')
-
         # I think that cufflinks is required to enable the df.iplot used below
-        fig = df.iplot(kind='box', asFigure=True)
-
+        box_fig = box_df.iplot(kind='box', asFigure=True)
         # Assign the plot to a variable that contains all the required html in a div.
         # This could be used in a Django view as the thing to return to an html template
-        div = opy.plot(fig, auto_open=False, output_type="div")
-        return_structure['plotly_test_div'] = div
+        box_div = opy.plot(box_fig, auto_open=False, output_type="div")
+
+        # A pie chart - is there an easier way to do this?
+        pie_df = df['requested_procedure_code_meaning'].value_counts().to_frame()
+        pie_df.index.name = 'labels'
+        pie_df['index_col'] = pie_df.index
+        pie_df = pie_df.reset_index()
+        pie_fig = pie_df.iplot(kind='pie', labels='labels', values='requested_procedure_code_meaning', asFigure=True)
+        pie_div = opy.plot(pie_fig, auto_open=False, output_type="div")
+
+        return_structure['plotly_test_div'] = box_div + pie_div
 
     if plot_request_num_events:
         result = average_chart_inc_histogram_data(request_events,
