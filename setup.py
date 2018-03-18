@@ -28,6 +28,7 @@ requires = [
     'mock',
     'django-debug-toolbar',
     'cufflinks',
+    'django-pandas',
     ]
 
 setup(
