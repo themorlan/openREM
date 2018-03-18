@@ -27,9 +27,9 @@ requires = [
     'testfixtures',
     'mock',
     'django-debug-toolbar',
-    'ipython'
-    'cufflinks',
     'django-pandas',
+    'ipython',
+    'cufflinks',
     ]
 
 setup(
