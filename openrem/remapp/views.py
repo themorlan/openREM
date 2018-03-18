@@ -2174,7 +2174,7 @@ def display_name_count(request):
             latest = studies.latest('study_date').study_date
         template = 'remapp/displayname-count.html'
         return render(request, template, {
-            'county': count,
+            'count': count,
             'latest': latest,
             'count_all': count_all,
         })
