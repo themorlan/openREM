@@ -1015,6 +1015,10 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
     from interface.chart_functions import average_chart_inc_histogram_data, average_chart_over_time_data, workload_chart_data
     from django.utils.datastructures import MultiValueDictKeyError
 
+    import plotly.offline as opy
+    import cufflinks as cf
+    from django_pandas.io import read_frame
+
     return_structure = {}
 
     if plot_study_mean_dlp or plot_study_mean_ctdi or plot_study_freq or plot_study_num_events or plot_study_mean_dlp_over_time or plot_study_per_day_and_hour or plot_request_mean_dlp or plot_request_freq or plot_request_num_events:
@@ -1171,6 +1175,21 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
         return_structure['requestSummary'] = result['summary']
         if plot_request_mean_dlp and plot_histograms:
             return_structure['requestHistogramData'] = result['histogram_data']
+
+        # Tinkering with Pandas dataframes and Plotly
+        cf.go_offline()
+        df = read_frame(request_events, fieldnames=['requested_procedure_code_meaning',
+                                                    'ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total'])
+        df = df.pivot(None, columns='requested_procedure_code_meaning',
+                      values='ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total')
+
+        # I think that cufflinks is required to enable the df.iplot used below
+        fig = df.iplot(kind='box', asFigure=True)
+
+        # Assign the plot to a variable that contains all the required html in a div.
+        # This could be used in a Django view as the thing to return to an html template
+        div = opy.plot(fig, auto_open=False, output_type="div")
+        return_structure['plotly_test_div'] = div
 
     if plot_request_num_events:
         result = average_chart_inc_histogram_data(request_events,
@@ -2148,16 +2167,34 @@ def display_name_count(request):
         data = request.POST
         modality = data.get('modality')
         equip_name_pk = data.get('equip_name_pk')
+        studies, count_all = display_name_modality_filter(equip_name_pk=equip_name_pk, modality=modality)
+        count = studies.count()
+        template = 'remapp/displayname-count.html'
+        return render(request, template, {
+            'count': count,
+            'count_all': count_all,
+        })
+
+
+def display_name_last_date(request):
+    """AJAX view to return the most recent study date associated with an entry in the equipment database
+
+    :param request: Request object containing modality and equipment table ID
+    :return: HTML table data element
+    """
+
+    if request.is_ajax():
+        data = request.POST
+        modality = data.get('modality')
+        equip_name_pk = data.get('equip_name_pk')
         latest = None
         studies, count_all = display_name_modality_filter(equip_name_pk=equip_name_pk, modality=modality)
         count = studies.count()
         if count:
             latest = studies.latest('study_date').study_date
-        template = 'remapp/displayname-count.html'
+        template = 'remapp/displayname-last-date.html'
         return render(request, template, {
-            'count': count,
             'latest': latest,
-            'count_all': count_all,
         })
 
 

@@ -54,6 +54,7 @@ $(document).ready(function() {
                 updateAverageChart(json.requestNameList, json.requestSystemList, json.requestSummary, json.requestHistogramData, plotAverageChoice, "histogramRequestPlotDIV", colourScale);
                 sortChartDataToDefault(chartSorting, chartSortingDirection, "histogramRequestPlotDIV");
                 hideButtonsIfOneSeries("histogramRequestPlotDIV", "req_dlp_series_");
+                $("#plotly_div").html(json.plotly_test_div);
             }
 
             // Number of events per study chart data

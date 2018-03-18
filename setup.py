@@ -27,6 +27,7 @@ requires = [
     'testfixtures',
     'mock',
     'django-debug-toolbar',
+    'cufflinks',
     ]
 
 setup(
