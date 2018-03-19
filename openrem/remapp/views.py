@@ -1193,7 +1193,7 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
                       values='ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total')
         colours = get_rgb_hex_colours(box_df.shape[1])
         # I think that cufflinks is required to enable the df.iplot used below
-        box_fig = box_df.iplot(kind='box', colors=colours, asFigure=True)
+        box_fig = box_df.iplot(kind='box', colors=colours, yTitle='DLP (mGy.cm)', asFigure=True)
         # Assign the plot to a variable that contains all the required html in a div.
         # This could be used in a Django view as the thing to return to an html template
         box_div = opy.plot(box_fig, auto_open=False, output_type="div")
@@ -1218,7 +1218,7 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
 
         layout = go.Layout(
             yaxis=dict(
-                title='DLP boxplot',
+                title='DLP (mGy.cm)',
                 zeroline=False
             ),
             boxmode='group'
