@@ -1020,6 +1020,7 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
     import plotly.graph_objs as go
     import cufflinks as cf
     from django_pandas.io import read_frame
+    from tools.get_rgb_hex_colours import get_rgb_hex_colours
 
     return_structure = {}
 
@@ -1184,28 +1185,24 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
                                                     'requested_procedure_code_meaning',
                                                     'ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total'])
 
+        df['requested_procedure_code_meaning'] = df['requested_procedure_code_meaning'].fillna(value='Blank')
+
+
         # A simple box plot - I don't think I can use this to create grouped box plots
         box_df = df.pivot(None, columns='requested_procedure_code_meaning',
                       values='ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total')
+        colours = get_rgb_hex_colours(box_df.shape[1])
         # I think that cufflinks is required to enable the df.iplot used below
-        box_fig = box_df.iplot(kind='box', asFigure=True)
+        box_fig = box_df.iplot(kind='box', colors=colours, asFigure=True)
         # Assign the plot to a variable that contains all the required html in a div.
         # This could be used in a Django view as the thing to return to an html template
         box_div = opy.plot(box_fig, auto_open=False, output_type="div")
 
+
         # A boxplot grouped by procedure name, with a series per system
         df.index = df['requested_procedure_code_meaning']
         unique_display_names = df['generalequipmentmoduleattr__unique_equipment_name_id__display_name'].unique()
-
-        # Generate a colour for each display name
-        import colorsys
-        num_colors = len(unique_display_names)
-        hsv_tuples = [(x * 1.0 / num_colors, 0.5, 0.5) for x in range(num_colors)]
-        rgb_tuples = map(lambda x: colorsys.hsv_to_rgb(*x), hsv_tuples)
-        colours = []
-        for (r, g, b) in rgb_tuples:
-            colours.append('#%02x%02x%02x' % (int(r * 255), int(g * 255), int(b * 255)))
-
+        colours = get_rgb_hex_colours(len(unique_display_names))
         plot_data = []
         for i, current_display_name in enumerate(unique_display_names):
             series_df = df.loc[df['generalequipmentmoduleattr__unique_equipment_name_id__display_name'] == current_display_name]
@@ -1229,12 +1226,14 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
         grouped_box_fig = go.Figure(data=plot_data, layout=layout)
         grouped_box_div = opy.plot(grouped_box_fig, auto_open=False, output_type="div")
 
+
         # A pie chart - is there an easier way to do this?
         pie_df = df['requested_procedure_code_meaning'].value_counts().to_frame()
         pie_df.index.name = 'labels'
         pie_df['index_col'] = pie_df.index
         pie_df = pie_df.reset_index()
-        pie_fig = pie_df.iplot(kind='pie', labels='labels', values='requested_procedure_code_meaning', asFigure=True)
+        colours = get_rgb_hex_colours(pie_df.shape[0])
+        pie_fig = pie_df.iplot(kind='pie', labels='labels', values='requested_procedure_code_meaning', colors=colours, asFigure=True)
         pie_div = opy.plot(pie_fig, auto_open=False, output_type="div")
 
         return_structure['plotly_test_div'] = box_div + grouped_box_div + pie_div
