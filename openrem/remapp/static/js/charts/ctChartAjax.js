@@ -54,7 +54,10 @@ $(document).ready(function() {
                 updateAverageChart(json.requestNameList, json.requestSystemList, json.requestSummary, json.requestHistogramData, plotAverageChoice, "histogramRequestPlotDIV", colourScale);
                 sortChartDataToDefault(chartSorting, chartSortingDirection, "histogramRequestPlotDIV");
                 hideButtonsIfOneSeries("histogramRequestPlotDIV", "req_dlp_series_");
-                $("#plotly_div").html(json.plotly_test_div);
+                $("#boxplot_div").html(json.request_boxplot);
+                if(typeof json.request_histograms !== "undefined") {
+                    $("#boxplot_div").append(json.request_histograms);
+                }
             }
 
             // Number of events per study chart data
@@ -85,6 +88,7 @@ $(document).ready(function() {
             // Study frequency chart data start
             if(typeof plotCTRequestFreq !== "undefined") {
                 updateFrequencyChart(json.requestNameList, json.requestSystemList, json.requestSummary, urlStartReq, "piechartRequestDIV", colourScale);
+                $("#piechart_div").html(json.request_piechart);
             }
 
             // DLP over time chart data

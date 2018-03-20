@@ -203,8 +203,6 @@
 
     {% if request.user.userprofile.plotCharts %}
 
-        <div id="plotly_div">This is a div for Plotly</div>
-
         <script src="{{ STATIC_URL }}js/charts/chartFullScreen.js"></script>
         <script src="{{ STATIC_URL }}js/charts/chartSetExportSize.js"></script>
         <script src="{{ STATIC_URL }}js/chroma.min.js"></script>
@@ -824,6 +822,8 @@
         {% endif %}
 
         {% if request.user.userprofile.plotCTRequestMeanDLP %}
+            <div id="boxplot_div">This is a div for a Plotly boxplot</div>
+
             <!-- HTML to include div container for request plot -->
             <div class="panel-group" id="accordion7">
                 <div class="panel panel-default">
@@ -922,6 +922,7 @@
         {% endif %}
 
         {% if request.user.userprofile.plotCTRequestFreq %}
+            <div id="piechart_div">This is a div for a Plotly piechart</div>
             <!-- HTML to include div container for request pie chart -->
             <div class="panel-group" id="accordion8">
                 <div class="panel panel-default">
