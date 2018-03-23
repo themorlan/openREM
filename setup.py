@@ -27,6 +27,7 @@ requires = [
     'testfixtures',
     'mock',
     'django-debug-toolbar',
+    'bokeh == 0.12.9'
     ]
 
 setup(

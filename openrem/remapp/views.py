@@ -1242,6 +1242,121 @@ def ct_detail_view(request, pk=None):
     )
 
 
+def get_parameter_value_or_default(dict, parameter, default_value):
+    if dict.get(parameter):
+        return dict[parameter]
+    else:
+        return default_value
+
+
+@login_required
+def ct_create_charts(request):
+    from remapp.interface.mod_filters import ct_acq_filter
+    from remapp.interface.chart_creation import create_box_and_whisker, create_scatter_plot, create_histogram
+    from forms import CTChartsForm
+    import pandas as pd
+
+    # TODO f.qs.values is not correctly filled if it is not the first pass (if page is updated / after a user-update)
+    f = ct_acq_filter(request.GET)
+
+    y_axis_parameter = get_parameter_value_or_default(
+        request.GET, 'y_axis_parameter', 'ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total')
+    x_axis_parameter = get_parameter_value_or_default(
+        request.GET, 'x_axis_parameter', 'generalequipmentmoduleattr__unique_equipment_name__display_name')
+    grouping_parameter = get_parameter_value_or_default(
+        request.GET, 'grouping_parameter', 'generalequipmentmoduleattr__unique_equipment_name__display_name')
+    study_description_filter_parameter = get_parameter_value_or_default(
+        request.GET, 'study_description_filter_parameter', None)
+
+    pandas_df = pd.DataFrame.from_records(f.qs.values(
+        'ctradiationdose__general_study_module_attributes__id',
+        'ctradiationdose__general_study_module_attributes__study_description',
+        grouping_parameter,
+        x_axis_parameter,
+        y_axis_parameter),
+        coerce_float=True)
+
+    if pandas_df.empty:
+        messages.error(request, 'Empty dataset. Probably (one of) the parameters are not filled in database.')
+        # todo what if default values are empty
+        return redirect('/openrem/ct/userdefinablecharts')
+
+    form = CTChartsForm({'graph_type': request.GET['graph_type'] if 'graph_type' in request.GET else 'boxwhisperplot',
+                         'y_axis_parameter': y_axis_parameter,
+                         'x_axis_parameter': x_axis_parameter,
+                         'grouping_parameter': grouping_parameter,
+                         'study_description_filter_parameter': study_description_filter_parameter,
+                         })
+
+    y_axis_label = [item[1] for item in form.y_axis_parameter_options if item[0] == y_axis_parameter][0]
+    x_axis_label = [item[1] for item in form.x_axis_parameter_options if item[0] == x_axis_parameter][0]
+    grouping_label = [item[1] for item in form.grouping_parameter_options if item[0] == grouping_parameter][0]
+
+    # todo: Create filter query on basis of form settings
+    filter_query = None
+    if study_description_filter_parameter:
+        filter_query = 'ctradiationdose__general_study_module_attributes__study_description==\'' + \
+                       study_description_filter_parameter + '\''
+    if filter_query:
+        pandas_df.query(filter_query, inplace=True)
+
+    figure = None
+    script = None
+    description = None
+    # todo: Insert histograms
+    if 'graph_type' in request.GET:
+        if request.GET['graph_type'] == 'scatterplot':
+            script, figure, description = create_scatter_plot(
+                request,
+                pandas_df,
+                'ctradiationdose__general_study_module_attributes__id',
+                grouping_parameter=grouping_parameter,
+                grouping_name=grouping_label,
+                x_axis_parameter=x_axis_parameter,
+                x_axis_label=x_axis_label,
+                y_axis_parameter=y_axis_parameter,
+                y_axis_label=y_axis_label)
+        elif request.GET['graph_type'] == 'boxwhisperplot':
+            script, figure, description = create_box_and_whisker(
+                request,
+                pandas_df,
+                'ctradiationdose__general_study_module_attributes__id',
+                x_axis_parameter,
+                x_axis_label,
+                y_axis_parameter,
+                y_axis_label)
+        elif request.GET['graph_type'] == 'histogramplot':
+            script, figure, description = create_histogram(
+                request,
+                pandas_df,
+                grouping_parameter=grouping_parameter,
+                grouping_name=grouping_label,
+                x_axis_parameter=x_axis_parameter,
+                x_axis_label=x_axis_label)
+    else:
+        # default box and whisper plot....
+        script, figure, description = create_box_and_whisker(
+            request,
+            pandas_df,
+            'ctradiationdose__general_study_module_attributes__id',
+            x_axis_parameter,
+            x_axis_label,
+            y_axis_parameter,
+            y_axis_label)
+    filters = {item: f.data[item] if item in f.data else None for item in f.filters}
+
+    context = {'parameter': y_axis_label,
+               'category': x_axis_label,
+               'chart_figure': figure,
+               'chart_script': script,
+               'pandas_description': description,
+               'chartform': form,
+               'filterdic': filters
+               }
+
+    return render(request, 'remapp/userdefinablechart.html', context)
+
+
 @login_required
 def mg_summary_list_filter(request):
     from remapp.interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid

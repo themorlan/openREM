@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "remapp/filteredbase.html" %}
+
+{% block headextras %}
+    <script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.9.min.js"></script>
+    <link rel="stylesheet" href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.6.min.css">
+{% endblock %}
+
+{% block toprow %}
+    <h1>{{  parameter }} for each {{ category }}</h1>
+{% endblock %}
+
+{% block col1 %}
+    <div>
+        {{ chart_figure|safe }}
+    </div>
+    <div>
+
+    </div>
+    <h2>Descriptive statistics</h2>
+    <div>
+        {% autoescape off %}{{ pandas_description }}{% endautoescape %}
+    </div>
+{% endblock %}
+
+{% block col2 %}
+    <form action="" method="get" class="form-horizontal" role="form">
+        <div class="panel panel-info small">
+            <div class="panel-heading">
+                <h3 class="panel-title">Parameter selection</h3>
+            </div>
+            <div class="panel-body">
+                    {% for field in chartform.visible_fields %}
+                        <div class="form-group">
+                            <div class="col-xs-4">
+                                <label>{{ field.label_tag }}</label>
+                            </div>
+                            <div class="col-xs-8">
+                                {{ field }}
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    {% for key, value in filterdic.items %}
+                        <input class="hidden" name="{{ key }}" value="{{ value }}"/>
+                    {% endfor %}
+                <input class="btn btn-default" name="chartUpdate" type="submit" value="Update"/>
+            </div>
+
+            <div class="panel-heading">
+                <h3 class="panel-title">Extra filter</h3>
+            </div>
+            <div class="panel-body">
+                <input class="btn btn-default" name="chartUpdate" type="submit" value="Update"/>
+            </div>
+
+
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block jsblock %}
+    {{ chart_script|safe }}
+{% endblock %}
+</html>

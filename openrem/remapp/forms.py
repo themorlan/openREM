@@ -143,6 +143,44 @@ class CTChartOptionsForm(forms.Form):
     plotHistograms = forms.BooleanField(label='Calculate histogram data', required=False)
 
 
+class CTChartsForm(forms.Form):
+    graph_type_options = [
+        ('boxwhisperplot', 'Box and whisper plot'),
+        ('histogramplot', 'Histogram'),
+        ('scatterplot', 'Scatter plot'),
+    ]
+
+    x_axis_parameter_options = [
+        ('generalequipmentmoduleattr__unique_equipment_name__display_name', 'Display name'),
+        ('ctradiationdose__ctirradiationeventdata__target_region__code_meaning', 'Body region'),
+        ('ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning', 'Acquisition type'),
+        ('ctradiationdose__ctirradiationeventdata__procedure_context__code_meaning', 'Procedure context'),
+        ('patientstudymoduleattr__patient_weight', 'Patient weight [kg]'),
+        ('ctradiationdose__ctirradiationeventdata__mean_ctdivol', 'Event mean CTDIvol'),
+    ]
+
+    y_axis_parameter_options = [
+        ('ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total', 'Total DLP [mGycm]'),
+        ('ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events', 'Number of events'),
+        ('ctradiationdose__ctaccumulateddosedata__ct_effective_dose_total', 'Total effective dose [..]'),
+        ('ctradiationdose__ctirradiationeventdata__exposure_time', 'Event Exposure time [mS]'),
+        ('ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__kvp', 'Event tube voltage [kV]'),
+        ('ctradiationdose__ctirradiationeventdata__mean_ctdivol', 'Event mean CTDIvol'),
+    ]
+
+    grouping_parameter_options = [
+        ('generalequipmentmoduleattr__unique_equipment_name__display_name', 'Display name'),
+        ('ctradiationdose__ctirradiationeventdata__target_region__code_meaning', 'Body region'),
+        ('ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning', 'Acquisition type'),
+    ]
+
+    graph_type = forms.ChoiceField(graph_type_options)
+    x_axis_parameter = forms.ChoiceField(x_axis_parameter_options)
+    y_axis_parameter = forms.ChoiceField(y_axis_parameter_options)
+    grouping_parameter = forms.ChoiceField(grouping_parameter_options)
+    study_description_filter_parameter = forms.CharField(label='Study description')
+
+
 class RFChartOptionsForm(forms.Form):
     plotCharts = forms.BooleanField(label='Plot charts?', required=False)
     plotRFStudyPerDayAndHour = forms.BooleanField(label='Study workload', required=False)

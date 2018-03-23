@@ -64,6 +64,7 @@ urlpatterns = patterns('remapp.views',
                        url(r'^dx/chart/$',
         'dx_summary_chart_data', name='dx_summary_chart_data'),
                        url(r'^dx/(?P<pk>\d+)/$', 'dx_detail_view', name='dx_detail_view'),
+                       url(r'^ct/userdefinablecharts/$', 'ct_create_charts', name='ct_create_charts'),
 
                        url(r'^mg/$',
         'mg_summary_list_filter', name='mg_summary_list_filter'),
