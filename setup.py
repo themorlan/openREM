@@ -28,7 +28,7 @@ requires = [
     'mock',
     'django-debug-toolbar',
     'django-pandas',
-    'ipython',
+    'ipython<6',
     'cufflinks',
     ]
 
