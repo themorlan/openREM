@@ -18,15 +18,23 @@ Headline changes
 * Interface: More and better charts, including scatter plots for mammography
 * Exports: Much faster, and more consistent
 
+Changes since release 0.8.0b1
+=============================
+
+* Lots of documentation updates
+* Imports: changes to how 'dual' RF/DX modalities are handled, improvements to handling MultiValue filters, bug fixes
+* Interface: bug fix for bi-plane fluoroscopy systems DAP and RP Dose display
+* Exports: added target exposure index and deviation index to DX exports, bug fixes
+
 ***************************************************
 Upgrading an OpenREM server with no internet access
 ***************************************************
 
 Follow the instructions found at :doc:`upgrade-offline`, before returning here to update the database and configuration.
 
-****************************
-Upgrading from version 0.7.4
-****************************
+***************************************
+Upgrading from version 0.7.4 or 0.8.0b1
+***************************************
 
 Upgrade
 =======
@@ -44,7 +52,7 @@ Upgrade
 
 .. sourcecode:: bash
 
-    pip install openrem==0.8.0b1
+    pip install openrem==0.8.0b2
 
 ..  _upgradefrom074:
 
@@ -67,8 +75,10 @@ In a shell/command window, move into the openrem folder:
 Update the configuration
 ========================
 
-* Set the date format for xlsx exports (need to check csv situation). Copy the following code into your
-  ``local_settings.py`` file if you want to change it from ``dd/mm/yyy``:
+Date format
+^^^^^^^^^^^
+Set the date format for xlsx exports (need to check csv situation). Copy the following code into your
+``local_settings.py`` file if you want to change it from ``dd/mm/yyy``:
 
 .. sourcecode:: python
 
@@ -77,10 +87,22 @@ Update the configuration
     # at https://msdn.microsoft.com/en-us/library/ee634398.aspx.
     # XLSX_DATE = 'mm/dd/yyyy'
 
-* Consider setting the timezone and language in ``local_settings.py``. See ``local_settings.py.example``.
-* Add the new extractor log file configuration to the ``local_settings.py`` - you can copy the 'Logging
-  configuration' section from  ``local_settings.py.example`` if you haven't made many changes to this section. See the
-  :ref:`local_settings_logfile` settings in the install instructions.
+Time zone and language
+^^^^^^^^^^^^^^^^^^^^^^
+
+Consider setting the timezone and language in ``local_settings.py``. See ``local_settings.py.example``.
+
+Add additional log file configuration
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. warning::
+
+    If the configuration is not added for the new ``openrem_extractor.log`` is not configured, you will find it being
+    created whereever you start the webserver from, and starting the webserver may fail.
+
+Add the new extractor log file configuration to the ``local_settings.py`` - you can copy the 'Logging
+configuration' section from  ``local_settings.py.example`` if you haven't made many changes to this section. See the
+:ref:`local_settings_logfile` settings in the install instructions.
 
 Adding legacy Toshiba CT functionality
 ======================================

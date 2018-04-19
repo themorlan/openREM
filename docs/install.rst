@@ -2,12 +2,12 @@
 Installing OpenREM
 ******************
 
-Install OpenREM 0.8.0b1
+Install OpenREM 0.8.0b2
 =======================
 
 .. sourcecode:: bash
 
-    pip install openrem==0.8.0b1
+    pip install openrem==0.8.0b2
 
 *Will need ``sudo`` or equivalent if installing on linux without using a virtualenv*
 
@@ -328,21 +328,6 @@ You are now ready to start the services to allow you to use OpenREM - go to :doc
 Further instructions
 ====================
 
-Production webservers
----------------------
-
-Unlike the database, the production webserver can be left till later and
-can be changed again at any time.
-
-For performance it is recommended that a production webserver is used instead of the inbuilt 'runserver'.
-Popular choices would be either `Apache <http://httpd.apache.org>`_ or you can do as the cool kids
-do and use `Gunicorn with nginx <http://www.robgolding.com/blog/2011/11/12/django-in-production-part-1---the-stack/>`_.
-
-The `django website <https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/modwsgi/>`_
-has instructions and links to get you set up with Apache.
-
-An advanced guide using Apache, including auto-restarting the server when the code changes, has been contributed
-here: :doc:`apache_on_windows`
 
 
 DICOM Store and query-retrieve

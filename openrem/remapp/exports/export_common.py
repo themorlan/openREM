@@ -152,17 +152,22 @@ def generate_sheets(studies, book, protocol_headers, modality=None, pid=False, n
     sheet_list = {}
     protocols_list = []
     for exams in studies:
-        if modality in [u"DX", u"RF", u"MG"]:
-            events = exams.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')
-        elif modality in u"CT":
-            events =  exams.ctradiationdose_set.get().ctirradiationeventdata_set.all()
-        for s in events:
-            if s.acquisition_protocol:
-                safe_protocol = s.acquisition_protocol
-            else:
-                safe_protocol = u'Unknown'
-            if safe_protocol not in protocols_list:
-                protocols_list.append(safe_protocol)
+        try:
+            if modality in [u"DX", u"RF", u"MG"]:
+                events = exams.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')
+            elif modality in u"CT":
+                events = exams.ctradiationdose_set.get().ctirradiationeventdata_set.all()
+            for s in events:
+                if s.acquisition_protocol:
+                    safe_protocol = s.acquisition_protocol
+                else:
+                    safe_protocol = u'Unknown'
+                if safe_protocol not in protocols_list:
+                    protocols_list.append(safe_protocol)
+        except ObjectDoesNotExist:
+            logger.error(u"Study missing during generation of sheet names; most likely due to study being deleted "
+                         u"whilst export in progress to be replace by later version of RDSR.")
+            continue
     protocols_list.sort()
 
     for protocol in protocols_list:
@@ -339,7 +344,8 @@ def get_pulse_data(source_data, modality=None):
     try:
         kvp = source_data.kvp_set.get().kvp
     except MultipleObjectsReturned:
-        kvp = source_data.kvp_set.all().aggregate(Avg('kvp'))['kvp__avg']
+        kvp = source_data.kvp_set.all().exclude(kvp__isnull=True).exclude(kvp__exact=0).aggregate(
+            Avg('kvp'))['kvp__avg']
     except ObjectDoesNotExist:
         kvp = None
 
@@ -352,7 +358,8 @@ def get_pulse_data(source_data, modality=None):
             else:
                 mas = None
         except MultipleObjectsReturned:
-            mas = source_data.exposure_set.all().aggregate(Avg('exposure'))['exposure__avg']
+            mas = source_data.exposure_set.all().exclude(exposure__isnull=True).exclude(exposure__exact=0).aggregate(
+                Avg('exposure'))['exposure__avg']
             mas = mas / 1000.
         except ObjectDoesNotExist:
             mas = None
@@ -363,7 +370,9 @@ def get_pulse_data(source_data, modality=None):
         try:
             xray_tube_current = source_data.xraytubecurrent_set.get().xray_tube_current
         except MultipleObjectsReturned:
-            xray_tube_current = source_data.xraytubecurrent_set.all().aggregate(
+            xray_tube_current = source_data.xraytubecurrent_set.all().exclude(
+                xray_tube_current__isnull=True).exclude(
+                xray_tube_current__exact=0).aggregate(
                 Avg('xray_tube_current'))['xray_tube_current__avg']
         except ObjectDoesNotExist:
             xray_tube_current = None
@@ -374,7 +383,10 @@ def get_pulse_data(source_data, modality=None):
         try:
             pulse_width = source_data.pulsewidth_set.get().pulse_width
         except MultipleObjectsReturned:
-            pulse_width = source_data.pulsewidth_set.all().aggregate(Avg('pulse_width'))['pulse_width__avg']
+            pulse_width = source_data.pulsewidth_set.all().exclude(
+                pulse_width__isnull=True).exclude(
+                pulse_width__exact=0).aggregate(
+                Avg('pulse_width'))['pulse_width__avg']
         except ObjectDoesNotExist:
             pulse_width = None
     else:
@@ -581,3 +593,21 @@ def create_summary_sheet(task, studies, book, summary_sheet, sheet_list):
         summary_sheet.write(row+6, 6, u', '.join(item[1]['protocolname'])) # Join as can't write a list to a single cell.
         summary_sheet.write(row+6, 7, item[1]['count'])
     summary_sheet.set_column('G:G', 15)
+
+
+def abort_if_zero_studies(num_studies, tsk):
+    """Function to update progress and status if filter is empty
+
+    :param num_studies: study count in fiilter
+    :param tsk: export task
+    :return: bool - True if should abort
+    """
+    if not num_studies:
+        tsk.status = u"ERROR"
+        tsk.progress = u"Export aborted - zero studies in the filter!"
+        tsk.save()
+        return True
+    else:
+        tsk.progress = u'Required study filter complete.'
+        tsk.save()
+        return False
