@@ -1,3 +1,4 @@
+# This Python file uses the following encoding: utf-8
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
 #    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
 #
@@ -28,27 +29,28 @@
 
 """
 from dicom.valuerep import PersonName
+from dicom import charset
+from django.utils.encoding import smart_text
 import logging
 logger = logging.getLogger(__name__)
 
 
-def get_value_kw(tag,dataset):
+def get_value_kw(tag, dataset):
     """Get DICOM value by keyword reference.
 
-    :param keyword:     DICOM keyword, no spaces or plural as per dictionary.
-    :type keyword:      str.
+    :param tag:         DICOM keyword, no spaces or plural as per dictionary.
+    :type tag:          str.
     :param dataset:     The DICOM dataset containing the tag.
     :type dataset:      dataset
     :returns:           str. -- value
     """
-    if (tag in dataset):
-        val = getattr(dataset,tag)
+    if tag in dataset:
+        val = getattr(dataset, tag)
         if val != '':
-            if type(val) is str or type(val) is PersonName:
-                val = val.decode('latin-1', 'replace')
             return val
 
-def get_value_num(tag,dataset):
+
+def get_value_num(tag, dataset):
     """Get DICOM value by tag group and element number.
     
     Always use get_value_kw by preference for readability. This module can
@@ -60,14 +62,13 @@ def get_value_num(tag,dataset):
     :type dataset:      dataset
     :returns:           str. -- value
     """
-    if (tag in dataset):
+    if tag in dataset:
         val = dataset[tag].value
         if val != '':
-            if type(val) is str or type(val) is PersonName:
-                val = val.decode('latin-1', 'replace')
             return val
 
-def get_seq_code_value(sequence,dataset):
+
+def get_seq_code_value(sequence, dataset):
     """From a DICOM sequence, get the code value.
 
     :param sequence:    DICOM sequence name.
@@ -76,13 +77,13 @@ def get_seq_code_value(sequence,dataset):
     :type dataset:      DICOM dataset
     :returns:           int. -- code value
     """
-    if (sequence in dataset):
-        seq = getattr(dataset,sequence)
-        if seq and hasattr(seq[0],'CodeValue'):
+    if sequence in dataset:
+        seq = getattr(dataset, sequence)
+        if seq and hasattr(seq[0], 'CodeValue'):
             return seq[0].CodeValue
 
 
-def get_seq_code_meaning(sequence,dataset):
+def get_seq_code_meaning(sequence, dataset):
     """From a DICOM sequence, get the code meaning.
 
     :param sequence:    DICOM sequence name.
@@ -91,18 +92,17 @@ def get_seq_code_meaning(sequence,dataset):
     :type dataset:      DICOM dataset
     :returns:           str. -- code meaning
     """
-    if (sequence in dataset):
-        seq = getattr(dataset,sequence)
-        if seq and hasattr(seq[0],'CodeMeaning'):
+    if sequence in dataset:
+        seq = getattr(dataset, sequence)
+        if seq and hasattr(seq[0], 'CodeMeaning'):
             meaning = seq[0].CodeMeaning
             if meaning != '':
-                if type(meaning) is str or type(meaning) is PersonName:
-                    meaning = meaning.decode('latin-1', 'replace')
-            return meaning
+                return meaning
+
 
 def get_or_create_cid(codevalue, codemeaning):
     """Create a code_value code_meaning pair entry in the ContextID
-    table if it doesn't already exist. 
+    table if it doesn't already exist.
 
     :param codevalue:   Code value as defined in the DICOM standard part 16
     :type codevalue:    int.
@@ -114,20 +114,22 @@ def get_or_create_cid(codevalue, codemeaning):
     if codevalue:
         if not ContextID.objects.all().filter(code_value=codevalue).exists():
             cid = ContextID(
-                code_value = codevalue,
-                code_meaning = codemeaning,
+                code_value=codevalue,
+                code_meaning=codemeaning,
                 )
             cid.save()
         code = ContextID.objects.filter(code_value__exact = codevalue)
         if code.count() > 1:
-            logger.warning("Duplicate entry in the ContextID table: %s/%s, import continuing",
-                            codevalue, codemeaning)
+            logger.warning(u"Duplicate entry in the ContextID table: {0}/{1}, import continuing".format(
+                codevalue, codemeaning))
         return code[0]
+
 
 def return_for_export(model, field):
     """
     Prevent errors due to missing data in models
-    :param val: database field
+    :param model: database table
+    :param field: database field
     :return: value or None
     """
     import datetime
@@ -143,22 +145,48 @@ def return_for_export(model, field):
         return None
 
 
-def safe_strings(str):
+def string_to_float(string_number):
     try:
-        return str.decode('latin-1', 'replace')
-    except AttributeError:
+        return float(string_number)
+    except TypeError:
         return None
+
+
+def safe_strings(string, char_set=charset.default_encoding):
+    try:
+        python_char_set = charset.python_encoding[char_set]
+    except KeyError:
+        python_char_set = charset.default_encoding
+    return smart_text(string, encoding=python_char_set)
 
 
 def replace_comma(comma_string):
     if comma_string:
-        no_comma_string = comma_string.replace(","," ").replace(";"," ")
+        no_comma_string = comma_string.replace(",", " ").replace(";", " ")
         return no_comma_string
-    return comma_string
 
 
-def export_safe(ascii_string):
-    if ascii_string:
-        utf8_string = ascii_string.encode("utf-8")
-        safe_string = replace_comma(utf8_string)
-        return safe_string
+def export_csv_prep(unicode_string):
+    """
+    Built-in csv module can't deal with unicode strings without specifying an encoding. Hence encode to utf-8 before
+    writing.
+    :param unicode_string: String to encode as utf-8
+    :return: UTF-8 encoded string with no commas or semicolons.
+    """
+    if unicode_string:
+        utf8_string = unicode_string.encode("utf-8")
+        csv_safe_string = replace_comma(utf8_string)
+        return csv_safe_string
+
+
+def list_to_string(dicom_value):
+    """
+    Turn multivalue names into a single string for correct encoding and pretty reproduction
+    :param dicom_value: returned DICOM value, usually a name field. Might be single (string) or multivalue (list)
+    :return: string of name(s)
+    """
+    from dicom.dataelem import isMultiValue
+    if dicom_value:
+        if isMultiValue(dicom_value):
+            dicom_value = ' | '.join(dicom_value)
+        return dicom_value

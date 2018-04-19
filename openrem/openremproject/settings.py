@@ -1,6 +1,7 @@
 # Django settings for OpenREM project.
 
 from __future__ import absolute_import
+
 # ^^^ The above is required if you want to import from the celery
 # library.  If you don't have this then `from celery.schedules import`
 # becomes `proj.celery.schedules` in Python 2.x since it allows
@@ -8,33 +9,37 @@ from __future__ import absolute_import
 
 # Debug is now set to false - you can turn it back on in local_settings if you need to
 DEBUG = False
-TEMPLATE_DEBUG = DEBUG
+TEMPLATE_DEBUG = False
 
 # Celery settings
 
 BROKER_URL = 'amqp://guest:guest@localhost//'
-#CELERY_RESULT_BACKEND = 'amqp'
-
-
-#: Only add pickle to this list if your broker is secured
-#: from unwanted access (see userguide/security.html)
+CELERY_RESULT_BACKEND = 'amqp'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_DEFAULT_QUEUE = 'default'
+# Added by DJP on 16/3/2017 to see if it stops Rabbit / Celery from timing out
+# Also see http://stackoverflow.com/questions/35325207/celery-and-rabbitmq-timeouts-and-connection-resets
+# Also see http://stackoverflow.com/questions/16040039/understanding-celery-task-prefetching
+# Both of the above suggest adding CELERY_ACKS_LATE = True, and adding '-Ofair' to the celery worker options
+# The concurrency in the celery task is also now set to 1 rather than 4 ("-c 4" to "-c 1")
+CELERY_ACKS_LATE = True
 CELERYD_PREFETCH_MULTIPLIER = 1
 
 from celery.schedules import crontab
+
 CELERYBEAT_SCHEDULE = {
     'trigger-dicom-keep-alive': {
         'task': 'remapp.netdicom.keepalive.keep_alive',
         'schedule': crontab(minute='*/1'),
-        'options': {'expires': 10},   # expire if not run ten seconds after being scheduled
+        'options': {'expires': 10},  # expire if not run ten seconds after being scheduled
     },
 }
 
 import os
-ROOT_PROJECT = os.path.join(os.path.split(__file__)[0],"..")
+
+ROOT_PROJECT = os.path.join(os.path.split(__file__)[0], "..")
 
 # **********************************************************************
 #
@@ -65,6 +70,10 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = False
 
+# Default date and time format for exporting to Excel xlsx spreadsheets - use Excel codes, override it in local_settings.py
+XLSX_DATE = 'dd/mm/yyyy'
+XLSX_TIME = 'hh:mm:ss'
+
 #
 # MEDIA_ROOT filepath has been moved to local_settings.py
 #
@@ -84,7 +93,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    os.path.join(ROOT_PROJECT,'static'),
+    os.path.join(ROOT_PROJECT, 'remapp', 'static'),
 )
 
 #
@@ -128,13 +137,13 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'pagination.middleware.PaginationMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'openremproject.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'openremproject.wsgi.application'
-
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -153,6 +162,7 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'solo',
     'crispy_forms',
+    'debug_toolbar',
 )
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
@@ -167,8 +177,8 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-            'datefmt' : "%d/%b/%Y %H:%M:%S"
+            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt': "%d/%b/%Y %H:%M:%S"
         },
         'simple': {
             'format': '%(levelname)s %(message)s'
@@ -186,21 +196,27 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler'
         },
         'file': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': 'openrem.log',
             'formatter': 'verbose'
         },
         'qr_file': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': 'openrem_qrscu.log',
             'formatter': 'verbose'
         },
         'store_file': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': 'openrem_storescp.log',
+            'formatter': 'verbose'
+        },
+        'extractor_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'openrem_extractor.log',
             'formatter': 'verbose'
         },
     },
@@ -224,8 +240,23 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False,
         },
+        'remapp.extractors.rdsr_toshiba_ct_from_dose_images': {
+            'handlers': ['extractor_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     }
 }
+
+# Dummy locations of various tools for DICOM RDSR creation from CT images
+DCMTK_PATH = ''
+DCMCONV = os.path.join(DCMTK_PATH, 'dcmconv.exe')
+DCMMKDIR = os.path.join(DCMTK_PATH, 'dcmmkdir.exe')
+JAVA_EXE = ''
+JAVA_OPTIONS = '-Xms256m -Xmx512m -Xss1m -cp'
+PIXELMED_JAR = ''
+PIXELMED_JAR_OPTIONS = '-Djava.awt.headless=true com.pixelmed.doseocr.OCR -'
+
 
 try:
     LOCAL_SETTINGS

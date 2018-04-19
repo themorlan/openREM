@@ -26,7 +26,7 @@ projectpath = os.path.abspath(os.path.join(basepath, "..", "openrem", "remapp"))
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-#needs_sphinx = '1.0'
+# needs_sphinx = '1.5'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -35,6 +35,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'celery.contrib.sphinx',
     'sphinx.ext.napoleon',
+    'sphinx.ext.graphviz',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -51,7 +52,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'OpenREM'
-copyright = u'2013-2015, The Royal Marsden NHS Foundation Trust'
+copyright = u'2013-2016, The Royal Marsden NHS Foundation Trust'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
