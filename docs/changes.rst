@@ -2,8 +2,14 @@
 OpenREM version history
 =======================
 
-0.8.0b2 (2018-04-18)
+0.8.0b4 (2018-04-24)
 --------------------
+* `#623`_  Imports: changed name of Toshiba image based extractor routine
+* `#621`_  Documentation: reversed install order of openrem and pynetdicom due to new pydicom release
+* `#619`_  Documentation: added workaround for outdated dictionary issues
+* `#618`_  DICOM: fixed image level query that prevented RDSRs from being found
+* `#617`_  Imports: fixed issue with multi study exams crashing the Toshiba extractor
+* `#616`_  Documentation: added information for pip download -d
 * `#615`_  Exports: added Target Exposure Index and Deviation Index to radiographic exports
 * `#614`_  Exports: handle error when study is deleted during sheet creation for exports
 * `#613`_  Imports: fixed dual modality type imports after 'dual' designation from ref `#580`_
@@ -133,6 +139,7 @@ OpenREM version history
 * `#429`_  Charts: Added new mammo scatter plots. Thanks to `@rijkhorst`_
 * `#414`_  Reduced use of JavaScript global variables and improved JavaScript objects
 * `#411`_  Imports: fixed laterality and accumulated AGD failure for Hologic DBT proprietary projection images
+* `#323`_  Documentation: code autodocumentation largely now working again
 * `#318`_  Database management: Display names view can be used to review and delete all studies from one source
 * `#114`_  Imports: Subsequent RDSRs of the same study will now replace existing study in database
 * `#61`_  Skin dose maps: These have been re-enabled, and currently work for Siemens systems
