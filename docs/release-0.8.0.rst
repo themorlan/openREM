@@ -38,15 +38,23 @@ Changes since release 0.8.0b3
 * Extensive documentation updates, particularly on the code side, as well as fixing install order
 * Changed the name of the Toshiba import function and script
 
+Changes since release 0.8.0b5
+=============================
+
+* Changed duplicate RDSR processing method to work with CT and projection, duplicate, continued and cumulative using
+  UIDs
+* Changed Celery results backend to rpc
+* Minor documentation and interface updates
+
 ***************************************************
 Upgrading an OpenREM server with no internet access
 ***************************************************
 
 Follow the instructions found at :doc:`upgrade-offline`, before returning here to update the database and configuration.
 
-**********************************************
-Upgrading from version 0.7.4 or 0.8.0b1,2 or 3
-**********************************************
+****************************************************
+Upgrading from version 0.7.4 or previous 0.8.0 betas
+****************************************************
 
 Upgrade
 =======
@@ -58,31 +66,18 @@ Upgrade
 
 * Stop any Celery workers
 
+* Consider temporarily disabling your DICOM StoreSCP if it is Conquest, or redirecting the data in Conquest to be
+  processed later
+
 * If you are using a virtualenv, activate it
 
 * Install the new version of OpenREM:
 
 .. sourcecode:: bash
 
-    pip install openrem==0.8.0b4
+    pip install openrem==0.8.0b5
 
 ..  _upgradefrom074:
-
-Migrate the database
-====================
-
-In a shell/command window, move into the openrem folder:
-
-* Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``
-* Other linux: ``/usr/lib/python2.7/site-packages/openrem/``
-* Linux virtualenv: ``lib/python2.7/site-packages/openrem/``
-* Windows: ``C:\Python27\Lib\site-packages\openrem\``
-* Windows virtualenv: ``Lib\site-packages\openrem\``
-
-.. sourcecode:: bash
-
-    python manage.py makemigrations remapp
-    python manage.py migrate remapp
 
 Update the configuration
 ========================
@@ -109,12 +104,21 @@ Add additional log file configuration
 
 .. warning::
 
-    If the configuration is not added for the new ``openrem_extractor.log`` is not configured, you will find it being
-    created whereever you start the webserver from, and starting the webserver may fail.
+    If the configuration is not added for the new ``openrem_extractor.log`` you will find it being created whereever
+    you start the webserver from, and starting the webserver may fail.
 
 Add the new extractor log file configuration to the ``local_settings.py`` - you can copy the 'Logging
 configuration' section from  ``local_settings.py.example`` if you haven't made many changes to this section. See the
 :ref:`local_settings_logfile` settings in the install instructions.
+
+.. warning::
+
+    If you are upgrading from an earlier beta with the Toshiba RDSR creation logs defined, this has changed names
+    and must be modified in ``local_settings.py`` before the migration below. It should be changed to::
+
+        LOGGING['loggers']['remapp.extractors.ct_toshiba']['level'] = 'INFO'  # Toshiba RDSR creation extractor logs
+
+    substituting ``INFO`` for whichever level of logging is desired.
 
 Adding legacy Toshiba CT functionality
 ======================================
@@ -145,6 +149,35 @@ configuration above using the command ``which dcmconv``. This will be something 
 ``DCMTK_PATH`` would be ``'/usr/bin`` and the ``DCMCONV`` would be ``os.path.join(DCMTK_PATH, 'dcmconv')``. Similarly
 for ``DCMMKDIR`` and ``JAVA_EXE``, which might be ``/usr/bin/java``. The pixelmed.jar file should be downloaded from
 the link above, and you will need to provide the path to where you have saved it.
+
+
+Migrate the database
+====================
+
+In a shell/command window, move into the openrem folder:
+
+* Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``
+* Other linux: ``/usr/lib/python2.7/site-packages/openrem/``
+* Linux virtualenv: ``lib/python2.7/site-packages/openrem/``
+* Windows: ``C:\Python27\Lib\site-packages\openrem\``
+* Windows virtualenv: ``Lib\site-packages\openrem\``
+
+.. sourcecode:: bash
+
+    python manage.py makemigrations remapp
+    python manage.py migrate remapp
+
+
+Update static files
+===================
+
+In the same shell/command window as you used above run the following command to clear the static files
+belonging to your previous OpenREM version and replace them with those belonging to the version you have
+just installed (assuming you are using a production web server...):
+
+.. sourcecode:: bash
+
+    python manage.py collectstatic --clear
 
 
 Restart all the services
