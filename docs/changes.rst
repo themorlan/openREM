@@ -2,8 +2,21 @@
 OpenREM version history
 =======================
 
-0.8.0b2 (2018-03-??)
+0.8.0b5 (2018-05-xx)
 --------------------
+* `#625`_  Imports: now using event level UIDs to process continued, cumulative and duplicate RDSRs
+* `#624`_  Charts: removed filter link on number of events histogram as it was not functioning correctly
+* `#623`_  Imports: changed name of Toshiba image based extractor routine
+* `#621`_  Documentation: reversed install order of openrem and pynetdicom due to new pydicom release
+* `#619`_  Documentation: added workaround for outdated dictionary issues
+* `#618`_  DICOM: fixed image level query that prevented RDSRs from being found
+* `#617`_  Imports: fixed issue with multi study exams crashing the Toshiba extractor
+* `#616`_  Documentation: added information for pip download -d
+* `#615`_  Exports: added Target Exposure Index and Deviation Index to radiographic exports
+* `#614`_  Exports: handle error when study is deleted during sheet creation for exports
+* `#613`_  Imports: fixed dual modality type imports after 'dual' designation from ref `#580`_
+* `#612`_  Imports: prevented crash when RDSR was imported with AcquisitionProtocol sequence with no TextValue
+* `#610`_  DICOM: query-retrieve changed to work for duplicate RDSRs, ref `#114`_
 * `#609`_  Interface: fixed the feature that toggles the selection when clicking anywhere on a display name table row
 * `#608`_  Interface: fixed the broken sorting of display name table
 * `#603`_  Interface: fixed JavaScript error if there are any None values in fluoro detail irradiation type table
@@ -41,9 +54,13 @@ OpenREM version history
 * `#556`_  Exports: DX exports where TotalNumberOfRadiographicFrames is not populated now export
 * `#552`_  Documentation: documented extractor for older Toshiba CT scanners
 * `#551`_  Documentation: added procedure for opening csv files in Excel with non-ASCII characters
+* `#549`_  Documentation: added procedure for fixing laterality on Hologic studies, ref `#411`_
 * `#544`_  Interface: added procedure, requested procedure to summary listings and details and filtering
 * `#543`_  Interface: added drop-down box to choose how many studies are displayed on filtered pages
 * `#542`_  Interface: added display name to all detailed html pages
+* `#541`_  Documentation: updated for celery on Windows
+* `#540`_  Documentation: updated for current skinDose functionality
+* `#539`_  Documentation: updated chart document to include series toggle buttons
 * `#536`_  Code quality: reduced javascript duplication and collected file groups into subfolders
 * `#535`_  Interface: fixed problem where category names that included a plus symbol caused filtering and chart issues
 * `#534`_  Interface: chart drilldown reported as not working - was actually due to a user's database migrations
@@ -65,6 +82,7 @@ OpenREM version history
 * `#509`_  Skin dose maps: now recalculated on view if recorded height or weight has changed since last calculation
 * `#508`_  Testing: DX sample files are now tested
 * `#507`_  Interface: Mammo now filterable by study description, procedure, requested procedure and acquisition protocol
+* `#506`_  Documentation: updated query-retrieve docs
 * `#505`_  Charts: n is now displayed on charts
 * `#504`_  Charts: Fixed issue with null values
 * `#503`_  Internationalisation: more robust decoding and use of unicode throughout
@@ -122,7 +140,8 @@ OpenREM version history
 * `#430`_  Exports: Fixed DX exports with multiple filters again, added tests
 * `#429`_  Charts: Added new mammo scatter plots. Thanks to `@rijkhorst`_
 * `#414`_  Reduced use of JavaScript global variables and improved JavaScript objects
-* `#411`_  Imports: Fixed laterality and accumulated AGD failure for Hologic DBT proprietary projection images
+* `#411`_  Imports: fixed laterality and accumulated AGD failure for Hologic DBT proprietary projection images
+* `#323`_  Documentation: code autodocumentation largely now working again
 * `#318`_  Database management: Display names view can be used to review and delete all studies from one source
 * `#114`_  Imports: Subsequent RDSRs of the same study will now replace existing study in database
 * `#61`_  Skin dose maps: These have been re-enabled, and currently work for Siemens systems

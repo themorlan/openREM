@@ -2,14 +2,24 @@
 Installing OpenREM
 ******************
 
-Install OpenREM 0.8.0b1
+Install OpenREM 0.8.0b2
 =======================
 
 .. sourcecode:: bash
 
-    pip install openrem==0.8.0b1
+    pip install openrem==0.8.0b4
 
 *Will need ``sudo`` or equivalent if installing on linux without using a virtualenv*
+
+Install pynetdicom (edited version)
+===================================
+
+Pynetdicom is used for the DICOM Store SCP and Query Retrieve SCU functions. See :doc:`netdicom` for details.
+
+.. sourcecode:: bash
+
+    pip install https://bitbucket.org/edmcdonagh/pynetdicom/get/default.tar.gz#egg=pynetdicom-0.8.2b2
+
 
 .. _localsettingsconfig:
 
@@ -154,6 +164,8 @@ Configure the filename to determine where the logs are written. In linux, you mi
     logfilename = os.path.join(MEDIA_ROOT, "openrem.log")
     qrfilename = os.path.join(MEDIA_ROOT, "openrem_qr.log")
     storefilename = os.path.join(MEDIA_ROOT, "openrem_store.log")
+    extractorfilename = os.path.join(MEDIA_ROOT, "openrem_extractor.log")
+
     LOGGING['handlers']['file']['filename'] = logfilename          # General logs
     LOGGING['handlers']['qr_file']['filename'] = qrfilename        # Query Retrieve SCU logs
     LOGGING['handlers']['store_file']['filename'] = storefilename  # Store SCP logs
@@ -180,7 +192,7 @@ is going wrong, but it is quite chatty for routine use!
     LOGGING['loggers']['remapp']['level'] = 'INFO'                    # General logs
     LOGGING['loggers']['remapp.netdicom.qrscu']['level'] = 'INFO'     # Query Retrieve SCU logs
     LOGGING['loggers']['remapp.netdicom.storescp']['level'] = 'INFO'  # Store SCP logs
-    LOGGING['loggers']['remapp.extractors.rdsr_toshiba_ct_from_dose_images']['level'] = 'INFO'  # Toshiba RDSR creation extractor logs
+    LOGGING['loggers']['remapp.extractors.ct_toshiba']['level'] = 'INFO'  # Toshiba RDSR creation extractor logs
 
 Finally, if you are using Linux you can set the system to start a new log file automatically when the current one
 gets to a certain size. The settings described below don't work with Windows - we'll try to include Windows settings in
