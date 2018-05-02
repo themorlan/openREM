@@ -1,10 +1,10 @@
-#########################################
-Calculation and display of skin dose maps
-#########################################
+##############
+Skin dose maps
+##############
 
-************************************
+*******************************
 Functionality that is available
-************************************
+*******************************
 
 * Skin dose map data is calculated to the surface of a simple geometric phantom
   using the in-built `openSkin`_ routines (3D phantom)
@@ -17,7 +17,9 @@ Functionality that is available
   patient; defaults of 1.786 m and 73.2 kg are used when patient height and mass
   are not available
 * Data can be calculated on import to OpenREM, or on demand when a study is
-  viewed
+  viewed. Calculating the skin dose map can take several minutes, so calculating
+  on import may tie up your server for that time, depending on how you have
+  configured the :ref:`celery-task-queue`
 * Data is recalculated automatically if the patient height or mass stored in
   the database differs from the values stored in the skin dose map data file.
   This is useful when patient size information has been imported in to OpenREM

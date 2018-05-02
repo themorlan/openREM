@@ -24,6 +24,7 @@ Upgrading an existing installation
     :maxdepth: 2
 
     release-0.8.0
+    upgrade-offline
 
 .. _databaselinks:
 
@@ -40,8 +41,10 @@ are repeated here.
 
     postgresql
     postgresql_windows
+    backupRestorePostgreSQL
     backupMySQLWindows
 
+.. _webservers:
 
 Web servers
 ===========

@@ -47,6 +47,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
+from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 import json
@@ -2171,8 +2172,9 @@ def display_name_modality_filter(equip_name_pk=None, modality=None):
     return studies, count_all
 
 
-def display_name_count(request):
-    """AJAX view to return the number of studies associated with an entry in the equipment database
+def display_name_last_date_and_count(request):
+    """AJAX view to return the most recent study date associated with an entry in the equipment database along with
+    the number of studies
 
     :param request: Request object containing modality and equipment table ID
     :return: HTML table data element
@@ -2187,12 +2189,13 @@ def display_name_count(request):
         count = studies.count()
         if count:
             latest = studies.latest('study_date').study_date
-        template = 'remapp/displayname-count.html'
-        return render(request, template, {
-            'count': count,
-            'latest': latest,
-            'count_all': count_all,
-        })
+        template_latest = 'remapp/displayname-last-date.html'
+        template_count = 'remapp/displayname-count.html'
+        count_html = render_to_string(template_count, {'count': count, 'count_all': count_all, }, request=request)
+        latest_html = render_to_string(template_latest, {'latest': latest, }, request=request)
+        return_html = {'count_html': count_html, 'latest_html': latest_html}
+        html_dict = json.dumps(return_html)
+        return HttpResponse(html_dict, content_type='application/json')
 
 
 @login_required
@@ -2304,29 +2307,20 @@ def reset_dual(pk=None):
         return
 
     studies = GeneralStudyModuleAttr.objects.filter(generalequipmentmoduleattr__unique_equipment_name__pk=pk)
+    not_dx_rf_cr = studies.exclude(modality_type__exact='DX').exclude(
+        modality_type__exact='RF').exclude(modality_type__exact='CR')
     message_start = "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are " \
-                    "DX, {3} are CR, {4} are RF and {5} are OT before processing,".format(
+                    "DX, {3} are CR, {4} are RF and {5} are something else before processing,".format(
         studies[0].generalequipmentmoduleattr_set.get().unique_equipment_name.display_name,
         studies.count(),
         studies.filter(modality_type__exact='DX').count(),
         studies.filter(modality_type__exact='CR').count(),
         studies.filter(modality_type__exact='RF').count(),
-        studies.filter(modality_type__exact='OT').count()
+        not_dx_rf_cr.count(),
     )
-    not_dx_rf_cr = studies.exclude(modality_type__exact='DX').exclude(
-        modality_type__exact='RF').exclude(modality_type__exact='CR').exclude(modality_type__exact='OT')
 
-    logger.debug(
-        "Reprocessed dual for {0}. Number of studies is {1}, of which {2} are DX, {3} are "
-        "CR, {4} are RF and {5} are OT, leaving {6} that are not.".format(
-            studies[0].generalequipmentmoduleattr_set.get().unique_equipment_name.display_name, studies.count(),
-            studies.filter(modality_type__exact='DX').count(),
-            studies.filter(modality_type__exact='CR').count(),
-            studies.filter(modality_type__exact='RF').count(),
-            studies.filter(modality_type__exact='OT').count(),
-            not_dx_rf_cr.count(),
-        )
-    )
+    logger.debug(message_start)
+
     for study in studies:
         try:
             projection_xray_dose = study.projectionxrayradiationdose_set.get()
@@ -2377,23 +2371,16 @@ def reset_dual(pk=None):
             study.modality_type = 'OT'
             study.save()
             logger.debug("Unable to reprocess study - no device type or accumulated data to go on. Modality set to OT.")
-    logger.debug(
-        "Reprocess dual complete for {0}. Number of studies is {1}, of which {2} are DX, "
-        "{3} are CR, {4} are RF and {5} are 'OT'.".format(
-            studies[0].generalequipmentmoduleattr_set.get().unique_equipment_name.display_name,
-            studies.count(),
-            studies.filter(modality_type='DX').count(),
-            studies.filter(modality_type='CR').count(),
-            studies.filter(modality_type='RF').count(),
-            studies.filter(modality_type__exact='OT').count())
-    )
-    message_finish = "and after processing  {0} are DX, {1} are CR, {2} are RF and {3} are OT because" \
-                     " they are incomplete.".format(
+
+    not_dx_rf_cr = studies.exclude(modality_type__exact='DX').exclude(
+        modality_type__exact='RF').exclude(modality_type__exact='CR')
+    message_finish = "and after processing  {0} are DX, {1} are CR, {2} are RF and {3} are something else".format(
                                                         studies.filter(modality_type='DX').count(),
                                                         studies.filter(modality_type='CR').count(),
                                                         studies.filter(modality_type='RF').count(),
-                                                        studies.filter(modality_type__exact='OT').count(),
-                                                    )
+                                                        not_dx_rf_cr.count(),
+    )
+    logger.debug(message_finish)
     return " ".join([message_start, message_finish])
 
 

@@ -50,6 +50,8 @@ For full functionality start the `Celery task queue`_ before moving on to `Confi
     ``DEBUG`` mode is set to ``False``, which prevents the test web server
     serving those files. The ``--insecure`` option allows them to be served again.
 
+.. _celery-task-queue:
+
 Celery task queue
 =================
 
@@ -98,7 +100,7 @@ Windows - ``celery multi`` doesn't work on Windows, and ``^`` is the continuatio
 
 .. sourcecode:: console
 
-    celery worker -n default -A openremproject -c 4 -Q default ^
+    celery worker -n default -P solo -Ofair -A openremproject -c 4 -Q default ^
     --pidfile=C:\path\to\media\celery\default.pid --logfile=C:\path\to\media\celery\default.log
 
 For production use, see `Daemonising Celery`_ below
@@ -232,6 +234,12 @@ Daemonising Celery
 
 In a production environment, Celery will need to start automatically and
 not depend on a particular user being logged in. Therefore, much like
-the webserver, it will need to be daemonised. For now, please refer to the
-instructions and links at http://celery.readthedocs.org/en/latest/tutorials/daemonizing.html.
+the webserver, it will need to be daemonised.
+
+* `Daemonising Celery on Linux <http://celery.readthedocs.org/en/latest/tutorials/daemonizing.html>`_ (external link)
+
+..  toctree::
+    :maxdepth: 1
+
+    celery-windows
 

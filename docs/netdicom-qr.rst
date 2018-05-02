@@ -35,36 +35,39 @@ Query-retrieve using the web interface
 * Select **which modalities** you want to query for - at least one must be ticked.
 * Select a **date range** - the wider this is, the more stress the query will place on the remote server, and the higher
   the likelyhood of the query being returned with zero results (a common configuration on the remote host to prevent
-  large database queries affecting other services).
+  large database queries affecting other services). Defaults to 'from yesterday'.
 * If you wish to **exclude studies** based on their study description, enter the text here. Add several terms by separating
   them with a comma. One example would be to exclude any studies with ``imported`` in the study description, if
   your institution modifies this field on import. The matching is case-insensitive.
 * Alternatively, you might want to only **keep studies** with particular terms in the study description. If so, enter them
   in the next box, comma separated.
+* You can also **exclude studies by station name**, or only keep them if they match the station name. This is only
+  effective if the remote system (the PACS) supports sending back station name information.
 
 Advanced query options
 ======================
 
+* **Attempt to get Toshiba dose images** *default not ticked*: If you have done the extra installation and configuration
+  required for creating RDSRs from older Toshiba scanners, then you can tick this box for `CT` searches to get the
+  images needed for this process. See the logic description below for details.
+* **Ignore studies already in the database** *default ticked*: By default OpenREM will attempt to avoid downloading any
+  DICOM objects (RDSRs or images) that have already been imported into the database. Untick this box to override that
+  behaviour and download all suitable objects. See the logic description below for details.
 * **Include SR only studies** *default not ticked*: If you have a DICOM store with only the radiation dose structured
-  reports (RDSR) in, or a mix of whole studies and RDSRs without the corresponding study, then tick this box.
-* **Ignore studies already in the database** *default ticked*: The RDSR import routine checks for the existance of the
-  study UID in the database, and if it is found they it doesn't go any further. This might change in the future as there
-  are instances where two RDSRs might legitimately have the same study UID, but different event UIDs. For image based
-  imports, the individual events are checked, so if you think there is a reasonable chance that the database is missing
-  individual images from a study, then you might like to deselect this setting. If the same dates are selected multiple
-  times (to update during a day for example), activating this setting will result in the same exams all being
-  transferred each time.
+  reports (RDSR) in, or a mix of whole studies and RDSRs without the corresponding study, then tick this box. Any
+  studies with images and RDSRS will be ignored (they can be found without this option). If this box is ticked any
+  modality choices will be ignored.
 
 When you have finished the query parameters, click ``Submit``
 
 Review and retrieve
 ===================
 
-The progress of the query is reported on the right hand side. If nothing happens, ask the adminsitrator to check if the
+The progress of the query is reported on the right hand side. If nothing happens, ask the administrator to check if the
 celery queue is running.
 
 Once all the responses have been purged of unwanted modalities, study descriptions or study UIDs, the number of studies
-of each type will be displayed and a button appears. Click ``Retreive`` to request the remote server send the selected
+of each type will be displayed and a button appears. Click ``Retrieve`` to request the remote server send the selected
 objects to your selected Store node. This will be based on your original selection - changing the node on the left hand
 side at this stage will have no effect.
 
@@ -76,38 +79,49 @@ The progress of the retrieve is displayed in the same place until the retrieve i
 Query-retrieve using the command line interface
 ***********************************************
 
-In a command window/shell, ``qrscu.py -h`` should present you with the following output:
+In a command window/shell, ``openrem_qr.py -h`` should present you with the following output:
 
 .. sourcecode:: console
 
-    usage: qrscu.py [-h] [-ct] [-mg] [-fl] [-dx] [-f yyyy-mm-dd] [-t yyyy-mm-dd]
-                    [-e string] [-i string] [-sr] [-dup] [-toshiba] qrid storeid
+   usage: openrem_qr.py [-h] [-ct] [-mg] [-fl] [-dx] [-f yyyy-mm-dd]
+                        [-t yyyy-mm-dd] [-e string] [-i string] [-sne string]
+                        [-sni string] [-toshiba] [-sr] [-dup]
+                        qr_id store_id
 
-    Query remote server and retrieve to OpenREM
+   Query remote server and retrieve to OpenREM
 
-    positional arguments:
-      qrid                  Database ID of the remote QR node
-      storeid               Database ID of the local store node
+   positional arguments:
+     qr_id                 Database ID of the remote QR node
+     store_id              Database ID of the local store node
 
-    optional arguments:
-      -h, --help            show this help message and exit
-      -ct                   Query for CT studies
-      -mg                   Query for mammography studies
-      -fl                   Query for fluoroscopy studies
-      -dx                   Query for planar X-ray studies
-      -f yyyy-mm-dd, --dfrom yyyy-mm-dd
-                            Date from, format yyyy-mm-dd
-      -t yyyy-mm-dd, --duntil yyyy-mm-dd
-                            Date until, format yyyy-mm-dd
-      -e string, --desc_exclude string
-                            Terms to exclude in study description, comma separated, quote whole
-                            string
-      -i string, --desc_include string
-                            Terms that must be included in study description, comma separated,
-                            quote whole string
-      -sr                   Advanced: Query for structured report only studies
-      -dup                  Advanced: Retrieve studies that are already in database
-      -toshiba              Advanced: Attempt to retrieve CT dose summary objects and one image from each series
+   optional arguments:
+     -h, --help            show this help message and exit
+     -ct                   Query for CT studies. Do not use with -sr
+     -mg                   Query for mammography studies. Do not use with -sr
+     -fl                   Query for fluoroscopy studies. Do not use with -sr
+     -dx                   Query for planar X-ray studies. Do not use with -sr
+     -f yyyy-mm-dd, --dfrom yyyy-mm-dd
+                           Date from, format yyyy-mm-dd
+     -t yyyy-mm-dd, --duntil yyyy-mm-dd
+                           Date until, format yyyy-mm-dd
+     -e string, --desc_exclude string
+                           Terms to exclude in study description, comma
+                           separated, quote whole string
+     -i string, --desc_include string
+                           Terms that must be included in study description,
+                           comma separated, quote whole string
+     -sne string, --stationname_exclude string
+                           Terms to exclude in station name, comma separated,
+                           quote whole string
+     -sni string, --stationname_include string
+                           Terms to include in station name, comma separated,
+                           quote whole string
+     -toshiba              Advanced: Attempt to retrieve CT dose summary objects
+                           and one image from each series
+     -sr                   Advanced: Query for structured report only studies.
+                           Cannot be used with -ct, -mg, -fl, -dx
+     -dup                  Advanced: Retrieve duplicates (studies that are
+                           already in database)
 
 As an example, if you wanted to query the PACS for DX images on the 5th April 2010 with any study descriptions including
 ``imported`` excluded, first you need to know the database IDs of the remote node and the local node you want the images
@@ -118,7 +132,7 @@ Assuming the PACS database ID is 2, and the store node ID is 1, the command woul
 
 .. sourcecode:: console
 
-    qrscu.py 2 1 -dx -f 2010-04-05 -t 2010-04-05 -e "imported"
+    openrem_qr.py 2 1 -dx -f 2010-04-05 -t 2010-04-05 -e "imported"
 
 If you want to do this regularly to catch new studies, you might like to use a script something like this on linux:
 
@@ -148,8 +162,72 @@ example PowerShell script is shown below:
     # Run the openrem_qr.py script with yesterday's date as the to and from date
     python D:\Server_Apps\python27\Scripts\openrem_qr.py 2 1 -ct -f $dateString -t $dateString
 
-The above PowerShell script could be run on a regular basis by adding a task to the Windows `Task Scheduler` that
-executes the `powershell` program with an argument of `-file C:\\path\\to\\script.ps1`.
+The above PowerShell script could be run on a regular basis by adding a task to the Windows ``Task Scheduler`` that
+executes the ``powershell`` program with an argument of ``-file C:\\path\\to\\script.ps1``.
+
+*********************
+Query filtering logic
+*********************
+
+Study level query response processing
+=====================================
+
+* First we query for each modality chosen in turn to get matching responses at study level.
+* If the optional ``ModalitiesInStudy`` has been populated in the response, and if you have ticked
+  ``Include SR only studies``, then any studies with anything other than just ``SR`` studies is removed from the
+  response list.
+* If any study description or station name filters have been added, and if the ``StudyDescription`` and/or
+  ``StationName`` tags are returned by the remote server, the study response list is filtered accordingly.
+* For the remaining study level responses, each series is queried.
+* If ``ModalitiesInStudy`` was not returned, it is now built from the series level responses.
+* If the remote server returned everything rather than just the modalities we asked for, the study level responses are
+  now filtered against the modalities selected.
+
+Series level query processing
+=============================
+
+* Another attempt is made to exclude or only-include if station name filters have been set
+
+If **mammography** exams were requested, and a study has ``MG`` in:
+
+* If one of the series is of type ``SR``, an image level query is done to see if it is an RDSR. If it is, all the
+  other series responses are deleted (i.e. when the move request/'retrieve' is sent only the RDSR is requested
+  not the images.
+* Otherwise the ``SR`` series responses are deleted and all the image series are requested.
+
+If **planar radiographic** exams were requested, and a study has ``DX`` or ``CR`` in:
+
+* Any ``SR`` series are checked at 'image' level to see if they are RDSRs. If they are, the other series level responses
+  for that study are deleted.
+* Otherwise the ``SR`` series responses are deleted and all the image series are requested.
+
+If **fluoroscopy** exams were requested, and a study has ``RF`` or ``XA`` in:
+
+* Any ``SR`` series are checked at 'image' level to see if they are RDSRs or ESRs (Enhanced Structured Reports - not
+  currently used but will be in the future). Any other ``SR`` series responses are deleted.
+* All non-``SR`` series responses are deleted.
+
+If **CT** exams were requested, and a study has ``CT`` in:
+
+* Any ``SR`` series are checked at 'image' level to see if they are RDSRs. If they are, all other SR and image series
+  responses are deleted. Otherwise, if it has an ESR series, again all other SR and image series responses are deleted.
+* If there are no RDSR or ESR series, the other series are checked to see if they are Philips 'Dose info' series. If
+  there are, other series responses are deleted.
+* If there are no RDSR, ESR or 'Dose info' series and the option to get Toshiba images has been selected, then an image
+  level query is performed for the first image in each series. If the image is not a secondary capture, all but the
+  first image are deleted from the image level responses and the image_level_move flag is set. If the image is a
+  secondary capture, the whole series response is kept.
+* If there are no RDSR or ESR, series descriptions aren't returned and the Toshiba option has been set, the image level
+  query is performed as per the previous point. This process will keep the responses that might have Philips 'Dose info'
+  series.
+* If there are no RDSR, ESR, series descriptions aren't returned and the Toshiba option has not been set, each series
+  with more than five images in is deleted from the series response list - the remaining ones might be Philips 'Dose
+  info' series.
+
+If **SR only studies** were requested:
+
+* Each series response is checked at 'image' level to see which type of SR it is. If is not RDSR or ESR, the study
+  response is deleted.
 
 .. _qrtroubleshooting:
 
@@ -168,7 +246,7 @@ responses will already have been imported):
 
 .. sourcecode:: console
 
-    qrscu.py 2 1 -dx -f 2016-05-04 -t 2016-05-04 -e "imported"
+    openrem_qr.py 2 1 -dx -f 2016-05-04 -t 2016-05-04 -e "imported"
 
 .. sourcecode:: console
 

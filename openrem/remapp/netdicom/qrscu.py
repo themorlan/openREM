@@ -2,16 +2,10 @@
 #!/usr/bin/python
 
 """
-Query/Retrieve SCU AE example.
+Query/Retrieve SCU AE
 
-This demonstrates a simple application entity that support the Patient
-Root Find and Move SOP Classes as SCU. In order to receive retrieved
-datasets, this application entity must support the CT Image Storage
-SOP Class as SCP as well. For this example to work, there must be an
-SCP listening on the specified host and port.
-
-For help on usage,
-python qrscu.py -h
+Specialised QR routine to get just the objects that might be useful for dose related metrics from a remote PACS or
+modality
 """
 
 from celery import shared_task
@@ -22,7 +16,7 @@ import sys
 import uuid
 import collections
 
-
+logger = logging.getLogger('remapp.netdicom.qrscu')  # Explicitly named so that it is still handled when using __main__
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
 projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
@@ -31,9 +25,53 @@ if projectpath not in sys.path:
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 django.setup()
 
-logger = logging.getLogger('remapp.netdicom.qrscu')  # Explicitly named so that it is still handled when using __main__
 
 from remapp.netdicom.tools import _create_ae
+
+
+def _remove_duplicates(query, study_rsp, assoc, query_id):
+    """
+    Checks for objects in C-Find response already being in the OpenREM database to remove them from the C-Move request
+    :param query: Query object in database
+    :param study_rsp: study level C-Find response object in database
+    :param assoc: current DICOM Query object
+    :param query_id: current query ID for logging
+    :return: Study, series and image level responses deleted if not useful
+    """
+    from remapp.models import GeneralStudyModuleAttr
+
+    logger.debug(u"About to remove any studies we already have in the database")
+    query.stage = u'Checking to see if any response studies are already in the OpenREM database'
+    try:
+        query.save()
+    except Exception as e:
+        logger.error(u"query.save in remove duplicates didn't work because of {0}".format(e))
+    logger.info(
+        u'Checking to see if any of the {0} studies are already in the OpenREM database'.format(study_rsp.count()))
+    for study in study_rsp:
+        existing_study = GeneralStudyModuleAttr.objects.filter(study_instance_uid=study.study_instance_uid)
+        if existing_study.exists():
+            existing_series_instance_uid = existing_study[0].series_instance_uid
+            existing_series_time = existing_study[0].series_time
+            for series_rsp in study.dicomqrrspseries_set.all():
+                if series_rsp.modality == 'SR':
+                    if series_rsp.series_instance_uid == existing_series_instance_uid:
+                        series_rsp.delete()
+                    elif existing_series_time and series_rsp.series_time and (
+                            series_rsp.series_time < existing_series_time
+                    ):
+                        series_rsp.delete()
+                elif series_rsp.modality in ['MG', 'DX', 'CR']:
+                    _query_images(assoc, series_rsp, query_id)
+                    for image_rsp in series_rsp.dicomqrrspimage_set.all():
+                        if existing_study.filter(
+                                projectionxrayradiationdose__irradeventxraydata__irradiation_event_uid=
+                                image_rsp.sop_instance_uid).exists():
+                            image_rsp.delete()
+                            series_rsp.image_level_move = True  # If we have deleted images we need to set this flag
+                            series_rsp.save()
+    study_rsp = query.dicomqrrspstudy_set.all()
+    logger.info(u'After removing studies we already have in the db, {0} studies are left'.format(study_rsp.count()))
 
 
 def _filter(query, level, filter_name, filter_list, filter_type):
@@ -97,6 +135,8 @@ def _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images)
     for study in study_rsp:
         logger.debug("at study in study_resp in series prune. modalities in study are: {0}".format(study.get_modalities_in_study()))
         if all_mods['MG']['inc'] and 'MG' in study.get_modalities_in_study():
+            # If _check_sr_type_in_study returns an RDSR, all other SR series will have been deleted and then all images
+            # are deleted. If _check_sr_type_in_study returns an ESR or no_dose_report, everything else is kept.
             study.modality = u'MG'
             study.save()
 
@@ -105,14 +145,11 @@ def _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images)
                 logger.debug(u"Found RDSR in MG study, so keep SR and delete all other series")
                 series = study.dicomqrrspseries_set.all()
                 series.exclude(modality__exact='SR').delete()
-            elif 'SR' in study.get_modalities_in_study():
-                logger.debug(u"SR in DX study not RDSR, so deleting")
-                series = study.dicomqrrspseries_set.all()
-                series.filter(modality__exact='SR').delete()
+            # ToDo: see if there is a mechanism to remove duplicate 'for processing' 'for presentation' images.
 
-            # ToDo: query each series at image level in case SOP Class UID is returned and raw/processed duplicates can
-            # be weeded out
         elif all_mods['DX']['inc'] and any(mod in study.get_modalities_in_study() for mod in ('CR', 'DX')):
+            # If _check_sr_type_in_study returns an RDSR, all other SR series will have been deleted and then all images
+            # are deleted. If _check_sr_type_in_study returns an ESR or no_dose_report, everything else is kept.
             study.modality = u'DX'
             study.save()
 
@@ -121,12 +158,9 @@ def _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images)
                 logger.debug(u"Found RDSR in DX study, so keep SR and delete all other series")
                 series = study.dicomqrrspseries_set.all()
                 series.exclude(modality__exact='SR').delete()
-            elif 'SR' in study.get_modalities_in_study():
-                logger.debug(u"SR in DX study not RDSR, so deleting")
-                series = study.dicomqrrspseries_set.all()
-                series.filter(modality__exact='SR').delete()
 
         elif all_mods['FL']['inc'] and any(mod in study.get_modalities_in_study() for mod in ('XA', 'RF')):
+            # _check_sr_type_in_study will delete any SR that is not RDSR or ESR. All other series are then deleted.
             study.modality = 'FL'
             study.save()
             sr_type = _check_sr_type_in_study(assoc, study, query.query_id)
@@ -135,23 +169,28 @@ def _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images)
             series.exclude(modality__exact='SR').delete()
 
         elif all_mods['CT']['inc'] and 'CT' in study.get_modalities_in_study():
+            # If _check_sr_type_in_study returns RDSR, all other SR series responses will have been deleted and then all
+            # other series responses will be deleted too.
+            # If _check_sr_type_in_study returns ESR, all other SR series responses will have been deleted and then all
+            # other series responses will be deleted too.
+            # Otherwise, we pass the study response to _get_philips_dose_images to see if there is a Philips dose info
+            # series and optionally get samples from each series for the Toshiba RDSR creation routine.
             study.modality = 'CT'
             study.save()
             logger.debug("Filtering CT at series level")
             series = study.dicomqrrspseries_set.all()
             if 'SR' in study.get_modalities_in_study():
-                SR_type = _check_sr_type_in_study(assoc, study, query.query_id)
-                if SR_type == 'RDSR':
+                sr_type = _check_sr_type_in_study(assoc, study, query.query_id)
+                if sr_type == 'RDSR':
                     logger.debug(u"Found RDSR in CT study, so keep SR and delete all other series")
                     series.exclude(modality__exact='SR').delete()
-                elif SR_type == 'ESR':  # GE CT's with ESR instead of RDSR
+                elif sr_type == 'ESR':  # GE CT's with ESR instead of RDSR
                     logger.debug(u"Found ESR in CT study, so keep SR and delete all other series")
                     series.exclude(modality__exact='SR').delete()
                 else:
-                    # non-dose SR, so check for Philips dose info
                     _get_philips_dose_images(series, get_toshiba_images, assoc, query.query_id)
             else:
-                # if SR not present in study, only keep Philips dose info series
+                # if SR not present in study
                 _get_philips_dose_images(series, get_toshiba_images, assoc, query.query_id)
 
         elif all_mods['SR']['inc']:
@@ -185,6 +224,8 @@ def _get_philips_dose_images(series, get_toshiba_images, assoc, query_id):
             _get_toshiba_dose_images(series, assoc, query_id)
         else:
             series.delete()
+    elif get_toshiba_images:
+        _get_toshiba_dose_images(series, assoc, query_id)
     else:
         series.filter(number_of_series_related_instances__gt=5).delete()
 
@@ -252,28 +293,35 @@ def _prune_study_responses(query, filters):
 
 # returns SR-type: RDSR or ESR; otherwise returns 'no_dose_report'
 def _check_sr_type_in_study(assoc, study, query_id):
+    """Checks at an image level whether SR in study is RDSR, ESR, or something else (Radiologist's report for example)
+
+    * If RDSR is found, all non-RDSR SR series responses are deleted
+    * Otherwise, if an ESR is found, all non-ESR series responses are deleted
+    * Otherwise, all SR series responses are deleted
+
+    The function returns one of 'RDSR', 'ESR', 'no_dose_report'.
+
+    :param assoc: Current DICOM query object
+    :param study: study level C-Find response object in database
+    :param query_id: current query ID for logging
+    :return: string indicating SR type remaining in study
     """
-    Checks at an image level whether SR in study is RDSR, ESR, or something else (Radiologist's report for example)
-    :param study: Study to check SR type of
-    :return: String of 'RDSR', 'ESR', or 'no_dose_report'
-    """
-    # select series with modality SR
     series_sr = study.dicomqrrspseries_set.filter(modality__exact='SR')
-    logger.info(u"Number of series with SR {0}".format(series_sr.count()))
+    logger.debug(u"Number of series with SR {0}".format(series_sr.count()))
     sopclasses = set()
     for sr in series_sr:
         _query_images(assoc, sr, query_id)
         images = sr.dicomqrrspimage_set.all()
         if images.count() == 0:
-            logger.debug(u"Oops, series {0} of study instance UID {1} doesn't have any images in!".format(
+            logger.debug(u"Oops, series {0} of study instance UID {1} doesn't have any objects in!".format(
                 sr.series_number, study.study_instance_uid))
             continue
         sopclasses.add(images[0].sop_class_uid)
         sr.sop_class_in_series = images[0].sop_class_uid
         sr.save()
-        logger.info(u"studyuid: {0}   seriesuid: {1}   nrimages: {2}   sopclasses: {3}".format(
+        logger.debug(u"studyuid: {0}   seriesuid: {1}   nrimages: {2}   sopclasses: {3}".format(
             study.study_instance_uid, sr.series_instance_uid, images.count(), sopclasses))
-    logger.info(u"sopclasses: {0}".format(sopclasses))
+    logger.debug(u"sopclasses: {0}".format(sopclasses))
     if '1.2.840.10008.5.1.4.1.1.88.67' in sopclasses:
         for sr in series_sr:
             if sr.sop_class_in_series != '1.2.840.10008.5.1.4.1.1.88.67':
@@ -302,6 +350,7 @@ def _query_images(assoc, seriesrsp, query_id, initial_image_only=False, msg_id=N
     d3 = Dataset()
     d3.QueryRetrieveLevel = "IMAGE"
     d3.SeriesInstanceUID = seriesrsp.series_instance_uid
+    d3.StudyInstanceUID = seriesrsp.dicom_qr_rsp_study.study_instance_uid
     d3.SOPInstanceUID = ''
     d3.SOPClassUID = ''
     d3.InstanceNumber = ''
@@ -312,8 +361,8 @@ def _query_images(assoc, seriesrsp, query_id, initial_image_only=False, msg_id=N
     if not msg_id:
         msg_id = 1
 
-    # logger.debug(u'Query_id {0}: query is {1}, intial_imge_only is {2}, msg_id is {3}'.format(
-    #     query_id, d3, initial_image_only, msg_id))
+    logger.debug(u'Query_id {0}: query is {1}, intial_imge_only is {2}, msg_id is {3}'.format(
+                    query_id, d3, initial_image_only, msg_id))
 
     st3 = assoc.StudyRootFindSOPClass.SCU(d3, msg_id)
 
@@ -339,6 +388,7 @@ def _query_images(assoc, seriesrsp, query_id, initial_image_only=False, msg_id=N
 
 
 def _query_series(assoc, d2, studyrsp, query_id):
+    from remapp.tools.dcmdatetime import get_time
     from remapp.tools.get_values import get_value_kw
     from remapp.models import DicomQRRspSeries
     d2.QueryRetrieveLevel = "SERIES"
@@ -349,6 +399,7 @@ def _query_series(assoc, d2, studyrsp, query_id):
     d2.NumberOfSeriesRelatedInstances = ''
     d2.StationName = ''
     d2.SpecificCharacterSet = ''
+    d2.SeriesTime = ''
 
     logger.debug(u'Query_id {0}: In _query_series'.format(query_id))
     logger.debug(u'Query_id {0}: series query is {1}'.format(query_id, d2))
@@ -380,6 +431,7 @@ def _query_series(assoc, d2, studyrsp, query_id):
         if not seriesrsp.number_of_series_related_instances:
             seriesrsp.number_of_series_related_instances = None  # integer so can't be ''
         seriesrsp.station_name = get_value_kw('StationName', series[1])
+        seriesrsp.series_time = get_time('SeriesTime', series[1])
         logger.debug(u"Series Response {0}: Modality {1}, StationName {2}, StudyUID {3}, Series No. {4}, "
                      u"Series description {5}".format(
                             seRspNo, seriesrsp.modality, seriesrsp.station_name, d2.StudyInstanceUID,
@@ -515,7 +567,6 @@ def _query_for_each_modality(all_mods, query, d, assoc):
     return modalities_returned, modality_matching
 
 
-
 @shared_task(name='remapp.netdicom.qrscu.qrscu')  # (name='remapp.netdicom.qrscu.qrscu', queue='qr')
 def qrscu(
         qr_scp_pk=None, store_scp_pk=None,
@@ -556,7 +607,7 @@ def qrscu(
 
     from dicom.dataset import Dataset
     from dicom.UID import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
-    from remapp.models import GeneralStudyModuleAttr, DicomQuery, DicomRemoteQR, DicomStoreSCP
+    from remapp.models import DicomQuery, DicomRemoteQR, DicomStoreSCP
     from remapp.tools.dcmdatetime import make_dcm_date_range
 
     debug_timer = datetime.now()
@@ -681,23 +732,6 @@ def qrscu(
                 study.delete()
         logger.debug(u"Finished removing studies that have anything other than SR in.")
 
-    # FIXME: why not perform at series level? Fixes the problem of additional series that might be missed, but
-    # would need to be  combined with changes to extractor scripts
-    if remove_duplicates:
-        logger.debug(u"About to remove any studies we already have in the database")
-        query.stage = u'Checking to see if any response studies are already in the OpenREM database'
-        try:
-            query.save()
-        except Exception as e:
-            logger.error(u"query.save in remove duplicates didn't work because of {0}".format(e))
-        logger.info(
-            u'Checking to see if any of the {0} studies are already in the OpenREM database'.format(study_rsp.count()))
-        for uid in study_rsp.values_list('study_instance_uid', flat=True):
-            if GeneralStudyModuleAttr.objects.filter(study_instance_uid=uid).exists():
-                study_rsp.filter(study_instance_uid__exact=uid).delete()
-        study_rsp = query.dicomqrrspstudy_set.all()
-        logger.info(u'After removing studies we already have in the db, {0} studies are left'.format(study_rsp.count()))
-
     filter_logs = []
     if filters['study_desc_inc']:
         filter_logs += [u"study description includes {0}, ".format(u", ".join(filters['study_desc_inc']))]
@@ -711,7 +745,6 @@ def qrscu(
     logger.info(u"Pruning study responses based on inc/exc options: {0}".format(u"".join(filter_logs)))
     _prune_study_responses(query, filters)
     study_rsp = query.dicomqrrspstudy_set.all()
-    logger.info(u'Now have {0} studies'.format(study_rsp.count()))
 
     for rsp in study_rsp:
         # Series level query
@@ -752,6 +785,9 @@ def qrscu(
 
     study_rsp = query.dicomqrrspstudy_set.all()
     logger.info(u'Now have {0} studies'.format(study_rsp.count()))
+
+    if remove_duplicates:
+        _remove_duplicates(query, study_rsp, assoc, query_id)
 
     # done
     my_ae.Quit()
@@ -885,16 +921,14 @@ def movescu(query_id):
     query.delete()
 
 
-def parse_args(argv):
-    """
-    Parse the command line args for the openrem_qr.py script.
-    :param argv: sys.argv[1:] from command line call
-    :return: Dict of processed args
-    """
-
+# def parse_args():
+    # """Parse the command line args for the openrem_qr.py script.
+    #
+    # :param argv: sys.argv[1:] from command line call
+    # :return: Dict of processed args
+    # """
+def _create_parser():
     import argparse
-    import datetime
-    from remapp.netdicom.tools import echoscu
 
     parser = argparse.ArgumentParser(description='Query remote server and retrieve to OpenREM')
     parser.add_argument('qr_id', type=int, help='Database ID of the remote QR node')
@@ -920,23 +954,29 @@ def parse_args(argv):
     parser.add_argument('-toshiba', action="store_true",
                         help='Advanced: Attempt to retrieve CT dose summary objects and one image from each series')
     parser.add_argument('-sr', action="store_true",
-                        help='Advanced: Query for structured report only studies. Cannot be used with -ct, -mg, -fl, -dx')
+                        help='Advanced: Use if store has RDSRs only, no images. Cannot be used with -ct, -mg, -fl, -dx')
     parser.add_argument('-dup', action="store_true",
                         help="Advanced: Retrieve duplicates (studies that are already in database)")
-    args = parser.parse_args(argv)
+
+    return parser
+
+
+def _process_args(parser_args, parser):
+    import datetime
+    from remapp.netdicom.tools import echoscu
 
     logger.info(u"qrscu script called")
 
     modalities = []
-    if args.ct:
+    if parser_args.ct:
         modalities += ['CT']
-    if args.mg:
+    if parser_args.mg:
         modalities += ['MG']
-    if args.fl:
+    if parser_args.fl:
         modalities += ['FL']
-    if args.dx:
+    if parser_args.dx:
         modalities += ['DX']
-    if args.sr:
+    if parser_args.sr:
         if modalities:
             parser.error(u"The sr option can not be combined with any other modalities")
         else:
@@ -949,34 +989,34 @@ def parse_args(argv):
 
     # Check if dates are in the right format, but keep them as strings
     try:
-        if args.dfrom:
-            datetime.datetime.strptime(args.dfrom, '%Y-%m-%d')
-            logger.info(u"Date from: {0}".format(args.dfrom))
-        if args.duntil:
-            datetime.datetime.strptime(args.duntil, '%Y-%m-%d')
-            logger.info(u"Date until: {0}".format(args.duntil))
+        if parser_args.dfrom:
+            datetime.datetime.strptime(parser_args.dfrom, '%Y-%m-%d')
+            logger.info(u"Date from: {0}".format(parser_args.dfrom))
+        if parser_args.duntil:
+            datetime.datetime.strptime(parser_args.duntil, '%Y-%m-%d')
+            logger.info(u"Date until: {0}".format(parser_args.duntil))
     except ValueError:
         parser.error(u"Incorrect data format, should be YYYY-MM-DD")
 
-    if args.desc_exclude:
+    if parser_args.desc_exclude:
 
-        study_desc_exc = [x.strip().lower() for x in args.desc_exclude.split(u',')]
+        study_desc_exc = [x.strip().lower() for x in parser_args.desc_exclude.split(u',')]
         logger.info(u"Study description exclude terms are {0}".format(study_desc_exc))
     else:
         study_desc_exc = None
-    if args.desc_include:
-        study_desc_inc = [x.strip().lower() for x in args.desc_include.split(u',')]
+    if parser_args.desc_include:
+        study_desc_inc = [x.strip().lower() for x in parser_args.desc_include.split(u',')]
         logger.info(u"Study description include terms are {0}".format(study_desc_inc))
     else:
         study_desc_inc = None
 
-    if args.stationname_exclude:
-        stationname_exc = [x.strip().lower() for x in args.stationname_exclude.split(u',')]
+    if parser_args.stationname_exclude:
+        stationname_exc = [x.strip().lower() for x in parser_args.stationname_exclude.split(u',')]
         logger.info(u"Stationname exclude terms are {0}".format(stationname_exc))
     else:
         stationname_exc = None
-    if args.stationname_include:
-        stationname_inc = [x.strip().lower() for x in args.stationname_include.split(u',')]
+    if parser_args.stationname_include:
+        stationname_inc = [x.strip().lower() for x in parser_args.stationname_include.split(u',')]
         logger.info(u"Stationname include terms are {0}".format(stationname_inc))
     else:
         stationname_inc = None
@@ -988,12 +1028,12 @@ def parse_args(argv):
                 'study_desc_exc'  : study_desc_exc,
               }
 
-    remove_duplicates = not(args.dup)  # if flag, duplicates will be retrieved.
+    remove_duplicates = not(parser_args.dup)  # if flag, duplicates will be retrieved.
 
-    get_toshiba = args.toshiba
+    get_toshiba = parser_args.toshiba
 
-    qr_node_up = echoscu(args.qr_id, qr_scp=True)
-    store_node_up = echoscu(args.store_id, store_scp=True)
+    qr_node_up = echoscu(parser_args.qr_id, qr_scp=True)
+    store_node_up = echoscu(parser_args.store_id, store_scp=True)
 
     if qr_node_up is not "Success" or store_node_up is not "Success":
         logger.error(u"Query-retrieve aborted: DICOM nodes not ready. QR SCP echo is {0}, Store SCP echo is {1}".format(
@@ -1001,39 +1041,55 @@ def parse_args(argv):
         sys.exit(u"Query-retrieve aborted: DICOM nodes not ready. QR SCP echo is {0}, Store SCP echo is {1}".format(
             qr_node_up, store_node_up))
 
-    processed_args = {'qr_id': args.qr_id,
-                      'store_id': args.store_id,
-                      'modalities': modalities,
-                      'remove_duplicates': remove_duplicates,
-                      'dfrom': args.dfrom,
-                      'duntil': args.duntil,
-                      'filters': filters,
-                      'get_toshiba': get_toshiba}
+    return_args = {'qr_id': parser_args.qr_id,
+                   'store_id': parser_args.store_id,
+                   'modalities': modalities,
+                   'remove_duplicates': remove_duplicates,
+                   'dfrom': parser_args.dfrom,
+                   'duntil': parser_args.duntil,
+                   'filters': filters,
+                   'get_toshiba': get_toshiba}
 
-    return processed_args
+    return return_args
 
 
 def qrscu_script():
-    """
-    Query-Retrieve function that can be called by the openrem_qr.py script. Always triggers a move.
+    """Query-Retrieve function that can be called by the openrem_qr.py script. Always triggers a move.
+
     :param args: sys.argv from command line call
     :return:
     """
 
-    parsed_args = parse_args(sys.argv[1:])
+    parser = _create_parser()
+    args = parser.parse_args()
+    processed_args = _process_args(args, parser)
     sys.exit(
-        qrscu.delay(qr_scp_pk=parsed_args['qr_id'],
-                    store_scp_pk=parsed_args['store_id'],
+        qrscu.delay(qr_scp_pk=processed_args['qr_id'],
+                    store_scp_pk=processed_args['store_id'],
                     move=True,
-                    modalities=parsed_args['modalities'],
-                    remove_duplicates=parsed_args['remove_duplicates'],
-                    date_from=parsed_args['dfrom'],
-                    date_until=parsed_args['duntil'],
-                    filters=parsed_args['filters'],
-                    get_toshiba_images=parsed_args['get_toshiba']
+                    modalities=processed_args['modalities'],
+                    remove_duplicates=processed_args['remove_duplicates'],
+                    date_from=processed_args['dfrom'],
+                    date_until=processed_args['duntil'],
+                    filters=processed_args['filters'],
+                    get_toshiba_images=processed_args['get_toshiba']
                     )
     )
 
 
-if __name__ == "__main__":
-    qrscu_script()
+# if __name__ == "__main__":
+#     parser = _create_parser()
+#     args = parser.parse_args()
+#     processed_args = _process_args(args, parser)
+#     sys.exit(
+#         qrscu.delay(qr_scp_pk=processed_args['qr_id'],
+#                     store_scp_pk=processed_args['store_id'],
+#                     move=True,
+#                     modalities=processed_args['modalities'],
+#                     remove_duplicates=processed_args['remove_duplicates'],
+#                     date_from=processed_args['dfrom'],
+#                     date_until=processed_args['duntil'],
+#                     filters=processed_args['filters'],
+#                     get_toshiba_images=processed_args['get_toshiba']
+#                     )
+#     )
