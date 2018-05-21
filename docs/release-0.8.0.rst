@@ -38,15 +38,31 @@ Changes since release 0.8.0b3
 * Extensive documentation updates, particularly on the code side, as well as fixing install order
 * Changed the name of the Toshiba import function and script
 
+Changes since release 0.8.0b4
+=============================
+
+* Changed duplicate RDSR processing method to work with CT and projection, duplicate, continued and cumulative using
+  UIDs
+* Changed Celery results backend to rpc
+* Minor documentation and interface updates
+
+Changes since release 0.8.0b5
+=============================
+
+* Implemented duplicate processing for RDSR, MG and DX using UIDs in a better way
+* Improved duplicate processing for DX and MG generally
+* Modified query-retrieve to work with SOPInstanceUIDs for duplicates processing
+* Added tests and rewrote existing ones
+
 ***************************************************
 Upgrading an OpenREM server with no internet access
 ***************************************************
 
 Follow the instructions found at :doc:`upgrade-offline`, before returning here to update the database and configuration.
 
-***********************************************
-Upgrading from version 0.7.4 or 0.8.0b1, 2 or 3
-***********************************************
+****************************************************
+Upgrading from version 0.7.4 or previous 0.8.0 betas
+****************************************************
 
 Upgrade
 =======
@@ -58,18 +74,29 @@ Upgrade
 
 * Stop any Celery workers
 
+* Consider temporarily disabling your DICOM StoreSCP if it is Conquest, or redirecting the data in Conquest to be
+  processed later
+
 * If you are using a virtualenv, activate it
 
 * Install the new version of OpenREM:
 
 .. sourcecode:: bash
 
-    pip install openrem==0.8.0b4
+    pip install openrem==0.8.0b6
 
 ..  _upgradefrom074:
 
 Update the configuration
 ========================
+
+Locate and edit your local_settings file
+
+* Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/openremproject/local_settings.py``
+* Other linux: ``/usr/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
+* Linux virtualenv: ``lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
+* Windows: ``C:\Python27\Lib\site-packages\openrem\openremproject\local_settings.py``
+* Windows virtualenv: ``Lib\site-packages\openrem\openremproject\local_settings.py``
 
 Date format
 ^^^^^^^^^^^
@@ -154,6 +181,7 @@ In a shell/command window, move into the openrem folder:
 .. sourcecode:: bash
 
     python manage.py makemigrations remapp
+    # if changes are detected (not expected between most beta versions)
     python manage.py migrate remapp
 
 
@@ -162,7 +190,7 @@ Update static files
 
 In the same shell/command window as you used above run the following command to clear the static files
 belonging to your previous OpenREM version and replace them with those belonging to the version you have
-just installed:
+just installed (assuming you are using a production web server...):
 
 .. sourcecode:: bash
 

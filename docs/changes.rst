@@ -2,8 +2,13 @@
 OpenREM version history
 =======================
 
-0.8.0b5 (2018-05-xx)
+0.8.0b6 (2018-05-16)
 --------------------
+* `#633`_  Charts: fixed issue where charts failed if bar chart series name was null
+* `#632`_  DICOM: move requests for queries that don't exist now fail gracefully
+* `#631`_  Skin dose maps: bug fixed that prevented message from displaying on screen when skin dose map cannot be calculated
+* `#628`_  Imports: fixed code for importing when there are duplicate DX or MG studies in the database
+* `#626`_  DICOM: isolated the generate modalities in study function and added testing
 * `#625`_  Imports: now using event level UIDs to process continued, cumulative and duplicate RDSRs
 * `#624`_  Charts: removed filter link on number of events histogram as it was not functioning correctly
 * `#623`_  Imports: changed name of Toshiba image based extractor routine
@@ -33,6 +38,7 @@ OpenREM version history
 * `#585`_  Documentation: added information about multiple cumulative RDSRs
 * `#584`_  Import, Interface, Export: RDSR with pulse level data now function
 * `#583`_  Documentation: added information about dual mode modalities and deleting all from an X-ray unit
+* `#582`_  Celery: updated results backend as amqp deprecated and slow
 * `#581`_  Import scripts: interpreter line now always first, functions imported specifically
 * `#580`_  Imports and Interface: one modality creating both DX and RF can now be handled appropriately
 * `#579`_  Imports: dummy values for Toshiba CT import function now in settings.py, log file config in docs
@@ -49,11 +55,12 @@ OpenREM version history
 * `#561`_  Imports: patient orientation modifier now correctly extracted from RDSR
 * `#560`_  Exports: added study level comments
 * `#559`_  Interface: date pickers inconsistent start day fixed
-* `#558`_  Skin dose maps: set defaults instead of crashing if kV, dose, table or tube/detector postition are missing
+* `#558`_  Skin dose maps: set defaults instead of crashing if kV, dose, table or tube/detector position are missing
 * `#557`_  Skin dose maps: improved construction of patient orientation code
 * `#556`_  Exports: DX exports where TotalNumberOfRadiographicFrames is not populated now export
 * `#552`_  Documentation: documented extractor for older Toshiba CT scanners
 * `#551`_  Documentation: added procedure for opening csv files in Excel with non-ASCII characters
+* `#550`_  Documentation: added a note to describe exposure time and duration for fluoroscopy studies
 * `#549`_  Documentation: added procedure for fixing laterality on Hologic studies, ref `#411`_
 * `#544`_  Interface: added procedure, requested procedure to summary listings and details and filtering
 * `#543`_  Interface: added drop-down box to choose how many studies are displayed on filtered pages
