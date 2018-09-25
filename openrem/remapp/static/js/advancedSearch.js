@@ -16,7 +16,7 @@ function addSearchBuilderLine(pos, first) {
         visibility = "visible";
 
     $("#search_builder").append("<div id='line_" + strPos + "' class='builder_line'>" +
-      "    <label for='concatoperator_" + strPos + "' class='labels' style='visibility: " + visibility + ";'>Select operator</label>" +
+      "    <label for='concatoperator_" + strPos + "' class='search_label' style='visibility: " + visibility + ";'>Select operator</label>" +
       "    <select id='concatoperator_" + strPos + "' class='concatoperator' style='visibility: " + visibility + ";'>" +
       "        <option value='AND'>AND</option>" +
       "        <option value='OR'>OR</option>" +
@@ -24,14 +24,14 @@ function addSearchBuilderLine(pos, first) {
       "        <option value='OR_NOT'>OR NOT</option>" +
       "    </select>" +
       "    <input id='prebracket_" + strPos + "' class='prebrackets' size=1/>" +
-      "    <label for='parameter_" + strPos + "' class='labels'>Select parameter</label>" +
+      "    <label for='parameter_" + strPos + "' class='search_label'>Select parameter</label>" +
       "    <select id='parameter_" + strPos + "' class='parameter'>" +
       "    </select>" +
-      "    <label for='operator_" + strPos + "' class='labels'>Select operator</label>" +
+      "    <label for='operator_" + strPos + "' class='search_label'>Select operator</label>" +
       "    <select id='operator_" + strPos + "' class='operator'>" +
       "    </select>" +
-      "    <div id='search_term_" + strPos + "' class='inline_div'>" +
-      "        <label for='term_" + strPos + "' class='labels'>parameter value</label>" +
+      "    <div id='search_term_" + strPos + "' class='search_inline_div'>" +
+      "        <label for='term_" + strPos + "' class='search_label'>parameter value</label>" +
       "        <input id='term_" + strPos + "' class='searchinput' size=40/>" +
       "    </div>" +
       "    <input id='postbracket_" + strPos + "' class='postbrackets' size=1/>" +

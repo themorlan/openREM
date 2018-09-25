@@ -95,3 +95,13 @@ body {
 .status-red {
   color: #d43f3a;
 }
+
+div.search_inline_div { display:inline; }
+.search_label { display:none; }
+div.built_search_string {
+    background-color:#E6E6E6;
+    border-width:thin;
+    border-style:solid;
+    border-color:#7092BE;
+}
+

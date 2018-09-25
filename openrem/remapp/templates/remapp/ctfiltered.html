@@ -9,7 +9,6 @@
     <p>
         There are {{ filter.count }} studies in this list.
     </p>
-
 {% endblock %}
 
 {% block col2 %}
@@ -108,6 +107,30 @@
 {% endblock %}
 
 {% block col1 %}
+                <form action="" method="get" class="form-horizontal" role="form">
+                    {% csrf_token %}
+                    <div class="panel panel-info" style="display:block">
+                        <div class="panel-heading" role="tab" id="headingSearch">
+                            <h4 class="panel-title">
+                                <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                      href="#collapseSearch" aria-expanded="false" aria-controls="collapseSearch">
+                                    Advanced Search
+                                </span>
+                            </h4>
+                        </div>
+                        <div id="collapseSearch" class="panel-collapse collapse in" role="tabpanel"
+                             aria-labelledby="headingSearch">
+                            <div class="advanced_search">
+                               <div id="div_search_string" class="built_search_string">
+                                 {{ advancedSearchForm.as_p }}
+                               </div>
+                               <div id="search_builder" class="search_builder_class">
+                               </div>
+                               <input class="btn btn-default" name="submit" type="submit" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
 
     {% autopaginate filter.qs request.user.userprofile.itemsPerPage as filter_list %}
     {% paginate %}
@@ -1125,6 +1148,23 @@
                 result = chartAverageOverTime('studyMeanDLPOverTimeDIV', 'DLP', 'mGy.cm', 'Median');
             {% endif %}
             </script>
+
+            <!-- scriptiong for advanced search -->
+            <script src="{{ STATIC_URL }}js/advancedSearch.js"></script>
+            <script>
+                var staticurl = "{{ STATIC_URL|safe }}";
+                var filterOptionsJSON = {{ json_filter_options|safe }};
+                var searchString = "{{ advancedSearchString|safe }}";
+                $(document).ready(function() {
+                    initializeJSON(filterOptionsJSON, staticurl);
+                    if (!!(searchString.trim()))
+                        createBuilderFromSearchString(searchString);
+                    else
+                        addSearchBuilderLine(-1, true);
+
+                })
+            </script>
+
         {% endif %}
 
     {% endif %}

@@ -902,9 +902,13 @@ def ct_summary_list_filter(request):
     from remapp.interface.mod_filters import ct_acq_filter
     from remapp.forms import CTChartOptionsForm, itemsPerPageForm
     from openremproject import settings
+    advanced_search_available = False
 
     pid = bool(request.user.groups.filter(name='pidgroup'))
     f = ct_acq_filter(request.GET, pid=pid)
+    if advanced_search_available:
+        advanced_search_structure = get_advanced_search_form(request)
+        f.qs = advanced_search_structure['exams']
 
     try:
         # See if the user has plot settings in userprofile
@@ -993,7 +997,12 @@ def ct_summary_list_filter(request):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    return_structure = {'filter': f, 'admin': admin, 'chartOptionsForm': chart_options_form, 'itemsPerPageForm': items_per_page_form}
+    return_structure = {'filter': f, 'admin': admin, 'chartOptionsForm': chart_options_form,
+                        'itemsPerPageForm': items_per_page_form}
+    if advanced_search_available:
+        return_structure['json_filter_options'] = advanced_search_structure['json_filter_options']
+        return_structure['advancedSearchForm'] = advanced_search_structure['advancedSearchForm']
+        return_structure['advancedSearchString'] = advanced_search_structure['advancedSearchString']
 
     return render_to_response(
         'remapp/ctfiltered.html',
@@ -1306,12 +1315,8 @@ def add_model2json_search(model, json_search, field_prefix=''):
     return json_search
 
 
-@login_required
-def advanced_search(request):
+def get_advanced_search_form(request):
     """
-    View with advanced search option
-    :param request: URL-request
-    :return:
     """
     import json
     from forms import AdvancedSearchForm
@@ -1348,24 +1353,16 @@ def advanced_search(request):
 
     if advanced_search_form.is_valid():
         # Use the form data if the user clicked on the submit button
-        exam_query_result = ""
-        if "submit" in request.GET:
+        if ("submit" in request.GET) and (len(advanced_search_string) > 0):
             exam_query_result = get_advanced_search_objects(GeneralStudyModuleAttr, advanced_search_string,
                                                             json.loads(json_search))
+        else:
+            exam_query_result = GeneralStudyModuleAttr.objects.filter(modality_type__exact='CT')
 
-    admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
-
-    for group in request.user.groups.all():
-        admin[group.name] = True
-
-    return_structure = {'examset': exam_query_result,
-                        'admin': admin,
-                        'json_filter_options': json_search,
-                        'advancedSearchForm': advanced_search_form,
-                        'advancedSearchString': advanced_search_string}
-
-
-    return render(request, 'remapp/advancedsearch.html', return_structure)
+    return {'exams': exam_query_result,
+            'json_filter_options': json_search,
+            'advancedSearchForm': advanced_search_form,
+            'advancedSearchString': advanced_search_string}
 
 @login_required
 def ct_detail_view(request, pk=None):

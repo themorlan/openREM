@@ -148,6 +148,72 @@ class CTChartOptionsForm(forms.Form):
     plotHistograms = forms.BooleanField(label='Calculate histogram data', required=False)
 
 
+class CTChartsForm(forms.Form):
+    graph_type_options = [
+        ('boxwhisperplot', 'Box and whisper plot'),
+        ('histogramplot', 'Histogram'),
+        ('scatterplot', 'Scatter plot'),
+    ]
+
+    x_axis_parameter_options = [
+        ('generalequipmentmoduleattr__unique_equipment_name__display_name', 'Display name'),
+        ('ctradiationdose__ctirradiationeventdata__target_region__code_meaning', 'Body region'),
+        ('ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning', 'Acquisition type'),
+        ('ctradiationdose__ctirradiationeventdata__procedure_context__code_meaning', 'Procedure context'),
+        ('patientstudymoduleattr__patient_weight', 'Patient weight [kg]'),
+        ('ctradiationdose__ctirradiationeventdata__mean_ctdivol', 'Event mean CTDIvol'),
+    ]
+
+    y_axis_parameter_options = [
+        ('ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total', 'Total DLP [mGycm]'),
+        ('ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events', 'Number of events'),
+        ('ctradiationdose__ctaccumulateddosedata__ct_effective_dose_total', 'Total effective dose [..]'),
+        ('ctradiationdose__ctirradiationeventdata__exposure_time', 'Event Exposure time [mS]'),
+        ('ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__kvp', 'Event tube voltage [kV]'),
+        ('ctradiationdose__ctirradiationeventdata__mean_ctdivol', 'Event mean CTDIvol'),
+    ]
+
+    grouping_parameter_options = [
+        ('generalequipmentmoduleattr__unique_equipment_name__display_name', 'Display name'),
+        ('ctradiationdose__ctirradiationeventdata__target_region__code_meaning', 'Body region'),
+        ('ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning', 'Acquisition type'),
+    ]
+
+    graph_type = forms.ChoiceField(graph_type_options)
+    x_axis_parameter = forms.ChoiceField(x_axis_parameter_options)
+    y_axis_parameter = forms.ChoiceField(y_axis_parameter_options)
+    grouping_parameter = forms.ChoiceField(grouping_parameter_options)
+    study_description_filter_parameter = forms.CharField(label = 'Study description')
+
+
+class DXChartsForm(forms.Form):
+    graph_type_options = [
+        ('boxwhisperplot', 'Box and whisper plot'),
+        ('histogramplot', 'Histogram'),
+        ('scatterplot', 'Scatter plot'),
+    ]
+
+    x_axis_parameter_options = [
+        ('generalequipmentmoduleattr__unique_equipment_name__display_name', 'Display name'),
+        ('patientstudymoduleattr__patient_weight', 'Patient weight [kg]'),
+    ]
+
+    y_axis_parameter_options = [
+        ('projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total', 'Total DAP [cGy.cm2]'),
+        ('projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__total_number_of_radiographic_frames', 'Total number of Acquisitions')
+    ]
+
+    grouping_parameter_options = [
+        ('generalequipmentmoduleattr__unique_equipment_name__display_name', 'Display name'),
+    ]
+
+    graph_type = forms.ChoiceField(graph_type_options)
+    x_axis_parameter = forms.ChoiceField(x_axis_parameter_options)
+    y_axis_parameter = forms.ChoiceField(y_axis_parameter_options)
+    grouping_parameter = forms.ChoiceField(grouping_parameter_options)
+    study_description_filter_parameter = forms.CharField(label = 'Study description')
+
+
 class RFChartOptionsForm(forms.Form):
     """Form for RF chart options
     """
@@ -169,6 +235,52 @@ class RFChartOptionsDisplayForm(forms.Form):
     plotRFStudyDAP = forms.BooleanField(label='DAP per study', required=False)
     plotRFInitialSortingChoice = forms.ChoiceField(label='Default chart sorting', choices=SORTING_CHOICES_DX,
                                                    required=False)
+
+
+class RFChartsForm(forms.Form):
+    graph_type_options = [
+        ('boxwhisperplot', 'Box and whisper plot'),
+        ('histogramplot', 'Histogram'),
+        ('scatterplot', 'Scatter plot'),
+    ]
+
+    x_axis_parameter_options = [
+        ('generalequipmentmoduleattr__unique_equipment_name__display_name', 'Display name'),
+        ('projectionxrayradiationdose__general_study_module_attributes__performing_physician_name', 'Performing Physician'),
+        ('projectionxrayradiationdose__irradeventxraydata__target_region__code_meaning', 'Body region'),
+        ('patientstudymoduleattr__patient_weight', 'Patient weight [kg]'),
+        ('projectionxrayradiationdose__irradeventxraydata__dose_area_product', 'Event DAP [cGycm2]'),
+        ('projectionxrayradiationdose__irradeventxraydata__irradiation_event_type__code_meaning', 'Event type'),
+        ('projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__positioner_primary_angle',
+         'Primary (Start) Angle'),
+    ]
+
+    y_axis_parameter_options = [
+        ('projectionxrayradiationdose__accumxraydose__accumprojxraydose__acquisition_dose_area_product_total',
+         'Total Acq. DAP [cGycm2]'),
+        ('projectionxrayradiationdose__accumxraydose__accumprojxraydose__fluoro_dose_area_product_total',
+         'Total Fluoro DAP [cGycm2]'),
+        ('projectionxrayradiationdose__accumxraydose__accumprojxraydose__dose_area_product_total', 'Total DAP [cGycm2]'),
+        ('projectionxrayradiationdose__accumxraydose__accumprojxraydose__total_fluoro_time', 'Total Fluoro Time [s]'),
+        ('projectionxrayradiationdose__accumxraydose__accumprojxraydose__total_fluoro_time', 'Total Fluoro Time [s]'),
+        ('projectionxrayradiationdose__accumxraydose__accumprojxraydose__total_number_of_radiographic_frames', 'Total number of frames'),
+        ('projectionxrayradiationdose__accumxraydose__accumprojxraydose__dose_rp_total', 'Ref. Point Dose [Gy]'),
+        ('projectionxrayradiationdose__irradeventxraydata__dose_area_product', 'Event DAP [cGycm2]'),
+        ('projectionxrayradiationdose__irradeventxraydata__entrance_exposure_at_rp', 'Event Ref. Point Dose [Gy]'),
+    ]
+
+    grouping_parameter_options = [
+        ('generalequipmentmoduleattr__unique_equipment_name__display_name', 'Display name'),
+        ('projectionxrayradiationdose__irradeventxraydata__target_region__code_meaning', 'Body region'),
+        ('projectionxrayradiationdose__general_study_module_attributes__performing_physician_name', 'Performing Physician'),
+        ('projectionxrayradiationdose__irradeventxraydata__irradiation_event_type__code_meaning', 'Event type'),
+    ]
+
+    graph_type = forms.ChoiceField(graph_type_options)
+    x_axis_parameter = forms.ChoiceField(x_axis_parameter_options)
+    y_axis_parameter = forms.ChoiceField(y_axis_parameter_options)
+    grouping_parameter = forms.ChoiceField(grouping_parameter_options)
+    study_description_filter_parameter = forms.CharField(label='Study description')
 
 
 class MGChartOptionsForm(forms.Form):
