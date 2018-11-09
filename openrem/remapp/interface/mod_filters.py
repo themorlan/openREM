@@ -14,7 +14,7 @@
 #    Additional permission under section 7 of GPLv3:
 #    You shall not make any use of the name of The Royal Marsden NHS
 #    Foundation trust in connection with this Program in any press or
-#    other public announcement without the prior written consent of 
+#    other public announcement without the prior written consent of
 #    The Royal Marsden NHS Foundation Trust.
 #
 #    You should have received a copy of the GNU General Public License
@@ -28,7 +28,7 @@
 
 """
 
-# Following three lines added so that sphinx autodocumentation works. 
+# Following three lines added so that sphinx autodocumentation works.
 import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 from django.db import models
@@ -231,7 +231,7 @@ def ct_acq_filter(filters, pid=False):
         if ('studyhist' in filters) and ('study_description' in filters):
             events = CtIrradiationEventData.objects.select_related().filter(ct_radiation_dose_id__general_study_module_attributes__study_description=filters['study_description'])
         else:
-            events = CtIrradiationEventData.objects.filter(acquisition_protocol__exact = filters['acquisition_protocol'])
+            events = CtIrradiationEventData.objects.filter(acquisition_protocol__iexact = filters['acquisition_protocol'])
         if 'acquisition_ctdi_min' in filters:
             try:
                 Decimal(filters['acquisition_ctdi_min'])
@@ -361,8 +361,8 @@ class DXSummaryListFilter(django_filters.FilterSet):
     class Meta:
         model = GeneralStudyModuleAttr
         fields = [
-            'date_after', 
-            'date_before', 
+            'date_after',
+            'date_before',
             'institution_name',
             'study_description',
             'procedure_code_meaning',
@@ -370,7 +370,7 @@ class DXSummaryListFilter(django_filters.FilterSet):
             'acquisition_protocol',
             'patient_age_min',
             'patient_age_max',
-            'manufacturer', 
+            'manufacturer',
             'model_name',
             'station_name',
             'display_name',
@@ -414,7 +414,7 @@ def dx_acq_filter(filters, pid=False):
         'acquisition_kvp_min' in filters or 'acquisition_kvp_max' in filters or
         'acquisition_mas_min' in filters or 'acquisition_mas_max' in filters
     ):
-        events = IrradEventXRayData.objects.filter(acquisition_protocol__exact = filters['acquisition_protocol'])
+        events = IrradEventXRayData.objects.filter(acquisition_protocol__iexact = filters['acquisition_protocol'])
         if 'acquisition_dap_min' in filters:
             try:
                 Decimal(filters['acquisition_dap_min'])

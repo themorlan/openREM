@@ -101,8 +101,8 @@ STATICFILES_DIRS = (
 #
 SECRET_KEY = 'youmustchangethiskeyinlocal_settings'
 
-# URL of the login page
-LOGIN_URL = '/login/'
+# URL name of the login page (as defined in urls.py)
+LOGIN_URL = 'login'
 
 TEMPLATES = [
     {
@@ -164,6 +164,7 @@ INSTALLED_APPS = (
     'solo',
     'crispy_forms',
     'debug_toolbar',
+    'django_js_reverse'
 )
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
@@ -249,7 +250,8 @@ LOGGING = {
     }
 }
 
-# Dummy locations of various tools for DICOM RDSR creation from CT images
+# Dummy locations of various tools for DICOM RDSR creation from CT images. Don't set value here - copy variables into
+# # local_settings.py and configure there.
 DCMTK_PATH = ''
 DCMCONV = os.path.join(DCMTK_PATH, 'dcmconv.exe')
 DCMMKDIR = os.path.join(DCMTK_PATH, 'dcmmkdir.exe')
@@ -258,6 +260,9 @@ JAVA_OPTIONS = '-Xms256m -Xmx512m -Xss1m -cp'
 PIXELMED_JAR = ''
 PIXELMED_JAR_OPTIONS = '-Djava.awt.headless=true com.pixelmed.doseocr.OCR -'
 
+# Dummy variable for running the website in a virtual_directory. Don't set value here - copy variable into
+# local_settings.py and configure there.
+VIRTUAL_DIRECTORY = ''
 
 try:
     LOCAL_SETTINGS

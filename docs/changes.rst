@@ -2,12 +2,47 @@
 OpenREM version history
 =======================
 
-0.8.1 (2018-07-xx)
+0.8.2 (2018-xx-xx)
 ------------------
+* `#685`_  Charts: fixed link code that would otherwise cause DLP per acqusition protocol chart histogram links to fail
+* `#683`_  Installation: added VIRTUAL_DIRECTORY to the settings file to avoid updating local_settings file on upgrade
+* `#682`_  Charts: fixed problem where links from histogram bars didn't filter correctly when case-insensitive categories selected
+* `#677`_  Interface: added additional filter materials to convert to abbreviations
+* `#675`_  Exports: improved resilience when export includes malformed studies
+* `#674`_  Documentation: amended zip command in example Orthanc configuration to work with Linux and Windows
+* `#673`_  Imports: handle empty NumericValues and workaround for incorrect Philips Azurion AcquisitionDeviceType
+* `#672`_  Documentation: improve and extend linux one-page install
+* `#670`_  Imports: handle illegal multi-value number in Toshiba RDSR with vHP
+* `#668`_  Code quality: library import and blank space cleanup
+* `#667`_  Web server: enable OpenREM to be hosted from a non-root folder/virtual-directory
+* `#666`_  Query-retrieve: handle non-return of ModalitiesInStudy correctly
+* `#658`_  Interface: added display of workload stats in home page modality tables
+* `#479`_  Administration: added facility to list and delete failed import studies
+
+0.8.1 (2018-09-16)
+------------------
+* `#663`_  Interface: updated column headings on home page
+* `#660`_  Documentation: corrected and improved Linux one-page install
+* `#659`_  Interface: made the summary tables on the home page sortable by clicking on headers
+* `#656`_  Install: pegged django-debug-toolbar to 1.9.1 until Django is upgraded
+* `#654`_  Documentation: supplemented the Orthanc Lua file config option docs
+* `#653`_  Docs: clarified notes to get link to Orthanc lua file correct on release
+* `#652`_  Documentation: added docs showing Celery daemonisation in Linux
+* `#651`_  Documentation: added one-page full setup Ubuntu 18.04 install instructions
+* `#650`_  Documentation: modified quick install virtualenv docs
+* `#649`_  Documentation: instructions for updating hosts file for Ubuntu and RabbitMQ
+* `#648`_  Documentation: clarified Toshiba options when not required
+* `#647`_  Documentation: updated link to pixelmed
+* `#646`_  Modified Celery import to avoid name clash in some circumstances
+* `#645`_  Imports: prevent import failure when text is used in filter thickness field in DX image
+* `#644`_  Exports: fixed error in exporting non-ASCII CT protocol acquisition names
+* `#643`_  Installation: updated docs to make use of pip binaries for Postgres connector and numpy, Windows and Linux
+* `#642`_  Skin dose maps: added catch for error when there are no events in the study
 * `#641`_  Exports: mammography exports from filtered pages sorted by AGD no longer result in duplicate studies
 * `#640`_  Exports: error in filter listing for NHSBSP csv exports corrected
 * `#639`_  Charts: fixed problem where a blank category name may not be displayed correctly
 * `#638`_  Skin dose maps: added a link to download data for stand-alone openSkin even when map displayed
+* `#627`_  DICOM Networking: Implemented workaround for query "bug" in Impax 6.6
 * `#606`_  Interface: Made it possible for the user to change his/her password
 
 0.8.0 (2018-06-11)
@@ -514,8 +549,8 @@ Reopened issue
 
 ..  note::
 
-    * `#64`_ includes **changes to the database schema and needs a user response** - see `version 0.4.0 release notes <http://docs.openrem.org/page/release-0.4.0.html>`_
-    * `#65`_ includes changes to the settings file which **require settings information to be copied** and files moved/renamed - see `version 0.4.0 release notes <http://docs.openrem.org/page/release-0.4.0.html>`_
+    * `#64`_ includes **changes to the database schema and needs a user response** - see `version 0.4.0 release notes <https://docs.openrem.org/page/release-0.4.0.html>`_
+    * `#65`_ includes changes to the settings file which **require settings information to be copied** and files moved/renamed - see `version 0.4.0 release notes <https://docs.openrem.org/page/release-0.4.0.html>`_
 
 
 * `#80`_   Added docs for installing Apache with auto-start on Windows Server 2012. Contributed by JA Cole
@@ -542,7 +577,7 @@ Reopened issue
 
 0.3.9 (2014-03-08)
 ------------------
-..  note:: `#51`_ includes changes to the database schema -- make sure South is in use before upgrading. See http://docs.openrem.org/page/upgrade.html
+..  note:: `#51`_ includes changes to the database schema -- make sure South is in use before upgrading. See https://docs.openrem.org/page/upgrade.html
 
 * `#59`_   CSS stylesheet referenced particular fonts that are not in the distribution -- references removed
 * `#58`_   Export to xlsx more robust - limitation of 31 characters for sheet names now enforced

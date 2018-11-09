@@ -39,6 +39,7 @@ def _generate_modalities_in_study(study_rsp):
     logger.debug(u"modalities_returned = False, so building from series info")
     series_rsp = study_rsp.dicomqrrspseries_set.all()
     study_rsp.set_modalities_in_study(list(set(val for dic in series_rsp.values('modality') for val in dic.values())))
+    study_rsp.save()
 
 
 def _remove_duplicates(query, study_rsp, assoc, query_id):
@@ -413,9 +414,18 @@ def _query_images(assoc, seriesrsp, query_id, initial_image_only=False, msg_id=N
         imagesrsp.query_id = query_id
         # Mandatory tags
         imagesrsp.sop_instance_uid = images[1].SOPInstanceUID
-        imagesrsp.sop_class_uid = images[1].SOPClassUID
-        imagesrsp.instance_number = images[1].InstanceNumber
-        if not imagesrsp.instance_number:  # just in case!!
+        try:
+            imagesrsp.sop_class_uid = images[1].SOPClassUID
+        except AttributeError:
+            logger.warning(u"Query_id {0}: StudyInstUID {1} Image Response {2}: no SOPClassUID. If "
+                           u"CT, might need to use Toshiba Advanced option (additional config required)".format(
+                            query_id, d3.StudyInstanceUID, imRspNo))
+            imagesrsp.sop_class_uid = u""
+        try:
+            imagesrsp.instance_number = images[1].InstanceNumber
+        except AttributeError:
+            logger.warning(u"Query_id {0}: Image Response {1}: illegal response, no InstanceNumber".format(
+                query_id, imRspNo))
             imagesrsp.instance_number = None  # integer so can't be ''
         imagesrsp.save()
 
@@ -452,9 +462,14 @@ def _query_series(assoc, d2, studyrsp, query_id):
         seriesrsp.query_id = series_query_id
         # Mandatory tags
         seriesrsp.series_instance_uid = series[1].SeriesInstanceUID
-        seriesrsp.modality = series[1].Modality
-        seriesrsp.series_number = series[1].SeriesNumber
-        if not seriesrsp.series_number:  # despite it being mandatory!
+        try:
+            seriesrsp.modality = series[1].Modality
+        except AttributeError:
+            seriesrsp.modality = u"OT"  # not sure why a series is returned without, assume we don't want it.
+            logger.warning(u"Series Response {0}: Illegal response with no modality at series level".format(query_id))
+        try:
+            seriesrsp.series_number = series[1].SeriesNumber
+        except AttributeError:
             seriesrsp.series_number = None  # integer so can't be ''
         # Optional useful tags
         seriesrsp.series_description = get_value_kw(u'SeriesDescription', series[1])
@@ -524,11 +539,15 @@ def _query_study(assoc, d, query, query_id):
         logger.debug(u"Study Description: {0}; Station Name: {1}".format(rsp.study_description, rsp.station_name))
 
         # Populate modalities_in_study, stored as JSON
-        if isinstance(ss[1].ModalitiesInStudy, str):   # if single modality, then type = string ('XA')
-            rsp.set_modalities_in_study(ss[1].ModalitiesInStudy.split(u','))
-        else:   # if multiple modalities, type = MultiValue (['XA', 'RF'])
-            rsp.set_modalities_in_study(ss[1].ModalitiesInStudy)
-        logger.debug(u"ModalitiesInStudy: {0}".format(rsp.get_modalities_in_study()))
+        try:
+            if isinstance(ss[1].ModalitiesInStudy, str):   # if single modality, then type = string ('XA')
+                rsp.set_modalities_in_study(ss[1].ModalitiesInStudy.split(u','))
+            else:   # if multiple modalities, type = MultiValue (['XA', 'RF'])
+                rsp.set_modalities_in_study(ss[1].ModalitiesInStudy)
+            logger.debug(u"ModalitiesInStudy: {0}".format(rsp.get_modalities_in_study()))
+        except AttributeError:
+            rsp.set_modalities_in_study([u''])
+            logger.debug(u"ModalitiesInStudy was not in response")
 
         rsp.modality = None  # Used later
         rsp.save()
@@ -584,18 +603,27 @@ def _query_for_each_modality(all_mods, query, d, assoc):
                     query.save()
                     logger.info(u'Currently querying for {0} studies...'.format(mod))
                     d.ModalitiesInStudy = mod
+                    if query.qr_scp_fk.use_modality_tag:
+                        logger.debug(u'Using modality tag in study query.')
+                        d.Modality = ''
                     query_id = uuid.uuid4()
                     _query_study(assoc, d, query, query_id)
                     study_rsp = query.dicomqrrspstudy_set.filter(query_id__exact=query_id)
                     logger.debug(u"Queried for {0}, now have {1} study level responses".format(mod, study_rsp.count()))
                     for rsp in study_rsp:  # First check if modalities in study has been populated
-                        if rsp.get_modalities_in_study():
+                        if rsp.get_modalities_in_study() and rsp.get_modalities_in_study()[0] != u'':
                             modalities_returned = True
                             # Then check for inappropriate responses
                             if mod not in rsp.get_modalities_in_study():
                                 modality_matching = False
                                 logger.debug(u"Remote node returns but doesn't match against ModalitiesInStudy")
                                 break  # This indicates that there was no modality match, so we have everything already
+                        else:  # modalities in study is empty
+                            modalities_returned = False
+                            # ModalitiesInStudy not supported, therefore assume not matched on key
+                            modality_matching = False
+                            logger.debug(u"Remote node doesn't support ModalitiesInStudy, assume we have everything")
+                            break
     logger.debug(u"modalities_returned: {0}; modality_matching: {1}".format(modalities_returned, modality_matching))
     return modalities_returned, modality_matching
 
@@ -802,8 +830,8 @@ def qrscu(
             logger.info(u"mod_set is {0}".format(mod_set))
             delete = True
             for mod_choice, details in all_mods.items():
-                logger.info(u"mod_choice {0}, details {1}".format(mod_choice, details))
                 if details['inc']:
+                    logger.info(u"mod_choice {0}, details {1}".format(mod_choice, details))
                     for mod in details['mods']:
                         logger.info(u"mod is {0}, mod_set is {1}".format(mod, mod_set))
                         if mod in mod_set:
@@ -838,6 +866,16 @@ def qrscu(
 
     logger.debug(u"Query {0} complete. Move is {1}. Query took {2}".format(
         query.query_id, move, time_took))
+
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug(u"Query result contains the following studies / series:")
+        studies = query.dicomqrrspstudy_set.all()
+        for study in studies:
+            for series in study.dicomqrrspseries_set.all():
+                logger.debug(
+                    u"    Study: {0} ({1}) modalities: {2}, Series: {3}, modality: {4} containing {5} objects.".format(
+                        study.study_description, study.study_instance_uid, study.get_modalities_in_study(),
+                        series.series_instance_uid, series.modality, series.number_of_series_related_instances))
 
     if move:
         movescu.delay(str(query.query_id))

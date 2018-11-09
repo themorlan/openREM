@@ -32,12 +32,12 @@
 
 {% block navhelp %}
         <li>
-            <a href="http://docs.openrem.org/en/{{ admin.docsversion }}/netdicom.html" target="_blank" data-toggle="tooltip" title="DICOM store & query-retrieve documentation - opens in a new tab">
+            <a href="https://docs.openrem.org/en/{{ admin.docsversion }}/netdicom.html" target="_blank" data-toggle="tooltip" title="DICOM store & query-retrieve documentation - opens in a new tab">
                 DICOM store and query-retrieve documentation
             </a>
         </li>
         <li>
-            <a href="http://docs.openrem.org/en/{{ admin.docsversion }}/install-prep.html#resources-for-creating-rdsr-for-older-toshiba-ct-scanners" target="_blank" data-toggle="tooltip" title="Generating RDSR from older Toshiba CT - opens in a new tab">
+            <a href="https://docs.openrem.org/en/{{ admin.docsversion }}/install-prep.html#resources-for-creating-rdsr-for-older-toshiba-ct-scanners" target="_blank" data-toggle="tooltip" title="Generating RDSR from older Toshiba CT - opens in a new tab">
                 Generating RDSR from older Toshiba scanners
             </a>
         </li>
@@ -93,7 +93,7 @@
   <div class="row">
     <hr>
     <div class="col-md-4 col-md-offset-4">
-      <a class="btn btn-default btn-block" href="/openrem/admin/dicomsummary" role="button">Start, stop and modify DICOM
+      <a class="btn btn-default btn-block" href="{% url dicom_summary %}" role="button">Start, stop and modify DICOM
         nodes</a>
     </div>
   </div>

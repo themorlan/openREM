@@ -94,7 +94,7 @@ def logout_page(request):
     Log users out and re-direct them to the main page.
     """
     logout(request)
-    return HttpResponseRedirect('/openrem/')
+    return HttpResponseRedirect(reverse_lazy('home'))
 
 
 @login_required
@@ -460,7 +460,7 @@ def dx_detail_view(request, pk=None):
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except:
         messages.error(request, 'That study was not found')
-        return redirect('/openrem/dx/')
+        return redirect(reverse_lazy('dx_summary_list_filter'))
 
     admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
 
@@ -693,12 +693,14 @@ def rf_detail_view(request, pk=None):
     from django.db.models import Sum
     import numpy as np
     import operator
+    from django.core.exceptions import ObjectDoesNotExist
+    from remapp.models import SkinDoseMapCalcSettings
 
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
         messages.error(request, 'That study was not found')
-        return redirect('/openrem/rf/')
+        return redirect(reverse_lazy('rf_summary_list_filter'))
 
     # get the totals
     irradiation_types = [(u'Fluoroscopy',), (u'Acquisition',)]
@@ -757,8 +759,6 @@ def rf_detail_view(request, pk=None):
 
     study_totals = np.column_stack((irradiation_types, stu_dose_totals, stu_time_totals)).tolist()
 
-    from remapp.models import SkinDoseMapCalcSettings
-    from django.core.exceptions import ObjectDoesNotExist
     try:
         SkinDoseMapCalcSettings.objects.get()
     except ObjectDoesNotExist:
@@ -797,7 +797,7 @@ def rf_detail_view_skin_map(request, pk=None):
         GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
         messages.error(request, 'That study was not found')
-        return redirect('/openrem/rf/')
+        return redirect(reverse_lazy('rf_summary_list_filter'))
 
     admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
 
@@ -1374,7 +1374,7 @@ def ct_detail_view(request, pk=None):
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
         messages.error(request, 'That study was not found')
-        return redirect('/openrem/ct/')
+        return redirect(reverse_lazy('ct_summary_list_filter'))
 
     events_all = study.ctradiationdose_set.get().ctirradiationeventdata_set.select_related(
         'ct_acquisition_type', 'ctdiw_phantom_type').all()
@@ -1586,7 +1586,7 @@ def mg_detail_view(request, pk=None):
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except:
         messages.error(request, 'That study was not found')
-        return redirect('/openrem/mg/')
+        return redirect(reverse_lazy('mg_summary_list_filter'))
 
     admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
 
@@ -1610,9 +1610,14 @@ def mg_detail_view(request, pk=None):
 
 
 def openrem_home(request):
-    from remapp.models import PatientIDSettings, DicomDeleteSettings, AdminTaskQuestions
+    from remapp.models import PatientIDSettings, DicomDeleteSettings, AdminTaskQuestions, HomePageAdminSettings
     from django.db.models import Q  # For the Q "OR" query used for DX and CR
     from collections import OrderedDict
+
+    try:
+        HomePageAdminSettings.objects.get()
+    except ObjectDoesNotExist:
+        HomePageAdminSettings.objects.create()
 
     test_dicom_store_settings = DicomDeleteSettings.objects.all()
     if not test_dicom_store_settings:
@@ -1684,6 +1689,17 @@ def openrem_home(request):
         'total': allstudies.count(),
     }
 
+    # Determine whether to calculate workload settings
+    display_workload_stats = HomePageAdminSettings.objects.values_list('enable_workload_stats', flat=True)[0]
+    home_config = {'display_workload_stats': display_workload_stats}
+    if display_workload_stats:
+        if request.user.is_authenticated():
+            home_config['day_delta_a'] = user_profile.summaryWorkloadDaysA
+            home_config['day_delta_b'] = user_profile.summaryWorkloadDaysB
+        else:
+            home_config['day_delta_a'] = 7
+            home_config['day_delta_b'] = 28
+
     admin = dict(openremversion=remapp.__version__, docsversion=remapp.__docs_version__)
 
     for group in request.user.groups.all():
@@ -1702,7 +1718,39 @@ def openrem_home(request):
     return render(request, "remapp/home.html",
                   {'homedata': homedata, 'admin': admin, 'users_in_groups': users_in_groups,
                    'admin_questions': admin_questions, 'admin_questions_true': admin_questions_true,
-                   'modalities': modalities})
+                   'modalities': modalities, 'home_config': home_config})
+
+
+class HomePageAdminSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
+    """UpdateView for configuring the home page settings
+
+    """
+    from remapp.models import HomePageAdminSettings
+    from remapp.forms import HomePageAdminSettingsForm
+    from django.core.exceptions import ObjectDoesNotExist
+
+    try:
+        HomePageAdminSettings.objects.get()
+    except ObjectDoesNotExist:
+        HomePageAdminSettings.objects.create()
+
+    model = HomePageAdminSettings
+    form_class = HomePageAdminSettingsForm
+
+    def get_context_data(self, **context):
+        context[self.context_object_name] = self.object
+        admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context['admin'] = admin
+        return context
+
+    def form_valid(self, form):
+        if form.has_changed():
+            messages.success(self.request, "Home page settings have been updated")
+        else:
+            messages.info(self.request, "No changes made")
+        return super(HomePageAdminSettingsUpdate, self).form_valid(form)
 
 
 @csrf_exempt
@@ -1734,8 +1782,80 @@ def update_latest_studies(request):
     :param request: Request object
     :return: HTML table of modalities
     """
-    from django.db.models import Q
+    from django.db.models import Q, Min
     from datetime import datetime
+    from collections import OrderedDict
+    from remapp.models import HomePageAdminSettings
+
+    if request.is_ajax():
+        data = request.POST
+        modality = data.get('modality')
+        if modality == 'DX':
+            studies = GeneralStudyModuleAttr.objects.filter(
+                Q(modality_type__exact='DX') | Q(modality_type__exact='CR')).all()
+        else:
+            studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact=modality).all()
+
+        display_names = studies.values_list(
+            'generalequipmentmoduleattr__unique_equipment_name__display_name').distinct().annotate(
+            pk_value=Min('generalequipmentmoduleattr__unique_equipment_name__pk'))
+
+        modalitydata = {}
+
+        if request.user.is_authenticated():
+            day_delta_a = request.user.userprofile.summaryWorkloadDaysA
+            day_delta_b = request.user.userprofile.summaryWorkloadDaysB
+        else:
+            day_delta_a = 7
+            day_delta_b = 28
+
+        for display_name, pk in display_names:
+            display_name_studies = studies.filter(generalequipmentmoduleattr__unique_equipment_name__display_name__exact=display_name)
+            latestdate = display_name_studies.latest('study_date').study_date
+            latestuid = display_name_studies.filter(study_date__exact=latestdate).latest('study_time')
+            latestdatetime = datetime.combine(latestuid.study_date, latestuid.study_time)
+
+            try:
+                displayname = display_name.encode('utf-8')
+            except AttributeError:
+                displayname = u"Unexpected display name non-ASCII issue"
+
+            modalitydata[display_name] = {
+                'total': display_name_studies.count(),
+                'latest': latestdatetime,
+                'displayname': displayname,
+                'displayname_pk': modality.lower() + str(pk)
+            }
+        ordereddata = OrderedDict(sorted(modalitydata.items(), key=lambda t: t[1]['latest'], reverse=True))
+
+        admin = {}
+        for group in request.user.groups.all():
+            admin[group.name] = True
+
+        template = 'remapp/home-list-modalities.html'
+        data = ordereddata
+
+        display_workload_stats = HomePageAdminSettings.objects.values_list('enable_workload_stats', flat=True)[0]
+        home_config = {
+            'display_workload_stats': display_workload_stats,
+            'day_delta_a': day_delta_a,
+            'day_delta_b': day_delta_b
+        }
+
+        return render(request, template, {'data': data, 'modality': modality.lower(), 'home_config': home_config,
+                                          'admin': admin})
+
+
+@csrf_exempt
+def update_study_workload(request):
+    """AJAX function to calculate the number of studies in two user-defined time periods for a particular modality.
+
+    :param request: Request object
+    :return: HTML table of modalities
+    """
+    from django.db.models import Q, Min
+    from datetime import datetime
+    from datetime import timedelta
     from collections import OrderedDict
 
     if request.is_ajax():
@@ -1746,35 +1866,42 @@ def update_latest_studies(request):
                 Q(modality_type__exact='DX') | Q(modality_type__exact='CR')).all()
         else:
             studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact=modality).all()
+
         display_names = studies.values_list(
-            'generalequipmentmoduleattr__unique_equipment_name__display_name').distinct()
+            'generalequipmentmoduleattr__unique_equipment_name__display_name').distinct().annotate(
+            pk_value=Min('generalequipmentmoduleattr__unique_equipment_name__pk'))
+
         modalitydata = {}
 
-        for display_name in display_names:
-            latestdate = studies.filter(
-                generalequipmentmoduleattr__unique_equipment_name__display_name__exact=display_name[0]
-            ).latest('study_date').study_date
-            latestuid = studies.filter(
-                generalequipmentmoduleattr__unique_equipment_name__display_name__exact=display_name[0]
-            ).filter(study_date__exact=latestdate).latest('study_time')
-            latestdatetime = datetime.combine(latestuid.study_date, latestuid.study_time)
+        if request.user.is_authenticated():
+            day_delta_a = request.user.userprofile.summaryWorkloadDaysA
+            day_delta_b = request.user.userprofile.summaryWorkloadDaysB
+        else:
+            day_delta_a = 7
+            day_delta_b = 28
+
+        today = datetime.now()
+        date_a = (datetime.now() - timedelta(days=day_delta_a))
+        date_b = (datetime.now() - timedelta(days=day_delta_b))
+
+        for display_name, pk in display_names:
+            display_name_studies = studies.filter(generalequipmentmoduleattr__unique_equipment_name__display_name__exact=display_name)
 
             try:
-                displayname = (display_name[0]).encode('utf-8')
+                displayname = display_name.encode('utf-8')
             except AttributeError:
-                displayname = "Error has occurred - import probably unsuccessful"
+                displayname = u"Unexpected display name non-ASCII issue"
 
-            modalitydata[display_name[0]] = {
-                'total': studies.filter(
-                    generalequipmentmoduleattr__unique_equipment_name__display_name__exact=display_name[0]
-                ).count(),
-                'latest': latestdatetime,
-                'displayname': displayname
+            modalitydata[display_name] = {
+                'studies_in_past_days_a': display_name_studies.filter(study_date__range=[date_a, today]).count(),
+                'studies_in_past_days_b': display_name_studies.filter(study_date__range=[date_b, today]).count(),
+                'displayname': displayname,
+                'displayname_pk': modality.lower() + str(pk)
             }
-        ordereddata = OrderedDict(sorted(modalitydata.items(), key=lambda t: t[1]['latest'], reverse=True))
+        data = OrderedDict(sorted(modalitydata.items(), key=lambda t: t[1]['displayname_pk'], reverse=True))
 
-        template = 'remapp/home-list-modalities.html'
-        data = ordereddata
+        template = 'remapp/home-modality-workload.html'
+
         return render(request, template, {'data': data, 'modality': modality.lower()})
 
 
@@ -1796,7 +1923,7 @@ def study_delete(request, pk, template_name='remapp/study_confirm_delete.html'):
     if 'HTTP_REFERER' in request.META.keys():
         return redirect(request.META['HTTP_REFERER'])
     else:
-        return redirect("/openrem/")
+        return redirect(reverse_lazy('home'))
 
 
 @login_required
@@ -1808,7 +1935,7 @@ def size_upload(request):
 
     if not request.user.groups.filter(name="importsizegroup"):
         messages.error(request, "You are not in the import size group - please contact your administrator")
-        return redirect('/openrem/')
+        return redirect(reverse_lazy('home'))
 
     # Handle file upload
     if request.method == 'POST' and request.user.groups.filter(name="importsizegroup"):
@@ -1818,7 +1945,8 @@ def size_upload(request):
             newcsv.save()
 
             # Redirect to the document list after POST
-            return HttpResponseRedirect("/openrem/admin/sizeprocess/{0}/".format(newcsv.id))
+            return HttpResponseRedirect(reverse_lazy('size_process', kwargs={'pk': newcsv.id}))
+
     else:
         form = SizeUploadForm()  # A empty, unbound form
 
@@ -1850,7 +1978,7 @@ def size_process(request, *args, **kwargs):
 
     if not request.user.groups.filter(name="importsizegroup"):
         messages.error(request, "You are not in the import size group - please contact your administrator")
-        return redirect('/openrem/')
+        return redirect(reverse_lazy('home'))
 
     if request.method == 'POST':
 
@@ -1862,7 +1990,7 @@ def size_process(request, *args, **kwargs):
 
             if not csvrecord.sizefile:
                 messages.error(request, "File to be processed doesn't exist. Do you wish to try again?")
-                return HttpResponseRedirect("/openrem/admin/sizeupload")
+                return HttpResponseRedirect(reverse_lazy('size_upload'))
 
             csvrecord.height_field = request.POST['height_field']
             csvrecord.weight_field = request.POST['weight_field']
@@ -1872,11 +2000,11 @@ def size_process(request, *args, **kwargs):
 
             websizeimport.delay(csv_pk=kwargs['pk'])
 
-            return HttpResponseRedirect("/openrem/admin/sizeimports")
+            return HttpResponseRedirect(reverse_lazy('size_imports'))
 
         else:
             messages.error(request, "Duplicate column header selection. Each field must have a different header.")
-            return HttpResponseRedirect("/openrem/admin/sizeprocess/{0}/".format(kwargs['pk']))
+            return HttpResponseRedirect(reverse_lazy('size_process', kwargs={'pk': kwargs['pk']}))
 
     else:
 
@@ -1897,18 +2025,18 @@ def size_process(request, *args, **kwargs):
                                    "Doesn't appear to have a header row. First row: {0}. The uploaded file has been deleted.".format(
                                        next(csvfile)))
                     csvrecord[0].sizefile.delete()
-                    return HttpResponseRedirect("/openrem/admin/sizeupload")
+                    return HttpResponseRedirect(reverse_lazy('size_upload'))
             except csv.Error as e:
                 messages.error(request,
                                "Doesn't appear to be a csv file. Error({0}). The uploaded file has been deleted.".format(
                                    e))
                 csvrecord[0].sizefile.delete()
-                return HttpResponseRedirect("/openrem/admin/sizeupload")
+                return HttpResponseRedirect(reverse_lazy('size_upload'))
             except:
                 messages.error(request,
                                "Unexpected error - please contact an administrator: {0}.".format(sys.exc_info()[0]))
                 csvrecord[0].sizefile.delete()
-                return HttpResponseRedirect("/openrem/admin/sizeupload")
+                return HttpResponseRedirect(reverse_lazy('size_upload'))
 
     admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
 
@@ -1929,7 +2057,7 @@ def size_imports(request, *args, **kwargs):
     """
     if not request.user.groups.filter(name="importsizegroup") and not request.user.groups.filter(name="admingroup"):
         messages.error(request, "You are not in the import size group - please contact your administrator")
-        return redirect('/openrem/')
+        return redirect(reverse_lazy('home'))
 
     imports = SizeUpload.objects.all().order_by('-import_date')
 
@@ -1975,7 +2103,7 @@ def size_delete(request):
                 messages.error(request,
                                "Unexpected error - please contact an administrator: {0}".format(sys.exc_info()[0]))
 
-    return HttpResponseRedirect(reverse(size_imports))
+    return HttpResponseRedirect(reverse('size_imports'))
 
 
 @login_required
@@ -1998,7 +2126,7 @@ def size_abort(request, pk):
     else:
         messages.error(request, "Only members of the importsizegroup or admingroup can abort a size import task")
 
-    return HttpResponseRedirect("/openrem/admin/sizeimports/")
+    return HttpResponseRedirect(reverse_lazy('size_imports'))
 
 
 @login_required
@@ -2024,11 +2152,11 @@ def size_download(request, task_id):
         exp = SizeUpload.objects.get(task_id__exact = task_id)
     except:
         messages.error(request, "Can't match the task ID, download aborted")
-        return redirect('/openrem/admin/sizeimports/')
+        return redirect(reverse_lazy('size_imports'))
 
     if not importperm:
         messages.error(request, "You don't have permission to download import logs")
-        return redirect('/openrem/admin/sizeimports')
+        return redirect(reverse_lazy('size_imports'))
 
     file_path = os.path.join(MEDIA_ROOT, exp.logfile.name)
     file_wrapper = FileWrapper(file(file_path,'rb'))
@@ -2095,7 +2223,7 @@ def display_names_view(request):
 
     return_structure = {'name_list': f, 'admin': admin,
                         'ct_names': ct_names, 'mg_names': mg_names, 'dx_names': dx_names, 'rf_names': rf_names,
-                        'ot_names': ot_names, 'modalities': ['CT', 'MG', 'DX', 'RF', 'OT']}
+                        'ot_names': ot_names, 'modalities': ['CT', 'RF', 'MG', 'DX', 'OT']}
 
     return render_to_response(
         'remapp/displaynameview.html',
@@ -2166,16 +2294,16 @@ def display_name_update(request):
 
         if error_message:
             messages.error(request, error_message)
-        return HttpResponseRedirect('/openrem/viewdisplaynames/')
+        return HttpResponseRedirect(reverse_lazy('display_names_view'))
 
     else:
         if request.GET.__len__() == 0:
-            return HttpResponseRedirect('/openrem/viewdisplaynames/')
+            return HttpResponseRedirect(reverse_lazy('display_names_view'))
 
         max_pk = UniqueEquipmentNames.objects.all().order_by('-pk').values_list('pk')[0][0]
         for current_pk in request.GET:
             if int(current_pk) > max_pk:
-                return HttpResponseRedirect('/openrem/viewdisplaynames/')
+                return HttpResponseRedirect(reverse_lazy('display_names_view'))
 
         f = UniqueEquipmentNames.objects.filter(pk__in=map(int, request.GET.values()))
 
@@ -2330,11 +2458,11 @@ def review_summary_list(request, equip_name_pk=None, modality=None, delete_equip
         messages.error(request,
                        "Partial and broken imports can only be reviewed with the correct "
                        "link from the display name page")
-        return HttpResponseRedirect('/openrem/viewdisplaynames/')
+        return HttpResponseRedirect(reverse_lazy('display_names_view'))
 
     if not request.user.groups.filter(name="admingroup"):
         messages.error(request, "You are not in the administrator group - please contact your administrator")
-        return redirect('/openrem/viewdisplaynames/')
+        return redirect(reverse_lazy('display_names_view'))
 
     if request.method == 'GET':
         equipment = UniqueEquipmentNames.objects.get(pk=equip_name_pk)
@@ -2364,22 +2492,25 @@ def review_summary_list(request, equip_name_pk=None, modality=None, delete_equip
             studies, count_all = display_name_modality_filter(equip_name_pk=equip_name_pk, modality=modality)
             studies.delete()
             messages.info(request, "Studies deleted")
-            return redirect('/admin/review/{0}/{1}'.format(equip_name_pk, modality))
+            return redirect(reverse_lazy('review_summary_list', kwargs={'equip_name_pk': equip_name_pk,
+                                                                        'modality': modality}))
         else:
             studies, count_all = display_name_modality_filter(equip_name_pk=equip_name_pk, modality=modality)
             if count_all > studies.count():
                 messages.warning(request,
                                  "Can't delete table entry - non-{0} studies are associated with it".format(modality))
                 logger.warning("Can't delete table entry - non-{0} studies are associated with it".format(modality))
-                return redirect('/admin/review/{0}/{1}'.format(equip_name_pk, modality))
+                return redirect(reverse_lazy('review_summary_list', kwargs={'equip_name_pk': equip_name_pk,
+                                                                            'modality': modality}))
             else:
                 studies.delete()
                 UniqueEquipmentNames.objects.get(pk=equip_name_pk).delete()
                 messages.info(request, "Studies and equipment name table entry deleted")
-                return redirect('/openrem/viewdisplaynames/')
+                return redirect(reverse_lazy('display_names_view'))
     else:
         messages.error(request, "Incorrect attempt to delete studies.")
-        return redirect('/admin/review/{0}/{1}'.format(equip_name_pk, modality))
+        return redirect(reverse_lazy('review_summary_list', kwargs={'equip_name_pk': equip_name_pk,
+                                                                    'modality': modality}))
 
 
 @login_required
@@ -2398,7 +2529,7 @@ def review_studies_delete(request):
 
 @login_required
 def review_studies_equip_delete(request):
-    """AJAX function to replace Delete button with delete form for euipment table entry and studies
+    """AJAX function to replace Delete button with delete form for equipment table entry and studies
 
     :param request:
     :return:
@@ -2408,6 +2539,20 @@ def review_studies_equip_delete(request):
         template = 'remapp/review_studies_delete_button.html'
         return render(request, template, {'delete_equip': True, 'modality': data['modality'],
                                           'equip_name_pk': data['equip_name_pk']})
+
+
+@login_required
+def review_failed_studies_delete(request):
+    """AJAX function to replace Delete button with delete form for studies without ubique_equipment_name table
+
+    :param request:
+    :return:
+    """
+    if request.is_ajax() and request.user.groups.filter(name="admingroup"):
+        data = request.POST
+        template = 'remapp/review_studies_delete_button.html'
+        return render(request, template, {'delete_equip': False, 'modality': data['modality'],
+                                          'equip_name_pk': 'n/a'})
 
 
 def reset_dual(pk=None):
@@ -2510,13 +2655,213 @@ def reprocess_dual(request, pk=None):
 
     if not request.user.groups.filter(name="admingroup"):
         messages.error(request, "You are not in the administrator group - please contact your administrator")
-        return redirect('/openrem/viewdisplaynames/')
+        return redirect(reverse_lazy('display_names_view'))
 
     if request.method == 'GET' and pk:
         status_message = reset_dual(pk=pk)
         messages.info(request, status_message)
 
-    return HttpResponseRedirect('/openrem/viewdisplaynames/')
+    return HttpResponseRedirect(reverse_lazy('display_names_view'))
+
+
+def _get_review_study_data(study):
+    """Get study data common to normal review and failed study review
+
+    :param study: GeneralStudyModuleAttr object
+    :return: Dict of study data
+        """
+    study_data = {
+        'study_date': study.study_date,
+        'study_time': study.study_time,
+        'accession_number': study.accession_number,
+        'study_description': study.study_description,
+    }
+    try:
+        patient = study.patientmoduleattr_set.get()
+        study_data['patientmoduleattr'] = u"Yes"
+        if patient.not_patient_indicator:
+            study_data['patientmoduleattr'] += u"<br>?not patient"
+    except ObjectDoesNotExist:
+        study_data['patientmoduleattr'] = u"Missing"
+    try:
+        patientstudymoduleattr = study.patientstudymoduleattr_set.get()
+        age = patientstudymoduleattr.patient_age_decimal
+        if age:
+            study_data['patientstudymoduleattr'] = u"Yes. Age {0:.1f}".format(
+                patientstudymoduleattr.patient_age_decimal)
+        else:
+            study_data['patientstudymoduleattr'] = u"Yes."
+    except ObjectDoesNotExist:
+        study_data['patientstudymoduleattr'] = u"Missing"
+    try:
+        ctradiationdose = study.ctradiationdose_set.get()
+        study_data['ctradiationdose'] = u"Yes"
+        try:
+            ctaccumulateddosedata = ctradiationdose.ctaccumulateddosedata_set.get()
+            num_events = ctaccumulateddosedata.total_number_of_irradiation_events
+            study_data['ctaccumulateddosedata'] = "Yes, {0} events".format(num_events)
+        except ObjectDoesNotExist:
+            study_data['ctaccumulateddosedata'] = u""
+        try:
+            ctirradiationeventdata_set = ctradiationdose.ctirradiationeventdata_set.order_by('pk')
+
+            study_data['cteventdata'] = u"{0} events.<br>".format(
+                ctirradiationeventdata_set.count())
+            for index, event in enumerate(ctirradiationeventdata_set):
+                if event.acquisition_protocol:
+                    protocol = event.acquisition_protocol
+                else:
+                    protocol = u""
+                if event.dlp:
+                    study_data['cteventdata'] += u"e{0}: {1} {2:.2f}&nbsp;mGycm<br>".format(
+                        index,
+                        protocol,
+                        event.dlp
+                    )
+                else:
+                    study_data['cteventdata'] += u"e{0}: {1}<br>".format(
+                        index,
+                        protocol
+                    )
+        except ObjectDoesNotExist:
+            study_data['cteventdata'] = u""
+    except ObjectDoesNotExist:
+        study_data['ctradiationdose'] = u""
+        study_data['ctaccumulateddosedata'] = u""
+        study_data['cteventdata'] = u""
+    try:
+        projectionxraydata = study.projectionxrayradiationdose_set.get()
+        study_data['projectionxraydata'] = u"Yes"
+        try:
+            accumxraydose_set = projectionxraydata.accumxraydose_set.order_by('pk')
+            accumxraydose_set_count = accumxraydose_set.count()
+            if accumxraydose_set_count == 1:
+                study_data['accumxraydose'] = u"Yes"
+            elif accumxraydose_set_count:
+                study_data['accumxraydose'] = u"{0} present".format(accumxraydose_set_count)
+            else:
+                study_data['accumxraydose'] = u""
+            try:
+                accumfluoroproj = {}
+                study_data['accumfluoroproj'] = u""
+                for index, accumxraydose in enumerate(accumxraydose_set):
+                    accumfluoroproj[index] = accumxraydose.accumprojxraydose_set.get()
+                    study_data['accumfluoroproj'] += u"P{0} ".format(index + 1)
+                    if accumfluoroproj[index].fluoro_dose_area_product_total:
+                        study_data['accumfluoroproj'] += u"Total fluoro DA: {0:.2f}&nbsp;cGy.cm<sup>2</sup>" \
+                                                         u"; ".format(accumfluoroproj[index].fluoro_gym2_to_cgycm2())
+                    if accumfluoroproj[index].acquisition_dose_area_product_total:
+                        study_data['accumfluoroproj'] += u"Acq: {0:.2f}&nbsp;cGy.cm<sup>2</sup>. ".format(
+                            accumfluoroproj[index].acq_gym2_to_cgycm2())
+            except ObjectDoesNotExist:
+                study_data['accumfluoroproj'] = u""
+            try:
+                accummammo_set = accumxraydose_set[0].accummammographyxraydose_set.order_by('pk')
+                if accummammo_set.count() == 0:
+                    study_data['accummammo'] = u""
+                else:
+                    study_data['accummammo'] = u""
+                    for accummammo in accummammo_set:
+                        study_data['accummammo'] += u"{0}: {1:.3f}&nbsp;mGy".format(
+                            accummammo.laterality, accummammo.accumulated_average_glandular_dose)
+            except ObjectDoesNotExist:
+                study_data['accummammo'] = u""
+            try:
+                accumcassproj = {}
+                study_data['accumcassproj'] = u""
+                for index, accumxraydose in enumerate(accumxraydose_set):
+                    accumcassproj[index] = accumxraydose.accumcassettebsdprojradiogdose_set.get()
+                    study_data['accumcassproj'] += u"Number of frames {0}".format(
+                        accumcassproj[index].total_number_of_radiographic_frames)
+            except ObjectDoesNotExist:
+                study_data['accumcassproj'] = u""
+            try:
+                accumproj = {}
+                study_data['accumproj'] = u""
+                for index, accumxraydose in enumerate(accumxraydose_set):
+                    accumproj[index] = accumxraydose.accumintegratedprojradiogdose_set.get()
+                    study_data['accumproj'] += u"DAP total {0:.2f}&nbsp;cGy.cm<sup>2</sup> ".format(
+                        accumproj[index].convert_gym2_to_cgycm2())
+            except ObjectDoesNotExist:
+                study_data['accumproj'] = u""
+        except ObjectDoesNotExist:
+            study_data['accumxraydose'] = u""
+            study_data['accumfluoroproj'] = u""
+            study_data['accummammo'] = u""
+            study_data['accumcassproj'] = u""
+            study_data['accumproj'] = u""
+        try:
+            study_data['eventdetector'] = u""
+            study_data['eventsource'] = u""
+            study_data['eventmech'] = u""
+            irradevent_set = projectionxraydata.irradeventxraydata_set.order_by('pk')
+            irradevent_set_count = irradevent_set.count()
+            if irradevent_set_count == 1:
+                study_data['irradevent'] = u"{0} event. ".format(irradevent_set_count)
+            else:
+                study_data['irradevent'] = u"{0} events. <br>".format(irradevent_set_count)
+            for index, irradevent in enumerate(irradevent_set):
+                if index == 4:
+                    study_data['irradevent'] += u"...etc"
+                    study_data['eventdetector'] += u"...etc"
+                    study_data['eventsource'] += u"...etc"
+                    study_data['eventmech'] += u"...etc"
+                    break
+                if irradevent.dose_area_product:
+                    study_data['irradevent'] += u"e{0}: {1} {2:.2f}&nbsp;cGy.cm<sup>2</sup> <br>".format(
+                        index + 1,
+                        irradevent.acquisition_protocol,
+                        irradevent.convert_gym2_to_cgycm2())
+                elif irradevent.entrance_exposure_at_rp:
+                    study_data['irradevent'] += u"RP dose {0}: {1:.2f} mGy  <br>".format(
+                        index + 1, irradevent.entrance_exposure_at_rp)
+                try:
+                    eventdetector = irradevent.irradeventxraydetectordata_set.get()
+                    if eventdetector.exposure_index:
+                        study_data['eventdetector'] += u"e{0}: EI&nbsp;{1:.1f},<br>".format(
+                            index + 1, eventdetector.exposure_index)
+                    else:
+                        study_data['eventdetector'] += u"e{0} present,<br>".format(index + 1)
+                except ObjectDoesNotExist:
+                    study_data['eventdetector'] += u""
+                try:
+                    eventsource = irradevent.irradeventxraysourcedata_set.get()
+                    if eventsource.dose_rp:
+                        study_data['eventsource'] += u"e{0} RP Dose {1:.3f}&nbsp;mGy,<br>".format(
+                            index + 1, eventsource.convert_gy_to_mgy())
+                    elif eventsource.average_glandular_dose:
+                        study_data['eventsource'] += u"e{0} AGD {1:.2f}&nbsp;mGy,<br>".format(
+                            index + 1, eventsource.average_glandular_dose)
+                    else:
+                        study_data['eventsource'] += u"e{0} present,<br>".format(index + 1)
+                except ObjectDoesNotExist:
+                    study_data['eventsource'] += u""
+                try:
+                    eventmech = irradevent.irradeventxraymechanicaldata_set.get()
+                    if eventmech.positioner_primary_angle:
+                        study_data['eventmech'] += u"e{0} {1:.1f}&deg;<br>".format(
+                            index + 1, eventmech.positioner_primary_angle)
+                    else:
+                        study_data['eventmech'] += u"e{0} present,<br>".format(
+                            index + 1)
+                except ObjectDoesNotExist:
+                    study_data['eventmech'] = u""
+        except ObjectDoesNotExist:
+            study_data['irradevent'] = u""
+    except ObjectDoesNotExist:
+        study_data['projectionxraydata'] = u""
+        study_data['accumxraydose'] = u""
+        study_data['accumfluoroproj'] = u""
+        study_data['accummammo'] = u""
+        study_data['accumcassproj'] = u""
+        study_data['accumproj'] = u""
+        study_data['irradevent'] = u""
+        study_data['eventdetector'] = u""
+        study_data['eventdetector'] = u""
+        study_data['eventsource'] = u""
+        study_data['eventmech'] = u""
+        study_data['eventmech'] = u""
+    return study_data
 
 
 def review_study_details(request):
@@ -2530,198 +2875,126 @@ def review_study_details(request):
         data = request.POST
         study_pk = data.get('study_pk')
         study = GeneralStudyModuleAttr.objects.get(pk__exact=study_pk)
-        study_data = {
-            'study_date': study.study_date,
-            'study_time': study.study_time
-        }
-        try:
-            patient = study.patientmoduleattr_set.get()
-            study_data['patientmoduleattr'] = u"Yes"
-            if patient.not_patient_indicator:
-                study_data['patientmoduleattr'] += u"<br>?not patient"
-        except ObjectDoesNotExist:
-            study_data['patientmoduleattr'] = u"Missing"
-        try:
-            patientstudymoduleattr = study.patientstudymoduleattr_set.get()
-            age = patientstudymoduleattr.patient_age_decimal
-            if age:
-                study_data['patientstudymoduleattr'] = u"Yes. Age {0:.1f}".format(
-                    patientstudymoduleattr.patient_age_decimal)
-            else:
-                study_data['patientstudymoduleattr'] = u"Yes."
-        except ObjectDoesNotExist:
-            study_data['patientstudymoduleattr'] = u"Missing"
-        try:
-            ctradiationdose = study.ctradiationdose_set.get()
-            study_data['ctradiationdose'] = u"Yes"
-            try:
-                ctaccumulateddosedata = ctradiationdose.ctaccumulateddosedata_set.get()
-                num_events = ctaccumulateddosedata.total_number_of_irradiation_events
-                study_data['ctaccumulateddosedata'] = "Yes, {0} events".format(num_events)
-            except ObjectDoesNotExist:
-                study_data['ctaccumulateddosedata'] = u""
-            try:
-                ctirradiationeventdata_set = ctradiationdose.ctirradiationeventdata_set.order_by('pk')
-
-                study_data['cteventdata'] = u"{0} events.<br>".format(
-                    ctirradiationeventdata_set.count())
-                for index, event in enumerate(ctirradiationeventdata_set):
-                    if event.acquisition_protocol:
-                        protocol = event.acquisition_protocol
-                    else:
-                        protocol = u""
-                    if event.dlp:
-                        study_data['cteventdata'] += u"e{0}: {1} {2:.2f}&nbsp;mGycm<br>".format(
-                            index,
-                            protocol,
-                            event.dlp
-                        )
-                    else:
-                        study_data['cteventdata'] += u"e{0}: {1}<br>".format(
-                            index,
-                            protocol
-                        )
-            except ObjectDoesNotExist:
-                study_data['cteventdata'] = u""
-        except ObjectDoesNotExist:
-            study_data['ctradiationdose'] = u""
-            study_data['ctaccumulateddosedata'] = u""
-            study_data['cteventdata'] = u""
-        try:
-            projectionxraydata = study.projectionxrayradiationdose_set.get()
-            study_data['projectionxraydata'] = u"Yes"
-            try:
-                accumxraydose_set = projectionxraydata.accumxraydose_set.order_by('pk')
-                accumxraydose_set_count = accumxraydose_set.count()
-                if accumxraydose_set_count == 1:
-                    study_data['accumxraydose'] = u"Yes"
-                elif accumxraydose_set_count:
-                    study_data['accumxraydose'] = u"{0} present".format(accumxraydose_set_count)
-                else:
-                    study_data['accumxraydose'] = u""
-                try:
-                    accumfluoroproj = {}
-                    study_data['accumfluoroproj'] = u""
-                    for index, accumxraydose in enumerate(accumxraydose_set):
-                        accumfluoroproj[index] = accumxraydose.accumprojxraydose_set.get()
-                        study_data['accumfluoroproj'] += u"P{0} ".format(index+1)
-                        if accumfluoroproj[index].fluoro_dose_area_product_total:
-                            study_data['accumfluoroproj'] += u"Total fluoro DA: {0:.2f}&nbsp;cGy.cm<sup>2</sup>" \
-                                                             u"; ".format(accumfluoroproj[index].fluoro_gym2_to_cgycm2())
-                        if accumfluoroproj[index].acquisition_dose_area_product_total:
-                            study_data['accumfluoroproj'] += u"Acq: {0:.2f}&nbsp;cGy.cm<sup>2</sup>. ".format(
-                            accumfluoroproj[index].acq_gym2_to_cgycm2())
-                except ObjectDoesNotExist:
-                    study_data['accumfluoroproj'] = u""
-                try:
-                    accummammo_set = accumxraydose_set[0].accummammographyxraydose_set.order_by('pk')
-                    if accummammo_set.count() == 0:
-                        study_data['accummammo'] = u""
-                    else:
-                        study_data['accummammo'] = u""
-                        for accummammo in accummammo_set:
-                            study_data['accummammo'] += u"{0}: {1:.3f}&nbsp;mGy".format(
-                                accummammo.laterality, accummammo.accumulated_average_glandular_dose)
-                except ObjectDoesNotExist:
-                    study_data['accummammo'] = u""
-                try:
-                    accumcassproj = {}
-                    study_data['accumcassproj'] = u""
-                    for index, accumxraydose in enumerate(accumxraydose_set):
-                        accumcassproj[index] = accumxraydose.accumcassettebsdprojradiogdose_set.get()
-                        study_data['accumcassproj'] += u"Number of frames {0}".format(
-                            accumcassproj[index].total_number_of_radiographic_frames)
-                except ObjectDoesNotExist:
-                    study_data['accumcassproj'] = u""
-                try:
-                    accumproj = {}
-                    study_data['accumproj'] = u""
-                    for index, accumxraydose in enumerate(accumxraydose_set):
-                        accumproj[index] = accumxraydose.accumintegratedprojradiogdose_set.get()
-                        study_data['accumproj'] += u"DAP total {0:.2f}&nbsp;cGy.cm<sup>2</sup> ".format(
-                            accumproj[index].convert_gym2_to_cgycm2())
-                except ObjectDoesNotExist:
-                    study_data['accumproj'] = u""
-            except ObjectDoesNotExist:
-                study_data['accumxraydose'] = u""
-                study_data['accumfluoroproj'] = u""
-                study_data['accummammo'] = u""
-                study_data['accumcassproj'] = u""
-                study_data['accumproj'] = u""
-            try:
-                study_data['eventdetector'] = u""
-                study_data['eventsource'] = u""
-                study_data['eventmech'] = u""
-                irradevent_set = projectionxraydata.irradeventxraydata_set.order_by('pk')
-                irradevent_set_count = irradevent_set.count()
-                if irradevent_set_count == 1:
-                    study_data['irradevent'] = u"{0} event. ".format(irradevent_set_count)
-                else:
-                    study_data['irradevent'] = u"{0} events. <br>".format(irradevent_set_count)
-                for index, irradevent in enumerate(irradevent_set):
-                    if index == 4:
-                        study_data['irradevent'] += u"...etc"
-                        study_data['eventdetector'] += u"...etc"
-                        study_data['eventsource'] += u"...etc"
-                        study_data['eventmech'] += u"...etc"
-                        break
-                    if irradevent.dose_area_product:
-                        study_data['irradevent'] += u"e{0}: {1} {2:.2f}&nbsp;cGy.cm<sup>2</sup> <br>".format(
-                            index+1,
-                            irradevent.acquisition_protocol,
-                            irradevent.convert_gym2_to_cgycm2())
-                    elif irradevent.entrance_exposure_at_rp:
-                        study_data['irradevent'] += u"RP dose {0}: {1:.2f} mGy  <br>".format(
-                            index+1, irradevent.entrance_exposure_at_rp)
-                    try:
-                        eventdetector = irradevent.irradeventxraydetectordata_set.get()
-                        if eventdetector.exposure_index:
-                            study_data['eventdetector'] += u"e{0}: EI&nbsp;{1:.1f},<br>".format(
-                                index+1, eventdetector.exposure_index)
-                        else:
-                            study_data['eventdetector'] += u"e{0} present,<br>".format(index+1)
-                    except ObjectDoesNotExist:
-                        study_data['eventdetector'] += u""
-                    try:
-                        eventsource = irradevent.irradeventxraysourcedata_set.get()
-                        if eventsource.dose_rp:
-                            study_data['eventsource'] += u"e{0} RP Dose {1:.3f}&nbsp;mGy,<br>".format(
-                                index+1, eventsource.convert_gy_to_mgy())
-                        elif eventsource.average_glandular_dose:
-                            study_data['eventsource'] += u"e{0} AGD {1:.2f}&nbsp;mGy,<br>".format(
-                                index + 1, eventsource.average_glandular_dose)
-                        else:
-                            study_data['eventsource'] += u"e{0} present,<br>".format(index+1)
-                    except ObjectDoesNotExist:
-                        study_data['eventsource'] += u""
-                    try:
-                        eventmech = irradevent.irradeventxraymechanicaldata_set.get()
-                        if eventmech.positioner_primary_angle:
-                            study_data['eventmech'] += u"e{0} {1:.1f}&deg;<br>".format(
-                                index+1, eventmech.positioner_primary_angle)
-                        else:
-                            study_data['eventmech'] += u"e{0} present,<br>".format(
-                                index+1)
-                    except ObjectDoesNotExist:
-                        study_data['eventmech'] = u""
-            except ObjectDoesNotExist:
-                study_data['irradevent'] = u""
-        except ObjectDoesNotExist:
-            study_data['projectionxraydata'] = u""
-            study_data['accumxraydose'] = u""
-            study_data['accumfluoroproj'] = u""
-            study_data['accummammo'] = u""
-            study_data['accumcassproj'] = u""
-            study_data['accumproj'] = u""
-            study_data['irradevent'] = u""
-            study_data['eventdetector'] = u""
-            study_data['eventdetector'] = u""
-            study_data['eventsource'] = u""
-            study_data['eventmech'] = u""
-            study_data['eventmech'] = u""
-
+        study_data = _get_review_study_data(study)
         template = 'remapp/review_study.html'
         return render(request, template, study_data)
+
+
+def review_failed_study_details(request):
+    """AJAX function to populate row in table with details of study for review
+
+    :param request: Request object containing study pk
+    :return: HTML row data
+    """
+
+    if request.is_ajax():
+        data = request.POST
+        study_pk = data.get('study_pk')
+        study = GeneralStudyModuleAttr.objects.get(pk__exact=study_pk)
+        study_data = _get_review_study_data(study)
+
+        try:
+            equipment = study.generalequipmentmoduleattr_set.get()
+            study_data['station_name'] = equipment.station_name
+            study_data['manufacturer'] = equipment.manufacturer
+            study_data['manufacturer_model_name'] = equipment.manufacturer_model_name
+            study_data['institution_name'] = equipment.institution_name
+            study_data['institution_department_name'] = equipment.institutional_department_name
+            study_data['device_serial_number'] = equipment.device_serial_number
+            study_data['equipmentattr'] = True
+        except ObjectDoesNotExist:
+            study_data['equipmentattr'] = False
+            study_data['station_name'] = u""
+            study_data['manufacturer'] = u""
+            study_data['manufacturer_model_name'] = u""
+            study_data['institution_name'] = u""
+            study_data['institution_department_name'] = u""
+            study_data['device_serial_number'] = u""
+
+        template = 'remapp/review_failed_study.html'
+        return render(request, template, study_data)
+
+
+def _get_broken_studies(modality=None):
+    """Filter studies with no unique_equipment_name table entry
+    :param modality: modality to filter by
+    :return: Query filter of studies
+    """
+    from django.db.models import Q
+
+    if modality == 'DX':
+        all_mod = GeneralStudyModuleAttr.objects.filter(Q(modality_type__exact=u'DX') | Q(modality_type__exact=u'CR'))
+    else:
+        all_mod = GeneralStudyModuleAttr.objects.filter(modality_type__exact=modality)
+
+    return all_mod.filter(generalequipmentmoduleattr__unique_equipment_name__display_name__isnull=True)
+
+
+def failed_list_populate(request):
+    """View for failed import section of display name view
+
+    :return: render request with modality specific numbers of studies
+    """
+
+    if request.is_ajax():
+        failed = {}
+        for modality in ['CT', 'RF', 'MG', 'DX']:
+            failed[modality] = _get_broken_studies(modality).count()
+        template = 'remapp/failed_summary_list.html'
+        return render(request, template, {'failed': failed})
+
+
+@login_required
+def review_failed_imports(request, modality=None):
+    """View to list 'failed import' studies
+
+    :param request:
+    :param modality: modality to filter by
+    :return:
+    """
+    from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+    if not modality in [u'CT', u'RF', u'MG', u'DX']:
+        logger.error("Attempt to load review_failed_imports without suitable modality")
+        messages.error(request,
+                       "Failed study imports can only be reviewed with the correct "
+                       "link from the display name page")
+        return HttpResponseRedirect(reverse_lazy('display_names_view'))
+
+    if not request.user.groups.filter(name="admingroup"):
+        messages.error(request, "You are not in the administrator group - please contact your administrator")
+        return redirect(reverse_lazy('display_names_view'))
+
+    if request.method == 'GET':
+        broken_studies = _get_broken_studies(modality)
+
+        paginator = Paginator(broken_studies, 25)
+        page = request.GET.get('page')
+        try:
+            studies = paginator.page(page)
+        except PageNotAnInteger:
+            studies = paginator.page(1)
+        except EmptyPage:
+            studies = paginator.page(paginator.num_pages)
+
+        admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
+
+        for group in request.user.groups.all():
+            admin[group.name] = True
+
+        template = 'remapp/review_failed_imports.html'
+        return render(request, template, {
+            'modality': modality, 'studies': studies,
+            'studies_count': broken_studies.count(), 'admin': admin})
+
+    if request.method == 'POST' and request.user.groups.filter(name="admingroup") and modality:
+        broken_studies = _get_broken_studies(modality)
+        broken_studies.delete()
+        messages.info(request, "Studies deleted")
+        return redirect(reverse_lazy('review_failed_imports', kwargs={'modality': modality}))
+    else:
+        messages.error(request, "Incorrect attempt to delete studies.")
+        return redirect(reverse_lazy('review_failed_imports', kwargs={'modality': modality}))
 
 
 @login_required
@@ -2878,6 +3151,72 @@ def chart_options_view(request):
 
     return render_to_response(
         'remapp/displaychartoptions.html',
+        return_structure,
+        context_instance=RequestContext(request)
+    )
+
+
+@login_required
+def homepage_options_view(request):
+    """View to enable user to see and update home page options
+
+    :param request: request object
+    :return: dictionary of home page settings, html template location and request object
+    """
+    from remapp.forms import HomepageOptionsForm
+    from remapp.models import HomePageAdminSettings
+    from django.utils.safestring import mark_safe
+
+    display_workload_stats = HomePageAdminSettings.objects.values_list('enable_workload_stats', flat=True)[0]
+    if not display_workload_stats:
+        if request.user.groups.filter(name="admingroup"):
+            messages.info(request, mark_safe(u'The display of homepage workload stats is disabled; as a member of the admin group you can change this setting <a href="/admin/homepagesettings/1/">here</a>'))
+        else:
+            messages.info(request, mark_safe(u'The display of homepage workload stats is disabled; a member of the admin group can change this setting <a href="/admin/homepagesettings/1/">here</a>'))
+
+    if request.method == 'POST':
+        homepage_options_form = HomepageOptionsForm(request.POST)
+        if homepage_options_form.is_valid():
+            try:
+                # See if the user has a userprofile
+                user_profile = request.user.userprofile
+            except:
+                # Create a default userprofile for the user if one doesn't exist
+                create_user_profile(sender=request.user, instance=request.user, created=True)
+                user_profile = request.user.userprofile
+
+            user_profile.summaryWorkloadDaysA = homepage_options_form.cleaned_data['dayDeltaA']
+            user_profile.summaryWorkloadDaysB = homepage_options_form.cleaned_data['dayDeltaB']
+
+            user_profile.save()
+
+        messages.success(request, "Home page options have been updated")
+        return HttpResponseRedirect(reverse_lazy('home'))
+
+    admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
+
+    for group in request.user.groups.all():
+        admin[group.name] = True
+
+    try:
+        # See if the user has a userprofile
+        user_profile = request.user.userprofile
+    except:
+        # Create a default userprofile for the user if one doesn't exist
+        create_user_profile(sender=request.user, instance=request.user, created=True)
+        user_profile = request.user.userprofile
+
+    homepage_form_data = {'dayDeltaA': user_profile.summaryWorkloadDaysA,
+                          'dayDeltaB': user_profile.summaryWorkloadDaysB}
+
+    homepage_options_form = HomepageOptionsForm(homepage_form_data)
+
+    return_structure = {'admin': admin,
+                        'HomepageOptionsForm': homepage_options_form,
+                        }
+
+    return render_to_response(
+        'remapp/displayhomepageoptions.html',
         return_structure,
         context_instance=RequestContext(request)
     )

@@ -24,6 +24,7 @@ Version specific information
     ..  toctree::
         :maxdepth: 1
 
+        release-0.8.0
         release-0.7.4
         release-0.7.3
         release-0.7.0
@@ -56,4 +57,5 @@ Many people have contributed to OpenREM - either with code, documentation, bugs,
 * `Luuk Oostveen <https://bitbucket.org/LuukO>`_
 * `David Platten <https://bitbucket.org/dplatten>`_
 * `Erik-Jan Rijkhorst <https://bitbucket.org/rijkhorst>`_
+* `Arnold Schilham <https://bitbucket.org/asch99>`_
 * `Tim de Wit <https://bitbucket.org/tcdewit/>`_

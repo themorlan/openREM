@@ -1,6 +1,6 @@
-########################
-Upgrade to OpenREM 0.8.0
-########################
+###################################
+OpenREM Release Notes version 0.8.0
+###################################
 
 ****************
 Headline changes
@@ -54,8 +54,6 @@ Upgrade
 .. sourcecode:: bash
 
     pip install openrem==0.8.0
-
-..  _upgradefrom074:
 
 Update the configuration
 ========================

@@ -26,10 +26,11 @@ requires = [
     'xlrd',
     'testfixtures >= 6.0',
     'mock',
-    'django-debug-toolbar',
     'django-pandas',
     'ipython<6',
     'cufflinks',
+    'django-debug-toolbar <= 1.9.1',
+    'django-js-reverse'
     ]
 
 setup(
@@ -50,9 +51,9 @@ setup(
     ],
     license='GPLv3 with additional permissions',
     description='Radiation Exposure Monitoring for physicists',
-#    description='Developer beta only',
+    # description='Developer beta only',
     long_description=README,
-    url='http://openrem.org/',
+    url='https://openrem.org/',
     author='Ed McDonagh',
     author_email='ed@openrem.org',
     long_description_content_type="text/x-rst",
