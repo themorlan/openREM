@@ -5,8 +5,16 @@ Pre-installation preparations
 Install Python 2.7.x and pip
 ============================
 
-* Linux – likely to be installed already
 * Windows – instructions and downloads are available at `python.org <https://www.python.org/downloads>`_
+* Linux – likely to be installed already except on newer distributions
+
+  Check by typing ``python -V`` - if the response is ``Python 2.7.x`` (x can be any number) then move on to installing
+  pip.
+
+  If the response is that the command can't be found, you will need to install Python. On Ubuntu, Python 2.7 is python
+  and Python 3.x is Python3::
+
+      sudo apt-get install python
 
 Add Python and the scripts folder to the path
 ---------------------------------------------
@@ -26,11 +34,11 @@ If Python is already installed, you can add Python to Path yourself:
 
         ;C:\Python27\;C:\Python27\Scripts\
 
-Setuptools and pip
-------------------
+Python package installer pip
+----------------------------
 
-Install setuptools and pip – for details go to
-http://www.pip-installer.org/en/latest/installing.html. The quick version
+Install pip – for details go to
+https://pip.pypa.io/en/latest/installing/. The quick version
 is as follows:
 
 Linux
@@ -67,6 +75,8 @@ Install RabbitMQ
 * Windows - Follow the guide at http://www.rabbitmq.com/install-windows.html
 
 For either install, just follow the defaults – no special configurations required.
+Please note that RabbitMQ requires that Erlang is installed first, as described in
+the above links.
 
 ..  Note::
 
@@ -90,27 +100,9 @@ Install NumPy
 
 Numpy is required for charts.
 
-For linux::
+For Linux and Windows - activate virtualenv first::
 
-    sudo apt-get install python-numpy
-    # If using a virtualenv, you might need to also do:
     pip install numpy
-
-For Windows:
-
-Download NumPy from http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
-
-* Find the right version - look for **numpy-X+mkl-cp27-cp27m-win32.whl** for 32-bit Windows or
-* **numpy-X+mkl-cp27-cp27m-win_amd64.whl** for 64-bit Windows.
-* At the time of writing, ``X`` was ``1.14.0`` - choose the latest version
-* Install using pip:
-
-.. sourcecode:: console
-
-    pip install numpy‑1.14.0+mkl‑cp27-cp27m‑win32.whl  # update the version number
-    # or
-    pip install numpy‑1.14.0+mkl‑cp27‑cp27m‑win_amd64.whl  # update the version number
-    # changing the filename appropriately
 
 
 .. _installpreppostgres:
@@ -129,6 +121,40 @@ of the in-built SQLite database. However, you should expect to start again when 
 * :doc:`postgresql`
 * :doc:`postgresql_windows`
 
+.. _installdicomstore:
+
+Install a DICOM Store service
+=============================
+
+To have modalities send DICOM objects to your OpenREM server, or to use query-retrieve from a PACS, you need to install
+a DICOM Store service. For testing, you can make use of the DICOM Store OpenREM can provide. However, because this is not
+stable over longer periods of time we recommend using a third-party DICOM Store service. You can use any one you like,
+as long as it can be scripted to call OpenREM scripts when DICOM objects are received. We recommend Orthanc or Conquest
+for this and provide details of how to configure them in the :ref:`configure_third_party_DICOM` section.
+
+Orthanc
+-------
+* Ubuntu users: ``sudo apt install orthanc``
+* Windows users: Download from https://www.orthanc-server.com/download-windows.php after filling in the form
+* Configuration instructions can be found in the :ref:`configure_third_party_DICOM` section.
+
+Alternative - Conquest
+----------------------
+* Download Conquest DICOM server from https://ingenium.home.xs4all.nl/dicom.html
+* Install using the instructions included in the download - there is a PDF with Windows install instructions and general
+  usage instructions, and another PDF with Linux install instructions. The guides in :ref:`configure_third_party_DICOM`
+  should be consulted when making configuration decisions.
+* Alternatively, Ubuntu 16.04 users can use the following instructions:
+
+  ..  toctree::
+      :maxdepth: 1
+
+      conquestUbuntu
+
+Unlike with the database, it is possible to change DICOM Store service at a later point.
+
+.. _install_toshiba_resources:
+
 Resources for creating RDSR for older Toshiba CT scanners
 =========================================================
 
@@ -139,7 +165,7 @@ on the same server as OpenREM:
 
     * The `Offis DICOM toolkit`_
     * `Java`_
-    * pixelmed.jar from the `PixelMed Java DICOM Toolkit`_
+    * `pixelmed.jar`_ from the PixelMed Java DICOM Toolkit
 
 For more information see :ref:`toshiba_legacy_imports`. The locations of these executables needs to be configured in the
 ``local_settings.py`` - see :ref:`toshiba_configuration`.
@@ -164,8 +190,8 @@ Virtualenv sets up an isolated python environment and is relatively easy to use.
 If you do use virtualenv, all the paths referred to in the documentation will
 be changed to:
 
-* Linux: ``lib/python2.7/site-packages/openrem/``
-* Windows: ``Lib\site-packages\openrem``
+* Linux: ``vitualenvfolder/lib/python2.7/site-packages/openrem/``
+* Windows: ``virtualenvfolder\Lib\site-packages\openrem``
 
 In Windows, even when the virtualenv is activated you will need to call `python`
 and provide the full path to script in the `Scripts` folder. If you call the
@@ -173,9 +199,10 @@ script (such as `openrem_rdsr.py`) without prefixing it with `python`, the
 system wide Python will be used instead. This doesn't apply to Linux, where
 once activated, the scripts can be called without a `python` prefix from anywhere.
 
+
 .. _virtualenv: https://virtualenv.pypa.io/
 .. _virtualenvwrapper: http://virtualenvwrapper.readthedocs.org/en/latest/
 .. _consider virtualenv: `Virtualenv and virtualenvwrapper`_
 .. _`Offis DICOM toolkit`: http://dicom.offis.de/dcmtk.php.en
 .. _`Java`: http://java.com/en/download/
-.. _`PixelMed Java DICOM Toolkit`: http://www.pixelmed.com/dicomtoolkit.html
+.. _`pixelmed.jar`: http://www.dclunie.com/pixelmed/software/webstart/pixelmed.jar

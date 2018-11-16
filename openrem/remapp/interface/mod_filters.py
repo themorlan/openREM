@@ -14,7 +14,7 @@
 #    Additional permission under section 7 of GPLv3:
 #    You shall not make any use of the name of The Royal Marsden NHS
 #    Foundation trust in connection with this Program in any press or
-#    other public announcement without the prior written consent of 
+#    other public announcement without the prior written consent of
 #    The Royal Marsden NHS Foundation Trust.
 #
 #    You should have received a copy of the GNU General Public License
@@ -28,7 +28,7 @@
 
 """
 
-# Following three lines added so that sphinx autodocumentation works. 
+# Following three lines added so that sphinx autodocumentation works.
 import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 from django.db import models
@@ -169,6 +169,16 @@ class RFFilterPlusPid(RFSummaryListFilter):
         self.filters['patient_id'] = django_filters.MethodFilter(action=custom_id_filter, label=u'Patient ID')
 
 
+# Values from DICOM CID 10013 CT Acquisition Type
+CT_ACQ_TYPE_CHOICES = (
+    ('Spiral Acquisition',         'Spiral'),
+    ('Sequenced Acquisition',      'Axial'),
+    ('Constant Angle Acquisition', 'Scan projection radiograph'),
+    ('Stationary Acquisition',     'Stationary acquisition'),
+    ('Free Acquisition',           'Free acquisition'),
+)
+
+
 class CTSummaryListFilter(django_filters.FilterSet):
     """Filter for CT studies to display in web interface.
 
@@ -190,6 +200,9 @@ class CTSummaryListFilter(django_filters.FilterSet):
     study_dlp_max = django_filters.NumberFilter(lookup_type='lte', label=u'Max study DLP', name='ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total')
     display_name = django_filters.CharFilter(lookup_type='icontains', label=u'Display name', name='generalequipmentmoduleattr__unique_equipment_name__display_name')
     test_data = django_filters.ChoiceFilter(lookup_type='isnull', label=u"Include possible test data", name='patientmoduleattr__not_patient_indicator', choices=TEST_CHOICES, widget=forms.Select)
+    ct_acquisition_type = django_filters.MultipleChoiceFilter(lookup_type='iexact', label=u'Acquisition type restriction',
+                                                              name='ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning',
+                                                              choices=CT_ACQ_TYPE_CHOICES, widget=forms.CheckboxSelectMultiple)
 
     class Meta:
         model = GeneralStudyModuleAttr
@@ -231,7 +244,7 @@ def ct_acq_filter(filters, pid=False):
         if ('studyhist' in filters) and ('study_description' in filters):
             events = CtIrradiationEventData.objects.select_related().filter(ct_radiation_dose_id__general_study_module_attributes__study_description=filters['study_description'])
         else:
-            events = CtIrradiationEventData.objects.filter(acquisition_protocol__exact = filters['acquisition_protocol'])
+            events = CtIrradiationEventData.objects.filter(acquisition_protocol__iexact = filters['acquisition_protocol'])
         if 'acquisition_ctdi_min' in filters:
             try:
                 Decimal(filters['acquisition_ctdi_min'])
@@ -256,8 +269,12 @@ def ct_acq_filter(filters, pid=False):
                 events = events.filter(dlp__lte = filters['acquisition_dlp_max'])
             except InvalidOperation:
                 pass
-        filteredInclude = list(set(
-            [o.ct_radiation_dose.general_study_module_attributes.study_instance_uid for o in events]))
+        if 'ct_acquisition_type' in filters:
+            try:
+                events = events.filter(ct_acquisition_type__code_meaning__iexact = filters['ct_acquisition_type'])
+            except InvalidOperation:
+                pass
+        filteredInclude = events.values_list('ct_radiation_dose__general_study_module_attributes__study_instance_uid').distinct()
 
     elif ('study_description' in filters) and ('acquisition_ctdi_min' in filters) and ('acquisition_ctdi_max' in filters):
         events = CtIrradiationEventData.objects.select_related().filter(ct_radiation_dose_id__general_study_module_attributes__study_description=filters['study_description'])
@@ -273,8 +290,12 @@ def ct_acq_filter(filters, pid=False):
                 events = events.filter(mean_ctdivol__lte=filters['acquisition_ctdi_max'])
             except InvalidOperation:
                 pass
-        filteredInclude = list(set(
-            [o.ct_radiation_dose.general_study_module_attributes.study_instance_uid for o in events]))
+        if 'ct_acquisition_type' in filters:
+            try:
+                events = events.filter(ct_acquisition_type__code_meaning__iexact = filters['ct_acquisition_type'])
+            except InvalidOperation:
+                pass
+        filteredInclude = events.values_list('ct_radiation_dose__general_study_module_attributes__study_instance_uid').distinct()
 
     studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact = 'CT')
     if filteredInclude:
@@ -361,8 +382,8 @@ class DXSummaryListFilter(django_filters.FilterSet):
     class Meta:
         model = GeneralStudyModuleAttr
         fields = [
-            'date_after', 
-            'date_before', 
+            'date_after',
+            'date_before',
             'institution_name',
             'study_description',
             'procedure_code_meaning',
@@ -370,7 +391,7 @@ class DXSummaryListFilter(django_filters.FilterSet):
             'acquisition_protocol',
             'patient_age_min',
             'patient_age_max',
-            'manufacturer', 
+            'manufacturer',
             'model_name',
             'station_name',
             'display_name',
@@ -414,7 +435,7 @@ def dx_acq_filter(filters, pid=False):
         'acquisition_kvp_min' in filters or 'acquisition_kvp_max' in filters or
         'acquisition_mas_min' in filters or 'acquisition_mas_max' in filters
     ):
-        events = IrradEventXRayData.objects.filter(acquisition_protocol__exact = filters['acquisition_protocol'])
+        events = IrradEventXRayData.objects.filter(acquisition_protocol__iexact = filters['acquisition_protocol'])
         if 'acquisition_dap_min' in filters:
             try:
                 Decimal(filters['acquisition_dap_min'])
@@ -451,9 +472,8 @@ def dx_acq_filter(filters, pid=False):
                 events = events.filter(irradeventxraysourcedata__exposure__exposure__lte = filters['acquisition_mas_max'])
             except InvalidOperation:
                 pass
-        filteredInclude = list(set(
-            [o.projection_xray_radiation_dose.general_study_module_attributes.study_instance_uid for o in events]
-        ))
+        filteredInclude = events.values_list('projection_xray_radiation_dose__general_study_module_attributes__study_instance_uid').distinct()
+
     studies = GeneralStudyModuleAttr.objects.filter(
         Q(modality_type__exact='DX') | Q(modality_type__exact='CR'))
     if filteredInclude:

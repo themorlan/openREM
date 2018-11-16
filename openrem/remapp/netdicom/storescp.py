@@ -23,9 +23,9 @@ try:
     from distutils.version import StrictVersion
 
     if StrictVersion(netdicom.__version__.__version__) <= StrictVersion('0.8.1'):
-        sys.exit(u'Pynedicom > 0.8.1 needs to be installed, see http://docs.openrem.org/en/latest/install.html')
+        sys.exit(u'Pynedicom > 0.8.1 needs to be installed, see https://docs.openrem.org/en/latest/install.html')
 except ImportError:
-    sys.exit(u'Pynedicom > 0.8.1 needs to be installed, see http://docs.openrem.org/en/latest/install.html')
+    sys.exit(u'Pynedicom > 0.8.1 needs to be installed, see https://docs.openrem.org/en/latest/install.html')
 from netdicom.SOPclass import StorageSOPClass, VerificationSOPClass
 from dicom.dataset import Dataset, FileDataset
 from django.views.decorators.csrf import csrf_exempt
@@ -205,7 +205,7 @@ def web_store(store_pk=None):
     import socket
     import time
     from remapp.models import DicomStoreSCP
-    from remapp.netdicom.tools import _create_ae
+    from remapp.netdicom.tools import create_ae
     from django.core.exceptions import ObjectDoesNotExist
 
     try:
@@ -222,7 +222,7 @@ def web_store(store_pk=None):
 
     # setup AE
     try:
-        my_ae = _create_ae(aet, port=port, sop_scu=[], sop_scp=[StorageSOPClass, VerificationSOPClass])
+        my_ae = create_ae(aet, port=port, sop_scu=[], sop_scp=[StorageSOPClass, VerificationSOPClass])
         my_ae.MaxAssociationIdleSeconds = 120
         my_ae.MaxNumberOfAssociations = 25
         my_ae.OnReceiveStore = OnReceiveStore

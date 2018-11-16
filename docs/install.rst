@@ -2,24 +2,33 @@
 Installing OpenREM
 ******************
 
-Install OpenREM 0.8.0b2
-=======================
+Install OpenREM
+===============
 
 .. sourcecode:: bash
 
-    pip install openrem==0.8.0b4
+    pip install openrem
 
-*Will need ``sudo`` or equivalent if installing on linux without using a virtualenv*
+*Will need* ``sudo`` *or equivalent if installing on linux without using a virtualenv*
 
 Install pynetdicom (edited version)
 ===================================
 
-Pynetdicom is used for the DICOM Store SCP and Query Retrieve SCU functions. See :doc:`netdicom` for details.
+Pynetdicom is used for the DICOM Store SCP and Query Retrieve SCU functions. See :ref:`directfrommodalities` for details.
 
 .. sourcecode:: bash
 
     pip install https://bitbucket.org/edmcdonagh/pynetdicom/get/default.tar.gz#egg=pynetdicom-0.8.2b2
 
+..  note::
+
+    You must install the ``pynetdicom`` package from the link above - the version in pypi or the newer versions in
+    GitHub won't work with the current version of OpenREM. Future versions of OpenREM will be adapted to work with
+    ``pynetdicom3`` and ``pydicom>1.0``.
+
+    If you are using the latest version of ``pip`` you will get error messages including the phrase
+    ``Failed building wheel for pynetdicom`` - it should be ok to ignore this message as long as you end up with the
+    message ``Successfully installed pynetdicom-0.8.2b2``
 
 .. _localsettingsconfig:
 
@@ -31,9 +40,9 @@ Locate install location
 
 * Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``
 * Other linux: ``/usr/lib/python2.7/site-packages/openrem/``
-* Linux virtualenv: ``lib/python2.7/site-packages/openrem/``
+* Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/``
 * Windows: ``C:\Python27\Lib\site-packages\openrem\``
-* Windows virtualenv: ``Lib\site-packages\openrem\``
+* Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\``
 
 
 There are two files that need renaming:
@@ -52,6 +61,7 @@ Edit local_settings.py
     on the View tab you may wish to set the Word wrap to 'No wrap'
 
 ..  Important::
+
     In local_settings.py, always use forward slashes and not backslashes, even for paths on
     Windows systems.
 
@@ -124,7 +134,7 @@ Allowed hosts
 ^^^^^^^^^^^^^
 
 The ``ALLOWED_HOSTS`` needs to be defined, as the ``DEBUG`` mode is now
-set to ``False``. This needs to contain the server name or IP address that
+set to ``False``. This needs to contain the OpenREM server hostname or IP address that
 will be used in the URL in the web browser. For example::
 
     ALLOWED_HOSTS = [
@@ -161,10 +171,11 @@ Configure the filename to determine where the logs are written. In linux, you mi
 .. sourcecode:: python
 
     import os
-    logfilename = os.path.join(MEDIA_ROOT, "openrem.log")
-    qrfilename = os.path.join(MEDIA_ROOT, "openrem_qr.log")
-    storefilename = os.path.join(MEDIA_ROOT, "openrem_store.log")
-    extractorfilename = os.path.join(MEDIA_ROOT, "openrem_extractor.log")
+    LOG_ROOT = MEDIA_ROOT
+    logfilename = os.path.join(LOG_ROOT, "openrem.log")
+    qrfilename = os.path.join(LOG_ROOT, "openrem_qr.log")
+    storefilename = os.path.join(LOG_ROOT, "openrem_store.log")
+    extractorfilename = os.path.join(LOG_ROOT, "openrem_extractor.log")
 
     LOGGING['handlers']['file']['filename'] = logfilename          # General logs
     LOGGING['handlers']['qr_file']['filename'] = qrfilename        # Query Retrieve SCU logs
@@ -233,8 +244,8 @@ http://www.i18nguy.com/unicode/language-identifiers.html
 Toshiba CT RDSR creation
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you need to import data from older Toshiba CT scanners into OpenREM then the following tools need to be available
-on the same server as OpenREM:
+If you need to import data from older Toshiba CT scanners that do not create RDSRs then the following
+tools need to be available on the same server as OpenREM:
 
     * The `Offis DICOM toolkit`_
     * `Java`_
@@ -260,6 +271,11 @@ configuration above using the command ``which dcmconv``. This will be something 
 for ``DCMMKDIR`` and ``JAVA_EXE``, which might be ``/usr/bin/java``. The pixelmed.jar file should be downloaded from
 the link above, and you will need to provide the path to where you have saved it.
 
+.. note::
+
+    If you do not intend to use the RDSR creation feature (all your CT scanners create RDSRs already, or your older
+    scanners are Philips), then these paths do not need to be changed for your install.
+
 .. _database_creation:
 
 Create the database
@@ -269,8 +285,10 @@ In a shell/command window, move into the openrem folder:
 
 * Ubuntu linux: ``cd /usr/local/lib/python2.7/dist-packages/openrem/``
 * Other linux: ``cd /usr/lib/python2.7/site-packages/openrem/``
+* Linux virtualenv: ``cd virtualenvfolder/lib/python2.7/site-packages/openrem/``
 * Windows: ``cd C:\Python27\Lib\site-packages\openrem\``
-* Virtualenv: ``cd lib/python2.7/site-packages/openrem/``
+* Windows virtualenv: ``cd virtualenvfolder\Lib\site-packages\openrem\``
+
 
 Create the database::
 
@@ -336,19 +354,6 @@ Start all the services!
 
 You are now ready to start the services to allow you to use OpenREM - go to :doc:`startservices` to see how!
 
-
-Further instructions
-====================
-
-
-
-DICOM Store and query-retrieve
-------------------------------
-
-The best (and only practical way in a production environment) to get DICOM data into OpenREM is to have a DICOM store
-node (Store Service Class Provider/SCP) and possibly a query-retrieve service class user too.
-
-To find out more about this, refer to the :doc:`netdicom` docs.
 
 
 .. _`Offis DICOM toolkit`: http://dicom.offis.de/dcmtk.php.en

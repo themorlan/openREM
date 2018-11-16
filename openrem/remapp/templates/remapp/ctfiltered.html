@@ -21,26 +21,26 @@
             {% if admin.exportgroup %}
                 <p><strong>Note:</strong> Apply the exam filter first to refine what is exported.</p>
                 <p>
-                    <a href="/openrem/exportctcsv1/0/0/?{{ request.GET.urlencode }}"
+                    <a href="{% url 'ctcsv1' 0 0 %}?{{ request.GET.urlencode }}"
                        class="btn btn-default btn-sm" role="button">Export to CSV&nbsp;</a>
                     {% if admin.pidgroup %}
-                        <a href="/openrem/exportctcsv1/1/0/?{{ request.GET.urlencode }}"
+                        <a href="{%  url 'ctcsv1' 1 0 %}?{{ request.GET.urlencode }}"
                            class="btn btn-default btn-sm" role="button">With names</a>
-                        <a href="/openrem/exportctcsv1/0/1/?{{ request.GET.urlencode }}"
+                        <a href="{% url 'ctcsv1' 0 1 %}?{{ request.GET.urlencode }}"
                            class="btn btn-default btn-sm" role="button">With ID</a>
-                        <a href="/openrem/exportctcsv1/1/1/?{{ request.GET.urlencode }}"
+                        <a href="{% url 'ctcsv1' 1 1 %}?{{ request.GET.urlencode }}"
                            class="btn btn-default btn-sm" role="button">With both</a>
                         </p>
                         <p>
                     {% endif %}
-                    <a href="/openrem/exportctxlsx1/0/0/?{{ request.GET.urlencode }}"
+                    <a href="{% url 'ctxlsx1' 0 0 %}?{{ request.GET.urlencode }}"
                        class="btn btn-default btn-sm" role="button">Export to XLSX</a>
                     {% if admin.pidgroup %}
-                        <a href="/openrem/exportctxlsx1/1/0/?{{ request.GET.urlencode }}"
+                        <a href="{% url 'ctxlsx1' 1 0 %}?{{ request.GET.urlencode }}"
                            class="btn btn-default btn-sm" role="button">With names</a>
-                        <a href="/openrem/exportctxlsx1/0/1/?{{ request.GET.urlencode }}"
+                        <a href="{% url 'ctxlsx1' 0 1 %}?{{ request.GET.urlencode }}"
                            class="btn btn-default btn-sm" role="button">With ID</a>
-                        <a href="/openrem/exportctxlsx1/1/1/?{{ request.GET.urlencode }}"
+                        <a href="{% url 'ctxlsx1' 1 1 %}?{{ request.GET.urlencode }}"
                            class="btn btn-default btn-sm" role="button">With both</a>
                     {% endif %}
                     </p>
@@ -143,13 +143,13 @@
           {% with ct_accumulated=ct_dose_set.ctaccumulateddosedata_set.get %}
             <tr>
                 <td>
-                    <a href="/openrem/ct/{{ exam.id }}/">
+                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
                         {{ equipment.institution_name }}
                     </a>
                 </td>
                 <td>
-                    <a href="/openrem/ct/{{ exam.id }}/">
-                        <table onclick="window.location='/openrem/ct/{{ exam.id }}/';">
+                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';">
                             <tr><td class="nowrap">{{ equipment.manufacturer }}</td></tr>
                             <tr><td class="nowrap">{{ equipment.manufacturer_model_name }}</td></tr>
                             <tr><td class="nowrap">{{ equipment.unique_equipment_name.display_name }}</td></tr>
@@ -157,28 +157,28 @@
                     </a>
                 </td>
                 <td>
-                    <a href="/openrem/ct/{{ exam.id }}/">
+                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
                         {{ exam.study_date|date:"Y-m-d" }} {{ exam.study_time|date:"H:i" }}</td>
                 </a>
                 <td>
-                    <a href="/openrem/ct/{{ exam.id }}/">
-                    <table onclick="window.location='/openrem/ct/{{ exam.id }}/';">
-                        <tr><td class="nowrap">{{ exam.study_description }}</td></tr>
-                        <tr><td class="nowrap">{{ exam.procedure_code_meaning }}</td></tr>
-                        <tr><td class="nowrap">{{ exam.requested_procedure_code_meaning }}</td></tr>
-                    {% if not exam.accession_hashed %}
-                        <tr><td class="nowrap">{{ exam.accession_number }}</td></tr>
-                    {% endif %}
-                    </table>
+                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';">
+                            <tr><td class="nowrap">{{ exam.study_description }}</td></tr>
+                            <tr><td class="nowrap">{{ exam.procedure_code_meaning }}</td></tr>
+                            <tr><td class="nowrap">{{ exam.requested_procedure_code_meaning }}</td></tr>
+                            {% if not exam.accession_hashed %}
+                                <tr><td class="nowrap">{{ exam.accession_number }}</td></tr>
+                            {% endif %}
+                        </table>
                     </a>
                 </td>
                 <td>
-                    <a href="/openrem/ct/{{ exam.id }}/">
+                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
                         {{ ct_accumulated.total_number_of_irradiation_events }}
                     </a>
                 </td>
                 <td>
-                    <a href="/openrem/ct/{{ exam.id }}/">
+                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
                         {{ ct_accumulated.ct_dose_length_product_total|floatformat:2 }}
                     </a>
                 </td>
@@ -203,6 +203,7 @@
 
     {% if request.user.userprofile.plotCharts %}
 
+        <script src="{{ STATIC_URL }}js/django_reverse/reverse.js"></script>
         <script src="{{ STATIC_URL }}js/charts/chartFullScreen.js"></script>
         <script src="{{ STATIC_URL }}js/charts/chartSetExportSize.js"></script>
         <script src="{{ STATIC_URL }}js/chroma.min.js"></script>
@@ -254,13 +255,13 @@
 
         {% if request.user.userprofile.plotCTStudyFreq or request.user.userprofile.plotCTStudyMeanDLPOverTime %}
             <script>
-                var urlStartStudy = '/openrem/ct/?{% for field in filter.form %}{% if field.name != 'study_description' and field.name != 'o' and field.value %}&{{ field.name }}={{ field.value }}{% endif %}{% endfor %}&study_description=';
+                var urlStartStudy = '{% url 'ct_summary_list_filter' %}?{% for field in filter.form %}{% if field.name != 'study_description' and field.name != 'o' and field.value %}&{{ field.name }}={{ field.value }}{% endif %}{% endfor %}&study_description=';
             </script>
         {% endif %}
 
         {% if request.user.userprofile.plotCTRequestMeanDLP or request.user.userprofile.plotCTRequestFreq or request.user.userprofile.plotCTRequestNumEvents %}
             <script>
-                var tooltipFiltersRequest = '{% for field in filter.form %}{% if field.name != 'study_dlp_min' and field.name != 'study_dlp_max' and field.name != 'requested_procedure' and field.name != 's' and field.name != 'o' and field.value %}&{{ field.name }}={{ field.value }}{% endif %}{% endfor %}';
+                var tooltipFiltersRequest = '{% for field in filter.form %}{% if field.name != 'study_dlp_min' and field.name != 'study_dlp_max' and field.name != 'requested_procedure' and field.name != 's' and field.name != 'o' and field.value %}&{% if field.name == 'ct_acquisition_type' %}{% for each_value in field.value %}{{ field.name }}={{ each_value }}{% endfor %}{% else %}{{ field.name }}={{ field.value }}{% endif %}{% endif %}{% endfor %}';
             </script>
         {% endif %}
 
@@ -333,8 +334,7 @@
                     chartSetExportSize('histogramAcquisitionPlotDLPdiv');
                     fitChartToDiv('histogramAcquisitionPlotDLPdiv');
                 });
-
-                var tooltipFiltersAcq = '{% for field in filter.form %}{% if field.name != 'acquisition_dlp_min' and field.name != 'acquisition_dlp_max' and field.name != 'acquisition_protocol' and field.name != 'o' and field.value %}&{{ field.name }}={{ field.value }}{% endif %}{% endfor %}';
+                var tooltipFiltersAcq = '{% for field in filter.form %}{% if field.name != 'acquisition_dlp_min' and field.name != 'acquisition_dlp_max' and field.name != 'acquisition_protocol' and field.name != 'o' and field.value %}&{% if field.name == 'ct_acquisition_type' %}{% for each_value in field.value %}{{ field.name }}={{ each_value }}{% endfor %}{% else %}{{ field.name }}={{ field.value }}{% endif %}{% endif %}{% endfor %}';
                 norm_btn_class = '.acq-hist-norm-btn';
                 instr_class = '.acq-instructions';
                 render_div = 'histogramAcquisitionPlotDLPdiv';
@@ -347,7 +347,7 @@
                 field_multiplier = 1.0;
                 field_cat_name = 'acquisition_protocol';
                 tooltip_filters = tooltipFiltersAcq;
-                href_start = '/openrem/ct/?acquisitionhist=1&';
+                href_start = '{% url 'ct_summary_list_filter' %}?acquisitionhist=1&';
                 hide_series_btn_stub = 'acq_dlp_series_';
 
             {% if request.user.userprofile.plotAverageChoice == 'both' %}
@@ -433,7 +433,7 @@
                     fitChartToDiv('histogramAcquisitionPlotCTDIdiv');
                 });
 
-                var tooltipFiltersAcqCTDI = '{% for field in filter.form %}{% if field.name != 'acquisition_ctdi_min' and field.name != 'acquisition_ctdi_max' and field.name != 'acquisition_protocol' and field.name != 'o' and field.value %}&{{ field.name }}={{ field.value }}{% endif %}{% endfor %}';
+                var tooltipFiltersAcqCTDI = '{% for field in filter.form %}{% if field.name != 'acquisition_ctdi_min' and field.name != 'acquisition_ctdi_max' and field.name != 'acquisition_protocol' and field.name != 'o' and field.value %}&{% if field.name == 'ct_acquisition_type' %}{% for each_value in field.value %}{{ field.name }}={{ each_value }}{% endfor %}{% else %}{{ field.name }}={{ field.value }}{% endif %}{% endif %}{% endfor %}';
                 norm_btn_class = '.acqctdi-hist-norm-btn';
                 instr_class = '.acq-ctdi-instructions';
                 render_div = 'histogramAcquisitionPlotCTDIdiv';
@@ -446,7 +446,7 @@
                 field_multiplier = 1.0;
                 field_cat_name = 'acquisition_protocol';
                 tooltip_filters = tooltipFiltersAcqCTDI;
-                href_start = '/openrem/ct/?acquisitionhist=1&';
+                href_start = '{% url 'ct_summary_list_filter' %}?acquisitionhist=1&';
                 hide_series_btn_stub = 'acq_ctdi_series_';
 
             {% if request.user.userprofile.plotAverageChoice == 'both' %}
@@ -493,7 +493,7 @@
                     fitChartToDiv('piechartAcquisitionDIV');
                 });
 
-                var urlStartAcq = '/openrem/ct/?{% for field in filter.form %}{% if field.name != 'acquisition_protocol' and field.name != 'o' and field.value %}&{{ field.name }}={{ field.value }}{% endif %}{% endfor %}&acquisition_protocol=';
+                var urlStartAcq = '{% url 'ct_summary_list_filter' %}?{% for field in filter.form %}{% if field.name != 'acquisition_protocol' and field.name != 'o' and field.value %}&{{ field.name }}={{ field.value }}{% endif %}{% endfor %}&acquisition_protocol=';
                 result = chartFrequency('piechartAcquisitionDIV', 'Acquisition protocol frequency');
             </script>
         {% endif %}
@@ -566,7 +566,7 @@
                     fitChartToDiv('histogramStudyPlotDIV');
                 });
 
-                var tooltipFiltersStudy = '{% for field in filter.form %}{% if field.name != 'study_dlp_min' and field.name != 'study_dlp_max' and field.name != 'study_description' and field.name != 's' and field.name != 'o' and field.value %}&{{ field.name }}={{ field.value }}{% endif %}{% endfor %}';
+                var tooltipFiltersStudy = '{% for field in filter.form %}{% if field.name != 'study_dlp_min' and field.name != 'study_dlp_max' and field.name != 'study_description' and field.name != 's' and field.name != 'o' and field.value %}&{% if field.name == 'ct_acquisition_type' %}{% for each_value in field.value %}{{ field.name }}={{ each_value }}{% endfor %}{% else %}{{ field.name }}={{ field.value }}{% endif %}{% endif %}{% endfor %}';
                 norm_btn_class = '.stu-hist-norm-btn';
                 instr_class = '.stu-instructions';
                 render_div = 'histogramStudyPlotDIV';
@@ -579,7 +579,7 @@
                 field_multiplier = 1.0;
                 field_cat_name = 'study_description';
                 tooltip_filters = tooltipFiltersStudy;
-                href_start = '/openrem/ct/?studyhist=1&';
+                href_start = '{% url 'ct_summary_list_filter' %}?studyhist=1&';
                 hide_series_btn_stub = 'study_dlp_series_';
 
             {% if request.user.userprofile.plotAverageChoice == 'both' %}
@@ -665,7 +665,7 @@
                     fitChartToDiv('histogramStudyPlotCTDIdiv');
                 });
 
-                var tooltipFiltersStudyCTDI = '{% for field in filter.form %}{% if field.name != 'acquisition_ctdi_min' and field.name != 'acquisition_ctdi_max' and field.name != 'study_description' and field.name != 'o' and field.value %}&{{ field.name }}={{ field.value }}{% endif %}{% endfor %}';
+                var tooltipFiltersStudyCTDI = '{% for field in filter.form %}{% if field.name != 'acquisition_ctdi_min' and field.name != 'acquisition_ctdi_max' and field.name != 'study_description' and field.name != 'o' and field.value %}&{% if field.name == 'ct_acquisition_type' %}{% for each_value in field.value %}{{ field.name }}={{ each_value }}{% endfor %}{% else %}{{ field.name }}={{ field.value }}{% endif %}{% endif %}{% endfor %}';
                 norm_btn_class = '.stu-ctdi-hist-norm-btn';
                 instr_class = '.stu-ctdi-instructions';
                 render_div = 'histogramStudyPlotCTDIdiv';
@@ -678,7 +678,7 @@
                 field_multiplier = 1.0;
                 field_cat_name = 'study_description';
                 tooltip_filters = tooltipFiltersStudyCTDI;
-                href_start = '/openrem/ct/?studyhist=1&';
+                href_start = '{% url 'ct_summary_list_filter' %}?studyhist=1&';
                 hide_series_btn_stub = 'study_ctdi_series_';
 
             {% if request.user.userprofile.plotAverageChoice == 'both' %}
@@ -791,7 +791,7 @@
                     fitChartToDiv('studyNumEventsDIV');
                 });
 
-                var tooltipFiltersStudy = '{% for field in filter.form %}{% if field.name != 'study_dlp_min' and field.name != 'study_dlp_max' and field.name != 'study_description' and field.name != 's' and field.name != 'o' and field.value %}&{{ field.name }}={{ field.value }}{% endif %}{% endfor %}';
+                var tooltipFiltersStudy = '{% for field in filter.form %}{% if field.name != 'study_dlp_min' and field.name != 'study_dlp_max' and field.name != 'study_description' and field.name != 's' and field.name != 'o' and field.value %}&{% if field.name == 'ct_acquisition_type' %}{% for each_value in field.value %}{{ field.name }}={{ each_value }}{% endfor %}{% else %}{{ field.name }}={{ field.value }}{% endif %}{% endif %}{% endfor %}';
                 norm_btn_class = '.stu-hist-norm-btn';
                 instr_class = '.stu-instructions';
                 render_div = 'studyNumEventsDIV';
@@ -901,7 +901,7 @@
                 field_multiplier = 1.0;
                 field_cat_name = 'requested_procedure';
                 tooltip_filters = tooltipFiltersRequest;
-                href_start = '/openrem/ct/?requesthist=1&';
+                href_start = '{% url 'ct_summary_list_filter' %}?requesthist=1&';
                 hide_series_btn_stub = 'req_dlp_series_';
 
             {% if request.user.userprofile.plotAverageChoice == 'both' %}
@@ -947,7 +947,7 @@
                     chartSetExportSize('piechartRequestDIV');
                     fitChartToDiv('piechartRequestDIV');
                 });
-                var urlStartReq = '/openrem/ct/?{% for field in filter.form %}{% if field.name != 'requested_procedure' and field.name != 'o' and field.value %}&{{ field.name }}={{ field.value }}{% endif %}{% endfor %}&requested_procedure=';
+                var urlStartReq = '{% url 'ct_summary_list_filter' %}?{% for field in filter.form %}{% if field.name != 'requested_procedure' and field.name != 'o' and field.value %}&{{ field.name }}={{ field.value }}{% endif %}{% endfor %}&requested_procedure=';
                 result = chartFrequency('piechartRequestDIV', 'Requested procedure frequency');
             </script>
         {% endif %}
@@ -1117,7 +1117,7 @@
                     fitChartToDiv('studyMeanDLPOverTimeDIV');
                 });
 
-                var urlStartStudyOverTime = '/openrem/ct/?{% for field in filter.form %}{% if field.name != 'study_description' and field.name != 'date_before' and field.name != 'date_after' and field.name != 'o' and field.value %}&{{ field.name }}={{ field.value }}{% endif %}{% endfor %}&study_description=';
+                var urlStartStudyOverTime = '{% url 'ct_summary_list_filter' %}?{% for field in filter.form %}{% if field.name != 'study_description' and field.name != 'date_before' and field.name != 'date_after' and field.name != 'o' and field.value %}&{% if field.name == 'ct_acquisition_type' %}{% for each_value in field.value %}{{ field.name }}={{ each_value }}{% endfor %}{% else %}{{ field.name }}={{ field.value }}{% endif %}{% endif %}{% endfor %}&study_description=';
 
             {% if request.user.userprofile.plotAverageChoice == 'mean' %}
                 result = chartAverageOverTime('studyMeanDLPOverTimeDIV', 'DLP', 'mGy.cm', 'Mean');

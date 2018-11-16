@@ -9,9 +9,9 @@ In a shell/command window, move into the openrem folder:
 
 * Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``
 * Other linux: ``/usr/lib/python2.7/site-packages/openrem/``
-* Linux virtualenv: ``lib/python2.7/site-packages/openrem/`` (remember to activate the virtualenv)
+* Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/`` (remember to activate the virtualenv)
 * Windows: ``C:\Python27\Lib\site-packages\openrem\``
-* Windows virtualenv: ``Lib\site-packages\openrem\`` (remember to activate the virtualenv)
+* Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\`` (remember to activate the virtualenv)
 
 Web access on OpenREM server only
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -85,15 +85,15 @@ Move into the openrem folder:
 
 * Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``
 * Other linux: ``/usr/lib/python2.7/site-packages/openrem/``
-* Linux virtualenv: ``lib/python2.7/site-packages/openrem/`` (remember to activate the virtualenv)
+* Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/`` (remember to activate the virtualenv)
 * Windows: ``C:\Python27\Lib\site-packages\openrem\``
-* Windows virtualenv: ``Lib\site-packages\openrem\`` (remember to activate the virtualenv)
+* Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\`` (remember to activate the virtualenv)
 
 Linux - ``\`` is the line continuation character:
 
 .. sourcecode:: console
 
-    celery multi start default -A openremproject -c 4 -Q default \
+    celery multi start default -Ofair -A openremproject -c 4 -Q default \
     --pidfile=/path/to/media/celery/%N.pid --logfile=/path/to/media/celery/%N.log
 
 Windows - ``celery multi`` doesn't work on Windows, and ``^`` is the continuation character:
@@ -108,6 +108,17 @@ For production use, see `Daemonising Celery`_ below
 Set the number of workers (concurrency, ``-c``) as you see fit. The more you have, the more processes (imports, exports,
 query-retrieve operations etc) can take place simultaneously. However, each extra worker uses extra memory and if you
 have too many they will be competing for CPU resources too.
+
+.. note::
+
+    Problems with Celery 4 on Windows
+
+    Full support for Celery on Windows was dropped with version 4 due to lack of Windows based developers. However,
+    using the settings above (and as suggested in :doc:`celery-windows`) have been shown to work well in production.
+    It is possible that there may be issues with particular releases though - Celery 4.0.0 his known to work well.
+    If you need to install a particular version of Celery, use::
+
+        pip install celery==4.0.0
 
 To stop the celery queues in Linux:
 
@@ -129,7 +140,7 @@ Celery periodic tasks: beat
 
     Celery beat is only required if you are using the :ref:`nativestore`. Please read the warnings there before deciding
     if you need to run Celery beat. At the current time, using a third party DICOM store service is recommended for
-    most users. See the :doc:`netdicom` documentation for more details
+    most users. See the :ref:`configure_third_party_DICOM` documentation for more details
 
 Celery beat is a scheduler. If it is running, then every 60 seconds a task is run to check if any of the DICOM
 Store SCP nodes are set to ``keep_alive``, and if they are, it tries to verify they are running with a DICOM echo.
@@ -139,9 +150,9 @@ To run celery beat, open a new shell and move into the openrem folder:
 
 * Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``
 * Other linux: ``/usr/lib/python2.7/site-packages/openrem/``
-* Linux virtualenv: ``lib/python2.7/site-packages/openrem/`` (remember to activate the virtualenv)
+* Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/`` (remember to activate the virtualenv)
 * Windows: ``C:\Python27\Lib\site-packages\openrem\``
-* Windows virtualenv: ``Lib\site-packages\openrem\`` (remember to activate the virtualenv)
+* Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\`` (remember to activate the virtualenv)
 
 Linux::
 
@@ -209,21 +220,17 @@ Configure the settings
 * Go to ``Config -> DICOM object delete settings`` and configure appropriately (see :doc:`i_deletesettings`)
 * Go to ``Config -> Patient ID settings`` and configure appropriately (see :doc:`patientid`)
 * If you want to use OpenREM as a DICOM store, or to use OpenREM to query remote systems, go to
-  ``Config -> Dicom network configuration``. For more information go to :doc:`netdicom` (not yet up to date)
+  ``Config -> Dicom network configuration``. For more information go to :doc:`import`.
 * With data in the system, you will want to go to ``Config -> View and edit display names`` and customise
   the display names. An established system will have several entries for each device, from each time the software
   version, station name or other elements changes. See :doc:`i_displaynames` for more information
 
 
 
-Start using it!
-===============
+Start using it - add some data!
+===============================
 
-Add some data!
-
-.. sourcecode:: bash
-
-    openrem_rdsr.py rdsrfile.dcm
+See :doc:`import`
 
 
 Further instructions
@@ -236,10 +243,9 @@ In a production environment, Celery will need to start automatically and
 not depend on a particular user being logged in. Therefore, much like
 the webserver, it will need to be daemonised.
 
-* `Daemonising Celery on Linux <http://celery.readthedocs.org/en/latest/tutorials/daemonizing.html>`_ (external link)
-
 ..  toctree::
     :maxdepth: 1
 
+    celery-linux
     celery-windows
 

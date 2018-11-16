@@ -2,8 +2,61 @@
 OpenREM version history
 =======================
 
-0.8.0b5 (2018-05-xx)
---------------------
+0.8.2 (2018-xx-xx)
+------------------
+* `#689`_  Interface: fixed URL lookup error for DICOM summary page
+* `#685`_  Charts: fixed link code that would otherwise cause DLP per acqusition protocol chart histogram links to fail
+* `#683`_  Installation: added VIRTUAL_DIRECTORY to the settings file to avoid updating local_settings file on upgrade
+* `#682`_  Charts: fixed problem where links from histogram bars didn't filter correctly when case-insensitive categories selected
+* `#679`_  Interface: added ability to filter CT studies on acquisition type
+* `#677`_  Interface: added additional filter materials to convert to abbreviations
+* `#675`_  Exports: improved resilience when export includes malformed studies
+* `#674`_  Documentation: amended zip command in example Orthanc configuration to work with Linux and Windows
+* `#673`_  Imports: handle empty NumericValues and workaround for incorrect Philips Azurion AcquisitionDeviceType
+* `#672`_  Documentation: improve and extend linux one-page install
+* `#670`_  Imports: handle illegal multi-value number in Toshiba RDSR with vHP
+* `#668`_  Code quality: library import and blank space cleanup
+* `#667`_  Web server: enable OpenREM to be hosted from a non-root folder/virtual-directory
+* `#666`_  Query-retrieve: handle non-return of ModalitiesInStudy correctly
+* `#658`_  Interface: added display of workload stats in home page modality tables
+* `#479`_  Administration: added facility to list and delete failed import studies
+
+0.8.1 (2018-09-16)
+------------------
+* `#663`_  Interface: updated column headings on home page
+* `#660`_  Documentation: corrected and improved Linux one-page install
+* `#659`_  Interface: made the summary tables on the home page sortable by clicking on headers
+* `#656`_  Install: pegged django-debug-toolbar to 1.9.1 until Django is upgraded
+* `#654`_  Documentation: supplemented the Orthanc Lua file config option docs
+* `#653`_  Docs: clarified notes to get link to Orthanc lua file correct on release
+* `#652`_  Documentation: added docs showing Celery daemonisation in Linux
+* `#651`_  Documentation: added one-page full setup Ubuntu 18.04 install instructions
+* `#650`_  Documentation: modified quick install virtualenv docs
+* `#649`_  Documentation: instructions for updating hosts file for Ubuntu and RabbitMQ
+* `#648`_  Documentation: clarified Toshiba options when not required
+* `#647`_  Documentation: updated link to pixelmed
+* `#646`_  Modified Celery import to avoid name clash in some circumstances
+* `#645`_  Imports: prevent import failure when text is used in filter thickness field in DX image
+* `#644`_  Exports: fixed error in exporting non-ASCII CT protocol acquisition names
+* `#643`_  Installation: updated docs to make use of pip binaries for Postgres connector and numpy, Windows and Linux
+* `#642`_  Skin dose maps: added catch for error when there are no events in the study
+* `#641`_  Exports: mammography exports from filtered pages sorted by AGD no longer result in duplicate studies
+* `#640`_  Exports: error in filter listing for NHSBSP csv exports corrected
+* `#639`_  Charts: fixed problem where a blank category name may not be displayed correctly
+* `#638`_  Skin dose maps: added a link to download data for stand-alone openSkin even when map displayed
+* `#627`_  DICOM Networking: Implemented workaround for query "bug" in Impax 6.6
+* `#606`_  Interface: Made it possible for the user to change his/her password
+
+0.8.0 (2018-06-11)
+------------------
+* `#635`_  Documentation: added Orthanc as preferred third party DICOM Store service
+* `#634`_  Documentation: updated docs for import and query-retrieve duplicates processing
+* `#633`_  Charts: fixed issue where charts failed if bar chart series name was null
+* `#632`_  DICOM: move requests for queries that don't exist now fail gracefully
+* `#631`_  Skin dose maps: bug fixed that prevented message from displaying on screen when skin dose map cannot be calculated
+* `#630`_  Documentation: improved installation instructions
+* `#628`_  Imports: fixed code for importing when there are duplicate DX or MG studies in the database
+* `#626`_  DICOM: isolated the generate modalities in study function and added testing
 * `#625`_  Imports: now using event level UIDs to process continued, cumulative and duplicate RDSRs
 * `#624`_  Charts: removed filter link on number of events histogram as it was not functioning correctly
 * `#623`_  Imports: changed name of Toshiba image based extractor routine
@@ -33,6 +86,7 @@ OpenREM version history
 * `#585`_  Documentation: added information about multiple cumulative RDSRs
 * `#584`_  Import, Interface, Export: RDSR with pulse level data now function
 * `#583`_  Documentation: added information about dual mode modalities and deleting all from an X-ray unit
+* `#582`_  Celery: updated results backend as amqp deprecated and slow
 * `#581`_  Import scripts: interpreter line now always first, functions imported specifically
 * `#580`_  Imports and Interface: one modality creating both DX and RF can now be handled appropriately
 * `#579`_  Imports: dummy values for Toshiba CT import function now in settings.py, log file config in docs
@@ -40,6 +94,8 @@ OpenREM version history
 * `#575`_  Exports: export page now updates using AJAX and has a select all button
 * `#573`_  Exports: corrected and clarified exposure time and duration units, added number of pulses
 * `#572`_  Interface: homepage now populates as AJAX to increase responsiveness
+* `#570`_  Charts: simplified chart function code
+* `#569`_  Charts: fixed frequency issue with mean averages selected
 * `#568`_  Imports: missing DICOM date-time no longer causes an error
 * `#567`_  Celery: fixed dual-namespace imports of tasks
 * `#566`_  Interface: correctly show "assumed patient mass" in case of set value of zero
@@ -49,18 +105,22 @@ OpenREM version history
 * `#561`_  Imports: patient orientation modifier now correctly extracted from RDSR
 * `#560`_  Exports: added study level comments
 * `#559`_  Interface: date pickers inconsistent start day fixed
-* `#558`_  Skin dose maps: set defaults instead of crashing if kV, dose, table or tube/detector postition are missing
+* `#558`_  Skin dose maps: set defaults instead of crashing if kV, dose, table or tube/detector position are missing
 * `#557`_  Skin dose maps: improved construction of patient orientation code
 * `#556`_  Exports: DX exports where TotalNumberOfRadiographicFrames is not populated now export
 * `#552`_  Documentation: documented extractor for older Toshiba CT scanners
 * `#551`_  Documentation: added procedure for opening csv files in Excel with non-ASCII characters
+* `#550`_  Documentation: added a note to describe exposure time and duration for fluoroscopy studies
 * `#549`_  Documentation: added procedure for fixing laterality on Hologic studies, ref `#411`_
+* `#547`_  Interface: improved handling of available time information for fluoro studies
+* `#546`_  Query Retrieve: added flag and functionality to query for Toshiba images
 * `#544`_  Interface: added procedure, requested procedure to summary listings and details and filtering
 * `#543`_  Interface: added drop-down box to choose how many studies are displayed on filtered pages
 * `#542`_  Interface: added display name to all detailed html pages
 * `#541`_  Documentation: updated for celery on Windows
 * `#540`_  Documentation: updated for current skinDose functionality
 * `#539`_  Documentation: updated chart document to include series toggle buttons
+* `#537`_  Charts: hide series function added
 * `#536`_  Code quality: reduced javascript duplication and collected file groups into subfolders
 * `#535`_  Interface: fixed problem where category names that included a plus symbol caused filtering and chart issues
 * `#534`_  Interface: chart drilldown reported as not working - was actually due to a user's database migrations
@@ -75,10 +135,12 @@ OpenREM version history
 * `#522`_  Documentation: made it clearer on offline-install docs that version numbers will change
 * `#521`_  Testing: added tests for dual source CT imports
 * `#520`_  Imports: removed XML styling from Philips legacy CT comment creation
+* `#519`_  Skin dose maps: fixed black on black text issue
 * `#518`_  Importing: fixed imports where CT Target Region isn't specified
 * `#517`_  Interface: operator name is now displayed on the detail page for each modality, along with physician for CT and fluoro
 * `#516`_  Imports: MultiValue person names are now stored as a decoded string, not a list
 * `#511`_  Testing: develop and other branches can now be deployed to dev.openrem.org and testing.openrem.org automatically
+* `#510`_  Imports: 'not-patient-indicators' can now be configured in the interface
 * `#509`_  Skin dose maps: now recalculated on view if recorded height or weight has changed since last calculation
 * `#508`_  Testing: DX sample files are now tested
 * `#507`_  Interface: Mammo now filterable by study description, procedure, requested procedure and acquisition protocol
@@ -105,11 +167,13 @@ OpenREM version history
 * `#485`_  Imports: CT RDSR now imports 'target region' correctly
 * `#484`_  Exports and Interface: Exports and interface page views are now more efficient and (much) faster
 * `#482`_  Imports: DX extractor now extracts acquisition protocol, requested procedure name and study name for Fuji Go mobile; extracts acquisition protocol for Toshiba Radrex equipment; extracts requested procedure name from Carestream DRX-Revolution mobiles
+* `#480`_  Imports: Code and instructions to create and import an RDSR from Toshiba CT dose summary images and studies
 * `#476`_  Imports: Mixed latin-1 and UTF8 characters now imported, but need to be handled better if possible
 * `#475`_  Query Retrieve: Made -sr a stand-alone option - it has a very niche use-case!
 * `#474`_  Logging: Changing to DEBUG logging level in ``local_settings.py`` will now be respected
 * `#473`_  Query Retrieve: Added tests
 * `#472`_  Query Retrieve: Overhauled the query retrieve routines
+* `#471`_  Internationalisation: added configuration and docs to set the timezone
 * `#470`_  Query Retrieve: Optimised CT filtering
 * `#468`_  Query Retrieve: Station names can now be used for filtering if returned
 * `#467`_  Testing: Added tests for mammography RDSR imports
@@ -122,6 +186,7 @@ OpenREM version history
 * `#454`_  Exports: Mean filter thickness now reported in exports
 * `#453`_  Imports: DX with min filter thickness greater than max have values switched on import
 * `#452`_  Exports: Added CTDIw phantom size to CT exports
+* `#451`_  Skin dose maps: fixed issue with filters being referenced before being defined
 * `#450`_  Imports: DX imports with filter thickness of 0.00 are now recorded as such
 * `#449`_  Exports: Fixed a bug that prevented fluoro exports if protocol names had non-ASCII characters
 * `#448`_  Documentation: Added a diagram showing the relationship between the OpenREM system components
@@ -135,10 +200,12 @@ OpenREM version history
 * `#440`_  Charts: Fixed a bug in sorting.js so that undefined strings are handled correctly
 * `#439`_  Charts: Added controls for plotting a series per system and calculation histogram data to each filtered view
 * `#438`_  Skin dose maps: skin dose maps successfully calculated from existing studies; indication of assumed or extracted data shown
+* `#434`_  Internationalisation: added passing char_set throughout the extractor functions (since largely made redundant again!)
 * `#432`_  Imports: RDSR import function now looks in comment field for `patient_table_relationship` data
 * `#431`_  Imports: fixed DX imports with MultiValue filter values (Cu+Al) again!
-* `#430`_  Exports: Fixed DX exports with multiple filters again, added tests
-* `#429`_  Charts: Added new mammo scatter plots. Thanks to `@rijkhorst`_
+* `#430`_  Exports: fixed DX exports with multiple filters again, added tests
+* `#429`_  Charts: added new mammo scatter plots. Thanks to `@rijkhorst`_
+* `#427`_  Testing: added a large number of tests that are automatically run on commit to bitbucket
 * `#414`_  Reduced use of JavaScript global variables and improved JavaScript objects
 * `#411`_  Imports: fixed laterality and accumulated AGD failure for Hologic DBT proprietary projection images
 * `#323`_  Documentation: code autodocumentation largely now working again
@@ -484,8 +551,8 @@ Reopened issue
 
 ..  note::
 
-    * `#64`_ includes **changes to the database schema and needs a user response** - see `version 0.4.0 release notes <http://docs.openrem.org/page/release-0.4.0.html>`_
-    * `#65`_ includes changes to the settings file which **require settings information to be copied** and files moved/renamed - see `version 0.4.0 release notes <http://docs.openrem.org/page/release-0.4.0.html>`_
+    * `#64`_ includes **changes to the database schema and needs a user response** - see `version 0.4.0 release notes <https://docs.openrem.org/page/release-0.4.0.html>`_
+    * `#65`_ includes changes to the settings file which **require settings information to be copied** and files moved/renamed - see `version 0.4.0 release notes <https://docs.openrem.org/page/release-0.4.0.html>`_
 
 
 * `#80`_   Added docs for installing Apache with auto-start on Windows Server 2012. Contributed by JA Cole
@@ -512,7 +579,7 @@ Reopened issue
 
 0.3.9 (2014-03-08)
 ------------------
-..  note:: `#51`_ includes changes to the database schema -- make sure South is in use before upgrading. See http://docs.openrem.org/page/upgrade.html
+..  note:: `#51`_ includes changes to the database schema -- make sure South is in use before upgrading. See https://docs.openrem.org/page/upgrade.html
 
 * `#59`_   CSS stylesheet referenced particular fonts that are not in the distribution -- references removed
 * `#58`_   Export to xlsx more robust - limitation of 31 characters for sheet names now enforced

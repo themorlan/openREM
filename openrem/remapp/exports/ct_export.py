@@ -327,9 +327,14 @@ def _ct_get_series_data(s):
     except AttributeError:
         phantom = None
 
+    try:
+        ct_acquisition_type = s.ct_acquisition_type.code_meaning
+    except AttributeError:
+        ct_acquisition_type = ""
+
     seriesdata = [
-        str(s.acquisition_protocol),
-        str(s.ct_acquisition_type),
+        s.acquisition_protocol,
+        ct_acquisition_type,
         s.exposure_time,
         s.scanninglength_set.get().scanning_length,
         s.nominal_single_collimation_width,
@@ -350,7 +355,7 @@ def _ct_get_series_data(s):
             source_parameters[index]['max_current'] = source.maximum_xray_tube_current
             source_parameters[index]['current'] = source.xray_tube_current
             source_parameters[index]['time'] = source.exposure_time_per_rotation
-    except ObjectDoesNotExist:
+    except (ObjectDoesNotExist, KeyError):
         logger.debug("Export: ctxraysourceparameters_set does not exist")
     for source in source_parameters:
         seriesdata += [
@@ -424,6 +429,6 @@ def _ct_get_series_data(s):
     seriesdata += [
         s.xray_modulation_type,
         dose_check_string,
-        str(s.comment),
+        s.comment,
         ]
     return seriesdata

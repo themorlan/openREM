@@ -23,7 +23,7 @@ Upgrading an existing installation
 ..  toctree::
     :maxdepth: 2
 
-    release-0.8.0
+    release-0.8.1
     upgrade-offline
 
 .. _databaselinks:
@@ -54,8 +54,7 @@ for performance it is recommended that a production webserver is used instead of
 
 On Windows or Linux, it is possible to use `Apache <http://httpd.apache.org>`_, however for reasons relating to how
 Python, Apache and mod_wsgi are compiled using old Microsoft tools, this is now nearly impossible to do on the Windows
-platform. There is no reason for existing Windows installs with Apache to change webserver, but in case it is useful our
-guide to :doc:`apache_on_windows` is available, but no longer recommended for new installs.
+platform. There is no reason for existing Windows installs with Apache to change webserver.
 
 For Apache installs on Linux, the
 `django website <https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/modwsgi/>`_ has instructions and links to
@@ -68,3 +67,24 @@ Our recommendations for Windows and Linux are:
 
     iis_on_windows
     nginx_on_linux
+
+If you want to run OpenREM-webinterface in a virtual directory (other than the root virtual directory), take a look at
+the following documentation before setting up the web server:
+
+..  toctree::
+    :maxdepth: 1
+
+    virtual_directory
+
+
+Quick start: One page complete install
+======================================
+
+..  toctree::
+    :maxdepth: 1
+
+    quick_start_linux
+
+
+
+

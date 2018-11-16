@@ -39,6 +39,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.core.urlresolvers import reverse_lazy
 import remapp
 
 logger = logging.getLogger(__name__)
@@ -88,10 +89,16 @@ def ctcsv1(request, name=None, pat_id=None):
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = ct_csv.delay(request.GET, pid['pidgroup'], pid['include_names'],
+        # The 'ct_acquisition_type' filter values must be passed to ct_csv as a list, so convert the GET to a dict and
+        # then update the 'ct_acquisition_type' value with a list.
+        filter_dict = request.GET.dict()
+        if 'ct_acquisition_type' in filter_dict:
+            filter_dict['ct_acquisition_type'] = request.GET.getlist('ct_acquisition_type')
+
+        job = ct_csv.delay(filter_dict, pid['pidgroup'], pid['include_names'],
                            pid['include_pat_id'], request.user.id)
         logger.debug(u'Export CT to CSV job is {0}'.format(job))
-    return redirect('/openrem/export/')
+    return redirect(reverse_lazy('export'))
 
 
 @csrf_exempt
@@ -110,11 +117,17 @@ def ctxlsx1(request, name=None, pat_id=None):
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = ctxlsx.delay(request.GET, pid['pidgroup'], pid['include_names'],
+        # The 'ct_acquisition_type' filter values must be passed to ctxlsx as a list, so convert the GET to a dict and
+        # then update the 'ct_acquisition_type' value with a list.
+        filter_dict = request.GET.dict()
+        if 'ct_acquisition_type' in filter_dict:
+            filter_dict['ct_acquisition_type'] = request.GET.getlist('ct_acquisition_type')
+
+        job = ctxlsx.delay(filter_dict, pid['pidgroup'], pid['include_names'],
                            pid['include_pat_id'], request.user.id)
         logger.debug(u'Export CT to XLSX job is {0}'.format(job))
 
-    return redirect('/openrem/export/')
+    return redirect(reverse_lazy('export'))
 
 
 @csrf_exempt
@@ -137,7 +150,7 @@ def dxcsv1(request, name=None, pat_id=None):
                                    pid['include_pat_id'], request.user.id)
         logger.debug(u'Export DX to CSV job is {0}'.format(job))
 
-    return redirect('/openrem/export/')
+    return redirect(reverse_lazy('export'))
 
 
 @csrf_exempt
@@ -160,7 +173,7 @@ def dxxlsx1(request, name=None, pat_id=None):
                            pid['include_pat_id'], request.user.id)
         logger.debug(u'Export DX to XLSX job is {0}'.format(job))
 
-    return redirect('/openrem/export/')
+    return redirect(reverse_lazy('export'))
 
 
 @csrf_exempt
@@ -183,7 +196,7 @@ def flcsv1(request, name=None, pat_id=None):
                                    pid['include_pat_id'], request.user.id)
         logger.debug(u'Export Fluoro to CSV job is {0}'.format(job))
 
-    return redirect('/openrem/export/')
+    return redirect(reverse_lazy('export'))
 
 
 @csrf_exempt
@@ -206,7 +219,7 @@ def rfxlsx1(request, name=None, pat_id=None):
                            pid['include_pat_id'], request.user.id)
         logger.debug(u'Export Fluoro to XLSX job is {0}'.format(job))
 
-    return redirect('/openrem/export/')
+    return redirect(reverse_lazy('export'))
 
 
 @csrf_exempt
@@ -227,7 +240,7 @@ def rfopenskin(request, pk):
         job = rfopenskin.delay(export.pk)
         logger.debug(u'Export Fluoro to openSkin CSV job is {0}'.format(job))
 
-    return redirect('/openrem/export/')
+    return redirect(reverse_lazy('export'))
 
 
 @csrf_exempt
@@ -250,7 +263,7 @@ def mgcsv1(request, name=None, pat_id=None):
                                    pid['include_pat_id'], request.user.id)
         logger.debug(u'Export MG to CSV job is {0}'.format(job))
 
-    return redirect('/openrem/export/')
+    return redirect(reverse_lazy('export'))
 
 
 @csrf_exempt
@@ -273,7 +286,7 @@ def mgxlsx1(request, name=None, pat_id=None):
                                    patid=pid['include_pat_id'], user=request.user.id, xlsx=True)
         logger.debug(u'Export MG to xlsx job is {0}'.format(job))
 
-    return redirect('/openrem/export/')
+    return redirect(reverse_lazy('export'))
 
 
 @csrf_exempt
@@ -291,7 +304,7 @@ def mgnhsbsp(request):
         job = mg_csv_nhsbsp.delay(request.GET, request.user.id)
         logger.debug(u'Export MG to CSV NHSBSP job is {0}'.format(job))
 
-    return redirect('/openrem/export/')
+    return redirect(reverse_lazy('export'))
 
 
 @csrf_exempt
@@ -347,16 +360,16 @@ def download(request, task_id):
         exp = Exports.objects.get(task_id__exact=task_id)
     except ObjectDoesNotExist:
         messages.error(request, u"Can't match the task ID, download aborted")
-        return redirect('/openrem/export/')
+        return redirect(reverse_lazy('export'))
 
     if not exportperm:
         messages.error(request, u"You don't have permission to download exported data")
-        return redirect('/openrem/export/')
+        return redirect(reverse_lazy('export'))
 
     if exp.includes_pid and not pidperm:
         messages.error(request,
                        u"You don't have permission to download export data that includes patient identifiable information")
-        return redirect('/openrem/export/')
+        return redirect(reverse_lazy('export'))
 
     file_path = os.path.join(MEDIA_ROOT, exp.filename.name)
     file_wrapper = FileWrapper(file(file_path, 'rb'))
@@ -419,7 +432,7 @@ def export_abort(request, pk):
         revoke(export_task.task_id, terminate=True)
         export_task.delete()
 
-    return HttpResponseRedirect("/openrem/export/")
+    return HttpResponseRedirect(reverse_lazy('export'))
 
 
 @csrf_exempt

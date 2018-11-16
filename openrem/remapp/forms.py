@@ -1,12 +1,13 @@
 from django import forms
 from django.utils.safestring import mark_safe
+from django.core.urlresolvers import reverse
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, HTML, Div
 from crispy_forms.bootstrap import FormActions, PrependedText, InlineCheckboxes, Accordion, AccordionGroup
 import logging
 from openremproject import settings
 from remapp.models import DicomDeleteSettings, DicomRemoteQR, DicomStoreSCP, SkinDoseMapCalcSettings, \
-    NotPatientIndicatorsName, NotPatientIndicatorsID
+    NotPatientIndicatorsName, NotPatientIndicatorsID, HomePageAdminSettings
 
 logger = logging.getLogger()
 
@@ -101,6 +102,8 @@ class itemsPerPageForm(forms.Form):
 
 
 class DXChartOptionsForm(forms.Form):
+    """Form for DX chart options
+    """
     plotCharts = forms.BooleanField(label='Plot charts?', required=False)
     plotDXAcquisitionMeanDAP = forms.BooleanField(label='DAP per acquisition', required=False)
     plotDXAcquisitionFreq = forms.BooleanField(label='Acquisition frequency', required=False)
@@ -124,6 +127,8 @@ class DXChartOptionsForm(forms.Form):
 
 
 class CTChartOptionsForm(forms.Form):
+    """Form for CT chart options
+    """
     plotCharts = forms.BooleanField(label='Plot charts?', required=False)
     plotCTAcquisitionMeanDLP = forms.BooleanField(label='DLP per acquisition', required=False)
     plotCTAcquisitionMeanCTDI = forms.BooleanField(label=mark_safe('CTDI<sub>vol</sub> per acquisition'),
@@ -146,6 +151,8 @@ class CTChartOptionsForm(forms.Form):
 
 
 class RFChartOptionsForm(forms.Form):
+    """Form for RF chart options
+    """
     plotCharts = forms.BooleanField(label='Plot charts?', required=False)
     plotRFStudyPerDayAndHour = forms.BooleanField(label='Study workload', required=False)
     plotRFStudyFreq = forms.BooleanField(label='Study frequency', required=False)
@@ -157,6 +164,8 @@ class RFChartOptionsForm(forms.Form):
 
 
 class RFChartOptionsDisplayForm(forms.Form):
+    """Form for RF chart display options
+    """
     plotRFStudyPerDayAndHour = forms.BooleanField(label='Study workload', required=False)
     plotRFStudyFreq = forms.BooleanField(label='Study frequency', required=False)
     plotRFStudyDAP = forms.BooleanField(label='DAP per study', required=False)
@@ -165,6 +174,8 @@ class RFChartOptionsDisplayForm(forms.Form):
 
 
 class MGChartOptionsForm(forms.Form):
+    """Form for MG chart options
+    """
     plotCharts = forms.BooleanField(label='Plot charts?', required=False)
     plotMGStudyPerDayAndHour = forms.BooleanField(label='Study workload', required=False)
     plotMGAGDvsThickness = forms.BooleanField(label='AGD vs. compressed thickness', required=False)
@@ -177,6 +188,8 @@ class MGChartOptionsForm(forms.Form):
 
 
 class MGChartOptionsDisplayForm(forms.Form):
+    """Form for MG chart display options
+    """
     plotMGStudyPerDayAndHour = forms.BooleanField(label='Study workload', required=False)
     plotMGAGDvsThickness = forms.BooleanField(label='AGD vs. compressed thickness', required=False)
     plotMGkVpvsThickness = forms.BooleanField(label='kVp vs. compressed thickness', required=False)
@@ -184,6 +197,8 @@ class MGChartOptionsDisplayForm(forms.Form):
 
 
 class DXChartOptionsDisplayForm(forms.Form):
+    """Form for DX chart display options
+    """
     plotDXAcquisitionMeanDAP = forms.BooleanField(label='DAP per acquisition', required=False)
     plotDXAcquisitionFreq = forms.BooleanField(label='Acquisition frequency', required=False)
     plotDXAcquisitionDAPvsIECDDI = forms.BooleanField(label='Acquisition DAP vs IEC DDI', required=False)
@@ -204,6 +219,8 @@ class DXChartOptionsDisplayForm(forms.Form):
 
 
 class CTChartOptionsDisplayForm(forms.Form):
+    """Form for CT chart display options
+    """
     plotCTAcquisitionMeanDLP = forms.BooleanField(label='DLP per acquisition', required=False)
     plotCTAcquisitionMeanCTDI = forms.BooleanField(label=mark_safe('CTDI<sub>vol</sub> per acquisition'),
                                                    required=False)
@@ -223,6 +240,8 @@ class CTChartOptionsDisplayForm(forms.Form):
 
 
 class GeneralChartOptionsDisplayForm(forms.Form):
+    """Form for general chart display options
+    """
     plotCharts = forms.BooleanField(label='Plot charts?', required=False)
     if 'postgresql' in settings.DATABASES['default']['ENGINE']:
         plotMeanMedianOrBoth = forms.ChoiceField(label='Average to use', choices=AVERAGES, required=False)
@@ -233,8 +252,16 @@ class GeneralChartOptionsDisplayForm(forms.Form):
     plotHistogramBins = forms.IntegerField(label='Number of histogram bins', min_value=2, max_value=40, required=False)
     plotCaseInsensitiveCategories = forms.BooleanField(label='Case-insensitive categories', required=False)
 
+
 class UpdateDisplayNamesForm(forms.Form):
     display_names = forms.CharField()
+
+
+class HomepageOptionsForm(forms.Form):
+    """Form for displaying and changing the home page options
+    """
+    dayDeltaA = forms.IntegerField(label='Primary time period to sum studies (days)', required=False)
+    dayDeltaB = forms.IntegerField(label='Secondary time period to sum studies (days)', required=False)
 
 
 class DicomQueryForm(forms.Form):
@@ -267,8 +294,8 @@ class DicomQueryForm(forms.Form):
                                       help_text="Only use with stores containing only RDSRs, "
                                                 "with no accompanying images")
     duplicates_field = forms.BooleanField(label='Ignore studies already in the database?', required=False, initial=True,
-                                          help_text="Studies with the same study UID won't be imported, so there isn't "
-                                                    "any point getting them!")
+                                          help_text="Objects that have already been processed won't be imported, so "
+                                                    "there isn't any point getting them!")
     desc_exclude_field = forms.CharField(required=False,
                                          label="Exclude studies with these terms in the study description:",
                                          help_text="Comma separated list of terms")
@@ -369,7 +396,7 @@ class DicomDeleteSettingsForm(forms.ModelForm):
             Div(
                 HTML("""
                 <div class="col-lg-4 col-lg-offset-2">
-                    <a href="/openrem/admin/dicomsummary#delete" role="button" class="btn btn-default">
+                    <a href='""" + reverse('dicom_summary') + """#delete' role="button" class="btn btn-default">
                         Cancel and return to the DICOM configuration and DICOM object delete summary page
                     </a>
                 </div>
@@ -390,11 +417,32 @@ class DicomQRForm(forms.ModelForm):
         super(DicomQRForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-lg-4'
-        self.helper.field_class = 'col-lg-2'
+        self.helper.label_class = 'col-md-8'
+        self.helper.field_class = 'col-md-4'
         self.helper.layout = Layout(
             Div(
                 'name', 'aetitle', 'callingaet', 'port', 'ip', 'hostname'
+            ),
+            Accordion(
+                AccordionGroup(
+                    'Non-standard configuration options',
+                    Div(
+                        HTML("""
+                        <p>
+                          Some PACS systems (like Impax 6.6) need modality at study level for correct filtering. 
+                          Others will return no results if modality is included at study level. See
+                            <a href="http://docs.openrem.org/en/{{ admin.docsversion }}/netdicom-qr-config.html"
+                                target="_blank" data-toggle="tooltip"
+                                title="DICOM query-retrieve node config documentation - opens in a new tab">
+                                DICOM query-retrieve node config documentation
+                            </a>
+                        </p>
+                        """)
+                    ),
+                    PrependedText('use_modality_tag', ''),  # Trick to force label to join the other labels,
+                                                            # otherwise sits to right
+                    active=False
+                )
             ),
             FormActions(
                 Submit('submit', 'Submit')
@@ -402,7 +450,7 @@ class DicomQRForm(forms.ModelForm):
             Div(
                 HTML("""
                 <div class="col-lg-4 col-lg-offset-4">
-                    <a href="/openrem/admin/dicomsummary" role="button" class="btn btn-default">
+                    <a href='""" + reverse('dicom_summary') + """' role="button" class="btn btn-default">
                         Cancel and return to DICOM configuration summary page
                     </a>
                 </div>
@@ -412,7 +460,7 @@ class DicomQRForm(forms.ModelForm):
 
     class Meta:
         model = DicomRemoteQR
-        fields = ['name', 'aetitle', 'callingaet', 'port', 'ip', 'hostname']
+        fields = ['name', 'aetitle', 'callingaet', 'port', 'ip', 'hostname', 'use_modality_tag']
 
 
 class DicomStoreForm(forms.ModelForm):
@@ -436,7 +484,7 @@ class DicomStoreForm(forms.ModelForm):
                         HTML("""
                         <p>
                           DICOM store node built in to OpenREM is not yet ready for production. See
-                            <a href="http://docs.openrem.org/en/{{ admin.docsversion }}/netdicom-nodes.html"
+                            <a href="https://docs.openrem.org/en/{{ admin.docsversion }}/netdicom-nodes.html"
                                 target="_blank" data-toggle="tooltip"
                                 title="DICOM store documentation - opens in a new tab">
                                 DICOM store documentation (Advanced)
@@ -455,7 +503,7 @@ class DicomStoreForm(forms.ModelForm):
             Div(
                 HTML("""
                 <div class="col-lg-4 col-lg-offset-4">
-                    <a href="/openrem/admin/dicomsummary" role="button" class="btn btn-default">
+                    <a href='""" + reverse('dicom_summary') + """' role="button" class="btn btn-default">
                         Cancel and return to DICOM configuration summary page
                     </a>
                 </div>
@@ -496,6 +544,28 @@ class SkinDoseMapCalcSettingsForm(forms.ModelForm):
         fields = ['enable_skin_dose_maps', 'calc_on_import']
 
 
+class HomePageAdminSettingsForm(forms.ModelForm):
+    """Form for configuring home page settings
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(HomePageAdminSettingsForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_class = 'form-horizontal'
+        self.helper.layout = Layout(
+            Div(
+                'enable_workload_stats',
+            ),
+            FormActions(
+                Submit('submit', 'Submit')
+            )
+        )
+
+    class Meta:
+        model = HomePageAdminSettings
+        fields = ['enable_workload_stats']
+
+
 class NotPatientNameForm(forms.ModelForm):
     """Form for configuring not-patient name patterns
     """
@@ -516,7 +586,7 @@ class NotPatientNameForm(forms.ModelForm):
             Div(
                 HTML("""
                 <div class="col-lg-4 col-lg-offset-4">
-                    <a href="/openrem/admin/notpatientindicators/" role="button" class="btn btn-default">
+                    <a href='""" + reverse('not_patient_indicators') + """' role="button" class="btn btn-default">
                         Cancel and return to not-patient indicator summary page
                     </a>
                 </div>
@@ -551,7 +621,7 @@ class NotPatientIDForm(forms.ModelForm):
             Div(
                 HTML("""
                 <div class="col-lg-4 col-lg-offset-4">
-                    <a href="/openrem/admin/notpatientindicators/" role="button" class="btn btn-default">
+                    <a href='""" + reverse('not_patient_indicators') + """' role="button" class="btn btn-default">
                         Cancel and return to not-patient indicator summary page
                     </a>
                 </div>
