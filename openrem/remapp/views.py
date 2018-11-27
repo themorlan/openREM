@@ -899,16 +899,21 @@ def rf_detail_view_skin_map(request, pk=None):
 
 @login_required
 def ct_summary_list_filter(request):
-    from remapp.interface.mod_filters import ct_acq_filter
+    from remapp.interface.mod_filters import ct_acq_filter, AdvancedSearchFilter
     from remapp.forms import CTChartOptionsForm, itemsPerPageForm
     from openremproject import settings
-    advanced_search_available = False
+    import json
+    advanced_search_available = True
 
     pid = bool(request.user.groups.filter(name='pidgroup'))
-    f = ct_acq_filter(request.GET, pid=pid)
     if advanced_search_available:
         advanced_search_structure = get_advanced_search_form(request)
-        f.qs = advanced_search_structure['exams']
+        f = AdvancedSearchFilter(advanced_search_structure['advancedSearchString'],
+                                 json.loads(advanced_search_structure['json_filter_options']),
+                                 'CT')
+        # f.qs = advanced_search_structure['exams']
+    else:
+        f = ct_acq_filter(request.GET, pid=pid)
 
     try:
         # See if the user has plot settings in userprofile
@@ -1320,7 +1325,7 @@ def get_advanced_search_form(request):
     """
     import json
     from forms import AdvancedSearchForm
-    from remapp.interface.mod_filters import get_advanced_search_objects
+    from remapp.interface.mod_filters import AdvancedSearchFilter
     from models import GeneralStudyModuleAttr, PatientModuleAttr, PatientStudyModuleAttr,GeneralEquipmentModuleAttr, \
         CtRadiationDose, CtAccumulatedDoseData, CtIrradiationEventData, CtXRaySourceParameters, ScanningLength, \
         SizeSpecificDoseEstimation, CtDoseCheckDetails, UniqueEquipmentNames
@@ -1354,8 +1359,9 @@ def get_advanced_search_form(request):
     if advanced_search_form.is_valid():
         # Use the form data if the user clicked on the submit button
         if ("submit" in request.GET) and (len(advanced_search_string) > 0):
-            exam_query_result = get_advanced_search_objects(GeneralStudyModuleAttr, advanced_search_string,
-                                                            json.loads(json_search))
+            exam_query_result = AdvancedSearchFilter.get_advanced_search_objects(GeneralStudyModuleAttr,
+                                                                                 advanced_search_string,
+                                                                                 json.loads(json_search))
         else:
             exam_query_result = GeneralStudyModuleAttr.objects.filter(modality_type__exact='CT')
 

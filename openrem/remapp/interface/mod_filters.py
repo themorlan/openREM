@@ -129,15 +129,13 @@ class AdvancedSearchFilter(django_filters.FilterSet):
     # https://github.com/carltongibson/django-filter/issues/137, bijna onderaan (visigoth)
     # https://stackoverflow.com/questions/28701202/create-or-filter-with-django-filters
 
-    from django.db.models import Q
-    cur_q_object = Q()
-
-    def __init__(self, search_string, json_search_object):
+    def __init__(self, search_string, json_search_object, modality=None):
         from django.db.models import Q
         from copy import deepcopy
 
         super(AdvancedSearchFilter, self).__init__()
         prev_q_object = Q()
+        cur_q_object = Q()
         search_string = search_string.strip()
         closing_bracket_pos = search_string.find(')')
         last_closing_bracket_pos = -1
@@ -167,7 +165,8 @@ class AdvancedSearchFilter(django_filters.FilterSet):
                     cur_q_object.add(prev_q_object, operator, squash=False)
             prev_q_object = deepcopy(cur_q_object)
             if start_pos_operator > -2:
-                search_string = (search_string[0:start_pos_operator+1] + search_string[closing_bracket_pos + 1:]).strip()
+                search_string = (search_string[0:start_pos_operator+1] +
+                                 search_string[closing_bracket_pos + 1:]).strip()
             else:
                 search_string = (search_string[0:opening_bracket_pos] + search_string[closing_bracket_pos + 1:]).strip()
             last_closing_bracket_pos = opening_bracket_pos
@@ -199,19 +198,21 @@ class AdvancedSearchFilter(django_filters.FilterSet):
                     operator = operator.replace('NOT', '').strip()
                 if operator != '':
                     cur_q_object.add(prev_q_object, operator)
-        if (cur_q_object):
+        if modality:
+            cur_q_object.add(self.parse_advanced_search("{{[Modality Type] is '{0}'}}".format(modality.upper()),
+                                                        json_search_object), 'AND')
+        if cur_q_object:
             filter = django_filters.AllValuesFilter(cur_q_object)
 
     class Meta:
         model = GeneralStudyModuleAttr
         fields = []
 
-
-    def parse_advanced_search(self, search_string, json_filter_options):
+    @staticmethod
+    def parse_advanced_search(search_string, json_filter_options):
         """
         Filter model based on the advanced search_string
         adapted from: https://www.djangosnippets.org/snippets/1700/
-        :param model: the model to filter
         :param search_string: human readable advanced search string
         :param json_filter_options: json search template
         :return: Queryset or None if no filter was found
@@ -221,7 +222,7 @@ class AdvancedSearchFilter(django_filters.FilterSet):
         # Replace human readable parameters by database (model) fields
         start_pos_parameter = search_string.find("[")
         end_pos_parameter = search_string.find("]")
-        while (start_pos_parameter < end_pos_parameter):
+        while start_pos_parameter < end_pos_parameter:
             # if this is the case both are found and start_pos < end_pos
             parameter = search_string[start_pos_parameter + 1:end_pos_parameter]
             db_field = get_database_field(json_filter_options, parameter)
@@ -270,6 +271,80 @@ class AdvancedSearchFilter(django_filters.FilterSet):
                 # but if we gonna localise the human readable string, we should be aware of this
                 q_object.add(query, and_or_operator)
         return q_object
+
+    @staticmethod
+    def get_advanced_search_objects(model, search_string, json_search_object):
+
+        from django.db.models import Q
+        from copy import deepcopy
+
+        prev_q_object = Q()
+        cur_q_object = Q()
+        search_string = search_string.strip()
+        closing_bracket_pos = search_string.find(')')
+        last_closing_bracket_pos = -1
+        while closing_bracket_pos > -1:
+            opening_bracket_pos = search_string.rfind('(', 0, closing_bracket_pos)
+            if opening_bracket_pos == -1:
+                return None
+            inner_search_string = search_string[opening_bracket_pos + 1:closing_bracket_pos].strip()
+            # operator should be just before opening_bracket_pos, if it is there (first or the inner of double brackets
+            # doesn't have one)
+            operator = ''
+            start_pos_operator = -2
+            if not((opening_bracket_pos == 0) or (search_string[opening_bracket_pos-1] == '(')):
+                start_pos_operator = search_string.rfind('}', 0, opening_bracket_pos)
+                if search_string.rfind('(', 0, opening_bracket_pos) > start_pos_operator:
+                    start_pos_operator = search_string.rfind('(', 0, opening_bracket_pos)
+                operator = search_string[start_pos_operator+1:opening_bracket_pos - 1].strip()
+            cur_q_object = AdvancedSearchFilter.parse_advanced_search(inner_search_string, json_search_object)
+            if operator.find('NOT') > -1:
+                cur_q_object.negate()
+                operator = operator.replace('NOT', '').strip()
+            if operator != '':
+                if opening_bracket_pos > last_closing_bracket_pos:
+                    cur_q_object.add(prev_q_object, operator)
+                else:
+                    # Add as child
+                    cur_q_object.add(prev_q_object, operator, squash=False)
+            prev_q_object = deepcopy(cur_q_object)
+            if start_pos_operator > -2:
+                search_string = (search_string[0:start_pos_operator+1] +
+                                 search_string[closing_bracket_pos + 1:]).strip()
+            else:
+                search_string = (search_string[0:opening_bracket_pos] + search_string[closing_bracket_pos + 1:]).strip()
+            last_closing_bracket_pos = opening_bracket_pos
+            while '()' in search_string:
+                # if position before last_closing_bracket_pos lower this variable with 2.
+                pos_brackets = search_string.find('()')
+                search_string = search_string[0:pos_brackets] + search_string[pos_brackets+2:]
+                if pos_brackets < last_closing_bracket_pos:
+                    last_closing_bracket_pos = last_closing_bracket_pos - 2
+            closing_bracket_pos = search_string.find(')', last_closing_bracket_pos)
+
+        # Now parse the (last) part without brackets, if it is there
+        if len(search_string) > 0:
+            if len(prev_q_object.children) == 0:
+                # it should be a simple query without brackets
+                cur_q_object = AdvancedSearchFilter.parse_advanced_search(search_string, json_search_object)
+            else:
+                if search_string[0] != '{':
+                    # operator is at the start of the search string
+                    operator = search_string[0:search_string.find('{')].strip()
+                    search_string = search_string[search_string.find('{'):]
+                else:
+                    # operator is at the end of the search string
+                    operator = search_string[search_string.find('}')+1:].strip()
+                    search_string = search_string[:search_string.find('}')+1]
+                cur_q_object = AdvancedSearchFilter.parse_advanced_search(search_string, json_search_object)
+                if operator.find('NOT') > -1:
+                    cur_q_object.negate()
+                    operator = operator.replace('NOT', '').strip()
+                if operator != '':
+                    cur_q_object.add(prev_q_object, operator)
+
+        return model.objects.filter(cur_q_object)
+
 
 class RFSummaryListFilter(django_filters.FilterSet):
     """Filter for fluoroscopy studies to display in web interface.
