@@ -58,10 +58,15 @@
 
     <form action="" method="get" class="form-horizontal" role="form">
         <div class="panel panel-info small">
-            <div class="panel-heading">
-                <h3 class="panel-title">Exam filter</h3>
+            <div class="panel-heading" {% if advancedSearchAvailable %}hidden{% endif %}>
+                <table style="width: 100%;">
+                    <tr>
+                        <td><h3 class="panel-title">Exam filter</h3></td>
+                        <td style="text-align: right;"><small>Switch to advanced filtering</small></td>
+                    </tr>
+                </table>
             </div>
-            <div class="panel-body">
+            <div class="panel-body" {% if advancedSearchAvailable %}hidden{% endif %}>
                 <i>Date format yyyy-mm-dd</i>
                 {% for field in filter.form.visible_fields %}
                     <div class="form-group">
@@ -104,19 +109,20 @@
     <script src="{{ STATIC_URL }}js/datepicker.js"></script>
     <script src="{{ STATIC_URL }}js/formatDate.js"></script>
 
-    <!-- scriptiog for advanced search -->
+    <!-- scripting for advanced search -->
     <script src="{{ STATIC_URL }}js/advancedSearch.js"></script>
     <script>
         var staticurl = "{{ STATIC_URL|safe }}";
-        var filterOptionsJSON = {{ json_filter_options|safe }};
+        var filterOptionsJSON = JSON.parse('{{ json_filter_options|safe }}');
         var searchString = "{{ advancedSearchString|safe }}";
         $(document).ready(function() {
-            initializeJSON(filterOptionsJSON, staticurl);
-            if (!!(searchString.trim()))
-                createBuilderFromSearchString(searchString);
-            else
-                addSearchBuilderLine(-1, true);
-
+            if (!jQuery.isEmptyObject(filterOptionsJSON)) {
+                initializeJSON(filterOptionsJSON, staticurl);
+                if (!!(searchString.trim()))
+                    createBuilderFromSearchString(searchString);
+                else
+                    addSearchBuilderLine(-1, true);
+            }
         })
     </script>
 
@@ -124,14 +130,20 @@
 {% endblock %}
 
 {% block col1 %}
-                <form id="advancedSearchMainForm" action="" method="get" class="form-horizontal" role="form" >
+                <form id="advancedSearchMainForm" action="" method="get" class="form-horizontal" role="form"
+                {% if not advancedSearchAvailable %}hidden{% endif %}>
                     {% csrf_token %}
-                    <div class="panel panel-info" style="display:block">
+                    <div class="panel panel-info" style="display: block;">
                         <div class="panel-heading" role="tab" id="headingSearch">
                             <h4 class="panel-title">
                                 <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
                                       href="#collapseSearch" aria-expanded="false" aria-controls="collapseSearch">
-                                    Advanced Search
+                                    <table style="width: 100%;">
+                                        <tr>
+                                            <td><h3 class="panel-title">Advanced filtering</h3></td>
+                                            <td style="text-align: right;"><small>Switch to default Exam filter</small></td>
+                                        </tr>
+                                    </table>
                                 </span>
                             </h4>
                         </div>
@@ -139,7 +151,7 @@
                              aria-labelledby="headingSearch">
                             <div class="advanced_search">
                                <div id="div_search_string" class="built_search_string">
-                                 {{ advancedSearchForm.as_p }}
+                                 {{ filter.form.as_p }}
                                </div>
                                <div id="search_builder" class="search_builder_class">
                                </div>
@@ -198,8 +210,10 @@
                 </td>
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        {{ exam.study_date|date:"Y-m-d" }} {{ exam.study_time|date:"H:i" }}</td>
-                </a>
+                        {{ exam.study_date|date:"Y-m-d" }} {{ exam.study_time|date:"H:i" }}
+                    </a>
+                </td>
+
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
                         <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';">
@@ -249,7 +263,7 @@
         <script src="{{ STATIC_URL }}js/chroma.min.js"></script>
         <script src="{{ STATIC_URL }}js/charts/chartUpdateData.js"></script>
 
-        <div class="ajax-progress"><img src="{{ STATIC_URL }}img/ajax-loader.gif"></div>
+        <div class="ajax-progress"><img src="{{ STATIC_URL }}img/ajax-loader.gif" alt='Preparing charts...'></div>
 
         <!-- Include JavaScript to enable highcharts plots -->
         <script src="{{ STATIC_URL }}js/charts/highcharts.js"></script>

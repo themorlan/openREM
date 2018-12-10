@@ -112,7 +112,7 @@ function updateSearchString() {
             builtSearchString += " " + prebracket + "{[" + parameter + "] " + operator + " '" + searchterm + "'}" + postbracket;
         }
     });
-    document.getElementById("id_advancedSearchString").value = builtSearchString;
+    document.getElementById("id_advanced_search_string").value = builtSearchString;
 }
 
 function createBuilderFromSearchString(searchString) {
