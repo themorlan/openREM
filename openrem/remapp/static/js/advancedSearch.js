@@ -44,7 +44,6 @@ function addSearchBuilderLine(pos, first) {
     if (first === false)
         $("#line_" + pos).find(".add_line")[0].style.visibility = "hidden";
     var cBox = document.getElementById("parameter_" + strNewPos);
-
     addHandlers();
     fillComboBox(cBox);
     updateOperatorCB(cBox);
