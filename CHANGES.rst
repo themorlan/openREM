@@ -2,11 +2,17 @@
 OpenREM version history
 =======================
 
-0.9.0b2 (2018-12-07)
+0.9.0b3 (2018-12-13)
 --------------------
+* `#710`_  Interface: Celery and RabbitMQ tables can now be sorted by clicking on column headings
+* `#708`_  Query-retrieve: fixed problem for empty Series Number
+* `#707`_  Interface: fixed issue where sigdig returned an error if it was passed an empty string
+* `#706`_  Exports: fixed problem where filters were not respected for radiographic exports
+* `#704`_  Imports: caters for illegal use of dGy.cm2 units in RDSR for DAP values
 * `#703`_  Interface: fixed URL lookup error for failed imports on homepage
 * `#702`_  Query-retrieve: fixed URLs in DICOM javascript files to allow virtual-directories
 * `#701`_  Interface: made the fluoroscopy exposure detail table sortable by clicking on headers
+* `#698`_  Imports: allow for incorrect case in Procedure reported tag in RDSR
 * `#697`_  Testing: added tests for fluoroscopy high dose alerts (single-plane systems)
 * `#696`_  Interface: fixed broken Delete Studies and Entry button
 * `#695`_  Imports: added missing name attribute for size_abort url
