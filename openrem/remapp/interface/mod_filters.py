@@ -31,6 +31,8 @@
 # Following three lines added so that sphinx autodocumentation works.
 import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
+from django.db import models
+import logging
 import django_filters
 from django import forms
 from remapp.models import GeneralStudyModuleAttr
@@ -118,10 +120,12 @@ def dap_max_filter(queryset, value):
 
 
 class AdvancedSearchFilter(django_filters.FilterSet):
-    # https://github.com/carltongibson/django-filter/issues/137, bijna onderaan (visigoth)
+    """
+    Filter based on string containing fieldnames, operators and values.
+    String can contain AND/ AND NOT / OR / OR NOT and braces.
+    """
+    # https://github.com/carltongibson/django-filter/issues/137, almost at the bottom (visigoth)
     # https://stackoverflow.com/questions/28701202/create-or-filter-with-django-filters
-    # advanced_search_filter = django_filters.MethodFilter(action='filter_advanced')
-    # search_string = ''
 
     advanced_search_string = django_filters.CharFilter(
         widget=forms.TextInput(attrs={'width': '100%', 'readonly': 'False', 'class': 'form-control',
@@ -131,12 +135,21 @@ class AdvancedSearchFilter(django_filters.FilterSet):
         help_text='')
 
     def __init__(self, data, json_search_object, modality=None):
+        """
+        :param data: default __init__ data argument for CharFilter
+        :param json_search_object: Object containing all possible search options
+        :param modality: Modality that should be filtered on. If None, cross modality search will be performed
+        """
         super(AdvancedSearchFilter, self).__init__(data=data)
         self.json_search_object = json_search_object
         self.modality = modality
 
     @property
     def qs(self):
+        """
+        Overrides BaseFilterSet.qs
+        :return: QuerySet
+        """
         from django.db.models import Q
         from copy import deepcopy
 
@@ -231,6 +244,11 @@ class AdvancedSearchFilter(django_filters.FilterSet):
         fields = []
 
     def __get_database_field(self, label):
+        """
+        return databasefield belonging to label
+        :param label: user readable label
+        :return: databasedfield belonging to label
+        """
         for item in self.json_search_object:
             if item['label'] == label:
                 return item['db_field']
