@@ -896,14 +896,14 @@ def rf_detail_view_skin_map(request, pk=None):
     return JsonResponse(return_structure, safe=False)
 
 
-def add2json_search_string(json_string, dbfield, label=None, comparison=None):
+def _add2json_search_string(json_string, dbfield, label=None, comparison=None):
     """
-    All assumed from "top of model": GeneralStudyModuleAttr
-    :param json_string:
-    :param dbfield:
-    :param label:
-    :param comparison:
-    :return:
+    adds a databasefield to the json-search-options
+    :param json_string: initial json-options
+    :param dbfield: databasefield to add
+    :param label: text for user, if not given, it is build from databasefield name
+    :param comparison: comparisons that are possible, if not given, it is build from databasefield type
+    :return: json-search-options including added databasefield
     """
     from models import GeneralStudyModuleAttr
 
@@ -931,44 +931,53 @@ def add2json_search_string(json_string, dbfield, label=None, comparison=None):
         return json_string
 
 
-def add_model2json_search(model, json_search, field_prefix=''):
+def _add_model2json_search(model, json_search, field_prefix='', pid=True):
+    """
+    :param model: add a full django-model (database-table) to the json-search-options
+    :param json_search: the inital json-search-options
+    :param field_prefix: prefix for each field
+    :return: json-search-options including the model
+    """
     for field in model._meta.get_fields():
         if not field.is_relation:
             if not((field.name == 'id') or ('hash' in field.name)):
-                json_search = add2json_search_string(json_search, field_prefix + field.name, field.verbose_name)
+                if pid or not((field.name == 'patient_name') or (field.name == 'patient_id')):
+                    json_search = _add2json_search_string(json_search, field_prefix + field.name, field.verbose_name)
         else:
             if field.related_model == remapp.models.ContextID:
-                json_search = add2json_search_string(json_search, field_prefix + field.name + '__code_meaning',
-                                                     field.verbose_name)
+                json_search = _add2json_search_string(json_search, field_prefix + field.name + '__code_meaning',
+                                                      field.verbose_name)
     return json_search
 
 
-def get_advanced_search_options_ct():
+def _get_advanced_search_options_ct(pid=True):
     """
+    Adds all advanced search options for CT to the json-search-options
+    :return: json-search-options for modality CT
     """
     from models import GeneralStudyModuleAttr, PatientModuleAttr, PatientStudyModuleAttr, GeneralEquipmentModuleAttr, \
         CtRadiationDose, CtAccumulatedDoseData, CtIrradiationEventData, CtXRaySourceParameters, ScanningLength, \
         SizeSpecificDoseEstimation, CtDoseCheckDetails, UniqueEquipmentNames
 
     json_search = ''
-    json_search = add_model2json_search(GeneralStudyModuleAttr, json_search)
-    json_search = add_model2json_search(PatientModuleAttr, json_search, 'patientmoduleattr__')
-    json_search = add_model2json_search(PatientStudyModuleAttr, json_search, 'patientstudymoduleattr__')
-    json_search = add_model2json_search(GeneralEquipmentModuleAttr, json_search, 'generalequipmentmoduleattr__')
-    json_search = add_model2json_search(UniqueEquipmentNames, json_search,
-                                        'generalequipmentmoduleattr__unique_equipment_name__')
-    json_search = add_model2json_search(CtRadiationDose, json_search, 'ctradiationdose__')
-    json_search = add_model2json_search(CtAccumulatedDoseData, json_search, 'ctradiationdose__ctaccumulateddosedata__')
-    json_search = add_model2json_search(CtIrradiationEventData, json_search,
-                                        'ctradiationdose__ctirradiationeventdata__')
-    json_search = add_model2json_search(CtXRaySourceParameters, json_search,
-                                        'ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__')
-    json_search = add_model2json_search(ScanningLength, json_search,
-                                        'ctradiationdose__ctirradiationeventdata__scanninglength__')
-    json_search = add_model2json_search(SizeSpecificDoseEstimation, json_search,
-                                        'ctradiationdose__ctirradiationeventdata__sizespecificdoseestimation__')
-    json_search = add_model2json_search(CtDoseCheckDetails, json_search,
-                                        'ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__')
+    json_search = _add_model2json_search(GeneralStudyModuleAttr, json_search)
+    json_search = _add_model2json_search(PatientModuleAttr, json_search, 'patientmoduleattr__')
+    json_search = _add_model2json_search(PatientStudyModuleAttr, json_search, 'patientstudymoduleattr__', pid)
+    json_search = _add_model2json_search(GeneralEquipmentModuleAttr, json_search, 'generalequipmentmoduleattr__')
+    json_search = _add_model2json_search(UniqueEquipmentNames, json_search,
+                                         'generalequipmentmoduleattr__unique_equipment_name__')
+    json_search = _add_model2json_search(CtRadiationDose, json_search, 'ctradiationdose__')
+    json_search = _add_model2json_search(CtAccumulatedDoseData, json_search, 'ctradiationdose__ctaccumulateddosedata__')
+    json_search = _add_model2json_search(CtIrradiationEventData, json_search,
+                                         'ctradiationdose__ctirradiationeventdata__')
+    json_search = _add_model2json_search(CtXRaySourceParameters, json_search,
+                                         'ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__')
+    json_search = _add_model2json_search(ScanningLength, json_search,
+                                         'ctradiationdose__ctirradiationeventdata__scanninglength__')
+    json_search = _add_model2json_search(SizeSpecificDoseEstimation, json_search,
+                                         'ctradiationdose__ctirradiationeventdata__sizespecificdoseestimation__')
+    json_search = _add_model2json_search(CtDoseCheckDetails, json_search,
+                                         'ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__')
     json_search = '[' + json_search[:-1] + ']'
 
     return json_search
@@ -979,20 +988,22 @@ def ct_summary_list_filter(request):
     from remapp.interface.mod_filters import ct_acq_filter, AdvancedSearchFilter
     from remapp.forms import CTChartOptionsForm, itemsPerPageForm
     from openremproject import settings
-    advanced_search_available = True  # by default: 'basic' filter behaviour.
+    advanced_search_available = False  # by default: standard 'exam filter'.
     advanced_search_options = '{}'
-    advanced_search_string = ''
+    advanced_search_str = ''
     return_structure = {}
 
     pid = bool(request.user.groups.filter(name='pidgroup'))
-    f = None
+    if 'advanced_search' in request.GET:
+        advanced_search_available = bool(request.GET['advanced_search'])
+    elif 'advanced_search_string' in request.GET and request.GET['advanced_search_string']:
+        advanced_search_available = True
     if advanced_search_available:
-        advanced_search_string = ''
-        advanced_search_options = get_advanced_search_options_ct()
-        # Use the form data if the user clicked on the submit button
-        f = AdvancedSearchFilter(json.loads(advanced_search_options), 'CT')
         if "submit" in request.GET:
-            advanced_search_string = f.form['advanced_search_string']
+            advanced_search_str = request.GET['advanced_search_string']
+        advanced_search_options = _get_advanced_search_options_ct(pid)
+        f = AdvancedSearchFilter({'advanced_search_string': advanced_search_str},
+                                 json.loads(advanced_search_options), 'CT')
     else:
         f = ct_acq_filter(request.GET, pid=pid)
 
@@ -1086,8 +1097,8 @@ def ct_summary_list_filter(request):
     return_structure.update({'filter': f, 'admin': admin, 'chartOptionsForm': chart_options_form,
                              'advancedSearchAvailable': advanced_search_available,
                              'json_filter_options': advanced_search_options,
-                             'advancedSearchString': advanced_search_string,
-                             'itemsPerPageForm': items_per_page_form})
+                             'advancedSearchString': advanced_search_str,
+                             'itemsPerPageForm': items_per_page_form},)
 
     return render_to_response(
         'remapp/ctfiltered.html',

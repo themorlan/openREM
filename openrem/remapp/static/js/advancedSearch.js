@@ -10,37 +10,40 @@ function remSearchBuilderLine(pos) {
 
 function addSearchBuilderLine(pos, first) {
     pos = parseInt(pos);
-    var strPos = "" + (pos + 1);
-    var visibility = "hidden";
-    if (first === false)
-        visibility = "visible";
+    var strNewPos = "" + (pos + 1);
+    var concatOptions = "<option value='AND'>AND</option>" +
+                        "<option value='OR'>OR</option>" +
+                        "<option value='AND_NOT'>AND NOT</option>" +
+                        "<option value='OR_NOT'>OR NOT</option>";
+    if (first) {
+        concatOptions = "<option value=''></option>" +
+                        "<option value='NOT'>NOT</option>";
+    }
 
-    $("#search_builder").append("<div id='line_" + strPos + "' class='builder_line'>" +
-      "    <label for='concatoperator_" + strPos + "' class='search_label' style='visibility: " + visibility + ";'>Select operator</label>" +
-      "    <select id='concatoperator_" + strPos + "' class='concatoperator' style='visibility: " + visibility + ";'>" +
-      "        <option value='AND'>AND</option>" +
-      "        <option value='OR'>OR</option>" +
-      "        <option value='AND_NOT'>AND NOT</option>" +
-      "        <option value='OR_NOT'>OR NOT</option>" +
+    $("#search_builder").append("<div id='line_" + strNewPos + "' class='builder_line'>" +
+      "    <label for='concatoperator_" + strNewPos + "' class='search_label'>Select operator</label>" +
+      "    <select id='concatoperator_" + strNewPos + "' class='concatoperator'>" +
+      concatOptions +
       "    </select>" +
-      "    <input id='prebracket_" + strPos + "' class='prebrackets' size=1/>" +
-      "    <label for='parameter_" + strPos + "' class='search_label'>Select parameter</label>" +
-      "    <select id='parameter_" + strPos + "' class='parameter'>" +
+      "    <input id='prebracket_" + strNewPos + "' class='prebrackets' size=1/>" +
+      "    <label for='parameter_" + strNewPos + "' class='search_label'>Select parameter</label>" +
+      "    <select id='parameter_" + strNewPos + "' class='parameter'>" +
       "    </select>" +
-      "    <label for='operator_" + strPos + "' class='search_label'>Select operator</label>" +
-      "    <select id='operator_" + strPos + "' class='operator'>" +
+      "    <label for='operator_" + strNewPos + "' class='search_label'>Select operator</label>" +
+      "    <select id='operator_" + strNewPos + "' class='operator'>" +
       "    </select>" +
-      "    <div id='search_term_" + strPos + "' class='search_inline_div'>" +
-      "        <label for='term_" + strPos + "' class='search_label'>parameter value</label>" +
-      "        <input id='term_" + strPos + "' class='searchinput' size=40/>" +
+      "    <div id='search_term_" + strNewPos + "' class='search_inline_div'>" +
+      "        <label for='term_" + strNewPos + "' class='search_label'>parameter value</label>" +
+      "        <input id='term_" + strNewPos + "' class='searchinput' size=40/>" +
       "    </div>" +
-      "    <input id='postbracket_" + strPos + "' class='postbrackets' size=1/>" +
-      "    <a href='javascript:;' class='rem_line' style='visibility: " + visibility + ";'><img id='remline_" + strPos + "' src='" + staticUrl + "img/delete.png' alt='remove line'/></a>" +
-      "    <a href='javascript:;' class='add_line'><img id='addline_" + strPos + "' src='" + staticUrl + "img/add.png' alt='add line'/></a>" +
+      "    <input id='postbracket_" + strNewPos + "' class='postbrackets' size=1/>" +
+      "    <a href='javascript:;' class='rem_line' style='visibility: " + (first ? "hidden" : "visible") + ";'>" +
+      "        <img id='remline_" + strNewPos + "' src='" + staticUrl + "img/delete.png' alt='remove line'/></a>" +
+      "    <a href='javascript:;' class='add_line'><img id='addline_" + strNewPos + "' src='" + staticUrl + "img/add.png' alt='add line'/></a>" +
       "</div>");
     if (first === false)
         $("#line_" + pos).find(".add_line")[0].style.visibility = "hidden";
-    var cBox = document.getElementById("parameter_" + strPos);
+    var cBox = document.getElementById("parameter_" + strNewPos);
     addHandlers();
     fillComboBox(cBox);
     updateOperatorCB(cBox);
@@ -80,15 +83,21 @@ function checkBrackets() {
         $(".prebrackets").filter(function() {
             return this.value.length > 0
         }).css("border", "2px solid orange");
+        // disable submit buttons
+        $("input[name='submit']").prop('disabled', true)
     }
     else if (bracketSaldo < 0) {
         $(".postbrackets").filter(function() {
             return this.value.length > 0
         }).css("border", "2px solid orange");
+        // disable submit buttons
+        $("input[name='submit']").prop('disabled', true)
     }
     else {
         $(".prebrackets").css("border", "");
         $(".postbrackets").css("border", "");
+        // enable submit buttons
+        $("input[name='submit']").prop('disabled', false)
     }
 }
 
@@ -101,18 +110,23 @@ function updateSearchString() {
             var prebracket = $(this).find(".prebrackets")[0].value;
             var postbracket = $(this).find(".postbrackets")[0].value;
             var concatOperatorElement = $(this).find(".concatoperator")[0];
-            var concatOperator = concatOperatorElement.options[concatOperatorElement.selectedIndex].text;
+            var concatOperator = "";
+            if (concatOperatorElement.selectedIndex > -1) {
+                concatOperator = concatOperatorElement.options[concatOperatorElement.selectedIndex].text;
+            }
             var parameterElement = $(this).find(".parameter")[0];
             var parameter = parameterElement.options[parameterElement.selectedIndex].text;
             var operatorElement = $(this).find(".operator")[0];
             var operator = operatorElement.options[operatorElement.selectedIndex].text;
-            if ((concatOperatorElement.style.visibility === "visible") && (builtSearchString !== "")) {
+            if (builtSearchString !== "") {
                 builtSearchString += " " + concatOperator;
+            } else {
+                builtSearchString = concatOperator;
             }
             builtSearchString += " " + prebracket + "{[" + parameter + "] " + operator + " '" + searchterm + "'}" + postbracket;
         }
     });
-    document.getElementById("id_advanced_search_string").value = builtSearchString;
+    document.getElementById("id_advanced_search_string").value = builtSearchString.trim();
 }
 
 function createBuilderFromSearchString(searchString) {
@@ -121,6 +135,7 @@ function createBuilderFromSearchString(searchString) {
     $searchBuilder.find("#line_").remove();
     var indexOfStartBrace = searchString.indexOf("{");
     var pos = -1;
+    var concatOperator = searchString.substring(0,3) === "NOT" ? "NOT" : "";
     while (indexOfStartBrace > -1)
     {
         var indexOfEndBrace = searchString.indexOf("}", indexOfStartBrace);
@@ -138,7 +153,6 @@ function createBuilderFromSearchString(searchString) {
             return;
         var value = searchString.substring(indexOfStartSingleQuote+1, indexOfEndSingleQuote);
         var comparison = searchString.substring(indexOfEndBracket+1, indexOfStartSingleQuote).trim();
-        var concatOperator = "";
         var startRoundBracket = "";
         if (indexOfStartBrace > 0) {
             var indexOfLastBrace = searchString.lastIndexOf("}", indexOfStartBrace);
@@ -146,9 +160,11 @@ function createBuilderFromSearchString(searchString) {
             var indexOfStartRoundBracket = searchString.indexOf("(", indexOfLastBrace);
             if ((indexOfStartRoundBracket > -1) && (indexOfStartRoundBracket < indexOfStartBrace)) {
                 startRoundBracket = searchString.substring(indexOfStartRoundBracket, indexOfStartBrace).trim();
-                concatOperator = searchString.substring(indexOfStartConcatOperator, indexOfStartRoundBracket).trim().replace(" ", "_");
+                if (concatOperator !== "NOT") {
+                    concatOperator = searchString.substring(indexOfStartConcatOperator, indexOfStartRoundBracket).trim().replace(" ", "_");
+                }
             }
-            else
+            else if (concatOperator !== "NOT")
                 concatOperator = searchString.substring(indexOfStartConcatOperator, indexOfStartBrace).trim().replace(" ", "_");
         }
         var endRoundBracket = "";
@@ -174,6 +190,7 @@ function createBuilderFromSearchString(searchString) {
         $searchBuilder.find("#postbracket_" + pos).val(endRoundBracket);
 
         indexOfStartBrace = searchString.indexOf("{", indexOfEndBrace);
+        concatOperator = "";
     }
 
 }
