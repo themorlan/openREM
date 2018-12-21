@@ -206,7 +206,7 @@ class AdvancedSearchFilter(django_filters.FilterSet):
 
         # Now parse the (last) part without brackets, if it is there
         if len(local_search_string) > 0:
-            if local_search_string[:3] == 'NOT':
+            if local_search_string[:3] == 'NOT' and len(cur_q_object) > 0:
                 # We had a search_string with multiple round brackets just after the first "NOT"
                 # we need this difficult way of "negate", because if the root node is "negated", also the modality
                 # that we add later, will be negated.
