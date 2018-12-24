@@ -3326,13 +3326,18 @@ def celery_tasks(request, stage=None):
                             this_task['type'] = None
                     except AttributeError:
                         this_task['type'] = None
-                    tasks += [this_task, ]
+
                     datetime_now = datetime.now()
+                    deltaseconds_received = (datetime_now - this_task['received']).total_seconds()
+                    deltaseconds_started = (datetime_now - this_task['started']).total_seconds()
+                    this_task['deltaseconds_received'] = deltaseconds_received
+                    this_task['deltaseconds_started'] = deltaseconds_started
+                    tasks += [this_task, ]
+
                     recent_time_delta = 60*60*6  # six hours
                     if u'STARTED' in this_task['state']:
                         active_tasks += [this_task, ]
-                    elif this_task['started'] and (
-                            datetime_now - this_task['started']).total_seconds() < recent_time_delta:
+                    elif this_task['started'] and deltaseconds_started < recent_time_delta:
                         recent_tasks += [this_task, ]
                     else:
                         older_tasks += [this_task, ]

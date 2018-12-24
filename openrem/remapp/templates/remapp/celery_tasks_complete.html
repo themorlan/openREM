@@ -2,7 +2,7 @@
   <tr>
     <th style="width: 30%" id="{{ celeryTable }}uuid" onclick="updateSort(this.id, 'user_click', '{{ celeryTable }}');">UUID</th>
     <th style="width: 24%" id="{{ celeryTable }}task" onclick="updateSort(this.id, 'user_click', '{{ celeryTable }}');">Task</th>
-    <th style="width: 18%" id="{{ celeryTable }}received" onclick="updateSort(this.id, 'user_click', '{{ celeryTable }}');">Received</th>
+    <th style="width: 18%" id="{{ celeryTable }}received" onclick="updateSort(this.id, 'user_click', '{{ celeryTable }}');" >Received</th>
     <th style="width: 18%" id="{{ celeryTable }}started" onclick="updateSort(this.id, 'user_click', '{{ celeryTable }}');">Started</th>
     <th>State</th>
   </tr>
@@ -10,8 +10,8 @@
     <tr>
       <td>{{ task.uuid }}</td>
       <td>{{ task.name }}</td>
-      <td>{{ task.received }}</td>
-      <td>{{ task.started }}</td>
+      <td sorttable_customkey="{{ task.deltaseconds_received }}">{{ task.received }}</td>
+      <td sorttable_customkey="{{ task.deltaseconds_started }}">{{ task.started }}</td>
       <td>{{ task.state }}</td>
     </tr>
   {% endfor %}

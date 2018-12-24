@@ -11,8 +11,8 @@
     <tr>
       <td>{{ task.uuid }}</td>
       <td>{{ task.name }}</td>
-      <td>{{ task.received }}</td>
-      <td>{{ task.started }}</td>
+      <td sorttable_customkey="{{ task.deltaseconds_received }}">{{ task.received }}</td>
+      <td sorttable_customkey="{{ task.deltaseconds_started }}">{{ task.started }}</td>
       <td>{{ task.state }}</td>
       <td>
         {% if task.state == 'STARTED' %}
