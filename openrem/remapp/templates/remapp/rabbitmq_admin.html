@@ -73,18 +73,15 @@
         </script>
         <p>
           RabbitMQ is used to queue up tasks until Celery is ready to process them. If Celery is not running RabbitMQ
-          will
-          hold onto the tasks until Celery is ready to process them. If Celery fails to complete a task then RabbitMQ
-          will
-          resend the job to Celery to be tried again. Sometimes it is necessary to remove (purge) tasks from the
-          RabbitMQ
-          queue; this can be done by clicking on the corresponding "Purge queue" button in the table below.
+          will hold onto the tasks until Celery is ready to process them. If Celery fails to complete a task then
+          RabbitMQ will resend the job to Celery to be tried again. Sometimes it is necessary to remove (purge) tasks
+          from the RabbitMQ queue; this can be done by clicking on the corresponding "Purge queue" button in the table
+          below.
         </p>
       </div>
     </div>
     <div class="row">
       <div class="col-md-8 col-md-offset-2">
-
         <p id="queues">
           The list of queues should appear here...
         </p>
