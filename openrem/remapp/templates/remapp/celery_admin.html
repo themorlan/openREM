@@ -26,21 +26,29 @@
     <div class="row">
       <div class="col-md-8 col-md-offset-2">
         <script>
-            function updateSort(heading, source) {
+            function updateSort(heading, source, table_ref) {
                 if (typeof source === "undefined") {
                     source = null;
                 }
 
-                sort_info.heading = heading;
+                if (table_ref === 'Active') sort_info_Active.heading = heading;
+                if (table_ref === 'Recent') sort_info_Recent.heading = heading;
+                if (table_ref === 'Older') sort_info_Older.heading = heading;
 
                 if (source === 'user_click') {
                     // It's a user-generated call and the headings already match
                     // so reverse the sorting direction
-                    sort_info.direction = sort_info.direction === "ascending" ? "descending" : "ascending";
+                    if (table_ref === 'Active') sort_info_Active.direction = sort_info_Active.direction === "ascending" ? "descending" : "ascending";
+                    if (table_ref === 'Recent') sort_info_Recent.direction = sort_info_Recent.direction === "ascending" ? "descending" : "ascending";
+                    if (table_ref === 'Older') sort_info_Older.direction = sort_info_Older.direction === "ascending" ? "descending" : "ascending";
+
                     sorttable.innerSortFunction.apply(document.getElementById(heading), []);
                 }
 
-                if (sort_info.direction === "ascending") {
+                if (table_ref === 'Active') sort_direction = sort_info_Active.direction;
+                if (table_ref === 'Recent') sort_direction = sort_info_Recent.direction;
+                if (table_ref === 'Older') sort_direction = sort_info_Older.direction;
+                if (sort_direction === "ascending") {
                     sorttable.innerSortFunction.apply(document.getElementById(heading), []);
                 } else {
                     sorttable.innerSortFunction.apply(document.getElementById(heading), []);
@@ -48,8 +56,16 @@
                 }
             }
 
-            sort_info = {
-                heading: "uuid",
+            sort_info_Active = {
+                heading: "Activeuuid",
+                direction: "ascending"
+            };
+            sort_info_Recent = {
+                heading: "Recentuuid",
+                direction: "ascending"
+            };
+            sort_info_Older = {
+                heading: "Olderuuid",
                 direction: "ascending"
             };
 
@@ -69,7 +85,7 @@
                         }
                     })
                 }
-            )
+            );
             $(document).ready(
                 function tasks_update_recent(json) {
                     $.ajax({
@@ -86,7 +102,7 @@
                         }
                     })
                 }
-            )
+            );
             $(document).ready(
                 function tasks_update_recent(json) {
                     $.ajax({
@@ -103,7 +119,7 @@
                         }
                     })
                 }
-            )
+            );
         </script>
         <p>
           Celery is the task manager that runs background tasks. A table of current active tasks can be found below
@@ -201,9 +217,4 @@
 
   {% endif %}
 
-
-
-
 {% endblock %}
-
-

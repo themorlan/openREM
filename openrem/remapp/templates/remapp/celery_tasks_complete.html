@@ -1,9 +1,9 @@
-<table class="table">
+<table class="table sortable" id="celery{{ celeryTable }}Table">
   <tr>
-    <th style="width: 30%">UUID</th>
-    <th style="width: 24%">Task</th>
-    <th style="width: 18%">Received</th>
-    <th style="width: 18%">Started</th>
+    <th style="width: 30%" id="{{ celeryTable }}uuid" onclick="updateSort(this.id, 'user_click', '{{ celeryTable }}');">UUID</th>
+    <th style="width: 24%" id="{{ celeryTable }}task" onclick="updateSort(this.id, 'user_click', '{{ celeryTable }}');">Task</th>
+    <th style="width: 18%" id="{{ celeryTable }}received" onclick="updateSort(this.id, 'user_click', '{{ celeryTable }}');">Received</th>
+    <th style="width: 18%" id="{{ celeryTable }}started" onclick="updateSort(this.id, 'user_click', '{{ celeryTable }}');">Started</th>
     <th>State</th>
   </tr>
   {% for task in tasks %}
@@ -17,3 +17,10 @@
   {% endfor %}
 </table>
 
+<script>
+    $(document).ready(function () {
+        var taskTableRecent = document.getElementById("celery{{ celeryTable }}Table");
+        sorttable.makeSortable(taskTableRecent);
+        updateSort(sort_info_{{ celeryTable }}.heading, null, '{{ celeryTable }}');
+    });
+</script>

@@ -1,39 +1,10 @@
-{#<h3> all tasks </h3>#}
-{#<table class="table sortable" id="celeryTaskTable">#}
-{#  <tr>#}
-{#    <th id="uuid" onclick="updateSort(this.id, 'user_click');">UUID</th>#}
-{#    <th id="task" onclick="updateSort(this.id, 'user_click');">Task</th>#}
-{#    <th id="received" onclick="updateSort(this.id, 'user_click');">Received</th>#}
-{#    <th id="started" onclick="updateSort(this.id, 'user_click');">Started</th>#}
-{#    <th id="state" onclick="updateSort(this.id, 'user_click');">Current state</th>#}
-{#    <th>Terminate</th>#}
-{#  </tr>#}
-{#  {% for task in tasks %}#}
-{#  <tr>#}
-{#  <td>{{ task.uuid }}</td>#}
-{#      <td>{{ task.name }}</td>#}
-{#  <td>{{ task.received }}</td>#}
-{#  <td>{{ task.started }}</td>#}
-{#  <td>{{  task.state }}</td>#}
-{#      <td>#}
-{#        {% if task.state == 'STARTED' %}#}
-{#          <a class="btn btn-danger" href="{% url 'celery_abort' task_id=task.uuid type=task.type %}" role="button">#}
-{#            Terminate task#}
-{#          </a>#}
-{#        {% else %}#}
-{#          <a class="btn btn-default" disabled="disabled">Terminate task</a>#}
-{#        {% endif %}#}
-{#      </td>#}
-{#</tr>#}
-{#{% endfor %}#}
-{#</table>#}
-<table class="table">
+<table class="table sortable" id="celery{{ celeryTable }}Table">
   <tr>
-    <th>UUID</th>
-    <th>Task</th>
-    <th>Received</th>
-    <th>Started</th>
-    <th>Current state</th>
+    <th id="{{ celeryTable }}uuid" onclick="updateSort(this.id, 'user_click', '{{ celeryTable }}');">UUID</th>
+    <th id="{{ celeryTable }}task" onclick="updateSort(this.id, 'user_click', '{{ celeryTable }}');">Task</th>
+    <th id="{{ celeryTable }}received" onclick="updateSort(this.id, 'user_click', '{{ celeryTable }}');">Received</th>
+    <th id="{{ celeryTable }}started" onclick="updateSort(this.id, 'user_click', '{{ celeryTable }}');">Started</th>
+    <th id="{{ celeryTable }}state" onclick="updateSort(this.id, 'user_click', '{{ celeryTable }}');">Current state</th>
     <th>Terminate</th>
   </tr>
   {% for task in tasks %}
@@ -56,10 +27,10 @@
   {% endfor %}
   </table>
 
-{#<script>#}
-{#    $(document).ready(function () {#}
-{#        var taskTableRecent = document.getElementById("celeryTaskTableRecent");#}
-{#        sorttable.makeSortable(taskTableRecent);#}
-{#        updateSort(sort_info.heading);#}
-{#    });#}
-{#</script>#}
+<script>
+    $(document).ready(function () {
+        var taskTableRecent = document.getElementById("celery{{ celeryTable }}Table");
+        sorttable.makeSortable(taskTableRecent);
+        updateSort(sort_info_{{ celeryTable }}.heading, null, '{{ celeryTable }}');
+    });
+</script>
