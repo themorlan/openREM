@@ -1,0 +1,33 @@
+{% extends "remapp/base.html" %}
+{% block mainblock %}
+
+      {% load crispy_forms_tags %}
+{#      {% crispy form %}#}
+<script>
+      var qr_form = '#qr-form';
+
+$.ajax({
+    url: "{% url 'testqrformajax' %}",
+    type: "POST",
+    data: {
+        form: $(qr_form).serialize(),
+        csrfmiddlewaretoken: '{{ csrf_token }}'
+    },
+    success: function(data) {
+        if (!(data['success'])) {
+            // Here we replace the form, for the
+            $(qr_form).replaceWith(data['form_html']);
+        }
+        else {
+            // Here you can show the user a success message or do whatever you need
+            $(qr_form).find('.success-message').show();
+        }
+    },
+    error: function () {
+        $(qr_form).find('.error-message').show()
+    }
+});
+</script>
+      <span id="qr_form">Form should be here</span>
+
+{% endblock %}

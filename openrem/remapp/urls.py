@@ -182,5 +182,7 @@ urlpatterns += patterns('remapp.netdicom.dicomviews',
                         url(r'admin/queryremote$', 'dicom_qr_page', name='dicom_qr_page'),
                         url(r'admin/queryretrieve$', 'r_start', name='start_retrieve'),
                         url(r'admin/moveupdate$', 'r_update', name='move_update'),
+                        url(r'admin/querysimpleform$', 'testqrform', name='testqrform'),
+                        url(r'admin/querysimpleformajax$', 'testqrformajax', name='testqrformajax'),
                         )
 

@@ -202,19 +202,22 @@ def q_update(request):
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
 
-@csrf_exempt
+# @csrf_exempt
 @login_required
 def q_process(request, *args, **kwargs):
     import uuid
     import datetime
+    from crispy_forms.utils import render_crispy_form
     from django.shortcuts import render_to_response
     from django.template import RequestContext
     from remapp.netdicom.qrscu import qrscu
     from remapp.models import DicomRemoteQR
     from remapp.forms import DicomQueryForm
 
-    if request.method == 'POST':
-        form = DicomQueryForm(request.POST)
+    if request.is_ajax():
+        post_data = request.POST
+        form = DicomQueryForm(post_data['form'] or None)
+
         if form.is_valid():
             rh_pk = form.cleaned_data.get('remote_host_field')
             store_pk = form.cleaned_data.get('store_scp_field')
@@ -259,44 +262,49 @@ def q_process(request, *args, **kwargs):
                 'study_desc_exc': study_desc_exc,
             }
 
-            task = qrscu.delay(qr_scp_pk=rh_pk, store_scp_pk=store_pk, query_id=query_id, date_from=date_from,
-                               date_until=date_until, modalities=modalities, inc_sr=inc_sr,
-                               remove_duplicates=remove_duplicates, filters=filters,
-                               get_toshiba_images=get_toshiba_images,
+            qrscu.delay(qr_scp_pk=rh_pk, store_scp_pk=store_pk, query_id=query_id, date_from=date_from,
+                        date_until=date_until, modalities=modalities, inc_sr=inc_sr, remove_duplicates=remove_duplicates,
+                        filters=filters, get_toshiba_images=get_toshiba_images,
                                )
+            resp = {'message': u'Request created', 'status': u'not complete', 'queryID': query_id}
 
-            resp = {}
-            resp['message'] = u'Request created'
-            resp['status'] = u'not complete'
-            resp['queryID'] = query_id
+            return {'success': True}
+            # return HttpResponse(json.dumps(resp), content_type='application/json')
 
-            return HttpResponse(json.dumps(resp), content_type='application/json')
-        else:
-            print u"Bother, form wasn't valid"
-            errors = form.errors
-            print errors
-            print form
+        # print u"Bother, form wasn't valid"
+        # errors = form.errors
+        # print errors
+        # print form
 
-            # Need to find a way to deal with this event
+        # Need to find a way to deal with this event
 #            render_to_response('remapp/dicomqr.html', {'form': form}, context_instance=RequestContext(request))
-            resp = {}
-            resp['message'] = errors
-            resp['status'] = 'not complete'
+#         resp = {}
+#         resp['message'] = errors
+#         resp['status'] = 'not complete'
+#
+#         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
+#
+#         for group in request.user.groups.all():
+#             admin[group.name] = True
 
-            admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
+        # from django.template.context_processors import csrf
+        # ctx = {}
+        # ctx.update(csrf(request))
+        # form_html = render_crispy_form(form, context=ctx)
+        form = ''
+        form_html = render_crispy_form(form, context=RequestContext(request))
+        # form_html = render_crispy_form(form)
+        return {'success': False, 'form_html': form_html}
 
-            for group in request.user.groups.all():
-                admin[group.name] = True
-
-            return render_to_response(
-                'remapp/dicomqr.html',
-                {'form': form, 'admin': admin},
-                context_instance=RequestContext(request)
-            )
-            # return HttpResponse(
-            #     json.dumps(resp),
-            #     content_type="application/json"
-            # )
+        # return render_to_response(
+        #     'remapp/dicomqr.html',
+        #     {'form': form, 'admin': admin},
+        #     context_instance=RequestContext(request)
+        # )
+        # return HttpResponse(
+        #     json.dumps(resp),
+        #     content_type="application/json"
+        # )
 
 
 
@@ -316,21 +324,21 @@ def dicom_qr_page(request, *args, **kwargs):
 
     storestatus = {}
     stores = DicomStoreSCP.objects.all()
-    for store in stores:
-        echo = echoscu(scp_pk=store.pk, store_scp=True)
-        if echo is "Success":
-            storestatus[store.name] = u"<span class='glyphicon glyphicon-ok' aria-hidden='true'></span><span class='sr-only'>OK:</span> responding to DICOM echo"
-        else:
-            storestatus[store.name] = u"<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span><span class='sr-only'>Error:</span> not responding to DICOM echo"
+    # for store in stores:
+    #     echo = echoscu(scp_pk=store.pk, store_scp=True)
+    #     if echo is "Success":
+    #         storestatus[store.name] = u"<span class='glyphicon glyphicon-ok' aria-hidden='true'></span><span class='sr-only'>OK:</span> responding to DICOM echo"
+    #     else:
+    #         storestatus[store.name] = u"<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span><span class='sr-only'>Error:</span> not responding to DICOM echo"
 
     qrstatus = {}
     qr = DicomRemoteQR.objects.all()
-    for scp in qr:
-        echo = echoscu(scp_pk=scp.pk, qr_scp=True)
-        if echo is "Success":
-            qrstatus[scp.name] = u"<span class='glyphicon glyphicon-ok' aria-hidden='true'></span><span class='sr-only'>OK:</span> responding to DICOM echo"
-        else:
-            qrstatus[scp.name] = u"<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span><span class='sr-only'>Error:</span> not responding to DICOM echo"
+    # for scp in qr:
+    #     echo = echoscu(scp_pk=scp.pk, qr_scp=True)
+    #     if echo is "Success":
+    #         qrstatus[scp.name] = u"<span class='glyphicon glyphicon-ok' aria-hidden='true'></span><span class='sr-only'>OK:</span> responding to DICOM echo"
+    #     else:
+    #         qrstatus[scp.name] = u"<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span><span class='sr-only'>Error:</span> not responding to DICOM echo"
 
     admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
 
@@ -386,3 +394,30 @@ def r_update(request):
         resp['message'] = u'<h4>Move request complete</h4>'
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
+
+
+def testqrform(request):
+    from remapp.views import _create_admin_dict
+    from django.shortcuts import render_to_response
+    from django.template import RequestContext
+    admin = _create_admin_dict(request)
+    template = 'remapp/testqrform.html'
+    return render_to_response(template, {'admin': admin}, context_instance=RequestContext(request))
+
+
+@csrf_exempt
+def testqrformajax(request):
+    from django.shortcuts import render_to_response
+    from django.template import RequestContext
+    from remapp.forms import DicomQueryForm, MessageForm
+    from crispy_forms.utils import render_crispy_form
+    from django.template import RequestContext
+
+    if request.is_ajax():
+        form = DicomQueryForm
+        print("request context: {0} |||".format(RequestContext(request)))
+        form_html = render_crispy_form(form, context=RequestContext(request))
+        # form_html = "<h1>Eh?</h1>"
+        # return HttpResponse(form_html)
+        return {'success': False, 'form_html': form_html}
+

@@ -77,7 +77,33 @@
       <h3>Query retrieve dialogue</h3>
 
       {% load crispy_forms_tags %}
-      {% crispy form %}
+{#      {% crispy form %}#}
+<script>
+      var example_form = '#qr-form';
+
+$.ajax({
+    url: "{% url 'q_process' %}",
+    type: "POST",
+    data: {
+        form: $(example_form).serialize(),
+        csrfmiddlewaretoken: '{{ csrf_token }}'
+    },
+    success: function(data) {
+        if (!(data['success'])) {
+            // Here we replace the form, for the
+            $(example_form).replaceWith(data['form_html']);
+        }
+        else {
+            // Here you can show the user a success message or do whatever you need
+            $(example_form).find('.success-message').show();
+        }
+    },
+    error: function () {
+        $(example_form).find('.error-message').show()
+    }
+});
+</script>
+      <span id="qr-form">Form should be here</span>
     </div>
 
 
