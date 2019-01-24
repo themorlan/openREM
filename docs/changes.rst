@@ -4,6 +4,7 @@ OpenREM version history
 
 0.9.0b6 (2019-01-xx)
 --------------------
+* `#721`_  Installation: Fixed missing django-debug-toolbar-request-history package in setup.py
 * `#719`_  Interface: Fixed hardcoded link in template rffiltered.html
 * `#717`_  Query-retrieve: fixed problem where an error was thrown if association is None
 * `#716`_  Task manager: removed assumption of queue name from RabbitMQ management interface
