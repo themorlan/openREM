@@ -417,7 +417,7 @@ def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
     try:
         source.ii_field_size = ElementTree.fromstring(source.irradiation_event_xray_data.comment).find('iiDiameter'
                                                                                                        ).get('SRData')
-    except (ElementTree.ParseError, AttributeError):
+    except (ElementTree.ParseError, AttributeError, TypeError):
         logger.debug(u"Failed in attempt to get II field size from comment (aimed at Siemens)")
         pass
     if (not source.collimated_field_height) and private_collimated_field_height:
@@ -576,7 +576,7 @@ def _irradiationeventxraydata(dataset, proj, ch, fulldataset):  # TID 10003
                     event.patient_table_relationship_cid = None
                     event.patient_orientation_cid = None
                     event.patient_orientation_modifier_cid = None
-            except (AttributeError, ElementTree.ParseError):
+            except (AttributeError, ElementTree.ParseError, TypeError):
                 logger.debug(u"Failed to extract patient orientation from comment string (aimed at Siemens)")
                 pass
             event.save()
