@@ -313,7 +313,7 @@ def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
     from django.db.models import Avg
     from remapp.models import IrradEventXRaySourceData
     from remapp.tools.get_values import get_or_create_cid, safe_strings
-    from xml.etree import ElementTree as ET
+    from xml.etree import ElementTree
     # Variables below are used if privately defined parameters are available
     private_collimated_field_height = None
     private_collimated_field_width = None
@@ -415,9 +415,10 @@ def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
             pass
     _deviceparticipant(dataset, 'source', source, ch)
     try:
-        source.ii_field_size = ET.fromstring(source.irradiation_event_xray_data.comment).find('iiDiameter').get(
-            'SRData')
-    except:
+        source.ii_field_size = ElementTree.fromstring(source.irradiation_event_xray_data.comment).find('iiDiameter'
+                                                                                                       ).get('SRData')
+    except (ElementTree.ParseError, AttributeError):
+        logger.debug(u"Failed in attempt to get II field size from comment (aimed at Siemens)")
         pass
     if (not source.collimated_field_height) and private_collimated_field_height:
         source.collimated_field_height = private_collimated_field_height
@@ -472,7 +473,7 @@ def _irradiationeventxraydata(dataset, proj, ch, fulldataset):  # TID 10003
     from remapp.models import IrradEventXRayData
     from remapp.tools.get_values import get_or_create_cid, safe_strings
     from remapp.tools.dcmdatetime import make_date_time
-    from xml.etree import ElementTree as ET
+    from xml.etree import ElementTree
     event = IrradEventXRayData.objects.create(projection_xray_radiation_dose=proj)
     for cont in dataset.ContentSequence:
         if cont.ConceptNameCodeSequence[0].CodeMeaning == 'Acquisition Plane':
@@ -553,7 +554,8 @@ def _irradiationeventxraydata(dataset, proj, ch, fulldataset):  # TID 10003
     for cont3 in fulldataset.ContentSequence:
         if cont3.ConceptNameCodeSequence[0].CodeMeaning == 'Comment':
             try:
-                orientation = ET.fromstring(cont3.TextValue).find('PatientPosition').find('Position').get('SRData')
+                orientation = ElementTree.fromstring(cont3.TextValue).find('PatientPosition').find('Position'
+                                                                                                   ).get('SRData')
                 if orientation.strip().lower() == 'hfs':
                     event.patient_table_relationship_cid = get_or_create_cid('F-10470', 'headfirst')
                     event.patient_orientation_cid = get_or_create_cid('F-10450', 'recumbent')
@@ -574,7 +576,8 @@ def _irradiationeventxraydata(dataset, proj, ch, fulldataset):  # TID 10003
                     event.patient_table_relationship_cid = None
                     event.patient_orientation_cid = None
                     event.patient_orientation_modifier_cid = None
-            except:
+            except (AttributeError, ElementTree.ParseError):
+                logger.debug(u"Failed to extract patient orientation from comment string (aimed at Siemens)")
                 pass
             event.save()
     # needs include for optional multiple person participant
