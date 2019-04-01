@@ -119,6 +119,7 @@ Install Python packages
 .. code-block:: console
 
     pip install numpy psycopg2-binary gunicorn
+    pip install celery==4.2.2
     pip install openrem
     pip install https://bitbucket.org/edmcdonagh/pynetdicom/get/default.tar.gz#egg=pynetdicom-0.8.2b2
 
@@ -133,7 +134,7 @@ Addd orthanc and www-data users to openrem group
 .. code-block:: console
 
     sudo adduser orthanc openrem
-    sudo adduser www-data openrem
+ sudo adduser www-data openrem
 
 Database and OpenREM config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
