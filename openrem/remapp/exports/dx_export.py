@@ -409,3 +409,94 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     xlsxfilename = u"dxexport{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
 
     write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
+
+
+@shared_task
+def dx_phe_2019_single(filterdict, user=None):
+    """Export filtered DX database data in the format for the 2019 Public Health England DX dose survey - single view
+    version
+
+    :param filterdict: Queryset of studies to export
+    :param user:  User that has started the export
+    :return: Saves Excel file into Media directory for user to download
+    """
+
+    import datetime
+    from remapp.models import Exports
+    from remapp.interface.mod_filters import dx_acq_filter
+    import uuid
+
+    tsk = Exports.objects.create()
+
+    tsk.task_id = dx_phe_2019_single.request.id
+    if tsk.task_id is None:  # Required when testing without celery
+        tsk.task_id = u'NotCelery-{0}'.format(uuid.uuid4())
+    tsk.modality = u"DX"
+    tsk.export_type = u"PHE DX 2019 export"
+    datestamp = datetime.datetime.now()
+    tsk.export_date = datestamp
+    tsk.progress = u'Query filters imported, task started'
+    tsk.status = u'CURRENT'
+    tsk.includes_pid = False
+    tsk.export_user_id = user
+    tsk.save()
+
+    tmp_xlsx, book = create_xlsx(tsk)
+    if not tmp_xlsx:
+        exit()
+
+    exams = dx_acq_filter(filterdict, pid=False).qs
+
+    tsk.num_records = exams.count()
+    if abort_if_zero_studies(tsk.num_records, tsk):
+        return
+
+    tsk.progress = u'{0} studies in query.'.format(tsk.num_records)
+    tsk.save()
+
+    headings = [
+        u'',
+        u'PHE Record No',
+        u"Contributer's record ID",
+        u'Exam date',
+        u'Projection DAP dose',
+        u'DAP dose units',
+        u'Protocol name',
+        u'Patient weight',
+        u'', u'',
+        u'Patient age',
+        u'Sex',
+        u'Height',
+        u'Detector used',
+        u'Grid used',
+        u'FDD',
+        u'Filtration in mm Al',
+        u'AEC used',
+        u'kVp',
+        u'mAs',
+        u'Patient position',
+        u'Detector in bucky',
+        u'Other projection info',
+        u'Additional filtration',
+        u'Exposure index',
+        u'',
+        u'',
+        u'SNOMED CT code',
+        u'NICIP code',
+        u'Variation in dose collection',
+        u'Other information, comments',
+    ]
+    sheet = book.add_worksheet("PHE DX 2019 Single Projection")
+    sheet.write_row(0, 0, headings)
+
+
+
+
+    book.close()
+    tsk.progress = u"PHE DX 2019 export complete"
+    tsk.save()
+
+    xlsxfilename = u"PHE_DX_2019_{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
+
+    write_export(tsk, xlsxfilename, tmp_xlsx, datestamp)
+
