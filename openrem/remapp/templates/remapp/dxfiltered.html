@@ -29,8 +29,8 @@
                            class="btn btn-default btn-sm" role="button">With ID</a>
                         <a href="{% url 'dxcsv1' 1 1 %}?{{ request.GET.urlencode }}"
                            class="btn btn-default btn-sm" role="button">With both</a>
-                        </p>
-                        <p>
+                </p>
+                <p>
                     {% endif %}
                     <a href="{% url 'dxxlsx1' 0 0 %}?{{ request.GET.urlencode }}"
                        class="btn btn-default btn-sm" role="button">Export to XLSX</a>
@@ -42,7 +42,11 @@
                         <a href="{% url 'dxxlsx1' 1 1 %}?{{ request.GET.urlencode }}"
                            class="btn btn-default btn-sm" role="button">With both</a>
                     {% endif %}
-                    </p>
+                </p>
+                <p>
+                    <a href="{% url 'dx_xlsx_phe2019_single' %}?{{ request.GET.urlencode }}"
+                       class="btn btn-default btn-sm" role="button">PHE 2019 Survey</a>
+                </p>
 
             {% else %}
                 <p>
