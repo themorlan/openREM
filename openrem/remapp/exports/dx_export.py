@@ -422,6 +422,7 @@ def dx_phe_2019_single(filterdict, user=None):
     """
 
     import datetime
+    from decimal import Decimal
     from remapp.models import Exports
     from remapp.interface.mod_filters import dx_acq_filter
     import uuid
@@ -463,7 +464,8 @@ def dx_phe_2019_single(filterdict, user=None):
         u'DAP dose units',
         u'Protocol name',
         u'Patient weight',
-        u'', u'',
+        u'',
+        u'',
         u'Patient age',
         u'Sex',
         u'Height',
@@ -489,8 +491,127 @@ def dx_phe_2019_single(filterdict, user=None):
     sheet = book.add_worksheet("PHE DX 2019 Single Projection")
     sheet.write_row(0, 0, headings)
 
+    num_rows = exams.count()
+    for row, exam in enumerate(exams):
+        tsk.progress = u"Writing study {0} of {1}".format(row+1, num_rows)
+        tsk.save()
+
+        exam_data = []
+        comments = []
+        patient_age_decimal = None
+        patient_size = None
+        patient_weight = None
+        try:
+            patient_study_module = exam.patientstudymoduleattr_set.get()
+            patient_age_decimal = patient_study_module.patient_age_decimal
+            patient_size = patient_study_module.patient_size
+            try:
+                patient_size = patient_study_module.patient_size * Decimal(100.)
+            except TypeError:
+                pass
+            patient_weight = patient_study_module.patient_weight
+        except ObjectDoesNotExist:
+            logger.debug(u"PHE CT 2019 export: patientstudymoduleattr_set object does not exist."
+                         u" AccNum {0}, Date {1}".format(exam.accession_number, exam.study_date))
+        patient_sex = None
+        try:
+            patient_module = exam.patientmoduleattr_set.get()
+            patient_sex = patient_module.patient_sex
+        except ObjectDoesNotExist:
+            logger.debug("Export {0}; patientmoduleattr_set object does not exist. AccNum {1}, Date {2}".format(
+                'PHE 2019 DX single', exams.accession_number, exams.study_date))
+        try:
+            first_view = exam.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0]
+            try:
+                source_data = first_view.irradeventxraysourcedata_set.get()
+                exposure_control_mode = source_data.exposure_control_mode
+                average_xray_tube_current = source_data.average_xray_tube_current
+                exposure_time = source_data.exposure_time
+                pulse_data = get_pulse_data(source_data=source_data, modality="DX")
+                kvp = pulse_data['kvp']
+                mas = pulse_data['mas']
+                filters, filter_thicknesses = get_xray_filter_info(source_data)
+                grid_focal_distance = source_data.grid_focal_distance
+            except ObjectDoesNotExist:
+                exposure_control_mode = None
+                average_xray_tube_current = None
+                exposure_time = None
+                kvp = None
+                mas = None
+                filters = None
+                filter_thicknesses = None
+                grid_focal_distance = None
+
+            try:
+                detector_data = first_view.irradeventxraydetectordata_set.get()
+                exposure_index = detector_data.exposure_index
+                target_exposure_index = detector_data.target_exposure_index
+                deviation_index = detector_data.deviation_index
+                relative_xray_exposure = detector_data.relative_xray_exposure
+            except ObjectDoesNotExist:
+                exposure_index = None
+                target_exposure_index = None
+                deviation_index = None
+                relative_xray_exposure = None
+
+            cgycm2 = first_view.convert_gym2_to_cgycm2()
+            entrance_exposure_at_rp = first_view.entrance_exposure_at_rp
+
+            try:
+                distances = first_view.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get()
+                distance_source_to_detector = distances.distance_source_to_detector
+                distance_source_to_entrance_surface = distances.distance_source_to_entrance_surface
+                distance_source_to_isocenter = distances.distance_source_to_isocenter
+                table_height_position = distances.table_height_position
+            except ObjectDoesNotExist:
+                distance_source_to_detector = None
+                distance_source_to_entrance_surface = None
+                distance_source_to_isocenter = None
+                table_height_position = None
+
+            try:
+                anatomical_structure = first_view.anatomical_structure.code_meaning
+            except AttributeError:
+                anatomical_structure = ""
+
+            series_data = [
+                first_view.acquisition_protocol,
+                anatomical_structure,
+            ]
+            try:
+                series_data += [first_view.image_view.code_meaning, ]
+            except AttributeError:
+                series_data += [None, ]
+
+            exam_data += [
+                u'',
+                row + 1,
+                exam.pk,
+                exam.study_date,
+                cgycm2,
+                u'cGycm²',
+                first_view.acquisition_protocol,
+                patient_weight,
+                '',
+                '',
+                patient_age_decimal,
+                patient_sex,
+                patient_size,
+                '',
+                grid_focal_distance,
+                distance_source_to_detector,
+                '',
+                exposure_control_mode,
+                kvp,
+                mas,
 
 
+            ]
+
+        except ObjectDoesNotExist:
+            logger.error(u"Failed to export study to PHE 2019 DX single as had no event data! PK={0}".format(exam.pk))
+            # Need to exit cleanly here
+        sheet.write_row(row + 1, 0, exam_data)
 
     book.close()
     tsk.progress = u"PHE DX 2019 export complete"
