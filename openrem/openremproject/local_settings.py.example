@@ -31,6 +31,10 @@ MEDIA_ROOT = ''
 # Example: "/home/media/media.lawrence.com/static/"
 STATIC_ROOT = ''
 
+# Take care the output path of "manage.py collectstatic_js_reverse" is correct
+# It is dependent on STATIC_ROOT
+JS_REVERSE_OUTPUT_PATH = os.path.join(STATIC_ROOT, 'js', 'django_reverse')
+
 # You should generate a new secret key. Make this unique, and don't
 # share it with anybody. See the docs.
 SECRET_KEY = 'hmj#)-$smzqk*=wuz9^a46rex30^$_j$rghp+1#y&amp;i+pys5b@$'
