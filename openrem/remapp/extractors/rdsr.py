@@ -37,6 +37,7 @@ import os
 import sys
 
 import django
+from django.db.models import ObjectDoesNotExist
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -342,7 +343,6 @@ def _check_dap_units(dap_sequence):
 
 def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
     # TODO: review model to convert to cid where appropriate, and add additional fields
-    from django.core.exceptions import ObjectDoesNotExist
     from django.db.models import Avg
     from remapp.models import IrradEventXRaySourceData
     from remapp.tools.get_values import get_or_create_cid, safe_strings
@@ -1342,10 +1342,20 @@ def _generalstudymoduleattributes(dataset, g, ch):
             g.requested_procedure_code_meaning = get_value_kw('RequestedProcedureDescription', dataset)
             g.save()
 
+    try:
+        number_of_events_ct = g.ctradiationdose_set.get().ctirradiationeventdata_set.count()
+    except ObjectDoesNotExist:
+        number_of_events_ct = 0
+    try:
+        number_of_events_proj = g.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
+    except ObjectDoesNotExist:
+        number_of_events_proj = 0
+    g.number_of_events = number_of_events_ct + number_of_events_proj
+    g.save()
+
 
 def _rdsr2db(dataset):
     from collections import OrderedDict
-    from django.db.models import ObjectDoesNotExist
     from time import sleep
     from remapp.models import GeneralStudyModuleAttr, SkinDoseMapCalcSettings
     from remapp.tools.check_uid import record_sop_instance_uid
@@ -1582,7 +1592,6 @@ def rdsr(rdsr_file):
     """
 
     import dicom
-    from django.core.exceptions import ObjectDoesNotExist
     from remapp.models import DicomDeleteSettings
     try:
         del_settings = DicomDeleteSettings.objects.get()

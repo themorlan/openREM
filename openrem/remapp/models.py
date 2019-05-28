@@ -587,6 +587,19 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
     series_time = models.TimeField(blank=True, null=True)
     content_time = models.TimeField(blank=True, null=True)
 
+    # Additional study summary fields
+    number_of_events = models.IntegerField(blank=True, null=True)
+    number_of_axial = models.IntegerField(blank=True, null=True)
+    number_of_spiral = models.IntegerField(blank=True, null=True)
+    number_of_stationary = models.IntegerField(blank=True, null=True)
+    number_of_const_angle = models.IntegerField(blank=True, null=True)
+    total_dlp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    total_dap = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    total_rp_dose = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    total_agd_left = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    total_agd_right = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    total_agd_both = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)  # for legacy
+
     def __unicode__(self):
         return self.study_instance_uid
 
