@@ -108,3 +108,30 @@ def get_study_check_dup(dataset, modality='DX'):
                 return 0
     # study exists, but event doesn't
     return this_study
+
+
+def ct_event_type_count(g):
+    """Count CT event types and record in GeneralStudyModuleAttr summary fields
+
+    :param g: GeneralStudyModuleAttr database table
+    :return: None - database is updated
+    """
+    from django.db.models import ObjectDoesNotExist
+
+    g.number_of_axial = 0
+    g.number_of_spiral = 0
+    g.number_of_stationary = 0
+    g.number_of_const_angle = 0
+    try:
+        events = g.ctradiationdose_set.get().ctirradiationeventdata_set.order_by('pk')
+        g.number_of_axial += events.filter(ct_acquisition_type__code_value__exact='113804').count()
+        g.number_of_spiral += events.filter(ct_acquisition_type__code_value__exact='116152004').count()
+        g.number_of_spiral += events.filter(ct_acquisition_type__code_value__exact='P5-08001').count()
+        g.number_of_spiral += events.filter(ct_acquisition_type__code_value__exact='C0860888').count()
+        g.number_of_stationary += events.filter(ct_acquisition_type__code_value__exact='113806').count()
+        g.number_of_const_angle += events.filter(ct_acquisition_type__code_value__exact='113805').count()
+    except ObjectDoesNotExist:
+        return
+    g.save()
+
+

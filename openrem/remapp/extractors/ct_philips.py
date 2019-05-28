@@ -292,6 +292,7 @@ def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
 
 def _generalstudymoduleattributes(dataset, g, ch):
     from datetime import datetime
+    from remapp.extractors.extract_common import ct_event_type_count
     from remapp.models import PatientIDSettings
     from remapp.tools.get_values import get_value_kw, get_seq_code_meaning, get_seq_code_value, list_to_string
     from remapp.tools.dcmdatetime import get_date, get_time
@@ -320,6 +321,7 @@ def _generalstudymoduleattributes(dataset, g, ch):
     g.requested_procedure_code_meaning = get_value_kw('RequestedProcedureDescription', dataset)
     g.save()
     _ctradiationdose(dataset, g, ch)
+    ct_event_type_count(g)
 
 
 def _philips_ct2db(dataset):

@@ -1263,31 +1263,9 @@ def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
     pat.save()
 
 
-def _ct_event_type_count(g):
-    """Count CT event types and record in GeneralStudyModuleAttr summary fields
-
-    :param g: GeneralStudyModuleAttr database table
-    :return: None - database is updated
-    """
-    g.number_of_axial = 0
-    g.number_of_spiral = 0
-    g.number_of_stationary = 0
-    g.number_of_const_angle = 0
-    try:
-        events = g.ctradiationdose_set.get().ctirradiationeventdata_set.order_by('pk')
-        g.number_of_axial += events.filter(ct_acquisition_type__code_value__exact='113804').count()
-        g.number_of_spiral += events.filter(ct_acquisition_type__code_value__exact='116152004').count()
-        g.number_of_spiral += events.filter(ct_acquisition_type__code_value__exact='P5-08001').count()
-        g.number_of_spiral += events.filter(ct_acquisition_type__code_value__exact='C0860888').count()
-        g.number_of_stationary += events.filter(ct_acquisition_type__code_value__exact='113806').count()
-        g.number_of_const_angle += events.filter(ct_acquisition_type__code_value__exact='113805').count()
-    except ObjectDoesNotExist:
-        return
-    g.save()
-
-
 def _generalstudymoduleattributes(dataset, g, ch):
     from datetime import datetime
+    from remapp.extractors.extract_common import ct_event_type_count
     from remapp.models import PatientIDSettings
     from remapp.tools.get_values import get_value_kw, get_seq_code_value, get_seq_code_meaning, list_to_string
     from remapp.tools.dcmdatetime import get_date, get_time, make_date, make_time
@@ -1376,7 +1354,7 @@ def _generalstudymoduleattributes(dataset, g, ch):
     g.number_of_events = number_of_events_ct + number_of_events_proj
     g.save()
     if template_identifier == '10011':
-        _ct_event_type_count(g)
+        ct_event_type_count(g)
 
 
 def _rdsr2db(dataset):
