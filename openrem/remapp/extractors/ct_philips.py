@@ -37,6 +37,7 @@ import os
 import sys
 
 import django
+from django.db.models import ObjectDoesNotExist
 
 logger = logging.getLogger(__name__)
 
@@ -321,7 +322,19 @@ def _generalstudymoduleattributes(dataset, g, ch):
     g.requested_procedure_code_meaning = get_value_kw('RequestedProcedureDescription', dataset)
     g.save()
     _ctradiationdose(dataset, g, ch)
+    try:
+        g.number_of_events = g.ctradiationdose_set.get().ctirradiationeventdata_set.count()
+        g.save()
+    except ObjectDoesNotExist:
+        logger.warning(u"Study UID {0} of modality {1}. Unable to get event count!".format(
+            g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
     ct_event_type_count(g)
+    try:
+        g.total_dlp = g.ctradiationdose_set.get().ctaccumulateddosedata_set.get().ct_dose_length_product_total
+        g.save()
+    except ObjectDoesNotExist:
+        logger.warning(u"Study UID {0} of modality {1}. Unable to set summary total_dlp".format(
+            g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
 
 
 def _philips_ct2db(dataset):

@@ -1355,6 +1355,11 @@ def _generalstudymoduleattributes(dataset, g, ch):
     g.save()
     if template_identifier == '10011':
         ct_event_type_count(g)
+        try:
+            g.total_dlp = g.ctradiationdose_set.get().ctaccumulateddosedata_set.get().ct_dose_length_product_total
+        except ObjectDoesNotExist:
+            logger.warning(u"Study UID {0} of modality {1}. Unable to set summary total_dlp".format(
+                g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
 
 
 def _rdsr2db(dataset):
