@@ -594,8 +594,10 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
     number_of_stationary = models.IntegerField(blank=True, null=True)
     number_of_const_angle = models.IntegerField(blank=True, null=True)
     total_dlp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    total_dap = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    total_rp_dose = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    total_dap_a = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    total_dap_b = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    total_rp_dose_a = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    total_rp_dose_b = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
     total_agd_left = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
     total_agd_right = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
     total_agd_both = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)  # for legacy
