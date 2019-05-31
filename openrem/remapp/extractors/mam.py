@@ -383,6 +383,7 @@ def _patientmoduleattributes(dataset, g):  # C.7.1.1
 
 def _generalstudymoduleattributes(dataset, g):
     from datetime import datetime
+    from remapp.extractors.extract_common import populate_mammo_agd_summary
     from remapp.models import PatientIDSettings
     from remapp.tools.get_values import get_value_kw, get_seq_code_meaning, get_seq_code_value, list_to_string
     from remapp.tools.dcmdatetime import get_date, get_time
@@ -417,6 +418,7 @@ def _generalstudymoduleattributes(dataset, g):
     _projectionxrayradiationdose(dataset, g)
     _patientstudymoduleattributes(dataset, g)
     _patientmoduleattributes(dataset, g)
+    populate_mammo_agd_summary(g)
 
 
 def _test_if_mammo(dataset):
