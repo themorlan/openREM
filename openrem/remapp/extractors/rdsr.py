@@ -1361,11 +1361,20 @@ def _generalstudymoduleattributes(dataset, g, ch):
             logger.warning(u"Study UID {0} of modality {1}. Unable to set summary total_dlp".format(
                 g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
     elif template_identifier == '10001':
-        try:
-            planes = g.projectionxrayradiationdose_set.get().accumxraydose_set.order_by('pk')
-            if g.modality_type == 'MG':
-                pass
-            else:
+        planes = g.projectionxrayradiationdose_set.get().accumxraydose_set.order_by('pk')
+        if g.modality_type == 'MG':
+            try:
+                for breast in planes[0].accummammographyxraydose_set.order_by('pk'):
+                    if breast.laterality.code_value == 'T-04020':  # Right breast
+                        g.total_agd_right = breast.accumulated_average_glandular_dose
+                    elif breast.laterality.code_value == 'T-04030':  # Left breast
+                        g.total_agd_left = breast.accumulated_average_glandular_dose
+                g.save()
+            except ObjectDoesNotExist:
+                logger.warning(u"Study UID {0} of modality {1}. Unable to set summary total_agd values".format(
+                    g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
+        else:
+            try:
                 g.total_dap_a = planes[0].accumprojxraydose_set.get().dose_area_product_total
                 try:
                     g.total_dap_b = planes[1].accumprojxraydose_set.get().dose_area_product_total
@@ -1376,10 +1385,10 @@ def _generalstudymoduleattributes(dataset, g, ch):
                     g.total_rp_dose_b = planes[1].accumprojxraydose_set.get().dose_rp_total
                 except IndexError:
                     pass
-        except ObjectDoesNotExist:
-            logger.warning(u"Study UID {0} of modality {1}. Unable to set summary total_dap and rp dose".format(
-                g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
-
+                g.save()
+            except ObjectDoesNotExist:
+                logger.warning(u"Study UID {0} of modality {1}. Unable to set summary total_dap and rp dose".format(
+                    g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
 
 
 def _rdsr2db(dataset):
