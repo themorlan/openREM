@@ -1375,14 +1375,14 @@ def _generalstudymoduleattributes(dataset, g, ch):
                     g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
         else:
             try:
-                g.total_dap_a = planes[0].accumprojxraydose_set.get().dose_area_product_total
+                g.total_dap_a = planes[0].accumintegratedprojradiogdose_set.get().dose_area_product_total
                 try:
-                    g.total_dap_b = planes[1].accumprojxraydose_set.get().dose_area_product_total
+                    g.total_dap_b = planes[1].accumintegratedprojradiogdose_set.get().dose_area_product_total
                 except IndexError:
                     pass
-                g.total_rp_dose_a = planes[0].accumprojxraydose_set.get().dose_rp_total
+                g.total_rp_dose_a = planes[0].accumintegratedprojradiogdose_set.get().dose_rp_total
                 try:
-                    g.total_rp_dose_b = planes[1].accumprojxraydose_set.get().dose_rp_total
+                    g.total_rp_dose_b = planes[1].accumintegratedprojradiogdose_set.get().dose_rp_total
                 except IndexError:
                     pass
                 g.save()
