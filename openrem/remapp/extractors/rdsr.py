@@ -1265,7 +1265,7 @@ def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
 
 def _generalstudymoduleattributes(dataset, g, ch):
     from datetime import datetime
-    from remapp.extractors.extract_common import ct_event_type_count
+    from remapp.extractors.extract_common import ct_event_type_count, populate_mammo_agd_summary
     from remapp.models import PatientIDSettings
     from remapp.tools.get_values import get_value_kw, get_seq_code_value, get_seq_code_meaning, list_to_string
     from remapp.tools.dcmdatetime import get_date, get_time, make_date, make_time
@@ -1361,19 +1361,10 @@ def _generalstudymoduleattributes(dataset, g, ch):
             logger.warning(u"Study UID {0} of modality {1}. Unable to set summary total_dlp".format(
                 g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
     elif template_identifier == '10001':
-        planes = g.projectionxrayradiationdose_set.get().accumxraydose_set.order_by('pk')
         if g.modality_type == 'MG':
-            try:
-                for breast in planes[0].accummammographyxraydose_set.order_by('pk'):
-                    if breast.laterality.code_value == 'T-04020':  # Right breast
-                        g.total_agd_right = breast.accumulated_average_glandular_dose
-                    elif breast.laterality.code_value == 'T-04030':  # Left breast
-                        g.total_agd_left = breast.accumulated_average_glandular_dose
-                g.save()
-            except ObjectDoesNotExist:
-                logger.warning(u"Study UID {0} of modality {1}. Unable to set summary total_agd values".format(
-                    g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
+            populate_mammo_agd_summary(g)
         else:
+            planes = g.projectionxrayradiationdose_set.get().accumxraydose_set.order_by('pk')
             try:
                 g.total_dap_a = planes[0].accumintegratedprojradiogdose_set.get().dose_area_product_total
                 try:

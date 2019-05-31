@@ -135,3 +135,24 @@ def ct_event_type_count(g):
     g.save()
 
 
+def populate_mammo_agd_summary(g):
+    """Copy accumulated AGD to the GeneralStudyModuleAttr summary fields
+
+    :param g: GeneralStudyModuleAttr database table
+    :return: None - database is updated
+    """
+    from django.db.models import ObjectDoesNotExist
+
+    logger = logging.getLogger('remapp.extractors')
+
+    try:
+        for breast in g.projectionxrayradiationdose_set.get().accumxraydose_set.get().\
+                accummammographyxraydose_set.order_by('pk'):
+            if breast.laterality.code_value == 'T-04020':  # Right breast
+                g.total_agd_right = breast.accumulated_average_glandular_dose
+            elif breast.laterality.code_value == 'T-04030':  # Left breast
+                g.total_agd_left = breast.accumulated_average_glandular_dose
+        g.save()
+    except ObjectDoesNotExist:
+        logger.warning(u"Study UID {0}. Unable to set summary total_agd values".format(g.study_instance_uid))
+
