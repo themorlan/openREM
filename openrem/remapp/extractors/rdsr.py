@@ -1265,7 +1265,7 @@ def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
 
 def _generalstudymoduleattributes(dataset, g, ch):
     from datetime import datetime
-    from remapp.extractors.extract_common import ct_event_type_count, populate_mammo_agd_summary
+    from remapp.extractors.extract_common import ct_event_type_count, populate_mammo_agd_summary, populate_dx_rf_summary
     from remapp.models import PatientIDSettings
     from remapp.tools.get_values import get_value_kw, get_seq_code_value, get_seq_code_meaning, list_to_string
     from remapp.tools.dcmdatetime import get_date, get_time, make_date, make_time
@@ -1364,22 +1364,23 @@ def _generalstudymoduleattributes(dataset, g, ch):
         if g.modality_type == 'MG':
             populate_mammo_agd_summary(g)
         else:
-            planes = g.projectionxrayradiationdose_set.get().accumxraydose_set.order_by('pk')
-            try:
-                g.total_dap_a = planes[0].accumintegratedprojradiogdose_set.get().dose_area_product_total
-                try:
-                    g.total_dap_b = planes[1].accumintegratedprojradiogdose_set.get().dose_area_product_total
-                except IndexError:
-                    pass
-                g.total_rp_dose_a = planes[0].accumintegratedprojradiogdose_set.get().dose_rp_total
-                try:
-                    g.total_rp_dose_b = planes[1].accumintegratedprojradiogdose_set.get().dose_rp_total
-                except IndexError:
-                    pass
-                g.save()
-            except ObjectDoesNotExist:
-                logger.warning(u"Study UID {0} of modality {1}. Unable to set summary total_dap and rp dose".format(
-                    g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
+            populate_dx_rf_summary(g)
+            # planes = g.projectionxrayradiationdose_set.get().accumxraydose_set.order_by('pk')
+            # try:
+            #     g.total_dap_a = planes[0].accumintegratedprojradiogdose_set.get().dose_area_product_total
+            #     try:
+            #         g.total_dap_b = planes[1].accumintegratedprojradiogdose_set.get().dose_area_product_total
+            #     except IndexError:
+            #         pass
+            #     g.total_rp_dose_a = planes[0].accumintegratedprojradiogdose_set.get().dose_rp_total
+            #     try:
+            #         g.total_rp_dose_b = planes[1].accumintegratedprojradiogdose_set.get().dose_rp_total
+            #     except IndexError:
+            #         pass
+            #     g.save()
+            # except ObjectDoesNotExist:
+            #     logger.warning(u"Study UID {0} of modality {1}. Unable to set summary total_dap and rp dose".format(
+            #         g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
 
 
 def _rdsr2db(dataset):

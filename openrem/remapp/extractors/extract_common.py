@@ -28,6 +28,7 @@
 """
 
 import logging
+from django.db.models import ObjectDoesNotExist
 
 
 def get_study_check_dup(dataset, modality='DX'):
@@ -116,7 +117,6 @@ def ct_event_type_count(g):
     :param g: GeneralStudyModuleAttr database table
     :return: None - database is updated
     """
-    from django.db.models import ObjectDoesNotExist
 
     g.number_of_axial = 0
     g.number_of_spiral = 0
@@ -141,7 +141,6 @@ def populate_mammo_agd_summary(g):
     :param g: GeneralStudyModuleAttr database table
     :return: None - database is updated
     """
-    from django.db.models import ObjectDoesNotExist
 
     logger = logging.getLogger('remapp.extractors')
 
@@ -156,3 +155,29 @@ def populate_mammo_agd_summary(g):
     except ObjectDoesNotExist:
         logger.warning(u"Study UID {0}. Unable to set summary total_agd values".format(g.study_instance_uid))
 
+
+def populate_dx_rf_summary(g):
+    """Copy accumulated DAP and RP dose for each plane into the GeneralStudyModuleAttr summary fields
+
+    :param g: GeneralStudyModuleAttr database table
+    :return: None - database is updated
+    """
+
+    logger = logging.getLogger('remapp.extractors')
+
+    try:
+        planes = g.projectionxrayradiationdose_set.get().accumxraydose_set.order_by('pk')
+        accum_int_a = planes[0].accumintegratedprojradiogdose_set.get()
+        g.total_dap_a = accum_int_a.dose_area_product_total
+        g.total_rp_dose_a = accum_int_a.dose_rp_total
+        try:
+            accum_int_b = planes[1].accumintegratedprojradiogdose_set.get()
+            g.total_dap_b = accum_int_b.dose_area_product_total
+            g.total_rp_dose_b = accum_int_b.dose_rp_total
+        except IndexError:
+            logger.debug(u"Study UID {0}. No second plane when setting summary DAP/RP values".format(
+                g.study_instance_uid))
+        g.save()
+    except ObjectDoesNotExist:
+        logger.warning(u"Study UID {0}. Unable to set summary total DAP and RP dose values".format(
+            g.study_instance_uid))

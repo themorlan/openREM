@@ -571,6 +571,7 @@ def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
 
 def _generalstudymoduleattributes(dataset, g):
     from datetime import datetime
+    from remapp.extractors.extract_common import populate_dx_rf_summary
     from remapp.models import PatientIDSettings
     from remapp.tools.get_values import get_value_kw, get_seq_code_meaning, get_seq_code_value, get_value_num, \
         list_to_string
@@ -631,7 +632,7 @@ def _generalstudymoduleattributes(dataset, g):
     _projectionxrayradiationdose(dataset, g, ch)
     _patientstudymoduleattributes(dataset, g)
     _patientmoduleattributes(dataset, g, ch)
-
+    populate_dx_rf_summary(g)
 
 # The routine will accept three types of image:
 # CR image storage                               (SOP UID = '1.2.840.10008.5.1.4.1.1.1')
