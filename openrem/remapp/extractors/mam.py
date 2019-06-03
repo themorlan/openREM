@@ -419,6 +419,8 @@ def _generalstudymoduleattributes(dataset, g):
     _patientstudymoduleattributes(dataset, g)
     _patientmoduleattributes(dataset, g)
     populate_mammo_agd_summary(g)
+    g.number_of_events = g.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
+    g.save()
 
 
 def _test_if_mammo(dataset):
@@ -451,6 +453,9 @@ def _mammo2db(dataset):
         if this_study:
             _irradiationeventxraydata(dataset, this_study.projectionxrayradiationdose_set.get())
             populate_mammo_agd_summary(this_study)
+            this_study.number_of_events = this_study.projectionxrayradiationdose_set.get(
+                ).irradeventxraydata_set.count()
+            this_study.save()
 
     if not study_in_db:
         # study doesn't exist, start from scratch

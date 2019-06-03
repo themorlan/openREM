@@ -633,6 +633,8 @@ def _generalstudymoduleattributes(dataset, g):
     _patientstudymoduleattributes(dataset, g)
     _patientmoduleattributes(dataset, g, ch)
     populate_dx_rf_summary(g)
+    g.number_of_events = g.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
+    g.save()
 
 # The routine will accept three types of image:
 # CR image storage                               (SOP UID = '1.2.840.10008.5.1.4.1.1.1')
@@ -667,6 +669,9 @@ def _dx2db(dataset):
         if this_study:
             _irradiationeventxraydata(dataset, this_study.projectionxrayradiationdose_set.get(), ch)
             populate_dx_rf_summary(this_study)
+            this_study.number_of_events = this_study.projectionxrayradiationdose_set.get(
+                ).irradeventxraydata_set.count()
+            this_study.save()
 
     if not study_in_db:
         # study doesn't exist, start from scratch
