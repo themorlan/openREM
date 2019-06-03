@@ -434,7 +434,7 @@ def _test_if_mammo(dataset):
 def _mammo2db(dataset):
     from time import sleep
     from random import random
-    from remapp.extractors.extract_common import get_study_check_dup
+    from remapp.extractors.extract_common import get_study_check_dup, populate_mammo_agd_summary
     from remapp.models import GeneralStudyModuleAttr
     from remapp.tools import check_uid
     from remapp.tools.get_values import get_value_kw
@@ -450,6 +450,7 @@ def _mammo2db(dataset):
         this_study = get_study_check_dup(dataset, modality='MG')
         if this_study:
             _irradiationeventxraydata(dataset, this_study.projectionxrayradiationdose_set.get())
+            populate_mammo_agd_summary(this_study)
 
     if not study_in_db:
         # study doesn't exist, start from scratch
