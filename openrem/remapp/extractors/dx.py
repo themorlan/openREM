@@ -650,7 +650,7 @@ def _dx2db(dataset):
     import sys
     from time import sleep
     from random import random
-    from remapp.extractors.extract_common import get_study_check_dup
+    from remapp.extractors.extract_common import get_study_check_dup, populate_dx_rf_summary
     from remapp.models import GeneralStudyModuleAttr
     from remapp.tools import check_uid
     from remapp.tools.get_values import get_value_kw
@@ -666,6 +666,7 @@ def _dx2db(dataset):
         this_study = get_study_check_dup(dataset, modality='DX')
         if this_study:
             _irradiationeventxraydata(dataset, this_study.projectionxrayradiationdose_set.get(), ch)
+            populate_dx_rf_summary(this_study)
 
     if not study_in_db:
         # study doesn't exist, start from scratch
