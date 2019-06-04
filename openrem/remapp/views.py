@@ -4053,6 +4053,8 @@ def populate_summary(request):
     for study in all_ct:
         try:
             study.number_of_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.count()
+            study.total_dlp = study.ctradiationdose_set.get().ctaccumulateddosedata_set.get(
+                ).ct_dose_length_product_total
             study.save()
             ct_event_type_count(study)
         except ObjectDoesNotExist:
@@ -4077,7 +4079,7 @@ def populate_summary(request):
             logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
                 study.modality_type, study.pk, study.study_instance_uid))
     all_rf = GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF')
-    for study in all_dx:
+    for study in all_rf:
         try:
             study.number_of_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
             study.save()
@@ -4085,6 +4087,7 @@ def populate_summary(request):
         except ObjectDoesNotExist:
             logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
                 study.modality_type, study.pk, study.study_instance_uid))
+    return HttpResponseRedirect(reverse_lazy('home'))
 
 
 
