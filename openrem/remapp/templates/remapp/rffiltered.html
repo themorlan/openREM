@@ -178,26 +178,26 @@
             </td>
             <td>
                 <a href="{% url 'rf_detail_view' pk=exam.id %}">
-                    {{ projection_set.irradeventxraydata_set.count }}
+                    {{ exam.number_of_events }}
                 </a>
             </td>
             <td>
                 <a href="{% url 'rf_detail_view' pk=exam.id %}">
-                    {% for record in accum_set %}
-                      {% with accum_integrated=record.accumintegratedprojradiogdose_set.get %}
-                        {% if accum_set.count > 1 %}
-                            {{ record.acquisition_plane }}:
-                        {% endif %}
-
-                        {% if accum_integrated.convert_gym2_to_cgycm2 >= alertLevels.alert_total_dap_rf %}
-                            <strong style="color: red;">{{ accum_integrated.convert_gym2_to_cgycm2|floatformat:1 }}</strong>
+                    {% if exam.number_of_planes == 2 %}
+                        {% if exam.dap_a_cgycm2 >= alertLevels.alert_total_dap_rf %}
+                            A: <strong style="color: red;">{{ exam.dap_a_cgycm2|floatformat:1 }}</strong>
                         {% else %}
-                            {{ accum_integrated.convert_gym2_to_cgycm2|floatformat:1 }}
+                            A: {{ exam.dap_a_cgycm2|floatformat:1 }}
                         {% endif %}
-
                         <br>
-                      {% endwith %}
-                    {% endfor %}
+                        {% if exam.dap_b_cgycm2 >= alertLevels.alert_total_dap_rf %}
+                            B: <strong style="color: red;">{{ exam.dap_b_cgycm2|floatformat:1 }}</strong>
+                        {% else %}
+                            B: {{ exam.dap_b_cgycm2|floatformat:1 }}
+                        {% endif %}
+                    {% else %}
+                        {{ exam.dap_a_cgycm2|floatformat:1 }}
+                    {% endif %}
                 </a>
             </td>
             <td>
