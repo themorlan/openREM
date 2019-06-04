@@ -170,10 +170,14 @@ def populate_dx_rf_summary(g):
         accum_int_a = planes[0].accumintegratedprojradiogdose_set.get()
         g.total_dap_a = accum_int_a.dose_area_product_total
         g.total_rp_dose_a = accum_int_a.dose_rp_total
+        g.total_dap_a_delta_weeks = accum_int_a.dose_area_product_total_over_delta_weeks
+        g.total_rp_dose_a_delta_weeks = accum_int_a.dose_rp_total_over_delta_weeks
         try:
             accum_int_b = planes[1].accumintegratedprojradiogdose_set.get()
             g.total_dap_b = accum_int_b.dose_area_product_total
             g.total_rp_dose_b = accum_int_b.dose_rp_total
+            g.total_dap_b_delta_weeks = accum_int_b.dose_area_product_total_over_delta_weeks
+            g.total_rp_dose_b_delta_weeks = accum_int_b.dose_rp_total_over_delta_weeks
             g.number_of_planes = 2
         except IndexError:
             g.number_of_planes = 1

@@ -593,11 +593,15 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
     number_of_spiral = models.IntegerField(blank=True, null=True)
     number_of_stationary = models.IntegerField(blank=True, null=True)
     number_of_const_angle = models.IntegerField(blank=True, null=True)
-    total_dlp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    total_dap_a = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    total_dap_b = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    total_rp_dose_a = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    total_rp_dose_b = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    total_dlp = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+    total_dap_a = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+    total_dap_b = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+    total_rp_dose_a = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+    total_rp_dose_b = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+    total_dap_a_delta_weeks = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+    total_rp_dose_a_delta_weeks = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+    total_dap_b_delta_weeks = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+    total_rp_dose_b_delta_weeks = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
     total_agd_left = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
     total_agd_right = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
     total_agd_both = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)  # for legacy
@@ -615,6 +619,16 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
         """Converts DAP B to cGy.cm2 from Gy.m2 for display in we interface"""
         if self.total_dap_b:
             return 1000000*self.total_dap_b
+
+    def dap_a_delta_cgycm2(self):
+        """Converts DAP A delta to cGy.cm2 from Gy.m2 for display in we interface"""
+        if self.total_dap_a_delta_weeks:
+            return 1000000*self.total_dap_a_delta_weeks
+
+    def dap_b_delta_cgycm2(self):
+        """Converts DAP B delta to cGy.cm2 from Gy.m2 for display in we interface"""
+        if self.total_dap_b_delta_weeks:
+            return 1000000*self.total_dap_b_delta_weeks
 
 
 class ObjectUIDsProcessed(models.Model):
