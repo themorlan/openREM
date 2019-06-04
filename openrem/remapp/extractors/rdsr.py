@@ -1513,7 +1513,8 @@ def _rdsr2db(dataset):
             HighDoseMetricAlertSettings.objects.create()
 
         week_delta = HighDoseMetricAlertSettings.objects.values_list('accum_dose_delta_weeks', flat=True)[0]
-        calc_accum_dose_over_delta_weeks_on_import = HighDoseMetricAlertSettings.objects.values_list('calc_accum_dose_over_delta_weeks_on_import', flat=True)[0]
+        calc_accum_dose_over_delta_weeks_on_import = \
+        HighDoseMetricAlertSettings.objects.values_list('calc_accum_dose_over_delta_weeks_on_import', flat=True)[0]
         if calc_accum_dose_over_delta_weeks_on_import:
             from datetime import timedelta
             from django.db.models import Sum
@@ -1546,7 +1547,8 @@ def _rdsr2db(dataset):
 
                     accum_int_proj_to_update = AccumIntegratedProjRadiogDose.objects.get(pk=accum_int_proj_pk)
 
-                    included_studies = all_rf_studies.filter(patientmoduleattr__patient_id__exact=patient_id, study_date__range=[oldest_date, study_date])
+                    included_studies = all_rf_studies.filter(patientmoduleattr__patient_id__exact=patient_id,
+                                                             study_date__range=[oldest_date, study_date])
 
                     bulk_entries = []
                     for pk in included_studies.values_list('pk', flat=True):
@@ -1558,14 +1560,18 @@ def _rdsr2db(dataset):
                     if len(bulk_entries):
                         PKsForSummedRFDoseStudiesInDeltaWeeks.objects.bulk_create(bulk_entries)
 
-                    accum_totals = included_studies.aggregate(Sum('projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total'),
-                                                              Sum('projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_rp_total'))
-                    accum_int_proj_to_update.dose_area_product_total_over_delta_weeks = accum_totals['projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total__sum']
-                    accum_int_proj_to_update.dose_rp_total_over_delta_weeks = accum_totals['projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_rp_total__sum']
+                    accum_totals = included_studies.aggregate(Sum(
+                        'projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total'),
+                        Sum('projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_rp_total'))
+                    accum_int_proj_to_update.dose_area_product_total_over_delta_weeks = accum_totals[
+                        'projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total__sum']
+                    accum_int_proj_to_update.dose_rp_total_over_delta_weeks = accum_totals[
+                        'projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_rp_total__sum']
                     accum_int_proj_to_update.save()
 
         # Send an e-mail to all high dose alert recipients if this study is at or above threshold levels
-        send_alert_emails = HighDoseMetricAlertSettings.objects.values_list('send_high_dose_metric_alert_emails', flat=True)[0]
+        send_alert_emails = \
+        HighDoseMetricAlertSettings.objects.values_list('send_high_dose_metric_alert_emails', flat=True)[0]
         if send_alert_emails:
             from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
             send_rf_high_dose_alert_email(g.pk)
