@@ -601,6 +601,7 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
     total_agd_left = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
     total_agd_right = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
     total_agd_both = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)  # for legacy
+    number_of_planes = models.IntegerField(blank=True, null=True)
 
     def __unicode__(self):
         return self.study_instance_uid

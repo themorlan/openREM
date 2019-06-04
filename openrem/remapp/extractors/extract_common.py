@@ -174,7 +174,9 @@ def populate_dx_rf_summary(g):
             accum_int_b = planes[1].accumintegratedprojradiogdose_set.get()
             g.total_dap_b = accum_int_b.dose_area_product_total
             g.total_rp_dose_b = accum_int_b.dose_rp_total
+            g.number_of_planes = 2
         except IndexError:
+            g.number_of_planes = 1
             logger.debug(u"Study UID {0}. No second plane when setting summary DAP/RP values".format(
                 g.study_instance_uid))
         g.save()
