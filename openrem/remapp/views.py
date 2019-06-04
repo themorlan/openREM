@@ -4038,3 +4038,53 @@ class NotPatientIDDelete(DeleteView):  # pylint: disable=unused-variable
             admin[group.name] = True
         context['admin'] = admin
         return context
+
+
+def populate_summary(request):
+    """Populate the summary fields in GeneralStudyModuleAttr table for existing studies
+
+    :param request:
+    :return:
+    """
+    from django.db.models import Q
+    from remapp.extractors.extract_common import ct_event_type_count, populate_mammo_agd_summary, populate_dx_rf_summary
+
+    all_ct = GeneralStudyModuleAttr.objects.filter(modality_type__exact='CT')
+    for study in all_ct:
+        try:
+            study.number_of_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.count()
+            study.save()
+            ct_event_type_count(study)
+        except ObjectDoesNotExist:
+            logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
+                study.modality_type, study.pk, study.study_instance_uid))
+    all_mg = GeneralStudyModuleAttr.objects.filter(modality_type__exact='MG')
+    for study in all_mg:
+        try:
+            study.number_of_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
+            study.save()
+            populate_mammo_agd_summary(study)
+        except ObjectDoesNotExist:
+            logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
+                study.modality_type, study.pk, study.study_instance_uid))
+    all_dx = GeneralStudyModuleAttr.objects.filter(Q(modality_type__exact='DX') | Q(modality_type__exact='CR'))
+    for study in all_dx:
+        try:
+            study.number_of_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
+            study.save()
+            populate_dx_rf_summary(study)
+        except ObjectDoesNotExist:
+            logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
+                study.modality_type, study.pk, study.study_instance_uid))
+    all_rf = GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF')
+    for study in all_dx:
+        try:
+            study.number_of_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
+            study.save()
+            populate_dx_rf_summary(study)
+        except ObjectDoesNotExist:
+            logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
+                study.modality_type, study.pk, study.study_instance_uid))
+
+
+
