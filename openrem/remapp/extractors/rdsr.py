@@ -1365,22 +1365,6 @@ def _generalstudymoduleattributes(dataset, g, ch):
             populate_mammo_agd_summary(g)
         else:
             populate_dx_rf_summary(g)
-            # planes = g.projectionxrayradiationdose_set.get().accumxraydose_set.order_by('pk')
-            # try:
-            #     g.total_dap_a = planes[0].accumintegratedprojradiogdose_set.get().dose_area_product_total
-            #     try:
-            #         g.total_dap_b = planes[1].accumintegratedprojradiogdose_set.get().dose_area_product_total
-            #     except IndexError:
-            #         pass
-            #     g.total_rp_dose_a = planes[0].accumintegratedprojradiogdose_set.get().dose_rp_total
-            #     try:
-            #         g.total_rp_dose_b = planes[1].accumintegratedprojradiogdose_set.get().dose_rp_total
-            #     except IndexError:
-            #         pass
-            #     g.save()
-            # except ObjectDoesNotExist:
-            #     logger.warning(u"Study UID {0} of modality {1}. Unable to set summary total_dap and rp dose".format(
-            #         g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
 
 
 def _rdsr2db(dataset):
