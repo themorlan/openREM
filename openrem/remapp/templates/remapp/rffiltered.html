@@ -200,7 +200,7 @@
                             <strong style="color: red;">{{ exam.dap_a_cgycm2|floatformat:1 }}</strong>
                         {% else %}
                             {{ exam.dap_a_cgycm2|floatformat:1 }}
-                        {% endelse %}
+                        {% endif %}
                     {% endif %}
                 </a>
             </td>
@@ -208,39 +208,23 @@
                 <a href="{% url 'rf_detail_view' pk=exam.id %}">
                     {% if exam.number_of_planes == 2 %}
                         {% if exam.total_rp_dose_a >= alertLevels.alert_total_rp_dose_rf %}
-                            A: <strong style="color: red;">{{ exam.total_rp_dose_a|floatformat:1 }}</strong>
+                            A: <strong style="color: red;">{{ exam.total_rp_dose_a|sigdig }}</strong>
                         {% else %}
-                            A: {{ exam.total_rp_dose_a|floatformat:1 }}
+                            A: {{ exam.total_rp_dose_a|sigdig }}
                         {% endif %}
                         <br>
                         {% if exam.total_rp_dose_b >= alertLevels.alert_total_rp_dose_rf %}
-                            B: <strong style="color: red;">{{ exam.total_rp_dose_b|floatformat:1 }}</strong>
+                            B: <strong style="color: red;">{{ exam.total_rp_dose_b|sigdig }}</strong>
                         {% else %}
-                            B: {{ exam.total_rp_dose_b|floatformat:1 }}
+                            B: {{ exam.total_rp_dose_b|sigdig }}
                         {% endif %}
                     {% else %}
                         {% if exam.total_rp_dose_a >= alertLevels.alert_total_rp_dose_rf %}
-                            <strong style="color: red;">{{ exam.total_rp_dose_a|floatformat:1 }}</strong>
+                            <strong style="color: red;">{{ exam.total_rp_dose_a|sigdig }}</strong>
                         {% else %}
-                            {{ exam.total_rp_dose_a|floatformat:1 }}
-                        {% endelse %}
+                            {{ exam.total_rp_dose_a|sigdig }}
+                        {% endif %}
                     {% endif %}
-                |
-                    {% for record in accum_set %}
-                      {% with accum_integrated=record.accumintegratedprojradiogdose_set.get %}
-                        {% if accum_set.count > 1 %}
-                            {{ record.acquisition_plane }}:
-                        {% endif %}
-
-                        {% if accum_integrated.dose_rp_total >= alertLevels.alert_total_rp_dose_rf %}
-                            <strong style="color: red;">{{ accum_integrated.dose_rp_total | sigdig }} </strong>
-                        {% else %}
-                            {{ accum_integrated.dose_rp_total | sigdig }}
-                        {% endif %}
-
-                        <br>
-                      {% endwith %}
-                    {% endfor %}
                 </a>
             </td>
             {% if alertLevels.show_accum_dose_over_delta_weeks %}
