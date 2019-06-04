@@ -606,6 +606,16 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
     def __unicode__(self):
         return self.study_instance_uid
 
+    def dap_a_cgycm2(self):
+        """Converts DAP A to cGy.cm2 from Gy.m2 for display in we interface"""
+        if self.total_dap_a:
+            return 1000000*self.total_dap_a
+
+    def dap_b_cgycm2(self):
+        """Converts DAP B to cGy.cm2 from Gy.m2 for display in we interface"""
+        if self.total_dap_b:
+            return 1000000*self.total_dap_b
+
 
 class ObjectUIDsProcessed(models.Model):
     """Table to hold the SOP Instance UIDs of the objects that have been processed against this study to enable
