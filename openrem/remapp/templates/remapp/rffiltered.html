@@ -196,12 +196,36 @@
                             B: {{ exam.dap_b_cgycm2|floatformat:1 }}
                         {% endif %}
                     {% else %}
-                        {{ exam.dap_a_cgycm2|floatformat:1 }}
+                        {% if exam.dap_a_cgycm2 >= alertLevels.alert_total_dap_rf %}
+                            <strong style="color: red;">{{ exam.dap_a_cgycm2|floatformat:1 }}</strong>
+                        {% else %}
+                            {{ exam.dap_a_cgycm2|floatformat:1 }}
+                        {% endelse %}
                     {% endif %}
                 </a>
             </td>
             <td>
                 <a href="{% url 'rf_detail_view' pk=exam.id %}">
+                    {% if exam.number_of_planes == 2 %}
+                        {% if exam.total_rp_dose_a >= alertLevels.alert_total_rp_dose_rf %}
+                            A: <strong style="color: red;">{{ exam.total_rp_dose_a|floatformat:1 }}</strong>
+                        {% else %}
+                            A: {{ exam.total_rp_dose_a|floatformat:1 }}
+                        {% endif %}
+                        <br>
+                        {% if exam.total_rp_dose_b >= alertLevels.alert_total_rp_dose_rf %}
+                            B: <strong style="color: red;">{{ exam.total_rp_dose_b|floatformat:1 }}</strong>
+                        {% else %}
+                            B: {{ exam.total_rp_dose_b|floatformat:1 }}
+                        {% endif %}
+                    {% else %}
+                        {% if exam.total_rp_dose_a >= alertLevels.alert_total_rp_dose_rf %}
+                            <strong style="color: red;">{{ exam.total_rp_dose_a|floatformat:1 }}</strong>
+                        {% else %}
+                            {{ exam.total_rp_dose_a|floatformat:1 }}
+                        {% endelse %}
+                    {% endif %}
+                |
                     {% for record in accum_set %}
                       {% with accum_integrated=record.accumintegratedprojradiogdose_set.get %}
                         {% if accum_set.count > 1 %}
