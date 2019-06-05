@@ -147,10 +147,12 @@ def populate_mammo_agd_summary(g):
     try:
         for breast in g.projectionxrayradiationdose_set.get().accumxraydose_set.get().\
                 accummammographyxraydose_set.order_by('pk'):
-            if breast.laterality.code_value == 'T-04020':  # Right breast
+            if breast.laterality.code_value in ['T-04020', '73056007', 'C0222600']:  # Right breast
                 g.total_agd_right = breast.accumulated_average_glandular_dose
-            elif breast.laterality.code_value == 'T-04030':  # Left breast
+            elif breast.laterality.code_value in ['T-04030', '80248007', 'C0222601']:  # Left breast
                 g.total_agd_left = breast.accumulated_average_glandular_dose
+            elif breast.laterality.code_value in ['T-04080', '63762007', 'C0222605']:  # Left breast
+                g.total_agd_both = breast.accumulated_average_glandular_dose
         g.save()
     except ObjectDoesNotExist:
         logger.warning(u"Study UID {0}. Unable to set summary total_agd values".format(g.study_instance_uid))
