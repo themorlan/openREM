@@ -143,7 +143,7 @@
           {% with equipment=exam.generalequipmentmoduleattr_set.get %}
           {% with projection_set=exam.projectionxrayradiationdose_set.get %}
           {% with accum_set=projection_set.accumxraydose_set.all %}
-          {% with study_delta_pk_set=exam.pksforsummedrfdosestudiesindeltaweeks_set.all %}
+          {% with n_delta_studies=exam.pksforsummedrfdosestudiesindeltaweeks_set.all.count %}
         <tr>
             <td>
                 <a href="{% url 'rf_detail_view' pk=exam.id %}">
@@ -238,9 +238,7 @@
                                 {{ accum_integrated.total_dap_delta_gym2_to_cgycm2|floatformat:1 }}
                             {% endif %}
 
-                            {% with n_studies=study_delta_pk_set.count %}
-                                 ({{ n_studies }} exam{{ n_studies|pluralize }})
-                            {% endwith %}
+                             ({{ n_delta_studies }} exam{{ n_delta_studies|pluralize }})
                           {% endwith %}
                         </a>
                     </td>
@@ -248,14 +246,12 @@
                         <a href="{% url 'rf_detail_view' pk=exam.id %}">
                           {% with accum_integrated=first_accum_set.accumintegratedprojradiogdose_set.get %}
                             {% if accum_integrated.dose_rp_total_over_delta_weeks >= alertLevels.alert_total_rp_dose_rf %}
-                                <strong style="color: red;">{{ accum_integrated.dose_rp_total_over_delta_weeks | sigdig }} </strong>
+                                <strong style="color: red;">{{ accum_integrated.dose_rp_total_over_delta_weeks | sigdig }}</strong>
                             {% else %}
                                 {{ accum_integrated.dose_rp_total_over_delta_weeks | sigdig }}
                             {% endif %}
 
-                            {% with n_studies=study_delta_pk_set.count %}
-                                 ({{ n_studies }} exam{{ n_studies|pluralize }})
-                            {% endwith %}
+                             ({{ n_delta_studies }} exam{{ n_delta_studies|pluralize }})
                           {% endwith %}
                         </a>
                     </td>

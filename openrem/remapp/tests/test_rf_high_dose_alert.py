@@ -46,7 +46,7 @@ class RFHighDoseAlert(TestCase):
         # The second file has had the study date adjusted by two days, and the Study UID adjusted by a single digit
 
         root_tests = os.path.dirname(os.path.abspath(__file__))
-        # Important to read in the earlist study date RDSR first because
+        # Important to read in the earliest study date RDSR first because
         # the cumulated DAP and RP dose looks for matching studies that have
         # previously taken place.
         rdsr(os.path.join(root_tests, rf_siemens_zee_20160510))
@@ -54,8 +54,8 @@ class RFHighDoseAlert(TestCase):
 
         self.dap_16_text = u'<strong style="color: red;">16.0</strong>'
         self.dap_32_text = u'<strong style="color: red;">32.0</strong>'
-        self.rp_252_text = u'<strong style="color: red;">0.00252 </strong>'
-        self.rp_504_text = u'<strong style="color: red;">0.00504 </strong>'
+        self.rp_252_text = u'<strong style="color: red;">0.00252</strong>'
+        self.rp_504_text = u'<strong style="color: red;">0.00504</strong>'
         self.rp_000_text = u'<strong style="color: red;">0.0</strong>'
         self.one_exam_text = u'(1 exam)'
         self.two_exams_text = u'(2 exams)'
