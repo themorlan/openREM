@@ -856,7 +856,9 @@ def rf_detail_view(request, pk=None):
             study_date = study.study_date
             week_delta = HighDoseMetricAlertSettings.objects.values_list('accum_dose_delta_weeks', flat=True)[0]
             oldest_date = (study_date - timedelta(weeks=week_delta))
-            included_studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF', patientmoduleattr__patient_id__exact=patient_id, study_date__range=[oldest_date, study_date])
+            included_studies = GeneralStudyModuleAttr.objects.filter(
+                modality_type__exact='RF', patientmoduleattr__patient_id__exact=patient_id,
+                study_date__range=[oldest_date, study_date])
         else:
             included_studies = None
     else:
