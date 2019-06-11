@@ -3880,6 +3880,12 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
                     accum_int_proj_to_update.dose_area_product_total_over_delta_weeks = accum_totals['projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total__sum']
                     accum_int_proj_to_update.dose_rp_total_over_delta_weeks = accum_totals['projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_rp_total__sum']
                     accum_int_proj_to_update.save()
+                # Both planes are added to the total, which is recorded in each plane. So only need to get the first one
+                study.total_dap_delta_weeks = study.projectionxrayradiationdose_set.get().accumxraydose_set.order_by('pk')[
+                    0].accumintegratedprojradiogdose_set.get().dose_area_product_total_over_delta_weeks
+                study.total_rp_dose_delta_weeks = study.projectionxrayradiationdose_set.get().accumxraydose_set.order_by('pk')[
+                    0].accumintegratedprojradiogdose_set.get().dose_rp_total_over_delta_weeks
+                study.save()
 
         HighDoseMetricAlertSettings.objects.all().update(changed_accum_dose_delta_weeks=False)
 
