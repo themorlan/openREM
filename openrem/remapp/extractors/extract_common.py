@@ -189,3 +189,25 @@ def populate_dx_rf_summary(g):
     except ObjectDoesNotExist:
         logger.warning(u"Study UID {0}. Unable to set summary total DAP and RP dose values".format(
             g.study_instance_uid))
+
+
+def populate_rf_delta_weeks_summary(g):
+    """Copy DAP and RP dose accumulated over delta weeks into the GeneralStudyModuleAttr summary fields
+
+    :param g: GeneralStudyModuleAttr database table
+    :return: None - database is updated
+    """
+
+    logger = logging.getLogger('remapp.extractors')
+
+    try:
+        # Both planes are added to the total, which is recorded in each plane. So only need to get the first one
+        g.total_dap_delta_weeks = g.projectionxrayradiationdose_set.get().accumxraydose_set.order_by('pk')[
+            0].accumintegratedprojradiogdose_set.get().dose_area_product_total_over_delta_weeks
+        g.total_rp_dose_delta_weeks = g.projectionxrayradiationdose_set.get().accumxraydose_set.order_by('pk')[
+            0].accumintegratedprojradiogdose_set.get().dose_rp_total_over_delta_weeks
+        g.save()
+    except ObjectDoesNotExist:
+        logger.warning(u"Study UID {0}. Unable to set summary delta weeks DAP and RP dose values".format(
+            g.study_instance_uid))
+

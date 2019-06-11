@@ -1379,6 +1379,7 @@ def _generalstudymoduleattributes(dataset, g, ch):
 def _rdsr2db(dataset):
     from collections import OrderedDict
     from time import sleep
+    from remapp.extractors.extract_common import populate_rf_delta_weeks_summary
     from remapp.models import GeneralStudyModuleAttr, SkinDoseMapCalcSettings
     from remapp.tools.check_uid import record_sop_instance_uid
     from remapp.tools.get_values import get_value_kw
@@ -1580,12 +1581,7 @@ def _rdsr2db(dataset):
                     accum_int_proj_to_update.dose_rp_total_over_delta_weeks = accum_totals[
                         'projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_rp_total__sum']
                     accum_int_proj_to_update.save()
-                # Both planes are added to the total, which is recorded in each plane. So only need to get the first one
-                g.total_dap_delta_weeks = g.projectionxrayradiationdose_set.get().accumxraydose_set.order_by('pk')[
-                    0].accumintegratedprojradiogdose_set.get().dose_area_product_total_over_delta_weeks
-                g.total_rp_dose_delta_weeks = g.projectionxrayradiationdose_set.get().accumxraydose_set.order_by('pk')[
-                    0].accumintegratedprojradiogdose_set.get().dose_rp_total_over_delta_weeks
-                g.save()
+                populate_rf_delta_weeks_summary(g)
 
         # Send an e-mail to all high dose alert recipients if this study is at or above threshold levels
         send_alert_emails = \

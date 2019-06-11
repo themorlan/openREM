@@ -3804,6 +3804,7 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
 
     """
     from django.http import JsonResponse
+    from remapp.extractors.extract_common import populate_rf_delta_weeks_summary
 
     if not request.user.groups.filter(name="admingroup"):
         # Send the user to the home page
@@ -3880,12 +3881,7 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
                     accum_int_proj_to_update.dose_area_product_total_over_delta_weeks = accum_totals['projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total__sum']
                     accum_int_proj_to_update.dose_rp_total_over_delta_weeks = accum_totals['projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_rp_total__sum']
                     accum_int_proj_to_update.save()
-                # Both planes are added to the total, which is recorded in each plane. So only need to get the first one
-                study.total_dap_delta_weeks = study.projectionxrayradiationdose_set.get().accumxraydose_set.order_by('pk')[
-                    0].accumintegratedprojradiogdose_set.get().dose_area_product_total_over_delta_weeks
-                study.total_rp_dose_delta_weeks = study.projectionxrayradiationdose_set.get().accumxraydose_set.order_by('pk')[
-                    0].accumintegratedprojradiogdose_set.get().dose_rp_total_over_delta_weeks
-                study.save()
+                populate_rf_delta_weeks_summary(study)
 
         HighDoseMetricAlertSettings.objects.all().update(changed_accum_dose_delta_weeks=False)
 
@@ -4058,7 +4054,8 @@ def populate_summary(request):
     :return:
     """
     from django.db.models import Q
-    from remapp.extractors.extract_common import ct_event_type_count, populate_mammo_agd_summary, populate_dx_rf_summary
+    from remapp.extractors.extract_common import ct_event_type_count, populate_mammo_agd_summary, \
+        populate_dx_rf_summary, populate_rf_delta_weeks_summary
 
     all_ct = GeneralStudyModuleAttr.objects.filter(modality_type__exact='CT')
     for study in all_ct:
@@ -4095,6 +4092,7 @@ def populate_summary(request):
             study.number_of_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
             study.save()
             populate_dx_rf_summary(study)
+            populate_rf_delta_weeks_summary(study)
         except ObjectDoesNotExist:
             logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
                 study.modality_type, study.pk, study.study_instance_uid))
