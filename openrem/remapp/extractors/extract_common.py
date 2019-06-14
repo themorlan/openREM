@@ -174,6 +174,17 @@ def populate_dx_rf_summary(g):
         g.total_rp_dose_a = accum_int_a.dose_rp_total
         g.total_dap_a_delta_weeks = accum_int_a.dose_area_product_total_over_delta_weeks
         g.total_rp_dose_a_delta_weeks = accum_int_a.dose_rp_total_over_delta_weeks
+        if g.projectionxrayradiationdose_set.get().irradeventxraydata_set.all(
+                ).filter(acquisition_plane__code_value__exact="113620").count():
+            g.number_of_events_a = g.projectionxrayradiationdose_set.get().irradeventxraydata_set.all(
+                ).filter(acquisition_plane__code_value__exact="113620").count()
+        elif g.projectionxrayradiationdose_set.get().irradeventxraydata_set.all(
+                ).filter(acquisition_plane__code_value__exact="113622").count():
+            g.number_of_events_a = g.projectionxrayradiationdose_set.get().irradeventxraydata_set.all(
+                ).filter(acquisition_plane__code_value__exact="113622").count()
+        else:
+            g.number_of_events_a = g.projectionxrayradiationdose_set.get().irradeventxraydata_set.all(
+                ).filter(acquisition_plane__code_value__exact="113890").count()
         try:
             accum_int_b = planes[1].accumintegratedprojradiogdose_set.get()
             g.total_dap_b = accum_int_b.dose_area_product_total
@@ -181,6 +192,8 @@ def populate_dx_rf_summary(g):
             g.total_dap_b_delta_weeks = accum_int_b.dose_area_product_total_over_delta_weeks
             g.total_rp_dose_b_delta_weeks = accum_int_b.dose_rp_total_over_delta_weeks
             g.number_of_planes = 2
+            g.number_of_events_b = g.projectionxrayradiationdose_set.get().irradeventxraydata_set.all(
+                ).filter(acquisition_plane__code_value__exact="113621").count()
         except IndexError:
             g.number_of_planes = 1
             logger.debug(u"Study UID {0}. No second plane when setting summary DAP/RP values".format(

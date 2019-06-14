@@ -589,6 +589,8 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
 
     # Additional study summary fields
     number_of_events = models.IntegerField(blank=True, null=True)
+    number_of_events_a = models.IntegerField(blank=True, null=True)
+    number_of_events_b = models.IntegerField(blank=True, null=True)
     number_of_axial = models.IntegerField(blank=True, null=True)
     number_of_spiral = models.IntegerField(blank=True, null=True)
     number_of_stationary = models.IntegerField(blank=True, null=True)
