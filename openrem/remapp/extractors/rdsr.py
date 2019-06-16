@@ -1569,7 +1569,6 @@ def _rdsr2db(dataset):
                             new_entry.general_study_module_attributes_id = g.pk
                             new_entry.study_pk_in_delta_weeks = pk
                             bulk_entries.append(new_entry)
-
                     if len(bulk_entries):
                         PKsForSummedRFDoseStudiesInDeltaWeeks.objects.bulk_create(bulk_entries)
 
