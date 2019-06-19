@@ -36,6 +36,7 @@ import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 import json
 from django.db import models
+from django.db.models.sql.aggregates import Aggregate as SQLAggregate
 from django.core.urlresolvers import reverse
 from solo.models import SingletonModel
 from django.contrib.auth.models import User
@@ -43,6 +44,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 # pylint: disable=unused-variable
+
 
 class AdminTaskQuestions(SingletonModel):
     """
@@ -1389,8 +1391,6 @@ class PersonParticipant(models.Model):  # TID 1020
         return self.person_name
 
 
-from django.db.models.sql.aggregates import Aggregate as SQLAggregate
-
 class MedianSQL(SQLAggregate):
     sql_function = 'Median'
     sql_template = '%(function)s(%(field)s)'
@@ -1404,3 +1404,12 @@ class Median(models.Aggregate):
     def add_to_query(self, query, alias, col, source, is_summary):
         aggregate = self.sql(col, **self.extra)
         query.aggregates[alias] = aggregate
+
+
+class SummaryFields(SingletonModel):
+    """Status and progress of populating the summary fields in GeneralStudyModuleAttr
+
+    """
+
+    complete = models.BooleanField(default=False)
+    status_message = models.TextField(blank=True, null=True)

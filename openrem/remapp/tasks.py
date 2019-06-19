@@ -19,3 +19,4 @@ from remapp.extractors.ptsizecsv2db import websizeimport  # pylint: disable=unus
 from remapp.netdicom.qrscu import qrscu, movescu  # pylint: disable=unused-import
 from remapp.netdicom.keepalive import keep_alive  # pylint: disable=unused-import
 from remapp.tools.make_skin_map import make_skin_map  # pylint: disable=unused-import
+from remapp.tools.populate_summary import populate_summary  # pylint: disable=unused-import
