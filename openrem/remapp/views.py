@@ -4053,10 +4053,38 @@ def populate_summary(request):
     :param request:
     :return:
     """
-    from remapp.tools.populate_summary import populate_summary
+    from remapp.tools.populate_summary import populate_summary_ct, populate_summary_mg, populate_summary_dx, \
+        populate_summary_rf
     from remapp.models import SummaryFields
 
     if request.user.groups.filter(name="admingroup"):
+        try:
+            task_ct = SummaryFields.objects.get(modality_type__exact='CT')
+        except ObjectDoesNotExist:
+            task_ct = SummaryFields.objects.create(modality_type='CT')
+        if not task_ct.complete:
+            populate_summary_ct.delay()
+        try:
+            task_mg = SummaryFields.objects.get(modality_type__exact='MG')
+        except ObjectDoesNotExist:
+            task_mg = SummaryFields.objects.create(modality_type='MG')
+        if not task_mg.complete:
+            populate_summary_mg.delay()
+        try:
+            task_dx = SummaryFields.objects.get(modality_type__exact='DX')
+        except ObjectDoesNotExist:
+            task_dx = SummaryFields.objects.create(modality_type='DX')
+        if not task_dx.complete:
+            populate_summary_dx.delay()
+        try:
+            task_rf = SummaryFields.objects.get(modality_type__exact='RF')
+        except ObjectDoesNotExist:
+            task_rf = SummaryFields.objects.create(modality_type='RF')
+        if not task_rf.complete:
+            populate_summary_rf.delay()
+
+
+
         task = SummaryFields.get_solo()
         if task.complete:
             messages.error(u"Populating summary fields already complete!")

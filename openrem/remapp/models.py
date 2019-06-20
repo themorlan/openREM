@@ -1406,10 +1406,13 @@ class Median(models.Aggregate):
         query.aggregates[alias] = aggregate
 
 
-class SummaryFields(SingletonModel):
+class SummaryFields(models.Model):
     """Status and progress of populating the summary fields in GeneralStudyModuleAttr
 
     """
 
+    modality_type = models.CharField(max_length=2, null=True)
     complete = models.BooleanField(default=False)
     status_message = models.TextField(blank=True, null=True)
+    total_studies = models.IntegerField(default=0)
+    current_study = models.IntegerField(default=0)
