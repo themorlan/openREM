@@ -1,191 +1,199 @@
 {% extends "remapp/base.html" %}
 
 {% block headextras %}
-  <script src="{{ STATIC_URL }}js/sorttable.js"></script>
+    <script src="{{ STATIC_URL }}js/sorttable.js"></script>
 {% endblock %}
 
 {% block navhelp %}
-  <li>
-    <a href="https://docs.openrem.org/en/{{ admin.docsversion }}/i_navigate.html" target="_blank" data-toggle="tooltip"
-       title="Web interface documentation - opens in a new tab">
-      Web interface documentation
-    </a>
-  </li>
+    <li>
+        <a href="https://docs.openrem.org/en/{{ admin.docsversion }}/i_navigate.html" target="_blank"
+           data-toggle="tooltip"
+           title="Web interface documentation - opens in a new tab">
+            Web interface documentation
+        </a>
+    </li>
 {% endblock %}
 
 
 {% block toprow %}
-  <h1><img src="{{ STATIC_URL }}img/openrem0055.png" height="55" width="55" class="openrem-logo">OpenREM database
-    browser and export</h1>
+    <h1><img src="{{ STATIC_URL }}img/openrem0055.png" height="55" width="55" class="openrem-logo">OpenREM database
+        browser and export</h1>
 
-  {% if not users_in_groups.any %}
-    <div class="panel panel-danger">
-      <div class="panel-heading">
-        <h3 class="panel-title">There are no users in any of the groups</h3>
-      </div>
-      <div class="panel-body">
-        <p>
-          You will need to allocate users to a group before using this system -
-          <a href="{%  url 'admin:auth_user_changelist' %}">you can do this here.</a> You will need to know the superuser
-          username and password you used when you installed the database.
-        </p>
-        <p>
-          Make sure there is at least one Admin user. You can return to the user config
-          page later by using the 'Manage users' link on the admin menu.
-        </p>
-      </div>
-    </div>
-  {% elif not users_in_groups.admin %}
-    <div class="panel panel-warning">
-      <div class="panel-heading">
-        <h3 class="panel-title">There are no users in the admin group</h3>
-      </div>
-      <div class="panel-body">
-        <p>
-          Make sure there is at least one Admin user &mdash; <a href="{% url 'admin:auth_user_changelist' %}">you can do this here.</a> You
-          will need to know the superuser
-          username and password you used when you installed the database.
-        </p>
-        <p>
-          You can return to the user config
-          page later by using the 'Manage users' link on the admin menu.
-        </p>
-      </div>
-    </div>
-  {% endif %}
-
-  <p>
-    There are {{ homedata.total }} studies in this database. Page last refreshed on {% now "jS F Y \a\t H:i" %}.
-    {% if user.is_authenticated %}
-      {% if request.user.userprofile.plotCharts %}
-        Chart plotting on.
-      {% else %}
-        Chart plotting off.
-      {% endif %}
+    {% if not users_in_groups.any %}
+        <div class="panel panel-danger">
+            <div class="panel-heading">
+                <h3 class="panel-title">There are no users in any of the groups</h3>
+            </div>
+            <div class="panel-body">
+                <p>
+                    You will need to allocate users to a group before using this system -
+                    <a href="{% url 'admin:auth_user_changelist' %}">you can do this here.</a> You will need to know the
+                    superuser
+                    username and password you used when you installed the database.
+                </p>
+                <p>
+                    Make sure there is at least one Admin user. You can return to the user config
+                    page later by using the 'Manage users' link on the admin menu.
+                </p>
+            </div>
+        </div>
+    {% elif not users_in_groups.admin %}
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <h3 class="panel-title">There are no users in the admin group</h3>
+            </div>
+            <div class="panel-body">
+                <p>
+                    Make sure there is at least one Admin user &mdash; <a href="{% url 'admin:auth_user_changelist' %}">you
+                    can do this here.</a> You
+                    will need to know the superuser
+                    username and password you used when you installed the database.
+                </p>
+                <p>
+                    You can return to the user config
+                    page later by using the 'Manage users' link on the admin menu.
+                </p>
+            </div>
+        </div>
     {% endif %}
-  </p>
 
-  {% if admin.admingroup %}
-    {% if admin_questions_true %}
-      <table class="table table-bordered">
-        {% if admin_questions.not_patient_indicator_question %}
-          <tr>
-            <td>
-              <strong>Admin question:</strong> Identifying non-patient exposures has changed in release 0.8. Would you
-              like this install to match the behaviour of release 0.7.4 and earlier?
-              <a href="{% url 'admin_questions_hide_not_patient' %}" role="button" class="btn btn-default pull-right">
-                Hide
-              </a>
-              <a href="{% url 'not_patient_indicators_as_074' %}" role="button" class="btn btn-default pull-right">
-                Restore 0.7.4 patterns
-              </a>
-              <a href="{%  url 'not_patient_indicators' %}" role="button" class="btn btn-default pull-right">
-                More information
-              </a>
-            </td>
-          </tr>
+    <p>
+        There are {{ homedata.total }} studies in this database. Page last refreshed on {% now "jS F Y \a\t H:i" %}.
+        {% if user.is_authenticated %}
+            {% if request.user.userprofile.plotCharts %}
+                Chart plotting on.
+            {% else %}
+                Chart plotting off.
+            {% endif %}
         {% endif %}
-      </table>
+    </p>
+
+    {% if admin.admingroup %}
+        {% if admin_questions_true %}
+            <table class="table table-bordered">
+                {% if admin_questions.not_patient_indicator_question %}
+                    <tr>
+                        <td>
+                            <strong>Admin question:</strong> Identifying non-patient exposures has changed in release
+                            0.8. Would you
+                            like this install to match the behaviour of release 0.7.4 and earlier?
+                            <a href="{% url 'admin_questions_hide_not_patient' %}" role="button"
+                               class="btn btn-default pull-right">
+                                Hide
+                            </a>
+                            <a href="{% url 'not_patient_indicators_as_074' %}" role="button"
+                               class="btn btn-default pull-right">
+                                Restore 0.7.4 patterns
+                            </a>
+                            <a href="{% url 'not_patient_indicators' %}" role="button"
+                               class="btn btn-default pull-right">
+                                More information
+                            </a>
+                        </td>
+                    </tr>
+                {% endif %}
+            </table>
+        {% endif %}
     {% endif %}
-  {% endif %}
 {% endblock %}
 
 
 {% block mainblock %}
 
-  <script>
-      $(document).ready(
-          function get_modality_numbers(json) {
-              $.ajax(
-                  {
-                      url: "{% url 'update_modality_totals' %}",
-                      type: "POST",
-                      dataType: "json",
-                      success: function (json) {
-                          $('#total-ct').html(json.total_ct);
-                          $('#total-rf').html(json.total_rf);
-                          $('#total-mg').html(json.total_mg);
-                          $('#total-dx').html(json.total_dx);
-                      }
-                  }
-              )
-          }
-      )
-  </script>
-  <table class="table table-bordered">
-    <tr>
-      {% for modality, details in modalities.items %}
-          {%  with modality|add:'_summary_list_filter' as url_name %}
-            <th style="width:25%"><a href="{% url url_name|lower %}">{{ details.name }}</a></th>
-          {% endwith %}
-      {% endfor %}
-    </tr>
-    <tr>
-      {% for modality, details in modalities.items %}
-        <td>
-          <div id="total-{{ modality|lower }}">{{ details.count }}</div>
-        </td>
-      {% endfor %}
-    </tr>
-  </table>
-
-  {% for modality, details in modalities.items %}
     <script>
         $(document).ready(
-            function get_latest_studies(json) {
+            function get_modality_numbers(json) {
                 $.ajax(
                     {
-                        url: "{% url 'update_latest_studies' %}",
-                        data: {modality: '{{ modality }}'},
+                        url: "{% url 'update_modality_totals' %}",
                         type: "POST",
-                        success: function (data) {
-                            $('#{{ modality }}-table').html(data);
-                            {% if home_config.display_workload_stats %}
-                                $.ajax(
-                                    {
-                                        url: "{% url 'update_study_workload' %}",
-                                        data: {modality: '{{ modality }}'},
-                                        type: "POST",
-                                        success: function (data) {
-                                            $('#{{ modality }}-table').append(data);
-                                        }
-                                    }
-                                );
-                            {% endif %}
+                        dataType: "json",
+                        success: function (json) {
+                            $('#total-ct').html(json.total_ct);
+                            $('#total-rf').html(json.total_rf);
+                            $('#total-mg').html(json.total_mg);
+                            $('#total-dx').html(json.total_dx);
                         }
                     }
                 )
             }
         )
     </script>
-
-
-    <h4>{{ details.name }} summary table</h4>
-    <div id="{{ modality }}-table">
-      <table class="table table-bordered table-hover row-clickable">
+    <table class="table table-bordered">
         <tr>
-          <th style="width:25%">System name</th>
-          <th style="width:25%">Total number of studies</th>
-          <th style="width:25%">Latest study</th>
-          {% if home_config.display_workload_stats %}
-            <th style="width:12.5%">Number in last {{ home_config.day_delta_a }} days</th>
-            <th style="width:12.5%">Number in last {{ home_config.day_delta_b }} days</th>
-          {% endif %}
+            {% for modality, details in modalities.items %}
+                {% with modality|add:'_summary_list_filter' as url_name %}
+                    <th style="width:25%"><a href="{% url url_name|lower %}">{{ details.name }}</a></th>
+                {% endwith %}
+            {% endfor %}
         </tr>
         <tr>
-          <td colspan={% if home_config.display_workload_stats %}"5"{% else %}"3"{% endif %}>Please wait - querying the database</td>
+            {% for modality, details in modalities.items %}
+                <td>
+                    <div id="total-{{ modality|lower }}">{{ details.count }}</div>
+                </td>
+            {% endfor %}
         </tr>
-      </table>
-    </div>
-  {% endfor %}
+    </table>
+
+    {% for modality, details in modalities.items %}
+        <script>
+            $(document).ready(
+                function get_latest_studies(json) {
+                    $.ajax(
+                        {
+                            url: "{% url 'update_latest_studies' %}",
+                            data: {modality: '{{ modality }}'},
+                            type: "POST",
+                            success: function (data) {
+                                $('#{{ modality }}-table').html(data);
+                                {% if home_config.display_workload_stats %}
+                                    $.ajax(
+                                        {
+                                            url: "{% url 'update_study_workload' %}",
+                                            data: {modality: '{{ modality }}'},
+                                            type: "POST",
+                                            success: function (data) {
+                                                $('#{{ modality }}-table').append(data);
+                                            }
+                                        }
+                                    );
+                                {% endif %}
+                            }
+                        }
+                    )
+                }
+            )
+        </script>
+
+
+        <h4>{{ details.name }} summary table</h4>
+        <div id="{{ modality }}-table">
+            <table class="table table-bordered table-hover row-clickable">
+                <tr>
+                    <th style="width:25%">System name</th>
+                    <th style="width:25%">Total number of studies</th>
+                    <th style="width:25%">Latest study</th>
+                    {% if home_config.display_workload_stats %}
+                        <th style="width:12.5%">Number in last {{ home_config.day_delta_a }} days</th>
+                        <th style="width:12.5%">Number in last {{ home_config.day_delta_b }} days</th>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td colspan={% if home_config.display_workload_stats %}"5"{% else %}"3"{% endif %}
+                    >Please wait - querying the database</td>
+                </tr>
+            </table>
+        </div>
+    {% endfor %}
 
 
 
 
-  {% if not modalities %}
-    <h4>No data to display in the system</h4>
-    <p>There are currently no studies from any modality stored in the database. Add some to see a summary of each on
-      this page.</p>
-  {% endif %}
+    {% if not modalities %}
+        <h4>No data to display in the system</h4>
+        <p>There are currently no studies from any modality stored in the database. Add some to see a summary of each on
+            this page.</p>
+    {% endif %}
 
 {% endblock %}
