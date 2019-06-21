@@ -102,6 +102,25 @@
 
     <script>
         $(document).ready(
+            function populate_summary_progress(json) {
+                $.ajax(
+                    {
+                        url: "{% url 'populate_summary_progress' %}",
+                        data: {
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        type: "POST",
+                        success: function (data) {
+                            $('#summary-progress').html(data);
+                            setTimeout(function() {
+                                populate_summary_progress();
+                            }, 2000);
+                        }
+                    }
+                )
+            }
+        );
+        $(document).ready(
             function get_modality_numbers(json) {
                 $.ajax(
                     {
@@ -119,6 +138,9 @@
             }
         )
     </script>
+    <p>
+    <p id="summary-progress">ct progress</p>
+    </p>
     <table class="table table-bordered">
         <tr>
             {% for modality, details in modalities.items %}

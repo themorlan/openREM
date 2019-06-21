@@ -15,7 +15,7 @@ def populate_summary_ct():
     from remapp.extractors.extract_common import ct_event_type_count
 
     try:
-        task = SummaryFields.objects.get(modality_type_exact='CT')
+        task = SummaryFields.objects.get(modality_type__exact='CT')
     except ObjectDoesNotExist:
         task = SummaryFields.objects.create(modality_type='CT')
     all_ct = GeneralStudyModuleAttr.objects.filter(modality_type__exact='CT')

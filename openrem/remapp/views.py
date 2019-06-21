@@ -4085,17 +4085,40 @@ def populate_summary(request):
 
 
 
-        task = SummaryFields.get_solo()
-        if task.complete:
-            messages.error(u"Populating summary fields already complete!")
-            return redirect(reverse_lazy('home'))
-        task.status_message = u"Starting migration to populate summary fields"
-        messages.info = u"Starting migration to populate summary fields"
-        task.save()
-        populate_summary.delay()
+        # task = SummaryFields.get_solo()
+        # if task.complete:
+        #     messages.error(u"Populating summary fields already complete!")
+        #     return redirect(reverse_lazy('home'))
+        # task.status_message = u"Starting migration to populate summary fields"
+        # messages.info = u"Starting migration to populate summary fields"
+        # task.save()
+        # populate_summary.delay()
         return redirect(reverse_lazy('home'))
 
 
+def populate_summary_progress(request):
+    """AJAX function to get populate summary fields progress"""
+    from remapp.models import SummaryFields
 
+    if request.is_ajax() and request.user.groups.filter(name="admingroup"):
+        try:
+            ct_status = SummaryFields.objects.get(modality_type__exact='CT')
+        except ObjectDoesNotExist:
+            ct_status = None
+        try:
+            rf_status = SummaryFields.objects.get(modality_type__exact='RF')
+        except ObjectDoesNotExist:
+            rf_status = None
+        try:
+            mg_status = SummaryFields.objects.get(modality_type__exact='MG')
+        except ObjectDoesNotExist:
+            mg_status = None
+        try:
+            dx_status = SummaryFields.objects.get(modality_type__exact='DX')
+        except ObjectDoesNotExist:
+            dx_status = None
 
+        return render_to_response('remapp/populate_summary_progress.html',
+                                  {'ct_status': ct_status, 'rf_status': rf_status, 'mg_status': mg_status,
+                                   'dx_status': dx_status}, context_instance=RequestContext(request))
 
