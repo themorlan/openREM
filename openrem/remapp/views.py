@@ -4103,22 +4103,27 @@ def populate_summary_progress(request):
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
         try:
             ct_status = SummaryFields.objects.get(modality_type__exact='CT')
+            ct_pc = 100 * (float(ct_status.current_study)/ct_status.total_studies)
         except ObjectDoesNotExist:
             ct_status = None
         try:
             rf_status = SummaryFields.objects.get(modality_type__exact='RF')
+            rf_pc = 100 * (float(rf_status.current_study)/rf_status.total_studies)
         except ObjectDoesNotExist:
             rf_status = None
         try:
             mg_status = SummaryFields.objects.get(modality_type__exact='MG')
+            mg_pc = 100 * (float(mg_status.current_study)/mg_status.total_studies)
         except ObjectDoesNotExist:
             mg_status = None
         try:
             dx_status = SummaryFields.objects.get(modality_type__exact='DX')
+            dx_pc = 100 * (float(dx_status.current_study)/dx_status.total_studies)
         except ObjectDoesNotExist:
             dx_status = None
 
         return render_to_response('remapp/populate_summary_progress.html',
                                   {'ct_status': ct_status, 'rf_status': rf_status, 'mg_status': mg_status,
-                                   'dx_status': dx_status}, context_instance=RequestContext(request))
+                                   'dx_status': dx_status, 'ct_pc': ct_pc, 'rf_pc': rf_pc, 'mg_pc': mg_pc,
+                                   'dx_pc': dx_pc,}, context_instance=RequestContext(request))
 

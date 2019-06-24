@@ -1,8 +1,32 @@
 <h4>CT</h4>
 Currently processing {{ ct_status.current_study }} of {{ ct_status.total_studies }}.
+<div class="progress">
+  <div class="progress-bar progress-bar-striped active" role="progressbar"
+       aria-valuenow="{{ ct_pc }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ ct_pc }}%">
+    <span class="sr-only">{{ ct_pc }}% Complete</span>
+  </div>
+</div>
 <h4>RF</h4>
 Currently processing {{ rf_status.current_study }} of {{ rf_status.total_studies }}.
+<div class="progress">
+  <div class="progress-bar progress-bar-striped active" role="progressbar"
+       aria-valuenow="{{ rf_pc }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ rf_pc }}%">
+    <span class="sr-only">{{ rf_pc }}% Complete</span>
+  </div>
+</div>
 <h4>MG</h4>
 Currently processing {{ mg_status.current_study }} of {{ mg_status.total_studies }}.
+<div class="progress">
+  <div class="progress-bar progress-bar-striped active" role="progressbar"
+       aria-valuenow="{{ mg_pc }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ mg_pc }}%">
+    <span class="sr-only">{{ mg_pc }}% Complete</span>
+  </div>
+</div>
 <h4>DX</h4>
 Currently processing {{ dx_status.current_study }} of {{ dx_status.total_studies }}.
+<div class="progress">
+  <div class="progress-bar progress-bar-striped active" role="progressbar"
+       aria-valuenow="{{ dx_pc }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ dx_pc }}%">
+    <span class="sr-only">{{ dx_pc }}% Complete</span>
+  </div>
+</div>
