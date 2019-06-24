@@ -1,5 +1,5 @@
 <h4>CT</h4>
-{% if ct_status.complete=False %}
+{% if not ct_status.complete %}
 Currently processing {{ ct_status.current_study }} of {{ ct_status.total_studies }}.
 <div class="progress">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
@@ -16,7 +16,7 @@ Currently processing {{ ct_status.current_study }} of {{ ct_status.total_studies
 {% endif %}
 
 <h4>RF</h4>
-{% if rf_status.complete=False %}
+{% if not rf_status.complete %}
 Currently processing {{ rf_status.current_study }} of {{ rf_status.total_studies }}.
 <div class="progress">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
@@ -33,7 +33,7 @@ Currently processing {{ rf_status.current_study }} of {{ rf_status.total_studies
 {% endif %}
 
 <h4>MG</h4>
-{% if mg_status.complete=False %}
+{% if not mg_status.complete %}
 Currently processing {{ mg_status.current_study }} of {{ mg_status.total_studies }}.
 <div class="progress">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
@@ -50,7 +50,7 @@ Currently processing {{ mg_status.current_study }} of {{ mg_status.total_studies
 {% endif %}
 
 <h4>DX</h4>
-{% if dx_status.complete=False %}
+{% if not dx_status.complete %}
 Currently processing {{ dx_status.current_study }} of {{ dx_status.total_studies }}.
 <div class="progress">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
