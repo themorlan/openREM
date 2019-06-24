@@ -24,15 +24,16 @@ def populate_summary_ct():
     task.save()
     logger.debug(u"Starting migration of CT to summary fields")
     for study in all_ct:
-        try:
-            study.number_of_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.count()
-            study.total_dlp = study.ctradiationdose_set.get().ctaccumulateddosedata_set.get(
-                ).ct_dose_length_product_total
-            study.save()
-            ct_event_type_count(study)
-        except ObjectDoesNotExist:
-            logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
-                study.modality_type, study.pk, study.study_instance_uid))
+        if not study.number_of_events:
+            try:
+                study.number_of_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.count()
+                study.total_dlp = study.ctradiationdose_set.get().ctaccumulateddosedata_set.get(
+                    ).ct_dose_length_product_total
+                study.save()
+                ct_event_type_count(study)
+            except ObjectDoesNotExist:
+                logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
+                    study.modality_type, study.pk, study.study_instance_uid))
         task.current_study += 1
         task.save()
     logger.debug(u"Completed migration of CT to summary fields")
@@ -58,13 +59,14 @@ def populate_summary_mg():
     task.save()
     logger.debug(u"Starting migration of MG to summary fields")
     for study in all_mg:
-        try:
-            study.number_of_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
-            study.save()
-            populate_mammo_agd_summary(study)
-        except ObjectDoesNotExist:
-            logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
-                study.modality_type, study.pk, study.study_instance_uid))
+        if not study.number_of_events:
+            try:
+                study.number_of_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
+                study.save()
+                populate_mammo_agd_summary(study)
+            except ObjectDoesNotExist:
+                logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
+                    study.modality_type, study.pk, study.study_instance_uid))
         task.current_study += 1
         task.save()
     logger.debug(u"Completed migration of MG to summary fields")
@@ -91,13 +93,14 @@ def populate_summary_dx():
     task.delete()
     logger.debug(u"Starting migration of DX to summary fields")
     for study in all_dx:
-        try:
-            study.number_of_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
-            study.save()
-            populate_dx_rf_summary(study)
-        except ObjectDoesNotExist:
-            logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
-                study.modality_type, study.pk, study.study_instance_uid))
+        if not study.number_of_events:
+            try:
+                study.number_of_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
+                study.save()
+                populate_dx_rf_summary(study)
+            except ObjectDoesNotExist:
+                logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
+                    study.modality_type, study.pk, study.study_instance_uid))
         task.current_study += 1
         task.save()
     logger.debug(u"Completed migration of DX to summary fields")
@@ -123,14 +126,15 @@ def populate_summary_rf():
     task.save()
     logger.debug(u"Starting migration of RF to summary fields")
     for study in all_rf:
-        try:
-            study.number_of_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
-            study.save()
-            populate_dx_rf_summary(study)
-            populate_rf_delta_weeks_summary(study)
-        except ObjectDoesNotExist:
-            logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
-                study.modality_type, study.pk, study.study_instance_uid))
+        if not study.number_of_events:
+            try:
+                study.number_of_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
+                study.save()
+                populate_dx_rf_summary(study)
+                populate_rf_delta_weeks_summary(study)
+            except ObjectDoesNotExist:
+                logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
+                    study.modality_type, study.pk, study.study_instance_uid))
         task.current_study += 1
         task.save()
     logger.debug(u"Completed migration of RF to summary fields")
