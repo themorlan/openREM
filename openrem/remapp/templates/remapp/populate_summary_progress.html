@@ -1,4 +1,5 @@
 <h4>CT</h4>
+{% if ct_status.complete=False %}
 Currently processing {{ ct_status.current_study }} of {{ ct_status.total_studies }}.
 <div class="progress">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
@@ -6,7 +7,16 @@ Currently processing {{ ct_status.current_study }} of {{ ct_status.total_studies
     <span class="sr-only">{{ ct_pc }}% Complete</span>
   </div>
 </div>
+{% else %}
+<div class="alert alert-success">
+  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+  <span class="sr-only">Success:</span>
+  CT migration complete
+</div>
+{% endif %}
+
 <h4>RF</h4>
+{% if rf_status.complete=False %}
 Currently processing {{ rf_status.current_study }} of {{ rf_status.total_studies }}.
 <div class="progress">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
@@ -14,7 +24,16 @@ Currently processing {{ rf_status.current_study }} of {{ rf_status.total_studies
     <span class="sr-only">{{ rf_pc }}% Complete</span>
   </div>
 </div>
+{% else %}
+<div class="alert alert-success">
+  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+  <span class="sr-only">Success:</span>
+  Fluoroscopy migration complete
+</div>
+{% endif %}
+
 <h4>MG</h4>
+{% if mg_status.complete=False %}
 Currently processing {{ mg_status.current_study }} of {{ mg_status.total_studies }}.
 <div class="progress">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
@@ -22,7 +41,16 @@ Currently processing {{ mg_status.current_study }} of {{ mg_status.total_studies
     <span class="sr-only">{{ mg_pc }}% Complete</span>
   </div>
 </div>
+{% else %}
+<div class="alert alert-success">
+  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+  <span class="sr-only">Success:</span>
+  Mammography migration complete
+</div>
+{% endif %}
+
 <h4>DX</h4>
+{% if dx_status.complete=False %}
 Currently processing {{ dx_status.current_study }} of {{ dx_status.total_studies }}.
 <div class="progress">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
@@ -30,3 +58,10 @@ Currently processing {{ dx_status.current_study }} of {{ dx_status.total_studies
     <span class="sr-only">{{ dx_pc }}% Complete</span>
   </div>
 </div>
+{% else %}
+<div class="alert alert-success">
+  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+  <span class="sr-only">Success:</span>
+  Radiography migration complete
+</div>
+{% endif %}
