@@ -18,9 +18,10 @@ def populate_summary_ct():
         task = SummaryFields.objects.get(modality_type__exact='CT')
     except ObjectDoesNotExist:
         task = SummaryFields.objects.create(modality_type='CT')
-    all_ct = GeneralStudyModuleAttr.objects.filter(modality_type__exact='CT')
+    all_ct = GeneralStudyModuleAttr.objects.filter(modality_type__exact='CT').order_by('pk')
     task.total_studies = all_ct.count()
-    task.current_study = 1
+    if not task.current_study:
+        task.current_study = 1
     task.save()
     logger.debug(u"Starting migration of CT to summary fields")
     for study in all_ct:
@@ -53,9 +54,10 @@ def populate_summary_mg():
         task = SummaryFields.objects.get(modality_type__exact='MG')
     except ObjectDoesNotExist:
         task = SummaryFields.objects.create(modality_type='CT')
-    all_mg = GeneralStudyModuleAttr.objects.filter(modality_type__exact='MG')
+    all_mg = GeneralStudyModuleAttr.objects.filter(modality_type__exact='MG').order_by('pk')
     task.total_studies = all_mg.count()
-    task.current_study = 1
+    if not task.current_study:
+        task.current_study = 1
     task.save()
     logger.debug(u"Starting migration of MG to summary fields")
     for study in all_mg:
@@ -87,9 +89,11 @@ def populate_summary_dx():
         task = SummaryFields.objects.get(modality_type__exact='DX')
     except ObjectDoesNotExist:
         task = SummaryFields.objects.create(modality_type='DX')
-    all_dx = GeneralStudyModuleAttr.objects.filter(Q(modality_type__exact='DX') | Q(modality_type__exact='CR'))
+    all_dx = GeneralStudyModuleAttr.objects.filter(
+        Q(modality_type__exact='DX') | Q(modality_type__exact='CR')).order_by('pk')
     task.total_studies = all_dx.count()
-    task.current_study = 1
+    if not task.current_study:
+        task.current_study = 1
     task.delete()
     logger.debug(u"Starting migration of DX to summary fields")
     for study in all_dx:
@@ -120,9 +124,10 @@ def populate_summary_rf():
         task = SummaryFields.objects.get(modality_type__exact='RF')
     except ObjectDoesNotExist:
         task = SummaryFields.objects.create(modality_type='RF')
-    all_rf = GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF')
+    all_rf = GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by('pk')
     task.total_studies = all_rf.count()
-    task.current_study = 1
+    if not task.current_study:
+        task.current_study = 1
     task.save()
     logger.debug(u"Starting migration of RF to summary fields")
     for study in all_rf:
