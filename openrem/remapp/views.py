@@ -4102,10 +4102,17 @@ def populate_summary_progress(request):
 
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
         try:
+            ct_complete = GeneralStudyModuleAttr.objects.filter(modality_type__exact='CT').filter(
+                number_of_events__gt=0).count()
             ct_status = SummaryFields.objects.get(modality_type__exact='CT')
-            ct_pc = 100 * (float(ct_status.current_study)/ct_status.total_studies)
+            if ct_complete >= ct_status.total_studies:
+                ct_status.complete = True
+                ct_status.save()
+            ct_pc = 100 * (float(ct_complete)/ct_status.total_studies)
         except ObjectDoesNotExist:
+            ct_complete = None
             ct_status = None
+            ct_pc = 0
         try:
             rf_status = SummaryFields.objects.get(modality_type__exact='RF')
             rf_pc = 100 * (float(rf_status.current_study)/rf_status.total_studies)
@@ -4123,7 +4130,7 @@ def populate_summary_progress(request):
             dx_status = None
 
         return render_to_response('remapp/populate_summary_progress.html',
-                                  {'ct_status': ct_status, 'rf_status': rf_status, 'mg_status': mg_status,
+                                  {'ct_complete': ct_complete, 'ct_status': ct_status, 'rf_status': rf_status, 'mg_status': mg_status,
                                    'dx_status': dx_status, 'ct_pc': ct_pc, 'rf_pc': rf_pc, 'mg_pc': mg_pc,
                                    'dx_pc': dx_pc,}, context_instance=RequestContext(request))
 

@@ -12,7 +12,7 @@ def populate_summary_ct():
 
     :return:
     """
-    from remapp.extractors.extract_common import ct_event_type_count
+    # from remapp.extractors.extract_common import ct_event_type_count
 
     try:
         task = SummaryFields.objects.get(modality_type__exact='CT')
@@ -25,20 +25,46 @@ def populate_summary_ct():
     task.save()
     logger.debug(u"Starting migration of CT to summary fields")
     for study in to_process_ct:
-        try:
-            study.number_of_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.count()
-            study.total_dlp = study.ctradiationdose_set.get().ctaccumulateddosedata_set.get(
-                ).ct_dose_length_product_total
-            study.save()
-            ct_event_type_count(study)
-        except ObjectDoesNotExist:
-            logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
-                study.modality_type, study.pk, study.study_instance_uid))
+        populate_summary_ct_study_level.delay(study.pk)
+        # try:
+        #     study.number_of_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.count()
+        #     study.total_dlp = study.ctradiationdose_set.get().ctaccumulateddosedata_set.get(
+        #         ).ct_dose_length_product_total
+        #     study.save()
+        #     ct_event_type_count(study)
+        # except ObjectDoesNotExist:
+        #     logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
+        #         study.modality_type, study.pk, study.study_instance_uid))
         task.current_study += 1
         task.save()
-    logger.debug(u"Completed migration of CT to summary fields")
-    task.complete = True
-    task.save()
+    # logger.debug(u"Completed migration of CT to summary fields")
+    # task.complete = True
+    # task.save()
+
+
+@shared_task
+def populate_summary_ct_study_level(study_pk):
+    """Enables the summary level data to be sent as a task at study level
+
+    :param study_pk: GeneralStudyModuleAttr database object primary key
+    :return:
+    """
+    from remapp.extractors.extract_common import ct_event_type_count
+
+    try:
+        study = GeneralStudyModuleAttr.objects.get(pk__exact=study_pk)
+    except ObjectDoesNotExist:
+        logger.error(u"Attempte to get CT study with pk {0} failed - presumably deleted?".format(study_pk))
+        return
+    try:
+        study.number_of_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.count()
+        study.total_dlp = study.ctradiationdose_set.get().ctaccumulateddosedata_set.get(
+        ).ct_dose_length_product_total
+        study.save()
+        ct_event_type_count(study)
+    except ObjectDoesNotExist:
+        logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
+            study.modality_type, study.pk, study.study_instance_uid))
 
 
 @shared_task

@@ -1,6 +1,6 @@
 <h4>CT</h4>
 {% if not ct_status.complete %}
-Currently processing {{ ct_status.current_study }} of {{ ct_status.total_studies }}
+Currently processing {{ ct_complete }} of {{ ct_status.total_studies }}
 <div class="progress">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
        aria-valuenow="{{ ct_pc }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ ct_pc }}%">
