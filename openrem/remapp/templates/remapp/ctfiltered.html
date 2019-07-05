@@ -139,8 +139,6 @@
         </tr>
         {% for exam in study_list %}
           {% with equipment=exam.generalequipmentmoduleattr_set.get %}
-          {% with ct_dose_set=exam.ctradiationdose_set.get %}
-          {% with ct_accumulated=ct_dose_set.ctaccumulateddosedata_set.get %}
             <tr>
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
@@ -175,13 +173,11 @@
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
                         {{ exam.number_of_events }}
-                        {{ ct_accumulated.total_number_of_irradiation_events }}
                     </a>
                 </td>
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
                         {{ exam.total_dlp|floatformat:2 }}
-                        {{ ct_accumulated.ct_dose_length_product_total|floatformat:2 }}
                     </a>
                 </td>
                 {% if admin.admingroup %}
@@ -190,7 +186,7 @@
                     </td>
                 {% endif %}
             </tr>
-          {% endwith %}{% endwith %}{% endwith %}
+          {% endwith %}
         {% endfor %}
     </table>
 
