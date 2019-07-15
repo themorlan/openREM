@@ -54,12 +54,12 @@ def populate_summary_ct_study_level(study_pk):
     try:
         study = GeneralStudyModuleAttr.objects.get(pk__exact=study_pk)
     except ObjectDoesNotExist:
-        logger.error(u"Attempte to get CT study with pk {0} failed - presumably deleted?".format(study_pk))
+        logger.error(u"Attempt to get CT study with pk {0} failed - presumably deleted?".format(study_pk))
         return
     try:
         study.number_of_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.count()
         study.total_dlp = study.ctradiationdose_set.get().ctaccumulateddosedata_set.get(
-        ).ct_dose_length_product_total
+            ).ct_dose_length_product_total
         study.save()
         ct_event_type_count(study)
     except ObjectDoesNotExist:
