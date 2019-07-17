@@ -17,10 +17,10 @@ def populate_summary_ct():
     try:
         task = SummaryFields.objects.get(modality_type__exact='CT')
     except ObjectDoesNotExist:
-        task = SummaryFields.objects.create(modality_type='CT')
+        task = SummaryFields.objects.create(modality_type__exact='CT')
     all_ct = GeneralStudyModuleAttr.objects.filter(modality_type__exact='CT').order_by('pk')
     task.total_studies = all_ct.count()
-    to_process_ct = all_ct.exclude(number_of_events__gt=0)
+    to_process_ct = all_ct.filter(number_of_const_angle__isnull=True)
     task.current_study = task.total_studies - to_process_ct.count()
     task.save()
     logger.debug(u"Starting migration of CT to summary fields")
