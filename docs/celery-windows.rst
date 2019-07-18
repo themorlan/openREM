@@ -6,10 +6,10 @@ To ensure that the Celery task queue and Flower are started at system start-up
 it is advisable to launch them using batch files and configure Windows Task
 Scheduler to run each of these at system start-up.
 
-Celery will sometimes fall over during the execution of a long task, If Celery
+Celery will sometimes fall over during the execution of a long task. If Celery
 frequently falls over on your system then Windows Task Scheduler can be used to
-restart Celery on a regular basis. The Task Scheduler can can be used to ensure
-celery is running a few minutes prior to scheduled PACS queries.
+restart Celery on a regular basis. The Task Scheduler can also be used to
+ensure celery is running a few minutes prior to scheduled PACS queries.
 
 An example batch file is shown below for running and restarting Celery. This
 calls separate batch files to start Celery and Flower, also shown below.
