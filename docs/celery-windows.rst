@@ -6,14 +6,13 @@ To ensure that the Celery task queue and Flower are started at system start-up
 it is advisable to launch them using batch files and configure Windows Task
 Scheduler to run each of these at system start-up.
 
-Celery will sometimes fall over during the execution of a long task. In this
-situation it will not restart on its own. Windows Task Scheduler can be used to
-restart Celery on a regular basis. In addition it can be used to ensure celery
-is running a few minutes prior to a scheduled PACS query.
+Celery will sometimes fall over during the execution of a long task, If Celery
+frequently falls over on your system then Windows Task Scheduler can be used to
+restart Celery on a regular basis. The Task Scheduler can can be used to ensure
+celery is running a few minutes prior to scheduled PACS queries.
 
 An example batch file is shown below for running and restarting Celery. This
-calls separate batch files to shutdown and start Celery, and start Flower if
-needed.
+calls separate batch files to start Celery and Flower, also shown below.
 
 Celery control batch file
 =========================
@@ -23,61 +22,25 @@ Celery control batch file
 .. sourcecode:: bat
 
     :: Create variables containing the name and path of the Celery pid file and the
-    :: names and paths to the batch files used to shutdown and run Celery and run
-    :: Flower.
+    :: names and paths to the batch files used to run Celery and Flower.
     SET celeryPidFile=E:\media_root\celery\default.pid
-    SET celeryShutdownFile=D:\Server_Apps\celery\celery_shutdown.bat
     SET celeryStartFile=D:\Server_Apps\celery\celery_start.bat
     SET flowerStartFile=D:\Server_Apps\flower\flower_start.bat
 
-    :: Attempt to shutdown Celery gracefully.
-    START /B CMD /C CALL "%celeryShutdownFile%"
+    :: Celery 3.1.25 cannot be shutdown gracefully, and has to be killed. The
+    :: following command will kill all celery.exe processes and any python.exe
+    :: processes associated with Celery. The celery.exe process that is running
+    :: Flower will also be killed by this command.
+    TASKKILL /IM celery.exe /T /F
 
-    :: Pause this file for 60 s to ensure that the above has time to work (you may
-    :: need to check that the 'timeout' command is available on your Windows
-    :: system. Some systems may have 'sleep' instead, in which case replace the
-    :: line below with:
-    :: SLEEP 60
-    TIMEOUT /T 60
-
-    :: Kill any remaining Celery instances (ungraceful) and delete the pid file in
-    :: case the above graceful shutdown did not work. If the default.pid file
-    :: exists then the graceful shutdown didn't work.
-    IF EXIST "%celeryPidFile%" (
-        :: Kill all processes with the name celery.exe and any associated
-        :: python.exe processes. This will also kill Flower.
-        TASKKILL /IM celery.exe /T /F
-
-        :: Force the deletion of the pid file.
-        DEL /F "%celeryPidFile%"
+    :: Force the deletion of the Celery pid file so that Celery can be restarted.
+    DEL /F "%celeryPidFile%"
         
-        :: Start Flower.
-        START /B CMD /C CALL "%flowerStartFile%"
-    )
+    :: Start Flower again.
+    START /B CMD /C CALL "%flowerStartFile%"
 
-    :: Start Celery.
+    :: Start Celery again.
     START /B CMD /C CALL "%celeryStartFile%"
-
-
-Celery shutdown batch file
-==========================
-
-`celery_shutdown.bat`, called by `celery_task.bat`.
-
-.. sourcecode:: bat
-
-    :: Create variable containing the drive and path to OpenREM.
-    SET openremDrive=D:
-    SET openremPath=D:\Server_Apps\python27\Lib\site-packages\openrem
-
-    :: Change to the drive on which OpenREM is installed and navigate to the
-    :: OpenREM folder.
-    %openremDrive%
-    CD "%openremPath%"
-
-    :: Attempt to shutdown Celery gracefully.
-    celery -A openremproject control shutdown --timeout=30
-
 
 
 Celery start batch file
@@ -86,7 +49,6 @@ Celery start batch file
 `celery_start.bat`, called by `celery_task.bat`.
 
 .. sourcecode:: bat
-   :linenos:
 
     :: Create variables containing the drive and path to OpenREM and the name and
     :: path of the Celery pid and log files.
