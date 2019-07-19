@@ -101,6 +101,7 @@
 {% block mainblock %}
 
     <script>
+        {% if not migration_complete %}
         $(document).ready(
             function populate_summary_progress(json) {
                 $.ajax(
@@ -119,7 +120,7 @@
                     }
                 )
             }
-        );
+        ); {% endif %}
         $(document).ready(
             function get_modality_numbers(json) {
                 $.ajax(
@@ -139,7 +140,7 @@
         )
     </script>
     <p>
-    <p id="summary-progress">migration progress should be here...</p>
+    <p id="summary-progress"></p>
     </p>
     <table class="table table-bordered">
         <tr>

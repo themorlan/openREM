@@ -1416,3 +1416,10 @@ class SummaryFields(models.Model):
     status_message = models.TextField(blank=True, null=True)
     total_studies = models.IntegerField(default=0)
     current_study = models.IntegerField(default=0)
+
+
+class UpgradeStatus(SingletonModel):
+    """
+    Record upgrade status activity
+    """
+    from_0_9_1_summary_fields = models.BooleanField(default=False)

@@ -1610,7 +1610,8 @@ def mg_detail_view(request, pk=None):
 
 
 def openrem_home(request):
-    from remapp.models import PatientIDSettings, DicomDeleteSettings, AdminTaskQuestions, HomePageAdminSettings
+    from remapp.models import PatientIDSettings, DicomDeleteSettings, AdminTaskQuestions, HomePageAdminSettings, \
+        UpgradeStatus
     from django.db.models import Q  # For the Q "OR" query used for DX and CR
     from collections import OrderedDict
 
@@ -1716,6 +1717,8 @@ def openrem_home(request):
         if not_patient_indicator_question:
             admin_questions_true = True  # Doing this instead
 
+    migration_complete = UpgradeStatus.get_solo().from_0_9_1_summary_fields
+
     #from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
     #send_rf_high_dose_alert_email(417637)
     #send_rf_high_dose_alert_email(417973)
@@ -1743,7 +1746,7 @@ def openrem_home(request):
     return render(request, "remapp/home.html",
                   {'homedata': homedata, 'admin': admin, 'users_in_groups': users_in_groups,
                    'admin_questions': admin_questions, 'admin_questions_true': admin_questions_true,
-                   'modalities': modalities, 'home_config': home_config})
+                   'modalities': modalities, 'home_config': home_config, 'migration_complete': migration_complete})
 
 
 @csrf_exempt
@@ -4098,7 +4101,7 @@ def populate_summary(request):
 
 def populate_summary_progress(request):
     """AJAX function to get populate summary fields progress"""
-    from remapp.models import SummaryFields
+    from remapp.models import SummaryFields, UpgradeStatus
 
     if request.is_ajax():
         if request.user.groups.filter(name="admingroup"):
@@ -4111,7 +4114,11 @@ def populate_summary_progress(request):
                 return render_to_response('remapp/populate_summary_progress_error.html', {'not_admin': False},
                                           context_instance=RequestContext(request))
 
-            # if ct_status.complete
+            if ct_status.complete and rf_status.complete and mg_status.complete and dx_status.complete:
+                upgrade_status = UpgradeStatus.get_solo()
+                upgrade_status.from_0_9_1_summary_fields = True
+                upgrade_status.save()
+                return HttpResponse('')
             try:
                 ct = GeneralStudyModuleAttr.objects.filter(modality_type__exact='CT')
                 if ct.filter(number_of_const_angle__isnull=True).count() > 0:
