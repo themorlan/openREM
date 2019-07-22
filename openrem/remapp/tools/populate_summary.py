@@ -78,7 +78,7 @@ def populate_summary_mg():
     try:
         task = SummaryFields.objects.get(modality_type__exact='MG')
     except ObjectDoesNotExist:
-        task = SummaryFields.objects.create(modality_type='CT')
+        task = SummaryFields.objects.create(modality_type='MG')
     all_mg = GeneralStudyModuleAttr.objects.filter(modality_type__exact='MG').order_by('pk')
     task.total_studies = all_mg.count()
     to_process_mg = all_mg.exclude(number_of_events__gt=0)
