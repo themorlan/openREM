@@ -86,18 +86,42 @@ def populate_summary_mg():
     task.save()
     logger.debug(u"Starting migration of MG to summary fields")
     for study in to_process_mg:
-        try:
-            study.number_of_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
-            study.save()
-            populate_mammo_agd_summary(study)
-        except ObjectDoesNotExist:
-            logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
-                study.modality_type, study.pk, study.study_instance_uid))
+        populate_summary_mg_study_level(study.pk)
+        # try:
+        #     study.number_of_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
+        #     study.save()
+        #     populate_mammo_agd_summary(study)
+        # except ObjectDoesNotExist:
+        #     logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
+        #         study.modality_type, study.pk, study.study_instance_uid))
         task.current_study += 1
         task.save()
-    logger.debug(u"Completed migration of MG to summary fields")
-    task.complete = True
-    task.save()
+    # logger.debug(u"Completed migration of MG to summary fields")
+    # task.complete = True
+    # task.save()
+
+
+@shared_task
+def populate_summary_mg_study_level(study_pk):
+    """Enables  the summary level data to be sent as a task at study level
+
+    :param study_pk: GeneralStudyModuleAttr database object primary key
+    :return:
+    """
+    from remapp.extractors.extract_common import populate_mammo_agd_summary
+
+    try:
+        study = GeneralStudyModuleAttr.objects.get(pk__exact=study_pk)
+    except ObjectDoesNotExist:
+        logger.error(u"Attempt to get MG study with pk {0} failed - presumably deleted?".format(study_pk))
+        return
+    try:
+        study.number_of_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
+        study.save()
+        populate_mammo_agd_summary(study)
+    except ObjectDoesNotExist:
+        logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
+            study.modality_type, study.pk, study.study_instance_uid))
 
 
 @shared_task
