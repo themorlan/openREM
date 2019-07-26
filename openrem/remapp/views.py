@@ -4101,6 +4101,7 @@ def populate_summary(request):
 
 def populate_summary_progress(request):
     """AJAX function to get populate summary fields progress"""
+    from django.db.models import Q
     from remapp.models import SummaryFields, UpgradeStatus
 
     if request.is_ajax():
@@ -4136,23 +4137,69 @@ def populate_summary_progress(request):
                 ct_total = None
                 ct_pc = 0
             try:
-                rf_pc = 100 * (float(rf_status.current_study)/rf_status.total_studies)
+                rf = GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF')
+                if rf.filter(number_of_events_a__isnull=True).count() > 0:
+                    rf_complete = rf.filter(number_of_events_a__isnull=False).count()
+                    rf_total = rf.count()
+                    rf_pc = 100 * (float(rf_complete)/rf_total)
+                else:
+                    rf_status.complete = True
+                    rf_status.save()
+                    rf_complete = None
+                    rf_total = None
+                    rf_pc = 0
             except ObjectDoesNotExist:
-                rf_status = None
+                rf_complete = None
+                rf_total = None
+                rf_pc = 0
             try:
-                mg_pc = 100 * (float(mg_status.current_study)/mg_status.total_studies)
+                mg = GeneralStudyModuleAttr.objects.filter(modality_type__exact='MG')
+                if mg.filter(total_agd_right__isnull=True).filter(
+                        total_agd_left__isnull=True).filter(
+                        total_agd_both__isnull=True).count() > 0:
+                    mg_complete = mg.filter(number_of_events_a__isnull=False).count()
+                    mg_total = mg.count()
+                    mg_pc = 100 * (float(mg_complete)/mg_total)
+                else:
+                    mg_status.complete = True
+                    mg_status.save()
+                    mg_complete = None
+                    mg_total = None
+                    mg_pc = 0
             except ObjectDoesNotExist:
-                mg_status = None
+                mg_complete = None
+                mg_total = None
+                mg_pc = 0
+            try:
+                dx = GeneralStudyModuleAttr.objects.filter(Q(modality_type__exact='DX') | Q(modality_type__exact='CR'))
+                if dx.filter(number_of_events_a__isnull=True).count() > 0:
+                    dx_complete = dx.filter(number_of_events_a__isnull=False).count()
+                    dx_total = dx.count()
+                    dx_pc = 100 * (float(dx_complete)/dx_total)
+                else:
+                    dx_status.complete = True
+                    dx_status.save()
+                    dx_complete = None
+                    dx_total = None
+                    dx_pc = 0
+            except ObjectDoesNotExist:
+                dx_complete = None
+                dx_total = None
+                dx_pc = 0
             try:
                 dx_pc = 100 * (float(dx_status.current_study)/dx_status.total_studies)
             except ObjectDoesNotExist:
                 dx_status = None
 
             return render_to_response('remapp/populate_summary_progress.html',
-                                      {'ct_complete': ct_complete, 'ct_total': ct_total, 'ct_pc': ct_pc, 'ct_status': ct_status,
-                                       'rf_status': rf_status, 'mg_status': mg_status,
-                                       'dx_status': dx_status, 'rf_pc': rf_pc, 'mg_pc': mg_pc,
-                                       'dx_pc': dx_pc,}, context_instance=RequestContext(request))
+                                      {'ct_complete': ct_complete, 'ct_total': ct_total, 'ct_pc': ct_pc,
+                                       'ct_status': ct_status,
+                                       'rf_complete': rf_complete, 'rf_total': rf_total, 'rf_pc': rf_pc,
+                                       'rf_status': rf_status,
+                                       'mg_complete': mg_complete, 'mg_total': mg_total, 'mg_pc': mg_pc,
+                                       'mg_status': mg_status,
+                                       'dx_complete': dx_complete, 'dx_total': dx_total, 'dx_pc': dx_pc,
+                                       'dx_status': dx_status,}, context_instance=RequestContext(request))
         else:
             return render_to_response('remapp/populate_summary_progress_error.html', {'not_admin': True},
                                       context_instance=RequestContext(request))
