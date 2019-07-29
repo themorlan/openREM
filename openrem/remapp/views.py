@@ -1717,7 +1717,12 @@ def openrem_home(request):
         if not_patient_indicator_question:
             admin_questions_true = True  # Doing this instead
 
-    migration_complete = UpgradeStatus.get_solo().from_0_9_1_summary_fields
+    upgrade_status = UpgradeStatus.get_solo()
+    migration_complete = upgrade_status.from_0_9_1_summary_fields
+    if not migration_complete and homedata['total'] == 0:
+        upgrade_status.from_0_9_1_summary_fields = True
+        upgrade_status.save()
+        migration_complete = True
 
     #from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
     #send_rf_high_dose_alert_email(417637)
