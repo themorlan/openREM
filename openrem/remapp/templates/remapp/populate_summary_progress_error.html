@@ -8,7 +8,14 @@
                 {% if not_admin %}
                     You need to be logged in as an admin user to view progress of the migration.
                 {% else %}
-                    An error has occurred with getting the status update.
+                    <p>
+                        Upgrading to OpenREM release x requires a data migration. Please start the migration by
+                        <a href="{% url 'populate_summary' %}">clicking here</a>
+                    </p>
+                    <p>
+                        If you have already started the migration and are still seeing this message, make sure Celery
+                        and RabbitMQ are running on the <a href="{% url 'celery_admin' %}">Tasks admin page</a>.
+                    </p>
                 {% endif %}
             </p>
         </div>
