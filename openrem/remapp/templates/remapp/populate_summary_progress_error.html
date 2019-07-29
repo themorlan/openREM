@@ -6,11 +6,26 @@
         <div class="panel-body">
             <p>
                 {% if not_admin %}
-                    You need to be logged in as an admin user to view progress of the migration.
+                    <p>
+                        Upgrading to OpenREM release x requires a data migration. Log in as an admin user to start the
+                        process or to view the migration progress.
+                    </p>
+                    <p>
+                        During the migration you will be
+                        able to use OpenREM and import new studies, but some processes will be delayed as the migration
+                        takes place. Some of the interface views will also not work properly until the migration is
+                        complete.
+                    </p>
                 {% else %}
                     <p>
                         Upgrading to OpenREM release x requires a data migration. Please start the migration by
-                        <a href="{% url 'populate_summary' %}">clicking here</a>
+                        <a href="{% url 'populate_summary' %}">clicking here</a>.
+                    </p>
+                    <p>
+                        During the migration you will be
+                        able to use OpenREM and import new studies, but some processes will be delayed as the migration
+                        takes place. Some of the interface views will also not work properly until the migration is
+                        complete.
                     </p>
                     <p>
                         If you have already started the migration and are still seeing this message, make sure Celery
