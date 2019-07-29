@@ -31,7 +31,7 @@
 
             <h4>RF</h4>
             {% if not rf_status.complete %}
-                Currently processing {{ rf_status.current_study }} of {{ rf_status.total_studies }}
+                Currently processing {{ rf_complete }} of {{ rf_total }}
                 <div class="progress">
                     <div class="progress-bar progress-bar-striped active" role="progressbar"
                          aria-valuenow="{{ rf_pc }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ rf_pc }}%">
@@ -48,7 +48,7 @@
 
             <h4>MG</h4>
             {% if not mg_status.complete %}
-                Currently processing {{ mg_status.current_study }} of {{ mg_status.total_studies }}
+                Currently processing {{ mg_complete }} of {{ mg_total }}
                 <div class="progress">
                     <div class="progress-bar progress-bar-striped active" role="progressbar"
                          aria-valuenow="{{ mg_pc }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ mg_pc }}%">
@@ -65,7 +65,7 @@
 
             <h4>DX</h4>
             {% if not dx_status.complete %}
-                Currently processing {{ dx_status.current_study }} of {{ dx_status.total_studies }}
+                Currently processing {{ dx_complete }} of {{ dx_total }}
                 <div class="progress">
                     <div class="progress-bar progress-bar-striped active" role="progressbar"
                          aria-valuenow="{{ dx_pc }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ dx_pc }}%">
