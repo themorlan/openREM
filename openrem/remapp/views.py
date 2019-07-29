@@ -4157,7 +4157,10 @@ def populate_summary_progress(request):
                 if mg.filter(total_agd_right__isnull=True).filter(
                         total_agd_left__isnull=True).filter(
                         total_agd_both__isnull=True).count() > 0:
-                    mg_complete = mg.filter(number_of_events_a__isnull=False).count()
+                    mg_complete = mg.filter(Q(
+                        total_agd_right__isnull=False) | Q(
+                        total_agd_left__isnull=False) | Q(
+                        total_agd_both__isnull=False)).count()
                     mg_total = mg.count()
                     mg_pc = 100 * (float(mg_complete)/mg_total)
                 else:
