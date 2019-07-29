@@ -86,7 +86,6 @@ def populate_summary_mg():
 
     :return:
     """
-    from remapp.extractors.extract_common import populate_mammo_agd_summary
 
     try:
         task = SummaryFields.objects.get(modality_type__exact='MG')
@@ -94,7 +93,9 @@ def populate_summary_mg():
         task = SummaryFields.objects.create(modality_type='MG')
     all_mg = GeneralStudyModuleAttr.objects.filter(modality_type__exact='MG').order_by('pk')
     task.total_studies = all_mg.count()
-    to_process_mg = all_mg.exclude(number_of_events__gt=0)
+    to_process_mg = all_mg.filter(total_agd_right__isnull=True).filter(
+        total_agd_left__isnull=True).filter(
+        total_agd_both__isnull=True)
     task.current_study = task.total_studies - to_process_mg.count()
     task.save()
     logger.debug(u"Starting migration of MG to summary fields")
@@ -130,7 +131,7 @@ def populate_summary_dx():
     all_dx = GeneralStudyModuleAttr.objects.filter(
         Q(modality_type__exact='DX') | Q(modality_type__exact='CR')).order_by('pk')
     task.total_studies = all_dx.count()
-    to_process_dx = all_dx.exclude(number_of_events__gt=0)
+    to_process_dx = all_dx.filter(number_of_events_a__isnull=True)
     task.current_study = task.total_studies - to_process_dx.count()
     task.save()
     logger.debug(u"Starting migration of DX to summary fields")
@@ -164,7 +165,7 @@ def populate_summary_rf():
         task = SummaryFields.objects.create(modality_type='RF')
     all_rf = GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by('pk')
     task.total_studies = all_rf.count()
-    to_process_rf = all_rf.exclude(number_of_events__gt=0)
+    to_process_rf = all_rf.filter(number_of_events_a__isnull=True)
     task.current_study = task.total_studies - to_process_rf.count()
     task.save()
     logger.debug(u"Starting migration of RF to summary fields")
