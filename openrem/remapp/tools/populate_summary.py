@@ -7,6 +7,44 @@ logger = logging.getLogger(__name__)
 
 
 @shared_task
+def populate_summary_study_level(modality, study_pk):
+    """Enables the summary level data to be sent as a task at study level
+
+    :param modality: Modality type
+    :param study_pk: GeneralStudyModuleAttr database object primary key
+    :return:
+    """
+    from remapp.extractors.extract_common import populate_mammo_agd_summary, populate_dx_rf_summary, \
+        populate_rf_delta_weeks_summary, ct_event_type_count
+
+    try:
+        study = GeneralStudyModuleAttr.objects.get(pk__exact=study_pk)
+    except ObjectDoesNotExist:
+        logger.error(u"Attempt to get {0} study with pk {1} failed - presumably deleted?".format(modality, study_pk))
+        return
+    try:
+        if modality in ['DX', 'RF']:
+            study.number_of_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
+            study.save()
+            populate_dx_rf_summary(study)
+            if modality in 'RF':
+                populate_rf_delta_weeks_summary(study)
+        elif 'MG' in modality:
+            study.number_of_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
+            study.save()
+            populate_mammo_agd_summary(study)
+        elif modality in 'CT':
+            study.number_of_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.count()
+            study.total_dlp = study.ctradiationdose_set.get().ctaccumulateddosedata_set.get(
+                ).ct_dose_length_product_total
+            study.save()
+            ct_event_type_count(study)
+    except ObjectDoesNotExist:
+        logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
+            study.modality_type, study.pk, study.study_instance_uid))
+
+
+@shared_task
 def populate_summary_ct():
     """Populate the CT summary fields in GeneralStudyModuleAttr table for existing studies
 
@@ -25,7 +63,7 @@ def populate_summary_ct():
     task.save()
     logger.debug(u"Starting migration of CT to summary fields")
     for study in to_process_ct:
-        populate_summary_study_level.delay(study.pk)
+        populate_summary_study_level.delay('CT', study.pk)
         # try:
         #     study.number_of_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.count()
         #     study.total_dlp = study.ctradiationdose_set.get().ctaccumulateddosedata_set.get(
@@ -40,31 +78,6 @@ def populate_summary_ct():
     # logger.debug(u"Completed migration of CT to summary fields")
     # task.complete = True
     # task.save()
-
-
-@shared_task
-def populate_summary_ct_study_level(study_pk):
-    """Enables the summary level data to be sent as a task at study level
-
-    :param study_pk: GeneralStudyModuleAttr database object primary key
-    :return:
-    """
-    from remapp.extractors.extract_common import ct_event_type_count
-
-    try:
-        study = GeneralStudyModuleAttr.objects.get(pk__exact=study_pk)
-    except ObjectDoesNotExist:
-        logger.error(u"Attempt to get CT study with pk {0} failed - presumably deleted?".format(study_pk))
-        return
-    try:
-        study.number_of_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.count()
-        study.total_dlp = study.ctradiationdose_set.get().ctaccumulateddosedata_set.get(
-            ).ct_dose_length_product_total
-        study.save()
-        ct_event_type_count(study)
-    except ObjectDoesNotExist:
-        logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
-            study.modality_type, study.pk, study.study_instance_uid))
 
 
 @shared_task
@@ -135,44 +148,6 @@ def populate_summary_dx():
     # logger.debug(u"Completed migration of DX to summary fields")
     # task.complete = True
     # task.save()
-
-
-@shared_task
-def populate_summary_study_level(modality, study_pk):
-    """Enables the summary level data to be sent as a task at study level
-
-    :param modality: Modality type
-    :param study_pk: GeneralStudyModuleAttr database object primary key
-    :return:
-    """
-    from remapp.extractors.extract_common import populate_mammo_agd_summary, populate_dx_rf_summary, \
-        populate_rf_delta_weeks_summary, ct_event_type_count
-
-    try:
-        study = GeneralStudyModuleAttr.objects.get(pk__exact=study_pk)
-    except ObjectDoesNotExist:
-        logger.error(u"Attempt to get {0} study with pk {1} failed - presumably deleted?".format(modality, study_pk))
-        return
-    try:
-        if modality in ['DX', 'RF']:
-            study.number_of_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
-            study.save()
-            populate_dx_rf_summary(study)
-            if modality in 'RF':
-                populate_rf_delta_weeks_summary(study)
-        elif 'MG' in modality:
-            study.number_of_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
-            study.save()
-            populate_mammo_agd_summary(study)
-        elif modality in 'CT':
-            study.number_of_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.count()
-            study.total_dlp = study.ctradiationdose_set.get().ctaccumulateddosedata_set.get(
-                ).ct_dose_length_product_total
-            study.save()
-            ct_event_type_count(study)
-    except ObjectDoesNotExist:
-        logger.warning(u"{0} {1} with study UID {2}: unable to set summary data.".format(
-            study.modality_type, study.pk, study.study_instance_uid))
 
 
 @shared_task
