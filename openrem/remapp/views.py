@@ -258,6 +258,9 @@ def dx_summary_chart_data(request):
         user_profile.save()
         median_available = False
 
+    # Start time
+    from datetime import datetime
+    start_time = datetime.now()
     return_structure = \
         dx_plot_calculations(f, user_profile.plotDXAcquisitionMeanDAP, user_profile.plotDXAcquisitionFreq,
                              user_profile.plotDXStudyMeanDAP, user_profile.plotDXStudyFreq,
@@ -269,7 +272,7 @@ def dx_summary_chart_data(request):
                              median_available, user_profile.plotAverageChoice, user_profile.plotSeriesPerSystem,
                              user_profile.plotHistogramBins, user_profile.plotHistograms,
                              user_profile.plotCaseInsensitiveCategories)
-
+    print("Elapased time is {0}".format(datetime.now() - start_time))
     return JsonResponse(return_structure, safe=False)
 
 
@@ -305,7 +308,7 @@ def dx_plot_calculations(f, plot_acquisition_mean_dap, plot_acquisition_freq,
                 # to avoid studies being duplicated when there is more than one of a particular acquisition type in a
                 # study.
                 study_events = GeneralStudyModuleAttr.objects.exclude(
-                    projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total__isnull=True
+                    total_dap_a__isnull=True
                 ).filter(study_instance_uid__in=exp_include)
             else:
                 # The user hasn't filtered on acquisition, so we can use the faster database querying.
@@ -322,7 +325,7 @@ def dx_plot_calculations(f, plot_acquisition_mean_dap, plot_acquisition_freq,
                 # to avoid studies being duplicated when there is more than one of a particular acquisition type in a
                 # study.
                 request_events = GeneralStudyModuleAttr.objects.exclude(
-                    projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total__isnull=True
+                    total_dap_a__isnull=True
                 ).filter(study_instance_uid__in=exp_include)
             else:
                 # The user hasn't filtered on acquisition, so we can use the faster database querying.
@@ -354,7 +357,7 @@ def dx_plot_calculations(f, plot_acquisition_mean_dap, plot_acquisition_freq,
         result = average_chart_inc_histogram_data(request_events,
                                                   'generalequipmentmoduleattr__unique_equipment_name_id__display_name',
                                                   'requested_procedure_code_meaning',
-                                                  'projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total',
+                                                  'total_dap_a',
                                                   1000000,
                                                   plot_request_mean_dap, plot_request_freq,
                                                   plot_series_per_systems, plot_average_choice,
@@ -372,7 +375,7 @@ def dx_plot_calculations(f, plot_acquisition_mean_dap, plot_acquisition_freq,
         result = average_chart_inc_histogram_data(study_events,
                                                   'generalequipmentmoduleattr__unique_equipment_name_id__display_name',
                                                   'study_description',
-                                                  'projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total',
+                                                  'total_dap_a',
                                                   1000000,
                                                   plot_study_mean_dap, plot_study_freq,
                                                   plot_series_per_systems, plot_average_choice,
@@ -691,6 +694,9 @@ def rf_summary_chart_data(request):
         user_profile.save()
         median_available = False
 
+    # Start time
+    from datetime import datetime
+    start_time = datetime.now()
     return_structure =\
         rf_plot_calculations(f, median_available, user_profile.plotAverageChoice,
                              user_profile.plotSeriesPerSystem, user_profile.plotHistogramBins,
@@ -698,7 +704,7 @@ def rf_summary_chart_data(request):
                              user_profile.plotRFStudyFreq, user_profile.plotRFStudyDAP,
                              user_profile.plotRFRequestFreq, user_profile.plotRFRequestDAP,
                              user_profile.plotHistograms, user_profile.plotCaseInsensitiveCategories)
-
+    print("Elapased time is {0}".format(datetime.now() - start_time))
     return JsonResponse(return_structure, safe=False)
 
 
@@ -1115,6 +1121,9 @@ def ct_summary_chart_data(request):
         user_profile.save()
         median_available = False
 
+    # Start time
+    from datetime import datetime
+    start_time = datetime.now()
     return_structure =\
         ct_plot_calculations(f, user_profile.plotCTAcquisitionFreq, user_profile.plotCTAcquisitionMeanCTDI, user_profile.plotCTAcquisitionMeanDLP,
                              user_profile.plotCTRequestFreq, user_profile.plotCTRequestMeanDLP, user_profile.plotCTRequestNumEvents,
@@ -1122,7 +1131,7 @@ def ct_summary_chart_data(request):
                              user_profile.plotCTStudyMeanDLPOverTime, user_profile.plotCTStudyMeanDLPOverTimePeriod, user_profile.plotCTStudyPerDayAndHour,
                              median_available, user_profile.plotAverageChoice, user_profile.plotSeriesPerSystem,
                              user_profile.plotHistogramBins, user_profile.plotHistograms, user_profile.plotCaseInsensitiveCategories)
-
+    print("Elapased time is {0}".format(datetime.now() - start_time))
     return JsonResponse(return_structure, safe=False)
 
 
@@ -1140,20 +1149,8 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
 
     if plot_study_mean_dlp or plot_study_mean_ctdi or plot_study_freq or plot_study_num_events or plot_study_mean_dlp_over_time or plot_study_per_day_and_hour or plot_request_mean_dlp or plot_request_freq or plot_request_num_events:
         prefetch_list = ['generalequipmentmoduleattr__unique_equipment_name_id__display_name']
-        if plot_study_mean_dlp or plot_study_freq or plot_study_mean_ctdi or plot_study_num_events or plot_study_mean_dlp_over_time or plot_study_per_day_and_hour:
-            prefetch_list.append('study_description')
-        if plot_study_mean_dlp or plot_study_freq or plot_request_mean_dlp or plot_request_freq:
-            prefetch_list.append('ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total')
         if plot_study_mean_ctdi:
             prefetch_list.append('ctradiationdose__ctirradiationeventdata__mean_ctdivol')
-        if plot_study_num_events:
-            prefetch_list.append('ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events')
-        if plot_study_mean_dlp_over_time:
-            prefetch_list.append('study_date')
-        if plot_request_freq or plot_request_mean_dlp or plot_request_num_events:
-            prefetch_list.append('requested_procedure_code_meaning')
-        if plot_request_num_events:
-            prefetch_list.append('ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events')
 
         if ('acquisition_protocol' in f.form.data and f.form.data['acquisition_protocol']) or ('ct_acquisition_type' in f.form.data and f.form.data['ct_acquisition_type']):
             # The user has filtered on acquisition_protocol, so need to use the slow method of querying the database
@@ -1162,7 +1159,7 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
             try:
                 exp_include = f.qs.values_list('study_instance_uid')
                 study_and_request_events = GeneralStudyModuleAttr.objects.exclude(
-                    ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total__isnull=True
+                    total_dlp__isnull=True
                 ).filter(study_instance_uid__in=exp_include).values(*prefetch_list)
             except KeyError:
                 study_and_request_events = f.qs.values(*prefetch_list)
@@ -1185,7 +1182,7 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
             try:
                 exp_include = f.qs.values_list('study_instance_uid')
                 acquisition_events = GeneralStudyModuleAttr.objects.exclude(
-                    ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total__isnull=True
+                    total_dlp__isnull=True
                 ).filter(study_instance_uid__in=exp_include,
                          ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__iexact=f.form.data['ct_acquisition_type']).values(*prefetch_list)
             except KeyError:
@@ -1235,7 +1232,7 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
         result = average_chart_inc_histogram_data(study_and_request_events,
                                                   'generalequipmentmoduleattr__unique_equipment_name_id__display_name',
                                                   'study_description',
-                                                  'ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total',
+                                                  'total_dlp',
                                                   1,
                                                   plot_study_mean_dlp, plot_study_freq,
                                                   plot_series_per_systems, plot_average_choice,
@@ -1272,7 +1269,7 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
         result = average_chart_inc_histogram_data(study_and_request_events,
                                                   'generalequipmentmoduleattr__unique_equipment_name_id__display_name',
                                                   'study_description',
-                                                  'ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events',
+                                                  'number_of_events',
                                                   1,
                                                   plot_study_num_events, 0,
                                                   plot_series_per_systems, plot_average_choice,
@@ -1291,7 +1288,7 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
         result = average_chart_inc_histogram_data(study_and_request_events,
                                                   'generalequipmentmoduleattr__unique_equipment_name_id__display_name',
                                                   'requested_procedure_code_meaning',
-                                                  'ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total',
+                                                  'total_dlp',
                                                   1,
                                                   plot_request_mean_dlp, plot_request_freq,
                                                   plot_series_per_systems, plot_average_choice,
@@ -1309,7 +1306,7 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
         result = average_chart_inc_histogram_data(study_and_request_events,
                                                   'generalequipmentmoduleattr__unique_equipment_name_id__display_name',
                                                   'requested_procedure_code_meaning',
-                                                  'ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events',
+                                                  'number_of_events',
                                                   1,
                                                   plot_request_num_events, 0,
                                                   plot_series_per_systems, plot_average_choice,
@@ -1327,7 +1324,7 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
     if plot_study_mean_dlp_over_time:
         result = average_chart_over_time_data(study_and_request_events,
                                               'study_description',
-                                              'ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total',
+                                              'total_dlp',
                                               'study_date', 'study_date',
                                               median_available, plot_average_choice,
                                               1, plot_study_mean_dlp_over_time_period,
@@ -1512,12 +1509,15 @@ def mg_summary_chart_data(request):
         user_profile.save()
         median_available = False
 
+    # Start time
+    from datetime import datetime
+    start_time = datetime.now()
     return_structure =\
         mg_plot_calculations(f, median_available, user_profile.plotAverageChoice,
                              user_profile.plotSeriesPerSystem, user_profile.plotHistogramBins,
                              user_profile.plotMGStudyPerDayAndHour, user_profile.plotMGAGDvsThickness,
                              user_profile.plotMGkVpvsThickness, user_profile.plotMGmAsvsThickness)
-
+    print("Elapased time is {0}".format(datetime.now() - start_time))
     return JsonResponse(return_structure, safe=False)
 
 
