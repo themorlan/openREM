@@ -155,7 +155,9 @@ def populate_mammo_agd_summary(g):
                 g.total_agd_both = breast.accumulated_average_glandular_dose
         g.save()
     except (ObjectDoesNotExist, AttributeError):
-        logger.warning(u"Study UID {0}. Unable to set summary total_agd values".format(g.study_instance_uid))
+        g.total_agd_both = 0
+        g.save()
+        logger.warning(u"Study UID {0}. Unable to set summary total_agd values - total_agd_both set to 0.".format(g.study_instance_uid))
 
 
 def populate_dx_rf_summary(g):
