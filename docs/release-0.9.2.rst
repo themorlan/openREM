@@ -6,8 +6,9 @@ Upgrade to OpenREM 0.9.2
 Headline changes
 ****************
 
-*
-*
+* Database: new summary fields introduced to improve the responsiveness of the interface - requires additional migration
+  step
+* Imports: enabled import of GE Elite Mini View C-arm RDSR with no template declaration
 
 *******************
 Upgrade preparation
@@ -292,3 +293,22 @@ Restart all the services
 ========================
 
 Follow the guide at :doc:`startservices`.
+
+Populate new summary fields
+===========================
+
+With RabbitMQ, Celery and the web server running, log in as an administrator to start the migration process. If you have
+a large number of studies in your database this can take some time.
+
+One task per modality type (CT, fluoroscopy, mammography and radiography) is generated to create a task per study in
+each modality to populate the new fields for that study. If the number of workers is the same or less than the number
+of modality types in your database then the study level tasks will all be created before any of them are executed as
+all the workers will be busy. Therefore there might be a delay before the progress indicators on the OpenREM front
+page start to update. You can review the number of tasks being created on the ``Config -> Tasks`` page.
+
+When the process is complete the 'Summary data fields migration' panel will disappear and will not be seen again.
+
+Before the migration is complete, some of the information on the modality pages of OpenREM will be missing, such as the
+dose information for example.
+The system will otherwise be fully functioning, though the Celery workers will be busy! New studies can be imported as
+normal.
