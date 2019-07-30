@@ -199,7 +199,7 @@ def populate_dx_rf_summary(g):
             logger.debug(u"Study UID {0}. No second plane when setting summary DAP/RP values".format(
                 g.study_instance_uid))
         g.save()
-    except ObjectDoesNotExist:
+    except (ObjectDoesNotExist, IndexError):
         logger.warning(u"Study UID {0}. Unable to set summary total DAP and RP dose values".format(
             g.study_instance_uid))
 
