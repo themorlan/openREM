@@ -202,7 +202,9 @@ def populate_dx_rf_summary(g):
                 g.study_instance_uid))
         g.save()
     except (ObjectDoesNotExist, IndexError):
-        logger.warning(u"Study UID {0}. Unable to set summary total DAP and RP dose values".format(
+        g.number_of_events_a = 0
+        g.save()
+        logger.warning(u"Study UID {0}. Unable to set summary total DAP and RP dose values. number_of_events_a set to 0.".format(
             g.study_instance_uid))
 
 
