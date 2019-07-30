@@ -220,7 +220,7 @@ def populate_rf_delta_weeks_summary(g):
         g.total_rp_dose_delta_weeks = g.projectionxrayradiationdose_set.get().accumxraydose_set.order_by('pk')[
             0].accumintegratedprojradiogdose_set.get().dose_rp_total_over_delta_weeks
         g.save()
-    except ObjectDoesNotExist:
+    except (ObjectDoesNotExist, IndexError):
         logger.warning(u"Study UID {0}. Unable to set summary delta weeks DAP and RP dose values".format(
             g.study_instance_uid))
 
