@@ -600,6 +600,7 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
     total_dlp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
     total_dap_a = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
     total_dap_b = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+    total_dap = models.DecimalField(max_digits=16, decimal_places=12, null=True)
     total_rp_dose_a = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
     total_rp_dose_b = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
     total_dap_delta_weeks = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)

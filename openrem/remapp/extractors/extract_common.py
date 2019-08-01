@@ -201,6 +201,16 @@ def populate_dx_rf_summary(g):
             logger.debug(u"Study UID {0}. No second plane when setting summary DAP/RP values".format(
                 g.study_instance_uid))
         g.save()
+        try:
+            g.total_dap = g.total_dap_a + g.total_dap_b
+        except TypeError:
+            if g.total_dap_a is not None:
+                g.total_dap = g.total_dap_a
+            elif g.total_dap_b is not None:
+                g.total_dap = g.total_dap_b
+            else:
+                g.total_dap = 0
+        g.save()
     except (ObjectDoesNotExist, IndexError):
         g.number_of_events_a = 0
         g.save()
