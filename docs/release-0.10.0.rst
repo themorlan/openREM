@@ -297,14 +297,29 @@ Follow the guide at :doc:`startservices`.
 Populate new summary fields
 ===========================
 
+..  figure:: img/0_10_Migration_Login.png
+    :figwidth: 100%
+    :align: center
+    :alt: 0.10 upgrade panel before log in
+
 With RabbitMQ, Celery and the web server running, log in as an administrator to start the migration process. If you have
 a large number of studies in your database this can take some time.
+
+..  figure:: img/0_10_Migration_Loggedin.png
+    :figwidth: 100%
+    :align: center
+    :alt: 0.10 upgrade panel after log in as administrator
 
 One task per modality type (CT, fluoroscopy, mammography and radiography) is generated to create a task per study in
 each modality to populate the new fields for that study. If the number of workers is the same or less than the number
 of modality types in your database then the study level tasks will all be created before any of them are executed as
 all the workers will be busy. Therefore there might be a delay before the progress indicators on the OpenREM front
 page start to update. You can review the number of tasks being created on the ``Config -> Tasks`` page.
+
+..  figure:: img/0_10_Migration_Processing.png
+    :figwidth: 100%
+    :align: center
+    :alt: 0.10 upgrade panel, population of fields in progress
 
 When the process is complete the 'Summary data fields migration' panel will disappear and will not be seen again.
 
