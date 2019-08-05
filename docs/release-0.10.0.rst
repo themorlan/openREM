@@ -24,9 +24,9 @@ Upgrading an OpenREM server with no internet access
 Follow the instructions found at :doc:`upgrade-offline`, before returning here to update the configuration, migrate the
 database and complete the upgrade.
 
-*****************
-Upgrading process
-*****************
+***************
+Upgrade process
+***************
 
 Upgrade
 =======
