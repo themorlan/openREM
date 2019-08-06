@@ -427,13 +427,13 @@ def floatIfValueNone(val):
     return float(val) if isinstance(val, numbers.Number) else None
 
 
-def stringIfNone(str):
+def stringIfNone(val):
     """ This function returns the passed parameter if it is a string; otherwise it returns ''.
 
     Args:
-        str: any variable, but hopefully one that is a string
+        val: any variable, but hopefully one that is a string
 
     Returns:
         str if it is a string; otherwise ''
     """
-    return str if isinstance(str, basestring) else ''
+    return val if isinstance(val, basestring) else ''
