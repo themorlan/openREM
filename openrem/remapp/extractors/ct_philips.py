@@ -368,7 +368,6 @@ def ct_philips(philips_file):
     """
 
     import dicom
-    from django.core.exceptions import ObjectDoesNotExist
     from remapp.models import DicomDeleteSettings
     try:
         del_settings = DicomDeleteSettings.objects.get()

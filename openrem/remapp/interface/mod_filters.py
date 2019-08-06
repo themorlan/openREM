@@ -38,7 +38,6 @@ from django.db import models
 import logging
 import django_filters
 from django import forms
-from django.db.models import Count
 from remapp.models import GeneralStudyModuleAttr
 from django.utils.safestring import mark_safe
 
