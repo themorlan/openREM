@@ -902,7 +902,7 @@ def _ctirradiationeventdata(dataset, ct, ch):  # TID 10013
             try:
                 event.target_region = get_or_create_cid(cont.ConceptCodeSequence[0].CodeValue,
                                                         cont.ConceptCodeSequence[0].CodeMeaning)
-            except AttributeError:
+            except (AttributeError, IndexError):
                 logger.info(u'Target Region ConceptNameCodeSequence exists, but no content. Study UID {0} from {1}, '
                             u'{2}, {3}'.format(
                     event.ct_radiation_dose.general_study_module_attributes.study_instance_uid,
