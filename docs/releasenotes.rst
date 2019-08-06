@@ -22,7 +22,7 @@ Version specific information
 ============================
 
 
-* :doc:`release-0.9.2` (this release)
+* :doc:`release-0.10.0` (this release)
 
 ..  toctree::
     :maxdepth: 1

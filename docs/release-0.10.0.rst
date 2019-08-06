@@ -1,6 +1,6 @@
-########################
-Upgrade to OpenREM 0.9.2
-########################
+#########################
+Upgrade to OpenREM 0.10.0
+#########################
 
 ****************
 Headline changes
@@ -99,7 +99,7 @@ Upgrade
 
     .. code-block:: console
 
-        pip install openrem==0.9.2b1
+        pip install openrem==0.10.0b1
 
 .. _update_configuration092:
 
