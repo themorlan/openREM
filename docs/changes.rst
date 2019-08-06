@@ -4,6 +4,7 @@ OpenREM version history
 
 0.10.0b1 (2019-xx-xx)
 ---------------------
+* `#765`_  Imports: updated error catching to allow Philips BigBore 4DCT RDSR to import
 * `#763`_  Imports: corrected delta week fluoro study counting for dual plane modalities
 * `#761`_  Imports: fixed issue in high dose alert e-mail code where week_delta may be used before assignment
 * `#759`_  Database: added study level summary fields and migration function

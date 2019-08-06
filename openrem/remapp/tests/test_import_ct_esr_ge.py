@@ -1,12 +1,12 @@
 # This Python file uses the following encoding: utf-8
 # test_test_import_esr_ge.py
 
-import os, datetime
+import datetime
+import os
 from decimal import Decimal
 from django.test import TestCase
 from remapp.extractors import rdsr
 from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
-
 
 
 class ImportCTRDSR(TestCase):
