@@ -65,7 +65,14 @@
                 {{ exam.accession_number }}
             </td>
             <td>{{ exam.projectionxrayradiationdose_set.get.irradeventxraydata_set.count }}</td>
-            <td>{{ exam.projectionxrayradiationdose_set.get.accumxraydose_set.get.accumintegratedprojradiogdose_set.get.convert_gym2_to_cgycm2 | floatformat:1 }}</td>
+            <td>
+                {% for record in exam.projectionxrayradiationdose_set.get.accumxraydose_set.all %}
+                    {% if exam.projectionxrayradiationdose_set.get.accumxraydose_set.all.count > 1 %}
+                        {{ record.acquisition_plane }}:
+                    {% endif %}
+                    {{ record.accumintegratedprojradiogdose_set.get.convert_gym2_to_cgycm2 | floatformat:1 }}
+                {% endfor %}
+            </td>
 {% elif exam.modality_type == "MG" %}
             <td>
                 <a href="{% url 'mg_detail_view' pk=exam.id %}">{{ exam.procedure_code_meaning }}</a> |
