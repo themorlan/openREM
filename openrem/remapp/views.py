@@ -308,7 +308,7 @@ def dx_plot_calculations(f, plot_acquisition_mean_dap, plot_acquisition_freq,
                 # to avoid studies being duplicated when there is more than one of a particular acquisition type in a
                 # study.
                 study_events = GeneralStudyModuleAttr.objects.exclude(
-                    total_dap_a__isnull=True
+                    total_dap__isnull=True
                 ).filter(study_instance_uid__in=exp_include)
             else:
                 # The user hasn't filtered on acquisition, so we can use the faster database querying.
@@ -325,7 +325,7 @@ def dx_plot_calculations(f, plot_acquisition_mean_dap, plot_acquisition_freq,
                 # to avoid studies being duplicated when there is more than one of a particular acquisition type in a
                 # study.
                 request_events = GeneralStudyModuleAttr.objects.exclude(
-                    total_dap_a__isnull=True
+                    total_dap__isnull=True
                 ).filter(study_instance_uid__in=exp_include)
             else:
                 # The user hasn't filtered on acquisition, so we can use the faster database querying.
@@ -357,7 +357,7 @@ def dx_plot_calculations(f, plot_acquisition_mean_dap, plot_acquisition_freq,
         result = average_chart_inc_histogram_data(request_events,
                                                   'generalequipmentmoduleattr__unique_equipment_name_id__display_name',
                                                   'requested_procedure_code_meaning',
-                                                  'total_dap_a',
+                                                  'total_dap',
                                                   1000000,
                                                   plot_request_mean_dap, plot_request_freq,
                                                   plot_series_per_systems, plot_average_choice,
@@ -375,7 +375,7 @@ def dx_plot_calculations(f, plot_acquisition_mean_dap, plot_acquisition_freq,
         result = average_chart_inc_histogram_data(study_events,
                                                   'generalequipmentmoduleattr__unique_equipment_name_id__display_name',
                                                   'study_description',
-                                                  'total_dap_a',
+                                                  'total_dap',
                                                   1000000,
                                                   plot_study_mean_dap, plot_study_freq,
                                                   plot_series_per_systems, plot_average_choice,
