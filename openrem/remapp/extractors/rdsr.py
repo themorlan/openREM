@@ -37,6 +37,7 @@ import os
 import sys
 
 import django
+from django.db.models import ObjectDoesNotExist
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -342,7 +343,6 @@ def _check_dap_units(dap_sequence):
 
 def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
     # TODO: review model to convert to cid where appropriate, and add additional fields
-    from django.core.exceptions import ObjectDoesNotExist
     from django.db.models import Avg
     from remapp.models import IrradEventXRaySourceData
     from remapp.tools.get_values import get_or_create_cid, safe_strings
@@ -1265,6 +1265,7 @@ def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
 
 def _generalstudymoduleattributes(dataset, g, ch):
     from datetime import datetime
+    from remapp.extractors.extract_common import ct_event_type_count, populate_mammo_agd_summary, populate_dx_rf_summary
     from remapp.models import PatientIDSettings
     from remapp.tools.get_values import get_value_kw, get_seq_code_value, get_seq_code_meaning, list_to_string
     from remapp.tools.dcmdatetime import get_date, get_time, make_date, make_time
@@ -1351,11 +1352,34 @@ def _generalstudymoduleattributes(dataset, g, ch):
             g.requested_procedure_code_meaning = get_value_kw('RequestedProcedureDescription', dataset)
             g.save()
 
+    try:
+        number_of_events_ct = g.ctradiationdose_set.get().ctirradiationeventdata_set.count()
+    except ObjectDoesNotExist:
+        number_of_events_ct = 0
+    try:
+        number_of_events_proj = g.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
+    except ObjectDoesNotExist:
+        number_of_events_proj = 0
+    g.number_of_events = number_of_events_ct + number_of_events_proj
+    g.save()
+    if template_identifier == '10011':
+        ct_event_type_count(g)
+        try:
+            g.total_dlp = g.ctradiationdose_set.get().ctaccumulateddosedata_set.get().ct_dose_length_product_total
+        except ObjectDoesNotExist:
+            logger.warning(u"Study UID {0} of modality {1}. Unable to set summary total_dlp".format(
+                g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
+    elif template_identifier == '10001':
+        if g.modality_type == 'MG':
+            populate_mammo_agd_summary(g)
+        else:
+            populate_dx_rf_summary(g)
+
 
 def _rdsr2db(dataset):
     from collections import OrderedDict
-    from django.db.models import ObjectDoesNotExist
     from time import sleep
+    from remapp.extractors.extract_common import populate_rf_delta_weeks_summary
     from remapp.models import GeneralStudyModuleAttr, SkinDoseMapCalcSettings
     from remapp.tools.check_uid import record_sop_instance_uid
     from remapp.tools.get_values import get_value_kw
@@ -1499,7 +1523,8 @@ def _rdsr2db(dataset):
             HighDoseMetricAlertSettings.objects.create()
 
         week_delta = HighDoseMetricAlertSettings.objects.values_list('accum_dose_delta_weeks', flat=True)[0]
-        calc_accum_dose_over_delta_weeks_on_import = HighDoseMetricAlertSettings.objects.values_list('calc_accum_dose_over_delta_weeks_on_import', flat=True)[0]
+        calc_accum_dose_over_delta_weeks_on_import = \
+        HighDoseMetricAlertSettings.objects.values_list('calc_accum_dose_over_delta_weeks_on_import', flat=True)[0]
         if calc_accum_dose_over_delta_weeks_on_import:
             from datetime import timedelta
             from django.db.models import Sum
@@ -1532,7 +1557,8 @@ def _rdsr2db(dataset):
 
                     accum_int_proj_to_update = AccumIntegratedProjRadiogDose.objects.get(pk=accum_int_proj_pk)
 
-                    included_studies = all_rf_studies.filter(patientmoduleattr__patient_id__exact=patient_id, study_date__range=[oldest_date, study_date])
+                    included_studies = all_rf_studies.filter(patientmoduleattr__patient_id__exact=patient_id,
+                                                             study_date__range=[oldest_date, study_date])
 
                     bulk_entries = []
                     for pk in included_studies.values_list('pk', flat=True):
@@ -1546,14 +1572,19 @@ def _rdsr2db(dataset):
                     if len(bulk_entries):
                         PKsForSummedRFDoseStudiesInDeltaWeeks.objects.bulk_create(bulk_entries)
 
-                    accum_totals = included_studies.aggregate(Sum('projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total'),
-                                                              Sum('projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_rp_total'))
-                    accum_int_proj_to_update.dose_area_product_total_over_delta_weeks = accum_totals['projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total__sum']
-                    accum_int_proj_to_update.dose_rp_total_over_delta_weeks = accum_totals['projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_rp_total__sum']
+                    accum_totals = included_studies.aggregate(Sum(
+                        'projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total'),
+                        Sum('projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_rp_total'))
+                    accum_int_proj_to_update.dose_area_product_total_over_delta_weeks = accum_totals[
+                        'projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total__sum']
+                    accum_int_proj_to_update.dose_rp_total_over_delta_weeks = accum_totals[
+                        'projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_rp_total__sum']
                     accum_int_proj_to_update.save()
+                populate_rf_delta_weeks_summary(g)
 
         # Send an e-mail to all high dose alert recipients if this study is at or above threshold levels
-        send_alert_emails = HighDoseMetricAlertSettings.objects.values_list('send_high_dose_metric_alert_emails', flat=True)[0]
+        send_alert_emails = \
+        HighDoseMetricAlertSettings.objects.values_list('send_high_dose_metric_alert_emails', flat=True)[0]
         if send_alert_emails:
             from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
             send_rf_high_dose_alert_email(g.pk)
@@ -1593,7 +1624,6 @@ def rdsr(rdsr_file):
     """
 
     import dicom
-    from django.core.exceptions import ObjectDoesNotExist
     from remapp.models import DicomDeleteSettings
     try:
         del_settings = DicomDeleteSettings.objects.get()

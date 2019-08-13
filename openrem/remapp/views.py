@@ -258,6 +258,10 @@ def dx_summary_chart_data(request):
         user_profile.save()
         median_available = False
 
+    if settings.DEBUG:
+        from datetime import datetime
+        start_time = datetime.now()
+
     return_structure = \
         dx_plot_calculations(f, user_profile.plotDXAcquisitionMeanDAP, user_profile.plotDXAcquisitionFreq,
                              user_profile.plotDXStudyMeanDAP, user_profile.plotDXStudyFreq,
@@ -269,6 +273,9 @@ def dx_summary_chart_data(request):
                              median_available, user_profile.plotAverageChoice, user_profile.plotSeriesPerSystem,
                              user_profile.plotHistogramBins, user_profile.plotHistograms,
                              user_profile.plotCaseInsensitiveCategories)
+
+    if settings.DEBUG:
+        logger.debug("Elapased time is {0}".format(datetime.now() - start_time))
 
     return JsonResponse(return_structure, safe=False)
 
@@ -305,7 +312,7 @@ def dx_plot_calculations(f, plot_acquisition_mean_dap, plot_acquisition_freq,
                 # to avoid studies being duplicated when there is more than one of a particular acquisition type in a
                 # study.
                 study_events = GeneralStudyModuleAttr.objects.exclude(
-                    projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total__isnull=True
+                    total_dap__isnull=True
                 ).filter(study_instance_uid__in=exp_include)
             else:
                 # The user hasn't filtered on acquisition, so we can use the faster database querying.
@@ -322,7 +329,7 @@ def dx_plot_calculations(f, plot_acquisition_mean_dap, plot_acquisition_freq,
                 # to avoid studies being duplicated when there is more than one of a particular acquisition type in a
                 # study.
                 request_events = GeneralStudyModuleAttr.objects.exclude(
-                    projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total__isnull=True
+                    total_dap__isnull=True
                 ).filter(study_instance_uid__in=exp_include)
             else:
                 # The user hasn't filtered on acquisition, so we can use the faster database querying.
@@ -354,7 +361,7 @@ def dx_plot_calculations(f, plot_acquisition_mean_dap, plot_acquisition_freq,
         result = average_chart_inc_histogram_data(request_events,
                                                   'generalequipmentmoduleattr__unique_equipment_name_id__display_name',
                                                   'requested_procedure_code_meaning',
-                                                  'projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total',
+                                                  'total_dap',
                                                   1000000,
                                                   plot_request_mean_dap, plot_request_freq,
                                                   plot_series_per_systems, plot_average_choice,
@@ -372,7 +379,7 @@ def dx_plot_calculations(f, plot_acquisition_mean_dap, plot_acquisition_freq,
         result = average_chart_inc_histogram_data(study_events,
                                                   'generalequipmentmoduleattr__unique_equipment_name_id__display_name',
                                                   'study_description',
-                                                  'projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total',
+                                                  'total_dap',
                                                   1000000,
                                                   plot_study_mean_dap, plot_study_freq,
                                                   plot_series_per_systems, plot_average_choice,
@@ -691,6 +698,10 @@ def rf_summary_chart_data(request):
         user_profile.save()
         median_available = False
 
+    if settings.DEBUG:
+        from datetime import datetime
+        start_time = datetime.now()
+
     return_structure =\
         rf_plot_calculations(f, median_available, user_profile.plotAverageChoice,
                              user_profile.plotSeriesPerSystem, user_profile.plotHistogramBins,
@@ -698,6 +709,9 @@ def rf_summary_chart_data(request):
                              user_profile.plotRFStudyFreq, user_profile.plotRFStudyDAP,
                              user_profile.plotRFRequestFreq, user_profile.plotRFRequestDAP,
                              user_profile.plotHistograms, user_profile.plotCaseInsensitiveCategories)
+
+    if settings.DEBUG:
+        logger.debug("Elapased time is {0}".format(datetime.now() - start_time))
 
     return JsonResponse(return_structure, safe=False)
 
@@ -728,7 +742,7 @@ def rf_plot_calculations(f, median_available, plot_average_choice,
         result = average_chart_inc_histogram_data(study_and_request_events,
                                                   'generalequipmentmoduleattr__unique_equipment_name_id__display_name',
                                                   'study_description',
-                                                  'projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total',
+                                                  'total_dap',
                                                   1000000,
                                                   plot_study_dap, plot_study_freq,
                                                   plot_series_per_systems, plot_average_choice,
@@ -746,7 +760,7 @@ def rf_plot_calculations(f, median_available, plot_average_choice,
         result = average_chart_inc_histogram_data(study_and_request_events,
                                                   'generalequipmentmoduleattr__unique_equipment_name_id__display_name',
                                                   'requested_procedure_code_meaning',
-                                                  'projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total',
+                                                  'total_dap',
                                                   1000000,
                                                   plot_request_dap, plot_request_freq,
                                                   plot_series_per_systems, plot_average_choice,
@@ -856,7 +870,9 @@ def rf_detail_view(request, pk=None):
             study_date = study.study_date
             week_delta = HighDoseMetricAlertSettings.objects.values_list('accum_dose_delta_weeks', flat=True)[0]
             oldest_date = (study_date - timedelta(weeks=week_delta))
-            included_studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF', patientmoduleattr__patient_id__exact=patient_id, study_date__range=[oldest_date, study_date])
+            included_studies = GeneralStudyModuleAttr.objects.filter(
+                modality_type__exact='RF', patientmoduleattr__patient_id__exact=patient_id,
+                study_date__range=[oldest_date, study_date])
         else:
             included_studies = None
     else:
@@ -1113,6 +1129,10 @@ def ct_summary_chart_data(request):
         user_profile.save()
         median_available = False
 
+    if settings.DEBUG:
+        from datetime import datetime
+        start_time = datetime.now()
+
     return_structure =\
         ct_plot_calculations(f, user_profile.plotCTAcquisitionFreq, user_profile.plotCTAcquisitionMeanCTDI, user_profile.plotCTAcquisitionMeanDLP,
                              user_profile.plotCTRequestFreq, user_profile.plotCTRequestMeanDLP, user_profile.plotCTRequestNumEvents,
@@ -1120,6 +1140,9 @@ def ct_summary_chart_data(request):
                              user_profile.plotCTStudyMeanDLPOverTime, user_profile.plotCTStudyMeanDLPOverTimePeriod, user_profile.plotCTStudyPerDayAndHour,
                              median_available, user_profile.plotAverageChoice, user_profile.plotSeriesPerSystem,
                              user_profile.plotHistogramBins, user_profile.plotHistograms, user_profile.plotCaseInsensitiveCategories)
+
+    if settings.DEBUG:
+        logger.debug("Elapased time is {0}".format(datetime.now() - start_time))
 
     return JsonResponse(return_structure, safe=False)
 
@@ -1138,20 +1161,8 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
 
     if plot_study_mean_dlp or plot_study_mean_ctdi or plot_study_freq or plot_study_num_events or plot_study_mean_dlp_over_time or plot_study_per_day_and_hour or plot_request_mean_dlp or plot_request_freq or plot_request_num_events:
         prefetch_list = ['generalequipmentmoduleattr__unique_equipment_name_id__display_name']
-        if plot_study_mean_dlp or plot_study_freq or plot_study_mean_ctdi or plot_study_num_events or plot_study_mean_dlp_over_time or plot_study_per_day_and_hour:
-            prefetch_list.append('study_description')
-        if plot_study_mean_dlp or plot_study_freq or plot_request_mean_dlp or plot_request_freq:
-            prefetch_list.append('ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total')
         if plot_study_mean_ctdi:
             prefetch_list.append('ctradiationdose__ctirradiationeventdata__mean_ctdivol')
-        if plot_study_num_events:
-            prefetch_list.append('ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events')
-        if plot_study_mean_dlp_over_time:
-            prefetch_list.append('study_date')
-        if plot_request_freq or plot_request_mean_dlp or plot_request_num_events:
-            prefetch_list.append('requested_procedure_code_meaning')
-        if plot_request_num_events:
-            prefetch_list.append('ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events')
 
         if ('acquisition_protocol' in f.form.data and f.form.data['acquisition_protocol']) or ('ct_acquisition_type' in f.form.data and f.form.data['ct_acquisition_type']):
             # The user has filtered on acquisition_protocol, so need to use the slow method of querying the database
@@ -1160,7 +1171,7 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
             try:
                 exp_include = f.qs.values_list('study_instance_uid')
                 study_and_request_events = GeneralStudyModuleAttr.objects.exclude(
-                    ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total__isnull=True
+                    total_dlp__isnull=True
                 ).filter(study_instance_uid__in=exp_include).values(*prefetch_list)
             except KeyError:
                 study_and_request_events = f.qs.values(*prefetch_list)
@@ -1183,7 +1194,7 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
             try:
                 exp_include = f.qs.values_list('study_instance_uid')
                 acquisition_events = GeneralStudyModuleAttr.objects.exclude(
-                    ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total__isnull=True
+                    total_dlp__isnull=True
                 ).filter(study_instance_uid__in=exp_include,
                          ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__iexact=f.form.data['ct_acquisition_type']).values(*prefetch_list)
             except KeyError:
@@ -1233,7 +1244,7 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
         result = average_chart_inc_histogram_data(study_and_request_events,
                                                   'generalequipmentmoduleattr__unique_equipment_name_id__display_name',
                                                   'study_description',
-                                                  'ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total',
+                                                  'total_dlp',
                                                   1,
                                                   plot_study_mean_dlp, plot_study_freq,
                                                   plot_series_per_systems, plot_average_choice,
@@ -1270,7 +1281,7 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
         result = average_chart_inc_histogram_data(study_and_request_events,
                                                   'generalequipmentmoduleattr__unique_equipment_name_id__display_name',
                                                   'study_description',
-                                                  'ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events',
+                                                  'number_of_events',
                                                   1,
                                                   plot_study_num_events, 0,
                                                   plot_series_per_systems, plot_average_choice,
@@ -1289,7 +1300,7 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
         result = average_chart_inc_histogram_data(study_and_request_events,
                                                   'generalequipmentmoduleattr__unique_equipment_name_id__display_name',
                                                   'requested_procedure_code_meaning',
-                                                  'ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total',
+                                                  'total_dlp',
                                                   1,
                                                   plot_request_mean_dlp, plot_request_freq,
                                                   plot_series_per_systems, plot_average_choice,
@@ -1307,7 +1318,7 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
         result = average_chart_inc_histogram_data(study_and_request_events,
                                                   'generalequipmentmoduleattr__unique_equipment_name_id__display_name',
                                                   'requested_procedure_code_meaning',
-                                                  'ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events',
+                                                  'number_of_events',
                                                   1,
                                                   plot_request_num_events, 0,
                                                   plot_series_per_systems, plot_average_choice,
@@ -1325,7 +1336,7 @@ def ct_plot_calculations(f, plot_acquisition_freq, plot_acquisition_mean_ctdi, p
     if plot_study_mean_dlp_over_time:
         result = average_chart_over_time_data(study_and_request_events,
                                               'study_description',
-                                              'ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total',
+                                              'total_dlp',
                                               'study_date', 'study_date',
                                               median_available, plot_average_choice,
                                               1, plot_study_mean_dlp_over_time_period,
@@ -1510,11 +1521,18 @@ def mg_summary_chart_data(request):
         user_profile.save()
         median_available = False
 
+    if settings.DEBUG:
+        from datetime import datetime
+        start_time = datetime.now()
+
     return_structure =\
         mg_plot_calculations(f, median_available, user_profile.plotAverageChoice,
                              user_profile.plotSeriesPerSystem, user_profile.plotHistogramBins,
                              user_profile.plotMGStudyPerDayAndHour, user_profile.plotMGAGDvsThickness,
                              user_profile.plotMGkVpvsThickness, user_profile.plotMGmAsvsThickness)
+
+    if settings.DEBUG:
+        logger.debug("Elapased time is {0}".format(datetime.now() - start_time))
 
     return JsonResponse(return_structure, safe=False)
 
@@ -1608,7 +1626,8 @@ def mg_detail_view(request, pk=None):
 
 
 def openrem_home(request):
-    from remapp.models import PatientIDSettings, DicomDeleteSettings, AdminTaskQuestions, HomePageAdminSettings
+    from remapp.models import PatientIDSettings, DicomDeleteSettings, AdminTaskQuestions, HomePageAdminSettings, \
+        UpgradeStatus
     from django.db.models import Q  # For the Q "OR" query used for DX and CR
     from collections import OrderedDict
 
@@ -1714,6 +1733,13 @@ def openrem_home(request):
         if not_patient_indicator_question:
             admin_questions_true = True  # Doing this instead
 
+    upgrade_status = UpgradeStatus.get_solo()
+    migration_complete = upgrade_status.from_0_9_1_summary_fields
+    if not migration_complete and homedata['total'] == 0:
+        upgrade_status.from_0_9_1_summary_fields = True
+        upgrade_status.save()
+        migration_complete = True
+
     #from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
     #send_rf_high_dose_alert_email(417637)
     #send_rf_high_dose_alert_email(417973)
@@ -1741,7 +1767,7 @@ def openrem_home(request):
     return render(request, "remapp/home.html",
                   {'homedata': homedata, 'admin': admin, 'users_in_groups': users_in_groups,
                    'admin_questions': admin_questions, 'admin_questions_true': admin_questions_true,
-                   'modalities': modalities, 'home_config': home_config})
+                   'modalities': modalities, 'home_config': home_config, 'migration_complete': migration_complete})
 
 
 @csrf_exempt
@@ -3802,6 +3828,7 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
 
     """
     from django.http import JsonResponse
+    from remapp.extractors.extract_common import populate_rf_delta_weeks_summary
 
     if not request.user.groups.filter(name="admingroup"):
         # Send the user to the home page
@@ -3878,6 +3905,7 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
                     accum_int_proj_to_update.dose_area_product_total_over_delta_weeks = accum_totals['projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total__sum']
                     accum_int_proj_to_update.dose_rp_total_over_delta_weeks = accum_totals['projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_rp_total__sum']
                     accum_int_proj_to_update.save()
+                populate_rf_delta_weeks_summary(study)
 
         HighDoseMetricAlertSettings.objects.all().update(changed_accum_dose_delta_weeks=False)
 
@@ -4041,3 +4069,161 @@ class NotPatientIDDelete(DeleteView):  # pylint: disable=unused-variable
             admin[group.name] = True
         context['admin'] = admin
         return context
+
+
+def populate_summary(request):
+    """Populate the summary fields in GeneralStudyModuleAttr table for existing studies
+
+    :param request:
+    :return:
+    """
+    from remapp.tools.populate_summary import populate_summary_ct, populate_summary_mg, populate_summary_dx, \
+        populate_summary_rf
+    from remapp.models import SummaryFields
+
+    if request.user.groups.filter(name="admingroup"):
+        try:
+            task_ct = SummaryFields.objects.get(modality_type__exact='CT')
+        except ObjectDoesNotExist:
+            task_ct = SummaryFields.objects.create(modality_type='CT')
+        if not task_ct.complete:
+            populate_summary_ct.delay()
+        try:
+            task_mg = SummaryFields.objects.get(modality_type__exact='MG')
+        except ObjectDoesNotExist:
+            task_mg = SummaryFields.objects.create(modality_type='MG')
+        if not task_mg.complete:
+            populate_summary_mg.delay()
+        try:
+            task_dx = SummaryFields.objects.get(modality_type__exact='DX')
+        except ObjectDoesNotExist:
+            task_dx = SummaryFields.objects.create(modality_type='DX')
+        if not task_dx.complete:
+            populate_summary_dx.delay()
+        try:
+            task_rf = SummaryFields.objects.get(modality_type__exact='RF')
+        except ObjectDoesNotExist:
+            task_rf = SummaryFields.objects.create(modality_type='RF')
+        if not task_rf.complete:
+            populate_summary_rf.delay()
+
+
+
+        # task = SummaryFields.get_solo()
+        # if task.complete:
+        #     messages.error(u"Populating summary fields already complete!")
+        #     return redirect(reverse_lazy('home'))
+        # task.status_message = u"Starting migration to populate summary fields"
+        # messages.info = u"Starting migration to populate summary fields"
+        # task.save()
+        # populate_summary.delay()
+        return redirect(reverse_lazy('home'))
+
+
+def populate_summary_progress(request):
+    """AJAX function to get populate summary fields progress"""
+    from django.db.models import Q
+    from remapp.models import SummaryFields, UpgradeStatus
+
+    if request.is_ajax():
+        if request.user.groups.filter(name="admingroup"):
+            try:
+                ct_status = SummaryFields.objects.get(modality_type__exact='CT')
+                rf_status = SummaryFields.objects.get(modality_type__exact='RF')
+                mg_status = SummaryFields.objects.get(modality_type__exact='MG')
+                dx_status = SummaryFields.objects.get(modality_type__exact='DX')
+            except ObjectDoesNotExist:
+                return render_to_response('remapp/populate_summary_progress_error.html', {'not_admin': False},
+                                          context_instance=RequestContext(request))
+
+            if ct_status.complete and rf_status.complete and mg_status.complete and dx_status.complete:
+                upgrade_status = UpgradeStatus.get_solo()
+                upgrade_status.from_0_9_1_summary_fields = True
+                upgrade_status.save()
+                return HttpResponse('')
+            try:
+                ct = GeneralStudyModuleAttr.objects.filter(modality_type__exact='CT')
+                if ct.filter(number_of_const_angle__isnull=True).count() > 0:
+                    ct_complete = ct.filter(number_of_const_angle__isnull=False).count()
+                    ct_total = ct.count()
+                    ct_pc = 100 * (float(ct_complete)/ct_total)
+                else:
+                    ct_status.complete = True
+                    ct_status.save()
+                    ct_complete = None
+                    ct_total = None
+                    ct_pc = 0
+            except ObjectDoesNotExist:
+                ct_complete = None
+                ct_total = None
+                ct_pc = 0
+            try:
+                rf = GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF')
+                if rf.filter(number_of_events_a__isnull=True).count() > 0:
+                    rf_complete = rf.filter(number_of_events_a__isnull=False).count()
+                    rf_total = rf.count()
+                    rf_pc = 100 * (float(rf_complete)/rf_total)
+                else:
+                    rf_status.complete = True
+                    rf_status.save()
+                    rf_complete = None
+                    rf_total = None
+                    rf_pc = 0
+            except ObjectDoesNotExist:
+                rf_complete = None
+                rf_total = None
+                rf_pc = 0
+            try:
+                mg = GeneralStudyModuleAttr.objects.filter(modality_type__exact='MG')
+                if mg.filter(total_agd_right__isnull=True).filter(
+                        total_agd_left__isnull=True).filter(
+                        total_agd_both__isnull=True).count() > 0:
+                    mg_complete = mg.filter(Q(
+                        total_agd_right__isnull=False) | Q(
+                        total_agd_left__isnull=False) | Q(
+                        total_agd_both__isnull=False)).count()
+                    mg_total = mg.count()
+                    mg_pc = 100 * (float(mg_complete)/mg_total)
+                else:
+                    mg_status.complete = True
+                    mg_status.save()
+                    mg_complete = None
+                    mg_total = None
+                    mg_pc = 0
+            except ObjectDoesNotExist:
+                mg_complete = None
+                mg_total = None
+                mg_pc = 0
+            try:
+                dx = GeneralStudyModuleAttr.objects.filter(Q(modality_type__exact='DX') | Q(modality_type__exact='CR'))
+                if dx.filter(number_of_events_a__isnull=True).count() > 0:
+                    dx_complete = dx.filter(number_of_events_a__isnull=False).count()
+                    dx_total = dx.count()
+                    dx_pc = 100 * (float(dx_complete)/dx_total)
+                else:
+                    dx_status.complete = True
+                    dx_status.save()
+                    dx_complete = None
+                    dx_total = None
+                    dx_pc = 0
+            except ObjectDoesNotExist:
+                dx_complete = None
+                dx_total = None
+                dx_pc = 0
+            try:
+                dx_pc = 100 * (float(dx_status.current_study)/dx_status.total_studies)
+            except ObjectDoesNotExist:
+                dx_status = None
+
+            return render_to_response('remapp/populate_summary_progress.html',
+                                      {'ct_complete': ct_complete, 'ct_total': ct_total, 'ct_pc': ct_pc,
+                                       'ct_status': ct_status,
+                                       'rf_complete': rf_complete, 'rf_total': rf_total, 'rf_pc': rf_pc,
+                                       'rf_status': rf_status,
+                                       'mg_complete': mg_complete, 'mg_total': mg_total, 'mg_pc': mg_pc,
+                                       'mg_status': mg_status,
+                                       'dx_complete': dx_complete, 'dx_total': dx_total, 'dx_pc': dx_pc,
+                                       'dx_status': dx_status,}, context_instance=RequestContext(request))
+        else:
+            return render_to_response('remapp/populate_summary_progress_error.html', {'not_admin': True},
+                                      context_instance=RequestContext(request))

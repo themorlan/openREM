@@ -177,7 +177,8 @@ def average_chart_inc_histogram_data(database_events, db_display_name_relationsh
                             {'db_series_names_to_use': missing_name, 'num': 0})
 
                 # Rearrange the list into the same order as series_names
-                return_structure['summary'][index] = sorted(return_structure['summary'][index], key=lambda k: k['db_series_names_to_use'].lower())
+                #return_structure['summary'][index] = sorted(return_structure['summary'][index], key=lambda k: k['db_series_names_to_use'].lower())
+                return_structure['summary'][index] = sorted(return_structure['summary'][index], key=lambda k: stringIfNone(k['db_series_names_to_use']).lower())
 
     if plot_average and calculate_histograms:
         histogram_annotations = {}
@@ -242,6 +243,9 @@ def average_chart_inc_histogram_data(database_events, db_display_name_relationsh
 
                     return_structure['histogram_data'][system_i][series_i][1] = \
                         (return_structure['histogram_data'][system_i][series_i][1] * value_multiplier).tolist()
+
+    # Replace None with '' in return_structure['series_names'] and sort the result - will now be sorted in the same order as the return_structure['summary'][0,1,2,etc] data
+    return_structure['series_names'] = sorted([stringIfNone(entry) for entry in return_structure['series_names']])
 
     return return_structure
 
@@ -421,3 +425,15 @@ def floatIfValueNone(val):
     """
     import numbers
     return float(val) if isinstance(val, numbers.Number) else None
+
+
+def stringIfNone(val):
+    """ This function returns the passed parameter if it is a string; otherwise it returns ''.
+
+    Args:
+        val: any variable, but hopefully one that is a string
+
+    Returns:
+        str if it is a string; otherwise ''
+    """
+    return val if isinstance(val, basestring) else ''

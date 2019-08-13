@@ -571,6 +571,7 @@ def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
 
 def _generalstudymoduleattributes(dataset, g):
     from datetime import datetime
+    from remapp.extractors.extract_common import populate_dx_rf_summary
     from remapp.models import PatientIDSettings
     from remapp.tools.get_values import get_value_kw, get_seq_code_meaning, get_seq_code_value, get_value_num, \
         list_to_string
@@ -631,7 +632,9 @@ def _generalstudymoduleattributes(dataset, g):
     _projectionxrayradiationdose(dataset, g, ch)
     _patientstudymoduleattributes(dataset, g)
     _patientmoduleattributes(dataset, g, ch)
-
+    populate_dx_rf_summary(g)
+    g.number_of_events = g.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
+    g.save()
 
 # The routine will accept three types of image:
 # CR image storage                               (SOP UID = '1.2.840.10008.5.1.4.1.1.1')
@@ -649,7 +652,7 @@ def _dx2db(dataset):
     import sys
     from time import sleep
     from random import random
-    from remapp.extractors.extract_common import get_study_check_dup
+    from remapp.extractors.extract_common import get_study_check_dup, populate_dx_rf_summary
     from remapp.models import GeneralStudyModuleAttr
     from remapp.tools import check_uid
     from remapp.tools.get_values import get_value_kw
@@ -665,6 +668,10 @@ def _dx2db(dataset):
         this_study = get_study_check_dup(dataset, modality='DX')
         if this_study:
             _irradiationeventxraydata(dataset, this_study.projectionxrayradiationdose_set.get(), ch)
+            populate_dx_rf_summary(this_study)
+            this_study.number_of_events = this_study.projectionxrayradiationdose_set.get(
+                ).irradeventxraydata_set.count()
+            this_study.save()
 
     if not study_in_db:
         # study doesn't exist, start from scratch
