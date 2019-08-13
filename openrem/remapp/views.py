@@ -258,9 +258,10 @@ def dx_summary_chart_data(request):
         user_profile.save()
         median_available = False
 
-    # Start time
-    from datetime import datetime
-    start_time = datetime.now()
+    if settings.DEBUG:
+        from datetime import datetime
+        start_time = datetime.now()
+
     return_structure = \
         dx_plot_calculations(f, user_profile.plotDXAcquisitionMeanDAP, user_profile.plotDXAcquisitionFreq,
                              user_profile.plotDXStudyMeanDAP, user_profile.plotDXStudyFreq,
@@ -272,7 +273,10 @@ def dx_summary_chart_data(request):
                              median_available, user_profile.plotAverageChoice, user_profile.plotSeriesPerSystem,
                              user_profile.plotHistogramBins, user_profile.plotHistograms,
                              user_profile.plotCaseInsensitiveCategories)
-    print("Elapased time is {0}".format(datetime.now() - start_time))
+
+    if settings.DEBUG:
+        logger.debug("Elapased time is {0}".format(datetime.now() - start_time))
+
     return JsonResponse(return_structure, safe=False)
 
 
@@ -694,9 +698,10 @@ def rf_summary_chart_data(request):
         user_profile.save()
         median_available = False
 
-    # Start time
-    from datetime import datetime
-    start_time = datetime.now()
+    if settings.DEBUG:
+        from datetime import datetime
+        start_time = datetime.now()
+
     return_structure =\
         rf_plot_calculations(f, median_available, user_profile.plotAverageChoice,
                              user_profile.plotSeriesPerSystem, user_profile.plotHistogramBins,
@@ -704,7 +709,10 @@ def rf_summary_chart_data(request):
                              user_profile.plotRFStudyFreq, user_profile.plotRFStudyDAP,
                              user_profile.plotRFRequestFreq, user_profile.plotRFRequestDAP,
                              user_profile.plotHistograms, user_profile.plotCaseInsensitiveCategories)
-    print("Elapased time is {0}".format(datetime.now() - start_time))
+
+    if settings.DEBUG:
+        logger.debug("Elapased time is {0}".format(datetime.now() - start_time))
+
     return JsonResponse(return_structure, safe=False)
 
 
@@ -1121,9 +1129,10 @@ def ct_summary_chart_data(request):
         user_profile.save()
         median_available = False
 
-    # Start time
-    from datetime import datetime
-    start_time = datetime.now()
+    if settings.DEBUG:
+        from datetime import datetime
+        start_time = datetime.now()
+
     return_structure =\
         ct_plot_calculations(f, user_profile.plotCTAcquisitionFreq, user_profile.plotCTAcquisitionMeanCTDI, user_profile.plotCTAcquisitionMeanDLP,
                              user_profile.plotCTRequestFreq, user_profile.plotCTRequestMeanDLP, user_profile.plotCTRequestNumEvents,
@@ -1131,7 +1140,10 @@ def ct_summary_chart_data(request):
                              user_profile.plotCTStudyMeanDLPOverTime, user_profile.plotCTStudyMeanDLPOverTimePeriod, user_profile.plotCTStudyPerDayAndHour,
                              median_available, user_profile.plotAverageChoice, user_profile.plotSeriesPerSystem,
                              user_profile.plotHistogramBins, user_profile.plotHistograms, user_profile.plotCaseInsensitiveCategories)
-    print("Elapased time is {0}".format(datetime.now() - start_time))
+
+    if settings.DEBUG:
+        logger.debug("Elapased time is {0}".format(datetime.now() - start_time))
+
     return JsonResponse(return_structure, safe=False)
 
 
@@ -1509,15 +1521,19 @@ def mg_summary_chart_data(request):
         user_profile.save()
         median_available = False
 
-    # Start time
-    from datetime import datetime
-    start_time = datetime.now()
+    if settings.DEBUG:
+        from datetime import datetime
+        start_time = datetime.now()
+
     return_structure =\
         mg_plot_calculations(f, median_available, user_profile.plotAverageChoice,
                              user_profile.plotSeriesPerSystem, user_profile.plotHistogramBins,
                              user_profile.plotMGStudyPerDayAndHour, user_profile.plotMGAGDvsThickness,
                              user_profile.plotMGkVpvsThickness, user_profile.plotMGmAsvsThickness)
-    print("Elapased time is {0}".format(datetime.now() - start_time))
+
+    if settings.DEBUG:
+        logger.debug("Elapased time is {0}".format(datetime.now() - start_time))
+
     return JsonResponse(return_structure, safe=False)
 
 
