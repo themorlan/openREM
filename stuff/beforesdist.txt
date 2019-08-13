@@ -8,7 +8,8 @@ Change the version number in
 	    release-0.x.x.rst - make sure update_configuration link is right for upgrade-offline
 	    install-offline.rst (twice)
 	    upgrade-offline.rst (twice)
-	    upgrade-offline.rst - make user link back to release notes is right
+	    upgrade-offline.rst - make user link back to release notes and previous upgrades is right
+	    upgrade_previous_0.10.0.rst - title, install command, link back to release and content generally
 	date and other details in changes and CHANGES
     Edit README.rst including docs links
     Edit description in setup.py between beta and release

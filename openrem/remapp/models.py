@@ -36,6 +36,7 @@ import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 import json
 from django.db import models
+from django.db.models.sql.aggregates import Aggregate as SQLAggregate
 from django.core.urlresolvers import reverse
 from solo.models import SingletonModel
 from django.contrib.auth.models import User
@@ -43,6 +44,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 # pylint: disable=unused-variable
+
 
 class AdminTaskQuestions(SingletonModel):
     """
@@ -587,8 +589,44 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
     series_time = models.TimeField(blank=True, null=True)
     content_time = models.TimeField(blank=True, null=True)
 
+    # Additional study summary fields
+    number_of_events = models.IntegerField(blank=True, null=True)
+    number_of_events_a = models.IntegerField(blank=True, null=True)
+    number_of_events_b = models.IntegerField(blank=True, null=True)
+    number_of_axial = models.IntegerField(blank=True, null=True)
+    number_of_spiral = models.IntegerField(blank=True, null=True)
+    number_of_stationary = models.IntegerField(blank=True, null=True)
+    number_of_const_angle = models.IntegerField(blank=True, null=True)
+    total_dlp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    total_dap_a = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+    total_dap_b = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+    total_dap = models.DecimalField(max_digits=16, decimal_places=12, null=True)
+    total_rp_dose_a = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+    total_rp_dose_b = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+    total_dap_delta_weeks = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+    total_rp_dose_delta_weeks = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+    total_agd_left = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    total_agd_right = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    total_agd_both = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)  # for legacy
+    number_of_planes = models.IntegerField(blank=True, null=True)
+
     def __unicode__(self):
         return self.study_instance_uid
+
+    def dap_a_cgycm2(self):
+        """Converts DAP A to cGy.cm2 from Gy.m2 for display in we interface"""
+        if self.total_dap_a:
+            return 1000000*self.total_dap_a
+
+    def dap_b_cgycm2(self):
+        """Converts DAP B to cGy.cm2 from Gy.m2 for display in we interface"""
+        if self.total_dap_b:
+            return 1000000*self.total_dap_b
+
+    def dap_delta_weeks_cgycm2(self):
+        """Converts DAP delta weeks to cGy.cm2 from Gy.m2 for display in we interface"""
+        if self.total_dap_delta_weeks:
+            return 1000000*self.total_dap_delta_weeks
 
 
 class ObjectUIDsProcessed(models.Model):
@@ -1354,8 +1392,6 @@ class PersonParticipant(models.Model):  # TID 1020
         return self.person_name
 
 
-from django.db.models.sql.aggregates import Aggregate as SQLAggregate
-
 class MedianSQL(SQLAggregate):
     sql_function = 'Median'
     sql_template = '%(function)s(%(field)s)'
@@ -1369,3 +1405,22 @@ class Median(models.Aggregate):
     def add_to_query(self, query, alias, col, source, is_summary):
         aggregate = self.sql(col, **self.extra)
         query.aggregates[alias] = aggregate
+
+
+class SummaryFields(models.Model):
+    """Status and progress of populating the summary fields in GeneralStudyModuleAttr
+
+    """
+
+    modality_type = models.CharField(max_length=2, null=True)
+    complete = models.BooleanField(default=False)
+    status_message = models.TextField(blank=True, null=True)
+    total_studies = models.IntegerField(default=0)
+    current_study = models.IntegerField(default=0)
+
+
+class UpgradeStatus(SingletonModel):
+    """
+    Record upgrade status activity
+    """
+    from_0_9_1_summary_fields = models.BooleanField(default=False)

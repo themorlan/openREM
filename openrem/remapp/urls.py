@@ -139,6 +139,9 @@ urlpatterns = patterns('remapp.views',
                        url('^admin/celery/abort_task/(?P<task_id>[0-9a-zA-Z.@-]+)/(?P<type>\w+)$', 'celery_abort',
                            name='celery_abort'),
                        url('^admin/celery/service_status/$', 'task_service_status', name='task_service_status'),
+                       url('^admin/populate_summary/$', 'populate_summary', name='populate_summary'),
+                       url('^admin/populate_summary_progress/$', 'populate_summary_progress',
+                           name='populate_summary_progress'),
                        )
 
 urlpatterns += patterns('remapp.exports.exportviews',

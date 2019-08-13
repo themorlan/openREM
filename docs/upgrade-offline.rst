@@ -7,8 +7,13 @@ version of OpenREM. These can be downloaded on any computer with Python 2.7 inst
 though if you have trouble when installing the packages you might need to use a similar computer to the one you are
 installing on - same operating system and matching 32-bit or 64-bit.
 
-OpenREM version 0.9 has a minimum Python version of 2.7.9. Use the instructions in the :doc:`release-0.9.1` release
-notes to check this before downloading the new OpenREM packages.
+OpenREM version 0.10 has a minimum Python version of 2.7.9. Use the instructions in the :doc:`upgrade_previous_0.10.0`
+release notes to check this before downloading the new OpenREM packages. The latest Python 2.7 installation can be
+obtained from https://www.python.org/downloads/windows/
+
+* Follow the link to the 'Latest Python 2 release'
+* Download either the ``Windows x86 MSI installer`` for 32-bit Windows or
+* Download ``Windows x86-64 MSI installer`` for 64-bit Windows
 
 On a computer with internet access
 ==================================
@@ -59,6 +64,8 @@ On the OpenREM server without internet access
 
 * Consider temporarily disabling your DICOM Store SCP, or redirecting the data to be processed later
 
+* Install the new version of Python 2.7 if applicable
+
 * If you are using a virtualenv, activate it
 
 Upgrade setuptools:
@@ -87,4 +94,4 @@ Install OpenREM:
 
     pip install --no-index --find-links=openremfiles openrem==0.9.1
 
-Now go back to :ref:`update_configuration092`, migrate the database and finish the upgrade.
+Now go back to :ref:`update_configuration0100`, migrate the database and finish the upgrade.

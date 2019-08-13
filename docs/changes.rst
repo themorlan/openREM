@@ -8,6 +8,7 @@ OpenREM version history
 * `#763`_  Imports: corrected delta week fluoro study counting for dual plane modalities
 * `#762`_  Interface: fixed error when deleting dual plane radiography studies
 * `#761`_  Imports: fixed issue in high dose alert e-mail code where week_delta may be used before assignment
+* `#759`_  Database: added study level summary fields and migration function
 * `#758`_  Configuration: corrected issues with location of js_reverse static files
 * `#746`_  Imports: enabled import of GE Elite Mini View C-arm RDSR with no template declaration
 

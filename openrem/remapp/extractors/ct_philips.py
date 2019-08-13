@@ -37,6 +37,7 @@ import os
 import sys
 
 import django
+from django.db.models import ObjectDoesNotExist
 
 logger = logging.getLogger(__name__)
 
@@ -292,6 +293,7 @@ def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
 
 def _generalstudymoduleattributes(dataset, g, ch):
     from datetime import datetime
+    from remapp.extractors.extract_common import ct_event_type_count
     from remapp.models import PatientIDSettings
     from remapp.tools.get_values import get_value_kw, get_seq_code_meaning, get_seq_code_value, list_to_string
     from remapp.tools.dcmdatetime import get_date, get_time
@@ -320,6 +322,19 @@ def _generalstudymoduleattributes(dataset, g, ch):
     g.requested_procedure_code_meaning = get_value_kw('RequestedProcedureDescription', dataset)
     g.save()
     _ctradiationdose(dataset, g, ch)
+    try:
+        g.number_of_events = g.ctradiationdose_set.get().ctirradiationeventdata_set.count()
+        g.save()
+    except ObjectDoesNotExist:
+        logger.warning(u"Study UID {0} of modality {1}. Unable to get event count!".format(
+            g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
+    ct_event_type_count(g)
+    try:
+        g.total_dlp = g.ctradiationdose_set.get().ctaccumulateddosedata_set.get().ct_dose_length_product_total
+        g.save()
+    except ObjectDoesNotExist:
+        logger.warning(u"Study UID {0} of modality {1}. Unable to set summary total_dlp".format(
+            g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
 
 
 def _philips_ct2db(dataset):
@@ -353,7 +368,6 @@ def ct_philips(philips_file):
     """
 
     import dicom
-    from django.core.exceptions import ObjectDoesNotExist
     from remapp.models import DicomDeleteSettings
     try:
         del_settings = DicomDeleteSettings.objects.get()
