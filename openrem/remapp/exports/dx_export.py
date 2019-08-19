@@ -531,6 +531,7 @@ def dx_phe_2019_single(filterdict, user=None):
                 kvp = pulse_data['kvp']
                 mas = pulse_data['mas']
                 filters, filter_thicknesses = get_xray_filter_info(source_data)
+                filters = u"{0} {1}".format(filters, filter_thicknesses)
                 grid_focal_distance = source_data.grid_focal_distance
             except ObjectDoesNotExist:
                 exposure_control_mode = None
@@ -579,9 +580,29 @@ def dx_phe_2019_single(filterdict, user=None):
                 anatomical_structure,
             ]
             try:
-                series_data += [first_view.image_view.code_meaning, ]
+                image_view = first_view.image_view.code_meaning
             except AttributeError:
-                series_data += [None, ]
+                image_view = None
+            try:
+                pt_orientation = first_view.patient_orientation_cid.code_meaning
+            except AttributeError:
+                pt_orientation = None
+            try:
+                pt_orientation_mod = first_view.patient_orientation_modifier_cid.code_meaning
+            except AttributeError:
+                pt_orientation_mod = None
+            try:
+                pt_table_rel = first_view.patient_table_relationship_cid.code_meaning
+            except AttributeError:
+                pt_table_rel = None
+
+            pt_position = u""
+            if pt_orientation:
+                pt_position = u"{0}{1}".format(pt_position, pt_orientation)
+            if pt_orientation_mod:
+                pt_position = u"{0}, {1}".format(pt_position, pt_orientation_mod)
+            if pt_table_rel:
+                pt_position = u"{0}, {1}".format(pt_position, pt_table_rel)
 
             exam_data += [
                 u'',
@@ -600,11 +621,13 @@ def dx_phe_2019_single(filterdict, user=None):
                 '',
                 grid_focal_distance,
                 distance_source_to_detector,
-                '',
+                filters,
                 exposure_control_mode,
                 kvp,
                 mas,
-
+                pt_position,
+                '',
+                image_view,
 
             ]
 
