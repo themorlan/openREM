@@ -220,7 +220,26 @@ EVENT_NUMBER_CHOICES = (
     (8, '8'),
     (9, '9'),
     (10, '10'),
+    ('more', '>10'),
 )
+
+
+def _specify_event_numbers(queryset, value):
+    """Method filter for specifying number of events in each study
+
+    :param queryset: Study list
+    :param value: number of events
+    :return: filtered queryset
+    """
+    try:
+        value = int(value)
+    except ValueError:
+        if value == 'more':
+            filtered = queryset.filter(number_of_events__gt=10)
+            return filtered
+        return queryset
+    filtered = queryset.filter(number_of_events__exact=value)
+    return filtered
 
 
 def _specify_event_numbers_spiral(queryset, value):
@@ -233,6 +252,9 @@ def _specify_event_numbers_spiral(queryset, value):
     try:
         value = int(value)
     except ValueError:
+        if value == 'more':
+            filtered = queryset.filter(number_of_spiral__gt=10)
+            return filtered
         return queryset
     filtered = queryset.filter(number_of_spiral__exact=value)
     return filtered
@@ -248,6 +270,9 @@ def _specify_event_numbers_axial(queryset, value):
     try:
         value = int(value)
     except ValueError:
+        if value == 'more':
+            filtered = queryset.filter(number_of_axial__gt=10)
+            return filtered
         return queryset
     filtered = queryset.filter(number_of_axial__exact=value)
     return filtered
@@ -263,6 +288,9 @@ def _specify_event_numbers_spr(queryset, value):
     try:
         value = int(value)
     except ValueError:
+        if value == 'more':
+            filtered = queryset.filter(number_of_const_angle__gt=10)
+            return filtered
         return queryset
     filtered = queryset.filter(number_of_const_angle__exact=value)
     return filtered
@@ -278,6 +306,9 @@ def _specify_event_numbers_stationary(queryset, value):
     try:
         value = int(value)
     except ValueError:
+        if value == 'more':
+            filtered = queryset.filter(number_of_stationary__gt=10)
+            return filtered
         return queryset
     filtered = queryset.filter(number_of_stationary__exact=value)
     return filtered
@@ -329,6 +360,8 @@ class CTSummaryListFilter(django_filters.FilterSet):
                                                                    'acquisition_type__code_meaning',
                                                               choices=CT_ACQ_TYPE_CHOICES,
                                                               widget=forms.CheckboxSelectMultiple)
+    num_events = django_filters.ChoiceFilter(action=_specify_event_numbers, label=u'Num. events total',
+                                                    choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
     num_spiral_events = django_filters.ChoiceFilter(action=_specify_event_numbers_spiral, label=u'Num. spiral events',
                                                     choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
     num_axial_events = django_filters.ChoiceFilter(action=_specify_event_numbers_axial, label=u'Num. axial events',
