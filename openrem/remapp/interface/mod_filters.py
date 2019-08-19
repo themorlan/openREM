@@ -361,7 +361,7 @@ class CTSummaryListFilter(django_filters.FilterSet):
                                                               choices=CT_ACQ_TYPE_CHOICES,
                                                               widget=forms.CheckboxSelectMultiple)
     num_events = django_filters.ChoiceFilter(action=_specify_event_numbers, label=u'Num. events total',
-                                                    choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
+                                             choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
     num_spiral_events = django_filters.ChoiceFilter(action=_specify_event_numbers_spiral, label=u'Num. spiral events',
                                                     choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
     num_axial_events = django_filters.ChoiceFilter(action=_specify_event_numbers_axial, label=u'Num. axial events',
@@ -589,6 +589,8 @@ class DXSummaryListFilter(django_filters.FilterSet):
     # acquisition_dap_min = django_filters.NumberFilter(lookup_type='gte', label=mark_safe('Min acquisition DAP (Gy.m<sup>2</sup>)'), name='projectionxrayradiationdose__irradeventxraydata__dose_area_product') # nosec
     display_name = django_filters.CharFilter(lookup_type='icontains', label=u'Display name',
                                              name='generalequipmentmoduleattr__unique_equipment_name__display_name')
+    num_events = django_filters.ChoiceFilter(action=_specify_event_numbers, label=u'Num. events total',
+                                             choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
     test_data = django_filters.ChoiceFilter(lookup_type='isnull', label=u"Include possible test data",
                                             name='patientmoduleattr__not_patient_indicator', choices=TEST_CHOICES,
                                             widget=forms.Select)
@@ -598,25 +600,7 @@ class DXSummaryListFilter(django_filters.FilterSet):
         Lists fields and order-by information for django-filter filtering
         """
         model = GeneralStudyModuleAttr
-        fields = [
-            'date_after',
-            'date_before',
-            'institution_name',
-            'study_description',
-            'procedure_code_meaning',
-            'requested_procedure',
-            'acquisition_protocol',
-            'patient_age_min',
-            'patient_age_max',
-            'manufacturer',
-            'model_name',
-            'station_name',
-            'display_name',
-            'accession_number',
-            # 'study_dap_min',
-            # 'study_dap_max',
-            'test_data',
-        ]
+        fields = []
         order_by = (
             ('-study_date', mark_safe('Exam date &darr;')),
             ('study_date', mark_safe('Exam date &uarr;')),
