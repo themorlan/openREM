@@ -443,10 +443,9 @@ def get_xray_filter_info(source):
             filters += u' | '
             thicknesses = [current_filter.xray_filter_thickness_minimum,
                            current_filter.xray_filter_thickness_maximum]
+            thick = u''
             if thicknesses[0] is not None and thicknesses[1] is not None:
                 thick = old_div(sum(thicknesses), len(thicknesses))
-            elif thicknesses[0] is None and thicknesses[1] is None:
-                thick = u''
             elif thicknesses[0] is not None:
                 thick = thicknesses[0]
             elif thicknesses[1] is not None:
