@@ -531,7 +531,10 @@ def dx_phe_2019_single(filterdict, user=None):
                 kvp = pulse_data['kvp']
                 mas = pulse_data['mas']
                 filters, filter_thicknesses = get_xray_filter_info(source_data)
-                filters = u"{0} {1}".format(filters, filter_thicknesses)
+                if u"None" not in filters:
+                    filters = u"{0} {1}".format(filters, filter_thicknesses)
+                else:
+                    filters = u''
                 grid_focal_distance = source_data.grid_focal_distance
             except ObjectDoesNotExist:
                 exposure_control_mode = None
