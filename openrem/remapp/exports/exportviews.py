@@ -194,10 +194,11 @@ def dxxlsx1(request, name=None, pat_id=None):
 
 @csrf_exempt
 @login_required
-def dx_xlsx_phe2019_single(request):
+def dx_xlsx_phe2019(request, export_type=None):
     """View to launch celery task to export DX studies to xlsx file in PHE 2019 DX survey format (single view)
 
     :param request: Contains the database filtering parameters and user details.
+    :param export_type: string, 'projection' or 'exam'
     """
     import urllib
     from django.db.models import Max
@@ -205,22 +206,45 @@ def dx_xlsx_phe2019_single(request):
     from remapp.exports.dx_export import dx_phe_2019_single
     from remapp.interface.mod_filters import dx_acq_filter
     if request.user.groups.filter(name="exportgroup"):
-        exams = dx_acq_filter(request.GET, pid=False).qs
-        if not exams.count():
-            messages.error(request, u"No studies in export, nothing to do!")
-            return redirect("{0}?{1}".format(reverse_lazy('dx_summary_list_filter'), urllib.urlencode(request.GET)))
-        max_events_dict = exams.aggregate(Max('projectionxrayradiationdose__accumxraydose__'
-                                              'accumintegratedprojradiogdose__total_number_of_radiographic_frames'))
-        max_events = max_events_dict['projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__'
-                                     'total_number_of_radiographic_frames__max']
-        if max_events > 1:
-            messages.warning(request, u"PHE 2019 DX Single export is expecting one exposure per study - some studies "
-                                      u"selected have more than one. Only the first exposure will be considered.")
+        if export_type in ('exam', 'projection'):
+            exams = dx_acq_filter(request.GET, pid=False).qs
+            if not exams.count():
+                messages.error(request, u"No studies in export, nothing to do!")
+                return redirect("{0}?{1}".format(reverse_lazy('dx_summary_list_filter'), urllib.urlencode(request.GET)))
+            max_events_dict = exams.aggregate(Max('number_of_events'))
+            max_events = max_events_dict['number_of_events__max']
+            if 'projection' in export_type:
+                if max_events > 1:
+                    messages.warning(request, u"PHE 2019 DX Projection export is expecting one exposure per study - "
+                                              u"some studies selected have more than one. Only the first exposure will "
+                                              u"be considered.")
+                else:
+                    messages.info(request, u"PHE 2019 DX single projection export started.")
+                job = dx_phe_2019_single.delay(request.GET, request.user.id)
+                logger.debug(u'Export CT to XLSX job is {0}'.format(job))
+                return redirect(reverse_lazy('export'))
+            elif 'exam' in export_type:
+                if max_events > 6:
+                    if max_events > 20:
+                        messages.warning(request, u"PHE 2019 DX Study sheets expect a maximum of six projections. You "
+                                                  u"need to request a bespoke workbook from PHE. This export has a "
+                                                  u"maximum of {0} projections, but only the first 20 will be included "
+                                                  u"in the main columns of the bespoke worksheet.".format(max_events))
+                    else:
+                        messages.warning(request, u"PHE 2019 DX Study sheets expect a maximum of six projections. This "
+                                                  u"export has a maximum of {0} projections so you will need to request"
+                                                  u" a bespoke workbook from PHE. This has space for 20 "
+                                                  u"projections.".format(max_events))
+                else:
+                    messages.info(request, u"PHE 2019 DX Study export started.")
+                # actual job here!
+                return redirect(reverse_lazy('export'))
         else:
-            messages.info(request, u"PHE 2019 DX single view export started.")
-        job = dx_phe_2019_single.delay(request.GET, request.user.id)
-        logger.debug(u'Export CT to XLSX job is {0}'.format(job))
-    return redirect(reverse_lazy('export'))
+            messages.error(request, u"Malformed export URL {0}".format(type))
+            return redirect("{0}?{1}".format(reverse_lazy('dx_summary_list_filter'), urllib.urlencode(request.GET)))
+    else:
+        messages.error(request, u"Only users in the Export group can launch exports")
+        return redirect("{0}?{1}".format(reverse_lazy('dx_summary_list_filter'), urllib.urlencode(request.GET)))
 
 
 @csrf_exempt

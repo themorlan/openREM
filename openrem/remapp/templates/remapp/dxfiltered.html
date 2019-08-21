@@ -44,8 +44,10 @@
                     {% endif %}
                 </p>
                 <p>
-                    <a href="{% url 'dx_xlsx_phe2019_single' %}?{{ request.GET.urlencode }}"
-                       class="btn btn-default btn-sm" role="button">PHE 2019 Survey</a>
+                    <a href="{% url 'dx_xlsx_phe2019' 'projection' %}?{{ request.GET.urlencode }}"
+                       class="btn btn-default btn-sm" role="button">PHE 2019 Survey: Projection</a>
+                    <a href="{% url 'dx_xlsx_phe2019' 'exam' %}?{{ request.GET.urlencode }}"
+                       class="btn btn-default btn-sm" role="button">PHE 2019 Survey: Study</a>
                 </p>
 
             {% else %}
