@@ -455,12 +455,19 @@ def dx_phe_2019_single(filterdict, user=None):
     tsk.progress = u'{0} studies in query.'.format(tsk.num_records)
     tsk.save()
 
-    headings = [
+    columns_a_d = [
         u'',
         u'PHE Record No',
-        u"Contributer's record ID",
+        u"Contributor's record ID",
         u'Exam date',
+        ]
+    column_e_projection = [
         u'Projection DAP dose',
+        ]
+    column_e_study = [
+        u'Study DAP dose',
+        ]
+    columns_f_m = [
         u'DAP dose units',
         u'Protocol name',
         u'Patient weight',
@@ -469,6 +476,12 @@ def dx_phe_2019_single(filterdict, user=None):
         u'Patient age',
         u'Sex',
         u'Height',
+        ]
+    study_num_projections = [
+        u'number of projections',
+    ]
+
+    per_projection_headings = [
         u'Detector used',
         u'Grid used',
         u'FDD',
@@ -479,17 +492,20 @@ def dx_phe_2019_single(filterdict, user=None):
         u'Patient position',
         u'Detector in bucky',
         u'Other projection info',
-        u'Additional filtration',
-        u'Exposure index',
-        u'',
-        u'',
+        ]
+    final_columns = [
+        u'Additional one',
+        u'Additional two',
+        u'Additional three',
+        u'Additional four',
         u'SNOMED CT code',
         u'NICIP code',
         u'Variation in dose collection',
         u'Other information, comments',
     ]
     sheet = book.add_worksheet("PHE DX 2019 Single Projection")
-    sheet.write_row(0, 0, headings)
+    projection_headings = columns_a_d + column_e_projection + columns_f_m + per_projection_headings + final_columns
+    sheet.write_row(0, 0, projection_headings)
 
     num_rows = exams.count()
     for row, exam in enumerate(exams):
