@@ -43,6 +43,56 @@ from remapp.exports.export_common import text_and_date_formats, common_headers, 
 logger = logging.getLogger(__name__)
 
 
+def _get_detector_data(series_table):
+    """Return detector data
+
+    :param series_table: irradeventxraydata_set
+    :return: dict of detector data
+    """
+    try:
+        detector_data = series_table.irradeventxraydetectordata_set.get()
+        exposure_index = detector_data.exposure_index
+        target_exposure_index = detector_data.target_exposure_index
+        deviation_index = detector_data.deviation_index
+        relative_xray_exposure = detector_data.relative_xray_exposure
+    except ObjectDoesNotExist:
+        exposure_index = None
+        target_exposure_index = None
+        deviation_index = None
+        relative_xray_exposure = None
+    return {
+        'exposure_index': exposure_index,
+        'target_exposure_index': target_exposure_index,
+        'deviation_index': deviation_index,
+        'relative_xray_exposure': relative_xray_exposure,
+    }
+
+
+def _get_distance_data(series_table):
+    """Return distance data
+
+    :param series_table: irradeventxraydata_set
+    :return: dict of distance data
+    """
+    try:
+        distances = series_table.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get()
+        distance_source_to_detector = distances.distance_source_to_detector
+        distance_source_to_entrance_surface = distances.distance_source_to_entrance_surface
+        distance_source_to_isocenter = distances.distance_source_to_isocenter
+        table_height_position = distances.table_height_position
+    except ObjectDoesNotExist:
+        distance_source_to_detector = None
+        distance_source_to_entrance_surface = None
+        distance_source_to_isocenter = None
+        table_height_position = None
+    return {
+        'distance_source_to_detector': distance_source_to_detector,
+        'distance_source_to_entrance_surface': distance_source_to_entrance_surface,
+        'distance_source_to_isocenter': distance_source_to_isocenter,
+        'table_height_position': table_height_position,
+    }
+
+
 def _series_headers(max_events):
     """Return the series headers common to both DX exports
 
@@ -101,32 +151,12 @@ def _dx_get_series_data(s):
         filters = None
         filter_thicknesses = None
 
-    try:
-        detector_data = s.irradeventxraydetectordata_set.get()
-        exposure_index = detector_data.exposure_index
-        target_exposure_index = detector_data.target_exposure_index
-        deviation_index = detector_data.deviation_index
-        relative_xray_exposure = detector_data.relative_xray_exposure
-    except ObjectDoesNotExist:
-        exposure_index = None
-        target_exposure_index = None
-        deviation_index = None
-        relative_xray_exposure = None
+    detector_data = _get_detector_data(s)
 
     cgycm2 = s.convert_gym2_to_cgycm2()
     entrance_exposure_at_rp = s.entrance_exposure_at_rp
 
-    try:
-        distances = s.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get()
-        distance_source_to_detector = distances.distance_source_to_detector
-        distance_source_to_entrance_surface = distances.distance_source_to_entrance_surface
-        distance_source_to_isocenter = distances.distance_source_to_isocenter
-        table_height_position = distances.table_height_position
-    except ObjectDoesNotExist:
-        distance_source_to_detector = None
-        distance_source_to_entrance_surface = None
-        distance_source_to_isocenter = None
-        table_height_position = None
+    distances = _get_distance_data(s)
 
     try:
         anatomical_structure = s.anatomical_structure.code_meaning
@@ -149,16 +179,16 @@ def _dx_get_series_data(s):
         exposure_time,
         filters,
         filter_thicknesses,
-        exposure_index,
-        target_exposure_index,
-        deviation_index,
-        relative_xray_exposure,
+        detector_data['exposure_index'],
+        detector_data['target_exposure_index'],
+        detector_data['deviation_index'],
+        detector_data['relative_xray_exposure'],
         cgycm2,
         entrance_exposure_at_rp,
-        distance_source_to_detector,
-        distance_source_to_entrance_surface,
-        distance_source_to_isocenter,
-        table_height_position,
+        distances['distance_source_to_detector'],
+        distances['distance_source_to_entrance_surface'],
+        distances['distance_source_to_isocenter'],
+        distances['table_height_position'],
         s.comment,
     ]
     return series_data
@@ -562,32 +592,12 @@ def dx_phe_2019_single(filterdict, user=None):
                 filter_thicknesses = None
                 grid_focal_distance = None
 
-            try:
-                detector_data = first_view.irradeventxraydetectordata_set.get()
-                exposure_index = detector_data.exposure_index
-                target_exposure_index = detector_data.target_exposure_index
-                deviation_index = detector_data.deviation_index
-                relative_xray_exposure = detector_data.relative_xray_exposure
-            except ObjectDoesNotExist:
-                exposure_index = None
-                target_exposure_index = None
-                deviation_index = None
-                relative_xray_exposure = None
+            detector_data = _get_detector_data(first_view)
 
             cgycm2 = first_view.convert_gym2_to_cgycm2()
             entrance_exposure_at_rp = first_view.entrance_exposure_at_rp
 
-            try:
-                distances = first_view.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get()
-                distance_source_to_detector = distances.distance_source_to_detector
-                distance_source_to_entrance_surface = distances.distance_source_to_entrance_surface
-                distance_source_to_isocenter = distances.distance_source_to_isocenter
-                table_height_position = distances.table_height_position
-            except ObjectDoesNotExist:
-                distance_source_to_detector = None
-                distance_source_to_entrance_surface = None
-                distance_source_to_isocenter = None
-                table_height_position = None
+            distances = _get_distance_data(first_view)
 
             try:
                 anatomical_structure = first_view.anatomical_structure.code_meaning
@@ -639,7 +649,7 @@ def dx_phe_2019_single(filterdict, user=None):
                 patient_size,
                 '',
                 grid_focal_distance,
-                distance_source_to_detector,
+                distances['distance_source_to_detector'],
                 filters,
                 exposure_control_mode,
                 kvp,
