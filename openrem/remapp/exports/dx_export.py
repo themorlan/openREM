@@ -43,6 +43,43 @@ from remapp.exports.export_common import text_and_date_formats, common_headers, 
 logger = logging.getLogger(__name__)
 
 
+def _get_source_data(series_table):
+    """Return source data
+
+    :param series_table:  irradeventxraydata_set
+    :return: dict of source data
+    """
+    try:
+        source_data = series_table.irradeventxraysourcedata_set.get()
+        exposure_control_mode = source_data.exposure_control_mode
+        average_xray_tube_current = source_data.average_xray_tube_current
+        exposure_time = source_data.exposure_time
+        pulse_data = get_pulse_data(source_data=source_data, modality="DX")
+        kvp = pulse_data['kvp']
+        mas = pulse_data['mas']
+        filters, filter_thicknesses = get_xray_filter_info(source_data)
+        grid_focal_distance = source_data.grid_focal_distance
+    except ObjectDoesNotExist:
+        exposure_control_mode = None
+        average_xray_tube_current = None
+        exposure_time = None
+        kvp = None
+        mas = None
+        filters = None
+        filter_thicknesses = None
+        grid_focal_distance = None
+    return {
+        'exposure_control_mode': exposure_control_mode,
+        'average_xray_tube_current': average_xray_tube_current,
+        'exposure_time': exposure_time,
+        'kvp': kvp,
+        'mas': mas,
+        'filters': filters,
+        'filter_thicknesses': filter_thicknesses,
+        'grid_focal_distance': grid_focal_distance,
+    }
+
+
 def _get_detector_data(series_table):
     """Return detector data
 
@@ -133,24 +170,7 @@ def _dx_get_series_data(s):
     :param s: series
     :return: series data
     """
-    try:
-        source_data = s.irradeventxraysourcedata_set.get()
-        exposure_control_mode = source_data.exposure_control_mode
-        average_xray_tube_current = source_data.average_xray_tube_current
-        exposure_time = source_data.exposure_time
-        pulse_data = get_pulse_data(source_data=source_data, modality="DX")
-        kvp = pulse_data['kvp']
-        mas = pulse_data['mas']
-        filters, filter_thicknesses = get_xray_filter_info(source_data)
-    except ObjectDoesNotExist:
-        exposure_control_mode = None
-        average_xray_tube_current = None
-        exposure_time = None
-        kvp = None
-        mas = None
-        filters = None
-        filter_thicknesses = None
-
+    source_data = _get_source_data(s)
     detector_data = _get_detector_data(s)
 
     cgycm2 = s.convert_gym2_to_cgycm2()
@@ -172,13 +192,13 @@ def _dx_get_series_data(s):
     except AttributeError:
         series_data += [None, ]
     series_data += [
-        exposure_control_mode,
-        kvp,
-        mas,
-        average_xray_tube_current,
-        exposure_time,
-        filters,
-        filter_thicknesses,
+        source_data['exposure_control_mode'],
+        source_data['kvp'],
+        source_data['mas'],
+        source_data['average_xray_tube_current'],
+        source_data['exposure_time'],
+        source_data['filters'],
+        source_data['filter_thicknesses'],
         detector_data['exposure_index'],
         detector_data['target_exposure_index'],
         detector_data['deviation_index'],
@@ -568,29 +588,11 @@ def dx_phe_2019_single(filterdict, user=None):
                 'PHE 2019 DX single', exams.accession_number, exams.study_date))
         try:
             first_view = exam.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0]
-            try:
-                source_data = first_view.irradeventxraysourcedata_set.get()
-                exposure_control_mode = source_data.exposure_control_mode
-                average_xray_tube_current = source_data.average_xray_tube_current
-                exposure_time = source_data.exposure_time
-                pulse_data = get_pulse_data(source_data=source_data, modality="DX")
-                kvp = pulse_data['kvp']
-                mas = pulse_data['mas']
-                filters, filter_thicknesses = get_xray_filter_info(source_data)
-                if u"None" not in filters:
-                    filters = u"{0} {1}".format(filters, filter_thicknesses)
-                else:
-                    filters = u''
-                grid_focal_distance = source_data.grid_focal_distance
-            except ObjectDoesNotExist:
-                exposure_control_mode = None
-                average_xray_tube_current = None
-                exposure_time = None
-                kvp = None
-                mas = None
-                filters = None
-                filter_thicknesses = None
-                grid_focal_distance = None
+            source_data = _get_source_data(first_view)
+            if u"None" not in source_data['filters']:
+                filters = u"{0} {1}".format(source_data['filters'], source_data['filter_thicknesses'])
+            else:
+                filters = u''
 
             detector_data = _get_detector_data(first_view)
 
@@ -648,12 +650,12 @@ def dx_phe_2019_single(filterdict, user=None):
                 patient_sex,
                 patient_size,
                 '',
-                grid_focal_distance,
+                source_data['grid_focal_distance'],
                 distances['distance_source_to_detector'],
                 filters,
-                exposure_control_mode,
-                kvp,
-                mas,
+                source_data['exposure_control_mode'],
+                source_data['kvp'],
+                source_data['mas'],
                 pt_position,
                 '',
                 image_view,
