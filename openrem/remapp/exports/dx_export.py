@@ -462,24 +462,26 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
 
 @shared_task
-def dx_phe_2019_single(filterdict, user=None):
+def dx_phe_2019(filterdict, user=None, projection=True):
     """Export filtered DX database data in the format for the 2019 Public Health England DX dose survey - single view
     version
 
     :param filterdict: Queryset of studies to export
     :param user:  User that has started the export
+    :param projection: projection export if True, study export if False
     :return: Saves Excel file into Media directory for user to download
     """
 
     import datetime
     from decimal import Decimal
+    from remapp.exports.export_common import _get_patient_study_data
     from remapp.models import Exports
     from remapp.interface.mod_filters import dx_acq_filter
     import uuid
 
     tsk = Exports.objects.create()
 
-    tsk.task_id = dx_phe_2019_single.request.id
+    tsk.task_id = dx_phe_2019.request.id
     if tsk.task_id is None:  # Required when testing without celery
         tsk.task_id = u'NotCelery-{0}'.format(uuid.uuid4())
     tsk.modality = u"DX"
@@ -562,23 +564,15 @@ def dx_phe_2019_single(filterdict, user=None):
         tsk.progress = u"Writing study {0} of {1}".format(row+1, num_rows)
         tsk.save()
 
+        try:
+            projection_events = exam.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')
+        except ObjectDoesNotExist:
+            logger.error(u"Failed to export study to PHE 2019 DX as had no event data! PK={0}".format(exam.pk))
+            continue
+
         exam_data = []
         comments = []
-        patient_age_decimal = None
-        patient_size = None
-        patient_weight = None
-        try:
-            patient_study_module = exam.patientstudymoduleattr_set.get()
-            patient_age_decimal = patient_study_module.patient_age_decimal
-            patient_size = patient_study_module.patient_size
-            try:
-                patient_size = patient_study_module.patient_size * Decimal(100.)
-            except TypeError:
-                pass
-            patient_weight = patient_study_module.patient_weight
-        except ObjectDoesNotExist:
-            logger.debug(u"PHE CT 2019 export: patientstudymoduleattr_set object does not exist."
-                         u" AccNum {0}, Date {1}".format(exam.accession_number, exam.study_date))
+        patient_study_data = _get_patient_study_data(exam)
         patient_sex = None
         try:
             patient_module = exam.patientmoduleattr_set.get()
@@ -586,6 +580,32 @@ def dx_phe_2019_single(filterdict, user=None):
         except ObjectDoesNotExist:
             logger.debug("Export {0}; patientmoduleattr_set object does not exist. AccNum {1}, Date {2}".format(
                 'PHE 2019 DX single', exams.accession_number, exams.study_date))
+        row_data = [
+            u'',
+            row + 1,
+            exam.pk,
+            exam.study_date
+        ]
+        if not projection:
+            row_data += [
+                exam.total_dap,
+            ]
+        else:
+            row_data += [
+                projection_events[0].convert_gym2_to_cgycm2(),
+            ]
+        row_data += [
+            u'cGycm²',
+            u'{0} | {1} | {2}'.format(
+                exam.procedure_code_meaning, exam.requested_procedure_code_meaning, exam.study_description),
+            patient_study_data['patient_weight'],
+            '',
+            '',
+            patient_study_data['patient_age_decimal'],
+            patient_sex,
+            patient_study_data['patient_size'],
+        ]
+
         try:
             first_view = exam.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0]
             source_data = _get_source_data(first_view)

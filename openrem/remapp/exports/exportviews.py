@@ -203,7 +203,7 @@ def dx_xlsx_phe2019(request, export_type=None):
     import urllib
     from django.db.models import Max
     from django.shortcuts import redirect
-    from remapp.exports.dx_export import dx_phe_2019_single
+    from remapp.exports.dx_export import dx_phe_2019
     from remapp.interface.mod_filters import dx_acq_filter
     if request.user.groups.filter(name="exportgroup"):
         if export_type in ('exam', 'projection'):
@@ -220,7 +220,7 @@ def dx_xlsx_phe2019(request, export_type=None):
                                               u"be considered.")
                 else:
                     messages.info(request, u"PHE 2019 DX single projection export started.")
-                job = dx_phe_2019_single.delay(request.GET, request.user.id)
+                job = dx_phe_2019.delay(request.GET, request.user.id, projection=True)
                 logger.debug(u'Export CT to XLSX job is {0}'.format(job))
                 return redirect(reverse_lazy('export'))
             elif 'exam' in export_type:

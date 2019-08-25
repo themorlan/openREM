@@ -190,6 +190,30 @@ def generate_sheets(studies, book, protocol_headers, modality=None, pid=False, n
     return book, sheet_list
 
 
+def _get_patient_study_data(exam):
+    """Get patient study module data
+
+    :param exam: Exam table
+    :return: dict of patient study module data
+    """
+    patient_age_decimal = None
+    patient_size = None
+    patient_weight = None
+    try:
+        patient_study_module = exam.patientstudymoduleattr_set.get()
+        patient_age_decimal = patient_study_module.patient_age_decimal
+        patient_size = patient_study_module.patient_size
+        patient_weight = patient_study_module.patient_weight
+    except ObjectDoesNotExist:
+        logger.debug("Export {0}; patientstudymoduleattr_set object does not exist. AccNum {1}, Date {2}".format(
+            exam.modality_type, exam.accession_number, exam.study_date))
+    return {
+        'patient_age_decimal': patient_age_decimal,
+        'patient_size': patient_size,
+        'patient_weight': patient_weight,
+    }
+
+
 def get_common_data(modality, exams, pid=None, name=None, patid=None):
     """Get the data common to several exports
 
@@ -240,17 +264,7 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
         logger.debug("Export {0}; generalequipmentmoduleattr_set object does not exist. AccNum {1}, Date {2}".format(
             modality, exams.accession_number, exams.study_date))
 
-    patient_age_decimal = None
-    patient_size = None
-    patient_weight = None
-    try:
-        patient_study_module = exams.patientstudymoduleattr_set.get()
-        patient_age_decimal = patient_study_module.patient_age_decimal
-        patient_size = patient_study_module.patient_size
-        patient_weight = patient_study_module.patient_weight
-    except ObjectDoesNotExist:
-        logger.debug("Export {0}; patientstudymoduleattr_set object does not exist. AccNum {1}, Date {2}".format(
-            modality, exams.accession_number, exams.study_date))
+    patient_study_data = _get_patient_study_data(exams)
 
     event_count = None
     cgycm2 = None
@@ -313,13 +327,13 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
             patient_birth_date,
         ]
     examdata += [
-        patient_age_decimal,
+        patient_study_data['patient_age_decimal'],
         patient_sex,
     ]
     if modality not in u"MG":
         examdata += [
-            patient_size,
-            patient_weight,
+            patient_study_data['patient_size'],
+            patient_study_data['patient_weight'],
         ]
     examdata += [
         not_patient_indicator,
