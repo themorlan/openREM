@@ -556,9 +556,27 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
         u'Variation in dose collection',
         u'Other information, comments',
     ]
-    sheet = book.add_worksheet("PHE DX 2019 Single Projection")
-    projection_headings = columns_a_d + column_e_projection + columns_f_m + per_projection_headings + final_columns
-    sheet.write_row(0, 0, projection_headings)
+    if projection:
+        sheet = book.add_worksheet("PHE DX 2019 Single Projection")
+        headings = columns_a_d + column_e_projection + columns_f_m + per_projection_headings + final_columns
+    else:
+        if bespoke:
+            event_columns = 20
+        else:
+            event_columns = 6
+        sheet = book.add_worksheet("PHE DX 2019 Exam")
+        headings = columns_a_d + column_e_study + columns_f_m + study_num_projections
+        for x in range(event_columns):
+            headings += [
+                u'Projection {0} DAP'.format(x+1)
+            ]
+        for x in range(event_columns):
+            headings += [
+                u'Projection {0} Name'.format(x+1)
+            ]
+            headings += per_projection_headings
+        headings += final_columns
+    sheet.write_row(0, 0, headings)
 
     num_rows = exams.count()
     for row, exam in enumerate(exams):
@@ -611,10 +629,6 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
             row_data += [
                 exam.number_of_events
             ]
-            if bespoke:
-                event_columns = 20
-            else:
-                event_columns = 6
             for x in range(event_columns):
                 try:
                     row_data += [
@@ -669,17 +683,31 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
             if pt_table_rel:
                 pt_position = u"{0}, {1}".format(pt_position, pt_table_rel)
 
+            if not projection:
+                row_data += [
+                    event.acquisition_protocol,
+                ]
+            sdd = ''
+            if distances['distance_source_to_detector']:
+                sdd = distances['distance_source_to_detector'] / 10
             row_data += [
                 '',
                 source_data['grid_focal_distance'],
-                distances['distance_source_to_detector'],
+                sdd,
                 filters,
                 source_data['exposure_control_mode'],
                 source_data['kvp'],
                 source_data['mas'],
                 pt_position,
                 '',
-                'EI: {0} {1}'.format(detector_data['exposure_index'], image_view),
+            ]
+            other_info = u''
+            if detector_data['exposure_index']:
+                other_info = u'EI: {0}'.format(round(detector_data['exposure_index'], 2))
+            if image_view:
+                other_info = u'{0} {1}'.format(other_info, image_view)
+            row_data += [
+                other_info
             ]
             if projection:
                 break
