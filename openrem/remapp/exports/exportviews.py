@@ -207,6 +207,7 @@ def dx_xlsx_phe2019(request, export_type=None):
     from remapp.interface.mod_filters import dx_acq_filter
     if request.user.groups.filter(name="exportgroup"):
         if export_type in ('exam', 'projection'):
+            bespoke = False
             exams = dx_acq_filter(request.GET, pid=False).qs
             if not exams.count():
                 messages.error(request, u"No studies in export, nothing to do!")
@@ -221,10 +222,11 @@ def dx_xlsx_phe2019(request, export_type=None):
                 else:
                     messages.info(request, u"PHE 2019 DX single projection export started.")
                 job = dx_phe_2019.delay(request.GET, request.user.id, projection=True)
-                logger.debug(u'Export CT to XLSX job is {0}'.format(job))
+                logger.debug(u'Export PHE 2019 DX survey format job is {0}'.format(job))
                 return redirect(reverse_lazy('export'))
             elif 'exam' in export_type:
                 if max_events > 6:
+                    bespoke = True
                     if max_events > 20:
                         messages.warning(request, u"PHE 2019 DX Study sheets expect a maximum of six projections. You "
                                                   u"need to request a bespoke workbook from PHE. This export has a "
@@ -237,7 +239,8 @@ def dx_xlsx_phe2019(request, export_type=None):
                                                   u"projections.".format(max_events))
                 else:
                     messages.info(request, u"PHE 2019 DX Study export started.")
-                # actual job here!
+                job = dx_phe_2019.delay(request.GET, request.user.id, projection=False, bespoke=bespoke)
+                logger.debug(u'Export PHE 2019 DX survey format job is {0}'.format(job))
                 return redirect(reverse_lazy('export'))
         else:
             messages.error(request, u"Malformed export URL {0}".format(type))

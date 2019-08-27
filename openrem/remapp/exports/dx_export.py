@@ -462,13 +462,14 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
 
 @shared_task
-def dx_phe_2019(filterdict, user=None, projection=True):
+def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
     """Export filtered DX database data in the format for the 2019 Public Health England DX dose survey - single view
     version
 
     :param filterdict: Queryset of studies to export
     :param user:  User that has started the export
     :param projection: projection export if True, study export if False
+    :param bespoke: for study export, are there more than six projections
     :return: Saves Excel file into Media directory for user to download
     """
 
@@ -606,44 +607,57 @@ def dx_phe_2019(filterdict, user=None, projection=True):
             patient_study_data['patient_size'],
         ]
 
-        try:
-            first_view = exam.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0]
-            source_data = _get_source_data(first_view)
+        if not projection:
+            row_data += [
+                exam.number_of_events
+            ]
+            if bespoke:
+                event_columns = 20
+            else:
+                event_columns = 6
+            for x in range(event_columns):
+                try:
+                    row_data += [
+                        projection_events[x].convert_gym2_to_cgycm2(),
+                    ]
+                except IndexError:
+                    row_data += [
+                        '',
+                    ]
+
+        for event in projection_events:
+            source_data = _get_source_data(event)
             if u"None" not in source_data['filters']:
                 filters = u"{0} {1}".format(source_data['filters'], source_data['filter_thicknesses'])
             else:
                 filters = u''
 
-            detector_data = _get_detector_data(first_view)
-
-            cgycm2 = first_view.convert_gym2_to_cgycm2()
-            entrance_exposure_at_rp = first_view.entrance_exposure_at_rp
-
-            distances = _get_distance_data(first_view)
+            detector_data = _get_detector_data(event)
+            distances = _get_distance_data(event)
 
             try:
-                anatomical_structure = first_view.anatomical_structure.code_meaning
+                anatomical_structure = event.anatomical_structure.code_meaning
             except AttributeError:
                 anatomical_structure = ""
 
             series_data = [
-                first_view.acquisition_protocol,
+                event.acquisition_protocol,
                 anatomical_structure,
             ]
             try:
-                image_view = first_view.image_view.code_meaning
+                image_view = event.image_view.code_meaning
             except AttributeError:
                 image_view = None
             try:
-                pt_orientation = first_view.patient_orientation_cid.code_meaning
+                pt_orientation = event.patient_orientation_cid.code_meaning
             except AttributeError:
                 pt_orientation = None
             try:
-                pt_orientation_mod = first_view.patient_orientation_modifier_cid.code_meaning
+                pt_orientation_mod = event.patient_orientation_modifier_cid.code_meaning
             except AttributeError:
                 pt_orientation_mod = None
             try:
-                pt_table_rel = first_view.patient_table_relationship_cid.code_meaning
+                pt_table_rel = event.patient_table_relationship_cid.code_meaning
             except AttributeError:
                 pt_table_rel = None
 
@@ -655,20 +669,7 @@ def dx_phe_2019(filterdict, user=None, projection=True):
             if pt_table_rel:
                 pt_position = u"{0}, {1}".format(pt_position, pt_table_rel)
 
-            exam_data += [
-                u'',
-                row + 1,
-                exam.pk,
-                exam.study_date,
-                cgycm2,
-                u'cGycm²',
-                first_view.acquisition_protocol,
-                patient_weight,
-                '',
-                '',
-                patient_age_decimal,
-                patient_sex,
-                patient_size,
+            row_data += [
                 '',
                 source_data['grid_focal_distance'],
                 distances['distance_source_to_detector'],
@@ -678,14 +679,12 @@ def dx_phe_2019(filterdict, user=None, projection=True):
                 source_data['mas'],
                 pt_position,
                 '',
-                image_view,
-
+                'EI: {0} {1}'.format(detector_data['exposure_index'], image_view),
             ]
+            if projection:
+                break
 
-        except ObjectDoesNotExist:
-            logger.error(u"Failed to export study to PHE 2019 DX single as had no event data! PK={0}".format(exam.pk))
-            # Need to exit cleanly here
-        sheet.write_row(row + 1, 0, exam_data)
+        sheet.write_row(row + 1, 0, row_data)
 
     book.close()
     tsk.progress = u"PHE DX 2019 export complete"
