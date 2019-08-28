@@ -11,5 +11,4 @@ openrem/openremproject/wsgi.py
 OpenREM.egg-info/
 .coverage
 coverage.xml
-/.vs/ProjectSettings.json
-/.vs/slnx.sqlite
+
