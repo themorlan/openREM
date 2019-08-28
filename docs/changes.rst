@@ -10,6 +10,7 @@ OpenREM version history
 * `#761`_  Imports: fixed issue in high dose alert e-mail code where week_delta may be used before assignment
 * `#759`_  Database: added study level summary fields and migration function
 * `#758`_  Configuration: corrected issues with location of js_reverse static files
+* `#750`_  Exports: added export tailored to the 2019 PHE DX dose survey
 * `#746`_  Imports: enabled import of GE Elite Mini View C-arm RDSR with no template declaration
 
 0.9.1 (2019-05-16)
