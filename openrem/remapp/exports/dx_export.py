@@ -474,7 +474,6 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
     """
 
     import datetime
-    from decimal import Decimal
     from remapp.exports.export_common import _get_patient_study_data
     from remapp.models import Exports
     from remapp.interface.mod_filters import dx_acq_filter
@@ -589,8 +588,6 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
             logger.error(u"Failed to export study to PHE 2019 DX as had no event data! PK={0}".format(exam.pk))
             continue
 
-        exam_data = []
-        comments = []
         patient_study_data = _get_patient_study_data(exam)
         patient_sex = None
         try:
@@ -654,10 +651,6 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
             except AttributeError:
                 anatomical_structure = ""
 
-            series_data = [
-                event.acquisition_protocol,
-                anatomical_structure,
-            ]
             try:
                 image_view = event.image_view.code_meaning
             except AttributeError:

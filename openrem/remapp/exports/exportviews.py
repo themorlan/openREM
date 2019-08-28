@@ -421,7 +421,6 @@ def download(request, task_id):
     from django.core.servers.basehttp import FileWrapper
     from django.utils.encoding import smart_str
     from django.shortcuts import redirect
-    from django.contrib import messages
     from openremproject.settings import MEDIA_ROOT
     from remapp.models import Exports
 
@@ -467,7 +466,6 @@ def deletefile(request):
     import sys
     from django.http import HttpResponseRedirect
     from django.core.urlresolvers import reverse
-    from django.contrib import messages
     from remapp.models import Exports
 
     for task in request.POST:
