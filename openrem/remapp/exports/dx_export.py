@@ -647,11 +647,6 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
             distances = _get_distance_data(event)
 
             try:
-                anatomical_structure = event.anatomical_structure.code_meaning
-            except AttributeError:
-                anatomical_structure = ""
-
-            try:
                 image_view = event.image_view.code_meaning
             except AttributeError:
                 image_view = None

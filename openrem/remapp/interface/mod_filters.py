@@ -33,9 +33,7 @@ from builtins import object  # pylint: disable=redefined-builtin
 from past.utils import old_div
 import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
-from django.db import models
 
-import logging
 import django_filters
 from django import forms
 from remapp.models import GeneralStudyModuleAttr
@@ -406,7 +404,7 @@ class CTFilterPlusPid(CTSummaryListFilter):
 
 def ct_acq_filter(filters, pid=False):
     from decimal import Decimal, InvalidOperation
-    from remapp.models import GeneralStudyModuleAttr, CtIrradiationEventData
+    from remapp.models import CtIrradiationEventData
     filteredInclude = []
     if 'acquisition_protocol' in filters and (
             'acquisition_ctdi_min' in filters or 'acquisition_ctdi_max' in filters or
@@ -631,7 +629,7 @@ class DXFilterPlusPid(DXSummaryListFilter):
 def dx_acq_filter(filters, pid=False):
     from decimal import Decimal, InvalidOperation
     from django.db.models import Q
-    from remapp.models import GeneralStudyModuleAttr, IrradEventXRayData
+    from remapp.models import IrradEventXRayData
     filteredInclude = []
     if 'acquisition_protocol' in filters and (
             'acquisition_dap_min' in filters or 'acquisition_dap_max' in filters or
