@@ -4,6 +4,7 @@ OpenREM version history
 
 0.10.0b1 (2019-xx-xx)
 ---------------------
+* `#770`_  Imports: fix to allow non-conformant Opera Swing to import
 * `#768`_  Charts: study- and request-level charts now use study-level summary fields to improve performance
 * `#765`_  Imports: updated error catching to allow Philips BigBore 4DCT RDSR to import
 * `#763`_  Imports: corrected delta week fluoro study counting for dual plane modalities
