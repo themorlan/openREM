@@ -1,3 +1,4 @@
+# This Python file uses the following encoding: utf-8
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
 #    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
 #
@@ -821,3 +822,55 @@ def rf_phe_2019(filterdict, user=None):
     :param user: User that has started the export
     :return: Saves Excel file into media directory for user to download
     """
+
+    import datetime
+    import uuid
+    from remapp.exports.export_common import _get_patient_study_data
+    from remapp.models import Exports, GeneralStudyModuleAttr
+    from remapp.interface.mod_filters import dx_acq_filter
+    from remapp.interface.mod_filters import RFSummaryListFilter
+
+    tsk = Exports.objects.create()
+    tsk.task_id = rf_phe_2019.request.id
+    if tsk.task_id is None:  # Required when testing without celery
+        tsk.task_id = u'NotCelery-{0}'.format(uuid.uuid4())
+    tsk.modality = u"RF"
+    tsk.export_type = u"PHE RF 2019 export"
+    datestamp = datetime.datetime.now()
+    tsk.export_date = datestamp
+    tsk.progress = u'Query filters imported, task started'
+    tsk.status = u'CURRENT'
+    tsk.export_user_id = user
+    tsk.save()
+
+    tmp_xlsx, book = create_xlsx(tsk)
+    if not tmp_xlsx:
+        exit()
+
+    exams = RFSummaryListFilter(
+        filterdict, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact = 'RF')).qs
+    tsk.num_records = exams.count()
+    if abort_if_zero_studies(tsk.num_records, tsk):
+        return
+
+    tsk.progress = u'{0} studies in query.'.format(tsk.num_records)
+    tsk.save()
+
+    row_4 = ['', '', '', '', '', u'cGycm²', '', u'seconds', u'Gy']
+
+    num_rows = exams.count()
+    for row, exam in enumerate(exams):
+        tsk.progress = u"Writing study {0} of {1}".format(row+1, num_rows)
+        tsk.save()
+
+        row_data = [
+            '',
+            row + 1,
+            exam.pk,
+            exam.study_date,
+            exam.total_dap,
+
+        ]
+
+
+
