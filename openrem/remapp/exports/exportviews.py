@@ -195,7 +195,7 @@ def dxxlsx1(request, name=None, pat_id=None):
 @csrf_exempt
 @login_required
 def dx_xlsx_phe2019(request, export_type=None):
-    """View to launch celery task to export DX studies to xlsx file in PHE 2019 DX survey format (single view)
+    """View to launch celery task to export DX studies to xlsx file in PHE 2019 DX survey format
 
     :param request: Contains the database filtering parameters and user details.
     :param export_type: string, 'projection' or 'exam'
@@ -315,6 +315,26 @@ def rfopenskin(request, pk):
         logger.debug(u'Export Fluoro to openSkin CSV job is {0}'.format(job))
 
     return redirect(reverse_lazy('export'))
+
+
+@csrf_exempt
+@login_required
+def rf_xlsx_phe2019(request):
+    """View to launch celery task to export fluoro studies to xlsx file in PHE 2019 IR/fluoro survey format
+
+    :param request: Contains the database filtering parameters and user details.
+    """
+    import urllib
+    from django.shortcuts import redirect
+    from remapp.exports.rf_export import rf_phe_2019
+    if request.user.groups.filter(name="exportgroup"):
+        messages.info(u"PHE 2019 IR/fluoro export started")
+        job = rf_phe_2019.delay(request.GET, request.user.id)
+        logger.debug(u"Export PHE 2019 IR/fluoro survey format job is {0}.".format(job))
+        return redirect(reverse_lazy('export'))
+    else:
+        messages.error(request, u"Only users in the Export group can launch exports")
+        return redirect("{0}?{1}".format(reverse_lazy('rf_summary_list_filter'), urllib.urlencode(request.GET)))
 
 
 @csrf_exempt

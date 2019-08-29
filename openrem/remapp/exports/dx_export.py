@@ -463,8 +463,7 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
 @shared_task
 def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
-    """Export filtered DX database data in the format for the 2019 Public Health England DX dose survey - single view
-    version
+    """Export filtered DX database data in the format for the 2019 Public Health England DX dose survey
 
     :param filterdict: Queryset of studies to export
     :param user:  User that has started the export

@@ -208,7 +208,6 @@ def _all_data_headers(pid=False, name=None, patid=None):
     return all_data_headers
 
 
-
 @shared_task
 def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     """Export filtered RF database data to multi-sheet Microsoft XSLX files.
@@ -812,3 +811,13 @@ def rfopenskin(studyid):
     csvfilename = u"OpenSkinExport{0}.csv".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
 
     write_export(tsk, csvfilename, tmpfile, datestamp)
+
+
+@shared_task
+def rf_phe_2019(filterdict, user=None):
+    """Export filtered RF database data in the format for the 2019 Public Health England IR/fluoro dose survey
+
+    :param filterdict: Queryset of studies to export
+    :param user: User that has started the export
+    :return: Saves Excel file into media directory for user to download
+    """
