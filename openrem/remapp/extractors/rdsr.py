@@ -643,7 +643,10 @@ def _calibration(dataset, accum, ch):
             cal.dose_measurement_device = get_or_create_cid(cont.ConceptCodeSequence[0].CodeValue,
                                                             cont.ConceptCodeSequence[0].CodeMeaning)
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Calibration Date':
-            cal.calibration_date = make_date_time(cont.DateTime)
+            try:
+                cal.calibration_date = make_date_time(cont.DateTime)
+            except (KeyError, AttributeError):
+                pass  # Mandatory field not always present - see issue #770
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Calibration Factor':
             cal.calibration_factor = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Calibration Uncertainty':
