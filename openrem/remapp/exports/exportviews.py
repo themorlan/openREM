@@ -328,7 +328,7 @@ def rf_xlsx_phe2019(request):
     from django.shortcuts import redirect
     from remapp.exports.rf_export import rf_phe_2019
     if request.user.groups.filter(name="exportgroup"):
-        messages.info(u"PHE 2019 IR/fluoro export started")
+        messages.info(request, u"PHE 2019 IR/fluoro export started")
         job = rf_phe_2019.delay(request.GET, request.user.id)
         logger.debug(u"Export PHE 2019 IR/fluoro survey format job is {0}.".format(job))
         return redirect(reverse_lazy('export'))

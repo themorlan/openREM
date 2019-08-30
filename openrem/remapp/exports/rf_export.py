@@ -846,6 +846,7 @@ def rf_phe_2019(filterdict, user=None):
     tmp_xlsx, book = create_xlsx(tsk)
     if not tmp_xlsx:
         exit()
+    sheet = book.add_worksheet(u"PHE IR-Fluoro")
 
     exams = RFSummaryListFilter(
         filterdict, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact = 'RF')).qs
@@ -857,6 +858,7 @@ def rf_phe_2019(filterdict, user=None):
     tsk.save()
 
     row_4 = ['', '', '', '', '', u'cGycm²', '', u'seconds', u'Gy']
+    sheet.write_row(3, 0, row_4)
 
     num_rows = exams.count()
     for row, exam in enumerate(exams):
@@ -886,7 +888,44 @@ def rf_phe_2019(filterdict, user=None):
             accum_data[0]['acquisition_dose_area_product_total'],
             accum_data[0]['total_fluoro_time'],
         ]
+
         try:
             total_rp_dose = exam.total_rp_dose_a + exam.total_rp_dose_b
         except TypeError:
-            total_rp_dose =
+            if exam.total_rp_dose_a is not None:
+                total_rp_dose = exam.total_rp_dose_a
+            elif exam.total_rp_dose_b is not None:
+                total_rp_dose = exam.total_rp_dose_b
+            else:
+                total_rp_dose = 0
+        row_data += [
+            total_rp_dose,
+            accum_data[0]['fluoro_dose_rp_total'],
+            accum_data[0]['acquisition_dose_rp_total'],
+            u'{0} | {1} | {2}'.format(
+                exam.procedure_code_meaning, exam.requested_procedure_code_meaning, exam.study_description),
+        ]
+        patient_study_data = _get_patient_study_data(exam)
+        patient_sex = None
+        try:
+            patient_sex = exam.patientmoduleattr_set.get().patient_sex
+        except ObjectDoesNotExist:
+            logger.debug("Export {0}; patientmoduleattr_set object does not exist. AccNum {1}, Date {2}".format(
+                'PHE 2019 RF', exams.accession_number, exams.study_date))
+        row_data += [
+            patient_study_data['patient_weight'],
+            '',
+            patient_study_data['patient_age_decimal'],
+            patient_sex,
+            patient_study_data['patient_size'],
+        ]
+
+        sheet.write_row(row + 6, 0, row_data)
+
+    book.close()
+    tsk.progress = u"PHE IR/Fluoro 2019 export complete"
+    tsk.save()
+
+    xlsxfilename = u"PHE_RF_2019_{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
+
+    write_export(tsk, xlsxfilename, tmp_xlsx, datestamp)

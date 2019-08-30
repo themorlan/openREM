@@ -594,7 +594,7 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
             patient_sex = patient_module.patient_sex
         except ObjectDoesNotExist:
             logger.debug("Export {0}; patientmoduleattr_set object does not exist. AccNum {1}, Date {2}".format(
-                'PHE 2019 DX single', exams.accession_number, exams.study_date))
+                'PHE 2019 DX', exams.accession_number, exams.study_date))
         row_data = [
             u'',
             row + 1,
