@@ -869,8 +869,24 @@ def rf_phe_2019(filterdict, user=None):
             exam.pk,
             exam.study_date,
             exam.total_dap,
-
         ]
-
-
-
+        accum_data = []
+        for plane in exam.projectionxrayradiationdose_set.get().accumxraydose_set.all():
+            accum_data.append(_get_accumulated_data(plane))
+        if len(accum_data) == 2:
+            accum_data[0]['fluoro_dose_area_product_total'] += accum_data[1]['fluoro_dose_area_product_total']
+            accum_data[0]['fluoro_dose_rp_total'] += accum_data[1]['fluoro_dose_rp_total']
+            accum_data[0]['total_fluoro_time'] += accum_data[1]['total_fluoro_time']
+            accum_data[0]['acquisition_dose_area_product_total'] += accum_data[1]['acquisition_dose_area_product_total']
+            accum_data[0]['acquisition_dose_rp_total'] += accum_data[1]['acquisition_dose_rp_total']
+            accum_data[0]['total_acquisition_time'] += accum_data[1]['total_acquisition_time']
+            accum_data[0]['eventcount'] += accum_data[1]['eventcount']
+        row_data += [
+            accum_data[0]['fluoro_dose_area_product_total'],
+            accum_data[0]['acquisition_dose_area_product_total'],
+            accum_data[0]['total_fluoro_time'],
+        ]
+        try:
+            total_rp_dose = exam.total_rp_dose_a + exam.total_rp_dose_b
+        except TypeError:
+            total_rp_dose =
