@@ -930,10 +930,30 @@ def rf_phe_2019(filterdict, user=None):
             u' | '.join(fluoro_events.order_by().values_list('acquisition_protocol', flat=True).distinct()),
             u' | '.join(fluoro_events.order_by().values_list(
                 'irradeventxraysourcedata__fluoro_mode__code_meaning', flat=True).distinct()),
-            u' | '.join(format(x, "1.1f") for x in fluoro_events.order_by().values_list(
-                'irradeventxraysourcedata__pulse_rate', flat=True).distinct()),
         ]
-
+        fluoro_frame_rates = fluoro_events.order_by().values_list(
+            'irradeventxraysourcedata__pulse_rate', flat=True).distinct()
+        column_aq = ''
+        if len(fluoro_frame_rates) > 1:
+            column_aq = u' | '.join(format(x, "1.1f") for x in fluoro_frame_rates)
+            row_data += [
+                u'Multiple',
+            ]
+        else:
+            try:
+                row_data += [
+                    fluoro_frame_rates[0]
+                ]
+            except IndexError:
+                row_data += [
+                    '',
+                ]
+        row_data += [
+            '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+        ]
+        row_data += [
+            column_aq
+        ]
         sheet.write_row(row + 6, 0, row_data)
 
     book.close()
