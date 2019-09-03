@@ -826,7 +826,7 @@ def rf_phe_2019(filterdict, user=None):
     import datetime
     import uuid
     from remapp.exports.export_common import _get_patient_study_data
-    from remapp.models import Exports, GeneralStudyModuleAttr
+    from remapp.models import Exports, GeneralStudyModuleAttr, IrradEventXRayData
     from remapp.interface.mod_filters import dx_acq_filter
     from remapp.interface.mod_filters import RFSummaryListFilter
 
@@ -857,7 +857,7 @@ def rf_phe_2019(filterdict, user=None):
     tsk.progress = u'{0} studies in query.'.format(tsk.num_records)
     tsk.save()
 
-    row_4 = ['', '', '', '', '', u'cGycm²', '', u'seconds', u'Gy']
+    row_4 = ['', '', '', '', '', u'Gy·m²', '', u'seconds', u'Gy']
     sheet.write_row(3, 0, row_4)
 
     num_rows = exams.count()
@@ -918,6 +918,12 @@ def rf_phe_2019(filterdict, user=None):
             patient_study_data['patient_age_decimal'],
             patient_sex,
             patient_study_data['patient_size'],
+        ]
+
+        events = IrradEventXRayData.objects.filter(
+            projection_xray_radiation_dose__general_study_module_attributes__pk__exact=exam.pk)
+        row_data += [
+            u' | '.join(events.order_by().values_list('acquisition_protocol', flat=True).distinct())
         ]
 
         sheet.write_row(row + 6, 0, row_data)
