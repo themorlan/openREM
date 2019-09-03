@@ -922,8 +922,16 @@ def rf_phe_2019(filterdict, user=None):
 
         events = IrradEventXRayData.objects.filter(
             projection_xray_radiation_dose__general_study_module_attributes__pk__exact=exam.pk)
+        fluoro_events = events.exclude(
+            irradiation_event_type__code_value__exact='113611').exclude(
+            irradiation_event_type__code_value__exact='113612').exclude(
+            irradiation_event_type__code_value__exact='113613')
         row_data += [
-            u' | '.join(events.order_by().values_list('acquisition_protocol', flat=True).distinct())
+            u' | '.join(fluoro_events.order_by().values_list('acquisition_protocol', flat=True).distinct()),
+            u' | '.join(fluoro_events.order_by().values_list(
+                'irradeventxraysourcedata__fluoro_mode__code_meaning', flat=True).distinct()),
+            u' | '.join(format(x, "1.1f") for x in fluoro_events.order_by().values_list(
+                'irradeventxraysourcedata__pulse_rate', flat=True).distinct()),
         ]
 
         sheet.write_row(row + 6, 0, row_data)
