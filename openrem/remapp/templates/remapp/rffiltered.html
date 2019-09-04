@@ -146,14 +146,8 @@
 
 
         {% with False as use_warning %}
-            {% if exam.number_of_planes == 2 %}
-                {% if exam.dap_a_cgycm2 >= alertLevels.alert_total_dap_rf or exam.dap_b_cgycm2 >= alertLevels.alert_total_dap_rf  or exam.total_rp_dose_a >= alertLevels.alert_total_rp_dose_rf or exam.total_rp_dose_b >= alertLevels.alert_total_rp_dose_rf %}
-                    {% update_variable True as use_warning %}
-                {% endif %}
-            {% else %}
-                {% if exam.dap_a_cgycm2 >= alertLevels.alert_total_dap_rf or exam.total_rp_dose_a >= alertLevels.alert_total_rp_dose_rf %}
-                    {% update_variable True as use_warning %}
-                {% endif %}
+            {% if exam.dap_a_cgycm2 >= alertLevels.alert_total_dap_rf or exam.dap_b_cgycm2 >= alertLevels.alert_total_dap_rf  or exam.total_rp_dose_a >= alertLevels.alert_total_rp_dose_rf or exam.total_rp_dose_b >= alertLevels.alert_total_rp_dose_rf %}
+                {% update_variable True as use_warning %}
             {% endif %}
 
             {% if use_warning == False %}
