@@ -923,10 +923,8 @@ def rf_phe_2019(filterdict, user=None):
         events = IrradEventXRayData.objects.filter(
             projection_xray_radiation_dose__general_study_module_attributes__pk__exact=exam.pk)
         fluoro_events = events.exclude(
-            irradiation_event_type__code_value__exact='113611').exclude(
-            irradiation_event_type__code_value__exact='113612').exclude(
-            irradiation_event_type__code_value__exact='113613')
-        acquisition_events = events.exclude(id__in=fluoro_events.values_list('pk', flat=True).distinct())
+            irradiation_event_type__code_value__contains='11361')  # acq events are 113611, 113612, 113613
+        acquisition_events = events.filter(irradiation_event_type__code_value__contains='11361')
         row_data += [
             u' | '.join(fluoro_events.order_by().values_list('acquisition_protocol', flat=True).distinct()),
             u' | '.join(fluoro_events.order_by().values_list(
@@ -979,7 +977,20 @@ def rf_phe_2019(filterdict, user=None):
                     '',
                 ]
         row_data += [
-            '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+            acquisition_events.count()
+        ]
+        try:
+            grid_types = events.order_by().values_list(
+                'irradeventxraysourcedata__xraygrid__xray_grid__code_meaning', flat=True).distinct()
+            if None in grid_types:
+                grid_types = grid_types[1:]
+        except ObjectDoesNotExist:
+            grid_types = ['']
+        row_data += [
+            u' | '.join(grid_types)
+        ]
+        row_data += [
+            '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
         ]
         row_data += [
             column_aq
