@@ -926,6 +926,7 @@ def rf_phe_2019(filterdict, user=None):
             irradiation_event_type__code_value__exact='113611').exclude(
             irradiation_event_type__code_value__exact='113612').exclude(
             irradiation_event_type__code_value__exact='113613')
+        acquisition_events = events.exclude(id__in=fluoro_events.values_list('pk', flat=True).distinct())
         row_data += [
             u' | '.join(fluoro_events.order_by().values_list('acquisition_protocol', flat=True).distinct()),
             u' | '.join(fluoro_events.order_by().values_list(
@@ -935,21 +936,50 @@ def rf_phe_2019(filterdict, user=None):
             'irradeventxraysourcedata__pulse_rate', flat=True).distinct()
         column_aq = ''
         if len(fluoro_frame_rates) > 1:
-            column_aq = u' | '.join(format(x, "1.1f") for x in fluoro_frame_rates)
+            column_aq += u'Fluoro: '
+            column_aq += u' | '.join(format(x, "1.1f") for x in fluoro_frame_rates)
+            column_aq += u' fps. '
             row_data += [
-                u'Multiple',
+                u'Multiple rates',
             ]
         else:
             try:
                 row_data += [
-                    fluoro_frame_rates[0]
+                    fluoro_frame_rates[0],
+                ]
+            except IndexError:
+                row_data += [
+                    '',
+                ]
+        acquisition_frame_rates = acquisition_events.order_by().values_list(
+            'irradeventxraysourcedata__pulse_rate', flat=True).distinct()
+        add_single = False
+        if None in acquisition_frame_rates:
+            if len(acquisition_frame_rates) == 1:
+                acquisition_frame_rates = [u'Single shot']
+            else:
+                acquisition_frame_rates = acquisition_frame_rates[1:]
+                add_single = True
+        if len(acquisition_frame_rates) > 1:
+            row_data += [
+                u'Multiple rates'
+            ]
+            column_aq += u'Acquisition: '
+            if add_single:
+                column_aq += u'Single shot | '
+            column_aq += u' | '.join(format(x, "1.1f") for x in acquisition_frame_rates)
+            column_aq += u' fps. '
+        else:
+            try:
+                row_data += [
+                    acquisition_frame_rates[0],
                 ]
             except IndexError:
                 row_data += [
                     '',
                 ]
         row_data += [
-            '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+            '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
         ]
         row_data += [
             column_aq
