@@ -825,6 +825,7 @@ def rf_phe_2019(filterdict, user=None):
 
     import datetime
     import uuid
+    from django.db.models import Max, Min
     from remapp.exports.export_common import _get_patient_study_data
     from remapp.models import Exports, GeneralStudyModuleAttr, IrradEventXRayData
     from remapp.interface.mod_filters import RFSummaryListFilter
@@ -999,10 +1000,46 @@ def rf_phe_2019(filterdict, user=None):
             for element in (i for i in position_set if i):
                 patient_position_str += u'{0}, '.format(element)
         row_data += [
-            patient_position_str
+            patient_position_str,
+            '',  # digital subtraction
+            '',  # circular field of view
+        ]
+        field_dimensions = events.aggregate(Min('irradeventxraysourcedata__collimated_field_area'),
+                                      Max('irradeventxraysourcedata__collimated_field_area'),
+                                      Min('irradeventxraysourcedata__collimated_field_width'),
+                                      Max('irradeventxraysourcedata__collimated_field_width'),
+                                      Min('irradeventxraysourcedata__collimated_field_height'),
+                                      Max('irradeventxraysourcedata__collimated_field_height'),
+                                      )
+        rectangular_fov = u''
+        if field_dimensions['irradeventxraysourcedata__collimated_field_area__min']:
+            rectangular_fov += u'Area {0:.4f} to {1:.4f} m², '.format(
+                field_dimensions['irradeventxraysourcedata__collimated_field_area__min'],
+                field_dimensions['irradeventxraysourcedata__collimated_field_area__max']
+            )
+        if field_dimensions['irradeventxraysourcedata__collimated_field_width__min']:
+            rectangular_fov += u'Width {0:.4f} to {1:.4f} m, '.format(
+                field_dimensions['irradeventxraysourcedata__collimated_field_width__min'],
+                field_dimensions['irradeventxraysourcedata__collimated_field_width__max']
+            )
+        if field_dimensions['irradeventxraysourcedata__collimated_field_height__min']:
+            rectangular_fov += u'Height {0:.4f} to {1:.4f} m, '.format(
+                field_dimensions['irradeventxraysourcedata__collimated_field_height__min'],
+                field_dimensions['irradeventxraysourcedata__collimated_field_height__max']
+            )
+        field_sizes = events.order_by().values_list('irradeventxraysourcedata__ii_field_size', flat=True).distinct()
+        diagonal_fov = u''
+        for fov in field_sizes:
+            if fov:
+                diagonal_fov += u'{0}, '.format(fov)
+        if diagonal_fov:
+            diagonal_fov += u' mm'
+        row_data += [
+            rectangular_fov,
+            diagonal_fov
         ]
         row_data += [
-            '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+            '', '', '', '', '', '', '', '', '', '', '', '', '',
         ]
         row_data += [
             column_aq
