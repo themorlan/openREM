@@ -827,7 +827,6 @@ def rf_phe_2019(filterdict, user=None):
     import uuid
     from remapp.exports.export_common import _get_patient_study_data
     from remapp.models import Exports, GeneralStudyModuleAttr, IrradEventXRayData
-    from remapp.interface.mod_filters import dx_acq_filter
     from remapp.interface.mod_filters import RFSummaryListFilter
 
     tsk = Exports.objects.create()
@@ -987,10 +986,23 @@ def rf_phe_2019(filterdict, user=None):
         except ObjectDoesNotExist:
             grid_types = ['']
         row_data += [
-            u' | '.join(grid_types)
+            u' | '.join(grid_types),
+            '',  # AEC used - not recorded in RDSR
+        ]
+        patient_position = events.order_by().values_list(
+            'patient_table_relationship_cid__code_meaning',
+            'patient_orientation_cid__code_meaning',
+            'patient_orientation_modifier_cid__code_meaning'
+        ).distinct()
+        patient_position_str = u''
+        for position_set in patient_position:
+            for element in (i for i in position_set if i):
+                patient_position_str += u'{0}, '.format(element)
+        row_data += [
+            patient_position_str
         ]
         row_data += [
-            '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+            '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
         ]
         row_data += [
             column_aq
