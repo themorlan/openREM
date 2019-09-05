@@ -1038,8 +1038,37 @@ def rf_phe_2019(filterdict, user=None):
             rectangular_fov,
             diagonal_fov
         ]
+        filters_al = events.filter(
+            irradeventxraysourcedata__xrayfilters__xray_filter_material__code_value__exact='C-120F9')
+        filters_cu = events.filter(
+            irradeventxraysourcedata__xrayfilters__xray_filter_material__code_value__exact='C-127F9')
+        filters_al_thick = filters_al.aggregate(
+            Min('irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum'),
+            Max('irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum'),
+        )
+        filters_cu_thick = filters_cu.aggregate(
+            Min('irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum'),
+            Max('irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum'),
+        )
+        filters_al_str = u''
+        filters_cu_str = u''
+        if filters_al_thick['irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum__min']:
+            filters_al_str = u'{0:.2} - {1:.2} mm'.format(
+                filters_al_thick['irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum__min'],
+                filters_al_thick['irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum__max'],
+            )
+        if filters_cu_thick['irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum__min']:
+            filters_cu_str = u'{0:.2} - {1:.2} mm'.format(
+                filters_cu_thick['irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum__min'],
+                filters_cu_thick['irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum__max'],
+            )
         row_data += [
-            '', '', '', '', '', '', '', '', '', '', '', '', '',
+            '',  # filtration automated?
+            filters_cu_str,
+            filters_al_str,
+        ]
+        row_data += [
+            '', '', '', '', '', '', '', '', '', '',
         ]
         row_data += [
             column_aq
