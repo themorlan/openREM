@@ -14,6 +14,7 @@ OpenREM version history
 * `#758`_  Configuration: corrected issues with location of js_reverse static files
 * `#750`_  Exports: added export tailored to the 2019 PHE DX dose survey
 * `#746`_  Imports: enabled import of GE Elite Mini View C-arm RDSR with no template declaration
+* `#181`_  Imports: corrected import of grid information from RDSRs
 
 0.9.1 (2019-05-16)
 ------------------
