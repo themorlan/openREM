@@ -1,5 +1,6 @@
 {% extends "remapp/filteredbase.html" %}
 {% load sigdig %}
+{% load update_variable %}
 
 {% block navrf %}<li class="active">{% endblock %}
 
@@ -146,7 +147,29 @@
         {% for exam in study_list %}
           {% with equipment=exam.generalequipmentmoduleattr_set.get %}
           {% with n_delta_studies=exam.pksforsummedrfdosestudiesindeltaweeks_set.all.count %}
-        <tr>
+
+
+        {% with False as use_warning %}
+            {% if exam.dap_a_cgycm2 >= alertLevels.alert_total_dap_rf or exam.dap_b_cgycm2 >= alertLevels.alert_total_dap_rf  or exam.total_rp_dose_a >= alertLevels.alert_total_rp_dose_rf or exam.total_rp_dose_b >= alertLevels.alert_total_rp_dose_rf %}
+                {% update_variable True as use_warning %}
+            {% endif %}
+
+            {% if use_warning == False %}
+                {% if alertLevels.show_accum_dose_over_delta_weeks %}
+                    {% if exam.dap_delta_weeks_cgycm2 >= alertLevels.alert_total_dap_rf or exam.total_rp_dose_delta_weeks >= alertLevels.alert_total_rp_dose_rf %}
+                        {% update_variable True as use_warning %}
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+
+            {% if use_warning == False %}
+                <tr>
+            {% else %}
+                <tr class="warning">
+            {% endif %}
+        {% endwith %}
+
+
             <td>
                 <a href="{% url 'rf_detail_view' pk=exam.id %}">
                     {{ equipment.institution_name }}
