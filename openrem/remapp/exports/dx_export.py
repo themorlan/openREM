@@ -473,7 +473,7 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
     """
 
     import datetime
-    from remapp.exports.export_common import _get_patient_study_data
+    from remapp.exports.export_common import get_patient_study_data
     from remapp.models import Exports
     from remapp.interface.mod_filters import dx_acq_filter
     import uuid
@@ -587,7 +587,7 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
             logger.error(u"Failed to export study to PHE 2019 DX as had no event data! PK={0}".format(exam.pk))
             continue
 
-        patient_study_data = _get_patient_study_data(exam)
+        patient_study_data = get_patient_study_data(exam)
         patient_sex = None
         try:
             patient_module = exam.patientmoduleattr_set.get()

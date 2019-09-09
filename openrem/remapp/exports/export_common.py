@@ -190,7 +190,7 @@ def generate_sheets(studies, book, protocol_headers, modality=None, pid=False, n
     return book, sheet_list
 
 
-def _get_patient_study_data(exam):
+def get_patient_study_data(exam):
     """Get patient study module data
 
     :param exam: Exam table
@@ -264,7 +264,7 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
         logger.debug("Export {0}; generalequipmentmoduleattr_set object does not exist. AccNum {1}, Date {2}".format(
             modality, exams.accession_number, exams.study_date))
 
-    patient_study_data = _get_patient_study_data(exams)
+    patient_study_data = get_patient_study_data(exams)
 
     event_count = None
     cgycm2 = None

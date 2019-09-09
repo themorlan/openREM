@@ -826,7 +826,7 @@ def rf_phe_2019(filterdict, user=None):
     import datetime
     import uuid
     from django.db.models import Max, Min
-    from remapp.exports.export_common import _get_patient_study_data
+    from remapp.exports.export_common import get_patient_study_data
     from remapp.models import Exports, GeneralStudyModuleAttr, IrradEventXRayData
     from remapp.interface.mod_filters import RFSummaryListFilter
 
@@ -905,7 +905,7 @@ def rf_phe_2019(filterdict, user=None):
             u'{0} | {1} | {2}'.format(
                 exam.procedure_code_meaning, exam.requested_procedure_code_meaning, exam.study_description),
         ]
-        patient_study_data = _get_patient_study_data(exam)
+        patient_study_data = get_patient_study_data(exam)
         patient_sex = None
         try:
             patient_sex = exam.patientmoduleattr_set.get().patient_sex
