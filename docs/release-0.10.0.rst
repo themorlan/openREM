@@ -8,7 +8,9 @@ Headline changes
 
 * Database: new summary fields introduced to improve the responsiveness of the interface - requires additional migration
   step
-* Imports: enabled import of GE Elite Mini View C-arm RDSR with no template declaration
+* Imports: enabled import of GE Elite Mini View C-arm, Opera Swing R/F and Philips BIgBore CT RDSRs that have issues
+* Interface: highlight row when dose alert exceeded
+* Exports: added fluoroscopy and radiography exports tailored for UK PHE dose survey
 
 *******************
 Upgrade preparation

@@ -2,7 +2,7 @@
 OpenREM version history
 =======================
 
-0.10.0b1 (2019-xx-xx)
+0.10.0b1 (2019-09-09)
 ---------------------
 * `#771`_  Interface: entire fluoro exam row now highlighted when dose alert exceeded
 * `#770`_  Imports: fix to allow non-conformant Opera Swing to import
