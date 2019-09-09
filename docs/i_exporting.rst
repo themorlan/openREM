@@ -145,12 +145,14 @@ then you should further prepare the data as follows:
 Where patients have had both 2D and tomographic exposures in the same study, NCCPM will be able to match them up as they
 will have the same patient number in both surveys.
 
-PHE 2019 CT survey
-------------------
+PHE 2019 CT survey and IPEM/PHE 2019 paediatric CT survey
+---------------------------------------------------------
 
-This export is specific to the UK Public Health England (PHE) CT dose audit and exports the data in the correct
+This export is specific to the UK Public Health England (PHE) CT dose survey and exports the data in the correct
 format to copy and paste into the spreadsheet provided by PHE. More information about the survey and copies of the
-data collection spreadsheet can be found on the `CT User Group (CTUG) website`_.
+data collection spreadsheet can be found on the `CT User Group (CTUG) website`_. The same export function is also
+suitable for the UK Paediatric CT Dose Survey launched by the IPEM paediatric optimisation working party in
+collaboration with PHE. The spreadsheet and instructions for this survey can also be found on the CTUG website.
 
 The introduction and guidance tabs of the PHE data collection spreadsheet
 should be read and the 'Your details' sheet completed. Then the 'Patient and Protocol data 1' sheet
@@ -159,11 +161,8 @@ The first 142 rows of each sheet should be filled in manually with all the detai
 study data in OpenREM may help to answer some of the questions.
 
 The CT studies should then be filtered in OpenREM; by date (ideally previous 12 months, no older than 2017), by scanner
-(each scanner and protocol combination should be a new sheet), by minimum age of 16, and by study description (or
-combination of factors to specify a particular protocol). The guidance specifies patients between 50 to 90 kg -- if you
-have weight data in OpenREM this filter could be added, but the values form part of the output anyway so it isn't
-essential. It would however enable filtering out of those studies that don't have weight data if the majority does. If
-patient weight data isn't available in OpenREM then just ensure the sample is large!
+(each scanner and protocol combination should be a new sheet), by age of (minimum of 16 for the PHE adult survey), and
+by study description (or combination of factors to specify a particular protocol).
 
 Finally the studies should be filtered to have exactly the right number of each type of acquisition for that protocol.
 This might be one spiral, one localiser and two stationary (bolus tracking) acquisitions for example. Localisers do not
@@ -172,10 +171,66 @@ the standard protocol.
 
 The export can then be started and monitored in the normal way by clicking on the 'PHE 2019 survey' button. The
 resulting export will be in xlsx format, with one header row. The data from row 2 onwards can be copied and pasted
-directly into row 150 onwards of the Patient and Protocol sheet of the PHE data collection spreadsheet. Column AL is
-for patient comments, and OpenREM uses this cell to record the series types that have been exported for each study. This
-can therefore be used to double check the data is as you expect it to be. If the protocol has more than four series
-excluding localisers, the data is continued in the same format from column AM onwards.
+directly into row 150 (152 for paed survey) onwards of the Patient and Protocol sheet of the adult PHE data collection
+spreadsheet. The adult survey starts in column A, the paediatric survey starts in column B. Column AL (AM for paed
+survey) is for patient comments, and OpenREM uses this cell to record the series types that have been exported for each
+study. This can therefore be used to double check the data is as you expect it to be. If the protocol has more than four
+series excluding localisers, the data is continued in the same format from column AM (AN for paed) onwards.
+
+PHE 2019 X-ray, fluoroscopy and interventional radiology survey
+---------------------------------------------------------------
+
+As with the PHE and IPEM CT surveys, the PHE exports on the radiography and fluoroscopy modality filter pages are
+designed to paste directly templates provided by PHE via the Medical-Physics-Engineering JiscMail e-mail list or
+available direcly from PHE.
+
+The spreadsheets provided are:
+
+Planar Radiography Survey:
+
+    * ``PHE_Dose_PR_Patient_xxxxx.xlsx`` Individual patient records - OpenREM export is designed for this
+    * ``PHE_Dose_PR_Patient_X26_xxxxx.xlsx`` Individual patient records, specifically for skeletal surveys
+    * ``PHE_Dose_PR_System_xxxxx.xlsx`` System mean and median - OpenREM does not support this summary format directly
+
+IR and Fluoroscopy Survey:
+
+    * ``PHE_Dose_IR_Fluoro_Patient_xxxxx.xlsx`` Individual patient records - OpenREM export is designed for this
+    * ``PHE_Dose_IR_Fluoro_System_xxxxx.xlsx`` System mean and median - OpenREM does not support this summary format
+      directly
+
+As with the CT surveys, care should be taken to read and fill in the instructions and questions asked in the templates.
+
+For the **radiography survey**, there are two types of studies asked for:
+
+#. Single-projection studies - for example the sheet ``Abdomen_AP_DAP_by_record``
+#. Multi-projection studies - for example the sheet ``Abdomen_exam_DAP_by_record``
+
+For studies in the former category, select your data as appropriate on the Radiography filter page, making use of the
+'Num. events total' filter to ensure all selected studies have just one exposure. Then use the 'PHE 2019 Survey:
+Projection' button to export the data. If any exams do have more than one exposure, the export will continue with a
+warning, and only include the first exposure of each study in the export.
+
+For multi-projection studies, filter as before, setting the 'Num. events total' filter if the exam normally has a
+specific number of views, and export using the 'PHE 2019 Survey: Study' button. If any of the studies have more than
+eight exposures, the export will automatically format the data to suit the template designed for skeletal studies. This
+allows for up to 20 exposures. However, you will need to request the 'bespoke' template from PHE as it was not
+distributed in the original email!
+
+The exported spreadsheet has a header row at the top. Copy from the second row onward and paste into the relevant sheet
+in the PHE template in row ``7``.
+
+For The **fluoroscopy survey**, select the studies as appropriate and use the 'PHE 2019 Survey' button to export the
+data. The resulting data should be copied into the ``PHE_Dose_IR_Fluoro_Patient_xxxxx.xlsx`` as follows:
+
+    #. Select the exported data from column ``A`` through to column ``AQ``, row ``1`` though to the last row of the
+       exported data
+    #. Select the cell ``A1`` and choose the full Paste Special menu - ``Ctrl+Alt+V`` or right-click Paste Special ->
+       Paste Special. Then select Paste 'Formulas' and 'Skip Blanks'.
+
+This will paste the correct DAP and time units into row ``4`` along with the exported data into row ``7`` onwards. The
+DAP units exported using the radiography exports (cGy·cm²) and fluoroscopy (Gy·m²) may not correspond to the units
+normally used on your system, but the exported values will be correct for the units stated.
+
 
 Opening csv exports in Excel
 ============================

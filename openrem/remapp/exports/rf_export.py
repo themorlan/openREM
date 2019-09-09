@@ -1,3 +1,4 @@
+# This Python file uses the following encoding: utf-8
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
 #    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
 #
@@ -206,7 +207,6 @@ def _all_data_headers(pid=False, name=None, patid=None):
         u'B Number of events',
     ]
     return all_data_headers
-
 
 
 @shared_task
@@ -812,3 +812,273 @@ def rfopenskin(studyid):
     csvfilename = u"OpenSkinExport{0}.csv".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
 
     write_export(tsk, csvfilename, tmpfile, datestamp)
+
+
+@shared_task
+def rf_phe_2019(filterdict, user=None):
+    """Export filtered RF database data in the format for the 2019 Public Health England IR/fluoro dose survey
+
+    :param filterdict: Queryset of studies to export
+    :param user: User that has started the export
+    :return: Saves Excel file into media directory for user to download
+    """
+
+    import datetime
+    import uuid
+    from django.db.models import Max, Min
+    from remapp.exports.export_common import get_patient_study_data
+    from remapp.models import Exports, GeneralStudyModuleAttr, IrradEventXRayData
+    from remapp.interface.mod_filters import RFSummaryListFilter
+
+    tsk = Exports.objects.create()
+    tsk.task_id = rf_phe_2019.request.id
+    if tsk.task_id is None:  # Required when testing without celery
+        tsk.task_id = u'NotCelery-{0}'.format(uuid.uuid4())
+    tsk.modality = u"RF"
+    tsk.export_type = u"PHE RF 2019 export"
+    datestamp = datetime.datetime.now()
+    tsk.export_date = datestamp
+    tsk.progress = u'Query filters imported, task started'
+    tsk.status = u'CURRENT'
+    tsk.export_user_id = user
+    tsk.save()
+
+    tmp_xlsx, book = create_xlsx(tsk)
+    if not tmp_xlsx:
+        exit()
+    sheet = book.add_worksheet(u"PHE IR-Fluoro")
+
+    exams = RFSummaryListFilter(
+        filterdict, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact = 'RF')).qs
+    tsk.num_records = exams.count()
+    if abort_if_zero_studies(tsk.num_records, tsk):
+        return
+
+    tsk.progress = u'{0} studies in query.'.format(tsk.num_records)
+    tsk.save()
+
+    row_4 = ['', '', '', '', '', u'Gy·m²', '', u'seconds', u'Gy']
+    sheet.write_row(3, 0, row_4)
+
+    num_rows = exams.count()
+    for row, exam in enumerate(exams):
+        tsk.progress = u"Writing study {0} of {1}".format(row+1, num_rows)
+        tsk.save()
+
+        row_data = [
+            '',
+            row + 1,
+            exam.pk,
+            exam.study_date,
+            exam.total_dap,
+        ]
+        accum_data = []
+        for plane in exam.projectionxrayradiationdose_set.get().accumxraydose_set.all():
+            accum_data.append(_get_accumulated_data(plane))
+        if len(accum_data) == 2:
+            accum_data[0]['fluoro_dose_area_product_total'] += accum_data[1]['fluoro_dose_area_product_total']
+            accum_data[0]['fluoro_dose_rp_total'] += accum_data[1]['fluoro_dose_rp_total']
+            accum_data[0]['total_fluoro_time'] += accum_data[1]['total_fluoro_time']
+            accum_data[0]['acquisition_dose_area_product_total'] += accum_data[1]['acquisition_dose_area_product_total']
+            accum_data[0]['acquisition_dose_rp_total'] += accum_data[1]['acquisition_dose_rp_total']
+            accum_data[0]['total_acquisition_time'] += accum_data[1]['total_acquisition_time']
+            accum_data[0]['eventcount'] += accum_data[1]['eventcount']
+        row_data += [
+            accum_data[0]['fluoro_dose_area_product_total'],
+            accum_data[0]['acquisition_dose_area_product_total'],
+            accum_data[0]['total_fluoro_time'],
+        ]
+
+        try:
+            total_rp_dose = exam.total_rp_dose_a + exam.total_rp_dose_b
+        except TypeError:
+            if exam.total_rp_dose_a is not None:
+                total_rp_dose = exam.total_rp_dose_a
+            elif exam.total_rp_dose_b is not None:
+                total_rp_dose = exam.total_rp_dose_b
+            else:
+                total_rp_dose = 0
+        row_data += [
+            total_rp_dose,
+            accum_data[0]['fluoro_dose_rp_total'],
+            accum_data[0]['acquisition_dose_rp_total'],
+            u'{0} | {1} | {2}'.format(
+                exam.procedure_code_meaning, exam.requested_procedure_code_meaning, exam.study_description),
+        ]
+        patient_study_data = get_patient_study_data(exam)
+        patient_sex = None
+        try:
+            patient_sex = exam.patientmoduleattr_set.get().patient_sex
+        except ObjectDoesNotExist:
+            logger.debug("Export {0}; patientmoduleattr_set object does not exist. AccNum {1}, Date {2}".format(
+                'PHE 2019 RF', exams.accession_number, exams.study_date))
+        row_data += [
+            patient_study_data['patient_weight'],
+            '',
+            patient_study_data['patient_age_decimal'],
+            patient_sex,
+            patient_study_data['patient_size'],
+        ]
+
+        events = IrradEventXRayData.objects.filter(
+            projection_xray_radiation_dose__general_study_module_attributes__pk__exact=exam.pk)
+        fluoro_events = events.exclude(
+            irradiation_event_type__code_value__contains='11361')  # acq events are 113611, 113612, 113613
+        acquisition_events = events.filter(irradiation_event_type__code_value__contains='11361')
+        row_data += [
+            u' | '.join(fluoro_events.order_by().values_list('acquisition_protocol', flat=True).distinct()),
+            u' | '.join(fluoro_events.order_by().values_list(
+                'irradeventxraysourcedata__fluoro_mode__code_meaning', flat=True).distinct()),
+        ]
+        fluoro_frame_rates = fluoro_events.order_by().values_list(
+            'irradeventxraysourcedata__pulse_rate', flat=True).distinct()
+        column_aq = ''
+        if len(fluoro_frame_rates) > 1:
+            column_aq += u'Fluoro: '
+            column_aq += u' | '.join(format(x, "1.1f") for x in fluoro_frame_rates)
+            column_aq += u' fps. '
+            row_data += [
+                u'Multiple rates',
+            ]
+        else:
+            try:
+                row_data += [
+                    fluoro_frame_rates[0],
+                ]
+            except IndexError:
+                row_data += [
+                    '',
+                ]
+        acquisition_frame_rates = acquisition_events.order_by().values_list(
+            'irradeventxraysourcedata__pulse_rate', flat=True).distinct()
+        add_single = False
+        if None in acquisition_frame_rates:
+            if len(acquisition_frame_rates) == 1:
+                acquisition_frame_rates = [u'Single shot']
+            else:
+                acquisition_frame_rates = acquisition_frame_rates[1:]
+                add_single = True
+        if len(acquisition_frame_rates) > 1:
+            row_data += [
+                u'Multiple rates'
+            ]
+            column_aq += u'Acquisition: '
+            if add_single:
+                column_aq += u'Single shot | '
+            column_aq += u' | '.join(format(x, "1.1f") for x in acquisition_frame_rates)
+            column_aq += u' fps. '
+        else:
+            try:
+                row_data += [
+                    acquisition_frame_rates[0],
+                ]
+            except IndexError:
+                row_data += [
+                    '',
+                ]
+        row_data += [
+            acquisition_events.count()
+        ]
+        try:
+            grid_types = events.order_by().values_list(
+                'irradeventxraysourcedata__xraygrid__xray_grid__code_meaning', flat=True).distinct()
+            if None in grid_types:
+                grid_types = grid_types[1:]
+        except ObjectDoesNotExist:
+            grid_types = ['']
+        row_data += [
+            u' | '.join(grid_types),
+            '',  # AEC used - not recorded in RDSR
+        ]
+        patient_position = events.order_by().values_list(
+            'patient_table_relationship_cid__code_meaning',
+            'patient_orientation_cid__code_meaning',
+            'patient_orientation_modifier_cid__code_meaning'
+        ).distinct()
+        patient_position_str = u''
+        for position_set in patient_position:
+            for element in (i for i in position_set if i):
+                patient_position_str += u'{0}, '.format(element)
+        row_data += [
+            patient_position_str,
+            '',  # digital subtraction
+            '',  # circular field of view
+        ]
+        field_dimensions = events.aggregate(Min('irradeventxraysourcedata__collimated_field_area'),
+                                      Max('irradeventxraysourcedata__collimated_field_area'),
+                                      Min('irradeventxraysourcedata__collimated_field_width'),
+                                      Max('irradeventxraysourcedata__collimated_field_width'),
+                                      Min('irradeventxraysourcedata__collimated_field_height'),
+                                      Max('irradeventxraysourcedata__collimated_field_height'),
+                                      )
+        rectangular_fov = u''
+        if field_dimensions['irradeventxraysourcedata__collimated_field_area__min']:
+            rectangular_fov += u'Area {0:.4f} to {1:.4f} m², '.format(
+                field_dimensions['irradeventxraysourcedata__collimated_field_area__min'],
+                field_dimensions['irradeventxraysourcedata__collimated_field_area__max']
+            )
+        if field_dimensions['irradeventxraysourcedata__collimated_field_width__min']:
+            rectangular_fov += u'Width {0:.4f} to {1:.4f} m, '.format(
+                field_dimensions['irradeventxraysourcedata__collimated_field_width__min'],
+                field_dimensions['irradeventxraysourcedata__collimated_field_width__max']
+            )
+        if field_dimensions['irradeventxraysourcedata__collimated_field_height__min']:
+            rectangular_fov += u'Height {0:.4f} to {1:.4f} m, '.format(
+                field_dimensions['irradeventxraysourcedata__collimated_field_height__min'],
+                field_dimensions['irradeventxraysourcedata__collimated_field_height__max']
+            )
+        field_sizes = events.order_by().values_list('irradeventxraysourcedata__ii_field_size', flat=True).distinct()
+        diagonal_fov = u''
+        for fov in field_sizes:
+            if fov:
+                diagonal_fov += u'{0}, '.format(fov)
+        if diagonal_fov:
+            diagonal_fov += u' mm'
+        row_data += [
+            rectangular_fov,
+            diagonal_fov
+        ]
+        filters_al = events.filter(
+            irradeventxraysourcedata__xrayfilters__xray_filter_material__code_value__exact='C-120F9')
+        filters_cu = events.filter(
+            irradeventxraysourcedata__xrayfilters__xray_filter_material__code_value__exact='C-127F9')
+        filters_al_thick = filters_al.aggregate(
+            Min('irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum'),
+            Max('irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum'),
+        )
+        filters_cu_thick = filters_cu.aggregate(
+            Min('irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum'),
+            Max('irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum'),
+        )
+        filters_al_str = u''
+        filters_cu_str = u''
+        if filters_al_thick['irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum__min']:
+            filters_al_str = u'{0:.2} - {1:.2} mm'.format(
+                filters_al_thick['irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum__min'],
+                filters_al_thick['irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum__max'],
+            )
+        if filters_cu_thick['irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum__min']:
+            filters_cu_str = u'{0:.2} - {1:.2} mm'.format(
+                filters_cu_thick['irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum__min'],
+                filters_cu_thick['irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum__max'],
+            )
+        row_data += [
+            '',  # filtration automated?
+            filters_cu_str,
+            filters_al_str,
+        ]
+        row_data += [
+            '', '', '', '', '', '', '', '', '', '',
+        ]
+        row_data += [
+            column_aq
+        ]
+        sheet.write_row(row + 6, 0, row_data)
+
+    book.close()
+    tsk.progress = u"PHE IR/Fluoro 2019 export complete"
+    tsk.save()
+
+    xlsxfilename = u"PHE_RF_2019_{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
+
+    write_export(tsk, xlsxfilename, tmp_xlsx, datestamp)

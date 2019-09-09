@@ -344,7 +344,7 @@ def _check_dap_units(dap_sequence):
 def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
     # TODO: review model to convert to cid where appropriate, and add additional fields
     from django.db.models import Avg
-    from remapp.models import IrradEventXRaySourceData
+    from remapp.models import IrradEventXRaySourceData, XrayGrid
     from remapp.tools.get_values import get_or_create_cid, safe_strings
     from defusedxml.ElementTree import fromstring, ParseError
     # Variables below are used if privately defined parameters are available
@@ -392,9 +392,11 @@ def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
                 source.collimated_field_area = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
             # TODO: xray_grid no longer exists in this table - it is a model on its own...
             # See https://bitbucket.org/openrem/openrem/issue/181
-            elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'X-Ray Grid':
-                source.xray_grid = get_or_create_cid(cont.ConceptCodeSequence[0].CodeValue,
+            elif cont.ConceptNameCodeSequence[0].CodeValue == '111635':  # 'X-Ray Grid'
+                grid = XrayGrid.objects.create(irradiation_event_xray_source_data=source)
+                grid.xray_grid = get_or_create_cid(cont.ConceptCodeSequence[0].CodeValue,
                                                      cont.ConceptCodeSequence[0].CodeMeaning)
+                grid.save()
             elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Pulse Width':
                 _pulsewidth(cont.MeasuredValueSequence[0].NumericValue, source)
             elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'KVP':

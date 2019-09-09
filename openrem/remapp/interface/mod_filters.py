@@ -33,9 +33,7 @@ from builtins import object  # pylint: disable=redefined-builtin
 from past.utils import old_div
 import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
-from django.db import models
 
-import logging
 import django_filters
 from django import forms
 from remapp.models import GeneralStudyModuleAttr
@@ -220,7 +218,26 @@ EVENT_NUMBER_CHOICES = (
     (8, '8'),
     (9, '9'),
     (10, '10'),
+    ('more', '>10'),
 )
+
+
+def _specify_event_numbers(queryset, value):
+    """Method filter for specifying number of events in each study
+
+    :param queryset: Study list
+    :param value: number of events
+    :return: filtered queryset
+    """
+    try:
+        value = int(value)
+    except ValueError:
+        if value == 'more':
+            filtered = queryset.filter(number_of_events__gt=10)
+            return filtered
+        return queryset
+    filtered = queryset.filter(number_of_events__exact=value)
+    return filtered
 
 
 def _specify_event_numbers_spiral(queryset, value):
@@ -233,6 +250,9 @@ def _specify_event_numbers_spiral(queryset, value):
     try:
         value = int(value)
     except ValueError:
+        if value == 'more':
+            filtered = queryset.filter(number_of_spiral__gt=10)
+            return filtered
         return queryset
     filtered = queryset.filter(number_of_spiral__exact=value)
     return filtered
@@ -248,6 +268,9 @@ def _specify_event_numbers_axial(queryset, value):
     try:
         value = int(value)
     except ValueError:
+        if value == 'more':
+            filtered = queryset.filter(number_of_axial__gt=10)
+            return filtered
         return queryset
     filtered = queryset.filter(number_of_axial__exact=value)
     return filtered
@@ -263,6 +286,9 @@ def _specify_event_numbers_spr(queryset, value):
     try:
         value = int(value)
     except ValueError:
+        if value == 'more':
+            filtered = queryset.filter(number_of_const_angle__gt=10)
+            return filtered
         return queryset
     filtered = queryset.filter(number_of_const_angle__exact=value)
     return filtered
@@ -278,6 +304,9 @@ def _specify_event_numbers_stationary(queryset, value):
     try:
         value = int(value)
     except ValueError:
+        if value == 'more':
+            filtered = queryset.filter(number_of_stationary__gt=10)
+            return filtered
         return queryset
     filtered = queryset.filter(number_of_stationary__exact=value)
     return filtered
@@ -329,6 +358,8 @@ class CTSummaryListFilter(django_filters.FilterSet):
                                                                    'acquisition_type__code_meaning',
                                                               choices=CT_ACQ_TYPE_CHOICES,
                                                               widget=forms.CheckboxSelectMultiple)
+    num_events = django_filters.ChoiceFilter(action=_specify_event_numbers, label=u'Num. events total',
+                                             choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
     num_spiral_events = django_filters.ChoiceFilter(action=_specify_event_numbers_spiral, label=u'Num. spiral events',
                                                     choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
     num_axial_events = django_filters.ChoiceFilter(action=_specify_event_numbers_axial, label=u'Num. axial events',
@@ -373,7 +404,7 @@ class CTFilterPlusPid(CTSummaryListFilter):
 
 def ct_acq_filter(filters, pid=False):
     from decimal import Decimal, InvalidOperation
-    from remapp.models import GeneralStudyModuleAttr, CtIrradiationEventData
+    from remapp.models import CtIrradiationEventData
     filteredInclude = []
     if 'acquisition_protocol' in filters and (
             'acquisition_ctdi_min' in filters or 'acquisition_ctdi_max' in filters or
@@ -556,6 +587,8 @@ class DXSummaryListFilter(django_filters.FilterSet):
     # acquisition_dap_min = django_filters.NumberFilter(lookup_type='gte', label=mark_safe('Min acquisition DAP (Gy.m<sup>2</sup>)'), name='projectionxrayradiationdose__irradeventxraydata__dose_area_product') # nosec
     display_name = django_filters.CharFilter(lookup_type='icontains', label=u'Display name',
                                              name='generalequipmentmoduleattr__unique_equipment_name__display_name')
+    num_events = django_filters.ChoiceFilter(action=_specify_event_numbers, label=u'Num. events total',
+                                             choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
     test_data = django_filters.ChoiceFilter(lookup_type='isnull', label=u"Include possible test data",
                                             name='patientmoduleattr__not_patient_indicator', choices=TEST_CHOICES,
                                             widget=forms.Select)
@@ -565,25 +598,7 @@ class DXSummaryListFilter(django_filters.FilterSet):
         Lists fields and order-by information for django-filter filtering
         """
         model = GeneralStudyModuleAttr
-        fields = [
-            'date_after',
-            'date_before',
-            'institution_name',
-            'study_description',
-            'procedure_code_meaning',
-            'requested_procedure',
-            'acquisition_protocol',
-            'patient_age_min',
-            'patient_age_max',
-            'manufacturer',
-            'model_name',
-            'station_name',
-            'display_name',
-            'accession_number',
-            # 'study_dap_min',
-            # 'study_dap_max',
-            'test_data',
-        ]
+        fields = []
         order_by = (
             ('-study_date', mark_safe('Exam date &darr;')),
             ('study_date', mark_safe('Exam date &uarr;')),
@@ -614,7 +629,7 @@ class DXFilterPlusPid(DXSummaryListFilter):
 def dx_acq_filter(filters, pid=False):
     from decimal import Decimal, InvalidOperation
     from django.db.models import Q
-    from remapp.models import GeneralStudyModuleAttr, IrradEventXRayData
+    from remapp.models import IrradEventXRayData
     filteredInclude = []
     if 'acquisition_protocol' in filters and (
             'acquisition_dap_min' in filters or 'acquisition_dap_max' in filters or

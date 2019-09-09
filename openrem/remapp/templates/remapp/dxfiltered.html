@@ -29,8 +29,8 @@
                            class="btn btn-default btn-sm" role="button">With ID</a>
                         <a href="{% url 'dxcsv1' 1 1 %}?{{ request.GET.urlencode }}"
                            class="btn btn-default btn-sm" role="button">With both</a>
-                        </p>
-                        <p>
+                </p>
+                <p>
                     {% endif %}
                     <a href="{% url 'dxxlsx1' 0 0 %}?{{ request.GET.urlencode }}"
                        class="btn btn-default btn-sm" role="button">Export to XLSX</a>
@@ -42,7 +42,13 @@
                         <a href="{% url 'dxxlsx1' 1 1 %}?{{ request.GET.urlencode }}"
                            class="btn btn-default btn-sm" role="button">With both</a>
                     {% endif %}
-                    </p>
+                </p>
+                <p>
+                    <a href="{% url 'dx_xlsx_phe2019' 'projection' %}?{{ request.GET.urlencode }}"
+                       class="btn btn-default btn-sm" role="button">PHE 2019 Survey: Projection</a>
+                    <a href="{% url 'dx_xlsx_phe2019' 'exam' %}?{{ request.GET.urlencode }}"
+                       class="btn btn-default btn-sm" role="button">PHE 2019 Survey: Study</a>
+                </p>
 
             {% else %}
                 <p>
@@ -150,79 +156,79 @@
         </row>
         {% for exam in study_list %}
             {% with equipment=exam.generalequipmentmoduleattr_set.get %}
-                <tr>
-                    <td>
-                        <a href="{% url 'dx_detail_view' pk=exam.id %}">
-                            {{ equipment.institution_name }}
-                        </a>
-                    </td>
-                    <td>
-                        <a href="{% url 'dx_detail_view' pk=exam.id %}">
-                            <table onclick="window.location='{% url 'dx_detail_view' pk=exam.id %}';">
-                                <tr>
-                                    <td class="nowrap">{{ equipment.manufacturer }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="nowrap">{{ equipment.manufacturer_model_name }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="nowrap">{{ equipment.unique_equipment_name.display_name }}</td>
-                                </tr>
-                            </table>
-                        </a>
-                    </td>
-                    <td>
-                        <a href="{% url 'dx_detail_view' pk=exam.id %}">
-                            {{ exam.study_date|date:"Y-m-d" }} {{ exam.study_time|date:"H:i" }}
-                        </a>
-                    </td>
-                    <td>
-                        <a href="{% url 'dx_detail_view' pk=exam.id %}">
-                            <table onclick="window.location='{% url 'dx_detail_view' pk=exam.id %}';">
-                                <tr>
-                                    <td class="nowrap">{{ exam.study_description }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="nowrap">{{ exam.procedure_code_meaning }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="nowrap">{{ exam.requested_procedure_code_meaning }}</td>
-                                </tr>
-                                {% if not exam.accession_hashed %}
-                                    <tr>
-                                        <td class="nowrap">{{ exam.accession_number }}</td>
-                                    </tr>
-                                {% endif %}
-                            </table>
-                        </a>
-                    </td>
-                    <td>
-                        <a href="{% url 'dx_detail_view' pk=exam.id %}">
-                            {% if exam.number_of_planes == 2 %}
-                                A: {{ exam.number_of_events_a }}<br>
-                                B: {{ exam.number_of_events_b }}
-                            {% else %}
-                                {{ exam.number_of_events_a }}
+                        <tr>
+                            <td>
+                                <a href="{% url 'dx_detail_view' pk=exam.id %}">
+                                    {{ equipment.institution_name }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'dx_detail_view' pk=exam.id %}">
+                                    <table onclick="window.location='{% url 'dx_detail_view' pk=exam.id %}';">
+                                        <tr>
+                                            <td class="nowrap">{{ equipment.manufacturer }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="nowrap">{{ equipment.manufacturer_model_name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="nowrap">{{ equipment.unique_equipment_name.display_name }}</td>
+                                        </tr>
+                                    </table>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'dx_detail_view' pk=exam.id %}">
+                                    {{ exam.study_date|date:"Y-m-d" }} {{ exam.study_time|date:"H:i" }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'dx_detail_view' pk=exam.id %}">
+                                    <table onclick="window.location='{% url 'dx_detail_view' pk=exam.id %}';">
+                                        <tr>
+                                            <td class="nowrap">{{ exam.study_description }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="nowrap">{{ exam.procedure_code_meaning }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="nowrap">{{ exam.requested_procedure_code_meaning }}</td>
+                                        </tr>
+                                        {% if not exam.accession_hashed %}
+                                            <tr>
+                                                <td class="nowrap">{{ exam.accession_number }}</td>
+                                            </tr>
+                                        {% endif %}
+                                    </table>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'dx_detail_view' pk=exam.id %}">
+                {% if exam.number_of_planes == 2 %}
+                    A: {{ exam.number_of_events_a }}<br>
+                    B: {{ exam.number_of_events_b }}
+                                            {% else %}
+                    {{ exam.number_of_events_a }}
+                                            {% endif %}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'dx_detail_view' pk=exam.id %}">
+                {% if exam.number_of_planes == 2 %}
+                    A: {{ exam.dap_a_cgycm2 | floatformat:1 }}<br>
+                    B: {{ exam.dap_b_cgycm2 | floatformat:1 }}
+                {% else %}
+                    {{ exam.dap_a_cgycm2 | floatformat:1 }}
+                                            {% endif %}
+                                </a>
+                            </td>
+                            {% if admin.admingroup %}
+                                <td>
+                                    <a href="{% url 'study_delete' exam.id %}">Delete</a>
+                                </td>
                             {% endif %}
-                        </a>
-                    </td>
-                    <td>
-                        <a href="{% url 'dx_detail_view' pk=exam.id %}">
-                            {% if exam.number_of_planes == 2 %}
-                                A: {{ exam.dap_a_cgycm2 | floatformat:1 }}<br>
-                                B: {{ exam.dap_b_cgycm2 | floatformat:1 }}
-                            {% else %}
-                                {{ exam.dap_a_cgycm2 | floatformat:1 }}
-                            {% endif %}
-                        </a>
-                    </td>
-                    {% if admin.admingroup %}
-                        <td>
-                            <a href="{% url 'study_delete' exam.id %}">Delete</a>
-                        </td>
-                    {% endif %}
-                </tr>
-            {% endwith %}
+                        </tr>
+          {% endwith %}
         {% endfor %}
     </table>
 

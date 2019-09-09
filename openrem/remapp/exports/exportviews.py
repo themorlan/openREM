@@ -36,6 +36,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 
 import logging
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -193,6 +194,64 @@ def dxxlsx1(request, name=None, pat_id=None):
 
 @csrf_exempt
 @login_required
+def dx_xlsx_phe2019(request, export_type=None):
+    """View to launch celery task to export DX studies to xlsx file in PHE 2019 DX survey format
+
+    :param request: Contains the database filtering parameters and user details.
+    :param export_type: string, 'projection' or 'exam'
+    """
+    import urllib
+    from django.db.models import Max
+    from django.shortcuts import redirect
+    from remapp.exports.dx_export import dx_phe_2019
+    from remapp.interface.mod_filters import dx_acq_filter
+    if request.user.groups.filter(name="exportgroup"):
+        if export_type in ('exam', 'projection'):
+            bespoke = False
+            exams = dx_acq_filter(request.GET, pid=False).qs
+            if not exams.count():
+                messages.error(request, u"No studies in export, nothing to do!")
+                return redirect("{0}?{1}".format(reverse_lazy('dx_summary_list_filter'), urllib.urlencode(request.GET)))
+            max_events_dict = exams.aggregate(Max('number_of_events'))
+            max_events = max_events_dict['number_of_events__max']
+            if 'projection' in export_type:
+                if max_events > 1:
+                    messages.warning(request, u"PHE 2019 DX Projection export is expecting one exposure per study - "
+                                              u"some studies selected have more than one. Only the first exposure will "
+                                              u"be considered.")
+                else:
+                    messages.info(request, u"PHE 2019 DX single projection export started.")
+                job = dx_phe_2019.delay(request.GET, request.user.id, projection=True)
+                logger.debug(u'Export PHE 2019 DX survey format job is {0}'.format(job))
+                return redirect(reverse_lazy('export'))
+            elif 'exam' in export_type:
+                if max_events > 6:
+                    bespoke = True
+                    if max_events > 20:
+                        messages.warning(request, u"PHE 2019 DX Study sheets expect a maximum of six projections. You "
+                                                  u"need to request a bespoke workbook from PHE. This export has a "
+                                                  u"maximum of {0} projections, but only the first 20 will be included "
+                                                  u"in the main columns of the bespoke worksheet.".format(max_events))
+                    else:
+                        messages.warning(request, u"PHE 2019 DX Study sheets expect a maximum of six projections. This "
+                                                  u"export has a maximum of {0} projections so you will need to request"
+                                                  u" a bespoke workbook from PHE. This has space for 20 "
+                                                  u"projections.".format(max_events))
+                else:
+                    messages.info(request, u"PHE 2019 DX Study export started.")
+                job = dx_phe_2019.delay(request.GET, request.user.id, projection=False, bespoke=bespoke)
+                logger.debug(u'Export PHE 2019 DX survey format job is {0}'.format(job))
+                return redirect(reverse_lazy('export'))
+        else:
+            messages.error(request, u"Malformed export URL {0}".format(type))
+            return redirect("{0}?{1}".format(reverse_lazy('dx_summary_list_filter'), urllib.urlencode(request.GET)))
+    else:
+        messages.error(request, u"Only users in the Export group can launch exports")
+        return redirect("{0}?{1}".format(reverse_lazy('dx_summary_list_filter'), urllib.urlencode(request.GET)))
+
+
+@csrf_exempt
+@login_required
 def flcsv1(request, name=None, pat_id=None):
     """View to launch celery task to export fluoroscopy studies to csv file
 
@@ -256,6 +315,26 @@ def rfopenskin(request, pk):
         logger.debug(u'Export Fluoro to openSkin CSV job is {0}'.format(job))
 
     return redirect(reverse_lazy('export'))
+
+
+@csrf_exempt
+@login_required
+def rf_xlsx_phe2019(request):
+    """View to launch celery task to export fluoro studies to xlsx file in PHE 2019 IR/fluoro survey format
+
+    :param request: Contains the database filtering parameters and user details.
+    """
+    import urllib
+    from django.shortcuts import redirect
+    from remapp.exports.rf_export import rf_phe_2019
+    if request.user.groups.filter(name="exportgroup"):
+        messages.info(request, u"PHE 2019 IR/fluoro export started")
+        job = rf_phe_2019.delay(request.GET, request.user.id)
+        logger.debug(u"Export PHE 2019 IR/fluoro survey format job is {0}.".format(job))
+        return redirect(reverse_lazy('export'))
+    else:
+        messages.error(request, u"Only users in the Export group can launch exports")
+        return redirect("{0}?{1}".format(reverse_lazy('rf_summary_list_filter'), urllib.urlencode(request.GET)))
 
 
 @csrf_exempt
@@ -362,7 +441,6 @@ def download(request, task_id):
     from django.core.servers.basehttp import FileWrapper
     from django.utils.encoding import smart_str
     from django.shortcuts import redirect
-    from django.contrib import messages
     from openremproject.settings import MEDIA_ROOT
     from remapp.models import Exports
 
@@ -408,7 +486,6 @@ def deletefile(request):
     import sys
     from django.http import HttpResponseRedirect
     from django.core.urlresolvers import reverse
-    from django.contrib import messages
     from remapp.models import Exports
 
     for task in request.POST:

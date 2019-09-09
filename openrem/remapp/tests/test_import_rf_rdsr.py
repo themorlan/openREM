@@ -206,6 +206,8 @@ class ImportRFRDSRGESurgical(TestCase):
         self.assertAlmostEqual(event_4_source.dose_rp, Decimal(0.00210763))
         self.assertAlmostEqual(event_4_source.collimated_field_area, Decimal(0.04196800))
         self.assertAlmostEqual(event_4_source.average_xray_tube_current, Decimal(18.90340042))
+        self.assertEqual(event_4_source.xraygrid_set.get().xray_grid.code_meaning, u'Fixed Grid')
+        self.assertEqual(event_4_source.xraygrid_set.get().xray_grid.code_value, u'111641')
 
 
 class ImportRFRDSRGEOECMiniView(TestCase):
