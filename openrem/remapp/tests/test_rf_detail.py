@@ -22,11 +22,6 @@ class SummaryTotalDoses(TestCase):
         vg.save()
 
         pid = PatientIDSettings.objects.create()
-        pid.name_stored = True
-        pid.name_hashed = True
-        pid.id_stored = True
-        pid.id_hashed = True
-        pid.dob_stored = True
         pid.save()
 
         rf_siemens_zee_20160512 = os.path.join("test_files", "RF-RDSR-Siemens-Zee.dcm")
