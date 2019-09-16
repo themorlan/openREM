@@ -6,6 +6,7 @@ OpenREM version history
 ---------------------
 * `#771`_  Interface: entire fluoro exam row now highlighted when dose alert exceeded
 * `#770`_  Imports: fix to allow non-conformant Opera Swing to import
+* `#769`_  Interface: modified to allow detail view display of Ziehm studies with missing summary data
 * `#768`_  Charts: study- and request-level charts now use study-level summary fields to improve performance
 * `#765`_  Imports: updated error catching to allow Philips BigBore 4DCT RDSR to import
 * `#763`_  Imports: corrected delta week fluoro study counting for dual plane modalities
