@@ -155,30 +155,30 @@ def average_chart_inc_histogram_data(database_events, db_display_name_relationsh
         for index in range(len(return_structure['summary'])):
             return_structure['summary'][index] = list(return_structure['summary'][index])
 
-        # Fill in default values where data for a series name is missing for any of the systems
-        if plot_series_per_system:
-            for index in range(len(return_structure['system_list'])):
-                missing_names =\
-                    list(set(return_structure['series_names']) -
-                         set([d['db_series_names_to_use'] for d in return_structure['summary'][index]]))
-                for missing_name in missing_names:
-                    if plot_average:
-                        if median_available and plot_average_choice == 'both':
-                            (return_structure['summary'][index]).append(
-                                {'median': 0, 'mean': 0, 'db_series_names_to_use': missing_name, 'num': 0})
-                        elif median_available and plot_average_choice == 'median':
-                            (return_structure['summary'][index]).append(
-                                {'median': 0, 'db_series_names_to_use': missing_name, 'num': 0})
-                        else:
-                            (return_structure['summary'][index]).append(
-                                {'mean': 0, 'db_series_names_to_use': missing_name, 'num': 0})
-                    elif plot_freq:
+        # Fill in default values where data for a series name is missing for any of
+        # the systems even if plot_series_per_system is false
+        for index in range(len(return_structure['system_list'])):
+            missing_names =\
+                list(set(return_structure['series_names']) -
+                     set([d['db_series_names_to_use'] for d in return_structure['summary'][index]]))
+            for missing_name in missing_names:
+                if plot_average:
+                    if median_available and plot_average_choice == 'both':
                         (return_structure['summary'][index]).append(
-                            {'db_series_names_to_use': missing_name, 'num': 0})
+                            {'median': 0, 'mean': 0, 'db_series_names_to_use': missing_name, 'num': 0})
+                    elif median_available and plot_average_choice == 'median':
+                        (return_structure['summary'][index]).append(
+                            {'median': 0, 'db_series_names_to_use': missing_name, 'num': 0})
+                    else:
+                        (return_structure['summary'][index]).append(
+                            {'mean': 0, 'db_series_names_to_use': missing_name, 'num': 0})
+                elif plot_freq:
+                    (return_structure['summary'][index]).append(
+                        {'db_series_names_to_use': missing_name, 'num': 0})
 
-                # Rearrange the list into the same order as series_names
-                #return_structure['summary'][index] = sorted(return_structure['summary'][index], key=lambda k: k['db_series_names_to_use'].lower())
-                return_structure['summary'][index] = sorted(return_structure['summary'][index], key=lambda k: stringIfNone(k['db_series_names_to_use']).lower())
+            # Rearrange the list into the same order as series_names
+            #return_structure['summary'][index] = sorted(return_structure['summary'][index], key=lambda k: k['db_series_names_to_use'].lower())
+            return_structure['summary'][index] = sorted(return_structure['summary'][index], key=lambda k: stringIfNone(k['db_series_names_to_use']).lower())
 
     if plot_average and calculate_histograms:
         histogram_annotations = {}
