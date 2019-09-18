@@ -212,7 +212,7 @@ warning, and only include the first exposure of each study in the export.
 
 For multi-projection studies, filter as before, setting the 'Num. events total' filter if the exam normally has a
 specific number of views, and export using the 'PHE 2019 Survey: Study' button. If any of the studies have more than
-eight exposures, the export will automatically format the data to suit the template designed for skeletal studies. This
+six exposures, the export will automatically format the data to suit the template designed for skeletal studies. This
 allows for up to 20 exposures. However, you will need to request the 'bespoke' template from PHE as it was not
 distributed in the original email!
 

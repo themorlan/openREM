@@ -623,6 +623,11 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
         if self.total_dap_b:
             return 1000000*self.total_dap_b
 
+    def dap_total_cgycm2(self):
+        """Converts DAP A+B to cGy.cm2 from Gy.m2 for display in we interface"""
+        if self.total_dap:
+            return 1000000*self.total_dap
+
     def dap_delta_weeks_cgycm2(self):
         """Converts DAP delta weeks to cGy.cm2 from Gy.m2 for display in we interface"""
         if self.total_dap_delta_weeks:
