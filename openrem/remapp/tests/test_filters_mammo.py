@@ -28,9 +28,9 @@ class FilterViewTests(TestCase):
         path_mam2 = os.path.join(root_tests, mam2)
         path_mam3 = os.path.join(root_tests, mam3)
 
-        mam(path_mam1)
-        mam(path_mam2)
-        rdsr(path_mam3)
+        mam.mam(path_mam1)
+        mam.mam(path_mam2)
+        rdsr.rdsr(path_mam3)
 
     def test_list_all_mammo(self):
         """

@@ -26,8 +26,8 @@ class FilterViewTests(TestCase):
         path_rf1 = os.path.join(root_tests, rf1)
         path_rf2 = os.path.join(root_tests, rf2)
 
-        rdsr(path_rf1)
-        rdsr(path_rf2)
+        rdsr.rdsr(path_rf1)
+        rdsr.rdsr(path_rf2)
 
     def test_list_all_fluoro(self):
         """

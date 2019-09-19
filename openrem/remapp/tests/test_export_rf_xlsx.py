@@ -33,9 +33,9 @@ class ExportRFxlsx(TransactionTestCase):  # Not TestCase as raises TransactionMa
         rf_eurocolumbus = os.path.join("test_files", "RF-RDSR-Eurocolumbus.dcm")
         root_tests = os.path.dirname(os.path.abspath(__file__))
 
-        rdsr(os.path.join(root_tests, rf_siemens_zee))
-        rdsr(os.path.join(root_tests, rf_philips_allura))
-        rdsr(os.path.join(root_tests, rf_eurocolumbus))
+        rdsr.rdsr(os.path.join(root_tests, rf_siemens_zee))
+        rdsr.rdsr(os.path.join(root_tests, rf_philips_allura))
+        rdsr.rdsr(os.path.join(root_tests, rf_eurocolumbus))
 
         eurocolumbus = GeneralStudyModuleAttr.objects.filter(
             study_instance_uid__exact='1.3.6.1.4.1.5962.99.1.1227319599.741127153.1517350807855.3.0').first()

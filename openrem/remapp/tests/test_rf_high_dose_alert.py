@@ -49,8 +49,8 @@ class RFHighDoseAlert(TestCase):
         # Important to read in the earliest study date RDSR first because
         # the cumulated DAP and RP dose looks for matching studies that have
         # previously taken place.
-        rdsr(os.path.join(root_tests, rf_siemens_zee_20160510))
-        rdsr(os.path.join(root_tests, rf_siemens_zee_20160512))
+        rdsr.rdsr(os.path.join(root_tests, rf_siemens_zee_20160510))
+        rdsr.rdsr(os.path.join(root_tests, rf_siemens_zee_20160512))
 
         self.dap_16_text = u'<strong style="color: red;">16.0</strong>'
         self.dap_32_text = u'<strong style="color: red;">32.0</strong>'

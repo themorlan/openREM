@@ -26,7 +26,7 @@ class ImportCTRDSRPhilips(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         bigbore_path = os.path.join(root_tests, bigbore)
 
-        rdsr(bigbore_path)
+        rdsr.rdsr(bigbore_path)
         studies = GeneralStudyModuleAttr.objects.order_by('id')
 
         # Test that one study has been imported

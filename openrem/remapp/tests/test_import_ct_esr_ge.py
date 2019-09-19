@@ -29,8 +29,8 @@ class ImportCTRDSR(TestCase):
         ge_optima_path = os.path.join(root_tests, ge_optima)
         ge_vct_path = os.path.join(root_tests, ge_vct)
 
-        rdsr(ge_optima_path)
-        rdsr(ge_vct_path)
+        rdsr.rdsr(ge_optima_path)
+        rdsr.rdsr(ge_vct_path)
         studies = GeneralStudyModuleAttr.objects.order_by('id')
 
         # Test that two studies have been imported
@@ -1037,7 +1037,7 @@ class ImportNonDoseSR(TestCase):
 
         from testfixtures import LogCapture
         with LogCapture() as l:
-            rdsr(esr_path)
+            rdsr.rdsr(esr_path)
             studies = GeneralStudyModuleAttr.objects.all()
 
             # Test that no studies have been imported

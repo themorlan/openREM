@@ -36,13 +36,13 @@ class FilterViewTests(TestCase):
         path_ct6 = os.path.join(root_tests, ct6)
         path_ct7 = os.path.join(root_tests, ct7)
 
-        rdsr(path_ct1)
-        rdsr(path_ct2)
-        rdsr(path_ct3)
-        rdsr(path_ct4)
-        rdsr(path_ct5)
-        rdsr(path_ct6)
-        ct_philips(path_ct7)
+        rdsr.rdsr(path_ct1)
+        rdsr.rdsr(path_ct2)
+        rdsr.rdsr(path_ct3)
+        rdsr.rdsr(path_ct4)
+        rdsr.rdsr(path_ct5)
+        rdsr.rdsr(path_ct6)
+        ct_philips.ct_philips(path_ct7)
 
     def test_list_all_ct(self):
         """

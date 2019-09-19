@@ -24,7 +24,7 @@ class ImportDXRDSR(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        rdsr(dicom_path)
+        rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.order_by('id')[0]
 
         #Test that patient identifiable information is not stored
@@ -118,7 +118,7 @@ class ImportDXRDSR(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        rdsr(dicom_path)
+        rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.order_by('id')[0]
 
         #Test that patient identifiable information is not stored

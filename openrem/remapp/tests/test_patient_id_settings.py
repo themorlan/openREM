@@ -26,7 +26,7 @@ class ImportPatientIDSettings(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        rdsr(dicom_path)
+        rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.all()[0]
 
         # Test that patient identifiable data is stored in plain text
@@ -55,7 +55,7 @@ class ImportPatientIDSettings(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        rdsr(dicom_path)
+        rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.all()[0]
 
         name = hashlib.sha256('SMITH^JOHN').hexdigest()

@@ -28,7 +28,7 @@ class ExportMammoCSV(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        mam(dicom_path)
+        mam.mam(dicom_path)
 
     def test_all_values(self):
         import pandas as pd
@@ -89,7 +89,7 @@ class ExportMammoCSVNHSBSP(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        rdsr(dicom_path)
+        rdsr.rdsr(dicom_path)
 
     def test_nhsbsp(self):
         import pandas as pd

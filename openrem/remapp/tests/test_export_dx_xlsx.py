@@ -35,11 +35,11 @@ class ExportDXxlsx(TestCase):
         dx_carestream_dr7500_2 = os.path.join("test_files", "DX-Im-Carestream_DR7500-2.dcm")
         root_tests = os.path.dirname(os.path.abspath(__file__))
 
-        dx(os.path.join(root_tests, dx_ge_xr220_1))
-        dx(os.path.join(root_tests, dx_ge_xr220_2))
-        dx(os.path.join(root_tests, dx_ge_xr220_3))
-        dx(os.path.join(root_tests, dx_carestream_dr7500_1))
-        dx(os.path.join(root_tests, dx_carestream_dr7500_2))
+        dx.dx(os.path.join(root_tests, dx_ge_xr220_1))
+        dx.dx(os.path.join(root_tests, dx_ge_xr220_2))
+        dx.dx(os.path.join(root_tests, dx_ge_xr220_3))
+        dx.dx(os.path.join(root_tests, dx_carestream_dr7500_1))
+        dx.dx(os.path.join(root_tests, dx_carestream_dr7500_2))
 
     def test_id_as_text(self):  # See https://bitbucket.org/openrem/openrem/issues/443
         filter_set = ""

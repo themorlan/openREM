@@ -30,7 +30,7 @@ class ImportRFRDSRPhilips(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        rdsr(dicom_path)
+        rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.order_by('id')[0]
 
         projection_dose = study.projectionxrayradiationdose_set.get()
@@ -66,7 +66,7 @@ class ImportRFRDSRPhilipsAzurion(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        rdsr(dicom_path)
+        rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.order_by('id')[0]
 
         fluoro_totals = study.projectionxrayradiationdose_set.get().accumxraydose_set.get().accumprojxraydose_set.get()
@@ -151,7 +151,7 @@ class ImportRFRDSRSiemens(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        rdsr(dicom_path)
+        rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.order_by('id')[0]
 
         event_data = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0]
@@ -180,7 +180,7 @@ class ImportRFRDSRGESurgical(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        rdsr(dicom_path)
+        rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.order_by('id')[0]
 
         device_observer_uid = study.generalequipmentmoduleattr_set.get().unique_equipment_name.device_observer_uid
@@ -227,7 +227,7 @@ class ImportRFRDSRGEOECMiniView(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        rdsr(dicom_path)
+        rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.order_by('id')[0]
 
         accum_proj = study.projectionxrayradiationdose_set.get().accumxraydose_set.get().accumprojxraydose_set.get()

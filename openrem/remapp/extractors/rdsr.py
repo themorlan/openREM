@@ -1624,8 +1624,8 @@ def _fix_toshiba_vhp(dataset):
 def rdsr(rdsr_file):
     """Extract radiation dose related data from DICOM Radiation SR objects.
 
-    :param filename: relative or absolute path to Radiation Dose Structured Report.
-    :type filename: str.
+    :param rdsr_file: relative or absolute path to Radiation Dose Structured Report.
+    :type rdsr_file: str.
     """
 
     import dicom

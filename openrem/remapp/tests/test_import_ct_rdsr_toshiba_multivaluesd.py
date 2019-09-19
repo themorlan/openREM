@@ -28,6 +28,6 @@ class ImportToshibaWithVariableHelicalPitch(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        rdsr(dicom_path)
+        rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.order_by('id')[0]
         self.assertEqual(study.series_instance_uid, "1.3.6.1.4.1.5962.99.1.1042634278.1704769588.1538640959014.8.0")

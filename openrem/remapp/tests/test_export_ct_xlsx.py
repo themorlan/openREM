@@ -37,10 +37,10 @@ class ExportCTxlsx(TestCase):
         ct_toshiba_dosecheck = os.path.join("test_files", "CT-RDSR-Toshiba_DoseCheck.dcm")
         root_tests = os.path.dirname(os.path.abspath(__file__))
 
-        rdsr(os.path.join(root_tests, ct_ge_ct660))
-        rdsr(os.path.join(root_tests, ct_ge_vct))
-        rdsr(os.path.join(root_tests, ct_siemens_flash_ss))
-        rdsr(os.path.join(root_tests, ct_toshiba_dosecheck))
+        rdsr.rdsr(os.path.join(root_tests, ct_ge_ct660))
+        rdsr.rdsr(os.path.join(root_tests, ct_ge_vct))
+        rdsr.rdsr(os.path.join(root_tests, ct_siemens_flash_ss))
+        rdsr.rdsr(os.path.join(root_tests, ct_toshiba_dosecheck))
 
     def test_id_as_text(self):  # See https://bitbucket.org/openrem/openrem/issues/443
         filter_set = ""

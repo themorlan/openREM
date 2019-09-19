@@ -38,14 +38,14 @@ class FilterViewTests(TestCase):
         path_dx7 = os.path.join(root_tests, dx7)
         path_dx8 = os.path.join(root_tests, dx8)
 
-        dx(path_dx1)
-        dx(path_dx2)
-        dx(path_dx3)
-        dx(path_dx4)
-        dx(path_dx5)
-        dx(path_dx6)
-        rdsr(path_dx7)
-        rdsr(path_dx8)
+        dx.dx(path_dx1)
+        dx.dx(path_dx2)
+        dx.dx(path_dx3)
+        dx.dx(path_dx4)
+        dx.dx(path_dx5)
+        dx.dx(path_dx6)
+        rdsr.rdsr(path_dx7)
+        rdsr.rdsr(path_dx8)
 
     def test_list_all_dx(self):
         """
