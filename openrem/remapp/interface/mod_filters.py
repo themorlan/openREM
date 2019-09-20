@@ -160,7 +160,7 @@ class RFSummaryListFilter(django_filters.FilterSet):
                                             name='patientmoduleattr__not_patient_indicator', choices=TEST_CHOICES,
                                             widget=forms.Select)
 
-    class Meta(object):
+    class Meta:
         """
         Lists fields and order-by information for django-filter filtering
         """
