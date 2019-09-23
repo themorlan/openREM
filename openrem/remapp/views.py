@@ -206,7 +206,7 @@ def dx_summary_list_filter(request):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    paginator = Paginator(f, user_profile.itemsPerPage)
+    paginator = Paginator(f.queryset, user_profile.itemsPerPage)
     page = request.GET.get('page')
     try:
         study_list = paginator.page(page)
@@ -644,7 +644,7 @@ def rf_summary_list_filter(request):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    paginator = Paginator(f, user_profile.itemsPerPage)
+    paginator = Paginator(f.queryset, user_profile.itemsPerPage)
     page = request.GET.get('page')
     try:
         study_list = paginator.page(page)
@@ -1079,7 +1079,7 @@ def ct_summary_list_filter(request):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    paginator = Paginator(f, user_profile.itemsPerPage)
+    paginator = Paginator(f.queryset, user_profile.itemsPerPage)
     page = request.GET.get('page')
     try:
         study_list = paginator.page(page)
@@ -1467,7 +1467,7 @@ def mg_summary_list_filter(request):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    paginator = Paginator(f, user_profile.itemsPerPage)
+    paginator = Paginator(f.queryset, user_profile.itemsPerPage)
     page = request.GET.get('page')
     try:
         study_list = paginator.page(page)

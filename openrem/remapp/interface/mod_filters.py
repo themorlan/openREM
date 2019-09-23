@@ -149,12 +149,12 @@ class RFSummaryListFilter(django_filters.FilterSet):
     station_name = django_filters.CharFilter(lookup_type='icontains', label=u'Station name',
                                              name='generalequipmentmoduleattr__station_name')
     performing_physician_name = django_filters.CharFilter(lookup_type='icontains', label=u'Physician')
-    accession_number = django_filters.MethodFilter(action=custom_acc_filter, label=u'Accession number')
+    accession_number = django_filters.CharFilter(method='custom_acc_filter', label=u'Accession number')
     display_name = django_filters.CharFilter(lookup_type='icontains', label=u'Display name',
                                              name='generalequipmentmoduleattr__unique_equipment_name__display_name')
-    study_dap_min = django_filters.MethodFilter(action=dap_min_filter,
+    study_dap_min = django_filters.CharFilter(method='dap_min_filter',
                                                 label=mark_safe(u'Min study DAP (cGy.cm<sup>2</sup>)'))  # nosec
-    study_dap_max = django_filters.MethodFilter(action=dap_max_filter,
+    study_dap_max = django_filters.CharFilter(method='dap_max_filter',
                                                 label=mark_safe(u'Max study DAP (cGy.cm<sup>2</sup>)'))  # nosec
     test_data = django_filters.ChoiceFilter(lookup_type='isnull', label=u"Include possible test data",
                                             name='patientmoduleattr__not_patient_indicator', choices=TEST_CHOICES,
@@ -191,8 +191,8 @@ class RFSummaryListFilter(django_filters.FilterSet):
 class RFFilterPlusPid(RFSummaryListFilter):
     def __init__(self, *args, **kwargs):
         super(RFFilterPlusPid, self).__init__(*args, **kwargs)
-        self.filters['patient_name'] = django_filters.MethodFilter(action=custom_name_filter, label=u'Patient name')
-        self.filters['patient_id'] = django_filters.MethodFilter(action=custom_id_filter, label=u'Patient ID')
+        self.filters['patient_name'] = django_filters.CharFilter(method='custom_name_filter', label=u'Patient name')
+        self.filters['patient_id'] = django_filters.CharFilter(method='custom_id_filter', label=u'Patient ID')
 
 
 # Values from DICOM CID 10013 CT Acquisition Type
@@ -340,7 +340,7 @@ class CTSummaryListFilter(django_filters.FilterSet):
                                            name='generalequipmentmoduleattr__manufacturer_model_name')
     station_name = django_filters.CharFilter(lookup_type='icontains', label=u'Station name',
                                              name='generalequipmentmoduleattr__station_name')
-    accession_number = django_filters.MethodFilter(action=custom_acc_filter, label=u'Accession number')
+    accession_number = django_filters.CharFilter(method='custom_acc_filter', label=u'Accession number')
     study_dlp_min = django_filters.NumberFilter(lookup_type='gte', label=u'Min study DLP',
                                                 name='ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_'
                                                      'total')
@@ -398,8 +398,8 @@ class CTSummaryListFilter(django_filters.FilterSet):
 class CTFilterPlusPid(CTSummaryListFilter):
     def __init__(self, *args, **kwargs):
         super(CTFilterPlusPid, self).__init__(*args, **kwargs)
-        self.filters['patient_name'] = django_filters.MethodFilter(action=custom_name_filter, label=u'Patient name')
-        self.filters['patient_id'] = django_filters.MethodFilter(action=custom_id_filter, label=u'Patient ID')
+        self.filters['patient_name'] = django_filters.CharFilter(method='custom_name_filter', label=u'Patient name')
+        self.filters['patient_id'] = django_filters.CharFilter(method='custom_id_filter', label=u'Patient ID')
 
 
 def ct_acq_filter(filters, pid=False):
@@ -507,7 +507,7 @@ class MGSummaryListFilter(django_filters.FilterSet):
                                            name='generalequipmentmoduleattr__manufacturer_model_name')
     station_name = django_filters.CharFilter(lookup_type='icontains', label=u'Station name',
                                              name='generalequipmentmoduleattr__station_name')
-    accession_number = django_filters.MethodFilter(action=custom_acc_filter, label=u'Accession number')
+    accession_number = django_filters.CharFilter(method='custom_acc_filter', label=u'Accession number')
     display_name = django_filters.CharFilter(lookup_type='icontains', label=u'Display name',
                                              name='generalequipmentmoduleattr__unique_equipment_name__display_name')
     test_data = django_filters.ChoiceFilter(lookup_type='isnull', label=u"Include possible test data",
@@ -546,8 +546,8 @@ class MGSummaryListFilter(django_filters.FilterSet):
 class MGFilterPlusPid(MGSummaryListFilter):
     def __init__(self, *args, **kwargs):
         super(MGFilterPlusPid, self).__init__(*args, **kwargs)
-        self.filters['patient_name'] = django_filters.MethodFilter(action=custom_name_filter, label=u'Patient name')
-        self.filters['patient_id'] = django_filters.MethodFilter(action=custom_id_filter, label=u'Patient ID')
+        self.filters['patient_name'] = django_filters.CharFilter(method='custom_name_filter', label=u'Patient name')
+        self.filters['patient_id'] = django_filters.CharFilter(method='custom_id_filter', label=u'Patient ID')
 
 
 class DXSummaryListFilter(django_filters.FilterSet):
@@ -578,10 +578,10 @@ class DXSummaryListFilter(django_filters.FilterSet):
                                            name='generalequipmentmoduleattr__manufacturer_model_name')
     station_name = django_filters.CharFilter(lookup_type='icontains', label=u'Station name',
                                              name='generalequipmentmoduleattr__station_name')
-    accession_number = django_filters.MethodFilter(action=custom_acc_filter, label=u'Accession number')
-    study_dap_min = django_filters.MethodFilter(action=dap_min_filter,
+    accession_number = django_filters.CharFilter(method='custom_acc_filter', label=u'Accession number')
+    study_dap_min = django_filters.CharFilter(method='dap_min_filter',
                                                 label=mark_safe(u'Min study DAP (cGy.cm<sup>2</sup>)'))  # nosec
-    study_dap_max = django_filters.MethodFilter(action=dap_max_filter,
+    study_dap_max = django_filters.CharFilter(method='dap_max_filter',
                                                 label=mark_safe(u'Max study DAP (cGy.cm<sup>2</sup>)'))  # nosec
     # acquisition_dap_max = django_filters.NumberFilter(lookup_type='lte', label=mark_safe('Max acquisition DAP (Gy.m<sup>2</sup>)'), name='projectionxrayradiationdose__irradeventxraydata__dose_area_product') # nosec
     # acquisition_dap_min = django_filters.NumberFilter(lookup_type='gte', label=mark_safe('Min acquisition DAP (Gy.m<sup>2</sup>)'), name='projectionxrayradiationdose__irradeventxraydata__dose_area_product') # nosec
@@ -593,7 +593,7 @@ class DXSummaryListFilter(django_filters.FilterSet):
                                             name='patientmoduleattr__not_patient_indicator', choices=TEST_CHOICES,
                                             widget=forms.Select)
 
-    class Meta(object):
+    class Meta:
         """
         Lists fields and order-by information for django-filter filtering
         """
@@ -622,8 +622,8 @@ class DXSummaryListFilter(django_filters.FilterSet):
 class DXFilterPlusPid(DXSummaryListFilter):
     def __init__(self, *args, **kwargs):
         super(DXFilterPlusPid, self).__init__(*args, **kwargs)
-        self.filters['patient_name'] = django_filters.MethodFilter(action=custom_name_filter, label=u'Patient name')
-        self.filters['patient_id'] = django_filters.MethodFilter(action=custom_id_filter, label=u'Patient ID')
+        self.filters['patient_name'] = django_filters.CharFilter(method='custom_name_filter', label=u'Patient name')
+        self.filters['patient_id'] = django_filters.CharFilter(method='custom_id_filter', label=u'Patient ID')
 
 
 def dx_acq_filter(filters, pid=False):
