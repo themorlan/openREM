@@ -182,7 +182,7 @@ PHE 2019 X-ray, fluoroscopy and interventional radiology survey
 
 As with the PHE and IPEM CT surveys, the PHE exports on the radiography and fluoroscopy modality filter pages are
 designed to paste directly templates provided by PHE via the Medical-Physics-Engineering JiscMail e-mail list or
-available direcly from PHE.
+available directly from PHE.
 
 The spreadsheets provided are:
 
