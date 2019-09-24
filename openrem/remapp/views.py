@@ -108,13 +108,12 @@ def logout_page(request):
 def dx_summary_list_filter(request):
     """Obtain data for radiographic summary view
     """
-    from remapp.interface.mod_filters import dx_acq_filter, DXTestFilter
+    from remapp.interface.mod_filters import dx_acq_filter
     from remapp.forms import DXChartOptionsForm, itemsPerPageForm
     from openremproject import settings
 
     pid = bool(request.user.groups.filter(name='pidgroup'))
-    # f = dx_acq_filter(request.GET, pid=pid)
-    f = DXTestFilter(request.GET, queryset=GeneralStudyModuleAttr.objects.all())
+    f = dx_acq_filter(request.GET, pid=pid)
     print("f has {0}".format(f.qs.count()))
 
     try:

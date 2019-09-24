@@ -555,30 +555,25 @@ class DXSummaryListFilter(django_filters.FilterSet):
 
     """
 
-    # date_after = django_filters.DateFilter(lookup_type='gte', label=u'Date from', name='study_date',
-    #                                        widget=forms.TextInput(attrs={'class': 'datepicker'}))
-    # date_before = django_filters.DateFilter(lookup_type='lte', label=u'Date until', name='study_date',
-    #                                         widget=forms.TextInput(attrs={'class': 'datepicker'}))
-    study_description = django_filters.CharFilter(lookup_expr='icontains')  #, label=u'Study description')
-    # procedure_code_meaning = django_filters.CharFilter(lookup_type='icontains', label=u'Procedure',
-    #                                                    name='procedure_code_meaning')
-    # requested_procedure = django_filters.CharFilter(lookup_type='icontains', label=u'Requested procedure',
-    #                                                 name='requested_procedure_code_meaning')
-    # acquisition_protocol = django_filters.CharFilter(lookup_type='icontains', label=u'Acquisition protocol',
-    #                                                  name='projectionxrayradiationdose__irradeventxraydata__'
-    #                                                       'acquisition_protocol')
-    # patient_age_min = django_filters.NumberFilter(lookup_type='gt', label=u'Min age (yrs)',
-    #                                               name='patientstudymoduleattr__patient_age_decimal')
+    study_date__gt = django_filters.DateFilter(lookup_expr='gte', label='Date from', name='study_date',
+                                               widget=forms.TextInput(attrs={'class': 'datepicker'}))
+    study_date__lt = django_filters.DateFilter(lookup_expr='lte', label='Date until', name='study_date',
+                                               widget=forms.TextInput(attrs={'class': 'datepicker'}))
+    study_description = django_filters.CharFilter(lookup_expr='icontains', label='Study description')
+    procedure_code_meaning = django_filters.CharFilter(lookup_expr='icontains', label='Procedure')
+    requested_procedure_code_meaning = django_filters.CharFilter(lookup_expr='icontains', label='Requested procedure')
+    projectionxrayradiationdose__irradeventxraydata__acquisition_protocol = django_filters.CharFilter(
+        lookup_expr='icontains', label='Acquisition protocol')
+    # patientstudymoduleattr__patient_age_decimal__gt = django_filters.NumberFilter(lookup_expr='gte', label='Min age (yrs)')# lookup_expr='gt',
+    #                                                                              # label='Min age (yrs)')
+    #                                               # name='patientstudymoduleattr__patient_age_decimal')
     # patient_age_max = django_filters.NumberFilter(lookup_type='lt', label=u'Max age (yrs)',
     #                                               name='patientstudymoduleattr__patient_age_decimal')
-    # institution_name = django_filters.CharFilter(lookup_type='icontains', label=u'Hospital',
-    #                                              name='generalequipmentmoduleattr__institution_name')
-    # manufacturer = django_filters.CharFilter(lookup_type='icontains', label=u'Make',
-    #                                          name='generalequipmentmoduleattr__manufacturer')
-    # model_name = django_filters.CharFilter(lookup_type='icontains', label=u'Model',
-    #                                        name='generalequipmentmoduleattr__manufacturer_model_name')
-    # station_name = django_filters.CharFilter(lookup_type='icontains', label=u'Station name',
-    #                                          name='generalequipmentmoduleattr__station_name')
+    generalequipmentmoduleattr__institution_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Hospital')
+    generalequipmentmoduleattr__manufacturer = django_filters.CharFilter(lookup_expr='icontains', label=u'Make')
+    generalequipmentmoduleattr__manufacturer_model_name = django_filters.CharFilter(
+        lookup_expr='icontains', label='Model')
+    generalequipmentmoduleattr__station_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Station name')
     # accession_number = django_filters.CharFilter(method='custom_acc_filter', label=u'Accession number')
     # study_dap_min = django_filters.CharFilter(method='dap_min_filter',
     #                                             label=mark_safe(u'Min study DAP (cGy.cm<sup>2</sup>)'))  # nosec
@@ -599,7 +594,14 @@ class DXSummaryListFilter(django_filters.FilterSet):
         Lists fields and order-by information for django-filter filtering
         """
         model = GeneralStudyModuleAttr
-        fields = '__all__'
+        fields = [
+            'study_date__gt', 'study_date__lt',
+            'study_description', 'procedure_code_meaning', 'requested_procedure_code_meaning',
+            'projectionxrayradiationdose__irradeventxraydata__acquisition_protocol',
+            'generalequipmentmoduleattr__institution_name', 'generalequipmentmoduleattr__manufacturer',
+            'generalequipmentmoduleattr__manufacturer_model_name', 'generalequipmentmoduleattr__station_name',
+
+        ]
         # order_by = (
         #     ('-study_date', mark_safe('Exam date &darr;')),
         #     ('study_date', mark_safe('Exam date &uarr;')),
@@ -685,21 +687,3 @@ def dx_acq_filter(filters, pid=False):
     if pid:
         return DXFilterPlusPid(filters, queryset=studies.order_by().distinct())
     return DXSummaryListFilter(filters, queryset=studies.order_by().distinct())
-
-
-class DXTestFilter(django_filters.FilterSet):
-    accession_number = django_filters.CharFilter(lookup_expr='icontains')
-    total_dap = django_filters.NumberFilter()
-    total_dap__gt = django_filters.NumberFilter(name='total_dap', lookup_expr='gt')
-    total_dap__lt = django_filters.NumberFilter(name='total_dap', lookup_expr='lt')
-
-    class Meta:
-        model = GeneralStudyModuleAttr
-        fields = '__all__'
-
-    @property
-    def qs(self):
-        from django.db.models import Q
-        parent = super(DXTestFilter, self).qs
-        print("Parent has {0}".format(parent.count()))
-        return parent.filter(Q(modality_type__exact='DX') | Q(modality_type__exact='CR'))
