@@ -108,12 +108,14 @@ def logout_page(request):
 def dx_summary_list_filter(request):
     """Obtain data for radiographic summary view
     """
-    from remapp.interface.mod_filters import dx_acq_filter
+    from remapp.interface.mod_filters import dx_acq_filter, DXTestFilter
     from remapp.forms import DXChartOptionsForm, itemsPerPageForm
     from openremproject import settings
 
     pid = bool(request.user.groups.filter(name='pidgroup'))
-    f = dx_acq_filter(request.GET, pid=pid)
+    # f = dx_acq_filter(request.GET, pid=pid)
+    f = DXTestFilter(request.GET, queryset=GeneralStudyModuleAttr.objects.all())
+    print("f has {0}".format(f.qs.count()))
 
     try:
         # See if the user has plot settings in userprofile
@@ -206,7 +208,7 @@ def dx_summary_list_filter(request):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    paginator = Paginator(f.queryset, user_profile.itemsPerPage)
+    paginator = Paginator(f.qs, user_profile.itemsPerPage)
     page = request.GET.get('page')
     try:
         study_list = paginator.page(page)
