@@ -74,7 +74,7 @@ def custom_id_filter(queryset, value):
     return filtered
 
 
-def custom_acc_filter(queryset, value):
+def _custom_acc_filter(queryset, name, value):
     if not value:
         return queryset
 
@@ -90,8 +90,8 @@ def custom_acc_filter(queryset, value):
     return filtered
 
 
-def dap_min_filter(queryset, value):
-    if not value:
+def _total_dap_filter(queryset, name, value):
+    if not value or not name:
         return queryset
 
     from decimal import Decimal, InvalidOperation
@@ -99,14 +99,16 @@ def dap_min_filter(queryset, value):
         value_gy_m2 = old_div(Decimal(value), Decimal(1000000))
     except InvalidOperation:
         return queryset
-    filtered = queryset.filter(
-        projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total__gte=
-        value_gy_m2)
-    return filtered
+    if 'study_dap_min' in name:
+        return queryset.filter(total_dap__gte=value_gy_m2)
+    elif 'study_dap_max' in name:
+        return queryset.filter(total_dap__lte=value_gy_m2)
+    else:
+        return queryset
 
 
-def dap_max_filter(queryset, value):
-    if not value:
+def _event_dap_filter(queryset, name, value):
+    if not value or not name:
         return queryset
 
     from decimal import Decimal, InvalidOperation
@@ -114,10 +116,12 @@ def dap_max_filter(queryset, value):
         value_gy_m2 = old_div(Decimal(value), Decimal(1000000))
     except InvalidOperation:
         return queryset
-    filtered = queryset.filter(
-        projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total__lte=
-        value_gy_m2)
-    return filtered
+    if 'event_dap_min' in name:
+        return queryset.filter(projectionxrayradiationdose__irradeventxraydata__dose_area_product__gte=value_gy_m2)
+    elif 'event_dap_max' in name:
+        return queryset.filter(projectionxrayradiationdose__irradeventxraydata__dose_area_product__lte=value_gy_m2)
+    else:
+        return queryset
 
 
 class RFSummaryListFilter(django_filters.FilterSet):
@@ -222,13 +226,14 @@ EVENT_NUMBER_CHOICES = (
 )
 
 
-def _specify_event_numbers(queryset, value):
+def _specify_event_numbers(queryset, name, value):
     """Method filter for specifying number of events in each study
 
     :param queryset: Study list
     :param value: number of events
     :return: filtered queryset
     """
+    print("Name is {0}".format(name))
     try:
         value = int(value)
     except ValueError:
@@ -574,20 +579,18 @@ class DXSummaryListFilter(django_filters.FilterSet):
     generalequipmentmoduleattr__manufacturer_model_name = django_filters.CharFilter(
         lookup_expr='icontains', label='Model')
     generalequipmentmoduleattr__station_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Station name')
-    # accession_number = django_filters.CharFilter(method='custom_acc_filter', label=u'Accession number')
-    # study_dap_min = django_filters.CharFilter(method='dap_min_filter',
-    #                                             label=mark_safe(u'Min study DAP (cGy.cm<sup>2</sup>)'))  # nosec
-    # study_dap_max = django_filters.CharFilter(method='dap_max_filter',
-    #                                             label=mark_safe(u'Max study DAP (cGy.cm<sup>2</sup>)'))  # nosec
-    # # acquisition_dap_max = django_filters.NumberFilter(lookup_expr='lte', label=mark_safe('Max acquisition DAP (Gy.m<sup>2</sup>)'), name='projectionxrayradiationdose__irradeventxraydata__dose_area_product') # nosec
-    # # acquisition_dap_min = django_filters.NumberFilter(lookup_expr='gte', label=mark_safe('Min acquisition DAP (Gy.m<sup>2</sup>)'), name='projectionxrayradiationdose__irradeventxraydata__dose_area_product') # nosec
-    # display_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Display name',
-    #                                          name='generalequipmentmoduleattr__unique_equipment_name__display_name')
-    # num_events = django_filters.ChoiceFilter(action=_specify_event_numbers, label=u'Num. events total',
-    #                                          choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
-    # test_data = django_filters.ChoiceFilter(lookup_expr='isnull', label=u"Include possible test data",
-    #                                         name='patientmoduleattr__not_patient_indicator', choices=TEST_CHOICES,
-    #                                         widget=forms.Select)
+    accession_number = django_filters.CharFilter(method=_custom_acc_filter, label='Accession number')
+    study_dap_min = django_filters.NumberFilter(method=_total_dap_filter, label='Min study DAP (cGy·cm²)')
+    study_dap_max = django_filters.NumberFilter(method=_total_dap_filter, label='Max study DAP (cGy·cm²)')
+    event_dap_min = django_filters.NumberFilter(method=_event_dap_filter, label='Min acquisition DAP (cGy·cm²)',)
+    event_dap_max = django_filters.NumberFilter(method=_event_dap_filter, label='Max acquisition DAP (cGy·cm²)',)
+    generalequipmentmoduleattr__unique_equipment_name__display_name = django_filters.CharFilter(
+        lookup_expr='icontains', label='Display name')
+    num_events = django_filters.ChoiceFilter(method=_specify_event_numbers, label='Num. events total',
+                                             choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
+    test_data = django_filters.ChoiceFilter(lookup_expr='isnull', label=u"Include possible test data",
+                                            name='patientmoduleattr__not_patient_indicator', choices=TEST_CHOICES,
+                                            widget=forms.Select)
 
     class Meta:
         """
@@ -600,8 +603,11 @@ class DXSummaryListFilter(django_filters.FilterSet):
             'projectionxrayradiationdose__irradeventxraydata__acquisition_protocol',
             'generalequipmentmoduleattr__institution_name', 'generalequipmentmoduleattr__manufacturer',
             'generalequipmentmoduleattr__manufacturer_model_name', 'generalequipmentmoduleattr__station_name',
-
+            'accession_number', 'study_dap_min', 'study_dap_max',
+            'event_dap_min', 'event_dap_max',
+            'generalequipmentmoduleattr__unique_equipment_name__display_name', 'num_events', 'test_data',
         ]
+        #
         # order_by = (
         #     ('-study_date', mark_safe('Exam date &darr;')),
         #     ('study_date', mark_safe('Exam date &uarr;')),
