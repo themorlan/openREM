@@ -182,7 +182,7 @@ PHE 2019 X-ray, fluoroscopy and interventional radiology survey
 
 As with the PHE and IPEM CT surveys, the PHE exports on the radiography and fluoroscopy modality filter pages are
 designed to paste directly templates provided by PHE via the Medical-Physics-Engineering JiscMail e-mail list or
-available direcly from PHE.
+available directly from PHE.
 
 The spreadsheets provided are:
 
@@ -212,7 +212,7 @@ warning, and only include the first exposure of each study in the export.
 
 For multi-projection studies, filter as before, setting the 'Num. events total' filter if the exam normally has a
 specific number of views, and export using the 'PHE 2019 Survey: Study' button. If any of the studies have more than
-eight exposures, the export will automatically format the data to suit the template designed for skeletal studies. This
+six exposures, the export will automatically format the data to suit the template designed for skeletal studies. This
 allows for up to 20 exposures. However, you will need to request the 'bespoke' template from PHE as it was not
 distributed in the original email!
 

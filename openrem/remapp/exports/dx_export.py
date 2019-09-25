@@ -603,14 +603,14 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
         ]
         if not projection:
             row_data += [
-                exam.total_dap,
+                exam.dap_total_cgycm2(),
             ]
         else:
             row_data += [
                 projection_events[0].convert_gym2_to_cgycm2(),
             ]
         row_data += [
-            u'cGycm²',
+            u'cGy·cm²',
             u'{0} | {1} | {2}'.format(
                 exam.procedure_code_meaning, exam.requested_procedure_code_meaning, exam.study_description),
             patient_study_data['patient_weight'],
