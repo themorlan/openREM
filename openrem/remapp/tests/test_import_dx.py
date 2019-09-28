@@ -167,7 +167,7 @@ class ImportCarestreamDR7500(TestCase):
         self.assertEqual(studies[1].patientmoduleattr_set.get().patient_birth_date, datetime.date(2014, 6, 20))
         self.assertAlmostEqual(studies[0].patientstudymoduleattr_set.get().patient_age_decimal, Decimal(56.9))
 
-        # Test that irradiation event data is stored correctl
+        # Test that irradiation event data is stored correctly
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0].
             acquisition_protocol, 'ABD_1_VIEW')
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[1].
@@ -265,13 +265,10 @@ class ImportCarestreamDR7500(TestCase):
             irradeventxraysourcedata_set.get().xrayfilters_set.order_by('id')[1].xray_filter_thickness_maximum,
             Decimal(0.206))
 
-
         self.assertAlmostEqual(studies[1].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0].
             irradeventxraysourcedata_set.get().grid_focal_distance, Decimal(1828.8))
         self.assertAlmostEqual(studies[1].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[1].
             irradeventxraysourcedata_set.get().grid_focal_distance, Decimal(1828.8))
-
-
 
         #Test exposure data is stored correctly
         self.assertAlmostEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0].
@@ -285,7 +282,6 @@ class ImportCarestreamDR7500(TestCase):
             irradeventxraysourcedata_set.get().exposure_set.get().exposure, Decimal(10 * 1000))
         self.assertAlmostEqual(studies[1].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[1].
             irradeventxraysourcedata_set.get().exposure_set.get().exposure, Decimal(9 * 1000))
-
 
         #Test that irradiation event detector data is stored correctly
         self.assertAlmostEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0].
@@ -321,6 +317,15 @@ class ImportCarestreamDR7500(TestCase):
         self.assertAlmostEqual(studies[1].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[1].
             irradeventxraydetectordata_set.get().relative_xray_exposure, Decimal(1430))
 
+        # Test summary fields
+        self.assertAlmostEqual(studies[0].total_dap_a, Decimal(3.28 / 100000))
+        self.assertAlmostEqual(studies[0].total_dap, Decimal(3.28 / 100000))
+        self.assertEqual(studies[0].number_of_events, 3)
+        self.assertEqual(studies[0].number_of_planes, 1)
+        self.assertAlmostEqual(studies[1].total_dap_a, Decimal(21.17 / 100000))
+        self.assertAlmostEqual(studies[1].total_dap, Decimal(21.17 / 100000))
+        self.assertEqual(studies[1].number_of_events, 2)
+        self.assertEqual(studies[1].number_of_planes, 1)
 
 
     def test_filter_thickness_order(self):
