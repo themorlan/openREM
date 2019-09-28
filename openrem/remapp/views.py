@@ -114,7 +114,6 @@ def dx_summary_list_filter(request):
 
     pid = bool(request.user.groups.filter(name='pidgroup'))
     f = dx_acq_filter(request.GET, pid=pid)
-    print("f has {0}".format(f.qs.count()))
 
     try:
         # See if the user has plot settings in userprofile
@@ -1080,7 +1079,7 @@ def ct_summary_list_filter(request):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    paginator = Paginator(f.queryset, user_profile.itemsPerPage)
+    paginator = Paginator(f.qs, user_profile.itemsPerPage)
     page = request.GET.get('page')
     try:
         study_list = paginator.page(page)
