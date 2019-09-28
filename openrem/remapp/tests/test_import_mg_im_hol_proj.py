@@ -33,3 +33,6 @@ class ImportMGImgHologicPropProjection(TestCase):
         self.assertAlmostEqual(study.projectionxrayradiationdose_set.get().accumxraydose_set.get(
             ).accummammographyxraydose_set.all()[0].accumulated_average_glandular_dose, Decimal(0.26))
 
+        # Test summary fields
+        self.assertAlmostEqual(study.total_agd_right, Decimal(0.26))
+        self.assertEqual(study.number_of_events, 1)
