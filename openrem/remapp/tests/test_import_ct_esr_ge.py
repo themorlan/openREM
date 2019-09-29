@@ -1018,6 +1018,10 @@ class ImportCTRDSR(TestCase):
 
         self.assertEqual(studies[0].number_of_events, 6)
         self.assertAlmostEqual(studies[0].total_dlp, Decimal(415.82))
+        self.assertEqual(studies[0].number_of_axial, 0)
+        self.assertEqual(studies[0].number_of_spiral, 2)
+        self.assertEqual(studies[0].number_of_stationary, 0)
+        self.assertEqual(studies[0].number_of_const_angle, 4)
 
 
 class ImportNonDoseSR(TestCase):
