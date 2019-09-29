@@ -4,6 +4,7 @@ OpenREM version history
 
 0.10.0b2 (2019-09-xx)
 ---------------------
+* `#776`_  Documentation: grammar and spelling correction for PHE exports
 * `#775`_  Exports, documentation: fixed units issue and minor docs issue for PHE DX export
 * `#774`_  Charts: fixed issue where charts were mis-labelled if "Plot a series per system" was unchecked
 * `#771`_  Interface: entire fluoro exam row now highlighted when dose alert exceeded
