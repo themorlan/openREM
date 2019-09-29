@@ -781,9 +781,9 @@ def rf_plot_calculations(f, median_available, plot_average_choice,
 def rf_detail_view(request, pk=None):
     """Detail view for an RF study
     """
+    from decimal import Decimal
     from django.db.models import Sum
     import numpy as np
-    import operator
     from remapp.models import HighDoseMetricAlertSettings, SkinDoseMapCalcSettings
     from django.core.exceptions import ObjectDoesNotExist
     from datetime import timedelta
@@ -796,6 +796,10 @@ def rf_detail_view(request, pk=None):
 
     # get the totals
     irradiation_types = [(u'Fluoroscopy',), (u'Acquisition',)]
+    fluoro_dap_total = Decimal(0)
+    fluoro_rp_total = Decimal(0)
+    acq_dap_total = Decimal(0)
+    acq_rp_total = Decimal(0)
     stu_dose_totals = [(0, 0), (0, 0)]
     stu_time_totals = [0, 0]
     total_dap = 0
@@ -808,12 +812,24 @@ def rf_detail_view(request, pk=None):
         'patient_orientation_modifier_cid', 'acquisition_plane').all()
     for dose_ds in accumxraydose_set_all_planes:
         accum_dose_ds = dose_ds.accumprojxraydose_set.get()
-        stu_dose_totals[0] = tuple(map(operator.add, stu_dose_totals[0],
-                                       (accum_dose_ds.fluoro_dose_area_product_total*1000000,
-                                        accum_dose_ds.fluoro_dose_rp_total)))
-        stu_dose_totals[1] = tuple(map(operator.add, stu_dose_totals[1],
-                                       (accum_dose_ds.acquisition_dose_area_product_total*1000000,
-                                        accum_dose_ds.acquisition_dose_rp_total)))
+        try:
+            fluoro_dap_total += accum_dose_ds.fluoro_gym2_to_cgycm2()
+        except TypeError:
+            pass
+        try:
+            fluoro_rp_total += accum_dose_ds.fluoro_dose_rp_total
+        except TypeError:
+            pass
+        try:
+            acq_dap_total += accum_dose_ds.acq_gym2_to_cgycm2()
+        except TypeError:
+            pass
+        try:
+            acq_rp_total += accum_dose_ds.acquisition_dose_rp_total
+        except TypeError:
+            pass
+        stu_dose_totals[0] = (fluoro_dap_total, fluoro_rp_total)
+        stu_dose_totals[1] = (acq_dap_total, acq_rp_total)
         stu_time_totals[0] = stu_time_totals[0] + accum_dose_ds.total_fluoro_time
         stu_time_totals[1] = stu_time_totals[1] + accum_dose_ds.total_acquisition_time
         total_dap = total_dap + accum_dose_ds.dose_area_product_total
