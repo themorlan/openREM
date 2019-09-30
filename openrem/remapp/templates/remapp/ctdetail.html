@@ -78,7 +78,7 @@
 
       <tr>
         <td rowspan="2">{{ event.acquisition_protocol }}</td>
-        <td rowspan="2">{{ event.ct_acquisition_type }}</td>
+        <td rowspan="2">{{ event.ct_acquisition_type.code_meaning }}</td>
         <td rowspan="2">
           {{ event.mean_ctdivol|floatformat:2 }}
           {% if event.ctdiw_phantom_type.code_value == "113691" %}
