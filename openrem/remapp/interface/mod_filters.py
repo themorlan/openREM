@@ -330,17 +330,21 @@ class CTSummaryListFilter(django_filters.FilterSet):
     requested_procedure_code_meaning = django_filters.CharFilter(lookup_expr='icontains', label='Requested procedure')
     projectionxrayradiationdose__irradeventxraydata__acquisition_protocol = django_filters.CharFilter(
         lookup_expr='icontains', label='Acquisition protocol')
-    # patient_age_min = django_filters.NumberFilter(lookup_expr='gt', label=u'Min age (yrs)',
-    #                                               name='patientstudymoduleattr__patient_age_decimal')
-    # patient_age_max = django_filters.NumberFilter(lookup_expr='lt', label=u'Max age (yrs)',
-    #                                               name='patientstudymoduleattr__patient_age_decimal')
+    patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(lookup_expr='gte',
+                                                                                   label=u'Min age (yrs)',
+                                                                                   name='patientstudymoduleattr'
+                                                                                        '__patient_age_decimal')
+    patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(lookup_expr='lte',
+                                                                                   label=u'Max age (yrs)',
+                                                                                   name='patientstudymoduleattr'
+                                                                                        '__patient_age_decimal')
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Hospital')
     generalequipmentmoduleattr__manufacturer = django_filters.CharFilter(lookup_expr='icontains', label=u'Make')
     generalequipmentmoduleattr__manufacturer_model_name = django_filters.CharFilter(
         lookup_expr='icontains', label='Model')
     generalequipmentmoduleattr__station_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Station name')
     accession_number = django_filters.CharFilter(method=_custom_acc_filter, label='Accession number')
-    total_dlp__gt = django_filters.NumberFilter(label="Min study DLP")
+    total_dlp__gte = django_filters.NumberFilter(lookup_expr='gte', name='total_dlp', label="Min study DLP")
     # study_dlp_min = django_filters.NumberFilter(lookup_expr='gte', label=u'Min study DLP',
     #                                             name='ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_'
     #                                                  'total')
@@ -381,7 +385,8 @@ class CTSummaryListFilter(django_filters.FilterSet):
             'projectionxrayradiationdose__irradeventxraydata__acquisition_protocol',
             'generalequipmentmoduleattr__institution_name', 'generalequipmentmoduleattr__manufacturer',
             'generalequipmentmoduleattr__manufacturer_model_name', 'generalequipmentmoduleattr__station_name',
-            'accession_number', 'total_dlp__gt',
+            'patientstudymoduleattr__patient_age_decimal__gte', 'patientstudymoduleattr__patient_age_decimal__lte',
+            'accession_number', 'total_dlp__gte',
             ]
 
         # order_by = (
@@ -572,11 +577,14 @@ class DXSummaryListFilter(django_filters.FilterSet):
     requested_procedure_code_meaning = django_filters.CharFilter(lookup_expr='icontains', label='Requested procedure')
     projectionxrayradiationdose__irradeventxraydata__acquisition_protocol = django_filters.CharFilter(
         lookup_expr='icontains', label='Acquisition protocol')
-    # patientstudymoduleattr__patient_age_decimal__gt = django_filters.NumberFilter(lookup_expr='gte', label='Min age (yrs)')# lookup_expr='gt',
-    #                                                                              # label='Min age (yrs)')
-    #                                               # name='patientstudymoduleattr__patient_age_decimal')
-    # patient_age_max = django_filters.NumberFilter(lookup_expr='lt', label=u'Max age (yrs)',
-    #                                               name='patientstudymoduleattr__patient_age_decimal')
+    patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(lookup_expr='gte',
+                                                                                   label=u'Min age (yrs)',
+                                                                                   name='patientstudymoduleattr'
+                                                                                        '__patient_age_decimal')
+    patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(lookup_expr='lte',
+                                                                                   label=u'Max age (yrs)',
+                                                                                   name='patientstudymoduleattr'
+                                                                                        '__patient_age_decimal')
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Hospital')
     generalequipmentmoduleattr__manufacturer = django_filters.CharFilter(lookup_expr='icontains', label=u'Make')
     generalequipmentmoduleattr__manufacturer_model_name = django_filters.CharFilter(
@@ -606,6 +614,7 @@ class DXSummaryListFilter(django_filters.FilterSet):
             'projectionxrayradiationdose__irradeventxraydata__acquisition_protocol',
             'generalequipmentmoduleattr__institution_name', 'generalequipmentmoduleattr__manufacturer',
             'generalequipmentmoduleattr__manufacturer_model_name', 'generalequipmentmoduleattr__station_name',
+            'patientstudymoduleattr__patient_age_decimal__gte', 'patientstudymoduleattr__patient_age_decimal__lte',
             'accession_number', 'study_dap_min', 'study_dap_max',
             'event_dap_min', 'event_dap_max',
             'generalequipmentmoduleattr__unique_equipment_name__display_name', 'num_events', 'test_data',
