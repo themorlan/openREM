@@ -118,10 +118,14 @@ class ImportMGImg(TestCase):
             )[0].irradeventxraymechanicaldata_set.get().
                 doserelateddistancemeasurements_set.get().distance_source_to_entrance_surface, Decimal(607))
 
+        # Test summary fields
+        self.assertEqual(study.number_of_events, 1)
+        self.assertAlmostEqual(study.total_agd_left, Decimal(0.01373)*Decimal(100))
+
     def test_import_mg_img_ge_pid(self):
         """
-        Imports a known mammography image file derived from a GE Senographe DS image, and tests the values
-        imported against those expected.
+        Imports a known mammography image file derived from a GE Senographe DS image, and tests the patient name and ID
+        are recorded correctly in plain text
         """
         import datetime
         pid = PatientIDSettings.objects.create()
@@ -148,8 +152,8 @@ class ImportMGImg(TestCase):
 
     def test_import_mg_img_ge_pid_hashed(self):
         """
-        Imports a known mammography image file derived from a GE Senographe DS image, and tests the values
-        imported against those expected.
+        Imports a known mammography image file derived from a GE Senographe DS image, and tests the name and ID are
+        recorded correctly as a hash of the original values
         """
         pid = PatientIDSettings.objects.create()
         pid.name_stored = True
@@ -202,9 +206,13 @@ class ImportDuplicatesMG(TestCase):
 
         # Check study has been imported, with one event
         self.assertEqual(GeneralStudyModuleAttr.objects.all().count(), 1)
-        number_events = GeneralStudyModuleAttr.objects.order_by('pk')[0].projectionxrayradiationdose_set.get(
-            ).irradeventxraydata_set.all().count()
+        study = GeneralStudyModuleAttr.objects.order_by('pk')[0]
+        number_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all().count()
         self.assertEqual(number_events, 1)
+
+        # Check summary fields
+        self.assertAlmostEqual(study.total_agd_left, Decimal(0.00547)*Decimal(100))
+        self.assertEqual(study.number_of_events, 1)
 
         with LogCapture(level=logging.DEBUG) as log1:
             # Import second object, same time etc
@@ -212,9 +220,13 @@ class ImportDuplicatesMG(TestCase):
 
             # Check still one study, one event
             self.assertEqual(GeneralStudyModuleAttr.objects.all().count(), 1)
-            number_events = GeneralStudyModuleAttr.objects.order_by('pk')[0].projectionxrayradiationdose_set.get(
-                ).irradeventxraydata_set.all().count()
+            study = GeneralStudyModuleAttr.objects.order_by('pk')[0]
+            number_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all().count()
             self.assertEqual(number_events, 1)
+
+            # Check summary fields
+            self.assertAlmostEqual(study.total_agd_left, Decimal(0.00547) * Decimal(100))
+            self.assertEqual(study.number_of_events, 1)
 
             # Check log message
             log1.check_present(('remapp.extractors.mam', 'DEBUG',
@@ -226,9 +238,13 @@ class ImportDuplicatesMG(TestCase):
 
         # Check one study, two events
         self.assertEqual(GeneralStudyModuleAttr.objects.all().count(), 1)
-        number_events = GeneralStudyModuleAttr.objects.order_by('pk')[0].projectionxrayradiationdose_set.get(
-        ).irradeventxraydata_set.all().count()
+        study = GeneralStudyModuleAttr.objects.order_by('pk')[0]
+        number_events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all().count()
         self.assertEqual(number_events, 2)
+
+        # Check summary fields
+        self.assertAlmostEqual(study.total_agd_left, Decimal(0.00547 + 0.01409) * Decimal(100))
+        self.assertEqual(study.number_of_events, 2)
 
         with LogCapture(level=logging.DEBUG) as log2:
             # Import second object again - should be stopped on event UID this time

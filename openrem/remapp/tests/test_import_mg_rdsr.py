@@ -203,3 +203,8 @@ class ImportCTRDSR(TestCase):
         self.assertAlmostEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
             )[1].irradeventxraymechanicaldata_set.get().
                 doserelateddistancemeasurements_set.get().distance_source_to_detector, Decimal(700.00))
+
+        # Test summary fields
+        self.assertAlmostEqual(studies[0].total_agd_left, Decimal(1.30))
+        self.assertAlmostEqual(studies[0].total_agd_right, Decimal(1.28))
+        self.assertEqual(studies[0].number_of_events, 2)

@@ -161,6 +161,13 @@ class ImportRFRDSRSiemens(TestCase):
         source_data = event_data.irradeventxraysourcedata_set.get()
         self.assertEqual(source_data.ii_field_size, 220)
 
+        # Test summary fields
+        self.assertAlmostEqual(study.total_dap_a, Decimal(0.000016))
+        self.assertAlmostEqual(study.total_dap, Decimal(0.000016))
+        self.assertAlmostEqual(study.total_rp_dose_a, Decimal(0.00252))
+        self.assertEqual(study.number_of_events, 8)
+        self.assertEqual(study.number_of_planes, 1)
+
 
 class ImportRFRDSRGESurgical(TestCase):
     """
@@ -208,6 +215,13 @@ class ImportRFRDSRGESurgical(TestCase):
         self.assertAlmostEqual(event_4_source.average_xray_tube_current, Decimal(18.90340042))
         self.assertEqual(event_4_source.xraygrid_set.get().xray_grid.code_meaning, u'Fixed Grid')
         self.assertEqual(event_4_source.xraygrid_set.get().xray_grid.code_value, u'111641')
+
+        # Test summary fields
+        self.assertAlmostEqual(study.total_dap_a, Decimal(0.00024126))
+        self.assertAlmostEqual(study.total_dap, Decimal(0.00024126))
+        self.assertAlmostEqual(study.total_rp_dose_a, Decimal(0.01173170))
+        self.assertEqual(study.number_of_events, 8)
+        self.assertEqual(study.number_of_planes, 1)
 
 
 class ImportRFRDSRGEOECMiniView(TestCase):
