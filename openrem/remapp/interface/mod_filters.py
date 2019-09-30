@@ -230,10 +230,10 @@ def _specify_event_numbers(queryset, name, value):
     """Method filter for specifying number of events in each study
 
     :param queryset: Study list
+    :param name: field name (not used)
     :param value: number of events
     :return: filtered queryset
     """
-    print("Name is {0}".format(name))
     try:
         value = int(value)
     except ValueError:
@@ -245,10 +245,11 @@ def _specify_event_numbers(queryset, name, value):
     return filtered
 
 
-def _specify_event_numbers_spiral(queryset, value):
+def _specify_event_numbers_spiral(queryset, name, value):
     """Method filter for specifying number of spiral (helical) events in each study
 
     :param queryset: Study list
+    :param name: field name (not used)
     :param value: number of events
     :return: filtered queryset
     """
@@ -263,10 +264,11 @@ def _specify_event_numbers_spiral(queryset, value):
     return filtered
 
 
-def _specify_event_numbers_axial(queryset, value):
+def _specify_event_numbers_axial(queryset, name, value):
     """Method filter for specifying number of axial events in each study
 
     :param queryset: Study list
+    :param name: field name (not used)
     :param value: number of events
     :return: filtered queryset
     """
@@ -281,10 +283,11 @@ def _specify_event_numbers_axial(queryset, value):
     return filtered
 
 
-def _specify_event_numbers_spr(queryset, value):
+def _specify_event_numbers_spr(queryset, name, value):
     """Method filter for specifying number of scan projection radiograph events in each study
 
     :param queryset: Study list
+    :param name: field name (not used)
     :param value: number of events
     :return: filtered queryset
     """
@@ -299,10 +302,11 @@ def _specify_event_numbers_spr(queryset, value):
     return filtered
 
 
-def _specify_event_numbers_stationary(queryset, value):
+def _specify_event_numbers_stationary(queryset, name, value):
     """Method filter for specifying number of scan projection radiograph events in each study
 
     :param queryset: Study list
+    :param name: field name (not used)
     :param value: number of events
     :return: filtered queryset
     """
@@ -345,34 +349,27 @@ class CTSummaryListFilter(django_filters.FilterSet):
     generalequipmentmoduleattr__station_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Station name')
     accession_number = django_filters.CharFilter(method=_custom_acc_filter, label='Accession number')
     total_dlp__gte = django_filters.NumberFilter(lookup_expr='gte', name='total_dlp', label="Min study DLP")
-    # study_dlp_min = django_filters.NumberFilter(lookup_expr='gte', label=u'Min study DLP',
-    #                                             name='ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_'
-    #                                                  'total')
-    # study_dlp_max = django_filters.NumberFilter(lookup_expr='lte', label=u'Max study DLP',
-    #                                             name='ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_'
-    #                                                  'total')
-    # display_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Display name',
-    #                                          name='generalequipmentmoduleattr__unique_equipment_name__display_name')
-    # test_data = django_filters.ChoiceFilter(lookup_expr='isnull', label=u"Include possible test data",
-    #                                         name='patientmoduleattr__not_patient_indicator', choices=TEST_CHOICES,
-    #                                         widget=forms.Select)
-    # ct_acquisition_type = django_filters.MultipleChoiceFilter(lookup_expr='iexact',
-    #                                                           label=u'Acquisition type restriction',
-    #                                                           name='ctradiationdose__ctirradiationeventdata__ct_'
-    #                                                                'acquisition_type__code_meaning',
-    #                                                           choices=CT_ACQ_TYPE_CHOICES,
-    #                                                           widget=forms.CheckboxSelectMultiple)
-    # num_events = django_filters.ChoiceFilter(action=_specify_event_numbers, label=u'Num. events total',
-    #                                          choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
-    # num_spiral_events = django_filters.ChoiceFilter(action=_specify_event_numbers_spiral, label=u'Num. spiral events',
-    #                                                 choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
-    # num_axial_events = django_filters.ChoiceFilter(action=_specify_event_numbers_axial, label=u'Num. axial events',
-    #                                                choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
-    # num_spr_events = django_filters.ChoiceFilter(action=_specify_event_numbers_spr, label=u'Num. localisers',
-    #                                              choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
-    # num_stationary_events = django_filters.ChoiceFilter(action=_specify_event_numbers_stationary,
-    #                                                     label=u'Num. stationary events', choices=EVENT_NUMBER_CHOICES,
-    #                                                     widget=forms.Select)
+    total_dlp__lte = django_filters.NumberFilter(lookup_expr='lte', name='total_dlp', label="Max study DLP")
+    generalequipmentmoduleattr__unique_equipment_name__display_name = django_filters.CharFilter(
+        lookup_expr='icontains', label='Display name')
+    test_data = django_filters.ChoiceFilter(lookup_expr='isnull', label=u"Include possible test data",
+                                            name='patientmoduleattr__not_patient_indicator', choices=TEST_CHOICES,
+                                            widget=forms.Select)
+    ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning = django_filters.MultipleChoiceFilter(
+        lookup_expr='iexact', label=u'Acquisition type restriction',
+        name='ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning', choices=CT_ACQ_TYPE_CHOICES,
+        widget=forms.CheckboxSelectMultiple)
+    num_events = django_filters.ChoiceFilter(method=_specify_event_numbers, label=u'Num. events total',
+                                             choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
+    num_spiral_events = django_filters.ChoiceFilter(method=_specify_event_numbers_spiral, label=u'Num. spiral events',
+                                                    choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
+    num_axial_events = django_filters.ChoiceFilter(method=_specify_event_numbers_axial, label=u'Num. axial events',
+                                                   choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
+    num_spr_events = django_filters.ChoiceFilter(method=_specify_event_numbers_spr, label=u'Num. localisers',
+                                                 choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
+    num_stationary_events = django_filters.ChoiceFilter(method=_specify_event_numbers_stationary,
+                                                        label=u'Num. stationary events', choices=EVENT_NUMBER_CHOICES,
+                                                        widget=forms.Select)
 
     class Meta:
         """
@@ -386,7 +383,10 @@ class CTSummaryListFilter(django_filters.FilterSet):
             'generalequipmentmoduleattr__institution_name', 'generalequipmentmoduleattr__manufacturer',
             'generalequipmentmoduleattr__manufacturer_model_name', 'generalequipmentmoduleattr__station_name',
             'patientstudymoduleattr__patient_age_decimal__gte', 'patientstudymoduleattr__patient_age_decimal__lte',
-            'accession_number', 'total_dlp__gte',
+            'accession_number', 'total_dlp__gte', 'total_dlp__lte',
+            'generalequipmentmoduleattr__unique_equipment_name__display_name', 'test_data',
+            'ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning', 'num_events',
+            'num_spiral_events', 'num_axial_events', 'num_spr_events', 'num_stationary_events',
             ]
 
         # order_by = (
