@@ -396,29 +396,33 @@ class CTSummaryListFilter(django_filters.FilterSet):
 
     ordering = django_filters.OrderingFilter(
         choices=(
-            ('-study_date', 'Exam date -'),
-            ('study_date', 'Exam date +'),
+            ('-study_date', 'Exam date ⬇'),
+            ('study_date', 'Exam date ⬆'),
             ('study_description', 'Study Description'),
+            ('generalequipmentmoduleattr__institution_name', 'Hospital'),
+            ('generalequipmentmoduleattr__manufacturer', 'Make'),
+            ('generalequipmentmoduleattr__manufacturer_model_name', 'Model'),
+            ('generalequipmentmoduleattr__unique_equipment_name__display_name', 'Display name'),
+            ('study_description', 'Study description'),
+            ('-total_dlp', 'Total DLP'),
         ),
         fields=(
             ('study_date', '-study_date'),
             ('study_date', 'study_date'),
             ('study_description', 'study_description'),
+            ('generalequipmentmoduleattr__institution_name', 'generalequipmentmoduleattr__institution_name'),
+            ('generalequipmentmoduleattr__manufacturer', 'generalequipmentmoduleattr__manufacturer'),
+            ('generalequipmentmoduleattr__manufacturer_model_name',
+             'generalequipmentmoduleattr__manufacturer_model_name'),
+            ('generalequipmentmoduleattr__unique_equipment_name__display_name',
+             'generalequipmentmoduleattr__unique_equipment_name__display_name'),
+            ('study_description', 'study_description'),
+            ('total_dlp', '-total_dlp'),
         ),
     )
-        # order_by = (
-        #     ('-study_date', mark_safe('Exam date &darr;')),
-        #     ('study_date', mark_safe('Exam date &uarr;')),
-        #     ('generalequipmentmoduleattr__institution_name', 'Hospital'),
-        #     ('generalequipmentmoduleattr__manufacturer', 'Make'),
-        #     ('generalequipmentmoduleattr__manufacturer_model_name', 'Model name'),
-        #     ('generalequipmentmoduleattr__station_name', 'Station name'),
-        #     ('study_description', 'Study description'),
-        #     ('-ctradiationdose__ctaccumulateddosedata__ct_dose_length_product_total', 'Total DLP'),
-        # )
 
-    # def get_order_by(self, order_value):
-    #     if order_value == 'study_date':
+    # def get_order_by(self, ordering):
+    #     if ordering == 'study_date':
     #         return ['study_date', 'study_time']
     #     elif order_value == '-study_date':
     #         return ['-study_date', '-study_time']
