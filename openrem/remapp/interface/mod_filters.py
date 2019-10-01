@@ -394,7 +394,7 @@ class CTSummaryListFilter(django_filters.FilterSet):
             'num_spiral_events', 'num_axial_events', 'num_spr_events', 'num_stationary_events',
             ]
 
-    ordering = django_filters.OrderingFilter(
+    o = django_filters.OrderingFilter(
         choices=(
             ('-study_date', 'Exam date ⬇'),
             ('study_date', 'Exam date ⬆'),
