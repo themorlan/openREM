@@ -105,7 +105,8 @@ class ExportCTxlsx(TestCase):
         as expected.
 
         """
-        filter_set = {"ct_acquisition_type": ["Spiral Acquisition"]}
+        filter_set = {
+            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning": ["Spiral Acquisition"]}
         pid = True
         name = False
         patient_id = True
@@ -123,7 +124,8 @@ class ExportCTxlsx(TestCase):
         as expected.
 
         """
-        filter_set = {"ct_acquisition_type": ["Sequenced Acquisition"]}
+        filter_set = {
+            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning": ["Sequenced Acquisition"]}
         pid = True
         name = False
         patient_id = True
@@ -141,7 +143,9 @@ class ExportCTxlsx(TestCase):
         as expected.
 
         """
-        filter_set = {"ct_acquisition_type": ["Spiral Acquisition", "Sequenced Acquisition"]}
+        filter_set = {
+            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning": ["Spiral Acquisition",
+                                                                                           "Sequenced Acquisition"]}
         pid = True
         name = False
         patient_id = True
