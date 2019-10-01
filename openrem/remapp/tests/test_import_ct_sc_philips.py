@@ -36,3 +36,10 @@ class ImportCTPhilipsSC(TestCase):
         # Test that two studies have been imported
         self.assertEqual(studies.count(), 1)
 
+        self.assertEqual(studies[0].number_of_events, 4)
+        self.assertAlmostEqual(studies[0].total_dlp, Decimal(1102.44609))
+        self.assertEqual(studies[0].number_of_axial, 0)
+        self.assertEqual(studies[0].number_of_spiral, 3)
+        self.assertEqual(studies[0].number_of_stationary, 0)
+        self.assertEqual(studies[0].number_of_const_angle, 1)
+

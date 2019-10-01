@@ -675,8 +675,6 @@ class ImportCTRDSR(TestCase):
         self.assertAlmostEqual(studies[1].ctradiationdose_set.get().
             ctirradiationeventdata_set.order_by('id')[26].number_of_xray_sources, Decimal(1))
 
-
-
         self.assertAlmostEqual(studies[1].ctradiationdose_set.get().
             ctirradiationeventdata_set.order_by('id')[5].pitch_factor, Decimal(0.97))
         self.assertAlmostEqual(studies[1].ctradiationdose_set.get().
@@ -713,7 +711,6 @@ class ImportCTRDSR(TestCase):
             ctirradiationeventdata_set.order_by('id')[25].ctdiw_phantom_type.code_meaning, 'IEC Body Dosimetry Phantom')
         self.assertEqual(studies[1].ctradiationdose_set.get().
             ctirradiationeventdata_set.order_by('id')[26].ctdiw_phantom_type.code_meaning, 'IEC Body Dosimetry Phantom')
-
 
         # Test that CT xraysource data is recorded correctly
         self.assertAlmostEqual(studies[0].ctradiationdose_set.get().
@@ -1019,7 +1016,12 @@ class ImportCTRDSR(TestCase):
             ctirradiationeventdata_set.order_by('id')[26].ctxraysourceparameters_set.get().
                 xray_tube_current, Decimal(70))
 
-
+        self.assertEqual(studies[0].number_of_events, 6)
+        self.assertAlmostEqual(studies[0].total_dlp, Decimal(415.82))
+        self.assertEqual(studies[0].number_of_axial, 0)
+        self.assertEqual(studies[0].number_of_spiral, 2)
+        self.assertEqual(studies[0].number_of_stationary, 0)
+        self.assertEqual(studies[0].number_of_const_angle, 4)
 
 
 class ImportNonDoseSR(TestCase):

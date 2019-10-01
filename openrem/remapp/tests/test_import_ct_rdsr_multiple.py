@@ -3,6 +3,7 @@
 
 import os
 from collections import Counter
+from decimal import Decimal
 from django.test import TestCase
 import logging
 from testfixtures import LogCapture
@@ -46,6 +47,13 @@ class ImportMultipleRDSRs(TestCase):  # pylint: disable=unused-variable
             self.assertEqual(sop_instance_uid_list1, Counter(
                 [u'1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.11.0']))
 
+            self.assertEqual(study.number_of_events, 1)
+            self.assertAlmostEqual(study.total_dlp, Decimal(7.46))
+            self.assertEqual(study.number_of_axial, 0)
+            self.assertEqual(study.number_of_spiral, 0)
+            self.assertEqual(study.number_of_stationary, 0)
+            self.assertEqual(study.number_of_const_angle, 1)
+
             rdsr(dicom_path_2)
             study = GeneralStudyModuleAttr.objects.order_by('pk')[0]
             num_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.count()
@@ -57,6 +65,13 @@ class ImportMultipleRDSRs(TestCase):  # pylint: disable=unused-variable
             self.assertEqual(GeneralStudyModuleAttr.objects.count(), 1)
             self.assertEqual(num_events, 2)
             self.assertEqual(sop_instance_uid_list2, uid_list2)
+
+            self.assertEqual(study.number_of_events, 2)
+            self.assertAlmostEqual(study.total_dlp, Decimal(77.27))
+            self.assertEqual(study.number_of_axial, 0)
+            self.assertEqual(study.number_of_spiral, 1)
+            self.assertEqual(study.number_of_stationary, 0)
+            self.assertEqual(study.number_of_const_angle, 1)
 
             rdsr(dicom_path_3)
             study = GeneralStudyModuleAttr.objects.order_by('pk')[0]
@@ -70,6 +85,13 @@ class ImportMultipleRDSRs(TestCase):  # pylint: disable=unused-variable
             self.assertEqual(GeneralStudyModuleAttr.objects.count(), 1)
             self.assertEqual(num_events, 3)
             self.assertEqual(sop_instance_uid_list3, uid_list3)
+
+            self.assertEqual(study.number_of_events, 3)
+            self.assertAlmostEqual(study.total_dlp, Decimal(236.09))
+            self.assertEqual(study.number_of_axial, 0)
+            self.assertEqual(study.number_of_spiral, 2)
+            self.assertEqual(study.number_of_stationary, 0)
+            self.assertEqual(study.number_of_const_angle, 1)
 
             rdsr(dicom_path_1)
             study = GeneralStudyModuleAttr.objects.order_by('pk')[0]
@@ -86,6 +108,12 @@ class ImportMultipleRDSRs(TestCase):  # pylint: disable=unused-variable
             log.check_present(('remapp.extractors.rdsr', 'DEBUG',
                                u"Import match on Study Instance UID {0} and object SOP Instance UID {1}. "
                                u"Will not import.".format(study_uid, new_sop_instance_uid)))
+            self.assertEqual(study.number_of_events, 3)
+            self.assertAlmostEqual(study.total_dlp, Decimal(236.09))
+            self.assertEqual(study.number_of_axial, 0)
+            self.assertEqual(study.number_of_spiral, 2)
+            self.assertEqual(study.number_of_stationary, 0)
+            self.assertEqual(study.number_of_const_angle, 1)
 
 
 class ImportContinuedRDSRs(TestCase):
