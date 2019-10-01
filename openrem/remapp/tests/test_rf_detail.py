@@ -8,6 +8,7 @@ from remapp.extractors import rdsr
 from remapp.models import PatientIDSettings, GeneralStudyModuleAttr, HighDoseMetricAlertSettings
 from django.core.urlresolvers import reverse_lazy
 from decimal import Decimal
+from remapp.interface.mod_filters import RFSummaryListFilter
 
 
 @override_settings(LANGUAGE_CODE='en-us')
@@ -36,7 +37,15 @@ class SummaryTotalDoses(TestCase):
         """
         self.client.login(username='temporary', password='temporary')
 
-        response = self.client.get(reverse_lazy('rf_detail_view', kwargs={'pk':1}), follow=True)
+        # Obtain the private keys of the two studies.
+        # The Siemens test study date is 2016-05-12
+        # The Philips test study date is 2016-03-15
+        filter_set = ''
+        f = RFSummaryListFilter(filter_set, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by().distinct())
+        pk_20160512 = f.qs.filter(study_date='2016-05-12').values_list('pk', flat=True)[0]
+        pk_20160315 = f.qs.filter(study_date='2016-03-15').values_list('pk', flat=True)[0]
+
+        response = self.client.get(reverse_lazy('rf_detail_view', kwargs={'pk':pk_20160512}), follow=True)
 
         summary_table_text = [[u'Fluoroscopy',
                                Decimal('16.000000000000'),
@@ -67,5 +76,5 @@ class SummaryTotalDoses(TestCase):
                             Decimal('0.004271280351'),
                             Decimal('27.75000000')]]
 
-        response_philips = self.client.get(reverse_lazy('rf_detail_view', kwargs={'pk': 2}), follow=True)
+        response_philips = self.client.get(reverse_lazy('rf_detail_view', kwargs={'pk': pk_20160315}), follow=True)
         self.assertEqual(response_philips.context['study_totals'], summary_philips)
