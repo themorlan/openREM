@@ -17,7 +17,7 @@ requires = [
     'xlsxwriter',
     'celery>=3.1,<4.3',
     'argparse >= 1.2.1',
-    'django-qsstats-magic',
+    'django-qsstats-magic <= 1.0.0',
     'python-dateutil',
     'django-solo',
     'django-crispy-forms',
