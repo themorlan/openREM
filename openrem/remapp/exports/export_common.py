@@ -31,8 +31,6 @@
 from __future__ import division
 from __future__ import print_function
 
-from builtins import str  # pylint: disable=redefined-builtin
-from past.utils import old_div
 import logging
 import sys
 from django.core.exceptions import ObjectDoesNotExist
@@ -459,7 +457,7 @@ def get_xray_filter_info(source):
                            current_filter.xray_filter_thickness_maximum]
             thick = u''
             if thicknesses[0] is not None and thicknesses[1] is not None:
-                thick = old_div(sum(thicknesses), len(thicknesses))
+                thick = sum(thicknesses) / len(thicknesses)
             elif thicknesses[0] is not None:
                 thick = thicknesses[0]
             elif thicknesses[1] is not None:
