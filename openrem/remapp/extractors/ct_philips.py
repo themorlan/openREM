@@ -36,6 +36,7 @@ import logging
 import os
 import sys
 
+from decimal import Decimal
 import django
 from django.db.models import ObjectDoesNotExist
 
@@ -112,7 +113,7 @@ def _ctirradiationeventdata(dataset, ct):  # TID 10013
     event.save()
     _ctxraysourceparameters(dataset, event)
     event.mean_ctdivol = get_value_kw('CTDIvol', dataset)
-    event.dlp = get_value_num(0x00e11021, dataset)  # Philips private tag
+    event.dlp = Decimal(get_value_num(0x00e11021, dataset).decode())  # Philips private tag
     event.date_time_started = get_date_time('AcquisitionDateTime', dataset)
     #    event.series_description = get_value_kw('SeriesDescription',dataset)
     event.save()
@@ -123,7 +124,7 @@ def _ctaccumulateddosedata(dataset, ct, ch):  # TID 10012
     from remapp.tools.get_values import get_value_kw, get_value_num
     ctacc = CtAccumulatedDoseData.objects.create(ct_radiation_dose=ct)
     ctacc.total_number_of_irradiation_events = get_value_kw('TotalNumberOfExposures', dataset)
-    ctacc.ct_dose_length_product_total = get_value_num(0x00e11021, dataset)  # Philips private tag
+    ctacc.ct_dose_length_product_total = Decimal(get_value_num(0x00e11021, dataset).decode())  # Philips private tag
     ctacc.comment = get_value_kw('CommentsOnRadiationDose', dataset)
     ctacc.save()
 

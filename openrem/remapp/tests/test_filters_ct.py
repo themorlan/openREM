@@ -5,8 +5,8 @@ import os
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.core.urlresolvers import reverse
-from remapp.extractors import rdsr, ct_philips
-from remapp.models import PatientIDSettings
+from ..extractors import rdsr, ct_philips
+from ..models import PatientIDSettings
 
 
 class FilterViewTests(TestCase):
