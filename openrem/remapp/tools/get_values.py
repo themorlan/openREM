@@ -195,7 +195,12 @@ def list_to_string(dicom_value):
     from dicom.dataelem import isMultiValue
     if dicom_value:
         if isMultiValue(dicom_value):
-            dicom_value = ' | '.join(dicom_value)
+            name_str = ''
+            for name in dicom_value:
+                name_str += name.original_string
+                name_str += ' | '
+            name_str = name_str[:-3]
+            return name_str
         return dicom_value
 
 
