@@ -83,7 +83,7 @@ class FilterViewTests(TestCase):
         Apply procedure filter
         """
         self.client.login(username='temporary', password='temporary')
-        response = self.client.get('http://test/openrem/ct/?requested_procedure=bones', follow=True)
+        response = self.client.get('http://test/openrem/ct/?requested_procedure_code_meaning=bones', follow=True)
         self.assertEqual(response.status_code, 200)
         one_responses_text = u'There are 1 studies in this list.'
         self.assertContains(response, one_responses_text)
@@ -95,7 +95,9 @@ class FilterViewTests(TestCase):
         Apply acquisition protocol filter
         """
         self.client.login(username='temporary', password='temporary')
-        response = self.client.get('http://test/openrem/ct/?acquisition_protocol=monitoring', follow=True)
+        response = self.client.get(
+            'http://test/openrem/ct/?ctradiationdose__ctirradiationeventdata__acquisition_protocol=monitoring',
+            follow=True)
         self.assertEqual(response.status_code, 200)
         one_responses_text = u'There are 1 studies in this list.'
         self.assertContains(response, one_responses_text)

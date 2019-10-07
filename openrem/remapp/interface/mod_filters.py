@@ -337,7 +337,7 @@ class CTSummaryListFilter(django_filters.FilterSet):
     study_description = django_filters.CharFilter(lookup_expr='icontains', label='Study description')
     procedure_code_meaning = django_filters.CharFilter(lookup_expr='icontains', label='Procedure')
     requested_procedure_code_meaning = django_filters.CharFilter(lookup_expr='icontains', label='Requested procedure')
-    projectionxrayradiationdose__irradeventxraydata__acquisition_protocol = django_filters.CharFilter(
+    ctradiationdose__ctirradiationeventdata__acquisition_protocol = django_filters.CharFilter(
         lookup_expr='icontains', label='Acquisition protocol')
     patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(lookup_expr='gte',
                                                                                    label=u'Min age (yrs)',
@@ -384,7 +384,7 @@ class CTSummaryListFilter(django_filters.FilterSet):
         fields = [
             'study_date__gt', 'study_date__lt',
             'study_description', 'procedure_code_meaning', 'requested_procedure_code_meaning',
-            'projectionxrayradiationdose__irradeventxraydata__acquisition_protocol',
+            'ctradiationdose__ctirradiationeventdata__acquisition_protocol',
             'generalequipmentmoduleattr__institution_name', 'generalequipmentmoduleattr__manufacturer',
             'generalequipmentmoduleattr__manufacturer_model_name', 'generalequipmentmoduleattr__station_name',
             'patientstudymoduleattr__patient_age_decimal__gte', 'patientstudymoduleattr__patient_age_decimal__lte',
@@ -438,7 +438,7 @@ class CTFilterPlusPid(CTSummaryListFilter):
 
 def ct_acq_filter(filters, pid=False):
     from decimal import Decimal, InvalidOperation
-    from remapp.models import CtIrradiationEventData
+    from ..models import CtIrradiationEventData
     filteredInclude = []
     if 'acquisition_protocol' in filters and (
             'acquisition_ctdi_min' in filters or 'acquisition_ctdi_max' in filters or
