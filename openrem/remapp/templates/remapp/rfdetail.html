@@ -30,7 +30,7 @@
                 {% for record in accumxraydose_set_all_planes %}
                   {% with accumprojection=record.accumintegratedprojradiogdose_set.get %}
                   <li>
-                        Total DAP, {{ record.acquisition_plane }}:
+                        Total DAP, {{ record.acquisition_plane.code_meaning }}:
                         {% if accumprojection.convert_gym2_to_cgycm2 >= alert_levels.alert_total_dap_rf %}
                             <strong style="color: red;">{{ accumprojection.convert_gym2_to_cgycm2|floatformat:1 }}</strong> cGy.cm<sup>2</sup>
                         {% else %}
@@ -39,7 +39,7 @@
                         <br>
                   </li>
                   <li>
-                        Total dose at RP, {{ record.acquisition_plane }}:
+                        Total dose at RP, {{ record.acquisition_plane.code_meaning }}:
                         {% if accumprojection.dose_rp_total >= alert_levels.alert_total_rp_dose_rf %}
                             <strong style="color: red;">{{ accumprojection.dose_rp_total | sigdig }}</strong> Gy
                         {% else %}
@@ -442,9 +442,9 @@
     <tr>
         <td>{{ event.date_time_started|time:"H:i.s" }}</td>
         <td>{{ event.acquisition_protocol }}</td>
-        <td>{{ event.irradiation_event_type }}</td>
+        <td>{{ event.irradiation_event_type.code_meaning }}</td>
         <td>{{ sourcedata.pulse_rate|floatformat:2 }}</td>
-        <td>{{ event.acquisition_plane }}</td>
+        <td>{{ event.acquisition_plane.code_meaning }}</td>
         <td>{% if event.convert_gym2_to_cgycm2 %}{{ event.convert_gym2_to_cgycm2 | sigdig }} {% endif %}</td>
         <td>{% if sourcedata.convert_gy_to_mgy %}{{ sourcedata.convert_gy_to_mgy | sigdig }} {% endif %}</td>
         <td>
@@ -477,7 +477,9 @@
         <td>{{ mechanicaldata.positioner_secondary_angle|floatformat:1 }}</td>
         <td>{{ sourcedata.ii_field_size }}</td>
         <td>{{ mechanicaldata.doserelateddistancemeasurements_set.get.distance_source_to_detector|floatformat:0 }}</td>
-		    <td>{{ event.patient_table_relationship_cid|title }}, {{ event.patient_orientation_cid|title }}, {{ event.patient_orientation_modifier_cid|title }}
+		    <td>{{ event.patient_table_relationship_cid.code_meaning|title }},
+                {{ event.patient_orientation_cid.code_meaning|title }},
+                {{ event.patient_orientation_modifier_cid.code_meaning|title }}
     </tr>
       {% endwith %}{% endwith %}
     {% endfor %}
