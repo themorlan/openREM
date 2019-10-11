@@ -80,7 +80,10 @@ def _exposure(dataset, source):
     from remapp.models import Exposure
     exp = Exposure.objects.create(irradiation_event_xray_source_data=source)
     from remapp.tools.get_values import get_value_kw
-    exp.exposure = get_value_kw('ExposureInuAs', dataset)  # uAs
+    try:
+        exp.exposure = get_value_kw('ExposureInuAs', dataset).decode()  # uAs
+    except AttributeError:
+        exp.exposure = get_value_kw('ExposureInuAs', dataset)
     exp.save()
 
 
@@ -156,7 +159,10 @@ def _irradiationeventxraymechanicaldata(dataset, event):
     from remapp.models import IrradEventXRayMechanicalData
     from remapp.tools.get_values import get_value_kw
     mech = IrradEventXRayMechanicalData.objects.create(irradiation_event_xray_data=event)
-    mech.compression_thickness = get_value_kw('BodyPartThickness', dataset)
+    try:
+        mech.compression_thickness = get_value_kw('BodyPartThickness', dataset).decode()
+    except AttributeError:
+        mech.compression_thickness = get_value_kw('BodyPartThickness', dataset)
     compression_force = get_value_kw('CompressionForce', dataset)
     if compression_force:
         mech.compression_force = float(compression_force)
@@ -224,7 +230,10 @@ def _irradiationeventxraydata(dataset, proj):  # TID 10003
     # image view modifier?
     if event.anatomical_structure:
         event.target_region = event.anatomical_structure
-    event.entrance_exposure_at_rp = get_value_kw('EntranceDoseInmGy', dataset)
+    try:
+        event.entrance_exposure_at_rp = get_value_kw('EntranceDoseInmGy', dataset).decode()
+    except AttributeError:
+        event.entrance_exposure_at_rp = get_value_kw('EntranceDoseInmGy', dataset)
     # reference point definition?
     pc_fibroglandular = get_value_kw('CommentsOnRadiationDose', dataset)
     if pc_fibroglandular:
@@ -524,7 +533,7 @@ def mam(mg_file):
 
     """
 
-    import dicom
+    import pydicom
     from django.core.exceptions import ObjectDoesNotExist
     from remapp.models import DicomDeleteSettings
     try:
@@ -535,7 +544,7 @@ def mam(mg_file):
         del_mg_im = False
         del_no_match = True
 
-    dataset = dicom.read_file(mg_file)
+    dataset = pydicom.read_file(mg_file)
     dataset.decode()
     ismammo = _test_if_mammo(dataset)
     if not ismammo:

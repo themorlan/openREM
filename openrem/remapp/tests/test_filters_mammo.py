@@ -4,7 +4,7 @@
 import os
 from django.contrib.auth.models import User
 from django.test import TestCase
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from remapp.extractors import mam, rdsr
 from remapp.models import PatientIDSettings
 
@@ -37,7 +37,7 @@ class FilterViewTests(TestCase):
         Initial test to ensure three studies are listed with no filter
         """
         self.client.login(username='temporary', password='temporary')
-        response = self.client.get(reverse_lazy('mg_summary_list_filter'), follow=True)
+        response = self.client.get(reverse('mg_summary_list_filter'), follow=True)
         self.assertEqual(response.status_code, 200)
         three_responses_text = u'There are 3 studies in this list.'
         self.assertContains(response, three_responses_text)
@@ -71,7 +71,7 @@ class FilterViewTests(TestCase):
         Apply acquisition protocol filter
         """
         self.client.login(username='temporary', password='temporary')
-        response = self.client.get('http://test/openrem/mg/?acquisition_protocol=routine', follow=True)
+        response = self.client.get(reverse('mg_summary_list_filter') + '?projectionxrayradiationdose__irradeventxraydata__acquisition_protocol=routine', follow=True)
         self.assertEqual(response.status_code, 200)
         one_responses_text = u'There are 1 studies in this list.'
         self.assertContains(response, one_responses_text)
