@@ -728,7 +728,7 @@ def dx_acq_filter(filters, pid=False):
 
     studies = GeneralStudyModuleAttr.objects.filter(
         Q(modality_type__exact='DX') | Q(modality_type__exact='CR'))
-    print("number of studies first up {0}".format(studies.count()))
+
     if filteredInclude:
         studies = studies.filter(study_instance_uid__in=filteredInclude)
     if pid:

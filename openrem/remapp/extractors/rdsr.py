@@ -1629,7 +1629,7 @@ def rdsr(rdsr_file):
     :type rdsr_file: str.
     """
 
-    import dicom
+    import pydicom
     from remapp.models import DicomDeleteSettings
     try:
         del_settings = DicomDeleteSettings.objects.get()
@@ -1637,7 +1637,7 @@ def rdsr(rdsr_file):
     except ObjectDoesNotExist:
         del_rdsr = False
 
-    dataset = dicom.read_file(rdsr_file)
+    dataset = pydicom.read_file(rdsr_file)
     try:
         dataset.decode()
     except ValueError as e:

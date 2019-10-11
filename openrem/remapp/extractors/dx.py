@@ -124,7 +124,7 @@ def _xray_filters_multiple(xray_filter_material, xray_filter_thickness_maximum, 
             pass
 
 def _xray_filters_prep(dataset, source):
-    from dicom.valuerep import MultiValue
+    from pydicom.valuerep import MultiValue
     from remapp.tools.get_values import get_value_kw
 
     xray_filter_type = get_value_kw('FilterType', dataset)
@@ -138,7 +138,7 @@ def _xray_filters_prep(dataset, source):
     if xray_filter_material is None:
         return
 
-    # Get multiple filters into dicom MultiValue or lists
+    # Get multiple filters into pydicom MultiValue or lists
     if ',' in xray_filter_material and not isinstance(xray_filter_material, MultiValue):
         xray_filter_material = xray_filter_material.split(',')
 
@@ -770,7 +770,7 @@ def dx(dig_file):
 
     """
 
-    import dicom
+    import pydicom
     from django.core.exceptions import ObjectDoesNotExist
     from remapp.models import DicomDeleteSettings
     try:
@@ -780,11 +780,11 @@ def dx(dig_file):
         del_dx_im = False
 
     logger.debug(u"About to read DX")
-    dataset = dicom.read_file(dig_file)
+    dataset = pydicom.dcmread(dig_file)
     try:
         dataset.decode()
-    except ValueError as e:
-        if "Invalid tag (0018, 7052): invalid literal for float" in e.message:
+    except ValueError as err:
+        if "could not convert string to float" in str(err):
             _fix_kodak_filters(dataset)
             dataset.decode()
     isdx = _test_if_dx(dataset)

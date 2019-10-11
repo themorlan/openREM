@@ -62,7 +62,7 @@ def get_not_pt(dataset):
 
     if patient_name:
         for pattern in name_indicators:
-            if fnmatch.fnmatch(patient_name.original_string.lower(), pattern.not_patient_name.lower()):
+            if fnmatch.fnmatch(patient_name.original_string.decode().lower(), pattern.not_patient_name.lower()):
                 name_contains += [pattern.not_patient_name.lower()]
 
     if id_contains or name_contains:
