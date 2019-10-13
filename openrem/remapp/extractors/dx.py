@@ -154,6 +154,17 @@ def _xray_filters_prep(dataset, source):
         # Could not convert string to float - inappropriate content
         logger.warning("filter thickness maximum value could not be converted to a float")
         xray_filter_thickness_maximum = None
+    try:
+        float(xray_filter_thickness_minimum)
+    except ValueError:
+        if ',' in xray_filter_thickness_minimum:
+            xray_filter_thickness_minimum = xray_filter_thickness_minimum.split(',')
+    try:
+        float(xray_filter_thickness_maximum)
+    except ValueError:
+        if ',' in xray_filter_thickness_maximum:
+            xray_filter_thickness_maximum = xray_filter_thickness_maximum.split(',')
+
 
     if isinstance(xray_filter_material, list):
         _xray_filters_multiple(
