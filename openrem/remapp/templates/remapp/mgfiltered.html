@@ -179,11 +179,11 @@
             <td>
                 <a href="{% url 'mg_detail_view' pk=exam.id %}">
                 {% for breast in accum_mammo_set %}
-                    {% if breast.laterality.code_value in "T-04020,73056007,C0222600" %} <!-- Left breast -->
+                    {% if breast.laterality.code_value in "T-04030,80248007,C0222601" %} <!-- CID 6023: Left breast -->
                         Left:&nbsp;{{ breast.accumulated_average_glandular_dose|floatformat:3 }}<br>
-                    {% elif breast.laterality.code_value in "T-04030,80248007,C0222601" %} <!-- Right breast -->
+                    {% elif breast.laterality.code_value in "T-04020,73056007,C0222600" %} <!-- CID 6023: Right breast -->
                         Right:&nbsp;{{ breast.accumulated_average_glandular_dose|floatformat:3 }}<br>
-                    {% elif breast.laterality.code_value in "T-04080,63762007,C0222605" %} <!-- Both breasts -->
+                    {% elif breast.laterality.code_value in "T-04080,63762007,C0222605" %} <!-- CID 6023: Both breasts -->
                         Both:&nbsp;{{ breast.accumulated_average_glandular_dose|floatformat:3 }}<br>
                     {% endif %}
                 {% endfor %}
