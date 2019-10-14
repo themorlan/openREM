@@ -192,12 +192,23 @@ def list_to_string(dicom_value):
     :param dicom_value: returned DICOM value, usually a name field. Might be single (string) or multivalue (list)
     :return: string of name(s)
     """
-    from dicom.dataelem import isMultiValue
+    from pydicom.dataelem import isMultiValue
     if dicom_value:
         if isMultiValue(dicom_value):
             name_str = ''
             for name in dicom_value:
-                name_str += name.original_string.decode()
+                if name.name_suffix:
+                    name_str += name.formatted(
+                        '%(family_name)s^%(given_name)s^%(middle_name)s^%(name_prefix)s^%(name_suffix)s')
+                elif name.name_prefix:
+                    name_str += name.formatted('%(family_name)s^%(given_name)s^%(middle_name)s^%(name_prefix)s')
+                elif name.middle_name:
+                    name_str += name.formatted('%(family_name)s^%(given_name)s^%(middle_name)s')
+                elif name.given_name:
+                    name_str += name.formatted('%(family_name)s^%(given_name)s')
+                elif name.family_name:
+                    name_str += name.formatted('%(family_name)s')
+                # name_str += name.original_string.decode()
                 name_str += ' | '
             name_str = name_str[:-3]
             return name_str
