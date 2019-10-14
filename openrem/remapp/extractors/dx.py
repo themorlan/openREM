@@ -142,29 +142,20 @@ def _xray_filters_prep(dataset, source):
     if ',' in xray_filter_material and not isinstance(xray_filter_material, MultiValue):
         xray_filter_material = xray_filter_material.split(',')
 
-    try:
-        xray_filter_thickness_minimum = get_value_kw('FilterThicknessMinimum', dataset)
-    except ValueError:
-        # Could not convert string to float - inappropriate content
-        logger.warning("filter thickness minimum value could not be converted to a float")
-        xray_filter_thickness_minimum = None
-    try:
-        xray_filter_thickness_maximum = get_value_kw('FilterThicknessMaximum', dataset)
-    except ValueError:
-        # Could not convert string to float - inappropriate content
-        logger.warning("filter thickness maximum value could not be converted to a float")
-        xray_filter_thickness_maximum = None
-    try:
-        float(xray_filter_thickness_minimum)
-    except ValueError:
-        if ',' in xray_filter_thickness_minimum:
-            xray_filter_thickness_minimum = xray_filter_thickness_minimum.split(',')
-    try:
-        float(xray_filter_thickness_maximum)
-    except ValueError:
-        if ',' in xray_filter_thickness_maximum:
-            xray_filter_thickness_maximum = xray_filter_thickness_maximum.split(',')
-
+    xray_filter_thickness_minimum = get_value_kw('FilterThicknessMinimum', dataset)
+    xray_filter_thickness_maximum = get_value_kw('FilterThicknessMaximum', dataset)
+    if not isinstance(xray_filter_thickness_minimum, (MultiValue, list)):
+        try:
+            float(xray_filter_thickness_minimum)
+        except ValueError:
+            if ',' in xray_filter_thickness_minimum:
+                xray_filter_thickness_minimum = xray_filter_thickness_minimum.split(',')
+    if not isinstance(xray_filter_thickness_maximum, (MultiValue, list)):
+        try:
+            float(xray_filter_thickness_maximum)
+        except ValueError:
+            if ',' in xray_filter_thickness_maximum:
+                xray_filter_thickness_maximum = xray_filter_thickness_maximum.split(',')
 
     if isinstance(xray_filter_material, list):
         _xray_filters_multiple(
