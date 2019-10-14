@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-# test_dicom_qr.py
+# disabled_test_dicom_qr.py
 
 import collections
 import os
