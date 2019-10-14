@@ -1,6 +1,6 @@
-import geomclass
-import geomfunc
-import skinMap
+from openrem.remapp.tools.openskin import geomclass
+from openrem.remapp.tools.openskin import geomfunc
+from openrem.remapp.tools.openskin import skinMap
 
 
 class CalcExpMap(object):
@@ -27,7 +27,7 @@ class CalcExpMap(object):
             # Where does the 025 come from?
             # The 10 refers to the phantom depth, but isn't used by geomclass.Phantom...
             # The 1 is the scale
-            self.phantom = geomclass.Phantom("flat", [025, 0, 0], self.table_width, self.table_length, 10, 1)
+            self.phantom = geomclass.Phantom("flat", [25, 0, 0], self.table_width, self.table_length, 10, 1)
             self.matt_thick = 0.0
             
         elif self.phantom_type == "3D":
