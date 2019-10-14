@@ -2,12 +2,12 @@
 # test_rf_detail.py
 
 import os
+from decimal import Decimal
 from django.contrib.auth.models import User, Group
+from django.core.urlresolvers import reverse
 from django.test import RequestFactory, TestCase, override_settings
 from remapp.extractors import rdsr
 from remapp.models import PatientIDSettings, GeneralStudyModuleAttr, HighDoseMetricAlertSettings
-from django.core.urlresolvers import reverse_lazy
-from decimal import Decimal
 from remapp.interface.mod_filters import RFSummaryListFilter
 
 
@@ -29,8 +29,8 @@ class SummaryTotalDoses(TestCase):
         rf_philips_allura = os.path.join("test_files", "RF-RDSR-Philips_Allura.dcm")
 
         root_tests = os.path.dirname(os.path.abspath(__file__))
-        rdsr(os.path.join(root_tests, rf_siemens_zee_20160512))
-        rdsr(os.path.join(root_tests, rf_philips_allura))
+        rdsr.rdsr(os.path.join(root_tests, rf_siemens_zee_20160512))
+        rdsr.rdsr(os.path.join(root_tests, rf_philips_allura))
 
     def test_summary_total_dose_table(self):
         """Test the summary total dose table
@@ -45,7 +45,7 @@ class SummaryTotalDoses(TestCase):
         pk_20160512 = f.qs.filter(study_date='2016-05-12').values_list('pk', flat=True)[0]
         pk_20160315 = f.qs.filter(study_date='2016-03-15').values_list('pk', flat=True)[0]
 
-        response = self.client.get(reverse_lazy('rf_detail_view', kwargs={'pk':pk_20160512}), follow=True)
+        response = self.client.get(reverse('rf_detail_view', kwargs={'pk':pk_20160512}), follow=True)
 
         summary_table_text = [[u'Fluoroscopy',
                                Decimal('16.000000000000'),
@@ -76,5 +76,5 @@ class SummaryTotalDoses(TestCase):
                             Decimal('0.004271280351'),
                             Decimal('27.75000000')]]
 
-        response_philips = self.client.get(reverse_lazy('rf_detail_view', kwargs={'pk': pk_20160315}), follow=True)
+        response_philips = self.client.get(reverse('rf_detail_view', kwargs={'pk': pk_20160315}), follow=True)
         self.assertEqual(response_philips.context['study_totals'], summary_philips)
