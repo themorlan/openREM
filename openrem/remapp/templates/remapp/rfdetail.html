@@ -97,7 +97,7 @@
                                     <li>
                                         Number of studies: {{ studies_in_week_delta.count }}
                                         ({% for each_study in studies_in_week_delta %}
-                                        {% if each_study.pk == study.pk %}this study{% else %}<a href="{% url 'rf_detail_view' pk=each_study.id %}">study {{ each_study.pk }}</a>{% endif %}{% if not forloop.last%}, {% endif %}
+                                        {% if each_study.pk == study.pk %}this study{% else %}<a href="{% url 'rf_detail_view' pk=each_study.pk %}">study {{ each_study.pk }}</a>{% endif %}{% if not forloop.last%}, {% endif %}
                                     {% endfor %})
                                     </li>
                                     <li>
@@ -164,7 +164,7 @@
                                     </td>
 
                                     <td>{% if each_study.pk == study.pk %}This study{% else %}
-                                        <a href="{% url 'rf_detail_view' pk=each_study.id %}">Study {{ each_study.pk }}</a>{% endif %}
+                                        <a href="{% url 'rf_detail_view' pk=each_study.pk %}">Study {{ each_study.pk }}</a>{% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
