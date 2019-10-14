@@ -65,7 +65,7 @@ class RFHighDoseAlert(TestCase):
         """
         self.client.login(username='temporary', password='temporary')
         filter_set = ''
-        f = RFSummaryListFilter(filter_set, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by().distinct())
+        f = RFSummaryListFilter(filter_set, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by('-pk').distinct())
 
         # Test that cumulative DAP matches what I expect below
         # Using AlmostEqual as comparing floating point numbers
@@ -82,7 +82,7 @@ class RFHighDoseAlert(TestCase):
         """
         self.client.login(username='temporary', password='temporary')
         filter_set = ''
-        f = RFSummaryListFilter(filter_set, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by().distinct())
+        f = RFSummaryListFilter(filter_set, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by('-pk').distinct())
 
         # Test that cumulative DAP matches what I expect below
         # Using AlmostEqual as comparing floating point numbers
