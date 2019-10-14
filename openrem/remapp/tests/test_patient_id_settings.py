@@ -58,9 +58,12 @@ class ImportPatientIDSettings(TestCase):
         rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.all()[0]
 
-        name = hashlib.sha256('SMITH^JOHN').hexdigest()
-        pat_id = hashlib.sha256('123456').hexdigest()
-        acc = hashlib.sha256('ACC12345601').hexdigest()
+        # name = hashlib.sha256('SMITH^JOHN'.encode('utf-8')).hexdigest()
+        name = '6339a06c6eee552c54459ad004204009343fa78f12d7e77e9a012cf9c077c047'
+        # pat_id = hashlib.sha256('123456'.encode('utf-8')).hexdigest()
+        pat_id = '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92'
+        # acc = hashlib.sha256('ACC12345601'.encode('utf-8')).hexdigest()
+        acc = '91410632c6b5d798ba71ba34540e9044912ea65b9f4bf143fa9b53f328916be4'
 
         # Test that patient identifiable data is stored in plain text
         self.assertEqual(study.patientmoduleattr_set.get().patient_name, name)
