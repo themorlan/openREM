@@ -197,7 +197,7 @@ def list_to_string(dicom_value):
         if isMultiValue(dicom_value):
             name_str = ''
             for name in dicom_value:
-                name_str += name.original_string
+                name_str += name.original_string.decode()
                 name_str += ' | '
             name_str = name_str[:-3]
             return name_str
