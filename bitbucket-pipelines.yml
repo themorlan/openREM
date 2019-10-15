@@ -17,7 +17,7 @@ pipelines:
           - >-
             sed -i "/'HOST':/c\        'HOST': 'test_user_password'," openrem/openremproject/local_settings.py
           - mv openrem/openremproject/wsgi.py{.example,}
-          - pip install psycopg2-binary
+#          - pip install psycopg2-binary
           - pip install -U tox
           - tox -e ci
         services:
