@@ -4,7 +4,8 @@ OpenREM version history
 
 0.10.0b2 (2019-09-xx)
 ---------------------
-* `#783`_  Interface: Replaced static links by dynamic versions in rfdetail.html
+* `#784`_  Imports: added laterality under target region as per 2017 CP 1676 change
+* `#783`_  Interface: replaced static links by dynamic versions in rfdetail.html
 * `#782`_  Exports: fixed RF export issue with studies containing multiple modalities
 * `#780`_  Interface: changed mammography accumulated laterality to use code_value rather than code_meaning
 * `#779`_  Installation: added restriction to django-qsstats-magic version
