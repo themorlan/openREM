@@ -14,6 +14,10 @@ pipelines:
             sed -i "/'USER':/c\        'USER': 'test_user'," openrem/openremproject/local_settings.py
           - >-
             sed -i "/'PASSWORD':/c\        'PASSWORD': 'test_user_password'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'HOST':/c\        'HOST': '127.0.0.1'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
           - mv openrem/openremproject/wsgi.py{.example,}
           - pip install -U tox
           - tox -e ci
