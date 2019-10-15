@@ -47,17 +47,17 @@
         <td>{{ events_all|length }}</td>
       </tr>
       {% for breast in accum_mammo_set %}
-        {% if breast.laterality.code_meaning == "Left breast" %}
-          <tr>
+        {% if breast.laterality.code_value in "T-04030,80248007,C0222601" %} <!-- CID 6023: Left breast -->
+         <tr>
             <th>Accumulated AGD: Left</th>
             <td>{{ breast.accumulated_average_glandular_dose|floatformat:3 }} mGy</td>
           </tr>
-        {% elif breast.laterality.code_meaning == "Right breast" %}
+        {% elif breast.laterality.code_value in "T-04020,73056007,C0222600" %} <!-- CID 6023: Right breast -->
           <tr>
             <th>Accumulated AGD: Right</th>
             <td>{{ breast.accumulated_average_glandular_dose|floatformat:3 }} mGy</td>
           </tr>
-        {% elif breast.laterality.code_meaning == "Both breasts" %}
+        {% elif breast.laterality.code_value in "T-04080,63762007,C0222605" %} <!-- CID 6023: Both breasts -->
           <tr>
             <th>Accumulated AGD: Both breasts</th>
             <td>{{ breast.accumulated_average_glandular_dose|floatformat:3 }} mGy</td>
