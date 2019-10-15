@@ -26,7 +26,7 @@ pipelines:
 definitions:
   services:
     postgres:
-      image: postgres
+      image: postgres:10
 
 #  branches:
 #    develop:  # Commits to the develop branch are tested and deployed to dev.openrem.org on success
