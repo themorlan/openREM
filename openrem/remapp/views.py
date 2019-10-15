@@ -3734,12 +3734,13 @@ class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
     """
     from remapp.models import HighDoseMetricAlertSettings
     from remapp.forms import RFHighDoseFluoroAlertsForm
-    from django.core.exceptions import ObjectDoesNotExist
+    # from django.core.exceptions import ObjectDoesNotExist
 
-    try:
-        HighDoseMetricAlertSettings.objects.get()
-    except ObjectDoesNotExist:
-        HighDoseMetricAlertSettings.objects.create()
+    check_exists = HighDoseMetricAlertSettings.get_solo()  # will create item if it doesn't exist
+    # try:
+    #     HighDoseMetricAlertSettings.objects.get()
+    # except ObjectDoesNotExist:
+    #     HighDoseMetricAlertSettings.objects.create()
 
     model = HighDoseMetricAlertSettings
     form_class = RFHighDoseFluoroAlertsForm
