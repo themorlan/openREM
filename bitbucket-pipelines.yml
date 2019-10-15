@@ -9,11 +9,11 @@ pipelines:
           - >-
             sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql_psycopg2'," openrem/openremproject/local_settings.py
           - >-
-            sed -i "/'NAME':/c\        'NAME': 'pipelines'," openrem/openremproject/local_settings.py
+            sed -i "/'NAME':/c\        'NAME': 'openremdb'," openrem/openremproject/local_settings.py
           - >-
-            sed -i "/'USER':/c\        'USER': 'test_user'," openrem/openremproject/local_settings.py
+            sed -i "/'USER':/c\        'USER': 'openremuser'," openrem/openremproject/local_settings.py
           - >-
-            sed -i "/'PASSWORD':/c\        'PASSWORD': 'test_user_password'," openrem/openremproject/local_settings.py
+            sed -i "/'PASSWORD':/c\        'PASSWORD': 'openremuserpass'," openrem/openremproject/local_settings.py
           - >-
             sed -i "/'HOST':/c\        'HOST': '127.0.0.1'," openrem/openremproject/local_settings.py
           - >-
@@ -26,8 +26,11 @@ pipelines:
 definitions:
   services:
     postgres:
-      image: postgres:10
-
+      image: postgres
+      environment:
+        POSTGRES_DB: openremdb
+        POSTGRES_USER: openremuser
+        POSTGRES_PASSWORD: openremuserpass
 #  branches:
 #    develop:  # Commits to the develop branch are tested and deployed to dev.openrem.org on success
 #      - step:
