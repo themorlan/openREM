@@ -3733,19 +3733,14 @@ class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
     """
     from remapp.models import HighDoseMetricAlertSettings
     from remapp.forms import RFHighDoseFluoroAlertsForm
-    from django.db.utils import ProgrammingError as AvoidDataMigrationError
+    from django.db.utils import ProgrammingError as AvoidDataMigrationErrorPostgres
+    from django.db.utils import OperationalError as AvoidDataMigrationErrorSQLite
     # from django.core.exceptions import ObjectDoesNotExist
 
     try:
-        check_exists = HighDoseMetricAlertSettings.get_solo()  # will create item if it doesn't exist
-    except AvoidDataMigrationError:
+        HighDoseMetricAlertSettings.get_solo()  # will create item if it doesn't exist
+    except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
         pass
-    except ObjectDoesNotExist:
-        HighDoseMetricAlertSettings.objects.create()
-    # try:
-    #     HighDoseMetricAlertSettings.objects.get()
-    # except ObjectDoesNotExist:
-    #     HighDoseMetricAlertSettings.objects.create()
 
     model = HighDoseMetricAlertSettings
     form_class = RFHighDoseFluoroAlertsForm
@@ -3956,14 +3951,13 @@ class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-varia
     from remapp.models import SkinDoseMapCalcSettings
     from remapp.forms import SkinDoseMapCalcSettingsForm
     from django.core.exceptions import ObjectDoesNotExist
-    from django.db.utils import ProgrammingError as AvoidDataMigrationError
+    from django.db.utils import ProgrammingError as AvoidDataMigrationErrorPostgres
+    from django.db.utils import OperationalError as AvoidDataMigrationErrorSQLite
 
     try:
-        SkinDoseMapCalcSettings.objects.get()
-    except AvoidDataMigrationError:
+        SkinDoseMapCalcSettings.get_solo()  # will create item if it doesn't exist
+    except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
         pass
-    except ObjectDoesNotExist:
-        SkinDoseMapCalcSettings.objects.create()
 
     model = SkinDoseMapCalcSettings
     form_class = SkinDoseMapCalcSettingsForm
