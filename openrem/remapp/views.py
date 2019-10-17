@@ -3589,7 +3589,7 @@ class DicomStoreCreate(CreateView):  # pylint: disable=unused-variable
     form_class = DicomStoreForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(DicomStoreCreate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -3608,7 +3608,7 @@ class DicomStoreUpdate(UpdateView):  # pylint: disable=unused-variable
     form_class = DicomStoreForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(DicomStoreUpdate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -3645,7 +3645,7 @@ class DicomQRCreate(CreateView):  # pylint: disable=unused-variable
     form_class = DicomQRForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(DicomQRCreate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -3664,7 +3664,7 @@ class DicomQRUpdate(UpdateView):  # pylint: disable=unused-variable
     form_class = DicomQRForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(DicomQRUpdate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -3700,8 +3700,7 @@ class PatientIDSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
     fields = ['name_stored', 'name_hashed', 'id_stored', 'id_hashed', 'accession_hashed', 'dob_stored']
 
     def get_context_data(self, **context):
-
-        context[self.context_object_name] = self.object
+        context = super(PatientIDSettingsUpdate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -3720,7 +3719,7 @@ class DicomDeleteSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
     form_class = DicomDeleteSettingsForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(DicomDeleteSettingsUpdate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -3752,7 +3751,7 @@ class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
     form_class = RFHighDoseFluoroAlertsForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(RFHighDoseAlertSettings, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -3996,7 +3995,7 @@ class NotPatientNameCreate(CreateView):  # pylint: disable=unused-variable
     form_class = NotPatientNameForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(NotPatientNameCreate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -4015,7 +4014,7 @@ class NotPatientNameUpdate(UpdateView):  # pylint: disable=unused-variable
     form_class = NotPatientNameForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(NotPatientNameUpdate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -4052,7 +4051,7 @@ class NotPatientIDCreate(CreateView):  # pylint: disable=unused-variable
     form_class = NotPatientIDForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(NotPatientIDCreate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -4071,7 +4070,7 @@ class NotPatientIDUpdate(UpdateView):  # pylint: disable=unused-variable
     form_class = NotPatientIDForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(NotPatientIDUpdate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
