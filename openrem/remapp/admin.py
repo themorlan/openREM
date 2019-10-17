@@ -22,20 +22,5 @@ admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.site_url = reverse_lazy('home')
 
-
-@admin.register(NotPatientIndicatorsID)
-class NotPatientIndicatorsIDAdmin(admin.ModelAdmin):
-    list_display = ('not_patient_id', )
-    list_editable = ('not_patient_id', )
-    view_on_site = False
-
-
-@admin.register(NotPatientIndicatorsName)
-class NotPatientIndicatorsNameAdmin(admin.ModelAdmin):
-    list_display = ('not_patient_name', )
-    list_editable = ('not_patient_name', )
-    view_on_site = False
-
-
 admin.site.site_header = u'OpenREM Site Administration'
 admin.site.site_title = u'OpenREM Site Administration'
