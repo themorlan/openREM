@@ -36,7 +36,7 @@ import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 import json
 from django.db import models
-from django.db.models.sql.aggregates import Aggregate as SQLAggregate
+from django.db.models.aggregates import Aggregate as SQLAggregate
 from django.core.urlresolvers import reverse
 from solo.models import SingletonModel
 from django.contrib.auth.models import User
