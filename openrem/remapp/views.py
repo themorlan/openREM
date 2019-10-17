@@ -3734,9 +3734,15 @@ class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
     """
     from remapp.models import HighDoseMetricAlertSettings
     from remapp.forms import RFHighDoseFluoroAlertsForm
+    from django.db.utils import ProgrammingError as AvoidDataMigrationError
     # from django.core.exceptions import ObjectDoesNotExist
 
-    check_exists = HighDoseMetricAlertSettings.get_solo()  # will create item if it doesn't exist
+    try:
+        check_exists = HighDoseMetricAlertSettings.get_solo()  # will create item if it doesn't exist
+    except AvoidDataMigrationError:
+        pass
+    except ObjectDoesNotExist:
+        HighDoseMetricAlertSettings.objects.create()
     # try:
     #     HighDoseMetricAlertSettings.objects.get()
     # except ObjectDoesNotExist:
@@ -3951,9 +3957,12 @@ class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-varia
     from remapp.models import SkinDoseMapCalcSettings
     from remapp.forms import SkinDoseMapCalcSettingsForm
     from django.core.exceptions import ObjectDoesNotExist
+    from django.db.utils import ProgrammingError as AvoidDataMigrationError
 
     try:
         SkinDoseMapCalcSettings.objects.get()
+    except AvoidDataMigrationError:
+        pass
     except ObjectDoesNotExist:
         SkinDoseMapCalcSettings.objects.create()
 
