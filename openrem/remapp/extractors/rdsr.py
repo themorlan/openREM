@@ -1638,7 +1638,7 @@ def rdsr(rdsr_file):
     except ObjectDoesNotExist:
         del_rdsr = False
 
-    dataset = pydicom.read_file(rdsr_file)
+    dataset = pydicom.dcmread(rdsr_file)
     try:
         dataset.decode()
     except ValueError as e:
