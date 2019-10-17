@@ -1,19 +1,21 @@
 from django.conf import settings
 from django.conf.urls import patterns, include, url
+from django.contrib import auth
 from .settings import VIRTUAL_DIRECTORY
+import remapp.views
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^{0}'.format(VIRTUAL_DIRECTORY), include('remapp.urls')),
     url(r'^{0}openrem/'.format(VIRTUAL_DIRECTORY), include('remapp.urls')),
     url(r'^{0}admin/'.format(VIRTUAL_DIRECTORY), include(admin.site.urls)),
     # Login / logout.
-    url(r'^{0}login/$'.format(VIRTUAL_DIRECTORY), 'django.contrib.auth.views.login', name='login'),
-    url(r'^{0}logout/$'.format(VIRTUAL_DIRECTORY), 'remapp.views.logout_page', name='logout'),
-)
+    url(r'^{0}login/$'.format(VIRTUAL_DIRECTORY), auth.views.login, name='login'),
+    url(r'^{0}logout/$'.format(VIRTUAL_DIRECTORY), remapp.views.logout_page, name='logout'),
+]
 
 if settings.DEBUG:
     try:
