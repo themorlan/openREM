@@ -3970,7 +3970,7 @@ class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-varia
     form_class = SkinDoseMapCalcSettingsForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(SkinDoseMapCalcSettingsUpdate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
