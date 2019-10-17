@@ -52,8 +52,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render, render_to_response, redirect, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -219,10 +218,9 @@ def dx_summary_list_filter(request):
                         'admin': admin, 'chartOptionsForm': chart_options_form,
                         'itemsPerPageForm': items_per_page_form}
 
-    return render_to_response(
+    return render(request,
         'remapp/dxfiltered.html',
         return_structure,
-        context_instance=RequestContext(request)
     )
 
 
@@ -505,11 +503,10 @@ def dx_detail_view(request, pk=None):
     accum_set = projection_set.accumxraydose_set.all()
     # accum_integrated = projection_set.accumxraydose_set.get().accumintegratedprojradiogdose_set.get()
 
-    return render_to_response(
+    return render(request,
         'remapp/dxdetail.html',
         {'generalstudymoduleattr': study, 'admin': admin,
-         'projection_set': projection_set, 'events_all': events_all, 'accum_set': accum_set},
-        context_instance=RequestContext(request)
+         'projection_set': projection_set, 'events_all': events_all, 'accum_set': accum_set}
     )
 
 
@@ -657,10 +654,9 @@ def rf_summary_list_filter(request):
                         'admin': admin, 'chartOptionsForm': chart_options_form,
                         'itemsPerPageForm': items_per_page_form, 'alertLevels': alert_levels}
 
-    return render_to_response(
+    return render(request,
         'remapp/rffiltered.html',
-        return_structure,
-        context_instance=RequestContext(request)
+        return_structure
     )
 
 
@@ -901,7 +897,7 @@ def rf_detail_view(request, pk=None):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    return render_to_response(
+    return render(request,
         'remapp/rfdetail.html',
         {'generalstudymoduleattr': study, 'admin': admin,
          'study_totals': study_totals,
@@ -910,7 +906,6 @@ def rf_detail_view(request, pk=None):
          'events_all': events_all,
          'alert_levels': alert_levels,
          'studies_in_week_delta': included_studies},
-        context_instance=RequestContext(request)
     )
 
 
@@ -1108,10 +1103,9 @@ def ct_summary_list_filter(request):
                         'admin': admin, 'chartOptionsForm': chart_options_form,
                         'itemsPerPageForm': items_per_page_form}
 
-    return render_to_response(
+    return render(request,
         'remapp/ctfiltered.html',
         return_structure,
-        context_instance=RequestContext(request)
     )
 
 
@@ -1392,10 +1386,9 @@ def ct_detail_view(request, pk=None):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    return render_to_response(
+    return render(request,
         'remapp/ctdetail.html',
         {'generalstudymoduleattr': study, 'admin': admin, 'events_all': events_all},
-        context_instance=RequestContext(request)
     )
 
 
@@ -1496,10 +1489,9 @@ def mg_summary_list_filter(request):
                         'admin': admin, 'chartOptionsForm': chart_options_form,
                         'itemsPerPageForm': items_per_page_form}
 
-    return render_to_response(
+    return render(request,
         'remapp/mgfiltered.html',
         return_structure,
-        context_instance=RequestContext(request)
     )
 
 
@@ -1631,13 +1623,12 @@ def mg_detail_view(request, pk=None):
     events_all = projection_xray_dose_set.irradeventxraydata_set.select_related(
         'laterality', 'image_view').all()
 
-    return render_to_response(
+    return render(request,
         'remapp/mgdetail.html',
         {'generalstudymoduleattr': study, 'admin': admin,
          'projection_xray_dose_set': projection_xray_dose_set,
          'accum_mammo_set': accum_mammo_set,
          'events_all': events_all},
-        context_instance=RequestContext(request)
     )
 
 
@@ -1990,10 +1981,9 @@ def size_upload(request):
         admin[group.name] = True
 
     # Render list page with the documents and the form
-    return render_to_response(
+    return render(request,
         'remapp/sizeupload.html',
         {'form': form, 'admin': admin},
-        context_instance=RequestContext(request)
     )
 
 
@@ -2077,10 +2067,9 @@ def size_process(request, *args, **kwargs):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    return render_to_response(
+    return render(request,
         'remapp/sizeprocess.html',
         {'form': form, 'csvid': kwargs['pk'], 'admin': admin},
-        context_instance=RequestContext(request)
     )
 
 
@@ -2104,10 +2093,9 @@ def size_imports(request, *args, **kwargs):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    return render_to_response(
+    return render(request,
         'remapp/sizeimports.html',
         {'admin': admin, 'current': current, 'complete': complete, 'errors': errors},
-        context_instance=RequestContext(request)
     )
 
 
@@ -2287,10 +2275,9 @@ def display_names_view(request):
                         'ct_names': ct_names, 'mg_names': mg_names, 'dx_names': dx_names, 'rf_names': rf_names,
                         'ot_names': ot_names, 'modalities': ['CT', 'RF', 'MG', 'DX', 'OT']}
 
-    return render_to_response(
+    return render(request,
         'remapp/displaynameview.html',
         return_structure,
-        context_instance=RequestContext(request)
     )
 
 
@@ -2380,9 +2367,8 @@ def display_name_update(request):
 
         return_structure = {'name_list': f, 'admin': admin, 'form': form}
 
-    return render_to_response('remapp/displaynameupdate.html',
-                              return_structure,
-                              context_instance=RequestContext(request))
+    return render(request,'remapp/displaynameupdate.html',
+                              return_structure)
 
 
 def display_name_populate(request):
@@ -3215,10 +3201,9 @@ def chart_options_view(request):
                         'MGChartOptionsForm': mg_chart_options_form,
                         }
 
-    return render_to_response(
+    return render(request,
         'remapp/displaychartoptions.html',
         return_structure,
-        context_instance=RequestContext(request)
     )
 
 
@@ -3298,10 +3283,9 @@ def homepage_options_view(request):
                         'home_config': home_config
                         }
 
-    return render_to_response(
+    return render(request,
         'remapp/displayhomepageoptions.html',
         return_structure,
-        context_instance=RequestContext(request)
     )
 
 
@@ -3320,10 +3304,9 @@ def not_patient_indicators(request):
         admin[group.name] = True
 
     # Render list page with the documents and the form
-    return render_to_response(
+    return render(request,
         'remapp/notpatient.html',
         {'ids': not_patient_ids, 'names': not_patient_names, 'admin': admin},
-        context_instance=RequestContext(request)
     )
 
 
@@ -3414,13 +3397,13 @@ def task_service_status(request):
             rabbitmq_status = 500
         template = 'remapp/task_service_status.html'
         admin = _create_admin_dict(request)
-        return render_to_response(template,
+        return render(request,template,
                                   {'default_queue': default_queue,
                                    'celery_queue': celery_queue,
                                    'flower_status': flower_status,
                                    'rabbitmq_status': rabbitmq_status,
                                    'admin': admin},
-                                  context_instance=RequestContext(request))
+                                  )
 
 
 @login_required
@@ -3441,7 +3424,7 @@ def celery_admin(request):
     admin = _create_admin_dict(request)
 
     template = 'remapp/celery_admin.html'
-    return render_to_response(template, {'admin': admin}, context_instance=RequestContext(request))
+    return render(request,template, {'admin': admin})
 
 
 def celery_tasks(request, stage=None):
@@ -3495,18 +3478,15 @@ def celery_tasks(request, stage=None):
                     else:
                         older_tasks += [this_task, ]
                 if u"active" in stage:
-                    return render_to_response('remapp/celery_tasks.html', {'tasks': active_tasks, 'type': 'active'},
-                                              context_instance=RequestContext(request))
+                    return render(request,'remapp/celery_tasks.html', {'tasks': active_tasks, 'type': 'active'})
                 elif u"recent" in stage:
-                    return render_to_response('remapp/celery_tasks_complete.html', {'tasks': recent_tasks, 'type': 'recent'},
-                                              context_instance=RequestContext(request))
+                    return render(request,'remapp/celery_tasks_complete.html', {'tasks': recent_tasks, 'type': 'recent'})
                 elif u"older" in stage:
-                    return render_to_response('remapp/celery_tasks_complete.html', {'tasks': older_tasks, 'type': 'older'},
-                                              context_instance=RequestContext(request))
+                    return render(request,'remapp/celery_tasks_complete.html', {'tasks': older_tasks, 'type': 'older'})
         except requests.ConnectionError:
             admin = _create_admin_dict(request)
             template = 'remapp/celery_connection_error.html'
-            return render_to_response(template, {'admin': admin}, context_instance=RequestContext(request))
+            return render(request,template, {'admin': admin})
 
 
 def celery_abort(request, task_id=None, type=None):
@@ -3571,10 +3551,9 @@ def dicom_summary(request):
     admin = _create_admin_dict(request)
 
     # Render list page with the documents and the form
-    return render_to_response(
+    return render(request,
         'remapp/dicomsummary.html',
         {'store': store, 'remoteqr': remoteqr, 'admin': admin, 'del_settings': del_settings},
-        context_instance=RequestContext(request)
     )
 
 
@@ -3832,10 +3811,9 @@ def rf_alert_notifications_view(request):
 
     return_structure = {'user_list': f, 'admin': admin}
 
-    return render_to_response(
+    return render(request,
         'remapp/rfalertnotificationsview.html',
         return_structure,
-        context_instance=RequestContext(request)
     )
 
 
@@ -4152,8 +4130,7 @@ def populate_summary_progress(request):
                 mg_status = SummaryFields.objects.get(modality_type__exact='MG')
                 dx_status = SummaryFields.objects.get(modality_type__exact='DX')
             except ObjectDoesNotExist:
-                return render_to_response('remapp/populate_summary_progress_error.html', {'not_admin': False},
-                                          context_instance=RequestContext(request))
+                return render(request,'remapp/populate_summary_progress_error.html', {'not_admin': False})
 
             if ct_status.complete and rf_status.complete and mg_status.complete and dx_status.complete:
                 upgrade_status = UpgradeStatus.get_solo()
@@ -4234,7 +4211,7 @@ def populate_summary_progress(request):
             except ObjectDoesNotExist:
                 dx_status = None
 
-            return render_to_response('remapp/populate_summary_progress.html',
+            return render(request,'remapp/populate_summary_progress.html',
                                       {'ct_complete': ct_complete, 'ct_total': ct_total, 'ct_pc': ct_pc,
                                        'ct_status': ct_status,
                                        'rf_complete': rf_complete, 'rf_total': rf_total, 'rf_pc': rf_pc,
@@ -4242,7 +4219,6 @@ def populate_summary_progress(request):
                                        'mg_complete': mg_complete, 'mg_total': mg_total, 'mg_pc': mg_pc,
                                        'mg_status': mg_status,
                                        'dx_complete': dx_complete, 'dx_total': dx_total, 'dx_pc': dx_pc,
-                                       'dx_status': dx_status,}, context_instance=RequestContext(request))
+                                       'dx_status': dx_status,})
         else:
-            return render_to_response('remapp/populate_summary_progress_error.html', {'not_admin': True},
-                                      context_instance=RequestContext(request))
+            return render(request,'remapp/populate_summary_progress_error.html', {'not_admin': True})
