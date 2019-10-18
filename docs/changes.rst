@@ -4,6 +4,7 @@ OpenREM version history
 
 0.10.0b2 (2019-09-xx)
 ---------------------
+* `#781`_  Charts: fixed issue where charts were mis-labelled if "Case-insensitive categories" was unchecked
 * `#778`_  Imports: added summary field population tests, fixed CT RDSR Total DLP import error
 * `#776`_  Documentation: grammar and spelling correction for PHE exports
 * `#775`_  Exports, documentation: fixed units issue and minor docs issue for PHE DX export
