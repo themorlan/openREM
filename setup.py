@@ -9,8 +9,8 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 exec(open('openrem/remapp/version.py').read())
 
 requires = [
-    'django>=1.10,<1.11',
-    'django-filter == 1.1.0',
+    'django>=1.11,<2',
+    'django-filter',
     'pytz >= 0a',
     'humanize',
     'dicom',
