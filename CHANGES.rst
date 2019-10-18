@@ -4,7 +4,11 @@ OpenREM version history
 
 0.10.0b2 (2019-09-xx)
 ---------------------
+* `#783`_  Interface: Replaced static links by dynamic versions in rfdetail.html
+* `#782`_  Exports: fixed RF export issue with studies containing multiple modalities
 * `#781`_  Charts: fixed issue where charts were mis-labelled if "Case-insensitive categories" was unchecked
+* `#780`_  Interface: changed mammography accumulated laterality to use code_value rather than code_meaning
+* `#779`_  Installation: added restriction to django-qsstats-magic version
 * `#778`_  Imports: added summary field population tests, fixed CT RDSR Total DLP import error
 * `#776`_  Documentation: grammar and spelling correction for PHE exports
 * `#775`_  Exports, documentation: fixed units issue and minor docs issue for PHE DX export

@@ -307,10 +307,10 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
             common_exam_data = list(examdata)
 
             angle_range = 5.0  # plus or minus range considered to be the same position
-            studyiuid = exams.study_instance_uid
+
             # TODO: Check if generation of inst could be more efficient, ie start with exams?
             inst = IrradEventXRayData.objects.filter(
-                projection_xray_radiation_dose__general_study_module_attributes__study_instance_uid__exact=studyiuid)
+                projection_xray_radiation_dose__general_study_module_attributes__id__exact=exams.id)
 
             num_groups_this_exam = 0
             while inst:  # ie while there are events still left that haven't been matched into a group
