@@ -601,6 +601,13 @@ def _irradiationeventxraydata(dataset, proj, ch, fulldataset):  # TID 10003
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Target Region':
             event.target_region = get_or_create_cid(
                 cont.ConceptCodeSequence[0].CodeValue, cont.ConceptCodeSequence[0].CodeMeaning)
+            try:
+                for cont2 in cont.ContentSequence:
+                    if cont2.ConceptNameCodeSequence[0].CodeMeaning == 'Laterality':
+                        event.laterality = get_or_create_cid(cont2.ConceptCodeSequence[0].CodeValue,
+                                                             cont2.ConceptCodeSequence[0].CodeMeaning)
+            except AttributeError:
+                pass
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Dose Area Product':
             event.dose_area_product = _check_dap_units(cont.MeasuredValueSequence[0])
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Half Value Layer':
