@@ -4,7 +4,7 @@
 import os
 from django.test import TestCase
 from remapp.extractors import rdsr
-from remapp.models import GeneralStudyModuleAttr, PatientIDSettings, UniqueEquipmentNames, SkinDoseMapCalcSettings
+from remapp.models import GeneralStudyModuleAttr, PatientIDSettings, UniqueEquipmentNames  #, SkinDoseMapCalcSettings
 
 
 class ImportDualRDSRs(TestCase):
@@ -26,7 +26,8 @@ class ImportDualRDSRs(TestCase):
         """
 
         PatientIDSettings.objects.create()
-        SkinDoseMapCalcSettings.objects.create()  # Bitbucket pipeline requires in order to import reset_dual
+        # # Need to check if the line below is required. As was, it created an IntegrityError
+        # SkinDoseMapCalcSettings.get_solo()  # Bitbucket pipeline requires in order to import reset_dual
 
 
         rf_file = "test_files/Dual-RDSR-RF.dcm"
@@ -76,7 +77,8 @@ class ImportDualRDSRs(TestCase):
         """
 
         PatientIDSettings.objects.create()
-        SkinDoseMapCalcSettings.objects.create()  # Bitbucket pipeline requires in order to import reset_dual
+        # # Need to check if the line below is required. As was, it created an IntegrityError
+        # SkinDoseMapCalcSettings.get_solo()  # Bitbucket pipeline requires in order to import reset_dual
 
         rf_file = "test_files/Dual-RDSR-RF.dcm"
         dx_file = "test_files/Dual-RDSR-DX.dcm"
