@@ -128,9 +128,9 @@ class RFSummaryListFilter(django_filters.FilterSet):
     """Filter for fluoroscopy studies to display in web interface.
 
     """
-    study_date__gt = django_filters.DateFilter(lookup_expr='gte', label='Date from', name='study_date',
+    study_date__gt = django_filters.DateFilter(lookup_expr='gte', label='Date from', field_name='study_date',
                                                widget=forms.TextInput(attrs={'class': 'datepicker'}))
-    study_date__lt = django_filters.DateFilter(lookup_expr='lte', label='Date until', name='study_date',
+    study_date__lt = django_filters.DateFilter(lookup_expr='lte', label='Date until', field_name='study_date',
                                                widget=forms.TextInput(attrs={'class': 'datepicker'}))
     study_description = django_filters.CharFilter(lookup_expr='icontains', label='Study description')
     procedure_code_meaning = django_filters.CharFilter(lookup_expr='icontains', label='Procedure')
@@ -139,11 +139,11 @@ class RFSummaryListFilter(django_filters.FilterSet):
         lookup_expr='icontains', label='Acquisition protocol')
     patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(lookup_expr='gte',
                                                                                    label=u'Min age (yrs)',
-                                                                                   name='patientstudymoduleattr'
+                                                                                   field_name='patientstudymoduleattr'
                                                                                         '__patient_age_decimal')
     patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(lookup_expr='lte',
                                                                                    label=u'Max age (yrs)',
-                                                                                   name='patientstudymoduleattr'
+                                                                                   field_name='patientstudymoduleattr'
                                                                                         '__patient_age_decimal')
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Hospital')
     generalequipmentmoduleattr__manufacturer = django_filters.CharFilter(lookup_expr='icontains', label=u'Make')
@@ -157,7 +157,7 @@ class RFSummaryListFilter(django_filters.FilterSet):
     generalequipmentmoduleattr__unique_equipment_name__display_name = django_filters.CharFilter(
         lookup_expr='icontains', label='Display name')
     test_data = django_filters.ChoiceFilter(lookup_expr='isnull', label=u"Include possible test data",
-                                            name='patientmoduleattr__not_patient_indicator', choices=TEST_CHOICES,
+                                            field_name='patientmoduleattr__not_patient_indicator', choices=TEST_CHOICES,
                                             widget=forms.Select)
 
     class Meta:
@@ -330,9 +330,9 @@ class CTSummaryListFilter(django_filters.FilterSet):
     """Filter for CT studies to display in web interface.
 
     """
-    study_date__gt = django_filters.DateFilter(lookup_expr='gte', label='Date from', name='study_date',
+    study_date__gt = django_filters.DateFilter(lookup_expr='gte', label='Date from', field_name='study_date',
                                                widget=forms.TextInput(attrs={'class': 'datepicker'}))
-    study_date__lt = django_filters.DateFilter(lookup_expr='lte', label='Date until', name='study_date',
+    study_date__lt = django_filters.DateFilter(lookup_expr='lte', label='Date until', field_name='study_date',
                                                widget=forms.TextInput(attrs={'class': 'datepicker'}))
     study_description = django_filters.CharFilter(lookup_expr='icontains', label='Study description')
     procedure_code_meaning = django_filters.CharFilter(lookup_expr='icontains', label='Procedure')
@@ -341,11 +341,11 @@ class CTSummaryListFilter(django_filters.FilterSet):
         lookup_expr='icontains', label='Acquisition protocol')
     patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(lookup_expr='gte',
                                                                                    label=u'Min age (yrs)',
-                                                                                   name='patientstudymoduleattr'
+                                                                                   field_name='patientstudymoduleattr'
                                                                                         '__patient_age_decimal')
     patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(lookup_expr='lte',
                                                                                    label=u'Max age (yrs)',
-                                                                                   name='patientstudymoduleattr'
+                                                                                   field_name='patientstudymoduleattr'
                                                                                         '__patient_age_decimal')
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Hospital')
     generalequipmentmoduleattr__manufacturer = django_filters.CharFilter(lookup_expr='icontains', label=u'Make')
@@ -353,16 +353,16 @@ class CTSummaryListFilter(django_filters.FilterSet):
         lookup_expr='icontains', label='Model')
     generalequipmentmoduleattr__station_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Station name')
     accession_number = django_filters.CharFilter(method=_custom_acc_filter, label='Accession number')
-    total_dlp__gte = django_filters.NumberFilter(lookup_expr='gte', name='total_dlp', label="Min study DLP")
-    total_dlp__lte = django_filters.NumberFilter(lookup_expr='lte', name='total_dlp', label="Max study DLP")
+    total_dlp__gte = django_filters.NumberFilter(lookup_expr='gte', field_name='total_dlp', label="Min study DLP")
+    total_dlp__lte = django_filters.NumberFilter(lookup_expr='lte', field_name='total_dlp', label="Max study DLP")
     generalequipmentmoduleattr__unique_equipment_name__display_name = django_filters.CharFilter(
         lookup_expr='icontains', label='Display name')
     test_data = django_filters.ChoiceFilter(lookup_expr='isnull', label=u"Include possible test data",
-                                            name='patientmoduleattr__not_patient_indicator', choices=TEST_CHOICES,
+                                            field_name='patientmoduleattr__not_patient_indicator', choices=TEST_CHOICES,
                                             widget=forms.Select)
     ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning = django_filters.MultipleChoiceFilter(
         lookup_expr='iexact', label=u'Acquisition type restriction',
-        name='ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning', choices=CT_ACQ_TYPE_CHOICES,
+        field_name='ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning', choices=CT_ACQ_TYPE_CHOICES,
         widget=forms.CheckboxSelectMultiple)
     num_events = django_filters.ChoiceFilter(method=_specify_event_numbers, label=u'Num. events total',
                                              choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
@@ -517,9 +517,9 @@ class MGSummaryListFilter(django_filters.FilterSet):
     """Filter for mammography studies to display in web interface.
 
     """
-    study_date__gt = django_filters.DateFilter(lookup_expr='gte', label='Date from', name='study_date',
+    study_date__gt = django_filters.DateFilter(lookup_expr='gte', label='Date from', field_name='study_date',
                                                widget=forms.TextInput(attrs={'class': 'datepicker'}))
-    study_date__lt = django_filters.DateFilter(lookup_expr='lte', label='Date until', name='study_date',
+    study_date__lt = django_filters.DateFilter(lookup_expr='lte', label='Date until', field_name='study_date',
                                                widget=forms.TextInput(attrs={'class': 'datepicker'}))
     study_description = django_filters.CharFilter(lookup_expr='icontains', label='Study description')
     procedure_code_meaning = django_filters.CharFilter(lookup_expr='icontains', label='Procedure')
@@ -528,11 +528,11 @@ class MGSummaryListFilter(django_filters.FilterSet):
         lookup_expr='icontains', label='Acquisition protocol')
     patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(lookup_expr='gte',
                                                                                    label=u'Min age (yrs)',
-                                                                                   name='patientstudymoduleattr'
+                                                                                   field_name='patientstudymoduleattr'
                                                                                         '__patient_age_decimal')
     patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(lookup_expr='lte',
                                                                                    label=u'Max age (yrs)',
-                                                                                   name='patientstudymoduleattr'
+                                                                                   field_name='patientstudymoduleattr'
                                                                                         '__patient_age_decimal')
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Hospital')
     generalequipmentmoduleattr__manufacturer = django_filters.CharFilter(lookup_expr='icontains', label=u'Make')
@@ -545,7 +545,7 @@ class MGSummaryListFilter(django_filters.FilterSet):
     num_events = django_filters.ChoiceFilter(method=_specify_event_numbers, label='Num. events total',
                                              choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
     test_data = django_filters.ChoiceFilter(lookup_expr='isnull', label=u"Include possible test data",
-                                            name='patientmoduleattr__not_patient_indicator', choices=TEST_CHOICES,
+                                            field_name='patientmoduleattr__not_patient_indicator', choices=TEST_CHOICES,
                                             widget=forms.Select)
 
     class Meta:
@@ -597,9 +597,9 @@ class DXSummaryListFilter(django_filters.FilterSet):
 
     """
 
-    study_date__gt = django_filters.DateFilter(lookup_expr='gte', label='Date from', name='study_date',
+    study_date__gt = django_filters.DateFilter(lookup_expr='gte', label='Date from', field_name='study_date',
                                                widget=forms.TextInput(attrs={'class': 'datepicker'}))
-    study_date__lt = django_filters.DateFilter(lookup_expr='lte', label='Date until', name='study_date',
+    study_date__lt = django_filters.DateFilter(lookup_expr='lte', label='Date until', field_name='study_date',
                                                widget=forms.TextInput(attrs={'class': 'datepicker'}))
     study_description = django_filters.CharFilter(lookup_expr='icontains', label='Study description')
     procedure_code_meaning = django_filters.CharFilter(lookup_expr='icontains', label='Procedure')
@@ -608,11 +608,11 @@ class DXSummaryListFilter(django_filters.FilterSet):
         lookup_expr='icontains', label='Acquisition protocol')
     patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(lookup_expr='gte',
                                                                                    label=u'Min age (yrs)',
-                                                                                   name='patientstudymoduleattr'
+                                                                                   field_name='patientstudymoduleattr'
                                                                                         '__patient_age_decimal')
     patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(lookup_expr='lte',
                                                                                    label=u'Max age (yrs)',
-                                                                                   name='patientstudymoduleattr'
+                                                                                   field_name='patientstudymoduleattr'
                                                                                         '__patient_age_decimal')
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Hospital')
     generalequipmentmoduleattr__manufacturer = django_filters.CharFilter(lookup_expr='icontains', label=u'Make')
@@ -629,7 +629,7 @@ class DXSummaryListFilter(django_filters.FilterSet):
     num_events = django_filters.ChoiceFilter(method=_specify_event_numbers, label='Num. events total',
                                              choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
     test_data = django_filters.ChoiceFilter(lookup_expr='isnull', label=u"Include possible test data",
-                                            name='patientmoduleattr__not_patient_indicator', choices=TEST_CHOICES,
+                                            field_name='patientmoduleattr__not_patient_indicator', choices=TEST_CHOICES,
                                             widget=forms.Select)
 
     class Meta:
