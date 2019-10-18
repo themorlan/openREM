@@ -25,10 +25,7 @@ class ImportDualRDSRs(TestCase):
         :return: None
         """
 
-        PatientIDSettings.objects.create()
-        # # Need to check if the line below is required. As was, it created an IntegrityError
-        # SkinDoseMapCalcSettings.get_solo()  # Bitbucket pipeline requires in order to import reset_dual
-
+        PatientIDSettings.get_solo()
 
         rf_file = "test_files/Dual-RDSR-RF.dcm"
         dx_file = "test_files/Dual-RDSR-DX.dcm"
@@ -76,9 +73,7 @@ class ImportDualRDSRs(TestCase):
         :return: None
         """
 
-        PatientIDSettings.objects.create()
-        # # Need to check if the line below is required. As was, it created an IntegrityError
-        # SkinDoseMapCalcSettings.get_solo()  # Bitbucket pipeline requires in order to import reset_dual
+        PatientIDSettings.get_solo()
 
         rf_file = "test_files/Dual-RDSR-RF.dcm"
         dx_file = "test_files/Dual-RDSR-DX.dcm"
