@@ -15,11 +15,11 @@ personnel.
 
 This is a beta release of version 0.10.0 for testing by developers and advanced users.
 
-Documentation is on Read the Docs: https://docs.openrem.org/en/0.10.0b1-docs/, and a demo of the release version can be seen at
+Documentation is on Read the Docs: https://docs.openrem.org/en/0.10.0b2-docs/, and a demo of the release version can be seen at
 http://demo.openrem.org; username `demo` password `demo`
 
-For upgrades, please review the `version release notes <https://docs.openrem.org/en/0.10.0b1-docs/release-0.10.0.html>`_. For
-fresh installs, please review the `install docs <https://docs.openrem.org/en/0.10.0b1-docs/installation.html>`_.
+For upgrades, please review the `version release notes <https://docs.openrem.org/en/0.10.0b2-docs/release-0.10.0.html>`_. For
+fresh installs, please review the `install docs <https://docs.openrem.org/en/0.10.0b2-docs/installation.html>`_.
 
 Contribution of code, ideas, bug reports documentation is all welcome.
 Please feel free to fork the repository and send pull requests. See
