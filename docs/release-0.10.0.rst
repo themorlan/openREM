@@ -107,13 +107,12 @@ Restart all the services
 
 Follow the guide at :doc:`startservices`.
 
-(Ubuntu one page instructions::
+    Ubuntu one page instructions::
 
-    sudo systemctl start openrem-celery
-    sudo systemctl start orthanc
-    sudo systemctl restart openrem-gunicorn
+        sudo systemctl start openrem-celery
+        sudo systemctl start orthanc
+        sudo systemctl restart openrem-gunicorn
 
-)
 .. _post_upgrade0100:
 
 ****************************************
