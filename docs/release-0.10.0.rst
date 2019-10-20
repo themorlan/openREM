@@ -46,7 +46,7 @@ Upgrade
 
 * If you are using a virtualenv, activate it
 
-    Ubuntu one page instructions::
+    *Ubuntu one page instructions*::
 
         sudo systemctl stop openrem-celery
         sudo systemctl stop orthanc
@@ -112,7 +112,7 @@ Restart all the services
 
 Follow the guide at :doc:`startservices`.
 
-    Ubuntu one page instructions::
+    *Ubuntu one page instructions*::
 
         sudo systemctl start openrem-celery
         sudo systemctl start orthanc
