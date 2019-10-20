@@ -40,11 +40,12 @@ Upgrade
     * For PostgreSQL on Windows you can refer to :doc:`backupRestorePostgreSQL`
     * For a non-production SQLite3 database, simply make a copy of the database file
 
-* Stop any Celery workers
+* Stop any Celery workers (Ubuntu one page instructions: ``sudo systemctl stop openrem-celery``)
 
-* Consider temporarily disabling your DICOM Store SCP, or redirecting the data to be processed later
+* Consider temporarily disabling your DICOM Store SCP, or redirecting the data to be processed later (Ubuntu one page
+  instructions: ``sudo systemctl stop orthanc``)
 
-* If you are using a virtualenv, activate it
+* If you are using a virtualenv, activate it (Ubuntu on page instructions: ``. /var/dose/veopenrem/bin/activate``)
 
 * Install the new version of OpenREM:
 
@@ -106,6 +107,13 @@ Restart all the services
 
 Follow the guide at :doc:`startservices`.
 
+(Ubuntu one page instructions::
+
+    sudo systemctl start openrem-celery
+    sudo systemctl start orthanc
+    sudo systemctl restart openrem-gunicorn
+
+)
 .. _post_upgrade0100:
 
 ****************************************
