@@ -8,8 +8,8 @@ Headline changes
 
 * Database: new summary fields introduced to improve the responsiveness of the interface - requires additional migration
   step
-* Imports: enabled import of GE Elite Mini View C-arm, Opera Swing R/F and Philips BIgBore CT RDSRs that have issues
-* Imports: updated event level laterality to import from new location after CP 1676
+* Imports: enabled import of GE Elite Mini View C-arm, Opera Swing R/F and Philips BigBore CT RDSRs that have issues
+* Imports: updated event level laterality to import from new location after DICOM standard change proposal CP1676_
 * Interface: highlight row when dose alert exceeded
 * Exports: added fluoroscopy and radiography exports tailored for UK PHE dose survey
 
@@ -157,3 +157,6 @@ Before the migration is complete, some of the information on the modality pages 
 dose information for example.
 The system will otherwise be fully functioning, though the Celery workers will be busy! New studies can be imported as
 normal.
+
+
+.. _CP1676: https://www.dicomstandard.org/cps/
