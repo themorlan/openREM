@@ -8,8 +8,8 @@ Headline changes
 
 * Database: new summary fields introduced to improve the responsiveness of the interface - requires additional migration
   step
-* Imports: enabled import of GE Elite Mini View C-arm, Opera Swing R/F and Philips BIgBore CT RDSRs that have issues
-* Imports: updated event level laterality to import from new location after CP 1676
+* Imports: enabled import of GE Elite Mini View C-arm, Opera Swing R/F and Philips BigBore CT RDSRs that have issues
+* Imports: updated event level laterality to import from new location after DICOM standard change proposal CP1676_
 * Interface: highlight row when dose alert exceeded
 * Exports: added fluoroscopy and radiography exports tailored for UK PHE dose survey
 
@@ -45,6 +45,12 @@ Upgrade
 * Consider temporarily disabling your DICOM Store SCP, or redirecting the data to be processed later
 
 * If you are using a virtualenv, activate it
+
+    *Ubuntu one page instructions*::
+
+        sudo systemctl stop openrem-celery
+        sudo systemctl stop orthanc
+        . /var/dose/veopenrem/bin/activate
 
 * Install the new version of OpenREM:
 
@@ -106,6 +112,12 @@ Restart all the services
 
 Follow the guide at :doc:`startservices`.
 
+    *Ubuntu one page instructions*::
+
+        sudo systemctl start openrem-celery
+        sudo systemctl start orthanc
+        sudo systemctl restart openrem-gunicorn
+
 .. _post_upgrade0100:
 
 ****************************************
@@ -145,3 +157,6 @@ Before the migration is complete, some of the information on the modality pages 
 dose information for example.
 The system will otherwise be fully functioning, though the Celery workers will be busy! New studies can be imported as
 normal.
+
+
+.. _CP1676: https://www.dicomstandard.org/cps/
