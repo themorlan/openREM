@@ -40,10 +40,10 @@ Diagram of system components
          data_export -> python_django [style=dotted dir=both];
 
          // Define the nodes for the DICOM store, database population and skin dose map calculation
-         conquest [label="DICOM StoreSCP\n(Conquest&sup2;)" fontname="Helvetica" tooltip="Conquest, acting as a DICOM storage SCP" shape="box"];
+         conquest [label="DICOM StoreSCP&sup2;" fontname="Helvetica" tooltip="Conquest, acting as a DICOM storage SCP" shape="box"];
          conquest_script [shape=diamond label="Does the\nobject contain\nuseful data?" fontname="Helvetica" tooltip="Process the rules in dicom.ini"];
          populate_database [label="Extract information from\nthe DICOM object to the\nOpenREM database" fontname="Helvetica", tooltip="Extract data using OpenREM's python scripts" shape="box"];
-         delete_object [label="Delete the DICOM object\nfrom the Conquest store" fontname="Helvetica" tooltip="Delete the DICOM object from the local store SCP" shape="box"];
+         delete_object [label="Delete the DICOM object\nfrom the DICOM store" fontname="Helvetica" tooltip="Delete the DICOM object from the local store SCP" shape="box"];
          calc_skin_dose_map [shape=diamond label="Calculate\nskin dose\nmap?" fontname="Helvetica" tooltip="Calculate the skin dose map?"];
          blank_node_1 [shape=none style=invisible];
 
@@ -95,8 +95,9 @@ Alternatively, a built-in web server is included that will suffice for testing p
 2: DICOM Store node
 ^^^^^^^^^^^^^^^^^^^
 Any DICOM Store can be used, as long as it can be used to call the OpenREM import script. A built-in store is
-available, but not recommended for production use. See :doc:`netdicom-nodes` for more details. Conquest is the
-recommended DICOM Store service to use.
+available, but not recommended for production use. See :doc:`netdicom-nodes` for more details. Orthanc or
+Conquest are the recommended DICOM Store services to use; see :ref:`_installdicomstore` for installation notes
+and the :ref:`configure_third_party_DICOM` section for configuration help.
 
 3: Database
 ^^^^^^^^^^^
