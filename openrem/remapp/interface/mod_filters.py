@@ -175,26 +175,42 @@ class RFSummaryListFilter(django_filters.FilterSet):
             'performing_physician_name', 'accession_number', 'study_dap_min', 'study_dap_max',
             'generalequipmentmoduleattr__unique_equipment_name__display_name', 'test_data',
         ]
-        # order_by = (
-        #     ('-study_date', mark_safe('Exam date &darr;')),
-        #     ('study_date', mark_safe('Exam date &uarr;')),
-        #     ('generalequipmentmoduleattr__institution_name', 'Hospital'),
-        #     ('generalequipmentmoduleattr__manufacturer', 'Make'),
-        #     ('generalequipmentmoduleattr__manufacturer_model_name', 'Model name'),
-        #     ('generalequipmentmoduleattr__station_name', 'Station name'),
-        #     ('study_description', 'Study description'),
-        #     ('-projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total',
-        #      'Total DAP'),
-        #     ('-projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_rp_total',
-        #      'Total RP Dose'),
-        # )
 
-    def get_order_by(self, order_value):
-        if order_value == 'study_date':
-            return ['study_date', 'study_time']
-        elif order_value == '-study_date':
-            return ['-study_date', '-study_time']
-        return super(RFSummaryListFilter, self).get_order_by(order_value)
+    o = django_filters.OrderingFilter(
+        choices=(
+            ('-study_date', 'Exam date ⬇'),
+            ('study_date', 'Exam date ⬆'),
+            ('study_description', 'Study Description'),
+            ('generalequipmentmoduleattr__institution_name', 'Hospital'),
+            ('generalequipmentmoduleattr__manufacturer', 'Make'),
+            ('generalequipmentmoduleattr__manufacturer_model_name', 'Model'),
+            ('generalequipmentmoduleattr__unique_equipment_name__display_name', 'Display name'),
+            ('study_description', 'Study description'),
+            ('-total_dap', 'Total DAP'),
+            ('-total_rp_dose_a', 'Total RP Dose (A)'),
+        ),
+        fields=(
+            ('study_date', '-study_date'),
+            ('study_date', 'study_date'),
+            ('study_description', 'study_description'),
+            ('generalequipmentmoduleattr__institution_name', 'generalequipmentmoduleattr__institution_name'),
+            ('generalequipmentmoduleattr__manufacturer', 'generalequipmentmoduleattr__manufacturer'),
+            ('generalequipmentmoduleattr__manufacturer_model_name',
+             'generalequipmentmoduleattr__manufacturer_model_name'),
+            ('generalequipmentmoduleattr__unique_equipment_name__display_name',
+             'generalequipmentmoduleattr__unique_equipment_name__display_name'),
+            ('study_description', 'study_description'),
+            ('total_dap', '-total_dap'),
+            ('total_rp_dose_a', '-total_rp_dose_a'),
+        ),
+    )
+
+    # def get_order_by(self, order_value):
+    #     if order_value == 'study_date':
+    #         return ['study_date', 'study_time']
+    #     elif order_value == '-study_date':
+    #         return ['-study_date', '-study_time']
+    #     return super(RFSummaryListFilter, self).get_order_by(order_value)
 
 
 class RFFilterPlusPid(RFSummaryListFilter):
@@ -565,24 +581,43 @@ class MGSummaryListFilter(django_filters.FilterSet):
             'generalequipmentmoduleattr__unique_equipment_name__display_name', 'num_events', 'test_data',
         ]
 
-        # order_by = (
-        #     ('-study_date', mark_safe('Exam date &darr;')),
-        #     ('study_date', mark_safe('Exam date &uarr;')),
-        #     ('generalequipmentmoduleattr__institution_name', 'Hospital'),
-        #     ('generalequipmentmoduleattr__manufacturer', 'Make'),
-        #     ('generalequipmentmoduleattr__manufacturer_model_name', 'Model name'),
-        #     ('generalequipmentmoduleattr__station_name', 'Station name'),
-        #     ('procedure_code_meaning', 'Procedure'),
-        #     ('-projectionxrayradiationdose__accumxraydose__accummammographyxraydose__accumulated_average_glandular_'
-        #      'dose', 'Accumulated AGD'),
-        # )
+    o = django_filters.OrderingFilter(
+        choices=(
+            ('-study_date', 'Exam date ⬇'),
+            ('study_date', 'Exam date ⬆'),
+            ('study_description', 'Study Description'),
+            ('generalequipmentmoduleattr__institution_name', 'Hospital'),
+            ('generalequipmentmoduleattr__manufacturer', 'Make'),
+            ('generalequipmentmoduleattr__manufacturer_model_name', 'Model'),
+            ('generalequipmentmoduleattr__unique_equipment_name__display_name', 'Display name'),
+            ('study_description', 'Study description'),
+            ('procedure_code_meaning', 'Procedure'),
+            ('-total_agd_left', 'AGD (left)'),
+            ('-total_agd_right', 'AGD (right)'),
+        ),
+        fields=(
+            ('study_date', '-study_date'),
+            ('study_date', 'study_date'),
+            ('study_description', 'study_description'),
+            ('generalequipmentmoduleattr__institution_name', 'generalequipmentmoduleattr__institution_name'),
+            ('generalequipmentmoduleattr__manufacturer', 'generalequipmentmoduleattr__manufacturer'),
+            ('generalequipmentmoduleattr__manufacturer_model_name',
+             'generalequipmentmoduleattr__manufacturer_model_name'),
+            ('generalequipmentmoduleattr__unique_equipment_name__display_name',
+             'generalequipmentmoduleattr__unique_equipment_name__display_name'),
+            ('study_description', 'study_description'),
+            ('procedure_doce_meaning', 'procedure_code_menaing'),
+            ('total_agd_left', '-total_agd_left'),
+            ('total_agd_right', '-total_agd_right'),
+        ),
+    )
 
-    def get_order_by(self, order_value):
-        if order_value == 'study_date':
-            return ['study_date', 'study_time']
-        elif order_value == '-study_date':
-            return ['-study_date', '-study_time']
-        return super(MGSummaryListFilter, self).get_order_by(order_value)
+    # def get_order_by(self, order_value):
+    #     if order_value == 'study_date':
+    #         return ['study_date', 'study_time']
+    #     elif order_value == '-study_date':
+    #         return ['-study_date', '-study_time']
+    #     return super(MGSummaryListFilter, self).get_order_by(order_value)
 
 
 class MGFilterPlusPid(MGSummaryListFilter):
@@ -648,18 +683,33 @@ class DXSummaryListFilter(django_filters.FilterSet):
             'event_dap_min', 'event_dap_max',
             'generalequipmentmoduleattr__unique_equipment_name__display_name', 'num_events', 'test_data',
         ]
-        #
-        # order_by = (
-        #     ('-study_date', mark_safe('Exam date &darr;')),
-        #     ('study_date', mark_safe('Exam date &uarr;')),
-        #     ('generalequipmentmoduleattr__institution_name', 'Hospital'),
-        #     ('generalequipmentmoduleattr__manufacturer', 'Make'),
-        #     ('generalequipmentmoduleattr__manufacturer_model_name', 'Model name'),
-        #     ('generalequipmentmoduleattr__station_name', 'Station name'),
-        #     ('study_description', 'Study description'),
-        #     ('-projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total',
-        #      'Total DAP'),
-        # )
+
+    o = django_filters.OrderingFilter(
+        choices=(
+            ('-study_date', 'Exam date ⬇'),
+            ('study_date', 'Exam date ⬆'),
+            ('study_description', 'Study Description'),
+            ('generalequipmentmoduleattr__institution_name', 'Hospital'),
+            ('generalequipmentmoduleattr__manufacturer', 'Make'),
+            ('generalequipmentmoduleattr__manufacturer_model_name', 'Model'),
+            ('generalequipmentmoduleattr__unique_equipment_name__display_name', 'Display name'),
+            ('study_description', 'Study description'),
+            ('-total_dap', 'Total DAP'),
+        ),
+        fields=(
+            ('study_date', '-study_date'),
+            ('study_date', 'study_date'),
+            ('study_description', 'study_description'),
+            ('generalequipmentmoduleattr__institution_name', 'generalequipmentmoduleattr__institution_name'),
+            ('generalequipmentmoduleattr__manufacturer', 'generalequipmentmoduleattr__manufacturer'),
+            ('generalequipmentmoduleattr__manufacturer_model_name',
+             'generalequipmentmoduleattr__manufacturer_model_name'),
+            ('generalequipmentmoduleattr__unique_equipment_name__display_name',
+             'generalequipmentmoduleattr__unique_equipment_name__display_name'),
+            ('study_description', 'study_description'),
+            ('total_dap', '-total_dap'),
+        ),
+    )
 
     # def get_order_by(self, order_value):
     #     if order_value == 'study_date':
