@@ -8,8 +8,8 @@ Headline changes
 
 * Database: new summary fields introduced to improve the responsiveness of the interface - requires additional migration
   step
-* Imports: enabled import of GE Elite Mini View C-arm, Opera Swing R/F and Philips BIgBore CT RDSRs that have issues
-* Imports: updated event level laterality to import from new location after CP 1676
+* Imports: enabled import of GE Elite Mini View C-arm, Opera Swing R/F and Philips BigBore CT RDSRs that have issues
+* Imports: updated event level laterality to import from new location after DICOM standard change proposal CP1676_
 * Interface: highlight row when dose alert exceeded
 * Exports: added fluoroscopy and radiography exports tailored for UK PHE dose survey
 
@@ -46,11 +46,17 @@ Upgrade
 
 * If you are using a virtualenv, activate it
 
+    *Ubuntu one page instructions*::
+
+        sudo systemctl stop openrem-celery
+        sudo systemctl stop orthanc
+        . /var/dose/veopenrem/bin/activate
+
 * Install the new version of OpenREM:
 
     .. code-block:: console
 
-        pip install openrem==0.10.0b1
+        pip install openrem==0.10.0b2
 
 .. _update_configuration0100:
 
@@ -106,6 +112,12 @@ Restart all the services
 
 Follow the guide at :doc:`startservices`.
 
+    *Ubuntu one page instructions*::
+
+        sudo systemctl start openrem-celery
+        sudo systemctl start orthanc
+        sudo systemctl restart openrem-gunicorn
+
 .. _post_upgrade0100:
 
 ****************************************
@@ -134,6 +146,11 @@ of modality types in your database then the study level tasks will all be create
 all the workers will be busy. Therefore there might be a delay before the progress indicators on the OpenREM front
 page start to update. You can review the number of tasks being created on the ``Config -> Tasks`` page.
 
+Before the migration is complete, some of the information on the modality pages of OpenREM will be missing, such as the
+dose information for example, but otherwise everything that doesn't rely on Celery workers will work as normal. Studies
+sent directly to be imported will carry on during the migration, but query-retrieve tasks will get stuck behind the
+migration tasks.
+
 ..  figure:: img/0_10_Migration_Processing.png
     :figwidth: 100%
     :align: center
@@ -141,7 +158,10 @@ page start to update. You can review the number of tasks being created on the ``
 
 When the process is complete the 'Summary data fields migration' panel will disappear and will not be seen again.
 
-Before the migration is complete, some of the information on the modality pages of OpenREM will be missing, such as the
-dose information for example.
-The system will otherwise be fully functioning, though the Celery workers will be busy! New studies can be imported as
-normal.
+Post migration activity
+=======================
+
+Any scheduled query-retrieve tasks may not have executed properly during the migration. If they
+haven't, it is worth replicating the missing tasks using the web interface 'Query remote server'.
+
+.. _CP1676: https://www.dicomstandard.org/cps/
