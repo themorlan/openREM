@@ -146,6 +146,11 @@ of modality types in your database then the study level tasks will all be create
 all the workers will be busy. Therefore there might be a delay before the progress indicators on the OpenREM front
 page start to update. You can review the number of tasks being created on the ``Config -> Tasks`` page.
 
+Before the migration is complete, some of the information on the modality pages of OpenREM will be missing, such as the
+dose information for example, but otherwise everything that doesn't rely on Celery workers will work as normal. Studies
+sent directly to be imported will carry on during the migration, but query-retrieve tasks will get stuck behind the
+migration tasks.
+
 ..  figure:: img/0_10_Migration_Processing.png
     :figwidth: 100%
     :align: center
@@ -153,10 +158,10 @@ page start to update. You can review the number of tasks being created on the ``
 
 When the process is complete the 'Summary data fields migration' panel will disappear and will not be seen again.
 
-Before the migration is complete, some of the information on the modality pages of OpenREM will be missing, such as the
-dose information for example.
-The system will otherwise be fully functioning, though the Celery workers will be busy! New studies can be imported as
-normal.
+Post migration activity
+=======================
 
+Any scheduled query-retrieve tasks may not have executed properly during the migration. If they
+haven't, it is worth replicating the missing tasks using the web interface 'Query remote server'.
 
 .. _CP1676: https://www.dicomstandard.org/cps/
