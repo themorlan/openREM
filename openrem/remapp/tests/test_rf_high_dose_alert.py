@@ -7,7 +7,7 @@ from django.test import RequestFactory, TestCase, override_settings
 from remapp.extractors import rdsr
 from remapp.models import PatientIDSettings, GeneralStudyModuleAttr, HighDoseMetricAlertSettings
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from remapp.interface.mod_filters import RFSummaryListFilter
 from decimal import Decimal
 

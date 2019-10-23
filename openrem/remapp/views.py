@@ -50,7 +50,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
@@ -2107,7 +2107,7 @@ def size_delete(request):
     :param request: Contains the task ID
     :type request: POST
     """
-    from django.core.urlresolvers import reverse
+    from django.urls import reverse
     from django.contrib import messages
 
     for task in request.POST:
