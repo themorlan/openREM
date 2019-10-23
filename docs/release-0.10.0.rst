@@ -161,7 +161,7 @@ When the process is complete the 'Summary data fields migration' panel will disa
 Post migration activity
 =======================
 
-If there are regular query-retrieve tasks check these may not have executed properly during the migration. If they
+Any scheduled query-retrieve tasks may not have executed properly during the migration. If they
 haven't, it is worth replicating the missing tasks using the web interface 'Query remote server'.
 
 .. _CP1676: https://www.dicomstandard.org/cps/
