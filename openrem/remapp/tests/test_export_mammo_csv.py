@@ -114,37 +114,37 @@ class ExportMammoCSVNHSBSP(TestCase):
 
         # Test each row
         rcc1 = csvdf[csvdf['View code'].str.contains('RCC') & (csvdf['Filter'] == 'Al') & (csvdf['Thickness'] == 19.0)]
-        self.assertAlmostEquals(rcc1.mAs.values[0], 34.3)
-        self.assertAlmostEquals(rcc1.kV.values[0], 26.0)
+        self.assertAlmostEqual(rcc1.mAs.values[0], 34.3)
+        self.assertAlmostEqual(rcc1.kV.values[0], 26.0)
 
         rcc4 = csvdf[csvdf['View code'].str.contains('RCC') & (csvdf['Filter'] == 'Al') & (csvdf['Thickness'] == 20.0)]
-        self.assertAlmostEquals(rcc4.mAs.values[0], 33.9)
-        self.assertAlmostEquals(rcc4.kV.values[0], 26.0)
+        self.assertAlmostEqual(rcc4.mAs.values[0], 33.9)
+        self.assertAlmostEqual(rcc4.kV.values[0], 26.0)
 
         rob1 = csvdf[csvdf['View code'].str.contains('ROB')]
-        self.assertAlmostEquals(rob1.mAs.values[0], 35.6)
-        self.assertAlmostEquals(rob1.kV.values[0], 26.0)
+        self.assertAlmostEqual(rob1.mAs.values[0], 35.6)
+        self.assertAlmostEqual(rob1.kV.values[0], 26.0)
         self.assertEqual(rob1.Filter.values[0], 'Al')
-        self.assertAlmostEquals(rob1.Thickness.values[0], 21.0)
+        self.assertAlmostEqual(rob1.Thickness.values[0], 21.0)
 
         lcc1 = csvdf[csvdf['View code'].str.contains('LCC')]
-        self.assertAlmostEquals(lcc1.mAs.values[0], 33.9)
-        self.assertAlmostEquals(lcc1.kV.values[0], 26.0)
+        self.assertAlmostEqual(lcc1.mAs.values[0], 33.9)
+        self.assertAlmostEqual(lcc1.kV.values[0], 26.0)
         self.assertEqual(lcc1.Filter.values[0], 'Al')
-        self.assertAlmostEquals(lcc1.Thickness.values[0], 20.0)
+        self.assertAlmostEqual(lcc1.Thickness.values[0], 20.0)
 
         rcc2 = csvdf[csvdf['View code'].str.contains('RCC') & (csvdf['Filter'] == 'Rh') & (csvdf['Thickness'] == 23.0)]
-        self.assertAlmostEquals(rcc2.mAs.values[0], 17.9)
-        self.assertAlmostEquals(rcc2.kV.values[0], 20.0)
+        self.assertAlmostEqual(rcc2.mAs.values[0], 17.9)
+        self.assertAlmostEqual(rcc2.kV.values[0], 20.0)
 
         rcc5 = csvdf[csvdf['View code'].str.contains('RCC') & (csvdf['Filter'] == 'Rh') & (csvdf['Thickness'] == 46.0)]
-        self.assertAlmostEquals(rcc5.mAs.values[0], 17.8)
-        self.assertAlmostEquals(rcc5.kV.values[0], 20.0)
+        self.assertAlmostEqual(rcc5.mAs.values[0], 17.8)
+        self.assertAlmostEqual(rcc5.kV.values[0], 20.0)
 
         rcc3 = csvdf[csvdf['View code'].str.contains('RCC') & (csvdf['Filter'] == 'Ag')]
-        self.assertAlmostEquals(rcc3.mAs.values[0], 17.9)
-        self.assertAlmostEquals(rcc3.kV.values[0], 20.0)
-        self.assertAlmostEquals(rcc3.Thickness.values[0], 128.0)
+        self.assertAlmostEqual(rcc3.mAs.values[0], 17.9)
+        self.assertAlmostEqual(rcc3.kV.values[0], 20.0)
+        self.assertAlmostEqual(rcc3.Thickness.values[0], 128.0)
 
         # cleanup
         task.filename.delete()  # delete file so local testing doesn't get too messy!
