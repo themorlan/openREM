@@ -14,9 +14,7 @@ Installation
 
 ..  code-block:: console
 
-    pip install django-debug-toolbar==1.9.1
-
-The version is fixed for now due to the version of Django being used.
+    pip install django-debug-toolbar
 
 Configuration
 -------------
@@ -25,7 +23,7 @@ Configuration
 
 ..  code-block:: console
 
-    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware',]
     INSTALLED_APPS += ('debug_toolbar',)
     INTERNAL_IPS = ['127.0.0.1']
 
