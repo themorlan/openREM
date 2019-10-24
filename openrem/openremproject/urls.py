@@ -5,7 +5,6 @@ from .settings import VIRTUAL_DIRECTORY
 import remapp.views
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
     url(r'^{0}'.format(VIRTUAL_DIRECTORY), include('remapp.urls')),
     url(r'^{0}openrem/'.format(VIRTUAL_DIRECTORY), include('remapp.urls')),
     url(r'^{0}admin/'.format(VIRTUAL_DIRECTORY), admin.site.urls),
