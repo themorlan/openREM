@@ -138,7 +138,7 @@
                                     <td>
                                         {% for accumxraydoseset_allplanes in each_study.projectionxrayradiationdose_set.get.accumxraydose_set.all %}
                                             {% with accumprojection=accumxraydoseset_allplanes.accumintegratedprojradiogdose_set.get %}
-                                                {{ accumxraydoseset_allplanes.acquisition_plane }}:
+                                                {{ accumxraydoseset_allplanes.acquisition_plane.code_meaning }}:
                                                 {% if accumprojection.convert_gym2_to_cgycm2 >= alert_levels.alert_total_dap_rf %}
                                                     <strong style="color: red;">{{ accumprojection.convert_gym2_to_cgycm2|floatformat:1 }}</strong>
                                                 {% else %}
@@ -152,7 +152,7 @@
                                     <td>
                                         {% for accumxraydoseset_allplanes in each_study.projectionxrayradiationdose_set.get.accumxraydose_set.all %}
                                             {% with accumprojection=accumxraydoseset_allplanes.accumintegratedprojradiogdose_set.get %}
-                                                {{ accumxraydoseset_allplanes.acquisition_plane }}:
+                                                {{ accumxraydoseset_allplanes.acquisition_plane.code_meaning }}:
                                                 {% if accumprojection.dose_rp_total >= alert_levels.alert_total_rp_dose_rf %}
                                                     <strong style="color: red;">{{ accumprojection.dose_rp_total|floatformat:1 }}</strong>
                                                 {% else %}
