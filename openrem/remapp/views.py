@@ -1840,16 +1840,11 @@ def update_latest_studies(request):
             latestdatetime = datetime.combine(latestuid.study_date, latestuid.study_time)
             deltaseconds = int((datetime.now() - latestdatetime).total_seconds())
 
-            try:
-                displayname = display_name.encode('utf-8')
-            except AttributeError:
-                displayname = u"Unexpected display name non-ASCII issue"
-
             modalitydata[display_name] = {
                 'total': display_name_studies.count(),
                 'latest': latestdatetime,
                 'deltaseconds': deltaseconds,
-                'displayname': displayname,
+                'displayname': display_name,
                 'displayname_pk': modality.lower() + str(pk)
             }
         ordereddata = OrderedDict(sorted(list(modalitydata.items()), key=lambda t: t[1]['latest'], reverse=True))
