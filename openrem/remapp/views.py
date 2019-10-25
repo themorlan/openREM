@@ -522,11 +522,11 @@ def rf_summary_list_filter(request):
     if request.user.groups.filter(name='pidgroup'):
         f = RFFilterPlusPid(
             request.GET, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by(
-            ).distinct())
+                '-study_date', '-study_time').distinct())
     else:
         f = RFSummaryListFilter(
-            request.GET, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by(
-            ).distinct())
+            request.GET,queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by(
+                '-study_date', '-study_time').distinct())
 
     try:
         # See if the user has plot settings in userprofile
@@ -1407,11 +1407,11 @@ def mg_summary_list_filter(request):
     if request.user.groups.filter(name='pidgroup'):
         f = MGFilterPlusPid(
             filter_data, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='MG').order_by(
-            ).distinct())
+                '-study_date', '-study_time').distinct())
     else:
         f = MGSummaryListFilter(
             filter_data, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='MG').order_by(
-            ).distinct())
+                '-study_date', '-study_time').distinct())
 
     try:
         # See if the user has plot settings in userprofile

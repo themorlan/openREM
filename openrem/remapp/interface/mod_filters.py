@@ -124,6 +124,26 @@ def _event_dap_filter(queryset, name, value):
         return queryset
 
 
+class DateTimeOrderingFilter(django_filters.OrderingFilter):
+
+    def __init__(self, *args, **kwargs):
+        super(DateTimeOrderingFilter, self).__init__(*args, **kwargs)
+        self.extra['choices'] += (
+            ('-time_date', 'Exam date ⬇'),
+            ('time_date', 'Exam date ⬆'),
+        )
+
+    def filter(self, qs, value):
+        # OrderingFilter is CSV-based, so `value` is a list
+        if value and any(v in ['time_date', '-time_date'] for v in value):
+            if '-time_date' in value:
+                return qs.order_by('-study_date', '-study_time')
+            if 'time_date' in value:
+                return qs.order_by('study_date', 'study_time')
+
+        return super(DateTimeOrderingFilter, self).filter(qs, value)
+
+
 class RFSummaryListFilter(django_filters.FilterSet):
     """Filter for fluoroscopy studies to display in web interface.
 
@@ -176,10 +196,8 @@ class RFSummaryListFilter(django_filters.FilterSet):
             'generalequipmentmoduleattr__unique_equipment_name__display_name', 'test_data',
         ]
 
-    o = django_filters.OrderingFilter(
+    o = DateTimeOrderingFilter(
         choices=(
-            ('-study_date', 'Exam date ⬇'),
-            ('study_date', 'Exam date ⬆'),
             ('study_description', 'Study Description'),
             ('generalequipmentmoduleattr__institution_name', 'Hospital'),
             ('generalequipmentmoduleattr__manufacturer', 'Make'),
@@ -190,8 +208,6 @@ class RFSummaryListFilter(django_filters.FilterSet):
             ('-total_rp_dose_a', 'Total RP Dose (A)'),
         ),
         fields=(
-            ('study_date', '-study_date'),
-            ('study_date', 'study_date'),
             ('study_description', 'study_description'),
             ('generalequipmentmoduleattr__institution_name', 'generalequipmentmoduleattr__institution_name'),
             ('generalequipmentmoduleattr__manufacturer', 'generalequipmentmoduleattr__manufacturer'),
@@ -204,13 +220,6 @@ class RFSummaryListFilter(django_filters.FilterSet):
             ('total_rp_dose_a', '-total_rp_dose_a'),
         ),
     )
-
-    # def get_order_by(self, order_value):
-    #     if order_value == 'study_date':
-    #         return ['study_date', 'study_time']
-    #     elif order_value == '-study_date':
-    #         return ['-study_date', '-study_time']
-    #     return super(RFSummaryListFilter, self).get_order_by(order_value)
 
 
 class RFFilterPlusPid(RFSummaryListFilter):
@@ -410,10 +419,8 @@ class CTSummaryListFilter(django_filters.FilterSet):
             'num_spiral_events', 'num_axial_events', 'num_spr_events', 'num_stationary_events',
             ]
 
-    o = django_filters.OrderingFilter(
+    o = DateTimeOrderingFilter(
         choices=(
-            ('-study_date', 'Exam date ⬇'),
-            ('study_date', 'Exam date ⬆'),
             ('study_description', 'Study Description'),
             ('generalequipmentmoduleattr__institution_name', 'Hospital'),
             ('generalequipmentmoduleattr__manufacturer', 'Make'),
@@ -423,8 +430,6 @@ class CTSummaryListFilter(django_filters.FilterSet):
             ('-total_dlp', 'Total DLP'),
         ),
         fields=(
-            ('study_date', '-study_date'),
-            ('study_date', 'study_date'),
             ('study_description', 'study_description'),
             ('generalequipmentmoduleattr__institution_name', 'generalequipmentmoduleattr__institution_name'),
             ('generalequipmentmoduleattr__manufacturer', 'generalequipmentmoduleattr__manufacturer'),
@@ -436,13 +441,6 @@ class CTSummaryListFilter(django_filters.FilterSet):
             ('total_dlp', '-total_dlp'),
         ),
     )
-
-    # def get_order_by(self, ordering):
-    #     if ordering == 'study_date':
-    #         return ['study_date', 'study_time']
-    #     elif order_value == '-study_date':
-    #         return ['-study_date', '-study_time']
-    #     return super(CTSummaryListFilter, self).get_order_by(order_value)
 
 
 class CTFilterPlusPid(CTSummaryListFilter):
@@ -525,8 +523,8 @@ def ct_acq_filter(filters, pid=False):
     if filteredInclude:
         studies = studies.filter(study_instance_uid__in=filteredInclude)
     if pid:
-        return CTFilterPlusPid(filters, studies.order_by().distinct())
-    return CTSummaryListFilter(filters, studies.order_by().distinct())
+        return CTFilterPlusPid(filters, studies.order_by('-study_date', '-study_time').distinct())
+    return CTSummaryListFilter(filters, studies.order_by('-study_date', '-study_time').distinct())
 
 
 class MGSummaryListFilter(django_filters.FilterSet):
@@ -581,10 +579,8 @@ class MGSummaryListFilter(django_filters.FilterSet):
             'generalequipmentmoduleattr__unique_equipment_name__display_name', 'num_events', 'test_data',
         ]
 
-    o = django_filters.OrderingFilter(
+    o = DateTimeOrderingFilter(
         choices=(
-            ('-study_date', 'Exam date ⬇'),
-            ('study_date', 'Exam date ⬆'),
             ('study_description', 'Study Description'),
             ('generalequipmentmoduleattr__institution_name', 'Hospital'),
             ('generalequipmentmoduleattr__manufacturer', 'Make'),
@@ -596,8 +592,6 @@ class MGSummaryListFilter(django_filters.FilterSet):
             ('-total_agd_right', 'AGD (right)'),
         ),
         fields=(
-            ('study_date', '-study_date'),
-            ('study_date', 'study_date'),
             ('study_description', 'study_description'),
             ('generalequipmentmoduleattr__institution_name', 'generalequipmentmoduleattr__institution_name'),
             ('generalequipmentmoduleattr__manufacturer', 'generalequipmentmoduleattr__manufacturer'),
@@ -611,13 +605,6 @@ class MGSummaryListFilter(django_filters.FilterSet):
             ('total_agd_right', '-total_agd_right'),
         ),
     )
-
-    # def get_order_by(self, order_value):
-    #     if order_value == 'study_date':
-    #         return ['study_date', 'study_time']
-    #     elif order_value == '-study_date':
-    #         return ['-study_date', '-study_time']
-    #     return super(MGSummaryListFilter, self).get_order_by(order_value)
 
 
 class MGFilterPlusPid(MGSummaryListFilter):
@@ -684,10 +671,8 @@ class DXSummaryListFilter(django_filters.FilterSet):
             'generalequipmentmoduleattr__unique_equipment_name__display_name', 'num_events', 'test_data',
         ]
 
-    o = django_filters.OrderingFilter(
+    o = DateTimeOrderingFilter(
         choices=(
-            ('-study_date', 'Exam date ⬇'),
-            ('study_date', 'Exam date ⬆'),
             ('study_description', 'Study Description'),
             ('generalequipmentmoduleattr__institution_name', 'Hospital'),
             ('generalequipmentmoduleattr__manufacturer', 'Make'),
@@ -697,8 +682,6 @@ class DXSummaryListFilter(django_filters.FilterSet):
             ('-total_dap', 'Total DAP'),
         ),
         fields=(
-            ('study_date', '-study_date'),
-            ('study_date', 'study_date'),
             ('study_description', 'study_description'),
             ('generalequipmentmoduleattr__institution_name', 'generalequipmentmoduleattr__institution_name'),
             ('generalequipmentmoduleattr__manufacturer', 'generalequipmentmoduleattr__manufacturer'),
@@ -710,13 +693,6 @@ class DXSummaryListFilter(django_filters.FilterSet):
             ('total_dap', '-total_dap'),
         ),
     )
-
-    # def get_order_by(self, order_value):
-    #     if order_value == 'study_date':
-    #         return ['study_date', 'study_time']
-    #     elif order_value == '-study_date':
-    #         return ['-study_date', '-study_time']
-    #     return super(DXSummaryListFilter, self).get_order_by(order_value)
 
 
 class DXFilterPlusPid(DXSummaryListFilter):
@@ -782,5 +758,5 @@ def dx_acq_filter(filters, pid=False):
     if filteredInclude:
         studies = studies.filter(study_instance_uid__in=filteredInclude)
     if pid:
-        return DXFilterPlusPid(filters, queryset=studies.order_by().distinct())
-    return DXSummaryListFilter(filters, queryset=studies.order_by().distinct())
+        return DXFilterPlusPid(filters, queryset=studies.order_by('-study_date', '-study_time').distinct())
+    return DXSummaryListFilter(filters, queryset=studies.order_by('-study_date', '-study_time').distinct())
