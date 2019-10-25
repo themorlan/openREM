@@ -1682,7 +1682,7 @@ def openrem_home(request):
         user_profile = request.user.userprofile
     except (ObjectDoesNotExist, AttributeError):
         # Attribute error needed for AnonymousUser, who doesn't have a userprofile attribute
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             # Create a default userprofile for the user if one doesn't exist
             create_user_profile(sender=request.user, instance=request.user, created=True)
             user_profile = request.user.userprofile
@@ -1699,12 +1699,12 @@ def openrem_home(request):
     for modality in modalities:
         if not modalities[modality]['count']:
             mods_to_delete += [modality,]
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 setattr(user_profile, "display{0}".format(modality), False)
         else:
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 setattr(user_profile, "display{0}".format(modality), True)
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         user_profile.save()
 
     for modality in mods_to_delete:
@@ -1718,7 +1718,7 @@ def openrem_home(request):
     display_workload_stats = HomePageAdminSettings.objects.values_list('enable_workload_stats', flat=True)[0]
     home_config = {'display_workload_stats': display_workload_stats}
     if display_workload_stats:
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             home_config['day_delta_a'] = user_profile.summaryWorkloadDaysA
             home_config['day_delta_b'] = user_profile.summaryWorkloadDaysB
         else:
@@ -1826,7 +1826,7 @@ def update_latest_studies(request):
 
         modalitydata = {}
 
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             day_delta_a = request.user.userprofile.summaryWorkloadDaysA
             day_delta_b = request.user.userprofile.summaryWorkloadDaysB
         else:
@@ -1898,7 +1898,7 @@ def update_study_workload(request):
 
         modalitydata = {}
 
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             day_delta_a = request.user.userprofile.summaryWorkloadDaysA
             day_delta_b = request.user.userprofile.summaryWorkloadDaysB
         else:
@@ -2196,7 +2196,7 @@ def charts_off(request):
         # See if the user has plot settings in userprofile
         user_profile = request.user.userprofile
     except ObjectDoesNotExist:
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             # Create a default userprofile for the user if one doesn't exist
             create_user_profile(sender=request.user, instance=request.user, created=True)
             user_profile = request.user.userprofile
