@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 exec(open('openrem/remapp/version.py').read())
 
 requires = [
-    'django>=1.11,<2',
+    'django>=2,<2.1',
     'django-filter',
     'pytz >= 0a',
     'humanize',
@@ -17,7 +17,6 @@ requires = [
     'pydicom',
     'xlsxwriter',
     'celery>=3.1,<4.3',
-    # 'argparse >= 1.2.1',
     'django-qsstats-magic',
     'python-dateutil',
     'django-solo',
