@@ -27,7 +27,7 @@ try:
 except ImportError:
     sys.exit(u'Pynedicom > 0.8.1 needs to be installed, see https://docs.openrem.org/en/latest/install.html')
 from netdicom.SOPclass import StorageSOPClass, VerificationSOPClass
-from dicom.dataset import Dataset, FileDataset
+from pydicom.dataset import Dataset, FileDataset
 from django.views.decorators.csrf import csrf_exempt
 
 logger = logging.getLogger(name='remapp.netdicom.storescp')

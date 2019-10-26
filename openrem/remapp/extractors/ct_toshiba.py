@@ -72,8 +72,8 @@ def _find_dose_summary_objects(folder_path):
         A list of structures, each containing the elements "fileName",
         "studyTime" and "instanceNumber".
     """
-    import dicom
-    from dicom.filereader import InvalidDicomError
+    import pydicom
+    from pydicom.filereader import InvalidDicomError
 
     sop_class_uid = "Secondary Capture Image Storage"
     dose_summary_object_list = []
@@ -81,7 +81,7 @@ def _find_dose_summary_objects(folder_path):
     for file_name in os.listdir(folder_path):
         if os.path.isfile(os.path.join(folder_path, file_name)):
             try:
-                dcm = dicom.read_file(os.path.join(folder_path, file_name))
+                dcm = pydicom.dcmread(os.path.join(folder_path, file_name))
                 if str(dcm.SOPClassUID) == str(sop_class_uid) and len(dcm.ImageType) == 2:
                     dose_summary_object_list.append({"fileName": file_name,
                                                      "studyTime": dcm.StudyTime,
@@ -118,9 +118,9 @@ def _split_by_studyinstanceuid(dicom_path):
         original dicom_path.
 
     """
-    import dicom
+    import pydicom
 
-    from dicom.filereader import InvalidDicomError
+    from pydicom.filereader import InvalidDicomError
 
     folder_list = []
     file_counter = 0
@@ -128,7 +128,7 @@ def _split_by_studyinstanceuid(dicom_path):
     for filename in os.listdir(dicom_path):
         if os.path.isfile(os.path.join(dicom_path, filename)):
             try:
-                dcm = dicom.read_file(os.path.join(dicom_path, filename))
+                dcm = pydicom.dcmread(os.path.join(dicom_path, filename))
 
                 subfolder_path = os.path.join(dicom_path, dcm.StudyInstanceUID)
                 if not os.path.isdir(subfolder_path):
@@ -172,9 +172,9 @@ def _find_extra_info(dicom_path):
         DeviceSerialNumber
 
     """
-    import dicom
+    import pydicom
 
-    from dicom.filereader import InvalidDicomError
+    from pydicom.filereader import InvalidDicomError
 
     from struct import unpack
 
@@ -187,7 +187,7 @@ def _find_extra_info(dicom_path):
     for filename in os.listdir(dicom_path):
         if os.path.isfile(os.path.join(dicom_path, filename)):
             try:
-                dcm = dicom.read_file(os.path.join(dicom_path, filename))
+                dcm = pydicom.dcmread(os.path.join(dicom_path, filename))
 
                 try:
                     # Only look at the tags if the combination of AcquisitionNumber and AcquisitionTime is new
@@ -484,13 +484,13 @@ def _update_dicom_rdsr(rdsr_file, additional_study_info, additional_acquisition_
         integer (int): 1 on success; 0 if the rdsr_file could not be read.
 
     """
-    import dicom
-    from dicom.dataset import Dataset
-    from dicom.sequence import Sequence
+    import pydicom
+    from pydicom.dataset import Dataset
+    from pydicom.sequence import Sequence
 
     logger.debug('Trying to open initial RDSR file')
     try:
-        dcm = dicom.read_file(rdsr_file)
+        dcm = pydicom.dcmread(rdsr_file)
         logger.debug('RDSR file opened: {0}'.format(rdsr_file))
     except IOError as e:
         logger.debug('I/O error({0}): {1} when trying to read {2}'.format(e.errno, e.strerror, rdsr_file))
@@ -1056,7 +1056,7 @@ def ct_toshiba(folder_name):
 
     :param folder_name: Path to folder containing Toshiba DICOM objects - dose summary and images
     """
-    import dicom
+    import pydicom
 
     rdsr_name = 'sr.dcm'
     updated_rdsr_name = 'sr_updated.dcm'
@@ -1140,13 +1140,13 @@ def ct_toshiba(folder_name):
             for sub_folder in subfolder_paths:
                 if first_subfolder == True:
                     shutil.copy(os.path.join(sub_folder, updated_rdsr_name), os.path.join(folder, combined_rdsr_name))
-                    combined_rdsr = dicom.read_file(os.path.join(folder, combined_rdsr_name))
+                    combined_rdsr = pydicom.dcmread(os.path.join(folder, combined_rdsr_name))
                     for content_sequence in combined_rdsr.ContentSequence:
                         if content_sequence.ConceptNameCodeSequence[0].CodeMeaning == 'CT Accumulated Dose Data':
                             combined_rdsr_accumulated_dose_data = content_sequence
                     first_subfolder = False
                 else:
-                    current_rdsr = dicom.read_file(os.path.join(sub_folder, updated_rdsr_name))
+                    current_rdsr = pydicom.dcmread(os.path.join(sub_folder, updated_rdsr_name))
                     for content_sequence in current_rdsr.ContentSequence:
                         if content_sequence.ConceptNameCodeSequence[0].CodeMeaning == 'CT Acquisition':
                             combined_rdsr.ContentSequence.append(content_sequence)

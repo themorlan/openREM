@@ -2,7 +2,7 @@
 # test_import_dx_rdsr.py
 
 import os
-import dicom
+import pydicom
 from django.test import TestCase
 from remapp.extractors.dx import _dx2db
 from remapp.extractors.rdsr import _rdsr2db
@@ -25,7 +25,7 @@ class DislayNamesAndMatchOnObsUID(TestCase):
         dicom_path = os.path.join(root_tests, dicom_file)
 
         # Initial import of DX RDSR without any modifications
-        dataset = dicom.read_file(dicom_path)
+        dataset = pydicom.dcmread(dicom_path)
         dataset.decode()
         _rdsr2db(dataset)
         study = GeneralStudyModuleAttr.objects.order_by('id')[0]
@@ -104,10 +104,10 @@ class DislayNamesAndMatchOnObsUID(TestCase):
         dicom_path_1 = os.path.join(root_tests, dicom_file_1)
         dicom_path_2 = os.path.join(root_tests, dicom_file_2)
 
-        dataset_1 = dicom.read_file(dicom_path_1)
+        dataset_1 = pydicom.dcmread(dicom_path_1)
         dataset_1.decode()
         _rdsr2db(dataset_1)
-        dataset_2 = dicom.read_file(dicom_path_2)
+        dataset_2 = pydicom.dcmread(dicom_path_2)
         dataset_2.decode()
         _rdsr2db(dataset_2)
 
@@ -161,8 +161,8 @@ class DislayNamesAndMatchOnObsUID(TestCase):
         img_path = os.path.join(root_tests, img_file)
         rdsr_path = os.path.join(root_tests, rdsr_file)
 
-        img = dicom.read_file(img_path)
-        rdsr = dicom.read_file(rdsr_path)
+        img = pydicom.dcmread(img_path)
+        rdsr = pydicom.dcmread(rdsr_path)
         img.decode()
         rdsr.decode()
 

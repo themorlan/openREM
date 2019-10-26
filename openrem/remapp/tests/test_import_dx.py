@@ -8,9 +8,9 @@ import datetime
 from decimal import Decimal
 from django.contrib.auth.models import User, Group
 from django.test import TestCase
-from dicom.dataset import Dataset
-from dicom.dataelem import DataElement
-from dicom.multival import MultiValue
+from pydicom.dataset import Dataset
+from pydicom.dataelem import DataElement
+from pydicom.multival import MultiValue
 import logging
 from testfixtures import LogCapture
 from remapp.extractors.dx import _xray_filters_prep

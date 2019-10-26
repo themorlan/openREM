@@ -11,7 +11,7 @@
 from __future__ import unicode_literals
 import datetime
 from django.test import TestCase
-from dicom.dataset import Dataset
+from pydicom.dataset import Dataset
 from remapp.tools.dcmdatetime import get_date, get_time, get_date_time, make_dcm_date, make_dcm_date_range
 
 

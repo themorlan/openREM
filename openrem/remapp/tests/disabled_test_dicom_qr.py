@@ -5,8 +5,8 @@ import collections
 import os
 import uuid
 
-from dicom.UID import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
-from dicom.dataset import Dataset
+from pydicom.uid import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
+from pydicom.dataset import Dataset
 from django.test import TestCase
 from mock import patch
 from netdicom.SOPclass import StudyRootFindSOPClass, StudyRootMoveSOPClass, VerificationSOPClass

@@ -157,7 +157,7 @@ def _xray_filters_prep(dataset, source):
             if ',' in xray_filter_thickness_maximum:
                 xray_filter_thickness_maximum = xray_filter_thickness_maximum.split(',')
 
-    if isinstance(xray_filter_material, list):
+    if isinstance(xray_filter_material, (MultiValue, list)):
         _xray_filters_multiple(
             xray_filter_material, xray_filter_thickness_maximum, xray_filter_thickness_minimum, source)
     else:

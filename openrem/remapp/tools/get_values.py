@@ -29,8 +29,9 @@
 
 """
 from builtins import str  # pylint: disable=redefined-builtin
-from dicom.valuerep import PersonName
-from dicom import charset
+from pydicom.valuerep import PersonName
+from pydicom import charset
+from pydicom.charset import default_encoding
 from django.utils.encoding import smart_text
 import logging
 logger = logging.getLogger(__name__)
@@ -65,6 +66,10 @@ def get_value_num(tag, dataset):
     """
     if tag in dataset:
         val = dataset[tag].value
+        try:
+            val = val.decode(default_encoding)
+        except AttributeError:
+            pass
         if val != '':
             return val
 

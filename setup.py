@@ -13,7 +13,6 @@ requires = [
     'django-filter',
     'pytz >= 0a',
     'humanize',
-    'dicom',
     'pydicom',
     'xlsxwriter',
     'celery>=3.1,<4.3',

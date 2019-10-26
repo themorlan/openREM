@@ -84,8 +84,8 @@ class DAPUnitsTest(TestCase):
         Initial test of sequence as presented in Ultimax RDSR
         :return: None
         """
-        from dicom.dataset import Dataset
-        from dicom.sequence import Sequence
+        from pydicom.dataset import Dataset
+        from pydicom.sequence import Sequence
         from remapp.extractors.rdsr import _check_dap_units
 
         units_sequence = Dataset()
@@ -104,8 +104,8 @@ class DAPUnitsTest(TestCase):
         Test case of correct sequence as presented in conformant RDSR
         :return: None
         """
-        from dicom.dataset import Dataset
-        from dicom.sequence import Sequence
+        from pydicom.dataset import Dataset
+        from pydicom.sequence import Sequence
         from remapp.extractors.rdsr import _check_dap_units
 
         units_sequence = Dataset()
@@ -124,7 +124,7 @@ class DAPUnitsTest(TestCase):
         Test case of missing units sequence - not seen by the auther in the wild
         :return: None
         """
-        from dicom.dataset import Dataset
+        from pydicom.dataset import Dataset
         from remapp.extractors.rdsr import _check_dap_units
 
         measured_values_sequence = Dataset()
