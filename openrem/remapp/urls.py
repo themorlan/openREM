@@ -28,7 +28,6 @@
 
 """
 
-from django.conf.urls import url
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
 
@@ -36,100 +35,93 @@ from . import views
 from .exports import exportviews
 from .netdicom import dicomviews
 
-urlpatterns = [
-    url(r'^$', views.openrem_home, name='home'),
-    url(r'^hometotals/$', views.update_modality_totals, name='update_modality_totals'),
-    url(r'^homestudies/$', views.update_latest_studies, name='update_latest_studies'),
-    url(r'^homeworkload/$', views.update_study_workload, name='update_study_workload'),
-
-    url(r'^rf/$', views.rf_summary_list_filter, name='rf_summary_list_filter'),
-    url(r'^rf/chart/$', views.rf_summary_chart_data, name='rf_summary_chart_data'),
+main_patterns = [
     path('rf/<int:pk>/', views.rf_detail_view, name='rf_detail_view'),
-    url(r'^rf/(?P<pk>\d+)/skin_map/$', views.rf_detail_view_skin_map, name='rf_detail_view_skin_map'),
-
-    url(r'^ct/$', views.ct_summary_list_filter, name='ct_summary_list_filter'),
-    url(r'^ct/chart/$', views.ct_summary_chart_data, name='ct_summary_chart_data'),
-    url(r'^ct/(?P<pk>\d+)/$', views.ct_detail_view, name='ct_detail_view'),
-
-    url(r'^dx/$', views.dx_summary_list_filter, name='dx_summary_list_filter'),
-    url(r'^dx/chart/$', views.dx_summary_chart_data, name='dx_summary_chart_data'),
-    url(r'^dx/(?P<pk>\d+)/$', views.dx_detail_view, name='dx_detail_view'),
-
-    url(r'^mg/$', views.mg_summary_list_filter, name='mg_summary_list_filter'),
-    url(r'^mg/chart/$', views.mg_summary_chart_data, name='mg_summary_chart_data'),
-    url(r'^mg/(?P<pk>\d+)/$', views.mg_detail_view, name='mg_detail_view'),
-
-    url(r'^viewdisplaynames/$', views.display_names_view, name='display_names_view'),
-
-    url(r'^delete/(?P<pk>\d+)$', views.study_delete, name='study_delete'),
-    url(r'^ptsize/sizeupload$', views.size_upload, name='size_upload'),
-    url(r'^ptsize/sizeprocess/(?P<pk>\d+)/$', views.size_process, name='size_process'),
-    url(r'^ptsize/sizeimports', views.size_imports, name='size_imports'),
-    url(r'^ptsize/sizedelete', views.size_delete, name='size_delete'),
-    url(r'^ptsize/sizeimport/abort/(?P<pk>\d+)$', views.size_abort, name='size_abort'),
-    url(r'^ptsize/sizelogs/(?P<task_id>[a-f0-9-]{36})$', views.size_download, name='size_download'),
-    url(r'^updatedisplaynames/$', views.display_name_update, name='display_name_update'),
-    url(r'^populatedisplaynames$', views.display_name_populate, name='display_name_populate'),
-    url(r'^populatefailedimportlist', views.failed_list_populate, name='failed_list_populate'),
-    url(r'^misc/reprocessdual/(?P<pk>\d+)/$', views.reprocess_dual, name='reprocess_dual'),
-    url(r'^review/(?P<equip_name_pk>\d+)/(?P<modality>\w+)/$', views.review_summary_list,
-        name='review_summary_list'),
-    url(r'^review/study$', views.review_study_details, name='review_study_details'),
-    url(r'^review/studiesdelete$', views.review_studies_delete, name='review_studies_delete'),
-    url(r'^review/equipmentlastdateandcount$', views.display_name_last_date_and_count,
-        name='display_name_last_date_and_count'),
-    url(r'^review/studiesequipdelete$', views.review_studies_equip_delete, name='review_studies_equip_delete'),
-    url(r'^review/failed/(?P<modality>\w+)/$', views.review_failed_imports, name='review_failed_imports'),
-    url(r'^review/failed/study$', views.review_failed_study_details, name='review_failed_study_details'),
-    url(r'^review/studiesdeletefailed$', views.review_failed_studies_delete, name='review_failed_studies_delete'),
-    url(r'^chartoptions/$', views.chart_options_view, name='chart_options_view'),
-    url(r'^homepageoptions/$', views.homepage_options_view, name='homepage_options_view'),
-    url(r'^settings/patientidsettings/(?P<pk>\d+)/$', views.PatientIDSettingsUpdate.as_view(),
-        name='patient_id_settings_update'),
-    url(r'^settings/dicomdelsettings/(?P<pk>\d+)/$', views.DicomDeleteSettingsUpdate.as_view(),
-        name='dicom_delete_settings_update'),
-    url(r'^settings/skindosemapsettings/(?P<pk>\d+)/$', views.SkinDoseMapCalcSettingsUpdate.as_view(),
-        name='skin_dose_map_settings_update'),
-    url(r'^settings/notpatientindicators/$', views.not_patient_indicators, name='not_patient_indicators'),
-    url(r'^settings/notpatientindicators/restore074/$', views.not_patient_indicators_as_074,
-        name='not_patient_indicators_as_074'),
-    url(r'^settings/notpatientindicators/names/add/$', views.NotPatientNameCreate.as_view(),
-        name='notpatientname_add'),
-    url(r'^settings/notpatientindicators/names/(?P<pk>\d+)/$', views.NotPatientNameUpdate.as_view(),
-        name='notpatientname_update'),
-    url(r'^settings/notpatientindicators/names/(?P<pk>\d+)/delete/$', views.NotPatientNameDelete.as_view(),
-        name='notpatientname_delete'),
-    url(r'^settings/notpatientindicators/id/add/$', views.NotPatientIDCreate.as_view(),
-        name='notpatienid_add'),
-    url(r'^settings/notpatientindicators/id/(?P<pk>\d+)/$', views.NotPatientIDUpdate.as_view(),
-        name='notpatientid_update'),
-    url(r'^settings/notpatientindicators/id/(?P<pk>\d+)/delete/$', views.NotPatientIDDelete.as_view(),
-        name='notpatientid_delete'),
-    url(r'^settings/adminquestions/hide_not_patient/$', views.admin_questions_hide_not_patient,
-        name='admin_questions_hide_not_patient'),
-    url(r'^settings/rfalertsettings/(?P<pk>\d+)/$', views.RFHighDoseAlertSettings.as_view(),
-        name='rf_alert_settings_update'),
-    url(r'^settings/rfalertnotifications/$', views.rf_alert_notifications_view,
-        name='rf_alert_notifications_view'),
-    url(r'^settings/rfrecalculateaccumdoses/', views.rf_recalculate_accum_doses,
-        name='rf_recalculate_accum_doses'),
-    # url(r'^password/$', views.change_password, name='change_password'),
-    url(r'^change_password/$', auth_views.password_change,
-        {'template_name': 'registration/changepassword.html'}, name='password_change'),
-    url(r'^change_password/done/$', auth_views.password_change_done,
-        {'template_name': 'registration/changepassworddone.html'}, name='password_change_done'),
-    url(r'^tasks/rabbitmq/purge_queue/(?P<queue>[0-9a-zA-Z.@-]+)$', views.rabbitmq_purge,
-        name='rabbitmq_purge'),
-    url(r'^tasks/celery/$', views.celery_admin, name='celery_admin'),
-    url(r'^tasks/celery/tasks/(?P<stage>\w+)$', views.celery_tasks, name='celery_tasks'),
-    url(r'^tasks/celery/abort_task/(?P<task_id>[0-9a-zA-Z.@-]+)/(?P<type>\w+)$', views.celery_abort,
-        name='celery_abort'),
-    url(r'^tasks/celery/service_status/$', views.task_service_status, name='task_service_status'),
-    url(r'^migrate/populate_summary/$', views.populate_summary, name='populate_summary'),
-    url(r'^migrate/populate_summary_progress/$', views.populate_summary_progress,
-        name='populate_summary_progress'),
-    url(r'^charts_off/$', views.charts_off, name='charts_off')
+    path('', views.openrem_home, name='home'),
+    path('hometotals/', views.update_modality_totals, name='update_modality_totals'),
+    path('homestudies/', views.update_latest_studies, name='update_latest_studies'),
+    path('homeworkload/', views.update_study_workload, name='update_study_workload'),
+    path('rf/', views.rf_summary_list_filter, name='rf_summary_list_filter'),
+    path('rf/chart/', views.rf_summary_chart_data, name='rf_summary_chart_data'),
+    path('rf/<int:pk>/skin_map/', views.rf_detail_view_skin_map, name='rf_detail_view_skin_map'),
+    path('ct/', views.ct_summary_list_filter, name='ct_summary_list_filter'),
+    path('ct/chart/', views.ct_summary_chart_data, name='ct_summary_chart_data'),
+    path('ct/<int:pk>/', views.ct_detail_view, name='ct_detail_view'),
+    path('dx/', views.dx_summary_list_filter, name='dx_summary_list_filter'),
+    path('dx/chart/', views.dx_summary_chart_data, name='dx_summary_chart_data'),
+    path('dx/<int:pk>/', views.dx_detail_view, name='dx_detail_view'),
+    path('mg/', views.mg_summary_list_filter, name='mg_summary_list_filter'),
+    path('mg/chart/', views.mg_summary_chart_data, name='mg_summary_chart_data'),
+    path('mg/<int:pk>/', views.mg_detail_view, name='mg_detail_view'),
+    path('viewdisplaynames/', views.display_names_view, name='display_names_view'),
+    path('delete/<int:pk>', views.study_delete, name='study_delete'),
+    path('updatedisplaynames/', views.display_name_update, name='display_name_update'),
+    path('populatedisplaynames', views.display_name_populate, name='display_name_populate'),
+    path('populatefailedimportlist', views.failed_list_populate, name='failed_list_populate'),
+    path('misc/reprocessdual/<int:pk>/', views.reprocess_dual, name='reprocess_dual'),
+    path('change_password/', auth_views.password_change, {'template_name': 'registration/changepassword.html'}, name='password_change'),
+    path('change_password/done/', auth_views.password_change_done, {'template_name': 'registration/changepassworddone.html'}, name='password_change_done'),
+    path('migrate/populate_summary/', views.populate_summary, name='populate_summary'),
+    path('migrate/populate_summary_progress/', views.populate_summary_progress, name='populate_summary_progress'),
 ]
+
+
+tasks_patterns = [
+    path('rabbitmq/purge_queue/<str:queue>/', views.rabbitmq_purge, name='rabbitmq_purge'),
+    path('celery/', views.celery_admin, name='celery_admin'),
+    path('celery/tasks/<str:stage>/', views.celery_tasks, name='celery_tasks'),
+    path('celery/abort_task/<uuid:task_id>/<str:type>/', views.celery_abort, name='celery_abort'),
+    path('celery/service_status/', views.task_service_status, name='task_service_status'),
+]
+
+
+review_patterns = [
+    path('<int:equip_name_pk>/<str:modality>/', views.review_summary_list, name='review_summary_list'),
+    path('study', views.review_study_details, name='review_study_details'),
+    path('studiesdelete', views.review_studies_delete, name='review_studies_delete'),
+    path('equipmentlastdateandcount', views.display_name_last_date_and_count, name='display_name_last_date_and_count'),
+    path('studiesequipdelete', views.review_studies_equip_delete, name='review_studies_equip_delete'),
+    path('failed/<str:modality>/', views.review_failed_imports, name='review_failed_imports'),
+    path('failed/study', views.review_failed_study_details, name='review_failed_study_details'),
+    path('studiesdeletefailed', views.review_failed_studies_delete, name='review_failed_studies_delete'),
+]
+
+
+patient_size_patterns = [
+    path('sizeupload/', views.size_upload, name='size_upload'),
+    path('sizeprocess/<int:pk>/', views.size_process, name='size_process'),
+    path('sizeimports/', views.size_imports, name='size_imports'),
+    path('sizedelete/', views.size_delete, name='size_delete'),
+    path('sizeimport/abort/<int:pk>/', views.size_abort, name='size_abort'),
+    path('sizelogs/<uuid:task_id>/', views.size_download, name='size_download'),
+]
+
+
+settings_not_patient_indicators_patterns = [
+    path('', views.not_patient_indicators, name='not_patient_indicators'),
+    path('restore074/', views.not_patient_indicators_as_074, name='not_patient_indicators_as_074'),
+    path('names/add/', views.NotPatientNameCreate.as_view(), name='notpatientname_add'),
+    path('names/<int:pk>/', views.NotPatientNameUpdate.as_view(), name='notpatientname_update'),
+    path('names/<int:pk>/delete/', views.NotPatientNameDelete.as_view(), name='notpatientname_delete'),
+    path('id/add/', views.NotPatientIDCreate.as_view(), name='notpatienid_add'),
+    path('id/<int:pk>/', views.NotPatientIDUpdate.as_view(), name='notpatientid_update'),
+    path('id/<int:pk>/delete/', views.NotPatientIDDelete.as_view(), name='notpatientid_delete'),
+]
+
+settings_patterns = [
+    path('charts_off/', views.charts_off, name='charts_off'),
+    path('chartoptions/', views.chart_options_view, name='chart_options_view'),
+    path('homepageoptions/', views.homepage_options_view, name='homepage_options_view'),
+    path('patientidsettings/<int:pk>/', views.PatientIDSettingsUpdate.as_view(), name='patient_id_settings_update'),
+    path('dicomdelsettings/<int:pk>/', views.DicomDeleteSettingsUpdate.as_view(), name='dicom_delete_settings_update'),
+    path('skindosemapsettings/<int:pk>/', views.SkinDoseMapCalcSettingsUpdate.as_view(), name='skin_dose_map_settings_update'),
+    path('adminquestions/hide_not_patient/', views.admin_questions_hide_not_patient, name='admin_questions_hide_not_patient'),
+    path('rfalertsettings/<int:pk>/', views.RFHighDoseAlertSettings.as_view(), name='rf_alert_settings_update'),
+    path('rfalertnotifications/', views.rf_alert_notifications_view, name='rf_alert_notifications_view'),
+    path('rfrecalculateaccumdoses/', views.rf_recalculate_accum_doses, name='rf_recalculate_accum_doses'),
+    path('notpatientindicators/', include(settings_not_patient_indicators_patterns)),
+]
+
 
 export_patterns = [
     path('', exportviews.export, name='export'),
@@ -172,7 +164,12 @@ dicom_patterns = [
     path('moveupdate', dicomviews.r_update, name='move_update'),
 ]
 
-urlpatterns += [
+urlpatterns = [
+    path('', include(main_patterns)),
     path('export/', include(export_patterns)),
     path('dicom/', include(dicom_patterns)),
+    path('settings/', include(settings_patterns)),
+    path('ptsize/', include(patient_size_patterns)),
+    path('review/', include(review_patterns)),
+    path('tasks/', include(tasks_patterns)),
 ]
