@@ -59,8 +59,8 @@ main_patterns = [
     path('populatedisplaynames', views.display_name_populate, name='display_name_populate'),
     path('populatefailedimportlist', views.failed_list_populate, name='failed_list_populate'),
     path('misc/reprocessdual/<int:pk>/', views.reprocess_dual, name='reprocess_dual'),
-    path('change_password/', auth_views.password_change, {'template_name': 'registration/changepassword.html'}, name='password_change'),
-    path('change_password/done/', auth_views.password_change_done, {'template_name': 'registration/changepassworddone.html'}, name='password_change_done'),
+    path('change_password/', auth_views.PasswordChangeView, {'template_name': 'registration/changepassword.html'}, name='password_change'),
+    path('change_password/done/', auth_views.PasswordChangeDoneView, {'template_name': 'registration/changepassworddone.html'}, name='password_change_done'),
     path('migrate/populate_summary/', views.populate_summary, name='populate_summary'),
     path('migrate/populate_summary_progress/', views.populate_summary_progress, name='populate_summary_progress'),
 ]
