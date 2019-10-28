@@ -344,6 +344,7 @@ def _check_dap_units(dap_sequence):
 
 def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
     # TODO: review model to convert to cid where appropriate, and add additional fields
+    from decimal import Decimal
     from django.db.models import Avg
     from remapp.models import IrradEventXRaySourceData, XrayGrid
     from remapp.tools.get_values import get_or_create_cid, safe_strings
@@ -465,7 +466,7 @@ def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
         try:
             avg_pulse_width = source.pulsewidth_set.all().aggregate(Avg('pulse_width'))['pulse_width__avg']
             if avg_pulse_width:
-                source.exposure_time = avg_pulse_width * source.number_of_pulses
+                source.exposure_time = avg_pulse_width * Decimal(source.number_of_pulses)
                 source.save()
         except ObjectDoesNotExist:
             pass
