@@ -30,6 +30,7 @@
 
 from django.conf.urls import url
 from django.contrib.auth import views as auth_views
+from django.urls import include, path
 
 from . import views
 from .exports import exportviews
@@ -43,7 +44,7 @@ urlpatterns = [
 
     url(r'^rf/$', views.rf_summary_list_filter, name='rf_summary_list_filter'),
     url(r'^rf/chart/$', views.rf_summary_chart_data, name='rf_summary_chart_data'),
-    url(r'^rf/(?P<pk>\d+)/$', views.rf_detail_view, name='rf_detail_view'),
+    path('rf/<int:pk>/', views.rf_detail_view, name='rf_detail_view'),
     url(r'^rf/(?P<pk>\d+)/skin_map/$', views.rf_detail_view_skin_map, name='rf_detail_view_skin_map'),
 
     url(r'^ct/$', views.ct_summary_list_filter, name='ct_summary_list_filter'),
@@ -130,43 +131,48 @@ urlpatterns = [
     url(r'^charts_off/$', views.charts_off, name='charts_off')
 ]
 
-urlpatterns += [
-    url(r'^export/$', exportviews.export, name='export'),
-    url(r'^exportctcsv1/(?P<name>\w+)/(?P<pat_id>\w+)/$', exportviews.ctcsv1, name='ctcsv1'),
-    url(r'^exportctxlsx1/(?P<name>\w+)/(?P<pat_id>\w+)/$', exportviews.ctxlsx1, name='ctxlsx1'),
-    url(r'^exportctphe2019/$', exportviews.ct_xlsx_phe2019, name='ct_xlsx_phe2019'),
-    url(r'^exportdxcsv1/(?P<name>\w+)/(?P<pat_id>\w+)/$', exportviews.dxcsv1, name='dxcsv1'),
-    url(r'^exportdxxlsx1/(?P<name>\w+)/(?P<pat_id>\w+)/$', exportviews.dxxlsx1, name='dxxlsx1'),
-    url(r'^exportdxphe2019/(?P<export_type>\w+)/$', exportviews.dx_xlsx_phe2019, name='dx_xlsx_phe2019'),
-    url(r'^exportflcsv1/(?P<name>\w+)/(?P<pat_id>\w+)/$', exportviews.flcsv1, name='flcsv1'),
-    url(r'^exportrfxlsx1/(?P<name>\w+)/(?P<pat_id>\w+)/$', exportviews.rfxlsx1, name='rfxlsx1'),
-    url(r'^exportrfopenskin/(?P<pk>\d+)$', exportviews.rfopenskin, name='rfopenskin'),
-    url(r'^exportrfphe2019/$', exportviews.rf_xlsx_phe2019, name='rf_xlsx_phe2019'),
-    url(r'^exportmgcsv1/(?P<name>\w+)/(?P<pat_id>\w+)/$', exportviews.mgcsv1, name='mgcsv1'),
-    url(r'^exportmgxlsx1/(?P<name>\w+)/(?P<pat_id>\w+)/$', exportviews.mgxlsx1, name='mgxlsx1'),
-    url(r'^exportmgnhsbsp/$', exportviews.mgnhsbsp, name='mgnhsbsp'),
-    url(r'^download/(?P<task_id>[a-f0-9-]{36})$', exportviews.download, name='download'),
-    url(r'^deletefile/$', exportviews.deletefile, name='deletefile'),
-    url(r'^export/abort/(?P<pk>\d+)$', exportviews.export_abort, name='export_abort'),
-    url(r'^export/updateactive$', exportviews.update_active, name='update_active'),
-    url(r'^export/updateerror$', exportviews.update_error, name='update_error'),
-    url(r'^export/updatecomplete$', exportviews.update_complete, name='update_complete'),
+export_patterns = [
+    path('', exportviews.export, name='export'),
+    path('ctcsv1/<int:name>/<int:pat_id>/', exportviews.ctcsv1, name='ctcsv1'),
+    path('ctxlsx1/<int:name>/<int:pat_id>/', exportviews.ctxlsx1, name='ctxlsx1'),
+    path('ctphe2019/', exportviews.ct_xlsx_phe2019, name='ct_xlsx_phe2019'),
+    path('dxcsv1/<int:name>/<int:pat_id>/', exportviews.dxcsv1, name='dxcsv1'),
+    path('dxxlsx1/<int:name>/<int:pat_id>/', exportviews.dxxlsx1, name='dxxlsx1'),
+    path('dxphe2019/<str:export_type>/', exportviews.dx_xlsx_phe2019, name='dx_xlsx_phe2019'),
+    path('flcsv1/<int:name>/<int:pat_id>/', exportviews.flcsv1, name='flcsv1'),
+    path('rfxlsx1/<int:name>/<int:pat_id>/', exportviews.rfxlsx1, name='rfxlsx1'),
+    path('rfopenskin/<int:pk>/', exportviews.rfopenskin, name='rfopenskin'),
+    path('rfphe2019/', exportviews.rf_xlsx_phe2019, name='rf_xlsx_phe2019'),
+    path('mgcsv1/<int:name>/<int:pat_id>/', exportviews.mgcsv1, name='mgcsv1'),
+    path('mgxlsx1/<int:name>/<int:pat_id>/', exportviews.mgxlsx1, name='mgxlsx1'),
+    path('mgnhsbsp/', exportviews.mgnhsbsp, name='mgnhsbsp'),
+    path('download/<uuid:task_id>/', exportviews.download, name='download'),
+    path('deletefile/', exportviews.deletefile, name='deletefile'),
+    path('abort/<int:pk>/', exportviews.export_abort, name='export_abort'),
+    path('updateactive/', exportviews.update_active, name='update_active'),
+    path('updateerror/', exportviews.update_error, name='update_error'),
+    path('updatecomplete/', exportviews.update_complete, name='update_complete'),
+]
+
+dicom_patterns = [
+    path('summary', views.dicom_summary, name='dicom_summary'),
+    path('store/add/', views.DicomStoreCreate.as_view(), name='dicomstore_add'),
+    path('store/<int:pk>/', views.DicomStoreUpdate.as_view(), name='dicomstore_update'),
+    path('store/<int:pk>/delete/', views.DicomStoreDelete.as_view(), name='dicomstore_delete'),
+    path('store/<int:pk>/start/', dicomviews.run_store, name='run_store'),
+    path('store/<int:pk>/stop/', dicomviews.stop_store, name='stop_store'),
+    path('store/statusupdate', dicomviews.status_update_store, name='status_update_store'),
+    path('qr/add/', views.DicomQRCreate.as_view(), name='dicomqr_add'),
+    path('qr/<int:pk>/', views.DicomQRUpdate.as_view(), name='dicomqr_update'),
+    path('qr/<int:pk>/delete/', views.DicomQRDelete.as_view(), name='dicomqr_delete'),
+    path('queryupdate', dicomviews.q_update, name='query_update'),
+    path('queryprocess', dicomviews.q_process, name='q_proces'),
+    path('queryremote', dicomviews.dicom_qr_page, name='dicom_qr_page'),
+    path('queryretrieve', dicomviews.r_start, name='start_retrieve'),
+    path('moveupdate', dicomviews.r_update, name='move_update'),
 ]
 
 urlpatterns += [
-    url(r'^dicom/summary', views.dicom_summary, name='dicom_summary'),
-    url(r'^dicom/store/add/$', views.DicomStoreCreate.as_view(), name='dicomstore_add'),
-    url(r'^dicom/store/(?P<pk>\d+)/$', views.DicomStoreUpdate.as_view(), name='dicomstore_update'),
-    url(r'^dicom/store/(?P<pk>\d+)/delete/$', views.DicomStoreDelete.as_view(), name='dicomstore_delete'),
-    url(r'^dicom/store/(?P<pk>\d+)/start/$', dicomviews.run_store, name='run_store'),
-    url(r'^dicom/store/(?P<pk>\d+)/stop/$', dicomviews.stop_store, name='stop_store'),
-    url(r'^dicom/store/statusupdate', dicomviews.status_update_store, name='status_update_store'),
-    url(r'^dicom/qr/add/$', views.DicomQRCreate.as_view(), name='dicomqr_add'),
-    url(r'^dicom/qr/(?P<pk>\d+)/$', views.DicomQRUpdate.as_view(), name='dicomqr_update'),
-    url(r'^dicom/qr/(?P<pk>\d+)/delete/$', views.DicomQRDelete.as_view(), name='dicomqr_delete'),
-    url(r'^dicom/queryupdate$', dicomviews.q_update, name='query_update'),
-    url(r'^dicom/queryprocess$', dicomviews.q_process, name='q_proces'),
-    url(r'^dicom/queryremote$', dicomviews.dicom_qr_page, name='dicom_qr_page'),
-    url(r'^dicom/queryretrieve$', dicomviews.r_start, name='start_retrieve'),
-    url(r'^dicom/moveupdate$', dicomviews.r_update, name='move_update'),
+    path('export/', include(export_patterns)),
+    path('dicom/', include(dicom_patterns)),
 ]
