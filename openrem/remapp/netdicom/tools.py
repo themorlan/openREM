@@ -27,9 +27,9 @@
 # anthing else.
 
 import logging
-from netdicom.applicationentity import AE
-from netdicom.SOPclass import StudyRootFindSOPClass, StudyRootMoveSOPClass, VerificationSOPClass
 from pydicom.uid import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
+from pynetdicom import (AE, VerificationPresentationContexts)
+from pynetdicom.sop_class import VerificationSOPClass
 
 logger = logging.getLogger(__name__)
 qr_logger = logging.getLogger('remapp.netdicom.qrscu')
@@ -55,70 +55,49 @@ def echoscu(scp_pk=None, store_scp=False, qr_scp=False, *args, **kwargs):
     :param kwargs:
     :return: 'AssocFail', Success or ?
     """
-    from remapp.models import DicomRemoteQR, DicomStoreSCP
+    from ..models import DicomRemoteQR, DicomStoreSCP
 
     if store_scp and scp_pk:
         scp = DicomStoreSCP.objects.get(pk=scp_pk)
-        rh = "localhost"
-        aet = "OPENREMECHO"
+        remote_host = "localhost"
+        our_aet = "OPENREMECHO"
     elif qr_scp and scp_pk:
         scp = DicomRemoteQR.objects.get(pk=scp_pk)
         if scp.hostname:
-            rh = scp.hostname
+            remote_host = scp.hostname
         else:
-            rh = scp.ip
-        aet = scp.callingaet
-        if not aet:
-            aet = "OPENREMECHO"
+            remote_host = scp.ip
+        our_aet = scp.callingaet
+        if not our_aet:
+            our_aet = "OPENREMECHO"
     else:
-        logger.warning(u"echoscu called without SCP information")
+        logger.warning("echoscu called without SCP information")
         return 0
 
-    rp = scp.port
-    aec = scp.aetitle
+    remote_port = scp.port
+    remote_aet = scp.aetitle
 
-    ts = [
-        ExplicitVRLittleEndian,
-        ImplicitVRLittleEndian,
-        ExplicitVRBigEndian
-        ]
+    ae = AE()
+    ae.requested_contexts = VerificationPresentationContexts
+    ae.ae_title = our_aet
 
+    assoc = ae.associate(remote_host, remote_port, ae_title=remote_aet)
 
+    if assoc.is_established:
+        status = assoc.send_c_echo()
 
-    # create application entity with just Verification SOP classes as SCU
-    my_ae = AE(aet.encode('ascii', 'ignore'), 0, [VerificationSOPClass], [], ts)
-    my_ae.OnAssociateResponse = OnAssociateResponse
-    my_ae.OnAssociateRequest = OnAssociateRequest
-    my_ae.start()
+        if status:
+            if status.Status == 0x0000:
+                print('C-ECHO request returned success')
+            else:
+                print('C-ECHO request status: 0x{0:04x} or {0} of type {1}'.format(status.Status, type(status.Status)))
+        else:
+            print('Connection timed out, was aborted or received invalid response')
 
-    # remote application entity
-    remote_ae = dict(Address=rh, Port=rp, AET=aec.encode('ascii', 'ignore'))
+        assoc.release()
 
-    # create association with remote AE
-    logger.debug(u"Request association with {0} {1} {2}".format(rh, rp, aec))
-    assoc = my_ae.RequestAssociation(remote_ae)
-
-    if not assoc:
-        logger.info(u"Association with {0} {1} {2} was not successful".format(rh, rp, aec))
-        return "AssocFail"
-    logger.debug(u"assoc is ... %s", assoc)
-
-    # perform a DICOM ECHO
-    logger.debug(u"DICOM Echo... {0} {1} {2}".format(rh, rp, aec))
-    echo = assoc.VerificationSOPClass.SCU(1)
-    logger.debug(u'done with status %s', echo)
-
-    logger.debug(u"Release association from {0} {1} {2}".format(rh, rp, aec))
-    assoc.Release(0)
-
-    # done
-    my_ae.Quit()
-    if echo.Type is "Success":
-        logger.info(u"Returning Success response from echo to {0} {1} {2}".format(rh, rp, aec))
-        return "Success"
     else:
-        logger.info(u"Returning EchoFail response from echo to {0} {1} {2}. Type is {3}.".format(rh, rp, aec, echo.Type))
-        return "EchoFail"
+        print('Association rejected, aborted or never connected')
 
 
 def create_ae(aet, port=None, sop_scu=None, sop_scp=None, transfer_syntax=None):

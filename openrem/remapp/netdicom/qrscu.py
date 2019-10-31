@@ -16,6 +16,8 @@ import os
 import sys
 import uuid
 import collections
+from pynetdicom import AE
+from pynetdicom.sop_class import StudyRootQueryRetrieveInformationModelFind
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -830,14 +832,14 @@ def qrscu(
 
     qr_scp = DicomRemoteQR.objects.get(pk=qr_scp_pk)
     if qr_scp.hostname:
-        rh = qr_scp.hostname
+        remote_host = qr_scp.hostname
     else:
-        rh = qr_scp.ip
-    rp = qr_scp.port
-    aec = qr_scp.aetitle
-    aet = qr_scp.callingaet
-    if not aet:
-        aet = "OPENREMDEFAULT"
+        remote_host = qr_scp.ip
+    remote_port = qr_scp.port
+    remote_aet = qr_scp.aetitle
+    our_aet = qr_scp.callingaet
+    if not our_aet:
+        our_aet = "OPENREMDEFAULT"
 
     if implicit:
         ts = [ImplicitVRLittleEndian]
@@ -850,12 +852,16 @@ def qrscu(
             ExplicitVRBigEndian
         ]
 
-    my_ae = create_ae(aet.encode('ascii', 'ignore'), transfer_syntax=ts)
-    my_ae.start()
-    logger.debug(u"{1} my_ae {0} started".format(my_ae, query_id))
+    ae = AE()
+    ae.add_requested_context(StudyRootQueryRetrieveInformationModelFind)
+    ae.ae_title = our_aet
 
-    # remote application entity
-    remote_ae = dict(Address=rh, Port=rp, AET=aec.encode('ascii', 'ignore'))
+    # my_ae = create_ae(our_aet.encode('ascii', 'ignore'), transfer_syntax=ts)
+    # my_ae.start()
+    # logger.debug(u"{1} my_ae {0} started".format(my_ae, query_id))
+    #
+    # # remote application entity
+    # remote_ae = dict(Address=remote_host, Port=remote_port, AET=remote_aet.encode('ascii', 'ignore'))
     logger.debug(u"{1} Remote AE is {0}".format(remote_ae, query_id))
 
     query = DicomQuery.objects.create()
@@ -865,222 +871,232 @@ def qrscu(
     query.qr_scp_fk = qr_scp
     query.save()
 
-    assoc = _create_association(my_ae, rh, rp, remote_ae, query)
-    if not assoc:
-        logger.warning(u"{0} Query aborted as could not create initial association.".format(query_id))
-        return
+    assoc = ae.associate(remote_host, remote_port, ae_title=remote_aet)
+    # assoc = _create_association(my_ae, remote_host, remote_port, remote_ae, query)
 
-    # perform a DICOM ECHO
-    logger.info(u"{0} DICOM Echo ... ".format(query_id))
-    echo_response = _echo(assoc, query_id)
-    if echo_response.Type != u'Success':
-        logger.error(u"{1} Echo response was {0} instead of Success. Aborting query".format(echo_response, query_id))
-        query.stage = u"Echo response was {0} instead of Success. Aborting query".format(echo_response)
+    if assoc.is_established:
+
+
+    # if not assoc:
+    #     logger.warning(u"{0} Query aborted as could not create initial association.".format(query_id))
+    #     return
+    #
+    # # perform a DICOM ECHO
+    # logger.info(u"{0} DICOM Echo ... ".format(query_id))
+    # echo_response = _echo(assoc, query_id)
+    # if echo_response.Type != u'Success':
+    #     logger.error(u"{1} Echo response was {0} instead of Success. Aborting query".format(echo_response, query_id))
+    #     query.stage = u"Echo response was {0} instead of Success. Aborting query".format(echo_response)
+    #     query.complete = True
+    #     query.save()
+    #     my_ae.Quit()
+    #     return
+
+        logger.info(u"{0} DICOM FindSCU ... ".format(query_id))
+        d = Dataset()
+        d.StudyDate = str(make_dcm_date_range(date1=date_from, date2=date_until, single_date=single_date) or '')
+        if len(d.StudyDate) == 8:
+            d.StudyTime = str(make_dcm_time_range(time1=time_from, time2=time_until) or '')
+        else:
+            d.StudyTime = ''
+
+        all_mods = collections.OrderedDict()
+        all_mods['CT'] = {'inc': False, 'mods': ['CT']}
+        all_mods['MG'] = {'inc': False, 'mods': ['MG']}
+        all_mods['FL'] = {'inc': False, 'mods': ['RF', 'XA']}
+        all_mods['DX'] = {'inc': False, 'mods': ['DX', 'CR']}
+        all_mods['SR'] = {'inc': False, 'mods': ['SR']}
+
+        # Reasoning regarding PET-CT: Some PACS allocate study modality PT, some CT, some depending on order received.
+        # If ModalitiesInStudy is used for matching on C-Find, the CT from PET-CT will be picked up.
+        # If not, then the PET-CT will be returned with everything else, and the CT will show up in the series level
+        # query. Therefore, there is no need to search for PT at any stage.
+        for m in all_mods:
+            if m in modalities:
+                all_mods[m]['inc'] = True
+
+        # query for all requested studies
+        modalities_returned, modality_matching = _query_for_each_modality(all_mods, query, d, assoc)
+
+        # Now we have all our studies. Time to throw duplicates and away any we don't want
+
+        study_numbers = {'initial': query.dicomqrrspstudy_set.count()}
+        study_numbers['current'] = _remove_duplicates_in_study_response(query, study_numbers['initial'])
+
+        # Performing some cleanup if modality_matching=True (prevents having to retrieve unnecessary series)
+        # We are assuming that if remote matches on modality it will populate ModalitiesInStudy and conversely
+        # if remote doesn't match on modality it won't return a populated ModalitiesInStudy.
+        study_rsp = query.dicomqrrspstudy_set.all()
+        if modalities_returned and inc_sr:
+            logger.info(u"{0} Modalities_returned is true and we only want studies with only SR in; removing everything "
+                        u"else.".format(query_id))
+            for study in study_rsp:
+                mods = study.get_modalities_in_study()
+                if mods != ['SR']:
+                    study.delete()
+            study_numbers['current'] = study_rsp.count()
+            study_numbers['sr_only_removed'] = study_numbers['initial'] - study_numbers['current']
+            logger.info(u"{2} Finished removing studies that have anything other than SR in, {0} removed, {1}"
+                        u" remain".format(study_numbers['sr_only_removed'], study_numbers['current'], query_id))
+
+        filter_logs = []
+        if filters['study_desc_inc']:
+            filter_logs += [u"study description includes {0}, ".format(u", ".join(filters['study_desc_inc']))]
+        if filters['study_desc_exc']:
+            filter_logs += [u"study description excludes {0}, ".format(u", ".join(filters['study_desc_exc']))]
+        if filters['stationname_inc']:
+            filter_logs += [u"station name includes {0}, ".format(u", ".join(filters['stationname_inc']))]
+        if filters['stationname_exc']:
+            filter_logs += [u"station name excludes {0}, ".format(u", ".join(filters['stationname_exc']))]
+
+        if filter_logs:
+            query.stage = u"Pruning study responses based on inc/exc options"
+            query.save()
+            logger.info(u"{1} Pruning study responses based on inc/exc options: {0}".format(u"".join(filter_logs), query_id))
+            before_study_prune = study_numbers['current']
+            deleted_studies_filters = _prune_study_responses(query, filters)
+            study_rsp = query.dicomqrrspstudy_set.all()
+            study_numbers['current'] = study_rsp.count()
+            study_numbers['inc_exc_removed'] = before_study_prune - study_numbers['current']
+            logger.info(u"{2} Pruning studies based on inc/exc has removed {0} studies, {1} studies remain.".format(
+                study_numbers['inc_exc_removed'], study_numbers['current'], query_id))
+        else:
+            deleted_studies_filters = {'study_desc_inc': 0, 'study_desc_exc': 0, 'stationname_inc': 0, 'stationname_exc': 0}
+            logger.info(u"{0} No inc/exc options selected".format(query_id))
+
+        query.stage = u"Querying at series level to get more details about studies"
+        query.save()
+        logger.info(u"{0} Querying at series level to get more details about studies".format(query_id))
+        for rsp in study_rsp:
+            # Series level query
+            d2 = Dataset()
+            d2.StudyInstanceUID = rsp.study_instance_uid
+            _query_series(assoc, d2, rsp, query_id)
+            if not modalities_returned:
+                _generate_modalities_in_study(rsp, query_id)
+        logger.debug(u"{0} Series level query complete.".format(query_id))
+
+        if (not modality_matching) or qr_scp.use_modality_tag:
+            before_not_modality_matching = study_numbers['current']
+            mods_in_study_set = set(val for dic in study_rsp.values('modalities_in_study') for val in list(dic.values()))
+            logger.debug(u"{1} mods in study are: {0}".format(study_rsp.values('modalities_in_study'), query_id))
+            query.stage = u"Deleting studies we didn't ask for"
+            query.save()
+            logger.info(u"{0} Deleting studies we didn't ask for".format(query_id))
+            logger.debug(u"{1} mods_in_study_set is {0}".format(mods_in_study_set, query_id))
+            for mod_set in mods_in_study_set:
+                logger.info(u"{1} mod_set is {0}".format(mod_set, query_id))
+                delete = True
+                for mod_choice, details in list(all_mods.items()):
+                    if details['inc']:
+                        logger.info(u"{2} mod_choice {0}, details {1}".format(mod_choice, details, query_id))
+                        for mod in details['mods']:
+                            logger.info(u"{2} mod is {0}, mod_set is {1}".format(mod, mod_set, query_id))
+                            if mod in mod_set:
+                                delete = False
+                                continue
+                            if inc_sr and mod_set == ['SR']:
+                                delete = False
+                if delete:
+                    study_rsp.filter(modalities_in_study__exact=mod_set).delete()
+            study_numbers['current'] = study_rsp.count()
+            study_numbers['wrong_modality_removed'] = before_not_modality_matching - study_numbers['current']
+            logger.info(u'{0} Removing studies of modalities not asked for removed {1} studies, {2} studies remain'.format(
+                query_id, study_numbers['wrong_modality_removed'], study_numbers['current']))
+
+        query.stage = u"Pruning series responses"
+        query.save()
+        logger.debug(u"{0} Pruning series responses".format(query_id))
+        before_series_pruning = study_numbers['current']
+        deleted_studies, deleted_studies_filters_series, kept_ct = _prune_series_responses(
+            assoc, query, all_mods, filters, get_toshiba_images, get_empty_sr)
+        deleted_studies_filters['stationname_inc'] += deleted_studies_filters_series['stationname_inc']
+        deleted_studies_filters['stationname_exc'] += deleted_studies_filters_series['stationname_exc']
+
+        series_pruning_log = u""
+        if all_mods['FL']['inc']:
+            series_pruning_log += u"{0} RF studies were deleted from query due to no suitable RDSR being found. ".format(
+                deleted_studies['RF'])
+        if all_mods['CT']['inc']:
+            series_pruning_log += u"{0} CT studies were deleted from query due to no suitable images or reports being " \
+                                  u"found. Of the remaining studies, {1} have RDSR or ESR, {2} have Philips dose images, " \
+                                  u"{3} have been prepared for the Toshiba import option and {4} have been prepared as " \
+                                  u"possibly containing Philips dose images. ".format(
+                                    deleted_studies['CT'], kept_ct['SR'], kept_ct['philips'], kept_ct['toshiba'],
+                                    kept_ct['maybe_philips'])
+        if all_mods['SR']['inc']:
+            series_pruning_log += u"{0} SR studies were deleted from query due to no suitable SR being found. ".format(
+                deleted_studies['SR'])
+        logger.info(u"{0} ".format(query_id) + series_pruning_log)
+
+        study_rsp = query.dicomqrrspstudy_set.all()
+        study_numbers['current'] = study_rsp.count()
+        study_numbers['series_pruning_removed'] = before_series_pruning - study_numbers['current']
+        logger.info(u'{0} Pruning series responses removed {1} studies, leaving {2} studies'.format(
+            query_id, study_numbers['series_pruning_removed'], study_numbers['current']))
+
+        if remove_duplicates:
+            study_rsp = query.dicomqrrspstudy_set.all()
+            before_remove_duplicates = study_rsp.count()
+            query.stage = u"Removing any responses that match data we already have in the database"
+            logger.debug(u"{0} Removing any responses that match data we already have in the database".format(query_id))
+            query.save()
+            _remove_duplicates(query, study_rsp, assoc, query_id)
+            study_numbers['current'] = query.dicomqrrspstudy_set.all().count()
+            study_numbers['duplicates_removed'] = before_remove_duplicates - study_numbers['current']
+            logger.info(u"{0} Removing duplicates of previous objects removed {1}, leaving {2}".format(
+                query_id, study_numbers['duplicates_removed'], study_numbers['current']))
+
+        # done
+        assoc.release()
         query.complete = True
-        query.save()
-        my_ae.Quit()
-        return
 
-    logger.info(u"{0} DICOM FindSCU ... ".format(query_id))
-    d = Dataset()
-    d.StudyDate = str(make_dcm_date_range(date1=date_from, date2=date_until, single_date=single_date) or '')
-    if len(d.StudyDate) == 8:
-        d.StudyTime = str(make_dcm_time_range(time1=time_from, time2=time_until) or '')
-    else:
-        d.StudyTime = ''
-
-    all_mods = collections.OrderedDict()
-    all_mods['CT'] = {'inc': False, 'mods': ['CT']}
-    all_mods['MG'] = {'inc': False, 'mods': ['MG']}
-    all_mods['FL'] = {'inc': False, 'mods': ['RF', 'XA']}
-    all_mods['DX'] = {'inc': False, 'mods': ['DX', 'CR']}
-    all_mods['SR'] = {'inc': False, 'mods': ['SR']}
-
-    # Reasoning regarding PET-CT: Some PACS allocate study modality PT, some CT, some depending on order received.
-    # If ModalitiesInStudy is used for matching on C-Find, the CT from PET-CT will be picked up.
-    # If not, then the PET-CT will be returned with everything else, and the CT will show up in the series level
-    # query. Therefore, there is no need to search for PT at any stage.
-    for m in all_mods:
-        if m in modalities:
-            all_mods[m]['inc'] = True
-
-    # query for all requested studies
-    modalities_returned, modality_matching = _query_for_each_modality(all_mods, query, d, assoc)
-
-    # Now we have all our studies. Time to throw duplicates and away any we don't want
-
-    study_numbers = {'initial': query.dicomqrrspstudy_set.count()}
-    study_numbers['current'] = _remove_duplicates_in_study_response(query, study_numbers['initial'])
-
-    # Performing some cleanup if modality_matching=True (prevents having to retrieve unnecessary series)
-    # We are assuming that if remote matches on modality it will populate ModalitiesInStudy and conversely
-    # if remote doesn't match on modality it won't return a populated ModalitiesInStudy.
-    study_rsp = query.dicomqrrspstudy_set.all()
-    if modalities_returned and inc_sr:
-        logger.info(u"{0} Modalities_returned is true and we only want studies with only SR in; removing everything "
-                    u"else.".format(query_id))
-        for study in study_rsp:
-            mods = study.get_modalities_in_study()
-            if mods != ['SR']:
-                study.delete()
-        study_numbers['current'] = study_rsp.count()
-        study_numbers['sr_only_removed'] = study_numbers['initial'] - study_numbers['current']
-        logger.info(u"{2} Finished removing studies that have anything other than SR in, {0} removed, {1}"
-                    u" remain".format(study_numbers['sr_only_removed'], study_numbers['current'], query_id))
-
-    filter_logs = []
-    if filters['study_desc_inc']:
-        filter_logs += [u"study description includes {0}, ".format(u", ".join(filters['study_desc_inc']))]
-    if filters['study_desc_exc']:
-        filter_logs += [u"study description excludes {0}, ".format(u", ".join(filters['study_desc_exc']))]
-    if filters['stationname_inc']:
-        filter_logs += [u"station name includes {0}, ".format(u", ".join(filters['stationname_inc']))]
-    if filters['stationname_exc']:
-        filter_logs += [u"station name excludes {0}, ".format(u", ".join(filters['stationname_exc']))]
-
-    if filter_logs:
-        query.stage = u"Pruning study responses based on inc/exc options"
-        query.save()
-        logger.info(u"{1} Pruning study responses based on inc/exc options: {0}".format(u"".join(filter_logs), query_id))
-        before_study_prune = study_numbers['current']
-        deleted_studies_filters = _prune_study_responses(query, filters)
-        study_rsp = query.dicomqrrspstudy_set.all()
-        study_numbers['current'] = study_rsp.count()
-        study_numbers['inc_exc_removed'] = before_study_prune - study_numbers['current']
-        logger.info(u"{2} Pruning studies based on inc/exc has removed {0} studies, {1} studies remain.".format(
-            study_numbers['inc_exc_removed'], study_numbers['current'], query_id))
-    else:
-        deleted_studies_filters = {'study_desc_inc': 0, 'study_desc_exc': 0, 'stationname_inc': 0, 'stationname_exc': 0}
-        logger.info(u"{0} No inc/exc options selected".format(query_id))
-
-    query.stage = u"Querying at series level to get more details about studies"
-    query.save()
-    logger.info(u"{0} Querying at series level to get more details about studies".format(query_id))
-    for rsp in study_rsp:
-        # Series level query
-        d2 = Dataset()
-        d2.StudyInstanceUID = rsp.study_instance_uid
-        _query_series(assoc, d2, rsp, query_id)
-        if not modalities_returned:
-            _generate_modalities_in_study(rsp, query_id)
-    logger.debug(u"{0} Series level query complete.".format(query_id))
-
-    if (not modality_matching) or qr_scp.use_modality_tag:
-        before_not_modality_matching = study_numbers['current']
-        mods_in_study_set = set(val for dic in study_rsp.values('modalities_in_study') for val in list(dic.values()))
-        logger.debug(u"{1} mods in study are: {0}".format(study_rsp.values('modalities_in_study'), query_id))
-        query.stage = u"Deleting studies we didn't ask for"
-        query.save()
-        logger.info(u"{0} Deleting studies we didn't ask for".format(query_id))
-        logger.debug(u"{1} mods_in_study_set is {0}".format(mods_in_study_set, query_id))
-        for mod_set in mods_in_study_set:
-            logger.info(u"{1} mod_set is {0}".format(mod_set, query_id))
-            delete = True
-            for mod_choice, details in list(all_mods.items()):
-                if details['inc']:
-                    logger.info(u"{2} mod_choice {0}, details {1}".format(mod_choice, details, query_id))
-                    for mod in details['mods']:
-                        logger.info(u"{2} mod is {0}, mod_set is {1}".format(mod, mod_set, query_id))
-                        if mod in mod_set:
-                            delete = False
-                            continue
-                        if inc_sr and mod_set == ['SR']:
-                            delete = False
-            if delete:
-                study_rsp.filter(modalities_in_study__exact=mod_set).delete()
-        study_numbers['current'] = study_rsp.count()
-        study_numbers['wrong_modality_removed'] = before_not_modality_matching - study_numbers['current']
-        logger.info(u'{0} Removing studies of modalities not asked for removed {1} studies, {2} studies remain'.format(
-            query_id, study_numbers['wrong_modality_removed'], study_numbers['current']))
-
-    query.stage = u"Pruning series responses"
-    query.save()
-    logger.debug(u"{0} Pruning series responses".format(query_id))
-    before_series_pruning = study_numbers['current']
-    deleted_studies, deleted_studies_filters_series, kept_ct = _prune_series_responses(
-        assoc, query, all_mods, filters, get_toshiba_images, get_empty_sr)
-    deleted_studies_filters['stationname_inc'] += deleted_studies_filters_series['stationname_inc']
-    deleted_studies_filters['stationname_exc'] += deleted_studies_filters_series['stationname_exc']
-
-    series_pruning_log = u""
-    if all_mods['FL']['inc']:
-        series_pruning_log += u"{0} RF studies were deleted from query due to no suitable RDSR being found. ".format(
-            deleted_studies['RF'])
-    if all_mods['CT']['inc']:
-        series_pruning_log += u"{0} CT studies were deleted from query due to no suitable images or reports being " \
-                              u"found. Of the remaining studies, {1} have RDSR or ESR, {2} have Philips dose images, " \
-                              u"{3} have been prepared for the Toshiba import option and {4} have been prepared as " \
-                              u"possibly containing Philips dose images. ".format(
-                                deleted_studies['CT'], kept_ct['SR'], kept_ct['philips'], kept_ct['toshiba'],
-                                kept_ct['maybe_philips'])
-    if all_mods['SR']['inc']:
-        series_pruning_log += u"{0} SR studies were deleted from query due to no suitable SR being found. ".format(
-            deleted_studies['SR'])
-    logger.info(u"{0} ".format(query_id) + series_pruning_log)
-
-    study_rsp = query.dicomqrrspstudy_set.all()
-    study_numbers['current'] = study_rsp.count()
-    study_numbers['series_pruning_removed'] = before_series_pruning - study_numbers['current']
-    logger.info(u'{0} Pruning series responses removed {1} studies, leaving {2} studies'.format(
-        query_id, study_numbers['series_pruning_removed'], study_numbers['current']))
-
-    if remove_duplicates:
-        study_rsp = query.dicomqrrspstudy_set.all()
-        before_remove_duplicates = study_rsp.count()
-        query.stage = u"Removing any responses that match data we already have in the database"
-        logger.debug(u"{0} Removing any responses that match data we already have in the database".format(query_id))
-        query.save()
-        _remove_duplicates(query, study_rsp, assoc, query_id)
+        time_took = (datetime.now() - debug_timer).total_seconds()
         study_numbers['current'] = query.dicomqrrspstudy_set.all().count()
-        study_numbers['duplicates_removed'] = before_remove_duplicates - study_numbers['current']
-        logger.info(u"{0} Removing duplicates of previous objects removed {1}, leaving {2}".format(
-            query_id, study_numbers['duplicates_removed'], study_numbers['current']))
+        query.stage = u"Query complete. Query took {0} and we are left with {1} studies to move.<br>" \
+                      u"Of the original {2} study responses, ".format(
+                        naturalduration(time_took), study_numbers['current'], study_numbers['initial'])
+        query.stage += series_pruning_log
+        filter_pruning_logs = u"Filtering for "
+        if filters['study_desc_inc']:
+            filter_pruning_logs += u"only studies with description that include '{0}' removed {1} studies, ".format(
+                u", ".join(filters['study_desc_inc']), deleted_studies_filters['study_desc_inc'])
+        if filters['study_desc_exc']:
+            filter_pruning_logs += u"studies with description that do not include '{0}' removed {1} studies, ".format(
+                u", ".join(filters['study_desc_exc']), deleted_studies_filters['study_desc_exc'])
+        if filters['stationname_inc']:
+            filter_pruning_logs += u"only studies with station names that include '{0}' removed {1} studies, ".format(
+                u", ".join(filters['stationname_inc']), deleted_studies_filters['stationname_inc'])
+        if filters['stationname_exc']:
+            filter_pruning_logs += u"studies with station names that do not include '{0}' removed {1} studies, ".format(
+                u", ".join(filters['stationname_exc']), deleted_studies_filters['stationname_exc'])
+        query.stage += filter_pruning_logs
+        if remove_duplicates:
+            query.stage += u"Removing duplicates of previous objects removed {0} studies.".format(
+                study_numbers['duplicates_removed'])
+        query.save()
+        logger.info(u"{0} ".format(query_id) + query.stage)
 
-    # done
-    my_ae.Quit()
-    query.complete = True
-    time_took = (datetime.now() - debug_timer).total_seconds()
-    study_numbers['current'] = query.dicomqrrspstudy_set.all().count()
-    query.stage = u"Query complete. Query took {0} and we are left with {1} studies to move.<br>" \
-                  u"Of the original {2} study responses, ".format(
-                    naturalduration(time_took), study_numbers['current'], study_numbers['initial'])
-    query.stage += series_pruning_log
-    filter_pruning_logs = u"Filtering for "
-    if filters['study_desc_inc']:
-        filter_pruning_logs += u"only studies with description that include '{0}' removed {1} studies, ".format(
-            u", ".join(filters['study_desc_inc']), deleted_studies_filters['study_desc_inc'])
-    if filters['study_desc_exc']:
-        filter_pruning_logs += u"studies with description that do not include '{0}' removed {1} studies, ".format(
-            u", ".join(filters['study_desc_exc']), deleted_studies_filters['study_desc_exc'])
-    if filters['stationname_inc']:
-        filter_pruning_logs += u"only studies with station names that include '{0}' removed {1} studies, ".format(
-            u", ".join(filters['stationname_inc']), deleted_studies_filters['stationname_inc'])
-    if filters['stationname_exc']:
-        filter_pruning_logs += u"studies with station names that do not include '{0}' removed {1} studies, ".format(
-            u", ".join(filters['stationname_exc']), deleted_studies_filters['stationname_exc'])
-    query.stage += filter_pruning_logs
-    if remove_duplicates:
-        query.stage += u"Removing duplicates of previous objects removed {0} studies.".format(
-            study_numbers['duplicates_removed'])
-    query.save()
-    logger.info(u"{0} ".format(query_id) + query.stage)
+        logger.debug(u"{0} Query complete. Move is {1}. Query took {2}".format(
+            query.query_id, move, time_took))
 
-    logger.debug(u"{0} Query complete. Move is {1}. Query took {2}".format(
-        query.query_id, move, time_took))
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(u"{0} Query result contains the following studies / series:".format(query_id))
+            studies = query.dicomqrrspstudy_set.all()
+            for study in studies:
+                for series in study.dicomqrrspseries_set.all():
+                    logger.debug(
+                        u"{6}    Study: {0} ({1}) modalities: {2}, Series: {3}, modality: {4} containing {5} "
+                        u"objects.".format(study.study_description, study.study_instance_uid,
+                                           study.get_modalities_in_study(), series.series_instance_uid, series.modality,
+                                           series.number_of_series_related_instances, query_id))
 
-    if logger.isEnabledFor(logging.DEBUG):
-        logger.debug(u"{0} Query result contains the following studies / series:".format(query_id))
-        studies = query.dicomqrrspstudy_set.all()
-        for study in studies:
-            for series in study.dicomqrrspseries_set.all():
-                logger.debug(
-                    u"{6}    Study: {0} ({1}) modalities: {2}, Series: {3}, modality: {4} containing {5} "
-                    u"objects.".format(study.study_description, study.study_instance_uid,
-                                       study.get_modalities_in_study(), series.series_instance_uid, series.modality,
-                                       series.number_of_series_related_instances, query_id))
+        if move:
+            movescu.delay(str(query.query_id))
 
-    if move:
-        movescu.delay(str(query.query_id))
+    else:
+        print('Association rejected, aborted or never connected')
+        return
 
 
 def _move_req(my_ae, assoc, d, study_no, series_no):

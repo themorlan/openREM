@@ -14,6 +14,7 @@ requires = [
     'pytz >= 0a',
     'humanize',
     'pydicom',
+    'pynetdicom',
     'xlsxwriter',
     'celery>=3.1,<4.3',
     'django-qsstats-magic',
