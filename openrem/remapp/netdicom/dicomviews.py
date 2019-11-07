@@ -35,7 +35,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 import remapp
@@ -207,8 +207,6 @@ def q_update(request):
 @login_required
 def q_process(request, *args, **kwargs):
     import uuid
-    import datetime
-    from django.shortcuts import render_to_response
     from django.template import RequestContext
     from remapp.netdicom.qrscu import qrscu
     from remapp.models import DicomRemoteQR
@@ -291,22 +289,11 @@ def q_process(request, *args, **kwargs):
             for group in request.user.groups.all():
                 admin[group.name] = True
 
-            return render_to_response(
-                'remapp/dicomqr.html',
-                {'form': form, 'admin': admin},
-                context_instance=RequestContext(request)
-            )
-            # return HttpResponse(
-            #     json.dumps(resp),
-            #     content_type="application/json"
-            # )
-
+            return render(request, 'remapp/dicomqr.html', {'form': form, 'admin': admin})
 
 
 @login_required
 def dicom_qr_page(request, *args, **kwargs):
-    from django.shortcuts import render_to_response
-    from django.template import RequestContext
     from remapp.forms import DicomQueryForm
     from remapp.models import DicomStoreSCP, DicomRemoteQR
     from remapp.netdicom.tools import echoscu
@@ -340,11 +327,9 @@ def dicom_qr_page(request, *args, **kwargs):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    return render_to_response(
-        'remapp/dicomqr.html',
-        {'form': form, 'storestatus': storestatus, 'qrstatus': qrstatus, 'admin': admin},
-        context_instance=RequestContext(request)
-    )
+    return render(request, 'remapp/dicomqr.html',
+                  {'form': form, 'storestatus': storestatus, 'qrstatus': qrstatus, 'admin': admin},)
+
 
 @csrf_exempt
 @login_required
@@ -358,6 +343,7 @@ def r_start(request):
     movescu.delay(query_id)
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
+
 
 @csrf_exempt
 def r_update(request):
