@@ -487,7 +487,7 @@ def _query_images(assoc, seriesrsp, query_id, initial_image_only=False, msg_id=N
     logger.debug(u'Query_id {0}: query is {1}, intial_imge_only is {2}, msg_id is {3}'.format(
                     query_id, d3, initial_image_only, msg_id))
 
-    st3 = assoc.StudyRootFindSOPClass.SCU(d3, msg_id)
+    st3 = assoc.send_c_find(d3, StudyRootQueryRetrieveInformationModelFind)
 
     query_id = uuid.uuid4()
 
@@ -545,7 +545,7 @@ def _query_series(assoc, d2, studyrsp, query_id):
     logger.debug(u'{0} In _query_series'.format(query_id))
     logger.debug(u'{0} series query is {1}'.format(query_id, d2))
 
-    st2 = assoc.StudyRootFindSOPClass.SCU(d2, 1)
+    st2 = assoc.send_c_find(d2, StudyRootQueryRetrieveInformationModelFind)
 
     series_query_id = uuid.uuid4()
 
@@ -603,7 +603,7 @@ def _query_study(assoc, d, query, query_id):
 
     logger.debug(u'{0}: Study level association requested'.format(query_id))
     logger.debug(u'{0}: Study level query is {1}'.format(query_id, d))
-    st = assoc.StudyRootFindSOPClass.SCU(d, 1)
+    st = assoc.send_c_find(d, StudyRootQueryRetrieveInformationModelFind)
     logger.debug(u'{0}: _query_study done with status {1}'.format(query_id, st))
 
     # TODO: Replace the code below to deal with find failure
@@ -862,7 +862,7 @@ def qrscu(
     #
     # # remote application entity
     # remote_ae = dict(Address=remote_host, Port=remote_port, AET=remote_aet.encode('ascii', 'ignore'))
-    logger.debug(u"{1} Remote AE is {0}".format(remote_ae, query_id))
+    logger.debug(u"{1} Remote AE is {0}".format(remote_aet, query_id))
 
     query = DicomQuery.objects.create()
     query.query_id = query_id
