@@ -410,7 +410,7 @@ class DicomQueryForm(forms.Form):
         self.helper = FormHelper(self)
         self.helper.form_id = 'post-form'
         self.helper.form_method = 'post'
-        self.helper.form_action = 'q_process'
+        self.helper.form_action = 'queryprocess'
         self.helper.add_input(Submit('submit', 'Submit'))
         self.helper.layout = Layout(
             Div(

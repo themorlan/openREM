@@ -207,10 +207,8 @@ def q_update(request):
 @login_required
 def q_process(request, *args, **kwargs):
     import uuid
-    from django.template import RequestContext
-    from remapp.netdicom.qrscu import qrscu
-    from remapp.models import DicomRemoteQR
-    from remapp.forms import DicomQueryForm
+    from ..netdicom.qrscu import qrscu
+    from ..forms import DicomQueryForm
 
     if request.method == 'POST':
         form = DicomQueryForm(request.POST)
@@ -294,7 +292,7 @@ def q_process(request, *args, **kwargs):
 
 @login_required
 def dicom_qr_page(request, *args, **kwargs):
-    from remapp.forms import DicomQueryForm
+    from ..forms import DicomQueryForm
     from remapp.models import DicomStoreSCP, DicomRemoteQR
     from remapp.netdicom.tools import echoscu
 
