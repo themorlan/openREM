@@ -44,7 +44,7 @@ Download OpenREM and all other dependencies:
 
 .. code-block:: console
 
-    pip download -d openremfiles openrem==0.10.0b2
+    pip download -d openremfiles openrem==0.10.0
 
 Copy everything to the OpenREM server
 -------------------------------------
@@ -92,6 +92,6 @@ Install OpenREM:
 
 .. code-block:: console
 
-    pip install --no-index --find-links=openremfiles openrem==0.10.0b2
+    pip install --no-index --find-links=openremfiles openrem==0.10.0
 
 Now go back to :ref:`update_configuration0100`, migrate the database and finish the upgrade.
