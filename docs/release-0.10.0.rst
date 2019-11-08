@@ -12,6 +12,7 @@ Headline changes
 * Imports: updated event level laterality to import from new location after DICOM standard change proposal CP1676_
 * Interface: highlight row when dose alert exceeded
 * Exports: added fluoroscopy and radiography exports tailored for UK PHE dose survey
+* General: Lots of fixes to imports, interface, charts etc
 
 *******************
 Upgrade preparation
@@ -121,7 +122,7 @@ Follow the guide at :doc:`startservices`.
 .. _post_upgrade0100:
 
 ****************************************
-Post upgrade migration of summary fields
+Post-upgrade migration of summary fields
 ****************************************
 
 Populate new summary fields
@@ -133,7 +134,9 @@ Populate new summary fields
     :alt: 0.10 upgrade panel before log in
 
 With RabbitMQ, Celery and the web server running, log in as an administrator to start the migration process. If you have
-a large number of studies in your database this can take some time.
+a large number of studies in your database this can take some time. A large database (several hundred studies) on slow
+disks might take a day or two, on faster disks or with a smaller database it could take from a few minutes to an hour
+or so. You will be able to monitor the progress on the home page as seen in the figure at the bottom of this page.
 
 ..  figure:: img/0_10_Migration_Loggedin.png
     :figwidth: 100%
