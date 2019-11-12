@@ -50,10 +50,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render, render_to_response, redirect, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -206,7 +205,7 @@ def dx_summary_list_filter(request):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    paginator = Paginator(f, user_profile.itemsPerPage)
+    paginator = Paginator(f.qs, user_profile.itemsPerPage)
     page = request.GET.get('page')
     try:
         study_list = paginator.page(page)
@@ -219,10 +218,9 @@ def dx_summary_list_filter(request):
                         'admin': admin, 'chartOptionsForm': chart_options_form,
                         'itemsPerPageForm': items_per_page_form}
 
-    return render_to_response(
+    return render(request,
         'remapp/dxfiltered.html',
         return_structure,
-        context_instance=RequestContext(request)
     )
 
 
@@ -505,11 +503,10 @@ def dx_detail_view(request, pk=None):
     accum_set = projection_set.accumxraydose_set.all()
     # accum_integrated = projection_set.accumxraydose_set.get().accumintegratedprojradiogdose_set.get()
 
-    return render_to_response(
+    return render(request,
         'remapp/dxdetail.html',
         {'generalstudymoduleattr': study, 'admin': admin,
-         'projection_set': projection_set, 'events_all': events_all, 'accum_set': accum_set},
-        context_instance=RequestContext(request)
+         'projection_set': projection_set, 'events_all': events_all, 'accum_set': accum_set}
     )
 
 
@@ -525,11 +522,11 @@ def rf_summary_list_filter(request):
     if request.user.groups.filter(name='pidgroup'):
         f = RFFilterPlusPid(
             request.GET, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by(
-            ).distinct())
+                '-study_date', '-study_time').distinct())
     else:
         f = RFSummaryListFilter(
-            request.GET, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by(
-            ).distinct())
+            request.GET,queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by(
+                '-study_date', '-study_time').distinct())
 
     try:
         # See if the user has plot settings in userprofile
@@ -644,7 +641,7 @@ def rf_summary_list_filter(request):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    paginator = Paginator(f, user_profile.itemsPerPage)
+    paginator = Paginator(f.qs, user_profile.itemsPerPage)
     page = request.GET.get('page')
     try:
         study_list = paginator.page(page)
@@ -657,10 +654,9 @@ def rf_summary_list_filter(request):
                         'admin': admin, 'chartOptionsForm': chart_options_form,
                         'itemsPerPageForm': items_per_page_form, 'alertLevels': alert_levels}
 
-    return render_to_response(
+    return render(request,
         'remapp/rffiltered.html',
-        return_structure,
-        context_instance=RequestContext(request)
+        return_structure
     )
 
 
@@ -901,7 +897,7 @@ def rf_detail_view(request, pk=None):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    return render_to_response(
+    return render(request,
         'remapp/rfdetail.html',
         {'generalstudymoduleattr': study, 'admin': admin,
          'study_totals': study_totals,
@@ -910,7 +906,6 @@ def rf_detail_view(request, pk=None):
          'events_all': events_all,
          'alert_levels': alert_levels,
          'studies_in_week_delta': included_studies},
-        context_instance=RequestContext(request)
     )
 
 
@@ -1095,7 +1090,7 @@ def ct_summary_list_filter(request):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    paginator = Paginator(f, user_profile.itemsPerPage)
+    paginator = Paginator(f.qs, user_profile.itemsPerPage)
     page = request.GET.get('page')
     try:
         study_list = paginator.page(page)
@@ -1108,10 +1103,9 @@ def ct_summary_list_filter(request):
                         'admin': admin, 'chartOptionsForm': chart_options_form,
                         'itemsPerPageForm': items_per_page_form}
 
-    return render_to_response(
+    return render(request,
         'remapp/ctfiltered.html',
         return_structure,
-        context_instance=RequestContext(request)
     )
 
 
@@ -1392,10 +1386,9 @@ def ct_detail_view(request, pk=None):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    return render_to_response(
+    return render(request,
         'remapp/ctdetail.html',
         {'generalstudymoduleattr': study, 'admin': admin, 'events_all': events_all},
-        context_instance=RequestContext(request)
     )
 
 
@@ -1414,11 +1407,11 @@ def mg_summary_list_filter(request):
     if request.user.groups.filter(name='pidgroup'):
         f = MGFilterPlusPid(
             filter_data, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='MG').order_by(
-            ).distinct())
+                '-study_date', '-study_time').distinct())
     else:
         f = MGSummaryListFilter(
             filter_data, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='MG').order_by(
-            ).distinct())
+                '-study_date', '-study_time').distinct())
 
     try:
         # See if the user has plot settings in userprofile
@@ -1483,7 +1476,7 @@ def mg_summary_list_filter(request):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    paginator = Paginator(f, user_profile.itemsPerPage)
+    paginator = Paginator(f.qs, user_profile.itemsPerPage)
     page = request.GET.get('page')
     try:
         study_list = paginator.page(page)
@@ -1496,10 +1489,9 @@ def mg_summary_list_filter(request):
                         'admin': admin, 'chartOptionsForm': chart_options_form,
                         'itemsPerPageForm': items_per_page_form}
 
-    return render_to_response(
+    return render(request,
         'remapp/mgfiltered.html',
         return_structure,
-        context_instance=RequestContext(request)
     )
 
 
@@ -1631,13 +1623,12 @@ def mg_detail_view(request, pk=None):
     events_all = projection_xray_dose_set.irradeventxraydata_set.select_related(
         'laterality', 'image_view').all()
 
-    return render_to_response(
+    return render(request,
         'remapp/mgdetail.html',
         {'generalstudymoduleattr': study, 'admin': admin,
          'projection_xray_dose_set': projection_xray_dose_set,
          'accum_mammo_set': accum_mammo_set,
          'events_all': events_all},
-        context_instance=RequestContext(request)
     )
 
 
@@ -1691,7 +1682,7 @@ def openrem_home(request):
         user_profile = request.user.userprofile
     except (ObjectDoesNotExist, AttributeError):
         # Attribute error needed for AnonymousUser, who doesn't have a userprofile attribute
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             # Create a default userprofile for the user if one doesn't exist
             create_user_profile(sender=request.user, instance=request.user, created=True)
             user_profile = request.user.userprofile
@@ -1708,12 +1699,12 @@ def openrem_home(request):
     for modality in modalities:
         if not modalities[modality]['count']:
             mods_to_delete += [modality,]
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 setattr(user_profile, "display{0}".format(modality), False)
         else:
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 setattr(user_profile, "display{0}".format(modality), True)
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         user_profile.save()
 
     for modality in mods_to_delete:
@@ -1727,7 +1718,7 @@ def openrem_home(request):
     display_workload_stats = HomePageAdminSettings.objects.values_list('enable_workload_stats', flat=True)[0]
     home_config = {'display_workload_stats': display_workload_stats}
     if display_workload_stats:
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             home_config['day_delta_a'] = user_profile.summaryWorkloadDaysA
             home_config['day_delta_b'] = user_profile.summaryWorkloadDaysB
         else:
@@ -1835,7 +1826,7 @@ def update_latest_studies(request):
 
         modalitydata = {}
 
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             day_delta_a = request.user.userprofile.summaryWorkloadDaysA
             day_delta_b = request.user.userprofile.summaryWorkloadDaysB
         else:
@@ -1849,16 +1840,11 @@ def update_latest_studies(request):
             latestdatetime = datetime.combine(latestuid.study_date, latestuid.study_time)
             deltaseconds = int((datetime.now() - latestdatetime).total_seconds())
 
-            try:
-                displayname = display_name.encode('utf-8')
-            except AttributeError:
-                displayname = u"Unexpected display name non-ASCII issue"
-
             modalitydata[display_name] = {
                 'total': display_name_studies.count(),
                 'latest': latestdatetime,
                 'deltaseconds': deltaseconds,
-                'displayname': displayname,
+                'displayname': display_name,
                 'displayname_pk': modality.lower() + str(pk)
             }
         ordereddata = OrderedDict(sorted(list(modalitydata.items()), key=lambda t: t[1]['latest'], reverse=True))
@@ -1907,7 +1893,7 @@ def update_study_workload(request):
 
         modalitydata = {}
 
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             day_delta_a = request.user.userprofile.summaryWorkloadDaysA
             day_delta_b = request.user.userprofile.summaryWorkloadDaysB
         else:
@@ -1990,10 +1976,9 @@ def size_upload(request):
         admin[group.name] = True
 
     # Render list page with the documents and the form
-    return render_to_response(
+    return render(request,
         'remapp/sizeupload.html',
         {'form': form, 'admin': admin},
-        context_instance=RequestContext(request)
     )
 
 
@@ -2077,10 +2062,9 @@ def size_process(request, *args, **kwargs):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    return render_to_response(
+    return render(request,
         'remapp/sizeprocess.html',
         {'form': form, 'csvid': kwargs['pk'], 'admin': admin},
-        context_instance=RequestContext(request)
     )
 
 
@@ -2104,10 +2088,9 @@ def size_imports(request, *args, **kwargs):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    return render_to_response(
+    return render(request,
         'remapp/sizeimports.html',
         {'admin': admin, 'current': current, 'complete': complete, 'errors': errors},
-        context_instance=RequestContext(request)
     )
 
 
@@ -2119,7 +2102,7 @@ def size_delete(request):
     :param request: Contains the task ID
     :type request: POST
     """
-    from django.core.urlresolvers import reverse
+    from django.urls import reverse
     from django.contrib import messages
 
     for task in request.POST:
@@ -2208,7 +2191,7 @@ def charts_off(request):
         # See if the user has plot settings in userprofile
         user_profile = request.user.userprofile
     except ObjectDoesNotExist:
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             # Create a default userprofile for the user if one doesn't exist
             create_user_profile(sender=request.user, instance=request.user, created=True)
             user_profile = request.user.userprofile
@@ -2287,10 +2270,9 @@ def display_names_view(request):
                         'ct_names': ct_names, 'mg_names': mg_names, 'dx_names': dx_names, 'rf_names': rf_names,
                         'ot_names': ot_names, 'modalities': ['CT', 'RF', 'MG', 'DX', 'OT']}
 
-    return render_to_response(
+    return render(request,
         'remapp/displaynameview.html',
         return_structure,
-        context_instance=RequestContext(request)
     )
 
 
@@ -2380,9 +2362,8 @@ def display_name_update(request):
 
         return_structure = {'name_list': f, 'admin': admin, 'form': form}
 
-    return render_to_response('remapp/displaynameupdate.html',
-                              return_structure,
-                              context_instance=RequestContext(request))
+    return render(request,'remapp/displaynameupdate.html',
+                              return_structure)
 
 
 def display_name_populate(request):
@@ -3215,10 +3196,9 @@ def chart_options_view(request):
                         'MGChartOptionsForm': mg_chart_options_form,
                         }
 
-    return render_to_response(
+    return render(request,
         'remapp/displaychartoptions.html',
         return_structure,
-        context_instance=RequestContext(request)
     )
 
 
@@ -3298,10 +3278,9 @@ def homepage_options_view(request):
                         'home_config': home_config
                         }
 
-    return render_to_response(
+    return render(request,
         'remapp/displayhomepageoptions.html',
         return_structure,
-        context_instance=RequestContext(request)
     )
 
 
@@ -3320,10 +3299,9 @@ def not_patient_indicators(request):
         admin[group.name] = True
 
     # Render list page with the documents and the form
-    return render_to_response(
+    return render(request,
         'remapp/notpatient.html',
         {'ids': not_patient_ids, 'names': not_patient_names, 'admin': admin},
-        context_instance=RequestContext(request)
     )
 
 
@@ -3414,13 +3392,13 @@ def task_service_status(request):
             rabbitmq_status = 500
         template = 'remapp/task_service_status.html'
         admin = _create_admin_dict(request)
-        return render_to_response(template,
+        return render(request,template,
                                   {'default_queue': default_queue,
                                    'celery_queue': celery_queue,
                                    'flower_status': flower_status,
                                    'rabbitmq_status': rabbitmq_status,
                                    'admin': admin},
-                                  context_instance=RequestContext(request))
+                                  )
 
 
 @login_required
@@ -3441,7 +3419,7 @@ def celery_admin(request):
     admin = _create_admin_dict(request)
 
     template = 'remapp/celery_admin.html'
-    return render_to_response(template, {'admin': admin}, context_instance=RequestContext(request))
+    return render(request,template, {'admin': admin})
 
 
 def celery_tasks(request, stage=None):
@@ -3495,18 +3473,15 @@ def celery_tasks(request, stage=None):
                     else:
                         older_tasks += [this_task, ]
                 if u"active" in stage:
-                    return render_to_response('remapp/celery_tasks.html', {'tasks': active_tasks, 'type': 'active'},
-                                              context_instance=RequestContext(request))
+                    return render(request,'remapp/celery_tasks.html', {'tasks': active_tasks, 'type': 'active'})
                 elif u"recent" in stage:
-                    return render_to_response('remapp/celery_tasks_complete.html', {'tasks': recent_tasks, 'type': 'recent'},
-                                              context_instance=RequestContext(request))
+                    return render(request,'remapp/celery_tasks_complete.html', {'tasks': recent_tasks, 'type': 'recent'})
                 elif u"older" in stage:
-                    return render_to_response('remapp/celery_tasks_complete.html', {'tasks': older_tasks, 'type': 'older'},
-                                              context_instance=RequestContext(request))
+                    return render(request,'remapp/celery_tasks_complete.html', {'tasks': older_tasks, 'type': 'older'})
         except requests.ConnectionError:
             admin = _create_admin_dict(request)
             template = 'remapp/celery_connection_error.html'
-            return render_to_response(template, {'admin': admin}, context_instance=RequestContext(request))
+            return render(request,template, {'admin': admin})
 
 
 def celery_abort(request, task_id=None, type=None):
@@ -3571,10 +3546,9 @@ def dicom_summary(request):
     admin = _create_admin_dict(request)
 
     # Render list page with the documents and the form
-    return render_to_response(
+    return render(request,
         'remapp/dicomsummary.html',
         {'store': store, 'remoteqr': remoteqr, 'admin': admin, 'del_settings': del_settings},
-        context_instance=RequestContext(request)
     )
 
 
@@ -3589,7 +3563,7 @@ class DicomStoreCreate(CreateView):  # pylint: disable=unused-variable
     form_class = DicomStoreForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(DicomStoreCreate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -3608,7 +3582,7 @@ class DicomStoreUpdate(UpdateView):  # pylint: disable=unused-variable
     form_class = DicomStoreForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(DicomStoreUpdate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -3645,7 +3619,7 @@ class DicomQRCreate(CreateView):  # pylint: disable=unused-variable
     form_class = DicomQRForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(DicomQRCreate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -3664,7 +3638,7 @@ class DicomQRUpdate(UpdateView):  # pylint: disable=unused-variable
     form_class = DicomQRForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(DicomQRUpdate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -3700,8 +3674,7 @@ class PatientIDSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
     fields = ['name_stored', 'name_hashed', 'id_stored', 'id_hashed', 'accession_hashed', 'dob_stored']
 
     def get_context_data(self, **context):
-
-        context[self.context_object_name] = self.object
+        context = super(PatientIDSettingsUpdate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -3720,7 +3693,7 @@ class DicomDeleteSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
     form_class = DicomDeleteSettingsForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(DicomDeleteSettingsUpdate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -3734,18 +3707,20 @@ class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
     """
     from remapp.models import HighDoseMetricAlertSettings
     from remapp.forms import RFHighDoseFluoroAlertsForm
-    from django.core.exceptions import ObjectDoesNotExist
+    from django.db.utils import ProgrammingError as AvoidDataMigrationErrorPostgres
+    from django.db.utils import OperationalError as AvoidDataMigrationErrorSQLite
+    # from django.core.exceptions import ObjectDoesNotExist
 
     try:
-        HighDoseMetricAlertSettings.objects.get()
-    except ObjectDoesNotExist:
-        HighDoseMetricAlertSettings.objects.create()
+        HighDoseMetricAlertSettings.get_solo()  # will create item if it doesn't exist
+    except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
+        pass
 
     model = HighDoseMetricAlertSettings
     form_class = RFHighDoseFluoroAlertsForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(RFHighDoseAlertSettings, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -3831,10 +3806,9 @@ def rf_alert_notifications_view(request):
 
     return_structure = {'user_list': f, 'admin': admin}
 
-    return render_to_response(
+    return render(request,
         'remapp/rfalertnotificationsview.html',
         return_structure,
-        context_instance=RequestContext(request)
     )
 
 
@@ -3950,17 +3924,19 @@ class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-varia
     from remapp.models import SkinDoseMapCalcSettings
     from remapp.forms import SkinDoseMapCalcSettingsForm
     from django.core.exceptions import ObjectDoesNotExist
+    from django.db.utils import ProgrammingError as AvoidDataMigrationErrorPostgres
+    from django.db.utils import OperationalError as AvoidDataMigrationErrorSQLite
 
     try:
-        SkinDoseMapCalcSettings.objects.get()
-    except ObjectDoesNotExist:
-        SkinDoseMapCalcSettings.objects.create()
+        SkinDoseMapCalcSettings.get_solo()  # will create item if it doesn't exist
+    except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
+        pass
 
     model = SkinDoseMapCalcSettings
     form_class = SkinDoseMapCalcSettingsForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(SkinDoseMapCalcSettingsUpdate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -3986,7 +3962,7 @@ class NotPatientNameCreate(CreateView):  # pylint: disable=unused-variable
     form_class = NotPatientNameForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(NotPatientNameCreate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -4005,7 +3981,7 @@ class NotPatientNameUpdate(UpdateView):  # pylint: disable=unused-variable
     form_class = NotPatientNameForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(NotPatientNameUpdate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -4042,7 +4018,7 @@ class NotPatientIDCreate(CreateView):  # pylint: disable=unused-variable
     form_class = NotPatientIDForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(NotPatientIDCreate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -4061,7 +4037,7 @@ class NotPatientIDUpdate(UpdateView):  # pylint: disable=unused-variable
     form_class = NotPatientIDForm
 
     def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
+        context = super(NotPatientIDUpdate, self).get_context_data(**context)
         admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -4149,8 +4125,7 @@ def populate_summary_progress(request):
                 mg_status = SummaryFields.objects.get(modality_type__exact='MG')
                 dx_status = SummaryFields.objects.get(modality_type__exact='DX')
             except ObjectDoesNotExist:
-                return render_to_response('remapp/populate_summary_progress_error.html', {'not_admin': False},
-                                          context_instance=RequestContext(request))
+                return render(request,'remapp/populate_summary_progress_error.html', {'not_admin': False})
 
             if ct_status.complete and rf_status.complete and mg_status.complete and dx_status.complete:
                 upgrade_status = UpgradeStatus.get_solo()
@@ -4231,7 +4206,7 @@ def populate_summary_progress(request):
             except ObjectDoesNotExist:
                 dx_status = None
 
-            return render_to_response('remapp/populate_summary_progress.html',
+            return render(request,'remapp/populate_summary_progress.html',
                                       {'ct_complete': ct_complete, 'ct_total': ct_total, 'ct_pc': ct_pc,
                                        'ct_status': ct_status,
                                        'rf_complete': rf_complete, 'rf_total': rf_total, 'rf_pc': rf_pc,
@@ -4239,7 +4214,6 @@ def populate_summary_progress(request):
                                        'mg_complete': mg_complete, 'mg_total': mg_total, 'mg_pc': mg_pc,
                                        'mg_status': mg_status,
                                        'dx_complete': dx_complete, 'dx_total': dx_total, 'dx_pc': dx_pc,
-                                       'dx_status': dx_status,}, context_instance=RequestContext(request))
+                                       'dx_status': dx_status,})
         else:
-            return render_to_response('remapp/populate_summary_progress_error.html', {'not_admin': True},
-                                      context_instance=RequestContext(request))
+            return render(request,'remapp/populate_summary_progress_error.html', {'not_admin': True})

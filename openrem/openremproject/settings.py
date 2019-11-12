@@ -127,16 +127,15 @@ TEMPLATES = [
     },
 ]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-)
+]
 
 ROOT_URLCONF = 'openremproject.urls'
 
@@ -269,13 +268,18 @@ EMAIL_USE_SSL = False
 EMAIL_DOSE_ALERT_SENDER = 'your.alert@email.address'
 EMAIL_OPENREM_URL = 'http://your.openrem.server'
 
-try:
-    LOCAL_SETTINGS
-except NameError:
-    try:
-        from openremproject.local_settings import *
-    except ImportError:
-        try:
-            from openrem.openremproject.local_settings import *
-        except ImportError:
-            pass
+# try:
+#     LOCAL_SETTINGS
+# except NameError:
+#     print('Name Error')
+#     try:
+#         from .openremproject.local_settings import DEBUG
+#         print('Debug should have been imported')
+#     except ImportError:
+#         print("that didn't work")
+#         try:
+#             from openrem.openremproject.local_settings import *
+#         except ImportError:
+#             pass
+
+from .local_settings import *  # NOQA: F401

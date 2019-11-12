@@ -1,13 +1,12 @@
 # This Python file uses the following encoding: utf-8
 # test_export_rf_xlsx.py
 
-from builtins import range  # pylint: disable=redefined-builtin
 import os
 from django.contrib.auth.models import User, Group
 from django.test import RequestFactory, TransactionTestCase
-from remapp.extractors import rdsr
-from remapp.exports.rf_export import rfxlsx
-from remapp.models import PatientIDSettings, Exports, GeneralStudyModuleAttr
+from ..extractors import rdsr
+from ..exports.rf_export import rfxlsx
+from ..models import PatientIDSettings, Exports, GeneralStudyModuleAttr
 
 
 class ExportRFxlsx(TransactionTestCase):  # Not TestCase as raises TransactionManagementError
@@ -33,9 +32,9 @@ class ExportRFxlsx(TransactionTestCase):  # Not TestCase as raises TransactionMa
         rf_eurocolumbus = os.path.join("test_files", "RF-RDSR-Eurocolumbus.dcm")
         root_tests = os.path.dirname(os.path.abspath(__file__))
 
-        rdsr(os.path.join(root_tests, rf_siemens_zee))
-        rdsr(os.path.join(root_tests, rf_philips_allura))
-        rdsr(os.path.join(root_tests, rf_eurocolumbus))
+        rdsr.rdsr(os.path.join(root_tests, rf_siemens_zee))
+        rdsr.rdsr(os.path.join(root_tests, rf_philips_allura))
+        rdsr.rdsr(os.path.join(root_tests, rf_eurocolumbus))
 
         eurocolumbus = GeneralStudyModuleAttr.objects.filter(
             study_instance_uid__exact='1.3.6.1.4.1.5962.99.1.1227319599.741127153.1517350807855.3.0').first()
@@ -43,7 +42,7 @@ class ExportRFxlsx(TransactionTestCase):  # Not TestCase as raises TransactionMa
         eurocolumbus.save()
 
     def test_id_as_text(self):  # See https://bitbucket.org/openrem/openrem/issues/443
-        filter_set = ""
+        filter_set = {"o": "-study_date"}
         pid = True
         name = False
         patient_id = True
@@ -82,7 +81,7 @@ class ExportRFxlsx(TransactionTestCase):  # Not TestCase as raises TransactionMa
 
         TODO: Add test study with no filter
         """
-        filter_set = ""
+        filter_set = {"o": "-study_date"}
         pid = True
         name = False
         patient_id = True
@@ -94,16 +93,16 @@ class ExportRFxlsx(TransactionTestCase):  # Not TestCase as raises TransactionMa
 
         book = xlrd.open_workbook(task.filename.path)
         philips_sheet = book.sheet_by_name('abdomen_2fps_25%')
-        siemens_sheet = book.sheet_by_name(('fl_-_ang'))
+        siemens_sheet = book.sheet_by_name('fl_-_ang')
         headers = siemens_sheet.row(0)
 
         filter_material_col = [i for i, x in enumerate(headers) if x.value == u'Filter material'][0]
         filter_thickness_col = [i for i, x in enumerate(headers) if x.value == u'Mean filter thickness (mm)'][0]
 
         self.assertEqual(philips_sheet.cell_value(1, filter_material_col), 'Cu | Al')
-        self.assertEqual(philips_sheet.cell_value(1, filter_thickness_col), '0.1 | 1.0')
+        self.assertEqual(philips_sheet.cell_value(1, filter_thickness_col), '0.1000 | 1.0000')
         self.assertEqual(siemens_sheet.cell_value(1, filter_material_col), 'Cu')
-        self.assertEqual(siemens_sheet.cell_value(1, filter_thickness_col), '0.6')
+        self.assertEqual(siemens_sheet.cell_value(1, filter_thickness_col), '0.6000')
 
         # cleanup
         task.filename.delete()  # delete file so local testing doesn't get too messy!
@@ -113,7 +112,7 @@ class ExportRFxlsx(TransactionTestCase):  # Not TestCase as raises TransactionMa
         """Tests that RDSR with pulse level kVp, mA, pulse width data imports and exports with mean values
 
         """
-        filter_set = ""
+        filter_set = {"o": "-study_date"}
         pid = True
         name = False
         patient_id = True

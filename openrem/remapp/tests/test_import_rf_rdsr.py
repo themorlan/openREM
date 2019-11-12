@@ -30,7 +30,7 @@ class ImportRFRDSRPhilips(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        rdsr(dicom_path)
+        rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.order_by('id')[0]
 
         projection_dose = study.projectionxrayradiationdose_set.get()
@@ -66,7 +66,7 @@ class ImportRFRDSRPhilipsAzurion(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        rdsr(dicom_path)
+        rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.order_by('id')[0]
 
         fluoro_totals = study.projectionxrayradiationdose_set.get().accumxraydose_set.get().accumprojxraydose_set.get()
@@ -84,8 +84,8 @@ class DAPUnitsTest(TestCase):
         Initial test of sequence as presented in Ultimax RDSR
         :return: None
         """
-        from dicom.dataset import Dataset
-        from dicom.sequence import Sequence
+        from pydicom.dataset import Dataset
+        from pydicom.sequence import Sequence
         from remapp.extractors.rdsr import _check_dap_units
 
         units_sequence = Dataset()
@@ -104,8 +104,8 @@ class DAPUnitsTest(TestCase):
         Test case of correct sequence as presented in conformant RDSR
         :return: None
         """
-        from dicom.dataset import Dataset
-        from dicom.sequence import Sequence
+        from pydicom.dataset import Dataset
+        from pydicom.sequence import Sequence
         from remapp.extractors.rdsr import _check_dap_units
 
         units_sequence = Dataset()
@@ -124,7 +124,7 @@ class DAPUnitsTest(TestCase):
         Test case of missing units sequence - not seen by the auther in the wild
         :return: None
         """
-        from dicom.dataset import Dataset
+        from pydicom.dataset import Dataset
         from remapp.extractors.rdsr import _check_dap_units
 
         measured_values_sequence = Dataset()
@@ -151,7 +151,7 @@ class ImportRFRDSRSiemens(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        rdsr(dicom_path)
+        rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.order_by('id')[0]
 
         event_data = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0]
@@ -187,7 +187,7 @@ class ImportRFRDSRGESurgical(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        rdsr(dicom_path)
+        rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.order_by('id')[0]
 
         device_observer_uid = study.generalequipmentmoduleattr_set.get().unique_equipment_name.device_observer_uid
@@ -241,7 +241,7 @@ class ImportRFRDSRGEOECMiniView(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        rdsr(dicom_path)
+        rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.order_by('id')[0]
 
         accum_proj = study.projectionxrayradiationdose_set.get().accumxraydose_set.get().accumprojxraydose_set.get()

@@ -301,9 +301,9 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
                     for index, item in enumerate(series_data):
                         if item is None:
                             series_data[index] = ''
-                        if isinstance(item, basestring) and u',' in item:
+                        if isinstance(item, str) and u',' in item:
                             series_data[index] = item.replace(u',', u';')
-                    writer.writerow([str(data_string).encode("utf-8") for data_string in series_data])
+                    writer.writerow([str(data_string) for data_string in series_data])
                 else:
                     all_exam_data += series_data  # For all data
                     protocol = series.acquisition_protocol

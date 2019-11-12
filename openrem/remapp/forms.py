@@ -30,7 +30,7 @@
 from builtins import object  # pylint: disable=redefined-builtin
 from django import forms
 from django.utils.safestring import mark_safe
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, HTML, Div
 from crispy_forms.bootstrap import FormActions, PrependedText, InlineCheckboxes, Accordion, AccordionGroup

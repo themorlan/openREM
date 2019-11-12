@@ -14,8 +14,8 @@ from __future__ import print_function
 import sys
 import argparse
 from netdicom import AE, StorageSOPClass, VerificationSOPClass
-from dicom.UID import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
-from dicom import read_file
+from pydicom.uid import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
+from pydicom import read_file
 
 # parse commandline
 parser = argparse.ArgumentParser(description='storage SCU example')

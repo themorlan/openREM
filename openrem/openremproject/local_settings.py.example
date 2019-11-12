@@ -1,5 +1,5 @@
-LOCAL_SETTINGS = True
-from settings import *
+# LOCAL_SETTINGS = True
+from .settings import *
 
 
 # Choose your database and fill in the details below. If testing, you

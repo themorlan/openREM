@@ -36,6 +36,7 @@ import logging
 import os
 import sys
 
+from decimal import Decimal
 import django
 from django.db.models import ObjectDoesNotExist
 
@@ -77,7 +78,7 @@ def _ctirradiationeventdata(dataset, ct):  # TID 10013
     from remapp.models import CtIrradiationEventData
     from remapp.tools.get_values import get_value_kw, get_value_num, get_or_create_cid
     from remapp.tools.dcmdatetime import get_date_time
-    from dicom import UID
+    from pydicom import uid
     event = CtIrradiationEventData.objects.create(ct_radiation_dose=ct)
     event.acquisition_protocol = get_value_kw('SeriesDescription', dataset)
     # target region is mandatory, but I don't have it
@@ -94,7 +95,7 @@ def _ctirradiationeventdata(dataset, ct):  # TID 10013
         event.ct_acquisition_type = get_or_create_cid('113807', 'Free Acquisition')
     # procedure context is optional and not reported (contrast or not)
     # irradiation event uid would be available in image headers, but assuming just working from dose report image:
-    event.irradiation_event_uid = UID.generate_uid()
+    event.irradiation_event_uid = uid.generate_uid()
     exptime = get_value_kw('ExposureTime', dataset)
     if exptime:
         event.exposure_time = exptime / 1000.0
@@ -112,7 +113,7 @@ def _ctirradiationeventdata(dataset, ct):  # TID 10013
     event.save()
     _ctxraysourceparameters(dataset, event)
     event.mean_ctdivol = get_value_kw('CTDIvol', dataset)
-    event.dlp = get_value_num(0x00e11021, dataset)  # Philips private tag
+    event.dlp = Decimal(get_value_num(0x00e11021, dataset))  # Philips private tag
     event.date_time_started = get_date_time('AcquisitionDateTime', dataset)
     #    event.series_description = get_value_kw('SeriesDescription',dataset)
     event.save()
@@ -123,7 +124,7 @@ def _ctaccumulateddosedata(dataset, ct, ch):  # TID 10012
     from remapp.tools.get_values import get_value_kw, get_value_num
     ctacc = CtAccumulatedDoseData.objects.create(ct_radiation_dose=ct)
     ctacc.total_number_of_irradiation_events = get_value_kw('TotalNumberOfExposures', dataset)
-    ctacc.ct_dose_length_product_total = get_value_num(0x00e11021, dataset)  # Philips private tag
+    ctacc.ct_dose_length_product_total = Decimal(get_value_num(0x00e11021, dataset))  # Philips private tag
     ctacc.comment = get_value_kw('CommentsOnRadiationDose', dataset)
     ctacc.save()
 
@@ -367,7 +368,7 @@ def ct_philips(philips_file):
         * Brilliance BigBore v3.5.4.17001.
     """
 
-    import dicom
+    import pydicom
     from remapp.models import DicomDeleteSettings
     try:
         del_settings = DicomDeleteSettings.objects.get()
@@ -375,7 +376,7 @@ def ct_philips(philips_file):
     except ObjectDoesNotExist:
         del_ct_phil = False
 
-    dataset = dicom.read_file(philips_file)
+    dataset = pydicom.dcmread(philips_file)
     dataset.decode()
     if dataset.SOPClassUID != '1.2.840.10008.5.1.4.1.1.7' or dataset.Manufacturer != 'Philips' \
             or dataset.SeriesDescription != 'Dose Info':

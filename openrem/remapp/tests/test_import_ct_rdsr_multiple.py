@@ -36,7 +36,7 @@ class ImportMultipleRDSRs(TestCase):  # pylint: disable=unused-variable
             dicom_path_2 = os.path.join(root_tests, dicom_file_2)
             dicom_path_3 = os.path.join(root_tests, dicom_file_3)
 
-            rdsr(dicom_path_1)
+            rdsr.rdsr(dicom_path_1)
             study = GeneralStudyModuleAttr.objects.order_by('pk')[0]
             num_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.count()
             sop_instance_uid_list1 = Counter(study.objectuidsprocessed_set.values_list('sop_instance_uid', flat=True))
@@ -54,7 +54,7 @@ class ImportMultipleRDSRs(TestCase):  # pylint: disable=unused-variable
             self.assertEqual(study.number_of_stationary, 0)
             self.assertEqual(study.number_of_const_angle, 1)
 
-            rdsr(dicom_path_2)
+            rdsr.rdsr(dicom_path_2)
             study = GeneralStudyModuleAttr.objects.order_by('pk')[0]
             num_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.count()
             sop_instance_uid_list2 = Counter(study.objectuidsprocessed_set.values_list('sop_instance_uid', flat=True))
@@ -73,7 +73,7 @@ class ImportMultipleRDSRs(TestCase):  # pylint: disable=unused-variable
             self.assertEqual(study.number_of_stationary, 0)
             self.assertEqual(study.number_of_const_angle, 1)
 
-            rdsr(dicom_path_3)
+            rdsr.rdsr(dicom_path_3)
             study = GeneralStudyModuleAttr.objects.order_by('pk')[0]
             num_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.count()
             sop_instance_uid_list3 = Counter(study.objectuidsprocessed_set.values_list('sop_instance_uid', flat=True))
@@ -93,7 +93,7 @@ class ImportMultipleRDSRs(TestCase):  # pylint: disable=unused-variable
             self.assertEqual(study.number_of_stationary, 0)
             self.assertEqual(study.number_of_const_angle, 1)
 
-            rdsr(dicom_path_1)
+            rdsr.rdsr(dicom_path_1)
             study = GeneralStudyModuleAttr.objects.order_by('pk')[0]
             num_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.count()
             sop_instance_uid_list4 = Counter(study.objectuidsprocessed_set.values_list('sop_instance_uid', flat=True))
@@ -134,7 +134,7 @@ class ImportContinuedRDSRs(TestCase):
             dicom_path_1 = os.path.join(root_tests, dicom_file_1)
             dicom_path_2 = os.path.join(root_tests, dicom_file_2)
 
-            rdsr(dicom_path_1)
+            rdsr.rdsr(dicom_path_1)
             study = GeneralStudyModuleAttr.objects.order_by('pk')[0]
             num_events = study.ctradiationdose_set.get().ctirradiationeventdata_set.count()
             study_uid = study.study_instance_uid
@@ -146,7 +146,7 @@ class ImportContinuedRDSRs(TestCase):
             self.assertEqual(num_events, 2)
             self.assertEqual(sop_instance_uid_list1, uid_list1)
 
-            rdsr(dicom_path_2)
+            rdsr.rdsr(dicom_path_2)
             # Test the the new study has been imported separately
             self.assertEqual(GeneralStudyModuleAttr.objects.count(), 2)
 
@@ -165,7 +165,7 @@ class ImportContinuedRDSRs(TestCase):
             self.assertEqual(sop_instance_uid_list2, uid_list2)
 
             latest_study_pk = GeneralStudyModuleAttr.objects.all().order_by('pk').last().pk
-            rdsr(dicom_path_2)
+            rdsr.rdsr(dicom_path_2)
             # Test that it doesn't import a second time...
             self.assertEqual(GeneralStudyModuleAttr.objects.count(), 2)
             self.assertEqual(GeneralStudyModuleAttr.objects.all().order_by('pk').last().pk, latest_study_pk)
@@ -190,10 +190,10 @@ class ImportDuplicateNonCTRDSRs(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path_1 = os.path.join(root_tests, dicom_file_1)
 
-        rdsr(dicom_path_1)
+        rdsr.rdsr(dicom_path_1)
         # Test that there is one study, and it has one event
         self.assertEqual(GeneralStudyModuleAttr.objects.count(), 1)
 
-        rdsr(dicom_path_1)
+        rdsr.rdsr(dicom_path_1)
         # Test that there is one study, and it has one event
         self.assertEqual(GeneralStudyModuleAttr.objects.count(), 1)

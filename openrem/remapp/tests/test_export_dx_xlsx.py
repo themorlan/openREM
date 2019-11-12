@@ -35,11 +35,11 @@ class ExportDXxlsx(TestCase):
         dx_carestream_dr7500_2 = os.path.join("test_files", "DX-Im-Carestream_DR7500-2.dcm")
         root_tests = os.path.dirname(os.path.abspath(__file__))
 
-        dx(os.path.join(root_tests, dx_ge_xr220_1))
-        dx(os.path.join(root_tests, dx_ge_xr220_2))
-        dx(os.path.join(root_tests, dx_ge_xr220_3))
-        dx(os.path.join(root_tests, dx_carestream_dr7500_1))
-        dx(os.path.join(root_tests, dx_carestream_dr7500_2))
+        dx.dx(os.path.join(root_tests, dx_ge_xr220_1))
+        dx.dx(os.path.join(root_tests, dx_ge_xr220_2))
+        dx.dx(os.path.join(root_tests, dx_ge_xr220_3))
+        dx.dx(os.path.join(root_tests, dx_carestream_dr7500_1))
+        dx.dx(os.path.join(root_tests, dx_carestream_dr7500_2))
 
     def test_id_as_text(self):  # See https://bitbucket.org/openrem/openrem/issues/443
         filter_set = ""
@@ -93,9 +93,9 @@ class ExportDXxlsx(TestCase):
         filter_thick_col = [i for i, x in enumerate(headers) if x.value == 'Filter thicknesses (mm)'][0]
 
         self.assertEqual(aec_sheet.cell_value(1, filter_col), 'Al')
-        self.assertEqual(aec_sheet.cell_value(1, filter_thick_col), '1.0')
+        self.assertEqual(aec_sheet.cell_value(1, filter_thick_col), '1.0000')
         self.assertEqual(aec_sheet.cell_value(2, filter_col), 'Al | Cu')
-        self.assertEqual(aec_sheet.cell_value(2, filter_thick_col), '1.0 | 0.2')
+        self.assertEqual(aec_sheet.cell_value(2, filter_thick_col), '1.0000 | 0.2000')
 
         # cleanup
         task.filename.delete()  # delete file so local testing doesn't get too messy!

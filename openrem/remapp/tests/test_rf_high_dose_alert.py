@@ -7,7 +7,7 @@ from django.test import RequestFactory, TestCase, override_settings
 from remapp.extractors import rdsr
 from remapp.models import PatientIDSettings, GeneralStudyModuleAttr, HighDoseMetricAlertSettings
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse
 from remapp.interface.mod_filters import RFSummaryListFilter
 from decimal import Decimal
 
@@ -49,8 +49,8 @@ class RFHighDoseAlert(TestCase):
         # Important to read in the earliest study date RDSR first because
         # the cumulated DAP and RP dose looks for matching studies that have
         # previously taken place.
-        rdsr(os.path.join(root_tests, rf_siemens_zee_20160510))
-        rdsr(os.path.join(root_tests, rf_siemens_zee_20160512))
+        rdsr.rdsr(os.path.join(root_tests, rf_siemens_zee_20160510))
+        rdsr.rdsr(os.path.join(root_tests, rf_siemens_zee_20160512))
 
         self.dap_16_text = u'<strong style="color: red;">16.0</strong>'
         self.dap_32_text = u'<strong style="color: red;">32.0</strong>'
@@ -65,7 +65,7 @@ class RFHighDoseAlert(TestCase):
         """
         self.client.login(username='temporary', password='temporary')
         filter_set = ''
-        f = RFSummaryListFilter(filter_set, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by().distinct())
+        f = RFSummaryListFilter(filter_set, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by('-pk').distinct())
 
         # Test that cumulative DAP matches what I expect below
         # Using AlmostEqual as comparing floating point numbers
@@ -82,7 +82,7 @@ class RFHighDoseAlert(TestCase):
         """
         self.client.login(username='temporary', password='temporary')
         filter_set = ''
-        f = RFSummaryListFilter(filter_set, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by().distinct())
+        f = RFSummaryListFilter(filter_set, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by('-pk').distinct())
 
         # Test that cumulative DAP matches what I expect below
         # Using AlmostEqual as comparing floating point numbers
@@ -108,10 +108,10 @@ class RFHighDoseAlert(TestCase):
         alert_settings.save()
 
         # Recalculate the cumulative dose data because DAP alert changed
-        self.client.get(reverse_lazy('rf_recalculate_accum_doses'), follow=True)
+        self.client.get(reverse('rf_recalculate_accum_doses'), follow=True)
 
         # Obtain the response from the RF summary list filter - this includes the html of the page
-        response = self.client.get(reverse_lazy('rf_summary_list_filter'), follow=True)
+        response = self.client.get(reverse('rf_summary_list_filter'), follow=True)
 
         # One study should be highlighted
         self.assertContains(response, self.dap_32_text, count=1)
@@ -132,10 +132,10 @@ class RFHighDoseAlert(TestCase):
         alert_settings.save()
 
         # Recalculate the cumulative dose data because DAP alert changed
-        self.client.get(reverse_lazy('rf_recalculate_accum_doses'), follow=True)
+        self.client.get(reverse('rf_recalculate_accum_doses'), follow=True)
 
         # Obtain the response from the RF summary list filter - this includes the html of the page
-        response = self.client.get(reverse_lazy('rf_summary_list_filter'), follow=True)
+        response = self.client.get(reverse('rf_summary_list_filter'), follow=True)
 
         # The latest study should have cumulative DAP highlighted
         self.assertContains(response, self.dap_32_text, count=1)
@@ -158,10 +158,10 @@ class RFHighDoseAlert(TestCase):
         alert_settings.save()
 
         # Recalculate the cumulative dose data because DAP alert changed
-        self.client.get(reverse_lazy('rf_recalculate_accum_doses'), follow=True)
+        self.client.get(reverse('rf_recalculate_accum_doses'), follow=True)
 
         # Obtain the response from the RF summary list filter - this includes the html of the page
-        response = self.client.get(reverse_lazy('rf_summary_list_filter'), follow=True)
+        response = self.client.get(reverse('rf_summary_list_filter'), follow=True)
 
         # Cumulative RP dose should be highlighted for the latest study
         self.assertContains(response, self.rp_504_text, count=1)
@@ -176,10 +176,10 @@ class RFHighDoseAlert(TestCase):
         alert_settings.save()
 
         # Recalculate the cumulative dose data because DAP alert changed
-        self.client.get(reverse_lazy('rf_recalculate_accum_doses'), follow=True)
+        self.client.get(reverse('rf_recalculate_accum_doses'), follow=True)
 
         # Obtain the response from the RF summary list filter - this includes the html of the page
-        response = self.client.get(reverse_lazy('rf_summary_list_filter'), follow=True)
+        response = self.client.get(reverse('rf_summary_list_filter'), follow=True)
 
         # Cumulative RP dose should be highlighted for the latest study
         self.assertContains(response, self.rp_504_text, count=1)
@@ -203,7 +203,7 @@ class RFHighDoseAlert(TestCase):
         alert_settings.save()
 
         # Recalculate the cumulative dose data because DAP alert changed
-        self.client.get(reverse_lazy('rf_recalculate_accum_doses'), follow=True)
+        self.client.get(reverse('rf_recalculate_accum_doses'), follow=True)
 
         # Obtain the private keys of the two studies
         filter_set = ''
@@ -212,7 +212,7 @@ class RFHighDoseAlert(TestCase):
         pk_20160512 = f.qs.filter(study_date='2016-05-12').values_list('pk', flat=True)[0]
 
         # Obtain the response from the RF summary list filter for the newest study - this includes the html of the page
-        response = self.client.get(reverse_lazy('rf_detail_view', kwargs={'pk': pk_20160512}), follow=True)
+        response = self.client.get(reverse('rf_detail_view', kwargs={'pk': pk_20160512}), follow=True)
 
         # Cumulative DAP should be highlighted for the most recent study
         self.assertContains(response, self.dap_32_text, count=1)
@@ -221,7 +221,7 @@ class RFHighDoseAlert(TestCase):
         self.assertContains(response, self.rp_504_text, count=1)
 
         # Obtain the response from the RF summary list filter for the older study - this includes the html of the page
-        response = self.client.get(reverse_lazy('rf_detail_view', kwargs={'pk': pk_20160510}), follow=True)
+        response = self.client.get(reverse('rf_detail_view', kwargs={'pk': pk_20160510}), follow=True)
 
         # Cumulative DAP should not be highlighted for the older study
         self.assertNotContains(response, self.dap_16_text)
@@ -238,10 +238,10 @@ class RFHighDoseAlert(TestCase):
         alert_settings.save()
 
         # Recalculate the cumulative dose data because DAP alert changed
-        self.client.get(reverse_lazy('rf_recalculate_accum_doses'), follow=True)
+        self.client.get(reverse('rf_recalculate_accum_doses'), follow=True)
 
         # Obtain the response from the RF summary list filter for the newest study - this includes the html of the page
-        response = self.client.get(reverse_lazy('rf_detail_view', kwargs={'pk': pk_20160512}), follow=True)
+        response = self.client.get(reverse('rf_detail_view', kwargs={'pk': pk_20160512}), follow=True)
 
         # Cumulative DAP should be highlighted for the most recent study
         self.assertContains(response, self.dap_32_text, count=1)
@@ -258,7 +258,7 @@ class RFHighDoseAlert(TestCase):
         self.assertContains(response, self.rp_000_text, count=2)
 
         # Obtain the response from the RF summary list filter for the older study - this includes the html of the page
-        response = self.client.get(reverse_lazy('rf_detail_view', kwargs={'pk': pk_20160510}), follow=True)
+        response = self.client.get(reverse('rf_detail_view', kwargs={'pk': pk_20160510}), follow=True)
 
         # Cumulative DAP should be highlighted for the older study, together with total DAP and total DAP in summary over past two weeks
         self.assertContains(response, self.dap_16_text, count=3)

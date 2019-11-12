@@ -37,13 +37,13 @@ class ExportCTxlsx(TestCase):
         ct_toshiba_dosecheck = os.path.join("test_files", "CT-RDSR-Toshiba_DoseCheck.dcm")
         root_tests = os.path.dirname(os.path.abspath(__file__))
 
-        rdsr(os.path.join(root_tests, ct_ge_ct660))
-        rdsr(os.path.join(root_tests, ct_ge_vct))
-        rdsr(os.path.join(root_tests, ct_siemens_flash_ss))
-        rdsr(os.path.join(root_tests, ct_toshiba_dosecheck))
+        rdsr.rdsr(os.path.join(root_tests, ct_ge_ct660))
+        rdsr.rdsr(os.path.join(root_tests, ct_ge_vct))
+        rdsr.rdsr(os.path.join(root_tests, ct_siemens_flash_ss))
+        rdsr.rdsr(os.path.join(root_tests, ct_toshiba_dosecheck))
 
     def test_id_as_text(self):  # See https://bitbucket.org/openrem/openrem/issues/443
-        filter_set = ""
+        filter_set = {"o": "-study_date"}
         pid = True
         name = False
         patient_id = True
@@ -105,7 +105,10 @@ class ExportCTxlsx(TestCase):
         as expected.
 
         """
-        filter_set = {"ct_acquisition_type": ["Spiral Acquisition"]}
+        filter_set = {
+            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning": ["Spiral Acquisition"],
+            "o": "-study_date"
+        }
         pid = True
         name = False
         patient_id = True
@@ -123,7 +126,10 @@ class ExportCTxlsx(TestCase):
         as expected.
 
         """
-        filter_set = {"ct_acquisition_type": ["Sequenced Acquisition"]}
+        filter_set = {
+            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning": ["Sequenced Acquisition"],
+            "o": "-study_date"
+        }
         pid = True
         name = False
         patient_id = True
@@ -141,7 +147,11 @@ class ExportCTxlsx(TestCase):
         as expected.
 
         """
-        filter_set = {"ct_acquisition_type": ["Spiral Acquisition", "Sequenced Acquisition"]}
+        filter_set = {
+            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning": ["Spiral Acquisition",
+                                                                                           "Sequenced Acquisition"],
+            "o": "-study_date"
+        }
         pid = True
         name = False
         patient_id = True
@@ -155,7 +165,7 @@ class ExportCTxlsx(TestCase):
         task.filename.delete()  # delete file so local testing doesn't get too messy!
 
     def test_export_phe(self):
-        filter_set = {"num_spiral_events": "2"}
+        filter_set = {"num_spiral_events": "2", "o": "-study_date"}
 
         ct_phe_2019(filter_set, user=self.user)
 

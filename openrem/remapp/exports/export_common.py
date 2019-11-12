@@ -31,8 +31,6 @@
 from __future__ import division
 from __future__ import print_function
 
-from builtins import str  # pylint: disable=redefined-builtin
-from past.utils import old_div
 import logging
 import sys
 from django.core.exceptions import ObjectDoesNotExist
@@ -434,32 +432,32 @@ def get_xray_filter_info(source):
         filters = u''
         filter_thicknesses = u''
         for current_filter in source.xrayfilters_set.all():
-            if u'Aluminum' in str(current_filter.xray_filter_material):
+            if u'Aluminum' in str(current_filter.xray_filter_material.code_meaning):
                 filters += u'Al'
-            elif u'Copper' in str(current_filter.xray_filter_material):
+            elif u'Copper' in str(current_filter.xray_filter_material.code_meaning):
                 filters += u'Cu'
-            elif u'Tantalum' in str(current_filter.xray_filter_material):
+            elif u'Tantalum' in str(current_filter.xray_filter_material.code_meaning):
                 filters += u'Ta'
-            elif u'Molybdenum' in str(current_filter.xray_filter_material):
+            elif u'Molybdenum' in str(current_filter.xray_filter_material.code_meaning):
                 filters += u'Mo'
-            elif u'Rhodium' in str(current_filter.xray_filter_material):
+            elif u'Rhodium' in str(current_filter.xray_filter_material.code_meaning):
                 filters += u'Rh'
-            elif u'Silver' in str(current_filter.xray_filter_material):
+            elif u'Silver' in str(current_filter.xray_filter_material.code_meaning):
                 filters += u'Ag'
-            elif u'Niobium' in str(current_filter.xray_filter_material):
+            elif u'Niobium' in str(current_filter.xray_filter_material.code_meaning):
                 filters += u'Nb'
-            elif u'Europium' in str(current_filter.xray_filter_material):
+            elif u'Europium' in str(current_filter.xray_filter_material.code_meaning):
                 filters += u'Eu'
-            elif u'Lead' in str(current_filter.xray_filter_material):
+            elif u'Lead' in str(current_filter.xray_filter_material.code_meaning):
                 filters += u'Pb'
             else:
-                filters += str(current_filter.xray_filter_material)
+                filters += str(current_filter.xray_filter_material.code_meaning)
             filters += u' | '
             thicknesses = [current_filter.xray_filter_thickness_minimum,
                            current_filter.xray_filter_thickness_maximum]
             thick = u''
             if thicknesses[0] is not None and thicknesses[1] is not None:
-                thick = old_div(sum(thicknesses), len(thicknesses))
+                thick = sum(thicknesses) / len(thicknesses)
             elif thicknesses[0] is not None:
                 thick = thicknesses[0]
             elif thicknesses[1] is not None:
@@ -481,14 +479,14 @@ def get_anode_target_material(source):
     :param source: x-ray source data for the exposure
     :return: string containing target material abbreviation
     """
-    if u"Molybdenum" in str(source.anode_target_material):
+    if u"Molybdenum" in str(source.anode_target_material.code_meaning):
         anode = u"Mo"
-    elif u"Rhodium" in str(source.anode_target_material):
+    elif u"Rhodium" in str(source.anode_target_material.code_meaning):
         anode = u"Rh"
-    elif u"Tungsten" in str(source.anode_target_material):
+    elif u"Tungsten" in str(source.anode_target_material.code_meaning):
         anode = u"W"
     else:
-        anode = str(source.anode_target_material)
+        anode = str(source.anode_target_material.code_meaning)
 
     return anode
 
@@ -525,7 +523,7 @@ def create_csv(task):
     from tempfile import TemporaryFile
 
     try:
-        temp_csv = TemporaryFile()
+        temp_csv = TemporaryFile(mode='r+')
         writer = csv.writer(temp_csv)
     except (OSError, IOError) as e:
         print("Error saving csv temporary file ({0}): {1}".format(e.errno, e.strerror))
@@ -553,8 +551,6 @@ def write_export(task, filename, temp_file, datestamp):
         task.filename.save(filename, File(temp_file))
     except (OSError, IOError) as e:
         print("Error saving export file ({0}): {1}".format(e.errno, e.strerror))
-    except Exception:
-        print("Unexpected error: {0}".format(sys.exc_info()[0]))
 
     task.status = u'COMPLETE'
     task.processtime = (datetime.datetime.now() - datestamp).total_seconds()

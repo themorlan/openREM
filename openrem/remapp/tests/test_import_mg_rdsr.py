@@ -27,7 +27,7 @@ class ImportCTRDSR(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         hologic_2d_path = os.path.join(root_tests, hologic_2d)
 
-        rdsr(hologic_2d_path)
+        rdsr.rdsr(hologic_2d_path)
         studies = GeneralStudyModuleAttr.objects.order_by('id')
 
         # Test that one study has been imported

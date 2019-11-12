@@ -58,26 +58,26 @@
       {% else %}
       <tr>
         <td style="width:25%">
-          <a href="{% url url_name %}?display_name={{ display_name }}&o=-study_date">
+          <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date">
             {{ details.displayname }}
           </a>
         </td>
         <td style="width:25%">
-          <a href="{% url url_name %}?display_name={{ display_name }}&o=-study_date">
+          <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date">
             {{ details.total }}
           </a>
         </td>
         <td style="width:25%" sorttable_customkey="{{ details.deltaseconds }}">
-          <a href="{% url url_name %}?display_name={{ display_name }}&o=-study_date">
+          <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date">
             {{ details.latest|naturaltime }}
           </a>
         </td>
         {% if home_config.display_workload_stats %}
           <td style="width:12.5%">
-            <a href="{% url url_name %}?display_name={{ display_name }}&o=-study_date" id="{{ details.displayname_pk }}_a"></a>
+            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date" id="{{ details.displayname_pk }}_a"></a>
           </td>
           <td style="width:12.5%">
-            <a href="{% url url_name %}?display_name={{ display_name }}&o=-study_date" id="{{ details.displayname_pk }}_b"></a>
+            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date" id="{{ details.displayname_pk }}_b"></a>
           </td>
         {% endif %}
       {% endif %}

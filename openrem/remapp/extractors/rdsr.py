@@ -28,6 +28,7 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
+
 from __future__ import division
 from __future__ import absolute_import
 
@@ -156,7 +157,7 @@ def _pulsewidth(pulse_width_value, source):
         pulse = PulseWidth.objects.create(irradiation_event_xray_source_data=source)
         pulse.pulse_width = pulse_width_value
         pulse.save()
-    except ValueError:
+    except (ValueError, TypeError):
         if not hasattr(pulse_width_value, "strip") and (
                 hasattr(pulse_width_value, "__getitem__") or hasattr(pulse_width_value, "__iter__")):
             for per_pulse_pulse_width in pulse_width_value:
@@ -177,7 +178,7 @@ def _kvptable(kvp_value, source):
         kvpdata = Kvp.objects.create(irradiation_event_xray_source_data=source)
         kvpdata.kvp = kvp_value
         kvpdata.save()
-    except ValueError:
+    except (ValueError, TypeError):
         if not hasattr(kvp_value, "strip") and (
                 hasattr(kvp_value, "__getitem__") or hasattr(kvp_value, "__iter__")):
             for per_pulse_kvp in kvp_value:
@@ -198,7 +199,7 @@ def _xraytubecurrent(current_value, source):
         tubecurrent = XrayTubeCurrent.objects.create(irradiation_event_xray_source_data=source)
         tubecurrent.xray_tube_current = current_value
         tubecurrent.save()
-    except ValueError:
+    except (ValueError, TypeError):
         if not hasattr(current_value, "strip") and (
                 hasattr(current_value, "__getitem__") or hasattr(current_value, "__iter__")):
             for per_pulse_current in current_value:
@@ -219,7 +220,7 @@ def _exposure(exposure_value, source):
         exposure = Exposure.objects.create(irradiation_event_xray_source_data=source)
         exposure.exposure = exposure_value
         exposure.save()
-    except ValueError:
+    except (ValueError, TypeError):
         if not hasattr(exposure_value, "strip") and (
                 hasattr(exposure_value, "__getitem__") or hasattr(exposure_value, "__iter__")):
             for per_pulse_exposure in exposure_value:
@@ -343,6 +344,7 @@ def _check_dap_units(dap_sequence):
 
 def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
     # TODO: review model to convert to cid where appropriate, and add additional fields
+    from decimal import Decimal
     from django.db.models import Avg
     from remapp.models import IrradEventXRaySourceData, XrayGrid
     from remapp.tools.get_values import get_or_create_cid, safe_strings
@@ -464,7 +466,7 @@ def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
         try:
             avg_pulse_width = source.pulsewidth_set.all().aggregate(Avg('pulse_width'))['pulse_width__avg']
             if avg_pulse_width:
-                source.exposure_time = avg_pulse_width * source.number_of_pulses
+                source.exposure_time = avg_pulse_width * Decimal(source.number_of_pulses)
                 source.save()
         except ObjectDoesNotExist:
             pass
@@ -1632,11 +1634,11 @@ def _fix_toshiba_vhp(dataset):
 def rdsr(rdsr_file):
     """Extract radiation dose related data from DICOM Radiation SR objects.
 
-    :param filename: relative or absolute path to Radiation Dose Structured Report.
-    :type filename: str.
+    :param rdsr_file: relative or absolute path to Radiation Dose Structured Report.
+    :type rdsr_file: str.
     """
 
-    import dicom
+    import pydicom
     from remapp.models import DicomDeleteSettings
     try:
         del_settings = DicomDeleteSettings.objects.get()
@@ -1644,7 +1646,7 @@ def rdsr(rdsr_file):
     except ObjectDoesNotExist:
         del_rdsr = False
 
-    dataset = dicom.read_file(rdsr_file)
+    dataset = pydicom.dcmread(rdsr_file)
     try:
         dataset.decode()
     except ValueError as e:

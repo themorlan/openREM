@@ -464,7 +464,7 @@ def _check_sr_type_in_study(assoc, study, query_id, get_empty_sr):
 
 def _query_images(assoc, seriesrsp, query_id, initial_image_only=False, msg_id=None):
     from remapp.models import DicomQRRspImage
-    from dicom.dataset import Dataset
+    from pydicom.dataset import Dataset
 
     logger.debug(u'Query_id {0}: In _query_images'.format(query_id))
 
@@ -799,8 +799,8 @@ def qrscu(
 
     from datetime import datetime
 
-    from dicom.dataset import Dataset
-    from dicom.UID import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
+    from pydicom.dataset import Dataset
+    from pydicom.uid import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
     from remapp.models import DicomQuery, DicomRemoteQR, DicomStoreSCP
     from remapp.templatetags.remappduration import naturalduration
     from remapp.tools.dcmdatetime import make_dcm_date_range, make_dcm_time_range
@@ -1104,7 +1104,7 @@ def movescu(query_id):
     :return: None
     """
     from time import sleep
-    from dicom.dataset import Dataset
+    from pydicom.dataset import Dataset
     from remapp.models import DicomQuery
 
     logger.debug(u"Query_id {0}: Starting move request".format(query_id))

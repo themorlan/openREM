@@ -29,16 +29,13 @@
 
 """
 
-from builtins import str  # pylint: disable=redefined-builtin
-from builtins import range  # pylint: disable=redefined-builtin
-from past.builtins import basestring  # pylint: disable=redefined-builtin
 import logging
 from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
-from remapp.exports.export_common import text_and_date_formats, common_headers, generate_sheets, sheet_name, \
+from ..exports.export_common import text_and_date_formats, common_headers, generate_sheets, sheet_name, \
     get_common_data, get_xray_filter_info, create_xlsx, create_csv, write_export, create_summary_sheet, \
     get_pulse_data, abort_if_zero_studies
-from remapp.tools.get_values import return_for_export
+from ..tools.get_values import return_for_export
 
 logger = logging.getLogger(__name__)
 
@@ -223,9 +220,9 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     import datetime
     from django.db.models import Max, Min, Avg
-    from remapp.models import GeneralStudyModuleAttr, IrradEventXRayData
-    from remapp.models import Exports
-    from remapp.interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
+    from ..models import GeneralStudyModuleAttr, IrradEventXRayData
+    from ..models import Exports
+    from ..interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
     import uuid
 
     tsk = Exports.objects.create()
@@ -298,7 +295,7 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     num_groups_max = 0
     for row, exams in enumerate(e):
 
-        tsk.progress = u'Writing study {0} of {1}'.format(row + 1, e.count())
+        tsk.progress = 'Writing study {0} of {1}'.format(row + 1, e.count())
         tsk.save()
 
         try:
@@ -314,7 +311,7 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
             num_groups_this_exam = 0
             while inst:  # ie while there are events still left that haven't been matched into a group
-                tsk.progress = u'Writing study {0} of {1}; {2} events remaining.'.format(
+                tsk.progress = 'Writing study {0} of {1}; {2} events remaining.'.format(
                     row + 1, e.count(), inst.count())
                 tsk.save()
                 num_groups_this_exam += 1
@@ -360,7 +357,7 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
                 if filter_material:
                     for xray_filter in inst[0].irradeventxraysourcedata_set.get().xrayfilters_set.all():
                         similarexposures = similarexposures.filter(
-                            irradeventxraysourcedata__xrayfilters__xray_filter_material__code_meaning__exact = xray_filter.xray_filter_material)
+                            irradeventxraysourcedata__xrayfilters__xray_filter_material__code_meaning__exact=xray_filter.xray_filter_material.code_meaning)
                         similarexposures = similarexposures.filter(
                             irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum__exact = xray_filter.xray_filter_thickness_maximum)
                 if anglei:
@@ -535,9 +532,9 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
     """
 
     import datetime
-    from remapp.models import GeneralStudyModuleAttr
-    from remapp.models import Exports
-    from remapp.interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
+    from ..models import GeneralStudyModuleAttr
+    from ..models import Exports
+    from ..interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
 
     tsk = Exports.objects.create()
 
@@ -596,7 +593,7 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
             for index, item in enumerate(exam_data):
                 if item is None:
                     exam_data[index] = ''
-                if isinstance(item, basestring) and u',' in item:
+                if isinstance(item, str) and u',' in item:
                     exam_data[index] = item.replace(u',', u';')
             writer.writerow([str(data_string).encode("utf-8") for data_string in exam_data])
         except ObjectDoesNotExist:
@@ -624,9 +621,9 @@ def rfopenskin(studyid):
     u"""
 
     import datetime
-    from remapp.models import GeneralStudyModuleAttr
-    from remapp.models import Exports
-    from remapp.tools.get_values import export_csv_prep
+    from ..models import GeneralStudyModuleAttr
+    from ..models import Exports
+    from ..tools.get_values import export_csv_prep
 
     tsk = Exports.objects.create()
 
@@ -826,9 +823,9 @@ def rf_phe_2019(filterdict, user=None):
     import datetime
     import uuid
     from django.db.models import Max, Min
-    from remapp.exports.export_common import get_patient_study_data
-    from remapp.models import Exports, GeneralStudyModuleAttr, IrradEventXRayData
-    from remapp.interface.mod_filters import RFSummaryListFilter
+    from ..exports.export_common import get_patient_study_data
+    from ..models import Exports, GeneralStudyModuleAttr, IrradEventXRayData
+    from ..interface.mod_filters import RFSummaryListFilter
 
     tsk = Exports.objects.create()
     tsk.task_id = rf_phe_2019.request.id

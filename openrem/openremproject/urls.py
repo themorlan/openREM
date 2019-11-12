@@ -1,26 +1,23 @@
 from django.conf import settings
-from django.conf.urls import patterns, include, url
-from settings import VIRTUAL_DIRECTORY
+from django.urls import include, path
+from django.contrib import auth, admin
+from .settings import VIRTUAL_DIRECTORY
+import remapp.views
 
-# Uncomment the next two lines to enable the admin:
-from django.contrib import admin
-admin.autodiscover()
-
-urlpatterns = patterns('',
-    url(r'^{0}'.format(VIRTUAL_DIRECTORY), include('remapp.urls')),
-    url(r'^{0}openrem/'.format(VIRTUAL_DIRECTORY), include('remapp.urls')),
-    url(r'^{0}admin/'.format(VIRTUAL_DIRECTORY), include(admin.site.urls)),
+urlpatterns = [
+    path('{0}'.format(VIRTUAL_DIRECTORY), include('remapp.urls')),
+    path('{0}openrem/'.format(VIRTUAL_DIRECTORY), include('remapp.urls')),  # is this actually necessary?
+    path('{0}admin/'.format(VIRTUAL_DIRECTORY), admin.site.urls),
     # Login / logout.
-    url(r'^{0}login/$'.format(VIRTUAL_DIRECTORY), 'django.contrib.auth.views.login', name='login'),
-    url(r'^{0}logout/$'.format(VIRTUAL_DIRECTORY), 'remapp.views.logout_page', name='logout'),
-
-)
+    path('{0}login/'.format(VIRTUAL_DIRECTORY), auth.views.LoginView, name='login'),
+    path('{0}logout/'.format(VIRTUAL_DIRECTORY), remapp.views.logout_page, name='logout'),
+]
 
 if settings.DEBUG:
     try:
         import debug_toolbar
         urlpatterns = [
-            url(r'^{0}__debug__/'.format(VIRTUAL_DIRECTORY), include(debug_toolbar.urls)),
+            path('{0}__debug__/'.format(VIRTUAL_DIRECTORY), include(debug_toolbar.urls)),
         ] + urlpatterns
     except ImportError:
         pass

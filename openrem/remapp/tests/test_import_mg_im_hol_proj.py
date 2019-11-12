@@ -22,7 +22,7 @@ class ImportMGImgHologicPropProjection(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        mam(dicom_path)
+        mam.mam(dicom_path)
         study = GeneralStudyModuleAttr.objects.all()[0]
 
         # Test that laterality is recorded (see https://bitbucket.org/openrem/openrem/issues/411)

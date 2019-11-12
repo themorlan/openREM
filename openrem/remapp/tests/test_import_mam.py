@@ -31,7 +31,7 @@ class ImportMGImg(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        mam(dicom_path)
+        mam.mam(dicom_path)
 
         study = GeneralStudyModuleAttr.objects.all()[0]
 
@@ -140,7 +140,7 @@ class ImportMGImg(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        mam(dicom_path)
+        mam.mam(dicom_path)
         study = GeneralStudyModuleAttr.objects.all()[0]
 
         # Test that patient identifiable data is stored in plain text
@@ -167,7 +167,7 @@ class ImportMGImg(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        mam(dicom_path)
+        mam.mam(dicom_path)
         study = GeneralStudyModuleAttr.objects.all()[0]
 
         # Test that patient identifiable data is stored in hash
@@ -202,7 +202,7 @@ class ImportDuplicatesMG(TestCase):
         mg_im2_for_pres = os.path.join("test_files", "MG-Im-GE_Seno_2_ForPresentation.dcm")
         root_tests = os.path.dirname(os.path.abspath(__file__))
 
-        mam(os.path.join(root_tests, mg_im1_for_pres))
+        mam.mam(os.path.join(root_tests, mg_im1_for_pres))
 
         # Check study has been imported, with one event
         self.assertEqual(GeneralStudyModuleAttr.objects.all().count(), 1)
@@ -216,7 +216,7 @@ class ImportDuplicatesMG(TestCase):
 
         with LogCapture(level=logging.DEBUG) as log1:
             # Import second object, same time etc
-            mam(os.path.join(root_tests, mg_im1_for_proc))
+            mam.mam(os.path.join(root_tests, mg_im1_for_proc))
 
             # Check still one study, one event
             self.assertEqual(GeneralStudyModuleAttr.objects.all().count(), 1)
@@ -234,7 +234,7 @@ class ImportDuplicatesMG(TestCase):
                                u'.1525984267206.3.0) and time (2013-04-12T13:22:23) has been imported. Stopping'),)
 
         # Import third object, different event
-        mam(os.path.join(root_tests, mg_im2_for_pres))
+        mam.mam(os.path.join(root_tests, mg_im2_for_pres))
 
         # Check one study, two events
         self.assertEqual(GeneralStudyModuleAttr.objects.all().count(), 1)
@@ -248,7 +248,7 @@ class ImportDuplicatesMG(TestCase):
 
         with LogCapture(level=logging.DEBUG) as log2:
             # Import second object again - should be stopped on event UID this time
-            mam(os.path.join(root_tests, mg_im1_for_proc))
+            mam.mam(os.path.join(root_tests, mg_im1_for_proc))
 
             # Check one study, two events
             self.assertEqual(GeneralStudyModuleAttr.objects.all().count(), 1)

@@ -4,9 +4,9 @@
 import os
 from django.contrib.auth.models import User
 from django.test import TestCase
-from django.core.urlresolvers import reverse
-from remapp.extractors import rdsr, ct_philips
-from remapp.models import PatientIDSettings
+from django.urls import reverse
+from ..extractors import rdsr, ct_philips
+from ..models import PatientIDSettings
 
 
 class FilterViewTests(TestCase):
@@ -36,13 +36,13 @@ class FilterViewTests(TestCase):
         path_ct6 = os.path.join(root_tests, ct6)
         path_ct7 = os.path.join(root_tests, ct7)
 
-        rdsr(path_ct1)
-        rdsr(path_ct2)
-        rdsr(path_ct3)
-        rdsr(path_ct4)
-        rdsr(path_ct5)
-        rdsr(path_ct6)
-        ct_philips(path_ct7)
+        rdsr.rdsr(path_ct1)
+        rdsr.rdsr(path_ct2)
+        rdsr.rdsr(path_ct3)
+        rdsr.rdsr(path_ct4)
+        rdsr.rdsr(path_ct5)
+        rdsr.rdsr(path_ct6)
+        ct_philips.ct_philips(path_ct7)
 
     def test_list_all_ct(self):
         """
@@ -83,7 +83,7 @@ class FilterViewTests(TestCase):
         Apply procedure filter
         """
         self.client.login(username='temporary', password='temporary')
-        response = self.client.get('http://test/openrem/ct/?requested_procedure=bones', follow=True)
+        response = self.client.get('http://test/openrem/ct/?requested_procedure_code_meaning=bones', follow=True)
         self.assertEqual(response.status_code, 200)
         one_responses_text = u'There are 1 studies in this list.'
         self.assertContains(response, one_responses_text)
@@ -95,7 +95,9 @@ class FilterViewTests(TestCase):
         Apply acquisition protocol filter
         """
         self.client.login(username='temporary', password='temporary')
-        response = self.client.get('http://test/openrem/ct/?acquisition_protocol=monitoring', follow=True)
+        response = self.client.get(
+            'http://test/openrem/ct/?ctradiationdose__ctirradiationeventdata__acquisition_protocol=monitoring',
+            follow=True)
         self.assertEqual(response.status_code, 200)
         one_responses_text = u'There are 1 studies in this list.'
         self.assertContains(response, one_responses_text)

@@ -4,7 +4,7 @@
 
 {% block toprow %}
       <p>
-        There are {{ filter|length }} studies in this list.
+        There are {{ filter.qs.count }} studies in this list.
       </p>
 {% endblock %}
 

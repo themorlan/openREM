@@ -4,7 +4,7 @@
 import os
 from django.contrib.auth.models import User
 from django.test import TestCase
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from remapp.extractors import rdsr, dx
 from remapp.models import PatientIDSettings
 
@@ -38,21 +38,21 @@ class FilterViewTests(TestCase):
         path_dx7 = os.path.join(root_tests, dx7)
         path_dx8 = os.path.join(root_tests, dx8)
 
-        dx(path_dx1)
-        dx(path_dx2)
-        dx(path_dx3)
-        dx(path_dx4)
-        dx(path_dx5)
-        dx(path_dx6)
-        rdsr(path_dx7)
-        rdsr(path_dx8)
+        dx.dx(path_dx1)
+        dx.dx(path_dx2)
+        dx.dx(path_dx3)
+        dx.dx(path_dx4)
+        dx.dx(path_dx5)
+        dx.dx(path_dx6)
+        rdsr.rdsr(path_dx7)
+        rdsr.rdsr(path_dx8)
 
     def test_list_all_dx(self):
         """
         Initial test to ensure five studies are listed with no filter
         """
         self.client.login(username='temporary', password='temporary')
-        response = self.client.get(reverse_lazy('dx_summary_list_filter'), follow=True)
+        response = self.client.get(reverse('dx_summary_list_filter'), follow=True)
         self.assertEqual(response.status_code, 200)
         responses_text = u'There are 5 studies in this list.'
         self.assertContains(response, responses_text)
@@ -76,7 +76,8 @@ class FilterViewTests(TestCase):
         Apply acquisition protocol filter
         """
         self.client.login(username='temporary', password='temporary')
-        response = self.client.get(reverse_lazy('dx_summary_list_filter') + '?acquisition_protocol=thigh', follow=True)
+        response = self.client.get(
+            reverse_lazy('dx_summary_list_filter') + '?projectionxrayradiationdose__irradeventxraydata__acquisition_protocol=thigh', follow=True)
         self.assertEqual(response.status_code, 200)
         one_responses_text = u'There are 1 studies in this list.'
         self.assertContains(response, one_responses_text)

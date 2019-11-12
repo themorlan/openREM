@@ -4,7 +4,7 @@
 import os
 from django.test import TestCase
 from remapp.extractors import rdsr
-from remapp.models import GeneralStudyModuleAttr, PatientIDSettings, UniqueEquipmentNames, SkinDoseMapCalcSettings
+from remapp.models import GeneralStudyModuleAttr, PatientIDSettings, UniqueEquipmentNames  #, SkinDoseMapCalcSettings
 
 
 class ImportDualRDSRs(TestCase):
@@ -25,9 +25,7 @@ class ImportDualRDSRs(TestCase):
         :return: None
         """
 
-        PatientIDSettings.objects.create()
-        SkinDoseMapCalcSettings.objects.create()  # Bitbucket pipeline requires in order to import reset_dual
-
+        PatientIDSettings.get_solo()
 
         rf_file = "test_files/Dual-RDSR-RF.dcm"
         dx_file = "test_files/Dual-RDSR-DX.dcm"
@@ -35,7 +33,7 @@ class ImportDualRDSRs(TestCase):
         rf_path = os.path.join(root_tests, rf_file)
         dx_path = os.path.join(root_tests, dx_file)
 
-        rdsr(dx_path)
+        rdsr.rdsr(dx_path)
         dx_study = GeneralStudyModuleAttr.objects.order_by('id')[0]
         unique_equip = UniqueEquipmentNames.objects.order_by('id')[0]
 
@@ -47,7 +45,7 @@ class ImportDualRDSRs(TestCase):
         from remapp.views import reset_dual
         reset_dual(unique_equip.pk)
 
-        rdsr(rf_path)
+        rdsr.rdsr(rf_path)
         rf_study = GeneralStudyModuleAttr.objects.order_by('id')[1]
         # Make sure second study has fallen into same equipment entry
         self.assertEqual(UniqueEquipmentNames.objects.count(), 1)
@@ -75,8 +73,7 @@ class ImportDualRDSRs(TestCase):
         :return: None
         """
 
-        PatientIDSettings.objects.create()
-        SkinDoseMapCalcSettings.objects.create()  # Bitbucket pipeline requires in order to import reset_dual
+        PatientIDSettings.get_solo()
 
         rf_file = "test_files/Dual-RDSR-RF.dcm"
         dx_file = "test_files/Dual-RDSR-DX.dcm"
@@ -84,8 +81,8 @@ class ImportDualRDSRs(TestCase):
         rf_path = os.path.join(root_tests, rf_file)
         dx_path = os.path.join(root_tests, dx_file)
 
-        rdsr(dx_path)
-        rdsr(rf_path)
+        rdsr.rdsr(dx_path)
+        rdsr.rdsr(rf_path)
         dx_study = GeneralStudyModuleAttr.objects.order_by('id')[0]
         rf_study = GeneralStudyModuleAttr.objects.order_by('id')[1]
         # Make sure second study has fallen into same equipment entry

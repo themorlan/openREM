@@ -1,12 +1,12 @@
 # This Python file uses the following encoding: utf-8
-# test_dicom_qr.py
+# disabled_test_dicom_qr.py
 
 import collections
 import os
 import uuid
 
-from dicom.UID import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
-from dicom.dataset import Dataset
+from pydicom.uid import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
+from pydicom.dataset import Dataset
 from django.test import TestCase
 from mock import patch
 from netdicom.SOPclass import StudyRootFindSOPClass, StudyRootMoveSOPClass, VerificationSOPClass
@@ -1410,7 +1410,7 @@ class RemoveDuplicates(TestCase):
         dicom_file_1 = "test_files/CT-RDSR-Siemens-Multi-1.dcm"
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path_1 = os.path.join(root_tests, dicom_file_1)
-        rdsr(dicom_path_1)
+        rdsr.rdsr(dicom_path_1)
 
         query = DicomQuery.objects.create()
         query.query_id = "CT"
@@ -1479,7 +1479,7 @@ class RemoveDuplicates(TestCase):
         dicom_file_1 = "test_files/CT-RDSR-Siemens-Multi-2.dcm"
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path_1 = os.path.join(root_tests, dicom_file_1)
-        rdsr(dicom_path_1)
+        rdsr.rdsr(dicom_path_1)
         imported_study = GeneralStudyModuleAttr.objects.order_by('pk')[0]
         imported_study.objectuidsprocessed_set.all().delete()
         imported_study.save()
@@ -1535,7 +1535,7 @@ class RemoveDuplicates(TestCase):
 
         dx_ge_xr220_1 = os.path.join("test_files", "DX-Im-GE_XR220-1.dcm")
         root_tests = os.path.dirname(os.path.abspath(__file__))
-        dx(os.path.join(root_tests, dx_ge_xr220_1))
+        dx.dx(os.path.join(root_tests, dx_ge_xr220_1))
 
         query = DicomQuery.objects.create()
         query.query_id = "DX"

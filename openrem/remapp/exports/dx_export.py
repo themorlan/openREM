@@ -137,7 +137,7 @@ def _series_headers(max_events):
     :return: headers as a list of strings
     """
     series_headers = []
-    for series_number in range(max_events):
+    for series_number in range(int(max_events)):
         series_headers += [
             u'E' + str(series_number+1) + u' Protocol',
             u'E' + str(series_number+1) + u' Anatomy',

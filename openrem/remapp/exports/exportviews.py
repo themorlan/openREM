@@ -40,7 +40,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 import remapp
 
 logger = logging.getLogger(__name__)
@@ -485,7 +485,7 @@ def deletefile(request):
     """
     import sys
     from django.http import HttpResponseRedirect
-    from django.core.urlresolvers import reverse
+    from django.urls import reverse
     from remapp.models import Exports
 
     for task in request.POST:

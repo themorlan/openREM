@@ -8,7 +8,8 @@
 from django import template
 register = template.Library()
 
-@register.assignment_tag()
+
+@register.simple_tag()
 def update_variable(value):
     """ Template assignment tag to return a supplied value to enable template variable values to be updated
 

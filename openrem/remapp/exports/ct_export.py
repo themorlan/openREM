@@ -286,7 +286,7 @@ def _generate_all_data_headers_ct(max_events):
     """
 
     repeating_series_headers = []
-    for h in range(max_events):
+    for h in range(int(max_events)):
         repeating_series_headers += [
             u'E' + str(h+1) + u' Protocol',
             u'E' + str(h+1) + u' Type',

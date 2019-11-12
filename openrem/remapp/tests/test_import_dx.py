@@ -8,9 +8,9 @@ import datetime
 from decimal import Decimal
 from django.contrib.auth.models import User, Group
 from django.test import TestCase
-from dicom.dataset import Dataset
-from dicom.dataelem import DataElement
-from dicom.multival import MultiValue
+from pydicom.dataset import Dataset
+from pydicom.dataelem import DataElement
+from pydicom.multival import MultiValue
 import logging
 from testfixtures import LogCapture
 from remapp.extractors.dx import _xray_filters_prep
@@ -106,12 +106,12 @@ class ImportCarestreamDR7500(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
 
         with LogCapture(level=logging.DEBUG) as self.log:
-            dx(os.path.join(root_tests, dx_ge_xr220_1))
-            dx(os.path.join(root_tests, dx_ge_xr220_2))
-            dx(os.path.join(root_tests, dx_ge_xr220_3))
-            dx(os.path.join(root_tests, dx_carestream_dr7500_1))
-            dx(os.path.join(root_tests, dx_carestream_dr7500_2))
-            dx(os.path.join(root_tests, dx_ge_xr220_2))
+            dx.dx(os.path.join(root_tests, dx_ge_xr220_1))
+            dx.dx(os.path.join(root_tests, dx_ge_xr220_2))
+            dx.dx(os.path.join(root_tests, dx_ge_xr220_3))
+            dx.dx(os.path.join(root_tests, dx_carestream_dr7500_1))
+            dx.dx(os.path.join(root_tests, dx_carestream_dr7500_2))
+            dx.dx(os.path.join(root_tests, dx_ge_xr220_2))
 
     def test_dr7500_and_xr220(self):
 
@@ -375,7 +375,7 @@ class ImportCarestreamDRXRevolution(TestCase):
 
         dx_carestream_drx_revolution = os.path.join("test_files", "DX-Im-Carestream_DRX.dcm")
         root_tests = os.path.dirname(os.path.abspath(__file__))
-        dx(os.path.join(root_tests, dx_carestream_drx_revolution))
+        dx.dx(os.path.join(root_tests, dx_carestream_drx_revolution))
 
     def test_requested_procedure_name(self):
         """
@@ -407,7 +407,7 @@ class ImportDuplicateDX(TestCase):
         dx_ge_xr220_1 = os.path.join("test_files", "DX-Im-GE_XR220-1.dcm")
         root_tests = os.path.dirname(os.path.abspath(__file__))
 
-        dx(os.path.join(root_tests, dx_ge_xr220_1))
+        dx.dx(os.path.join(root_tests, dx_ge_xr220_1))
         study_one = GeneralStudyModuleAttr.objects.order_by('pk')[0]
         original_study_uid = study_one.study_instance_uid
         original_sop_instance_uid = study_one.projectionxrayradiationdose_set.get().irradeventxraydata_set.get(
@@ -421,7 +421,7 @@ class ImportDuplicateDX(TestCase):
         self.assertEqual(GeneralStudyModuleAttr.objects.all().count(), 1)
 
         # Import the image again...
-        dx(os.path.join(root_tests, dx_ge_xr220_1))
+        dx.dx(os.path.join(root_tests, dx_ge_xr220_1))
 
         # Check there are two studies now
         self.assertEqual(GeneralStudyModuleAttr.objects.all().count(), 2)
@@ -447,7 +447,7 @@ class ImportDuplicateDX(TestCase):
         study_1_pk = GeneralStudyModuleAttr.objects.order_by('pk').first().pk
 
         with LogCapture(level=logging.DEBUG) as log:
-            dx(os.path.join(root_tests, dx_ge_xr220_2))
+            dx.dx(os.path.join(root_tests, dx_ge_xr220_2))
 
         log.check_present(('remapp.extractors.dx',
                            'WARNING',
@@ -486,7 +486,7 @@ class ImportDuplicateDX(TestCase):
         study_2_pk = GeneralStudyModuleAttr.objects.order_by('pk')[1].pk
 
         with LogCapture(level=logging.DEBUG) as log:
-            dx(os.path.join(root_tests, dx_ge_xr220_2))
+            dx.dx(os.path.join(root_tests, dx_ge_xr220_2))
 
         log.check_present(('remapp.extractors.dx',
                            'WARNING',
@@ -523,7 +523,7 @@ class ImportDuplicateDX(TestCase):
             study.save()
 
         with LogCapture(level=logging.DEBUG) as log:
-            dx(os.path.join(root_tests, dx_ge_xr220_2))
+            dx.dx(os.path.join(root_tests, dx_ge_xr220_2))
 
         log.check_present(('remapp.extractors.dx',
                            'WARNING',
