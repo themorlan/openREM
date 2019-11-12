@@ -6,9 +6,9 @@ Upgrade to OpenREM 0.10.0 from before 0.9.1
 Upgrade preparation
 *******************
 
-Version 0.9 of OpenREM has a minimum Python version of 2.7.9 (still needs to be 2.7 not 3) and a minimum version of
-setuptools. If your installation was originally for OpenREM 0.6 in 2014 or earlier, these may now be too old and need
-updating.
+Version 0.9 and later of OpenREM has a minimum Python version of 2.7.9 (still needs to be 2.7 not 3) and a minimum
+version of setuptools. If your installation was originally for OpenREM 0.6 in 2014 or earlier, these may now be too old
+and need updating.
 
 To check the Python version, activate the virtualenv if you are using one, then:
 
@@ -85,7 +85,7 @@ Upgrade
 
     .. code-block:: console
 
-        pip install openrem==0.10.0b2
+        pip install openrem==0.10.0
 
 .. _update_configuration092:
 

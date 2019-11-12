@@ -2,8 +2,8 @@
 OpenREM version history
 =======================
 
-0.10.0b2 (2019-10-19)
----------------------
+0.10.0 (2019-11-08)
+-------------------
 * `#785`_  Interface: added study level comments to rfdetail.html
 * `#784`_  Imports: added laterality under target region as per 2017 CP 1676 change
 * `#783`_  Interface: replaced static links by dynamic versions in rfdetail.html
