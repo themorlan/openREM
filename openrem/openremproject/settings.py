@@ -282,4 +282,4 @@ EMAIL_OPENREM_URL = 'http://your.openrem.server'
 #         except ImportError:
 #             pass
 
-from .local_settings import *
+from .local_settings import *  # NOQA: F401

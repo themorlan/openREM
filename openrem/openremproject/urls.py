@@ -10,7 +10,7 @@ urlpatterns = [
     path('{0}admin/'.format(VIRTUAL_DIRECTORY), admin.site.urls),
     # Login / logout.
     path('{0}login/'.format(VIRTUAL_DIRECTORY), auth.views.LoginView, name='login'),
-    path('logout/'.format(VIRTUAL_DIRECTORY), remapp.views.logout_page, name='logout'),
+    path('{0}logout/'.format(VIRTUAL_DIRECTORY), remapp.views.logout_page, name='logout'),
 ]
 
 if settings.DEBUG:
