@@ -28,7 +28,7 @@
 
 import logging
 from pydicom.uid import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
-from pynetdicom import (AE, VerificationPresentationContexts, evt)
+from pynetdicom import (AE, VerificationPresentationContexts)
 from pynetdicom.sop_class import VerificationSOPClass
 
 logger = logging.getLogger(__name__)
@@ -43,17 +43,6 @@ def OnAssociateResponse(association):
 def OnAssociateRequest(association):
     logger.info(u"Association resquested")
     return True
-
-
-def handle_assoc(event):
-    print(event.assoc.acceptor.primitive.result)
-    print(event.assoc.acceptor.primitive.result_source)
-    print(event.assoc.acceptor.primitive.result_str)
-    print(event.assoc.acceptor.primitive.reason_str)
-    print(event.assoc.acceptor.primitive.diagnostic)
-
-
-handlers = [(evt.EVT_REJECTED, handle_assoc)]
 
 
 def echoscu(scp_pk=None, store_scp=False, qr_scp=False, *args, **kwargs):
@@ -92,24 +81,24 @@ def echoscu(scp_pk=None, store_scp=False, qr_scp=False, *args, **kwargs):
     ae.requested_contexts = VerificationPresentationContexts
     ae.ae_title = our_aet
 
-    assoc = ae.associate(remote_host, remote_port, ae_title=remote_aet, evt_handlers=handlers)
+    assoc = ae.associate(remote_host, remote_port, ae_title=remote_aet)
 
     if assoc.is_established:
         status = assoc.send_c_echo()
 
         if status:
             if status.Status == 0x0000:
-                print('C-ECHO request returned success')
+                # print('C-ECHO request returned success')
                 logger.info(u"Returning Success response from echo to {0} {1} {2}".format(
                     remote_host, remote_port, remote_aet))
                 assoc.release()
                 return "Success"
             else:
-                print('C-ECHO request status: 0x{0:04x} or {0} of type {1}'.format(status.Status, type(status.Status)))
-                logger.info(u"Returning EchoFail response from echo to {0} {1} {2}. Type is {3}.".format(
+                # print('C-ECHO request status: 0x{0:04x} or {0} of type {1}'.format(status.Status, type(status.Status)))
+                logger.info("Returning EchoFail response from echo to {0} {1} {2}. Type is {3}.".format(
                     remote_host, remote_port, remote_aet, status.Status))
                 assoc.release()
-                return "EchoFail"
+                return "Association created, but EchoFail"
         else:
             print('Connection timed out, was aborted or received invalid response')
             logger.info(u"Returning EchoFail response from echo to {0} {1} {2}. No status.".format(
@@ -117,6 +106,15 @@ def echoscu(scp_pk=None, store_scp=False, qr_scp=False, *args, **kwargs):
             assoc.release()
             return "EchoFail"
     else:
+        # print(dir(assoc))
+        if assoc.is_rejected:
+            msg = ('{0}: {1}'.format(
+                assoc.acceptor.primitive.result_str,
+                assoc.acceptor.primitive.reason_str
+            ))
+            return(msg)
+        if assoc.is_aborted:
+            return("Association aborted or never connected")
         logger.info(u"Association with {0} {1} {2} was not successful".format(remote_host, remote_port, remote_aet))
         print('Association rejected, aborted or never connected')
         return "AssocFail"

@@ -16,7 +16,7 @@ import os
 import sys
 import uuid
 import collections
-from pynetdicom import AE
+from pynetdicom import (AE, evt)
 from pynetdicom.sop_class import StudyRootQueryRetrieveInformationModelFind
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -604,6 +604,7 @@ def _query_study(assoc, d, query, query_id):
     logger.debug(u'{0}: Study level association requested'.format(query_id))
     logger.debug(u'{0}: Study level query is {1}'.format(query_id, d))
     st = assoc.send_c_find(d, StudyRootQueryRetrieveInformationModelFind)
+
     logger.debug(u'{0}: _query_study done with status {1}'.format(query_id, st))
 
     # TODO: Replace the code below to deal with find failure
@@ -763,6 +764,11 @@ def _remove_duplicates_in_study_response(query, initial_count):
         return initial_count
 
 
+def handle_assoc(event):
+    print(event.assoc.acceptor.primitive.result_str)
+    print(event.assoc.acceptor.primitive.reason_str)
+
+
 @shared_task(name='remapp.netdicom.qrscu.qrscu')  # (name='remapp.netdicom.qrscu.qrscu', queue='qr')
 def qrscu(
         qr_scp_pk=None, store_scp_pk=None,
@@ -871,7 +877,8 @@ def qrscu(
     query.qr_scp_fk = qr_scp
     query.save()
 
-    assoc = ae.associate(remote_host, remote_port, ae_title=remote_aet)
+    handlers = [(evt.EVT_REJECTED, handle_assoc)]
+    assoc = ae.associate(remote_host, remote_port, ae_title=remote_aet, evt_handlers=handlers)
     # assoc = _create_association(my_ae, remote_host, remote_port, remote_ae, query)
 
     if assoc.is_established:

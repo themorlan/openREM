@@ -309,7 +309,7 @@ def dicom_qr_page(request, *args, **kwargs):
         if echo is "Success":
             storestatus[store.name] = u"<span class='glyphicon glyphicon-ok' aria-hidden='true'></span><span class='sr-only'>OK:</span> responding to DICOM echo"
         else:
-            storestatus[store.name] = u"<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span><span class='sr-only'>Error:</span> not responding to DICOM echo"
+            storestatus[store.name] = "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span><span class='sr-only'>Error:</span> not responding to DICOM echo {0}".format(echo)
 
     qrstatus = {}
     qr = DicomRemoteQR.objects.all()
@@ -318,7 +318,7 @@ def dicom_qr_page(request, *args, **kwargs):
         if echo is "Success":
             qrstatus[scp.name] = u"<span class='glyphicon glyphicon-ok' aria-hidden='true'></span><span class='sr-only'>OK:</span> responding to DICOM echo"
         else:
-            qrstatus[scp.name] = u"<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span><span class='sr-only'>Error:</span> not responding to DICOM echo"
+            qrstatus[scp.name] = "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span><span class='sr-only'>Error:</span> not responding to DICOM echo {0}".format(echo)
 
     admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
 
