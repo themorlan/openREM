@@ -125,6 +125,9 @@ def _event_dap_filter(queryset, name, value):
 
 
 class DateTimeOrderingFilter(django_filters.OrderingFilter):
+    """Custom filter to order by date and time as they are two seperate fields
+
+    """
 
     def __init__(self, *args, **kwargs):
         super(DateTimeOrderingFilter, self).__init__(*args, **kwargs)
@@ -134,6 +137,12 @@ class DateTimeOrderingFilter(django_filters.OrderingFilter):
         )
 
     def filter(self, qs, value):
+        """Sets order_by to date then time and returns queryset
+
+        :param qs: queryset
+        :param value: list containing ordering type as string
+        :return: ordered queryset
+        """
         # OrderingFilter is CSV-based, so `value` is a list
         if value and any(v in ['time_date', '-time_date'] for v in value):
             if '-time_date' in value:
