@@ -162,6 +162,8 @@ dicom_patterns = [
     path('queryremote', dicomviews.dicom_qr_page, name='dicom_qr_page'),
     path('queryretrieve', dicomviews.r_start, name='start_retrieve'),
     path('moveupdate', dicomviews.r_update, name='move_update'),
+    path('qrnodestatus', dicomviews.get_qr_status, name='get_qr_status'),
+    path('storenodestatus', dicomviews.get_store_status, name='get_store_status'),
 ]
 
 urlpatterns = [

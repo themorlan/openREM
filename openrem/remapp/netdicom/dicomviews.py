@@ -302,23 +302,8 @@ def dicom_qr_page(request, *args, **kwargs):
 
     form = DicomQueryForm
 
-    storestatus = {}
-    stores = DicomStoreSCP.objects.all()
-    for store in stores:
-        echo = echoscu(scp_pk=store.pk, store_scp=True)
-        if echo is "Success":
-            storestatus[store.name] = u"<span class='glyphicon glyphicon-ok' aria-hidden='true'></span><span class='sr-only'>OK:</span> responding to DICOM echo"
-        else:
-            storestatus[store.name] = "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span><span class='sr-only'>Error:</span> not responding to DICOM echo {0}".format(echo)
-
-    qrstatus = {}
-    qr = DicomRemoteQR.objects.all()
-    for scp in qr:
-        echo = echoscu(scp_pk=scp.pk, qr_scp=True)
-        if echo is "Success":
-            qrstatus[scp.name] = u"<span class='glyphicon glyphicon-ok' aria-hidden='true'></span><span class='sr-only'>OK:</span> responding to DICOM echo"
-        else:
-            qrstatus[scp.name] = "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span><span class='sr-only'>Error:</span> not responding to DICOM echo {0}".format(echo)
+    store_nodes = DicomStoreSCP.objects.all()
+    qr_nodes = DicomRemoteQR.objects.all()
 
     admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
 
@@ -326,7 +311,7 @@ def dicom_qr_page(request, *args, **kwargs):
         admin[group.name] = True
 
     return render(request, 'remapp/dicomqr.html',
-                  {'form': form, 'storestatus': storestatus, 'qrstatus': qrstatus, 'admin': admin},)
+                  {'form': form, 'admin': admin, 'qr_nodes': qr_nodes, 'store_nodes': store_nodes},)
 
 
 @csrf_exempt
@@ -373,3 +358,31 @@ def r_update(request):
         resp['message'] = u'<h4>Move request complete</h4>'
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
+
+
+def get_qr_status(request):
+    from .tools import echoscu
+
+    data = request.POST
+    echo_response = echoscu(scp_pk=data.get('node'), qr_scp=True)
+    if echo_response is "Success":
+        status = u"<span class='glyphicon glyphicon-ok' aria-hidden='true'></span>" \
+                             u"<span class='sr-only'>OK:</span> responding to DICOM echo"
+    else:
+        status = "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>" \
+                             "<span class='sr-only'>Error:</span> {0}".format(echo_response)
+    return HttpResponse(json.dumps(status), content_type='application/json')
+
+
+def get_store_status(request):
+    from .tools import echoscu
+
+    data = request.POST
+    echo_response = echoscu(scp_pk=data.get('node'), store_scp=True)
+    if echo_response is "Success":
+        status = u"<span class='glyphicon glyphicon-ok' aria-hidden='true'></span>" \
+                             u"<span class='sr-only'>OK:</span> responding to DICOM echo"
+    else:
+        status = "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>" \
+                             "<span class='sr-only'>Error:</span> {0}".format(echo_response)
+    return HttpResponse(json.dumps(status), content_type='application/json')
