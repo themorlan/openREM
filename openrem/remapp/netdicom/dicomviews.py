@@ -83,11 +83,11 @@ def status_update_store(request):
     data = request.POST
     scp_pk = data.get('scp_pk')
 
-    echo = echoscu(scp_pk=scp_pk, store_scp=True)
+    echo_response = echoscu(scp_pk=scp_pk, store_scp=True)
 
     store = DicomStoreSCP.objects.get(pk=scp_pk)
 
-    if echo is "Success":
+    if echo_response is "Success":
         resp['message'] = u"<div>Last status: {0}</div>".format(store.status)
         resp['statusindicator'] = u"<h3 class='pull-right panel-title'>" \
                                   u"<span class='glyphicon glyphicon-ok' aria-hidden='true'></span>" \
@@ -96,11 +96,12 @@ def status_update_store(request):
         resp['startbutton'] = u""
         resp['stopbutton'] = u"<a class='btn btn-danger' href='{0}' role='button'>Stop server</a>".format(
             reverse_lazy('stop_store', kwargs={'pk': scp_pk}))
-    elif echo is "AssocFail":
+    else:
         resp['message'] = u"<div>Last status: {0}</div>".format(store.status)
         resp['statusindicator'] = u"<h3 class='pull-right panel-title status-red'>" \
                                   u"<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>" \
-                                  u"<span class='sr-only'>Error:</span> Association fail - server not running?</h3>"
+                                  u"<span class='sr-only'>Error:</span> {0}</h3>".format(
+            echo_response)
         resp['delbutton'] = u"<a class='btn btn-primary' href='{0}' role='button'>Delete</a>".format(
             reverse_lazy('dicomstore_delete', kwargs={'pk': scp_pk}))
         resp['startbutton'] = u"<a class='btn btn-success' href='{0}' role='button'>Start server</a>".format(
