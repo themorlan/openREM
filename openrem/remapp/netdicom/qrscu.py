@@ -847,27 +847,10 @@ def qrscu(
     if not our_aet:
         our_aet = "OPENREMDEFAULT"
 
-    if implicit:
-        ts = [ImplicitVRLittleEndian]
-    elif explicit:
-        ts = [ExplicitVRLittleEndian]
-    else:
-        ts = [
-            ExplicitVRLittleEndian,
-            ImplicitVRLittleEndian,
-            ExplicitVRBigEndian
-        ]
-
     ae = AE()
     ae.add_requested_context(StudyRootQueryRetrieveInformationModelFind)
     ae.ae_title = our_aet
 
-    # my_ae = create_ae(our_aet.encode('ascii', 'ignore'), transfer_syntax=ts)
-    # my_ae.start()
-    # logger.debug(u"{1} my_ae {0} started".format(my_ae, query_id))
-    #
-    # # remote application entity
-    # remote_ae = dict(Address=remote_host, Port=remote_port, AET=remote_aet.encode('ascii', 'ignore'))
     logger.debug(u"{1} Remote AE is {0}".format(remote_aet, query_id))
 
     query = DicomQuery.objects.create()
@@ -879,7 +862,6 @@ def qrscu(
 
     handlers = [(evt.EVT_REJECTED, handle_assoc)]
     assoc = ae.associate(remote_host, remote_port, ae_title=remote_aet, evt_handlers=handlers)
-    # assoc = _create_association(my_ae, remote_host, remote_port, remote_ae, query)
 
     if assoc.is_established:
 
@@ -1102,8 +1084,22 @@ def qrscu(
             movescu.delay(str(query.query_id))
 
     else:
-        print('Association rejected, aborted or never connected')
-        return
+        if assoc.is_rejected:
+            msg = ('{0}: {1}'.format(
+                assoc.acceptor.primitive.result_str,
+                assoc.acceptor.primitive.reason_str
+            ))
+            logger.warning("Association rejected from {0} {1} {2}. {3}".format(
+                remote_host, remote_port, remote_aet, msg))
+        elif assoc.is_aborted:
+            msg = "Association aborted or never connected"
+            logger.warning("{3} to {0} {1} {2}".format(remote_host, remote_port, remote_aet, msg))
+        else:
+            msg = "Association Failed"
+            logger.warning("{3} with {0} {1} {2}".format(remote_host, remote_port, remote_aet, msg))
+        query.message = msg
+        query.failed = True
+        query.save()
 
 
 def _move_req(my_ae, assoc, d, study_no, series_no):

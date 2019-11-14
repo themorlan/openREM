@@ -88,13 +88,11 @@ def echoscu(scp_pk=None, store_scp=False, qr_scp=False, *args, **kwargs):
 
         if status:
             if status.Status == 0x0000:
-                # print('C-ECHO request returned success')
                 logger.info(u"Returning Success response from echo to {0} {1} {2}".format(
                     remote_host, remote_port, remote_aet))
                 assoc.release()
                 return "Success"
             else:
-                # print('C-ECHO request status: 0x{0:04x} or {0} of type {1}'.format(status.Status, type(status.Status)))
                 logger.info("Returning EchoFail response from echo to {0} {1} {2}. Type is {3}.".format(
                     remote_host, remote_port, remote_aet, status.Status))
                 assoc.release()
@@ -106,18 +104,20 @@ def echoscu(scp_pk=None, store_scp=False, qr_scp=False, *args, **kwargs):
             assoc.release()
             return "EchoFail"
     else:
-        # print(dir(assoc))
         if assoc.is_rejected:
             msg = ('{0}: {1}'.format(
                 assoc.acceptor.primitive.result_str,
                 assoc.acceptor.primitive.reason_str
             ))
-            return(msg)
+            logger.info("Association rejected from {0} {1} {2}. {3}".format(remote_host, remote_port, remote_aet, msg))
+            return msg
         if assoc.is_aborted:
-            return("Association aborted or never connected")
-        logger.info(u"Association with {0} {1} {2} was not successful".format(remote_host, remote_port, remote_aet))
-        print('Association rejected, aborted or never connected')
-        return "AssocFail"
+            msg = "Association aborted or never connected"
+            logger.info("{3} to {0} {1} {2}".format(remote_host, remote_port, remote_aet, msg))
+            return msg
+        msg = "Association Failed"
+        logger.info("{3} with {0} {1} {2}".format(remote_host, remote_port, remote_aet, msg))
+        return msg
 
 
 def create_ae(aet, port=None, sop_scu=None, sop_scp=None, transfer_syntax=None):
