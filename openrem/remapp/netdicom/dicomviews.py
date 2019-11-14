@@ -135,7 +135,8 @@ def q_update(request):
     study_rsp = query.dicomqrrspstudy_set.all()
     if not query.complete:
         modalities = study_rsp.values('modalities_in_study').annotate(count=Count('pk'))
-        table = [u'<table class="table table-bordered"><tr><th>Modalities in study</th><th>Number of responses</th></tr>']
+        table = [u'<table class="table table-bordered">'
+                 u'<tr><th>Modalities in study</th><th>Number of responses</th></tr>']
         for m in modalities:
             table.append(u'<tr><td>')
             if m['modalities_in_study']:

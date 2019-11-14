@@ -588,8 +588,8 @@ def _query_series(assoc, d2, studyrsp, query_id):
 
 
 def _query_study(assoc, d, query, query_id):
-    from remapp.models import DicomQRRspStudy
-    from remapp.tools.get_values import get_value_kw
+    from ..models import DicomQRRspStudy
+    from ..tools.get_values import get_value_kw
     d.QueryRetrieveLevel = "STUDY"
     d.PatientName = ''
     d.PatientID = ''
@@ -603,55 +603,55 @@ def _query_study(assoc, d, query, query_id):
 
     logger.debug(u'{0}: Study level association requested'.format(query_id))
     logger.debug(u'{0}: Study level query is {1}'.format(query_id, d))
-    st = assoc.send_c_find(d, StudyRootQueryRetrieveInformationModelFind)
+    responses = assoc.send_c_find(d, StudyRootQueryRetrieveInformationModelFind)
 
-    logger.debug(u'{0}: _query_study done with status {1}'.format(query_id, st))
-
-    # TODO: Replace the code below to deal with find failure
-    # if not st:
-    #     query.failed = True
-    #     query.message = "Study Root Find unsuccessful"
-    #     query.complete = True
-    #     query.save()
-    #     MyAE.Quit()
-    #     return
+    logger.debug(u'{0}: _query_study done with status {1}'.format(query_id, responses))
 
     rspno = 0
 
-    logger.debug(u'{0} Processing the study level responses'.format(query_id))
-    for ss in st:
-        if not ss[1]:
-            continue
-        ss[1].decode()
-        # Line below commented out as it will print patient information to the log file
-        # logger.debug(u'{0}: study level response is {1}'.format(query_id, ss[1]))
-        rspno += 1
-        rsp = DicomQRRspStudy.objects.create(dicom_query=query)
-        rsp.query_id = query_id
-        # Unique key
-        rsp.study_instance_uid = ss[1].StudyInstanceUID
-        # Required keys - none of interest
-        logger.debug(u"{2} Response {0}, StudyUID: {1}".format(rspno, rsp.study_instance_uid, query_id))
+    for (status, identifier) in responses:
+        if status:
+            if status.Status == 0x0000:
+                logger.info('{0} Matching is complete'.format(query_id))
+                query.stage = 'Matching for {0} is complete'.format(d.ModalitiesInStudy)
+                query.save()
+                return
+            if status.Status in (0xFF00, 0xFF01):
+                logger.info('{0} Matches are continuing (0x{1:04x})'.format(query_id, status.Status))
+                query.stage = 'Matches are continuing for {0} studies'.format(d.ModalitiesInStudy)
+                query.save()
+                # Next line commented to avoid patient information being logged
+                # logger.debug(identifier)
+                rspno += 1
+                rsp = DicomQRRspStudy.objects.create(dicom_query=query)
+                rsp.query_id = query_id
+                # Unique key
+                rsp.study_instance_uid = identifier.StudyInstanceUID
+                # Required keys - none of interest
+                logger.debug(u"{2} Response {0}, StudyUID: {1}".format(rspno, rsp.study_instance_uid, query_id))
 
-        # Optional and special keys
-        rsp.study_description = get_value_kw(u"StudyDescription", ss[1])
-        rsp.station_name = get_value_kw('StationName', ss[1])
-        logger.debug(u"{2} Study Description: {0}; Station Name: {1}".format(
-            rsp.study_description, rsp.station_name, query_id))
+                # Optional and special keys
+                rsp.study_description = get_value_kw(u"StudyDescription", identifier)
+                rsp.station_name = get_value_kw('StationName', identifier)
+                logger.debug(u"{2} Study Description: {0}; Station Name: {1}".format(
+                    rsp.study_description, rsp.station_name, query_id))
 
-        # Populate modalities_in_study, stored as JSON
-        try:
-            if isinstance(ss[1].ModalitiesInStudy, str):   # if single modality, then type = string ('XA')
-                rsp.set_modalities_in_study(ss[1].ModalitiesInStudy.split(u','))
-            else:   # if multiple modalities, type = MultiValue (['XA', 'RF'])
-                rsp.set_modalities_in_study(ss[1].ModalitiesInStudy)
-            logger.debug(u"{1} ModalitiesInStudy: {0}".format(rsp.get_modalities_in_study(), query_id))
-        except AttributeError:
-            rsp.set_modalities_in_study([u''])
-            logger.debug(u"{0} ModalitiesInStudy was not in response".format(query_id))
+                # Populate modalities_in_study, stored as JSON
+                try:
+                    if isinstance(identifier.ModalitiesInStudy, str):  # if single modality, then type = string ('XA')
+                        rsp.set_modalities_in_study(identifier.ModalitiesInStudy.split(u','))
+                    else:  # if multiple modalities, type = MultiValue (['XA', 'RF'])
+                        rsp.set_modalities_in_study(identifier.ModalitiesInStudy)
+                    logger.debug(u"{1} ModalitiesInStudy: {0}".format(rsp.get_modalities_in_study(), query_id))
+                except AttributeError:
+                    rsp.set_modalities_in_study([u''])
+                    logger.debug(u"{0} ModalitiesInStudy was not in response".format(query_id))
 
-        rsp.modality = None  # Used later
-        rsp.save()
+                rsp.modality = None  # Used later
+                rsp.save()
+
+        else:
+            logger.info('{0} Connection timed out, was aborted or received invalid response'.format(query_id))
 
 
 def _create_association(my_ae, remote_host, remote_port, remote_ae, query):
@@ -864,22 +864,6 @@ def qrscu(
     assoc = ae.associate(remote_host, remote_port, ae_title=remote_aet, evt_handlers=handlers)
 
     if assoc.is_established:
-
-
-    # if not assoc:
-    #     logger.warning(u"{0} Query aborted as could not create initial association.".format(query_id))
-    #     return
-    #
-    # # perform a DICOM ECHO
-    # logger.info(u"{0} DICOM Echo ... ".format(query_id))
-    # echo_response = _echo(assoc, query_id)
-    # if echo_response.Type != u'Success':
-    #     logger.error(u"{1} Echo response was {0} instead of Success. Aborting query".format(echo_response, query_id))
-    #     query.stage = u"Echo response was {0} instead of Success. Aborting query".format(echo_response)
-    #     query.complete = True
-    #     query.save()
-    #     my_ae.Quit()
-    #     return
 
         logger.info(u"{0} DICOM FindSCU ... ".format(query_id))
         d = Dataset()
