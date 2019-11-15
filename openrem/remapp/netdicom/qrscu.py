@@ -93,7 +93,7 @@ def _remove_duplicates(query, study_rsp, assoc, query_id):
                     elif series_rsp.modality in ['MG', 'DX', 'CR']:
                         logger.debug(u"{2} Study {0} {1} about to query at image level to get SOPInstanceUID".format(
                             study_number, study.study_instance_uid, query_id))
-                        _query_images(assoc, series_rsp, query_id)
+                        _query_images(assoc, series_rsp, query, query_id)
                         for image_rsp in series_rsp.dicomqrrspimage_set.all():
                             logger.debug(u"{3} Study {0} {1} Checking for SOPInstanceUID {2}".format(
                                 study_number, study.study_instance_uid, image_rsp.sop_instance_uid, query_id))
@@ -205,7 +205,7 @@ def _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images,
             study.save()
 
             if 'SR' in study.get_modalities_in_study():
-                if _check_sr_type_in_study(assoc, study, query.query_id, get_empty_sr) in ['RDSR', 'null_response']:
+                if _check_sr_type_in_study(assoc, study, query, query.query_id, get_empty_sr) in ['RDSR', 'null_response']:
                     logger.debug(u"{0} RDSR in MG study, keep SR, delete all other series".format(query_id))
                     series = study.dicomqrrspseries_set.all()
                     series.exclude(modality__exact='SR').delete()
@@ -222,7 +222,7 @@ def _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images,
             study.save()
 
             if 'SR' in study.get_modalities_in_study():
-                if _check_sr_type_in_study(assoc, study, query.query_id, get_empty_sr) in ['RDSR', 'null_response']:
+                if _check_sr_type_in_study(assoc, study, query, query.query_id, get_empty_sr) in ['RDSR', 'null_response']:
                     logger.debug(u"{0} RDSR in DX study, keep SR, delete all other series".format(query_id))
                     series = study.dicomqrrspseries_set.all()
                     series.exclude(modality__exact='SR').delete()
@@ -235,7 +235,7 @@ def _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images,
             # Only RDSR or some ESR useful here
             study.modality = 'FL'
             study.save()
-            sr_type = _check_sr_type_in_study(assoc, study, query.query_id, get_empty_sr)
+            sr_type = _check_sr_type_in_study(assoc, study, query, query.query_id, get_empty_sr)
             if sr_type == 'no_dose_report':
                 logger.debug(u"{0} No usable SR in RF study. Deleting from query.".format(query_id))
                 study.delete()
@@ -257,7 +257,7 @@ def _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images,
             series = study.dicomqrrspseries_set.all()
             sr_type = None
             if 'SR' in study.get_modalities_in_study():
-                sr_type = _check_sr_type_in_study(assoc, study, query.query_id, get_empty_sr)
+                sr_type = _check_sr_type_in_study(assoc, study, query, query.query_id, get_empty_sr)
             if 'SR' and sr_type in ('RDSR', 'ESR', 'null_response'):
                 logger.debug(u"{0} {1} in CT study, keep SR, delete all other series".format(query_id, sr_type))
                 series.exclude(modality__exact='SR').delete()
@@ -270,7 +270,7 @@ def _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images,
                 elif not philips_found and get_toshiba_images:
                     logger.debug(u"{0} No usable CT SR, no Philips dose image found, preparing study for Toshiba "
                                  u"option".format(query_id))
-                    _get_toshiba_dose_images(series, assoc, query_id)
+                    _get_toshiba_dose_images(series, assoc, query, query_id)
                     kept_ct['toshiba'] += 1
                 elif not philips_desc and philips_found:
                     logger.debug(u"{0} No usable CT SR, series descriptions, retaining small series in case useful.")
@@ -281,7 +281,7 @@ def _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images,
                     deleted_studies['CT'] += 1
 
         elif all_mods['SR']['inc']:
-            sr_type = _check_sr_type_in_study(assoc, study, query.query_id, get_empty_sr)
+            sr_type = _check_sr_type_in_study(assoc, study, query, query.query_id, get_empty_sr)
             if sr_type == 'RDSR':
                 logger.debug(u"{0} SR only query, found RDSR, deleted other SRs".format(query_id))
             elif sr_type == 'ESR':
@@ -328,7 +328,7 @@ def _get_philips_dose_images(series, get_toshiba_images, query_id):
         return False, True
 
 
-def _get_toshiba_dose_images(study_series, assoc, query_id):
+def _get_toshiba_dose_images(study_series, assoc, query, query_id):
     """
     Get images for Toshiba studies with no RDSR
     :param study_series: database set
@@ -336,7 +336,7 @@ def _get_toshiba_dose_images(study_series, assoc, query_id):
     """
 
     for index, series in enumerate(study_series):
-        _query_images(assoc, series, query_id, initial_image_only=True, msg_id=index+1)
+        _query_images(assoc, series, query, query_id, initial_image_only=True, msg_id=index + 1)
         images = series.dicomqrrspimage_set.all()
         if images.count() == 0:
             logger.debug("{0} Toshiba option: No images in series, deleting series.".format(query_id))
@@ -406,7 +406,7 @@ def _prune_study_responses(query, filters):
 
 
 # returns SR-type: RDSR or ESR; otherwise returns 'no_dose_report'
-def _check_sr_type_in_study(assoc, study, query_id, get_empty_sr):
+def _check_sr_type_in_study(assoc, study, query, query_id, get_empty_sr):
     """Checks at an image level whether SR in study is RDSR, ESR, or something else (Radiologist's report for example)
 
     * If RDSR is found, all non-RDSR SR series responses are deleted
@@ -426,7 +426,7 @@ def _check_sr_type_in_study(assoc, study, query_id, get_empty_sr):
     logger.debug(u"{1} Check SR type: Number of series with SR {0}".format(series_sr.count(), query_id))
     sopclasses = set()
     for sr in series_sr:
-        _query_images(assoc, sr, query_id)
+        _query_images(assoc, sr, query, query_id)
         images = sr.dicomqrrspimage_set.all()
         if images.count() == 0:
             if get_empty_sr:
@@ -464,8 +464,8 @@ def _check_sr_type_in_study(assoc, study, query_id, get_empty_sr):
         return 'no_dose_report'
 
 
-def _query_images(assoc, seriesrsp, query_id, initial_image_only=False, msg_id=None):
-    from remapp.models import DicomQRRspImage
+def _query_images(assoc, seriesrsp, query, query_id, initial_image_only=False, msg_id=None):
+    from ..models import DicomQRRspImage
     from pydicom.dataset import Dataset
 
     logger.debug(u'Query_id {0}: In _query_images'.format(query_id))
@@ -487,41 +487,53 @@ def _query_images(assoc, seriesrsp, query_id, initial_image_only=False, msg_id=N
     logger.debug(u'Query_id {0}: query is {1}, intial_imge_only is {2}, msg_id is {3}'.format(
                     query_id, d3, initial_image_only, msg_id))
 
-    st3 = assoc.send_c_find(d3, StudyRootQueryRetrieveInformationModelFind)
+    responses = assoc.send_c_find(d3, StudyRootQueryRetrieveInformationModelFind)
 
     query_id = uuid.uuid4()
 
     imRspNo = 0
 
-    for images in st3:
-        if not images[1]:
-            continue
-        images[1].decode()
-        imRspNo += 1
-        logger.debug(u"Query_id {0}: Image Response {1}: {2}".format(query_id, imRspNo, images[1]))
-        imagesrsp = DicomQRRspImage.objects.create(dicom_qr_rsp_series=seriesrsp)
-        imagesrsp.query_id = query_id
-        # Mandatory tags
-        imagesrsp.sop_instance_uid = images[1].SOPInstanceUID
-        try:
-            imagesrsp.sop_class_uid = images[1].SOPClassUID
-        except AttributeError:
-            logger.warning(u"Query_id {0}: StudyInstUID {1} Image Response {2}: no SOPClassUID. If "
-                           u"CT, might need to use Toshiba Advanced option (additional config required)".format(
-                            query_id, d3.StudyInstanceUID, imRspNo))
-            imagesrsp.sop_class_uid = u""
-        try:
-            imagesrsp.instance_number = int(images[1].InstanceNumber)
-        except (ValueError, TypeError, AttributeError):
-            logger.warning(u"Query_id {0}: Image Response {1}: illegal response, no InstanceNumber".format(
-                query_id, imRspNo))
-            imagesrsp.instance_number = None  # integer so can't be ''
-        imagesrsp.save()
+    for (status, identifier) in responses:
+        if status:
+            if status.Status == 0x0000:
+                logger.info('{0} Image level matching is complete for this study'.format(query_id))
+                query.stage = 'Image level matching for this study is complete (there many be more)'
+                query.save()
+                return
+            if status.Status in (0xFF00, 0xFF01):
+                logger.info('{0} Image level matches are continuing (0x{1:04x})'.format(query_id, status.Status))
+                query.stage = 'Image level matches are continuing.'
+                query.save()
+                imRspNo += 1
+                logger.debug(u"Query_id {0}: Image Response {1}: {2}".format(query_id, imRspNo, identifier))
+                imagesrsp = DicomQRRspImage.objects.create(dicom_qr_rsp_series=seriesrsp)
+                imagesrsp.query_id = query_id
+                # Mandatory tags
+                imagesrsp.sop_instance_uid = identifier.SOPInstanceUID
+                try:
+                    imagesrsp.sop_class_uid = identifier.SOPClassUID
+                except AttributeError:
+                    logger.warning(u"Query_id {0}: StudyInstUID {1} Image Response {2}: no SOPClassUID. If "
+                                   u"CT, might need to use Toshiba Advanced option (additional config required)".format(
+                                    query_id, d3.StudyInstanceUID, imRspNo))
+                    imagesrsp.sop_class_uid = u""
+                try:
+                    imagesrsp.instance_number = int(identifier.InstanceNumber)
+                except (ValueError, TypeError, AttributeError):
+                    logger.warning(u"Query_id {0}: Image Response {1}: illegal response, no InstanceNumber".format(
+                        query_id, imRspNo))
+                    imagesrsp.instance_number = None  # integer so can't be ''
+                imagesrsp.save()
+        else:
+            logger.info('{0} Connection timed out, was aborted or received invalid response'.format(query_id))
+            query.stage = 'Connection timed out, was aborted or received invalid response'
+            query.save()
 
 
-def _query_series(assoc, d2, studyrsp, query_id):
+def _query_series(assoc, d2, studyrsp, query, query_id):
     """Query for series level data for each study
 
+    :param query:
     :param assoc: DICOM association with C-FIND SCP
     :param d2: DICOM dataset containing StudyInstanceUID to be used for series level query
     :param studyrsp: database entry for the study
@@ -529,9 +541,9 @@ def _query_series(assoc, d2, studyrsp, query_id):
     :return: None
     """
 
-    from remapp.tools.dcmdatetime import get_time
-    from remapp.tools.get_values import get_value_kw
-    from remapp.models import DicomQRRspSeries
+    from ..tools.dcmdatetime import get_time
+    from ..tools.get_values import get_value_kw
+    from ..models import DicomQRRspSeries
     d2.QueryRetrieveLevel = "SERIES"
     d2.SeriesDescription = ''
     d2.SeriesNumber = ''
@@ -545,46 +557,57 @@ def _query_series(assoc, d2, studyrsp, query_id):
     logger.debug(u'{0} In _query_series'.format(query_id))
     logger.debug(u'{0} series query is {1}'.format(query_id, d2))
 
-    st2 = assoc.send_c_find(d2, StudyRootQueryRetrieveInformationModelFind)
+    responses = assoc.send_c_find(d2, StudyRootQueryRetrieveInformationModelFind)
 
     series_query_id = uuid.uuid4()
 
     seRspNo = 0
 
-    for series in st2:
-        if not series[1]:
-            continue
-        series[1].decode()
-        seRspNo += 1
-        seriesrsp = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=studyrsp)
-        seriesrsp.query_id = series_query_id
-        # Mandatory tags
-        seriesrsp.series_instance_uid = series[1].SeriesInstanceUID
-        try:
-            seriesrsp.modality = series[1].Modality
-        except AttributeError:
-            seriesrsp.modality = u"OT"  # not sure why a series is returned without, assume we don't want it.
-            logger.warning(u"{0} Illegal response with no modality at series level".format(query_id))
-        try:
-            seriesrsp.series_number = int(series[1].SeriesNumber)
-        except (ValueError, TypeError, AttributeError):
-            seriesrsp.series_number = None
-            # integer so can't be '' (ValueError). If missing will be (AttributeError).
-            # None would be ok, but now gives (TypeError)
-        # Optional useful tags
-        seriesrsp.series_description = get_value_kw(u'SeriesDescription', series[1])
-        if seriesrsp.series_description:
-            seriesrsp.series_description = ''.join(seriesrsp.series_description).strip().lower()
-        seriesrsp.number_of_series_related_instances = get_value_kw('NumberOfSeriesRelatedInstances', series[1])
-        if not seriesrsp.number_of_series_related_instances:
-            seriesrsp.number_of_series_related_instances = None  # integer so can't be ''
-        seriesrsp.station_name = get_value_kw('StationName', series[1])
-        seriesrsp.series_time = get_time('SeriesTime', series[1])
-        logger.debug(u"{6} Series Response {0}: Modality {1}, StationName {2}, StudyUID {3}, Series No. {4}, "
-                     u"Series description {5}".format(
-                            seRspNo, seriesrsp.modality, seriesrsp.station_name, d2.StudyInstanceUID,
-                            seriesrsp.series_number, seriesrsp.series_description, query_id))
-        seriesrsp.save()
+    for (status, identifier) in responses:
+        if status:
+            if status.Status == 0x0000:
+                logger.info('{0} Series level matching is complete for this study'.format(query_id))
+                query.stage = 'Series level matching for this study is complete (there may be more)'
+                query.save()
+                return
+            if status.Status in (0xFF00, 0xFF01):
+                logger.info('{0} Series level matches are continuing (0x{1:04x})'.format(query_id, status.Status))
+                query.stage = 'Series level matches are continuing.'
+                query.save()
+                seRspNo += 1
+                seriesrsp = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=studyrsp)
+                seriesrsp.query_id = series_query_id
+                # Mandatory tags
+                seriesrsp.series_instance_uid = identifier.SeriesInstanceUID
+                try:
+                    seriesrsp.modality = identifier.Modality
+                except AttributeError:
+                    seriesrsp.modality = u"OT"  # not sure why a series is returned without, assume we don't want it.
+                    logger.warning(u"{0} Illegal response with no modality at series level".format(query_id))
+                try:
+                    seriesrsp.series_number = int(identifier.SeriesNumber)
+                except (ValueError, TypeError, AttributeError):
+                    seriesrsp.series_number = None
+                    # integer so can't be '' (ValueError). If missing will be (AttributeError).
+                    # None would be ok, but now gives (TypeError)
+                # Optional useful tags
+                seriesrsp.series_description = get_value_kw(u'SeriesDescription', identifier)
+                if seriesrsp.series_description:
+                    seriesrsp.series_description = ''.join(seriesrsp.series_description).strip().lower()
+                seriesrsp.number_of_series_related_instances = get_value_kw('NumberOfSeriesRelatedInstances', identifier)
+                if not seriesrsp.number_of_series_related_instances:
+                    seriesrsp.number_of_series_related_instances = None  # integer so can't be ''
+                seriesrsp.station_name = get_value_kw('StationName', identifier)
+                seriesrsp.series_time = get_time('SeriesTime', identifier)
+                logger.debug(u"{6} Series Response {0}: Modality {1}, StationName {2}, StudyUID {3}, Series No. {4}, "
+                             u"Series description {5}".format(
+                                    seRspNo, seriesrsp.modality, seriesrsp.station_name, d2.StudyInstanceUID,
+                                    seriesrsp.series_number, seriesrsp.series_description, query_id))
+                seriesrsp.save()
+        else:
+            logger.info('{0} Connection timed out, was aborted or received invalid response'.format(query_id))
+            query.stage = 'Connection timed out, was aborted or received invalid response'
+            query.save()
 
 
 def _query_study(assoc, d, query, query_id):
@@ -613,7 +636,7 @@ def _query_study(assoc, d, query, query_id):
         if status:
             if status.Status == 0x0000:
                 logger.info('{0} Matching is complete'.format(query_id))
-                query.stage = 'Matching for {0} is complete'.format(d.ModalitiesInStudy)
+                query.stage = 'Study level matching for {0} is complete'.format(d.ModalitiesInStudy)
                 query.save()
                 return
             if status.Status in (0xFF00, 0xFF01):
@@ -628,12 +651,12 @@ def _query_study(assoc, d, query, query_id):
                 # Unique key
                 rsp.study_instance_uid = identifier.StudyInstanceUID
                 # Required keys - none of interest
-                logger.debug(u"{2} Response {0}, StudyUID: {1}".format(rspno, rsp.study_instance_uid, query_id))
+                logger.debug("{2} Response {0}, StudyUID: {1}".format(rspno, rsp.study_instance_uid, query_id))
 
                 # Optional and special keys
                 rsp.study_description = get_value_kw(u"StudyDescription", identifier)
                 rsp.station_name = get_value_kw('StationName', identifier)
-                logger.debug(u"{2} Study Description: {0}; Station Name: {1}".format(
+                logger.debug("{2} Study Description: {0}; Station Name: {1}".format(
                     rsp.study_description, rsp.station_name, query_id))
 
                 # Populate modalities_in_study, stored as JSON
@@ -642,16 +665,18 @@ def _query_study(assoc, d, query, query_id):
                         rsp.set_modalities_in_study(identifier.ModalitiesInStudy.split(u','))
                     else:  # if multiple modalities, type = MultiValue (['XA', 'RF'])
                         rsp.set_modalities_in_study(identifier.ModalitiesInStudy)
-                    logger.debug(u"{1} ModalitiesInStudy: {0}".format(rsp.get_modalities_in_study(), query_id))
+                    logger.debug("{1} ModalitiesInStudy: {0}".format(rsp.get_modalities_in_study(), query_id))
                 except AttributeError:
                     rsp.set_modalities_in_study([u''])
-                    logger.debug(u"{0} ModalitiesInStudy was not in response".format(query_id))
+                    logger.debug("{0} ModalitiesInStudy was not in response".format(query_id))
 
                 rsp.modality = None  # Used later
                 rsp.save()
 
         else:
             logger.info('{0} Connection timed out, was aborted or received invalid response'.format(query_id))
+            query.stage = 'Connection timed out, was aborted or received invalid response'
+            query.save()
 
 
 def _create_association(my_ae, remote_host, remote_port, remote_ae, query):
@@ -944,7 +969,7 @@ def qrscu(
             # Series level query
             d2 = Dataset()
             d2.StudyInstanceUID = rsp.study_instance_uid
-            _query_series(assoc, d2, rsp, query_id)
+            _query_series(assoc, d2, rsp, query, query_id)
             if not modalities_returned:
                 _generate_modalities_in_study(rsp, query_id)
         logger.debug(u"{0} Series level query complete.".format(query_id))
@@ -1082,6 +1107,7 @@ def qrscu(
             msg = "Association Failed"
             logger.warning("{3} with {0} {1} {2}".format(remote_host, remote_port, remote_aet, msg))
         query.message = msg
+        query.stage = msg
         query.failed = True
         query.save()
 
