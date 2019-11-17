@@ -17,7 +17,8 @@ import sys
 import uuid
 import collections
 from pynetdicom import (AE, evt)
-from pynetdicom.sop_class import StudyRootQueryRetrieveInformationModelFind
+from pynetdicom.sop_class import (StudyRootQueryRetrieveInformationModelFind,
+                                  StudyRootQueryRetrieveInformationModelMove)
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -30,7 +31,7 @@ if projectpath not in sys.path:
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 django.setup()
 
-from remapp.netdicom.tools import create_ae
+from ..netdicom.tools import create_ae
 
 
 def _generate_modalities_in_study(study_rsp, query_id):
@@ -1134,7 +1135,7 @@ def movescu(query_id):
     """
     from time import sleep
     from pydicom.dataset import Dataset
-    from remapp.models import DicomQuery
+    from ..models import DicomQuery
 
     logger.debug(u"Query_id {0}: Starting move request".format(query_id))
     try:
@@ -1148,8 +1149,13 @@ def movescu(query_id):
     qr_scp = query.qr_scp_fk
     store_scp = query.store_scp_fk
 
-    my_ae = create_ae(store_scp.aetitle.encode('ascii', 'ignore'))
-    my_ae.start()
+    ae = AE()
+    ae.add_requested_context(StudyRootQueryRetrieveInformationModelMove)
+    ae.ae_title = store_scp.aetitle
+
+
+    # my_ae = create_ae(store_scp.aetitle.encode('ascii', 'ignore'))
+    # my_ae.start()
     logger.debug(u"Move AE my_ae {0} started".format(my_ae))
 
     # remote application entity
