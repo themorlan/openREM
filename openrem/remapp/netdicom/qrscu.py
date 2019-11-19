@@ -1113,17 +1113,27 @@ def qrscu(
         query.save()
 
 
-def _move_req(my_ae, assoc, d, study_no, series_no):
-    move_generator = assoc.StudyRootMoveSOPClass.SCU(d, my_ae.getName(), 1)
-    try:
-        for move_status in move_generator:
-            if u'Pending' in move_status:
-                logger.info(u"Move of study {0}, series {1} status is {2} "
-                            u"(i.e. one object processed)".format(study_no, series_no, move_status))
+def _move_req(my_ae, assoc, d, study_no, series_no, query):
+
+    responses = assoc.send_c_move(d, my_ae.ae_title, StudyRootQueryRetrieveInformationModelMove)
+
+    for (status, identifier) in responses:
+        if status:
+            print('C-MOVE query status: 0x{0:04x}'.format(status.Status))
+
+            # If the status is 'Pending' then the identifier is the C-MOVE response
+            if status.Status in (0xFF00, 0xFF01):
+                print(identifier)
+                msg = "Move of study {0}, series {1} status is 0x{2:04x} " \
+                      "(i.e. one object processed)".format(study_no, series_no, status.Status)
+                logger.info(msg)
+                query.stage = msg
+                query.save()
             else:
-                logger.warning(u"Move of study {0}, series {1} status is {2}".format(study_no, series_no, move_status))
-    except KeyError as e:
-        logger.error(u"{0} in qrscu._move_req. Request is {1}, study {2} series {3}".format(e, d, study_no, series_no))
+                logger.warning(u"Move of study {0}, series {1} status is 0x{2:04x}".format(
+                    study_no, series_no, status.Status))
+        else:
+            print('Connection timed out, was aborted or received invalid response')
 
 
 @shared_task(name='remapp.netdicom.qrscu.movescu')  # (name='remapp.netdicom.qrscu.movescu', queue='qr')
@@ -1156,17 +1166,21 @@ def movescu(query_id):
 
     # my_ae = create_ae(store_scp.aetitle.encode('ascii', 'ignore'))
     # my_ae.start()
-    logger.debug(u"Move AE my_ae {0} started".format(my_ae))
+    logger.debug(u"Move AE my_ae {0} started".format(ae))
 
     # remote application entity
     if qr_scp.hostname:
-        rh = qr_scp.hostname
+        remote_host = qr_scp.hostname
     else:
-        rh = qr_scp.ip
-    remote_ae = dict(Address=rh, Port=qr_scp.port, AET=qr_scp.aetitle.encode('ascii', 'ignore'))
+        remote_host = qr_scp.ip
+    remote_port = qr_scp.port
+    remote_aet = qr_scp.aetitle
+
+    # remote_ae = dict(Address=remote_host, Port=qr_scp.port, AET=qr_scp.aetitle.encode('ascii', 'ignore'))
 
     logger.debug(u"Query_id {0}: Requesting move association".format(query_id))
-    assoc = my_ae.RequestAssociation(remote_ae)
+    # assoc = my_ae.RequestAssociation(remote_ae)
+    assoc = ae.associate(remote_host, remote_port, ae_title=remote_aet)
     logger.info(u"Query_id {0}: Move association requested".format(query_id))
 
     query.stage = u"Preparing to start move request"
@@ -1178,66 +1192,69 @@ def movescu(query_id):
     query.save()
     logger.info(u"Query_id {0}: Requesting move of {1} studies".format(query_id, studies.count()))
 
-    study_no = 0
-    for study in studies:
-        study_no += 1
-        logger.debug(u"Mv: study_no {0}".format(study_no))
-        series_no = 0
-        for series in study.dicomqrrspseries_set.all():
-            series_no += 1
-            logger.debug(u"Mv: study no {0} series no {1}".format(study_no, series_no))
-            d = Dataset()
-            d.StudyInstanceUID = study.study_instance_uid
-            d.QueryRetrieveLevel = "SERIES"
-            d.SeriesInstanceUID = series.series_instance_uid
-            if series.number_of_series_related_instances:
-                num_objects = u" Series contains {0} objects".format(series.number_of_series_related_instances)
-            else:
-                num_objects = u""
-            query.stage = u"Requesting move: modality {0}, study {1} (of {2}) series {3} (of {4}).{5}".format(
-                study.modality, study_no, studies.count(), series_no, study.dicomqrrspseries_set.all().count(),
-                num_objects
-            )
-            logger.info(u"Requesting move: modality {0}, study {1} (of {2}) series {3} (of {4}).{5}".format(
-                study.modality, study_no, studies.count(), series_no, study.dicomqrrspseries_set.all().count(),
-                num_objects
-            ))
-            query.save()
-            if not assoc.is_alive:
-                logger.warning(u"Query_id {0}: Association has aborted, attempting to reconnect".format(query_id))
-                assoc.Release(0)
-                assoc = my_ae.RequestAssociation(remote_ae)
-                if not assoc.is_alive:
-                    logger.error(u"Query_id {0}: Association could not be re-established".format(query_id))
-                    assoc.Release(0)
-                    my_ae.Quit()
-                    logger.debug(u"Query_id {0}: Move AE my_ae quit".format(query_id))
-                    query.delete()
-                    exit()
-            logger.debug(u"_move_req launched")
-            if series.image_level_move:
-                d.QueryRetrieveLevel = "IMAGE"
-                for image in series.dicomqrrspimage_set.all():
-                    d.SOPInstanceUID = image.sop_instance_uid
-                    logger.debug(u"Image-level move - d is: {0}".format(d))
-                    _move_req(my_ae, assoc, d, study_no, series_no)
-            else:
-                logger.debug(u"Series-level move - d is: {0}".format(d))
-                _move_req(my_ae, assoc, d, study_no, series_no)
+    if assoc.is_established:
+        study_no = 0
+        for study in studies:
+            study_no += 1
+            logger.debug(u"Mv: study_no {0}".format(study_no))
+            series_no = 0
+            for series in study.dicomqrrspseries_set.all():
+                series_no += 1
+                logger.debug(u"Mv: study no {0} series no {1}".format(study_no, series_no))
+                d = Dataset()
+                d.StudyInstanceUID = study.study_instance_uid
+                d.QueryRetrieveLevel = "SERIES"
+                d.SeriesInstanceUID = series.series_instance_uid
+                if series.number_of_series_related_instances:
+                    num_objects = u" Series contains {0} objects".format(series.number_of_series_related_instances)
+                else:
+                    num_objects = u""
+                query.stage = u"Requesting move: modality {0}, study {1} (of {2}) series {3} (of {4}).{5}".format(
+                    study.modality, study_no, studies.count(), series_no, study.dicomqrrspseries_set.all().count(),
+                    num_objects
+                )
+                logger.info(u"Requesting move: modality {0}, study {1} (of {2}) series {3} (of {4}).{5}".format(
+                    study.modality, study_no, studies.count(), series_no, study.dicomqrrspseries_set.all().count(),
+                    num_objects
+                ))
+                query.save()
+                logger.debug(u"_move_req launched")
+                if series.image_level_move:
+                    d.QueryRetrieveLevel = "IMAGE"
+                    for image in series.dicomqrrspimage_set.all():
+                        d.SOPInstanceUID = image.sop_instance_uid
+                        logger.debug(u"Image-level move - d is: {0}".format(d))
+                        _move_req(ae, assoc, d, study_no, series_no, query)
+                else:
+                    logger.debug(u"Series-level move - d is: {0}".format(d))
+                    _move_req(ae, assoc, d, study_no, series_no, query)
 
-    query.move_complete = True
+        query.move_complete = True
+        query.save()
+        logger.info(u"Move complete")
+
+        logger.debug(u"Query_id {0}: Releasing move association".format(query_id))
+        try:
+            assoc.release(0)
+            logger.info(u"Query_id {0}: Move association released".format(query_id))
+        except AttributeError:
+            logger.info(u"Query_id {0}: Could not release Move association due to an AttributeError: perhaps no studies were present".format(query_id))
+
+    elif assoc.is_rejected:
+        msg = ('{0}: {1}'.format(
+            assoc.acceptor.primitive.result_str,
+            assoc.acceptor.primitive.reason_str
+        ))
+        logger.warning("Association rejected from {0} {1} {2}. {3}".format(
+            remote_host, remote_port, remote_aet, msg))
+    elif assoc.is_aborted:
+        msg = "Association aborted or never connected"
+        logger.warning("{3} to {0} {1} {2}".format(remote_host, remote_port, remote_aet, msg))
+    else:
+        msg = "Association Failed"
+        logger.warning("{3} with {0} {1} {2}".format(remote_host, remote_port, remote_aet, msg))
+    query.stage = msg
     query.save()
-    logger.info(u"Move complete")
-
-    logger.debug(u"Query_id {0}: Releasing move association".format(query_id))
-    try:
-        assoc.Release(0)
-        logger.info(u"Query_id {0}: Move association released".format(query_id))
-    except AttributeError:
-        logger.info(u"Query_id {0}: Could not release Move association due to an AttributeError: perhaps no studies were present".format(query_id))
-
-    my_ae.Quit()
-    logger.debug(u"Query_id {0}: Move AE my_ae quit".format(query_id))
 
     sleep(10)
     query.delete()
