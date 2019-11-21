@@ -123,13 +123,15 @@ def q_update(request):
     try:
         query = DicomQuery.objects.get(query_id=query_id)
     except ObjectDoesNotExist:
-        resp['status'] = u'not complete'
-        resp['message'] = u'<h4>Query {0} not yet started</h4>'.format(query_id)
+        resp['status'] = 'not complete'
+        resp['message'] = '<h4>Query {0} not yet started</h4>'.format(query_id)
+        resp['subops'] = ''
         return HttpResponse(json.dumps(resp), content_type='application/json')
 
     if query.failed:
         resp['status'] = u'failed'
         resp['message'] ='<h4>Query Failed</h4> {0}'.format(query.message)
+        resp['subops'] = ''
         return HttpResponse(json.dumps(resp), content_type='application/json')
 
     study_rsp = query.dicomqrrspstudy_set.all()
@@ -150,6 +152,7 @@ def q_update(request):
         tablestr = ''.join(table)
         resp['status'] = u'not complete'
         resp['message'] = u'<h4>{0}</h4><p>Responses so far:</p> {1}'.format(query.stage, tablestr)
+        resp['subops'] = ''
     else:
         modalities = study_rsp.values('modality').annotate(count=Count('pk'))
         table = [u'<table class="table table-bordered"><tr><th>Modality</th><th>Number of responses</th></tr>']
@@ -202,6 +205,7 @@ def q_update(request):
                                     u"</div></div></div></div>".format(remapp.__docs_version__)
         resp['message'] = u'<h4>Query complete - there are {1} studies we can move</h4> {0} {2} {3}'.format(
             tablestr, study_rsp.count(), query_details_text, not_as_expected_help_text)
+        resp['subops'] = ''
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
 
@@ -343,21 +347,49 @@ def r_update(request):
     try:
         query = DicomQuery.objects.get(query_id=query_id)
     except ObjectDoesNotExist:
-        resp['status'] = u'not complete'
-        resp['message'] = u'<h4>Move request {0} not yet started</h4>'.format(query_id)
+        resp['status'] = 'not complete'
+        resp['message'] = '<h4>Move request {0} not yet started</h4>'.format(query_id)
+        resp['subops'] = ''
         return HttpResponse(json.dumps(resp), content_type='application/json')
 
     if query.failed:
-        resp['status'] = u'failed'
-        resp['message'] = u'<h4>Move request failed</h4> {0}'.format(query.message)
+        resp['status'] = 'failed'
+        resp['message'] = '<h4>Move request failed</h4> {0}'.format(query.message)
+        resp['subops'] = f'Sub-operations: ' \
+                         f'<table>' \
+                         f'<tr><th>Completed</th><th>Failed</th><th>Warnings</th></tr>' \
+                         f'<tr>' \
+                         f'<td>{query.move_completed_sub_ops}</td>' \
+                         f'<td>{query.move_failed_sub_ops}</td>' \
+                         f'<td>{query.move_warning_sub_ops}</td>' \
+                         f'</tr>' \
+                         f'</table>'
         return HttpResponse(json.dumps(resp), content_type='application/json')
 
     if not query.move_complete:
-        resp['status'] = u'not complete'
-        resp['message'] = u'<h4>{0}</h4>'.format(query.stage)
+        resp['status'] = 'not complete'
+        resp['message'] = '<h4>{0}</h4>'.format(query.stage)
+        resp['subops'] = f'Sub-operations: ' \
+                         f'<table>' \
+                         f'<tr><th>Completed</th><th>Failed</th><th>Warnings</th></tr>' \
+                         f'<tr>' \
+                         f'<td>{query.move_completed_sub_ops}</td>' \
+                         f'<td>{query.move_failed_sub_ops}</td>' \
+                         f'<td>{query.move_warning_sub_ops}</td>' \
+                         f'</tr>' \
+                         f'</table>'
     else:
         resp['status'] = u'move complete'
         resp['message'] = u'<h4>Move request complete</h4>'
+        resp['subops'] = f'Sub-operations: ' \
+                         f'<table>' \
+                         f'<tr><th>Completed</th><th>Failed</th><th>Warnings</th></tr>' \
+                         f'<tr>' \
+                         f'<td>{query.move_completed_sub_ops}</td>' \
+                         f'<td>{query.move_failed_sub_ops}</td>' \
+                         f'<td>{query.move_warning_sub_ops}</td>' \
+                         f'</tr>' \
+                         f'</table>'
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
 

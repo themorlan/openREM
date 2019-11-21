@@ -884,6 +884,9 @@ def qrscu(
     query.complete = False
     query.store_scp_fk = DicomStoreSCP.objects.get(pk=store_scp_pk)
     query.qr_scp_fk = qr_scp
+    query.move_completed_sub_ops = 0
+    query.move_warning_sub_ops = 0
+    query.move_failed_sub_ops = 0
     query.save()
 
     handlers = [(evt.EVT_REJECTED, handle_assoc)]
@@ -951,7 +954,8 @@ def qrscu(
         if filter_logs:
             query.stage = u"Pruning study responses based on inc/exc options"
             query.save()
-            logger.info(u"{1} Pruning study responses based on inc/exc options: {0}".format(u"".join(filter_logs), query_id))
+            logger.info("{1} Pruning study responses based on inc/exc options: {0}".format(
+                "".join(filter_logs), query_id))
             before_study_prune = study_numbers['current']
             deleted_studies_filters = _prune_study_responses(query, filters)
             study_rsp = query.dicomqrrspstudy_set.all()
@@ -960,7 +964,8 @@ def qrscu(
             logger.info(u"{2} Pruning studies based on inc/exc has removed {0} studies, {1} studies remain.".format(
                 study_numbers['inc_exc_removed'], study_numbers['current'], query_id))
         else:
-            deleted_studies_filters = {'study_desc_inc': 0, 'study_desc_exc': 0, 'stationname_inc': 0, 'stationname_exc': 0}
+            deleted_studies_filters = {
+                'study_desc_inc': 0, 'study_desc_exc': 0, 'stationname_inc': 0, 'stationname_exc': 0}
             logger.info(u"{0} No inc/exc options selected".format(query_id))
 
         query.stage = u"Querying at series level to get more details about studies"
@@ -1000,8 +1005,8 @@ def qrscu(
                     study_rsp.filter(modalities_in_study__exact=mod_set).delete()
             study_numbers['current'] = study_rsp.count()
             study_numbers['wrong_modality_removed'] = before_not_modality_matching - study_numbers['current']
-            logger.info(u'{0} Removing studies of modalities not asked for removed {1} studies, {2} studies remain'.format(
-                query_id, study_numbers['wrong_modality_removed'], study_numbers['current']))
+            logger.info('{0} Removing studies of modalities not asked for removed {1} studies, {2} studies'
+                        ' remain'.format(query_id, study_numbers['wrong_modality_removed'], study_numbers['current']))
 
         query.stage = u"Pruning series responses"
         query.save()
@@ -1117,10 +1122,19 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
 
     responses = assoc.send_c_move(d, my_ae.ae_title, StudyRootQueryRetrieveInformationModelMove)
 
+    completed_sub_ops = 0
+    failed_sub_ops = 0
+    warning_sub_ops = 0
     for (status, identifier) in responses:
         if status:
-            print('C-MOVE query status: 0x{0:04x}'.format(status.Status))
+            logger.info(f'Status: 0x{status.Status:04x}')
+            logger.info(f'NumberOfCompletedSuboperations: {status.NumberOfCompletedSuboperations}')
+            logger.info(f'NumberOfFailedSuboperations: {status.NumberOfFailedSuboperations}')
+            logger.info(f'NumberOfWarningSuboperations: {status.NumberOfWarningSuboperations}')
 
+            completed_sub_ops = status.NumberOfCompletedSuboperations
+            failed_sub_ops = status.NumberOfFailedSuboperations
+            warning_sub_ops = status.NumberOfWarningSuboperations
             # If the status is 'Pending' then the identifier is the C-MOVE response
             if status.Status in (0xFF00, 0xFF01):
                 print(identifier)
@@ -1134,6 +1148,10 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
                     study_no, series_no, status.Status))
         else:
             print('Connection timed out, was aborted or received invalid response')
+    query.move_completed_sub_ops += completed_sub_ops
+    query.move_failed_sub_ops += failed_sub_ops
+    query.move_warning_sub_ops += warning_sub_ops
+    query.save()
 
 
 @shared_task(name='remapp.netdicom.qrscu.movescu')  # (name='remapp.netdicom.qrscu.movescu', queue='qr')
@@ -1192,6 +1210,8 @@ def movescu(query_id):
     query.save()
     logger.info(u"Query_id {0}: Requesting move of {1} studies".format(query_id, studies.count()))
 
+    sub_ops = {'completed': 0, 'failed': 0, 'warnings': 0}
+
     if assoc.is_established:
         study_no = 0
         for study in studies:
@@ -1238,7 +1258,8 @@ def movescu(query_id):
             assoc.release(0)
             logger.info(u"Query_id {0}: Move association released".format(query_id))
         except AttributeError:
-            logger.info(u"Query_id {0}: Could not release Move association due to an AttributeError: perhaps no studies were present".format(query_id))
+            logger.info("Query_id {0}: Could not release Move association due to an AttributeError: perhaps no "
+                        "studies were present".format(query_id))
 
     elif assoc.is_rejected:
         msg = ('{0}: {1}'.format(
