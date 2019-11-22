@@ -1127,27 +1127,24 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
     warning_sub_ops = 0
     for (status, identifier) in responses:
         if status:
-            logger.info(f'Status: 0x{status.Status:04x}')
-            logger.info(f'NumberOfCompletedSuboperations: {status.NumberOfCompletedSuboperations}')
-            logger.info(f'NumberOfFailedSuboperations: {status.NumberOfFailedSuboperations}')
-            logger.info(f'NumberOfWarningSuboperations: {status.NumberOfWarningSuboperations}')
-
             completed_sub_ops = status.NumberOfCompletedSuboperations
             failed_sub_ops = status.NumberOfFailedSuboperations
             warning_sub_ops = status.NumberOfWarningSuboperations
+            status_msg = 'Status undefined.'
             # If the status is 'Pending' then the identifier is the C-MOVE response
             if status.Status in (0xFF00, 0xFF01):
-                print(identifier)
-                msg = f"Move of study {study_no}, series {series_no} status is 0x{status.Status:04x} " \
-                      f"(i.e. one object processed). " \
-                      f"Completed sub-ops: {completed_sub_ops}, failed sub-ops {failed_sub_ops}, " \
-                      f"warning sub-ops: {warning_sub_ops}."
-                logger.info(msg)
-                query.stage = msg
-                query.save()
+                # print(identifier)
+                status_msg = 'Match returned, further matches are continuing.'
+            if status.Status == 0x0000:
+                status_msg = 'All matches returned.'
             else:
-                logger.warning(u"Move of study {0}, series {1} status is 0x{2:04x}".format(
-                    study_no, series_no, status.Status))
+                status_msg = f'0x{status.Status:04x}'
+            msg = f"Move of study {study_no}, series {series_no}: {status_msg} " \
+                  f"Sub-ops completed: {completed_sub_ops}, failed: {failed_sub_ops}, " \
+                  f"warning: {warning_sub_ops}."
+            logger.info(msg)
+            query.stage = msg
+            query.save()
         else:
             print('Connection timed out, was aborted or received invalid response')
     query.move_completed_sub_ops += completed_sub_ops
