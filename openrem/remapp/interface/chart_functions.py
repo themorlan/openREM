@@ -441,4 +441,4 @@ def stringIfNone(val):
     Returns:
         str if it is a string; otherwise ''
     """
-    return val if isinstance(val, basestring) else ''
+    return val if isinstance(val, str) else ''
