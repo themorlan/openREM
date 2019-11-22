@@ -1408,19 +1408,26 @@ class PersonParticipant(models.Model):  # TID 1020
         return self.person_name
 
 
-class MedianSQL(SQLAggregate):
-    sql_function = 'Median'
-    sql_template = '%(function)s(%(field)s)'
-    is_ordinal = True
+#class MedianSQL(SQLAggregate):
+#    sql_function = 'Median'
+#    sql_template = '%(function)s(%(field)s)'
+#    is_ordinal = True
+
+
+#class Median(models.Aggregate):
+#    name = 'Median'
+#    sql = MedianSQL
+#
+#    def add_to_query(self, query, alias, col, source, is_summary):
+#        aggregate = self.sql(col, **self.extra)
+#        query.aggregates[alias] = aggregate
 
 
 class Median(models.Aggregate):
-    name = 'Median'
-    sql = MedianSQL
-
-    def add_to_query(self, query, alias, col, source, is_summary):
-        aggregate = self.sql(col, **self.extra)
-        query.aggregates[alias] = aggregate
+    function = 'PERCENTILE_CONT'
+    name = 'median'
+    output_field = models.FloatField()
+    template = '%(function)s(0.5) WITHIN GROUP (ORDER BY %(expressions)s)'
 
 
 class SummaryFields(models.Model):
