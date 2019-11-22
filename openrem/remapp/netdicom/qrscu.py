@@ -1138,8 +1138,10 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
             # If the status is 'Pending' then the identifier is the C-MOVE response
             if status.Status in (0xFF00, 0xFF01):
                 print(identifier)
-                msg = "Move of study {0}, series {1} status is 0x{2:04x} " \
-                      "(i.e. one object processed)".format(study_no, series_no, status.Status)
+                msg = f"Move of study {study_no}, series {series_no} status is 0x{status.Status:04x} " \
+                      f"(i.e. one object processed). " \
+                      f"Completed sub-ops: {completed_sub_ops}, failed sub-ops {failed_sub_ops}, " \
+                      f"warning sub-ops: {warning_sub_ops}."
                 logger.info(msg)
                 query.stage = msg
                 query.save()

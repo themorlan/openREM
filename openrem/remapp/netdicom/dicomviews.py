@@ -352,44 +352,27 @@ def r_update(request):
         resp['subops'] = ''
         return HttpResponse(json.dumps(resp), content_type='application/json')
 
+    resp['subops'] = f'<h4>Cumulative Sub-operations for move request:</h4>' \
+                     f'<table class="table">' \
+                     f'<tr><th>Completed</th><th>Failed</th><th>Warnings</th></tr>' \
+                     f'<tr>' \
+                     f'<td>{query.move_completed_sub_ops}</td>' \
+                     f'<td>{query.move_failed_sub_ops}</td>' \
+                     f'<td>{query.move_warning_sub_ops}</td>' \
+                     f'</tr>' \
+                     f'</table>'
+
     if query.failed:
         resp['status'] = 'failed'
         resp['message'] = '<h4>Move request failed</h4> {0}'.format(query.message)
-        resp['subops'] = f'Sub-operations: ' \
-                         f'<table>' \
-                         f'<tr><th>Completed</th><th>Failed</th><th>Warnings</th></tr>' \
-                         f'<tr>' \
-                         f'<td>{query.move_completed_sub_ops}</td>' \
-                         f'<td>{query.move_failed_sub_ops}</td>' \
-                         f'<td>{query.move_warning_sub_ops}</td>' \
-                         f'</tr>' \
-                         f'</table>'
         return HttpResponse(json.dumps(resp), content_type='application/json')
 
     if not query.move_complete:
         resp['status'] = 'not complete'
         resp['message'] = '<h4>{0}</h4>'.format(query.stage)
-        resp['subops'] = f'Sub-operations: ' \
-                         f'<table>' \
-                         f'<tr><th>Completed</th><th>Failed</th><th>Warnings</th></tr>' \
-                         f'<tr>' \
-                         f'<td>{query.move_completed_sub_ops}</td>' \
-                         f'<td>{query.move_failed_sub_ops}</td>' \
-                         f'<td>{query.move_warning_sub_ops}</td>' \
-                         f'</tr>' \
-                         f'</table>'
     else:
         resp['status'] = u'move complete'
         resp['message'] = u'<h4>Move request complete</h4>'
-        resp['subops'] = f'Sub-operations: ' \
-                         f'<table>' \
-                         f'<tr><th>Completed</th><th>Failed</th><th>Warnings</th></tr>' \
-                         f'<tr>' \
-                         f'<td>{query.move_completed_sub_ops}</td>' \
-                         f'<td>{query.move_failed_sub_ops}</td>' \
-                         f'<td>{query.move_warning_sub_ops}</td>' \
-                         f'</tr>' \
-                         f'</table>'
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
 
