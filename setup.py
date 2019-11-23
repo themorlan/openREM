@@ -15,7 +15,7 @@ requires = [
     'humanize',
     'pydicom',
     'xlsxwriter',
-    'dramatiq[rabbitmq, watch]',
+    'django-carrot',
     'django-qsstats-magic',
     'python-dateutil',
     'django-solo',

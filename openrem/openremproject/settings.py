@@ -35,6 +35,25 @@ CELERYBEAT_SCHEDULE = {
 }
 
 
+# **********************************************************************
+# Django-carrot configuration
+DEFAULT_BROKER = 'amqp://guest:guest@localhost:5672/carrot'
+# Django-carrot refused to start on my Windows system without using a RabbitMQ
+# virtual host (the "carrot" bit at the end of the above URL). I had to create
+# a virtual host in my RabbitMQ server.
+
+CARROT = {
+    'default_broker': DEFAULT_BROKER,
+    'queues': [
+        {
+            'name': 'default',
+            'host': DEFAULT_BROKER
+        }
+    ]
+}
+# **********************************************************************
+
+
 ROOT_PROJECT = os.path.join(os.path.split(__file__)[0], "..")
 
 # **********************************************************************
@@ -158,7 +177,8 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'solo',
     'crispy_forms',
-    'django_js_reverse'
+    'django_js_reverse',
+    'carrot',
 )
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
