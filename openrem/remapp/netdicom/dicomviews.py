@@ -44,13 +44,13 @@ import remapp
 @login_required
 def run_store(request, pk):
     from django.shortcuts import redirect
-    from remapp.models import DicomStoreSCP
-    from remapp.netdicom.storescp import web_store
+    from ..models import DicomStoreSCP
+    from ..netdicom.storescp import start_store
     if request.user.groups.filter(name="admingroup"):
         store = DicomStoreSCP.objects.get(pk__exact = pk)
         store.run = True
         store.save()
-        storetask = web_store(store_pk=pk)
+        storetask = start_store(store_pk=pk)
     return redirect(reverse_lazy('dicom_summary'))
 
 @csrf_exempt

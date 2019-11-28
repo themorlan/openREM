@@ -71,7 +71,7 @@ def start_store(store_pk=None):
         logger.info(msg)
         conf.status = msg
         conf.save()
-        scp = ae.start_server(('', 11112), block=False, evt_handlers=handlers)
+        scp = ae.start_server(('', our_port), ae_title=our_aet, evt_handlers=handlers, block=False)
         msg = f'Started Store SCP AET {our_aet}, port {our_port}'
         logger.info(msg)
         conf.status = msg
@@ -80,7 +80,7 @@ def start_store(store_pk=None):
         while 1:
             time.sleep(1)
             stay_alive = DicomStoreSCP.objects.get(pk__exact=store_pk)
-            if not stay_alive:
+            if not stay_alive.run:
                 scp.shutdown()
                 logger.info(f'Stopped Store SCP AET {our_aet}, port {our_port}')
                 break
