@@ -13,26 +13,81 @@ if projectpath not in sys.path:
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 django.setup()
 
-from pydicom.dataset import Dataset
-
 from pynetdicom import (
     AE, evt,
     StoragePresentationContexts,
 )
 from pynetdicom.sop_class import VerificationSOPClass
+from ..version import __implementation_uid__ as OPENREM_UID
+from ..version import __openrem_root_uid__ as ROOT_UID
+from ..version import __version__ as OPENREM_VERSION
 
 
 # Implement a handler evt.EVT_C_STORE
 def handle_store(event):
     """Handle a C-STORE request event."""
+    from openremproject.settings import MEDIA_ROOT
+    from ..extractors.dx import dx
+    from ..extractors.mam import mam
+    from ..extractors.rdsr import rdsr
+    from ..extractors.ct_philips import ct_philips
+    from ..models import DicomDeleteSettings
+
+    del_settings = DicomDeleteSettings.objects.get()
     # Decode the C-STORE request's *Data Set* parameter to a pydicom Dataset
     ds = event.dataset
 
     # Add the File Meta Information
     ds.file_meta = event.file_meta
+    ds.file_meta.ImplementationClassUID = OPENREM_UID
+    ds.file_meta.ImplementationVersionName = f'OpenREM_{OPENREM_VERSION}'
 
     # Save the dataset using the SOP Instance UID as the filename
-    ds.save_as(ds.SOPInstanceUID, write_like_original=False)
+    path = os.path.join(
+        MEDIA_ROOT, "dicom_in"
+    )
+    os.makedirs(path, exist_ok=True)
+    filename = os.path.join(path, u"{0}.dcm".format(ds.SOPInstanceUID))
+    ds.save_as(filename=filename, write_like_original=False)
+
+    if (ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.88.67'  # X-Ray Radiation Dose SR
+        or ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.88.22'  # Enhanced SR, as used by GE
+        ):
+        logger.info(u"Processing as RDSR")
+        rdsr.delay(filename)
+    elif (ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.1'  # CR Image Storage
+          or ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.1.1'  # Digital X-Ray Image Storage for Presentation
+          or ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.1.1.1'  # Digital X-Ray Image Storage for Processing
+          ):
+        logger.info(u"Processing as DX")
+        dx.delay(filename)
+    elif (ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.1.2'  # Digital Mammography X-Ray Image Storage for Presentation
+          or ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.1.2.1'  # Digital Mammography X-Ray Image Storage for Processing
+          or (ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.7'  # Secondary Capture Image Storage, for processing
+              and ds.Modality == 'MG'  # Selenia proprietary DBT projection objects
+              and 'ORIGINAL' in ds.ImageType
+              )
+          ):
+        logger.info(u"Processing as MG")
+        mam.delay(filename)
+    elif ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.7':
+        try:
+            manufacturer = ds.Manufacturer
+            series_description = ds.SeriesDescription
+        except AttributeError:
+            if del_settings.del_no_match:
+                os.remove(filename)
+                logger.info(u"Secondary capture object with either no manufacturer or series description. Deleted.")
+            return 0x0000
+        if manufacturer == 'Philips' and series_description == 'Dose Info':
+            logger.info(u"Processing as Philips Dose Info series")
+            ct_philips.delay(filename)
+        elif del_settings.del_no_match:
+            os.remove(filename)
+            logger.info(u"Can't find anything to do with this file - it has been deleted")
+    elif del_settings.del_no_match:
+        os.remove(filename)
+        logger.info(u"Can't find anything to do with this file - it has been deleted")
 
     # Return a 'Success' status
     return 0x0000
@@ -62,8 +117,8 @@ def start_store(store_pk=None):
     # Add the supported presentation contexts
     ae.supported_contexts = StoragePresentationContexts
     ae.add_supported_context(VerificationSOPClass)
-    ae.implementation_class_uid = '1.3.6.1.4.1.45593.1.1'
-    ae.implementation_version_name = 'OpenREM_1_0_0'
+    ae.implementation_class_uid = OPENREM_UID
+    ae.implementation_version_name = f'OpenREM_{OPENREM_VERSION}'
 
     # Start listening for incoming association requests
     try:
