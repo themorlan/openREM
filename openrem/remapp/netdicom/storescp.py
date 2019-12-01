@@ -47,19 +47,19 @@ def handle_store(event):
         MEDIA_ROOT, "dicom_in"
     )
     os.makedirs(path, exist_ok=True)
-    filename = os.path.join(path, u"{0}.dcm".format(ds.SOPInstanceUID))
+    filename = os.path.join(path, "{0}.dcm".format(ds.SOPInstanceUID))
     ds.save_as(filename=filename, write_like_original=False)
 
     if (ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.88.67'  # X-Ray Radiation Dose SR
         or ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.88.22'  # Enhanced SR, as used by GE
         ):
-        logger.info(u"Processing as RDSR")
+        logger.info("Processing as RDSR")
         rdsr.delay(filename)
     elif (ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.1'  # CR Image Storage
           or ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.1.1'  # Digital X-Ray Image Storage for Presentation
           or ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.1.1.1'  # Digital X-Ray Image Storage for Processing
           ):
-        logger.info(u"Processing as DX")
+        logger.info("Processing as DX")
         dx.delay(filename)
     elif (ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.1.2'  # Digital Mammography X-Ray Image Storage for Presentation
           or ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.1.2.1'  # Digital Mammography X-Ray Image Storage for Processing
@@ -68,7 +68,7 @@ def handle_store(event):
               and 'ORIGINAL' in ds.ImageType
               )
           ):
-        logger.info(u"Processing as MG")
+        logger.info("Processing as MG")
         mam.delay(filename)
     elif ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.7':
         try:
@@ -77,17 +77,17 @@ def handle_store(event):
         except AttributeError:
             if del_settings.del_no_match:
                 os.remove(filename)
-                logger.info(u"Secondary capture object with either no manufacturer or series description. Deleted.")
+                logger.info("Secondary capture object with either no manufacturer or series description. Deleted.")
             return 0x0000
         if manufacturer == 'Philips' and series_description == 'Dose Info':
-            logger.info(u"Processing as Philips Dose Info series")
+            logger.info("Processing as Philips Dose Info series")
             ct_philips.delay(filename)
         elif del_settings.del_no_match:
             os.remove(filename)
-            logger.info(u"Can't find anything to do with this file - it has been deleted")
+            logger.info("Can't find anything to do with this file - it has been deleted")
     elif del_settings.del_no_match:
         os.remove(filename)
-        logger.info(u"Can't find anything to do with this file - it has been deleted")
+        logger.info("Can't find anything to do with this file - it has been deleted")
 
     # Return a 'Success' status
     return 0x0000
@@ -106,8 +106,8 @@ def start_store(store_pk=None):
         conf.run = True
         conf.save()
     except ObjectDoesNotExist:
-        logger.error(u"Attempt to start DICOM Store SCP with an invalid database pk")
-        sys.exit(u"Attempt to start DICOM Store SCP with an invalid database pk")
+        logger.error("Attempt to start DICOM Store SCP with an invalid database pk")
+        sys.exit("Attempt to start DICOM Store SCP with an invalid database pk")
 
     handlers = [(evt.EVT_C_STORE, handle_store)]
 
