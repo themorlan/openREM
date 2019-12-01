@@ -6,6 +6,7 @@ OpenREM version history
 --------------------
 * `#787`_  Interface: fixed login error
 * `#777`_  Updated OpenREM to use pydicom 1.3
+* `#530`_  Updated OpenREM to use pynetdicom 1.4
 * `#457`_  Updated OpenREM to use Django 2.2
 * `#437`_  Updated OpenREM to use django-filters v2
 * `#404`_  Ported OpenREM to Python 3
