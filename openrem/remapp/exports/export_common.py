@@ -467,7 +467,7 @@ def get_xray_filter_info(source):
             filter_thicknesses += str(thick) + u' | '
         filters = filters[:-3]
         filter_thicknesses = filter_thicknesses[:-3]
-    except ObjectDoesNotExist:
+    except (ObjectDoesNotExist, AttributeError):
         filters = None
         filter_thicknesses = None
     return filters, filter_thicknesses
