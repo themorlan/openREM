@@ -31,8 +31,6 @@ if projectpath not in sys.path:
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 django.setup()
 
-from ..netdicom.tools import create_ae
-
 
 def _generate_modalities_in_study(study_rsp, query_id):
     """Generates modalities in study from series level Modality information
@@ -1205,9 +1203,6 @@ def movescu(query_id):
     ae.add_requested_context(StudyRootQueryRetrieveInformationModelMove)
     ae.ae_title = store_scp.aetitle
 
-
-    # my_ae = create_ae(store_scp.aetitle.encode('ascii', 'ignore'))
-    # my_ae.start()
     logger.debug(u"Move AE my_ae {0} started".format(ae))
 
     # remote application entity
@@ -1233,8 +1228,6 @@ def movescu(query_id):
     query.stage = u"Requesting move of {0} studies".format(studies.count())
     query.save()
     logger.info(u"Query_id {0}: Requesting move of {1} studies".format(query_id, studies.count()))
-
-    sub_ops = {'completed': 0, 'failed': 0, 'warnings': 0}
 
     if assoc.is_established:
         study_no = 0

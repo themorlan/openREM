@@ -118,31 +118,3 @@ def echoscu(scp_pk=None, store_scp=False, qr_scp=False, *args, **kwargs):
         msg = "Association Failed"
         logger.info("{3} with {0} {1} {2}".format(remote_host, remote_port, remote_aet, msg))
         return msg
-
-
-def create_ae(aet, port=None, sop_scu=None, sop_scp=None, transfer_syntax=None):
-    """
-    Function to create an application entity
-    :param aet: string, AE Title
-    :param sop_classes: list of supported SOP classes from netdicom.SOPclass to override default set
-    :param transfer_syntax: list of supported transfer syntax from pydicom.uid to override default set
-    :return: application entity object ready to be started
-    """
-    qr_logger.debug(u"Create AE called with AET {0}, port {1}, SOP SCUs {2}, SOP SCPs {3} and transfer syntax {4} "
-                 u"(None if default)".format(aet, port, sop_scu, sop_scp, transfer_syntax))
-    if port is None:
-        port = 0
-    if sop_scu is None:
-        sop_scu = [StudyRootFindSOPClass, StudyRootMoveSOPClass, VerificationSOPClass]
-    if sop_scp is None:
-        sop_scp = []
-    if transfer_syntax is None:
-        transfer_syntax = [ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian]
-
-    qr_logger.debug(u"Creating AE with AET {0}, port {1}, SOP SCUs {2}, SOP SCPs {3} and transfer syntax {4}".format(
-        aet, port, sop_scu, sop_scp, transfer_syntax))
-    my_ae = AE(aet, port, sop_scu, sop_scp, transfer_syntax)
-    my_ae.OnAssociateResponse = OnAssociateResponse
-    my_ae.OnAssociateRequest = OnAssociateRequest
-
-    return my_ae

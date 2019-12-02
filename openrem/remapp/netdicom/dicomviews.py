@@ -35,14 +35,18 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
+import json
 import remapp
+
 
 @csrf_exempt
 @login_required
 def run_store(request, pk):
+    """View to start built-in STORE-SCP"""
     from django.shortcuts import redirect
     from ..models import DicomStoreSCP
     from ..netdicom.storescp import start_store
@@ -50,12 +54,14 @@ def run_store(request, pk):
         store = DicomStoreSCP.objects.get(pk__exact = pk)
         store.run = True
         store.save()
-        storetask = start_store(store_pk=pk)
+        start_store(store_pk=pk)
     return redirect(reverse_lazy('dicom_summary'))
+
 
 @csrf_exempt
 @login_required
 def stop_store(request, pk):
+    """View to stop built-in STORE-SCP"""
     from django.shortcuts import redirect
     from remapp.models import DicomStoreSCP
     if request.user.groups.filter(name="admingroup"):
@@ -69,13 +75,10 @@ def stop_store(request, pk):
             print(u"Can't stop store SCP: Invalid primary key")
     return redirect(reverse_lazy('dicom_summary'))
 
-import json
-from django.http import HttpResponseRedirect, HttpResponse
-from django.http import Http404
-
 
 @csrf_exempt
 def status_update_store(request):
+    """View to check if store is running using DICOM ECHO"""
     from remapp.models import DicomStoreSCP
     from remapp.netdicom.tools import echoscu
 
@@ -110,8 +113,10 @@ def status_update_store(request):
 
     return HttpResponse(json.dumps(resp), content_type="application/json")
 
+
 @csrf_exempt
 def q_update(request):
+    """View to update query status"""
     from django.core.exceptions import ObjectDoesNotExist
     from django.db.models import Count
     from remapp.models import DicomQuery
@@ -209,9 +214,11 @@ def q_update(request):
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
 
+
 @csrf_exempt
 @login_required
 def q_process(request, *args, **kwargs):
+    """View to process query form POST"""
     import uuid
     from ..netdicom.qrscu import qrscu
     from ..forms import DicomQueryForm
@@ -264,7 +271,7 @@ def q_process(request, *args, **kwargs):
                 'study_desc_exc': study_desc_exc,
             }
 
-            task = qrscu.delay(qr_scp_pk=rh_pk, store_scp_pk=store_pk, query_id=query_id, date_from=date_from,
+            qrscu.delay(qr_scp_pk=rh_pk, store_scp_pk=store_pk, query_id=query_id, date_from=date_from,
                                date_until=date_until, modalities=modalities, inc_sr=inc_sr,
                                remove_duplicates=remove_duplicates, filters=filters,
                                get_toshiba_images=get_toshiba_images, get_empty_sr=get_empty_sr,
@@ -298,9 +305,9 @@ def q_process(request, *args, **kwargs):
 
 @login_required
 def dicom_qr_page(request, *args, **kwargs):
+    """View for DICOM Query Retrieve page"""
     from ..forms import DicomQueryForm
     from remapp.models import DicomStoreSCP, DicomRemoteQR
-    from remapp.netdicom.tools import echoscu
 
     if not request.user.groups.filter(name="importqrgroup"):
         messages.error(request, u"You are not in the importqrgroup - please contact your administrator")
@@ -323,6 +330,7 @@ def dicom_qr_page(request, *args, **kwargs):
 @csrf_exempt
 @login_required
 def r_start(request):
+    """View to trigger move following successful query"""
     from remapp.netdicom.qrscu import movescu
     resp = {}
     data = request.POST
@@ -336,8 +344,8 @@ def r_start(request):
 
 @csrf_exempt
 def r_update(request):
+    """View to update progress of QR move (retrieval)"""
     from django.core.exceptions import ObjectDoesNotExist
-    from django.db.models import Count
     from remapp.models import DicomQuery
 
     resp = {}
@@ -378,6 +386,7 @@ def r_update(request):
 
 
 def get_qr_status(request):
+    """View to get query-retrieve node status for query page"""
     from .tools import echoscu
 
     data = request.POST
@@ -392,6 +401,7 @@ def get_qr_status(request):
 
 
 def get_store_status(request):
+    """View to get store node status for query page"""
     from .tools import echoscu
 
     data = request.POST
