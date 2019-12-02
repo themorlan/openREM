@@ -790,11 +790,6 @@ def _remove_duplicates_in_study_response(query, initial_count):
         return initial_count
 
 
-def handle_assoc(event):
-    print(event.assoc.acceptor.primitive.result_str)
-    print(event.assoc.acceptor.primitive.reason_str)
-
-
 @shared_task(name='remapp.netdicom.qrscu.qrscu')  # (name='remapp.netdicom.qrscu.qrscu', queue='qr')
 def qrscu(
         qr_scp_pk=None, store_scp_pk=None,
@@ -834,7 +829,6 @@ def qrscu(
     from datetime import datetime
 
     from pydicom.dataset import Dataset
-    from pydicom.uid import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
     from remapp.models import DicomQuery, DicomRemoteQR, DicomStoreSCP
     from remapp.templatetags.remappduration import naturalduration
     from remapp.tools.dcmdatetime import make_dcm_date_range, make_dcm_time_range
@@ -889,8 +883,7 @@ def qrscu(
     query.move_failed_sub_ops = 0
     query.save()
 
-    handlers = [(evt.EVT_REJECTED, handle_assoc)]
-    assoc = ae.associate(remote_host, remote_port, ae_title=remote_aet, evt_handlers=handlers)
+    assoc = ae.associate(remote_host, remote_port, ae_title=remote_aet)
 
     if assoc.is_established:
 
