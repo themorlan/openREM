@@ -27,22 +27,10 @@
 # anthing else.
 
 import logging
-from pydicom.uid import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
 from pynetdicom import (AE, VerificationPresentationContexts)
-from pynetdicom.sop_class import VerificationSOPClass
 
 logger = logging.getLogger(__name__)
 qr_logger = logging.getLogger('remapp.netdicom.qrscu')
-
-
-# call back
-def OnAssociateResponse(association):
-    logger.info(u"Association response received")
-
-
-def OnAssociateRequest(association):
-    logger.info(u"Association resquested")
-    return True
 
 
 def echoscu(scp_pk=None, store_scp=False, qr_scp=False, *args, **kwargs):

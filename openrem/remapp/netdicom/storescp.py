@@ -47,7 +47,7 @@ from pynetdicom import (
 )
 from pynetdicom.sop_class import VerificationSOPClass
 from ..version import __implementation_uid__ as OPENREM_UID
-from ..version import __openrem_root_uid__ as ROOT_UID
+# from ..version import __openrem_root_uid__ as ROOT_UID
 from ..version import __version__ as OPENREM_VERSION
 
 

@@ -16,7 +16,7 @@ import os
 import sys
 import uuid
 import collections
-from pynetdicom import (AE, evt)
+from pynetdicom import AE
 from pynetdicom.sop_class import (StudyRootQueryRetrieveInformationModelFind,
                                   StudyRootQueryRetrieveInformationModelMove)
 from django.core.exceptions import ObjectDoesNotExist
