@@ -466,7 +466,10 @@ def download(request, task_id):
         return redirect(reverse_lazy('export'))
 
     file_path = os.path.join(MEDIA_ROOT, exp.filename.name)
-    file_wrapper = FileWrapper(file(file_path, 'rb'))
+    if file_path.endswith('.xlsx'):
+        file_wrapper = FileWrapper(open(file_path, 'rb'))
+    else:
+        file_wrapper = FileWrapper(open(file_path, 'rt'))
     file_mimetype = mimetypes.guess_type(file_path)
     response = HttpResponse(file_wrapper, content_type=file_mimetype)
     response['X-Sendfile'] = file_path
