@@ -521,10 +521,11 @@ def create_csv(task):
     """
     import csv
     from tempfile import TemporaryFile
+    from io import TextIOWrapper
 
     try:
-        temp_csv = TemporaryFile(mode='r+')
-        writer = csv.writer(temp_csv)
+        temp_csv = TemporaryFile(mode='w+b')
+        writer = csv.writer(TextIOWrapper(temp_csv, encoding='utf-8', newline=''))
     except (OSError, IOError) as e:
         print("Error saving csv temporary file ({0}): {1}".format(e.errno, e.strerror))
     except Exception:

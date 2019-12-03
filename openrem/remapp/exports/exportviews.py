@@ -438,7 +438,7 @@ def download(request, task_id):
     """
     import mimetypes
     from django.core.exceptions import ObjectDoesNotExist
-    from django.core.servers.basehttp import FileWrapper
+    from wsgiref.util import FileWrapper
     from django.utils.encoding import smart_str
     from django.shortcuts import redirect
     from openremproject.settings import MEDIA_ROOT
@@ -467,9 +467,9 @@ def download(request, task_id):
 
     file_path = os.path.join(MEDIA_ROOT, exp.filename.name)
     if file_path.endswith('.xlsx'):
-        file_wrapper = FileWrapper(open(file_path, 'rb'))
+        file_wrapper = FileWrapper(open(file_path, mode='rb'))
     else:
-        file_wrapper = FileWrapper(open(file_path, 'rt'))
+        file_wrapper = FileWrapper(open(file_path, mode='rt', newline=''))
     file_mimetype = mimetypes.guess_type(file_path)
     response = HttpResponse(file_wrapper, content_type=file_mimetype)
     response['X-Sendfile'] = file_path
