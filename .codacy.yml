@@ -1,4 +1,1 @@
 engines:
- prospector:
-   enabled: true
-   python_version: 3
