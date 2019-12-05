@@ -51,33 +51,75 @@
   <script src="{{ STATIC_URL }}js/dicom.js"></script>
   <script src="{{ STATIC_URL }}js/django_reverse/reverse.js"></script>
 
-  <div class="row">
+<div class="row">
     <div class="col-md-4 col-md-offset-1">
 
-      <h3>Current DICOM SCP statuses</h3>
-      Remote QR nodes
-      <dl class="dl-horizontal">
-        {% autoescape off %}
-          {% for name, status in qrstatus.items %}
-            <dt>{{ name }}</dt>
-            <dd>{{ status }}</dd>
-          {% endfor %}
-        {% endautoescape %}
-      </dl>
-      Local Store nodes
-      <dl class="dl-horizontal">
-        {% autoescape off %}
-          {% for name, status in storestatus.items %}
-            <dt>{{ name }}</dt>
-            <dd>{{ status }}</dd>
-          {% endfor %}
-        {% endautoescape %}
-      </dl>
+        <h3>Current DICOM SCP statuses</h3>
+        Remote QR nodes
+        <dl class="dl-horizontal">
+            {% autoescape off %}
+            {% for qr_node in qr_nodes %}
+                <script>
+                    $(document).ready(
+                        function get_qr_status(json) {
+                            $.ajax(
+                                {
+                                    url: "{% url 'get_qr_status' %}",
+                                    data: {
+                                        node: '{{ qr_node.pk }}',
+                                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                                    },
+                                    type: "POST",
+                                    success: function (data) {
+                                        $('#qrnode{{ qr_node.pk }}').html(data);
+                                    }
+                                }
+                            )
+                        }
+                    )
+                </script>
+                <dt>{{ qr_node.name }}</dt>
+                <dd id="qrnode{{ qr_node.pk }}">Waiting for verification response</dd>
 
-      <h3>Query retrieve dialogue</h3>
+            {% endfor %}
 
-      {% load crispy_forms_tags %}
-      {% crispy form %}
+            {% endautoescape %}
+        </dl>
+        Local Store nodes
+        <dl class="dl-horizontal">
+            {% autoescape off %}
+            {% for store_node in store_nodes %}
+                <script>
+                    $(document).ready(
+                        function get_store_status(json) {
+                            $.ajax(
+                                {
+                                    url: "{%  url 'get_store_status' %}",
+                                    data: {
+                                        node: '{{ store_node.pk }}',
+                                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                                    },
+                                    type: "POST",
+                                    success: function (data) {
+                                        $('#storenode{{ store_node.pk }}').html(data);
+                                    }
+                                }
+                            )
+                        }
+                    )
+                </script>
+                <dt>{{ store_node.name }}</dt>
+                <dd id="storenode{{ store_node.pk }}">Waiting for verification response</dd>
+
+            {% endfor %}
+
+            {% endautoescape %}
+        </dl>
+
+        <h3>Query retrieve dialogue</h3>
+
+        {% load crispy_forms_tags %}
+        {% crispy form %}
     </div>
 
 
@@ -88,6 +130,9 @@
       </div>
       <div class="row">
         <div id="move-status"></div>
+      </div>
+      <div class="row">
+        <div id="subops"></div>
       </div>
     </div>
   </div>

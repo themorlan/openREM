@@ -9,6 +9,7 @@ OpenREM version history
 * `#791`_  Exports: prevented error when trying to export DX data that has no filter information
 * `#787`_  Interface: fixed login error
 * `#777`_  Updated OpenREM to use pydicom 1.3
+* `#530`_  Updated OpenREM to use pynetdicom 1.4
 * `#457`_  Updated OpenREM to use Django 2.2
 * `#437`_  Updated OpenREM to use django-filters v2
 * `#404`_  Ported OpenREM to Python 3

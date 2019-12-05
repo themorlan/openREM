@@ -158,10 +158,12 @@ dicom_patterns = [
     path('qr/<int:pk>/', views.DicomQRUpdate.as_view(), name='dicomqr_update'),
     path('qr/<int:pk>/delete/', views.DicomQRDelete.as_view(), name='dicomqr_delete'),
     path('queryupdate', dicomviews.q_update, name='query_update'),
-    path('queryprocess', dicomviews.q_process, name='q_proces'),
+    path('queryprocess', dicomviews.q_process, name='q_process'),
     path('queryremote', dicomviews.dicom_qr_page, name='dicom_qr_page'),
     path('queryretrieve', dicomviews.r_start, name='start_retrieve'),
     path('moveupdate', dicomviews.r_update, name='move_update'),
+    path('qrnodestatus', dicomviews.get_qr_status, name='get_qr_status'),
+    path('storenodestatus', dicomviews.get_store_status, name='get_store_status'),
 ]
 
 urlpatterns = [
