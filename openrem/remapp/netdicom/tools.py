@@ -27,22 +27,10 @@
 # anthing else.
 
 import logging
-from netdicom.applicationentity import AE
-from netdicom.SOPclass import StudyRootFindSOPClass, StudyRootMoveSOPClass, VerificationSOPClass
-from pydicom.uid import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
+from pynetdicom import (AE, VerificationPresentationContexts)
 
 logger = logging.getLogger(__name__)
 qr_logger = logging.getLogger('remapp.netdicom.qrscu')
-
-
-# call back
-def OnAssociateResponse(association):
-    logger.info(u"Association response received")
-
-
-def OnAssociateRequest(association):
-    logger.info(u"Association resquested")
-    return True
 
 
 def echoscu(scp_pk=None, store_scp=False, qr_scp=False, *args, **kwargs):
@@ -55,95 +43,66 @@ def echoscu(scp_pk=None, store_scp=False, qr_scp=False, *args, **kwargs):
     :param kwargs:
     :return: 'AssocFail', Success or ?
     """
-    from remapp.models import DicomRemoteQR, DicomStoreSCP
+    from ..models import DicomRemoteQR, DicomStoreSCP
 
     if store_scp and scp_pk:
         scp = DicomStoreSCP.objects.get(pk=scp_pk)
-        rh = "localhost"
-        aet = "OPENREMECHO"
+        remote_host = "localhost"
+        our_aet = "OPENREMECHO"
     elif qr_scp and scp_pk:
         scp = DicomRemoteQR.objects.get(pk=scp_pk)
         if scp.hostname:
-            rh = scp.hostname
+            remote_host = scp.hostname
         else:
-            rh = scp.ip
-        aet = scp.callingaet
-        if not aet:
-            aet = "OPENREMECHO"
+            remote_host = scp.ip
+        our_aet = scp.callingaet
+        if not our_aet:
+            our_aet = "OPENREMECHO"
     else:
-        logger.warning(u"echoscu called without SCP information")
+        logger.warning("echoscu called without SCP information")
         return 0
 
-    rp = scp.port
-    aec = scp.aetitle
+    remote_port = scp.port
+    remote_aet = scp.aetitle
 
-    ts = [
-        ExplicitVRLittleEndian,
-        ImplicitVRLittleEndian,
-        ExplicitVRBigEndian
-        ]
+    ae = AE()
+    ae.requested_contexts = VerificationPresentationContexts
+    ae.ae_title = our_aet
 
+    assoc = ae.associate(remote_host, remote_port, ae_title=remote_aet)
 
+    if assoc.is_established:
+        status = assoc.send_c_echo()
 
-    # create application entity with just Verification SOP classes as SCU
-    my_ae = AE(aet.encode('ascii', 'ignore'), 0, [VerificationSOPClass], [], ts)
-    my_ae.OnAssociateResponse = OnAssociateResponse
-    my_ae.OnAssociateRequest = OnAssociateRequest
-    my_ae.start()
-
-    # remote application entity
-    remote_ae = dict(Address=rh, Port=rp, AET=aec.encode('ascii', 'ignore'))
-
-    # create association with remote AE
-    logger.debug(u"Request association with {0} {1} {2}".format(rh, rp, aec))
-    assoc = my_ae.RequestAssociation(remote_ae)
-
-    if not assoc:
-        logger.info(u"Association with {0} {1} {2} was not successful".format(rh, rp, aec))
-        return "AssocFail"
-    logger.debug(u"assoc is ... %s", assoc)
-
-    # perform a DICOM ECHO
-    logger.debug(u"DICOM Echo... {0} {1} {2}".format(rh, rp, aec))
-    echo = assoc.VerificationSOPClass.SCU(1)
-    logger.debug(u'done with status %s', echo)
-
-    logger.debug(u"Release association from {0} {1} {2}".format(rh, rp, aec))
-    assoc.Release(0)
-
-    # done
-    my_ae.Quit()
-    if echo.Type is "Success":
-        logger.info(u"Returning Success response from echo to {0} {1} {2}".format(rh, rp, aec))
-        return "Success"
+        if status:
+            if status.Status == 0x0000:
+                logger.info(u"Returning Success response from echo to {0} {1} {2}".format(
+                    remote_host, remote_port, remote_aet))
+                assoc.release()
+                return "Success"
+            else:
+                logger.info("Returning EchoFail response from echo to {0} {1} {2}. Type is {3}.".format(
+                    remote_host, remote_port, remote_aet, status.Status))
+                assoc.release()
+                return "Association created, but EchoFail"
+        else:
+            print('Connection timed out, was aborted or received invalid response')
+            logger.info(u"Returning EchoFail response from echo to {0} {1} {2}. No status.".format(
+                remote_host, remote_port, remote_aet))
+            assoc.release()
+            return "EchoFail"
     else:
-        logger.info(u"Returning EchoFail response from echo to {0} {1} {2}. Type is {3}.".format(rh, rp, aec, echo.Type))
-        return "EchoFail"
-
-
-def create_ae(aet, port=None, sop_scu=None, sop_scp=None, transfer_syntax=None):
-    """
-    Function to create an application entity
-    :param aet: string, AE Title
-    :param sop_classes: list of supported SOP classes from netdicom.SOPclass to override default set
-    :param transfer_syntax: list of supported transfer syntax from pydicom.uid to override default set
-    :return: application entity object ready to be started
-    """
-    qr_logger.debug(u"Create AE called with AET {0}, port {1}, SOP SCUs {2}, SOP SCPs {3} and transfer syntax {4} "
-                 u"(None if default)".format(aet, port, sop_scu, sop_scp, transfer_syntax))
-    if port is None:
-        port = 0
-    if sop_scu is None:
-        sop_scu = [StudyRootFindSOPClass, StudyRootMoveSOPClass, VerificationSOPClass]
-    if sop_scp is None:
-        sop_scp = []
-    if transfer_syntax is None:
-        transfer_syntax = [ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian]
-
-    qr_logger.debug(u"Creating AE with AET {0}, port {1}, SOP SCUs {2}, SOP SCPs {3} and transfer syntax {4}".format(
-        aet, port, sop_scu, sop_scp, transfer_syntax))
-    my_ae = AE(aet, port, sop_scu, sop_scp, transfer_syntax)
-    my_ae.OnAssociateResponse = OnAssociateResponse
-    my_ae.OnAssociateRequest = OnAssociateRequest
-
-    return my_ae
+        if assoc.is_rejected:
+            msg = ('{0}: {1}'.format(
+                assoc.acceptor.primitive.result_str,
+                assoc.acceptor.primitive.reason_str
+            ))
+            logger.info("Association rejected from {0} {1} {2}. {3}".format(remote_host, remote_port, remote_aet, msg))
+            return msg
+        if assoc.is_aborted:
+            msg = "Association aborted or never connected"
+            logger.info("{3} to {0} {1} {2}".format(remote_host, remote_port, remote_aet, msg))
+            return msg
+        msg = "Association Failed"
+        logger.info("{3} with {0} {1} {2}".format(remote_host, remote_port, remote_aet, msg))
+        return msg

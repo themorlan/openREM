@@ -366,42 +366,41 @@ class DicomQueryForm(forms.Form):
 
     remote_host_field = forms.ChoiceField(choices=[], widget=forms.Select(attrs={"class": "form-control"}))
     store_scp_field = forms.ChoiceField(choices=[], widget=forms.Select(attrs={"class": "form-control"}))
-    date_from_field = forms.DateField(label='Date from',
-                                      widget=forms.DateInput(attrs={"class": "form-control datepicker", }),
-                                      required=False, initial=date.today().isoformat(),
-                                      help_text="Format yyyy-mm-dd, restrict as much as possible for best results")
-    date_until_field = forms.DateField(label='Date until',
-                                       widget=forms.DateInput(attrs={"class": "form-control datepicker", }),
-                                       required=False,
-                                       help_text="Format yyyy-mm-dd, restrict as much as possible for best results")
+    date_from_field = forms.DateField(
+        label='Date from', widget=forms.DateInput(attrs={"class": "form-control datepicker", }),
+        required=False, initial=date.today().isoformat(),
+        help_text="Format yyyy-mm-dd, restrict as much as possible for best results")
+    date_until_field = forms.DateField(
+        label='Date until', widget=forms.DateInput(attrs={"class": "form-control datepicker", }),
+        required=False, help_text="Format yyyy-mm-dd, restrict as much as possible for best results")
     modality_field = forms.MultipleChoiceField(
-        choices=MODALITIES, widget=forms.CheckboxSelectMultiple(
-            attrs={"checked": ""}), required=False, help_text=("At least one modality must be ticked - if SR only is "
-                                                               "ticked (Advanced) these modalities will be ignored"))
-    inc_sr_field = forms.BooleanField(label='Include SR only studies?', required=False, initial=False,
-                                      help_text="Only use with stores containing only RDSRs, "
-                                                "with no accompanying images")
-    duplicates_field = forms.BooleanField(label='Ignore studies already in the database?', required=False, initial=True,
-                                          help_text="Objects that have already been processed won't be imported, so "
-                                                    "there isn't any point getting them!")
-    desc_exclude_field = forms.CharField(required=False,
-                                         label="Exclude studies with these terms in the study description:",
-                                         help_text="Comma separated list of terms")
-    desc_include_field = forms.CharField(required=False,
-                                         label="Only keep studies with these terms in the study description:",
-                                         help_text="Comma separated list of terms")
-    stationname_exclude_field = forms.CharField(required=False,
-                                                label="Exclude studies or series with these terms in the station name:",
-                                                help_text="Comma separated list of terms")
-    stationname_include_field = forms.CharField(required=False,
-                                                label="Only keep studies or series with these terms in the station name:",
-                                                help_text="Comma separated list of terms")
-    get_toshiba_images_field = forms.BooleanField(label=u"Attempt to get Toshiba dose images", required=False,
-                                                  help_text=u"Only applicable if using Toshiba RDSR generator extension, "
-                                                            u"see docs")
-    get_empty_sr_field = forms.BooleanField(label=u"Get SR series that return nothing at image level query",
-                                            help_text=u"Only use if suggested in qrscu log, see docs",
-                                            required=False,)
+        choices=MODALITIES, widget=forms.CheckboxSelectMultiple(attrs={"checked": ""}),
+        required=False, help_text=("At least one modality must be ticked - if SR only is ticked (Advanced) these "
+                                   "modalities will be ignored"))
+    inc_sr_field = forms.BooleanField(
+        label='Include SR only studies?', required=False, initial=False,
+        help_text="Only use with stores containing only RDSRs, with no accompanying images")
+    duplicates_field = forms.BooleanField(
+        label='Ignore studies already in the database?', required=False, initial=True,
+        help_text="Objects that have already been processed won't be imported, so there isn't any point getting them!")
+    desc_exclude_field = forms.CharField(
+        required=False, label="Exclude studies with these terms in the study description:",
+        help_text="Comma separated list of terms")
+    desc_include_field = forms.CharField(
+        required=False, label="Only keep studies with these terms in the study description:",
+        help_text="Comma separated list of terms")
+    stationname_exclude_field = forms.CharField(
+        required=False, label="Exclude studies or series with these terms in the station name:",
+        help_text="Comma separated list of terms")
+    stationname_include_field = forms.CharField(
+        required=False, label="Only keep studies or series with these terms in the station name:",
+        help_text="Comma separated list of terms")
+    get_toshiba_images_field = forms.BooleanField(
+        label=u"Attempt to get Toshiba dose images", required=False,
+        help_text="Only applicable if using Toshiba RDSR generator extension, see docs")
+    get_empty_sr_field = forms.BooleanField(
+        label=u"Get SR series that return nothing at image level query",
+        help_text=u"Only use if suggested in qrscu log, see docs", required=False,)
 
     def __init__(self, *args, **kwargs):
         super(DicomQueryForm, self).__init__(*args, **kwargs)
@@ -411,7 +410,7 @@ class DicomQueryForm(forms.Form):
         self.helper = FormHelper(self)
         self.helper.form_id = 'post-form'
         self.helper.form_method = 'post'
-        self.helper.form_action = 'q_process'
+        self.helper.form_action = 'queryprocess'
         self.helper.add_input(Submit('submit', 'Submit'))
         self.helper.layout = Layout(
             Div(

@@ -30,4 +30,4 @@ NetDICOM common functions
 *************************
 
 ..  automodule:: openrem.remapp.netdicom.tools
-    :members: echoscu, create_ae
+    :members: echoscu

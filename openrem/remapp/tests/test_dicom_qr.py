@@ -1,25 +1,22 @@
 # This Python file uses the following encoding: utf-8
-# disabled_test_dicom_qr.py
+# dicom_qr.py
 
 import collections
 import os
 import uuid
 
-from pydicom.uid import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
 from pydicom.dataset import Dataset
 from django.test import TestCase
 from mock import patch
-from netdicom.SOPclass import StudyRootFindSOPClass, StudyRootMoveSOPClass, VerificationSOPClass
-from netdicom.applicationentity import AE
 from testfixtures import LogCapture
 
-from remapp.extractors import rdsr
-from remapp.models import DicomQuery, DicomQRRspStudy, DicomQRRspSeries, DicomQRRspImage, DicomRemoteQR, \
+from ..extractors import rdsr
+from ..models import DicomQuery, DicomQRRspStudy, DicomQRRspSeries, DicomQRRspImage, DicomRemoteQR, \
     DicomStoreSCP, GeneralStudyModuleAttr, PatientIDSettings
-from remapp.netdicom import qrscu
+from ..netdicom import qrscu
 
 
-def _fake_check_sr_type_in_study_with_rdsr(assoc, study, query_id, get_empty_sr):
+def _fake_check_sr_type_in_study_with_rdsr(assoc, study, query, query_id, get_empty_sr):
     return 'RDSR'
 
 
@@ -109,7 +106,7 @@ class StudyQueryLogic(TestCase):
         :param study_query_mock: Mocked study level response routine
         :return: Nothing
         """
-        from remapp.netdicom.qrscu import _query_for_each_modality
+        from ..netdicom.qrscu import _query_for_each_modality
 
         all_mods = {'CT': {'inc': True, 'mods': ['CT']},
                     'MG': {'inc': True, 'mods': ['MG']},
@@ -135,7 +132,7 @@ class StudyQueryLogic(TestCase):
         :param study_query_mock: Mocked study level response routine
         :return:  Nothing
         """
-        from remapp.netdicom.qrscu import _query_for_each_modality
+        from ..netdicom.qrscu import _query_for_each_modality
 
         all_mods = collections.OrderedDict()
         all_mods['CT'] = {'inc': True, 'mods': ['CT']}
@@ -145,18 +142,6 @@ class StudyQueryLogic(TestCase):
 
         query = DicomQuery.objects.get()
         qr_scp = DicomRemoteQR.objects.get()
-
-        # Create my_ae and remote_ae
-        aec = qr_scp.aetitle
-        aet = qr_scp.callingaet
-        ts = [
-            ExplicitVRLittleEndian,
-            ImplicitVRLittleEndian,
-            ExplicitVRBigEndian
-        ]
-        my_ae = AE(aet.encode('ascii', 'ignore'), 0, [StudyRootFindSOPClass, StudyRootMoveSOPClass,
-                                                      VerificationSOPClass], [], ts)
-        remote_ae = dict(Address=qr_scp.hostname, Port=qr_scp.port, AET=aec.encode('ascii', 'ignore'))
 
         d = Dataset()
         assoc = None
@@ -375,7 +360,7 @@ class QRPhilipsCT(TestCase):
         Testing that ModalitiesInStudy is generated if not returned by remote C-Find SCP
         """
         from collections import Counter
-        from remapp.netdicom.qrscu import _generate_modalities_in_study
+        from ..netdicom.qrscu import _generate_modalities_in_study
 
         query = DicomQuery.objects.get()
         rst1 = query.dicomqrrspstudy_set.all()[0]
@@ -478,7 +463,7 @@ class ResponseFiltering(TestCase):
         Testing _filter with include station name of 'goodstation'. Expect two responses goodstation and goodstation2
         :return: None
         """
-        from remapp.netdicom.qrscu import _filter
+        from ..netdicom.qrscu import _filter
 
         query = DicomQuery.objects.get()
         _filter(query, u"study", u"station_name", [u"goodstation"], u"include")
@@ -493,7 +478,7 @@ class ResponseFiltering(TestCase):
         Testing _filter with exclude station name of 'badstation'. Expect two responses goodstation and goodstation2
         :return: None
         """
-        from remapp.netdicom.qrscu import _filter
+        from ..netdicom.qrscu import _filter
 
         query = DicomQuery.objects.get()
         _filter(query, u"study", u"station_name", [u"badstation"], u"exclude")
@@ -508,7 +493,7 @@ class ResponseFiltering(TestCase):
         Testing _filter with exclude two study descriptions. Expect one response of goodstation
         :return: None
         """
-        from remapp.netdicom.qrscu import _filter
+        from ..netdicom.qrscu import _filter
 
         query = DicomQuery.objects.get()
         _filter(query, u"study", u"study_description", [u"import", u"test response 3"], u"exclude")
@@ -522,7 +507,7 @@ class ResponseFiltering(TestCase):
         Testing _filter with include study description 'test'. Expect two responses of goodstation and goodstation2
         :return: None
         """
-        from remapp.netdicom.qrscu import _filter
+        from ..netdicom.qrscu import _filter
 
         query = DicomQuery.objects.get()
         _filter(query, u"study", u"study_description", [u"test", ], u"include")
@@ -533,7 +518,7 @@ class ResponseFiltering(TestCase):
             self.assertTrue(u"goodstation" in study.station_name)
 
 
-def _fake_image_query(assoc, sr, query_id):
+def _fake_image_query(assoc, sr, query, query_id):
     return
 
 
@@ -563,7 +548,7 @@ class PruneSeriesResponses(TestCase):
         Test _prune_series_responses with mammo exam with no SR.
         :return: No change to response
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.create()
         query.query_id = "MammoNoSR"
@@ -600,7 +585,7 @@ class PruneSeriesResponses(TestCase):
         Test _prune_series_responses with mammo exam with two SRs, one RDSR and one Basic SR.
         :return: MG series and basic SR series should be deleted.
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.create()
         query.query_id = "MammoWithSR"
@@ -667,7 +652,7 @@ class PruneSeriesResponses(TestCase):
         Test _prune_series_responses with CR exam with no RDSR but with Basic SR.
         :return: Basic SR deleted, study.modality set to "DX"
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.create()
         query.query_id = "CRNoRDSR"
@@ -720,7 +705,7 @@ class PruneSeriesResponses(TestCase):
         Test _prune_series_responses with DX exam with three SRs, one RDSR, one ESR and one Basic SR.
         :return: DX series, ESR and basic SR series should be deleted.
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.create()
         query.query_id = "DXWithSR"
@@ -801,7 +786,7 @@ class PruneSeriesResponses(TestCase):
         Test _prune_series_responses with fluoro exam with no ESR or RDSR.
         :return: Whole study response deleted
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.create()
         query.query_id = "RFNoSR"
@@ -850,7 +835,7 @@ class PruneSeriesResponses(TestCase):
         Test _prune_series_responses with XA exam with an ESR, and one Basic SR.
         :return: XA series and basic SR series should be deleted.
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.create()
         query.query_id = "XAWithESRBSR"
@@ -918,7 +903,7 @@ class PruneSeriesResponses(TestCase):
         doesn't return any image level responses.
         :return: image series should remain, SR series should be deleted.
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.create()
         query.query_id = "MammoWithSR"
@@ -965,7 +950,7 @@ class PruneSeriesResponses(TestCase):
         doesn't return any image level responses.
         :return: SR series should remain, image series should be deleted.
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.create()
         query.query_id = "MammoWithSR"
@@ -1104,7 +1089,7 @@ class PruneSeriesResponsesCT(TestCase):
         Test _prune_series_responses with CT exam with a RDSR, ESR, Basic SR, Dose info and an axial series.
         :return: RDSR series.
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.get(query_id__exact="CT")
         all_mods = self.all_mods
@@ -1124,7 +1109,7 @@ class PruneSeriesResponsesCT(TestCase):
         Test _prune_series_responses with CT exam with a ESR, Basic SR, Dose info and an axial series.
         :return: ESR series.
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.get(query_id__exact="CT")
 
@@ -1149,7 +1134,7 @@ class PruneSeriesResponsesCT(TestCase):
         Test _prune_series_responses with CT exam with a Basic SR, Dose info and an axial series.
         :return: Dose info series.
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.get(query_id__exact="CT")
 
@@ -1175,7 +1160,7 @@ class PruneSeriesResponsesCT(TestCase):
         Test _prune_series_responses with CT exam with a Basic SR, Dose info and an axial series, but no series desc.
         :return: Dose info series.
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.get(query_id__exact="CT")
 
@@ -1204,7 +1189,7 @@ class PruneSeriesResponsesCT(TestCase):
         doesn't return any image level responses.
         :return: Dose info series.
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.get(query_id__exact="CT")
 
@@ -1234,7 +1219,7 @@ class PruneSeriesResponsesCT(TestCase):
         doesn't return any image level responses.
         :return: SR series.
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.get(query_id__exact="CT")
 
@@ -1290,7 +1275,7 @@ class QRSCUScriptArgParsing(TestCase):
         :return:
         """
 
-        from remapp.netdicom.qrscu import _create_parser, _process_args
+        from ..netdicom.qrscu import _create_parser, _process_args
 
         parser = _create_parser()
         parsed_args = _process_args(parser.parse_args(['1', '2', '-ct', '-mg']), parser)
@@ -1308,7 +1293,7 @@ class QRSCUScriptArgParsing(TestCase):
         :return:
         """
 
-        from remapp.netdicom.qrscu import _create_parser, _process_args
+        from ..netdicom.qrscu import _create_parser, _process_args
 
         parser = _create_parser()
         parsed_args = _process_args(parser.parse_args(['1', '2', '-ct', '-e Thorax, Neck ']), parser)
@@ -1329,7 +1314,7 @@ class QRSCUScriptArgParsing(TestCase):
         :return:
         """
 
-        from remapp.netdicom.qrscu import _create_parser, _process_args
+        from ..netdicom.qrscu import _create_parser, _process_args
 
         parser = _create_parser()
         parsed_args = _process_args(parser.parse_args(
@@ -1345,6 +1330,7 @@ class QRSCUScriptArgParsing(TestCase):
                    'stationname_inc': [u'mystn']}
         self.assertEqual(parsed_args['filters'], filters)
 
+
 class RemoveDuplicates(TestCase):
     """
     Test the routine to remove any responses that correspond to information already in the database
@@ -1355,7 +1341,7 @@ class RemoveDuplicates(TestCase):
 
         """
 
-        from remapp.netdicom.qrscu import _remove_duplicates
+        from ..netdicom.qrscu import _remove_duplicates
 
         PatientIDSettings.objects.create()
 
@@ -1403,7 +1389,7 @@ class RemoveDuplicates(TestCase):
         """Now testing _remove_duplicates will remove an identical RDSR, but retain a new one.
         """
 
-        from remapp.netdicom.qrscu import _remove_duplicates
+        from ..netdicom.qrscu import _remove_duplicates
 
         PatientIDSettings.objects.create()
 
@@ -1472,7 +1458,7 @@ class RemoveDuplicates(TestCase):
         :return:
         """
 
-        from remapp.netdicom.qrscu import _remove_duplicates
+        from ..netdicom.qrscu import _remove_duplicates
 
         PatientIDSettings.objects.create()
 
@@ -1528,8 +1514,8 @@ class RemoveDuplicates(TestCase):
         :return:
         """
 
-        from remapp.extractors import dx
-        from remapp.netdicom.qrscu import _remove_duplicates
+        from ..extractors import dx
+        from ..netdicom.qrscu import _remove_duplicates
 
         PatientIDSettings.objects.create()
 
@@ -1596,7 +1582,7 @@ class InvalidMove(TestCase):
         """Pass invalid query_id to movescu, expect log update and return False/0
 
         """
-        from remapp.netdicom.qrscu import movescu
+        from ..netdicom.qrscu import movescu
 
         PatientIDSettings.objects.create()
 
@@ -1615,7 +1601,7 @@ class DuplicatesInStudyResponse(TestCase):
         """Test to ensure duplicates are removed from the response query set
 
         """
-        from remapp.netdicom.qrscu import _remove_duplicates_in_study_response
+        from ..netdicom.qrscu import _remove_duplicates_in_study_response
 
         query = DicomQuery.objects.create()
         query.query_id = uuid.uuid4()
