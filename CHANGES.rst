@@ -4,6 +4,7 @@ OpenREM version history
 
 1.0.0b1 (2019-xx-xx)
 --------------------
+* `#798`_  Exports: prevented error in export view if task_id is missing
 * `#791`_  Exports: prevented error when trying to export DX data that has no filter information
 * `#787`_  Interface: fixed login error
 * `#777`_  Updated OpenREM to use pydicom 1.3
