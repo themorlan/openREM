@@ -617,7 +617,7 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
         else:
             row_data += [
                 f'{exam.procedure_code_meaning} | {exam.requested_procedure_code_meaning} | {exam.study_description} '
-                f'|| {projection_events[0].acquisition_protocol}'
+                f'| {projection_events[0].acquisition_protocol}'
             ]
         row_data += [
             patient_study_data['patient_weight'],
