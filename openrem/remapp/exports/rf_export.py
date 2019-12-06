@@ -595,7 +595,7 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
                     exam_data[index] = ''
                 if isinstance(item, str) and u',' in item:
                     exam_data[index] = item.replace(u',', u';')
-            writer.writerow([str(data_string).encode("utf-8") for data_string in exam_data])
+            writer.writerow([str(data_string) for data_string in exam_data])
         except ObjectDoesNotExist:
             error_message = u"DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number" \
                             u" {3} - maybe database entry was deleted as part of importing later version of same" \

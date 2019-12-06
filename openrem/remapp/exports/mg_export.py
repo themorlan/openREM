@@ -29,14 +29,11 @@
 
 """
 
-from builtins import str  # pylint: disable=redefined-builtin
-from builtins import range  # pylint: disable=redefined-builtin
-from past.builtins import basestring  # pylint: disable=redefined-builtin
 import logging
 
 from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
-from remapp.exports.export_common import common_headers,  text_and_date_formats, generate_sheets, create_summary_sheet,\
+from .export_common import common_headers,  text_and_date_formats, generate_sheets, create_summary_sheet,\
     get_common_data, get_anode_target_material, get_xray_filter_info, create_csv, create_xlsx, write_export, \
     sheet_name, abort_if_zero_studies
 
@@ -183,9 +180,9 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
     """
 
     import datetime
-    from remapp.models import GeneralStudyModuleAttr
-    from remapp.models import Exports
-    from remapp.interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
+    from ..models import GeneralStudyModuleAttr
+    from ..models import Exports
+    from ..interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
     import uuid
 
     tsk = Exports.objects.create()

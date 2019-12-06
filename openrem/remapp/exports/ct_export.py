@@ -28,14 +28,11 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-from builtins import str  # pylint: disable=redefined-builtin
-from builtins import range  # pylint: disable=redefined-builtin
-from past.builtins import basestring  # pylint: disable=redefined-builtin
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
 from celery import shared_task
-from remapp.exports.export_common import get_common_data, common_headers, create_xlsx, create_csv, write_export, \
+from .export_common import get_common_data, common_headers, create_xlsx, create_csv, write_export, \
     create_summary_sheet, abort_if_zero_studies
 
 logger = logging.getLogger(__name__)
@@ -55,9 +52,9 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     import datetime
     from django.db.models import Max
-    from remapp.exports.export_common import text_and_date_formats, generate_sheets, sheet_name
-    from remapp.models import Exports
-    from remapp.interface.mod_filters import ct_acq_filter
+    from ..export_common import text_and_date_formats, generate_sheets, sheet_name
+    from ..models import Exports
+    from ..interface.mod_filters import ct_acq_filter
     import uuid
 
     tsk = Exports.objects.create()
@@ -203,8 +200,8 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
 
     import datetime
     from django.db.models import Max
-    from remapp.models import Exports
-    from remapp.interface.mod_filters import ct_acq_filter
+    from ..models import Exports
+    from ..interface.mod_filters import ct_acq_filter
 
     tsk = Exports.objects.create()
 
@@ -260,9 +257,9 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
             for index, item in enumerate(exam_data):
                 if item is None:
                     exam_data[index] = ''
-                if isinstance(item, basestring) and u',' in item:
-                    exam_data[index] = item.replace(u',', u';')
-            writer.writerow([str(data_string).encode("utf-8") for data_string in exam_data])
+                if isinstance(item, str) and ',' in item:
+                    exam_data[index] = item.replace(',', ';')
+            writer.writerow([str(data_string) for data_string in exam_data])
         except ObjectDoesNotExist:
             error_message = u"DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number" \
                             u" {3} - maybe database entry was deleted as part of importing later version of same" \
@@ -449,8 +446,8 @@ def ct_phe_2019(filterdict, user=None):
 
     import datetime
     from decimal import Decimal
-    from remapp.models import Exports
-    from remapp.interface.mod_filters import ct_acq_filter
+    from ..models import Exports
+    from ..interface.mod_filters import ct_acq_filter
     import uuid
 
     tsk = Exports.objects.create()
