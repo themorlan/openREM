@@ -2,16 +2,24 @@
 # test_get_values.py
 
 from __future__ import unicode_literals
-import os, datetime
+import os
+from collections import Counter
+import datetime
 from decimal import Decimal
 from django.contrib.auth.models import User, Group
 from django.test import TestCase
-from dicom.dataelem import RawDataElement
-from dicom.dataset import Dataset
-from dicom.tag import Tag
+from pydicom.dataset import Dataset
+from pydicom.dataelem import DataElement
+from pydicom.multival import MultiValue
+import logging
+from testfixtures import LogCapture
 from remapp.extractors.dx import _xray_filters_prep
 from remapp.models import GeneralStudyModuleAttr, ProjectionXRayRadiationDose, IrradEventXRayData, \
     IrradEventXRaySourceData
+from openremproject import settings
+
+
+settings.LOGGING['loggers']['remapp']['level'] = 'DEBUG'
 
 
 class DXFilterTests(TestCase):
@@ -20,7 +28,9 @@ class DXFilterTests(TestCase):
         Test the material extraction process when the materials are in a MultiValue format
         """
         ds = Dataset()
-        ds.FilterMaterial = "aluminum\\copper"
+        multi = MultiValue(str, ["ALUMINUM", "COPPER"])
+        data_el = DataElement(0x187050, "CS", multi, already_converted=True)
+        ds[0x187050] = data_el
         ds.FilterThicknessMinimum = "1.0\\0.1"
         ds.FilterThicknessMaximum = "1.0\\0.1"
 
@@ -95,17 +105,26 @@ class ImportCarestreamDR7500(TestCase):
         dx_carestream_dr7500_2 = os.path.join("test_files", "DX-Im-Carestream_DR7500-2.dcm")
         root_tests = os.path.dirname(os.path.abspath(__file__))
 
-        dx(os.path.join(root_tests, dx_ge_xr220_1))
-        dx(os.path.join(root_tests, dx_ge_xr220_2))
-        dx(os.path.join(root_tests, dx_ge_xr220_3))
-        dx(os.path.join(root_tests, dx_carestream_dr7500_1))
-        dx(os.path.join(root_tests, dx_carestream_dr7500_2))
+        with LogCapture(level=logging.DEBUG) as self.log:
+            dx.dx(os.path.join(root_tests, dx_ge_xr220_1))
+            dx.dx(os.path.join(root_tests, dx_ge_xr220_2))
+            dx.dx(os.path.join(root_tests, dx_ge_xr220_3))
+            dx.dx(os.path.join(root_tests, dx_carestream_dr7500_1))
+            dx.dx(os.path.join(root_tests, dx_carestream_dr7500_2))
+            dx.dx(os.path.join(root_tests, dx_ge_xr220_2))
 
     def test_dr7500_and_xr220(self):
+
         studies = GeneralStudyModuleAttr.objects.order_by('id')
 
-        # Test that five studies have been imported
+        # Test that two studies have been imported
         self.assertEqual(studies.count(), 2)
+
+        # Test that the second attempt to import dx_ge_xr220_2 results in debug message
+        self.log.check_present(('remapp.extractors.dx', 'DEBUG',
+                                u'DX instance UID 1.3.6.1.4.1.5962.99.1.2282339064.1266597797.1479751121656.26.0 of '
+                                u'study UID 1.3.6.1.4.1.5962.99.1.2282339064.1266597797.1479751121656.24.0 '
+                                u'previously processed, stopping.'))
 
         # Test that study level data is recorded correctly
         self.assertEqual(studies[0].study_date, datetime.date(2014, 9, 30))
@@ -128,7 +147,16 @@ class ImportCarestreamDR7500(TestCase):
         self.assertEqual(studies[1].generalequipmentmoduleattr_set.get().software_versions, '4.0.3.B8.P6')
         self.assertEqual(studies[1].generalequipmentmoduleattr_set.get().device_serial_number, '00012345abc')
 
-
+        # Test the SOP instance UIDs have been recorded correctly
+        sop_instance_uid_list0 = Counter(studies[0].objectuidsprocessed_set.values_list('sop_instance_uid', flat=True))
+        sop_instance_uid_list1 = Counter(studies[1].objectuidsprocessed_set.values_list('sop_instance_uid', flat=True))
+        uid_list0 = Counter([u'1.3.6.1.4.1.5962.99.1.2282339064.1266597797.1479751121656.20.0',
+                             u'1.3.6.1.4.1.5962.99.1.2282339064.1266597797.1479751121656.26.0',
+                             u'1.3.6.1.4.1.5962.99.1.2282339064.1266597797.1479751121656.28.0'])
+        uid_list1 = Counter([u'1.2.276.0.7230010.3.1.4.8323329.11838.1483692281.541544',
+                             u'1.2.276.0.7230010.3.1.4.8323329.11853.1483692311.916929'])
+        self.assertEqual(sop_instance_uid_list0, uid_list0)
+        self.assertEqual(sop_instance_uid_list1, uid_list1)
 
         # Test that patient level data is recorded correctly
         self.assertEqual(studies[0].patientmoduleattr_set.get().patient_name, 'XR220^Samantha')
@@ -139,7 +167,7 @@ class ImportCarestreamDR7500(TestCase):
         self.assertEqual(studies[1].patientmoduleattr_set.get().patient_birth_date, datetime.date(2014, 6, 20))
         self.assertAlmostEqual(studies[0].patientstudymoduleattr_set.get().patient_age_decimal, Decimal(56.9))
 
-        #Test that irradiation event data is stored correctl
+        # Test that irradiation event data is stored correctly
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0].
             acquisition_protocol, 'ABD_1_VIEW')
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[1].
@@ -162,7 +190,7 @@ class ImportCarestreamDR7500(TestCase):
         self.assertAlmostEqual(studies[1].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[1].
             dose_area_product, Decimal(10.157 / 100000))
 
-        #Check that dose related distance measurement data is stored correctly
+        # Check that dose related distance measurement data is stored correctly
         self.assertAlmostEqual(studies[1].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0].
             irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get().
                 distance_source_to_detector, Decimal(11.5 * 100))
@@ -170,8 +198,7 @@ class ImportCarestreamDR7500(TestCase):
             irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get().
                 distance_source_to_detector, Decimal(11.5 * 100))
 
-
-        #Test that irradiation event source data is stored correctly
+        # Test that irradiation event source data is stored correctly
         self.assertAlmostEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0].
             irradeventxraysourcedata_set.get().exposure_time, Decimal(6))
         self.assertAlmostEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[1].
@@ -196,16 +223,12 @@ class ImportCarestreamDR7500(TestCase):
         self.assertAlmostEqual(studies[1].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[1].
             irradeventxraysourcedata_set.get().focal_spot_size, Decimal(1.2))
 
-
         self.assertAlmostEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0].
             irradeventxraysourcedata_set.get().average_xray_tube_current, Decimal(189))
         self.assertAlmostEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[1].
             irradeventxraysourcedata_set.get().average_xray_tube_current, Decimal(192))
         self.assertAlmostEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[2].
             irradeventxraysourcedata_set.get().average_xray_tube_current, Decimal(190))
-
-
-
 
         self.assertAlmostEqual(studies[1].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0].
             irradeventxraysourcedata_set.get().average_xray_tube_current, Decimal(500))
@@ -242,13 +265,10 @@ class ImportCarestreamDR7500(TestCase):
             irradeventxraysourcedata_set.get().xrayfilters_set.order_by('id')[1].xray_filter_thickness_maximum,
             Decimal(0.206))
 
-
         self.assertAlmostEqual(studies[1].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0].
             irradeventxraysourcedata_set.get().grid_focal_distance, Decimal(1828.8))
         self.assertAlmostEqual(studies[1].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[1].
             irradeventxraysourcedata_set.get().grid_focal_distance, Decimal(1828.8))
-
-
 
         #Test exposure data is stored correctly
         self.assertAlmostEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0].
@@ -262,7 +282,6 @@ class ImportCarestreamDR7500(TestCase):
             irradeventxraysourcedata_set.get().exposure_set.get().exposure, Decimal(10 * 1000))
         self.assertAlmostEqual(studies[1].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[1].
             irradeventxraysourcedata_set.get().exposure_set.get().exposure, Decimal(9 * 1000))
-
 
         #Test that irradiation event detector data is stored correctly
         self.assertAlmostEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0].
@@ -298,6 +317,15 @@ class ImportCarestreamDR7500(TestCase):
         self.assertAlmostEqual(studies[1].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[1].
             irradeventxraydetectordata_set.get().relative_xray_exposure, Decimal(1430))
 
+        # Test summary fields
+        self.assertAlmostEqual(studies[0].total_dap_a, Decimal(3.28 / 100000))
+        self.assertAlmostEqual(studies[0].total_dap, Decimal(3.28 / 100000))
+        self.assertEqual(studies[0].number_of_events, 3)
+        self.assertEqual(studies[0].number_of_planes, 1)
+        self.assertAlmostEqual(studies[1].total_dap_a, Decimal(21.17 / 100000))
+        self.assertAlmostEqual(studies[1].total_dap, Decimal(21.17 / 100000))
+        self.assertEqual(studies[1].number_of_events, 2)
+        self.assertEqual(studies[1].number_of_planes, 1)
 
 
     def test_filter_thickness_order(self):
@@ -347,7 +375,7 @@ class ImportCarestreamDRXRevolution(TestCase):
 
         dx_carestream_drx_revolution = os.path.join("test_files", "DX-Im-Carestream_DRX.dcm")
         root_tests = os.path.dirname(os.path.abspath(__file__))
-        dx(os.path.join(root_tests, dx_carestream_drx_revolution))
+        dx.dx(os.path.join(root_tests, dx_carestream_drx_revolution))
 
     def test_requested_procedure_name(self):
         """
@@ -356,3 +384,160 @@ class ImportCarestreamDRXRevolution(TestCase):
         study = GeneralStudyModuleAttr.objects.order_by('id')[0]
 
         self.assertEqual(study.requested_procedure_code_meaning, u'XR CHEST')
+
+
+class ImportDuplicateDX(TestCase):
+
+    def setUp(self):
+        """
+
+        """
+        from remapp.models import PatientIDSettings
+
+        pid = PatientIDSettings.objects.create()
+        pid.name_stored = True
+        pid.name_hashed = False
+        pid.id_stored = True
+        pid.id_hashed = False
+        pid.dob_stored = True
+        pid.save()
+
+        from remapp.extractors import dx
+
+        dx_ge_xr220_1 = os.path.join("test_files", "DX-Im-GE_XR220-1.dcm")
+        root_tests = os.path.dirname(os.path.abspath(__file__))
+
+        dx.dx(os.path.join(root_tests, dx_ge_xr220_1))
+        study_one = GeneralStudyModuleAttr.objects.order_by('pk')[0]
+        original_study_uid = study_one.study_instance_uid
+        original_sop_instance_uid = study_one.projectionxrayradiationdose_set.get().irradeventxraydata_set.get(
+            ).irradiation_event_uid
+        study_one.study_instance_uid = u'1.2.3.4.5.6.7.8'
+        study_one.projectionxrayradiationdose_set.get().irradeventxraydata_set.get(
+            ).irradiation_event_uid = u'2.3.4.5.6.7.8.9'
+        study_one.save()
+
+        # Check there is one study in the database
+        self.assertEqual(GeneralStudyModuleAttr.objects.all().count(), 1)
+
+        # Import the image again...
+        dx.dx(os.path.join(root_tests, dx_ge_xr220_1))
+
+        # Check there are two studies now
+        self.assertEqual(GeneralStudyModuleAttr.objects.all().count(), 2)
+
+        study_one.study_instance_uid = original_study_uid
+        study_one.projectionxrayradiationdose_set.get().irradeventxraydata_set.get(
+        ).irradiation_event_uid = original_sop_instance_uid
+        study_one.save()
+
+        # Now we are ready to test import with duplicate study UIDs.
+
+    def test_duplicate_study_dx(self):
+        """Imports second image, original two both have modality set.
+
+        """
+        from remapp.extractors import dx
+
+        dx_ge_xr220_2 = os.path.join("test_files", "DX-Im-GE_XR220-2.dcm")
+        root_tests = os.path.dirname(os.path.abspath(__file__))
+
+        self.assertEqual(GeneralStudyModuleAttr.objects.all().count(), 2)
+
+        study_1_pk = GeneralStudyModuleAttr.objects.order_by('pk').first().pk
+
+        with LogCapture(level=logging.DEBUG) as log:
+            dx.dx(os.path.join(root_tests, dx_ge_xr220_2))
+
+        log.check_present(('remapp.extractors.dx',
+                           'WARNING',
+                           u'Duplicate DX study UID 1.3.6.1.4.1.5962.99.1.2282339064.1266597797.1479751121656.24.0 in '
+                           u'database - could be a problem! There are 2 copies.'),
+                          ('remapp.extractors.dx',
+                           'DEBUG',
+                           u'Duplicate DX study UID 1.3.6.1.4.1.5962.99.1.2282339064.1266597797.1479751121656.24.0 - '
+                           u'first instance (pk={0}) with modality type assigned (DX) selected to import new event '
+                           u'into.'.format(study_1_pk))
+                          )
+
+        number_of_events_study_1 = GeneralStudyModuleAttr.objects.order_by('pk').first(
+            ).projectionxrayradiationdose_set.get().irradeventxraydata_set.all().count()
+        self.assertEqual(number_of_events_study_1, 2)
+        number_of_events_study_2 = GeneralStudyModuleAttr.objects.order_by('pk')[
+            1].projectionxrayradiationdose_set.get().irradeventxraydata_set.all().count()
+        self.assertEqual(number_of_events_study_2, 1)
+
+    def test_duplicate_study_dx_second_mod(self):
+        """Imports second image, later existing has modality set.
+
+        """
+        from remapp.extractors import dx
+
+        dx_ge_xr220_2 = os.path.join("test_files", "DX-Im-GE_XR220-2.dcm")
+        root_tests = os.path.dirname(os.path.abspath(__file__))
+
+        self.assertEqual(GeneralStudyModuleAttr.objects.all().count(), 2)
+
+        # Set first study modality to None
+        study_1 = GeneralStudyModuleAttr.objects.order_by('pk').first()
+        study_1.modality_type = None
+        study_1.save()
+
+        study_2_pk = GeneralStudyModuleAttr.objects.order_by('pk')[1].pk
+
+        with LogCapture(level=logging.DEBUG) as log:
+            dx.dx(os.path.join(root_tests, dx_ge_xr220_2))
+
+        log.check_present(('remapp.extractors.dx',
+                           'WARNING',
+                           u'Duplicate DX study UID 1.3.6.1.4.1.5962.99.1.2282339064.1266597797.1479751121656.24.0 in '
+                           u'database - could be a problem! There are 2 copies.'),
+                          ('remapp.extractors.dx',
+                           'DEBUG',
+                           u'Duplicate DX study UID 1.3.6.1.4.1.5962.99.1.2282339064.1266597797.1479751121656.24.0 - '
+                           u'first instance (pk={0}) with modality type assigned (DX) selected to import new event '
+                           u'into.'.format(study_2_pk))
+                          )
+
+        number_of_events_study_1 = GeneralStudyModuleAttr.objects.order_by('pk').first(
+            ).projectionxrayradiationdose_set.get().irradeventxraydata_set.all().count()
+        self.assertEqual(number_of_events_study_1, 1)
+        number_of_events_study_2 = GeneralStudyModuleAttr.objects.order_by('pk')[
+            1].projectionxrayradiationdose_set.get().irradeventxraydata_set.all().count()
+        self.assertEqual(number_of_events_study_2, 2)
+
+    def test_duplicate_study_dx_no_mod(self):
+        """Imports second image, original two don't have modality set.
+
+        """
+        from remapp.extractors import dx
+
+        dx_ge_xr220_2 = os.path.join("test_files", "DX-Im-GE_XR220-2.dcm")
+        root_tests = os.path.dirname(os.path.abspath(__file__))
+
+        self.assertEqual(GeneralStudyModuleAttr.objects.all().count(), 2)
+
+        # Set modality type to None
+        for study in GeneralStudyModuleAttr.objects.order_by('pk'):
+            study.modality_type = None
+            study.save()
+
+        with LogCapture(level=logging.DEBUG) as log:
+            dx.dx(os.path.join(root_tests, dx_ge_xr220_2))
+
+        log.check_present(('remapp.extractors.dx',
+                           'WARNING',
+                           u'Duplicate DX study UID 1.3.6.1.4.1.5962.99.1.2282339064.1266597797.1479751121656.24.0 in '
+                           u'database - could be a problem! There are 2 copies.'),
+                          ('remapp.extractors.dx',
+                           'WARNING',
+                           u'Duplicate DX study UID 1.3.6.1.4.1.5962.99.1.2282339064.1266597797.1479751121656.24.0, '
+                           u'none of which have modality_type assigned! Setting first instance to DX')
+                          )
+
+        number_of_events_study_1 = GeneralStudyModuleAttr.objects.order_by('pk').first(
+            ).projectionxrayradiationdose_set.get().irradeventxraydata_set.all().count()
+        self.assertEqual(number_of_events_study_1, 2)
+        number_of_events_study_2 = GeneralStudyModuleAttr.objects.order_by('pk')[
+            1].projectionxrayradiationdose_set.get().irradeventxraydata_set.all().count()
+        self.assertEqual(number_of_events_study_2, 1)

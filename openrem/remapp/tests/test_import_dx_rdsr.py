@@ -9,7 +9,6 @@ from remapp.extractors import rdsr
 from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
 
 
-
 class ImportDXRDSR(TestCase):
     def test_import_dx_rdsr_canon(self):
 
@@ -24,10 +23,10 @@ class ImportDXRDSR(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        rdsr(dicom_path)
+        rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.order_by('id')[0]
 
-        #Test that patient identifiable information is not stored
+        # Test that patient identifiable information is not stored
         self.assertEqual(study.patientmoduleattr_set.get().patient_name, None)
         self.assertEqual(study.patientmoduleattr_set.get().patient_id, None)
         self.assertEqual(study.patientmoduleattr_set.get().patient_birth_date, None)
@@ -70,7 +69,6 @@ class ImportDXRDSR(TestCase):
             code_meaning, 'Automated Data Collection')
         self.assertEqual(study.projectionxrayradiationdose_set.get().has_intent.code_meaning, 'Diagnostic Intent')
 
-
         self.assertAlmostEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.get().
             dose_area_product, Decimal(0.0000107))
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.get(
@@ -91,7 +89,6 @@ class ImportDXRDSR(TestCase):
         self.assertEqual(study.projectionxrayradiationdose_set.get().accumxraydose_set.get().
             accumprojxraydose_set.get().reference_point_definition, u'Unknown')
 
-
         self.assertAlmostEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.get(
             ).irradeventxraysourcedata_set.get().number_of_pulses, Decimal(1))
         self.assertAlmostEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.get(
@@ -104,6 +101,13 @@ class ImportDXRDSR(TestCase):
             ).irradeventxraysourcedata_set.get().exposure_time, Decimal(5))
         self.assertAlmostEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.get(
             ).irradeventxraysourcedata_set.get().focal_spot_size, Decimal(10))
+
+        # Test summary fields
+        self.assertAlmostEqual(study.total_dap_a, Decimal(0.0000107))
+        self.assertAlmostEqual(study.total_dap, Decimal(0.0000107))
+        self.assertEqual(study.number_of_events, 1)
+        self.assertEqual(study.number_of_planes, 1)
+
 
     def test_import_dx_rdsr_carestream(self):
 
@@ -118,7 +122,7 @@ class ImportDXRDSR(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        rdsr(dicom_path)
+        rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.order_by('id')[0]
 
         #Test that patient identifiable information is not stored
@@ -144,14 +148,14 @@ class ImportDXRDSR(TestCase):
         self.assertEqual(study.generalequipmentmoduleattr_set.get().device_serial_number, u'7664565786545')
         self.assertEqual(study.generalequipmentmoduleattr_set.get().software_versions, u'5.7.412.2035')
 
-       # Test that patient level data is recorded correctly
+        # Test that patient level data is recorded correctly
         self.assertEqual(study.patientstudymoduleattr_set.get().patient_age, u'029Y')
         self.assertAlmostEqual(study.patientstudymoduleattr_set.get().patient_age_decimal, Decimal(29.5))
         self.assertEqual(study.patientmoduleattr_set.get().patient_sex, u'F')
 
         # Test that projectionxrayradiationdose data is stored correctly
         self.assertEqual(study.projectionxrayradiationdose_set.get().procedure_reported.code_meaning, u'Projection X-Ray')
-        #One of these 'observer_type's should be 'person' but it only works if they are noth set as 'device'...
+        # One of these 'observer_type's should be 'person' but it only works if they are noth set as 'device'...
         self.assertEqual(study.projectionxrayradiationdose_set.get().observercontext_set.order_by('id')[0].
             observer_type.code_meaning, u'Device')
         self.assertEqual(study.projectionxrayradiationdose_set.get().observercontext_set.order_by('id')[1].
@@ -176,7 +180,7 @@ class ImportDXRDSR(TestCase):
         self.assertEqual(study.projectionxrayradiationdose_set.get().xray_source_data_available.code_meaning, u'Yes')
         self.assertEqual(study.projectionxrayradiationdose_set.get().xray_mechanical_data_available.code_meaning, u'Yes')
 
-        #Check that accumulated xray dose data is recorded correctly
+        # Check that accumulated xray dose data is recorded correctly
         self.assertAlmostEqual(study.projectionxrayradiationdose_set.get().accumxraydose_set.get().
                         accumintegratedprojradiogdose_set.get().dose_rp_total, Decimal(0.00029927175492))
         self.assertAlmostEqual(study.projectionxrayradiationdose_set.get().accumxraydose_set.get().
@@ -185,11 +189,11 @@ class ImportDXRDSR(TestCase):
                         accumintegratedprojradiogdose_set.get().reference_point_definition_code.code_meaning,
                             u'In Detector Plane')
 
-        #Check that x-ray irradiation event data is stored correctly
+        # Check that x-ray irradiation event data is stored correctly
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0].
             acquisition_plane.code_meaning, u'Single Plane')
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0].
-            date_time_started, datetime.datetime(2016,3,9,17,3,17,534000))
+            date_time_started, datetime.datetime(2016, 3, 9, 17, 3, 17, 534000))
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0].
             irradiation_event_type.code_meaning, u'Stationary Acquisition')
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[0].
@@ -242,7 +246,7 @@ class ImportDXRDSR(TestCase):
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[1].
             acquisition_plane.code_meaning, u'Single Plane')
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[1].
-            date_time_started, datetime.datetime(2016,3,9,17,3,12,87000))
+            date_time_started, datetime.datetime(2016, 3, 9, 17, 3, 12, 87000))
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[1].
             irradiation_event_type.code_meaning, u'Stationary Acquisition')
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[1].
@@ -295,7 +299,7 @@ class ImportDXRDSR(TestCase):
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[2].
             acquisition_plane.code_meaning, u'Single Plane')
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[2].
-            date_time_started, datetime.datetime(2016,3,9,17,3,55,725000))
+            date_time_started, datetime.datetime(2016, 3, 9, 17, 3, 55, 725000))
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[2].
             irradiation_event_type.code_meaning, u'Stationary Acquisition')
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[2].
@@ -350,7 +354,7 @@ class ImportDXRDSR(TestCase):
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[3].
             acquisition_plane.code_meaning, u'Single Plane')
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[3].
-            date_time_started, datetime.datetime(2016,3,9,17,3,35,590000))
+            date_time_started, datetime.datetime(2016, 3, 9, 17, 3, 35, 590000))
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[3].
             irradiation_event_type.code_meaning, u'Stationary Acquisition')
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[3].
@@ -421,7 +425,7 @@ class ImportDXRDSR(TestCase):
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[4].
             acquisition_plane.code_meaning, u'Single Plane')
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[4].
-            date_time_started, datetime.datetime(2016,3,9,17,3,41,533000))
+            date_time_started, datetime.datetime(2016, 3, 9, 17, 3, 41, 533000))
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[4].
             irradiation_event_type.code_meaning, u'Stationary Acquisition')
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[4].
@@ -470,3 +474,9 @@ class ImportDXRDSR(TestCase):
         self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')[4].
             irradeventxraysourcedata_set.get().deviceparticipant_set.get().device_serial_number,
                 u'7664565786545')
+
+        # Test summary fields
+        self.assertAlmostEqual(study.total_dap_a, Decimal(0.00000580999970))
+        self.assertAlmostEqual(study.total_dap, Decimal(0.00000580999970))
+        self.assertEqual(study.number_of_events, 5)
+        self.assertEqual(study.number_of_planes, 1)

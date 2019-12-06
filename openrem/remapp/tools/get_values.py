@@ -28,8 +28,10 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-from dicom.valuerep import PersonName
-from dicom import charset
+from builtins import str  # pylint: disable=redefined-builtin
+from pydicom.valuerep import PersonName
+from pydicom import charset
+from pydicom.charset import default_encoding
 from django.utils.encoding import smart_text
 import logging
 logger = logging.getLogger(__name__)
@@ -64,6 +66,10 @@ def get_value_num(tag, dataset):
     """
     if tag in dataset:
         val = dataset[tag].value
+        try:
+            val = val.decode(default_encoding)
+        except AttributeError:
+            pass
         if val != '':
             return val
 
@@ -139,16 +145,22 @@ def return_for_export(model, field):
         if val:
             if isinstance(val, datetime.date):
                 return val
-            val = unicode(val)
+            val = str(val)
         return val
     except ObjectDoesNotExist:
         return None
 
 
-def string_to_float(string_number):
+def test_numeric_value(string_number):
+    """
+    Tests if string can be converted to a float. If it can, return it
+    :param string_number: string to test if is a number
+    :return: string if number, nothing otherwise
+    """
     try:
-        return float(string_number)
-    except TypeError:
+        float(string_number)
+        return string_number
+    except ValueError:
         return None
 
 
@@ -185,8 +197,39 @@ def list_to_string(dicom_value):
     :param dicom_value: returned DICOM value, usually a name field. Might be single (string) or multivalue (list)
     :return: string of name(s)
     """
-    from dicom.dataelem import isMultiValue
+    from pydicom.dataelem import isMultiValue
     if dicom_value:
         if isMultiValue(dicom_value):
-            dicom_value = ' | '.join(dicom_value)
+            name_str = ''
+            for name in dicom_value:
+                if name.name_suffix:
+                    name_str += name.formatted(
+                        '%(family_name)s^%(given_name)s^%(middle_name)s^%(name_prefix)s^%(name_suffix)s')
+                elif name.name_prefix:
+                    name_str += name.formatted('%(family_name)s^%(given_name)s^%(middle_name)s^%(name_prefix)s')
+                elif name.middle_name:
+                    name_str += name.formatted('%(family_name)s^%(given_name)s^%(middle_name)s')
+                elif name.given_name:
+                    name_str += name.formatted('%(family_name)s^%(given_name)s')
+                elif name.family_name:
+                    name_str += name.formatted('%(family_name)s')
+                # name_str += name.original_string.decode()
+                name_str += ' | '
+            name_str = name_str[:-3]
+            return name_str
         return dicom_value
+
+
+def get_keys_by_value(dict_of_elements, value_to_find):
+    """
+    Get a list of keys from a dictionary which have the given value
+    :param dict_of_elements: a dictionary of elements
+    :param value_to_find: the value to look for in the dictionary
+    :return: list of key names matching the given value
+    """
+    list_of_keys = list()
+    list_of_items = list(dict_of_elements.items())
+    for item in list_of_items:
+        if item[1] == value_to_find:
+            list_of_keys.append(item[0])
+    return list_of_keys

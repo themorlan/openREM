@@ -14,8 +14,8 @@
 #
 #    Additional permission under section 7 of GPLv3:
 #    You shall not make any use of the name of The Royal Marsden NHS
-#    Foundation trust in connection with this Program in any press or 
-#    other public announcement without the prior written consent of 
+#    Foundation trust in connection with this Program in any press or
+#    other public announcement without the prior written consent of
 #    The Royal Marsden NHS Foundation Trust.
 #
 #    You should have received a copy of the GNU General Public License
@@ -62,7 +62,7 @@ def get_not_pt(dataset):
 
     if patient_name:
         for pattern in name_indicators:
-            if fnmatch.fnmatch(patient_name.lower(), pattern.not_patient_name.lower()):
+            if fnmatch.fnmatch(patient_name.family_comma_given().lower(), pattern.not_patient_name.lower()):
                 name_contains += [pattern.not_patient_name.lower()]
 
     if id_contains or name_contains:

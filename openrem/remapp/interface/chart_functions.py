@@ -1,3 +1,38 @@
+# This Python file uses the following encoding: utf-8
+#    OpenREM - Radiation Exposure Monitoring tools for the physicist
+#    Copyright (C) 2017  The Royal Marsden NHS Foundation Trust
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    Additional permission under section 7 of GPLv3:
+#    You shall not make any use of the name of The Royal Marsden NHS
+#    Foundation trust in connection with this Program in any press or
+#    other public announcement without the prior written consent of
+#    The Royal Marsden NHS Foundation Trust.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""
+..  module:: chart_functions
+    :synopsis: Helper functions for calculating chart data
+
+..  moduleauthor:: David Platten
+
+"""
+
+from builtins import filter  # pylint: disable=redefined-builtin
+from builtins import range  # pylint: disable=redefined-builtin
+
+
 def average_chart_inc_histogram_data(database_events, db_display_name_relationship, db_series_names, db_value_name,
                                      value_multiplier, plot_average, plot_freq, plot_series_per_system,
                                      plot_average_choice, median_available, num_hist_bins,
@@ -52,6 +87,8 @@ def average_chart_inc_histogram_data(database_events, db_display_name_relationsh
 
     return_structure = {}
 
+    summary_annotations = {}
+
     if plot_average or plot_freq:
         # Obtain a list of series names
         return_structure['series_names'] = list(
@@ -67,314 +104,118 @@ def average_chart_inc_histogram_data(database_events, db_display_name_relationsh
 
         return_structure['summary'] = []
 
-        if median_available and plot_average_choice == 'both':
-
-            if plot_series_per_system and plot_average:
-                # Calculate the mean, median and frequency for each x-ray system
-
-                for system in return_structure['system_list']:
-                    if exclude_constant_angle:
-                        # Exclude "Constant Angle Acquisitions" from the calculations
-                        return_structure['summary'].append(database_events.filter(
-                            **{db_display_name_relationship: system}).values('db_series_names_to_use').annotate(
-                            mean=Avg(
-                                Case(
-                                    When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=None),
+        if plot_average or plot_freq:
+            # Calculate the mean, median and frequency for each x-ray system
+            if exclude_constant_angle:
+                if plot_average:
+                    if plot_average_choice == 'both' or plot_average_choice == 'mean':
+                        summary_annotations['mean'] = Avg(
+                            Case(
+                                When(
+                                    ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=None),
                                     default=db_value_name, output_field=FloatField()
-                                )
-                            ) * value_multiplier,
-                            median=Median(
-                                Case(
-                                    When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=None),
+                            )
+                        ) * value_multiplier
+                    if plot_average_choice == 'both' or plot_average_choice == 'median':
+                        summary_annotations['median'] = Median(
+                            Case(
+                                When(
+                                    ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=None),
                                     default=db_value_name, output_field=FloatField()
-                                )
-                            ) * value_multiplier,
-                            num=Sum(
-                                Case(
-                                    When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=0),
-                                    default=1, output_field=IntegerField()
-                                )
                             )
-                        ).order_by('db_series_names_to_use'))
-                    else:
-                        # Don't exclude "Constant Angle Acquisitions" from the calculations
-                        return_structure['summary'].append(database_events.filter(
-                            **{db_display_name_relationship: system}).values('db_series_names_to_use').annotate(
-                            mean=Avg(db_value_name) * value_multiplier,
-                            median=Median(db_value_name) * value_multiplier,
-                            num=Count(db_value_name)).order_by('db_series_names_to_use'))
-
-            elif plot_average:
-                # Calculate the mean, median and frequency for all data combined
-
-                if exclude_constant_angle:
-                    # Exclude "Constant Angle Acquisitions" from the calculations
-                    return_structure['summary'].append(database_events.values('db_series_names_to_use').annotate(
-                        mean=Avg(
-                            Case(
-                                When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=None),
-                                default=db_value_name, output_field=FloatField()
-                            )
-                        ) * value_multiplier,
-                        median=Median(
-                            Case(
-                                When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=None),
-                                default=db_value_name, output_field=FloatField()
-                            )
-                        ) * value_multiplier,
-                        num=Sum(
-                            Case(
-                                When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=0),
-                                default=1, output_field=IntegerField()
-                            )
+                        ) * value_multiplier
+                if plot_average or plot_freq:
+                    summary_annotations['num'] = Sum(
+                        Case(
+                            When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=0),
+                            default=1, output_field=IntegerField()
                         )
-                    ).order_by('db_series_names_to_use'))
-                else:
-                    # Don't exclude "Constant Angle Acquisitions" from the calculations
-                    return_structure['summary'].append(database_events.values('db_series_names_to_use').annotate(
-                        mean=Avg(db_value_name) * value_multiplier,
-                        median=Median(db_value_name) * value_multiplier,
-                        num=Count(db_value_name)).order_by('db_series_names_to_use'))
-
+                    )
             else:
-                # Just calculate frequency of each series
-                if exclude_constant_angle:
-                    # Exclude "Constant Angle Acquisitions" from the calculations
-                    return_structure['summary'].append(database_events.values('db_series_names_to_use').annotate(
-                        num=Sum(
-                            Case(
-                                When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=0),
-                                default=1, output_field=IntegerField()
-                            )
-                        )
-                    ).order_by('db_series_names_to_use'))
-                else:
-                    # Don't exclude "Constant Angle Acquisitions" from the calculations
-                    return_structure['summary'].append(database_events.values('db_series_names_to_use').annotate(
-                        num=Count(db_value_name)).order_by('db_series_names_to_use'))
+                # Don't exclude "Constant Angle Acquisitions" from the calculations
+                if plot_average:
+                    if plot_average_choice == 'both' or plot_average_choice == 'mean':
+                        summary_annotations['mean'] = Avg(db_value_name) * value_multiplier
+                    if plot_average_choice == 'both' or plot_average_choice == 'median':
+                        summary_annotations['median'] = Median(db_value_name) * value_multiplier
+                if plot_average or plot_freq:
+                    summary_annotations['num'] = Count(db_value_name)
 
-        elif median_available and plot_average_choice == 'median':
-
-            if plot_series_per_system and plot_average:
-                # Calculate the median and frequency for each x-ray system
-
+            if plot_series_per_system:
                 for system in return_structure['system_list']:
-                    if exclude_constant_angle:
-                        # Exclude "Constant Angle Acquisitions" from the calculations
-                        return_structure['summary'].append(database_events.filter(
-                            **{db_display_name_relationship: system}).values('db_series_names_to_use').annotate(
-                            median=Median(
-                                Case(
-                                    When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=None),
-                                    default=db_value_name, output_field=FloatField()
-                                )
-                            ) * value_multiplier,
-                            num=Sum(
-                                Case(
-                                    When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=0),
-                                    default=1, output_field=IntegerField()
-                                )
-                            )
-                        ).order_by('db_series_names_to_use'))
-                    else:
-                        # Don't exclude "Constant Angle Acquisitions" from the calculations
-                        return_structure['summary'].append(database_events.filter(
-                            **{db_display_name_relationship: system}).values('db_series_names_to_use').annotate(
-                            median=Median(db_value_name) * value_multiplier,
-                            num=Count(db_value_name)).order_by('db_series_names_to_use'))
-
-            elif plot_average:
-                # Calculate the median and frequency for all data combined
-
-                if exclude_constant_angle:
-                    # Exclude "Constant Angle Acquisitions" from the calculations
-                    return_structure['summary'].append(database_events.values('db_series_names_to_use').annotate(
-                        median=Median(
-                            Case(
-                                When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=None),
-                                default=db_value_name, output_field=FloatField()
-                            )
-                        ) * value_multiplier,
-                        num=Sum(
-                            Case(
-                                When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=0),
-                                default=1, output_field=IntegerField()
-                            )
-                        )
-                    ).order_by('db_series_names_to_use'))
-                else:
-                    # Don't exclude "Constant Angle Acquisitions" from the calculations
-                    return_structure['summary'].append(database_events.values('db_series_names_to_use').annotate(
-                        median=Median(db_value_name) * value_multiplier,
-                        num=Count(db_value_name)).order_by('db_series_names_to_use'))
-
-            elif plot_series_per_system and plot_freq:
-                # Just calculate frequency of each series
-                for system in return_structure['system_list']:
-                    if exclude_constant_angle:
-                        # Exclude "Constant Angle Acquisitions" from the calculations
-                        return_structure['summary'].append(database_events.filter(
-                            **{db_display_name_relationship: system}).values('db_series_names_to_use').annotate(
-                            num=Sum(
-                                Case(
-                                    When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=0),
-                                    default=1, output_field=IntegerField()
-                                )
-                            )
-                        ).order_by('db_series_names_to_use'))
-                    else:
-                        # Don't exclude "Constant Angle Acquisitions" from the calculations
-                        return_structure['summary'].append(database_events.filter(
-                            **{db_display_name_relationship: system}).values('db_series_names_to_use').annotate(
-                            num=Count(db_value_name)).order_by('db_series_names_to_use'))
+                    return_structure['summary'].append(database_events.filter(
+                        **{db_display_name_relationship: system}).values('db_series_names_to_use').annotate(
+                        **summary_annotations).order_by('db_series_names_to_use'))
             else:
-                # Just calculate frequency of each series
-                if exclude_constant_angle:
-                    # Exclude "Constant Angle Acquisitions" from the calculations
-                    return_structure['summary'].append(database_events.values('db_series_names_to_use').annotate(
-                        num=Sum(
-                            Case(
-                                When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=0),
-                                default=1, output_field=IntegerField()
-                            )
-                        )
-                    ).order_by('db_series_names_to_use'))
-                else:
-                    # Don't exclude "Constant Angle Acquisitions" from the calculations
-                    return_structure['summary'].append(database_events.values('db_series_names_to_use').annotate(
-                        num=Count(db_value_name)).order_by('db_series_names_to_use'))
-
-        else:
-
-            if plot_series_per_system and plot_average:
-                # Calculate the mean and frequency for each x-ray system
-
-                for system in return_structure['system_list']:
-                    if exclude_constant_angle:
-                        # Exclude "Constant Angle Acquisitions" from the calculations
-                        return_structure['summary'].append(database_events.filter(
-                            **{db_display_name_relationship: system}).values('db_series_names_to_use').annotate(
-                            mean=Avg(
-                                Case(
-                                    When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=None),
-                                    default=db_value_name, output_field=FloatField()
-                                )
-                            ) * value_multiplier,
-                            num=Sum(
-                                Case(
-                                    When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=0),
-                                    default=1, output_field=IntegerField()
-                                )
-                            )
-                        ).order_by('db_series_names_to_use'))
-                    else:
-                        # Don't exclude "Constant Angle Acquisitions" from the calculations
-                        return_structure['summary'].append(database_events.filter(
-                            **{db_display_name_relationship: system}).values('db_series_names_to_use').annotate(
-                            mean=Avg(db_value_name) * value_multiplier,
-                            num=Count(db_value_name)).order_by('db_series_names_to_use'))
-
-            elif plot_average:
-                # Calculate the mean and frequency for all data combined
-
-                if exclude_constant_angle:
-                    # Exclude "Constant Angle Acquisitions" from the calculations
-                    return_structure['summary'].append(database_events.values('db_series_names_to_use').annotate(
-                        mean=Avg(
-                            Case(
-                                When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=None),
-                                default=db_value_name, output_field=FloatField()
-                            )
-                        ) * value_multiplier,
-                        num=Sum(
-                            Case(
-                                When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=0),
-                                default=1, output_field=IntegerField()
-                            )
-                        )
-                    ).order_by('db_series_names_to_use'))
-                else:
-                    # Don't exclude "Constant Angle Acquisitions" from the calculations
-                    return_structure['summary'].append(database_events.values('db_series_names_to_use').annotate(
-                        mean=Avg(db_value_name) * value_multiplier,
-                        num=Count(db_value_name)).order_by('db_series_names_to_use'))
-
-            else:
-                # Just calculate frequency of each series
-                if exclude_constant_angle:
-                    # Exclude "Constant Angle Acquisitions" from the calculations
-                    return_structure['summary'].append(database_events.values('db_series_names_to_use').annotate(
-                        num=Sum(
-                            Case(
-                                When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=0),
-                                default=1, output_field=IntegerField()
-                            )
-                        )
-                    ).order_by('db_series_names_to_use'))
-                else:
-                    # Don't exclude "Constant Angle Acquisitions" from the calculations
-                    return_structure['summary'].append(database_events.values('db_series_names_to_use').annotate(
-                        num=Count(db_value_name)).order_by('db_series_names_to_use'))
+                return_structure['summary'].append(
+                    database_events.values('db_series_names_to_use').annotate(**summary_annotations).order_by(
+                        'db_series_names_to_use'))
 
         # Force each item in return_structure['summary'] to be a list
         for index in range(len(return_structure['summary'])):
             return_structure['summary'][index] = list(return_structure['summary'][index])
 
-        # Fill in default values where data for a series name is missing for any of the systems
-        if plot_series_per_system:
-            for index in range(len(return_structure['system_list'])):
-                missing_names =\
-                    list(set(return_structure['series_names']) -
-                         set([d['db_series_names_to_use'] for d in return_structure['summary'][index]]))
-                for missing_name in missing_names:
-                    if plot_average:
-                        if median_available and plot_average_choice == 'both':
-                            (return_structure['summary'][index]).append(
-                                {'median': 0, 'mean': 0, 'db_series_names_to_use': missing_name, 'num': 0})
-                        elif median_available and plot_average_choice == 'median':
-                            (return_structure['summary'][index]).append(
-                                {'median': 0, 'db_series_names_to_use': missing_name, 'num': 0})
-                        else:
-                            (return_structure['summary'][index]).append(
-                                {'mean': 0, 'db_series_names_to_use': missing_name, 'num': 0})
-                    elif plot_freq:
+        # Fill in default values where data for a series name is missing for any of
+        # the systems even if plot_series_per_system is false
+        for index in range(len(return_structure['system_list'])):
+            missing_names =\
+                list(set(return_structure['series_names']) -
+                     set([d['db_series_names_to_use'] for d in return_structure['summary'][index]]))
+            for missing_name in missing_names:
+                if plot_average:
+                    if median_available and plot_average_choice == 'both':
                         (return_structure['summary'][index]).append(
-                            {'db_series_names_to_use': missing_name, 'num': 0})
+                            {'median': 0, 'mean': 0, 'db_series_names_to_use': missing_name, 'num': 0})
+                    elif median_available and plot_average_choice == 'median':
+                        (return_structure['summary'][index]).append(
+                            {'median': 0, 'db_series_names_to_use': missing_name, 'num': 0})
+                    else:
+                        (return_structure['summary'][index]).append(
+                            {'mean': 0, 'db_series_names_to_use': missing_name, 'num': 0})
+                elif plot_freq:
+                    (return_structure['summary'][index]).append(
+                        {'db_series_names_to_use': missing_name, 'num': 0})
 
-                # Rearrange the list into the same order as series_names
-                summary_temp = []
-                for series_name in return_structure['series_names']:
-                    summary_temp.append(filter(lambda item: item['db_series_names_to_use'] == series_name,
-                                               return_structure['summary'][index])[0])
-                return_structure['summary'][index] = summary_temp
+            # Rearrange the series using the same method that is used to sort the series_names below
+            if case_insensitive_categories:
+                return_structure['summary'][index] = sorted(return_structure['summary'][index], key=lambda k: stringIfNone(k['db_series_names_to_use']).lower())
+            else:
+                return_structure['summary'][index] = sorted(return_structure['summary'][index], key=lambda k: stringIfNone(k['db_series_names_to_use']))
+
+    # Replace None with '' in return_structure['series_names'] and sort the result using lowercase - will now be sorted in the same order as the return_structure['summary'][0,1,2,etc] data
+    if case_insensitive_categories:
+        return_structure['series_names'] = sorted([stringIfNone(entry).lower() for entry in return_structure['series_names']])
+    else:
+        return_structure['series_names'] = sorted([stringIfNone(entry) for entry in return_structure['series_names']])
 
     if plot_average and calculate_histograms:
+        histogram_annotations = {}
         # Calculate histogram data for each series from each system
         return_structure['histogram_data'] =\
-            [[[None for k in xrange(2)] for j in xrange(len(return_structure['series_names']))]
-             for i in xrange(len(return_structure['system_list']))]
+            [[[None for k in range(2)] for j in range(len(return_structure['series_names']))]
+             for i in range(len(return_structure['system_list']))]
 
         if exclude_constant_angle:
             # Exclude "Constant Angle Acquisitions" from the calculations
-            value_ranges = database_events.values('db_series_names_to_use').annotate(
-                min_value=Min(
-                    Case(
-                        When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=None),
-                        default=db_value_name, output_field=FloatField()
-                    )
-                ),
-                max_value=Max(
+            histogram_annotations['min_value'] = Min(
                     Case(
                         When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=None),
                         default=db_value_name, output_field=FloatField()
                     )
                 )
-            ).order_by('db_series_names_to_use')
+            histogram_annotations['max_value'] = Max(
+                    Case(
+                        When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=None),
+                        default=db_value_name, output_field=FloatField()
+                    )
+                )
         else:
             # Don't exclude "Constant Angle Acquisitions" from the calculations
-            value_ranges = database_events.values('db_series_names_to_use').annotate(
-                    min_value=Min(db_value_name, output_field=FloatField()),
-                    max_value=Max(db_value_name, output_field=FloatField())).order_by('db_series_names_to_use')
+            histogram_annotations['min_value'] = Min(db_value_name, output_field=FloatField())
+            histogram_annotations['max_value'] = Max(db_value_name, output_field=FloatField())
+
+        value_ranges = database_events.values('db_series_names_to_use').annotate(
+            **histogram_annotations).order_by('db_series_names_to_use')
 
         for system_i, system in enumerate(return_structure['system_list']):
             for series_i, series_name in enumerate(return_structure['series_names']):
@@ -589,3 +430,15 @@ def floatIfValueNone(val):
     """
     import numbers
     return float(val) if isinstance(val, numbers.Number) else None
+
+
+def stringIfNone(val):
+    """ This function returns the passed parameter if it is a string; otherwise it returns ''.
+
+    Args:
+        val: any variable, but hopefully one that is a string
+
+    Returns:
+        str if it is a string; otherwise ''
+    """
+    return val if isinstance(val, basestring) else ''

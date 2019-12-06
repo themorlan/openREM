@@ -3,7 +3,7 @@
 
 from __future__ import unicode_literals
 from django.test import TestCase
-from dicom.valuerep import MultiString
+from pydicom.valuerep import MultiString
 from remapp.tools.hash_id import hash_id
 
 class HashIDTests(TestCase):

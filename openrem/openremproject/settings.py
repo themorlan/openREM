@@ -5,6 +5,9 @@ from __future__ import absolute_import
 # library.  If you don't have this then `from celery.schedules import`
 # becomes `proj.celery.schedules` in Python 2.x since it allows
 # for relative imports by default.
+from celery.schedules import crontab
+import os
+
 
 # Debug is now set to false - you can turn it back on in local_settings if you need to
 DEBUG = False
@@ -12,24 +15,22 @@ TEMPLATE_DEBUG = False
 
 # Celery settings
 BROKER_URL = 'amqp://guest:guest@localhost//'
-BROKER_TRANSPORT_OPTIONS = {'confirm_publish': True}
-#CELERY_RESULT_BACKEND = 'amqp'
 
-
-#: Only add pickle to this list if your broker is secured
-#: from unwanted access (see userguide/security.html)
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+
 CELERY_DEFAULT_QUEUE = 'default'
+
 CELERYD_PREFETCH_MULTIPLIER = 1
 
-from celery.schedules import crontab
+FLOWER_PORT = 5555
+
 CELERYBEAT_SCHEDULE = {
     'trigger-dicom-keep-alive': {
         'task': 'remapp.netdicom.keepalive.keep_alive',
         'schedule': crontab(minute='*/1'),
-        'options': {'expires': 10},   # expire if not run ten seconds after being scheduled
+        'options': {'expires': 10},  # expire if not run ten seconds after being scheduled
     },
     'trigger-delete-expired-hl7-messages': {
         'task': 'hl7.hl7updater.del_old_messages_from_db',
@@ -38,12 +39,14 @@ CELERYBEAT_SCHEDULE = {
     },
 }
 
-import os
-ROOT_PROJECT = os.path.join(os.path.split(__file__)[0],"..")
+
+ROOT_PROJECT = os.path.join(os.path.split(__file__)[0], "..")
 
 # **********************************************************************
 #
 # Database settings have been moved to local_settings.py
+# Line below will be overwritten there. Included here for docs issue
+DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': 'openrem.db', 'USER': '', 'PASSWORD': '', 'HOST': '', 'PORT': '', }}
 #
 # **********************************************************************
 
@@ -70,12 +73,14 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = False
 
-# Default date format for exporting to Excel xlsx spreadsheets - use Excel codes, override it in local_settings.py
+# Default date and time format for exporting to Excel xlsx spreadsheets - use Excel codes, override it in local_settings.py
 XLSX_DATE = 'dd/mm/yyyy'
+XLSX_TIME = 'hh:mm:ss'
 
 #
 # MEDIA_ROOT filepath has been moved to local_settings.py
-#
+# Line below will be overwritten there. Included here for docs issue
+MEDIA_ROOT = ''
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -96,11 +101,12 @@ STATICFILES_DIRS = (
 )
 
 #
-# SECRET_KEY moved to local_settings.py
+# SECRET_KEY must be changed in local_settings.py
 #
+SECRET_KEY = 'youmustchangethiskeyinlocal_settings'
 
-# URL of the login page
-LOGIN_URL = '/login/'
+# URL name of the login page (as defined in urls.py)
+LOGIN_URL = 'login'
 
 TEMPLATES = [
     {
@@ -126,24 +132,20 @@ TEMPLATES = [
     },
 ]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'pagination.middleware.PaginationMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-)
+]
 
 ROOT_URLCONF = 'openremproject.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'openremproject.wsgi.application'
-
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -158,11 +160,10 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'remapp',
     'django_filters',
-    'pagination',
     'django.contrib.humanize',
     'solo',
     'crispy_forms',
-    'debug_toolbar',
+    'django_js_reverse'
 )
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
@@ -177,8 +178,8 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-            'datefmt' : "%d/%b/%Y %H:%M:%S"
+            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt': "%d/%b/%Y %H:%M:%S"
         },
         'simple': {
             'format': '%(levelname)s %(message)s'
@@ -197,26 +198,26 @@ LOGGING = {
         },
         'file': {
             'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-			'maxBytes': 10*1024*1024,
-            'backupCount': 5,
+            'class': 'logging.FileHandler',
             'filename': 'openrem.log',
             'formatter': 'verbose'
         },
         'qr_file': {
             'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-			'maxBytes': 10*1024*1024,
-            'backupCount': 5,
+            'class': 'logging.FileHandler',
             'filename': 'openrem_qrscu.log',
             'formatter': 'verbose'
         },
         'store_file': {
             'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-			'maxBytes': 10*1024*1024,
-            'backupCount': 5,
+            'class': 'logging.FileHandler',
             'filename': 'openrem_storescp.log',
+            'formatter': 'verbose'
+        },
+        'extractor_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'openrem_extractor.log',
             'formatter': 'verbose'
         },
         'hl7_file': {
@@ -250,20 +251,50 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False,
         },
+        'remapp.extractors.ct_toshiba': {
+            'handlers': ['extractor_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     }
 }
 
-# Not patient indicators: please override in local_settings.py
-ID_INDICATORS = [u'phy', u'test', u'qa']
-NAME_INDICATORS = [u'phys', u'test', u'qa']
+# Dummy locations of various tools for DICOM RDSR creation from CT images. Don't set value here - copy variables into
+# # local_settings.py and configure there.
+DCMTK_PATH = ''
+DCMCONV = os.path.join(DCMTK_PATH, 'dcmconv.exe')
+DCMMKDIR = os.path.join(DCMTK_PATH, 'dcmmkdir.exe')
+JAVA_EXE = ''
+JAVA_OPTIONS = '-Xms256m -Xmx512m -Xss1m -cp'
+PIXELMED_JAR = ''
+PIXELMED_JAR_OPTIONS = '-Djava.awt.headless=true com.pixelmed.doseocr.OCR -'
 
-try:
-    LOCAL_SETTINGS
-except NameError:
-    try:
-        from openremproject.local_settings import *
-    except ImportError:
-        try:
-            from openrem.openremproject.local_settings import *
-        except ImportError:
-            pass
+# Dummy variable for running the website in a virtual_directory. Don't set value here - copy variable into
+# local_settings.py and configure there.
+VIRTUAL_DIRECTORY = ''
+
+# E-mail server settings - see https://docs.djangoproject.com/en/1.8/topics/email/
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = 'a.user.that.can.send'
+EMAIL_HOST_PASSWORD = 'the.above.user.password'
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = False
+EMAIL_DOSE_ALERT_SENDER = 'your.alert@email.address'
+EMAIL_OPENREM_URL = 'http://your.openrem.server'
+
+# try:
+#     LOCAL_SETTINGS
+# except NameError:
+#     print('Name Error')
+#     try:
+#         from .openremproject.local_settings import DEBUG
+#         print('Debug should have been imported')
+#     except ImportError:
+#         print("that didn't work")
+#         try:
+#             from openrem.openremproject.local_settings import *
+#         except ImportError:
+#             pass
+
+from .local_settings import *  # NOQA: F401

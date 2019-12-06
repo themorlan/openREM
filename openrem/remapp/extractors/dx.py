@@ -33,13 +33,16 @@
 ..  moduleauthor:: David Platten, Ed McDonagh
 
 """
+from __future__ import division
+from __future__ import absolute_import
 
+from past.utils import old_div
 import os
 import sys
 import django
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('remapp.extractors.dx')  # Explicitly named so that it is still handled when using __main__
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -68,13 +71,14 @@ def _xrayfilters(filttype, material, thickmax, thickmin, source):
                 filter_types[filttype]["code"], filter_types[filttype]["meaning"]
             )
     if material:
+        logger.debug("In _xrayfilters, attempting to match material {0}".format(material.strip().lower()))
         if material.strip().lower() == 'molybdenum':
             filters.xray_filter_material = get_or_create_cid('C-150F9', 'Molybdenum or Molybdenum compound')
         if material.strip().lower() == 'rhodium':
             filters.xray_filter_material = get_or_create_cid('C-167F9', 'Rhodium or Rhodium compound')
         if material.strip().lower() == 'silver':
             filters.xray_filter_material = get_or_create_cid('C-137F9', 'Silver or Silver compound')
-        if material.strip().lower() == 'aluminum':
+        if material.strip().lower() in ['aluminum', 'aluminium']:  # Illegal spelling of Aluminium found in Philips DiDi
             filters.xray_filter_material = get_or_create_cid('C-120F9', 'Aluminum or Aluminum compound')
         if material.strip().lower() == 'copper':
             filters.xray_filter_material = get_or_create_cid('C-127F9', 'Copper or Copper compound')
@@ -120,7 +124,7 @@ def _xray_filters_multiple(xray_filter_material, xray_filter_thickness_maximum, 
             pass
 
 def _xray_filters_prep(dataset, source):
-    from dicom.valuerep import MultiValue
+    from pydicom.valuerep import MultiValue
     from remapp.tools.get_values import get_value_kw
 
     xray_filter_type = get_value_kw('FilterType', dataset)
@@ -134,14 +138,26 @@ def _xray_filters_prep(dataset, source):
     if xray_filter_material is None:
         return
 
-    # Get multiple filters into dicom MultiValue or lists
+    # Get multiple filters into pydicom MultiValue or lists
     if ',' in xray_filter_material and not isinstance(xray_filter_material, MultiValue):
         xray_filter_material = xray_filter_material.split(',')
 
     xray_filter_thickness_minimum = get_value_kw('FilterThicknessMinimum', dataset)
     xray_filter_thickness_maximum = get_value_kw('FilterThicknessMaximum', dataset)
+    if not isinstance(xray_filter_thickness_minimum, (MultiValue, list)):
+        try:
+            float(xray_filter_thickness_minimum)
+        except ValueError:
+            if ',' in xray_filter_thickness_minimum:
+                xray_filter_thickness_minimum = xray_filter_thickness_minimum.split(',')
+    if not isinstance(xray_filter_thickness_maximum, (MultiValue, list)):
+        try:
+            float(xray_filter_thickness_maximum)
+        except ValueError:
+            if ',' in xray_filter_thickness_maximum:
+                xray_filter_thickness_maximum = xray_filter_thickness_maximum.split(',')
 
-    if type(xray_filter_material) is list:
+    if isinstance(xray_filter_material, (MultiValue, list)):
         _xray_filters_multiple(
             xray_filter_material, xray_filter_thickness_maximum, xray_filter_thickness_minimum, source)
     else:
@@ -397,7 +413,7 @@ def _irradiationeventxraydata(dataset, proj, ch):  # TID 10003
         event.comment = event.comment + ', ' + exposure_control
 
     dap = get_value_kw('ImageAndFluoroscopyAreaDoseProduct', dataset)
-    if dap: event.dose_area_product = dap / 100000  # Value of DICOM tag (0018,115e) in dGy.cm2, converted to Gy.m2
+    if dap: event.dose_area_product = old_div(dap, 100000)  # Value of DICOM tag (0018,115e) in dGy.cm2, converted to Gy.m2
     event.save()
 
     _irradiationeventxraydetectordata(dataset, event)
@@ -462,31 +478,27 @@ def _generalequipmentmoduleattributes(dataset, study, ch):
     equip.date_of_last_calibration = get_date("DateOfLastCalibration", dataset)
     equip.time_of_last_calibration = get_time("TimeOfLastCalibration", dataset)
 
-    equip_display_name, created = UniqueEquipmentNames.objects.get_or_create(manufacturer=equip.manufacturer,
-                                                                             manufacturer_hash=hash_id(
-                                                                                 equip.manufacturer),
-                                                                             institution_name=equip.institution_name,
-                                                                             institution_name_hash=hash_id(
-                                                                                 equip.institution_name),
-                                                                             station_name=equip.station_name,
-                                                                             station_name_hash=hash_id(
-                                                                                 equip.station_name),
-                                                                             institutional_department_name=equip.institutional_department_name,
-                                                                             institutional_department_name_hash=hash_id(
-                                                                                 equip.institutional_department_name),
-                                                                             manufacturer_model_name=equip.manufacturer_model_name,
-                                                                             manufacturer_model_name_hash=hash_id(
-                                                                                 equip.manufacturer_model_name),
-                                                                             device_serial_number=equip.device_serial_number,
-                                                                             device_serial_number_hash=hash_id(
-                                                                                 equip.device_serial_number),
-                                                                             software_versions=equip.software_versions,
-                                                                             software_versions_hash=hash_id(
-                                                                                 equip.software_versions),
-                                                                             gantry_id=equip.gantry_id,
-                                                                             gantry_id_hash=hash_id(equip.gantry_id),
-                                                                             hash_generated=True
-                                                                             )
+    equip_display_name, created = UniqueEquipmentNames.objects.get_or_create(
+        manufacturer=equip.manufacturer,
+        manufacturer_hash=hash_id(equip.manufacturer),
+        institution_name=equip.institution_name,
+        institution_name_hash=hash_id(equip.institution_name),
+        station_name=equip.station_name,
+        station_name_hash=hash_id(equip.station_name),
+        institutional_department_name=equip.institutional_department_name,
+        institutional_department_name_hash=hash_id(equip.institutional_department_name),
+        manufacturer_model_name=equip.manufacturer_model_name,
+        manufacturer_model_name_hash=hash_id(equip.manufacturer_model_name),
+        device_serial_number=equip.device_serial_number,
+        device_serial_number_hash=hash_id(equip.device_serial_number),
+        software_versions=equip.software_versions,
+        software_versions_hash=hash_id(equip.software_versions),
+        gantry_id=equip.gantry_id,
+        gantry_id_hash=hash_id(equip.gantry_id),
+        hash_generated=True,
+        device_observer_uid=None,
+        device_observer_uid_hash=None
+    )
     if created:
         if equip.institution_name and equip.station_name:
             equip_display_name.display_name = equip.institution_name + ' ' + equip.station_name
@@ -528,15 +540,15 @@ def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
     pat.not_patient_indicator = get_not_pt(dataset)
     patientatt = PatientStudyModuleAttr.objects.get(general_study_module_attributes=g)
     if patient_birth_date:
-        patientatt.patient_age_decimal = Decimal((g.study_date.date() - patient_birth_date.date()).days) / Decimal(
-            '365.25')
+        patientatt.patient_age_decimal = old_div(Decimal((g.study_date.date() - patient_birth_date.date()).days), Decimal(
+            '365.25'))
     elif patientatt.patient_age:
         if patientatt.patient_age[-1:] == 'Y':
             patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1])
         elif patientatt.patient_age[-1:] == 'M':
-            patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1]) / Decimal('12')
+            patientatt.patient_age_decimal = old_div(Decimal(patientatt.patient_age[:-1]), Decimal('12'))
         elif patientatt.patient_age[-1:] == 'D':
-            patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1]) / Decimal('365.25')
+            patientatt.patient_age_decimal = old_div(Decimal(patientatt.patient_age[:-1]), Decimal('365.25'))
     if patientatt.patient_age_decimal:
         patientatt.patient_age_decimal = patientatt.patient_age_decimal.quantize(Decimal('.1'))
     patientatt.save()
@@ -561,6 +573,7 @@ def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
 
 def _generalstudymoduleattributes(dataset, g):
     from datetime import datetime
+    from remapp.extractors.extract_common import populate_dx_rf_summary
     from remapp.models import PatientIDSettings
     from remapp.tools.get_values import get_value_kw, get_seq_code_meaning, get_seq_code_value, get_value_num, \
         list_to_string
@@ -621,7 +634,9 @@ def _generalstudymoduleattributes(dataset, g):
     _projectionxrayradiationdose(dataset, g, ch)
     _patientstudymoduleattributes(dataset, g)
     _patientmoduleattributes(dataset, g, ch)
-
+    populate_dx_rf_summary(g)
+    g.number_of_events = g.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
+    g.save()
 
 # The routine will accept three types of image:
 # CR image storage                               (SOP UID = '1.2.840.10008.5.1.4.1.1.1')
@@ -635,89 +650,47 @@ def _test_if_dx(dataset):
     return 1
 
 
-def _create_event(dataset):
-    """
-    If study exists, create new event
-    :param dataset: DICOM object
-    :return: Nothing
-    """
-    from remapp.models import GeneralStudyModuleAttr
-    from remapp.tools import check_uid
-    from remapp.tools.get_values import get_value_kw
-    from remapp.tools.dcmdatetime import make_date_time
-
-    study_uid = get_value_kw('StudyInstanceUID', dataset)
-    event_uid = get_value_kw('SOPInstanceUID', dataset)
-    inst_in_db = check_uid.check_uid(event_uid, 'Event')
-    if inst_in_db:
-        return 0
-    same_study_uid = GeneralStudyModuleAttr.objects.filter(study_instance_uid__exact=study_uid)
-    if same_study_uid.count() != 1:
-        print(u"Duplicate study UIDs in database! Could be a problem.")
-        for dup in same_study_uid:
-            if dup.modality_type:
-                same_study_uid = dup
-                continue
-    # further check required to ensure 'for processing' and 'for presentation'
-    # versions of the same irradiation event don't get imported twice
-    event_time = get_value_kw('AcquisitionTime', dataset)
-    if not event_time:
-        event_time = get_value_kw('ContentTime', dataset)
-    event_date = get_value_kw('AcquisitionDate', dataset)
-    if not event_date:
-        event_date = get_value_kw('ContentDate', dataset)
-    event_date_time = make_date_time('{0}{1}'.format(event_date, event_time))
-    try:
-        for events in same_study_uid.get().projectionxrayradiationdose_set.get().irradeventxraydata_set.all():
-            if event_date_time == events.date_time_started:
-                return 0
-    except Exception as e:
-        logger.warning(u"DX study UID %s, event UID %s failed at check for identical event. Error %s",
-                       study_uid, event_uid, e)
-    # study exists, but event doesn't
-    ch = get_value_kw('SpecificCharacterSet', dataset)
-    _irradiationeventxraydata(dataset, same_study_uid.get().projectionxrayradiationdose_set.get(), ch)
-    # update the accumulated tables
-    return 0
-
-
 def _dx2db(dataset):
-    import os, sys
-    import openrem_settings
+    import sys
     from time import sleep
     from random import random
-
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'openrem.openremproject.settings'
-    from django.db import models
-
-    openrem_settings.add_project_to_path()
+    from remapp.extractors.extract_common import get_study_check_dup, populate_dx_rf_summary
     from remapp.models import GeneralStudyModuleAttr
     from remapp.tools import check_uid
     from remapp.tools.get_values import get_value_kw
-    from remapp.tools.dcmdatetime import make_date_time
 
     study_uid = get_value_kw('StudyInstanceUID', dataset)
     if not study_uid:
         sys.exit('No UID returned')
     study_in_db = check_uid.check_uid(study_uid)
+    ch = get_value_kw('SpecificCharacterSet', dataset)
 
-    if study_in_db == 1:
+    if study_in_db:
         sleep(2.)  # Give initial event a chance to get to save on _projectionxrayradiationdose
-        _create_event(dataset)
+        this_study = get_study_check_dup(dataset, modality='DX')
+        if this_study:
+            _irradiationeventxraydata(dataset, this_study.projectionxrayradiationdose_set.get(), ch)
+            populate_dx_rf_summary(this_study)
+            this_study.number_of_events = this_study.projectionxrayradiationdose_set.get(
+                ).irradeventxraydata_set.count()
+            this_study.save()
 
     if not study_in_db:
         # study doesn't exist, start from scratch
         g = GeneralStudyModuleAttr.objects.create()
         g.study_instance_uid = get_value_kw('StudyInstanceUID', dataset)
         g.save()
-        # check again
+        logger.debug("Started importing DX with Study Instance UID of {0}".format(g.study_instance_uid))
+        event_uid = get_value_kw('SOPInstanceUID', dataset)
+        check_uid.record_sop_instance_uid(g, event_uid)
+        # check study again
         study_in_db = check_uid.check_uid(study_uid)
         if study_in_db == 1:
             _generalstudymoduleattributes(dataset, g)
         elif not study_in_db:
             sys.exit(u"Something went wrong, GeneralStudyModuleAttr wasn't created")
         elif study_in_db > 1:
-            sleep(random())
+            sleep(random())  # nosec - not being used for cryptography
             # Check if other instance(s) has deleted the study yet
             study_in_db = check_uid.check_uid(study_uid)
             if study_in_db == 1:
@@ -727,30 +700,38 @@ def _dx2db(dataset):
                 study_in_db = check_uid.check_uid(study_uid)
                 if not study_in_db:
                     # both must have been deleted simultaneously!
-                    sleep(random())
+                    sleep(random())  # nosec - not being used for cryptography
                     # Check if other instance has created the study again yet
                     study_in_db = check_uid.check_uid(study_uid)
                     if study_in_db == 1:
                         sleep(2.)  # Give initial event a chance to get to save on _projectionxrayradiationdose
-                        _create_event(dataset)
+                        this_study = get_study_check_dup(dataset, modality='DX')
+                        if this_study:
+                            _irradiationeventxraydata(dataset, this_study.projectionxrayradiationdose_set.get(), ch)
                     while not study_in_db:
                         g = GeneralStudyModuleAttr.objects.create()
                         g.study_instance_uid = get_value_kw('StudyInstanceUID', dataset)
                         g.save()
+                        check_uid.record_sop_instance_uid(g, event_uid)
                         # check again
                         study_in_db = check_uid.check_uid(study_uid)
                         if study_in_db == 1:
                             _generalstudymoduleattributes(dataset, g)
                         elif study_in_db > 1:
                             g.delete()
-                            sleep(random())
+                            sleep(random())  # nosec - not being used for cryptography
                             study_in_db = check_uid.check_uid(study_uid)
                             if study_in_db == 1:
                                 sleep(2.)  # Give initial event a chance to get to save on _projectionxrayradiationdose
-                                _create_event(dataset)
+                                this_study = get_study_check_dup(dataset, modality='DX')
+                                if this_study:
+                                    _irradiationeventxraydata(dataset, this_study.projectionxrayradiationdose_set.get(),
+                                                              ch)
                 elif study_in_db == 1:
                     sleep(2.)  # Give initial event a chance to get to save on _projectionxrayradiationdose
-                    _create_event(dataset)
+                    this_study = get_study_check_dup(dataset, modality='DX')
+                    if this_study:
+                        _irradiationeventxraydata(dataset, this_study.projectionxrayradiationdose_set.get(), ch)
 
 
 def _fix_kodak_filters(dataset):
@@ -782,19 +763,16 @@ def _fix_kodak_filters(dataset):
             dict.__setitem__(dataset, 0x187054, thick2)
 
 
-@shared_task
+@shared_task(name="remapp.extractors.dx.dx")
 def dx(dig_file):
     """Extract radiation dose structured report related data from DX radiographic images
 
     :param filename: relative or absolute path to DICOM DX radiographic image file.
     :type filename: str.
 
-    Tested with:
-        Nothing yet
-
     """
 
-    import dicom
+    import pydicom
     from django.core.exceptions import ObjectDoesNotExist
     from remapp.models import DicomDeleteSettings
     from hl7.hl7updater import find_message_and_apply
@@ -804,17 +782,19 @@ def dx(dig_file):
     except ObjectDoesNotExist:
         del_dx_im = False
 
-    dataset = dicom.read_file(dig_file)
+    logger.debug(u"About to read DX")
+    dataset = pydicom.dcmread(dig_file)
     try:
         dataset.decode()
-    except ValueError as e:
-        if "Invalid tag (0018, 7052): invalid literal for float" in e.message:
+    except ValueError as err:
+        if "could not convert string to float" in str(err):
             _fix_kodak_filters(dataset)
             dataset.decode()
     isdx = _test_if_dx(dataset)
     if not isdx:
         return u'{0} is not a DICOM DX radiographic image'.format(dig_file)
 
+    logger.debug(u"About to launch _dx2db")
     _dx2db(dataset)
     find_message_and_apply(patient_id=dataset.PatientID, accession_number=dataset.AccessionNumber,
                            study_instance_uid=dataset.StudyInstanceUID)

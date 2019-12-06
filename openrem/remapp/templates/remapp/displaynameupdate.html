@@ -4,7 +4,7 @@
 
 {% block navhelp %}
         <li>
-            <a href="http://docs.openrem.org/en/{{ admin.docsversion }}/i_displaynames.html#changing-x-ray-system-display-names" target="_blank" data-toggle="tooltip" title="Display name documentation - opens in a new tab">
+            <a href="https://docs.openrem.org/en/{{ admin.docsversion }}/i_displaynames.html#changing-x-ray-system-display-names" target="_blank" data-toggle="tooltip" title="Display name documentation - opens in a new tab">
                 Changing display names and / or modality type
             </a>
         </li>
@@ -13,7 +13,7 @@
 
 {% block mainblock %}
   {% if admin.admingroup %}
-  <form action="/openrem/updatedisplaynames/" method="post">{% csrf_token %}
+  <form action="{% url 'display_name_update' %}" method="post">{% csrf_token %}
   {% endif %}
   <table class="table table-bordered table-hover row-clickable">
     <row>
@@ -45,11 +45,14 @@
   	  </tr>
   	  <tr>
       	<td>Enter a user defined modality type for all of the above systems:</td>
-      	<td><select name="new_user_defined_modality">
+      	<td>
+          <select name="new_user_defined_modality">
         	  <option value="">[Leave unchanged]</option>
       		  <option value="DX">DX (planar x-ray)</option>
       		  <option value="RF">RF (fluoroscopy)</option>
-      	</select></td>
+            <option value="dual">Dual (planar x-ray and fluoroscopy)</option>
+      	  </select>
+        </td>
       </tr>
       </table>
       <br>
@@ -78,7 +81,7 @@
   {% if admin.admingroup %}
   <input class="btn btn-primary" type="submit" value="Update">
   {% endif %}
-  <a class="btn btn-default" href="/openrem/viewdisplaynames/" role="button">Cancel</a>
+  <a class="btn btn-default" href="{%  url 'display_names_view' %}" role="button">Cancel</a>
   </form>
 
 {% endblock %}

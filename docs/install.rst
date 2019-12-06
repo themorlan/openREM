@@ -2,14 +2,44 @@
 Installing OpenREM
 ******************
 
-Install OpenREM 0.7.4
-=====================
+Windows only - install Celery
+=============================
+For Linux users, the correct version of Celery will be install automatically with OpenREM.
+
+*Activate virtualenv if you are using one*
+
+.. sourcecode:: bash
+
+    pip install celery==3.1.25
+
+
+Install OpenREM
+===============
 
 .. sourcecode:: bash
 
     pip install openrem
 
-*Will need ``sudo`` or equivalent if installing on linux without using a virtualenv*
+*Will need* ``sudo`` *or equivalent if installing on linux without using a virtualenv*
+
+Install pynetdicom (edited version)
+===================================
+
+Pynetdicom is used for the DICOM Store SCP and Query Retrieve SCU functions. See :ref:`directfrommodalities` for details.
+
+.. sourcecode:: bash
+
+    pip install https://bitbucket.org/edmcdonagh/pynetdicom/get/default.tar.gz#egg=pynetdicom-0.8.2b2
+
+..  note::
+
+    You must install the ``pynetdicom`` package from the link above - the version in pypi or the newer versions in
+    GitHub won't work with the current version of OpenREM. Future versions of OpenREM will be adapted to work with
+    ``pynetdicom3`` and ``pydicom>1.0``.
+
+    If you are using the latest version of ``pip`` you will get error messages including the phrase
+    ``Failed building wheel for pynetdicom`` - it should be ok to ignore this message as long as you end up with the
+    message ``Successfully installed pynetdicom-0.8.2b2``
 
 .. _localsettingsconfig:
 
@@ -21,9 +51,9 @@ Locate install location
 
 * Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``
 * Other linux: ``/usr/lib/python2.7/site-packages/openrem/``
-* Linux virtualenv: ``lib/python2.7/site-packages/openrem/``
+* Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/``
 * Windows: ``C:\Python27\Lib\site-packages\openrem\``
-* Windows virtualenv: ``Lib\site-packages\openrem\``
+* Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\``
 
 
 There are two files that need renaming:
@@ -42,6 +72,7 @@ Edit local_settings.py
     on the View tab you may wish to set the Word wrap to 'No wrap'
 
 ..  Important::
+
     In local_settings.py, always use forward slashes and not backslashes, even for paths on
     Windows systems.
 
@@ -100,7 +131,7 @@ Linux example::
     MEDIA_ROOT = "/var/openrem/media/"
 
 Windows example::
-    
+
     MEDIA_ROOT = "C:/Users/myusername/Documents/OpenREM/media/"
 
 
@@ -114,7 +145,7 @@ Allowed hosts
 ^^^^^^^^^^^^^
 
 The ``ALLOWED_HOSTS`` needs to be defined, as the ``DEBUG`` mode is now
-set to ``False``. This needs to contain the server name or IP address that
+set to ``False``. This needs to contain the OpenREM server hostname or IP address that
 will be used in the URL in the web browser. For example::
 
     ALLOWED_HOSTS = [
@@ -151,12 +182,16 @@ Configure the filename to determine where the logs are written. In linux, you mi
 .. sourcecode:: python
 
     import os
-    logfilename = os.path.join(MEDIA_ROOT, "openrem.log")
-    qrfilename = os.path.join(MEDIA_ROOT, "openrem_qr.log")
-    storefilename = os.path.join(MEDIA_ROOT, "openrem_store.log")
+    LOG_ROOT = MEDIA_ROOT
+    logfilename = os.path.join(LOG_ROOT, "openrem.log")
+    qrfilename = os.path.join(LOG_ROOT, "openrem_qr.log")
+    storefilename = os.path.join(LOG_ROOT, "openrem_store.log")
+    extractorfilename = os.path.join(LOG_ROOT, "openrem_extractor.log")
+
     LOGGING['handlers']['file']['filename'] = logfilename          # General logs
     LOGGING['handlers']['qr_file']['filename'] = qrfilename        # Query Retrieve SCU logs
     LOGGING['handlers']['store_file']['filename'] = storefilename  # Store SCP logs
+    LOGGING['handlers']['extractor_file']['filename'] = extractorfilename  # Extractor logs
 
 If you want all the logs in one file, simply set them all to the same filename.
 
@@ -168,21 +203,37 @@ In the settings file, there are ``simple`` and ``verbose`` log message styles. W
     LOGGING['handlers']['file']['formatter'] = 'verbose'        # General logs
     LOGGING['handlers']['qr_file']['formatter'] = 'verbose'     # Query Retrieve SCU logs
     LOGGING['handlers']['store_file']['formatter'] = 'verbose'  # Store SCP logs
+    LOGGING['handlers']['extractor_file']['formatter'] = 'verbose'  # Extractor logs
 
-Finally you can set the logging level. Options are ``DEBUG``, ``INFO``, ``WARNING``, ``ERROR``, and ``CRITICAL``, with
-progressively less logging.
+Next, you can set the logging level. Options are ``DEBUG``, ``INFO``, ``WARNING``, ``ERROR``, and ``CRITICAL``, with
+progressively less logging. ``INFO`` is probably a good choice for most circumstances. ``DEBUG`` is useful if something
+is going wrong, but it is quite chatty for routine use!
 
 .. sourcecode:: python
 
     LOGGING['loggers']['remapp']['level'] = 'INFO'                    # General logs
     LOGGING['loggers']['remapp.netdicom.qrscu']['level'] = 'INFO'     # Query Retrieve SCU logs
     LOGGING['loggers']['remapp.netdicom.storescp']['level'] = 'INFO'  # Store SCP logs
+    LOGGING['loggers']['remapp.extractors.ct_toshiba']['level'] = 'INFO'  # Toshiba RDSR creation extractor logs
+
+Finally, if you are using Linux you can set the system to start a new log file automatically when the current one
+gets to a certain size. The settings described below don't work with Windows - we'll try to include Windows settings in
+the next release. See `issue 483`_ to find out the progress on this!
+
+To activate the 'rotating' log function, uncomment the remaining lines by removing the ``#`` from the beginning of
+the lines. For example for the query retrieve logs:
+
+.. sourcecode:: python
+
+    LOGGING['handlers']['qr_file']['class'] = 'logging.handlers.RotatingFileHandler'
+    LOGGING['handlers']['qr_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
+    LOGGING['handlers']['qr_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
 
 Time zone
 ^^^^^^^^^
 
 Configure the local timezone in order to get correct times in the logfiles.
-The default timezone is set at 'Europe/London'. Valid options can be found here: 
+The default timezone is set at 'Europe/London'. Valid options can be found here:
 http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 
 .. sourcecode:: python
@@ -192,12 +243,92 @@ http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 Language
 ^^^^^^^^
 
-Configure the local language. Default language is set at us-english. Valid options can be found here: 
+Configure the local language. Default language is set at us-english. Valid options can be found here:
 http://www.i18nguy.com/unicode/language-identifiers.html
 
 .. sourcecode:: python
 
     LANGUAGE_CODE = 'en-us'
+
+.. _toshiba_configuration:
+
+Toshiba CT RDSR creation
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you need to import data from older Toshiba CT scanners that do not create RDSRs then the following
+tools need to be available on the same server as OpenREM:
+
+    * The `Offis DICOM toolkit`_
+    * `Java`_
+    * pixelmed.jar from the `PixelMed Java DICOM Toolkit`_
+
+The paths to these must be set in ``local_settings.py`` for your system:
+
+.. sourcecode:: python
+
+    # Locations of various tools for DICOM RDSR creation from CT images
+    DCMTK_PATH = 'C:/Apps/dcmtk-3.6.0-win32-i386/bin'
+    DCMCONV = os.path.join(DCMTK_PATH, 'dcmconv.exe')
+    DCMMKDIR = os.path.join(DCMTK_PATH, 'dcmmkdir.exe')
+    JAVA_EXE = 'C:/Apps/doseUtility/windows/jre/bin/java.exe'
+    JAVA_OPTIONS = '-Xms256m -Xmx512m -Xss1m -cp'
+    PIXELMED_JAR = 'C:/Apps/doseUtility/pixelmed.jar'
+    PIXELMED_JAR_OPTIONS = '-Djava.awt.headless=true com.pixelmed.doseocr.OCR -'
+
+The example above is for Windows. On linux,
+if you have installed the Offis DICOM toolkit with ``sudo apt install dcmtk`` or similar, you can find the path for the
+configuration above using the command ``which dcmconv``. This will be something like ``/usr/bin/dcmconv``, so the
+``DCMTK_PATH`` would be ``'/usr/bin`` and the ``DCMCONV`` would be ``os.path.join(DCMTK_PATH, 'dcmconv')``. Similarly
+for ``DCMMKDIR`` and ``JAVA_EXE``, which might be ``/usr/bin/java``. The pixelmed.jar file should be downloaded from
+the link above, and you will need to provide the path to where you have saved it.
+
+.. note::
+
+    If you do not intend to use the RDSR creation feature (all your CT scanners create RDSRs already, or your older
+    scanners are Philips), then these paths do not need to be changed for your install.
+
+.. _email_configuration:
+
+E-mail configuration
+^^^^^^^^^^^^^^^^^^^^
+
+The settings below must be correctly configured for fluoroscopy high dose alert
+e-mail messages to be sent. It is recommended that you liaise with your IT
+department in order to obtain the settings required in this section.
+
+.. sourcecode:: python
+
+    # E-mail server settings
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 25
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    EMAIL_USE_TLS = False
+    EMAIL_USE_SSL = False
+    EMAIL_DOSE_ALERT_SENDER = 'your.alert@email.address'
+    EMAIL_OPENREM_URL = 'http://your.openrem.server'
+
+The host name and port of the e-mail server that you wish to use must be
+entered in the ``EMAIL_HOST`` and ``EMAIL_PORT`` fields.
+
+If the e-mail server is set to only allow authenticated users to send messages
+then a suitable user and password must be entered in the ``EMAIL_HOST_USER``
+and ``EMAIL_HOST_PASSWORD`` fields. If this approach is used then it may be
+useful to request that an e-mail account be created specifically for sending
+these OpenREM alert messages.
+
+It may be possible to configure the e-mail server to allow sending of messages
+that originate from the OpenREM server without authentication, in which case
+the user and password settings below should not be required.
+
+The ``EMAIL_USE_TLS`` and ``EMAIL_USE_TLS`` options should be configured to
+match the encryption requirements of the e-mail server.
+
+The ``EMAIL_DOSE_ALERT_SENDER`` should contain the e-mail address that you want
+to use as the sender address.
+
+The ``EMAIL_OPENREM_URL`` must contain the URL of your OpenREM installation in
+order for hyperlinks in the e-mail alert messages to function correctly.
 
 .. _database_creation:
 
@@ -208,8 +339,10 @@ In a shell/command window, move into the openrem folder:
 
 * Ubuntu linux: ``cd /usr/local/lib/python2.7/dist-packages/openrem/``
 * Other linux: ``cd /usr/lib/python2.7/site-packages/openrem/``
+* Linux virtualenv: ``cd virtualenvfolder/lib/python2.7/site-packages/openrem/``
 * Windows: ``cd C:\Python27\Lib\site-packages\openrem\``
-* Virtualenv: ``cd lib/python2.7/site-packages/openrem/``
+* Windows virtualenv: ``cd virtualenvfolder\Lib\site-packages\openrem\``
+
 
 Create the database::
 
@@ -265,11 +398,9 @@ and then run
 
 .. sourcecode:: console
 
-    python manage.py makemigrations --empty remapp
     python manage.py migrate
 
-The first command will create a skeleton ``0001_initial.py`` migration file. The
-second command runs the migration files, and will display the text
+This command runs the migration file, and will display the text
 ``Applying remapp.0002_0_7_fresh_install_add_median... OK``, indicating that the median function has been added.
 
 Start all the services!
@@ -278,32 +409,8 @@ Start all the services!
 You are now ready to start the services to allow you to use OpenREM - go to :doc:`startservices` to see how!
 
 
-Further instructions
-====================
 
-Production webservers
----------------------
-
-Unlike the database, the production webserver can be left till later and
-can be changed again at any time.
-
-For performance it is recommended that a production webserver is used instead of the inbuilt 'runserver'.
-Popular choices would be either `Apache <http://httpd.apache.org>`_ or you can do as the cool kids
-do and use `Gunicorn with nginx <http://www.robgolding.com/blog/2011/11/12/django-in-production-part-1---the-stack/>`_.
-
-The `django website <https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/modwsgi/>`_
-has instructions and links to get you set up with Apache.
-
-An advanced guide using Apache, including auto-restarting the server when the code changes, has been contributed
-here: :doc:`apache_on_windows`
-
-
-DICOM Store and query-retrieve
-------------------------------
-
-The best (and only practical way in a production environment) to get DICOM data into OpenREM is to have a DICOM store
-node (Store Service Class Provider/SCP) and possibly a query-retrieve service class user too.
-
-To find out more about this, refer to the :doc:`netdicom` docs.
-
-
+.. _`Offis DICOM toolkit`: http://dicom.offis.de/dcmtk.php.en
+.. _`Java`: http://java.com/en/download/
+.. _`PixelMed Java DICOM Toolkit`: http://www.pixelmed.com/dicomtoolkit.html
+.. _`issue 483`: https://bitbucket.org/openrem/openrem/issues/483/add-automatic-zipping-of-log-files

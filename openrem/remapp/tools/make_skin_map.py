@@ -28,7 +28,12 @@
 ..  moduleauthor:: Ed McDonagh, David Platten
 
 """
+from __future__ import division
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str  # pylint: disable=redefined-builtin
+from past.utils import old_div
 import os
 import sys
 import logging
@@ -52,10 +57,11 @@ def make_skin_map(study_pk=None):
     import remapp.tools.openskin.calc_exp_map as calc_exp_map
     from remapp.models import GeneralStudyModuleAttr
     from openremproject.settings import MEDIA_ROOT
-    import os
-    import cPickle as pickle
+    import pickle as pickle
     import gzip
     from remapp.version import __skin_map_version__
+    from django.core.exceptions import ObjectDoesNotExist
+    import numpy as np
 
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
@@ -64,36 +70,67 @@ def make_skin_map(study_pk=None):
         try:
             pat_mass = float(study.patientstudymoduleattr_set.get().patient_weight)
             pat_mass_source = u'extracted'
-        except ValueError:
-            pat_mass = 73.2
-        except TypeError:
+        except (ValueError, TypeError):
             pat_mass = 73.2
 
         if pat_mass == 0.0:
             pat_mass = 73.2
+            pat_mass_source = u'assumed'
 
         pat_height_source = u'assumed'
         try:
             pat_height = float(study.patientstudymoduleattr_set.get().patient_size) * 100
             pat_height_source = u'extracted'
-        except ValueError:
-            pat_height = 178.6
-        except TypeError:
+        except (ValueError, TypeError):
             pat_height = 178.6
 
         if pat_height == 0.0:
             pat_height = 178.6
             pat_height_source = u'assumed'
 
-        pat_pos_source = u'assumed'
-        if study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all()[0].patient_table_relationship_cid:
-            patPos = str(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all(
-                        )[0].patient_table_relationship_cid)[0] + "f" + str(study.projectionxrayradiationdose_set.get(
-                        ).irradeventxraydata_set.all()[0].patient_orientation_modifier_cid)[0]
-            patPos = patPos.upper()
-            pat_pos_source = u'extracted'
+        ptr = None
+        orientation_modifier = None
+        try:
+            ptr_meaning = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all()[
+                0].patient_table_relationship_cid.code_meaning.lower()
+            if ptr_meaning in u"headfirst":
+                ptr = u"H"
+            elif ptr_meaning in u"feet-first":
+                ptr = u"F"
+            else:
+                logger.info(u"Study PK {0}: Patient table relationship not recognised ({1}). "
+                            u"Assuming head first.".format(study_pk, ptr_meaning))
+        except AttributeError:
+            logger.info(u"Study PK {0}: Patient table relationship not found. Assuming head first.".format(study_pk))
+        except IndexError:
+            logger.info(u"Study PK {0}: No irradiation event x-ray data found. Assuming head first.".format(study_pk))
+        try:
+            orientation_modifier_meaning = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all()[
+                0].patient_orientation_modifier_cid.code_meaning.lower()
+            if orientation_modifier_meaning in u"supine":
+                orientation_modifier = u"S"
+            elif orientation_modifier_meaning in u"prone":
+                orientation_modifier = u"P"
+            else:
+                logger.info(u"Study PK {0}: Orientation modifier not recognised ({1}). "
+                            u"Assuming supine.".format(study_pk, orientation_modifier_meaning))
+        except AttributeError:
+            logger.info(u"Study PK {0}: Orientation modifier not found. Assuming supine.".format(study_pk))
+        except IndexError:
+            logger.info(u"Study PK {0}: No irradiation event x-ray data found. Assuming supine.".format(study_pk))
+        if ptr and orientation_modifier:
+            pat_pos_source = u"extracted"
+            patPos = ptr + u"F" + orientation_modifier
+        elif ptr:
+            pat_pos_source = u"supine assumed"
+            patPos = ptr + u"FS"
+        elif orientation_modifier:
+            pat_pos_source = u"head first assumed"
+            patPos = u"HF" + orientation_modifier
         else:
-            patPos = u'HFS'
+            pat_pos_source = u"assumed"
+            patPos = u"HFS"
+        logger.debug(u"patPos is {0} and source is {1}".format(patPos, pat_pos_source))
 
         my_exp_map = calc_exp_map.CalcExpMap(phantom_type='3D', patPos=patPos,
                                              pat_mass=pat_mass, pat_height=pat_height,
@@ -101,51 +138,50 @@ def make_skin_map(study_pk=None):
                                              matt_thick=4.0)
 
         for irrad in study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all():
-            if irrad.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(
-                                                                                        ).table_longitudinal_position:
+            try:
                 delta_x = float(irrad.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(
                                                                                 ).table_longitudinal_position) / 10.0
-            else:
+            except (ObjectDoesNotExist, TypeError):
                 delta_x = 0.0
-            if irrad.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(
-                                                                                        ).table_lateral_position:
+            try:
                 delta_y = float(irrad.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(
                                                                                         ).table_lateral_position) / 10.0
-            else:
+            except (ObjectDoesNotExist, TypeError):
                 delta_y = 0.0
-            if irrad.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(
-                                                                                        ).table_height_position:
+            try:
                 delta_z = float(irrad.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(
                                                                                         ).table_height_position) / 10.0
-            else:
+            except (ObjectDoesNotExist, TypeError):
                 delta_z = 0.0
             if irrad.irradeventxraymechanicaldata_set.get().positioner_primary_angle:
                 angle_x = float(irrad.irradeventxraymechanicaldata_set.get().positioner_primary_angle)
             else:
                 angle_x = 0.0
-            if irrad.irradeventxraymechanicaldata_set.get().positioner_secondary_angle:
+            try:
                 angle_y = float(irrad.irradeventxraymechanicaldata_set.get().positioner_secondary_angle)
-            else:
+            except (ObjectDoesNotExist, TypeError):
                 angle_y = 0.0
-            if irrad.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(
-                                                                                        ).distance_source_to_isocenter:
+            try:
                 d_ref = float(irrad.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(
                                                                         ).distance_source_to_isocenter) / 10.0 - 15.0
-            else:
+            except (ObjectDoesNotExist, TypeError):
                 # This will result in failure to calculate skin dose map. Need a sensible default, or a lookup to a
                 # user-entered value
                 d_ref = None
-            if irrad.dose_area_product:
+            try:
                 dap = float(irrad.dose_area_product)
-            else:
+            except (ObjectDoesNotExist, TypeError):
                 dap = None
-            if irrad.irradeventxraysourcedata_set.get().dose_rp:
+            try:
                 ref_ak = float(irrad.irradeventxraysourcedata_set.get().dose_rp)
-            else:
+            except (ObjectDoesNotExist, TypeError):
                 ref_ak = None
-            if irrad.irradeventxraysourcedata_set.get().kvp_set.get().kvp:
-                kvp = float(irrad.irradeventxraysourcedata_set.get().kvp_set.get().kvp)
-            else:
+            try:
+                kvp = np.mean(irrad.irradeventxraysourcedata_set.get().kvp_set.all().exclude(kvp__isnull=True).exclude(kvp__exact=0).values_list('kvp', flat=True))
+                kvp = float(kvp)
+                if np.isnan(kvp):
+                    kvp = None
+            except (ObjectDoesNotExist, TypeError):
                 kvp = None
 
             filter_cu = 0.0
@@ -161,13 +197,13 @@ def make_skin_map(study_pk=None):
                 run_type = str(irrad.irradiation_event_type)
             else:
                 run_type = None
-            if irrad.irradeventxraysourcedata_set.get().number_of_pulses:
+            try:
                 frames = float(irrad.irradeventxraysourcedata_set.get().number_of_pulses)
-            else:
+            except (ObjectDoesNotExist, TypeError):
                 frames = None
-            if irrad.irradeventxraymechanicaldata_set.get().positioner_primary_end_angle:
+            try:
                 end_angle = float(irrad.irradeventxraymechanicaldata_set.get().positioner_primary_end_angle)
-            else:
+            except (ObjectDoesNotExist, TypeError):
                 end_angle = None
             if ref_ak and d_ref:
                 my_exp_map.add_view(delta_x=delta_x, delta_y=delta_y, delta_z=delta_z,
@@ -176,12 +212,10 @@ def make_skin_map(study_pk=None):
                                     kvp=kvp, filter_cu=filter_cu,
                                     run_type=run_type, frames=frames, end_angle=end_angle, patPos=patPos)
 
-        import numpy as np
-
         # Flip the skin dose map left-right so the view is from the front
         # my_exp_map.my_dose.fliplr()
         my_exp_map.my_dose.totalDose = np.roll(my_exp_map.my_dose.totalDose,
-                                               int(my_exp_map.phantom.phantom_flat_dist / 2),
+                                               int(old_div(my_exp_map.phantom.phantom_flat_dist, 2)),
                                                axis=0)
         try:
             my_exp_map.my_dose.totalDose = np.rot90(my_exp_map.my_dose.totalDose)

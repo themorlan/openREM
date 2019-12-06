@@ -14,8 +14,8 @@
 #
 #    Additional permission under section 7 of GPLv3:
 #    You shall not make any use of the name of The Royal Marsden NHS
-#    Foundation trust in connection with this Program in any press or 
-#    other public announcement without the prior written consent of 
+#    Foundation trust in connection with this Program in any press or
+#    other public announcement without the prior written consent of
 #    The Royal Marsden NHS Foundation Trust.
 #
 #    You should have received a copy of the GNU General Public License
@@ -30,79 +30,205 @@
 """
 from __future__ import division
 
-import csv
-from xlsxwriter.workbook import Workbook
+from builtins import str  # pylint: disable=redefined-builtin
+from builtins import range  # pylint: disable=redefined-builtin
+from past.builtins import basestring  # pylint: disable=redefined-builtin
+import logging
 from celery import shared_task
-from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+from remapp.exports.export_common import text_and_date_formats, common_headers, generate_sheets, sheet_name, \
+    get_common_data, get_xray_filter_info, create_xlsx, create_csv, write_export, create_summary_sheet, \
+    get_pulse_data, abort_if_zero_studies
+
+logger = logging.getLogger(__name__)
 
 
-def _get_xray_filterinfo(source):
-    from django.core.exceptions import ObjectDoesNotExist
+def _get_source_data(series_table):
+    """Return source data
+
+    :param series_table:  irradeventxraydata_set
+    :return: dict of source data
+    """
     try:
-        filters = u''
-        filter_thicknesses = u''
-        for current_filter in source.xrayfilters_set.all():
-            if 'Aluminum' in str(current_filter.xray_filter_material):
-                filters += u'Al'
-            elif 'Copper' in str(current_filter.xray_filter_material):
-                filters += u'Cu'
-            elif 'Tantalum' in str(current_filter.xray_filter_material):
-                filters += u'Ta'
-            elif 'Molybdenum' in str(current_filter.xray_filter_material):
-                filters += u'Mo'
-            elif 'Rhodium' in str(current_filter.xray_filter_material):
-                filters += u'Rh'
-            elif 'Silver' in str(current_filter.xray_filter_material):
-                filters += u'Ag'
-            elif 'Niobium' in str(current_filter.xray_filter_material):
-                filters += u'Nb'
-            elif 'Europium' in str(current_filter.xray_filter_material):
-                filters += u'Eu'
-            elif 'Lead' in str(current_filter.xray_filter_material):
-                filters += u'Pb'
-            else:
-                filters += str(current_filter.xray_filter_material)
-            filters += u' | '
-            thicknesses = [current_filter.xray_filter_thickness_minimum,
-                           current_filter.xray_filter_thickness_maximum]
-            if thicknesses[0] is not None and thicknesses[1] is not None:
-                thick = sum(thicknesses) / len(thicknesses)
-            elif thicknesses[0] is None and thicknesses[1] is None:
-                thick = ''
-            elif thicknesses[0] is not None:
-                thick = thicknesses[0]
-            elif thicknesses[1] is not None:
-                thick = thicknesses[1]
-            if thick:
-                thick = round(thick, 4)
-            filter_thicknesses += str(thick) + u' | '
-        filters = filters[:-3]
-        filter_thicknesses = filter_thicknesses[:-3]
+        source_data = series_table.irradeventxraysourcedata_set.get()
+        exposure_control_mode = source_data.exposure_control_mode
+        average_xray_tube_current = source_data.average_xray_tube_current
+        exposure_time = source_data.exposure_time
+        pulse_data = get_pulse_data(source_data=source_data, modality="DX")
+        kvp = pulse_data['kvp']
+        mas = pulse_data['mas']
+        filters, filter_thicknesses = get_xray_filter_info(source_data)
+        grid_focal_distance = source_data.grid_focal_distance
     except ObjectDoesNotExist:
+        exposure_control_mode = None
+        average_xray_tube_current = None
+        exposure_time = None
+        kvp = None
+        mas = None
         filters = None
         filter_thicknesses = None
-    return filters, filter_thicknesses
+        grid_focal_distance = None
+    return {
+        'exposure_control_mode': exposure_control_mode,
+        'average_xray_tube_current': average_xray_tube_current,
+        'exposure_time': exposure_time,
+        'kvp': kvp,
+        'mas': mas,
+        'filters': filters,
+        'filter_thicknesses': filter_thicknesses,
+        'grid_focal_distance': grid_focal_distance,
+    }
+
+
+def _get_detector_data(series_table):
+    """Return detector data
+
+    :param series_table: irradeventxraydata_set
+    :return: dict of detector data
+    """
+    try:
+        detector_data = series_table.irradeventxraydetectordata_set.get()
+        exposure_index = detector_data.exposure_index
+        target_exposure_index = detector_data.target_exposure_index
+        deviation_index = detector_data.deviation_index
+        relative_xray_exposure = detector_data.relative_xray_exposure
+    except ObjectDoesNotExist:
+        exposure_index = None
+        target_exposure_index = None
+        deviation_index = None
+        relative_xray_exposure = None
+    return {
+        'exposure_index': exposure_index,
+        'target_exposure_index': target_exposure_index,
+        'deviation_index': deviation_index,
+        'relative_xray_exposure': relative_xray_exposure,
+    }
+
+
+def _get_distance_data(series_table):
+    """Return distance data
+
+    :param series_table: irradeventxraydata_set
+    :return: dict of distance data
+    """
+    try:
+        distances = series_table.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get()
+        distance_source_to_detector = distances.distance_source_to_detector
+        distance_source_to_entrance_surface = distances.distance_source_to_entrance_surface
+        distance_source_to_isocenter = distances.distance_source_to_isocenter
+        table_height_position = distances.table_height_position
+    except ObjectDoesNotExist:
+        distance_source_to_detector = None
+        distance_source_to_entrance_surface = None
+        distance_source_to_isocenter = None
+        table_height_position = None
+    return {
+        'distance_source_to_detector': distance_source_to_detector,
+        'distance_source_to_entrance_surface': distance_source_to_entrance_surface,
+        'distance_source_to_isocenter': distance_source_to_isocenter,
+        'table_height_position': table_height_position,
+    }
+
+
+def _series_headers(max_events):
+    """Return the series headers common to both DX exports
+
+    :param max_events: number of series
+    :return: headers as a list of strings
+    """
+    series_headers = []
+    for series_number in range(int(max_events)):
+        series_headers += [
+            u'E' + str(series_number+1) + u' Protocol',
+            u'E' + str(series_number+1) + u' Anatomy',
+            u'E' + str(series_number+1) + u' Image view',
+            u'E' + str(series_number+1) + u' Exposure control mode',
+            u'E' + str(series_number+1) + u' kVp',
+            u'E' + str(series_number+1) + u' mAs',
+            u'E' + str(series_number+1) + u' mA',
+            u'E' + str(series_number+1) + u' Exposure time (ms)',
+            u'E' + str(series_number+1) + u' Filters',
+            u'E' + str(series_number+1) + u' Filter thicknesses (mm)',
+            u'E' + str(series_number+1) + u' Exposure index',
+            u'E' + str(series_number+1) + u' Target exposure index',
+            u'E' + str(series_number+1) + u' Deviation index',
+            u'E' + str(series_number+1) + u' Relative x-ray exposure',
+            u'E' + str(series_number+1) + u' DAP (cGy.cm^2)',
+            u'E' + str(series_number+1) + u' Entrance Exposure at RP (mGy)',
+            u'E' + str(series_number+1) + u' SDD Detector Dist',
+            u'E' + str(series_number+1) + u' SPD Patient Dist',
+            u'E' + str(series_number+1) + u' SIsoD Isocentre Dist',
+            u'E' + str(series_number+1) + u' Table Height',
+            u'E' + str(series_number+1) + u' Comment',
+            ]
+    return series_headers
+
+
+def _dx_get_series_data(s):
+    """Return the series level data
+
+    :param s: series
+    :return: series data
+    """
+    source_data = _get_source_data(s)
+    detector_data = _get_detector_data(s)
+
+    cgycm2 = s.convert_gym2_to_cgycm2()
+    entrance_exposure_at_rp = s.entrance_exposure_at_rp
+
+    distances = _get_distance_data(s)
+
+    try:
+        anatomical_structure = s.anatomical_structure.code_meaning
+    except AttributeError:
+        anatomical_structure = ""
+
+    series_data = [
+        s.acquisition_protocol,
+        anatomical_structure,
+    ]
+    try:
+        series_data += [s.image_view.code_meaning, ]
+    except AttributeError:
+        series_data += [None, ]
+    series_data += [
+        source_data['exposure_control_mode'],
+        source_data['kvp'],
+        source_data['mas'],
+        source_data['average_xray_tube_current'],
+        source_data['exposure_time'],
+        source_data['filters'],
+        source_data['filter_thicknesses'],
+        detector_data['exposure_index'],
+        detector_data['target_exposure_index'],
+        detector_data['deviation_index'],
+        detector_data['relative_xray_exposure'],
+        cgycm2,
+        entrance_exposure_at_rp,
+        distances['distance_source_to_detector'],
+        distances['distance_source_to_entrance_surface'],
+        distances['distance_source_to_isocenter'],
+        distances['table_height_position'],
+        s.comment,
+    ]
+    return series_data
 
 
 @shared_task
 def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
     """Export filtered DX database data to a single-sheet CSV file.
 
-    :param request: Query parameters from the DX filtered page URL.
-    :type request: HTTP get
-    
+    :param filterdict: Queryset of studies to export
+    :param pid: does the user have patient identifiable data permission
+    :param name: has patient name been selected for export
+    :param patid: has patient ID been selected for export
+    :param user: User that has started the export
+    :return: Saves csv file into Media directory for user to download
     """
 
-    import os, sys, datetime
-    from tempfile import TemporaryFile
-    from django.conf import settings
-    from django.core.files import File
-    from django.shortcuts import redirect
-    from remapp.models import GeneralStudyModuleAttr
+    import datetime
     from remapp.models import Exports
     from remapp.interface.mod_filters import dx_acq_filter
-    from django.db.models import Q # For the Q "OR" query used for DX and CR
-    from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
     tsk = Exports.objects.create()
 
@@ -113,283 +239,94 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.export_date = datestamp
     tsk.progress = u'Query filters imported, task started'
     tsk.status = u'CURRENT'
-    if pid and (name or patid):
-        tsk.includes_pid = True
-    else:
-        tsk.includes_pid = False
+    tsk.includes_pid = bool(pid and (name or patid))
     tsk.export_user_id = user
     tsk.save()
 
-    try:
-        tmpfile = TemporaryFile()
-        writer = csv.writer(tmpfile, dialect=csv.excel)
+    tmpfile, writer = create_csv(tsk)
+    if not tmpfile:
+        exit()
 
-        tsk.progress = u'CSV file created'
-        tsk.save()
-    except:
-        # messages.error(request, "Unexpected error creating temporary file - please contact an administrator: {0}".format(sys.exc_info()[0]))
-        return redirect('/openrem/export/')
-        
     # Get the data!
-
     e = dx_acq_filter(filterdict, pid=pid).qs
-
-    # Remove duplicate entries from the results - hopefully no longer necessary, left here in case. Needs testing
-    # e = e.filter(projectionxrayradiationdose__general_study_module_attributes__study_instance_uid__isnull = False).distinct()
 
     tsk.progress = u'Required study filter complete.'
     tsk.save()
-        
-    numresults = e.count()
 
-    tsk.progress = u'{0} studies in query.'.format(numresults)
-    tsk.num_records = numresults
+    tsk.num_records = e.count()
+    if abort_if_zero_studies(tsk.num_records, tsk):
+        return
+
+    tsk.progress = u'{0} studies in query.'.format(tsk.num_records)
+    tsk.num_records = tsk.num_records
     tsk.save()
 
-    pidheadings = []
-    if pid and name:
-        pidheadings += [u'Patient name']
-    if pid and patid:
-        pidheadings += [u'Patient ID']
-    headers = pidheadings + [
-        u'Institution name',
-        u'Manufacturer',
-        u'Model name',
-        u'Station name',
-        u'Display name',
-        u'Accession number',
-        u'Operator',
-        u'Study date',
-    ]
-    if pid and (name or patid):
-        headers += [
-            u'Date of birth',
-        ]
+    headers = common_headers(pid=pid, name=name, patid=patid)
     headers += [
-        u'Patient age',
-        u'Patient sex',
-        u'Patient height',
-        u'Patient mass (kg)',
-        u'Study description',
-        u'Requested procedure',
-        u'Number of events',
         u'DAP total (cGy.cm^2)',
     ]
 
     from django.db.models import Max
-    max_events = e.aggregate(Max('projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__total_number_of_radiographic_frames'))
+    max_events_dict = e.aggregate(Max('projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__'
+                                      'total_number_of_radiographic_frames'))
+    max_events = max_events_dict['projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__'
+                                 'total_number_of_radiographic_frames__max']
+    if not max_events:
+        max_events = 1
 
-    for h in xrange(max_events['projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__total_number_of_radiographic_frames__max']):
-        headers += [
-            'E' + str(h+1) + u' Protocol',
-            'E' + str(h+1) + u' Image view',
-            'E' + str(h+1) + u' Exposure control mode',
-            'E' + str(h+1) + u' kVp',
-            'E' + str(h+1) + u' mAs',
-            'E' + str(h+1) + u' mA',
-            'E' + str(h+1) + u' Exposure time (ms)',
-            'E' + str(h+1) + u' Filters',
-            'E' + str(h+1) + u' Filter thicknesses average (mm)',
-            'E' + str(h+1) + u' Exposure index',
-            'E' + str(h+1) + u' Relative x-ray exposure',
-            'E' + str(h+1) + u' DAP (cGy.cm^2)',
-            ]
+    headers += _series_headers(max_events)
 
-    writer.writerow([unicode(header).encode("utf-8") for header in headers])
+    writer.writerow([str(header).encode("utf-8") for header in headers])
 
     tsk.progress = u'CSV header row written.'
     tsk.save()
 
-    for i, exams in enumerate(e):
-        if pid and (name or patid):
-            try:
-                patient_birth_date = exams.patientmoduleattr_set.get().patient_birth_date
-                if name:
-                    patient_name = exams.patientmoduleattr_set.get().patient_name
-                if patid:
-                    patient_id = exams.patientmoduleattr_set.get().patient_id
-            except ObjectDoesNotExist:
-                patient_birth_date = None
-                patient_name = None
-                patient_id = None
-        try:
-            institution_name = exams.generalequipmentmoduleattr_set.get().institution_name
-            manufacturer = exams.generalequipmentmoduleattr_set.get().manufacturer
-            manufacturer_model_name = exams.generalequipmentmoduleattr_set.get().manufacturer_model_name
-            station_name = exams.generalequipmentmoduleattr_set.get().station_name
-            display_name = exams.generalequipmentmoduleattr_set.get().unique_equipment_name.display_name
-        except ObjectDoesNotExist:
-            institution_name = None
-            manufacturer = None
-            manufacturer_model_name = None
-            station_name = None
-            display_name = None
-        try:
-            patient_sex = exams.patientmoduleattr_set.get().patient_sex
-        except ObjectDoesNotExist:
-            patient_sex = None
-        try:
-            patient_age = exams.patientstudymoduleattr_set.get().patient_age_decimal
-            patient_size = exams.patientstudymoduleattr_set.get().patient_size
-            patient_weight = exams.patientstudymoduleattr_set.get().patient_weight
-        except ObjectDoesNotExist:
-            patient_age = None
-            patient_size = None
-            patient_weight = None
-        try:
-            total_number_of_radiographic_frames = exams.projectionxrayradiationdose_set.get().accumxraydose_set.get(
-                ).accumintegratedprojradiogdose_set.get().total_number_of_radiographic_frames
-            dap_total = exams.projectionxrayradiationdose_set.get().accumxraydose_set.get(
-                ).accumintegratedprojradiogdose_set.get().dose_area_product_total
-            if dap_total:
-                cgycm2 = exams.projectionxrayradiationdose_set.get().accumxraydose_set.get(
-                    ).accumintegratedprojradiogdose_set.get().convert_gym2_to_cgycm2()
-            else:
-                cgycm2 = None
-        except ObjectDoesNotExist:
-            total_number_of_radiographic_frames = None
-            cgycm2 = None
-
-        examdata = []
-        if pid and name:
-            examdata += [patient_name]
-        if pid and patid:
-            examdata += [patient_id]
-
-        examdata += [
-            institution_name,
-            manufacturer,
-            manufacturer_model_name,
-            station_name,
-            display_name,
-            exams.accession_number,
-            exams.operator_name,
-            exams.study_date,
-        ]
-        if pid and (name or patid):
-            examdata += [
-                patient_birth_date,
-            ]
-        examdata += [
-            patient_age,
-            patient_sex,
-            patient_size,
-            patient_weight,
-            exams.study_description,
-            exams.requested_procedure_code_meaning,
-            total_number_of_radiographic_frames,
-            cgycm2,
-        ]
-
-        for s in exams.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'):
-
-            try:
-                exposure_control_mode = s.irradeventxraysourcedata_set.get().exposure_control_mode
-                average_xray_tube_current = s.irradeventxraysourcedata_set.get().average_xray_tube_current
-                exposure_time = s.irradeventxraysourcedata_set.get().exposure_time
-                try:
-                    kvp = s.irradeventxraysourcedata_set.get().kvp_set.get().kvp
-                except ObjectDoesNotExist:
-                    kvp = None
-                try:
-                    uas = s.irradeventxraysourcedata_set.get().exposure_set.get().exposure
-                    if uas:
-                        mas = s.irradeventxraysourcedata_set.get().exposure_set.get().convert_uAs_to_mAs()
-                    else:
-                        mas = None
-                except ObjectDoesNotExist:
-                    mas = None
-                filters, filter_thicknesses = _get_xray_filterinfo(s.irradeventxraysourcedata_set.get())
-            except ObjectDoesNotExist:
-                exposure_control_mode = None
-                average_xray_tube_current = None
-                exposure_time = None
-                kvp = None
-                mas = None
-                filters = None
-                filter_thicknesses = None
-
-            try:
-                exposure_index = s.irradeventxraydetectordata_set.get().exposure_index
-                relative_xray_exposure = s.irradeventxraydetectordata_set.get().relative_xray_exposure
-            except ObjectDoesNotExist:
-                exposure_index = None
-                relative_xray_exposure = None
-
-            cgycm2 = s.convert_gym2_to_cgycm2()
-
-            examdata += [
-                s.acquisition_protocol,
-                ]
-            try:
-                examdata += [
-                s.image_view.code_meaning,
-                ]
-            except AttributeError:
-                pass
-            examdata += [
-                exposure_control_mode,
-                kvp,
-                mas,
-                average_xray_tube_current,
-                exposure_time,
-                filters,
-                filter_thicknesses,
-                exposure_index,
-                relative_xray_exposure,
-                cgycm2,
-                ]
-
-        for index, item in enumerate(examdata):
-            if item is None:
-                examdata[index] = ''
-            if isinstance(item, basestring) and u',' in item:
-                examdata[index] = item.replace(u',', u';')
-        writer.writerow([unicode(datastring).encode("utf-8") for datastring in examdata])
-        tsk.progress = u"{0} of {1}".format(i+1, numresults)
+    for row, exams in enumerate(e):
+        tsk.progress = u"Writing {0} of {1} to csv file".format(row + 1, tsk.num_records)
         tsk.save()
+        try:
+            exam_data = get_common_data(u"DX", exams, pid=pid, name=name, patid=patid)
+            for s in exams.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'):
+                # Get series data
+                exam_data += _dx_get_series_data(s)
+            # Clear out any commas
+            for index, item in enumerate(exam_data):
+                if item is None:
+                    exam_data[index] = ''
+                if isinstance(item, basestring) and u',' in item:
+                    exam_data[index] = item.replace(u',', u';')
+            writer.writerow([str(data_string).encode("utf-8") for data_string in exam_data])
+        except ObjectDoesNotExist:
+            error_message = u"DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number" \
+                            u" {3} - maybe database entry was deleted as part of importing later version of same" \
+                            u" study?".format(
+                                row + 1, tsk.num_records, exams.study_instance_uid, exams.accession_number)
+            logger.error(error_message)
+            writer.writerow([error_message, ])
+
     tsk.progress = u'All study data written.'
     tsk.save()
 
     csvfilename = u"dxexport{0}.csv".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
 
-    try:
-        tsk.filename.save(csvfilename, File(tmpfile))
-    except OSError as e:
-        tsk.progress = u"Error saving export file - please contact an administrator. Error({0}): {1}".format(e.errno, e.strerror)
-        tsk.status = u'ERROR'
-        tsk.save()
-        return
-    except:
-        tsk.progress = u"Unexpected error saving export file - please contact an administrator: {0}".format(sys.exc_info()[0])
-        tsk.status = u'ERROR'
-        tsk.save()
-        return
+    write_export(tsk, csvfilename, tmpfile, datestamp)
 
-    tsk.status = u'COMPLETE'
-    tsk.processtime = (datetime.datetime.now() - datestamp).total_seconds()
-    tsk.save()
 
 @shared_task
 def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     """Export filtered DX and CR database data to multi-sheet Microsoft XSLX files.
 
-    :param filterdict: Query parameters from the DX and CR filtered page URL.
-    :type filterdict: HTTP get
-    
+    :param filterdict: Queryset of studies to export
+    :param pid: does the user have patient identifiable data permission
+    :param name: has patient name been selected for export
+    :param patid: has patient ID been selected for export
+    :param user: User that has started the export
+    :return: Saves xlsx file into Media directory for user to download
     """
 
-    import os, sys, datetime
-    from tempfile import TemporaryFile
-    from django.conf import settings
-    from django.core.files import File
-    from django.shortcuts import redirect
-    from remapp.models import GeneralStudyModuleAttr
+    import datetime
     from remapp.models import Exports
     from remapp.interface.mod_filters import dx_acq_filter
-    from remapp.tools.get_values import return_for_export, string_to_float
-    from django.db.models import Q # For the Q "OR" query used for DX and CR
-    from django.core.exceptions import ObjectDoesNotExist
     import uuid
 
     tsk = Exports.objects.create()
@@ -403,72 +340,29 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.export_date = datestamp
     tsk.progress = u'Query filters imported, task started'
     tsk.status = u'CURRENT'
-    if pid and (name or patid):
-        tsk.includes_pid = True
-    else:
-        tsk.includes_pid = False
+    tsk.includes_pid = bool(pid and (name or patid))
     tsk.export_user_id = user
     tsk.save()
 
-    try:
-        tmpxlsx = TemporaryFile()
-        book = Workbook(tmpxlsx, {'default_date_format': settings.XLSX_DATE, 'strings_to_numbers': False})
-        tsk.progress = u'Workbook created'
-        tsk.save()
-    except:
-        # messages.error(request, "Unexpected error creating temporary file - please contact an administrator: {0}".format(sys.exc_info()[0]))
-        return redirect('/openrem/export/')
+    tmpxlsx, book = create_xlsx(tsk)
+    if not tmpxlsx:
+        exit()
 
     e = dx_acq_filter(filterdict, pid=pid).qs
 
-    # Remove duplicate entries from the results - hopefully no longer necessary, left here in case. Needs testing
-    # e = e.filter(projectionxrayradiationdose__general_study_module_attributes__study_instance_uid__isnull = False).distinct()
-
-    tsk.progress = u'Required study filter complete.'
     tsk.num_records = e.count()
-    tsk.save()
+    if abort_if_zero_studies(tsk.num_records, tsk):
+        return
 
     # Add summary sheet and all data sheet
     summarysheet = book.add_worksheet("Summary")
     wsalldata = book.add_worksheet('All data')
-    date_column = 7
-    if pid and name:
-        date_column += 1
-    if pid and patid:
-        date_column += 1
-    wsalldata.set_column(date_column, date_column, 10)  # allow date to be displayed.
-    if pid and (name or patid):
-        wsalldata.set_column(date_column+1, date_column+1, 10) # Date column
+
+    book = text_and_date_formats(book, wsalldata, pid=pid, name=name, patid=patid)
 
     # Some prep
-    pidheadings = []
-    if pid and name:
-        pidheadings += [u'Patient name']
-    if pid and patid:
-        pidheadings += [u'Patient ID']
-    commonheaders = pidheadings + [
-        u'Institution',
-        u'Manufacturer',
-        u'Model name',
-        u'Station name',
-        u'Display name',
-        u'Accession number',
-        u'Operator',
-        u'Study date',
-    ]
-    if pid and (name or patid):
-        commonheaders += [
-            u'Date of birth',
-        ]
+    commonheaders = common_headers(pid=pid, name=name, patid=patid)
     commonheaders += [
-        u'Patient age',
-        u'Patient sex',
-        u'Patient height',
-        u'Patient mass (kg)',
-        u'Test patient?',
-        u'Study description',
-        u'Requested procedure',
-        u'Number of events',
         u'DAP total (cGy.cm^2)',
         ]
     protocolheaders = commonheaders + [
@@ -483,6 +377,8 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         u'Filters',
         u'Filter thicknesses (mm)',
         u'Exposure index',
+        u'Target exposure index',
+        u'Deviation index',
         u'Relative x-ray exposure',
         u'DAP (cGy.cm^2)',
         u'Entrance exposure at RP',
@@ -492,86 +388,36 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         u'Table Height',
         u'Comment'
         ]
-        
+
     # Generate list of protocols in queryset and create worksheets for each
     tsk.progress = u'Generating list of protocols in the dataset...'
     tsk.save()
 
-    sheetlist = {}
-    protocolslist = []
-    for exams in e:
-        for s in exams.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'):
-            if s.acquisition_protocol:
-                safeprotocol = s.acquisition_protocol
-            else:
-                safeprotocol = u'Unknown'
-            if safeprotocol not in protocolslist:
-                protocolslist.append(safeprotocol)
-    protocolslist.sort()
-
     tsk.progress = u'Creating an Excel safe version of protocol names and creating a worksheet for each...'
     tsk.save()
 
-    for protocol in protocolslist:
-        tabtext = protocol.lower().replace(u" ", u"_")
-        translation_table = {ord('['):ord('('), ord(']'):ord(')'), ord(':'):ord(';'), ord('*'):ord('#'), ord('?'):ord(';'), ord('/'):ord('|'), ord('\\'):ord('|')}
-        tabtext = tabtext.translate(translation_table) # remove illegal characters
-        tabtext = tabtext[:31]
-        if tabtext not in sheetlist:
-            sheetlist[tabtext] = {
-                'sheet': book.add_worksheet(tabtext),
-                'count':0,
-                'protocolname':[protocol]}
-            sheetlist[tabtext]['sheet'].write_row(0,0,protocolheaders)
-            sheetlist[tabtext]['sheet'].set_column(date_column, date_column, 10) # Date column
-            if pid and (name or patid):
-                sheetlist[tabtext]['sheet'].set_column(date_column+1, date_column+1, 10) # Date column
-        else:
-            if protocol not in sheetlist[tabtext]['protocolname']:
-                sheetlist[tabtext]['protocolname'].append(protocol)
-
-
+    book, sheet_list = generate_sheets(e, book, protocolheaders, modality=u"DX", pid=pid, name=name, patid=patid)
 
     ##################
     # All data sheet
 
     from django.db.models import Max
-    max_events = e.aggregate(Max('projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__total_number_of_radiographic_frames'))
+    max_events_dict = e.aggregate(Max('projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__'
+                                      'total_number_of_radiographic_frames'))
+    max_events = max_events_dict['projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__'
+                                 'total_number_of_radiographic_frames__max']
+    if not max_events:
+        max_events = 1
 
-    alldataheaders = commonheaders
+    alldataheaders = list(commonheaders)
 
     tsk.progress = u'Generating headers for the all data sheet...'
     tsk.save()
 
-    for h in xrange(max_events['projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__total_number_of_radiographic_frames__max']):
-        alldataheaders += [
-            u'E' + str(h+1) + u' Protocol',
-            u'E' + str(h+1) + u' Anatomy',
-            u'E' + str(h+1) + u' Image view',
-            u'E' + str(h+1) + u' Exposure control mode',
-            u'E' + str(h+1) + u' kVp',
-            u'E' + str(h+1) + u' mAs',
-            u'E' + str(h+1) + u' mA',
-            u'E' + str(h+1) + u' Exposure time (ms)',
-            u'E' + str(h+1) + u' Filters',
-            u'E' + str(h+1) + u' Filter thicknesses (mm)',
-            u'E' + str(h+1) + u' Exposure index',
-            u'E' + str(h+1) + u' Relative x-ray exposure',
-            u'E' + str(h+1) + u' DAP (cGy.cm^2)',
-            u'E' + str(h+1) + u' Entrance Exposure at RP (mGy)',
-            u'E' + str(h+1) + u' SDD Detector Dist',
-            u'E' + str(h+1) + u' SPD Patient Dist',
-            u'E' + str(h+1) + u' SIsoD Isocentre Dist',
-            u'E' + str(h+1) + u' Table Height',
-            u'E' + str(h+1) + u' Comment',
-            ]
+    alldataheaders += _series_headers(max_events)
     wsalldata.write_row('A1', alldataheaders)
-    wsalldata.set_column(date_column, date_column, 10) # allow date to be displayed.
-    if pid and (name or patid):
-        wsalldata.set_column(date_column+1, date_column+1, 10) # allow date to be displayed.
-    numcolumns = (29 * max_events['projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__total_number_of_radiographic_frames__max']) + date_column + 8
     numrows = e.count()
-    wsalldata.autofilter(0,0,numrows,numcolumns)
+    wsalldata.autofilter(0, 0, numrows, len(alldataheaders) - 1)
 
     for row, exams in enumerate(e):
 
@@ -579,452 +425,32 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
             row + 1, numrows)
         tsk.save()
 
-        if pid and (name or patid):
-            try:
-                patient_birth_date = exams.patientmoduleattr_set.get().patient_birth_date
-                if name:
-                    patient_name = exams.patientmoduleattr_set.get().patient_name
-                if patid:
-                    patient_id = exams.patientmoduleattr_set.get().patient_id
-            except ObjectDoesNotExist:
-                patient_birth_date = None
-                patient_name = None
-                patient_id = None
-
         try:
-            institution_name = exams.generalequipmentmoduleattr_set.get().institution_name
-            manufacturer = exams.generalequipmentmoduleattr_set.get().manufacturer
-            manufacturer_model_name = exams.generalequipmentmoduleattr_set.get().manufacturer_model_name
-            station_name = exams.generalequipmentmoduleattr_set.get().station_name
-            display_name = exams.generalequipmentmoduleattr_set.get().unique_equipment_name.display_name
+            common_exam_data = get_common_data(u"DX", exams, pid=pid, name=name, patid=patid)
+            all_exam_data = list(common_exam_data)
+
+            for s in exams.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'):
+                # Get series data
+                series_data = _dx_get_series_data(s)
+                # Add series to all data
+                all_exam_data += series_data
+                # Add series data to series tab
+                protocol = s.acquisition_protocol
+                if not protocol:
+                    protocol = u'Unknown'
+                tabtext = sheet_name(protocol)
+                sheet_list[tabtext]['count'] += 1
+                sheet_list[tabtext]['sheet'].write_row(sheet_list[tabtext]['count'], 0, common_exam_data + series_data)
+
+            wsalldata.write_row(row + 1, 0, all_exam_data)
         except ObjectDoesNotExist:
-            institution_name = None
-            manufacturer = None
-            manufacturer_model_name = None
-            station_name = None
-            display_name = None
+            error_message = u"DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number" \
+                            u" {3} - maybe database entry was deleted as part of importing later version of same" \
+                            u" study?".format(row + 1, numrows, exams.study_instance_uid, exams.accession_number)
+            logger.error(error_message)
+            wsalldata.write(row + 1, 0, error_message)
 
-        try:
-            patient_sex = exams.patientmoduleattr_set.get().patient_sex
-        except ObjectDoesNotExist:
-            patient_sex = None
-
-        try:
-            patient_age = string_to_float(exams.patientstudymoduleattr_set.get().patient_age_decimal)
-            patient_size = string_to_float(exams.patientstudymoduleattr_set.get().patient_size)
-            patient_weight = string_to_float(exams.patientstudymoduleattr_set.get().patient_weight)
-        except ObjectDoesNotExist:
-            patient_age  = None
-            patient_size = None
-            patient_weight = None
-
-        try:
-            not_patient_indicator = exams.patientmoduleattr_set.get().not_patient_indicator
-        except ObjectDoesNotExist:
-            not_patient_indicator = None
-
-        try:
-            total_number_of_radiographic_frames = int(exams.projectionxrayradiationdose_set.get(
-                ).accumxraydose_set.get().accumintegratedprojradiogdose_set.get().total_number_of_radiographic_frames)
-            if exams.projectionxrayradiationdose_set.get(
-                ).accumxraydose_set.get().accumintegratedprojradiogdose_set.get().dose_area_product_total is not None:
-                cgycm2 = string_to_float(exams.projectionxrayradiationdose_set.get(
-                    ).accumxraydose_set.get().accumintegratedprojradiogdose_set.get().convert_gym2_to_cgycm2())
-            else:
-                cgycm2 = None
-        except ObjectDoesNotExist:
-            total_number_of_radiographic_frames = None
-            cgycm2 = None
-
-        examdata = []
-        if pid and name:
-            examdata += [patient_name]
-        if pid and patid:
-            examdata += [patient_id]
-
-        examdata += [
-            institution_name,
-            manufacturer,
-            manufacturer_model_name,
-            station_name,
-            display_name,
-            exams.accession_number,
-            exams.operator_name,
-            exams.study_date,
-        ]
-        if pid and (name or patid):
-            examdata += [
-                patient_birth_date,
-            ]
-        examdata += [
-            patient_age,
-            patient_sex,
-            patient_size,
-            patient_weight,
-            not_patient_indicator,
-            exams.study_description,
-            exams.requested_procedure_code_meaning,
-            total_number_of_radiographic_frames,
-            cgycm2,
-        ]
-        for s in exams.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'):
-
-            try:
-                exposure_control_mode = s.irradeventxraysourcedata_set.get().exposure_control_mode
-                average_xray_tube_current = string_to_float(
-                    s.irradeventxraysourcedata_set.get().average_xray_tube_current)
-                exposure_time = string_to_float(s.irradeventxraysourcedata_set.get().exposure_time)
-                try:
-                    kvp = string_to_float(s.irradeventxraysourcedata_set.get().kvp_set.get().kvp)
-                except ObjectDoesNotExist:
-                    kvp = None
-
-                try:
-                    if s.irradeventxraysourcedata_set.get().exposure_set.get().exposure is not None:
-                        mas = string_to_float(
-                            s.irradeventxraysourcedata_set.get().exposure_set.get().convert_uAs_to_mAs())
-                    else:
-                        mas = None
-                except ObjectDoesNotExist:
-                    mas = None
-                filters, filter_thicknesses = _get_xray_filterinfo(s.irradeventxraysourcedata_set.get())
-            except ObjectDoesNotExist:
-                exposure_control_mode = None
-                kvp = None
-                average_xray_tube_current = None
-                exposure_time = None
-                mas = None
-                filters = None
-                filter_thicknesses = None
-
-            try:
-                exposure_index = string_to_float(s.irradeventxraydetectordata_set.get().exposure_index)
-                relative_xray_exposure = string_to_float(s.irradeventxraydetectordata_set.get().relative_xray_exposure)
-            except ObjectDoesNotExist:
-                exposure_index = None
-                relative_xray_exposure = None
-
-            cgycm2 = string_to_float(s.convert_gym2_to_cgycm2())
-
-            entrance_exposure_at_rp = string_to_float(s.entrance_exposure_at_rp)
-
-            try:
-                s.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get()
-            except:
-                distance_source_to_detector = None
-                distance_source_to_entrance_surface = None
-                distance_source_to_isocenter = None
-                table_height_position = None
-            else:
-                distance_source_to_detector = string_to_float(return_for_export(
-                    s.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(),
-                    'distance_source_to_detector'))
-                distance_source_to_entrance_surface = string_to_float(return_for_export(
-                    s.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(),
-                    'distance_source_to_entrance_surface'))
-                distance_source_to_isocenter = string_to_float(return_for_export(
-                    s.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(),
-                    'distance_source_to_isocenter'))
-                table_height_position = string_to_float(return_for_export(
-                    s.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(),
-                    'table_height_position'))
-
-            examdata += [
-                s.acquisition_protocol,
-                str(s.anatomical_structure),
-                str(s.image_view),
-                exposure_control_mode,
-                kvp,
-                mas,
-                average_xray_tube_current,
-                exposure_time,
-                filters,
-                filter_thicknesses,
-                exposure_index,
-                relative_xray_exposure,
-                cgycm2,
-                entrance_exposure_at_rp,
-                distance_source_to_detector,
-                distance_source_to_entrance_surface,
-                distance_source_to_isocenter,
-                table_height_position,
-                s.comment,
-            ]
-
-        wsalldata.write_row(row+1,0, examdata)
-        
-        # Now we need to write a sheet per series protocol for each 'exams'.
-        
-        for s in exams.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'):
-            protocol = s.acquisition_protocol
-            if not protocol:
-                protocol = u'Unknown'
-            tabtext = protocol.lower().replace(u" ", u"_")
-            translation_table = {ord('['):ord('('), ord(']'):ord(')'), ord(':'):ord(';'), ord('*'):ord('#'),
-                                 ord('?'):ord(';'), ord('/'):ord('|'), ord('\\'):ord('|')}
-            tabtext = tabtext.translate(translation_table)  # remove illegal characters
-            tabtext = tabtext[:31]
-            sheetlist[tabtext]['count'] += 1
-
-            if pid and (name or patid):
-                try:
-                    exams.patientmoduleattr_set.get()
-                except ObjectDoesNotExist:
-                    if name:
-                        patient_name = None
-                    if patid:
-                        patient_id = None
-                else:
-                    if name:
-                        patient_name = return_for_export(exams.patientmoduleattr_set.get(), 'patient_name')
-                    if patid:
-                        patient_id = return_for_export(exams.patientmoduleattr_set.get(), 'patient_id')
-            try:
-                exams.generalequipmentmoduleattr_set.get()
-            except ObjectDoesNotExist:
-                institution_name = None
-                manufacturer = None
-                manufacturer_model_name = None
-                station_name = None
-                display_name = None
-            else:
-                institution_name = return_for_export(exams.generalequipmentmoduleattr_set.get(), 'institution_name')
-                manufacturer = return_for_export(exams.generalequipmentmoduleattr_set.get(), 'manufacturer')
-                manufacturer_model_name = return_for_export(exams.generalequipmentmoduleattr_set.get(), 'manufacturer_model_name')
-                station_name = return_for_export(exams.generalequipmentmoduleattr_set.get(), 'station_name')
-                display_name = return_for_export(exams.generalequipmentmoduleattr_set.get().unique_equipment_name, 'display_name')
-
-            try:
-                exams.patientmoduleattr_set.get()
-            except ObjectDoesNotExist:
-                patient_sex = None
-            else:
-                patient_sex = return_for_export(exams.patientmoduleattr_set.get(), 'patient_sex')
-
-            try:
-                exams.patientstudymoduleattr_set.get()
-            except ObjectDoesNotExist:
-                patient_age = None
-                patient_size = None
-                patient_weight = None
-            else:
-                patient_age = string_to_float(return_for_export(exams.patientstudymoduleattr_set.get(),
-                                                                'patient_age_decimal'))
-                patient_size = string_to_float(return_for_export(exams.patientstudymoduleattr_set.get(),
-                                                                 'patient_size'))
-                patient_weight = string_to_float(return_for_export(exams.patientstudymoduleattr_set.get(),
-                                                                   'patient_weight'))
-
-            try:
-                exams.patientmoduleattr_set.get()
-            except ObjectDoesNotExist:
-                not_patient_indicator = None
-            else:
-                not_patient_indicator = return_for_export(exams.patientmoduleattr_set.get(), 'not_patient_indicator')
-
-            try:
-                exams.projectionxrayradiationdose_set.get().accumxraydose_set.get().accumintegratedprojradiogdose_set.get()
-            except ObjectDoesNotExist:
-                total_number_of_radiographic_frames = None
-                cgycm2 = None
-            else:
-                total_number_of_radiographic_frames = int(return_for_export(
-                    exams.projectionxrayradiationdose_set.get().accumxraydose_set.get(
-                    ).accumintegratedprojradiogdose_set.get(), 'total_number_of_radiographic_frames'))
-                dap_total = return_for_export(
-                    exams.projectionxrayradiationdose_set.get().accumxraydose_set.get(
-                    ).accumintegratedprojradiogdose_set.get(), 'dose_area_product_total')
-                if dap_total:
-                    cgycm2 = string_to_float(
-                        exams.projectionxrayradiationdose_set.get().accumxraydose_set.get(
-                        ).accumintegratedprojradiogdose_set.get().convert_gym2_to_cgycm2())
-                else:
-                    cgycm2 = None
-
-            examdata = []
-            if pid and name:
-                examdata += [patient_name]
-            if pid and patid:
-                examdata += [patient_id]
-
-            examdata += [
-                institution_name,
-                manufacturer,
-                manufacturer_model_name,
-                station_name,
-                display_name,
-                exams.accession_number,
-                exams.operator_name,
-                exams.study_date,  # Is a date - cell needs formatting
-            ]
-            if pid and (name or patid):
-                examdata += [
-                    patient_birth_date,
-                ]
-            examdata += [
-                patient_age,
-                patient_sex,
-                patient_size,
-                patient_weight,
-                not_patient_indicator,
-                exams.study_description,
-                exams.requested_procedure_code_meaning,
-                total_number_of_radiographic_frames,
-                cgycm2,
-                ]
-
-            try:
-                s.irradeventxraysourcedata_set.get()
-            except ObjectDoesNotExist:
-                exposure_control_mode = None
-                kvp = None
-                average_xray_tube_current = None
-                exposure_time = None
-                mas = None
-                filters = None
-                filter_thicknesses = None
-            else:
-                exposure_control_mode = return_for_export(s.irradeventxraysourcedata_set.get(), 'exposure_control_mode')
-                average_xray_tube_current = string_to_float(return_for_export(s.irradeventxraysourcedata_set.get(),
-                                                                              'average_xray_tube_current'))
-                exposure_time = string_to_float(return_for_export(s.irradeventxraysourcedata_set.get(),
-                                                                  'exposure_time'))
-                try:
-                    s.irradeventxraysourcedata_set.get().kvp_set.get()
-                except ObjectDoesNotExist:
-                    kvp = None
-                else:
-                    kvp = string_to_float(return_for_export(s.irradeventxraysourcedata_set.get().kvp_set.get(), 'kvp'))
-
-                try:
-                    s.irradeventxraysourcedata_set.get().exposure_set.get()
-                except ObjectDoesNotExist:
-                    mas = None
-                else:
-                    uas = return_for_export(s.irradeventxraysourcedata_set.get().exposure_set.get(), 'exposure')
-                    if uas:
-                        mas = string_to_float(
-                            s.irradeventxraysourcedata_set.get().exposure_set.get().convert_uAs_to_mAs())
-                    else:
-                        mas = None
-                filters, filter_thicknesses = _get_xray_filterinfo(s.irradeventxraysourcedata_set.get())
-            try:
-                s.irradeventxraydetectordata_set.get()
-            except ObjectDoesNotExist:
-                exposure_index = None
-                relative_xray_exposure = None
-            else:
-                exposure_index = string_to_float(return_for_export(s.irradeventxraydetectordata_set.get(),
-                                                                   'exposure_index'))
-                relative_xray_exposure = string_to_float(return_for_export(s.irradeventxraydetectordata_set.get(),
-                                                                           'relative_xray_exposure'))
-
-            cgycm2 = string_to_float(s.convert_gym2_to_cgycm2())
-
-            entrance_exposure_at_rp = string_to_float(return_for_export(s, 'entrance_exposure_at_rp'))
-
-            try:
-                s.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get()
-            except:
-                distance_source_to_detector = None
-                distance_source_to_entrance_surface = None
-                distance_source_to_isocenter = None
-                table_height_position = None
-            else:
-                distance_source_to_detector = string_to_float(return_for_export(
-                    s.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(),
-                    'distance_source_to_detector'))
-                distance_source_to_entrance_surface = string_to_float(return_for_export(
-                    s.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(),
-                    'distance_source_to_entrance_surface'))
-                distance_source_to_isocenter = string_to_float(return_for_export(
-                    s.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(),
-                    'distance_source_to_isocenter'))
-                table_height_position = string_to_float(return_for_export(
-                    s.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(),
-                    'table_height_position'))
-
-            examdata += [
-                s.acquisition_protocol,
-                str(s.anatomical_structure),
-                str(s.image_view),
-                exposure_control_mode,
-                kvp,
-                mas,
-                average_xray_tube_current,
-                exposure_time,
-                filters,
-                filter_thicknesses,
-                exposure_index,
-                relative_xray_exposure,
-                cgycm2,
-                entrance_exposure_at_rp,
-                distance_source_to_detector,
-                distance_source_to_entrance_surface,
-                distance_source_to_isocenter,
-                table_height_position,
-                s.comment,
-            ]
-
-            sheetlist[tabtext]['sheet'].write_row(sheetlist[tabtext]['count'], 0, examdata)
-
-    # Could at this point go through each sheet adding on the auto filter as we now know how many of each there are...
-    
-    # Populate summary sheet
-    tsk.progress = u'Now populating the summary sheet...'
-    tsk.save()
-
-    import pkg_resources  # part of setuptools
-    import datetime
-
-    try:
-        vers = pkg_resources.require("openrem")[0].version
-    except:
-        vers = ''
-
-    version = vers
-    titleformat = book.add_format()
-    titleformat.set_font_size=(22)
-    titleformat.set_font_color=('#FF0000')
-    titleformat.set_bold()
-    toplinestring = u'XLSX Export from OpenREM version {0} on {1}'.format(version, str(datetime.datetime.now()))
-    linetwostring = u'OpenREM is copyright 2016 The Royal Marsden NHS Foundation Trust, and available under the GPL. See http://openrem.org'
-    summarysheet.write(0,0, toplinestring, titleformat)
-    summarysheet.write(1,0, linetwostring)
-
-    # Number of exams
-    summarysheet.write(3,0, u"Total number of exams")
-    summarysheet.write(3,1,e.count())
-
-    # Generate list of Study Descriptions
-    summarysheet.write(5,0, u"Study Description")
-    summarysheet.write(5,1, u"Frequency")
-    from django.db.models import Count
-    study_descriptions = e.values("study_description").annotate(n=Count("pk"))
-    for row, item in enumerate(study_descriptions.order_by('n').reverse()):
-        summarysheet.write(row+6,0,item['study_description'])
-        summarysheet.write(row+6,1,item['n'])
-    summarysheet.set_column('A:A', 25)
-
-    # Generate list of Requested Procedures
-    summarysheet.write(5,3, u"Requested Procedure")
-    summarysheet.write(5,4, u"Frequency")
-    from django.db.models import Count
-    requested_procedure = e.values("requested_procedure_code_meaning").annotate(n=Count("pk"))
-    for row, item in enumerate(requested_procedure.order_by('n').reverse()):
-        summarysheet.write(row+6,3,item['requested_procedure_code_meaning'])
-        summarysheet.write(row+6,4,item['n'])
-    summarysheet.set_column('D:D', 25)
-
-    # Generate list of Series Protocols
-    summarysheet.write(5,6, u"Series Protocol")
-    summarysheet.write(5,7, u"Frequency")
-    sortedprotocols = sorted(sheetlist.iteritems(), key=lambda (k,v): v['count'], reverse=True)
-    for row, item in enumerate(sortedprotocols):
-        summarysheet.write(row+6,6,u', '.join(item[1]['protocolname'])) # Join as can't write a list to a single cell.
-        summarysheet.write(row+6,7,item[1]['count'])
-    summarysheet.set_column('G:G', 15)
-
+    create_summary_sheet(tsk, e, book, summarysheet, sheet_list)
 
     book.close()
     tsk.progress = u'XLSX book written.'
@@ -1032,19 +458,254 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     xlsxfilename = u"dxexport{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
 
-    try:
-        tsk.filename.save(xlsxfilename,File(tmpxlsx))
-    except OSError as e:
-        tsk.progress = u"Error saving export file - please contact an administrator. Error({0}): {1}".format(e.errno, e.strerror)
-        tsk.status = u'ERROR'
-        tsk.save()
-        return
-    except:
-        tsk.progress = u"Unexpected error saving export file - please contact an administrator: {0}".format(sys.exc_info()[0])
-        tsk.status = u'ERROR'
-        tsk.save()
+    write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
+
+
+@shared_task
+def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
+    """Export filtered DX database data in the format for the 2019 Public Health England DX dose survey
+
+    :param filterdict: Queryset of studies to export
+    :param user:  User that has started the export
+    :param projection: projection export if True, study export if False
+    :param bespoke: for study export, are there more than six projections
+    :return: Saves Excel file into Media directory for user to download
+    """
+
+    import datetime
+    from remapp.exports.export_common import get_patient_study_data
+    from remapp.models import Exports
+    from remapp.interface.mod_filters import dx_acq_filter
+    import uuid
+
+    tsk = Exports.objects.create()
+
+    tsk.task_id = dx_phe_2019.request.id
+    if tsk.task_id is None:  # Required when testing without celery
+        tsk.task_id = u'NotCelery-{0}'.format(uuid.uuid4())
+    tsk.modality = u"DX"
+    tsk.export_type = u"PHE DX 2019 export"
+    datestamp = datetime.datetime.now()
+    tsk.export_date = datestamp
+    tsk.progress = u'Query filters imported, task started'
+    tsk.status = u'CURRENT'
+    tsk.includes_pid = False
+    tsk.export_user_id = user
+    tsk.save()
+
+    tmp_xlsx, book = create_xlsx(tsk)
+    if not tmp_xlsx:
+        exit()
+
+    exams = dx_acq_filter(filterdict, pid=False).qs
+
+    tsk.num_records = exams.count()
+    if abort_if_zero_studies(tsk.num_records, tsk):
         return
 
-    tsk.status = u'COMPLETE'
-    tsk.processtime = (datetime.datetime.now() - datestamp).total_seconds()
+    tsk.progress = u'{0} studies in query.'.format(tsk.num_records)
     tsk.save()
+
+    columns_a_d = [
+        u'',
+        u'PHE Record No',
+        u"Contributor's record ID",
+        u'Exam date',
+        ]
+    column_e_projection = [
+        u'Projection DAP dose',
+        ]
+    column_e_study = [
+        u'Study DAP dose',
+        ]
+    columns_f_m = [
+        u'DAP dose units',
+        u'Protocol name',
+        u'Patient weight',
+        u'',
+        u'',
+        u'Patient age',
+        u'Sex',
+        u'Height',
+        ]
+    study_num_projections = [
+        u'number of projections',
+    ]
+
+    per_projection_headings = [
+        u'Detector used',
+        u'Grid used',
+        u'FDD',
+        u'Filtration in mm Al',
+        u'AEC used',
+        u'kVp',
+        u'mAs',
+        u'Patient position',
+        u'Detector in bucky',
+        u'Other projection info',
+        ]
+    final_columns = [
+        u'Additional one',
+        u'Additional two',
+        u'Additional three',
+        u'Additional four',
+        u'SNOMED CT code',
+        u'NICIP code',
+        u'Variation in dose collection',
+        u'Other information, comments',
+    ]
+    if projection:
+        sheet = book.add_worksheet("PHE DX 2019 Single Projection")
+        headings = columns_a_d + column_e_projection + columns_f_m + per_projection_headings + final_columns
+    else:
+        if bespoke:
+            event_columns = 20
+        else:
+            event_columns = 6
+        sheet = book.add_worksheet("PHE DX 2019 Exam")
+        headings = columns_a_d + column_e_study + columns_f_m + study_num_projections
+        for x in range(event_columns):
+            headings += [
+                u'Projection {0} DAP'.format(x+1)
+            ]
+        for x in range(event_columns):
+            headings += [
+                u'Projection {0} Name'.format(x+1)
+            ]
+            headings += per_projection_headings
+        headings += final_columns
+    sheet.write_row(0, 0, headings)
+
+    num_rows = exams.count()
+    for row, exam in enumerate(exams):
+        tsk.progress = u"Writing study {0} of {1}".format(row+1, num_rows)
+        tsk.save()
+
+        try:
+            projection_events = exam.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')
+        except ObjectDoesNotExist:
+            logger.error(u"Failed to export study to PHE 2019 DX as had no event data! PK={0}".format(exam.pk))
+            continue
+
+        patient_study_data = get_patient_study_data(exam)
+        patient_sex = None
+        try:
+            patient_module = exam.patientmoduleattr_set.get()
+            patient_sex = patient_module.patient_sex
+        except ObjectDoesNotExist:
+            logger.debug("Export {0}; patientmoduleattr_set object does not exist. AccNum {1}, Date {2}".format(
+                'PHE 2019 DX', exams.accession_number, exams.study_date))
+        row_data = [
+            u'',
+            row + 1,
+            exam.pk,
+            exam.study_date
+        ]
+        if not projection:
+            row_data += [
+                exam.dap_total_cgycm2(),
+            ]
+        else:
+            row_data += [
+                projection_events[0].convert_gym2_to_cgycm2(),
+            ]
+        row_data += [
+            u'cGy·cm²',
+            u'{0} | {1} | {2}'.format(
+                exam.procedure_code_meaning, exam.requested_procedure_code_meaning, exam.study_description),
+            patient_study_data['patient_weight'],
+            '',
+            '',
+            patient_study_data['patient_age_decimal'],
+            patient_sex,
+            patient_study_data['patient_size'],
+        ]
+
+        if not projection:
+            row_data += [
+                exam.number_of_events
+            ]
+            for x in range(event_columns):
+                try:
+                    row_data += [
+                        projection_events[x].convert_gym2_to_cgycm2(),
+                    ]
+                except IndexError:
+                    row_data += [
+                        '',
+                    ]
+
+        for event in projection_events:
+            source_data = _get_source_data(event)
+            if u"None" not in source_data['filters']:
+                filters = u"{0} {1}".format(source_data['filters'], source_data['filter_thicknesses'])
+            else:
+                filters = u''
+
+            detector_data = _get_detector_data(event)
+            distances = _get_distance_data(event)
+
+            try:
+                image_view = event.image_view.code_meaning
+            except AttributeError:
+                image_view = None
+            try:
+                pt_orientation = event.patient_orientation_cid.code_meaning
+            except AttributeError:
+                pt_orientation = None
+            try:
+                pt_orientation_mod = event.patient_orientation_modifier_cid.code_meaning
+            except AttributeError:
+                pt_orientation_mod = None
+            try:
+                pt_table_rel = event.patient_table_relationship_cid.code_meaning
+            except AttributeError:
+                pt_table_rel = None
+
+            pt_position = u""
+            if pt_orientation:
+                pt_position = u"{0}{1}".format(pt_position, pt_orientation)
+            if pt_orientation_mod:
+                pt_position = u"{0}, {1}".format(pt_position, pt_orientation_mod)
+            if pt_table_rel:
+                pt_position = u"{0}, {1}".format(pt_position, pt_table_rel)
+
+            if not projection:
+                row_data += [
+                    event.acquisition_protocol,
+                ]
+            sdd = ''
+            if distances['distance_source_to_detector']:
+                sdd = distances['distance_source_to_detector'] / 10
+            row_data += [
+                '',
+                source_data['grid_focal_distance'],
+                sdd,
+                filters,
+                source_data['exposure_control_mode'],
+                source_data['kvp'],
+                source_data['mas'],
+                pt_position,
+                '',
+            ]
+            other_info = u''
+            if detector_data['exposure_index']:
+                other_info = u'EI: {0}'.format(round(detector_data['exposure_index'], 2))
+            if image_view:
+                other_info = u'{0} {1}'.format(other_info, image_view)
+            row_data += [
+                other_info
+            ]
+            if projection:
+                break
+
+        sheet.write_row(row + 1, 0, row_data)
+
+    book.close()
+    tsk.progress = u"PHE DX 2019 export complete"
+    tsk.save()
+
+    xlsxfilename = u"PHE_DX_2019_{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
+
+    write_export(tsk, xlsxfilename, tmp_xlsx, datestamp)
+

@@ -9,7 +9,6 @@ from remapp.extractors import rdsr
 from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
 
 
-
 class ImportCTRDSR(TestCase):
     def test_import_mg_rdsr_hologic(self):
         """
@@ -28,20 +27,20 @@ class ImportCTRDSR(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         hologic_2d_path = os.path.join(root_tests, hologic_2d)
 
-        rdsr(hologic_2d_path)
+        rdsr.rdsr(hologic_2d_path)
         studies = GeneralStudyModuleAttr.objects.order_by('id')
 
         # Test that one study has been imported
         self.assertEqual(studies.count(), 1)
 
         # Test that study level data is recorded correctly
-        self.assertEqual(studies[0].study_date, datetime.date(2015, 03, 22))
+        self.assertEqual(studies[0].study_date, datetime.date(2015, 3, 22))
         self.assertEqual(studies[0].study_time, datetime.time(12, 47, 45))
         self.assertEqual(studies[0].accession_number, 'AJSKDL1234')
         self.assertEqual(studies[0].study_description, 'Bilateral Mammography')
         self.assertEqual(studies[0].study_instance_uid, '1.3.6.1.4.1.5962.99.1.84038123.1638714927.1486142755307.43.0')
         self.assertEqual(studies[0].study_id, '01')
-        self.assertEqual(studies[0].modality_type, 'MG')    #Appears as SR in dcmdump?
+        self.assertEqual(studies[0].modality_type, 'MG')
 
         self.assertEqual(studies[0].generalequipmentmoduleattr_set.get().institution_name, 'OpenREM')
         self.assertEqual(studies[0].generalequipmentmoduleattr_set.get().institution_address, 'Milan')
@@ -55,19 +54,24 @@ class ImportCTRDSR(TestCase):
         # Test that patient level data is recorded correctly
         self.assertEqual(studies[0].patientmoduleattr_set.get().patient_name, 'Lyons^Samantha')
         self.assertEqual(studies[0].patientmoduleattr_set.get().patient_id, '00112233')
-        self.assertEqual(studies[0].patientmoduleattr_set.get().patient_birth_date, datetime.date(1954, 03, 22))
+        self.assertEqual(studies[0].patientmoduleattr_set.get().patient_birth_date, datetime.date(1954, 3, 22))
         self.assertEqual(studies[0].patientmoduleattr_set.get().patient_sex, 'F')
         self.assertEqual(studies[0].patientstudymoduleattr_set.get().patient_age, '061Y')
         self.assertAlmostEqual(studies[0].patientstudymoduleattr_set.get().patient_age_decimal, Decimal(61))
 
         # Test that projectionxrayradiationdose
-        self.assertEqual(studies[0].projectionxrayradiationdose_set.get().procedure_reported.code_meaning, 'Mammography')
+        self.assertEqual(studies[0].projectionxrayradiationdose_set.get().procedure_reported.code_meaning,
+                         'Mammography')
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().has_intent.code_meaning, 'Diagnostic Intent')
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().scope_of_accumulation.code_meaning, 'Study')
-        self.assertEqual(studies[0].projectionxrayradiationdose_set.get().xray_detector_data_available.code_meaning, 'Yes')
-        self.assertEqual(studies[0].projectionxrayradiationdose_set.get().xray_source_data_available.code_meaning, 'Yes')
-        self.assertEqual(studies[0].projectionxrayradiationdose_set.get().xray_mechanical_data_available.code_meaning, 'Yes')
-        self.assertEqual(studies[0].projectionxrayradiationdose_set.get().source_of_dose_information.code_meaning, 'Computed From Image Attributes')
+        self.assertEqual(studies[0].projectionxrayradiationdose_set.get().xray_detector_data_available.code_meaning,
+                         'Yes')
+        self.assertEqual(studies[0].projectionxrayradiationdose_set.get().xray_source_data_available.code_meaning,
+                         'Yes')
+        self.assertEqual(studies[0].projectionxrayradiationdose_set.get().xray_mechanical_data_available.code_meaning,
+                         'Yes')
+        self.assertEqual(studies[0].projectionxrayradiationdose_set.get().source_of_dose_information.code_meaning,
+                         'Computed From Image Attributes')
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().observercontext_set.get().
             observer_type.code_meaning, 'Device')
 
@@ -83,7 +87,6 @@ class ImportCTRDSR(TestCase):
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().accumxraydose_set.get(
             ).accummammographyxraydose_set.order_by('id')[1].laterality.code_meaning, "Right breast")
 
-
         # Test that event level data is recorded correctly
         self.assertAlmostEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
             )[0].irradeventxraysourcedata_set.get().average_glandular_dose, Decimal(1.3))
@@ -96,7 +99,7 @@ class ImportCTRDSR(TestCase):
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
             )[0].irradiation_event_type.code_meaning, 'Stationary Acquisition')
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
-            )[0].date_time_started, datetime.datetime(2015, 03, 22, 12, 47, 45))
+            )[0].date_time_started, datetime.datetime(2015, 3, 22, 12, 47, 45))
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
             )[0].image_view.code_meaning, 'cranio-caudal')
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
@@ -119,7 +122,7 @@ class ImportCTRDSR(TestCase):
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
             )[1].irradiation_event_type.code_meaning, 'Stationary Acquisition')
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
-            )[1].date_time_started, datetime.datetime(2015, 03, 22, 12, 50, 15))
+            )[1].date_time_started, datetime.datetime(2015, 3, 22, 12, 50, 15))
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
             )[1].image_view.code_meaning, 'cranio-caudal')
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
@@ -151,8 +154,6 @@ class ImportCTRDSR(TestCase):
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
             )[1].irradeventxraysourcedata_set.get().anode_target_material.code_meaning, 'Tungsten or Tungsten compound')
 
-
-
         # Test that X-ray filter data is recorded correctly
         self.assertAlmostEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
             )[0].irradeventxraysourcedata_set.get().xrayfilters_set.get().xray_filter_thickness_minimum, Decimal(0.05))
@@ -167,10 +168,11 @@ class ImportCTRDSR(TestCase):
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
             )[1].irradeventxraysourcedata_set.get().xrayfilters_set.get().xray_filter_type.code_meaning, 'Strip filter')
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
-            )[0].irradeventxraysourcedata_set.get().xrayfilters_set.get().xray_filter_material.code_meaning, 'Rhodium or Rhodium compound')
+            )[0].irradeventxraysourcedata_set.get().xrayfilters_set.get().xray_filter_material.code_meaning,
+                         'Rhodium or Rhodium compound')
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
-            )[1].irradeventxraysourcedata_set.get().xrayfilters_set.get().xray_filter_material.code_meaning, 'Rhodium or Rhodium compound')
-
+            )[1].irradeventxraysourcedata_set.get().xrayfilters_set.get().xray_filter_material.code_meaning,
+                         'Rhodium or Rhodium compound')
 
             # Test that exposure data is recorded correctly
         self.assertAlmostEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
@@ -188,9 +190,11 @@ class ImportCTRDSR(TestCase):
         self.assertAlmostEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
             )[1].irradeventxraymechanicaldata_set.get().compression_thickness, Decimal(43.00))
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
-            )[0].irradeventxraymechanicaldata_set.get().crdr_mechanical_configuration.code_meaning, 'Upright Stand Mount')
+            )[0].irradeventxraymechanicaldata_set.get().crdr_mechanical_configuration.code_meaning,
+                         'Upright Stand Mount')
         self.assertEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
-            )[1].irradeventxraymechanicaldata_set.get().crdr_mechanical_configuration.code_meaning, 'Upright Stand Mount')
+            )[1].irradeventxraymechanicaldata_set.get().crdr_mechanical_configuration.code_meaning,
+                         'Upright Stand Mount')
 
         # Test that dose related distance measurements are recorded correctly
         self.assertAlmostEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
@@ -199,3 +203,8 @@ class ImportCTRDSR(TestCase):
         self.assertAlmostEqual(studies[0].projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'
             )[1].irradeventxraymechanicaldata_set.get().
                 doserelateddistancemeasurements_set.get().distance_source_to_detector, Decimal(700.00))
+
+        # Test summary fields
+        self.assertAlmostEqual(studies[0].total_agd_left, Decimal(1.30))
+        self.assertAlmostEqual(studies[0].total_agd_right, Decimal(1.28))
+        self.assertEqual(studies[0].number_of_events, 2)

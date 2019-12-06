@@ -22,7 +22,7 @@ class ImportMGImgHologicPropProjection(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
-        mam(dicom_path)
+        mam.mam(dicom_path)
         study = GeneralStudyModuleAttr.objects.all()[0]
 
         # Test that laterality is recorded (see https://bitbucket.org/openrem/openrem/issues/411)
@@ -33,3 +33,6 @@ class ImportMGImgHologicPropProjection(TestCase):
         self.assertAlmostEqual(study.projectionxrayradiationdose_set.get().accumxraydose_set.get(
             ).accummammographyxraydose_set.all()[0].accumulated_average_glandular_dose, Decimal(0.26))
 
+        # Test summary fields
+        self.assertAlmostEqual(study.total_agd_right, Decimal(0.26))
+        self.assertEqual(study.number_of_events, 1)

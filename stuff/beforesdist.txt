@@ -1,12 +1,17 @@
-Change the version number in 
-	openrem/remapp/version.py
+Make sure develop is up to date, branch as release-version, eg release-0.9.0b5
+Change the version number in
+	openrem/remapp/version.py - append '-docs' to version tag name for docs branch
 	install instructions in the release notes where applicable
-	    install.rst - set to version for beta or versionless for release
+    	quick_start_linux.rst - set to version for beta or versionless for release
+	    install.rst - set to version for beta or versionless for release (two times, title and command)
 	    release-0.x.x.rst - set to version (upgrades always need version specified)
+	    release-0.x.x.rst - make sure update_configuration link is right for upgrade-offline
 	    install-offline.rst (twice)
 	    upgrade-offline.rst (twice)
+	    upgrade-offline.rst - make user link back to release notes and previous upgrades is right
+	    upgrade_previous_0.10.0.rst - title, install command, link back to release and content generally
 	date and other details in changes and CHANGES
-    Edit README.rst
+    Edit README.rst including docs links
     Edit description in setup.py between beta and release
 
 Clean the existing distribute folder:
@@ -19,3 +24,56 @@ cp ../bbOpenREM/stuff/0002_0_7_fresh_install_add_median.py.inactive openrem/rema
 Build:
 	python setup.py sdist bdist_wheel
 
+Test upload:
+    twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
+    Go to https://test.pypi.org/project/OpenREM/ to review
+
+Real upload:
+    twine upload dist/*
+
+    Go to https://pypi.org/project/OpenREM/ to review
+
+    commit all changes to branch
+    Push branch to bitbucket for reference
+    merge into develop if beta, master if release
+    tag with release number, ie 0.9.0b4
+    push to bitbucket
+    make new branch named version-docs eg 0.9.0b4-docs
+    push to bitbucket
+
+    If release, merge into develop and push to bitbucket
+
+Update docs versions
+    Go to https://readthedocs.org/projects/openrem/versions/ and find docs branch and set to public and active
+    For release, set docs to default in https://readthedocs.org/dashboard/openrem/versions/
+
+Update demo site for full release
+    If release, log into the demo site (ssh deploy@openrem.org)
+    Go to the folder /home/deploy/sites/demo.openrem.org/source/
+    git checkout master
+    git pull
+    . /home/deploy/sites/demo.openrem.org/virtualenv/bin/activate
+    pip install -e /home/deploy/sites/demo.openrem.org/source/
+    cd openrem
+    python manage.py makemigrations remapp
+    python manage.py migrate remapp
+    sudo systemctl restart gunicorn-demo.openrem.org.service
+
+Update website for full release
+    Checkout and branch from deploy-live
+    Update release version and release docs link on index.html
+    Create new rst2html from CHANGES.rst to changes/changes.html
+    Update changes/index.html with new section
+    Push to bitbucket, pull request to deploy-stage
+    Merge, check https://stage.openrem.org
+    If good, pull request deploy-stage to deploy-live
+    Merge, check https://openrem.org
+
+    Tell developers (beta) or public (late beta or release)
+
+    Git statistics:
+        Number of commits:
+            git rev-list 0.9.1 ^0.9.0 --count
+        Contributers:
+            git shortlog -s -n 0.9.1 ^0.9.0

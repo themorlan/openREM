@@ -1,5 +1,5 @@
-LOCAL_SETTINGS = True
-from settings import *
+# LOCAL_SETTINGS = True
+from .settings import *
 
 
 # Choose your database and fill in the details below. If testing, you
@@ -30,6 +30,7 @@ MEDIA_ROOT = ''
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
 STATIC_ROOT = ''
+JS_REVERSE_OUTPUT_PATH = os.path.join(STATIC_ROOT, 'js', 'django_reverse')
 
 # You should generate a new secret key. Make this unique, and don't
 # share it with anybody. See the docs.
@@ -46,6 +47,11 @@ ALLOWED_HOSTS = [
     '*',
 ]
 
+# If running OpenREM in a virtual directory specify the virtual directory here.
+# Eg. if OpenREM is in a virtual directory TST (http://server/TST), specify 'TST/' below.
+# LOGIN_URL (always) should be overridden to include the VIRTUAL_DIRECTORY
+VIRTUAL_DIRECTORY = ''
+
 # Date format for exporting data to Excel xlsx files.
 # Default in OpenREM is dd/mm/yyyy. Override it by uncommenting and customising below; a full list of codes is available
 # at https://msdn.microsoft.com/en-us/library/ee634398.aspx.
@@ -56,26 +62,47 @@ ALLOWED_HOSTS = [
 # systems you might put these in a subdirectory of /var/log/. If you want all the logs in one file, set the filename
 # to be the same for each one.
 import os
-logfilename = os.path.join(MEDIA_ROOT, "openrem.log")
-qrfilename = os.path.join(MEDIA_ROOT, "openrem_qr.log")
-storefilename = os.path.join(MEDIA_ROOT, "openrem_store.log")
-hl7filename = os.path.join(MEDIA_ROOT, "openrem_hl7.log")
+LOG_ROOT = MEDIA_ROOT
+logfilename = os.path.join(LOG_ROOT, "openrem.log")
+qrfilename = os.path.join(LOG_ROOT, "openrem_qr.log")
+storefilename = os.path.join(LOG_ROOT, "openrem_store.log")
+extractorfilename = os.path.join(LOG_ROOT, "openrem_extractor.log")
+hl7filename = os.path.join(LOG_ROOT, "openrem_hl7.log")
+
 LOGGING['handlers']['file']['filename'] = logfilename          # General logs
 LOGGING['handlers']['qr_file']['filename'] = qrfilename        # Query Retrieve SCU logs
 LOGGING['handlers']['store_file']['filename'] = storefilename  # Store SCP logs
-LOGGING['handlers']['hl7_file']['filename'] =hl7filename       # HL7 logs
+LOGGING['handlers']['extractor_file']['filename'] = extractorfilename  # Extractor logs
+LOGGING['handlers']['hl7_file']['filename'] = hl7filename      # HL7 logs
 
 # Set log message format. Options are 'verbose' or 'simple'. Recommend leaving as 'verbose'.
 LOGGING['handlers']['file']['formatter'] = 'verbose'        # General logs
 LOGGING['handlers']['qr_file']['formatter'] = 'verbose'     # Query Retrieve SCU logs
 LOGGING['handlers']['store_file']['formatter'] = 'verbose'  # Store SCP logs
+LOGGING['handlers']['extractor_file']['formatter'] = 'verbose'  # Extractor logs
 LOGGING['handlers']['hl7_file']['formatter'] = 'verbose'    # HL7 logs
 
 # Set the log level. Options are 'DEBUG', 'INFO', 'WARNING', 'ERROR', and 'CRITICAL', with progressively less logging.
 LOGGING['loggers']['remapp']['level'] = 'INFO'                    # General logs
 LOGGING['loggers']['remapp.netdicom.qrscu']['level'] = 'INFO'     # Query Retrieve SCU logs
 LOGGING['loggers']['remapp.netdicom.storescp']['level'] = 'INFO'  # Store SCP logs
+LOGGING['loggers']['remapp.extractors.ct_toshiba']['level'] = 'INFO'  # Toshiba RDSR creation extractor logs
 LOGGING['loggers']['hl7']['level'] = 'INFO'                       # HL7 logs
+
+# Linux only for now: configure 'rotating' logs so they don't get too big. Remove the '# ' to uncomment. 'LOGGING'
+# should be at the start of the line.
+# LOGGING['handlers']['file']['class'] = 'logging.handlers.RotatingFileHandler'
+# LOGGING['handlers']['file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
+# LOGGING['handlers']['file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
+# LOGGING['handlers']['qr_file']['class'] = 'logging.handlers.RotatingFileHandler'
+# LOGGING['handlers']['qr_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
+# LOGGING['handlers']['qr_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
+# LOGGING['handlers']['store_file']['class'] = 'logging.handlers.RotatingFileHandler'
+# LOGGING['handlers']['store_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
+# LOGGING['handlers']['store_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
+# LOGGING['handlers']['extractor_file']['class'] = 'logging.handlers.RotatingFileHandler'
+# LOGGING['handlers']['extractor_file']['maxBytes'] = 10 * 1024 * 1024  # 10*1024*1024 = 10 MB
+# LOGGING['handlers']['extractor_file']['backupCount'] = 5  # number of log files to keep before deleting the oldest one
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -86,3 +113,29 @@ TIME_ZONE = 'Europe/London'
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
+
+# Locations of various tools for DICOM RDSR creation from CT images
+DCMTK_PATH = 'C:\\Users\\David\\Apps\\dcmtk-3.6.0-win32-i386\\bin'
+DCMCONV = os.path.join(DCMTK_PATH, 'dcmconv.exe')
+DCMMKDIR = os.path.join(DCMTK_PATH, 'dcmmkdir.exe')
+JAVA_EXE = 'C:\\Users\\David\\Apps\\doseUtility\\windows\\jre\\bin\\java.exe'
+JAVA_OPTIONS = '-Xms256m -Xmx512m -Xss1m -cp'
+PIXELMED_JAR = 'C:\\Users\\David\\Apps\\doseUtility\\pixelmed.jar'
+PIXELMED_JAR_OPTIONS = '-Djava.awt.headless=true com.pixelmed.doseocr.OCR -'
+
+# E-mail server settings - see https://docs.djangoproject.com/en/1.8/topics/email/
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = False
+EMAIL_DOSE_ALERT_SENDER = 'your.alert@email.address'
+EMAIL_OPENREM_URL = 'http://your.openrem.server'
+
+# The following line can run on your OpenREM server to set up a dummy smtp server for testing:
+# python -m smtpd -n -c DebuggingServer localhost:25
+
+# Port that the Celery management software Flower runs on. Change if necessary to match how Flower is started.
+# See https://docs.openrem.org/en/latest/startservices.html#celery-task-management-flower
+FLOWER_PORT = 5555

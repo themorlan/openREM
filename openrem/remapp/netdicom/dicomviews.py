@@ -27,33 +27,41 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-
-# Following two lines added so that sphinx autodocumentation works.
+from __future__ import print_function
+from builtins import str  # pylint: disable=redefined-builtin
+from builtins import map  # pylint: disable=redefined-builtin
 import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
+from django.http import HttpResponse
+from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
+import json
 import remapp
+
 
 @csrf_exempt
 @login_required
 def run_store(request, pk):
+    """View to start built-in STORE-SCP"""
     from django.shortcuts import redirect
-    from remapp.models import DicomStoreSCP
-    from remapp.netdicom.storescp import web_store
+    from ..models import DicomStoreSCP
+    from ..netdicom.storescp import start_store
     if request.user.groups.filter(name="admingroup"):
         store = DicomStoreSCP.objects.get(pk__exact = pk)
         store.run = True
         store.save()
-        storetask = web_store(store_pk=pk)
-    return redirect('/openrem/admin/dicomsummary/')
+        start_store(store_pk=pk)
+    return redirect(reverse_lazy('dicom_summary'))
+
 
 @csrf_exempt
 @login_required
 def stop_store(request, pk):
+    """View to stop built-in STORE-SCP"""
     from django.shortcuts import redirect
     from remapp.models import DicomStoreSCP
     if request.user.groups.filter(name="admingroup"):
@@ -64,16 +72,13 @@ def stop_store(request, pk):
             store[0].status = u"Quit signal sent"
             store[0].save()
         else:
-            print u"Can't stop store SCP: Invalid primary key"
-    return redirect('/openrem/admin/dicomsummary/')
-
-import json
-from django.http import HttpResponseRedirect, HttpResponse
-from django.http import Http404
+            print(u"Can't stop store SCP: Invalid primary key")
+    return redirect(reverse_lazy('dicom_summary'))
 
 
 @csrf_exempt
 def status_update_store(request):
+    """View to check if store is running using DICOM ECHO"""
     from remapp.models import DicomStoreSCP
     from remapp.netdicom.tools import echoscu
 
@@ -81,27 +86,37 @@ def status_update_store(request):
     data = request.POST
     scp_pk = data.get('scp_pk')
 
-    echo = echoscu(scp_pk=scp_pk, store_scp=True)
+    echo_response = echoscu(scp_pk=scp_pk, store_scp=True)
 
     store = DicomStoreSCP.objects.get(pk=scp_pk)
 
-    if echo is "Success":
+    if echo_response is "Success":
         resp['message'] = u"<div>Last status: {0}</div>".format(store.status)
-        resp['statusindicator'] = u"<h3 class='pull-right panel-title'><span class='glyphicon glyphicon-ok' aria-hidden='true'></span><span class='sr-only'>OK:</span> Server is alive</h3>"
+        resp['statusindicator'] = u"<h3 class='pull-right panel-title'>" \
+                                  u"<span class='glyphicon glyphicon-ok' aria-hidden='true'></span>" \
+                                  u"<span class='sr-only'>OK:</span> Server is alive</h3>"
         resp['delbutton'] = u"<button type='button' class='btn btn-primary' disabled='disabled'>Delete</button>"
         resp['startbutton'] = u""
-        resp['stopbutton'] = u"<a class='btn btn-danger' href='/openrem/admin/dicomstore/{0}/stop/' role='button'>Stop server</a>".format(scp_pk)
-    elif echo is "AssocFail":
+        resp['stopbutton'] = u"<a class='btn btn-danger' href='{0}' role='button'>Stop server</a>".format(
+            reverse_lazy('stop_store', kwargs={'pk': scp_pk}))
+    else:
         resp['message'] = u"<div>Last status: {0}</div>".format(store.status)
-        resp['statusindicator'] = u"<h3 class='pull-right panel-title status-red'><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span><span class='sr-only'>Error:</span> Association fail - server not running?</h3>"
-        resp['delbutton'] = u"<a class='btn btn-primary' href='/openrem/admin/dicomstore/{0}/delete/' role='button'>Delete</a>".format(scp_pk)
-        resp['startbutton'] = u"<a class='btn btn-success' href='/openrem/admin/dicomstore/{0}/start/' role='button'>Start server</a>".format(scp_pk)
+        resp['statusindicator'] = u"<h3 class='pull-right panel-title status-red'>" \
+                                  u"<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>" \
+                                  u"<span class='sr-only'>Error:</span> {0}</h3>".format(
+            echo_response)
+        resp['delbutton'] = u"<a class='btn btn-primary' href='{0}' role='button'>Delete</a>".format(
+            reverse_lazy('dicomstore_delete', kwargs={'pk': scp_pk}))
+        resp['startbutton'] = u"<a class='btn btn-success' href='{0}' role='button'>Start server</a>".format(
+            reverse_lazy('run_store', kwargs={'pk': scp_pk}))
         resp['stopbutton'] = u""
 
     return HttpResponse(json.dumps(resp), content_type="application/json")
 
+
 @csrf_exempt
 def q_update(request):
+    """View to update query status"""
     from django.core.exceptions import ObjectDoesNotExist
     from django.db.models import Count
     from remapp.models import DicomQuery
@@ -113,19 +128,22 @@ def q_update(request):
     try:
         query = DicomQuery.objects.get(query_id=query_id)
     except ObjectDoesNotExist:
-        resp['status'] = u'not complete'
-        resp['message'] = u'<h4>Query {0} not yet started</h4>'.format(query_id)
+        resp['status'] = 'not complete'
+        resp['message'] = '<h4>Query {0} not yet started</h4>'.format(query_id)
+        resp['subops'] = ''
         return HttpResponse(json.dumps(resp), content_type='application/json')
 
     if query.failed:
         resp['status'] = u'failed'
         resp['message'] ='<h4>Query Failed</h4> {0}'.format(query.message)
+        resp['subops'] = ''
         return HttpResponse(json.dumps(resp), content_type='application/json')
 
     study_rsp = query.dicomqrrspstudy_set.all()
     if not query.complete:
         modalities = study_rsp.values('modalities_in_study').annotate(count=Count('pk'))
-        table = [u'<table class="table table-bordered"><tr><th>Modalities in study</th><th>Number of responses</th></tr>']
+        table = [u'<table class="table table-bordered">'
+                 u'<tr><th>Modalities in study</th><th>Number of responses</th></tr>']
         for m in modalities:
             table.append(u'<tr><td>')
             if m['modalities_in_study']:
@@ -139,6 +157,7 @@ def q_update(request):
         tablestr = ''.join(table)
         resp['status'] = u'not complete'
         resp['message'] = u'<h4>{0}</h4><p>Responses so far:</p> {1}'.format(query.stage, tablestr)
+        resp['subops'] = ''
     else:
         modalities = study_rsp.values('modality').annotate(count=Count('pk'))
         table = [u'<table class="table table-bordered"><tr><th>Modality</th><th>Number of responses</th></tr>']
@@ -154,20 +173,55 @@ def q_update(request):
         table.append(u'</table>')
         tablestr = u''.join(table)
         resp['status'] = u'complete'
-        resp['message'] = u'<h4>Query complete</h4> {0}'.format(tablestr)
+        query_details_text = u"<div class='panel-group' id='accordion'>" \
+                             u"<div class='panel panel-default'>" \
+                             u"<div class='panel-heading'>  "\
+                             u"<h4 class='panel-title'>" \
+                             u"<a data-toggle='collapse' data-parent='#accordion' href='#query-details'>" \
+                             u"Query details</h4>" \
+                             u"</a></h4></div>" \
+                             u"<div id='query-details' class='panel-collapse collapse'>" \
+                             u"<div class='panel-body'>" \
+                             u"<p>{0}</p></div></div></div></div>".format(query.stage)
+        not_as_expected_help_text = u"<div class='panel-group' id='accordion'>" \
+                                    u"<div class='panel panel-default'>" \
+                                    u"<div class='panel-heading'>  "\
+                                    u"<h4 class='panel-title'>" \
+                                    u"<a data-toggle='collapse' data-parent='#accordion' href='#not-expected'>" \
+                                    u"Not what you expected?</h4>" \
+                                    u"</a></h4></div>" \
+                                    u"<div id='not-expected' class='panel-collapse collapse'>" \
+                                    u"<div class='panel-body'>" \
+                                    u"<p>For DX and mammography, the query will look for Radiation Dose Structured " \
+                                    u"Reports, or images if the RDSR is not available. For Fluoroscopy, RDSRs are " \
+                                    u"required. For CT RDSRs are preferred, but Philips dose images can be used and " \
+                                    u"for some scanners, particularly older Toshiba scanners that can't create RDSR " \
+                                    u"OpenREM can process the data to create an RDSR to import.</p>" \
+                                    u"<p>If you haven't got the results you expect, it may be that the imaging system" \
+                                    u" is not creating RDSRs or not sending them to the PACS you are querying. In " \
+                                    u"either case you will need to have the system reconfigured to create and/or send" \
+                                    u" them. If it is a CT scanner that can't create an RDSR (it is too old), it is " \
+                                    u"worth trying the 'Toshiba' option, but you will need to be using Orthanc and " \
+                                    u"configure your scanner in the " \
+                                    u"<a href='https://docs.openrem.org/en/{0}/netdicom-orthanc-config.html" \
+                                    u"#guide-to-customising-orthanc-configuration' target='_blank'>" \
+                                    u"toshiba_extractor_systems</a> list" \
+                                    u". You will need to verify the resulting data to confirm accuracy.</p>" \
+                                    u"</div></div></div></div>".format(remapp.__docs_version__)
+        resp['message'] = u'<h4>Query complete - there are {1} studies we can move</h4> {0} {2} {3}'.format(
+            tablestr, study_rsp.count(), query_details_text, not_as_expected_help_text)
+        resp['subops'] = ''
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
+
 
 @csrf_exempt
 @login_required
 def q_process(request, *args, **kwargs):
+    """View to process query form POST"""
     import uuid
-    import datetime
-    from django.shortcuts import render_to_response
-    from django.template import RequestContext
-    from remapp.netdicom.qrscu import qrscu
-    from remapp.models import DicomRemoteQR
-    from remapp.forms import DicomQueryForm
+    from ..netdicom.qrscu import qrscu
+    from ..forms import DicomQueryForm
 
     if request.method == 'POST':
         form = DicomQueryForm(request.POST)
@@ -183,6 +237,9 @@ def q_process(request, *args, **kwargs):
             desc_include = form.cleaned_data.get('desc_include_field')
             stationname_exclude = form.cleaned_data.get('stationname_exclude_field')
             stationname_include = form.cleaned_data.get('stationname_include_field')
+            get_toshiba_images = form.cleaned_data.get('get_toshiba_images_field')
+            get_empty_sr = form.cleaned_data.get('get_empty_sr_field')
+
             query_id = str(uuid.uuid4())
 
             if date_from:
@@ -191,19 +248,19 @@ def q_process(request, *args, **kwargs):
                 date_until = date_until.isoformat()
 
             if desc_exclude:
-                study_desc_exc = map(unicode.lower, map(unicode.strip, desc_exclude.split(',')))
+                study_desc_exc = list(map(str.lower, list(map(str.strip, desc_exclude.split(',')))))
             else:
                 study_desc_exc = None
             if desc_include:
-                study_desc_inc = map(unicode.lower, map(unicode.strip, desc_include.split(',')))
+                study_desc_inc = list(map(str.lower, list(map(str.strip, desc_include.split(',')))))
             else:
                 study_desc_inc = None
             if stationname_exclude:
-                stationname_exc = map(unicode.lower, map(unicode.strip, stationname_exclude.split(',')))
+                stationname_exc = list(map(str.lower, list(map(str.strip, stationname_exclude.split(',')))))
             else:
                 stationname_exc = None
             if stationname_include:
-                stationname_inc = map(unicode.lower, map(unicode.strip, stationname_include.split(',')))
+                stationname_inc = list(map(str.lower, list(map(str.strip, stationname_include.split(',')))))
             else:
                 stationname_inc = None
 
@@ -214,9 +271,10 @@ def q_process(request, *args, **kwargs):
                 'study_desc_exc': study_desc_exc,
             }
 
-            task = qrscu.delay(qr_scp_pk=rh_pk, store_scp_pk=store_pk, query_id=query_id, date_from=date_from,
+            qrscu.delay(qr_scp_pk=rh_pk, store_scp_pk=store_pk, query_id=query_id, date_from=date_from,
                                date_until=date_until, modalities=modalities, inc_sr=inc_sr,
                                remove_duplicates=remove_duplicates, filters=filters,
+                               get_toshiba_images=get_toshiba_images, get_empty_sr=get_empty_sr,
                                )
 
             resp = {}
@@ -226,10 +284,10 @@ def q_process(request, *args, **kwargs):
 
             return HttpResponse(json.dumps(resp), content_type='application/json')
         else:
-            print u"Bother, form wasn't valid"
+            print(u"Bother, form wasn't valid")
             errors = form.errors
-            print errors
-            print form
+            print(errors)
+            print(form)
 
             # Need to find a way to deal with this event
 #            render_to_response('remapp/dicomqr.html', {'form': form}, context_instance=RequestContext(request))
@@ -242,64 +300,37 @@ def q_process(request, *args, **kwargs):
             for group in request.user.groups.all():
                 admin[group.name] = True
 
-            return render_to_response(
-                'remapp/dicomqr.html',
-                {'form': form, 'admin': admin},
-                context_instance=RequestContext(request)
-            )
-            # return HttpResponse(
-            #     json.dumps(resp),
-            #     content_type="application/json"
-            # )
-
+            return render(request, 'remapp/dicomqr.html', {'form': form, 'admin': admin})
 
 
 @login_required
 def dicom_qr_page(request, *args, **kwargs):
-    from django.shortcuts import render_to_response
-    from django.template import RequestContext
-    from remapp.forms import DicomQueryForm
+    """View for DICOM Query Retrieve page"""
+    from ..forms import DicomQueryForm
     from remapp.models import DicomStoreSCP, DicomRemoteQR
-    from remapp.netdicom.tools import echoscu
 
     if not request.user.groups.filter(name="importqrgroup"):
         messages.error(request, u"You are not in the importqrgroup - please contact your administrator")
-        return redirect('/openrem/')
+        return redirect(reverse_lazy('home'))
 
     form = DicomQueryForm
 
-    storestatus = {}
-    stores = DicomStoreSCP.objects.all()
-    for store in stores:
-        echo = echoscu(scp_pk=store.pk, store_scp=True)
-        if echo is "Success":
-            storestatus[store.name] = u"<span class='glyphicon glyphicon-ok' aria-hidden='true'></span><span class='sr-only'>OK:</span> responding to DICOM echo"
-        else:
-            storestatus[store.name] = u"<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span><span class='sr-only'>Error:</span> not responding to DICOM echo"
-
-    qrstatus = {}
-    qr = DicomRemoteQR.objects.all()
-    for scp in qr:
-        echo = echoscu(scp_pk=scp.pk, qr_scp=True)
-        if echo is "Success":
-            qrstatus[scp.name] = u"<span class='glyphicon glyphicon-ok' aria-hidden='true'></span><span class='sr-only'>OK:</span> responding to DICOM echo"
-        else:
-            qrstatus[scp.name] = u"<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span><span class='sr-only'>Error:</span> not responding to DICOM echo"
+    store_nodes = DicomStoreSCP.objects.all()
+    qr_nodes = DicomRemoteQR.objects.all()
 
     admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
 
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    return render_to_response(
-        'remapp/dicomqr.html',
-        {'form': form, 'storestatus': storestatus, 'qrstatus': qrstatus, 'admin': admin},
-        context_instance=RequestContext(request)
-    )
+    return render(request, 'remapp/dicomqr.html',
+                  {'form': form, 'admin': admin, 'qr_nodes': qr_nodes, 'store_nodes': store_nodes},)
+
 
 @csrf_exempt
 @login_required
 def r_start(request):
+    """View to trigger move following successful query"""
     from remapp.netdicom.qrscu import movescu
     resp = {}
     data = request.POST
@@ -310,10 +341,11 @@ def r_start(request):
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
 
+
 @csrf_exempt
 def r_update(request):
+    """View to update progress of QR move (retrieval)"""
     from django.core.exceptions import ObjectDoesNotExist
-    from django.db.models import Count
     from remapp.models import DicomQuery
 
     resp = {}
@@ -323,20 +355,61 @@ def r_update(request):
     try:
         query = DicomQuery.objects.get(query_id=query_id)
     except ObjectDoesNotExist:
-        resp['status'] = u'not complete'
-        resp['message'] = u'<h4>Move request {0} not yet started</h4>'.format(query_id)
+        resp['status'] = 'not complete'
+        resp['message'] = '<h4>Move request {0} not yet started</h4>'.format(query_id)
+        resp['subops'] = ''
         return HttpResponse(json.dumps(resp), content_type='application/json')
 
+    resp['subops'] = f'<h4>Cumulative Sub-operations for move request:</h4>' \
+                     f'<table class="table">' \
+                     f'<tr><th>Completed</th><th>Failed</th><th>Warnings</th></tr>' \
+                     f'<tr>' \
+                     f'<td>{query.move_completed_sub_ops}</td>' \
+                     f'<td>{query.move_failed_sub_ops}</td>' \
+                     f'<td>{query.move_warning_sub_ops}</td>' \
+                     f'</tr>' \
+                     f'</table>'
+
     if query.failed:
-        resp['status'] = u'failed'
-        resp['message'] = u'<h4>Move request failed</h4> {0}'.format(query.message)
+        resp['status'] = 'failed'
+        resp['message'] = '<h4>Move request failed</h4> {0}'.format(query.message)
         return HttpResponse(json.dumps(resp), content_type='application/json')
 
     if not query.move_complete:
-        resp['status'] = u'not complete'
-        resp['message'] = u'<h4>{0}</h4>'.format(query.stage)
+        resp['status'] = 'not complete'
+        resp['message'] = '<h4>{0}</h4>'.format(query.stage)
     else:
         resp['status'] = u'move complete'
         resp['message'] = u'<h4>Move request complete</h4>'
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
+
+
+def get_qr_status(request):
+    """View to get query-retrieve node status for query page"""
+    from .tools import echoscu
+
+    data = request.POST
+    echo_response = echoscu(scp_pk=data.get('node'), qr_scp=True)
+    if echo_response is "Success":
+        status = u"<span class='glyphicon glyphicon-ok' aria-hidden='true'></span>" \
+                             u"<span class='sr-only'>OK:</span> responding to DICOM echo"
+    else:
+        status = "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>" \
+                             "<span class='sr-only'>Error:</span> {0}".format(echo_response)
+    return HttpResponse(json.dumps(status), content_type='application/json')
+
+
+def get_store_status(request):
+    """View to get store node status for query page"""
+    from .tools import echoscu
+
+    data = request.POST
+    echo_response = echoscu(scp_pk=data.get('node'), store_scp=True)
+    if echo_response is "Success":
+        status = u"<span class='glyphicon glyphicon-ok' aria-hidden='true'></span>" \
+                             u"<span class='sr-only'>OK:</span> responding to DICOM echo"
+    else:
+        status = "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>" \
+                             "<span class='sr-only'>Error:</span> {0}".format(echo_response)
+    return HttpResponse(json.dumps(status), content_type='application/json')

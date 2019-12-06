@@ -1,12 +1,12 @@
 # This Python file uses the following encoding: utf-8
 # test_test_import_esr_ge.py
 
-import os, datetime
+import datetime
+import os
 from decimal import Decimal
 from django.test import TestCase
 from remapp.extractors import rdsr
 from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
-
 
 
 class ImportCTRDSR(TestCase):
@@ -29,8 +29,8 @@ class ImportCTRDSR(TestCase):
         ge_optima_path = os.path.join(root_tests, ge_optima)
         ge_vct_path = os.path.join(root_tests, ge_vct)
 
-        rdsr(ge_optima_path)
-        rdsr(ge_vct_path)
+        rdsr.rdsr(ge_optima_path)
+        rdsr.rdsr(ge_vct_path)
         studies = GeneralStudyModuleAttr.objects.order_by('id')
 
         # Test that two studies have been imported
@@ -60,11 +60,11 @@ class ImportCTRDSR(TestCase):
         # Test that patient level data is recorded correctly
         self.assertEqual(studies[0].patientmoduleattr_set.get().patient_name, 'Patient^Optima')
         self.assertEqual(studies[0].patientmoduleattr_set.get().patient_id, '00001234')
-        self.assertEqual(studies[0].patientmoduleattr_set.get().patient_birth_date, datetime.date(1957, 03, 12))
+        self.assertEqual(studies[0].patientmoduleattr_set.get().patient_birth_date, datetime.date(1957, 3, 12))
         self.assertAlmostEqual(studies[0].patientstudymoduleattr_set.get().patient_age_decimal, Decimal(49.4))
         self.assertEqual(studies[1].patientmoduleattr_set.get().patient_name, 'Patient^DiscoVCT')
         self.assertEqual(studies[1].patientmoduleattr_set.get().patient_id, '008F/g234')
-        self.assertEqual(studies[1].patientmoduleattr_set.get().patient_birth_date, datetime.date(1923, 05, 9))
+        self.assertEqual(studies[1].patientmoduleattr_set.get().patient_birth_date, datetime.date(1923, 5, 9))
         self.assertEqual(studies[1].patientstudymoduleattr_set.get().patient_age, '89Y')
         self.assertAlmostEqual(studies[1].patientstudymoduleattr_set.get().patient_age_decimal, Decimal(89.8))
 
@@ -76,7 +76,7 @@ class ImportCTRDSR(TestCase):
         self.assertEqual(studies[1].ctradiationdose_set.get().start_of_xray_irradiation,
                          datetime.datetime(2013, 2, 28, 11, 37, 31))
         self.assertEqual(studies[1].ctradiationdose_set.get().end_of_xray_irradiation,
-                         datetime.datetime(2013, 2, 28, 11, 52, 07))
+                         datetime.datetime(2013, 2, 28, 11, 52, 7))
 
         # Test that device observer data is stored correctly
         self.assertEqual(studies[0].ctradiationdose_set.get().observercontext_set.get().
@@ -675,8 +675,6 @@ class ImportCTRDSR(TestCase):
         self.assertAlmostEqual(studies[1].ctradiationdose_set.get().
             ctirradiationeventdata_set.order_by('id')[26].number_of_xray_sources, Decimal(1))
 
-
-
         self.assertAlmostEqual(studies[1].ctradiationdose_set.get().
             ctirradiationeventdata_set.order_by('id')[5].pitch_factor, Decimal(0.97))
         self.assertAlmostEqual(studies[1].ctradiationdose_set.get().
@@ -713,7 +711,6 @@ class ImportCTRDSR(TestCase):
             ctirradiationeventdata_set.order_by('id')[25].ctdiw_phantom_type.code_meaning, 'IEC Body Dosimetry Phantom')
         self.assertEqual(studies[1].ctradiationdose_set.get().
             ctirradiationeventdata_set.order_by('id')[26].ctdiw_phantom_type.code_meaning, 'IEC Body Dosimetry Phantom')
-
 
         # Test that CT xraysource data is recorded correctly
         self.assertAlmostEqual(studies[0].ctradiationdose_set.get().
@@ -1019,7 +1016,12 @@ class ImportCTRDSR(TestCase):
             ctirradiationeventdata_set.order_by('id')[26].ctxraysourceparameters_set.get().
                 xray_tube_current, Decimal(70))
 
-
+        self.assertEqual(studies[0].number_of_events, 6)
+        self.assertAlmostEqual(studies[0].total_dlp, Decimal(415.82))
+        self.assertEqual(studies[0].number_of_axial, 0)
+        self.assertEqual(studies[0].number_of_spiral, 2)
+        self.assertEqual(studies[0].number_of_stationary, 0)
+        self.assertEqual(studies[0].number_of_const_angle, 4)
 
 
 class ImportNonDoseSR(TestCase):
@@ -1037,7 +1039,7 @@ class ImportNonDoseSR(TestCase):
 
         from testfixtures import LogCapture
         with LogCapture() as l:
-            rdsr(esr_path)
+            rdsr.rdsr(esr_path)
             studies = GeneralStudyModuleAttr.objects.all()
 
             # Test that no studies have been imported

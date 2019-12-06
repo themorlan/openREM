@@ -3,9 +3,8 @@
 {% block navmg%}<li class="active">{% endblock %}
 
 {% block toprow %}
-      {% load pagination_tags %}    
       <p>
-        There are {{ filter.count }} studies in this list.
+        There are {{ filter.qs.count }} studies in this list.
       </p>
 {% endblock %}
 
@@ -20,19 +19,31 @@
     {% if admin.exportgroup %}
         <p><strong>Note:</strong> Apply the exam filter first to refine what is exported.</p>
     <p>
-      <a href="/openrem/exportmgcsv1/0/0/?{{ request.GET.urlencode }}"
+      <a href="{% url 'mgcsv1' 0 0 %}?{{ request.GET.urlencode }}"
              class="btn btn-default btn-sm" role="button">Export to CSV&nbsp;</a>
           {% if admin.pidgroup %}
-              <a href="/openrem/exportmgcsv1/1/0/?{{ request.GET.urlencode }}"
+              <a href="{% url 'mgcsv1' 1 0 %}?{{ request.GET.urlencode }}"
                  class="btn btn-default btn-sm" role="button">With names</a>
-              <a href="/openrem/exportmgcsv1/0/1/?{{ request.GET.urlencode }}"
+              <a href="{% url 'mgcsv1' 0 1 %}?{{ request.GET.urlencode }}"
                  class="btn btn-default btn-sm" role="button">With ID</a>
-              <a href="/openrem/exportmgcsv1/1/1/?{{ request.GET.urlencode }}"
+              <a href="{% url 'mgcsv1' 1 1 %}?{{ request.GET.urlencode }}"
                  class="btn btn-default btn-sm" role="button">With both</a>
     </p>
     <p>
           {% endif %}
-          <a href="/openrem/exportmgnhsbsp/?{{ request.GET.urlencode }}"
+      <a href="{% url 'mgxlsx1' 0 0 %}?{{ request.GET.urlencode }}"
+             class="btn btn-default btn-sm" role="button">Export to xlsx</a>
+          {% if admin.pidgroup %}
+              <a href="{% url 'mgxlsx1' 1 0 %}?{{ request.GET.urlencode }}"
+                 class="btn btn-default btn-sm" role="button">With names</a>
+              <a href="{% url 'mgxlsx1' 0 1 %}?{{ request.GET.urlencode }}"
+                 class="btn btn-default btn-sm" role="button">With ID</a>
+              <a href="{% url 'mgxlsx1' 1 1 %}?{{ request.GET.urlencode }}"
+                 class="btn btn-default btn-sm" role="button">With both</a>
+    </p>
+    <p>
+          {% endif %}
+          <a href="{% url 'mgnhsbsp' %}?{{ request.GET.urlencode }}"
              class="btn btn-default btn-sm" role="button">Export to CSV using the NHSBSP format</a>
     </p>
 
@@ -67,7 +78,6 @@
                                 </div>
                             </div>
                         {% endfor %}
-                    Caution: Ordering by AGD will duplicate bilateral studies in filtered list<br>
                     <input class="btn btn-default" type="submit" />
             </div>
             <div class="panel-heading">
@@ -80,23 +90,25 @@
                 </table>
                 <input class="btn btn-default" name="submit" type="submit" />
             </div>
+            <div class="panel-heading">
+                <h3 class="panel-title">Table options</h3>
+            </div>
+            <div class="panel-body">
+                <table>
+                    {{ itemsPerPageForm }}
+                </table>
+                <input class="btn btn-default" name="submit" type="submit" />
+            </div>
           </div>
     </form>
 
-<script>
-$('.datepicker').datepicker({
-    format: "yyyy-mm-dd",
-    autoclose: true,
-    todayHighlight: true
-    });
-</script>
+    <script src="{{ STATIC_URL }}js/datepicker.js"></script>
+    <script src="{{ STATIC_URL }}js/formatDate.js"></script>
 
 {% endblock %}
 
 {% block col1 %}
 
-    {% autopaginate filter.qs 50 as filter_list %}
-    {% paginate %}
 
     <table class="table table-bordered table-hover row-clickable small">
         <tr>
@@ -111,7 +123,9 @@ $('.datepicker').datepicker({
             <th>Date</th>
             <th>
                 <table>
-                    <tr><td class="nowrap">Acquisition protocol</td></tr>
+                    <tr><td class="nowrap">Study description</td></tr>
+                    <tr><td class="nowrap">Procedure</td></tr>
+                    <tr><td class="nowrap">Requested Procedure</td></tr>
                     <tr><td class="nowrap">Accession number</td></tr>
                 </table>
             </th>
@@ -121,31 +135,36 @@ $('.datepicker').datepicker({
             <th>Delete?</th>
             {% endif %}
         </tr>
-        {% for exam in filter_list %}
+        {% for exam in study_list %}
+          {% with equipment=exam.generalequipmentmoduleattr_set.get %}
+          {% with projection_set=exam.projectionxrayradiationdose_set.get %}
+          {% with accum_mammo_set=projection_set.accumxraydose_set.get.accummammographyxraydose_set.all %}
         <tr>
             <td>
-                <a href="/openrem/mg/{{ exam.id }}/">
-                    {{ exam.generalequipmentmoduleattr_set.get.institution_name }}
+                <a href="{% url 'mg_detail_view' pk=exam.id %}">
+                    {{ equipment.institution_name }}
                 </a>
             </td>
             <td>
-                <a href="/openrem/mg/{{ exam.id }}/">
-                    <table onclick="window.location='/openrem/mg/{{ exam.id }}/';">
-                        <tr><td class="nowrap">{{ exam.generalequipmentmoduleattr_set.get.manufacturer }}</td></tr>
-                        <tr><td class="nowrap">{{ exam.generalequipmentmoduleattr_set.get.manufacturer_model_name }}</td></tr>
-                        <tr><td class="nowrap">{{ exam.generalequipmentmoduleattr_set.get.unique_equipment_name.display_name }}</td></tr>
+                <a href="{% url 'mg_detail_view' pk=exam.id %}">
+                    <table onclick="window.location='{% url 'mg_detail_view' pk=exam.id %}';">
+                        <tr><td class="nowrap">{{ equipment.manufacturer }}</td></tr>
+                        <tr><td class="nowrap">{{ equipment.manufacturer_model_name }}</td></tr>
+                        <tr><td class="nowrap">{{ equipment.unique_equipment_name.display_name }}</td></tr>
                     </table>
                 </a>
             </td>
             <td>
-                <a href="/openrem/mg/{{ exam.id }}/">
+                <a href="{% url 'mg_detail_view' pk=exam.id %}">
                     {{ exam.study_date|date:"Y-m-d" }} {{ exam.study_time|date:"H:i" }}
                 </a>
             </td>
             <td>
-                <a href="/openrem/mg/{{ exam.id }}/">
-                    <table onclick="window.location='/openrem/mg/{{ exam.id }}/';">
+                <a href="{% url 'mg_detail_view' pk=exam.id %}">
+                    <table onclick="window.location='{% url 'mg_detail_view' pk=exam.id %}';">
+                        <tr><td class="nowrap">{{ exam.study_description }}</td></tr>
                         <tr><td class="nowrap">{{ exam.procedure_code_meaning }}</td></tr>
+                        <tr><td class="nowrap">{{ exam.requested_procedure_code_meaning }}</td></tr>
                   {% if not exam.accession_hashed %}
                         <tr><td class="nowrap">{{ exam.accession_number }}</td></tr>
                   {% endif %}
@@ -153,18 +172,18 @@ $('.datepicker').datepicker({
                 </a>
             </td>
             <td>
-                <a href="/openrem/mg/{{ exam.id }}/">
-                    {{ exam.projectionxrayradiationdose_set.get.irradeventxraydata_set.count }}
+                <a href="{% url 'mg_detail_view' pk=exam.id %}">
+                    {{ projection_set.irradeventxraydata_set.count }}
                 </a>
             </td>
             <td>
-                <a href="/openrem/mg/{{ exam.id }}/">
-                {% for breast in exam.projectionxrayradiationdose_set.get.accumxraydose_set.get.accummammographyxraydose_set.all %}
-                    {% if breast.laterality.code_meaning == "Left breast" %}
+                <a href="{% url 'mg_detail_view' pk=exam.id %}">
+                {% for breast in accum_mammo_set %}
+                    {% if breast.laterality.code_value in "T-04030,80248007,C0222601" %} <!-- CID 6023: Left breast -->
                         Left:&nbsp;{{ breast.accumulated_average_glandular_dose|floatformat:3 }}<br>
-                    {% elif breast.laterality.code_meaning == "Right breast" %}
+                    {% elif breast.laterality.code_value in "T-04020,73056007,C0222600" %} <!-- CID 6023: Right breast -->
                         Right:&nbsp;{{ breast.accumulated_average_glandular_dose|floatformat:3 }}<br>
-                    {% elif breast.laterality.code_meaning == "Both breasts" %}
+                    {% elif breast.laterality.code_value in "T-04080,63762007,C0222605" %} <!-- CID 6023: Both breasts -->
                         Both:&nbsp;{{ breast.accumulated_average_glandular_dose|floatformat:3 }}<br>
                     {% endif %}
                 {% endfor %}
@@ -176,39 +195,40 @@ $('.datepicker').datepicker({
             </td>
             {% endif %}
         </tr>
+          {% endwith %}{% endwith %}{% endwith %}
         {% endfor %}
     </table>
 
-    {% paginate %}
 
- 
+
 {% endblock %}
 
 {% block plotdata %}
 
     {% if request.user.userprofile.plotCharts %}
 
-        <script src="{{ STATIC_URL }}js/chartFullScreen.js"></script>
-        <script src="{{ STATIC_URL }}js/chartSetExportSize.js"></script>
+        <script src="{{ STATIC_URL }}js/django_reverse/reverse.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/chartFullScreen.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/chartSetExportSize.js"></script>
         <script src="{{ STATIC_URL }}js/chroma.min.js"></script>
-        <script src="{{ STATIC_URL }}js/chartUpdateData.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/chartUpdateData.js"></script>
 
         <div class="ajax-progress"><img src="{{ STATIC_URL }}img/ajax-loader.gif"></div>
 
         <!-- Include JavaScript to enable highcharts plots -->
-        <script src="{{ STATIC_URL }}js/highcharts.js"></script>
-        <script src="{{ STATIC_URL }}js/boost.js"></script>
-        <script src="{{ STATIC_URL }}js/exporting.js"></script>
-        <script src="{{ STATIC_URL }}js/offline-exporting.js"></script>
-        <script src="{{ STATIC_URL }}js/export-csv.js"></script>
-        <script src="{{ STATIC_URL }}js/drilldown.js"></script>
-        <script src="{{ STATIC_URL }}js/chartSortingRoutines.js"></script>
-        <script src="{{ STATIC_URL }}js/chartHistogramNormalise.js"></script>
-        <script src="{{ STATIC_URL }}js/chartAverageAndHistogram.js"></script>
-        <script src="{{ STATIC_URL }}js/chartAverageOverTime.js"></script>
-        <script src="{{ STATIC_URL }}js/chartFrequency.js"></script>
-        <script src="{{ STATIC_URL }}js/chartWorkload.js"></script>
-        <script src="{{ STATIC_URL }}js/chartScatter.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/highcharts.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/boost.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/exporting.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/offline-exporting.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/export-csv.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/drilldown.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/chartSortingRoutines.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/chartHistogramNormalise.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/chartAverageAndHistogram.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/chartAverageOverTime.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/chartFrequency.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/chartWorkload.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/chartScatter.js"></script>
         <!-- End of include JavaScript to enable highcharts plots -->
 
         <script>var plotAverageChoice = '{{ request.user.userprofile.plotAverageChoice }}';</script>
@@ -222,11 +242,11 @@ $('.datepicker').datepicker({
         <!-- End of JavaScript to enable bootstrap tooltips -->
 
         <!-- JavaScript function to sort a list of objects by the 'y' or 'name' object. -->
-        <script src="{{ STATIC_URL }}js/sorting.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/sorting.js"></script>
         <!-- End of JavaScript function to sort a list of objects by the 'y' or 'name' object -->
 
         <!-- JavaScript chart AJAX code. -->
-        <script src="{{ STATIC_URL }}js/mgChartAjax.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/mgChartAjax.js"></script>
         <!-- End of JavaScript chart AJAX code. -->
 
         {% if request.user.userprofile.plotMGAGDvsThickness %}

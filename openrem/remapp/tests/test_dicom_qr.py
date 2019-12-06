@@ -1,22 +1,23 @@
 # This Python file uses the following encoding: utf-8
-# test_dicom_qr.py
+# dicom_qr.py
 
+import collections
 import os
-from dicom.dataset import Dataset, FileDataset
-from dicom.UID import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
+import uuid
+
+from pydicom.dataset import Dataset
 from django.test import TestCase
 from mock import patch
-from netdicom.applicationentity import AE
-from netdicom.SOPclass import StudyRootFindSOPClass, StudyRootMoveSOPClass, VerificationSOPClass
 from testfixtures import LogCapture
-import uuid
-from remapp.netdicom import qrscu
-from remapp.models import DicomQuery, DicomQRRspStudy, DicomQRRspSeries, DicomQRRspImage, DicomRemoteQR, DicomStoreSCP
-import collections
 
-def _fake_check_sr_type_in_study_with_rdsr(MyAE, RemoteAE, study):
+from ..extractors import rdsr
+from ..models import DicomQuery, DicomQRRspStudy, DicomQRRspSeries, DicomQRRspImage, DicomRemoteQR, \
+    DicomStoreSCP, GeneralStudyModuleAttr, PatientIDSettings
+from ..netdicom import qrscu
+
+
+def _fake_check_sr_type_in_study_with_rdsr(assoc, study, query, query_id, get_empty_sr):
     return 'RDSR'
-
 
 
 fake_responses = [
@@ -25,7 +26,7 @@ fake_responses = [
     ]
 
 
-def _fake_two_modalities(my_ae, remote_ae, d, query, query_id, *args, **kwargs):
+def _fake_two_modalities(assoc, d, query, query_id, *args, **kwargs):
     """
     Mock routine that returns a set of four MG studies the first time it is called, and a set of three CT studies the
     second time  it is called.
@@ -49,7 +50,7 @@ def _fake_two_modalities(my_ae, remote_ae, d, query, query_id, *args, **kwargs):
         rsp.save()
 
 
-def _fake_all_modalities(my_ae, remote_ae, d, query, query_id, *args, **kwargs):
+def _fake_all_modalities(assoc, d, query, query_id, *args, **kwargs):
     """
     Mock routine to return a modality response that includes a study with a 'modalities in study' that does not have
     the requested modality in.
@@ -105,7 +106,7 @@ class StudyQueryLogic(TestCase):
         :param study_query_mock: Mocked study level response routine
         :return: Nothing
         """
-        from remapp.netdicom.qrscu import _query_for_each_modality
+        from ..netdicom.qrscu import _query_for_each_modality
 
         all_mods = {'CT': {'inc': True, 'mods': ['CT']},
                     'MG': {'inc': True, 'mods': ['MG']},
@@ -113,26 +114,15 @@ class StudyQueryLogic(TestCase):
                     'DX': {'inc': False, 'mods': ['DX', 'CR']}
                     }
         query = DicomQuery.objects.get()
-        qr_scp = DicomRemoteQR.objects.get()
-
-        # Create my_ae and remote_ae
-        aec = qr_scp.aetitle
-        aet = qr_scp.callingaet
-        ts = [
-            ExplicitVRLittleEndian,
-            ImplicitVRLittleEndian,
-            ExplicitVRBigEndian
-        ]
-        my_ae = AE(aet.encode('ascii', 'ignore'), 0, [StudyRootFindSOPClass, StudyRootMoveSOPClass,
-                                                      VerificationSOPClass], [], ts)
-        remote_ae = dict(Address=qr_scp.hostname, Port=qr_scp.port, AET=aec.encode('ascii', 'ignore'))
 
         d = Dataset()
-        modalities_returned, modality_matching = _query_for_each_modality(all_mods, query, d, my_ae, remote_ae)
+        assoc = None
+        modalities_returned, modality_matching = _query_for_each_modality(all_mods, query, d, assoc)
 
         self.assertEqual(DicomQRRspStudy.objects.count(), 2)
         self.assertEqual(study_query_mock.call_count, 1)
         self.assertEqual(modality_matching, False)
+        self.assertEqual(modalities_returned, True)
 
     @patch("remapp.netdicom.qrscu._query_study", side_effect=_fake_two_modalities)
     def test_modality_matching(self, study_query_mock):
@@ -142,7 +132,7 @@ class StudyQueryLogic(TestCase):
         :param study_query_mock: Mocked study level response routine
         :return:  Nothing
         """
-        from remapp.netdicom.qrscu import _query_for_each_modality
+        from ..netdicom.qrscu import _query_for_each_modality
 
         all_mods = collections.OrderedDict()
         all_mods['CT'] = {'inc': True, 'mods': ['CT']}
@@ -153,24 +143,14 @@ class StudyQueryLogic(TestCase):
         query = DicomQuery.objects.get()
         qr_scp = DicomRemoteQR.objects.get()
 
-        # Create my_ae and remote_ae
-        aec = qr_scp.aetitle
-        aet = qr_scp.callingaet
-        ts = [
-            ExplicitVRLittleEndian,
-            ImplicitVRLittleEndian,
-            ExplicitVRBigEndian
-        ]
-        my_ae = AE(aet.encode('ascii', 'ignore'), 0, [StudyRootFindSOPClass, StudyRootMoveSOPClass,
-                                                      VerificationSOPClass], [], ts)
-        remote_ae = dict(Address=qr_scp.hostname, Port=qr_scp.port, AET=aec.encode('ascii', 'ignore'))
-
         d = Dataset()
-        modalities_returned, modality_matching = _query_for_each_modality(all_mods, query, d, my_ae, remote_ae)
+        assoc = None
+        modalities_returned, modality_matching = _query_for_each_modality(all_mods, query, d, assoc)
 
         self.assertEqual(DicomQRRspStudy.objects.count(), 7)
         self.assertEqual(study_query_mock.call_count, 2)
         self.assertEqual(modality_matching, True)
+
 
 class QRPhilipsCT(TestCase):
     def setUp(self):
@@ -216,7 +196,7 @@ class QRPhilipsCT(TestCase):
         rst1s3.save()
 
         rst1_series_rsp = rst1.dicomqrrspseries_set.all()
-        rst1.set_modalities_in_study(list(set(val for dic in rst1_series_rsp.values('modality') for val in dic.values())))
+        rst1.set_modalities_in_study(list(set(val for dic in rst1_series_rsp.values('modality') for val in list(dic.values()))))
         rst1.save()
 
     def test_response_sorting_ct_philips_with_desc(self):
@@ -241,7 +221,8 @@ class QRPhilipsCT(TestCase):
 
         self.assertEqual(rst1.dicomqrrspseries_set.all().count(), 3)
 
-        qrscu._prune_series_responses("MyAE", "RemoteAE", query, all_mods, filters)
+        assoc = None
+        qrscu._prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=False)
 
         self.assertEqual(query.dicomqrrspstudy_set.all().count(), 1)
         self.assertEqual(rst1.dicomqrrspseries_set.all().count(), 1)
@@ -281,7 +262,8 @@ class QRPhilipsCT(TestCase):
         # Before pruning, three series
         self.assertEqual(rst1.dicomqrrspseries_set.all().count(), 3)
 
-        qrscu._prune_series_responses("MyAE", "RemoteAE", query, all_mods, filters)
+        assoc = None
+        qrscu._prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=False)
 
         # After pruning, two series
         self.assertEqual(query.dicomqrrspstudy_set.all().count(), 1)
@@ -315,7 +297,8 @@ class QRPhilipsCT(TestCase):
         # Before the pruning, two series
         self.assertEqual(rst1.dicomqrrspseries_set.all().count(), 2)
 
-        qrscu._prune_series_responses("MyAE", "RemoteAE", query, all_mods, filters)
+        assoc = None
+        qrscu._prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=False)
 
         # After pruning, there should be no studies left
         self.assertEqual(query.dicomqrrspstudy_set.all().count(), 0)
@@ -353,18 +336,57 @@ class QRPhilipsCT(TestCase):
 
         # Re-generate the modality list
         rst1_series_rsp = rst1.dicomqrrspseries_set.all()
-        rst1.set_modalities_in_study(list(set(val for dic in rst1_series_rsp.values('modality') for val in dic.values())))
+        rst1.set_modalities_in_study(
+            list(
+                set(
+                    val for dic in rst1_series_rsp.values('modality') for val in list(dic.values())
+                )
+            ))
         rst1.save()
 
         # Now starting with four series
         self.assertEqual(rst1.dicomqrrspseries_set.all().count(), 4)
 
-        qrscu._prune_series_responses("MyAE", "RemoteAE", query, all_mods, filters)
+        assoc = None
+        qrscu._prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=False)
 
         # Should now have one SR series left, identified by the series description for the purposes of this test
         self.assertEqual(query.dicomqrrspstudy_set.all().count(), 1)
         self.assertEqual(rst1.dicomqrrspseries_set.all().count(), 1)
         self.assertEqual(rst1.dicomqrrspseries_set.all()[0].series_description, u"radiation dose report")
+
+    def test_modalities_in_study_generation(self):
+        """
+        Testing that ModalitiesInStudy is generated if not returned by remote C-Find SCP
+        """
+        from collections import Counter
+        from ..netdicom.qrscu import _generate_modalities_in_study
+
+        query = DicomQuery.objects.get()
+        rst1 = query.dicomqrrspstudy_set.all()[0]
+
+        # Add in a fourth series with modality SR
+        rst1s4 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rst1)
+        rst1s4.query_id = query.query_id
+        rst1s4.series_instance_uid = uuid.uuid4()
+        rst1s4.modality = u"SR"
+        rst1s4.series_number = 999
+        rst1s4.series_description = u"radiation dose report"
+        rst1s4.number_of_series_related_instances = 1
+        rst1s4.save()
+
+        # Delete the modalities in study data
+        rst1.set_modalities_in_study(None)
+        rst1.save()
+
+        _generate_modalities_in_study(rst1, query.query_id)
+
+        # reload study, else _generate_modalities_in_study appears to work without save. See #627
+        rst2 = query.dicomqrrspstudy_set.all()[0]
+
+        # Modalities in study should now be available again
+        self.assertEqual(Counter(rst2.get_modalities_in_study()), Counter([u'CT', u'SC', u'SR']))
+
 
 class ResponseFiltering(TestCase):
     """
@@ -414,7 +436,12 @@ class ResponseFiltering(TestCase):
         rst1s3.save()
 
         rst1_series_rsp = rst1.dicomqrrspseries_set.all()
-        rst1.set_modalities_in_study(list(set(val for dic in rst1_series_rsp.values('modality') for val in dic.values())))
+        rst1.set_modalities_in_study(
+            list(
+                set(
+                    val for dic in rst1_series_rsp.values('modality') for val in list(dic.values())
+                )
+            ))
         rst1.save()
 
         rst2 = DicomQRRspStudy.objects.create(dicom_query=query)
@@ -436,7 +463,7 @@ class ResponseFiltering(TestCase):
         Testing _filter with include station name of 'goodstation'. Expect two responses goodstation and goodstation2
         :return: None
         """
-        from remapp.netdicom.qrscu import _filter
+        from ..netdicom.qrscu import _filter
 
         query = DicomQuery.objects.get()
         _filter(query, u"study", u"station_name", [u"goodstation"], u"include")
@@ -451,7 +478,7 @@ class ResponseFiltering(TestCase):
         Testing _filter with exclude station name of 'badstation'. Expect two responses goodstation and goodstation2
         :return: None
         """
-        from remapp.netdicom.qrscu import _filter
+        from ..netdicom.qrscu import _filter
 
         query = DicomQuery.objects.get()
         _filter(query, u"study", u"station_name", [u"badstation"], u"exclude")
@@ -466,7 +493,7 @@ class ResponseFiltering(TestCase):
         Testing _filter with exclude two study descriptions. Expect one response of goodstation
         :return: None
         """
-        from remapp.netdicom.qrscu import _filter
+        from ..netdicom.qrscu import _filter
 
         query = DicomQuery.objects.get()
         _filter(query, u"study", u"study_description", [u"import", u"test response 3"], u"exclude")
@@ -480,7 +507,7 @@ class ResponseFiltering(TestCase):
         Testing _filter with include study description 'test'. Expect two responses of goodstation and goodstation2
         :return: None
         """
-        from remapp.netdicom.qrscu import _filter
+        from ..netdicom.qrscu import _filter
 
         query = DicomQuery.objects.get()
         _filter(query, u"study", u"study_description", [u"test", ], u"include")
@@ -490,13 +517,15 @@ class ResponseFiltering(TestCase):
         for study in studies:
             self.assertTrue(u"goodstation" in study.station_name)
 
-def _fake_image_query(my_ae, remote_ae, sr):
+
+def _fake_image_query(assoc, sr, query, query_id):
     return
+
 
 class PruneSeriesResponses(TestCase):
     """
-    Test case for the study or series level filtering for desired or otherwise station names, study descriptions etc
-    Function tested is qrscu._filter
+    Test case for filtering series responses depending on availability and type of SR series, including using -emptysr
+    flag
     """
     def setUp(self):
         """
@@ -519,7 +548,7 @@ class PruneSeriesResponses(TestCase):
         Test _prune_series_responses with mammo exam with no SR.
         :return: No change to response
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.create()
         query.query_id = "MammoNoSR"
@@ -543,7 +572,8 @@ class PruneSeriesResponses(TestCase):
         query = DicomQuery.objects.get(query_id__exact="MammoNoSR")
         all_mods = self.all_mods
         filters = self.filters
-        _prune_series_responses("MyAE", "RemoteAE", query, all_mods, filters)
+        assoc = None
+        _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=False)
         studies = query.dicomqrrspstudy_set.all()
         self.assertEqual(studies.count(), 1)
         series = studies[0].dicomqrrspseries_set.all()
@@ -555,7 +585,7 @@ class PruneSeriesResponses(TestCase):
         Test _prune_series_responses with mammo exam with two SRs, one RDSR and one Basic SR.
         :return: MG series and basic SR series should be deleted.
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.create()
         query.query_id = "MammoWithSR"
@@ -607,7 +637,8 @@ class PruneSeriesResponses(TestCase):
         query = DicomQuery.objects.get(query_id__exact="MammoWithSR")
         all_mods = self.all_mods
         filters = self.filters
-        _prune_series_responses("MyAE", "RemoteAE", query, all_mods, filters)
+        assoc = None
+        _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=False)
         studies = query.dicomqrrspstudy_set.all()
         self.assertEqual(studies.count(), 1)
         series = studies[0].dicomqrrspseries_set.all()
@@ -621,7 +652,7 @@ class PruneSeriesResponses(TestCase):
         Test _prune_series_responses with CR exam with no RDSR but with Basic SR.
         :return: Basic SR deleted, study.modality set to "DX"
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.create()
         query.query_id = "CRNoRDSR"
@@ -659,7 +690,8 @@ class PruneSeriesResponses(TestCase):
         query = DicomQuery.objects.get(query_id__exact="CRNoRDSR")
         all_mods = self.all_mods
         filters = self.filters
-        _prune_series_responses("MyAE", "RemoteAE", query, all_mods, filters)
+        assoc = None
+        _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=False)
         studies = query.dicomqrrspstudy_set.all()
         self.assertEqual(studies.count(), 1)
         series = studies[0].dicomqrrspseries_set.all()
@@ -673,7 +705,7 @@ class PruneSeriesResponses(TestCase):
         Test _prune_series_responses with DX exam with three SRs, one RDSR, one ESR and one Basic SR.
         :return: DX series, ESR and basic SR series should be deleted.
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.create()
         query.query_id = "DXWithSR"
@@ -739,7 +771,8 @@ class PruneSeriesResponses(TestCase):
         query = DicomQuery.objects.get(query_id__exact="DXWithSR")
         all_mods = self.all_mods
         filters = self.filters
-        _prune_series_responses("MyAE", "RemoteAE", query, all_mods, filters)
+        assoc = None
+        _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=False)
         studies = query.dicomqrrspstudy_set.all()
         self.assertEqual(studies.count(), 1)
         series = studies[0].dicomqrrspseries_set.all()
@@ -753,7 +786,7 @@ class PruneSeriesResponses(TestCase):
         Test _prune_series_responses with fluoro exam with no ESR or RDSR.
         :return: Whole study response deleted
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.create()
         query.query_id = "RFNoSR"
@@ -791,7 +824,8 @@ class PruneSeriesResponses(TestCase):
         query = DicomQuery.objects.get(query_id__exact="RFNoSR")
         all_mods = self.all_mods
         filters = self.filters
-        _prune_series_responses("MyAE", "RemoteAE", query, all_mods, filters)
+        assoc = None
+        _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=False)
         studies = query.dicomqrrspstudy_set.all()
         self.assertEqual(studies.count(), 0)
 
@@ -801,7 +835,7 @@ class PruneSeriesResponses(TestCase):
         Test _prune_series_responses with XA exam with an ESR, and one Basic SR.
         :return: XA series and basic SR series should be deleted.
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.create()
         query.query_id = "XAWithESRBSR"
@@ -853,7 +887,8 @@ class PruneSeriesResponses(TestCase):
         query = DicomQuery.objects.get(query_id__exact="XAWithESRBSR")
         all_mods = self.all_mods
         filters = self.filters
-        _prune_series_responses("MyAE", "RemoteAE", query, all_mods, filters)
+        assoc = None
+        _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=False)
         studies = query.dicomqrrspstudy_set.all()
         self.assertEqual(studies.count(), 1)
         series = studies[0].dicomqrrspseries_set.all()
@@ -861,21 +896,115 @@ class PruneSeriesResponses(TestCase):
         sr_instance = series[0].dicomqrrspimage_set.get()
         self.assertEqual(sr_instance.sop_class_uid, u'1.2.840.10008.5.1.4.1.1.88.22')
 
+    @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
+    def test_prune_ser_resp_empty_sr_no_flag(self):
+        """
+        Test _prune_series_responses with mammo exam with one SR series & no -emptysr flag, simulating a PACS that
+        doesn't return any image level responses.
+        :return: image series should remain, SR series should be deleted.
+        """
+        from ..netdicom.qrscu import _prune_series_responses
+
+        query = DicomQuery.objects.create()
+        query.query_id = "MammoWithSR"
+        query.save()
+
+        st2 = DicomQRRspStudy.objects.create(dicom_query=query)
+        st2.query_id = query.query_id
+        st2.study_instance_uid = uuid.uuid4()
+        st2.study_description = u"MG study with SR"
+        st2.set_modalities_in_study(['MG', 'SR'])
+        st2.save()
+
+        st2_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st2)
+        st2_se1.query_id = query.query_id
+        st2_se1.series_instance_uid = uuid.uuid4()
+        st2_se1.modality = u"MG"
+        st2_se1.series_number = 1
+        st2_se1.number_of_series_related_instances = 1
+        st2_se1.save()
+
+        st2_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st2)
+        st2_se2.query_id = query.query_id
+        st2_se2.series_instance_uid = uuid.uuid4()
+        st2_se2.modality = u"SR"
+        st2_se2.series_number = 2
+        st2_se2.number_of_series_related_instances = 1
+        st2_se2.save()
+
+        query = DicomQuery.objects.get(query_id__exact="MammoWithSR")
+        all_mods = self.all_mods
+        filters = self.filters
+        assoc = None
+        _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=False)
+        studies = query.dicomqrrspstudy_set.all()
+        self.assertEqual(studies.count(), 1)
+        series = studies[0].dicomqrrspseries_set.all()
+        self.assertEqual(series.count(), 1)
+        self.assertEqual(series[0].modality, u'MG')
+
+    @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
+    def test_prune_ser_resp_empty_sr_with_flag(self):
+        """
+        Test _prune_series_responses with mammo exam with one SR series & the -emptysr flag, simulating a PACS that
+        doesn't return any image level responses.
+        :return: SR series should remain, image series should be deleted.
+        """
+        from ..netdicom.qrscu import _prune_series_responses
+
+        query = DicomQuery.objects.create()
+        query.query_id = "MammoWithSR"
+        query.save()
+
+        st2 = DicomQRRspStudy.objects.create(dicom_query=query)
+        st2.query_id = query.query_id
+        st2.study_instance_uid = uuid.uuid4()
+        st2.study_description = u"MG study with SR"
+        st2.set_modalities_in_study(['MG', 'SR'])
+        st2.save()
+
+        st2_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st2)
+        st2_se1.query_id = query.query_id
+        st2_se1.series_instance_uid = uuid.uuid4()
+        st2_se1.modality = u"MG"
+        st2_se1.series_number = 1
+        st2_se1.number_of_series_related_instances = 1
+        st2_se1.save()
+
+        st2_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st2)
+        st2_se2.query_id = query.query_id
+        st2_se2.series_instance_uid = uuid.uuid4()
+        st2_se2.modality = u"SR"
+        st2_se2.series_number = 2
+        st2_se2.number_of_series_related_instances = 1
+        st2_se2.save()
+
+        query = DicomQuery.objects.get(query_id__exact="MammoWithSR")
+        all_mods = self.all_mods
+        filters = self.filters
+        assoc = None
+        _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=True)
+        studies = query.dicomqrrspstudy_set.all()
+        self.assertEqual(studies.count(), 1)
+        series = studies[0].dicomqrrspseries_set.all()
+        self.assertEqual(series.count(), 1)
+        self.assertEqual(series[0].modality, u'SR')
+
 
 class PruneSeriesResponsesCT(TestCase):
     """
-    Test case for the study or series level filtering for desired or otherwise station names, study descriptions etc
-    Function tested is qrscu._filter
+    Test case for filtering series responses of CT studies, depending on availability and type of SR series,
+    including using -emptysr flag
     """
     def setUp(self):
         """
         """
 
         self.all_mods = {'CT': {'inc': True, 'mods': ['CT']},
-                    'MG': {'inc': True, 'mods': ['MG']},
-                    'FL': {'inc': True, 'mods': ['RF', 'XA']},
-                    'DX': {'inc': True, 'mods': ['DX', 'CR']}
-                    }
+                         'MG': {'inc': True, 'mods': ['MG']},
+                         'FL': {'inc': True, 'mods': ['RF', 'XA']},
+                         'DX': {'inc': True, 'mods': ['DX', 'CR']}
+                         }
         self.filters = {
             'stationname_inc': None,
             'stationname_exc': None,
@@ -960,12 +1089,13 @@ class PruneSeriesResponsesCT(TestCase):
         Test _prune_series_responses with CT exam with a RDSR, ESR, Basic SR, Dose info and an axial series.
         :return: RDSR series.
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.get(query_id__exact="CT")
         all_mods = self.all_mods
         filters = self.filters
-        _prune_series_responses("MyAE", "RemoteAE", query, all_mods, filters)
+        assoc = None
+        _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=False)
         studies = query.dicomqrrspstudy_set.all()
         self.assertEqual(studies.count(), 1)
         series = studies[0].dicomqrrspseries_set.all()
@@ -979,7 +1109,7 @@ class PruneSeriesResponsesCT(TestCase):
         Test _prune_series_responses with CT exam with a ESR, Basic SR, Dose info and an axial series.
         :return: ESR series.
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.get(query_id__exact="CT")
 
@@ -989,7 +1119,8 @@ class PruneSeriesResponsesCT(TestCase):
 
         all_mods = self.all_mods
         filters = self.filters
-        _prune_series_responses("MyAE", "RemoteAE", query, all_mods, filters)
+        assoc = None
+        _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=False)
         studies = query.dicomqrrspstudy_set.all()
         self.assertEqual(studies.count(), 1)
         series = studies[0].dicomqrrspseries_set.all()
@@ -1003,7 +1134,7 @@ class PruneSeriesResponsesCT(TestCase):
         Test _prune_series_responses with CT exam with a Basic SR, Dose info and an axial series.
         :return: Dose info series.
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.get(query_id__exact="CT")
 
@@ -1015,7 +1146,8 @@ class PruneSeriesResponsesCT(TestCase):
 
         all_mods = self.all_mods
         filters = self.filters
-        _prune_series_responses("MyAE", "RemoteAE", query, all_mods, filters)
+        assoc = None
+        _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=False)
         studies = query.dicomqrrspstudy_set.all()
         self.assertEqual(studies.count(), 1)
         series = studies[0].dicomqrrspseries_set.all()
@@ -1028,7 +1160,7 @@ class PruneSeriesResponsesCT(TestCase):
         Test _prune_series_responses with CT exam with a Basic SR, Dose info and an axial series, but no series desc.
         :return: Dose info series.
         """
-        from remapp.netdicom.qrscu import _prune_series_responses
+        from ..netdicom.qrscu import _prune_series_responses
 
         query = DicomQuery.objects.get(query_id__exact="CT")
 
@@ -1042,9 +1174,456 @@ class PruneSeriesResponsesCT(TestCase):
 
         all_mods = self.all_mods
         filters = self.filters
-        _prune_series_responses("MyAE", "RemoteAE", query, all_mods, filters)
+        assoc = None
+        _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=False)
         studies = query.dicomqrrspstudy_set.all()
         self.assertEqual(studies.count(), 1)
         series = studies[0].dicomqrrspseries_set.all()
         self.assertEqual(series.count(), 1)
         self.assertEqual(series[0].series_number, 4)
+
+    @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
+    def test_prune_ser_resp_ct_empty_sr_no_flag(self):
+        """
+        Test _prune_series_responses with CT exam with one SR series & no -emptysr flag, simulating a PACS that
+        doesn't return any image level responses.
+        :return: Dose info series.
+        """
+        from ..netdicom.qrscu import _prune_series_responses
+
+        query = DicomQuery.objects.get(query_id__exact="CT")
+
+        study = query.dicomqrrspstudy_set.get()
+
+        esr_series = study.dicomqrrspseries_set.filter(series_number__exact=2)
+        esr_series[0].dicomqrrspimage_set.get().delete()
+        study.dicomqrrspseries_set.filter(series_number__exact=3).all().delete()
+        study.dicomqrrspseries_set.filter(series_number__exact=5).all().delete()
+
+        all_mods = self.all_mods
+        filters = self.filters
+        assoc = None
+
+        _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=False)
+
+        studies = query.dicomqrrspstudy_set.all()
+        self.assertEqual(studies.count(), 1)
+        series = studies[0].dicomqrrspseries_set.all()
+        self.assertEqual(series.count(), 1)
+        self.assertEqual(series[0].series_number, 4)
+
+    @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
+    def test_prune_ser_resp_ct_empty_sr_with_flag(self):
+        """
+        Test _prune_series_responses with CT exam with one SR series with -emptysr flag, simulating a PACS that
+        doesn't return any image level responses.
+        :return: SR series.
+        """
+        from ..netdicom.qrscu import _prune_series_responses
+
+        query = DicomQuery.objects.get(query_id__exact="CT")
+
+        study = query.dicomqrrspstudy_set.get()
+
+        esr_series = study.dicomqrrspseries_set.filter(series_number__exact=2)
+        esr_series[0].dicomqrrspimage_set.get().delete()
+        study.dicomqrrspseries_set.filter(series_number__exact=3).all().delete()
+        study.dicomqrrspseries_set.filter(series_number__exact=5).all().delete()
+
+        all_mods = self.all_mods
+        filters = self.filters
+        assoc = None
+
+        _prune_series_responses(assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=True)
+
+        studies = query.dicomqrrspstudy_set.all()
+        self.assertEqual(studies.count(), 1)
+        series = studies[0].dicomqrrspseries_set.all()
+        self.assertEqual(series.count(), 1)
+        self.assertEqual(series[0].series_number, 2)
+
+
+def _fake_qrscu(qr_scp_pk=None, store_scp_pk=None,
+        implicit=False, explicit=False, move=False, query_id=None,
+        date_from=None, date_until=None, modalities=None, inc_sr=False, remove_duplicates=True, filters=None):
+    """
+    Check that the parsing has worked
+    """
+    pass
+
+
+def _fake_echo_success(scp_pk=None, store_scp=False, qr_scp=False):
+    """
+    Fake success return for echoscu
+    :param scp_pk:
+    :param store_scp:
+    :param qr_scp:
+    :return: str "Success"
+    """
+    return "Success"
+
+
+class QRSCUScriptArgParsing(TestCase):
+    """
+    Test the args passed on the command line are parsed properly
+    """
+
+    @patch("remapp.netdicom.tools.echoscu", _fake_echo_success)
+    def test_ct_mg(self):
+        """
+        Test the arg parser with modalities CT and MG
+        :return:
+        """
+
+        from ..netdicom.qrscu import _create_parser, _process_args
+
+        parser = _create_parser()
+        parsed_args = _process_args(parser.parse_args(['1', '2', '-ct', '-mg']), parser)
+
+        self.assertEqual(parsed_args['qr_id'], 1)
+        self.assertEqual(parsed_args['store_id'], 2)
+        self.assertEqual(parsed_args['modalities'].sort(), ['MG', 'CT'].sort())
+        filters = {'study_desc_exc': None, 'stationname_exc': None, 'study_desc_inc': None, 'stationname_inc': None}
+        self.assertEqual(parsed_args['filters'], filters)
+
+    @patch("remapp.netdicom.tools.echoscu", _fake_echo_success)
+    def test_ct_std_exc(self):
+        """
+        Test the arg parser with modalities CT and MG
+        :return:
+        """
+
+        from ..netdicom.qrscu import _create_parser, _process_args
+
+        parser = _create_parser()
+        parsed_args = _process_args(parser.parse_args(['1', '2', '-ct', '-e Thorax, Neck ']), parser)
+
+        self.assertEqual(parsed_args['qr_id'], 1)
+        self.assertEqual(parsed_args['store_id'], 2)
+        self.assertEqual(parsed_args['modalities'].sort(), ['MG', 'CT'].sort())
+        filters = {'study_desc_exc': [u'thorax', u'neck'],
+                   'study_desc_inc': None,
+                   'stationname_exc': None,
+                   'stationname_inc': None}
+        self.assertEqual(parsed_args['filters'], filters)
+
+    @patch("remapp.netdicom.tools.echoscu", _fake_echo_success)
+    def test_ct_std_exc_stn_inc(self):
+        """
+        Test the arg parser with modalities CT and MG
+        :return:
+        """
+
+        from ..netdicom.qrscu import _create_parser, _process_args
+
+        parser = _create_parser()
+        parsed_args = _process_args(parser.parse_args(
+            ['1', '2', '-ct', '--desc_exclude', 'Thorax, Neck ', '-sni', 'MyStn']),
+            parser)
+
+        self.assertEqual(parsed_args['qr_id'], 1)
+        self.assertEqual(parsed_args['store_id'], 2)
+        self.assertEqual(parsed_args['modalities'].sort(), ['MG', 'CT'].sort())
+        filters = {'study_desc_exc': [u'thorax', u'neck'],
+                   'study_desc_inc': None,
+                   'stationname_exc': None,
+                   'stationname_inc': [u'mystn']}
+        self.assertEqual(parsed_args['filters'], filters)
+
+
+class RemoveDuplicates(TestCase):
+    """
+    Test the routine to remove any responses that correspond to information already in the database
+    """
+
+    def test_rdsr_new(self):
+        """Inital test that _remove_duplicates doesn't remove new RDSR
+
+        """
+
+        from ..netdicom.qrscu import _remove_duplicates
+
+        PatientIDSettings.objects.create()
+
+        # Nothing imported into the database
+
+        query = DicomQuery.objects.create()
+        query.query_id = "CT"
+        query.save()
+
+        st1 = DicomQRRspStudy.objects.create(dicom_query=query)
+        st1.query_id = query.query_id
+        st1.study_instance_uid = "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.3.0"
+        st1.study_description = u"CT study"
+        st1.set_modalities_in_study(['CT', 'SR'])
+        st1.save()
+
+        st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
+        st1_se1.query_id = query.query_id
+        st1_se1.series_instance_uid = "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.12.0"
+        st1_se1.modality = u"SR"
+        st1_se1.series_number = 502
+        st1_se1.number_of_series_related_instances = 1
+        st1_se1.save()
+
+        st1_se1_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se1)
+        st1_se1_im1.query_id = query.query_id
+        st1_se1_im1.sop_instance_uid = u'1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.11.0'
+        st1_se1_im1.save()
+
+        study_responses_pre = DicomQRRspStudy.objects.all()
+        self.assertEqual(study_responses_pre.count(), 1)
+        self.assertEqual(study_responses_pre[0].dicomqrrspseries_set.count(), 1)
+
+        study_rsp = query.dicomqrrspstudy_set.all()
+        assoc = None
+        query_id = None
+        _remove_duplicates(query, study_rsp, assoc, query_id)
+
+        study_responses_post = DicomQRRspStudy.objects.all()
+        self.assertEqual(study_responses_post.count(), 1)
+        self.assertEqual(study_responses_post[0].dicomqrrspseries_set.count(), 1)
+
+
+    def test_rdsr_same(self):
+        """Now testing _remove_duplicates will remove an identical RDSR, but retain a new one.
+        """
+
+        from ..netdicom.qrscu import _remove_duplicates
+
+        PatientIDSettings.objects.create()
+
+        dicom_file_1 = "test_files/CT-RDSR-Siemens-Multi-1.dcm"
+        root_tests = os.path.dirname(os.path.abspath(__file__))
+        dicom_path_1 = os.path.join(root_tests, dicom_file_1)
+        rdsr.rdsr(dicom_path_1)
+
+        query = DicomQuery.objects.create()
+        query.query_id = "CT"
+        query.save()
+
+        # Same RDSR - expect study response to be deleted (post count = 0)
+        st1 = DicomQRRspStudy.objects.create(dicom_query=query)
+        st1.query_id = query.query_id
+        st1.study_instance_uid = "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.3.0"
+        st1.study_description = u"CT study"
+        st1.set_modalities_in_study(['CT', 'SR'])
+        st1.save()
+
+        st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
+        st1_se1.query_id = query.query_id
+        st1_se1.series_instance_uid = "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.12.0"
+        st1_se1.modality = u"SR"
+        st1_se1.series_number = 501
+        st1_se1.number_of_series_related_instances = 1
+        st1_se1.save()
+
+        st1_se1_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se1)
+        st1_se1_im1.query_id = query.query_id
+        st1_se1_im1.sop_instance_uid = u'1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.11.0'
+        st1_se1_im1.save()
+
+        st1_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
+        st1_se2.query_id = query.query_id
+        st1_se2.series_instance_uid = "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.7.0"
+        st1_se2.modality = u"SR"
+        st1_se2.series_number = 501
+        st1_se2.number_of_series_related_instances = 1
+        st1_se2.save()
+
+        st1_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se2)
+        st1_se2_im1.query_id = query.query_id
+        st1_se2_im1.sop_instance_uid = u'1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.6.0'
+        st1_se2_im1.save()
+
+        study_responses_pre = DicomQRRspStudy.objects.all()
+        self.assertEqual(study_responses_pre.count(), 1)
+        self.assertEqual(study_responses_pre[0].dicomqrrspseries_set.count(), 2)
+
+        study_rsp = query.dicomqrrspstudy_set.all()
+        assoc = None
+        query_id = None
+        _remove_duplicates(query, study_rsp, assoc, query_id)
+
+        study_responses_post = DicomQRRspStudy.objects.all()
+        self.assertEqual(study_responses_post.count(), 1)
+        self.assertEqual(study_responses_post[0].dicomqrrspseries_set.count(), 1)
+        self.assertEqual(study_responses_post[0].dicomqrrspseries_set.all()[0].series_instance_uid,
+                         u"1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.7.0")
+
+    def test_rdsr_no_objectuids(self):
+        """
+        Test importing RDSR where
+        * same study, ObjectUIDsProcessed not populated
+        :return:
+        """
+
+        from ..netdicom.qrscu import _remove_duplicates
+
+        PatientIDSettings.objects.create()
+
+        dicom_file_1 = "test_files/CT-RDSR-Siemens-Multi-2.dcm"
+        root_tests = os.path.dirname(os.path.abspath(__file__))
+        dicom_path_1 = os.path.join(root_tests, dicom_file_1)
+        rdsr.rdsr(dicom_path_1)
+        imported_study = GeneralStudyModuleAttr.objects.order_by('pk')[0]
+        imported_study.objectuidsprocessed_set.all().delete()
+        imported_study.save()
+
+        query = DicomQuery.objects.create()
+        query.query_id = "CT"
+        query.save()
+
+        st1 = DicomQRRspStudy.objects.create(dicom_query=query)
+        st1.query_id = query.query_id
+        st1.study_instance_uid = "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.3.0"
+        st1.study_description = u"CT study"
+        st1.set_modalities_in_study(['CT', 'SR'])
+        st1.save()
+
+        st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
+        st1_se1.query_id = query.query_id
+        st1_se1.series_instance_uid = "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.7.0"
+        st1_se1.modality = u"SR"
+        st1_se1.series_number = 501
+        st1_se1.number_of_series_related_instances = 1
+        st1_se1.save()
+
+        st1_se1_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se1)
+        st1_se1_im1.query_id = query.query_id
+        st1_se1_im1.sop_instance_uid = u'1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.6.0'
+        st1_se1_im1.save()
+
+        study_responses_pre = DicomQRRspStudy.objects.all()
+        self.assertEqual(study_responses_pre.count(), 1)
+        self.assertEqual(study_responses_pre[0].dicomqrrspseries_set.count(), 1)
+
+        study_rsp = query.dicomqrrspstudy_set.all()
+        assoc = None
+        query_id = None
+        _remove_duplicates(query, study_rsp, assoc, query_id)
+
+        study_responses_post = DicomQRRspStudy.objects.all()
+        self.assertEqual(study_responses_post.count(), 1)
+        self.assertEqual(study_responses_post[0].dicomqrrspseries_set.count(), 1)
+
+    @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
+    def test_dx(self):
+        """
+        Test remove duplicates with DX images
+        :return:
+        """
+
+        from ..extractors import dx
+        from ..netdicom.qrscu import _remove_duplicates
+
+        PatientIDSettings.objects.create()
+
+        dx_ge_xr220_1 = os.path.join("test_files", "DX-Im-GE_XR220-1.dcm")
+        root_tests = os.path.dirname(os.path.abspath(__file__))
+        dx.dx(os.path.join(root_tests, dx_ge_xr220_1))
+
+        query = DicomQuery.objects.create()
+        query.query_id = "DX"
+        query.save()
+
+        st1 = DicomQRRspStudy.objects.create(dicom_query=query)
+        st1.query_id = query.query_id
+        st1.study_instance_uid = "1.3.6.1.4.1.5962.99.1.2282339064.1266597797.1479751121656.24.0"
+        st1.study_description = u"DX study"
+        st1.set_modalities_in_study(['DX', ])
+        st1.save()
+
+        st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
+        st1_se1.query_id = query.query_id
+        st1_se1.series_instance_uid = "1.3.6.1.4.1.5962.99.1.2282339064.1266597797.1479751121656.25.0"
+        st1_se1.modality = u"DX"
+        st1_se1.series_number = 1
+        st1_se1.number_of_series_related_instances = 1
+        st1_se1.save()
+
+        # Image responses won't be there yet, but image level query is faked
+        st1_se5_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se1)
+        st1_se5_im1.query_id = query.query_id
+        st1_se5_im1.sop_instance_uid = "1.3.6.1.4.1.5962.99.1.2282339064.1266597797.1479751121656.20.0"
+        st1_se5_im1.save()
+
+        st1_se5_im2 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se1)
+        st1_se5_im2.query_id = query.query_id
+        st1_se5_im2.sop_instance_uid = "1.3.6.1.4.1.5962.99.1.2282339064.1266597797.1479751121656.26.0"
+        st1_se5_im2.save()
+
+        study_responses_pre = DicomQRRspStudy.objects.all()
+        self.assertEqual(study_responses_pre.count(), 1)
+        self.assertEqual(study_responses_pre[0].dicomqrrspseries_set.count(), 1)
+        self.assertEqual(study_responses_pre[0].dicomqrrspseries_set.get().dicomqrrspimage_set.count(), 2)
+
+        study_rsp = query.dicomqrrspstudy_set.all()
+        assoc = None
+        query_id = None
+        _remove_duplicates(query, study_rsp, assoc, query_id)
+
+        # One image response should have been deleted, one remain
+        study_responses_post = DicomQRRspStudy.objects.all()
+        self.assertEqual(study_responses_post.count(), 1)
+        self.assertEqual(study_responses_post[0].dicomqrrspseries_set.count(), 1)
+        self.assertEqual(study_responses_pre[0].dicomqrrspseries_set.get().dicomqrrspimage_set.count(), 1)
+        remaining_image_rsp = study_responses_pre[0].dicomqrrspseries_set.get().dicomqrrspimage_set.get()
+        self.assertEqual(
+            remaining_image_rsp.sop_instance_uid, "1.3.6.1.4.1.5962.99.1.2282339064.1266597797.1479751121656.26.0")
+
+
+class InvalidMove(TestCase):
+    """Small test class to check passing an invalid query ID to movescu fails gracefully
+
+    """
+
+    def test_invalid_query_id(self):
+        """Pass invalid query_id to movescu, expect log update and return False/0
+
+        """
+        from ..netdicom.qrscu import movescu
+
+        PatientIDSettings.objects.create()
+
+        with LogCapture('remapp.netdicom.qrscu') as log:
+            movestatus = movescu('not_a_query_ID')
+            self.assertEqual(movestatus, False)
+
+            log.check_present(('remapp.netdicom.qrscu', 'WARNING',
+                               u"Move called with invalid query_id not_a_query_ID. Move abandoned."))
+
+
+class DuplicatesInStudyResponse(TestCase):
+    """Test function that removes duplicates within the response at study level"""
+
+    def test_remove_duplicates_in_study_response(self):
+        """Test to ensure duplicates are removed from the response query set
+
+        """
+        from ..netdicom.qrscu import _remove_duplicates_in_study_response
+
+        query = DicomQuery.objects.create()
+        query.query_id = uuid.uuid4()
+        query.save()
+
+        rst1 = DicomQRRspStudy.objects.create(dicom_query=query)
+        rst1.query_id = query.query_id
+        rst1.study_instance_uid = uuid.uuid4()
+        rst1.save()
+
+        rst2 = DicomQRRspStudy.objects.create(dicom_query=query)
+        rst2.query_id = query.query_id
+        rst2.study_instance_uid = uuid.uuid4()
+        rst2.save()
+
+        rst3 = DicomQRRspStudy.objects.create(dicom_query=query)
+        rst3.query_id = query.query_id
+        rst3.study_instance_uid = rst1.study_instance_uid
+        rst3.save()
+
+        self.assertEqual(query.dicomqrrspstudy_set.count(), 3)
+
+        current_count = _remove_duplicates_in_study_response(query, 3)
+        self.assertEqual(current_count, 2)
+        self.assertEqual(query.dicomqrrspstudy_set.count(), 2)

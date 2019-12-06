@@ -28,11 +28,17 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
+from __future__ import division
+from __future__ import absolute_import
 
+from past.utils import old_div
+import logging
 import os
 import sys
+
+from decimal import Decimal
 import django
-import logging
+from django.db.models import ObjectDoesNotExist
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +78,7 @@ def _ctirradiationeventdata(dataset, ct):  # TID 10013
     from remapp.models import CtIrradiationEventData
     from remapp.tools.get_values import get_value_kw, get_value_num, get_or_create_cid
     from remapp.tools.dcmdatetime import get_date_time
-    from dicom import UID
+    from pydicom import uid
     event = CtIrradiationEventData.objects.create(ct_radiation_dose=ct)
     event.acquisition_protocol = get_value_kw('SeriesDescription', dataset)
     # target region is mandatory, but I don't have it
@@ -89,7 +95,7 @@ def _ctirradiationeventdata(dataset, ct):  # TID 10013
         event.ct_acquisition_type = get_or_create_cid('113807', 'Free Acquisition')
     # procedure context is optional and not reported (contrast or not)
     # irradiation event uid would be available in image headers, but assuming just working from dose report image:
-    event.irradiation_event_uid = UID.generate_uid()
+    event.irradiation_event_uid = uid.generate_uid()
     exptime = get_value_kw('ExposureTime', dataset)
     if exptime:
         event.exposure_time = exptime / 1000.0
@@ -107,24 +113,24 @@ def _ctirradiationeventdata(dataset, ct):  # TID 10013
     event.save()
     _ctxraysourceparameters(dataset, event)
     event.mean_ctdivol = get_value_kw('CTDIvol', dataset)
-    event.dlp = get_value_num(0x00e11021, dataset)  # Philips private tag
+    event.dlp = Decimal(get_value_num(0x00e11021, dataset))  # Philips private tag
     event.date_time_started = get_date_time('AcquisitionDateTime', dataset)
     #    event.series_description = get_value_kw('SeriesDescription',dataset)
     event.save()
 
 
 def _ctaccumulateddosedata(dataset, ct, ch):  # TID 10012
-    from remapp.models import CtAccumulatedDoseData, ContextID
+    from remapp.models import CtAccumulatedDoseData
     from remapp.tools.get_values import get_value_kw, get_value_num
     ctacc = CtAccumulatedDoseData.objects.create(ct_radiation_dose=ct)
     ctacc.total_number_of_irradiation_events = get_value_kw('TotalNumberOfExposures', dataset)
-    ctacc.ct_dose_length_product_total = get_value_num(0x00e11021, dataset)  # Philips private tag
+    ctacc.ct_dose_length_product_total = Decimal(get_value_num(0x00e11021, dataset))  # Philips private tag
     ctacc.comment = get_value_kw('CommentsOnRadiationDose', dataset)
     ctacc.save()
 
 
 def _ctradiationdose(dataset, g, ch):
-    from remapp.models import CtRadiationDose, ObserverContext
+    from remapp.models import CtRadiationDose
     from remapp.tools.get_values import get_value_kw, get_value_num, get_or_create_cid
     from datetime import timedelta
     from django.db.models import Min, Max
@@ -132,17 +138,17 @@ def _ctradiationdose(dataset, g, ch):
     proj.procedure_reported = get_or_create_cid('P5-08000', 'Computed Tomography X-Ray')
     proj.has_intent = get_or_create_cid('R-408C3', 'Diagnostic Intent')
     proj.scope_of_accumulation = get_or_create_cid('113014', 'Study')
-    commentdose = get_value_kw('CommentsOnRadiationDose', dataset)
-    commentprotocolfile = get_value_num(0x00e11061, dataset)
-    commentstudydescription = get_value_kw('StudyDescription', dataset)
-    if not commentdose:
-        commentdose = ''
-    if not commentprotocolfile:
-        commentprotocolfile = ''
-    if not commentstudydescription:
-        commentstudydescription = ''
-    proj.comment = (u'<DoseComment SRData="{0}" /> <ProtocolFilename SRData="{1}" /> <StudyDescription '
-                    u'SRData="{2}" />'.format(commentdose, commentprotocolfile, commentstudydescription))
+    comment_dose = get_value_kw('CommentsOnRadiationDose', dataset)
+    comment_protocol_file = get_value_num(0x00e11061, dataset)
+    comment_study_description = get_value_kw('StudyDescription', dataset)
+    if not comment_dose:
+        comment_dose = ''
+    if not comment_protocol_file:
+        comment_protocol_file = ''
+    if not comment_study_description:
+        comment_study_description = ''
+    proj.comment = (u"StudyDescription: {0}. Comments on radiation dose: {1}. ProtocolFilename: {2}".format(
+        comment_study_description, comment_dose, comment_protocol_file))
     proj.source_of_dose_information = get_or_create_cid('113866', 'Copied From Image Attributes')
     proj.save()
     _ctaccumulateddosedata(dataset, proj, ch)
@@ -194,31 +200,27 @@ def _generalequipmentmoduleattributes(dataset, study, ch):
     equip.date_of_last_calibration = get_date("DateOfLastCalibration", dataset)
     equip.time_of_last_calibration = get_time("TimeOfLastCalibration", dataset)
 
-    equip_display_name, created = UniqueEquipmentNames.objects.get_or_create(manufacturer=equip.manufacturer,
-                                                                             manufacturer_hash=hash_id(
-                                                                                 equip.manufacturer),
-                                                                             institution_name=equip.institution_name,
-                                                                             institution_name_hash=hash_id(
-                                                                                 equip.institution_name),
-                                                                             station_name=equip.station_name,
-                                                                             station_name_hash=hash_id(
-                                                                                 equip.station_name),
-                                                                             institutional_department_name=equip.institutional_department_name,
-                                                                             institutional_department_name_hash=hash_id(
-                                                                                 equip.institutional_department_name),
-                                                                             manufacturer_model_name=equip.manufacturer_model_name,
-                                                                             manufacturer_model_name_hash=hash_id(
-                                                                                 equip.manufacturer_model_name),
-                                                                             device_serial_number=equip.device_serial_number,
-                                                                             device_serial_number_hash=hash_id(
-                                                                                 equip.device_serial_number),
-                                                                             software_versions=equip.software_versions,
-                                                                             software_versions_hash=hash_id(
-                                                                                 equip.software_versions),
-                                                                             gantry_id=equip.gantry_id,
-                                                                             gantry_id_hash=hash_id(equip.gantry_id),
-                                                                             hash_generated=True
-                                                                             )
+    equip_display_name, created = UniqueEquipmentNames.objects.get_or_create(
+        manufacturer=equip.manufacturer,
+        manufacturer_hash=hash_id(equip.manufacturer),
+        institution_name=equip.institution_name,
+        institution_name_hash=hash_id(equip.institution_name),
+        station_name=equip.station_name,
+        station_name_hash=hash_id(equip.station_name),
+        institutional_department_name=equip.institutional_department_name,
+        institutional_department_name_hash=hash_id(equip.institutional_department_name),
+        manufacturer_model_name=equip.manufacturer_model_name,
+        manufacturer_model_name_hash=hash_id(equip.manufacturer_model_name),
+        device_serial_number=equip.device_serial_number,
+        device_serial_number_hash=hash_id(equip.device_serial_number),
+        software_versions=equip.software_versions,
+        software_versions_hash=hash_id(equip.software_versions),
+        gantry_id=equip.gantry_id,
+        gantry_id_hash=hash_id(equip.gantry_id),
+        hash_generated=True,
+        device_observer_uid=None,
+        device_observer_uid_hash=None
+    )
     if created:
         if equip.institution_name and equip.station_name:
             equip_display_name.display_name = equip.institution_name + ' ' + equip.station_name
@@ -259,15 +261,15 @@ def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
     pat.not_patient_indicator = get_not_pt(dataset)
     patientatt = PatientStudyModuleAttr.objects.get(general_study_module_attributes=g)
     if patient_birth_date:
-        patientatt.patient_age_decimal = Decimal((g.study_date.date() - patient_birth_date.date()).days) / Decimal(
-            '365.25')
+        patientatt.patient_age_decimal = old_div(Decimal((g.study_date.date() - patient_birth_date.date()).days), Decimal(
+            '365.25'))
     elif patientatt.patient_age:
         if patientatt.patient_age[-1:] == 'Y':
             patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1])
         elif patientatt.patient_age[-1:] == 'M':
-            patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1]) / Decimal('12')
+            patientatt.patient_age_decimal = old_div(Decimal(patientatt.patient_age[:-1]), Decimal('12'))
         elif patientatt.patient_age[-1:] == 'D':
-            patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1]) / Decimal('365.25')
+            patientatt.patient_age_decimal = old_div(Decimal(patientatt.patient_age[:-1]), Decimal('365.25'))
     if patientatt.patient_age_decimal:
         patientatt.patient_age_decimal = patientatt.patient_age_decimal.quantize(Decimal('.1'))
     patientatt.save()
@@ -292,6 +294,7 @@ def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
 
 def _generalstudymoduleattributes(dataset, g, ch):
     from datetime import datetime
+    from remapp.extractors.extract_common import ct_event_type_count
     from remapp.models import PatientIDSettings
     from remapp.tools.get_values import get_value_kw, get_seq_code_meaning, get_seq_code_value, list_to_string
     from remapp.tools.dcmdatetime import get_date, get_time
@@ -320,16 +323,22 @@ def _generalstudymoduleattributes(dataset, g, ch):
     g.requested_procedure_code_meaning = get_value_kw('RequestedProcedureDescription', dataset)
     g.save()
     _ctradiationdose(dataset, g, ch)
+    try:
+        g.number_of_events = g.ctradiationdose_set.get().ctirradiationeventdata_set.count()
+        g.save()
+    except ObjectDoesNotExist:
+        logger.warning(u"Study UID {0} of modality {1}. Unable to get event count!".format(
+            g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
+    ct_event_type_count(g)
+    try:
+        g.total_dlp = g.ctradiationdose_set.get().ctaccumulateddosedata_set.get().ct_dose_length_product_total
+        g.save()
+    except ObjectDoesNotExist:
+        logger.warning(u"Study UID {0} of modality {1}. Unable to set summary total_dlp".format(
+            g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
 
 
 def _philips_ct2db(dataset):
-    import os, sys
-    import openrem_settings
-
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'openrem.openremproject.settings'
-    from django.db import models
-
-    openrem_settings.add_project_to_path()
     from remapp.models import GeneralStudyModuleAttr
     from remapp.tools.get_values import get_value_kw
 
@@ -347,7 +356,7 @@ def _philips_ct2db(dataset):
     _patientmoduleattributes(dataset, g, ch)
 
 
-@shared_task
+@shared_task(name="remapp.extractors.ct_philips.ct_philips")
 def ct_philips(philips_file):
     """Extract radiation dose structured report related data from Philips CT dose report images
 
@@ -359,8 +368,7 @@ def ct_philips(philips_file):
         * Brilliance BigBore v3.5.4.17001.
     """
 
-    import dicom
-    from django.core.exceptions import ObjectDoesNotExist
+    import pydicom
     from remapp.models import DicomDeleteSettings
     from hl7.hl7updater import find_message_and_apply
     try:
@@ -369,7 +377,7 @@ def ct_philips(philips_file):
     except ObjectDoesNotExist:
         del_ct_phil = False
 
-    dataset = dicom.read_file(philips_file)
+    dataset = pydicom.dcmread(philips_file)
     dataset.decode()
     if dataset.SOPClassUID != '1.2.840.10008.5.1.4.1.1.7' or dataset.Manufacturer != 'Philips' \
             or dataset.SeriesDescription != 'Dose Info':
@@ -386,7 +394,6 @@ def ct_philips(philips_file):
 
 
 if __name__ == "__main__":
-    import sys
 
     if len(sys.argv) != 2:
         sys.exit(u'Error: Supply exactly one argument - the Philips dose report image')

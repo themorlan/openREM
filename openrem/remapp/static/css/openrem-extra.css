@@ -347,3 +347,27 @@ table.sortable thead th {
     font-weight: bold;
     cursor: default;
 }
+
+a.vert-offset:before {
+    display: block;
+    content: "";
+    height: 52px;
+    margin: -52px 0 0;
+}
+
+
+table.table-indent {
+  margin-left: 40px;
+}
+
+ul.no-marker {
+  list-style-type: none;
+}
+
+#id_ct_acquisition_type {
+    list-style: none;
+    padding: 0;
+    /*height: 5em;*/
+    /*overflow: scroll;*/
+    /*overflow-x: hidden;*/
+}

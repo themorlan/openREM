@@ -30,9 +30,16 @@ class ImportCTPhilipsSC(TestCase):
         root_tests = os.path.dirname(os.path.abspath(__file__))
         philips_sc_path = os.path.join(root_tests, philips_sc)
 
-        ct_philips(philips_sc_path)
+        ct_philips.ct_philips(philips_sc_path)
         studies = GeneralStudyModuleAttr.objects.all()
 
         # Test that two studies have been imported
         self.assertEqual(studies.count(), 1)
+
+        self.assertEqual(studies[0].number_of_events, 4)
+        self.assertAlmostEqual(studies[0].total_dlp, Decimal(1102.44609))
+        self.assertEqual(studies[0].number_of_axial, 0)
+        self.assertEqual(studies[0].number_of_spiral, 3)
+        self.assertEqual(studies[0].number_of_stationary, 0)
+        self.assertEqual(studies[0].number_of_const_angle, 1)
 
