@@ -611,7 +611,8 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
             ]
         row_data += [u'cGy·cm²']
 
-        exam_name_text = f'{exam.procedure_code_meaning} | {exam.requested_procedure_code_meaning} | {exam.study_description}'
+        exam_name_text = f'{exam.procedure_code_meaning} | {exam.requested_procedure_code_meaning}' \
+                         f' | {exam.study_description}'
         if projection:
             exam_name_text = f'{exam_name_text} | {projection_events[0].acquisition_protocol}'
         row_data += [exam_name_text]
