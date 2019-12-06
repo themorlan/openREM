@@ -261,6 +261,9 @@ class DicomQuery(models.Model):
     stage = models.TextField(blank=True, null=True)
     qr_scp_fk = models.ForeignKey(DicomRemoteQR, blank=True, null=True, on_delete=models.CASCADE)
     store_scp_fk = models.ForeignKey(DicomStoreSCP, blank=True, null=True, on_delete=models.CASCADE)
+    move_completed_sub_ops = models.IntegerField(default=0)
+    move_failed_sub_ops = models.IntegerField(default=0)
+    move_warning_sub_ops = models.IntegerField(default=0)
     move_complete = models.BooleanField(default=False)
 
 

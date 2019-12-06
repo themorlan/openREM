@@ -10,12 +10,13 @@ function retrieveProgress(json ) {
         dataType: "json",
         success: function( json ) {
             $( "#move-status" ).html( json.message );
+            $( "#subops" ).html( json.subops );
             if (json.status !== "move complete") setTimeout(function(){
                 var data = {
                     queryID: json.queryID
                 };
                 retrieveProgress( data );
-            }, 500);
+            }, 100);
         },
         error: function( xhr, status, errorThrown ) {
             alert( "Sorry, there was a problem getting the status!" );
@@ -37,6 +38,7 @@ function queryProgress(json ) {
         dataType: "json",
         success: function( json ) {
             $( "#qr-status" ).html( json.message );
+            $( "#subops" ).html( json.subops );
             if (json.status === "not complete") setTimeout(function(){
                 var data = {
                     queryID: json.queryID
