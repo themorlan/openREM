@@ -52,7 +52,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     import datetime
     from django.db.models import Max
-    from ..export_common import text_and_date_formats, generate_sheets, sheet_name
+    from .export_common import text_and_date_formats, generate_sheets, sheet_name
     from ..models import Exports
     from ..interface.mod_filters import ct_acq_filter
     import uuid
