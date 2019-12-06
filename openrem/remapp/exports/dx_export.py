@@ -609,14 +609,13 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
             row_data += [
                 projection_events[0].convert_gym2_to_cgycm2(),
             ]
-        row_data += [
-            u'cGy·cm²',
-            f'{exam.procedure_code_meaning} | {exam.requested_procedure_code_meaning} | {exam.study_description}'
-        ]
+        row_data += [u'cGy·cm²']
+
+        exam_name_text = f'{exam.procedure_code_meaning} | {exam.requested_procedure_code_meaning} | {exam.study_description}'
         if projection:
-            row_data += [
-                f' | {projection_events[0].acquisition_protocol}'
-            ]
+            exam_name_text = f'{exam_name_text} | {projection_events[0].acquisition_protocol}'
+        row_data += [exam_name_text]
+
         row_data += [
             patient_study_data['patient_weight'],
             '',
