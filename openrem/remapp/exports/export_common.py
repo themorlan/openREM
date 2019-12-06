@@ -521,7 +521,7 @@ def create_csv(task):
 
     try:
         temp_csv = TemporaryFile(mode='w+')
-        writer = csv.writer(temp_csv)
+        writer = csv.writer(temp_csv, dialect='excel')
     except (OSError, IOError) as e:
         print("Error saving csv temporary file ({0}): {1}".format(e.errno, e.strerror))
     except Exception:
