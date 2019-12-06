@@ -33,7 +33,7 @@ import logging
 
 from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
-from .export_common import common_headers,  text_and_date_formats, generate_sheets, create_summary_sheet,\
+from .export_common import common_headers, text_and_date_formats, generate_sheets, create_summary_sheet,\
     get_common_data, get_anode_target_material, get_xray_filter_info, create_csv, create_xlsx, write_export, \
     sheet_name, abort_if_zero_studies
 
