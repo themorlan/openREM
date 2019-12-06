@@ -609,10 +609,15 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
             row_data += [
                 projection_events[0].convert_gym2_to_cgycm2(),
             ]
+        row_data += [u'cGy·cm²']
+
+        exam_name_text = f'{exam.procedure_code_meaning} | {exam.requested_procedure_code_meaning}' \
+                         f' | {exam.study_description}'
+        if projection:
+            exam_name_text = f'{exam_name_text} | {projection_events[0].acquisition_protocol}'
+        row_data += [exam_name_text]
+
         row_data += [
-            u'cGy·cm²',
-            u'{0} | {1} | {2}'.format(
-                exam.procedure_code_meaning, exam.requested_procedure_code_meaning, exam.study_description),
             patient_study_data['patient_weight'],
             '',
             '',
@@ -637,10 +642,10 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
 
         for event in projection_events:
             source_data = _get_source_data(event)
-            if u"None" not in source_data['filters']:
-                filters = u"{0} {1}".format(source_data['filters'], source_data['filter_thicknesses'])
+            if source_data['filters'] is not None:
+                filters = f"{source_data['filters']} {source_data['filter_thicknesses']}"
             else:
-                filters = u''
+                filters = ''
 
             detector_data = _get_detector_data(event)
             distances = _get_distance_data(event)
