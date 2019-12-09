@@ -520,7 +520,8 @@ def create_csv(task):
     from tempfile import TemporaryFile
 
     try:
-        temp_csv = TemporaryFile(mode='w+')
+        temp_csv = TemporaryFile(mode='w+', encoding='utf-8')
+        print(f'temp_file is {temp_csv}')
         writer = csv.writer(temp_csv, dialect='excel')
     except (OSError, IOError) as e:
         print("Error saving csv temporary file ({0}): {1}".format(e.errno, e.strerror))
