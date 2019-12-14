@@ -207,9 +207,19 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
         if not tmpfile:
             exit()
     else:
-        tmpfile, writer = create_csv(tsk)
-        if not tmpfile:
-            exit()
+        import codecs
+        import csv
+        from django.core.files.base import ContentFile
+
+        export_filename = u"mgexport{0}.{1}".format(datestamp.strftime("%Y%m%d-%H%M%S%f"), 'csv')
+        tsk.filename.save(export_filename, ContentFile(codecs.BOM_UTF8))
+        tsk.save()
+        tmpfile = open(tsk.filename.path, 'a', newline='', encoding='utf-8')
+        writer = csv.writer(tmpfile, dialect='excel')
+
+        # tmpfile, writer = create_csv(tsk)
+        # if not tmpfile:
+        #     exit()
 
     # Resetting the ordering key to avoid duplicates
     if isinstance(filterdict, dict):
@@ -342,6 +352,12 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
         book.close()
         filetype_suffix = u"xlsx"
 
-    export_filename = u"mgexport{0}.{1}".format(datestamp.strftime("%Y%m%d-%H%M%S%f"), filetype_suffix)
+        export_filename = u"mgexport{0}.{1}".format(datestamp.strftime("%Y%m%d-%H%M%S%f"), filetype_suffix)
 
-    write_export(tsk, export_filename, tmpfile, datestamp)
+        write_export(tsk, export_filename, tmpfile, datestamp)
+
+    else:
+        tmpfile.close()
+        tsk.status = u'COMPLETE'
+        tsk.processtime = (datetime.datetime.now() - datestamp).total_seconds()
+        tsk.save()
