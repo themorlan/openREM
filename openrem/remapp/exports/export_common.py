@@ -28,10 +28,15 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
+import codecs
+import csv
 import logging
 import sys
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-
+from django.core.files.base import ContentFile
+from tempfile import TemporaryFile
+from xlsxwriter.workbook import Workbook
 
 logger = logging.getLogger(__name__)
 
@@ -47,8 +52,6 @@ def text_and_date_formats(book, sheet, pid=False, name=None, patid=None):
     :param patid: has patient ID been selected for export
     :return: book
     """
-
-    from django.conf import settings
 
     textformat = book.add_format({'num_format': '@'})
     dateformat = book.add_format({'num_format': settings.XLSX_DATE})
@@ -494,8 +497,6 @@ def create_xlsx(task):
     :param task: Export task object
     :return: workbook, temp file
     """
-    from tempfile import TemporaryFile
-    from xlsxwriter.workbook import Workbook
 
     try:
         temp_xlsx = TemporaryFile()
@@ -516,12 +517,12 @@ def create_csv(task):
     :param task: Export task object
     :return: workbook, temp file
     """
-    import csv
-    from tempfile import TemporaryFile
 
     try:
-        temp_csv = TemporaryFile(mode='w+', encoding='utf-8')
-        print(f'temp_file is {temp_csv}')
+        export_filename = u"mgexport{0}.{1}".format(task.export_date.strftime("%Y%m%d-%H%M%S%f"), 'csv')
+        task.filename.save(export_filename, ContentFile(codecs.BOM_UTF8))
+        task.save()
+        temp_csv = open(task.filename.path, 'a', newline='', encoding='utf-8')
         writer = csv.writer(temp_csv, dialect='excel')
     except (OSError, IOError) as e:
         print("Error saving csv temporary file ({0}): {1}".format(e.errno, e.strerror))
