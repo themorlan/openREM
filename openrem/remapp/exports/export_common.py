@@ -512,14 +512,14 @@ def create_xlsx(task):
 
 
 def create_csv(task):
-    """Function to create the xlsx temporary file
+    """Function to create the csv temporary file
 
     :param task: Export task object
     :return: workbook, temp file
     """
 
     try:
-        export_filename = u"mgexport{0}.{1}".format(task.export_date.strftime("%Y%m%d-%H%M%S%f"), 'csv')
+        export_filename = f'{task.modality.lower()}export{task.export_date.strftime("%Y%m%d-%H%M%S%f")}.csv'
         task.filename.save(export_filename, ContentFile(codecs.BOM_UTF8))
         task.save()
         temp_csv = open(task.filename.path, 'a', newline='', encoding='utf-8')
