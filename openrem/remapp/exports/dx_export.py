@@ -302,9 +302,10 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.progress = u'All study data written.'
     tsk.save()
 
-    csvfilename = u"dxexport{0}.csv".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
-
-    write_export(tsk, csvfilename, tmpfile, datestamp)
+    tmpfile.close()
+    tsk.status = u'COMPLETE'
+    tsk.processtime = (datetime.datetime.now() - datestamp).total_seconds()
+    tsk.save()
 
 
 @shared_task
