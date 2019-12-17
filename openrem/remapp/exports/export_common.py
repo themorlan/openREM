@@ -32,10 +32,11 @@ import codecs
 import csv
 import logging
 import sys
+from tempfile import TemporaryFile
+
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
-from tempfile import TemporaryFile
 from xlsxwriter.workbook import Workbook
 
 logger = logging.getLogger(__name__)

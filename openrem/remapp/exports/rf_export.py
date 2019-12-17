@@ -624,7 +624,6 @@ def rfopenskin(studyid):
     import datetime
     from ..models import GeneralStudyModuleAttr
     from ..models import Exports
-    from ..tools.get_values import export_csv_prep
 
     tsk = Exports.objects.create()
 
