@@ -1,12 +1,11 @@
-django>=1.8,<1.9
-django-filter >= 0.10,<0.15
+django>=2.2,<2.3
+django-filter
 pytz >= 0a
 humanize
-pydicom == 0.9.9
-django-pagination
+pydicom
+pynetdicom
 xlsxwriter
-celery >= 3.1
-argparse >= 1.2.1
+celery>=3.1<4.3
 django-qsstats-magic
 python-dateutil
 django-solo
@@ -15,8 +14,12 @@ pandas
 xlrd
 testfixtures
 mock
-django-debug-toolbar
-https://bitbucket.org/edmcdonagh/pynetdicom/get/default.tar.gz#egg=pynetdicom-0.8.2b2
+django-js-reverse >= 0.9.1
+requests
+flower
+numpy
+future
+defusedxml
 sphinxcontrib-programoutput
 sphinxcontrib-autoprogram
 sphinx-argparse

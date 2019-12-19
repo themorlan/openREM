@@ -28,15 +28,10 @@
 ..  moduleauthor:: David Platten and Ed McDonagh
 
 """
-from __future__ import division
-
-from builtins import str  # pylint: disable=redefined-builtin
-from builtins import range  # pylint: disable=redefined-builtin
-from past.builtins import basestring  # pylint: disable=redefined-builtin
 import logging
 from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
-from remapp.exports.export_common import text_and_date_formats, common_headers, generate_sheets, sheet_name, \
+from .export_common import text_and_date_formats, common_headers, generate_sheets, sheet_name, \
     get_common_data, get_xray_filter_info, create_xlsx, create_csv, write_export, create_summary_sheet, \
     get_pulse_data, abort_if_zero_studies
 
@@ -227,8 +222,8 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
     """
 
     import datetime
-    from remapp.models import Exports
-    from remapp.interface.mod_filters import dx_acq_filter
+    from ..models import Exports
+    from ..interface.mod_filters import dx_acq_filter
 
     tsk = Exports.objects.create()
 
@@ -276,7 +271,7 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
 
     headers += _series_headers(max_events)
 
-    writer.writerow([str(header).encode("utf-8") for header in headers])
+    writer.writerow(headers)
 
     tsk.progress = u'CSV header row written.'
     tsk.save()
@@ -293,9 +288,9 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
             for index, item in enumerate(exam_data):
                 if item is None:
                     exam_data[index] = ''
-                if isinstance(item, basestring) and u',' in item:
+                if isinstance(item, str) and ',' in item:
                     exam_data[index] = item.replace(u',', u';')
-            writer.writerow([str(data_string).encode("utf-8") for data_string in exam_data])
+            writer.writerow([str(data_string) for data_string in exam_data])
         except ObjectDoesNotExist:
             error_message = u"DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number" \
                             u" {3} - maybe database entry was deleted as part of importing later version of same" \
@@ -307,9 +302,10 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.progress = u'All study data written.'
     tsk.save()
 
-    csvfilename = u"dxexport{0}.csv".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
-
-    write_export(tsk, csvfilename, tmpfile, datestamp)
+    tmpfile.close()
+    tsk.status = u'COMPLETE'
+    tsk.processtime = (datetime.datetime.now() - datestamp).total_seconds()
+    tsk.save()
 
 
 @shared_task
@@ -325,8 +321,8 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     """
 
     import datetime
-    from remapp.models import Exports
-    from remapp.interface.mod_filters import dx_acq_filter
+    from ..models import Exports
+    from ..interface.mod_filters import dx_acq_filter
     import uuid
 
     tsk = Exports.objects.create()
@@ -473,9 +469,9 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
     """
 
     import datetime
-    from remapp.exports.export_common import get_patient_study_data
-    from remapp.models import Exports
-    from remapp.interface.mod_filters import dx_acq_filter
+    from .export_common import get_patient_study_data
+    from ..models import Exports
+    from ..interface.mod_filters import dx_acq_filter
     import uuid
 
     tsk = Exports.objects.create()

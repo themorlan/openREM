@@ -595,7 +595,7 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
                     exam_data[index] = ''
                 if isinstance(item, str) and u',' in item:
                     exam_data[index] = item.replace(u',', u';')
-            writer.writerow([str(data_string).encode("utf-8") for data_string in exam_data])
+            writer.writerow([str(data_string) for data_string in exam_data])
         except ObjectDoesNotExist:
             error_message = u"DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number" \
                             u" {3} - maybe database entry was deleted as part of importing later version of same" \
@@ -606,9 +606,10 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.progress = u'All study data written.'
     tsk.save()
 
-    csvfilename = u"rfexport{0}.csv".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
-
-    write_export(tsk, csvfilename, tmpfile, datestamp)
+    tmpfile.close()
+    tsk.status = u'COMPLETE'
+    tsk.processtime = (datetime.datetime.now() - datestamp).total_seconds()
+    tsk.save()
 
 
 @shared_task
@@ -623,13 +624,12 @@ def rfopenskin(studyid):
     import datetime
     from ..models import GeneralStudyModuleAttr
     from ..models import Exports
-    from ..tools.get_values import export_csv_prep
 
     tsk = Exports.objects.create()
 
     tsk.task_id = rfopenskin.request.id
-    tsk.modality = u"RF"
-    tsk.export_type = u"OpenSkin RF csv export"
+    tsk.modality = "RF-OpenSkin"
+    tsk.export_type = "OpenSkin RF csv export"
     datestamp = datetime.datetime.now()
     tsk.export_date = datestamp
     tsk.progress = u'Query filters imported, task started'
@@ -757,7 +757,12 @@ def rfopenskin(studyid):
             table_height_position = event.irradeventxraymechanicaldata_set.get(
             ).doserelateddistancemeasurements_set.get().table_height_position
 
-        acquisition_protocol = export_csv_prep(return_for_export(event, 'acquisition_protocol'))
+        acquisition_protocol = return_for_export(event, 'acquisition_protocol')
+        if isinstance(acquisition_protocol, str) and ',' in acquisition_protocol:
+            acquisition_protocol = acquisition_protocol.replace(',', ';')
+        comment = event.comment
+        if isinstance(comment, str) and ',' in comment:
+            comment = comment.replace(',', ';')
 
         data = [
             u'Anon',
@@ -798,7 +803,7 @@ def rfopenskin(studyid):
             table_lateral_position,
             table_height_position,
             event.target_region,
-            export_csv_prep(event.comment),
+            comment,
         ]
         writer.writerow(data)
         tsk.progress = u"{0} of {1}".format(i, numevents)
@@ -806,9 +811,10 @@ def rfopenskin(studyid):
     tsk.progress = u'All study data written.'
     tsk.save()
 
-    csvfilename = u"OpenSkinExport{0}.csv".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
-
-    write_export(tsk, csvfilename, tmpfile, datestamp)
+    tmpfile.close()
+    tsk.status = u'COMPLETE'
+    tsk.processtime = (datetime.datetime.now() - datestamp).total_seconds()
+    tsk.save()
 
 
 @shared_task
