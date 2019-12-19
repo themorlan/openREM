@@ -9,6 +9,6 @@ openrem/openremproject/wsgi.py
 #  Testing related bits
 .tox
 OpenREM.egg-info/
-.coverage*
+.coverage
 coverage.xml
 

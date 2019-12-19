@@ -1,0 +1,12 @@
+# .coveragerc to control coverage.py
+[run]
+branch = True
+omit = */__init__*
+       */test*.py
+       */migrations/*
+       openrem/manage.py
+       */proper_paginate.py
+       */openskin/*
+source = openrem/remapp
+parallel = true
+concurrency = multiprocessing
