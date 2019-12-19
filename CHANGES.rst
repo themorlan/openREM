@@ -6,6 +6,7 @@ OpenREM version history
 --------------------
 * `#799`_  DICOM Networking: workaround for stationnames > 16 characters
 * `#798`_  Exports: prevented error in export view if task_id is missing
+* `#797`_  Exports: fixed string/byte issues with csv exports
 * `#796`_  Exports: replaced file() with open() for Python 3.x compatibility
 * `#795`_  Exports: included acquisition name in PHE radiographic projection export
 * `#791`_  Exports: prevented error when trying to export DX data that has no filter information

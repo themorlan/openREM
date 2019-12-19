@@ -441,8 +441,8 @@ def download(request, task_id):
     from wsgiref.util import FileWrapper
     from django.utils.encoding import smart_str
     from django.shortcuts import redirect
-    from openremproject.settings import MEDIA_ROOT
-    from remapp.models import Exports
+    from django.conf import settings
+    from ..models import Exports
 
     exportperm = False
     pidperm = False
@@ -465,8 +465,8 @@ def download(request, task_id):
                        u"You don't have permission to download export data that includes patient identifiable information")
         return redirect(reverse_lazy('export'))
 
-    file_path = os.path.join(MEDIA_ROOT, exp.filename.name)
-    file_wrapper = FileWrapper(open(file_path, 'rb'))
+    file_path = os.path.join(settings.MEDIA_ROOT, exp.filename.name)
+    file_wrapper = FileWrapper(open(file_path, mode='rb'))
     file_mimetype = mimetypes.guess_type(file_path)
     response = HttpResponse(file_wrapper, content_type=file_mimetype)
     response['X-Sendfile'] = file_path

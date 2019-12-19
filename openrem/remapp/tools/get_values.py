@@ -178,19 +178,6 @@ def replace_comma(comma_string):
         return no_comma_string
 
 
-def export_csv_prep(unicode_string):
-    """
-    Built-in csv module can't deal with unicode strings without specifying an encoding. Hence encode to utf-8 before
-    writing.
-    :param unicode_string: String to encode as utf-8
-    :return: UTF-8 encoded string with no commas or semicolons.
-    """
-    if unicode_string:
-        utf8_string = unicode_string.encode("utf-8")
-        csv_safe_string = replace_comma(utf8_string)
-        return csv_safe_string
-
-
 def list_to_string(dicom_value):
     """
     Turn multivalue names into a single string for correct encoding and pretty reproduction
