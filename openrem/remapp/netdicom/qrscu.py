@@ -839,6 +839,9 @@ def qrscu(
                  u"queryID={5}, date_from={6}, date_until={7}, modalities={8}, inc_sr={9}, remove_duplicates={10}, "
                  u"filters={11}".format(qr_scp_pk, store_scp_pk, implicit, explicit, move, query_id,
                                        date_from, date_until, modalities, inc_sr, remove_duplicates, filters, query_id))
+    celery_task_uuid = qrscu.request.id
+    logger.debug(f'Alt id is {celery_task_uuid}')
+
 
     # Currently, if called from qrscu_script modalities will either be a list of modalities or it will be "SR".
     # Web interface hasn't changed, so will be a list of modalities and or the inc_sr flag
@@ -873,6 +876,7 @@ def qrscu(
 
     query = DicomQuery.objects.create()
     query.query_id = query_id
+    query.query_uuid = celery_task_uuid
     query.complete = False
     query.store_scp_fk = DicomStoreSCP.objects.get(pk=store_scp_pk)
     query.qr_scp_fk = qr_scp
@@ -1198,6 +1202,10 @@ def movescu(query_id):
     query.save()
     qr_scp = query.qr_scp_fk
     store_scp = query.store_scp_fk
+
+    logger.debug(f'movescu uuid is {movescu.request.id}')
+    query.move_uuid = movescu.request.id
+    query.save()
 
     ae = AE()
     ae.add_requested_context(StudyRootQueryRetrieveInformationModelMove)
