@@ -4,6 +4,7 @@ OpenREM version history
 
 1.0.0b1 (2019-xx-xx)
 --------------------
+* `#803`_  Fixed problem with multiple ModalitiesInStudy entries in c-find response
 * `#799`_  DICOM Networking: workaround for stationnames > 16 characters
 * `#798`_  Exports: prevented error in export view if task_id is missing
 * `#797`_  Exports: fixed string/byte issues with csv exports
