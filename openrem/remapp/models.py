@@ -279,7 +279,7 @@ class DicomQRRspStudy(models.Model):
     station_name = models.CharField(max_length=32, blank=True, null=True)
 
     def set_modalities_in_study(self, x):
-        self.modalities_in_study = json.dumps(list(x))
+        self.modalities_in_study = json.dumps(list(x or []))
 
     def get_modalities_in_study(self):
         return json.loads(self.modalities_in_study)
