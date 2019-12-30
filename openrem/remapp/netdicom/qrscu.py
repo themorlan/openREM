@@ -1268,11 +1268,12 @@ def movescu(query_id):
 
         query.move_complete = True
         query.save()
-        logger.info(u"Move complete")
+        msg = "Move complete"
+        logger.info("{0}".format(msg))
 
         logger.debug(u"Query_id {0}: Releasing move association".format(query_id))
         try:
-            assoc.release(0)
+            assoc.release()
             logger.info(u"Query_id {0}: Move association released".format(query_id))
         except AttributeError:
             logger.info("Query_id {0}: Could not release Move association due to an AttributeError: perhaps no "
