@@ -3460,10 +3460,14 @@ def celery_tasks(request, stage=None):
                         elif "qrscu" in this_task['name'].split('.'):
                             this_task['type'] = u'netdicom'
                             try:
-                                query_message = DicomQuery.objects.get(query_uuid__exact=task_uuid).stage
+                                dicom_task = DicomQuery.objects.get(query_uuid__exact=task_uuid)
+                                query_message = dicom_task.stage
+                                query_summary = dicom_task.query_summary
                             except ObjectDoesNotExist:
                                 query_message = 'not there'
-                            this_task['message'] = query_message
+                                query_summary = 'not there'
+                            this_task['result'] = query_message
+                            this_task['source'] = query_summary
                         elif "movescu" in this_task['name'].split('.'):
                             this_task['type'] = u'netdicom'
                             try:

@@ -30,6 +30,7 @@
 <table class="table">
   <tr>
     <th>UUID</th>
+    <th>Source</th>
     <th>Message</th>
     <th>Task</th>
     <th>Received</th>
@@ -40,7 +41,8 @@
   {% for task in tasks %}
     <tr>
       <td>{{ task.uuid }}</td>
-      <td>{{ task.message }}</td>
+      <td>{{ task.source }}</td>
+      <td>{{ task.result }}</td>
       <td>{{ task.name }}</td>
       <td>{{ task.received }}</td>
       <td>{{ task.started }}</td>

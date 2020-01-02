@@ -842,7 +842,6 @@ def qrscu(
     celery_task_uuid = qrscu.request.id
     logger.debug(f'Alt id is {celery_task_uuid}')
 
-
     # Currently, if called from qrscu_script modalities will either be a list of modalities or it will be "SR".
     # Web interface hasn't changed, so will be a list of modalities and or the inc_sr flag
     # Need to normalise one way or the other.
@@ -883,6 +882,24 @@ def qrscu(
     query.move_completed_sub_ops = 0
     query.move_warning_sub_ops = 0
     query.move_failed_sub_ops = 0
+    study_date = str(make_dcm_date_range(date1=date_from, date2=date_until, single_date=single_date) or '')
+    if len(study_date) == 8:
+        study_time = str(make_dcm_time_range(time1=time_from, time2=time_until) or '')
+    else:
+        study_time = ''
+    if study_time:
+        study_date_time = f"{study_date} {study_time}"
+    else:
+        study_date_time = study_date
+    if inc_sr:
+        modality_text = "SR 'studies' only"
+    else:
+        modality_text = f"Modalities = {modalities}"
+    query.query_summary = f"QR SCP PK = {qr_scp_pk} ({qr_scp.name}). " \
+                          f"Store SCP PK = {store_scp_pk} ({query.store_scp_fk.name}). {study_date_time}. " \
+                          f"{modality_text}. Filters = {filters}. " \
+                          f"Advanced options: Remove duplicates = {remove_duplicates}, " \
+                          f"Get Toshiba images = {get_toshiba_images}, Get 'empty' SR series = {get_empty_sr}"
     query.save()
 
     assoc = ae.associate(remote_host, remote_port, ae_title=remote_aet)
@@ -891,11 +908,8 @@ def qrscu(
 
         logger.info(u"{0} DICOM FindSCU ... ".format(query_id))
         d = Dataset()
-        d.StudyDate = str(make_dcm_date_range(date1=date_from, date2=date_until, single_date=single_date) or '')
-        if len(d.StudyDate) == 8:
-            d.StudyTime = str(make_dcm_time_range(time1=time_from, time2=time_until) or '')
-        else:
-            d.StudyTime = ''
+        d.StudyDate = study_date
+        d.StudyTime = study_time
 
         all_mods = collections.OrderedDict()
         all_mods['CT'] = {'inc': False, 'mods': ['CT']}

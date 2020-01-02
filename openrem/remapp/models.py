@@ -256,6 +256,7 @@ class DicomQuery(models.Model):
     """
     complete = models.BooleanField(default=False)
     query_id = models.CharField(max_length=64)
+    query_summary = models.TextField(blank=True, null=True)
     failed = models.BooleanField(default=False)
     message = models.TextField(blank=True, null=True)
     stage = models.TextField(blank=True, null=True)
