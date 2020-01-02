@@ -1268,15 +1268,15 @@ def movescu(query_id):
 
         query.move_complete = True
         query.save()
-        logger.info(u"Move complete")
-
-        logger.debug(u"Query_id {0}: Releasing move association".format(query_id))
+        msg = "Move complete"
+        logger.info(f"{msg}")
+        logger.debug(f"Query_id {query_id}: Releasing move association")
         try:
-            assoc.release(0)
-            logger.info(u"Query_id {0}: Move association released".format(query_id))
+            assoc.release()
+            logger.info(f"Query_id {query_id}: Move association released")
         except AttributeError:
-            logger.info("Query_id {0}: Could not release Move association due to an AttributeError: perhaps no "
-                        "studies were present".format(query_id))
+            logger.info(f"Query_id {query_id}: Could not release Move association due to an AttributeError: perhaps "
+                        f"no studies were present")
 
     elif assoc.is_rejected:
         msg = ('{0}: {1}'.format(
