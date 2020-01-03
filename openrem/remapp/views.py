@@ -3426,7 +3426,7 @@ def celery_tasks(request, stage=None):
     """AJAX function to get current task details"""
     import requests
     from datetime import datetime
-    from .models import DicomQuery
+    from .models import (DicomQuery, Exports)
 
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
         try:
@@ -3455,6 +3455,13 @@ def celery_tasks(request, stage=None):
                     try:
                         if u"exports" in this_task['name'].split('.'):
                             this_task['type'] = u'export'
+                            try:
+                                export_task = Exports.objects.get(task_id__exact=task_uuid)
+                                this_task['source'] = export_task.export_summary
+                                this_task['result'] = export_task.status
+                            except ObjectDoesNotExist:
+                                this_task['source'] = 'not there'
+                                this_task['result'] = 'not there'
                         elif u"websizeimport" in this_task['name'].split('.'):
                             this_task['type'] = u'size'
                         elif "qrscu" in this_task['name'].split('.'):

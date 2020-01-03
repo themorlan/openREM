@@ -896,9 +896,10 @@ def qrscu(
     else:
         modality_text = f"Modalities = {modalities}"
     active_filters = {k: v for k, v in filters.items() if v is not None}
-    query.query_summary = f"QR SCP PK = {qr_scp_pk} ({qr_scp.name}). " \
-                          f"Store SCP PK = {store_scp_pk} ({query.store_scp_fk.name}). {study_date_time}. " \
-                          f"{modality_text}. Filters = {active_filters}. " \
+    # active_filters_text = "<br/>".join(": ".join(_) for _ in active_filters.items())
+    query.query_summary = f"QR SCP PK = {qr_scp_pk} ({qr_scp.name}). <br>" \
+                          f"Store SCP PK = {store_scp_pk} ({query.store_scp_fk.name}).<br>{study_date_time}.<br>" \
+                          f"{modality_text}.<br>Filters = {active_filters}.<br>" \
                           f"Advanced options: Remove duplicates = {remove_duplicates}, " \
                           f"Get Toshiba images = {get_toshiba_images}, Get 'empty' SR series = {get_empty_sr}"
     query.save()

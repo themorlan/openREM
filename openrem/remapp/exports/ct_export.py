@@ -203,7 +203,6 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
     from ..models import Exports
     from ..interface.mod_filters import ct_acq_filter
 
-    # logger.error(f"filterdict for ct csv is {filterdict}")
     reduced_filterdict = {k: v for k, v in filterdict.items() if v}
     if reduced_filterdict:
         del reduced_filterdict['submit']
@@ -223,6 +222,7 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.status = u'CURRENT'
     tsk.includes_pid = bool(pid and (name or patid))
     tsk.export_user_id = user
+    tsk.export_summary = "<br/>".join(": ".join(_) for _ in no_plot_filterdict.items())
     tsk.save()
 
     tmpfile, writer = create_csv(tsk)
