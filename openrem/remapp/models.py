@@ -526,6 +526,7 @@ class Exports(models.Model):
     """
     task_id = models.TextField()
     filename = models.FileField(upload_to='exports/%Y/%m/%d', null=True)
+    export_summary = models.TextField(blank=True, null=True)
     status = models.TextField(blank=True, null=True)
     progress = models.TextField(blank=True, null=True)
     modality = models.CharField(max_length=16, blank=True, null=True)

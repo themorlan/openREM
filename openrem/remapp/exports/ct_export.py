@@ -203,6 +203,15 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
     from ..models import Exports
     from ..interface.mod_filters import ct_acq_filter
 
+    # logger.error(f"filterdict for ct csv is {filterdict}")
+    reduced_filterdict = {k: v for k, v in filterdict.items() if v}
+    if reduced_filterdict:
+        del reduced_filterdict['submit']
+        del reduced_filterdict['csrfmiddlewaretoken']
+        del reduced_filterdict['itemsPerPage']
+    no_plot_filterdict = {k: v for k, v in reduced_filterdict.items() if 'plot' not in k}
+    logger.error(f"no_plot_filterdict is {no_plot_filterdict}")
+
     tsk = Exports.objects.create()
 
     tsk.task_id = ct_csv.request.id
