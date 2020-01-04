@@ -32,8 +32,9 @@ import logging
 
 from django.core.exceptions import ObjectDoesNotExist
 from celery import shared_task
-from .export_common import get_common_data, common_headers, create_xlsx, create_csv, write_export, \
-    create_summary_sheet, abort_if_zero_studies
+
+from .export_common import (get_common_data, common_headers, create_xlsx, create_csv, write_export,
+                            create_summary_sheet, abort_if_zero_studies, create_export_task)
 
 logger = logging.getLogger(__name__)
 
@@ -200,30 +201,11 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
 
     import datetime
     from django.db.models import Max
-    from ..models import Exports
     from ..interface.mod_filters import ct_acq_filter
 
-    reduced_filterdict = {k: v for k, v in filterdict.items() if v}
-    if reduced_filterdict:
-        del reduced_filterdict['submit']
-        del reduced_filterdict['csrfmiddlewaretoken']
-        del reduced_filterdict['itemsPerPage']
-    no_plot_filterdict = {k: v for k, v in reduced_filterdict.items() if 'plot' not in k}
-    logger.error(f"no_plot_filterdict is {no_plot_filterdict}")
-
-    tsk = Exports.objects.create()
-
-    tsk.task_id = ct_csv.request.id
-    tsk.modality = u"CT"
-    tsk.export_type = u"CSV export"
     datestamp = datetime.datetime.now()
-    tsk.export_date = datestamp
-    tsk.progress = u'Query filters imported, task started'
-    tsk.status = u'CURRENT'
-    tsk.includes_pid = bool(pid and (name or patid))
-    tsk.export_user_id = user
-    tsk.export_summary = "<br/>".join(": ".join(_) for _ in no_plot_filterdict.items())
-    tsk.save()
+    tsk = create_export_task(uuid=ct_csv.request.id, modality='CT', export_type='CSV export', date_stamp=datestamp,
+                             pid=bool(pid and (name or patid)), user=user, filters_dict=filterdict)
 
     tmpfile, writer = create_csv(tsk)
     if not tmpfile:

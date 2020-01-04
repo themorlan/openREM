@@ -39,6 +39,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
 from xlsxwriter.workbook import Workbook
 
+from ..models import Exports
+
 logger = logging.getLogger(__name__)
 
 
@@ -635,3 +637,27 @@ def abort_if_zero_studies(num_studies, tsk):
         tsk.progress = u'Required study filter complete.'
         tsk.save()
         return False
+
+
+def create_export_task(uuid, modality, export_type, date_stamp, pid, user, filters_dict):
+
+    removed_blanks = {k: v for k, v in filters_dict.items() if v}
+    if removed_blanks:
+        del removed_blanks['submit']
+        del removed_blanks['csrfmiddlewaretoken']
+        del removed_blanks['itemsPerPage']
+    no_plot_filters_dict = {k: v for k, v in removed_blanks.items() if 'plot' not in k}
+
+    task = Exports.objects.create()
+    task.task_id = uuid
+    task.modality = modality
+    task.export_type = export_type
+    task.export_date = date_stamp
+    task.progress = 'Query filters imported, task started'
+    task.status = 'CURRENT'
+    task.includes_pid = pid
+    task.export_user_id = user
+    task.export_summary = "<br/>".join(": ".join(_) for _ in no_plot_filters_dict.items())
+    task.save()
+
+    return task
