@@ -54,24 +54,12 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     import datetime
     from django.db.models import Max
     from .export_common import text_and_date_formats, generate_sheets, sheet_name
-    from ..models import Exports
     from ..interface.mod_filters import ct_acq_filter
-    import uuid
 
-    tsk = Exports.objects.create()
-
-    tsk.task_id = ctxlsx.request.id
-    if tsk.task_id is None:  # Required when testing without celery
-        tsk.task_id = u'NotCelery-{0}'.format(uuid.uuid4())
-    tsk.modality = u"CT"
-    tsk.export_type = u"XLSX export"
     datestamp = datetime.datetime.now()
-    tsk.export_date = datestamp
-    tsk.progress = u'Query filters imported, task started'
-    tsk.status = u'CURRENT'
-    tsk.includes_pid = bool(pid and (name or patid))
-    tsk.export_user_id = user
-    tsk.save()
+    celery_uuid = ctxlsx.request.id
+    tsk = create_export_task(celery_uuid=celery_uuid, modality='CT', export_type='XLSX_export', date_stamp=datestamp,
+                             pid=bool(pid and (name or patid)), user=user, filters_dict=filterdict)
 
     tmpxlsx, book = create_xlsx(tsk)
     if not tmpxlsx:
@@ -204,7 +192,7 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
     from ..interface.mod_filters import ct_acq_filter
 
     datestamp = datetime.datetime.now()
-    tsk = create_export_task(uuid=ct_csv.request.id, modality='CT', export_type='CSV export', date_stamp=datestamp,
+    tsk = create_export_task(celery_uuid=ct_csv.request.id, modality='CT', export_type='CSV export', date_stamp=datestamp,
                              pid=bool(pid and (name or patid)), user=user, filters_dict=filterdict)
 
     tmpfile, writer = create_csv(tsk)
