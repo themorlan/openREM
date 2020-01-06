@@ -29,13 +29,15 @@
 
 """
 
+import datetime
 import logging
 
 from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
-from .export_common import common_headers, text_and_date_formats, generate_sheets, create_summary_sheet,\
-    get_common_data, get_anode_target_material, get_xray_filter_info, create_csv, create_xlsx, write_export, \
-    sheet_name, abort_if_zero_studies
+
+from .export_common import (common_headers, text_and_date_formats, generate_sheets, create_summary_sheet,
+                            get_common_data, get_anode_target_material, get_xray_filter_info, create_csv, create_xlsx,
+                            write_export, sheet_name, abort_if_zero_studies, create_export_task)
 
 logger = logging.getLogger(__name__)
 
@@ -179,28 +181,17 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
     :return: Saves csv file into Media directory for user to download
     """
 
-    import datetime
     from ..models import GeneralStudyModuleAttr
-    from ..models import Exports
     from ..interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
-    import uuid
 
-    tsk = Exports.objects.create()
-    tsk.task_id = exportMG2excel.request.id
-    if tsk.task_id is None:  # Required when testing without celery
-        tsk.task_id = u'NotCelery-{0}'.format(uuid.uuid4())
-    tsk.modality = u"MG"
-    if xlsx:
-        tsk.export_type = u"XLSX export"
-    else:
-        tsk.export_type = u"CSV export"
     datestamp = datetime.datetime.now()
-    tsk.export_date = datestamp
-    tsk.progress = u'Query filters imported, task started'
-    tsk.status = u'CURRENT'
-    tsk.includes_pid = bool(pid and (name or patid))
-    tsk.export_user_id = user
-    tsk.save()
+    if xlsx:
+        export_type = u"XLSX export"
+    else:
+        export_type = u"CSV export"
+    tsk = create_export_task(celery_uuid=exportMG2excel.request.id, modality='MG', export_type=export_type,
+                             date_stamp=datestamp, pid=bool(pid and (name or patid)), user=user,
+                             filters_dict=filterdict)
 
     if xlsx:
         tmpfile, book = create_xlsx(tsk)
