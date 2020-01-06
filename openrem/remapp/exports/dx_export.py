@@ -28,12 +28,15 @@
 ..  moduleauthor:: David Platten and Ed McDonagh
 
 """
+import datetime
 import logging
+
 from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
-from .export_common import text_and_date_formats, common_headers, generate_sheets, sheet_name, \
-    get_common_data, get_xray_filter_info, create_xlsx, create_csv, write_export, create_summary_sheet, \
-    get_pulse_data, abort_if_zero_studies
+
+from .export_common import (text_and_date_formats, common_headers, generate_sheets, sheet_name, get_common_data,
+                            get_xray_filter_info, create_xlsx, create_csv, write_export, create_summary_sheet,
+                            get_pulse_data, abort_if_zero_studies, create_export_task)
 
 logger = logging.getLogger(__name__)
 
@@ -221,22 +224,12 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
     :return: Saves csv file into Media directory for user to download
     """
 
-    import datetime
-    from ..models import Exports
     from ..interface.mod_filters import dx_acq_filter
 
-    tsk = Exports.objects.create()
-
-    tsk.task_id = exportDX2excel.request.id
-    tsk.modality = u"DX"
-    tsk.export_type = u"CSV export"
     datestamp = datetime.datetime.now()
-    tsk.export_date = datestamp
-    tsk.progress = u'Query filters imported, task started'
-    tsk.status = u'CURRENT'
-    tsk.includes_pid = bool(pid and (name or patid))
-    tsk.export_user_id = user
-    tsk.save()
+    tsk = create_export_task(celery_uuid=exportDX2excel.request.id, modality='DX', export_type='CSV export',
+                             date_stamp=datestamp, pid=bool(pid and (name or patid)), user=user,
+                             filters_dict=filterdict)
 
     tmpfile, writer = create_csv(tsk)
     if not tmpfile:
@@ -320,25 +313,12 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     :return: Saves xlsx file into Media directory for user to download
     """
 
-    import datetime
-    from ..models import Exports
     from ..interface.mod_filters import dx_acq_filter
-    import uuid
 
-    tsk = Exports.objects.create()
-
-    tsk.task_id = dxxlsx.request.id
-    if tsk.task_id is None:  # Required when testing without celery
-        tsk.task_id = u'NotCelery-{0}'.format(uuid.uuid4())
-    tsk.modality = u"DX"
-    tsk.export_type = u"XLSX export"
     datestamp = datetime.datetime.now()
-    tsk.export_date = datestamp
-    tsk.progress = u'Query filters imported, task started'
-    tsk.status = u'CURRENT'
-    tsk.includes_pid = bool(pid and (name or patid))
-    tsk.export_user_id = user
-    tsk.save()
+    tsk = create_export_task(celery_uuid=dxxlsx.request.id, modality='DX', export_type='XLSX export',
+                             date_stamp=datestamp, pid=bool(pid and (name or patid)), user=user,
+                             filters_dict=filterdict)
 
     tmpxlsx, book = create_xlsx(tsk)
     if not tmpxlsx:
@@ -468,26 +448,12 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
     :return: Saves Excel file into Media directory for user to download
     """
 
-    import datetime
     from .export_common import get_patient_study_data
-    from ..models import Exports
     from ..interface.mod_filters import dx_acq_filter
-    import uuid
 
-    tsk = Exports.objects.create()
-
-    tsk.task_id = dx_phe_2019.request.id
-    if tsk.task_id is None:  # Required when testing without celery
-        tsk.task_id = u'NotCelery-{0}'.format(uuid.uuid4())
-    tsk.modality = u"DX"
-    tsk.export_type = u"PHE DX 2019 export"
     datestamp = datetime.datetime.now()
-    tsk.export_date = datestamp
-    tsk.progress = u'Query filters imported, task started'
-    tsk.status = u'CURRENT'
-    tsk.includes_pid = False
-    tsk.export_user_id = user
-    tsk.save()
+    tsk = create_export_task(celery_uuid=dx_phe_2019.request.id, modality='DX', export_type='PHE DX 2019 export',
+                             date_stamp=datestamp, pid=False, user=user, filters_dict=filterdict)
 
     tmp_xlsx, book = create_xlsx(tsk)
     if not tmp_xlsx:
