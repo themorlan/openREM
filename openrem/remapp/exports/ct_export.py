@@ -426,24 +426,11 @@ def ct_phe_2019(filterdict, user=None):
 
     import datetime
     from decimal import Decimal
-    from ..models import Exports
     from ..interface.mod_filters import ct_acq_filter
-    import uuid
 
-    tsk = Exports.objects.create()
-
-    tsk.task_id = ct_phe_2019.request.id
-    if tsk.task_id is None:  # Required when testing without celery
-        tsk.task_id = u'NotCelery-{0}'.format(uuid.uuid4())
-    tsk.modality = u"CT"
-    tsk.export_type = u"PHE CT 2019 export"
     datestamp = datetime.datetime.now()
-    tsk.export_date = datestamp
-    tsk.progress = u'Query filters imported, task started'
-    tsk.status = u'CURRENT'
-    tsk.includes_pid = False
-    tsk.export_user_id = user
-    tsk.save()
+    tsk = create_export_task(celery_uuid=ct_phe_2019.request.id, modality='CT', export_type='PHE CT 2019 export',
+                             date_stamp=datestamp, pid=False, user=user, filters_dict=filterdict)
 
     tmp_xlsx, book = create_xlsx(tsk)
     if not tmp_xlsx:
