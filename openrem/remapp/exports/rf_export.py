@@ -29,12 +29,19 @@
 
 """
 
+import datetime
 import logging
+
 from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
-from ..exports.export_common import text_and_date_formats, common_headers, generate_sheets, sheet_name, \
-    get_common_data, get_xray_filter_info, create_xlsx, create_csv, write_export, create_summary_sheet, \
-    get_pulse_data, abort_if_zero_studies
+from django.db.models import Max, Min, Avg
+
+from ..exports.export_common import (text_and_date_formats, common_headers, generate_sheets, sheet_name,
+                                     get_common_data, get_xray_filter_info, create_xlsx, create_csv, write_export,
+                                     create_summary_sheet, get_pulse_data, abort_if_zero_studies, create_export_task,
+                                     get_patient_study_data)
+from ..interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
+from ..models import GeneralStudyModuleAttr, IrradEventXRayData
 from ..tools.get_values import return_for_export
 
 logger = logging.getLogger(__name__)
@@ -218,27 +225,10 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     :return: Saves xlsx file into Media directory for user to download
     """
 
-    import datetime
-    from django.db.models import Max, Min, Avg
-    from ..models import GeneralStudyModuleAttr, IrradEventXRayData
-    from ..models import Exports
-    from ..interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
-    import uuid
-
-    tsk = Exports.objects.create()
-
-    tsk.task_id = rfxlsx.request.id
-    if tsk.task_id is None:  # Required when testing without celery
-        tsk.task_id = u'NotCelery-{0}'.format(uuid.uuid4())
-    tsk.modality = u"RF"
-    tsk.export_type = u"XLSX export"
     datestamp = datetime.datetime.now()
-    tsk.export_date = datestamp
-    tsk.progress = u'Query filters imported, task started'
-    tsk.status = u'CURRENT'
-    tsk.includes_pid = bool(pid and (name or patid))
-    tsk.export_user_id = user
-    tsk.save()
+    tsk = create_export_task(celery_uuid=rfxlsx.request.id, modality='RF', export_type='XLSX export',
+                             date_stamp=datestamp, pid=bool(pid and (name or patid)), user=user,
+                             filters_dict=filterdict)
 
     tmpxlsx, book = create_xlsx(tsk)
     if not tmpxlsx:
@@ -531,23 +521,10 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
     :return: Saves csv file into Media directory for user to download
     """
 
-    import datetime
-    from ..models import GeneralStudyModuleAttr
-    from ..models import Exports
-    from ..interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
-
-    tsk = Exports.objects.create()
-
-    tsk.task_id = exportFL2excel.request.id
-    tsk.modality = u"RF"
-    tsk.export_type = u"CSV export"
     datestamp = datetime.datetime.now()
-    tsk.export_date = datestamp
-    tsk.progress = u'Query filters imported, task started'
-    tsk.status = u'CURRENT'
-    tsk.includes_pid = bool(pid and (name or patid))
-    tsk.export_user_id = user
-    tsk.save()
+    tsk = create_export_task(celery_uuid=exportFL2excel.request.id, modality='RF', export_type='CSV export',
+                             date_stamp=datestamp, pid=bool(pid and (name or patid)), user=user,
+                             filters_dict=filterdict)
 
     tmpfile, writer = create_csv(tsk)
     if not tmpfile:
@@ -614,27 +591,17 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
 
 @shared_task
 def rfopenskin(studyid):
-    u"""Export filtered RF database data to multi-sheet Microsoft XSLX files.
+    """Export single RF study data to OpenSkin RF csv sheet.
 
     :param studyid: RF study database ID.
     :type studyid: int
 
-    u"""
+    """
 
-    import datetime
-    from ..models import GeneralStudyModuleAttr
-    from ..models import Exports
-
-    tsk = Exports.objects.create()
-
-    tsk.task_id = rfopenskin.request.id
-    tsk.modality = "RF-OpenSkin"
-    tsk.export_type = "OpenSkin RF csv export"
     datestamp = datetime.datetime.now()
-    tsk.export_date = datestamp
-    tsk.progress = u'Query filters imported, task started'
-    tsk.status = u'CURRENT'
-    tsk.save()
+    tsk = create_export_task(celery_uuid=rfopenskin.request.id, modality='RF-OpenSkin',
+                             export_type='OpenSkin RF csv export', date_stamp=datestamp,
+                             pid=False, user=None, filters_dict={'study_id': studyid})
 
     tmpfile, writer = create_csv(tsk)
     if not tmpfile:
@@ -826,25 +793,9 @@ def rf_phe_2019(filterdict, user=None):
     :return: Saves Excel file into media directory for user to download
     """
 
-    import datetime
-    import uuid
-    from django.db.models import Max, Min
-    from ..exports.export_common import get_patient_study_data
-    from ..models import Exports, GeneralStudyModuleAttr, IrradEventXRayData
-    from ..interface.mod_filters import RFSummaryListFilter
-
-    tsk = Exports.objects.create()
-    tsk.task_id = rf_phe_2019.request.id
-    if tsk.task_id is None:  # Required when testing without celery
-        tsk.task_id = u'NotCelery-{0}'.format(uuid.uuid4())
-    tsk.modality = u"RF"
-    tsk.export_type = u"PHE RF 2019 export"
     datestamp = datetime.datetime.now()
-    tsk.export_date = datestamp
-    tsk.progress = u'Query filters imported, task started'
-    tsk.status = u'CURRENT'
-    tsk.export_user_id = user
-    tsk.save()
+    tsk = create_export_task(celery_uuid=rf_phe_2019.request.id, modality='RF', export_type='PHE RF 2019 export',
+                             date_stamp=datestamp, pid=False, user=user, filters_dict=filterdict)
 
     tmp_xlsx, book = create_xlsx(tsk)
     if not tmp_xlsx:
