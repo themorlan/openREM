@@ -57,9 +57,9 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     from ..interface.mod_filters import ct_acq_filter
 
     datestamp = datetime.datetime.now()
-    celery_uuid = ctxlsx.request.id
-    tsk = create_export_task(celery_uuid=celery_uuid, modality='CT', export_type='XLSX_export', date_stamp=datestamp,
-                             pid=bool(pid and (name or patid)), user=user, filters_dict=filterdict)
+    tsk = create_export_task(celery_uuid=ctxlsx.request.id, modality='CT', export_type='XLSX_export',
+                             date_stamp=datestamp, pid=bool(pid and (name or patid)), user=user,
+                             filters_dict=filterdict)
 
     tmpxlsx, book = create_xlsx(tsk)
     if not tmpxlsx:
