@@ -928,17 +928,22 @@ def rf_phe_2019(filterdict, user=None):
         fluoro_events = events.exclude(
             irradiation_event_type__code_value__contains='11361')  # acq events are 113611, 113612, 113613
         acquisition_events = events.filter(irradiation_event_type__code_value__contains='11361')
-        row_data += [
-            u' | '.join(fluoro_events.order_by().values_list('acquisition_protocol', flat=True).distinct()),
-            u' | '.join(fluoro_events.order_by().values_list(
-                'irradeventxraysourcedata__fluoro_mode__code_meaning', flat=True).distinct()),
-        ]
+        try:
+            row_data += [' | '.join(
+                fluoro_events.order_by().values_list('acquisition_protocol', flat=True).distinct()), ]
+        except TypeError:
+            row_data += ['', ]
+        try:
+            row_data += [' | '.join(fluoro_events.order_by().values_list(
+                'irradeventxraysourcedata__fluoro_mode__code_meaning', flat=True).distinct()), ]
+        except TypeError:
+            row_data += ['', ]
         fluoro_frame_rates = fluoro_events.order_by().values_list(
             'irradeventxraysourcedata__pulse_rate', flat=True).distinct()
         column_aq = ''
         if len(fluoro_frame_rates) > 1:
             column_aq += u'Fluoro: '
-            column_aq += u' | '.join(format(x, "1.1f") for x in fluoro_frame_rates)
+            column_aq += u' | '.join(format(x, "1.1f") for x in fluoro_frame_rates if x is not None)
             column_aq += u' fps. '
             row_data += [
                 u'Multiple rates',
