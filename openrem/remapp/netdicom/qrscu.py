@@ -1186,7 +1186,7 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
                   f"Sub-ops completed: {completed_sub_ops}, failed: {failed_sub_ops}, " \
                   f"warning: {warning_sub_ops}."
             logger.info(msg)
-            query.stage = msg
+            query.move_summary = msg
             query.save()
         else:
             print('Connection timed out, was aborted or received invalid response')
@@ -1243,12 +1243,12 @@ def movescu(query_id):
     assoc = ae.associate(remote_host, remote_port, ae_title=remote_aet)
     logger.info(u"Query_id {0}: Move association requested".format(query_id))
 
-    query.stage = u"Preparing to start move request"
+    query.move_summary = u"Preparing to start move request"
     query.save()
     logger.info(u"Query_id {0}: Preparing to start move request".format(query_id))
 
     studies = query.dicomqrrspstudy_set.all()
-    query.stage = u"Requesting move of {0} studies".format(studies.count())
+    query.move_summary = u"Requesting move of {0} studies".format(studies.count())
     query.save()
     logger.info(u"Query_id {0}: Requesting move of {1} studies".format(query_id, studies.count()))
 
@@ -1291,11 +1291,10 @@ def movescu(query_id):
                     _move_req(ae, assoc, d, study_no, series_no, query)
 
         query.move_complete = True
-        query.move_summary = f"Move complete. {studies.count()} studies.  " \
+        msg = f"Move complete. {studies.count()} studies.  " \
                              f"Cumulative sub-ops completed: {query.move_completed_sub_ops}, " \
                              f"failed: {query.move_failed_sub_ops}, warning: {query.move_warning_sub_ops}."
         query.save()
-        msg = "Move complete"
         logger.info(msg)
 
         logger.debug(u"Query_id {0}: Releasing move association".format(query_id))
@@ -1319,7 +1318,7 @@ def movescu(query_id):
     else:
         msg = "Association Failed"
         logger.warning("{3} with {0} {1} {2}".format(remote_host, remote_port, remote_aet, msg))
-    query.stage = msg
+    query.move_summary = msg
     query.save()
 
 

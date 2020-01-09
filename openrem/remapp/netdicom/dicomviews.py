@@ -382,7 +382,7 @@ def r_update(request):
 
     if not query.move_complete:
         resp['status'] = 'not complete'
-        resp['message'] = '<h4>{0}</h4>'.format(query.stage)
+        resp['message'] = '<h4>{0}</h4>'.format(query.move_summary)
     else:
         resp['status'] = u'move complete'
         resp['message'] = u'<h4>Move request complete</h4>'
