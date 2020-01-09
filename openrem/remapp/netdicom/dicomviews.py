@@ -356,7 +356,7 @@ def r_update(request):
         query = DicomQuery.objects.get(query_id=query_id)
     except ObjectDoesNotExist:
         resp['status'] = 'not complete'
-        resp['message'] = '<h4>Move request {0} not yet started</h4>'.format(query_id)
+        resp['message'] = f'<h4>Move request {query_id} not yet started</h4>'
         resp['subops'] = ''
         return HttpResponse(json.dumps(resp), content_type='application/json')
 
@@ -369,10 +369,15 @@ def r_update(request):
                      f'<td>{query.move_warning_sub_ops}</td>' \
                      f'</tr>' \
                      f'</table>'
+    # query.move_summary = f'Cumulative Sub-operations for move request: Completed {query.move_completed_sub_ops},' \
+    #                      f'Failed {query.move_failed_sub_ops}, Warnings {query.move_warning_sub_ops}.'
+    query.save()
 
     if query.failed:
         resp['status'] = 'failed'
-        resp['message'] = '<h4>Move request failed</h4> {0}'.format(query.message)
+        resp['message'] = f'<h4>Move request failed</h4> {query.message}'
+        query.move_summary = f'Move request failed: {query.message}'
+        query.save()
         return HttpResponse(json.dumps(resp), content_type='application/json')
 
     if not query.move_complete:

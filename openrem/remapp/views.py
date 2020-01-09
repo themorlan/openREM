@@ -3453,6 +3453,9 @@ def celery_tasks(request, stage=None):
                     else:
                         this_task['started'] = ''
                     try:
+                        this_task['source'] = ''
+                        this_task['result'] = ''
+                        # print(f"task name is {this_task['name']}")
                         if u"exports" in this_task['name'].split('.'):
                             this_task['type'] = u'export'
                             try:
@@ -3460,28 +3463,25 @@ def celery_tasks(request, stage=None):
                                 this_task['source'] = export_task.export_summary
                                 this_task['result'] = export_task.status
                             except ObjectDoesNotExist:
-                                this_task['source'] = 'not there'
-                                this_task['result'] = 'not there'
+                                pass
                         elif u"websizeimport" in this_task['name'].split('.'):
                             this_task['type'] = u'size'
-                        elif "qrscu" in this_task['name'].split('.'):
+                        elif "qrscu.qrscu" in this_task['name']:
                             this_task['type'] = u'netdicom'
                             try:
                                 dicom_task = DicomQuery.objects.get(query_uuid__exact=task_uuid)
-                                query_message = dicom_task.stage
-                                query_summary = dicom_task.query_summary
+                                this_task['result'] = dicom_task.stage
+                                this_task['source'] = dicom_task.query_summary
                             except ObjectDoesNotExist:
-                                query_message = 'not there'
-                                query_summary = 'not there'
-                            this_task['result'] = query_message
-                            this_task['source'] = query_summary
+                                pass
                         elif "movescu" in this_task['name'].split('.'):
                             this_task['type'] = u'netdicom'
                             try:
-                                query_message = DicomQuery.objects.get(move_uuid__exact=task_uuid).stage
+                                move_task = DicomQuery.objects.get(move_uuid__exact=task_uuid)
+                                this_task['result'] = move_task.move_summary
+                                this_task['source'] = move_task.query_summary
                             except ObjectDoesNotExist:
-                                query_message = 'not there'
-                            this_task['message'] = query_message
+                                pass
                         elif u"make_skin_map" in this_task['name'].split('.'):
                             this_task['type'] = u'skin_map'
                         else:

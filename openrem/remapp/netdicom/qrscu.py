@@ -1215,13 +1215,12 @@ def movescu(query_id):
         return 0
     query.move_complete = False
     query.failed = False
+    query.move_uuid = movescu.request.id
     query.save()
     qr_scp = query.qr_scp_fk
     store_scp = query.store_scp_fk
 
     logger.debug(f'movescu uuid is {movescu.request.id}')
-    query.move_uuid = movescu.request.id
-    query.save()
 
     ae = AE()
     ae.add_requested_context(StudyRootQueryRetrieveInformationModelMove)
@@ -1254,6 +1253,7 @@ def movescu(query_id):
     logger.info(u"Query_id {0}: Requesting move of {1} studies".format(query_id, studies.count()))
 
     if assoc.is_established:
+        logger.debug(f"Mv {query.move_uuid} Association with {remote_aet} is established.")
         study_no = 0
         for study in studies:
             study_no += 1
@@ -1270,7 +1270,7 @@ def movescu(query_id):
                     num_objects = u" Series contains {0} objects".format(series.number_of_series_related_instances)
                 else:
                     num_objects = u""
-                query.stage = u"Requesting move: modality {0}, study {1} (of {2}) series {3} (of {4}).{5}".format(
+                query.move_summary = u"Requesting move: modality {0}, study {1} (of {2}) series {3} (of {4}).{5}".format(
                     study.modality, study_no, studies.count(), series_no, study.dicomqrrspseries_set.all().count(),
                     num_objects
                 )
@@ -1291,12 +1291,16 @@ def movescu(query_id):
                     _move_req(ae, assoc, d, study_no, series_no, query)
 
         query.move_complete = True
+        query.move_summary = f"Move complete. {studies.count()} studies.  " \
+                             f"Cumulative sub-ops completed: {query.move_completed_sub_ops}, " \
+                             f"failed: {query.move_failed_sub_ops}, warning: {query.move_warning_sub_ops}."
         query.save()
-        logger.info(u"Move complete")
+        msg = "Move complete"
+        logger.info(msg)
 
         logger.debug(u"Query_id {0}: Releasing move association".format(query_id))
         try:
-            assoc.release(0)
+            assoc.release()
             logger.info(u"Query_id {0}: Move association released".format(query_id))
         except AttributeError:
             logger.info("Query_id {0}: Could not release Move association due to an AttributeError: perhaps no "
@@ -1317,9 +1321,6 @@ def movescu(query_id):
         logger.warning("{3} with {0} {1} {2}".format(remote_host, remote_port, remote_aet, msg))
     query.stage = msg
     query.save()
-
-    sleep(10)
-    query.delete()
 
 
 def _create_parser():

@@ -266,6 +266,7 @@ class DicomQuery(models.Model):
     move_failed_sub_ops = models.IntegerField(default=0)
     move_warning_sub_ops = models.IntegerField(default=0)
     move_complete = models.BooleanField(default=False)
+    move_summary = models.TextField(blank=True)
     query_uuid = models.UUIDField(null=True)
     move_uuid = models.UUIDField(null=True)
 
