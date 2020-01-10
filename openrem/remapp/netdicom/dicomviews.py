@@ -30,26 +30,32 @@
 from __future__ import print_function
 from builtins import str  # pylint: disable=redefined-builtin
 from builtins import map  # pylint: disable=redefined-builtin
+import json
 import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
+import uuid
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import (redirect, render)
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
-import json
-import remapp
+
+from .. import (__docs_version__, __version__)
+from ..forms import DicomQueryForm
+from ..models import (DicomQuery, DicomStoreSCP, DicomRemoteQR)
+from .qrscu import (movescu, qrscu)
+from .storescp import start_store
+from .tools import echoscu
 
 
 @csrf_exempt
 @login_required
 def run_store(request, pk):
     """View to start built-in STORE-SCP"""
-    from django.shortcuts import redirect
-    from ..models import DicomStoreSCP
-    from ..netdicom.storescp import start_store
     if request.user.groups.filter(name="admingroup"):
         store = DicomStoreSCP.objects.get(pk__exact = pk)
         store.run = True
@@ -62,8 +68,6 @@ def run_store(request, pk):
 @login_required
 def stop_store(request, pk):
     """View to stop built-in STORE-SCP"""
-    from django.shortcuts import redirect
-    from remapp.models import DicomStoreSCP
     if request.user.groups.filter(name="admingroup"):
         store = DicomStoreSCP.objects.filter(pk__exact = pk)
         if store:
@@ -79,8 +83,6 @@ def stop_store(request, pk):
 @csrf_exempt
 def status_update_store(request):
     """View to check if store is running using DICOM ECHO"""
-    from remapp.models import DicomStoreSCP
-    from remapp.netdicom.tools import echoscu
 
     resp = {}
     data = request.POST
@@ -117,9 +119,6 @@ def status_update_store(request):
 @csrf_exempt
 def q_update(request):
     """View to update query status"""
-    from django.core.exceptions import ObjectDoesNotExist
-    from django.db.models import Count
-    from remapp.models import DicomQuery
 
     resp = {}
     data = request.POST
@@ -207,7 +206,7 @@ def q_update(request):
                                     u"#guide-to-customising-orthanc-configuration' target='_blank'>" \
                                     u"toshiba_extractor_systems</a> list" \
                                     u". You will need to verify the resulting data to confirm accuracy.</p>" \
-                                    u"</div></div></div></div>".format(remapp.__docs_version__)
+                                    u"</div></div></div></div>".format(__docs_version__)
         resp['message'] = u'<h4>Query complete - there are {1} studies we can move</h4> {0} {2} {3}'.format(
             tablestr, study_rsp.count(), query_details_text, not_as_expected_help_text)
         resp['subops'] = ''
@@ -219,9 +218,6 @@ def q_update(request):
 @login_required
 def q_process(request, *args, **kwargs):
     """View to process query form POST"""
-    import uuid
-    from ..netdicom.qrscu import qrscu
-    from ..forms import DicomQueryForm
 
     if request.method == 'POST':
         form = DicomQueryForm(request.POST)
@@ -295,7 +291,7 @@ def q_process(request, *args, **kwargs):
             resp['message'] = errors
             resp['status'] = 'not complete'
 
-            admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
+            admin = {'openremversion': __version__, 'docsversion': __docs_version__}
 
             for group in request.user.groups.all():
                 admin[group.name] = True
@@ -306,8 +302,6 @@ def q_process(request, *args, **kwargs):
 @login_required
 def dicom_qr_page(request, *args, **kwargs):
     """View for DICOM Query Retrieve page"""
-    from ..forms import DicomQueryForm
-    from remapp.models import DicomStoreSCP, DicomRemoteQR
 
     if not request.user.groups.filter(name="importqrgroup"):
         messages.error(request, u"You are not in the importqrgroup - please contact your administrator")
@@ -318,7 +312,7 @@ def dicom_qr_page(request, *args, **kwargs):
     store_nodes = DicomStoreSCP.objects.all()
     qr_nodes = DicomRemoteQR.objects.all()
 
-    admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
+    admin = {'openremversion': __version__, 'docsversion': __docs_version__}
 
     for group in request.user.groups.all():
         admin[group.name] = True
@@ -331,7 +325,6 @@ def dicom_qr_page(request, *args, **kwargs):
 @login_required
 def r_start(request):
     """View to trigger move following successful query"""
-    from remapp.netdicom.qrscu import movescu
     resp = {}
     data = request.POST
     query_id = data.get('queryID')
@@ -345,8 +338,6 @@ def r_start(request):
 @csrf_exempt
 def r_update(request):
     """View to update progress of QR move (retrieval)"""
-    from django.core.exceptions import ObjectDoesNotExist
-    from remapp.models import DicomQuery
 
     resp = {}
     data = request.POST
@@ -392,7 +383,6 @@ def r_update(request):
 
 def get_qr_status(request):
     """View to get query-retrieve node status for query page"""
-    from .tools import echoscu
 
     data = request.POST
     echo_response = echoscu(scp_pk=data.get('node'), qr_scp=True)
@@ -407,7 +397,6 @@ def get_qr_status(request):
 
 def get_store_status(request):
     """View to get store node status for query page"""
-    from .tools import echoscu
 
     data = request.POST
     echo_response = echoscu(scp_pk=data.get('node'), store_scp=True)
