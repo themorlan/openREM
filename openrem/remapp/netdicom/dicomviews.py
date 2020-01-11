@@ -27,12 +27,8 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-from __future__ import print_function
-from builtins import str  # pylint: disable=redefined-builtin
-from builtins import map  # pylint: disable=redefined-builtin
 import json
 import os
-os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 import uuid
 
 from django.contrib import messages
@@ -50,6 +46,9 @@ from ..models import (DicomQuery, DicomStoreSCP, DicomRemoteQR)
 from .qrscu import (movescu, qrscu)
 from .storescp import start_store
 from .tools import echoscu
+
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 
 
 @csrf_exempt
