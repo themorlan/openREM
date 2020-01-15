@@ -4,6 +4,7 @@ OpenREM version history
 
 1.0.0b1 (2019-xx-xx)
 --------------------
+* `#808`_  Imports: caters for illegal use of mGy units in RDSR for dose at RP values
 * `#805`_  DICOM Networking: fix errors on "association release" and "move complete"
 * `#803`_  Fixed problem with multiple ModalitiesInStudy entries in c-find response
 * `#799`_  DICOM Networking: workaround for stationnames > 16 characters

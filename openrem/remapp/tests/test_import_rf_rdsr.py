@@ -134,6 +134,66 @@ class DAPUnitsTest(TestCase):
         self.assertAlmostEqual(dap, 0.000016)
 
 
+class RPDoseUnitsTest(TestCase):
+    """
+    Test handling of incorrect dose at reference point units found in a Canon RF Ultimax-i
+    """
+
+    def test_mgy(self):
+        """
+        Initial test of sequence as presented in Ultimax-i RDSR
+        :return: None
+        """
+        from pydicom.dataset import Dataset
+        from pydicom.sequence import Sequence
+        from remapp.extractors.rdsr import _check_rp_dose_units
+
+        units_sequence = Dataset()
+        units_sequence.CodeValue = u'mGy'
+        units_sequence.CodingSchemeDesignator = u'UCUM'
+        units_sequence.CodeMeaning = u'mGy'
+        measured_values_sequence = Dataset()
+        measured_values_sequence.NumericValue = 1.034
+        measured_values_sequence.MeasurementUnitsCodeSequence = Sequence([units_sequence])
+
+        dap = _check_rp_dose_units(measured_values_sequence)
+        self.assertAlmostEqual(dap, 0.001034)
+
+    def test_gy(self):
+        """
+        Test case of correct sequence as presented in conformant RDSR
+        :return: None
+        """
+        from pydicom.dataset import Dataset
+        from pydicom.sequence import Sequence
+        from remapp.extractors.rdsr import _check_rp_dose_units
+
+        units_sequence = Dataset()
+        units_sequence.CodeValue = u'Gy'
+        units_sequence.CodingSchemeDesignator = u'UCUM'
+        units_sequence.CodeMeaning = u'Gy'
+        measured_values_sequence = Dataset()
+        measured_values_sequence.NumericValue = 1.6e-003
+        measured_values_sequence.MeasurementUnitsCodeSequence = Sequence([units_sequence])
+
+        dap = _check_rp_dose_units(measured_values_sequence)
+        self.assertAlmostEqual(dap, 0.0016)
+
+    def test_no_units(self):
+        """
+        Test case of missing units sequence
+        :return: None
+        """
+        from pydicom.dataset import Dataset
+        from remapp.extractors.rdsr import _check_rp_dose_units
+
+        measured_values_sequence = Dataset()
+        measured_values_sequence.NumericValue = 1.6e-003
+
+        dap = _check_rp_dose_units(measured_values_sequence)
+        self.assertAlmostEqual(dap, 0.0016)
+
+
 class ImportRFRDSRSiemens(TestCase):
     """Tests for importing the Siemens Zee RDSR
 
