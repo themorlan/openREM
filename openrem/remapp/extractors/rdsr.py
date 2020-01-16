@@ -631,7 +631,7 @@ def _irradiationeventxraydata(dataset, proj, ch, fulldataset):  # TID 10003
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Half Value Layer':
             event.half_value_layer = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Entrance Exposure at RP':
-            event.entrance_exposure_at_rp = _check_rp_dose_units(cont.MeasuredValueSequence[0])
+            event.entrance_exposure_at_rp = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Reference Point Definition':
             try:
                 event.reference_point_definition = get_or_create_cid(cont.ConceptCodeSequence[0].CodeValue,
