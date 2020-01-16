@@ -315,4 +315,36 @@ class ImportRFRDSRGEOECMiniView(TestCase):
         self.assertEqual(total_acq_rp_dose, Decimal(0))
 
 
+class ImportRFRDSRCanonUltimaxi(TestCase):
+    """
+    Tests for importing an RDSR from a Canon Ultimax-i where the dose at reference point is stored as mGy
+    """
 
+    def test_canon_ultimax_i_rdsr(self):
+        """Tests that Canon Ultimax-i dose at reference point imports correctly as the values are stored in mGy rather
+        than Gy
+
+        :return: None
+        """
+
+        PatientIDSettings.objects.create()
+
+        dicom_file = "test_files/RF-RDSR-Canon-Ultimaxi-mGyDoseAtRP.dcm"
+        root_tests = os.path.dirname(os.path.abspath(__file__))
+        dicom_path = os.path.join(root_tests, dicom_file)
+
+        rdsr.rdsr(dicom_path)
+        study = GeneralStudyModuleAttr.objects.order_by('id')[0]
+
+        # Test the total reference point doses
+        accum_proj = study.projectionxrayradiationdose_set.get().accumxraydose_set.get().accumprojxraydose_set.get()
+        total_fluoro_rp_dose = accum_proj.fluoro_dose_rp_total
+        total_acq_rp_dose = accum_proj.acquisition_dose_rp_total
+
+        self.assertAlmostEqual(total_fluoro_rp_dose, Decimal(0.0257))
+        self.assertAlmostEqual(total_acq_rp_dose, Decimal(0.00491))
+
+        # Test a reference point dose from an individual acquisition
+        events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('pk')
+        event_1_source = events[0].irradeventxraysourcedata_set.get()
+        self.assertAlmostEqual(event_1_source.dose_rp, Decimal(0.000704))
