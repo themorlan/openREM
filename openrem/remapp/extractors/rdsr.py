@@ -359,6 +359,8 @@ def _check_rp_dose_units(rp_dose_sequence):
 
 
 def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
+    # Name in DICOM standard for TID 10003B is Irradiation Event X-Ray Source Data
+    # See http://dicom.nema.org/medical/Dicom/2017e/output/chtml/part16/sect_TID_10003b.html
     # TODO: review model to convert to cid where appropriate, and add additional fields
     from decimal import Decimal
     from django.db.models import Avg
@@ -373,7 +375,7 @@ def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
     source = IrradEventXRaySourceData.objects.create(irradiation_event_xray_data=event)
     for cont in dataset.ContentSequence:
         try:
-            if cont.ConceptNameCodeSequence[0].CodeMeaning == 'Dose (RP)':
+            if cont.ConceptNameCodeSequence[0].CodeValue == '113738': # = 'Dose (RP)'
                 source.dose_rp = _check_rp_dose_units(cont.MeasuredValueSequence[0])
             elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Reference Point Definition':
                 try:
@@ -700,6 +702,7 @@ def _accumulatedmammoxraydose(dataset, accum):  # TID 10005
 
 def _accumulatedfluoroxraydose(dataset, accum):  # TID 10004
     # Name in DICOM standard for TID 10004 is Accumulated Fluoroscopy and Acquisition Projection X-Ray Dose
+    # See http://dicom.nema.org/medical/Dicom/2017e/output/chtml/part16/sect_TID_10004.html
     from remapp.tools.get_values import get_or_create_cid
     from remapp.models import AccumProjXRayDose
     accumproj = AccumProjXRayDose.objects.create(accumulated_xray_dose=accum)
@@ -713,7 +716,7 @@ def _accumulatedfluoroxraydose(dataset, accum):  # TID 10004
                 accumproj.total_fluoro_time = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
             elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Acquisition Dose Area Product Total':
                 accumproj.acquisition_dose_area_product_total = _check_dap_units(cont.MeasuredValueSequence[0])
-            elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Acquisition Dose (RP) Total':
+            elif cont.ConceptNameCodeSequence[0].CodeValue == '113729': # = 'Acquisition Dose (RP) Total'
                 accumproj.acquisition_dose_rp_total = _check_rp_dose_units(cont.MeasuredValueSequence[0])
             elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Total Acquisition Time':
                 accumproj.total_acquisition_time = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
@@ -721,7 +724,7 @@ def _accumulatedfluoroxraydose(dataset, accum):  # TID 10004
             # _accumulatedtotalprojectionradiographydose
             elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Dose Area Product Total':
                 accumproj.dose_area_product_total = _check_dap_units(cont.MeasuredValueSequence[0])
-            elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Dose (RP) Total':
+            elif cont.ConceptNameCodeSequence[0].CodeValue == '113725':  # = 'Dose (RP) Total':
                 accumproj.dose_rp_total = _check_rp_dose_units(cont.MeasuredValueSequence[0])
             elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Total Number of Radiographic Frames':
                 accumproj.total_number_of_radiographic_frames = test_numeric_value(
@@ -761,6 +764,7 @@ def _accumulatedcassettebasedprojectionradiographydose(dataset, accum):  # TID 1
 
 def _accumulatedtotalprojectionradiographydose(dataset, accum):  # TID 10007
     # Name in DICOM standard for TID 10007 is Accumulated Total Projection Radiography Dose
+    # See http://dicom.nema.org/medical/Dicom/2017e/output/chtml/part16/sect_TID_10007.html
     from remapp.models import AccumIntegratedProjRadiogDose
     from remapp.tools.get_values import get_or_create_cid, safe_strings
     accumint = AccumIntegratedProjRadiogDose.objects.create(accumulated_xray_dose=accum)
@@ -768,7 +772,7 @@ def _accumulatedtotalprojectionradiographydose(dataset, accum):  # TID 10007
         try:
             if cont.ConceptNameCodeSequence[0].CodeMeaning == 'Dose Area Product Total':
                 accumint.dose_area_product_total = _check_dap_units(cont.MeasuredValueSequence[0])
-            elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Dose (RP) Total':
+            elif cont.ConceptNameCodeSequence[0].CodeValue == '113725': # = 'Dose (RP) Total':
                 accumint.dose_rp_total = _check_rp_dose_units(cont.MeasuredValueSequence[0])
             elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Total Number of Radiographic Frames':
                 accumint.total_number_of_radiographic_frames = test_numeric_value(
