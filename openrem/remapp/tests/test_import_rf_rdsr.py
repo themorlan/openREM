@@ -337,14 +337,20 @@ class ImportRFRDSRCanonUltimaxi(TestCase):
         study = GeneralStudyModuleAttr.objects.order_by('id')[0]
 
         # Test the total reference point doses
+        # The total fluoro RP dose is stored in the RDSR as 25.664 with units of mGy
+        # The total acquisition RP dose is stored in the RDSR as 4.909 with units of mGy
+        # The total RP dose is stored in the RDSR as 30.573 with units of mGy
         accum_proj = study.projectionxrayradiationdose_set.get().accumxraydose_set.get().accumprojxraydose_set.get()
         total_fluoro_rp_dose = accum_proj.fluoro_dose_rp_total
         total_acq_rp_dose = accum_proj.acquisition_dose_rp_total
+        total_rp_dose = accum_proj.dose_rp_total
 
-        self.assertAlmostEqual(total_fluoro_rp_dose, Decimal(0.0257))
-        self.assertAlmostEqual(total_acq_rp_dose, Decimal(0.00491))
+        self.assertAlmostEqual(total_fluoro_rp_dose, Decimal(0.025664000000))
+        self.assertAlmostEqual(total_acq_rp_dose, Decimal(0.004909000000))
+        self.assertAlmostEqual(total_rp_dose, Decimal(0.030573000000))
 
-        # Test a reference point dose from an individual acquisition
+        # Test a reference point dose from an individual exposure
+        # The first exposure RP dose is is stored in the RDSR as 0.384 with units of mGy
         events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('pk')
         event_1_source = events[0].irradeventxraysourcedata_set.get()
-        self.assertAlmostEqual(event_1_source.dose_rp, Decimal(0.000704))
+        self.assertAlmostEqual(event_1_source.dose_rp, Decimal(0.000384000000))
