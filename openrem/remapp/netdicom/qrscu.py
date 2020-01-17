@@ -16,7 +16,7 @@ import os
 import sys
 import uuid
 import collections
-from pynetdicom import AE
+from pynetdicom import (AE, debug_logger)
 from pynetdicom.sop_class import (StudyRootQueryRetrieveInformationModelFind,
                                   StudyRootQueryRetrieveInformationModelMove)
 from django.core.exceptions import ObjectDoesNotExist
@@ -1189,11 +1189,20 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
             query.move_summary = msg
             query.save()
         else:
-            print('Connection timed out, was aborted or received invalid response')
+            status_msg = 'Connection timed out, was aborted without reason given or received an invalid response. ' \
+                         'Check remote server logs'
+            msg = f"Move of study {study_no}, series {series_no}: {status_msg} " \
+                  f"Cumulative sub-ops completed: {query.move_completed_sub_ops}, " \
+                  f"failed: {query.move_failed_sub_ops}, warning: {query.move_warning_sub_ops}."
+            logger.error(msg)
+            query.move_summary = msg
+            query.save()
+            return False
     query.move_completed_sub_ops += completed_sub_ops
     query.move_failed_sub_ops += failed_sub_ops
     query.move_warning_sub_ops += warning_sub_ops
     query.save()
+    return True
 
 
 @shared_task(name='remapp.netdicom.qrscu.movescu')  # (name='remapp.netdicom.qrscu.movescu', queue='qr')
@@ -1203,9 +1212,10 @@ def movescu(query_id):
     :param query_id: UUID of query in the DicomQuery table
     :return: None
     """
-    from time import sleep
     from pydicom.dataset import Dataset
     from ..models import DicomQuery
+
+    # debug_logger()
 
     logger.debug(u"Query_id {0}: Starting move request".format(query_id))
     try:
@@ -1255,11 +1265,16 @@ def movescu(query_id):
     if assoc.is_established:
         logger.debug(f"Mv {query.move_uuid} Association with {remote_aet} is established.")
         study_no = 0
+        move = True
         for study in studies:
+            if not move:
+                break
             study_no += 1
             logger.debug(u"Mv: study_no {0}".format(study_no))
             series_no = 0
             for series in study.dicomqrrspseries_set.all():
+                if not move:
+                    break
                 series_no += 1
                 logger.debug(u"Mv: study no {0} series no {1}".format(study_no, series_no))
                 d = Dataset()
@@ -1285,25 +1300,31 @@ def movescu(query_id):
                     for image in series.dicomqrrspimage_set.all():
                         d.SOPInstanceUID = image.sop_instance_uid
                         logger.debug(u"Image-level move - d is: {0}".format(d))
-                        _move_req(ae, assoc, d, study_no, series_no, query)
+                        move = _move_req(ae, assoc, d, study_no, series_no, query)
+                        if not move:
+                            break
                 else:
                     logger.debug(u"Series-level move - d is: {0}".format(d))
-                    _move_req(ae, assoc, d, study_no, series_no, query)
-
-        query.move_complete = True
-        msg = f"Move complete. {studies.count()} studies.  " \
-                             f"Cumulative sub-ops completed: {query.move_completed_sub_ops}, " \
-                             f"failed: {query.move_failed_sub_ops}, warning: {query.move_warning_sub_ops}."
-        query.save()
-        logger.info(msg)
-
-        logger.debug(u"Query_id {0}: Releasing move association".format(query_id))
+                    move = _move_req(ae, assoc, d, study_no, series_no, query)
+                    if not move:
+                        break
         try:
             assoc.release()
             logger.info(u"Query_id {0}: Move association released".format(query_id))
         except AttributeError:
             logger.info("Query_id {0}: Could not release Move association due to an AttributeError: perhaps no "
                         "studies were present".format(query_id))
+        if move:
+            query.move_complete = True
+            msg = f"Move complete. {studies.count()} studies.  " \
+                                 f"Cumulative sub-ops completed: {query.move_completed_sub_ops}, " \
+                                 f"failed: {query.move_failed_sub_ops}, warning: {query.move_warning_sub_ops}."
+            query.save()
+            logger.info(msg)
+
+            logger.debug(u"Query_id {0}: Releasing move association".format(query_id))
+        else:
+            return
 
     elif assoc.is_rejected:
         msg = ('{0}: {1}'.format(
