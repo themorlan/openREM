@@ -1148,40 +1148,48 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
                 status_msg = 'Match returned, further matches are continuing.'
             elif status.Status == 0x0000:
                 status_msg = 'All matches returned.'
-            elif status.Status == 0xFE00:
-                status.msg = 'Sub-operations terminated due to Cancel indication.'
-            elif status.Status == 0x0122:
-                status_msg = 'SOP class not supported.'
-            elif status.Status == 0x0124:
-                status_msg = 'Not authorised.'
-            elif status.Status == 0x0210:
-                status_msg = 'Duplicate invocation.'
-            elif status.Status == 0x0211:
-                status_msg = 'Unrecognised operation.'
-            elif status.Status == 0x0212:
-                status_msg = 'Mistyped argument.'
-            elif status.Status == 0xA701:
-                status_msg = 'Out of resources: unable to calculate number of matches.'
-            elif status.Status == 0xA702:
-                status_msg = 'Out of resources: unable to perform sub-operations.'
-            elif status.Status == 0xA801:
-                status_msg = 'Move destination unknown.'
-            elif status.Status == 0xA900:
-                status_msg = 'Identifier does not match SOP class.'
-            elif status.Status == 0xAA00:
-                status_msg = 'None of the frames requested were found in the SOP instance.'
-            elif status.Status == 0xAA01:
-                status_msg = 'Unable to create new object for this SOP class.'
-            elif status.Status == 0xAA02:
-                status_msg = 'Unable to extract frames.'
-            elif status.Status == 0xAA03:
-                status_msg = 'Time-based request received for a non-time-based original SOP Instance.'
-            elif status.Status == 0xAA04:
-                status_msg = 'Invalid request.'
-            elif 0xc000 <= status.Status <= 0xcfff:
-                status_msg = f'Unable to process, code 0x{status.Status:04x}'
             else:
-                status_msg = f'0x{status.Status:04x}'
+                if status.Status == 0xFE00:
+                    status.msg = 'Sub-operations terminated due to Cancel indication.'
+                elif status.Status == 0x0122:
+                    status_msg = 'SOP class not supported.'
+                elif status.Status == 0x0124:
+                    status_msg = 'Not authorised.'
+                elif status.Status == 0x0210:
+                    status_msg = 'Duplicate invocation.'
+                elif status.Status == 0x0211:
+                    status_msg = 'Unrecognised operation.'
+                elif status.Status == 0x0212:
+                    status_msg = 'Mistyped argument.'
+                elif status.Status == 0xA701:
+                    status_msg = 'Out of resources: unable to calculate number of matches.'
+                elif status.Status == 0xA702:
+                    status_msg = 'Out of resources: unable to perform sub-operations.'
+                elif status.Status == 0xA801:
+                    status_msg = 'Move destination unknown.'
+                elif status.Status == 0xA900:
+                    status_msg = 'Identifier does not match SOP class.'
+                elif status.Status == 0xAA00:
+                    status_msg = 'None of the frames requested were found in the SOP instance.'
+                elif status.Status == 0xAA01:
+                    status_msg = 'Unable to create new object for this SOP class.'
+                elif status.Status == 0xAA02:
+                    status_msg = 'Unable to extract frames.'
+                elif status.Status == 0xAA03:
+                    status_msg = 'Time-based request received for a non-time-based original SOP Instance.'
+                elif status.Status == 0xAA04:
+                    status_msg = 'Invalid request.'
+                elif 0xc000 <= status.Status <= 0xcfff:
+                    status_msg = f'Unable to process, code 0x{status.Status:04x}.'
+                else:
+                    status_msg = f'0x{status.Status:04x}'
+                msg = f"Move of study {study_no}, series {series_no}: {status_msg} " \
+                      f"Sub-ops completed: {completed_sub_ops}, failed: {failed_sub_ops}, " \
+                      f"warning: {warning_sub_ops}."
+                logger.error(msg)
+                query.move_summary = msg
+                query.save()
+                return False
             msg = f"Move of study {study_no}, series {series_no}: {status_msg} " \
                   f"Sub-ops completed: {completed_sub_ops}, failed: {failed_sub_ops}, " \
                   f"warning: {warning_sub_ops}."
