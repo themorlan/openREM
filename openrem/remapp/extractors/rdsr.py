@@ -375,7 +375,7 @@ def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
     source = IrradEventXRaySourceData.objects.create(irradiation_event_xray_data=event)
     for cont in dataset.ContentSequence:
         try:
-            if cont.ConceptNameCodeSequence[0].CodeValue == '113738': # = 'Dose (RP)'
+            if cont.ConceptNameCodeSequence[0].CodeValue == '113738':  # = 'Dose (RP)'
                 source.dose_rp = _check_rp_dose_units(cont.MeasuredValueSequence[0])
             elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Reference Point Definition':
                 try:
@@ -716,7 +716,7 @@ def _accumulatedfluoroxraydose(dataset, accum):  # TID 10004
                 accumproj.total_fluoro_time = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
             elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Acquisition Dose Area Product Total':
                 accumproj.acquisition_dose_area_product_total = _check_dap_units(cont.MeasuredValueSequence[0])
-            elif cont.ConceptNameCodeSequence[0].CodeValue == '113729': # = 'Acquisition Dose (RP) Total'
+            elif cont.ConceptNameCodeSequence[0].CodeValue == '113729':  # = 'Acquisition Dose (RP) Total'
                 accumproj.acquisition_dose_rp_total = _check_rp_dose_units(cont.MeasuredValueSequence[0])
             elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Total Acquisition Time':
                 accumproj.total_acquisition_time = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
@@ -772,7 +772,7 @@ def _accumulatedtotalprojectionradiographydose(dataset, accum):  # TID 10007
         try:
             if cont.ConceptNameCodeSequence[0].CodeMeaning == 'Dose Area Product Total':
                 accumint.dose_area_product_total = _check_dap_units(cont.MeasuredValueSequence[0])
-            elif cont.ConceptNameCodeSequence[0].CodeValue == '113725': # = 'Dose (RP) Total':
+            elif cont.ConceptNameCodeSequence[0].CodeValue == '113725':  # = 'Dose (RP) Total':
                 accumint.dose_rp_total = _check_rp_dose_units(cont.MeasuredValueSequence[0])
             elif cont.ConceptNameCodeSequence[0].CodeMeaning == 'Total Number of Radiographic Frames':
                 accumint.total_number_of_radiographic_frames = test_numeric_value(
