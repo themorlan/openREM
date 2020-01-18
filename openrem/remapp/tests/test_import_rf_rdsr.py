@@ -134,6 +134,66 @@ class DAPUnitsTest(TestCase):
         self.assertAlmostEqual(dap, 0.000016)
 
 
+class RPDoseUnitsTest(TestCase):
+    """
+    Test handling of incorrect dose at reference point units found in a Canon RF Ultimax-i
+    """
+
+    def test_mgy(self):
+        """
+        Initial test of sequence as presented in Ultimax-i RDSR
+        :return: None
+        """
+        from pydicom.dataset import Dataset
+        from pydicom.sequence import Sequence
+        from remapp.extractors.rdsr import _check_rp_dose_units
+
+        units_sequence = Dataset()
+        units_sequence.CodeValue = u'mGy'
+        units_sequence.CodingSchemeDesignator = u'UCUM'
+        units_sequence.CodeMeaning = u'mGy'
+        measured_values_sequence = Dataset()
+        measured_values_sequence.NumericValue = 1.034
+        measured_values_sequence.MeasurementUnitsCodeSequence = Sequence([units_sequence])
+
+        dap = _check_rp_dose_units(measured_values_sequence)
+        self.assertAlmostEqual(dap, 0.001034)
+
+    def test_gy(self):
+        """
+        Test case of correct sequence as presented in conformant RDSR
+        :return: None
+        """
+        from pydicom.dataset import Dataset
+        from pydicom.sequence import Sequence
+        from remapp.extractors.rdsr import _check_rp_dose_units
+
+        units_sequence = Dataset()
+        units_sequence.CodeValue = u'Gy'
+        units_sequence.CodingSchemeDesignator = u'UCUM'
+        units_sequence.CodeMeaning = u'Gy'
+        measured_values_sequence = Dataset()
+        measured_values_sequence.NumericValue = 1.6e-003
+        measured_values_sequence.MeasurementUnitsCodeSequence = Sequence([units_sequence])
+
+        dap = _check_rp_dose_units(measured_values_sequence)
+        self.assertAlmostEqual(dap, 0.0016)
+
+    def test_no_units(self):
+        """
+        Test case of missing units sequence
+        :return: None
+        """
+        from pydicom.dataset import Dataset
+        from remapp.extractors.rdsr import _check_rp_dose_units
+
+        measured_values_sequence = Dataset()
+        measured_values_sequence.NumericValue = 1.6e-003
+
+        dap = _check_rp_dose_units(measured_values_sequence)
+        self.assertAlmostEqual(dap, 0.0016)
+
+
 class ImportRFRDSRSiemens(TestCase):
     """Tests for importing the Siemens Zee RDSR
 
@@ -255,4 +315,42 @@ class ImportRFRDSRGEOECMiniView(TestCase):
         self.assertEqual(total_acq_rp_dose, Decimal(0))
 
 
+class ImportRFRDSRCanonUltimaxi(TestCase):
+    """
+    Tests for importing an RDSR from a Canon Ultimax-i where the dose at reference point is stored as mGy
+    """
 
+    def test_canon_ultimax_i_rdsr(self):
+        """Tests that Canon Ultimax-i dose at reference point imports correctly as the values are stored in mGy rather
+        than Gy
+
+        :return: None
+        """
+
+        PatientIDSettings.objects.create()
+
+        dicom_file = "test_files/RF-RDSR-Canon-Ultimaxi-mGyDoseAtRP.dcm"
+        root_tests = os.path.dirname(os.path.abspath(__file__))
+        dicom_path = os.path.join(root_tests, dicom_file)
+
+        rdsr.rdsr(dicom_path)
+        study = GeneralStudyModuleAttr.objects.order_by('id')[0]
+
+        # Test the total reference point doses
+        # The total fluoro RP dose is stored in the RDSR as 25.664 with units of mGy
+        # The total acquisition RP dose is stored in the RDSR as 4.909 with units of mGy
+        # The total RP dose is stored in the RDSR as 30.573 with units of mGy
+        accum_proj = study.projectionxrayradiationdose_set.get().accumxraydose_set.get().accumprojxraydose_set.get()
+        total_fluoro_rp_dose = accum_proj.fluoro_dose_rp_total
+        total_acq_rp_dose = accum_proj.acquisition_dose_rp_total
+        total_rp_dose = accum_proj.dose_rp_total
+
+        self.assertAlmostEqual(total_fluoro_rp_dose, Decimal(0.025664000000))
+        self.assertAlmostEqual(total_acq_rp_dose, Decimal(0.004909000000))
+        self.assertAlmostEqual(total_rp_dose, Decimal(0.030573000000))
+
+        # Test a reference point dose from an individual exposure
+        # The first exposure RP dose is is stored in the RDSR as 0.384 with units of mGy
+        events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('pk')
+        event_1_source = events[0].irradeventxraysourcedata_set.get()
+        self.assertAlmostEqual(event_1_source.dose_rp, Decimal(0.000384000000))
