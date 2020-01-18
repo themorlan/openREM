@@ -20,9 +20,9 @@ function retrieveProgress(json ) {
         },
         error: function( xhr, status, errorThrown ) {
             alert( "Sorry, there was a problem getting the status!" );
-            console.log( "Error: " + errorThrown );
-            console.log( "Status: " + status );
-            console.dir( xhr );
+            // console.log( "Error: " + errorThrown );
+            // console.log( "Status: " + status );
+            // console.dir( xhr );
         }
 
     });
