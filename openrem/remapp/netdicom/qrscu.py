@@ -16,7 +16,7 @@ import os
 import sys
 import uuid
 import collections
-from pynetdicom import AE
+from pynetdicom import (AE, debug_logger)
 from pynetdicom.sop_class import (StudyRootQueryRetrieveInformationModelFind,
                                   StudyRootQueryRetrieveInformationModelMove)
 from django.core.exceptions import ObjectDoesNotExist
@@ -839,6 +839,8 @@ def qrscu(
                  u"queryID={5}, date_from={6}, date_until={7}, modalities={8}, inc_sr={9}, remove_duplicates={10}, "
                  u"filters={11}".format(qr_scp_pk, store_scp_pk, implicit, explicit, move, query_id,
                                        date_from, date_until, modalities, inc_sr, remove_duplicates, filters, query_id))
+    celery_task_uuid = qrscu.request.id
+    logger.debug(f'Alt id is {celery_task_uuid}')
 
     # Currently, if called from qrscu_script modalities will either be a list of modalities or it will be "SR".
     # Web interface hasn't changed, so will be a list of modalities and or the inc_sr flag
@@ -873,12 +875,33 @@ def qrscu(
 
     query = DicomQuery.objects.create()
     query.query_id = query_id
+    query.query_uuid = celery_task_uuid
     query.complete = False
     query.store_scp_fk = DicomStoreSCP.objects.get(pk=store_scp_pk)
     query.qr_scp_fk = qr_scp
     query.move_completed_sub_ops = 0
     query.move_warning_sub_ops = 0
     query.move_failed_sub_ops = 0
+    study_date = str(make_dcm_date_range(date1=date_from, date2=date_until, single_date=single_date) or '')
+    if len(study_date) == 8:
+        study_time = str(make_dcm_time_range(time1=time_from, time2=time_until) or '')
+    else:
+        study_time = ''
+    if study_time:
+        study_date_time = f"{study_date} {study_time}"
+    else:
+        study_date_time = study_date
+    if inc_sr:
+        modality_text = "SR 'studies' only"
+    else:
+        modality_text = f"Modalities = {modalities}"
+    active_filters = {k: v for k, v in filters.items() if v is not None}
+    # active_filters_text = "<br/>".join(": ".join(_) for _ in active_filters.items())
+    query.query_summary = f"QR SCP PK = {qr_scp_pk} ({qr_scp.name}). <br>" \
+                          f"Store SCP PK = {store_scp_pk} ({query.store_scp_fk.name}).<br>{study_date_time}.<br>" \
+                          f"{modality_text}.<br>Filters = {active_filters}.<br>" \
+                          f"Advanced options: Remove duplicates = {remove_duplicates}, " \
+                          f"Get Toshiba images = {get_toshiba_images}, Get 'empty' SR series = {get_empty_sr}"
     query.save()
 
     assoc = ae.associate(remote_host, remote_port, ae_title=remote_aet)
@@ -887,11 +910,8 @@ def qrscu(
 
         logger.info(u"{0} DICOM FindSCU ... ".format(query_id))
         d = Dataset()
-        d.StudyDate = str(make_dcm_date_range(date1=date_from, date2=date_until, single_date=single_date) or '')
-        if len(d.StudyDate) == 8:
-            d.StudyTime = str(make_dcm_time_range(time1=time_from, time2=time_until) or '')
-        else:
-            d.StudyTime = ''
+        d.StudyDate = study_date
+        d.StudyTime = study_time
 
         all_mods = collections.OrderedDict()
         all_mods['CT'] = {'inc': False, 'mods': ['CT']}
@@ -1128,52 +1148,69 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
                 status_msg = 'Match returned, further matches are continuing.'
             elif status.Status == 0x0000:
                 status_msg = 'All matches returned.'
-            elif status.Status == 0xFE00:
-                status.msg = 'Sub-operations terminated due to Cancel indication.'
-            elif status.Status == 0x0122:
-                status_msg = 'SOP class not supported.'
-            elif status.Status == 0x0124:
-                status_msg = 'Not authorised.'
-            elif status.Status == 0x0210:
-                status_msg = 'Duplicate invocation.'
-            elif status.Status == 0x0211:
-                status_msg = 'Unrecognised operation.'
-            elif status.Status == 0x0212:
-                status_msg = 'Mistyped argument.'
-            elif status.Status == 0xA701:
-                status_msg = 'Out of resources: unable to calculate number of matches.'
-            elif status.Status == 0xA702:
-                status_msg = 'Out of resources: unable to perform sub-operations.'
-            elif status.Status == 0xA801:
-                status_msg = 'Move destination unknown.'
-            elif status.Status == 0xA900:
-                status_msg = 'Identifier does not match SOP class.'
-            elif status.Status == 0xAA00:
-                status_msg = 'None of the frames requested were found in the SOP instance.'
-            elif status.Status == 0xAA01:
-                status_msg = 'Unable to create new object for this SOP class.'
-            elif status.Status == 0xAA02:
-                status_msg = 'Unable to extract frames.'
-            elif status.Status == 0xAA03:
-                status_msg = 'Time-based request received for a non-time-based original SOP Instance.'
-            elif status.Status == 0xAA04:
-                status_msg = 'Invalid request.'
-            elif 0xc000 <= status.Status <= 0xcfff:
-                status_msg = f'Unable to process, code 0x{status.Status:04x}'
             else:
-                status_msg = f'0x{status.Status:04x}'
+                if status.Status == 0xFE00:
+                    status.msg = 'Sub-operations terminated due to Cancel indication.'
+                elif status.Status == 0x0122:
+                    status_msg = 'SOP class not supported.'
+                elif status.Status == 0x0124:
+                    status_msg = 'Not authorised.'
+                elif status.Status == 0x0210:
+                    status_msg = 'Duplicate invocation.'
+                elif status.Status == 0x0211:
+                    status_msg = 'Unrecognised operation.'
+                elif status.Status == 0x0212:
+                    status_msg = 'Mistyped argument.'
+                elif status.Status == 0xA701:
+                    status_msg = 'Out of resources: unable to calculate number of matches.'
+                elif status.Status == 0xA702:
+                    status_msg = 'Out of resources: unable to perform sub-operations.'
+                elif status.Status == 0xA801:
+                    status_msg = 'Move destination unknown.'
+                elif status.Status == 0xA900:
+                    status_msg = 'Identifier does not match SOP class.'
+                elif status.Status == 0xAA00:
+                    status_msg = 'None of the frames requested were found in the SOP instance.'
+                elif status.Status == 0xAA01:
+                    status_msg = 'Unable to create new object for this SOP class.'
+                elif status.Status == 0xAA02:
+                    status_msg = 'Unable to extract frames.'
+                elif status.Status == 0xAA03:
+                    status_msg = 'Time-based request received for a non-time-based original SOP Instance.'
+                elif status.Status == 0xAA04:
+                    status_msg = 'Invalid request.'
+                elif 0xc000 <= status.Status <= 0xcfff:
+                    status_msg = f'Unable to process, code 0x{status.Status:04x}.'
+                else:
+                    status_msg = f'0x{status.Status:04x}'
+                msg = f"Move of study {study_no}, series {series_no}: {status_msg} " \
+                      f"Sub-ops completed: {completed_sub_ops}, failed: {failed_sub_ops}, " \
+                      f"warning: {warning_sub_ops}."
+                logger.error(msg)
+                query.move_summary = msg
+                query.save()
+                return False
             msg = f"Move of study {study_no}, series {series_no}: {status_msg} " \
                   f"Sub-ops completed: {completed_sub_ops}, failed: {failed_sub_ops}, " \
                   f"warning: {warning_sub_ops}."
             logger.info(msg)
-            query.stage = msg
+            query.move_summary = msg
             query.save()
         else:
-            print('Connection timed out, was aborted or received invalid response')
+            status_msg = 'Connection timed out, was aborted without reason given or received an invalid response. ' \
+                         'Check remote server logs'
+            msg = f"Move of study {study_no}, series {series_no}: {status_msg} " \
+                  f"Cumulative sub-ops completed: {query.move_completed_sub_ops}, " \
+                  f"failed: {query.move_failed_sub_ops}, warning: {query.move_warning_sub_ops}."
+            logger.error(msg)
+            query.move_summary = msg
+            query.save()
+            return False
     query.move_completed_sub_ops += completed_sub_ops
     query.move_failed_sub_ops += failed_sub_ops
     query.move_warning_sub_ops += warning_sub_ops
     query.save()
+    return True
 
 
 @shared_task(name='remapp.netdicom.qrscu.movescu')  # (name='remapp.netdicom.qrscu.movescu', queue='qr')
@@ -1183,9 +1220,10 @@ def movescu(query_id):
     :param query_id: UUID of query in the DicomQuery table
     :return: None
     """
-    from time import sleep
     from pydicom.dataset import Dataset
     from ..models import DicomQuery
+
+    # debug_logger()
 
     logger.debug(u"Query_id {0}: Starting move request".format(query_id))
     try:
@@ -1195,9 +1233,12 @@ def movescu(query_id):
         return 0
     query.move_complete = False
     query.failed = False
+    query.move_uuid = movescu.request.id
     query.save()
     qr_scp = query.qr_scp_fk
     store_scp = query.store_scp_fk
+
+    logger.debug(f'movescu uuid is {movescu.request.id}')
 
     ae = AE()
     ae.add_requested_context(StudyRootQueryRetrieveInformationModelMove)
@@ -1220,22 +1261,28 @@ def movescu(query_id):
     assoc = ae.associate(remote_host, remote_port, ae_title=remote_aet)
     logger.info(u"Query_id {0}: Move association requested".format(query_id))
 
-    query.stage = u"Preparing to start move request"
+    query.move_summary = u"Preparing to start move request"
     query.save()
     logger.info(u"Query_id {0}: Preparing to start move request".format(query_id))
 
     studies = query.dicomqrrspstudy_set.all()
-    query.stage = u"Requesting move of {0} studies".format(studies.count())
+    query.move_summary = u"Requesting move of {0} studies".format(studies.count())
     query.save()
     logger.info(u"Query_id {0}: Requesting move of {1} studies".format(query_id, studies.count()))
 
     if assoc.is_established:
+        logger.debug(f"Mv {query.move_uuid} Association with {remote_aet} is established.")
         study_no = 0
+        move = True
         for study in studies:
+            if not move:
+                break
             study_no += 1
             logger.debug(u"Mv: study_no {0}".format(study_no))
             series_no = 0
             for series in study.dicomqrrspseries_set.all():
+                if not move:
+                    break
                 series_no += 1
                 logger.debug(u"Mv: study no {0} series no {1}".format(study_no, series_no))
                 d = Dataset()
@@ -1246,7 +1293,7 @@ def movescu(query_id):
                     num_objects = u" Series contains {0} objects".format(series.number_of_series_related_instances)
                 else:
                     num_objects = u""
-                query.stage = u"Requesting move: modality {0}, study {1} (of {2}) series {3} (of {4}).{5}".format(
+                query.move_summary = u"Requesting move: modality {0}, study {1} (of {2}) series {3} (of {4}).{5}".format(
                     study.modality, study_no, studies.count(), series_no, study.dicomqrrspseries_set.all().count(),
                     num_objects
                 )
@@ -1261,22 +1308,31 @@ def movescu(query_id):
                     for image in series.dicomqrrspimage_set.all():
                         d.SOPInstanceUID = image.sop_instance_uid
                         logger.debug(u"Image-level move - d is: {0}".format(d))
-                        _move_req(ae, assoc, d, study_no, series_no, query)
+                        move = _move_req(ae, assoc, d, study_no, series_no, query)
+                        if not move:
+                            break
                 else:
                     logger.debug(u"Series-level move - d is: {0}".format(d))
-                    _move_req(ae, assoc, d, study_no, series_no, query)
-
-        query.move_complete = True
-        query.save()
-        msg = "Move complete"
-        logger.info(f"{msg}")
-        logger.debug(f"Query_id {query_id}: Releasing move association")
+                    move = _move_req(ae, assoc, d, study_no, series_no, query)
+                    if not move:
+                        break
         try:
             assoc.release()
-            logger.info(f"Query_id {query_id}: Move association released")
+            logger.info(u"Query_id {0}: Move association released".format(query_id))
         except AttributeError:
-            logger.info(f"Query_id {query_id}: Could not release Move association due to an AttributeError: perhaps "
-                        f"no studies were present")
+            logger.info("Query_id {0}: Could not release Move association due to an AttributeError: perhaps no "
+                        "studies were present".format(query_id))
+        if move:
+            query.move_complete = True
+            msg = f"Move complete. {studies.count()} studies.  " \
+                                 f"Cumulative sub-ops completed: {query.move_completed_sub_ops}, " \
+                                 f"failed: {query.move_failed_sub_ops}, warning: {query.move_warning_sub_ops}."
+            query.save()
+            logger.info(msg)
+
+            logger.debug(u"Query_id {0}: Releasing move association".format(query_id))
+        else:
+            return
 
     elif assoc.is_rejected:
         msg = ('{0}: {1}'.format(
@@ -1291,11 +1347,8 @@ def movescu(query_id):
     else:
         msg = "Association Failed"
         logger.warning("{3} with {0} {1} {2}".format(remote_host, remote_port, remote_aet, msg))
-    query.stage = msg
+    query.move_summary = msg
     query.save()
-
-    sleep(10)
-    query.delete()
 
 
 def _create_parser():
