@@ -33,11 +33,14 @@ import csv
 import logging
 import sys
 from tempfile import TemporaryFile
+import uuid
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
 from xlsxwriter.workbook import Workbook
+
+from ..models import Exports
 
 logger = logging.getLogger(__name__)
 
@@ -503,9 +506,9 @@ def create_xlsx(task):
         temp_xlsx = TemporaryFile()
         book = Workbook(temp_xlsx, {'strings_to_numbers':  False})
     except (OSError, IOError) as e:
-        print("Error saving xlsx temporary file ({0}): {1}".format(e.errno, e.strerror))
+        logger.error("Error saving xlsx temporary file ({0}): {1}".format(e.errno, e.strerror))
     except Exception:
-        print("Unexpected error: {0}".format(sys.exc_info()[0]))
+        logger.error("Unexpected error: {0}".format(sys.exc_info()[0]))
     else:
         task.progress = u'Workbook created'
         task.save()
@@ -526,9 +529,9 @@ def create_csv(task):
         temp_csv = open(task.filename.path, 'a', newline='', encoding='utf-8')
         writer = csv.writer(temp_csv, dialect='excel')
     except (OSError, IOError) as e:
-        print("Error saving csv temporary file ({0}): {1}".format(e.errno, e.strerror))
+        logger.error("Error saving csv temporary file ({0}): {1}".format(e.errno, e.strerror))
     except Exception:
-        print("Unexpected error: {0}".format(sys.exc_info()[0]))
+        logger.error("Unexpected error: {0}".format(sys.exc_info()[0]))
     else:
         task.progress = u'CSV file created'
         task.save()
@@ -550,7 +553,7 @@ def write_export(task, filename, temp_file, datestamp):
     try:
         task.filename.save(filename, File(temp_file))
     except (OSError, IOError) as e:
-        print("Error saving export file ({0}): {1}".format(e.errno, e.strerror))
+        logger.error("Error saving export file ({0}): {1}".format(e.errno, e.strerror))
 
     task.status = u'COMPLETE'
     task.processtime = (datetime.datetime.now() - datestamp).total_seconds()
@@ -635,3 +638,47 @@ def abort_if_zero_studies(num_studies, tsk):
         tsk.progress = u'Required study filter complete.'
         tsk.save()
         return False
+
+
+def create_export_task(celery_uuid, modality, export_type, date_stamp, pid, user, filters_dict):
+    """ Create export task, add filter details and Celery UUID to export table to track later
+
+    :param celery_uuid: UUID allocated by Celery for task
+    :param modality: export modality
+    :param export_type: CSV, XLSX or special
+    :param date_stamp: datetime export started
+    :param pid: If user is permitted to and requested patient names and/or IDs
+    :param user: logged in user
+    :param filters_dict: filters from GET
+    :return: Exports database object
+    """
+
+    if celery_uuid is None:
+        celery_uuid = uuid.uuid4()
+
+    removed_blanks = {k: v for k, v in filters_dict.items() if v}
+    if removed_blanks:
+        if 'submit' in removed_blanks:
+            del removed_blanks['submit']
+        if 'csrfmiddlewaretoken' in removed_blanks:
+            del removed_blanks['csrfmiddlewaretoken']
+        if 'itemsPerPage' in removed_blanks:
+            del removed_blanks['itemsPerPage']
+    no_plot_filters_dict = {k: v for k, v in removed_blanks.items() if 'plot' not in k}
+
+    task = Exports.objects.create()
+    task.task_id = celery_uuid
+    task.modality = modality
+    task.export_type = export_type
+    task.export_date = date_stamp
+    task.progress = 'Query filters imported, task started'
+    task.status = 'CURRENT'
+    task.includes_pid = pid
+    task.export_user_id = user
+    try:
+        task.export_summary = "<br/>".join(": ".join(_) for _ in no_plot_filters_dict.items())
+    except TypeError:
+        task.export_summary = no_plot_filters_dict
+    task.save()
+
+    return task

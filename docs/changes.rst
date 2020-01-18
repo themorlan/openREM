@@ -7,6 +7,7 @@ OpenREM version history
 * `#808`_  Imports: caters for illegal use of mGy units in RDSR for dose at RP values
 * `#805`_  DICOM Networking: fix errors on "association release" and "move complete"
 * `#803`_  Fixed problem with multiple ModalitiesInStudy entries in c-find response
+* `#800`_  Tasks: import and export tasks and DICOM queries and moves now listed with more information
 * `#799`_  DICOM Networking: workaround for stationnames > 16 characters
 * `#798`_  Exports: prevented error in export view if task_id is missing
 * `#797`_  Exports: fixed string/byte issues with csv exports

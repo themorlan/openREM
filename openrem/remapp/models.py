@@ -256,6 +256,7 @@ class DicomQuery(models.Model):
     """
     complete = models.BooleanField(default=False)
     query_id = models.CharField(max_length=64)
+    query_summary = models.TextField(blank=True, null=True)
     failed = models.BooleanField(default=False)
     message = models.TextField(blank=True, null=True)
     stage = models.TextField(blank=True, null=True)
@@ -265,6 +266,9 @@ class DicomQuery(models.Model):
     move_failed_sub_ops = models.IntegerField(default=0)
     move_warning_sub_ops = models.IntegerField(default=0)
     move_complete = models.BooleanField(default=False)
+    move_summary = models.TextField(blank=True)
+    query_uuid = models.UUIDField(null=True)
+    move_uuid = models.UUIDField(null=True)
 
 
 class DicomQRRspStudy(models.Model):
@@ -523,6 +527,7 @@ class Exports(models.Model):
     """
     task_id = models.TextField()
     filename = models.FileField(upload_to='exports/%Y/%m/%d', null=True)
+    export_summary = models.TextField(blank=True, null=True)
     status = models.TextField(blank=True, null=True)
     progress = models.TextField(blank=True, null=True)
     modality = models.CharField(max_length=16, blank=True, null=True)

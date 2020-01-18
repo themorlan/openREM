@@ -1,4 +1,3 @@
-# This Python file uses the following encoding: utf-8
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
 #    Copyright (C) 2014  The Royal Marsden NHS Foundation Trust and Jonathan Cole
 #
@@ -28,14 +27,11 @@
 ..  moduleauthor:: Ed McDonagh and Jonathan Cole
 
 """
-from __future__ import division
+import datetime
+import logging
 
-from builtins import str  # pylint: disable=redefined-builtin
-from builtins import range  # pylint: disable=redefined-builtin
-from past.utils import old_div
 from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -50,27 +46,13 @@ def mg_csv_nhsbsp(filterdict, user=None):
 
     """
 
-    import datetime
-    import uuid
-    from remapp.models import GeneralStudyModuleAttr
-    from remapp.models import Exports
-    from remapp.interface.mod_filters import MGSummaryListFilter
-    from remapp.exports.export_common import create_csv, write_export, abort_if_zero_studies
+    from ..models import GeneralStudyModuleAttr
+    from ..interface.mod_filters import MGSummaryListFilter
+    from .export_common import (create_csv, write_export, abort_if_zero_studies, create_export_task)
 
-    tsk = Exports.objects.create()
-
-    tsk.task_id = mg_csv_nhsbsp.request.id
-    if tsk.task_id is None:  # Required when testing without celery
-        tsk.task_id = u'NotCelery-{0}'.format(uuid.uuid4())
-    tsk.modality = u"MG"
-    tsk.export_type = u"NHSBSP CSV export"
     datestamp = datetime.datetime.now()
-    tsk.export_date = datestamp
-    tsk.progress = u'Query filters imported, task started'
-    tsk.status = u'CURRENT'
-    tsk.includes_pid = False
-    tsk.export_user_id = user
-    tsk.save()
+    tsk = create_export_task(celery_uuid=mg_csv_nhsbsp.request.id, modality='MG', export_type='NHSBSP CSV export',
+                             date_stamp=datestamp, pid=False, user=user, filters_dict=filterdict)
 
     tmpfile, writer = create_csv(tsk)
     if not tmpfile:
@@ -223,7 +205,7 @@ def mg_csv_nhsbsp(filterdict, user=None):
                     target,
                     filter_mat,
                     exp.irradeventxraymechanicaldata_set.get().compression_thickness,
-                    old_div(exp.irradeventxraysourcedata_set.get().exposure_set.get().exposure, 1000),
+                    exp.irradeventxraysourcedata_set.get().exposure_set.get().exposure/1000,
                     u'',  # not applicable to FFDM
                     automan_short,
                     automan,

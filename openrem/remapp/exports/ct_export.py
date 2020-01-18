@@ -1,4 +1,3 @@
-# This Python file uses the following encoding: utf-8
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
 #    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
 #
@@ -32,8 +31,9 @@ import logging
 
 from django.core.exceptions import ObjectDoesNotExist
 from celery import shared_task
-from .export_common import get_common_data, common_headers, create_xlsx, create_csv, write_export, \
-    create_summary_sheet, abort_if_zero_studies
+
+from .export_common import (get_common_data, common_headers, create_xlsx, create_csv, write_export,
+                            create_summary_sheet, abort_if_zero_studies, create_export_task)
 
 logger = logging.getLogger(__name__)
 
@@ -53,24 +53,12 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     import datetime
     from django.db.models import Max
     from .export_common import text_and_date_formats, generate_sheets, sheet_name
-    from ..models import Exports
     from ..interface.mod_filters import ct_acq_filter
-    import uuid
 
-    tsk = Exports.objects.create()
-
-    tsk.task_id = ctxlsx.request.id
-    if tsk.task_id is None:  # Required when testing without celery
-        tsk.task_id = u'NotCelery-{0}'.format(uuid.uuid4())
-    tsk.modality = u"CT"
-    tsk.export_type = u"XLSX export"
     datestamp = datetime.datetime.now()
-    tsk.export_date = datestamp
-    tsk.progress = u'Query filters imported, task started'
-    tsk.status = u'CURRENT'
-    tsk.includes_pid = bool(pid and (name or patid))
-    tsk.export_user_id = user
-    tsk.save()
+    tsk = create_export_task(celery_uuid=ctxlsx.request.id, modality='CT', export_type='XLSX_export',
+                             date_stamp=datestamp, pid=bool(pid and (name or patid)), user=user,
+                             filters_dict=filterdict)
 
     tmpxlsx, book = create_xlsx(tsk)
     if not tmpxlsx:
@@ -200,21 +188,12 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
 
     import datetime
     from django.db.models import Max
-    from ..models import Exports
     from ..interface.mod_filters import ct_acq_filter
 
-    tsk = Exports.objects.create()
-
-    tsk.task_id = ct_csv.request.id
-    tsk.modality = u"CT"
-    tsk.export_type = u"CSV export"
     datestamp = datetime.datetime.now()
-    tsk.export_date = datestamp
-    tsk.progress = u'Query filters imported, task started'
-    tsk.status = u'CURRENT'
-    tsk.includes_pid = bool(pid and (name or patid))
-    tsk.export_user_id = user
-    tsk.save()
+    tsk = create_export_task(celery_uuid=ct_csv.request.id, modality='CT', export_type='CSV export',
+                             date_stamp=datestamp, pid=bool(pid and (name or patid)), user=user,
+                             filters_dict=filterdict)
 
     tmpfile, writer = create_csv(tsk)
     if not tmpfile:
@@ -447,24 +426,11 @@ def ct_phe_2019(filterdict, user=None):
 
     import datetime
     from decimal import Decimal
-    from ..models import Exports
     from ..interface.mod_filters import ct_acq_filter
-    import uuid
 
-    tsk = Exports.objects.create()
-
-    tsk.task_id = ct_phe_2019.request.id
-    if tsk.task_id is None:  # Required when testing without celery
-        tsk.task_id = u'NotCelery-{0}'.format(uuid.uuid4())
-    tsk.modality = u"CT"
-    tsk.export_type = u"PHE CT 2019 export"
     datestamp = datetime.datetime.now()
-    tsk.export_date = datestamp
-    tsk.progress = u'Query filters imported, task started'
-    tsk.status = u'CURRENT'
-    tsk.includes_pid = False
-    tsk.export_user_id = user
-    tsk.save()
+    tsk = create_export_task(celery_uuid=ct_phe_2019.request.id, modality='CT', export_type='PHE CT 2019 export',
+                             date_stamp=datestamp, pid=False, user=user, filters_dict=filterdict)
 
     tmp_xlsx, book = create_xlsx(tsk)
     if not tmp_xlsx:

@@ -3426,6 +3426,7 @@ def celery_tasks(request, stage=None):
     """AJAX function to get current task details"""
     import requests
     from datetime import datetime
+    from .models import (DicomQuery, Exports)
 
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
         try:
@@ -3440,7 +3441,8 @@ def celery_tasks(request, stage=None):
                 for task_uuid in list(task_dict_list.keys()):
                     this_task = {'uuid': task_uuid,
                                  'name': task_dict_list[task_uuid]['name'],
-                                 'state': task_dict_list[task_uuid]['state']
+                                 'state': task_dict_list[task_uuid]['state'],
+                                 'message': ''
                                  }
                     if isinstance(task_dict_list[task_uuid]['received'], float):
                         this_task['received'] = datetime.fromtimestamp(task_dict_list[task_uuid]['received'])
@@ -3451,14 +3453,37 @@ def celery_tasks(request, stage=None):
                     else:
                         this_task['started'] = ''
                     try:
+                        this_task['source'] = ''
+                        this_task['result'] = ''
+                        # print(f"task name is {this_task['name']}")
                         if u"exports" in this_task['name'].split('.'):
                             this_task['type'] = u'export'
+                            try:
+                                export_task = Exports.objects.get(task_id__exact=task_uuid)
+                                this_task['source'] = export_task.export_summary
+                                this_task['result'] = export_task.status
+                            except ObjectDoesNotExist:
+                                pass
                         elif u"websizeimport" in this_task['name'].split('.'):
                             this_task['type'] = u'size'
-                            if u"netdicom" in this_task['name'].split('.'):
-                                this_task['type'] = u'netdicom'
-                            if u"make_skin_map" in this_task['name'].split('.'):
-                                this_task['type'] = u'skin_map'
+                        elif "qrscu.qrscu" in this_task['name']:
+                            this_task['type'] = u'netdicom'
+                            try:
+                                dicom_task = DicomQuery.objects.get(query_uuid__exact=task_uuid)
+                                this_task['result'] = dicom_task.stage
+                                this_task['source'] = dicom_task.query_summary
+                            except ObjectDoesNotExist:
+                                pass
+                        elif "movescu" in this_task['name'].split('.'):
+                            this_task['type'] = u'netdicom'
+                            try:
+                                move_task = DicomQuery.objects.get(move_uuid__exact=task_uuid)
+                                this_task['result'] = move_task.move_summary
+                                this_task['source'] = move_task.query_summary
+                            except ObjectDoesNotExist:
+                                pass
+                        elif u"make_skin_map" in this_task['name'].split('.'):
+                            this_task['type'] = u'skin_map'
                         else:
                             this_task['type'] = None
                     except AttributeError:
@@ -3472,12 +3497,16 @@ def celery_tasks(request, stage=None):
                         recent_tasks += [this_task, ]
                     else:
                         older_tasks += [this_task, ]
-                if u"active" in stage:
-                    return render(request,'remapp/celery_tasks.html', {'tasks': active_tasks, 'type': 'active'})
-                elif u"recent" in stage:
-                    return render(request,'remapp/celery_tasks_complete.html', {'tasks': recent_tasks, 'type': 'recent'})
-                elif u"older" in stage:
-                    return render(request,'remapp/celery_tasks_complete.html', {'tasks': older_tasks, 'type': 'older'})
+                dicom_tasks = DicomQuery.objects.order_by('pk')
+                if "active" in stage:
+                    return render(request, 'remapp/celery_tasks.html',
+                                  {'tasks': active_tasks, 'type': 'active'})
+                elif "recent" in stage:
+                    return render(request, 'remapp/celery_tasks_complete.html',
+                                  {'tasks': recent_tasks, 'type': 'recent'})
+                elif "older" in stage:
+                    return render(request,'remapp/celery_tasks_complete.html',
+                                  {'tasks': older_tasks, 'type': 'older'})
         except requests.ConnectionError:
             admin = _create_admin_dict(request)
             template = 'remapp/celery_connection_error.html'

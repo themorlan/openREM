@@ -42,7 +42,7 @@ class ExportDXxlsx(TestCase):
         dx.dx(os.path.join(root_tests, dx_carestream_dr7500_2))
 
     def test_id_as_text(self):  # See https://bitbucket.org/openrem/openrem/issues/443
-        filter_set = ""
+        filter_set = {}
         pid = True
         name = False
         patient_id = True
@@ -74,7 +74,7 @@ class ExportDXxlsx(TestCase):
 
     def test_filters(self):
         # Tests that extracts with multiple filters succeed (though previous test would fail too!
-        filter_set = ''
+        filter_set = {}
         # filter_set = "display_name=Carestream+Clinic+KODAK7500&"
         pid = True
         name = True

@@ -6,6 +6,7 @@
     <th>Exported</th>
     <th>Modality</th>
     <th>Export type</th>
+    <th>Export filters</th>
     <th>No. records</th>
     <th>Error message</th>
     <th></th>
@@ -15,6 +16,7 @@
         <td>{{ tsk.export_date|naturaltime }}</td>
         <td>{{ tsk.modality }}</td>
         <td>{{ tsk.export_type }}</td>
+        <td>{{ tsk.export_summary|safe }}</td>
         <td>{{ tsk.num_records }}</td>
         <td>{{ tsk.progress }}</td>
        <td><a href="{% url 'export_abort' pk=tsk.pk %}" class="btn btn-default">Delete task</a></td>
