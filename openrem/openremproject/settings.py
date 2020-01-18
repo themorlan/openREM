@@ -98,7 +98,7 @@ STATICFILES_DIRS = (
 #
 # SECRET_KEY must be changed in local_settings.py
 #
-SECRET_KEY = 'youmustchangethiskeyinlocal_settings'
+SECRET_KEY = 'youmustchangethiskeyinlocal_settings'  # nosec
 
 # URL name of the login page (as defined in urls.py)
 LOGIN_URL = 'login'
@@ -262,7 +262,7 @@ VIRTUAL_DIRECTORY = ''
 EMAIL_HOST = 'localhost'
 EMAIL_PORT = 25
 EMAIL_HOST_USER = 'a.user.that.can.send'
-EMAIL_HOST_PASSWORD = 'the.above.user.password'
+EMAIL_HOST_PASSWORD = 'the.above.user.password'  # nosec
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = False
 EMAIL_DOSE_ALERT_SENDER = 'your.alert@email.address'
