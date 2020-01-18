@@ -360,7 +360,7 @@ def _check_rp_dose_units(rp_dose_sequence):
 
 def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
     # Name in DICOM standard for TID 10003B is Irradiation Event X-Ray Source Data
-    # See http://dicom.nema.org/medical/Dicom/2017e/output/chtml/part16/sect_TID_10003b.html
+    # See http://dicom.nema.org/medical/dicom/current/output/chtml/part16/sect_TID_10003B.html
     # TODO: review model to convert to cid where appropriate, and add additional fields
     from decimal import Decimal
     from django.db.models import Avg
