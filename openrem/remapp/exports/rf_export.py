@@ -1,4 +1,3 @@
-# This Python file uses the following encoding: utf-8
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
 #    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
 #
@@ -34,7 +33,7 @@ import logging
 
 from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Max, Min, Avg
+from django.db.models import Avg, Max, Min
 
 from ..exports.export_common import (text_and_date_formats, common_headers, generate_sheets, sheet_name,
                                      get_common_data, get_xray_filter_info, create_xlsx, create_csv, write_export,

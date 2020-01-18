@@ -1,4 +1,3 @@
-# This Python file uses the following encoding: utf-8
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
 #    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
 #
@@ -192,8 +191,9 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
     from ..interface.mod_filters import ct_acq_filter
 
     datestamp = datetime.datetime.now()
-    tsk = create_export_task(celery_uuid=ct_csv.request.id, modality='CT', export_type='CSV export', date_stamp=datestamp,
-                             pid=bool(pid and (name or patid)), user=user, filters_dict=filterdict)
+    tsk = create_export_task(celery_uuid=ct_csv.request.id, modality='CT', export_type='CSV export',
+                             date_stamp=datestamp, pid=bool(pid and (name or patid)), user=user,
+                             filters_dict=filterdict)
 
     tmpfile, writer = create_csv(tsk)
     if not tmpfile:
