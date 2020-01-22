@@ -16,7 +16,7 @@
 
 """
 
-from geomfunc import *
+from .geomfunc import *
 import time
 from decimal import *
 
