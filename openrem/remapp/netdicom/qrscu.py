@@ -9,7 +9,7 @@ modality
 """
 
 from builtins import str  # pylint: disable=redefined-builtin
-from celery import shared_task
+from celery import shared_task, Task
 import django
 import logging
 import os
@@ -23,6 +23,12 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 logger = logging.getLogger('remapp.netdicom.qrscu')  # Explicitly named so that it is still handled when using __main__
+
+class LogErrorsTask(Task):
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        logger.exception('Failure for Celery task {0}'.format(task_id), exc_info=exc)
+        super(LogErrorsTask, self).on_failure(exc, task_id, args, kwargs, einfo)
+
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
 projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
@@ -788,7 +794,7 @@ def _remove_duplicates_in_study_response(query, initial_count):
         return initial_count
 
 
-@shared_task(name='remapp.netdicom.qrscu.qrscu')  # (name='remapp.netdicom.qrscu.qrscu', queue='qr')
+@shared_task(name='remapp.netdicom.qrscu.qrscu', base=LogErrorsTask)  # (name='remapp.netdicom.qrscu.qrscu', queue='qr')
 def qrscu(
         qr_scp_pk=None, store_scp_pk=None,
         implicit=False, explicit=False, move=False, query_id=None,
@@ -1213,7 +1219,7 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
     return True
 
 
-@shared_task(name='remapp.netdicom.qrscu.movescu')  # (name='remapp.netdicom.qrscu.movescu', queue='qr')
+@shared_task(name='remapp.netdicom.qrscu.movescu', base=LogErrorsTask)  # (name='remapp.netdicom.qrscu.movescu', queue='qr')
 def movescu(query_id):
     """
     C-Move request element of query-retrieve service class user
