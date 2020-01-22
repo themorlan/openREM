@@ -1,5 +1,4 @@
-# This Python file uses the following encoding: utf-8
-# test_export_rf_xlsx.py
+# test_openskin.py
 
 from decimal import Decimal
 import gzip
