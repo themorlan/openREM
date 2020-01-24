@@ -1,6 +1,5 @@
 # test_openskin.py
 
-from decimal import Decimal
 import gzip
 import pickle
 import os
