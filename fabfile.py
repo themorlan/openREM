@@ -90,8 +90,9 @@ def _restart_gunicorn(c):
 def deploy(c):
     site_folder = '/home/{0}/sites/{1}'.format(c.user, c.host)
     source_folder = site_folder + '/source'
+    print('getting commit hash')
     build_commit = c.local('echo $BITBUCKET_COMMIT')
-    print(build_commit)
+    print(f'commit hash is {build_commit}')
     # _create_directory_structure_if_necessary(c, site_folder)
     # _get_latest_source(c, source_folder)
     # # _update_settings(c, source_folder, env.host)
