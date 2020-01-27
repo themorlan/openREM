@@ -95,7 +95,7 @@ def deploy(c):
     test_echo = c.local('echo adfafd')
     print(f'test_echo is {test_echo}')
     c.local('echo $BITBUCKET_COMMIT')
-    build_commit = c.local('echo $BITBUCKET_COMMIT')
+    build_commit = c.local('$BITBUCKET_COMMIT')
     print(f'commit hash is {build_commit}')
     # _create_directory_structure_if_necessary(c, site_folder)
     # _get_latest_source(c, source_folder)
