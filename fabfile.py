@@ -20,12 +20,19 @@ def _create_directory_structure_if_necessary(c, site_folder):
 @task
 def _get_latest_source(c, source_folder):
     if files.exists(c, source_folder + '/.git'):
+        print("checking git folder exists")
         c.run('cd {0} && git fetch'.format(source_folder))
+        print("Seems it does, should have fetched now")
     else:
+        print("Oops, didn't find it")
         c.run('git clone {0} {1}'.format(REPO_URL, source_folder))
     # current_commit = local("git log -n 1 --format=%H", capture=True)
+    print("getting current commit")
     current_commit = c.local("echo $BITBUCKET_COMMIT")
+    print(f"current commit is {current_commit}")
+    print("Attempting to resett o new commit")
     c.run('cd {0} && git reset --hard {1}'.format(source_folder, current_commit))
+    print("Done it")
 
 
 # def _update_settings(c, source_folder, site_name):
