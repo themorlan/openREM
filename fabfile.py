@@ -91,9 +91,10 @@ def deploy(c):
     site_folder = '/home/{0}/sites/{1}'.format(c.user, c.host)
     source_folder = site_folder + '/source'
     print('getting commit hash')
+    c.local('echo adfafd')
     test_echo = c.local('echo adfafd')
-    test_echo2 = c.local('$BITBUCKET_COMMIT')
-    print(f'test_echo is {test_echo} and test_echo2 is {test_echo2}')
+    print(f'test_echo is {test_echo}')
+    c.local('echo $BITBUCKET_COMMIT')
     build_commit = c.local('echo $BITBUCKET_COMMIT')
     print(f'commit hash is {build_commit}')
     # _create_directory_structure_if_necessary(c, site_folder)
