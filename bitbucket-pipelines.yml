@@ -27,23 +27,23 @@ pipelines:
     issue814fabric:  # Commits to the develop branch are tested and deployed to dev.openrem.org on success
       - step:
           script:
-            - mv openrem/openremproject/local_settings.py{.example,}
-            - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
-            - >-
-              sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql_psycopg2'," openrem/openremproject/local_settings.py
-            - >-
-              sed -i "/'NAME':/c\        'NAME': 'openremdb'," openrem/openremproject/local_settings.py
-            - >-
-              sed -i "/'USER':/c\        'USER': 'openremuser'," openrem/openremproject/local_settings.py
-            - >-
-              sed -i "/'PASSWORD':/c\        'PASSWORD': 'openremuserpass'," openrem/openremproject/local_settings.py
-            - >-
-              sed -i "/'HOST':/c\        'HOST': '127.0.0.1'," openrem/openremproject/local_settings.py
-            - >-
-              sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
-            - mv openrem/openremproject/wsgi.py{.example,}
-            - pip install -U tox
-            - tox -e ci
+#            - mv openrem/openremproject/local_settings.py{.example,}
+#            - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
+#            - >-
+#              sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql_psycopg2'," openrem/openremproject/local_settings.py
+#            - >-
+#              sed -i "/'NAME':/c\        'NAME': 'openremdb'," openrem/openremproject/local_settings.py
+#            - >-
+#              sed -i "/'USER':/c\        'USER': 'openremuser'," openrem/openremproject/local_settings.py
+#            - >-
+#              sed -i "/'PASSWORD':/c\        'PASSWORD': 'openremuserpass'," openrem/openremproject/local_settings.py
+#            - >-
+#              sed -i "/'HOST':/c\        'HOST': '127.0.0.1'," openrem/openremproject/local_settings.py
+#            - >-
+#              sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
+#            - mv openrem/openremproject/wsgi.py{.example,}
+#            - pip install -U tox
+#            - tox -e ci
             - pip install fabric
             - pip install patchwork
             - mkdir -p ~/.ssh
