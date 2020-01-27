@@ -23,14 +23,6 @@ pipelines:
           - tox -e ci
         services:
           - postgres
-definitions:
-  services:
-    postgres:
-      image: postgres
-      environment:
-        POSTGRES_DB: openremdb
-        POSTGRES_USER: openremuser
-        POSTGRES_PASSWORD: openremuserpass
   branches:
     issue814fabric:  # Commits to the develop branch are tested and deployed to dev.openrem.org on success
       - step:
@@ -73,3 +65,11 @@ definitions:
 #            - cat deploy_tools/my_known_hosts >> ~/.ssh/known_hosts
 #            - (umask  077 ; echo $BB_OPENREM_KEY | base64 --decode > ~/.ssh/id_rsa)
 #            - fab deploy:host=deploy@testing.openrem.org
+definitions:
+  services:
+    postgres:
+      image: postgres
+      environment:
+        POSTGRES_DB: openremdb
+        POSTGRES_USER: openremuser
+        POSTGRES_PASSWORD: openremuserpass
