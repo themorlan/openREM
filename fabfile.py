@@ -2,6 +2,7 @@
 # Original code from: Test-Driven Development with Python by Harry Percival (O’Reilly).
 # Copyright 2014 Harry Percival, 978-1-449-36482-3.”
 
+
 from fabric import task
 from fabric.connection import Connection
 from patchwork import files
@@ -80,7 +81,7 @@ def _restart_gunicorn(c):
 
 @task
 def deploy(c):
-    site_folder = '/home/{0}/sites/{1}'.format(Connection.user, Connection.host)
+    site_folder = '/home/{0}/sites/{1}'.format(c.user, c.host)
     source_folder = site_folder + '/source'
     _create_directory_structure_if_necessary(c, site_folder)
     _get_latest_source(c, source_folder)
