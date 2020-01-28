@@ -52,7 +52,7 @@ pipelines:
             - echo $BITBUCKET_COMMIT
 #            - fab --hosts deploy@dev.openrem.org deploy
             - SITE_FOLDER="/home/deploy/sites/dev.openrem.org/"
-            - SOURCE_FOLDER = $SITE_FOLDER"source"
+            - SOURCE_FOLDER=$SITE_FOLDER"source"
             - ssh deploy@dev.openrem.org "cd $SOURCE_FOLDER && git fetch"
             - ssh deploy@dev.openrem.org "cd $SOURCE_FOLDER && git reset --hard $BITBUCKET_COMMIT"
             -
