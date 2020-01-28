@@ -44,13 +44,15 @@ pipelines:
 #            - mv openrem/openremproject/wsgi.py{.example,}
 #            - pip install -U tox
 #            - tox -e ci
-            - pip install fabric
-            - pip install patchwork
+#            - pip install fabric
+#            - pip install patchwork
             - mkdir -p ~/.ssh
             - cat deploy_tools/my_known_hosts >> ~/.ssh/known_hosts
             - (umask  077 ; echo $BB_OPENREM_KEY | base64 --decode > ~/.ssh/id_rsa)
             - echo $BITBUCKET_COMMIT
-            - fab --hosts deploy@dev.openrem.org deploy
+#            - fab --hosts deploy@dev.openrem.org deploy
+            - ssh deploy@dev.openrem.org "uname -a"
+            - ssh deploy@dev.openrem.org "cat $BITBUCKET_COMMIT > latestcommit.txt"
           services:
             - postgres
 #    '*stage':  # Commits to any branch ending in 'stage' are tested and deployed to testing.openrem.org
