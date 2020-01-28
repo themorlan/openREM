@@ -57,6 +57,11 @@ pipelines:
             - ssh deploy@dev.openrem.org "cd $SOURCE_FOLDER && git reset --hard $BITBUCKET_COMMIT"
             - VENV_PIP=$SITE_FOLDER"virtualenv/bin/pip"
             - ssh deploy@dev.openrem.org "$VENV_PIP install -e $SOURCE_FOLDER"
+            - VENV_PYTHON=$SITE_FOLDER"virtualenv/bin/python"
+            - ssh deploy@dev.openrem.org "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py collectstatic --noinput"
+            - ssh deploy@dev.openrem.org "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py makemigrations remapp --noinput"
+            - ssh deploy@dev.openrem.org "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py migrate --noinput"
+            - ssh deploy@dev.openrem.org "sudo /usr/sbin/service gunicorn-dev.openrem.org restart"
           services:
             - postgres
 #    '*stage':  # Commits to any branch ending in 'stage' are tested and deployed to testing.openrem.org
