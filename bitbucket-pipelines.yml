@@ -26,6 +26,7 @@ pipelines:
   branches:
     issue814fabric:  # Commits to the develop branch are tested and deployed to dev.openrem.org on success
       - step:
+          name: run django tests
           script:
             - mv openrem/openremproject/local_settings.py{.example,}
             - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
@@ -47,22 +48,24 @@ pipelines:
           services:
             - postgres
       - step:
+          name: deploy to dev.openrem.org
+          deployment: develop
           script:
             - mkdir -p ~/.ssh
             - cat deploy_tools/my_known_hosts >> ~/.ssh/known_hosts
             - (umask  077 ; echo $BB_OPENREM_KEY | base64 --decode > ~/.ssh/id_rsa)
             - echo $BITBUCKET_COMMIT
-            - SITE_FOLDER="/home/deploy/sites/dev.openrem.org/"
+            - SITE_FOLDER="/home/deploy/sites/$server/"
             - SOURCE_FOLDER=$SITE_FOLDER"source"
-            - ssh deploy@dev.openrem.org "cd $SOURCE_FOLDER && git fetch"
-            - ssh deploy@dev.openrem.org "cd $SOURCE_FOLDER && git reset --hard $BITBUCKET_COMMIT"
+            - ssh deploy@$server "cd $SOURCE_FOLDER && git fetch"
+            - ssh deploy@$server "cd $SOURCE_FOLDER && git reset --hard $BITBUCKET_COMMIT"
             - VENV_PIP=$SITE_FOLDER"virtualenv/bin/pip"
-            - ssh deploy@dev.openrem.org "$VENV_PIP install -e $SOURCE_FOLDER"
+            - ssh deploy@$server "$VENV_PIP install -e $SOURCE_FOLDER"
             - VENV_PYTHON=$SITE_FOLDER"virtualenv/bin/python"
-            - ssh deploy@dev.openrem.org "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py collectstatic --noinput"
-            - ssh deploy@dev.openrem.org "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py makemigrations remapp --noinput"
-            - ssh deploy@dev.openrem.org "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py migrate --noinput"
-            - ssh deploy@dev.openrem.org "sudo /usr/sbin/service gunicorn-dev.openrem.org restart"
+            - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py collectstatic --noinput"
+            - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py makemigrations remapp --noinput"
+            - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py migrate --noinput"
+            - ssh deploy@$server "sudo /usr/sbin/service gunicorn-dev.openrem.org restart"
 #    '*stage':  # Commits to any branch ending in 'stage' are tested and deployed to testing.openrem.org
 #      - step:
 #          script:
