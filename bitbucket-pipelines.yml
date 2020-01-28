@@ -52,7 +52,7 @@ pipelines:
             - echo $BITBUCKET_COMMIT
 #            - fab --hosts deploy@dev.openrem.org deploy
             - ssh deploy@dev.openrem.org "uname -a"
-            - ssh deploy@dev.openrem.org "cat $BITBUCKET_COMMIT > latestcommit.txt"
+            - ssh deploy@dev.openrem.org "echo $BITBUCKET_COMMIT > latestcommit.txt"
           services:
             - postgres
 #    '*stage':  # Commits to any branch ending in 'stage' are tested and deployed to testing.openrem.org
