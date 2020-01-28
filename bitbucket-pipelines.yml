@@ -51,8 +51,11 @@ pipelines:
             - (umask  077 ; echo $BB_OPENREM_KEY | base64 --decode > ~/.ssh/id_rsa)
             - echo $BITBUCKET_COMMIT
 #            - fab --hosts deploy@dev.openrem.org deploy
-            - ssh deploy@dev.openrem.org "cd /home/deploy/sites/dev.openrem.org/source/ && git fetch"
-            - ssh deploy@dev.openrem.org "cd /home/deploy/sites/dev.openrem.org/source/ && git reset --hard $BITBUCKET_COMMIT"
+            - SITE_FOLDER="/home/deploy/sites/dev.openrem.org/"
+            - SOURCE_FOLDER = $SITE_FOLDER"source"
+            - ssh deploy@dev.openrem.org "cd $SOURCE_FOLDER && git fetch"
+            - ssh deploy@dev.openrem.org "cd $SOURCE_FOLDER && git reset --hard $BITBUCKET_COMMIT"
+            -
           services:
             - postgres
 #    '*stage':  # Commits to any branch ending in 'stage' are tested and deployed to testing.openrem.org
