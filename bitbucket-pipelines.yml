@@ -55,7 +55,8 @@ pipelines:
             - SOURCE_FOLDER=$SITE_FOLDER"source"
             - ssh deploy@dev.openrem.org "cd $SOURCE_FOLDER && git fetch"
             - ssh deploy@dev.openrem.org "cd $SOURCE_FOLDER && git reset --hard $BITBUCKET_COMMIT"
-            -
+            - VENV_PIP=$SITE_FOLDER"virtualenv/bin/pip"
+            - ssh deploy@dev.openrem.org "$VENV_PIP install -e $SOURCE_FOLDER"
           services:
             - postgres
 #    '*stage':  # Commits to any branch ending in 'stage' are tested and deployed to testing.openrem.org
