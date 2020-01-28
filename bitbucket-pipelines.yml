@@ -27,30 +27,31 @@ pipelines:
     issue814fabric:  # Commits to the develop branch are tested and deployed to dev.openrem.org on success
       - step:
           script:
-#            - mv openrem/openremproject/local_settings.py{.example,}
-#            - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
-#            - >-
-#              sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql_psycopg2'," openrem/openremproject/local_settings.py
-#            - >-
-#              sed -i "/'NAME':/c\        'NAME': 'openremdb'," openrem/openremproject/local_settings.py
-#            - >-
-#              sed -i "/'USER':/c\        'USER': 'openremuser'," openrem/openremproject/local_settings.py
-#            - >-
-#              sed -i "/'PASSWORD':/c\        'PASSWORD': 'openremuserpass'," openrem/openremproject/local_settings.py
-#            - >-
-#              sed -i "/'HOST':/c\        'HOST': '127.0.0.1'," openrem/openremproject/local_settings.py
-#            - >-
-#              sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
-#            - mv openrem/openremproject/wsgi.py{.example,}
-#            - pip install -U tox
-#            - tox -e ci
-#            - pip install fabric
-#            - pip install patchwork
+            - mv openrem/openremproject/local_settings.py{.example,}
+            - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
+            - >-
+              sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql_psycopg2'," openrem/openremproject/local_settings.py
+            - >-
+              sed -i "/'NAME':/c\        'NAME': 'openremdb'," openrem/openremproject/local_settings.py
+            - >-
+              sed -i "/'USER':/c\        'USER': 'openremuser'," openrem/openremproject/local_settings.py
+            - >-
+              sed -i "/'PASSWORD':/c\        'PASSWORD': 'openremuserpass'," openrem/openremproject/local_settings.py
+            - >-
+              sed -i "/'HOST':/c\        'HOST': '127.0.0.1'," openrem/openremproject/local_settings.py
+            - >-
+              sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
+            - mv openrem/openremproject/wsgi.py{.example,}
+            - pip install -U tox
+            - tox -e ci
+          services:
+            - postgres
+      - step:
+          script:
             - mkdir -p ~/.ssh
             - cat deploy_tools/my_known_hosts >> ~/.ssh/known_hosts
             - (umask  077 ; echo $BB_OPENREM_KEY | base64 --decode > ~/.ssh/id_rsa)
             - echo $BITBUCKET_COMMIT
-#            - fab --hosts deploy@dev.openrem.org deploy
             - SITE_FOLDER="/home/deploy/sites/dev.openrem.org/"
             - SOURCE_FOLDER=$SITE_FOLDER"source"
             - ssh deploy@dev.openrem.org "cd $SOURCE_FOLDER && git fetch"
@@ -62,8 +63,6 @@ pipelines:
             - ssh deploy@dev.openrem.org "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py makemigrations remapp --noinput"
             - ssh deploy@dev.openrem.org "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py migrate --noinput"
             - ssh deploy@dev.openrem.org "sudo /usr/sbin/service gunicorn-dev.openrem.org restart"
-          services:
-            - postgres
 #    '*stage':  # Commits to any branch ending in 'stage' are tested and deployed to testing.openrem.org
 #      - step:
 #          script:
