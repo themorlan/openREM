@@ -4,6 +4,7 @@ OpenREM version history
 
 1.0.0b1 (2020-xx-xx)
 --------------------
+* `#816`_  Interface: fixed password change error
 * `#808`_  Imports: caters for illegal use of mGy units in RDSR for dose at RP values
 * `#807`_  Exports: fixed errors in PHE fluoro export when values are None
 * `#805`_  DICOM Networking: fix errors on "association release" and "move complete"
