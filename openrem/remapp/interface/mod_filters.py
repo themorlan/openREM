@@ -27,17 +27,17 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-from __future__ import division
-
-from builtins import object  # pylint: disable=redefined-builtin
-from past.utils import old_div
-import os
-os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
+from decimal import Decimal, InvalidOperation
+import logging
 
 import django_filters
 from django import forms
-from remapp.models import GeneralStudyModuleAttr
-from django.utils.safestring import mark_safe
+from django.db.models import Q
+
+from ..models import GeneralStudyModuleAttr
+from ..tools.hash_id import hash_id
+
+logger = logging.getLogger(__name__)
 
 TEST_CHOICES = ((u'', u'Yes (default)'), (2, u'No (caution)'),)
 
@@ -45,9 +45,6 @@ TEST_CHOICES = ((u'', u'Yes (default)'), (2, u'No (caution)'),)
 def custom_name_filter(queryset, name, value):
     if not value:
         return queryset
-
-    from django.db.models import Q
-    from remapp.tools.hash_id import hash_id
     filtered = queryset.filter(
         (
                 Q(patientmoduleattr__name_hashed=False) & Q(patientmoduleattr__patient_name__icontains=value)
@@ -61,9 +58,6 @@ def custom_name_filter(queryset, name, value):
 def custom_id_filter(queryset, name, value):
     if not value:
         return queryset
-
-    from django.db.models import Q
-    from remapp.tools.hash_id import hash_id
     filtered = queryset.filter(
         (
                 Q(patientmoduleattr__id_hashed=False) & Q(patientmoduleattr__patient_id__icontains=value)
@@ -77,9 +71,6 @@ def custom_id_filter(queryset, name, value):
 def _custom_acc_filter(queryset, name, value):
     if not value:
         return queryset
-
-    from django.db.models import Q
-    from remapp.tools.hash_id import hash_id
     filtered = queryset.filter(
         (
                 Q(accession_hashed=False) & Q(accession_number__icontains=value)
@@ -93,10 +84,8 @@ def _custom_acc_filter(queryset, name, value):
 def _total_dap_filter(queryset, name, value):
     if not value or not name:
         return queryset
-
-    from decimal import Decimal, InvalidOperation
     try:
-        value_gy_m2 = old_div(Decimal(value), Decimal(1000000))
+        value_gy_m2 = Decimal(value)/Decimal(1000000)
     except InvalidOperation:
         return queryset
     if 'study_dap_min' in name:
@@ -110,10 +99,8 @@ def _total_dap_filter(queryset, name, value):
 def _event_dap_filter(queryset, name, value):
     if not value or not name:
         return queryset
-
-    from decimal import Decimal, InvalidOperation
     try:
-        value_gy_m2 = old_div(Decimal(value), Decimal(1000000))
+        value_gy_m2 = Decimal(value)/Decimal(1000000)
     except InvalidOperation:
         return queryset
     if 'event_dap_min' in name:
@@ -277,86 +264,33 @@ def _specify_event_numbers(queryset, name, value):
         value = int(value)
     except ValueError:
         if value == 'more':
-            filtered = queryset.filter(number_of_events__gt=10)
+            if 'num_events' in name:
+                filtered = queryset.filter(number_of_events__gt=10)
+            elif 'num_spiral_events' in name:
+                filtered = queryset.filter(number_of_spiral__gt=10)
+            elif 'num_axial_events' in name:
+                filtered = queryset.filter(number_of_axial__gt=10)
+            elif 'num_spr_events' in name:
+                filtered = queryset.filter(number_of_const_angle__gt=10)
+            elif 'num_stationary_events' in name:
+                filtered = queryset.filter(number_of_stationary__gt=10)
+            else:
+                return queryset
             return filtered
+        else:
+            return queryset
+    if 'num_events' in name:
+        filtered = queryset.filter(number_of_events__exact=value)
+    elif 'num_spiral_events' in name:
+        filtered = queryset.filter(number_of_spiral__exact=value)
+    elif 'num_axial_events' in name:
+        filtered = queryset.filter(number_of_axial__exact=value)
+    elif 'num_spr_events' in name:
+        filtered = queryset.filter(number_of_const_angle__exact=value)
+    elif 'num_stationary_events' in name:
+        filtered = queryset.filter(number_of_stationary__exact=value)
+    else:
         return queryset
-    filtered = queryset.filter(number_of_events__exact=value)
-    return filtered
-
-
-def _specify_event_numbers_spiral(queryset, name, value):
-    """Method filter for specifying number of spiral (helical) events in each study
-
-    :param queryset: Study list
-    :param name: field name (not used)
-    :param value: number of events
-    :return: filtered queryset
-    """
-    try:
-        value = int(value)
-    except ValueError:
-        if value == 'more':
-            filtered = queryset.filter(number_of_spiral__gt=10)
-            return filtered
-        return queryset
-    filtered = queryset.filter(number_of_spiral__exact=value)
-    return filtered
-
-
-def _specify_event_numbers_axial(queryset, name, value):
-    """Method filter for specifying number of axial events in each study
-
-    :param queryset: Study list
-    :param name: field name (not used)
-    :param value: number of events
-    :return: filtered queryset
-    """
-    try:
-        value = int(value)
-    except ValueError:
-        if value == 'more':
-            filtered = queryset.filter(number_of_axial__gt=10)
-            return filtered
-        return queryset
-    filtered = queryset.filter(number_of_axial__exact=value)
-    return filtered
-
-
-def _specify_event_numbers_spr(queryset, name, value):
-    """Method filter for specifying number of scan projection radiograph events in each study
-
-    :param queryset: Study list
-    :param name: field name (not used)
-    :param value: number of events
-    :return: filtered queryset
-    """
-    try:
-        value = int(value)
-    except ValueError:
-        if value == 'more':
-            filtered = queryset.filter(number_of_const_angle__gt=10)
-            return filtered
-        return queryset
-    filtered = queryset.filter(number_of_const_angle__exact=value)
-    return filtered
-
-
-def _specify_event_numbers_stationary(queryset, name, value):
-    """Method filter for specifying number of scan projection radiograph events in each study
-
-    :param queryset: Study list
-    :param name: field name (not used)
-    :param value: number of events
-    :return: filtered queryset
-    """
-    try:
-        value = int(value)
-    except ValueError:
-        if value == 'more':
-            filtered = queryset.filter(number_of_stationary__gt=10)
-            return filtered
-        return queryset
-    filtered = queryset.filter(number_of_stationary__exact=value)
     return filtered
 
 
@@ -400,13 +334,13 @@ class CTSummaryListFilter(django_filters.FilterSet):
         widget=forms.CheckboxSelectMultiple)
     num_events = django_filters.ChoiceFilter(method=_specify_event_numbers, label=u'Num. events total',
                                              choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
-    num_spiral_events = django_filters.ChoiceFilter(method=_specify_event_numbers_spiral, label=u'Num. spiral events',
+    num_spiral_events = django_filters.ChoiceFilter(method=_specify_event_numbers, label=u'Num. spiral events',
                                                     choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
-    num_axial_events = django_filters.ChoiceFilter(method=_specify_event_numbers_axial, label=u'Num. axial events',
+    num_axial_events = django_filters.ChoiceFilter(method=_specify_event_numbers, label=u'Num. axial events',
                                                    choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
-    num_spr_events = django_filters.ChoiceFilter(method=_specify_event_numbers_spr, label=u'Num. localisers',
+    num_spr_events = django_filters.ChoiceFilter(method=_specify_event_numbers, label=u'Num. localisers',
                                                  choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
-    num_stationary_events = django_filters.ChoiceFilter(method=_specify_event_numbers_stationary,
+    num_stationary_events = django_filters.ChoiceFilter(method=_specify_event_numbers,
                                                         label=u'Num. stationary events', choices=EVENT_NUMBER_CHOICES,
                                                         widget=forms.Select)
 
