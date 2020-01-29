@@ -49,7 +49,8 @@ django.setup()
 
 from celery import shared_task
 
-logger = logging.getLogger('remapp.tools.make_skin_map')  # Explicitly named so that it is still handled when using __main__
+# Explicitly name logger so that it is still handled when using __main__
+logger = logging.getLogger('remapp.tools.make_skin_map')
 
 
 @shared_task(name='remapp.tools.make_skin_map', ignore_result=True)
@@ -120,19 +121,19 @@ def make_skin_map(study_pk=None):
             logger.info(u"Study PK {0}: No irradiation event x-ray data found. Assuming supine.".format(study_pk))
         if ptr and orientation_modifier:
             pat_pos_source = u"extracted"
-            patPos = ptr + u"F" + orientation_modifier
+            pat_pos = ptr + u"F" + orientation_modifier
         elif ptr:
             pat_pos_source = u"supine assumed"
-            patPos = ptr + u"FS"
+            pat_pos = ptr + u"FS"
         elif orientation_modifier:
             pat_pos_source = u"head first assumed"
-            patPos = u"HF" + orientation_modifier
+            pat_pos = u"HF" + orientation_modifier
         else:
             pat_pos_source = u"assumed"
-            patPos = u"HFS"
-        logger.debug(u"patPos is {0} and source is {1}".format(patPos, pat_pos_source))
+            pat_pos = u"HFS"
+        logger.debug(u"patPos is {0} and source is {1}".format(pat_pos, pat_pos_source))
 
-        my_exp_map = calc_exp_map.CalcExpMap(phantom_type='3D', patPos=patPos,
+        my_exp_map = calc_exp_map.CalcExpMap(phantom_type='3D', pat_pos=pat_pos,
                                              pat_mass=pat_mass, pat_height=pat_height,
                                              table_thick=0.5, table_width=40.0, table_length=150.0,
                                              matt_thick=4.0)
@@ -177,7 +178,8 @@ def make_skin_map(study_pk=None):
             except (ObjectDoesNotExist, TypeError):
                 ref_ak = None
             try:
-                kvp = np.mean(irrad.irradeventxraysourcedata_set.get().kvp_set.all().exclude(kvp__isnull=True).exclude(kvp__exact=0).values_list('kvp', flat=True))
+                kvp = np.mean(irrad.irradeventxraysourcedata_set.get().kvp_set.all().exclude(
+                    kvp__isnull=True).exclude(kvp__exact=0).values_list('kvp', flat=True))
                 kvp = float(kvp)
                 if np.isnan(kvp):
                     kvp = None
@@ -210,7 +212,7 @@ def make_skin_map(study_pk=None):
                                     angle_x=angle_x, angle_y=angle_y,
                                     d_ref=d_ref, dap=dap, ref_ak=ref_ak,
                                     kvp=kvp, filter_cu=filter_cu,
-                                    run_type=run_type, frames=frames, end_angle=end_angle, patPos=patPos)
+                                    run_type=run_type, frames=frames, end_angle=end_angle, pat_pos=pat_pos)
 
         # Flip the skin dose map left-right so the view is from the front
         # my_exp_map.my_dose.fliplr()
@@ -233,7 +235,7 @@ def make_skin_map(study_pk=None):
             'phantom_curved_dist': my_exp_map.phantom.phantom_curved_dist,
             'patient_height': pat_height,
             'patient_mass': pat_mass,
-            'patient_orientation': patPos,
+            'patient_orientation': pat_pos,
             'patient_height_source': pat_height_source,
             'patient_mass_source': pat_mass_source,
             'patient_orientation_source': pat_pos_source,
