@@ -16,12 +16,10 @@
 
 """
 
-import numpy as np
-import math
 from .geomclass import *
 
 
-def intersect(aRay, aTriangle):
+def intersect(a_ray, a_triangle):
     """ Derived from example code at http://geomalgorithms.com/a06-_intersect-2.html
     provided under the following license:
 
@@ -35,48 +33,48 @@ def intersect(aRay, aTriangle):
     This function checks if a ray intersects a triangle
 
     Args:
-        aRay: the ray (Segment_3) being projected
-        aTriangle: the triangle (Trianlge_3) to hit
+        a_ray: the ray (Segment_3) being projected
+        a_triangle: the triangle (Trianlge_3) to hit
 
     Returns:
         A string describing the status of the hit.
     """
 
-    n = np.cross(aTriangle.u, aTriangle.v)
+    n = np.cross(a_triangle.u, a_triangle.v)
     if n is [0, 0, 0]:
         output = "degenerate"
-    w0 = aRay.source - aTriangle.a;
-    a = -np.dot(n, w0);
-    b = np.dot(n, aRay.vector);
+    w0 = a_ray.source - a_triangle.a
+    a = -np.dot(n, w0)
+    b = np.dot(n, a_ray.vector)
 
-    if (abs(b) < 0.00000001):
+    if abs(b) < 0.00000001:
         output = "same plane"
         return output
 
     r = a / b
-    if (r < 0.0):
+    if r < 0.0:
         output = "away from triangle"
         return output
 
-    I = aRay.source + r * aRay.vector
+    i = a_ray.source + r * a_ray.vector
 
-    uu = np.dot(aTriangle.u, aTriangle.u);
-    uv = np.dot(aTriangle.u, aTriangle.v);
-    vv = np.dot(aTriangle.v, aTriangle.v);
-    w = I - aTriangle.a;
-    wu = np.dot(w, aTriangle.u);
-    wv = np.dot(w, aTriangle.v);
-    D = uv * uv - uu * vv;
+    uu = np.dot(a_triangle.u, a_triangle.u)
+    uv = np.dot(a_triangle.u, a_triangle.v)
+    vv = np.dot(a_triangle.v, a_triangle.v)
+    w = i - a_triangle.a
+    wu = np.dot(w, a_triangle.u)
+    wv = np.dot(w, a_triangle.v)
+    d = uv * uv - uu * vv
 
-    s = (uv * wv - vv * wu) / D;
-    t = (uv * wu - uu * wv) / D;
+    s = (uv * wv - vv * wu) / d
+    t = (uv * wu - uu * wv) / d
 
     # Hit some precision problems so either use this fix or use an exact maths library. This seems easier for now.
 
-    if (s < 0.0 or s > 1.000000000001):  # Technically >1 but for the rounding errors.
+    if s < 0.0 or s > 1.000000000001:  # Technically >1 but for the rounding errors.
         output = "outside test 1"
     else:
-        if (t < 0.0 or (s + t) > 1.000000000001):
+        if t < 0.0 or (s + t) > 1.000000000001:
             output = "outside test 2" + "S:" + str(s) + " t:" + str(t)
 
         else:
@@ -84,90 +82,90 @@ def intersect(aRay, aTriangle):
     return output
 
 
-def collimate(aRay, area, Dref):
+def collimate(a_ray, area, d_ref):
     """ This function produces a pair of triangles representing a square field
     of a collimated x-ray beam. These are then used for intersection checks to
     see if the phantom cell sees radiation.
 
     Args:
-        aRay: the x-ray beam from focus to isoncentre as a Segment_3
+        a_ray: the x-ray beam from focus to isoncentre as a Segment_3
         area: an area of the beam in square centimetres at any arbitrary distance
-        Dref: the reference distance the area is defined at
+        d_ref: the reference distance the area is defined at
 
     Returns:
         A tuple of two touching triangles making a square field oriented
         perpendicular to the beam direction.
     """
-    sideLength = math.sqrt(area) * 10 / Dref  # Side at 10 cm
+    side_length = math.sqrt(area) * 10 / d_ref  # Side at 10 cm
 
-    centrePoint = aRay.source + aRay.vector / aRay.length * 10  # point at 10 cm up on the midline of the ray
+    centre_point = a_ray.source + a_ray.vector / a_ray.length * 10  # point at 10 cm up on the midline of the ray
 
-    xvector = np.array([np.sin(aRay.xangle), 0, -np.cos(aRay.xangle)])
-    yvector = np.array([0, np.sin(aRay.yangle), np.cos(aRay.yangle)])
-    pointA = centrePoint + ((sideLength / 2) * xvector) + ((sideLength / 2) * yvector)
-    pointB = centrePoint + ((sideLength / 2) * xvector) - ((sideLength / 2) * yvector)
-    pointC = centrePoint - ((sideLength / 2) * xvector) + ((sideLength / 2) * yvector)
-    pointD = centrePoint - ((sideLength / 2) * xvector) - ((sideLength / 2) * yvector)
+    x_vector = np.array([np.sin(a_ray.xangle), 0, -np.cos(a_ray.xangle)])
+    y_vector = np.array([0, np.sin(a_ray.yangle), np.cos(a_ray.yangle)])
+    point_a = centre_point + ((side_length / 2) * x_vector) + ((side_length / 2) * y_vector)
+    point_b = centre_point + ((side_length / 2) * x_vector) - ((side_length / 2) * y_vector)
+    point_c = centre_point - ((side_length / 2) * x_vector) + ((side_length / 2) * y_vector)
+    point_d = centre_point - ((side_length / 2) * x_vector) - ((side_length / 2) * y_vector)
 
-    triangle_1 = Triangle_3(pointD, pointB, pointC)
-    triangle_2 = Triangle_3(pointA, pointB, pointC)
-    return (triangle_1, triangle_2)
+    triangle_1 = Triangle3(point_d, point_b, point_c)
+    triangle_2 = Triangle3(point_a, point_b, point_c)
+    return triangle_1, triangle_2
 
 
-def buildRay(tableLongitudinal, tableLateral, tableHeight, LRangle, CCangle, Dref):
+def build_ray(table_longitudinal, table_lateral, table_height, lr_angle, cc_angle, d_ref):
     """ This function takes RDSR geometry information and uses it to build
     an x-ray (Segment_3) taking into account translation and rotation.
 
     Args:
-        tableLongitudinal: the table longitudinal offset as defined in the DICOM statement
-        tableLateral: the table lateral offset as defined in the DICOM statement
-        tableHeight: the table height offset as defined in the DICOM statement
-        LRangle: the left-right angle. +90 is detector to the patient's left
-        CCangle: the cranial-caudal angle in degrees. +90 is detector to the head
-        Dref: the reference distance to the isocentre
+        table_longitudinal: the table longitudinal offset as defined in the DICOM statement
+        table_lateral: the table lateral offset as defined in the DICOM statement
+        table_height: the table height offset as defined in the DICOM statement
+        lr_angle: the left-right angle. +90 is detector to the patient's left
+        cc_angle: the cranial-caudal angle in degrees. +90 is detector to the head
+        d_ref: the reference distance to the isocentre
 
     Returns:
         A ray (Segment_3) representing the x-ray beam.
     """
     x = 0
     y = 0
-    z = -Dref
+    z = -d_ref
 
-    LRrads = (LRangle / 360.) * 2. * math.pi
-    CCrads = (CCangle / 360.) * 2. * math.pi
+    lr_rads = (lr_angle / 360.) * 2. * math.pi
+    cc_rads = (cc_angle / 360.) * 2. * math.pi
 
-    sinLR = math.sin(LRrads)
-    cosLR = math.cos(LRrads)
-    sinCC = math.sin(CCrads)
-    cosCC = math.cos(CCrads)
+    sin_lr = math.sin(lr_rads)
+    cos_lr = math.cos(lr_rads)
+    sin_cc = math.sin(cc_rads)
+    cos_cc = math.cos(cc_rads)
 
-    # Full maths: xNew = z*sinLR + x*cosLR
-    xNew = z * sinLR
+    # Full maths: x_new = z*sin_lr + x*cos_lr
+    x_new = z * sin_lr
 
-    # Full maths: zStep = z*cosLR - x*sinLR
-    zStep = z * cosLR
+    # Full maths: z_step = z*cos_lr - x*sin_lr
+    z_step = z * cos_lr
 
-    # Full maths: yNew = y*cosCC - zStep*sinCC
-    yNew = -zStep * sinCC
+    # Full maths: y_new = y*cos_cc - z_step*sin_cc
+    y_new = -z_step * sin_cc
 
-    # Full maths: zNew = y*sinCC + zStep*cosCC
-    zNew = zStep * cosCC
+    # Full maths: z_new = y*sin_cc + z_step*cos_cc
+    z_new = z_step * cos_cc
 
-    zTranslated = zNew + tableHeight
+    z_translated = z_new + table_height
 
-    xTranslated = xNew - tableLongitudinal
+    x_translated = x_new - table_longitudinal
 
-    yTranslated = yNew + tableLateral
+    y_translated = y_new + table_lateral
 
-    focus = np.array([xTranslated, yTranslated, zTranslated])
-    isocentre = np.array([x - tableLongitudinal, y + tableLateral, 0 + tableHeight])
+    focus = np.array([x_translated, y_translated, z_translated])
+    isocentre = np.array([x - table_longitudinal, y + table_lateral, 0 + table_height])
 
-    myRay = Segment_3(focus, isocentre)
+    my_ray = Segment3(focus, isocentre)
 
-    return myRay
+    return my_ray
 
 
-def checkOrthogonal(segment1, segment2):
+def check_orthogonal(segment1, segment2):
     """ This function checks whether two segments are within 90 degrees
 
     Args:
@@ -178,13 +176,13 @@ def checkOrthogonal(segment1, segment2):
         A boolean: true if the segments are within 90 degrees,
         false if outside.
     """
-    if (np.dot(segment1.vector, segment2.vector) >= 0):
+    if np.dot(segment1.vector, segment2.vector) >= 0:
         return True
     else:
         return False
 
 
-def checkMiss(source, centre, target1, target2):
+def check_miss(source, centre, target1, target2):
     """ This function compares two angles between a source and two targets.
     If the second target is at a steeper angle than the first, it misses.
 
@@ -198,17 +196,17 @@ def checkMiss(source, centre, target1, target2):
         A boolean: true if the second target misses.
     """
 
-    mainLine = centre - source
-    mainLength = np.linalg.norm(mainLine)
-    target1Vec = target1 - source
-    # target1Length = np.linalg.norm(target1Vec)
-    target1Length = math.sqrt(math.pow(target1Vec[0], 2) + math.pow(target1Vec[1], 2) + math.pow(target1Vec[2], 2))
-    target2Vec = target2 - source
-    # target2Length = np.linalg.norm(target2Vec)
-    target2Length = math.sqrt(math.pow(target2Vec[0], 2) + math.pow(target2Vec[1], 2) + math.pow(target2Vec[2], 2))
+    main_line = centre - source
+    main_length = np.linalg.norm(main_line)
+    target1_vec = target1 - source
+    # target1_length = np.linalg.norm(target1_vec)
+    target1_length = math.sqrt(math.pow(target1_vec[0], 2) + math.pow(target1_vec[1], 2) + math.pow(target1_vec[2], 2))
+    target2_vec = target2 - source
+    # target2_length = np.linalg.norm(target2_vec)
+    target2_length = math.sqrt(math.pow(target2_vec[0], 2) + math.pow(target2_vec[1], 2) + math.pow(target2_vec[2], 2))
 
-    angle1 = np.arccos(np.dot(mainLine, target1Vec) / (mainLength * target1Length))
-    angle2 = np.arccos(np.dot(mainLine, target2Vec) / (mainLength * target2Length))
+    angle1 = np.arccos(np.dot(main_line, target1_vec) / (main_length * target1_length))
+    angle2 = np.arccos(np.dot(main_line, target2_vec) / (main_length * target2_length))
 
     if abs(angle2) > abs(angle1):
         return True  # miss
@@ -229,28 +227,28 @@ def find_nearest(array, value):
     return index
 
 
-def getBSF(kV, Cu, size):
+def get_bsf(kv, cu_thickness, size):
     """ This function gives a BSF and f-factor combined. Data from:
     Backscatter factors and mass energy-absorption coefficient ratios for diagnostic radiology dosimetry
     Hamza Benmakhlouf et al 2011 Phys. Med. Biol. 56 7179 doi:10.1088/0031-9155/56/22/012
 
     Args:
-        kV: The peak kilovoltage
-        Cu: the added copper filtration. In addition, 3.1 mm Al is assumed by default
+        kv: The peak kilovoltage
+        cu_thickness: the added copper filtration in mm. In addition, 3.1 mm Al is assumed by default
         size: The side of the square field incident on the patient
 
     Returns:
         A combined backscatter factor and f-factor.
     """
-    kVTable = np.array([50, 80, 110, 150])
-    CuTable = np.array([0, 0.1, 0.2, 0.3, 0.6, 0.9])
-    sizeTable = np.array([5, 10, 20, 35])
+    kv_table = np.array([50, 80, 110, 150])
+    cu_table = np.array([0, 0.1, 0.2, 0.3, 0.6, 0.9])
+    size_table = np.array([5, 10, 20, 35])
 
-    lookup_kV = find_nearest(kVTable, kV)
-    lookup_Cu = find_nearest(CuTable, Cu)
-    lookup_Size = find_nearest(sizeTable, size)
+    lookup_kv = find_nearest(kv_table, kv)
+    lookup_cu = find_nearest(cu_table, cu_thickness)
+    lookup_size = find_nearest(size_table, size)
 
-    lookupArray = np.array([
+    lookup_array = np.array([
         [[1.2, 1.3, 1.3, 1.3], [1.3, 1.3, 1.4, 1.4], [1.3, 1.4, 1.4, 1.4], [1.3, 1.4, 1.4, 1.5], [1.3, 1.4, 1.5, 1.5],
          [1.3, 1.5, 1.5, 1.6]],
         [[1.3, 1.4, 1.4, 1.5], [1.3, 1.4, 1.5, 1.5], [1.3, 1.5, 1.6, 1.6], [1.4, 1.5, 1.6, 1.7], [1.4, 1.5, 1.7, 1.7],
@@ -261,49 +259,49 @@ def getBSF(kV, Cu, size):
          [1.3, 1.5, 1.6, 1.7]]
     ])
 
-    return lookupArray[lookup_kV, lookup_Cu, lookup_Size]
+    return lookup_array[lookup_kv, lookup_cu, lookup_size]
 
 
-def rotateRayY(segment1, angle):
+def rotate_ray_y(segment1, angle):
     """ This function rotates a ray around the end point of the ray by angle degrees.
 
     Args:
-        segment1: the ray to rotateRayY
+        segment1: the ray to rotate_ray_y
         angle: rotation angle in degrees
 
     Returns:
         A new ray with the same end point but the start point rotated.
     """
     isocentre = segment1.target
-    translateSource = segment1.source - isocentre
-    angleRads = angle / 360 * 2. * math.pi
-    myY = translateSource[1]
-    myX = translateSource[2] * math.sin(angleRads) + translateSource[0] * math.cos(angleRads)
-    myZ = translateSource[2] * math.cos(angleRads) - translateSource[0] * math.sin(angleRads)
-    newSource = np.array([myX, myY, myZ])
-    newRay = Segment_3(newSource + isocentre, isocentre)
-    return newRay
-    
-    
-def getTableTrans(kV, Cu):
+    translate_source = segment1.source - isocentre
+    angle_rads = angle / 360 * 2. * math.pi
+    my_y = translate_source[1]
+    my_x = translate_source[2] * math.sin(angle_rads) + translate_source[0] * math.cos(angle_rads)
+    my_z = translate_source[2] * math.cos(angle_rads) - translate_source[0] * math.sin(angle_rads)
+    new_source = np.array([my_x, my_y, my_z])
+    new_ray = Segment3(new_source + isocentre, isocentre)
+    return new_ray
+
+
+def get_table_trans(kv, cu_thickness):
     """ This function gives just the table transmission factor based
     on measurements made at the Royal Free Hospital on a Siemens Artis Zeego
     in early 2016.
 
     Args:
-        kV: The peak kilovoltage
-        Cu: the added copper filtration. In addition, 3.1 mm Al is assumed by default
+        kv: The peak kilovoltage
+        cu_thickness: the added copper filtration in mm. In addition, 3.1 mm Al is assumed by default
 
     Returns:
         A transmission factor for the table without a mattress.
     """
-    kVTable = np.array([60, 80, 110, 125])
-    CuTable = np.array([0, 0.1, 0.2, 0.3, 0.6, 0.9])
+    kv_table = np.array([60, 80, 110, 125])
+    cu_table = np.array([0, 0.1, 0.2, 0.3, 0.6, 0.9])
 
-    lookup_kV = find_nearest(kVTable, kV)
-    lookup_Cu = find_nearest(CuTable, Cu)
+    lookup_kv = find_nearest(kv_table, kv)
+    lookup_cu = find_nearest(cu_table, cu_thickness)
 
-    lookupArray = np.array([
+    lookup_array = np.array([
         [0.80, 0.82, 0.82, 0.82],
         [0.84, 0.84, 0.86, 0.87],
         [0.86, 0.86, 0.88, 0.88],
@@ -312,27 +310,28 @@ def getTableTrans(kV, Cu):
         [0.86, 0.87, 0.89, 0.90]
     ])
 
-    return lookupArray[lookup_Cu, lookup_kV]
+    return lookup_array[lookup_cu, lookup_kv]
 
-def getTableMattressTrans(kV, Cu):
+
+def get_table_mattress_trans(kv, cu_thickness):
     """ This function gives a table and mattress transmission factor based
     on measurements made at the Royal Free Hospital on a Siemens Artis Zeego
     in early 2016.
 
     Args:
-        kV: The peak kilovoltage
-        Cu: the added copper filtration. In addition, 3.1 mm Al is assumed by default
+        kv: The peak kilovoltage
+        cu_thickness: the added copper filtration in mm. In addition, 3.1 mm Al is assumed by default
 
     Returns:
         A combined transmission factor for table and mattress.
     """
-    kVTable = np.array([60, 80, 110, 125])
-    CuTable = np.array([0, 0.1, 0.2, 0.3, 0.6, 0.9])
+    kv_table = np.array([60, 80, 110, 125])
+    cu_table = np.array([0, 0.1, 0.2, 0.3, 0.6, 0.9])
 
-    lookup_kV = find_nearest(kVTable, kV)
-    lookup_Cu = find_nearest(CuTable, Cu)
+    lookup_kv = find_nearest(kv_table, kv)
+    lookup_cu = find_nearest(cu_table, cu_thickness)
 
-    lookupArray = np.array([
+    lookup_array = np.array([
         [0.66, 0.68, 0.71, 0.72],
         [0.73, 0.75, 0.78, 0.78],
         [0.75, 0.78, 0.81, 0.81],
@@ -341,5 +340,4 @@ def getTableMattressTrans(kV, Cu):
         [0.80, 0.82, 0.85, 0.86]
     ])
 
-    return lookupArray[lookup_Cu, lookup_kV]
-
+    return lookup_array[lookup_cu, lookup_kv]

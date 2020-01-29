@@ -19,7 +19,7 @@ import numpy as np
 import math
 
 
-class Triangle_3:
+class Triangle3:
     """This is a class to construct triangles in 3 dimensional Cartesian coordinate space.
 
     These triangles are used to construct target objects for intersection
@@ -35,15 +35,15 @@ class Triangle_3:
         v: Second of two vectors defining the triangle by making a v shape. Used for intersection calculations.
     """
 
-    def __init__(self, Point_3a, Point_3b, Point_3c):
-        self.a = Point_3a
-        self.b = Point_3b
-        self.c = Point_3c
-        self.u = Point_3b - Point_3a
-        self.v = Point_3c - Point_3a
+    def __init__(self, point_3a, point_3b, point_3c):
+        self.a = point_3a
+        self.b = point_3b
+        self.c = point_3c
+        self.u = point_3b - point_3a
+        self.v = point_3c - point_3a
 
 
-class Segment_3:
+class Segment3:
     """ This is a class to construct line segments in 3 dimensional Cartesian coordinate space.
 
     These segments are used to represent rays from the focus to isocentre or from the focus to the skin cell
@@ -61,10 +61,10 @@ class Segment_3:
         yangle: the angle between the segment and the y-axis
     """
 
-    def __init__(self, Point_3a, Point_3b):
-        self.source = Point_3a
-        self.target = Point_3b
-        self.vector = Point_3b - Point_3a
+    def __init__(self, point_3a, point_3b):
+        self.source = point_3a
+        self.target = point_3b
+        self.vector = point_3b - point_3a
         self.length = np.linalg.norm(self.vector)
         denom0 = self.vector[0]
         if abs(denom0) < 0.00000001:
@@ -92,33 +92,34 @@ class Phantom:
     Properties:
         width: the width of the phantom in cells
         height: the height of the phantom in cells
-        phantomMap: an array containing a list of points which represent each cell in the phantom surface to be evaluated
+        phantomMap: an array containing a list of points which represent each cell in the phantom surface to be
+        evaluated
         normalMap: an array containing line segments (Segment_3) indicating the outward facing surface of the cell
     """
 
-    def __init__(self, phantomType, origin, width, height, depth, scale):
-        self.phantomType = phantomType
+    def __init__(self, phantom_type, origin, width, height, depth, scale):
+        self.phantom_type = phantom_type
         self.width = width
         self.height = height
-        if phantomType is "flat":
-            zOffset = -origin[2]
+        if phantom_type is "flat":
+            z_offset = -origin[2]
             self.phantomMap = np.empty((width, height), dtype=object)
             self.normalMap = np.empty((width, height), dtype=object)
             it = np.nditer(self.phantomMap, op_flags=['readwrite'], flags=['multi_index', 'refs_ok'])
             while not it.finished:
-                myX = it.multi_index[0] * scale - origin[0]
-                myY = it.multi_index[1] * scale - origin[1]
-                self.phantomMap[it.multi_index[0], it.multi_index[1]] = np.array([myX, myY, zOffset])  # As above
+                my_x = it.multi_index[0] * scale - origin[0]
+                my_y = it.multi_index[1] * scale - origin[1]
+                self.phantomMap[it.multi_index[0], it.multi_index[1]] = np.array([my_x, my_y, z_offset])  # As above
 
-                planePoint = np.array([myX, myY, zOffset])
-                outsidePoint = np.array([myX, myY, zOffset - 1])
+                plane_point = np.array([my_x, my_y, z_offset])
+                outside_point = np.array([my_x, my_y, z_offset - 1])
                 # The normal is defined going back in to the plane, to make checking alignment easier
-                normal = Segment_3(outsidePoint, planePoint)
+                normal = Segment3(outside_point, plane_point)
                 self.normalMap[it.multi_index[0], it.multi_index[1]] = normal
                 it.iternext()
 
 
-class Phantom_3:
+class Phantom3:
     """ This class defines a surface in 3d to project dose onto.
     It is formed of a central cuboid with two semi cylinders on the sides.
 
@@ -140,123 +141,124 @@ class Phantom_3:
         phantom_depth: the depth of the 3D phantom
         phantom_flat_dist: the width of the flat part of the phantom (same for front and back)
         phantom_curved_dist: the distance around one curved side of the phantom (same for left and right sides)
-        phantomMap: an array containing a list of points which represent each cell in the phantom surface to be evaluated
+        phantomMap: an array containing a list of points which represent each cell in the phantom surface to be
+        evaluated
         normalMap: an array containing line segments (Segment_3) indicating the outward facing surface of the cell
         phantomType: set to "3d"
     """
 
-    def __init__(self, origin, scale=1, mass=73.2, height=178.6, patPos="HFS"):
+    def __init__(self, origin, scale=1, mass=73.2, height=178.6, pat_pos="HFS"):
 
-        refHeight = 178.6
-        refMass = 73.2
-        refTorso = 70.
-        refRadius = 10.
-        refWidth = 14.4
-        torso = refTorso * height / refHeight
-        radius = refRadius / math.sqrt(height / refHeight) * math.sqrt(mass / refMass)
+        ref_height = 178.6
+        ref_mass = 73.2
+        ref_torso = 70.
+        ref_radius = 10.
+        ref_width = 14.4
+        torso = ref_torso * height / ref_height
+        radius = ref_radius / math.sqrt(height / ref_height) * math.sqrt(mass / ref_mass)
         
-        if patPos == "HFS":
+        if pat_pos == "HFS":
             prone = False
-            patPosZ = 1.
-            patPosY = 1.
-            origin[1] = origin[1] - 24 * height/refHeight
-        elif patPos == "FFS":
+            pat_pos_z = 1.
+            pat_pos_y = 1.
+            origin[1] = origin[1] - 24 * height/ref_height
+        elif pat_pos == "FFS":
             prone = False
-            patPosZ = 1.
-            patPosY = -1.
-            origin[1] = origin[1] - 174 * height/refHeight
-        elif patPos == "HFP":
+            pat_pos_z = 1.
+            pat_pos_y = -1.
+            origin[1] = origin[1] - 174 * height/ref_height
+        elif pat_pos == "HFP":
             prone = True		
-            patPosZ = -1.
-            patPosY = 1.
-            origin[1] = origin[1] - 24 * height/refHeight
-        elif patPos == "FFP":
+            pat_pos_z = -1.
+            pat_pos_y = 1.
+            origin[1] = origin[1] - 24 * height/ref_height
+        elif pat_pos == "FFP":
             prone = True
-            patPosZ = -1.
-            patPosY = -1.
-            origin[1] = origin[1] - 174 * height/refHeight
-        
-            
+            pat_pos_z = -1.
+            pat_pos_y = -1.
+            origin[1] = origin[1] - 174 * height/ref_height
 
-        partCircumference = math.pi * radius
-        roundCircumference = round(partCircumference, 0)
-        flatWidth = refWidth / refRadius * radius
-        roundFlat = round(flatWidth, 0)
-        flatSpacing = flatWidth / roundFlat
+        part_circumference = math.pi * radius
+        round_circumference = round(part_circumference, 0)
+        flat_width = ref_width / ref_radius * radius
+        round_flat = round(flat_width, 0)
+        flat_spacing = flat_width / round_flat
 
         # The three properties were added by DJP to describe
         # the dimensions of the 3D phantom.
-        self.phantom_width = int(round(flatWidth + 2 * radius, 0))
+        self.phantom_width = int(round(flat_width + 2 * radius, 0))
         self.phantom_height = int(round(torso, 0))
         self.phantom_depth = round(radius * 2, 0)
-        self.phantom_flat_dist = roundFlat
-        self.phantom_curved_dist = roundCircumference
+        self.phantom_flat_dist = round_flat
+        self.phantom_curved_dist = round_circumference
 
-        self.width = int(2 * roundCircumference + 2 * roundFlat)
+        self.width = int(2 * round_circumference + 2 * round_flat)
         self.height = int(round(torso, 0))
         self.phantomType = "3d"
         self.phantomMap = np.empty((self.width, self.height), dtype=object)
         self.normalMap = np.empty((self.width, self.height), dtype=object)
-        transition1 = (roundFlat / 2.) + 0.5  # Centre line flat to start of curve.
-        transition2 = transition1 + roundCircumference  # End of first curve to table flat
-        transition3 = transition2 + roundFlat  # End of table flat to second curve
-        transition4 = transition3 + roundCircumference  # End of second curve to flat back to centre line
+        transition1 = (round_flat / 2.) + 0.5  # Centre line flat to start of curve.
+        transition2 = transition1 + round_circumference  # End of first curve to table flat
+        transition3 = transition2 + round_flat  # End of table flat to second curve
+        transition4 = transition3 + round_circumference  # End of second curve to flat back to centre line
         it = np.nditer(self.phantomMap, op_flags=['readwrite'], flags=['multi_index', 'refs_ok'])
         while not it.finished:
             # Start top, centre line.
             row_index = it.multi_index[0] - origin[0]
             col_index = it.multi_index[1] - origin[1]
-            angleStep = math.pi / roundCircumference
-            zOffset = -origin[2]
+            angle_step = math.pi / round_circumference
+            z_offset = -origin[2]
 
             if row_index < transition1:
-                myZ = (2. * radius + zOffset) * patPosZ
-                myX = row_index * flatSpacing - (roundFlat / 2.) + round(roundFlat / 2., 0)
-                myY = (col_index) * patPosY
-                normal = Segment_3(np.array([myX, myY, myZ + patPosZ]), np.array([myX, myY, myZ]))
-            elif row_index >= transition1 and row_index < transition2:
-                myY = (col_index)*patPosY
-                myX = flatSpacing * round(transition1, 0) - 1 + radius * math.sin(
-                    angleStep * (row_index - round(transition1, 0) + 1)) - (roundFlat / 2.) + round(roundFlat / 2., 0)
-                myZ = (2. * radius + zOffset + radius * math.cos(
-                    angleStep * (row_index - round(transition1, 0) + 1)) - radius) * patPosZ
-                normalX = myX + math.sin(angleStep * (row_index - round(transition1, 0) + 1))
-                normalZ = myZ + patPosZ * math.cos(angleStep * (row_index - round(transition1, 0) + 1))
-                normal = Segment_3(np.array([normalX, myY, normalZ]), np.array([myX, myY, myZ]))
-            elif row_index >= transition2 and row_index < transition3:
-                myZ = zOffset * patPosZ
-                myX = flatWidth - (row_index - roundCircumference) * flatSpacing + ((roundFlat / 2.) - round(
-                    roundFlat / 2., 0)) * (row_index - roundCircumference) / abs(row_index - roundCircumference)
-                myY = col_index * patPosY
-                normal = Segment_3(np.array([myX, myY, myZ - patPosZ]), np.array([myX, myY, myZ]))
-            elif row_index >= transition3 and row_index < transition4:
-                myY = col_index * patPosY
-                myX = -flatSpacing * round(roundFlat / 2, 0) - radius * math.sin(
-                    angleStep * (row_index - round(transition3, 0) + 1)) - (roundFlat / 2.) + round(roundFlat / 2., 0)
-                myZ = (zOffset - radius * math.cos(angleStep * (row_index - round(transition3, 0) + 1)) + radius) * patPosZ
-                normalX = myX - math.sin(angleStep * (row_index - round(transition3, 0) + 1))
-                normalZ = myZ - patPosZ * math.cos(angleStep * (row_index - round(transition3, 0) + 1))
-                normal = Segment_3(np.array([normalX, myY, normalZ]), np.array([myX, myY, myZ]))
+                my_z = (2. * radius + z_offset) * pat_pos_z
+                my_x = row_index * flat_spacing - (round_flat / 2.) + round(round_flat / 2., 0)
+                my_y = col_index * pat_pos_y
+                normal = Segment3(np.array([my_x, my_y, my_z + pat_pos_z]), np.array([my_x, my_y, my_z]))
+            elif transition1 <= row_index < transition2:
+                my_y = col_index * pat_pos_y
+                my_x = flat_spacing * round(transition1, 0) - 1 + radius * math.sin(
+                    angle_step * (row_index - round(transition1, 0) + 1)) - (round_flat / 2.) + \
+                    round(round_flat / 2., 0)
+                my_z = (2. * radius + z_offset + radius * math.cos(
+                    angle_step * (row_index - round(transition1, 0) + 1)) - radius) * pat_pos_z
+                normal_x = my_x + math.sin(angle_step * (row_index - round(transition1, 0) + 1))
+                normal_z = my_z + pat_pos_z * math.cos(angle_step * (row_index - round(transition1, 0) + 1))
+                normal = Segment3(np.array([normal_x, my_y, normal_z]), np.array([my_x, my_y, my_z]))
+            elif transition2 <= row_index < transition3:
+                my_z = z_offset * pat_pos_z
+                my_x = flat_width - (row_index - round_circumference) * flat_spacing + ((round_flat / 2.) - round(
+                    round_flat / 2., 0)) * (row_index - round_circumference) / abs(row_index - round_circumference)
+                my_y = col_index * pat_pos_y
+                normal = Segment3(np.array([my_x, my_y, my_z - pat_pos_z]), np.array([my_x, my_y, my_z]))
+            elif transition3 <= row_index < transition4:
+                my_y = col_index * pat_pos_y
+                my_x = -flat_spacing * round(round_flat / 2, 0) - radius * math.sin(
+                    angle_step * (row_index - round(transition3, 0) + 1)) - \
+                    (round_flat / 2.) + round(round_flat / 2., 0)
+                my_z = (z_offset - radius * math.cos(angle_step *
+                                                     (row_index - round(transition3, 0) + 1)) + radius) * pat_pos_z
+                normal_x = my_x - math.sin(angle_step * (row_index - round(transition3, 0) + 1))
+                normal_z = my_z - pat_pos_z * math.cos(angle_step * (row_index - round(transition3, 0) + 1))
+                normal = Segment3(np.array([normal_x, my_y, normal_z]), np.array([my_x, my_y, my_z]))
             else:
-                myZ = (2. * radius + zOffset) * patPosZ
-                myX = (row_index - self.width) * flatSpacing - (roundFlat / 2.) + round(roundFlat / 2., 0)
-                myY = col_index * patPosY
-                normal = Segment_3(np.array([myX, myY, myZ + patPosZ]), np.array([myX, myY, myZ]))
-            self.phantomMap[it.multi_index[0], it.multi_index[1]] = np.array([myX, myY, myZ])
+                my_z = (2. * radius + z_offset) * pat_pos_z
+                my_x = (row_index - self.width) * flat_spacing - (round_flat / 2.) + round(round_flat / 2., 0)
+                my_y = col_index * pat_pos_y
+                normal = Segment3(np.array([my_x, my_y, my_z + pat_pos_z]), np.array([my_x, my_y, my_z]))
+            self.phantomMap[it.multi_index[0], it.multi_index[1]] = np.array([my_x, my_y, my_z])
             self.normalMap[it.multi_index[0], it.multi_index[1]] = normal
             it.iternext()
-        #Flip to correct left and right so it becomes a view of the back.
-        #self.phantomMap = np.flipud(self.phantomMap)
-        #self.normalMap = np.flipud(self.normalMap)
+        # Flip to correct left and right so it becomes a view of the back.
+        # self.phantomMap = np.flipud(self.phantomMap)
+        # self.normalMap = np.flipud(self.normalMap)
         self.phantomMap = np.fliplr(self.phantomMap)
         self.normalMap = np.fliplr(self.normalMap)
         if prone:
-            self.normalMap = np.roll(self.normalMap, int(self.phantom_flat_dist + self.phantom_curved_dist),axis=0)
-            self.phantomMap = np.roll(self.phantomMap, int(self.phantom_flat_dist + self.phantom_curved_dist),axis=0)
+            self.normalMap = np.roll(self.normalMap, int(self.phantom_flat_dist + self.phantom_curved_dist), axis=0)
+            self.phantomMap = np.roll(self.phantomMap, int(self.phantom_flat_dist + self.phantom_curved_dist), axis=0)
             self.phantomMap = np.flipud(self.phantomMap)
             self.normalMap = np.flipud(self.normalMap)
            
-
 
 class SkinDose:
     """ This class holds dose maps for a defined phantom. It is intended
@@ -280,16 +282,16 @@ class SkinDose:
         self.doseArray = []
         self.totalDose = []
 
-    def addView(self, viewStr):
+    def add_view(self, view_str):
         if len(self.views) == 0:
-            self.views = viewStr
+            self.views = view_str
         else:
-            self.views = np.vstack((self.views, viewStr))
+            self.views = np.vstack((self.views, view_str))
 
-    def addDose(self, skinMap):
+    def add_dose(self, skin_map):
         if len(self.doseArray) == 0:
-            self.doseArray = skinMap
-            self.totalDose = skinMap
+            self.doseArray = skin_map
+            self.totalDose = skin_map
         else:
-            self.doseArray = np.dstack((self.doseArray, skinMap))
-            self.totalDose = self.totalDose + skinMap		
+            self.doseArray = np.dstack((self.doseArray, skin_map))
+            self.totalDose = self.totalDose + skin_map

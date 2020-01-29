@@ -21,16 +21,15 @@ import time
 from decimal import *
 
 
-
-def skinMap(xRay, phantom, area, refAK, kV, filterCu, Dref, tableLength, tableWidth, transmission,
+def skinMap(xray, phantom, area, ref_ak, kV, filterCu, Dref, tableLength, tableWidth, transmission,
             tableMattressThickness):
     """ This function calculates a skin dose map.
 
     Args:
-        xRay: the x-ray beam as a Segment_3
+        xray: the x-ray beam as a Segment_3
         phantom: the phantom object representing the surface to map on
         area: the area of the beam at the reference point in square cm
-        refAK: the air kerma at the reference point
+        ref_ak: the air kerma at the reference point
         kV: the peak kilovoltage
         filterCu: the copper filter thickness in mm
         Dref: the distance to the interventional reference point in cm
@@ -45,15 +44,15 @@ def skinMap(xRay, phantom, area, refAK, kV, filterCu, Dref, tableLength, tableWi
     refLength_squared = math.pow(Dref, 2)
 
     skinMap = np.zeros((phantom.width, phantom.height), dtype=np.dtype(Decimal))
-    focus = xRay.source
-    table1 = Triangle_3(np.array([-tableWidth / 2, 0, 0]), np.array([tableWidth / 2, 0, 0]),
-                        np.array([-tableWidth / 2, tableLength, 0]))
-    table2 = Triangle_3(np.array([-tableWidth / 2, tableLength, 0]), np.array([tableWidth / 2, tableLength, 0]),
-                        np.array([tableWidth / 2, 0, 0]))
+    focus = xray.source
+    table1 = Triangle3(np.array([-tableWidth / 2, 0, 0]), np.array([tableWidth / 2, 0, 0]),
+                       np.array([-tableWidth / 2, tableLength, 0]))
+    table2 = Triangle3(np.array([-tableWidth / 2, tableLength, 0]), np.array([tableWidth / 2, tableLength, 0]),
+                       np.array([tableWidth / 2, 0, 0]))
 
     it = np.nditer(skinMap, op_flags=['readwrite'], flags=['multi_index', 'refs_ok'])
 
-    (myTriangle1, myTriangle2) = collimate(xRay, area, Dref)
+    (myTriangle1, myTriangle2) = collimate(xray, area, Dref)
 
     while not it.finished:
 
@@ -62,37 +61,37 @@ def skinMap(xRay, phantom, area, refAK, kV, filterCu, Dref, tableLength, tableWi
         myX = phantom.phantomMap[lookup_row, lookup_col][0]
         myY = phantom.phantomMap[lookup_row, lookup_col][1]
         myZ = phantom.phantomMap[lookup_row, lookup_col][2]
-        myRay = Segment_3(focus, np.array([myX, myY, myZ]))
+        myRay = Segment3(focus, np.array([myX, myY, myZ]))
         reverseNormal = phantom.normalMap[lookup_row, lookup_col]
 
-        if checkOrthogonal(reverseNormal, myRay):
+        if check_orthogonal(reverseNormal, myRay):
             # Check to see if the beam hits the patient
             hit1 = intersect(myRay, myTriangle1)
             hit2 = intersect(myRay, myTriangle2)
             if hit1 is "hit" or hit2 is "hit":
 
                 # Check to see if the beam passes through the table
-                tableNormal = Segment_3(np.array([0, 0, 0]), np.array([0, 0, 1]))
+                tableNormal = Segment3(np.array([0, 0, 0]), np.array([0, 0, 1]))
                 hitTable1 = intersect(myRay, table1)
                 hitTable2 = intersect(myRay, table2)
                 # If the beam passes the table and does so on the way in to the patient, correct the AK
                 if hitTable1 is "hit" or hitTable2 is "hit":
-                    if checkOrthogonal(tableNormal, myRay):
-                        sinAlpha = xRay.vector[2] / xRay.length
+                    if check_orthogonal(tableNormal, myRay):
+                        sinAlpha = xray.vector[2] / xray.length
                         pathLength = tableMattressThickness / sinAlpha
                         mu = np.log(transmission) / (-tableMattressThickness)
                         tableCor = np.exp(-mu * pathLength)
-                        refAKcor = refAK * tableCor
+                        refAKcor = ref_ak * tableCor
                     # If the beam is more than 90 degrees (ie above the table) leave the AK alone
                     else:
-                        refAKcor = refAK
+                        refAKcor = ref_ak
                 # If the beam doesn't pass through the table, leave the AK alone
                 else:
-                    refAKcor = refAK
+                    refAKcor = ref_ak
 
                 # Calculate the dose at the skin point by correcting for distance and BSF
                 mylengthSquared = pow(myRay.length, 2)
-                it[0] = Decimal(refLength_squared / mylengthSquared * refAKcor * getBSF(kV, filterCu, math.sqrt(
+                it[0] = Decimal(refLength_squared / mylengthSquared * refAKcor * get_bsf(kV, filterCu, math.sqrt(
                     mylengthSquared / refLength_squared))).quantize(Decimal('0.000000001'),rounding=ROUND_HALF_UP)
 
         it.iternext()
@@ -140,7 +139,7 @@ def rotational(xRay, startAngle, endAngle, frames, phantom, area, refAK, kV, fil
     myDose = skinMap(xRay, phantom, area, refAK / frames, kV, filterCu, Dref, tableLength, tableWidth, transmission,
                      tableMattressThickness)
     for i in range(1, frames - 1):
-        xRay = rotateRayY(xRay, rotationAngle)
+        xRay = rotate_ray_y(xRay, rotationAngle)
         myDose = myDose + skinMap(xRay, phantom, area, refAK / frames, kV, filterCu, Dref, tableLength, tableWidth,
                                   transmission, tableMattressThickness)
     return myDose
