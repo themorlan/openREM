@@ -27,27 +27,25 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-from __future__ import division
-
-from builtins import object  # pylint: disable=redefined-builtin
-from past.utils import old_div
-import os
-os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
+from decimal import (Decimal, InvalidOperation)
+import logging
 
 import django_filters
 from django import forms
-from remapp.models import GeneralStudyModuleAttr
-from django.utils.safestring import mark_safe
+from django.db.models import Q
+
+from ..models import (GeneralStudyModuleAttr, IrradEventXRayData, CtIrradiationEventData)
+from ..tools.hash_id import hash_id
+
+logger = logging.getLogger(__name__)
 
 TEST_CHOICES = ((u'', u'Yes (default)'), (2, u'No (caution)'),)
 
 
 def custom_name_filter(queryset, name, value):
+    """Search for name as plain text and encrypted"""
     if not value:
         return queryset
-
-    from django.db.models import Q
-    from remapp.tools.hash_id import hash_id
     filtered = queryset.filter(
         (
                 Q(patientmoduleattr__name_hashed=False) & Q(patientmoduleattr__patient_name__icontains=value)
@@ -59,11 +57,9 @@ def custom_name_filter(queryset, name, value):
 
 
 def custom_id_filter(queryset, name, value):
+    """Search for ID as plain text and encrypted"""
     if not value:
         return queryset
-
-    from django.db.models import Q
-    from remapp.tools.hash_id import hash_id
     filtered = queryset.filter(
         (
                 Q(patientmoduleattr__id_hashed=False) & Q(patientmoduleattr__patient_id__icontains=value)
@@ -75,11 +71,9 @@ def custom_id_filter(queryset, name, value):
 
 
 def _custom_acc_filter(queryset, name, value):
+    """Search for accession number as plain text and encrypted"""
     if not value:
         return queryset
-
-    from django.db.models import Q
-    from remapp.tools.hash_id import hash_id
     filtered = queryset.filter(
         (
                 Q(accession_hashed=False) & Q(accession_number__icontains=value)
@@ -90,38 +84,25 @@ def _custom_acc_filter(queryset, name, value):
     return filtered
 
 
-def _total_dap_filter(queryset, name, value):
+def _dap_filter(queryset, name, value):
+    """Modify DAP to Gy.m2 before filtering"""
     if not value or not name:
         return queryset
-
-    from decimal import Decimal, InvalidOperation
     try:
-        value_gy_m2 = old_div(Decimal(value), Decimal(1000000))
+        value_gy_m2 = Decimal(value)/Decimal(1000000)
     except InvalidOperation:
         return queryset
     if 'study_dap_min' in name:
-        return queryset.filter(total_dap__gte=value_gy_m2)
+        filtered = queryset.filter(total_dap__gte=value_gy_m2)
     elif 'study_dap_max' in name:
-        return queryset.filter(total_dap__lte=value_gy_m2)
-    else:
-        return queryset
-
-
-def _event_dap_filter(queryset, name, value):
-    if not value or not name:
-        return queryset
-
-    from decimal import Decimal, InvalidOperation
-    try:
-        value_gy_m2 = old_div(Decimal(value), Decimal(1000000))
-    except InvalidOperation:
-        return queryset
-    if 'event_dap_min' in name:
-        return queryset.filter(projectionxrayradiationdose__irradeventxraydata__dose_area_product__gte=value_gy_m2)
+        filtered = queryset.filter(total_dap__lte=value_gy_m2)
+    elif 'event_dap_min' in name:
+        filtered = queryset.filter(projectionxrayradiationdose__irradeventxraydata__dose_area_product__gte=value_gy_m2)
     elif 'event_dap_max' in name:
-        return queryset.filter(projectionxrayradiationdose__irradeventxraydata__dose_area_product__lte=value_gy_m2)
+        filtered = queryset.filter(projectionxrayradiationdose__irradeventxraydata__dose_area_product__lte=value_gy_m2)
     else:
         return queryset
+    return filtered
 
 
 class DateTimeOrderingFilter(django_filters.OrderingFilter):
@@ -166,14 +147,10 @@ class RFSummaryListFilter(django_filters.FilterSet):
     requested_procedure_code_meaning = django_filters.CharFilter(lookup_expr='icontains', label='Requested procedure')
     projectionxrayradiationdose__irradeventxraydata__acquisition_protocol = django_filters.CharFilter(
         lookup_expr='icontains', label='Acquisition protocol')
-    patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(lookup_expr='gte',
-                                                                                   label=u'Min age (yrs)',
-                                                                                   field_name='patientstudymoduleattr'
-                                                                                        '__patient_age_decimal')
-    patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(lookup_expr='lte',
-                                                                                   label=u'Max age (yrs)',
-                                                                                   field_name='patientstudymoduleattr'
-                                                                                        '__patient_age_decimal')
+    patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
+        lookup_expr='gte', label=u'Min age (yrs)', field_name='patientstudymoduleattr__patient_age_decimal')
+    patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(
+        lookup_expr='lte', label=u'Max age (yrs)', field_name='patientstudymoduleattr__patient_age_decimal')
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Hospital')
     generalequipmentmoduleattr__manufacturer = django_filters.CharFilter(lookup_expr='icontains', label=u'Make')
     generalequipmentmoduleattr__manufacturer_model_name = django_filters.CharFilter(
@@ -181,8 +158,8 @@ class RFSummaryListFilter(django_filters.FilterSet):
     generalequipmentmoduleattr__station_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Station name')
     performing_physician_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Physician')
     accession_number = django_filters.CharFilter(method=_custom_acc_filter, label='Accession number')
-    study_dap_min = django_filters.NumberFilter(method=_total_dap_filter, label='Min study DAP (cGy·cm²)')
-    study_dap_max = django_filters.NumberFilter(method=_total_dap_filter, label='Max study DAP (cGy·cm²)')
+    study_dap_min = django_filters.NumberFilter(method=_dap_filter, label='Min study DAP (cGy·cm²)')
+    study_dap_max = django_filters.NumberFilter(method=_dap_filter, label='Max study DAP (cGy·cm²)')
     generalequipmentmoduleattr__unique_equipment_name__display_name = django_filters.CharFilter(
         lookup_expr='icontains', label='Display name')
     test_data = django_filters.ChoiceFilter(lookup_expr='isnull', label=u"Include possible test data",
@@ -232,6 +209,7 @@ class RFSummaryListFilter(django_filters.FilterSet):
 
 
 class RFFilterPlusPid(RFSummaryListFilter):
+    """Adding patient name and ID to filter if permissions allow"""
     def __init__(self, *args, **kwargs):
         super(RFFilterPlusPid, self).__init__(*args, **kwargs)
         self.filters['patient_name'] = django_filters.CharFilter(method=custom_name_filter, label=u'Patient name')
@@ -277,86 +255,32 @@ def _specify_event_numbers(queryset, name, value):
         value = int(value)
     except ValueError:
         if value == 'more':
-            filtered = queryset.filter(number_of_events__gt=10)
+            if 'num_events' in name:
+                filtered = queryset.filter(number_of_events__gt=10)
+            elif 'num_spiral_events' in name:
+                filtered = queryset.filter(number_of_spiral__gt=10)
+            elif 'num_axial_events' in name:
+                filtered = queryset.filter(number_of_axial__gt=10)
+            elif 'num_spr_events' in name:
+                filtered = queryset.filter(number_of_const_angle__gt=10)
+            elif 'num_stationary_events' in name:
+                filtered = queryset.filter(number_of_stationary__gt=10)
+            else:
+                return queryset
             return filtered
         return queryset
-    filtered = queryset.filter(number_of_events__exact=value)
-    return filtered
-
-
-def _specify_event_numbers_spiral(queryset, name, value):
-    """Method filter for specifying number of spiral (helical) events in each study
-
-    :param queryset: Study list
-    :param name: field name (not used)
-    :param value: number of events
-    :return: filtered queryset
-    """
-    try:
-        value = int(value)
-    except ValueError:
-        if value == 'more':
-            filtered = queryset.filter(number_of_spiral__gt=10)
-            return filtered
+    if 'num_events' in name:
+        filtered = queryset.filter(number_of_events__exact=value)
+    elif 'num_spiral_events' in name:
+        filtered = queryset.filter(number_of_spiral__exact=value)
+    elif 'num_axial_events' in name:
+        filtered = queryset.filter(number_of_axial__exact=value)
+    elif 'num_spr_events' in name:
+        filtered = queryset.filter(number_of_const_angle__exact=value)
+    elif 'num_stationary_events' in name:
+        filtered = queryset.filter(number_of_stationary__exact=value)
+    else:
         return queryset
-    filtered = queryset.filter(number_of_spiral__exact=value)
-    return filtered
-
-
-def _specify_event_numbers_axial(queryset, name, value):
-    """Method filter for specifying number of axial events in each study
-
-    :param queryset: Study list
-    :param name: field name (not used)
-    :param value: number of events
-    :return: filtered queryset
-    """
-    try:
-        value = int(value)
-    except ValueError:
-        if value == 'more':
-            filtered = queryset.filter(number_of_axial__gt=10)
-            return filtered
-        return queryset
-    filtered = queryset.filter(number_of_axial__exact=value)
-    return filtered
-
-
-def _specify_event_numbers_spr(queryset, name, value):
-    """Method filter for specifying number of scan projection radiograph events in each study
-
-    :param queryset: Study list
-    :param name: field name (not used)
-    :param value: number of events
-    :return: filtered queryset
-    """
-    try:
-        value = int(value)
-    except ValueError:
-        if value == 'more':
-            filtered = queryset.filter(number_of_const_angle__gt=10)
-            return filtered
-        return queryset
-    filtered = queryset.filter(number_of_const_angle__exact=value)
-    return filtered
-
-
-def _specify_event_numbers_stationary(queryset, name, value):
-    """Method filter for specifying number of scan projection radiograph events in each study
-
-    :param queryset: Study list
-    :param name: field name (not used)
-    :param value: number of events
-    :return: filtered queryset
-    """
-    try:
-        value = int(value)
-    except ValueError:
-        if value == 'more':
-            filtered = queryset.filter(number_of_stationary__gt=10)
-            return filtered
-        return queryset
-    filtered = queryset.filter(number_of_stationary__exact=value)
     return filtered
 
 
@@ -373,14 +297,10 @@ class CTSummaryListFilter(django_filters.FilterSet):
     requested_procedure_code_meaning = django_filters.CharFilter(lookup_expr='icontains', label='Requested procedure')
     ctradiationdose__ctirradiationeventdata__acquisition_protocol = django_filters.CharFilter(
         lookup_expr='icontains', label='Acquisition protocol')
-    patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(lookup_expr='gte',
-                                                                                   label=u'Min age (yrs)',
-                                                                                   field_name='patientstudymoduleattr'
-                                                                                        '__patient_age_decimal')
-    patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(lookup_expr='lte',
-                                                                                   label=u'Max age (yrs)',
-                                                                                   field_name='patientstudymoduleattr'
-                                                                                        '__patient_age_decimal')
+    patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
+        lookup_expr='gte', label=u'Min age (yrs)', field_name='patientstudymoduleattr__patient_age_decimal')
+    patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(
+        lookup_expr='lte', label=u'Max age (yrs)', field_name='patientstudymoduleattr__patient_age_decimal')
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Hospital')
     generalequipmentmoduleattr__manufacturer = django_filters.CharFilter(lookup_expr='icontains', label=u'Make')
     generalequipmentmoduleattr__manufacturer_model_name = django_filters.CharFilter(
@@ -396,17 +316,17 @@ class CTSummaryListFilter(django_filters.FilterSet):
                                             widget=forms.Select)
     ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning = django_filters.MultipleChoiceFilter(
         lookup_expr='iexact', label=u'Acquisition type restriction',
-        field_name='ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning', choices=CT_ACQ_TYPE_CHOICES,
-        widget=forms.CheckboxSelectMultiple)
+        field_name='ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning',
+        choices=CT_ACQ_TYPE_CHOICES, widget=forms.CheckboxSelectMultiple)
     num_events = django_filters.ChoiceFilter(method=_specify_event_numbers, label=u'Num. events total',
                                              choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
-    num_spiral_events = django_filters.ChoiceFilter(method=_specify_event_numbers_spiral, label=u'Num. spiral events',
+    num_spiral_events = django_filters.ChoiceFilter(method=_specify_event_numbers, label=u'Num. spiral events',
                                                     choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
-    num_axial_events = django_filters.ChoiceFilter(method=_specify_event_numbers_axial, label=u'Num. axial events',
+    num_axial_events = django_filters.ChoiceFilter(method=_specify_event_numbers, label=u'Num. axial events',
                                                    choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
-    num_spr_events = django_filters.ChoiceFilter(method=_specify_event_numbers_spr, label=u'Num. localisers',
+    num_spr_events = django_filters.ChoiceFilter(method=_specify_event_numbers, label=u'Num. localisers',
                                                  choices=EVENT_NUMBER_CHOICES, widget=forms.Select)
-    num_stationary_events = django_filters.ChoiceFilter(method=_specify_event_numbers_stationary,
+    num_stationary_events = django_filters.ChoiceFilter(method=_specify_event_numbers,
                                                         label=u'Num. stationary events', choices=EVENT_NUMBER_CHOICES,
                                                         widget=forms.Select)
 
@@ -453,6 +373,7 @@ class CTSummaryListFilter(django_filters.FilterSet):
 
 
 class CTFilterPlusPid(CTSummaryListFilter):
+    """Adding patient name and ID to filter if permissions allow"""
     def __init__(self, *args, **kwargs):
         super(CTFilterPlusPid, self).__init__(*args, **kwargs)
         self.filters['patient_name'] = django_filters.CharFilter(method=custom_name_filter, label=u'Patient name')
@@ -460,8 +381,7 @@ class CTFilterPlusPid(CTSummaryListFilter):
 
 
 def ct_acq_filter(filters, pid=False):
-    from decimal import Decimal, InvalidOperation
-    from ..models import CtIrradiationEventData
+    """Additional filters at event level"""
     filteredInclude = []
     if 'acquisition_protocol' in filters and (
             'acquisition_ctdi_min' in filters or 'acquisition_ctdi_max' in filters or
@@ -549,14 +469,10 @@ class MGSummaryListFilter(django_filters.FilterSet):
     requested_procedure_code_meaning = django_filters.CharFilter(lookup_expr='icontains', label='Requested procedure')
     projectionxrayradiationdose__irradeventxraydata__acquisition_protocol = django_filters.CharFilter(
         lookup_expr='icontains', label='Acquisition protocol')
-    patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(lookup_expr='gte',
-                                                                                   label=u'Min age (yrs)',
-                                                                                   field_name='patientstudymoduleattr'
-                                                                                        '__patient_age_decimal')
-    patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(lookup_expr='lte',
-                                                                                   label=u'Max age (yrs)',
-                                                                                   field_name='patientstudymoduleattr'
-                                                                                        '__patient_age_decimal')
+    patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
+        lookup_expr='gte', label=u'Min age (yrs)', field_name='patientstudymoduleattr__patient_age_decimal')
+    patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(
+        lookup_expr='lte', label=u'Max age (yrs)', field_name='patientstudymoduleattr__patient_age_decimal')
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Hospital')
     generalequipmentmoduleattr__manufacturer = django_filters.CharFilter(lookup_expr='icontains', label=u'Make')
     generalequipmentmoduleattr__manufacturer_model_name = django_filters.CharFilter(
@@ -617,6 +533,7 @@ class MGSummaryListFilter(django_filters.FilterSet):
 
 
 class MGFilterPlusPid(MGSummaryListFilter):
+    """Adding patient name and ID to filter if permissions allow"""
     def __init__(self, *args, **kwargs):
         super(MGFilterPlusPid, self).__init__(*args, **kwargs)
         self.filters['patient_name'] = django_filters.CharFilter(method=custom_name_filter, label=u'Patient name')
@@ -637,24 +554,20 @@ class DXSummaryListFilter(django_filters.FilterSet):
     requested_procedure_code_meaning = django_filters.CharFilter(lookup_expr='icontains', label='Requested procedure')
     projectionxrayradiationdose__irradeventxraydata__acquisition_protocol = django_filters.CharFilter(
         lookup_expr='icontains', label='Acquisition protocol')
-    patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(lookup_expr='gte',
-                                                                                   label=u'Min age (yrs)',
-                                                                                   field_name='patientstudymoduleattr'
-                                                                                        '__patient_age_decimal')
-    patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(lookup_expr='lte',
-                                                                                   label=u'Max age (yrs)',
-                                                                                   field_name='patientstudymoduleattr'
-                                                                                        '__patient_age_decimal')
+    patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
+        lookup_expr='gte', label=u'Min age (yrs)', field_name='patientstudymoduleattr__patient_age_decimal')
+    patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(
+        lookup_expr='lte', label=u'Max age (yrs)', field_name='patientstudymoduleattr__patient_age_decimal')
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Hospital')
     generalequipmentmoduleattr__manufacturer = django_filters.CharFilter(lookup_expr='icontains', label=u'Make')
     generalequipmentmoduleattr__manufacturer_model_name = django_filters.CharFilter(
         lookup_expr='icontains', label='Model')
     generalequipmentmoduleattr__station_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Station name')
     accession_number = django_filters.CharFilter(method=_custom_acc_filter, label='Accession number')
-    study_dap_min = django_filters.NumberFilter(method=_total_dap_filter, label='Min study DAP (cGy·cm²)')
-    study_dap_max = django_filters.NumberFilter(method=_total_dap_filter, label='Max study DAP (cGy·cm²)')
-    event_dap_min = django_filters.NumberFilter(method=_event_dap_filter, label='Min acquisition DAP (cGy·cm²)',)
-    event_dap_max = django_filters.NumberFilter(method=_event_dap_filter, label='Max acquisition DAP (cGy·cm²)',)
+    study_dap_min = django_filters.NumberFilter(method=_dap_filter, label='Min study DAP (cGy·cm²)')
+    study_dap_max = django_filters.NumberFilter(method=_dap_filter, label='Max study DAP (cGy·cm²)')
+    event_dap_min = django_filters.NumberFilter(method=_dap_filter, label='Min acquisition DAP (cGy·cm²)',)
+    event_dap_max = django_filters.NumberFilter(method=_dap_filter, label='Max acquisition DAP (cGy·cm²)',)
     generalequipmentmoduleattr__unique_equipment_name__display_name = django_filters.CharFilter(
         lookup_expr='icontains', label='Display name')
     num_events = django_filters.ChoiceFilter(method=_specify_event_numbers, label='Num. events total',
@@ -705,6 +618,7 @@ class DXSummaryListFilter(django_filters.FilterSet):
 
 
 class DXFilterPlusPid(DXSummaryListFilter):
+    """Adding patient name and ID to filter if permissions allow"""
     def __init__(self, *args, **kwargs):
         super(DXFilterPlusPid, self).__init__(*args, **kwargs)
         self.filters['patient_name'] = django_filters.CharFilter(method=custom_name_filter, label=u'Patient name')
@@ -712,9 +626,7 @@ class DXFilterPlusPid(DXSummaryListFilter):
 
 
 def dx_acq_filter(filters, pid=False):
-    from decimal import Decimal, InvalidOperation
-    from django.db.models import Q
-    from remapp.models import IrradEventXRayData
+    """Additional filters at event level"""
     filteredInclude = []
     if 'acquisition_protocol' in filters and (
             'acquisition_dap_min' in filters or 'acquisition_dap_max' in filters or
