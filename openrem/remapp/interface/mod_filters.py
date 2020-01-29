@@ -27,14 +27,14 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-from decimal import Decimal, InvalidOperation
+from decimal import (Decimal, InvalidOperation)
 import logging
 
 import django_filters
 from django import forms
 from django.db.models import Q
 
-from ..models import GeneralStudyModuleAttr
+from ..models import (GeneralStudyModuleAttr, IrradEventXRayData, CtIrradiationEventData)
 from ..tools.hash_id import hash_id
 
 logger = logging.getLogger(__name__)
@@ -394,8 +394,6 @@ class CTFilterPlusPid(CTSummaryListFilter):
 
 
 def ct_acq_filter(filters, pid=False):
-    from decimal import Decimal, InvalidOperation
-    from ..models import CtIrradiationEventData
     filteredInclude = []
     if 'acquisition_protocol' in filters and (
             'acquisition_ctdi_min' in filters or 'acquisition_ctdi_max' in filters or
@@ -646,9 +644,6 @@ class DXFilterPlusPid(DXSummaryListFilter):
 
 
 def dx_acq_filter(filters, pid=False):
-    from decimal import Decimal, InvalidOperation
-    from django.db.models import Q
-    from remapp.models import IrradEventXRayData
     filteredInclude = []
     if 'acquisition_protocol' in filters and (
             'acquisition_dap_min' in filters or 'acquisition_dap_max' in filters or
