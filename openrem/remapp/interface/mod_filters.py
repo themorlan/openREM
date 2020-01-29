@@ -42,7 +42,7 @@ from django.utils.safestring import mark_safe
 TEST_CHOICES = ((u'', u'Yes (default)'), (2, u'No (caution)'),)
 
 
-def custom_name_filter(queryset, value):
+def custom_name_filter(queryset, name, value):
     if not value:
         return queryset
 
@@ -58,7 +58,7 @@ def custom_name_filter(queryset, value):
     return filtered
 
 
-def custom_id_filter(queryset, value):
+def custom_id_filter(queryset, name, value):
     if not value:
         return queryset
 
@@ -234,8 +234,8 @@ class RFSummaryListFilter(django_filters.FilterSet):
 class RFFilterPlusPid(RFSummaryListFilter):
     def __init__(self, *args, **kwargs):
         super(RFFilterPlusPid, self).__init__(*args, **kwargs)
-        self.filters['patient_name'] = django_filters.CharFilter(method='custom_name_filter', label=u'Patient name')
-        self.filters['patient_id'] = django_filters.CharFilter(method='custom_id_filter', label=u'Patient ID')
+        self.filters['patient_name'] = django_filters.CharFilter(method=custom_name_filter, label=u'Patient name')
+        self.filters['patient_id'] = django_filters.CharFilter(method=custom_id_filter, label=u'Patient ID')
 
 
 # Values from DICOM CID 10013 CT Acquisition Type
@@ -455,8 +455,8 @@ class CTSummaryListFilter(django_filters.FilterSet):
 class CTFilterPlusPid(CTSummaryListFilter):
     def __init__(self, *args, **kwargs):
         super(CTFilterPlusPid, self).__init__(*args, **kwargs)
-        self.filters['patient_name'] = django_filters.CharFilter(method='custom_name_filter', label=u'Patient name')
-        self.filters['patient_id'] = django_filters.CharFilter(method='custom_id_filter', label=u'Patient ID')
+        self.filters['patient_name'] = django_filters.CharFilter(method=custom_name_filter, label=u'Patient name')
+        self.filters['patient_id'] = django_filters.CharFilter(method=custom_id_filter, label=u'Patient ID')
 
 
 def ct_acq_filter(filters, pid=False):
@@ -619,8 +619,8 @@ class MGSummaryListFilter(django_filters.FilterSet):
 class MGFilterPlusPid(MGSummaryListFilter):
     def __init__(self, *args, **kwargs):
         super(MGFilterPlusPid, self).__init__(*args, **kwargs)
-        self.filters['patient_name'] = django_filters.CharFilter(method='custom_name_filter', label=u'Patient name')
-        self.filters['patient_id'] = django_filters.CharFilter(method='custom_id_filter', label=u'Patient ID')
+        self.filters['patient_name'] = django_filters.CharFilter(method=custom_name_filter, label=u'Patient name')
+        self.filters['patient_id'] = django_filters.CharFilter(method=custom_id_filter, label=u'Patient ID')
 
 
 class DXSummaryListFilter(django_filters.FilterSet):
@@ -707,8 +707,8 @@ class DXSummaryListFilter(django_filters.FilterSet):
 class DXFilterPlusPid(DXSummaryListFilter):
     def __init__(self, *args, **kwargs):
         super(DXFilterPlusPid, self).__init__(*args, **kwargs)
-        self.filters['patient_name'] = django_filters.CharFilter(method='custom_name_filter', label=u'Patient name')
-        self.filters['patient_id'] = django_filters.CharFilter(method='custom_id_filter', label=u'Patient ID')
+        self.filters['patient_name'] = django_filters.CharFilter(method=custom_name_filter, label=u'Patient name')
+        self.filters['patient_id'] = django_filters.CharFilter(method=custom_id_filter, label=u'Patient ID')
 
 
 def dx_acq_filter(filters, pid=False):
