@@ -43,6 +43,7 @@ TEST_CHOICES = ((u'', u'Yes (default)'), (2, u'No (caution)'),)
 
 
 def custom_name_filter(queryset, name, value):
+    """Search for name as plain text and encrypted"""
     if not value:
         return queryset
     filtered = queryset.filter(
@@ -56,6 +57,7 @@ def custom_name_filter(queryset, name, value):
 
 
 def custom_id_filter(queryset, name, value):
+    """Search for ID as plain text and encrypted"""
     if not value:
         return queryset
     filtered = queryset.filter(
@@ -69,6 +71,7 @@ def custom_id_filter(queryset, name, value):
 
 
 def _custom_acc_filter(queryset, name, value):
+    """Search for accession number as plain text and encrypted"""
     if not value:
         return queryset
     filtered = queryset.filter(
@@ -81,7 +84,8 @@ def _custom_acc_filter(queryset, name, value):
     return filtered
 
 
-def _total_dap_filter(queryset, name, value):
+def _dap_filter(queryset, name, value):
+    """Modify DAP to Gy.m2 before filtering"""
     if not value or not name:
         return queryset
     try:
@@ -92,18 +96,7 @@ def _total_dap_filter(queryset, name, value):
         return queryset.filter(total_dap__gte=value_gy_m2)
     elif 'study_dap_max' in name:
         return queryset.filter(total_dap__lte=value_gy_m2)
-    else:
-        return queryset
-
-
-def _event_dap_filter(queryset, name, value):
-    if not value or not name:
-        return queryset
-    try:
-        value_gy_m2 = Decimal(value)/Decimal(1000000)
-    except InvalidOperation:
-        return queryset
-    if 'event_dap_min' in name:
+    elif 'event_dap_min' in name:
         return queryset.filter(projectionxrayradiationdose__irradeventxraydata__dose_area_product__gte=value_gy_m2)
     elif 'event_dap_max' in name:
         return queryset.filter(projectionxrayradiationdose__irradeventxraydata__dose_area_product__lte=value_gy_m2)
@@ -168,8 +161,8 @@ class RFSummaryListFilter(django_filters.FilterSet):
     generalequipmentmoduleattr__station_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Station name')
     performing_physician_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Physician')
     accession_number = django_filters.CharFilter(method=_custom_acc_filter, label='Accession number')
-    study_dap_min = django_filters.NumberFilter(method=_total_dap_filter, label='Min study DAP (cGy·cm²)')
-    study_dap_max = django_filters.NumberFilter(method=_total_dap_filter, label='Max study DAP (cGy·cm²)')
+    study_dap_min = django_filters.NumberFilter(method=_dap_filter, label='Min study DAP (cGy·cm²)')
+    study_dap_max = django_filters.NumberFilter(method=_dap_filter, label='Max study DAP (cGy·cm²)')
     generalequipmentmoduleattr__unique_equipment_name__display_name = django_filters.CharFilter(
         lookup_expr='icontains', label='Display name')
     test_data = django_filters.ChoiceFilter(lookup_expr='isnull', label=u"Include possible test data",
@@ -219,6 +212,7 @@ class RFSummaryListFilter(django_filters.FilterSet):
 
 
 class RFFilterPlusPid(RFSummaryListFilter):
+    """Adding patient name and ID to filter if permissions allow"""
     def __init__(self, *args, **kwargs):
         super(RFFilterPlusPid, self).__init__(*args, **kwargs)
         self.filters['patient_name'] = django_filters.CharFilter(method=custom_name_filter, label=u'Patient name')
@@ -277,8 +271,7 @@ def _specify_event_numbers(queryset, name, value):
             else:
                 return queryset
             return filtered
-        else:
-            return queryset
+        return queryset
     if 'num_events' in name:
         filtered = queryset.filter(number_of_events__exact=value)
     elif 'num_spiral_events' in name:
@@ -387,6 +380,7 @@ class CTSummaryListFilter(django_filters.FilterSet):
 
 
 class CTFilterPlusPid(CTSummaryListFilter):
+    """Adding patient name and ID to filter if permissions allow"""
     def __init__(self, *args, **kwargs):
         super(CTFilterPlusPid, self).__init__(*args, **kwargs)
         self.filters['patient_name'] = django_filters.CharFilter(method=custom_name_filter, label=u'Patient name')
@@ -394,6 +388,7 @@ class CTFilterPlusPid(CTSummaryListFilter):
 
 
 def ct_acq_filter(filters, pid=False):
+    """Additional filters at event level"""
     filteredInclude = []
     if 'acquisition_protocol' in filters and (
             'acquisition_ctdi_min' in filters or 'acquisition_ctdi_max' in filters or
@@ -549,6 +544,7 @@ class MGSummaryListFilter(django_filters.FilterSet):
 
 
 class MGFilterPlusPid(MGSummaryListFilter):
+    """Adding patient name and ID to filter if permissions allow"""
     def __init__(self, *args, **kwargs):
         super(MGFilterPlusPid, self).__init__(*args, **kwargs)
         self.filters['patient_name'] = django_filters.CharFilter(method=custom_name_filter, label=u'Patient name')
@@ -583,10 +579,10 @@ class DXSummaryListFilter(django_filters.FilterSet):
         lookup_expr='icontains', label='Model')
     generalequipmentmoduleattr__station_name = django_filters.CharFilter(lookup_expr='icontains', label=u'Station name')
     accession_number = django_filters.CharFilter(method=_custom_acc_filter, label='Accession number')
-    study_dap_min = django_filters.NumberFilter(method=_total_dap_filter, label='Min study DAP (cGy·cm²)')
-    study_dap_max = django_filters.NumberFilter(method=_total_dap_filter, label='Max study DAP (cGy·cm²)')
-    event_dap_min = django_filters.NumberFilter(method=_event_dap_filter, label='Min acquisition DAP (cGy·cm²)',)
-    event_dap_max = django_filters.NumberFilter(method=_event_dap_filter, label='Max acquisition DAP (cGy·cm²)',)
+    study_dap_min = django_filters.NumberFilter(method=_dap_filter, label='Min study DAP (cGy·cm²)')
+    study_dap_max = django_filters.NumberFilter(method=_dap_filter, label='Max study DAP (cGy·cm²)')
+    event_dap_min = django_filters.NumberFilter(method=_dap_filter, label='Min acquisition DAP (cGy·cm²)',)
+    event_dap_max = django_filters.NumberFilter(method=_dap_filter, label='Max acquisition DAP (cGy·cm²)',)
     generalequipmentmoduleattr__unique_equipment_name__display_name = django_filters.CharFilter(
         lookup_expr='icontains', label='Display name')
     num_events = django_filters.ChoiceFilter(method=_specify_event_numbers, label='Num. events total',
@@ -637,6 +633,7 @@ class DXSummaryListFilter(django_filters.FilterSet):
 
 
 class DXFilterPlusPid(DXSummaryListFilter):
+    """Adding patient name and ID to filter if permissions allow"""
     def __init__(self, *args, **kwargs):
         super(DXFilterPlusPid, self).__init__(*args, **kwargs)
         self.filters['patient_name'] = django_filters.CharFilter(method=custom_name_filter, label=u'Patient name')
@@ -644,6 +641,7 @@ class DXFilterPlusPid(DXSummaryListFilter):
 
 
 def dx_acq_filter(filters, pid=False):
+    """Additional filters at event level"""
     filteredInclude = []
     if 'acquisition_protocol' in filters and (
             'acquisition_dap_min' in filters or 'acquisition_dap_max' in filters or
