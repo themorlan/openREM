@@ -20,3 +20,6 @@ flower
 numpy
 future
 defusedxml
+sphinxcontrib-programoutput
+sphinxcontrib-autoprogram
+sphinx-argparse
