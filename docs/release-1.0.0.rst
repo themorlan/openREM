@@ -42,18 +42,18 @@ Upgrade
 
 * Create a new virtualenv with Python 3:
 
-.. code-block::
+.. code-block:: console
 
     python3 -m venv virtualenv3
     . virtualenv3/bin/activate
     # add location and Windows alternatives - go with strong recommendation for virtualenv this time...
 
 
-    *Ubuntu one page instructions*::
+*Ubuntu one page instructions*::
 
-        sudo systemctl stop openrem-celery
-        sudo systemctl stop orthanc
-        . /var/dose/veopenrem/bin/activate
+    sudo systemctl stop openrem-celery
+    sudo systemctl stop orthanc
+    . /var/dose/veopenrem/bin/activate
 
 * Install the new version of OpenREM:
 
@@ -123,6 +123,11 @@ just installed (assuming you are using a production web server...):
 
     See  :doc:`virtual_directory` for more details.
 
+
+Update all the services configurations
+======================================
+
+* Change paths to python, celery and flower binaries to Python 3 versions
 
 Restart all the services
 ========================
