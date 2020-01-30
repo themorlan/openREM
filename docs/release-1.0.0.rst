@@ -40,7 +40,14 @@ Upgrade
 
 * Consider temporarily disabling your DICOM Store SCP, or redirecting the data to be processed later
 
-* If you are using a virtualenv, activate it
+* Create a new virtualenv with Python 3:
+
+.. code-block::
+
+    python3 -m venv virtualenv3
+    . virtualenv3/bin/activate
+    # add location and Windows alternatives - go with strong recommendation for virtualenv this time...
+
 
     *Ubuntu one page instructions*::
 
@@ -56,6 +63,13 @@ Upgrade
 
 .. _update_configuration0100:
 
+Update the local_settings.py file
+=================================
+
+* Remove the first line ``LOCAL_SETTINGS = True``
+* Change second line to ``from .settings import *``
+* Compare file to local_settings.py.example to see if there are other sections that should be updated
+
 Migrate the database
 ====================
 
@@ -66,6 +80,8 @@ In a shell/command window, move into the ``openrem`` folder:
 * Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/``
 * Windows: ``C:\Python27\Lib\site-packages\openrem\``
 * Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\``
+
+Prepare the migrations folder:
 
 * Delete everything except ``__init__.py`` in ``remapp/migrations``
 * Rename ``0001_initial.py.1-0-upgrade`` to ``0001_initial.py``
