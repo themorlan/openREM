@@ -61,6 +61,8 @@ Upgrade
 
         pip install openrem==1.0.0b1
 
+* Install ``gunicorn`` if required.
+
 .. _update_configuration0100:
 
 Update the local_settings.py file
