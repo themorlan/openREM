@@ -31,6 +31,7 @@ requires = [
     'numpy',
     'future',
     'defusedxml',
+    'psycopg2-binary'
     ]
 
 setup(
