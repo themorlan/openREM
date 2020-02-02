@@ -31,6 +31,25 @@ definitions:
           - tox -e ci
         services:
           - postgres
+    - step: &deploy-to-openrem-org
+        name: deploy to $server
+        deployment: develop  # deployment has $server as a variable = dev.openrem.org
+        script:
+          - mkdir -p ~/.ssh
+          - cat deploy_tools/my_known_hosts >> ~/.ssh/known_hosts
+          - (umask  077 ; echo $BB_OPENREM_KEY | base64 --decode > ~/.ssh/id_rsa)
+          - echo $BITBUCKET_COMMIT
+          - SITE_FOLDER="/home/deploy/sites/$server/"
+          - SOURCE_FOLDER=$SITE_FOLDER"source"
+          - ssh deploy@$server "cd $SOURCE_FOLDER && git fetch"
+          - ssh deploy@$server "cd $SOURCE_FOLDER && git reset --hard $BITBUCKET_COMMIT"
+          - VENV_PIP=$SITE_FOLDER"virtualenv/bin/pip"
+          - ssh deploy@$server "$VENV_PIP install -e $SOURCE_FOLDER"
+          - VENV_PYTHON=$SITE_FOLDER"virtualenv/bin/python"
+          - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py collectstatic --noinput"
+          - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py makemigrations remapp --noinput"
+          - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py migrate --noinput"
+          - ssh deploy@$server "sudo /usr/sbin/service gunicorn-$server restart"
 
 pipelines:
   default:  # Standard commits are tested but not deployed
@@ -40,46 +59,12 @@ pipelines:
       - step:
           <<: *test
           name: run django tests - develop
-      - step:
-          name: deploy to dev.openrem.org
-          deployment: develop  # deployment has $server as a variable = dev.openrem.org
-          script:
-            - mkdir -p ~/.ssh
-            - cat deploy_tools/my_known_hosts >> ~/.ssh/known_hosts
-            - (umask  077 ; echo $BB_OPENREM_KEY | base64 --decode > ~/.ssh/id_rsa)
-            - echo $BITBUCKET_COMMIT
-            - SITE_FOLDER="/home/deploy/sites/$server/"
-            - SOURCE_FOLDER=$SITE_FOLDER"source"
-            - ssh deploy@$server "cd $SOURCE_FOLDER && git fetch"
-            - ssh deploy@$server "cd $SOURCE_FOLDER && git reset --hard $BITBUCKET_COMMIT"
-            - VENV_PIP=$SITE_FOLDER"virtualenv/bin/pip"
-            - ssh deploy@$server "$VENV_PIP install -e $SOURCE_FOLDER"
-            - VENV_PYTHON=$SITE_FOLDER"virtualenv/bin/python"
-            - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py collectstatic --noinput"
-            - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py makemigrations remapp --noinput"
-            - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py migrate --noinput"
-            - ssh deploy@$server "sudo /usr/sbin/service gunicorn-$server restart"
+      - step: *deploy-to-openrem-org
     '*stage':  # Commits to any branch ending in 'stage' are tested and deployed to testing.openrem.org
       - step:
           <<: *test
           name: run django tests - testing
       - step:
-          name: deploy to testing.openrem.org
+          <<: *deploy-to-openrem-org
           deployment: testing  # deployment has $server as a variable = testing.openrem.org
-          script:
-            - mkdir -p ~/.ssh
-            - cat deploy_tools/my_known_hosts >> ~/.ssh/known_hosts
-            - (umask  077 ; echo $BB_OPENREM_KEY | base64 --decode > ~/.ssh/id_rsa)
-            - echo $BITBUCKET_COMMIT
-            - SITE_FOLDER="/home/deploy/sites/$server/"
-            - SOURCE_FOLDER=$SITE_FOLDER"source"
-            - ssh deploy@$server "cd $SOURCE_FOLDER && git fetch"
-            - ssh deploy@$server "cd $SOURCE_FOLDER && git reset --hard $BITBUCKET_COMMIT"
-            - VENV_PIP=$SITE_FOLDER"virtualenv/bin/pip"
-            - ssh deploy@$server "$VENV_PIP install -e $SOURCE_FOLDER"
-            - VENV_PYTHON=$SITE_FOLDER"virtualenv/bin/python"
-            - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py collectstatic --noinput"
-            - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py makemigrations remapp --noinput"
-            - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py migrate --noinput"
-            - ssh deploy@$server "sudo /usr/sbin/service gunicorn-$server restart"
 
