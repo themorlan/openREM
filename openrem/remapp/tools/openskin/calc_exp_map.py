@@ -1,6 +1,6 @@
 from openrem.remapp.tools.openskin import geomclass
 from openrem.remapp.tools.openskin import geomfunc
-from openrem.remapp.tools.openskin import skinMap
+from openrem.remapp.tools.openskin import skinmap
 
 
 class CalcExpMap(object):
@@ -17,11 +17,11 @@ class CalcExpMap(object):
         self.table_width = table_width
         self.table_length = table_length
         self.matt_thick = matt_thick
-        self.patPos = pat_pos
+        self.pat_pos = pat_pos
         self.table_trans = 1
 
         if self.phantom_type == 'flat':
-            # I think that the values passed to geomclass.Phantom below should be parameters
+            # I think that the values passed to geomclass.PhantomFlat below should be parameters
             # rather than hard-written values. Is that correct?
             # def __init__(self, phantomType, origin, width, height, scale):
             # self.phantom = geomclass.Phantom("flat", [025, 0, 0], 50, 150, 1)
@@ -43,17 +43,18 @@ class CalcExpMap(object):
                  d_ref=None, dap=None, ref_ak=None,
                  kvp=None, filter_cu=None,
                  run_type=None, frames=None, end_angle=None, pat_pos=None):
-        
-        if pat_pos == "FFS" or pat_pos == "ffs":
+
+        pat_pos = pat_pos.upper()
+        if pat_pos == "FFS":
             delta_x = -delta_x
             delta_y = -delta_y
-        elif pat_pos == "HFP" or pat_pos == "hfp":
+        elif pat_pos == "HFP":
             delta_z = -delta_z
-            delta_x = -delta_x 
-        elif pat_pos == "FFP" or pat_pos == "ffp":
+            delta_x = -delta_x
+        elif pat_pos == "FFP":
             delta_y = -delta_y
             delta_z = -delta_z
-        elif pat_pos == "HFS" or pat_pos == "hfs":
+        elif pat_pos == "HFS":
             pass
         else:
             print("No orientation known. Quitting skin dose calculator")
@@ -65,20 +66,20 @@ class CalcExpMap(object):
         area = dap / ref_ak * 100. * 100.
 
         x_ray = geomfunc.build_ray(delta_x, delta_y, delta_z, angle_x, angle_y, d_ref + 15)
-        
-        if self.phantom.phantomType == "flat":
+
+        if self.phantom.phantom_type == "flat":
             self.table_trans = geomfunc.get_table_trans(kvp, filter_cu)
-        elif self.phantom.phantomType == "3d":
+        elif self.phantom.phantom_type == "3d":
             self.table_trans = geomfunc.get_table_mattress_trans(kvp, filter_cu)
 
         if 'Rotational' in run_type:
-            self.my_dose.add_dose(skinMap.rotational(x_ray, angle_x, end_angle, int(frames), self.phantom, area, ref_ak,
+            self.my_dose.add_dose(skinmap.rotational(x_ray, angle_x, end_angle, int(frames), self.phantom, area, ref_ak,
                                                      kvp, filter_cu, d_ref,
                                                      self.table_length, self.table_width,
                                                      self.table_trans,
                                                      self.table_thick + self.matt_thick))
         else:
-            self.my_dose.add_dose(skinMap.skin_map(x_ray, self.phantom, area, ref_ak, kvp, filter_cu, d_ref,
+            self.my_dose.add_dose(skinmap.skin_map(x_ray, self.phantom, area, ref_ak, kvp, filter_cu, d_ref,
                                                    self.table_length, self.table_width,
                                                    self.table_trans,
                                                    self.table_thick + self.matt_thick))

@@ -36,11 +36,11 @@ class Triangle3:
     """
 
     def __init__(self, point_3a, point_3b, point_3c):
-        self.a = point_3a
-        self.b = point_3b
-        self.c = point_3c
-        self.u = point_3b - point_3a
-        self.v = point_3c - point_3a
+        self.point_a = point_3a
+        self.point_b = point_3b
+        self.point_c = point_3c
+        self.vector_ab = point_3b - point_3a
+        self.vector_ac = point_3c - point_3a
 
 
 class Segment3:
@@ -91,30 +91,30 @@ class PhantomFlat:
     Properties:
         width: the width of the phantom in cells
         height: the height of the phantom in cells
-        phantomMap: an array containing a list of points which represent each cell in the phantom surface to be
+        phantom_map: an array containing a list of points which represent each cell in the phantom surface to be
         evaluated
-        normalMap: an array containing line segments (Segment_3) indicating the outward facing surface of the cell
+        normal_map: an array containing line segments (Segment_3) indicating the outward facing surface of the cell
     """
 
     def __init__(self, phantom_type, origin, width, height, scale):
-        self.phantomType = phantom_type
+        self.phantom_type = phantom_type
         self.width = width
         self.height = height
-        if phantom_type is "flat":
+        if phantom_type == "flat":
             z_offset = -origin[2]
-            self.phantomMap = np.empty((width, height), dtype=object)
-            self.normalMap = np.empty((width, height), dtype=object)
-            it = np.nditer(self.phantomMap, op_flags=['readwrite'], flags=['multi_index', 'refs_ok'])
+            self.phantom_map = np.empty((width, height), dtype=object)
+            self.normal_map = np.empty((width, height), dtype=object)
+            it = np.nditer(self.phantom_map, op_flags=['readwrite'], flags=['multi_index', 'refs_ok'])
             while not it.finished:
                 my_x = it.multi_index[0] * scale - origin[0]
                 my_y = it.multi_index[1] * scale - origin[1]
-                self.phantomMap[it.multi_index[0], it.multi_index[1]] = np.array([my_x, my_y, z_offset])  # As above
+                self.phantom_map[it.multi_index[0], it.multi_index[1]] = np.array([my_x, my_y, z_offset])  # As above
 
                 plane_point = np.array([my_x, my_y, z_offset])
                 outside_point = np.array([my_x, my_y, z_offset - 1])
                 # The normal is defined going back in to the plane, to make checking alignment easier
                 normal = Segment3(outside_point, plane_point)
-                self.normalMap[it.multi_index[0], it.multi_index[1]] = normal
+                self.normal_map[it.multi_index[0], it.multi_index[1]] = normal
                 it.iternext()
 
 
@@ -140,10 +140,10 @@ class Phantom3:
         phantom_depth: the depth of the 3D phantom
         phantom_flat_dist: the width of the flat part of the phantom (same for front and back)
         phantom_curved_dist: the distance around one curved side of the phantom (same for left and right sides)
-        phantomMap: an array containing a list of points which represent each cell in the phantom surface to be
+        phantom_map: an array containing a list of points which represent each cell in the phantom surface to be
         evaluated
-        normalMap: an array containing line segments (Segment_3) indicating the outward facing surface of the cell
-        phantomType: set to "3d"
+        normal_map: an array containing line segments (Segment_3) indicating the outward facing surface of the cell
+        phantom_type: set to "3d"
     """
 
     def __init__(self, origin, scale=1, mass=73.2, height=178.6, pat_pos="HFS"):
@@ -195,18 +195,18 @@ class Phantom3:
 
         self.width = int(2 * round_circumference + 2 * round_flat)
         self.height = int(round(torso, 0))
-        self.phantomType = "3d"
-        self.phantomMap = np.empty((self.width, self.height), dtype=object)
-        self.normalMap = np.empty((self.width, self.height), dtype=object)
+        self.phantom_type = "3d"
+        self.phantom_map = np.empty((self.width, self.height), dtype=object)
+        self.normal_map = np.empty((self.width, self.height), dtype=object)
         transition1 = (round_flat / 2.) + 0.5  # Centre line flat to start of curve.
         transition2 = transition1 + round_circumference  # End of first curve to table flat
         transition3 = transition2 + round_flat  # End of table flat to second curve
         transition4 = transition3 + round_circumference  # End of second curve to flat back to centre line
-        it = np.nditer(self.phantomMap, op_flags=['readwrite'], flags=['multi_index', 'refs_ok'])
-        while not it.finished:
+        iterator = np.nditer(self.phantom_map, op_flags=['readwrite'], flags=['multi_index', 'refs_ok'])
+        while not iterator.finished:
             # Start top, centre line.
-            row_index = it.multi_index[0] - origin[0]
-            col_index = it.multi_index[1] - origin[1]
+            row_index = iterator.multi_index[0] - origin[0]
+            col_index = iterator.multi_index[1] - origin[1]
             angle_step = math.pi / round_circumference
             z_offset = -origin[2]
 
@@ -246,19 +246,19 @@ class Phantom3:
                 my_x = (row_index - self.width) * flat_spacing - (round_flat / 2.) + round(round_flat / 2., 0)
                 my_y = col_index * pat_pos_y
                 normal = Segment3(np.array([my_x, my_y, my_z + pat_pos_z]), np.array([my_x, my_y, my_z]))
-            self.phantomMap[it.multi_index[0], it.multi_index[1]] = np.array([my_x, my_y, my_z])
-            self.normalMap[it.multi_index[0], it.multi_index[1]] = normal
-            it.iternext()
-        # Flip to correct left and right so it becomes a view of the back.
+            self.phantom_map[iterator.multi_index[0], iterator.multi_index[1]] = np.array([my_x, my_y, my_z])
+            self.normal_map[iterator.multi_index[0], iterator.multi_index[1]] = normal
+            iterator.iternext()
+        # Flip to correct left and right so iterator becomes a view of the back.
         # self.phantomMap = np.flipud(self.phantomMap)
         # self.normalMap = np.flipud(self.normalMap)
-        self.phantomMap = np.fliplr(self.phantomMap)
-        self.normalMap = np.fliplr(self.normalMap)
+        self.phantom_map = np.fliplr(self.phantom_map)
+        self.normal_map = np.fliplr(self.normal_map)
         if prone:
-            self.normalMap = np.roll(self.normalMap, int(self.phantom_flat_dist + self.phantom_curved_dist), axis=0)
-            self.phantomMap = np.roll(self.phantomMap, int(self.phantom_flat_dist + self.phantom_curved_dist), axis=0)
-            self.phantomMap = np.flipud(self.phantomMap)
-            self.normalMap = np.flipud(self.normalMap)
+            self.normal_map = np.roll(self.normal_map, int(self.phantom_flat_dist + self.phantom_curved_dist), axis=0)
+            self.phantom_map = np.roll(self.phantom_map, int(self.phantom_flat_dist + self.phantom_curved_dist), axis=0)
+            self.phantom_map = np.flipud(self.phantom_map)
+            self.normal_map = np.flipud(self.normal_map)
 
 
 class SkinDose:
@@ -271,28 +271,38 @@ class SkinDose:
     Properties:
         phantom: the phantom being irradiated
         views: a list of the irradiations included
-        doseArray: an array of doses delivered to the phantom
+        dose_array: an array of doses delivered to the phantom
         totalDose: a summed array of doses
-        fliplr: flip the left and right of the dose map to provide a view from
-        behind the patient
+        fliplr: flip the left and right of the dose map to provide a view from behind the patient
     """
 
     def __init__(self, phantom):
         self.phantom = phantom
         self.views = []
-        self.doseArray = []
-        self.totalDose = []
+        self.dose_array = []
+        self.total_dose = []
 
     def add_view(self, view_str):
+        """
+        Add a view (irradiation event) to the list of views (irradiation events)
+        :param view_str: the view number
+        :return: Nothing
+        """
         if len(self.views) == 0:
             self.views = view_str
         else:
             self.views = np.vstack((self.views, view_str))
 
     def add_dose(self, skin_map):
-        if len(self.doseArray) == 0:
-            self.doseArray = skin_map
-            self.totalDose = skin_map
+        """
+        Add the skin-dose of a specific view/irradiation event to the "summed" skin-dose map
+
+        :param skin_map: the skin-dose to add
+        :return: Nothing
+        """
+        if len(self.dose_array) == 0:
+            self.dose_array = skin_map
+            self.total_dose = skin_map
         else:
-            self.doseArray = np.dstack((self.doseArray, skin_map))
-            self.totalDose = self.totalDose + skin_map
+            self.dose_array = np.dstack((self.dose_array, skin_map))
+            self.total_dose = self.total_dose + skin_map

@@ -34,22 +34,25 @@ def intersect(a_ray, a_triangle):
     This function checks if a ray intersects a triangle
 
     Args:
-        a_ray: the ray (Segment_3) being projected
-        a_triangle: the triangle (Trianlge_3) to hit
+        a_ray: the ray (Segment3) being projected
+        a_triangle: the triangle (Triangle3) to hit
 
     Returns:
         A string describing the status of the hit.
     """
 
-    n = np.cross(a_triangle.u, a_triangle.v)
-    if n is [0, 0, 0]:
+    # Get triangle plane normal
+    plane_normal = np.cross(a_triangle.vector_ab, a_triangle.vector_ac)
+    if plane_normal is [0, 0, 0]:
         output = "degenerate"
         return output
 
-    w0 = a_ray.source - a_triangle.a
-    a = -np.dot(n, w0)
-    b = np.dot(n, a_ray.vector)
+    # Determine if ray intersects with triangle plane
+    w0 = a_ray.source - a_triangle.point_a
+    a = -np.dot(plane_normal, w0)
+    b = np.dot(plane_normal, a_ray.vector)
 
+    # Get the intersection point of the ray with the triangle plane
     if abs(b) < 0.00000001:
         output = "same plane"
         return output
@@ -59,14 +62,15 @@ def intersect(a_ray, a_triangle):
         output = "away from triangle"
         return output
 
-    i = a_ray.source + r * a_ray.vector
+    intersect_point = a_ray.source + r * a_ray.vector
 
-    uu = np.dot(a_triangle.u, a_triangle.u)
-    uv = np.dot(a_triangle.u, a_triangle.v)
-    vv = np.dot(a_triangle.v, a_triangle.v)
-    w = i - a_triangle.a
-    wu = np.dot(w, a_triangle.u)
-    wv = np.dot(w, a_triangle.v)
+    # Determine if intersection point is within inside the triangle
+    uu = np.dot(a_triangle.vector_ab, a_triangle.vector_ab)
+    uv = np.dot(a_triangle.vector_ab, a_triangle.vector_ac)
+    vv = np.dot(a_triangle.vector_ac, a_triangle.vector_ac)
+    w = intersect_point - a_triangle.point_a
+    wu = np.dot(w, a_triangle.vector_ab)
+    wv = np.dot(w, a_triangle.vector_ac)
     d = uv * uv - uu * vv
 
     s = (uv * wv - vv * wu) / d
@@ -76,12 +80,11 @@ def intersect(a_ray, a_triangle):
 
     if s < 0.0 or s > 1.000000000001:  # Technically >1 but for the rounding errors.
         output = "outside test 1"
+    elif t < 0.0 or (s + t) > 1.000000000001:
+        output = "outside test 2" + "S:" + str(s) + " t:" + str(t)
     else:
-        if t < 0.0 or (s + t) > 1.000000000001:
-            output = "outside test 2" + "S:" + str(s) + " t:" + str(t)
+        output = "hit"
 
-        else:
-            output = "hit"
     return output
 
 
@@ -179,10 +182,7 @@ def check_orthogonal(segment1, segment2):
         A boolean: true if the segments are within 90 degrees,
         false if outside.
     """
-    if np.dot(segment1.vector, segment2.vector) >= 0:
-        return True
-    else:
-        return False
+    return np.dot(segment1.vector, segment2.vector) >= 0
 
 
 def check_miss(source, centre, target1, target2):
@@ -211,10 +211,7 @@ def check_miss(source, centre, target1, target2):
     angle1 = np.arccos(np.dot(main_line, target1_vec) / (main_length * target1_length))
     angle2 = np.arccos(np.dot(main_line, target2_vec) / (main_length * target2_length))
 
-    if abs(angle2) > abs(angle1):
-        return True  # miss
-    else:
-        return False
+    return abs(angle2) > abs(angle1)
 
 
 def find_nearest(array, value):
@@ -226,17 +223,16 @@ def find_nearest(array, value):
     Returns:
         The index of the matching value.
     """
-    index = (np.abs(array - value)).argmin()
-    return index
+    return (np.abs(array - value)).argmin()
 
 
-def get_bsf(kv, cu_thickness, size):
+def get_bsf(tube_voltage, cu_thickness, size):
     """ This function gives a BSF and f-factor combined. Data from:
     Backscatter factors and mass energy-absorption coefficient ratios for diagnostic radiology dosimetry
     Hamza Benmakhlouf et al 2011 Phys. Med. Biol. 56 7179 doi:10.1088/0031-9155/56/22/012
 
     Args:
-        kv: The peak kilovoltage
+        tube_voltage: The peak kilovoltage
         cu_thickness: the added copper filtration in mm. In addition, 3.1 mm Al is assumed by default
         size: The side of the square field incident on the patient
 
@@ -247,7 +243,7 @@ def get_bsf(kv, cu_thickness, size):
     cu_table = np.array([0, 0.1, 0.2, 0.3, 0.6, 0.9])
     size_table = np.array([5, 10, 20, 35])
 
-    lookup_kv = find_nearest(kv_table, kv)
+    lookup_kv = find_nearest(kv_table, tube_voltage)
     lookup_cu = find_nearest(cu_table, cu_thickness)
     lookup_size = find_nearest(size_table, size)
 
@@ -282,17 +278,16 @@ def rotate_ray_y(segment1, angle):
     my_x = translate_source[2] * math.sin(angle_rads) + translate_source[0] * math.cos(angle_rads)
     my_z = translate_source[2] * math.cos(angle_rads) - translate_source[0] * math.sin(angle_rads)
     new_source = np.array([my_x, my_y, my_z])
-    new_ray = Segment3(new_source + isocentre, isocentre)
-    return new_ray
+    return Segment3(new_source + isocentre, isocentre)
 
 
-def get_table_trans(kv, cu_thickness):
+def get_table_trans(tube_voltage, cu_thickness):
     """ This function gives just the table transmission factor based
     on measurements made at the Royal Free Hospital on a Siemens Artis Zeego
     in early 2016.
 
     Args:
-        kv: The peak kilovoltage
+        tube_voltage: The peak kilovoltage
         cu_thickness: the added copper filtration in mm. In addition, 3.1 mm Al is assumed by default
 
     Returns:
@@ -301,7 +296,7 @@ def get_table_trans(kv, cu_thickness):
     kv_table = np.array([60, 80, 110, 125])
     cu_table = np.array([0, 0.1, 0.2, 0.3, 0.6, 0.9])
 
-    lookup_kv = find_nearest(kv_table, kv)
+    lookup_kv = find_nearest(kv_table, tube_voltage)
     lookup_cu = find_nearest(cu_table, cu_thickness)
 
     lookup_array = np.array([
@@ -316,13 +311,13 @@ def get_table_trans(kv, cu_thickness):
     return lookup_array[lookup_cu, lookup_kv]
 
 
-def get_table_mattress_trans(kv, cu_thickness):
+def get_table_mattress_trans(tube_voltage, cu_thickness):
     """ This function gives a table and mattress transmission factor based
     on measurements made at the Royal Free Hospital on a Siemens Artis Zeego
     in early 2016.
 
     Args:
-        kv: The peak kilovoltage
+        tube_voltage: The peak kilovoltage
         cu_thickness: the added copper filtration in mm. In addition, 3.1 mm Al is assumed by default
 
     Returns:
@@ -331,7 +326,7 @@ def get_table_mattress_trans(kv, cu_thickness):
     kv_table = np.array([60, 80, 110, 125])
     cu_table = np.array([0, 0.1, 0.2, 0.3, 0.6, 0.9])
 
-    lookup_kv = find_nearest(kv_table, kv)
+    lookup_kv = find_nearest(kv_table, tube_voltage)
     lookup_cu = find_nearest(cu_table, cu_thickness)
 
     lookup_array = np.array([

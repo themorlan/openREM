@@ -43,7 +43,7 @@ import django
 basepath = os.path.dirname(__file__)
 projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
 if projectpath not in sys.path:
-    sys.path.insert(1,projectpath)
+    sys.path.insert(1, projectpath)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 django.setup()
 
@@ -58,7 +58,7 @@ def make_skin_map(study_pk=None):
     import remapp.tools.openskin.calc_exp_map as calc_exp_map
     from remapp.models import GeneralStudyModuleAttr
     from openremproject.settings import MEDIA_ROOT
-    import pickle as pickle
+    import pickle
     import gzip
     from remapp.version import __skin_map_version__
     from django.core.exceptions import ObjectDoesNotExist
@@ -141,17 +141,17 @@ def make_skin_map(study_pk=None):
         for irrad in study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all():
             try:
                 delta_x = float(irrad.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(
-                                                                                ).table_longitudinal_position) / 10.0
+                    ).table_longitudinal_position) / 10.0
             except (ObjectDoesNotExist, TypeError):
                 delta_x = 0.0
             try:
                 delta_y = float(irrad.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(
-                                                                                        ).table_lateral_position) / 10.0
+                    ).table_lateral_position) / 10.0
             except (ObjectDoesNotExist, TypeError):
                 delta_y = 0.0
             try:
                 delta_z = float(irrad.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(
-                                                                                        ).table_height_position) / 10.0
+                    ).table_height_position) / 10.0
             except (ObjectDoesNotExist, TypeError):
                 delta_z = 0.0
             if irrad.irradeventxraymechanicaldata_set.get().positioner_primary_angle:
@@ -164,7 +164,7 @@ def make_skin_map(study_pk=None):
                 angle_y = 0.0
             try:
                 d_ref = float(irrad.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(
-                                                                        ).distance_source_to_isocenter) / 10.0 - 15.0
+                    ).distance_source_to_isocenter) / 10.0 - 15.0
             except (ObjectDoesNotExist, TypeError):
                 # This will result in failure to calculate skin dose map. Need a sensible default, or a lookup to a
                 # user-entered value
@@ -256,5 +256,5 @@ def make_skin_map(study_pk=None):
         if not os.path.exists(skin_map_path):
             os.makedirs(skin_map_path)
 
-        with gzip.open(os.path.join(skin_map_path, 'skin_map_' + str(study_pk) + '.p'), 'wb') as f:
-            pickle.dump(return_structure, f)
+        with gzip.open(os.path.join(skin_map_path, 'skin_map_' + str(study_pk) + '.p'), 'wb') as pickle_file:
+            pickle.dump(return_structure, pickle_file)
