@@ -80,7 +80,7 @@ class PhantomFlat:
     """ This class defines a surface to which dose will be delivered.
 
     Constructor Args:
-        phantomType: the type of phantom being assembled
+        phantom_type: the type of phantom being assembled
         origin: the coordinate system for the phantom. For example, some systems
             use the head end, table plane in the patient mid-line. So the origin
             would be [25,0,0] on a 50 cm wide phantom.
@@ -250,8 +250,8 @@ class Phantom3:
             self.normal_map[iterator.multi_index[0], iterator.multi_index[1]] = normal
             iterator.iternext()
         # Flip to correct left and right so iterator becomes a view of the back.
-        # self.phantomMap = np.flipud(self.phantomMap)
-        # self.normalMap = np.flipud(self.normalMap)
+        # self.phantom_map = np.flipud(self.phantom_map)
+        # self.normal_map = np.flipud(self.normal_map)
         self.phantom_map = np.fliplr(self.phantom_map)
         self.normal_map = np.fliplr(self.normal_map)
         if prone:
@@ -272,7 +272,7 @@ class SkinDose:
         phantom: the phantom being irradiated
         views: a list of the irradiations included
         dose_array: an array of doses delivered to the phantom
-        totalDose: a summed array of doses
+        total_dose: a summed array of doses
         fliplr: flip the left and right of the dose map to provide a view from behind the patient
     """
 

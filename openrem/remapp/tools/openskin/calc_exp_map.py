@@ -23,7 +23,7 @@ class CalcExpMap(object):
         if self.phantom_type == 'flat':
             # I think that the values passed to geomclass.PhantomFlat below should be parameters
             # rather than hard-written values. Is that correct?
-            # def __init__(self, phantomType, origin, width, height, scale):
+            # def __init__(self, phantom_type, origin, width, height, scale):
             # self.phantom = geomclass.Phantom("flat", [025, 0, 0], 50, 150, 1)
             # Where does the 025 come from?
             # The 1 is the scale

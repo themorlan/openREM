@@ -216,16 +216,16 @@ def make_skin_map(study_pk=None):
 
         # Flip the skin dose map left-right so the view is from the front
         # my_exp_map.my_dose.fliplr()
-        my_exp_map.my_dose.totalDose = np.roll(my_exp_map.my_dose.totalDose,
-                                               int(old_div(my_exp_map.phantom.phantom_flat_dist, 2)),
-                                               axis=0)
+        my_exp_map.my_dose.total_dose = np.roll(my_exp_map.my_dose.total_dose,
+                                                int(old_div(my_exp_map.phantom.phantom_flat_dist, 2)),
+                                                axis=0)
         try:
-            my_exp_map.my_dose.totalDose = np.rot90(my_exp_map.my_dose.totalDose)
+            my_exp_map.my_dose.total_dose = np.rot90(my_exp_map.my_dose.total_dose)
         except ValueError:
             pass
 
         return_structure = {
-            'skin_map': my_exp_map.my_dose.totalDose.flatten().tolist(),
+            'skin_map': my_exp_map.my_dose.total_dose.flatten().tolist(),
             'width': my_exp_map.phantom.width,
             'height': my_exp_map.phantom.height,
             'phantom_width': my_exp_map.phantom.phantom_width,

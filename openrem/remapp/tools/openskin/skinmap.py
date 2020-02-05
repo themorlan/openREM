@@ -61,11 +61,11 @@ def skin_map(x_ray, phantom, area, ref_ak, tube_voltage, cu_thickness, d_ref, ta
 
         lookup_row = iterator.multi_index[0]
         lookup_col = iterator.multi_index[1]
-        my_x = phantom.phantomMap[lookup_row, lookup_col][0]
-        my_y = phantom.phantomMap[lookup_row, lookup_col][1]
-        my_z = phantom.phantomMap[lookup_row, lookup_col][2]
+        my_x = phantom.phantom_map[lookup_row, lookup_col][0]
+        my_y = phantom.phantom_map[lookup_row, lookup_col][1]
+        my_z = phantom.phantom_map[lookup_row, lookup_col][2]
         my_ray = Segment3(focus, np.array([my_x, my_y, my_z]))
-        reverse_normal = phantom.normalMap[lookup_row, lookup_col]
+        reverse_normal = phantom.normal_map[lookup_row, lookup_col]
 
         if check_orthogonal(reverse_normal, my_ray):
             # Check to see if the beam hits the patient
@@ -189,7 +189,7 @@ def skinmap_to_png(colour, total_dose, filename, test_phantom, encode_16_bit_col
             total_dose = (total_dose * Decimal(65535)) / thresh_dose
 
             red, green = divmod(total_dose, 255)
-            # red is the number of times 255 goes into totalDose; green is the remainder
+            # red is the number of times 255 goes into total_dose; green is the remainder
 
             blue = np.empty([test_phantom.width, test_phantom.height])
             blue.fill(255)
@@ -227,8 +227,9 @@ def write_results_to_txt(txtfile, csvfile, test_phantom, my_dose):
         Nothing.
 
     """
-    total_dose = my_dose.totalDose
-    phantom_txt = str(test_phantom.width) + 'x' + str(test_phantom.height) + ' ' + test_phantom.phantomType + ' phantom'
+    total_dose = my_dose.total_dose
+    phantom_txt = str(test_phantom.width) + 'x' + str(test_phantom.height) + ' ' + \
+                  test_phantom.phantom_type + ' phantom'
     with open(txtfile, 'w') as text_file:
         text_file.write('{0:15} : {1:30}\n'.format('File created', time.strftime("%c")))
         text_file.write('{0:15} : {1:30}\n'.format('Data file', csvfile))
