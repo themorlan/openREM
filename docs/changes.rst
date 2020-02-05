@@ -5,6 +5,7 @@ OpenREM version history
 1.0.0b1 (2020-xx-xx)
 --------------------
 * `#818`_  Interface: refactored event number filtering
+* `#817`_  SkinDose: fixed PEP8 and Codacy issues for skinDose
 * `#816`_  Interface: fixed password change error
 * `#815`_  Interface: fixed patient name filtering
 * `#814`_  Deployment: automated deployment to dev.openrem.org and testing.openrem.org reintroduced

@@ -104,18 +104,18 @@ class PhantomFlat:
             z_offset = -origin[2]
             self.phantom_map = np.empty((width, height), dtype=object)
             self.normal_map = np.empty((width, height), dtype=object)
-            it = np.nditer(self.phantom_map, op_flags=['readwrite'], flags=['multi_index', 'refs_ok'])
-            while not it.finished:
-                my_x = it.multi_index[0] * scale - origin[0]
-                my_y = it.multi_index[1] * scale - origin[1]
-                self.phantom_map[it.multi_index[0], it.multi_index[1]] = np.array([my_x, my_y, z_offset])  # As above
+            iterator = np.nditer(self.phantom_map, op_flags=['readwrite'], flags=['multi_index', 'refs_ok'])
+            while not iterator.finished:
+                my_x = iterator.multi_index[0] * scale - origin[0]
+                my_y = iterator.multi_index[1] * scale - origin[1]
+                self.phantom_map[iterator.multi_index[0], iterator.multi_index[1]] = np.array([my_x, my_y, z_offset])  # As above
 
                 plane_point = np.array([my_x, my_y, z_offset])
                 outside_point = np.array([my_x, my_y, z_offset - 1])
                 # The normal is defined going back in to the plane, to make checking alignment easier
                 normal = Segment3(outside_point, plane_point)
-                self.normal_map[it.multi_index[0], it.multi_index[1]] = normal
-                it.iternext()
+                self.normal_map[iterator.multi_index[0], iterator.multi_index[1]] = normal
+                iterator.iternext()
 
 
 class Phantom3:

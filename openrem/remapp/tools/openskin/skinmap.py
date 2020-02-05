@@ -21,7 +21,7 @@ import numpy as np
 from .geomclass import Triangle3, Segment3
 from .geomfunc import collimate, check_orthogonal, intersect, rotate_ray_y, get_bsf
 import time
-from decimal import *
+from decimal import Decimal, ROUND_HALF_UP
 
 
 def skin_map(x_ray, phantom, area, ref_ak, tube_voltage, cu_thickness, d_ref, table_length, table_width, transmission,
@@ -78,7 +78,7 @@ def skin_map(x_ray, phantom, area, ref_ak, tube_voltage, cu_thickness, d_ref, ta
                 hit_table1 = intersect(my_ray, table1)
                 hit_table2 = intersect(my_ray, table2)
                 # If the beam passes the table and does so on the way in to the patient, correct the AK
-                if hit_table1 is "hit" or hit_table2 is "hit":
+                if hit_table1 == "hit" or hit_table2 == "hit":
                     if check_orthogonal(table_normal, my_ray):
                         sin_alpha = x_ray.vector[2] / x_ray.length
                         path_length = table_mattress_thickness / sin_alpha
