@@ -108,7 +108,7 @@ class PhantomFlat:
             while not iterator.finished:
                 my_x = iterator.multi_index[0] * scale - origin[0]
                 my_y = iterator.multi_index[1] * scale - origin[1]
-                self.phantom_map[iterator.multi_index[0], iterator.multi_index[1]] = np.array([my_x, my_y, z_offset])  # As above
+                self.phantom_map[iterator.multi_index[0], iterator.multi_index[1]] = np.array([my_x, my_y, z_offset])
 
                 plane_point = np.array([my_x, my_y, z_offset])
                 outside_point = np.array([my_x, my_y, z_offset - 1])
