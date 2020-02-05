@@ -43,7 +43,7 @@ def intersect(a_ray, a_triangle):
 
     # Get triangle plane normal
     plane_normal = np.cross(a_triangle.vector_ab, a_triangle.vector_ac)
-    if plane_normal == [0, 0, 0]:
+    if np.array_equal(plane_normal, [0, 0, 0]):
         output = "degenerate"
         return output
 
