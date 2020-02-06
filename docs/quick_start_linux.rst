@@ -156,7 +156,7 @@ Update the PostgreSQL client authentication configuration. Add the following lin
 for example in the gap before ``# DO NOT DISABLE`` or anywhere in the table that follows. The number of spaces between
 each word is not important (one or more).
 
-``sudo nano /etc/postgresql/10/main/pg_hba.conf``:
+``sudo nano /etc/postgresql/10/main/pg_hba.conf``
 
 .. code-block:: console
 
@@ -180,7 +180,7 @@ First navigate to the Python openrem folder and copy the example local_settings 
     cp openremproject/local_settings.py{.example,}
     cp openremproject/wsgi.py{.example,}
 
-Edit the new local_settings file (``nano openremproject/local_settings.py``):
+Edit the new local_settings file (``nano openremproject/local_settings.py``)
 
 .. code-block:: python
 
@@ -261,7 +261,7 @@ Webserver
 Configure NGINX and Gunicorn
 ----------------------------
 
-Create the OpenREM site config file ``sudo nano /etc/nginx/sites-available/openrem-server``:
+Create the OpenREM site config file ``sudo nano /etc/nginx/sites-available/openrem-server``
 
 .. code-block:: nginx
 
@@ -354,7 +354,7 @@ Celery and Flower
 
 First, create a Celery configuration file:
 
-``nano /var/dose/celery/celery.conf``:
+``nano /var/dose/celery/celery.conf``
 
 .. code-block:: bash
 
@@ -388,7 +388,7 @@ First, create a Celery configuration file:
 
 Now create the systemd service files:
 
-``sudo nano /etc/systemd/system/openrem-celery.service``:
+``sudo nano /etc/systemd/system/openrem-celery.service``
 
 .. code-block:: bash
 
@@ -415,7 +415,7 @@ Now create the systemd service files:
     [Install]
     WantedBy=multi-user.target
 
-``sudo nano /etc/systemd/system/openrem-flower.service``:
+``sudo nano /etc/systemd/system/openrem-flower.service``
 
 .. code-block:: bash
 
