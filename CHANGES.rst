@@ -4,8 +4,14 @@ OpenREM version history
 
 1.0.0b1 (2020-xx-xx)
 --------------------
-* `#806`_  DICOM Networking: show stack traces inside Celery tasks in openrem_qr.log
+* `#819`_  Removed colons from commands in documentation as they don't format correctly in PDF
+* `#818`_  Interface: refactored event number filtering
+* `#816`_  Interface: fixed password change error
+* `#815`_  Interface: fixed patient name filtering
+* `#814`_  Deployment: automated deployment to dev.openrem.org and testing.openrem.org reintroduced
 * `#808`_  Imports: caters for illegal use of mGy units in RDSR for dose at RP values
+* `#807`_  Exports: fixed errors in PHE fluoro export when values are None
+* `#806`_  DICOM Networking: show stack traces inside Celery tasks in openrem_qr.log
 * `#805`_  DICOM Networking: fix errors on "association release" and "move complete"
 * `#803`_  Fixed problem with multiple ModalitiesInStudy entries in c-find response
 * `#800`_  Tasks: import and export tasks and DICOM queries and moves now listed with more information

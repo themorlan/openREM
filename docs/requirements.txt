@@ -1,0 +1,25 @@
+django>=2.2,<2.3
+django-filter
+pytz >= 0a
+humanize
+pydicom
+pynetdicom
+xlsxwriter
+celery>=3.1,<4.3
+django-qsstats-magic
+python-dateutil
+django-solo
+django-crispy-forms
+pandas
+xlrd
+testfixtures
+mock
+django-js-reverse >= 0.9.1
+requests
+flower
+numpy
+future
+defusedxml
+sphinxcontrib-programoutput
+sphinxcontrib-autoprogram
+sphinx-argparse

@@ -18,7 +18,7 @@
 
 import numpy as np
 import math
-from geomclass import *
+from .geomclass import *
 
 
 def intersect(aRay, aTriangle):
