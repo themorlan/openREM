@@ -3,6 +3,7 @@ image: python:3.6
 pipelines:
   default:  # Standard commits are tested but not deployed
     - step:
+        name: run django tests
         script:
           - mv openrem/openremproject/local_settings.py{.example,}
           - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
@@ -23,6 +24,92 @@ pipelines:
           - tox -e ci
         services:
           - postgres
+  branches:
+    develop:  # Commits to the develop branch are tested and deployed to dev.openrem.org on success
+      - step:
+          name: run django tests
+          script:
+            - mv openrem/openremproject/local_settings.py{.example,}
+            - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
+            - >-
+              sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql_psycopg2'," openrem/openremproject/local_settings.py
+            - >-
+              sed -i "/'NAME':/c\        'NAME': 'openremdb'," openrem/openremproject/local_settings.py
+            - >-
+              sed -i "/'USER':/c\        'USER': 'openremuser'," openrem/openremproject/local_settings.py
+            - >-
+              sed -i "/'PASSWORD':/c\        'PASSWORD': 'openremuserpass'," openrem/openremproject/local_settings.py
+            - >-
+              sed -i "/'HOST':/c\        'HOST': '127.0.0.1'," openrem/openremproject/local_settings.py
+            - >-
+              sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
+            - mv openrem/openremproject/wsgi.py{.example,}
+            - pip install -U tox
+            - tox -e ci
+          services:
+            - postgres
+      - step:
+          name: deploy to dev.openrem.org
+          deployment: develop
+          script:
+            - mkdir -p ~/.ssh
+            - cat deploy_tools/my_known_hosts >> ~/.ssh/known_hosts
+            - (umask  077 ; echo $BB_OPENREM_KEY | base64 --decode > ~/.ssh/id_rsa)
+            - echo $BITBUCKET_COMMIT
+            - SITE_FOLDER="/home/deploy/sites/$server/"
+            - SOURCE_FOLDER=$SITE_FOLDER"source"
+            - ssh deploy@$server "cd $SOURCE_FOLDER && git fetch"
+            - ssh deploy@$server "cd $SOURCE_FOLDER && git reset --hard $BITBUCKET_COMMIT"
+            - VENV_PIP=$SITE_FOLDER"virtualenv/bin/pip"
+            - ssh deploy@$server "$VENV_PIP install -e $SOURCE_FOLDER"
+            - VENV_PYTHON=$SITE_FOLDER"virtualenv/bin/python"
+            - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py collectstatic --noinput"
+            - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py makemigrations remapp --noinput"
+            - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py migrate --noinput"
+            - ssh deploy@$server "sudo /usr/sbin/service gunicorn-dev.openrem.org restart"
+# Commented out until testing.openrem.org has been updated to 0.10
+#    '*stage':  # Commits to any branch ending in 'stage' are tested and deployed to testing.openrem.org
+#      - step:
+#          name: run django tests
+#          script:
+#            - mv openrem/openremproject/local_settings.py{.example,}
+#            - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
+#            - >-
+#              sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql_psycopg2'," openrem/openremproject/local_settings.py
+#            - >-
+#              sed -i "/'NAME':/c\        'NAME': 'openremdb'," openrem/openremproject/local_settings.py
+#            - >-
+#              sed -i "/'USER':/c\        'USER': 'openremuser'," openrem/openremproject/local_settings.py
+#            - >-
+#              sed -i "/'PASSWORD':/c\        'PASSWORD': 'openremuserpass'," openrem/openremproject/local_settings.py
+#            - >-
+#              sed -i "/'HOST':/c\        'HOST': '127.0.0.1'," openrem/openremproject/local_settings.py
+#            - >-
+#              sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
+#            - mv openrem/openremproject/wsgi.py{.example,}
+#            - pip install -U tox
+#            - tox -e ci
+#          services:
+#            - postgres
+#      - step:
+#          name: deploy to testing.openrem.org
+#          deployment: testing
+#          script:
+#            - mkdir -p ~/.ssh
+#            - cat deploy_tools/my_known_hosts >> ~/.ssh/known_hosts
+#            - (umask  077 ; echo $BB_OPENREM_KEY | base64 --decode > ~/.ssh/id_rsa)
+#            - echo $BITBUCKET_COMMIT
+#            - SITE_FOLDER="/home/deploy/sites/$server/"
+#            - SOURCE_FOLDER=$SITE_FOLDER"source"
+#            - ssh deploy@$server "cd $SOURCE_FOLDER && git fetch"
+#            - ssh deploy@$server "cd $SOURCE_FOLDER && git reset --hard $BITBUCKET_COMMIT"
+#            - VENV_PIP=$SITE_FOLDER"virtualenv/bin/pip"
+#            - ssh deploy@$server "$VENV_PIP install -e $SOURCE_FOLDER"
+#            - VENV_PYTHON=$SITE_FOLDER"virtualenv/bin/python"
+#            - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py collectstatic --noinput"
+#            - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py makemigrations remapp --noinput"
+#            - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py migrate --noinput"
+#            - ssh deploy@$server "sudo /usr/sbin/service gunicorn-dev.openrem.org restart"
 definitions:
   services:
     postgres:
@@ -31,30 +118,3 @@ definitions:
         POSTGRES_DB: openremdb
         POSTGRES_USER: openremuser
         POSTGRES_PASSWORD: openremuserpass
-#  branches:
-#    develop:  # Commits to the develop branch are tested and deployed to dev.openrem.org on success
-#      - step:
-#          script:
-#            - mv openrem/openremproject/local_settings.py{.example,}
-#            - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
-#            - mv openrem/openremproject/wsgi.py{.example,}
-#            - pip install -U tox
-#            - tox -e ci
-#            - pip install "fabric < 2"
-#            - mkdir -p ~/.ssh
-#            - cat deploy_tools/my_known_hosts >> ~/.ssh/known_hosts
-#            - (umask  077 ; echo $BB_OPENREM_KEY | base64 --decode > ~/.ssh/id_rsa)
-#            - fab deploy:host=deploy@dev.openrem.org
-#    '*stage':  # Commits to any branch ending in 'stage' are tested and deployed to testing.openrem.org
-#      - step:
-#          script:
-#            - mv openrem/openremproject/local_settings.py{.example,}
-#            - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
-#            - mv openrem/openremproject/wsgi.py{.example,}
-#            - pip install -U tox
-#            - tox -e ci
-#            - pip install "fabric < 2"
-#            - mkdir -p ~/.ssh
-#            - cat deploy_tools/my_known_hosts >> ~/.ssh/known_hosts
-#            - (umask  077 ; echo $BB_OPENREM_KEY | base64 --decode > ~/.ssh/id_rsa)
-#            - fab deploy:host=deploy@testing.openrem.org

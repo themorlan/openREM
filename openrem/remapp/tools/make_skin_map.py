@@ -43,13 +43,14 @@ import django
 basepath = os.path.dirname(__file__)
 projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
 if projectpath not in sys.path:
-    sys.path.insert(1,projectpath)
+    sys.path.insert(1, projectpath)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 django.setup()
 
 from celery import shared_task
 
-logger = logging.getLogger('remapp.tools.make_skin_map')  # Explicitly named so that it is still handled when using __main__
+# Explicitly name logger so that it is still handled when using __main__
+logger = logging.getLogger('remapp.tools.make_skin_map')
 
 
 @shared_task(name='remapp.tools.make_skin_map', ignore_result=True)
@@ -57,7 +58,7 @@ def make_skin_map(study_pk=None):
     import remapp.tools.openskin.calc_exp_map as calc_exp_map
     from remapp.models import GeneralStudyModuleAttr
     from openremproject.settings import MEDIA_ROOT
-    import pickle as pickle
+    import pickle
     import gzip
     from remapp.version import __skin_map_version__
     from django.core.exceptions import ObjectDoesNotExist
@@ -120,19 +121,19 @@ def make_skin_map(study_pk=None):
             logger.info(u"Study PK {0}: No irradiation event x-ray data found. Assuming supine.".format(study_pk))
         if ptr and orientation_modifier:
             pat_pos_source = u"extracted"
-            patPos = ptr + u"F" + orientation_modifier
+            pat_pos = ptr + u"F" + orientation_modifier
         elif ptr:
             pat_pos_source = u"supine assumed"
-            patPos = ptr + u"FS"
+            pat_pos = ptr + u"FS"
         elif orientation_modifier:
             pat_pos_source = u"head first assumed"
-            patPos = u"HF" + orientation_modifier
+            pat_pos = u"HF" + orientation_modifier
         else:
             pat_pos_source = u"assumed"
-            patPos = u"HFS"
-        logger.debug(u"patPos is {0} and source is {1}".format(patPos, pat_pos_source))
+            pat_pos = u"HFS"
+        logger.debug(u"patPos is {0} and source is {1}".format(pat_pos, pat_pos_source))
 
-        my_exp_map = calc_exp_map.CalcExpMap(phantom_type='3D', patPos=patPos,
+        my_exp_map = calc_exp_map.CalcExpMap(phantom_type='3D', pat_pos=pat_pos,
                                              pat_mass=pat_mass, pat_height=pat_height,
                                              table_thick=0.5, table_width=40.0, table_length=150.0,
                                              matt_thick=4.0)
@@ -140,17 +141,17 @@ def make_skin_map(study_pk=None):
         for irrad in study.projectionxrayradiationdose_set.get().irradeventxraydata_set.all():
             try:
                 delta_x = float(irrad.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(
-                                                                                ).table_longitudinal_position) / 10.0
+                    ).table_longitudinal_position) / 10.0
             except (ObjectDoesNotExist, TypeError):
                 delta_x = 0.0
             try:
                 delta_y = float(irrad.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(
-                                                                                        ).table_lateral_position) / 10.0
+                    ).table_lateral_position) / 10.0
             except (ObjectDoesNotExist, TypeError):
                 delta_y = 0.0
             try:
                 delta_z = float(irrad.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(
-                                                                                        ).table_height_position) / 10.0
+                    ).table_height_position) / 10.0
             except (ObjectDoesNotExist, TypeError):
                 delta_z = 0.0
             if irrad.irradeventxraymechanicaldata_set.get().positioner_primary_angle:
@@ -163,7 +164,7 @@ def make_skin_map(study_pk=None):
                 angle_y = 0.0
             try:
                 d_ref = float(irrad.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(
-                                                                        ).distance_source_to_isocenter) / 10.0 - 15.0
+                    ).distance_source_to_isocenter) / 10.0 - 15.0
             except (ObjectDoesNotExist, TypeError):
                 # This will result in failure to calculate skin dose map. Need a sensible default, or a lookup to a
                 # user-entered value
@@ -177,7 +178,8 @@ def make_skin_map(study_pk=None):
             except (ObjectDoesNotExist, TypeError):
                 ref_ak = None
             try:
-                kvp = np.mean(irrad.irradeventxraysourcedata_set.get().kvp_set.all().exclude(kvp__isnull=True).exclude(kvp__exact=0).values_list('kvp', flat=True))
+                kvp = np.mean(irrad.irradeventxraysourcedata_set.get().kvp_set.all().exclude(
+                    kvp__isnull=True).exclude(kvp__exact=0).values_list('kvp', flat=True))
                 kvp = float(kvp)
                 if np.isnan(kvp):
                     kvp = None
@@ -210,20 +212,20 @@ def make_skin_map(study_pk=None):
                                     angle_x=angle_x, angle_y=angle_y,
                                     d_ref=d_ref, dap=dap, ref_ak=ref_ak,
                                     kvp=kvp, filter_cu=filter_cu,
-                                    run_type=run_type, frames=frames, end_angle=end_angle, patPos=patPos)
+                                    run_type=run_type, frames=frames, end_angle=end_angle, pat_pos=pat_pos)
 
         # Flip the skin dose map left-right so the view is from the front
         # my_exp_map.my_dose.fliplr()
-        my_exp_map.my_dose.totalDose = np.roll(my_exp_map.my_dose.totalDose,
-                                               int(old_div(my_exp_map.phantom.phantom_flat_dist, 2)),
-                                               axis=0)
+        my_exp_map.my_dose.total_dose = np.roll(my_exp_map.my_dose.total_dose,
+                                                int(old_div(my_exp_map.phantom.phantom_flat_dist, 2)),
+                                                axis=0)
         try:
-            my_exp_map.my_dose.totalDose = np.rot90(my_exp_map.my_dose.totalDose)
+            my_exp_map.my_dose.total_dose = np.rot90(my_exp_map.my_dose.total_dose)
         except ValueError:
             pass
 
         return_structure = {
-            'skin_map': my_exp_map.my_dose.totalDose.flatten().tolist(),
+            'skin_map': my_exp_map.my_dose.total_dose.flatten().tolist(),
             'width': my_exp_map.phantom.width,
             'height': my_exp_map.phantom.height,
             'phantom_width': my_exp_map.phantom.phantom_width,
@@ -233,7 +235,7 @@ def make_skin_map(study_pk=None):
             'phantom_curved_dist': my_exp_map.phantom.phantom_curved_dist,
             'patient_height': pat_height,
             'patient_mass': pat_mass,
-            'patient_orientation': patPos,
+            'patient_orientation': pat_pos,
             'patient_height_source': pat_height_source,
             'patient_mass_source': pat_mass_source,
             'patient_orientation_source': pat_pos_source,
@@ -254,5 +256,5 @@ def make_skin_map(study_pk=None):
         if not os.path.exists(skin_map_path):
             os.makedirs(skin_map_path)
 
-        with gzip.open(os.path.join(skin_map_path, 'skin_map_' + str(study_pk) + '.p'), 'wb') as f:
-            pickle.dump(return_structure, f)
+        with gzip.open(os.path.join(skin_map_path, 'skin_map_' + str(study_pk) + '.p'), 'wb') as pickle_file:
+            pickle.dump(return_structure, pickle_file)
