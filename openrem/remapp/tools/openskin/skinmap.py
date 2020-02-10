@@ -39,7 +39,7 @@ def skin_map(x_ray, phantom, area, ref_ak, tube_voltage, cu_thickness, d_ref, ta
         table_length: the length of the table in cm from head to foot
         table_width: the width of the table in cm
         transmission: the table and/or mattress transmission as a decimal (0 to 1.0)
-        table_mattress_thickness: the table and/or mattress thickess in cm
+        table_mattress_thickness: the table and/or mattress thickness in cm
 
     Returns:
         An array containing doses for each cell in the phantom.
@@ -82,8 +82,8 @@ def skin_map(x_ray, phantom, area, ref_ak, tube_voltage, cu_thickness, d_ref, ta
                     if check_orthogonal(table_normal, my_ray):
                         sin_alpha = x_ray.vector[2] / x_ray.length
                         path_length = table_mattress_thickness / sin_alpha
-                        mu = np.log(transmission) / (-table_mattress_thickness)
-                        table_cor = np.exp(-mu * path_length)
+                        mu_table = np.log(transmission) / (-table_mattress_thickness)
+                        table_cor = np.exp(-mu_table * path_length)
                         ref_ak_cor = ref_ak * table_cor
                     # If the beam is more than 90 degrees (ie above the table) leave the AK alone
                     else:
@@ -129,7 +129,7 @@ def rotational(xray, start_angle, end_angle, frames, phantom, area, ref_ak, tube
     """
     try:
         rotation_angle = (end_angle - start_angle) / frames
-    except TypeError as e:
+    except TypeError as type_error:
         # We assume that it is Philips Allura XPer FD10 or FD20 data if start angle = -120 (propeller mode) or
         # -45 (roll mode) and endAngle is not available.
         if (end_angle is None) and (-120.5 < start_angle < -119.5):
@@ -137,7 +137,7 @@ def rotational(xray, start_angle, end_angle, frames, phantom, area, ref_ak, tube
         elif (end_angle is None) and (-45.5 < start_angle < -44.5):
             end_angle = 135
         else:
-            raise e
+            raise type_error
         rotation_angle = (end_angle - start_angle) / frames
 
     my_dose = skin_map(xray, phantom, area, ref_ak / frames, tube_voltage, cu_thickness, d_ref, table_length,

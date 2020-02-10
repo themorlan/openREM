@@ -3,13 +3,27 @@ from openrem.remapp.tools.openskin import geomfunc
 from openrem.remapp.tools.openskin import skinmap
 
 
-class CalcExpMap(object):
+class CalcExpMap:
+    """
+    This class enables adding a radiation event (view) to the skin dose map
 
+    """
     def __init__(self, phantom_type=None, pat_pos=None,
                  pat_mass=73.2, pat_height=178.6,
                  table_thick=0.5, table_width=40.0, table_length=150.0,
                  matt_thick=4.0):
+        """
+        Prepare empty skin dose map and set necessary parameters
 
+        :param phantom_type: type of phantom to use
+        :param pat_pos: patient position
+        :param pat_mass: patient mass
+        :param pat_height: patient height
+        :param table_thick: table thickness [cm]
+        :param table_width: width of table [cm]
+        :param table_length: length of table [cm]
+        :param matt_thick: mattress thickness [cm]
+        """
         self.phantom_type = phantom_type
         self.pat_mass = pat_mass
         self.pat_height = pat_height
@@ -29,7 +43,7 @@ class CalcExpMap(object):
             # The 1 is the scale
             self.phantom = geomclass.PhantomFlat("flat", [25, 0, 0], self.table_width, self.table_length, 1)
             self.matt_thick = 0.0
-            
+
         elif self.phantom_type == "3D":
             self.phantom = geomclass.Phantom3([0, -5, -self.matt_thick], mass=self.pat_mass, height=self.pat_height,
                                               pat_pos=pat_pos)
@@ -43,7 +57,24 @@ class CalcExpMap(object):
                  d_ref=None, dap=None, ref_ak=None,
                  kvp=None, filter_cu=None,
                  run_type=None, frames=None, end_angle=None, pat_pos=None):
+        """Add a view (irradiation event) to the skin dose map.
 
+        :param delta_x: x offset from reference point
+        :param delta_y: y offset from reference point
+        :param delta_z: z offset from reference point
+        :param angle_x: primary angle
+        :param angle_y: secondary angle
+        :param d_ref: distance source to iso-centre
+        :param dap: dose area product
+        :param ref_ak: dose (air kerma) in reference point
+        :param kvp: tube voltage [kV]
+        :param filter_cu: Cupper thickness in mm
+        :param run_type: run (event) type (e.g. stationary / rotational)
+        :param frames: number of frames
+        :param end_angle: end angle (if run_type is rotational)
+        :param pat_pos: patient orientation
+        :return:
+        """
         pat_pos = pat_pos.upper()
         if pat_pos == "FFS":
             delta_x = -delta_x

@@ -55,6 +55,12 @@ logger = logging.getLogger('remapp.tools.make_skin_map')
 
 @shared_task(name='remapp.tools.make_skin_map', ignore_result=True)
 def make_skin_map(study_pk=None):
+    """
+    Calculate and save skin-dose map
+
+    :param study_pk: primary key of study used for calculations
+    :return: dictionary with skin-dose map and accompanying information
+    """
     import remapp.tools.openskin.calc_exp_map as calc_exp_map
     from remapp.models import GeneralStudyModuleAttr
     from openremproject.settings import MEDIA_ROOT
