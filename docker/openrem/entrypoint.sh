@@ -10,9 +10,9 @@ then
 
     echo "PostgreSQL started"
 fi
-OPENREM_PATH="/opt/venv/lib/python3.8/site-packages/openrem"
-python $OPENREM_PATH/manage.py flush --no-input
-python $OPENREM_PATH/manage.py migrate
-#python $OPENREM_PATH/manage.py collectstatic --no-input --clear
+
+python manage.py flush --no-input
+python manage.py migrate
+#python manage.py collectstatic --no-input --clear
 
 exec "$@"

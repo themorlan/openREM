@@ -2,7 +2,7 @@
 FROM python:slim
 
 # set work directory
-WORKDIR /usr/src/openrem
+WORKDIR /usr/src
 
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -20,14 +20,13 @@ RUN pip install --upgrade pip
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY OpenREM-1.0.0.dev0-py3-none-any.whl .
-RUN pip install OpenREM-1.0.0.dev0-py3-none-any.whl
-# copy entrypoint.sh
-COPY ./entrypoint.sh /usr/src/openrem/entrypoint.sh
+COPY code/ .
+RUN pip install -e .
 
-# copy project
-#COPY . /usr/src/openrem/
+# Move into the /usr/src/openrem folder
+WORKDIR openrem
 
+COPY ./entrypoint.sh .
 
 # run entrypoint.sh
 ENTRYPOINT ["/usr/src/openrem/entrypoint.sh"]

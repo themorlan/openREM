@@ -12,3 +12,6 @@ OpenREM.egg-info/
 .coverage
 coverage.xml
 
+# docker related
+docker/wheel/*
+docker/code/*
