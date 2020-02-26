@@ -21,3 +21,4 @@ numpy
 future
 defusedxml
 psycopg2-binary
+gunicorn
