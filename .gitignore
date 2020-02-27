@@ -16,3 +16,4 @@ coverage.xml
 docker/wheel/*
 docker/openrem/code/*
 *.whl
+docker/scratch
