@@ -6,6 +6,7 @@ ENV HOME=/home/app
 ENV APP_HOME=/home/app/openrem
 ENV APP_VENV=/home/app/venv
 RUN mkdir $APP_HOME
+RUN mkdir $APP_HOME/mediafiles
 WORKDIR $HOME
 
 # set environment variables
@@ -35,8 +36,7 @@ USER app
 RUN pip install -e .
 
 WORKDIR $APP_HOME
-COPY ./entrypoint.sh .
-
+COPY ./entrypoint.prod.sh .
 
 # run entrypoint.sh
-ENTRYPOINT ["/home/app/openrem/entrypoint.sh"]
+ENTRYPOINT ["/home/app/openrem/entrypoint.prod.sh"]
