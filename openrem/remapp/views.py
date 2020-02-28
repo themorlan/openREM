@@ -59,7 +59,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 import json
 import logging
 import remapp
-from openremproject.settings import MEDIA_ROOT, FLOWER_PORT
+from openremproject.settings import MEDIA_ROOT, FLOWER_PORT, BROKER_MGMT_URL
 from remapp.forms import SizeUploadForm
 from remapp.models import GeneralStudyModuleAttr, create_user_profile
 from remapp.models import SizeUpload
@@ -3378,7 +3378,7 @@ def task_service_status(request):
         default_queue = {}
         celery_queue = {}
         try:
-            queues = requests.get('http://localhost:15672/api/queues', auth=('guest', 'guest'))
+            queues = requests.get(f'{BROKER_MGMT_URL}api/queues', auth=('guest', 'guest'))
             if queues.status_code == 200:
                 rabbitmq_status = 200
             else:
@@ -3407,7 +3407,7 @@ def rabbitmq_purge(request, queue=None):
     import requests
 
     if queue and request.user.groups.filter(name="admingroup"):
-        queue_url = 'http://localhost:15672/api/queues/%2f/{0}/contents'.format(queue)
+        queue_url = f'{BROKER_MGMT_URL}/api/queues/%2f/{queue}/contents'
         requests.delete(queue_url, auth=('guest', 'guest'))
         return redirect(reverse_lazy('celery_admin'))
 

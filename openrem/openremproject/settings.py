@@ -42,8 +42,8 @@ JS_REVERSE_OUTPUT_PATH = os.path.join(STATIC_ROOT, 'js', 'django_reverse')
 VIRTUAL_DIRECTORY = os.environ.get("VIRTUAL_DIRECTORY", default="")
 
 # Celery settings
-BROKER_URL = 'amqp://guest:guest@localhost//'
-
+BROKER_URL = 'amqp://guest:guest@broker:5672//'
+BROKER_MGMT_URL = os.environ.get("BROKER_MGMT_URL", default="http://localhost:15672/")
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

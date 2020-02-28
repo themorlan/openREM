@@ -19,6 +19,7 @@ services:
       - ./.env.prod
     depends_on:
       - db
+      - broker
   db:
     image: postgres:12.0-alpine
     volumes:
@@ -34,6 +35,8 @@ services:
       - 80:80
     depends_on:
       - openrem
+  broker:
+    image: rabbitmq:3-management-alpine
 
 volumes:
   postgres_data:
