@@ -44,12 +44,11 @@ VIRTUAL_DIRECTORY = os.environ.get("VIRTUAL_DIRECTORY", default="")
 # Celery settings
 BROKER_URL = 'amqp://guest:guest@broker:5672//'
 BROKER_MGMT_URL = os.environ.get("BROKER_MGMT_URL", default="http://localhost:15672/")
+CELERY_IMPORTS = ('worker.tasks', )
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-
 CELERY_DEFAULT_QUEUE = 'default'
-
 CELERYD_PREFETCH_MULTIPLIER = 1
 
 FLOWER_PORT = int(os.environ.get("FLOWER_PORT", default=5555))
