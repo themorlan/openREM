@@ -1492,7 +1492,7 @@ def _process_args(parser_args, parser):
     qr_node_up = echoscu(parser_args.qr_id, qr_scp=True)
     store_node_up = echoscu(parser_args.store_id, store_scp=True)
 
-    if qr_node_up is not "Success" or store_node_up is not "Success":
+    if qr_node_up != "Success" or store_node_up != "Success":
         logger.error(u"Query-retrieve aborted: DICOM nodes not ready. QR SCP echo is {0}, Store SCP echo is {1}".format(
             qr_node_up, store_node_up))
         sys.exit(u"Query-retrieve aborted: DICOM nodes not ready. QR SCP echo is {0}, Store SCP echo is {1}".format(

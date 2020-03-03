@@ -91,7 +91,7 @@ def status_update_store(request):
 
     store = DicomStoreSCP.objects.get(pk=scp_pk)
 
-    if echo_response is "Success":
+    if echo_response == "Success":
         resp['message'] = u"<div>Last status: {0}</div>".format(store.status)
         resp['statusindicator'] = u"<h3 class='pull-right panel-title'>" \
                                   u"<span class='glyphicon glyphicon-ok' aria-hidden='true'></span>" \
@@ -385,7 +385,7 @@ def get_qr_status(request):
 
     data = request.POST
     echo_response = echoscu(scp_pk=data.get('node'), qr_scp=True)
-    if echo_response is "Success":
+    if echo_response == "Success":
         status = u"<span class='glyphicon glyphicon-ok' aria-hidden='true'></span>" \
                              u"<span class='sr-only'>OK:</span> responding to DICOM echo"
     else:
@@ -399,7 +399,7 @@ def get_store_status(request):
 
     data = request.POST
     echo_response = echoscu(scp_pk=data.get('node'), store_scp=True)
-    if echo_response is "Success":
+    if echo_response == "Success":
         status = u"<span class='glyphicon glyphicon-ok' aria-hidden='true'></span>" \
                              u"<span class='sr-only'>OK:</span> responding to DICOM echo"
     else:
