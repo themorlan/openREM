@@ -52,6 +52,7 @@ CELERY_DEFAULT_QUEUE = 'default'
 CELERYD_PREFETCH_MULTIPLIER = 1
 
 FLOWER_PORT = int(os.environ.get("FLOWER_PORT", default=5555))
+FLOWER_URL = os.environ.get("FLOWER_URL", default="http://localhost")
 
 CELERYBEAT_SCHEDULE = {
     'trigger-dicom-keep-alive': {

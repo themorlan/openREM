@@ -37,6 +37,19 @@ services:
       - db
       - broker
 
+  flower:
+    build:
+      context: ./openrem
+      dockerfile: Dockerfile.prod
+    command: celery flower -A openremproject
+    expose:
+      - 5555
+    env_file:
+      - ./.env.prod
+    depends_on:
+      - db
+      - broker
+
   db:
     image: postgres:12.0-alpine
     volumes:
