@@ -2,6 +2,7 @@
 FROM python:slim
 
 RUN useradd -ms /bin/bash app
+RUN adduser www-data app
 ENV HOME=/home/app
 ENV APP_HOME=/home/app/openrem
 ENV APP_VENV=/home/app/venv
@@ -32,6 +33,8 @@ COPY code/ .
 USER root
 RUN chown -R app:app $HOME
 RUN chown -R app:app $HOME/.[^.]*
+RUN chmod -R 775 $APP_HOME/mediafiles
+RUN chmod -R g+s $APP_HOME/mediafiles
 
 USER app
 RUN pip install -e .
