@@ -34,7 +34,7 @@ DEBUG = int(os.environ.get("DEBUG", default=0))
 # For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
-# MEDIA_URL = "/mediafiles/"
+MEDIA_URL = "/mediafiles/"
 MEDIA_ROOT = os.environ.get("MEDIA_ROOT", default=os.path.join(BASE_DIR, "mediafiles"))
 STATIC_URL = "/staticfiles/"
 STATIC_ROOT = os.environ.get("STATIC_ROOT", default=os.path.join(BASE_DIR, "staticfiles"))
@@ -44,7 +44,7 @@ VIRTUAL_DIRECTORY = os.environ.get("VIRTUAL_DIRECTORY", default="")
 # Celery settings
 BROKER_URL = 'amqp://guest:guest@broker:5672//'
 BROKER_MGMT_URL = os.environ.get("BROKER_MGMT_URL", default="http://localhost:15672/")
-CELERY_IMPORTS = ('worker.tasks', )
+
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
