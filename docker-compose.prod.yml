@@ -3,7 +3,7 @@ version: '3.7'
 services:
   openrem:
     build:
-      context: ./openrem
+      context: .
       dockerfile: Dockerfile.prod
     command: gunicorn openremproject.wsgi:application --bind 0.0.0.0:8000
     volumes:
@@ -23,7 +23,7 @@ services:
 
   worker:
     build:
-      context: ./openrem
+      context: .
       dockerfile: Dockerfile.prod
     command: celery worker -A openremproject -Q default --pidfile=/scratch/celery.pid --logfile=/scratch/celery.log
     volumes:
@@ -39,7 +39,7 @@ services:
 
   flower:
     build:
-      context: ./openrem
+      context: .
       dockerfile: Dockerfile.prod
     command: celery flower -A openremproject
     expose:

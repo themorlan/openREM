@@ -13,7 +13,5 @@ OpenREM.egg-info/
 coverage.xml
 
 # docker related
-docker/wheel/*
-docker/openrem/code/*
 *.whl
-docker/scratch
+scratch

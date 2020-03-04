@@ -1,0 +1,13 @@
+deploy_tools
+docs
+nginx
+OpenREM.egg-info
+scratch
+stuff
+bitbucket*
+CHANGES
+docker*
+tox.ini
+**/*.pyc
+**/__pycache__
+Dockerfile*

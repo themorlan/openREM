@@ -25,10 +25,10 @@ RUN python -m venv $APP_VENV
 ENV PATH="$APP_VENV/bin:$PATH"
 # install dependencies
 RUN pip install --upgrade pip
-COPY requirements.txt .
+COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY code/ .
+COPY . .
 
 USER root
 RUN chown -R app:app $HOME
@@ -40,7 +40,6 @@ USER app
 RUN pip install -e .
 
 WORKDIR $APP_HOME
-COPY ./entrypoint.prod.sh .
 
 # run entrypoint.sh
 ENTRYPOINT ["/home/app/openrem/entrypoint.prod.sh"]
