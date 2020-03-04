@@ -28,9 +28,12 @@ RUN pip install --upgrade pip
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY . .
-
 USER root
+
+COPY . .
+RUN mv $HOME/stuff/0002_0_7_fresh_install_add_median.py.inactive $APP_HOME/remapp/migrations/
+RUN mv $APP_HOME/openremproject/wsgi.py.example $APP_HOME/openremproject/wsgi.py
+
 RUN chown -R app:app $HOME
 RUN chown -R app:app $HOME/.[^.]*
 RUN chmod -R 775 $APP_HOME/mediafiles

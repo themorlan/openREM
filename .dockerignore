@@ -4,6 +4,7 @@ nginx
 OpenREM.egg-info
 scratch
 stuff
+!stuff/0002_0_7_fresh_install_add_median.py.inactive
 bitbucket*
 CHANGES
 docker*
@@ -11,3 +12,6 @@ tox.ini
 **/*.pyc
 **/__pycache__
 Dockerfile*
+openrem/remapp/migrations/0*
+openrem/openremproject/wsgi.py
+openrem/openremproject/local_settings.py*
