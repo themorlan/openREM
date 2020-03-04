@@ -45,6 +45,10 @@ services:
       context: .
       dockerfile: Dockerfile
     command: celery flower -A openremproject
+    volumes:
+      - type: bind
+        source: ./logs
+        target: /logs
     expose:
       - 5555
     env_file:
