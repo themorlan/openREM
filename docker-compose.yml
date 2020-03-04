@@ -28,7 +28,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: celery worker -A openremproject -Q default --pidfile=/scratch/celery.pid --logfile=/scratch/celery.log
+    command: celery worker -A openremproject -Q default --pidfile=/logs/celery.pid --logfile=/logs/celery.log
     volumes:
       - media_volume:/home/app/openrem/mediafiles
       - type: bind
