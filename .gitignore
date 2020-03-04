@@ -15,3 +15,7 @@ coverage.xml
 # docker related
 *.whl
 scratch
+logs/*
+imports/*
+!logs/.gitkeep
+!imports/.gitkeep

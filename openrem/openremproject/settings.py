@@ -157,7 +157,7 @@ INSTALLED_APPS = (
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-LOG_ROOT = MEDIA_ROOT
+LOG_ROOT = os.environ.get("LOG_ROOT", default=MEDIA_ROOT)
 logfilename = os.path.join(LOG_ROOT, "openrem.log")
 qrfilename = os.path.join(LOG_ROOT, "openrem_qr.log")
 storefilename = os.path.join(LOG_ROOT, "openrem_store.log")
