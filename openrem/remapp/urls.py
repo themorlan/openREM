@@ -34,6 +34,7 @@ from django.urls import include, path
 from . import views
 from .exports import exportviews
 from .netdicom import dicomviews
+from .extractors import import_views
 
 main_patterns = [
     path('rf/<int:pk>/', views.rf_detail_view, name='rf_detail_view'),
@@ -168,6 +169,10 @@ dicom_patterns = [
     path('storenodestatus', dicomviews.get_store_status, name='get_store_status'),
 ]
 
+import_patterns = [
+    path('rdsr/', import_views.import_rdsr, name='import_rdsr'),
+]
+
 urlpatterns = [
     path('', include(main_patterns)),
     path('export/', include(export_patterns)),
@@ -176,4 +181,5 @@ urlpatterns = [
     path('ptsize/', include(patient_size_patterns)),
     path('review/', include(review_patterns)),
     path('tasks/', include(tasks_patterns)),
+    path('import/', include(import_patterns)),
 ]
