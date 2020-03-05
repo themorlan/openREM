@@ -6,9 +6,11 @@ RUN adduser www-data app
 ENV HOME=/home/app
 ENV APP_HOME=/home/app/openrem
 ENV APP_VENV=/home/app/venv
+USER app
 RUN mkdir $APP_HOME
 RUN mkdir $APP_HOME/mediafiles
 RUN mkdir $APP_HOME/staticfiles
+USER root
 WORKDIR $HOME
 
 # set environment variables
@@ -25,19 +27,22 @@ RUN python -m venv $APP_VENV
 ENV PATH="$APP_VENV/bin:$PATH"
 # install dependencies
 RUN pip install --upgrade pip
-COPY ./requirements.txt .
-RUN pip install -r requirements.txt
+COPY --chown=app:app ./requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-USER root
+#USER root
 
-COPY . .
+COPY --chown=app:app . .
 RUN mv $HOME/stuff/0002_0_7_fresh_install_add_median.py.inactive $APP_HOME/remapp/migrations/
 RUN mv $APP_HOME/openremproject/wsgi.py.example $APP_HOME/openremproject/wsgi.py
 
-RUN chown -R app:app $HOME
-RUN chown -R app:app $HOME/.[^.]*
+#RUN chown -R app:app $HOME
+#RUN chown -R app:app $HOME/.[^.]*
+USER root
 RUN chmod -R 775 $APP_HOME/mediafiles
+RUN chmod -R 775 $APP_HOME/staticfiles
 RUN chmod -R g+s $APP_HOME/mediafiles
+RUN chmod -R g+s $APP_HOME/staticfiles
 
 USER app
 RUN pip install -e .

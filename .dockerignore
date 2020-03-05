@@ -15,3 +15,14 @@ Dockerfile*
 openrem/remapp/migrations/0*
 openrem/openremproject/wsgi.py
 openrem/openremproject/local_settings.py*
+openrem/remapp/tests
+imports
+logs
+.codacy.yml
+.coverage*
+.dockerignore
+.gitignore
+.pylintrc
+.readthedocs.yml
+.git
+.idea

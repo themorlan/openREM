@@ -2,9 +2,12 @@ version: '3.7'
 
 services:
   openrem:
+    # to build image each time
     build:
       context: .
       dockerfile: Dockerfile
+    # to use pre-built image
+#    image: openrem_image:latest
     command: gunicorn openremproject.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - media_volume:/home/app/openrem/mediafiles
@@ -25,9 +28,12 @@ services:
       - broker
 
   worker:
+    # to build image each time
     build:
       context: .
       dockerfile: Dockerfile
+    # to use pre-built image
+#    image: openrem_image:latest
     command: celery worker -A openremproject -Q default --pidfile=/logs/celery.pid --logfile=/logs/celery.log
     volumes:
       - media_volume:/home/app/openrem/mediafiles
@@ -41,9 +47,12 @@ services:
       - broker
 
   flower:
+    # to build image each time
     build:
       context: .
       dockerfile: Dockerfile
+    # to use pre-built image
+#    image: openrem_image:latest
     command: celery flower -A openremproject
     volumes:
       - type: bind
@@ -72,8 +81,17 @@ services:
       - 80:80
     depends_on:
       - openrem
+
   broker:
     image: rabbitmq:3-management-alpine
+
+  orthanc:
+    image: jodogne/orthanc:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - type: bind
+        source: ./imports
+        target: /imports
 
 volumes:
   postgres_data:
