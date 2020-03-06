@@ -29,8 +29,7 @@
 
 from urllib.parse import  unquote
 
-from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from .rdsr import rdsr
@@ -49,4 +48,5 @@ def import_rdsr(request):
     if dicom_path:
         dicom_path = unquote(dicom_path)
         rdsr(dicom_path)
-    return HttpResponseRedirect(reverse_lazy('home'))
+        return HttpResponse(f"RDSR run on {dicom_path}")
+    return HttpResponse("RDSR not run, no DICOM path")
