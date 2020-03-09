@@ -79,6 +79,7 @@ services:
       - ./.env.prod.db
 
   nginx:
+    container_name: nginx
     restart: always
     build: ./nginx
     volumes:
@@ -96,7 +97,6 @@ services:
   orthanc:
     container_name: orthanc
     build: ./orthanc
-#    image: jodogne/orthanc:latest
     volumes:
       - type: bind
         source: ./imports

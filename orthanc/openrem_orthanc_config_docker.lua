@@ -255,8 +255,11 @@ function OnStoredInstance(instanceId)
     target:close()
 
     -- Call OpenREM import script. Runs as orthanc user in linux, so log files must be writable by Orthanc
---    os.execute(python_executable .. ' ' .. python_scripts_path .. import_script .. ' ' .. temp_file_path)
-    os.execute('/usr/bin/wget -aO- ' .. 'http://openrem:8000/import/' .. import_script .. '/ --post-data "dicom_path=' .. temp_file_path .. '"')
+    local headers = {
+        ["Host"] = "nginx",
+    }
+    local post_data = 'dicom_path=' .. temp_file_path
+    HttpPost('http://nginx/import/' .. import_script .. '/', post_data, headers)
     -- Remove the temporary DICOM file
     os.remove(temp_file_path)
 
