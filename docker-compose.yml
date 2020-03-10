@@ -3,7 +3,7 @@ version: '3.7'
 services:
   openrem:
     container_name: openrem
-    restart: always
+    restart: unless-stopped
     # to build image each time
     build:
       context: .
@@ -30,7 +30,7 @@ services:
       - broker
 
   worker:
-    restart: always
+    restart: unless-stopped
     # to build image each time
     build:
       context: .
@@ -50,7 +50,7 @@ services:
       - broker
 
   flower:
-    restart: always
+    restart: unless-stopped
     # to build image each time
     build:
       context: .
@@ -71,7 +71,7 @@ services:
       - broker
 
   db:
-    restart: always
+    restart: unless-stopped
     image: postgres:12.0-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
@@ -80,7 +80,7 @@ services:
 
   nginx:
     container_name: nginx
-    restart: always
+    restart: unless-stopped
     build: ./nginx
     volumes:
       - media_volume:/home/app/openrem/mediafiles
@@ -91,10 +91,11 @@ services:
       - openrem
 
   broker:
-    restart: always
+    restart: unless-stopped
     image: rabbitmq:3-management-alpine
 
   orthanc:
+    restart: unless-stopped
     container_name: orthanc
     build: ./orthanc
     volumes:
