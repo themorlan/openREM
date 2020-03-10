@@ -20,7 +20,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 RUN mkdir -p /usr/share/man/man1
-RUN apt-get update && apt-get -y dist-upgrade && apt install -y netcat && apt install -y default-jre dcmtk
+RUN apt-get update && apt-get -y dist-upgrade && apt install -y netcat dcmtk default-jre
 
 USER app
 RUN python -m venv $APP_VENV

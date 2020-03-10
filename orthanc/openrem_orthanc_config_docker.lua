@@ -254,7 +254,7 @@ function OnStoredInstance(instanceId)
     target:write(dicom)
     target:close()
 
-    -- Call OpenREM import script. Runs as orthanc user in linux, so log files must be writable by Orthanc
+    -- Send DICOM object path (shared between orthanc and openrem) and import type to openrem container via nginx
     local headers = {
         ["Host"] = "nginx",
     }
@@ -422,7 +422,14 @@ function OnStableStudy(studyId)
 
                 -- Run the Toshiba extractor on the folder. The extractor will remove the temp_files_path folder.
                 -- print('Trying to run: ' .. python_executable.. ' ' .. python_scripts_path .. 'openrem_cttoshiba.py' .. ' ' .. temp_files_path)
-                os.execute(python_executable.. ' ' .. python_scripts_path .. 'openrem_cttoshiba.py' .. ' ' .. temp_files_path)
+--                os.execute(python_executable.. ' ' .. python_scripts_path .. 'openrem_cttoshiba.py' .. ' ' .. temp_files_path)
+
+                -- Send DICOM object path (shared between orthanc and openrem) and import type to openrem container via nginx
+                local headers = {
+                    ["Host"] = "nginx",
+                }
+                local post_data = 'dicom_path=' .. temp_files_path .. '&import_type=ct_toshiba'
+                HttpPost('http://nginx/import/from_docker/', post_data, headers)
 
                 -- Exit the function
                 return true
