@@ -102,8 +102,15 @@ services:
         source: ./imports
         target: /imports
     ports:
-      - 8042:8042
+#      - 8042:8042
       - 104:4242
+    environment:
+      NAME: "OpenREM Orthanc"
+      DICOM_AET: "OPENREM"
+      AC_AUTHENTICATION_ENABLED: "true"
+      AC_REGISTERED_USERS: |
+        {"orthancuser": "demo"}
+      LUA_SCRIPTS: "[\"/etc/share/orthanc/scripts/openrem_orthanc_config_docker.lua\"]"
 
 volumes:
   postgres_data:
