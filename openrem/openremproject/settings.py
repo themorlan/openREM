@@ -256,12 +256,12 @@ LOGGING['loggers']['remapp.extractors.ct_toshiba']['level'] = os.environ.get("LO
 
 # Dummy locations of various tools for DICOM RDSR creation from CT images. Don't set value here - copy variables into
 # # local_settings.py and configure there.
-DCMTK_PATH = ''
+DCMTK_PATH = '/usr/bin'
 DCMCONV = os.path.join(DCMTK_PATH, 'dcmconv.exe')
 DCMMKDIR = os.path.join(DCMTK_PATH, 'dcmmkdir.exe')
-JAVA_EXE = ''
+JAVA_EXE = '/usr/bin/java'
 JAVA_OPTIONS = '-Xms256m -Xmx512m -Xss1m -cp'
-PIXELMED_JAR = ''
+PIXELMED_JAR = '/home/app/pixelmed/pixelmed.jar'
 PIXELMED_JAR_OPTIONS = '-Djava.awt.headless=true com.pixelmed.doseocr.OCR -'
 
 # Dummy variable for running the website in a virtual_directory. Don't set value here - copy variable into

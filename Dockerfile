@@ -10,6 +10,8 @@ USER app
 RUN mkdir $APP_HOME
 RUN mkdir $APP_HOME/mediafiles
 RUN mkdir $APP_HOME/staticfiles
+RUN mkdir $HOME/pixelmed
+ADD http://www.dclunie.com/pixelmed/software/webstart/pixelmed.jar $HOME/pixelmed/
 USER root
 WORKDIR $HOME
 
@@ -17,9 +19,8 @@ WORKDIR $HOME
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-RUN apt-get update && apt-get -y dist-upgrade
-# enable nc command in entrypoint
-RUN apt install -y netcat
+RUN mkdir -p /usr/share/man/man1
+RUN apt-get update && apt-get -y dist-upgrade && apt install -y netcat && apt install -y default-jre dcmtk
 
 USER app
 RUN python -m venv $APP_VENV
