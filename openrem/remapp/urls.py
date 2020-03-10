@@ -170,7 +170,7 @@ dicom_patterns = [
 ]
 
 import_patterns = [
-    path('rdsr/', import_views.import_rdsr, name='import_rdsr'),
+    path('from_docker/', import_views.import_from_docker, name='import_docker'),
 ]
 
 urlpatterns = [

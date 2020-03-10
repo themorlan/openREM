@@ -33,20 +33,40 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from .rdsr import rdsr
+from .dx import dx
+from .mam import mam
+from .ct_philips import ct_philips
+from .ct_toshiba import ct_toshiba
 
 
 @csrf_exempt
-def import_rdsr(request):
-    """
+def import_from_docker(request):
+    """View to consume the local path of an object ot import and pass to import scripts. To be used by Orthanc Docker
+    container.
 
-    :param request:
-    :return:
+    :param request: Request object containing local path and script name in POST data
+    :return: Text detailing what was run
     """
     data = request.POST
     dicom_path = data.get('dicom_path')
+    import_type = data.get('import_type')
+    print(f'In import_from_docker, dicom_path is {dicom_path}, import type is {import_type}')
 
     if dicom_path:
-        dicom_path = unquote(dicom_path)
-        rdsr(dicom_path)
-        return HttpResponse(f"RDSR run on {dicom_path}")
-    return HttpResponse("RDSR not run, no DICOM path")
+        if import_type == 'rdsr':
+            rdsr(dicom_path)
+            return HttpResponse(f"RDSR import run on {dicom_path}")
+        if import_type == 'dx':
+            dx(dicom_path)
+            return HttpResponse(f'DX import run on {dicom_path}')
+        if import_type == 'mam':
+            mam(dicom_path)
+            return HttpResponse(f'Mammography import run on {dicom_path}')
+        if import_type == 'ct_philips':
+            ct_philips(dicom_path)
+            return HttpResponse(f'CT Philips import run on {dicom_path}')
+        if import_type == 'ct_toshiba':
+            ct_toshiba(dicom_path)
+            return HttpResponse(f'{dicom_path} passed to CT Toshiba import')
+        return HttpResponse('Import script name not recognised')
+    return HttpResponse('No dicom_path, import not carried out')

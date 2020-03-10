@@ -180,15 +180,15 @@ function OnStoredInstance(instanceId)
     end
     if (instance_tags.Modality ~= nil) and (import_script == '') then
         if instance_tags.Modality == 'MG' then
-            import_script = 'openrem_mg.py'
+            import_script = 'mam'
         elseif (instance_tags.Modality == 'CR') or (instance_tags.Modality == 'DX') then
-            import_script = 'openrem_dx.py'
+            import_script = 'dx'
         end
     end
     if (instance_tags.SOPClassUID ~= nil) and (instance_tags.Manufacturer ~= nil) and (import_script == '') then
         if (instance_tags.SOPClassUID == '1.2.840.10008.5.1.4.1.1.7') and string.match(string.lower(instance_tags.Manufacturer), 'philips') then
             -- Secondary Capture object that might be Philips CT Dose Info image
-            import_script = 'openrem_ctphilips.py'
+            import_script = 'ct_philips'
         end
     end
     -------------------------------------------------------------------------------------
@@ -258,8 +258,8 @@ function OnStoredInstance(instanceId)
     local headers = {
         ["Host"] = "nginx",
     }
-    local post_data = 'dicom_path=' .. temp_file_path
-    HttpPost('http://nginx/import/' .. import_script .. '/', post_data, headers)
+    local post_data = 'dicom_path=' .. temp_file_path .. '&import_type=' .. import_script
+    HttpPost('http://nginx/import/from_docker/', post_data, headers)
     -- Remove the temporary DICOM file
     os.remove(temp_file_path)
 
