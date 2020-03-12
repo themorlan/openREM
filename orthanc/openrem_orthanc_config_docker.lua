@@ -12,7 +12,8 @@ local dir_sep = '/'
 
 -- Set this to true if you want Orthanc to keep physics test studies, and have it
 -- put them in the physics_to_keep_folder. Set it to false to disable this feature
-local use_physics_filtering = true
+local use_physics_filtering = os.getenv("USE_PHYSICS_FILTERING")
+if use_physics_filtering == nil then use_physics_filtering = false end
 
 -- Set this to the path where you want to keep physics-related DICOM images
 local physics_to_keep_folder = '/imports/physics/'
@@ -33,26 +34,37 @@ local rmdir_cmd = 'rm -r'
 
 -- A list to check against patient name and ID to see if the images should be kept.
 -- Orthanc will put anything that matches this in the physics_to_keep_folder.
-local physics_to_keep = {'physics'}
+local physics_to_keep = os.getenv("PHYSICS_TO_KEEP")
+if physics_to_keep == nil then physics_to_keep = {'physics'} end
 
 -- Lists of things to ignore. Orthanc will ignore anything matching the content of
 -- these lists: they will not be imported into OpenREM.
-local manufacturers_to_ignore = {}
-local model_names_to_ignore = {}
-local station_names_to_ignore = {}
-local software_versions_to_ignore = {}
-local device_serial_numbers_to_ignore = {}
+local manufacturers_to_ignore = os.getenv("MANUFACTURERS_TO_IGNORE")
+local model_names_to_ignore = os.getenv("MODEL_NAMES_TO_IGNORE")
+local station_names_to_ignore = os.getenv("STATION_NAMES_TO_IGNORE")
+local software_versions_to_ignore = os.getenv("SOFTWARE_VERSIONS_TO_IGNORE")
+local device_serial_numbers_to_ignore = os.getenv("DEVICE_SERIAL_NUMBERS_TO_IGNORE")
+if manufacturers_to_ignore == nil then manufacturers_to_ignore = {} end
+if model_names_to_ignore == nil then model_names_to_ignore = {} end
+if station_names_to_ignore == nil then station_names_to_ignore = {} end
+if software_versions_to_ignore == nil then software_versions_to_ignore = {} end
+if device_serial_numbers_to_ignore == nil then device_serial_numbers_to_ignore = {} end
 
 -- Set this to true if you want to use the OpenREM Toshiba CT extractor. Set it to
 -- false to disable this feature.
-local use_toshiba_ct_extractor = true
+local use_toshiba_ct_extractor = os.getenv("USE_TOSHIBA_CT_EXTRACTOR")
+if use_toshiba_ct_extractor == nil then use_toshiba_ct_extractor = true end
 
 -- A list of CT make and model pairs that are known to have worked with the Toshiba CT extractor.
 -- You can add to this list, but you will need to verify that the dose data created matches what you expect.
-local toshiba_extractor_systems = {
+local toshiba_extractor_systems = os.getenv("TOSHIBA_EXTRACTOR_SYSTEMS")
+if toshiba_extractor_systems == nil then
+    toshiba_extractor_systems = {
         {'Toshiba', 'Aquilion'},
         {'GE Medical Systems', 'Discovery STE'},
-}
+    }
+end
+
 -------------------------------------------------------------------------------------
 
 
@@ -441,5 +453,22 @@ function OnStableStudy(studyId)
  end
 
 function Initialize()
-    print 'In custom LUA'
+    print('USE_PHYSICS_FILTERING (default false): ')
+    print(os.getenv("USE_PHYSICS_FILTERING"))
+    print("PHYSICS_TO_KEEP (default {'physics'}: ")
+    print(os.getenv("PHYSICS_TO_KEEP"))
+    print('MANUFACTURERS_TO_IGNORE (default {}): ')
+    print(os.getenv("MANUFACTURERS_TO_IGNORE"))
+    print('MODEL_NAMES_TO_IGNORE (default {}): ')
+    print(os.getenv("MODEL_NAMES_TO_IGNORE"))
+    print('STATION_NAMES_TO_IGNORE (default {}): ')
+    print(os.getenv("STATION_NAMES_TO_IGNORE"))
+    print('SOFTWARE_VERSIONS_TO_IGNORE (default {}): ')
+    print(os.getenv("SOFTWARE_VERSIONS_TO_IGNORE"))
+    print('DEVICE_SERIAL_NUMBERS_TO_IGNORE (default {}): ')
+    print(os.getenv("DEVICE_SERIAL_NUMBERS_TO_IGNORE"))
+    print('USE_TOSHIBA_CT_EXTRACTOR (default {}): ')
+    print(os.getenv("USE_TOSHIBA_CT_EXTRACTOR"))
+    print('TOSHIBA_EXTRACTOR_SYSTEMS (default {}): ')
+    print(os.getenv("TOSHIBA_EXTRACTOR_SYSTEMS"))
 end

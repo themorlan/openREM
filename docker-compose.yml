@@ -5,11 +5,11 @@ services:
     container_name: openrem
     restart: unless-stopped
     # to build image each time
-    build:
-      context: .
-      dockerfile: Dockerfile
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
     # to use pre-built image
-#    image: openrem_image:latest
+    image: openrem_image:latest
     command: gunicorn openremproject.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - media_volume:/home/app/openrem/mediafiles
@@ -32,11 +32,11 @@ services:
   worker:
     restart: unless-stopped
     # to build image each time
-    build:
-      context: .
-      dockerfile: Dockerfile
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
     # to use pre-built image
-#    image: openrem_image:latest
+    image: openrem_image:latest
     command: celery worker -A openremproject -Q default --pidfile=/logs/celery.pid --logfile=/logs/celery.log
     volumes:
       - media_volume:/home/app/openrem/mediafiles
@@ -52,11 +52,11 @@ services:
   flower:
     restart: unless-stopped
     # to build image each time
-    build:
-      context: .
-      dockerfile: Dockerfile
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
     # to use pre-built image
-#    image: openrem_image:latest
+    image: openrem_image:latest
     command: celery flower -A openremproject
     volumes:
       - type: bind
@@ -76,7 +76,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
-      - ./.env.prod.db
+      - ./.env.prod
 
   nginx:
     container_name: nginx
@@ -94,7 +94,7 @@ services:
     restart: unless-stopped
     image: rabbitmq:3-management-alpine
 
-  orthanc:
+  orthanc_1:
     restart: unless-stopped
     container_name: orthanc
     build: ./orthanc
@@ -112,6 +112,8 @@ services:
       AC_REGISTERED_USERS: |
         {"orthancuser": "demo"}
       LUA_SCRIPTS: "[\"/etc/share/orthanc/scripts/openrem_orthanc_config_docker.lua\"]"
+      USE_PHYSICS_FILTERING: "true"
+      STATION_NAMES_TO_IGNORE: "{'CR85 Main', 'CR75 Main'}"
 
 volumes:
   postgres_data:
