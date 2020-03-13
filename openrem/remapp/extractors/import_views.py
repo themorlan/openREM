@@ -27,8 +27,6 @@
 ..  moduleauthor:: Ed McDonagh
 """
 
-from urllib.parse import  unquote
-
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 

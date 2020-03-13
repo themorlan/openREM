@@ -32,7 +32,7 @@ DEBUG = int(os.environ.get("DEBUG", default=0))
 
 # 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
 # For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default='localhost').split(" ")
 
 MEDIA_URL = "/mediafiles/"
 MEDIA_ROOT = os.environ.get("MEDIA_ROOT", default=os.path.join(BASE_DIR, "mediafiles"))
@@ -279,4 +279,8 @@ EMAIL_DOSE_ALERT_SENDER = 'your.alert@email.address'
 EMAIL_OPENREM_URL = 'http://your.openrem.server'
 
 
-# from .local_settings import *  # NOQA: F401
+try:
+    from .local_settings import *  # NOQA: F401
+except ImportError:
+    # For Docker builds, there will not be a local_settings.py, 'local settings' are passed via environment variables
+    pass
