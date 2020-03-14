@@ -50,7 +50,15 @@ definitions:
           - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py makemigrations remapp --noinput"
           - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py migrate --noinput"
           - ssh deploy@$server "sudo /usr/sbin/service gunicorn-$server restart"
-
+    - step: &build-and-deploy-to-docker
+        name: deploy to docker
+        trigger: manual
+        script:
+          - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
+          - docker build -t openrem/openrem:latest
+          - docker push openrem/openrem
+        services:
+          - docker
 pipelines:
   default:  # Standard commits are tested but not deployed
     - step: *test
@@ -67,4 +75,12 @@ pipelines:
       - step:
           <<: *deploy-to-openrem-org
           deployment: testing  # deployment has $server as a variable = testing.openrem.org
+    '*docker':  # Commits to any branch ending in 'docker' are tested and deployed to docker hub. Will add to develop
+      - step:
+          <<: *test
+          name: run django tests - testing
+      - step:
+          <<: *build-and-deploy-to-docker
+          name: build and push to Docker Hub
+
 
