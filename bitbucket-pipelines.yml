@@ -51,12 +51,13 @@ definitions:
           - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py migrate --noinput"
           - ssh deploy@$server "sudo /usr/sbin/service gunicorn-$server restart"
     - step: &build-and-deploy-to-docker
-        name: deploy to docker
+        name: build and push to docker
         trigger: manual
         script:
+          - export IMAGE_NAME=openrem/openrem:$BITBUCKET_BRANCH-$BITBUCKET_COMMIT
+          - docker build -t $IMAGE_NAME .
           - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
-          - docker build -t openrem/openrem:latest .
-          - docker push openrem/openrem
+          - docker push $IMAGE_NAME
         services:
           - docker
 pipelines:
@@ -68,6 +69,13 @@ pipelines:
           <<: *test
           name: run django tests - develop
       - step: *deploy-to-openrem-org
+      - step: *build-and-deploy-to-docker
+    master:  # Commits to the master branch are tested and pushed to Docker Hub
+      - step:
+          <<: *test
+          name: run django tests - master
+          deployment: Staging
+      - step: *build-and-deploy-to-docker
     '*stage':  # Commits to any branch ending in 'stage' are tested and deployed to testing.openrem.org
       - step:
           <<: *test
@@ -82,5 +90,16 @@ pipelines:
       - step:
           <<: *build-and-deploy-to-docker
           name: build and push to Docker Hub
-
+  tags:
+    '*':
+      - step:
+          name: retag and repush image
+          deployment: Production
+          script:
+            - export IMAGE_NAME=openrem/openrem:master-$BITBUCKET_COMMIT
+            - export NEW_IMAGE_NAME=openrem/openrem:$BITBUCKET_TAG
+            - docker login --username $DOCKER_HUB_USER --password $DOCKER_HUB_PASSWORD
+            - docker pull $IMAGE_NAME
+            - docker tag $IMAGE_NAME $NEW_IMAGE_NAME
+            - docker push $NEW_IMAGE_NAME
 
