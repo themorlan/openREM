@@ -169,7 +169,7 @@ dicom_patterns = [
     path('storenodestatus', dicomviews.get_store_status, name='get_store_status'),
 ]
 
-import_patterns = [
+import_patterns = [  # pylint: disable=invalid-name
     path('from_docker/', import_views.import_from_docker, name='import_docker'),
 ]
 

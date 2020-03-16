@@ -183,15 +183,15 @@ Configure the filename to determine where the logs are written. In linux, you mi
 
     import os
     LOG_ROOT = MEDIA_ROOT
-    logfilename = os.path.join(LOG_ROOT, "openrem.log")
-    qrfilename = os.path.join(LOG_ROOT, "openrem_qr.log")
-    storefilename = os.path.join(LOG_ROOT, "openrem_store.log")
-    extractorfilename = os.path.join(LOG_ROOT, "openrem_extractor.log")
+    LOG_FILENAME = os.path.join(LOG_ROOT, "openrem.log")
+    QR_FILENAME = os.path.join(LOG_ROOT, "openrem_qr.log")
+    STORE_FILENAME = os.path.join(LOG_ROOT, "openrem_store.log")
+    EXTRACTOR_FILENAME = os.path.join(LOG_ROOT, "openrem_extractor.log")
 
-    LOGGING['handlers']['file']['filename'] = logfilename          # General logs
-    LOGGING['handlers']['qr_file']['filename'] = qrfilename        # Query Retrieve SCU logs
-    LOGGING['handlers']['store_file']['filename'] = storefilename  # Store SCP logs
-    LOGGING['handlers']['extractor_file']['filename'] = extractorfilename  # Extractor logs
+    LOGGING['handlers']['file']['filename'] = LOG_FILENAME          # General logs
+    LOGGING['handlers']['qr_file']['filename'] = QR_FILENAME        # Query Retrieve SCU logs
+    LOGGING['handlers']['store_file']['filename'] = STORE_FILENAME  # Store SCP logs
+    LOGGING['handlers']['extractor_file']['filename'] = EXTRACTOR_FILENAME  # Extractor logs
 
 If you want all the logs in one file, simply set them all to the same filename.
 

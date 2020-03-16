@@ -53,18 +53,20 @@ def import_from_docker(request):
     if dicom_path:
         if import_type == 'rdsr':
             rdsr(dicom_path)
-            return HttpResponse(f"RDSR import run on {dicom_path}")
-        if import_type == 'dx':
+            return_type = "RDSR"
+        elif import_type == 'dx':
             dx(dicom_path)
-            return HttpResponse(f'DX import run on {dicom_path}')
-        if import_type == 'mam':
+            return_type = "DX"
+        elif import_type == 'mam':
             mam(dicom_path)
-            return HttpResponse(f'Mammography import run on {dicom_path}')
-        if import_type == 'ct_philips':
+            return_type = "Mammography"
+        elif import_type == 'ct_philips':
             ct_philips(dicom_path)
-            return HttpResponse(f'CT Philips import run on {dicom_path}')
-        if import_type == 'ct_toshiba':
+            return_type = "CT Philips"
+        elif import_type == 'ct_toshiba':
             ct_toshiba(dicom_path)
             return HttpResponse(f'{dicom_path} passed to CT Toshiba import')
-        return HttpResponse('Import script name not recognised')
+        else:
+            return HttpResponse('Import script name not recognised')
+        return HttpResponse(f"{return_type} import run on {dicom_path}")
     return HttpResponse('No dicom_path, import not carried out')
