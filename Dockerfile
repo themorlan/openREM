@@ -35,6 +35,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY --chown=app:app . .
 RUN mv $HOME/stuff/0002_0_7_fresh_install_add_median.py.inactive $APP_HOME/remapp/migrations/
+RUN mv $HOME/stuff/v1initial.py $APP_HOME/remapp/migrations/0001_initial.py.1-0-upgrade
 RUN mv $APP_HOME/openremproject/wsgi.py.example $APP_HOME/openremproject/wsgi.py
 
 #RUN chown -R app:app $HOME
