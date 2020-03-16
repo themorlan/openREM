@@ -31,6 +31,8 @@ definitions:
           - tox -e ci
         services:
           - postgres
+        caches:
+          - pip
     - step: &deploy-to-openrem-org
         name: deploy to $server
         deployment: develop  # deployment has $server as a variable = dev.openrem.org
@@ -59,6 +61,8 @@ definitions:
           - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
           - docker push $IMAGE_NAME
         services:
+          - docker
+        caches:
           - docker
 pipelines:
   default:  # Standard commits are tested but not deployed
