@@ -31,7 +31,7 @@ ENV PATH="$APP_VENV/bin:$PATH"
 # install dependencies
 RUN pip install --upgrade pip
 COPY --chown=app:app ./requirements.txt .
-RUN pip install --no-cache-dir git://github.com/pydicom/pynetdicom.git@master#egg=pynetdicom
+RUN pip install --no-cache-dir git+git://github.com/pydicom/pynetdicom.git@master#egg=pynetdicom
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY --chown=app:app . .
