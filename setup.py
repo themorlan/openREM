@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 exec(open('openrem/remapp/version.py').read())
 
 with open('requirements.txt') as f:
-    required = f.read().splitlines()
+    REQUIRED = f.read().splitlines()
 
 
 setup(
@@ -17,7 +17,7 @@ setup(
     version=__version__,
     packages=['openrem'],
     include_package_data=True,
-    install_requires=required,
+    install_requires=REQUIRED,
     scripts=[
         'openrem/scripts/openrem_rdsr.py',
         'openrem/scripts/openrem_mg.py',
