@@ -8,38 +8,16 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 # get version information
 exec(open('openrem/remapp/version.py').read())
 
-requires = [
-    'django>=2.2,<2.3',
-    'django-filter',
-    'pytz >= 0a',
-    'humanize',
-    'pydicom',
-    'pynetdicom',
-    'xlsxwriter',
-    'celery',
-    'django-qsstats-magic',
-    'python-dateutil',
-    'django-solo',
-    'django-crispy-forms',
-    'pandas',
-    'xlrd',
-    'testfixtures',
-    'mock',
-    'django-js-reverse >= 0.9.1',
-    'requests',
-    'flower',
-    'numpy',
-    'future',
-    'defusedxml',
-    'psycopg2-binary'
-    ]
+with open('requirements.txt') as f:
+    required = f.read().splitlines()
+
 
 setup(
     name='OpenREM',
     version=__version__,
     packages=['openrem'],
     include_package_data=True,
-    install_requires = requires,
+    install_requires=required,
     scripts=[
         'openrem/scripts/openrem_rdsr.py',
         'openrem/scripts/openrem_mg.py',
