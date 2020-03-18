@@ -28,6 +28,8 @@ definitions:
             sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
           - mv openrem/openremproject/wsgi.py{.example,}
           - pip install -U tox
+          - pip install -e git://git@github.com:pydicom/pynetdicom.git#egg=pynetdicom
+          - pip install -r requirements.txt
           - tox -e ci
         services:
           - postgres
