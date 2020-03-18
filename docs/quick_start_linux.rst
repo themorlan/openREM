@@ -120,7 +120,7 @@ Install Python packages
 
     pip install numpy psycopg2-binary gunicorn
     pip install openrem
-    pip install https://bitbucket.org/edmcdonagh/pynetdicom/get/default.tar.gz#egg=pynetdicom-0.8.2b2
+    pip install git+git://github.com/pydicom/pynetdicom.git@master#egg=pynetdicom
 
 .. note::
 

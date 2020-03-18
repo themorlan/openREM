@@ -22,24 +22,19 @@ Install OpenREM
 
 *Will need* ``sudo`` *or equivalent if installing on linux without using a virtualenv*
 
-Install pynetdicom (edited version)
-===================================
+Install pynetdicom
+==================
 
 Pynetdicom is used for the DICOM Store SCP and Query Retrieve SCU functions. See :ref:`directfrommodalities` for details.
 
 .. sourcecode:: bash
 
-    pip install https://bitbucket.org/edmcdonagh/pynetdicom/get/default.tar.gz#egg=pynetdicom-0.8.2b2
+    pip install git+git://github.com/pydicom/pynetdicom.git@master#egg=pynetdicom
 
 ..  note::
 
-    You must install the ``pynetdicom`` package from the link above - the version in pypi or the newer versions in
-    GitHub won't work with the current version of OpenREM. Future versions of OpenREM will be adapted to work with
-    ``pynetdicom3`` and ``pydicom>1.0``.
-
-    If you are using the latest version of ``pip`` you will get error messages including the phrase
-    ``Failed building wheel for pynetdicom`` - it should be ok to ignore this message as long as you end up with the
-    message ``Successfully installed pynetdicom-0.8.2b2``
+    You must install the ``pynetdicom`` package from the link above - OpenREM makes use of features in the 1.5.0 version
+    which has not yet been released.
 
 .. _localsettingsconfig:
 
