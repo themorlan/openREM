@@ -31,13 +31,15 @@
 from builtins import str  # pylint: disable=redefined-builtin
 import sys
 import os
-from openrem.remapp.extractors import rdsr
-from openremproject.settings import JAVA_EXE, JAVA_OPTIONS, PIXELMED_JAR, PIXELMED_JAR_OPTIONS
 import shutil
-import django
 import logging
 import traceback
+
+import django
 from celery import shared_task
+
+from .rdsr import rdsr
+from openrem.openremproject.settings import (JAVA_EXE, JAVA_OPTIONS, PIXELMED_JAR, PIXELMED_JAR_OPTIONS)
 
 # setup django/OpenREM
 base_path = os.path.dirname(__file__)
@@ -1212,7 +1214,7 @@ def ct_toshiba(folder_name):
             if len(subfolder_paths) > 0:
                 combined_rdsr.save_as(os.path.join(folder, combined_rdsr_name+'_updated'))
                 logger.debug('Importing updated combined rdsr in to OpenREM ({0})'.format(os.path.join(folder, combined_rdsr_name+'_updated')))
-                rdsr.rdsr(os.path.join(folder, combined_rdsr_name+'_updated'))
+                rdsr(os.path.join(folder, combined_rdsr_name+'_updated'))
                 logger.debug('Imported in to OpenREM')
             else:
                 logger.debug('RDSRs could not be created for any subfolders')
@@ -1243,7 +1245,7 @@ def ct_toshiba(folder_name):
                 # Now import the updated rdsr into OpenREM using the Toshiba extractor
                 if result == 1:
                     logger.debug('Importing updated rdsr in to OpenREM ({0})'.format(updated_rdsr_name_and_path))
-                    rdsr.rdsr(updated_rdsr_name_and_path)
+                    rdsr(updated_rdsr_name_and_path)
                     logger.debug('Imported in to OpenREM')
                 else:
                     logger.debug('Not imported to OpenREM. Result is: {0}'.format(result))

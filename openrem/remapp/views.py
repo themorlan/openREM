@@ -59,7 +59,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 import json
 import logging
 import remapp
-from openremproject.settings import MEDIA_ROOT, FLOWER_PORT
+from openremproject.settings import (MEDIA_ROOT, FLOWER_PORT, FLOWER_URL, BROKER_MGMT_URL)
 from remapp.forms import SizeUploadForm
 from remapp.models import GeneralStudyModuleAttr, create_user_profile
 from remapp.models import SizeUpload
@@ -3368,7 +3368,7 @@ def task_service_status(request):
 
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
         try:
-            flower = requests.get('http://localhost:{0}/api/tasks'.format(FLOWER_PORT))
+            flower = requests.get(f'{FLOWER_URL}:{FLOWER_PORT}/api/tasks')
             if flower.status_code == 200:
                 flower_status = 200
             else:
@@ -3378,7 +3378,7 @@ def task_service_status(request):
         default_queue = {}
         celery_queue = {}
         try:
-            queues = requests.get('http://localhost:15672/api/queues', auth=('guest', 'guest'))
+            queues = requests.get(f'{BROKER_MGMT_URL}api/queues', auth=('guest', 'guest'))
             if queues.status_code == 200:
                 rabbitmq_status = 200
             else:
@@ -3407,7 +3407,7 @@ def rabbitmq_purge(request, queue=None):
     import requests
 
     if queue and request.user.groups.filter(name="admingroup"):
-        queue_url = 'http://localhost:15672/api/queues/%2f/{0}/contents'.format(queue)
+        queue_url = f'{BROKER_MGMT_URL}/api/queues/%2f/{queue}/contents'
         requests.delete(queue_url, auth=('guest', 'guest'))
         return redirect(reverse_lazy('celery_admin'))
 
@@ -3430,7 +3430,7 @@ def celery_tasks(request, stage=None):
 
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
         try:
-            flower = requests.get('http://localhost:{0}/api/tasks'.format(FLOWER_PORT))
+            flower = requests.get(f'{FLOWER_URL}:{FLOWER_PORT}/api/tasks')
             if flower.status_code == 200:
                 tasks = []
                 recent_tasks = []
@@ -3519,7 +3519,7 @@ def celery_abort(request, task_id=None, type=None):
     from remapp.models import Exports, DicomQuery
 
     if task_id and request.user.groups.filter(name="admingroup"):
-        queue_url = 'http://localhost:{0}/api/task/revoke/{1}'.format(FLOWER_PORT, task_id)
+        queue_url = f'{FLOWER_URL}:{FLOWER_PORT}/api/task/revoke/{task_id}'
         payload = {"terminate": "true"}
         abort = requests.post(queue_url, data=payload)
         if abort.status_code == 200:

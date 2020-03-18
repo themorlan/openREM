@@ -120,7 +120,7 @@ Install Python packages
 
     pip install numpy psycopg2-binary gunicorn
     pip install openrem
-    pip install https://bitbucket.org/edmcdonagh/pynetdicom/get/default.tar.gz#egg=pynetdicom-0.8.2b2
+    pip install git+git://github.com/pydicom/pynetdicom.git@master#egg=pynetdicom
 
 .. note::
 
@@ -214,10 +214,10 @@ Edit the new local_settings file (``nano openremproject/local_settings.py``)
     ]
 
     LOG_ROOT = "/var/dose/log"
-    logfilename = os.path.join(LOG_ROOT, "openrem.log")
-    qrfilename = os.path.join(LOG_ROOT, "openrem_qr.log")
-    storefilename = os.path.join(LOG_ROOT, "openrem_store.log")
-    extractorfilename = os.path.join(LOG_ROOT, "openrem_extractor.log")
+    LOG_FILENAME = os.path.join(LOG_ROOT, "openrem.log")
+    QR_FILENAME = os.path.join(LOG_ROOT, "openrem_qr.log")
+    STORE_FILENAME = os.path.join(LOG_ROOT, "openrem_store.log")
+    EXTRACTOR_FILENAME = os.path.join(LOG_ROOT, "openrem_extractor.log")
 
     # Removed comment hashes to enable log file rotation:
     LOGGING['handlers']['file']['class'] = 'logging.handlers.RotatingFileHandler'

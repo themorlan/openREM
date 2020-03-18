@@ -28,9 +28,13 @@ definitions:
             sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
           - mv openrem/openremproject/wsgi.py{.example,}
           - pip install -U tox
+          - pip install git+git://github.com/pydicom/pynetdicom.git@master#egg=pynetdicom
+          - pip install -r requirements.txt
           - tox -e ci
         services:
           - postgres
+        caches:
+          - pip
     - step: &deploy-to-openrem-org
         name: deploy to $server
         deployment: develop  # deployment has $server as a variable = dev.openrem.org
@@ -50,7 +54,18 @@ definitions:
           - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py makemigrations remapp --noinput"
           - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py migrate --noinput"
           - ssh deploy@$server "sudo /usr/sbin/service gunicorn-$server restart"
-
+    - step: &build-and-deploy-to-docker
+        name: build and push to docker
+        trigger: manual
+        script:
+          - export IMAGE_NAME=openrem/openrem:$BITBUCKET_BRANCH-$BITBUCKET_COMMIT
+          - docker build -t openrem/openrem:$BITBUCKET_BRANCH-$BITBUCKET_COMMIT -t openrem/openrem:$BITBUCKET_BRANCH .
+          - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
+          - docker push openrem/openrem
+        services:
+          - docker
+        caches:
+          - docker
 pipelines:
   default:  # Standard commits are tested but not deployed
     - step: *test
@@ -60,6 +75,13 @@ pipelines:
           <<: *test
           name: run django tests - develop
       - step: *deploy-to-openrem-org
+      - step: *build-and-deploy-to-docker
+    master:  # Commits to the master branch are tested and pushed to Docker Hub
+      - step:
+          <<: *test
+          name: run django tests - master
+          deployment: Staging
+      - step: *build-and-deploy-to-docker
     '*stage':  # Commits to any branch ending in 'stage' are tested and deployed to testing.openrem.org
       - step:
           <<: *test
@@ -67,4 +89,23 @@ pipelines:
       - step:
           <<: *deploy-to-openrem-org
           deployment: testing  # deployment has $server as a variable = testing.openrem.org
+    '*docker':  # Commits to any branch ending in 'docker' are tested and deployed to docker hub. Will add to develop
+      - step:
+          <<: *test
+          name: run django tests - testing
+      - step:
+          <<: *build-and-deploy-to-docker
+          name: build and push to Docker Hub
+  tags:
+    '*':
+      - step:
+          name: retag and repush image
+          deployment: Production
+          script:
+            - export IMAGE_NAME=openrem/openrem:master-$BITBUCKET_COMMIT
+            - export NEW_IMAGE_NAME=openrem/openrem:$BITBUCKET_TAG
+            - docker login --username $DOCKER_HUB_USER --password $DOCKER_HUB_PASSWORD
+            - docker pull $IMAGE_NAME
+            - docker tag $IMAGE_NAME $NEW_IMAGE_NAME
+            - docker push $NEW_IMAGE_NAME
 
