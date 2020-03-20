@@ -5,6 +5,7 @@ OpenREM version history
 1.0.0b1 (2020-xx-xx)
 --------------------
 * :issue:`821`  Code quality: fixed literal comparisons Docker was complaining about
+* :issue:`820`  Documentation: converted changes to use sphinx-issues
 * :issue:`819`  Removed colons from commands in documentation as they don't format correctly in PDF
 * :issue:`818`  Interface: refactored event number filtering
 * :issue:`816`  Interface: fixed password change error
