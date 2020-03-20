@@ -22,3 +22,4 @@ future==0.18.2
 defusedxml==0.6.0
 psycopg2-binary==2.8.4
 gunicorn==20.0.4
+sphinx-issues==1.2.0
