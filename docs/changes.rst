@@ -4,6 +4,7 @@ OpenREM version history
 
 1.0.0b1 (2020-xx-xx)
 --------------------
+* `#821`_  Code quality: fixed literal comparisons Docker was complaining about
 * `#819`_  Removed colons from commands in documentation as they don't format correctly in PDF
 * `#818`_  Interface: refactored event number filtering
 * `#816`_  Interface: fixed password change error
@@ -19,6 +20,7 @@ OpenREM version history
 * `#797`_  Exports: fixed string/byte issues with csv exports
 * `#796`_  Exports: replaced file() with open() for Python 3.x compatibility
 * `#795`_  Exports: included acquisition name in PHE radiographic projection export
+* `#793`_  Installation: added Docker installation
 * `#791`_  Exports: prevented error when trying to export DX data that has no filter information
 * `#787`_  Interface: fixed login error
 * `#777`_  Updated OpenREM to use pydicom 1.3
