@@ -4,8 +4,8 @@ OpenREM version history
 
 1.0.0b1 (2020-xx-xx)
 --------------------
-* `#821`_  Code quality: fixed literal comparisons Docker was complaining about
-* `#819`_  Removed colons from commands in documentation as they don't format correctly in PDF
+* :issue:`821`  Code quality: fixed literal comparisons Docker was complaining about
+* :issue:`819`  Removed colons from commands in documentation as they don't format correctly in PDF
 * `#818`_  Interface: refactored event number filtering
 * `#816`_  Interface: fixed password change error
 * `#815`_  Interface: fixed patient name filtering
