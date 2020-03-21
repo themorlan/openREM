@@ -68,20 +68,19 @@ def _patientstudymoduleattributes(exam, height, weight, verbose, imp_log=None): 
             if verbose:
                 if imp_log:
                     imp_log.file.open("ab")
-                    imp_log.write("\r\n    Inserted height of {0} cm".format(height))
+                    imp_log.write(f"\r\n    Inserted height of {height} cm")
                     imp_log.file.close()
                 else:
                     print(u"    Inserted height of {0}".format(height))
         elif verbose:
+            existing_height = patient_attributes.patient_size * Decimal(100.)
             if imp_log:
                 imp_log.file.open("ab")
-                imp_log.write(
-                    "\r\n    Height of {0} cm not inserted as {1:.2f} cm already in the database".format(height, (
-                                patient_attributes.patient_size * Decimal(100.))))
+                imp_log.write(f"\r\n    Height of {height} cm not inserted as {existing_height:.2f} cm already in "
+                              f"the database")
                 imp_log.file.close()
             else:
-                print(u"    Height of {0} cm not inserted as {1:.2f} cm already in the database".format(height, (
-                            patient_attributes.patient_size * Decimal(100.))))
+                print(f"    Height of {height} cm not inserted as {existing_height:.2f} cm already in the database")
 
     if weight:
         if not patient_attributes.patient_weight:
