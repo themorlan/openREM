@@ -27,6 +27,8 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
+import argparse
+import csv
 import logging
 import os
 import sys
@@ -202,19 +204,25 @@ def websizeimport(csv_pk=None):
                 csvrecord.save()
 
 
-def csv2db(*args, **kwargs):
-    """ Import patient height and weight data from csv RIS exports. Can be called from ``openrem_ptsizecsv.py`` script
+def _create_parser():
+    parser = argparse.ArgumentParser(
+        description="Import height and weight data from a CSV file into an OpenREM database. If either height or "
+                    "weight is missing just add a blank column with an appropriate title.")
+    parser.add_argument("-u", "--si-uid", action="store_true",
+                        help="use Study Instance UID instead of Accession Number")
+    parser.add_argument("-v", "--verbose", help="also print log to shell", action="store_true")
+    parser.add_argument("csvfile", help="csv file with height, weight and study identifier")
+    parser.add_argument("id", help="column title for the accession number or study instance UID")
+    parser.add_argument("height", help="column title for the patient height, values in cm")
+    parser.add_argument("weight", help="column title for the patient weight, values in kg")
 
-    :param --si-uid: Use Study Instance UID instead of Accession Number. Short form -s.
-    :type --si-uid: bool
-    :param csvfile: relative or absolute path to csv file
-    :type csvfile: str
-    :param id: Accession number column header or header if -u or --si-uid is set. Quote if necessary.
-    :type id: str
-    :param height: Patient height column header. Create if necessary, quote if necessary. Values in cm.
-    :type height: str
-    :param weight: Patient weight column header. Create if necessary, quote if necessary. Values in kg.
-    :type weight: str
+    return parser
+
+
+def csv2db(args):
+    """ Import patient height and weight data from csv RIS exports. Called from ``openrem_ptsizecsv.py`` script
+
+    :param args: sys.argv from the command line call
 
     Example::
 
@@ -222,21 +230,7 @@ def csv2db(*args, **kwargs):
 
     """
 
-    import csv
-    import argparse
-
-    # Required and optional arguments
-    parser = argparse.ArgumentParser(
-        description="Import height and weight data into an OpenREM database. If either is missing just add a blank "
-                    "column with appropriate title.")
-    parser.add_argument("-u", "--si-uid", action="store_true",
-                        help="Use Study Instance UID instead of Accession Number")
-    parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
-    parser.add_argument("csvfile", help="csv file containing the height and/or weight information and study identifier")
-    parser.add_argument("id", help="Column title for the accession number or study instance UID")
-    parser.add_argument("height", help="Column title for the patient height, values in cm")
-    parser.add_argument("weight", help="Column title for the patient weight, values in kg")
-    args = parser.parse_args()
+    args = _create_parser().parse_args()
 
     f = open(args.csvfile, 'rb')
     try:
@@ -245,7 +239,3 @@ def csv2db(*args, **kwargs):
             _ptsizeinsert(line[args.id], line[args.height], line[args.weight], args.si_uid, args.verbose)
     finally:
         f.close()
-
-
-if __name__ == "__main__":
-    sys.exit(csv2db())
