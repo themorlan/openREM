@@ -40,6 +40,7 @@ from builtins import str  # pylint: disable=redefined-builtin
 from builtins import zip  # pylint: disable=redefined-builtin
 from builtins import next  # pylint: disable=redefined-builtin
 import os
+import sys
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 
@@ -2028,7 +2029,7 @@ def size_process(request, *args, **kwargs):
     else:
 
         csvrecord = SizeUpload.objects.all().filter(id__exact=kwargs['pk'])
-        with open(os.path.join(MEDIA_ROOT, csvrecord[0].sizefile.name), 'rb') as csvfile:
+        with open(os.path.join(MEDIA_ROOT, csvrecord[0].sizefile.name), 'r') as csvfile:
             try:
                 # dialect = csv.Sniffer().sniff(csvfile.read(1024))
                 csvfile.seek(0)
@@ -2160,8 +2161,8 @@ def size_download(request, task_id):
 
     """
     import mimetypes
-    from django.core.servers.basehttp import FileWrapper
     from django.utils.encoding import smart_str
+    from wsgiref.util import FileWrapper
 
     importperm = False
     if request.user.groups.filter(name="importsizegroup"):
@@ -2177,7 +2178,7 @@ def size_download(request, task_id):
         return redirect(reverse_lazy('size_imports'))
 
     file_path = os.path.join(MEDIA_ROOT, exp.logfile.name)
-    file_wrapper = FileWrapper(file(file_path,'rb'))
+    file_wrapper = FileWrapper(open(file_path, 'rb'))
     file_mimetype = mimetypes.guess_type(file_path)
     response = HttpResponse(file_wrapper, content_type=file_mimetype )
     response['X-Sendfile'] = file_path
