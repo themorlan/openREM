@@ -58,7 +58,7 @@ def _patientstudymoduleattributes(exam, height, weight, verbose, imp_log=None): 
         logger.error(u"Attempt to import pt size info for study UID {0}/acc. number {1} failed due to a "
                      u"failed import".format(exam.study_instance_uid, exam.accession_number))
         if imp_log:
-            imp_log.file.open("ab")
+            imp_log.file.open("a")
             imp_log.write("\r\n    ********* Failed to insert size - database entry incomplete *********")
             imp_log.file.close()
         else:
@@ -69,7 +69,7 @@ def _patientstudymoduleattributes(exam, height, weight, verbose, imp_log=None): 
             patient_attributes.patient_size = Decimal(height) / Decimal(100.)
             if verbose:
                 if imp_log:
-                    imp_log.file.open("ab")
+                    imp_log.file.open("a")
                     imp_log.write(f"\r\n    Inserted height of {height} cm")
                     imp_log.file.close()
                 else:
@@ -77,7 +77,7 @@ def _patientstudymoduleattributes(exam, height, weight, verbose, imp_log=None): 
         elif verbose:
             existing_height = patient_attributes.patient_size * Decimal(100.)
             if imp_log:
-                imp_log.file.open("ab")
+                imp_log.file.open("a")
                 imp_log.write(f"\r\n    Height of {height} cm not inserted as {existing_height:.2f} cm already in "
                               f"the database")
                 imp_log.file.close()
@@ -89,14 +89,14 @@ def _patientstudymoduleattributes(exam, height, weight, verbose, imp_log=None): 
             patient_attributes.patient_weight = weight
             if verbose:
                 if imp_log:
-                    imp_log.file.open("ab")
+                    imp_log.file.open("a")
                     imp_log.write("\r\n    Inserted weight of {0} kg".format(weight))
                     imp_log.file.close()
                 else:
                     print(u"    Inserted weight of {0}".format(weight))
         elif verbose:
             if imp_log:
-                imp_log.file.open("ab")
+                imp_log.file.open("a")
                 imp_log.write(
                     "\r\n    Weight of {0} kg not inserted as {1:.1f} kg already in the "
                     "database".format(weight, patient_attributes.patient_weight))
@@ -124,7 +124,7 @@ def _ptsizeinsert(accno, height, weight, siuid, verbose, **kwargs):
             for exam in exams:
                 if verbose:
                     if imp_log:
-                        imp_log.file.open("ab")
+                        imp_log.file.open("a")
                         imp_log.write("\r\n{0}:".format(accno))
                         imp_log.file.close()
                     else:
@@ -186,7 +186,7 @@ def websizeimport(csv_pk=None):
             log_file.file.close()
             # Method used for opening and writing to file as per https://code.djangoproject.com/ticket/13809
 
-            csvrecord.sizefile.open(mode='rb')
+            csvrecord.sizefile.open(mode='r')
             f = csvrecord.sizefile.readlines()
             csvrecord.num_records = len(f)
             csvrecord.save()
