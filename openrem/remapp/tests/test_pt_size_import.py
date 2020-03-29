@@ -1,17 +1,21 @@
 # test_pt_size_import.py
 
+import codecs
+import csv
 from decimal import Decimal
 import os
+import tempfile
 
 from django.contrib.auth.models import User, Group
-from django.test import TestCase
-from mock import patch
+from django.core.files.base import ContentFile
+from django.test import (TestCase, override_settings)
 
 from ..extractors.dx import dx
 from ..extractors.ptsizecsv2db import (csv2db, _create_parser, websizeimport, _ptsizeinsert,
                                        _patientstudymoduleattributes)
 from ..extractors.rdsr import rdsr
-from ..models import (GeneralStudyModuleAttr, PatientIDSettings)
+from ..models import (GeneralStudyModuleAttr, PatientIDSettings, SizeUpload)
+from openrem.openremproject.settings import MEDIA_ROOT
 
 
 class CommandLineUse(TestCase):
@@ -84,5 +88,49 @@ class CSVUpdateHeightWeight(TestCase):
         self.assertAlmostEqual(studies[2].patientstudymoduleattr_set.get().patient_size, Decimal(1.98))
         self.assertAlmostEqual(studies[2].patientstudymoduleattr_set.get().patient_weight, Decimal(102.3))
 
+    @override_settings(MEDIA_ROOT=tempfile.gettempdir())
+    def test_web_import(self):
+        root_tests = os.path.dirname(os.path.abspath(__file__))
+        height_and_weight = os.path.join(root_tests, "test_files", 'CT-RDSR-Siemens_Flash-TAP-SS.dcm')
+        weight_only = os.path.join(root_tests, "test_files", "CT-RDSR-Siemens_Flash-QA-DS.dcm")
+        no_size = os.path.join(root_tests, "test_files", "DX-Im-GE_XR220-1.dcm")
 
+        rdsr(height_and_weight)
+        rdsr(weight_only)
+        dx(no_size)
+
+        record = SizeUpload.objects.create()
+        record.sizefile.save("test_csv.csv", ContentFile(''))
+        record.height_field = "height"
+        record.weight_field = "weight"
+        record.id_field = "Acc num"
+        record.id_type = "acc-no"
+        record.save()
+        temp_csv = open(record.sizefile.path, 'a', newline='', encoding='utf-8')
+        writer = csv.writer(temp_csv, dialect='excel')
+        header_row = [record.id_field, record.height_field, record.weight_field, 'file', 'Existing h', 'existing w']
+        writer.writerow(header_row)
+        writer.writerow(['ACC12345601', '170', '90', 'CT-RDSR-Siemens_Flash-TAP-SS.dcm', '186', '87'])
+        writer.writerow(['74624646290', '165', '80.6', 'CT-RDSR-Siemens_Flash-QA-DS.dcm', '-', '75'])
+        writer.writerow(['00938475', '198', '102.3', 'DX-Im-GE_XR220-1.dcm', '-', '-'])
+        temp_csv.close()
+
+        studies = GeneralStudyModuleAttr.objects.order_by('id')
+        self.assertAlmostEqual(studies[0].patientstudymoduleattr_set.get().patient_size, Decimal(1.86))
+        self.assertAlmostEqual(studies[0].patientstudymoduleattr_set.get().patient_weight, Decimal(87))
+        self.assertIsNone(studies[1].patientstudymoduleattr_set.get().patient_size)
+        self.assertAlmostEqual(studies[1].patientstudymoduleattr_set.get().patient_weight, Decimal(75))
+        self.assertIsNone(studies[2].patientstudymoduleattr_set.get().patient_size)
+        self.assertIsNone(studies[2].patientstudymoduleattr_set.get().patient_weight)
+
+        csv_pk = SizeUpload.objects.last().pk
+        websizeimport(csv_pk=csv_pk)
+
+        studies = GeneralStudyModuleAttr.objects.order_by('id')
+        self.assertAlmostEqual(studies[0].patientstudymoduleattr_set.get().patient_size, Decimal(1.86))
+        self.assertAlmostEqual(studies[0].patientstudymoduleattr_set.get().patient_weight, Decimal(87))
+        self.assertAlmostEqual(studies[1].patientstudymoduleattr_set.get().patient_size, Decimal(1.65))
+        self.assertAlmostEqual(studies[1].patientstudymoduleattr_set.get().patient_weight, Decimal(75))
+        self.assertAlmostEqual(studies[2].patientstudymoduleattr_set.get().patient_size, Decimal(1.98))
+        self.assertAlmostEqual(studies[2].patientstudymoduleattr_set.get().patient_weight, Decimal(102.3))
 

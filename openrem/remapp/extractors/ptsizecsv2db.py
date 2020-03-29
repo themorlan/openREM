@@ -188,7 +188,7 @@ def websizeimport(csv_pk=None):
 
             csvrecord.sizefile.open(mode='r')
             f = csvrecord.sizefile.readlines()
-            csvrecord.num_records = len(f)
+            csvrecord.num_records = len(f) - 1
             csvrecord.save()
             try:
                 dataset = csv.DictReader(f)
