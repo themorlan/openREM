@@ -60,10 +60,9 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 import json
 import logging
 import remapp
-from openremproject.settings import (MEDIA_ROOT, FLOWER_PORT, FLOWER_URL, BROKER_MGMT_URL)
-from remapp.forms import SizeUploadForm
-from remapp.models import GeneralStudyModuleAttr, create_user_profile
-from remapp.models import SizeUpload
+from openrem.openremproject.settings import (MEDIA_ROOT, FLOWER_PORT, FLOWER_URL, BROKER_MGMT_URL)
+from .forms import SizeHeadersForm, SizeUploadForm
+from .models import (GeneralStudyModuleAttr, create_user_profile, SizeUpload)
 
 try:
     from numpy import *
@@ -1949,7 +1948,8 @@ def study_delete(request, pk, template_name='remapp/study_confirm_delete.html'):
 
 @login_required
 def size_upload(request):
-    """Form for upload of csv file containing patient size information. POST request passes database entry ID to size_process
+    """Form for upload of csv file containing patient size information. POST request passes database entry ID to
+    size_process
 
     :param request: If POST, contains the file upload information
     """
@@ -1983,9 +1983,6 @@ def size_upload(request):
     )
 
 
-from remapp.forms import SizeHeadersForm
-
-
 @login_required
 def size_process(request, *args, **kwargs):
     """Form for csv column header patient size imports through the web interface. POST request launches import task
@@ -1994,7 +1991,7 @@ def size_process(request, *args, **kwargs):
     :param pk: From URL, identifies database patient size import record
     :type pk: kwarg
     """
-    from remapp.extractors.ptsizecsv2db import websizeimport
+    from .extractors.ptsizecsv2db import websizeimport
 
     if not request.user.groups.filter(name="importsizegroup"):
         messages.error(request, "You are not in the import size group - please contact your administrator")
@@ -2041,15 +2038,13 @@ def size_process(request, *args, **kwargs):
                     form = SizeHeadersForm(my_choice=fieldnames)
                 else:
                     csvfile.seek(0)
-                    messages.error(request,
-                                   "Doesn't appear to have a header row. First row: {0}. The uploaded file has been deleted.".format(
-                                       next(csvfile)))
+                    messages.error(request, "Doesn't appear to have a header row. First row: {0}. The uploaded "
+                                            "file has been deleted.".format(next(csvfile)))
                     csvrecord[0].sizefile.delete()
                     return HttpResponseRedirect(reverse_lazy('size_upload'))
-            except csv.Error as e:
-                messages.error(request,
-                               "Doesn't appear to be a csv file. Error({0}). The uploaded file has been deleted.".format(
-                                   e))
+            except csv.Error as csv_error:
+                messages.error(request, "Doesn't appear to be a csv file. Error({0}). The uploaded file has been "
+                                        "deleted.".format(csv_error))
                 csvrecord[0].sizefile.delete()
                 return HttpResponseRedirect(reverse_lazy('size_upload'))
             except:
@@ -2063,10 +2058,7 @@ def size_process(request, *args, **kwargs):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    return render(request,
-        'remapp/sizeprocess.html',
-        {'form': form, 'csvid': kwargs['pk'], 'admin': admin},
-    )
+    return render(request, 'remapp/sizeprocess.html', {'form': form, 'csvid': kwargs['pk'], 'admin': admin},)
 
 
 def size_imports(request, *args, **kwargs):
@@ -2089,10 +2081,8 @@ def size_imports(request, *args, **kwargs):
     for group in request.user.groups.all():
         admin[group.name] = True
 
-    return render(request,
-        'remapp/sizeimports.html',
-        {'admin': admin, 'current': current, 'complete': complete, 'errors': errors},
-    )
+    return render(request, 'remapp/sizeimports.html',
+                  {'admin': admin, 'current': current, 'complete': complete, 'errors': errors},)
 
 
 @csrf_exempt
@@ -2113,10 +2103,10 @@ def size_delete(request):
                 upload.logfile.delete()
                 upload.delete()
                 messages.success(request, "Export file and database entry deleted successfully.")
-            except OSError as e:
+            except OSError as delete_error:
                 messages.error(request,
                                "Export file delete failed - please contact an administrator. Error({0}): {1}".format(
-                                   e.errno, e.strerror))
+                                   delete_error.errno, delete_error.strerror))
             except:
                 messages.error(request,
                                "Unexpected error - please contact an administrator: {0}".format(sys.exc_info()[0]))
@@ -2131,7 +2121,7 @@ def size_abort(request, pk):
     :param request: Contains the task primary key
     :type request: POST
     """
-    from openremproject.celeryapp import app
+    from openrem.openremproject.celeryapp import app
 
     size_import = get_object_or_404(SizeUpload, pk=pk)
 
@@ -2152,38 +2142,36 @@ def size_abort(request, pk):
 def size_download(request, task_id):
     """View to handle downloads of files from the server
 
-    Originally used for download of the export spreadsheets, now also used
-    for downloading the patient size import logfiles.
+    For downloading the patient size import logfiles.
 
     :param request: Used to get user group.
-    :param file_name: Passes name of file to be downloaded.
-    :type filename: string
+    :param task_id: Size import task ID.
 
     """
     import mimetypes
     from django.utils.encoding import smart_str
     from wsgiref.util import FileWrapper
 
-    importperm = False
+    import_permission = False
     if request.user.groups.filter(name="importsizegroup"):
-        importperm = True
+        import_permission = True
     try:
-        exp = SizeUpload.objects.get(task_id__exact = task_id)
-    except:
+        export_log = SizeUpload.objects.get(task_id__exact=task_id)
+    except ObjectDoesNotExist:
         messages.error(request, "Can't match the task ID, download aborted")
         return redirect(reverse_lazy('size_imports'))
 
-    if not importperm:
+    if not import_permission:
         messages.error(request, "You don't have permission to download import logs")
         return redirect(reverse_lazy('size_imports'))
 
-    file_path = os.path.join(MEDIA_ROOT, exp.logfile.name)
+    file_path = os.path.join(MEDIA_ROOT, export_log.logfile.name)
     file_wrapper = FileWrapper(open(file_path, 'rb'))
     file_mimetype = mimetypes.guess_type(file_path)
-    response = HttpResponse(file_wrapper, content_type=file_mimetype )
+    response = HttpResponse(file_wrapper, content_type=file_mimetype)
     response['X-Sendfile'] = file_path
     response['Content-Length'] = os.stat(file_path).st_size
-    response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(exp.logfile)
+    response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(export_log.logfile)
     return response
 
 
