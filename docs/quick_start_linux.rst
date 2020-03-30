@@ -120,7 +120,7 @@ Install Python packages
 
     pip install numpy psycopg2-binary gunicorn
     pip install openrem
-    pip install https://bitbucket.org/edmcdonagh/pynetdicom/get/default.tar.gz#egg=pynetdicom-0.8.2b2
+    pip install git+git://github.com/pydicom/pynetdicom.git@master#egg=pynetdicom
 
 .. note::
 
@@ -156,7 +156,7 @@ Update the PostgreSQL client authentication configuration. Add the following lin
 for example in the gap before ``# DO NOT DISABLE`` or anywhere in the table that follows. The number of spaces between
 each word is not important (one or more).
 
-``sudo nano /etc/postgresql/10/main/pg_hba.conf``:
+``sudo nano /etc/postgresql/10/main/pg_hba.conf``
 
 .. code-block:: console
 
@@ -180,7 +180,7 @@ First navigate to the Python openrem folder and copy the example local_settings 
     cp openremproject/local_settings.py{.example,}
     cp openremproject/wsgi.py{.example,}
 
-Edit the new local_settings file (``nano openremproject/local_settings.py``):
+Edit the new local_settings file (``nano openremproject/local_settings.py``)
 
 .. code-block:: python
 
@@ -214,10 +214,10 @@ Edit the new local_settings file (``nano openremproject/local_settings.py``):
     ]
 
     LOG_ROOT = "/var/dose/log"
-    logfilename = os.path.join(LOG_ROOT, "openrem.log")
-    qrfilename = os.path.join(LOG_ROOT, "openrem_qr.log")
-    storefilename = os.path.join(LOG_ROOT, "openrem_store.log")
-    extractorfilename = os.path.join(LOG_ROOT, "openrem_extractor.log")
+    LOG_FILENAME = os.path.join(LOG_ROOT, "openrem.log")
+    QR_FILENAME = os.path.join(LOG_ROOT, "openrem_qr.log")
+    STORE_FILENAME = os.path.join(LOG_ROOT, "openrem_store.log")
+    EXTRACTOR_FILENAME = os.path.join(LOG_ROOT, "openrem_extractor.log")
 
     # Removed comment hashes to enable log file rotation:
     LOGGING['handlers']['file']['class'] = 'logging.handlers.RotatingFileHandler'
@@ -261,7 +261,7 @@ Webserver
 Configure NGINX and Gunicorn
 ----------------------------
 
-Create the OpenREM site config file ``sudo nano /etc/nginx/sites-available/openrem-server``:
+Create the OpenREM site config file ``sudo nano /etc/nginx/sites-available/openrem-server``
 
 .. code-block:: nginx
 
@@ -354,7 +354,7 @@ Celery and Flower
 
 First, create a Celery configuration file:
 
-``nano /var/dose/celery/celery.conf``:
+``nano /var/dose/celery/celery.conf``
 
 .. code-block:: bash
 
@@ -388,7 +388,7 @@ First, create a Celery configuration file:
 
 Now create the systemd service files:
 
-``sudo nano /etc/systemd/system/openrem-celery.service``:
+``sudo nano /etc/systemd/system/openrem-celery.service``
 
 .. code-block:: bash
 
@@ -415,7 +415,7 @@ Now create the systemd service files:
     [Install]
     WantedBy=multi-user.target
 
-``sudo nano /etc/systemd/system/openrem-flower.service``:
+``sudo nano /etc/systemd/system/openrem-flower.service``
 
 .. code-block:: bash
 

@@ -10,3 +10,5 @@ openrem/openremproject/local_settings.py
 openrem/openremproject/wsgi.py
 *.pyc
 OpenREM.egg-info/
+docker/
+*/__pycache__/

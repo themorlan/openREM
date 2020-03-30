@@ -14,14 +14,14 @@ In this example, the following folders have been created:
 * :file:`/var/dose/log/`
 * :file:`/var/dose/veopenrem/`
 
-OpenREM is installed in a virtualenv in ``/var/dose/veopenrem/``.
+OpenREM is installed in a virtualenv in ``/var/dose/veopenrem/``
 
 Adjust all the paths as appropriate. If you change the default port from 5555 then you need to make the same change in
 ``openremproject\local_settings.py`` to add/modify the line ``FLOWER_PORT = 5555``
 
 First, create a Celery configuration file:
 
-``nano /var/dose/celery/celery.conf``:
+``nano /var/dose/celery/celery.conf``
 
 .. code-block:: bash
 
@@ -55,7 +55,7 @@ First, create a Celery configuration file:
 
 Now create the systemd service files:
 
-``sudo nano /etc/systemd/system/celery-openrem.service``:
+``sudo nano /etc/systemd/system/celery-openrem.service``
 
 .. code-block:: bash
 
@@ -82,7 +82,7 @@ Now create the systemd service files:
     [Install]
     WantedBy=multi-user.target
 
-``sudo nano /etc/systemd/system/flower-openrem.service``:
+``sudo nano /etc/systemd/system/flower-openrem.service``
 
 .. code-block:: bash
 

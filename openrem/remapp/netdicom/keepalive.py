@@ -14,7 +14,7 @@ def keep_alive():
         if store.keep_alive:
             echo = echoscu(scp_pk=store.pk, store_scp=True)
             logger.debug(u"Keep_alive echo for {0} is {1}".format(store.aetitle, echo))
-            if echo is "AssocFail":
+            if echo == "AssocFail":
                 logger.warning(u"Starting {0} on port {1} due to Association Request failure.".format(store.aetitle, store.port))
                 store.status = u"Store not running, but keep-alive is set!"
                 store.save()

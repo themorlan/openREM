@@ -9,22 +9,50 @@ from celery.schedules import crontab
 import os
 
 
-# Debug is now set to false - you can turn it back on in local_settings if you need to
-DEBUG = False
-TEMPLATE_DEBUG = False
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Choose your database and fill in the details below. If testing, you
+# can use the sqlite3 database as it doesn't require any further configuration
+DATABASES = {
+    "default": {
+        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": os.environ.get("POSTGRES_DB", os.path.join(BASE_DIR, "db.sqlite3")),
+        "USER": os.environ.get("POSTGRES_USER", "user"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "password"),
+        "HOST": os.environ.get("SQL_HOST", "localhost"),
+        "PORT": os.environ.get("SQL_PORT", "5432"),
+    }
+}
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
+DEBUG = int(os.environ.get("DEBUG", default=0))
+
+# 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
+# For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default='localhost').split(" ")
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.environ.get("MEDIA_ROOT", default=os.path.join(BASE_DIR, "mediafiles"))
+STATIC_URL = "/static/"
+STATIC_ROOT = os.environ.get("STATIC_ROOT", default=os.path.join(BASE_DIR, "staticfiles"))
+JS_REVERSE_OUTPUT_PATH = os.path.join(STATIC_ROOT, 'js', 'django_reverse')
+VIRTUAL_DIRECTORY = os.environ.get("VIRTUAL_DIRECTORY", default="")
 
 # Celery settings
-BROKER_URL = 'amqp://guest:guest@localhost//'
+BROKER_URL = 'amqp://guest:guest@broker:5672//'
+BROKER_MGMT_URL = os.environ.get("BROKER_MGMT_URL", default="http://localhost:15672/")
 
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-
 CELERY_DEFAULT_QUEUE = 'default'
-
 CELERYD_PREFETCH_MULTIPLIER = 1
 
-FLOWER_PORT = 5555
+FLOWER_PORT = int(os.environ.get("FLOWER_PORT", default=5555))
+FLOWER_URL = os.environ.get("FLOWER_URL", default="http://localhost")
 
 CELERYBEAT_SCHEDULE = {
     'trigger-dicom-keep-alive': {
@@ -37,23 +65,15 @@ CELERYBEAT_SCHEDULE = {
 
 ROOT_PROJECT = os.path.join(os.path.split(__file__)[0], "..")
 
-# **********************************************************************
-#
-# Database settings have been moved to local_settings.py
-# Line below will be overwritten there. Included here for docs issue
-DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': 'openrem.db', 'USER': '', 'PASSWORD': '', 'HOST': '', 'PORT': '', }}
-#
-# **********************************************************************
-
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'Europe/London'
+TIME_ZONE = os.environ.get("TIME_ZONE", default='Europe/London')
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = os.environ.get("LANGUAGE_CODE", default='en-us')
 
 SITE_ID = 1
 
@@ -68,37 +88,14 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = False
 
-# Default date and time format for exporting to Excel xlsx spreadsheets - use Excel codes, override it in local_settings.py
-XLSX_DATE = 'dd/mm/yyyy'
-XLSX_TIME = 'hh:mm:ss'
-
-#
-# MEDIA_ROOT filepath has been moved to local_settings.py
-# Line below will be overwritten there. Included here for docs issue
-MEDIA_ROOT = ''
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash.
-# Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-# MEDIA_URL = '/media/'
-
-#
-# STATIC_ROOT filepath has been moved to local_settings.py
-#
-
-# URL prefix for static files.
-# Example: "http://media.lawrence.com/static/"
-STATIC_URL = '/static/'
+XLSX_DATE = os.environ.get("XLSX_DATE", default='dd/mm/yyyy')
+XLSX_TIME = os.environ.get("XLSX_TIME", default='hh:mm:ss')
 
 # Additional locations of static files
 STATICFILES_DIRS = (
     os.path.join(ROOT_PROJECT, 'remapp', 'static'),
 )
 
-#
-# SECRET_KEY must be changed in local_settings.py
-#
-SECRET_KEY = 'youmustchangethiskeyinlocal_settings'  # nosec
 
 # URL name of the login page (as defined in urls.py)
 LOGIN_URL = 'login'
@@ -149,10 +146,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Uncomment the next line to enable the admin:
     'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
     'remapp',
     'django_filters',
     'django.contrib.humanize',
@@ -163,11 +157,11 @@ INSTALLED_APPS = (
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error when DEBUG=False.
-# See http://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
+LOG_ROOT = os.environ.get("LOG_ROOT", default=MEDIA_ROOT)
+LOG_FILENAME = os.path.join(LOG_ROOT, "openrem.log")
+QR_FILENAME = os.path.join(LOG_ROOT, "openrem_qr.log")
+STORE_FILENAME = os.path.join(LOG_ROOT, "openrem_store.log")
+EXTRACTOR_FILENAME = os.path.join(LOG_ROOT, "openrem_extractor.log")
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -243,15 +237,34 @@ LOGGING = {
         },
     }
 }
+LOGGING['handlers']['file']['filename'] = LOG_FILENAME          # General logs
+LOGGING['handlers']['qr_file']['filename'] = QR_FILENAME        # Query Retrieve SCU logs
+LOGGING['handlers']['store_file']['filename'] = STORE_FILENAME  # Store SCP logs
+LOGGING['handlers']['extractor_file']['filename'] = EXTRACTOR_FILENAME  # Extractor logs
+
+# Set log message format. Options are 'verbose' or 'simple'. Recommend leaving as 'verbose'.
+LOGGING['handlers']['file']['formatter'] = 'verbose'        # General logs
+LOGGING['handlers']['qr_file']['formatter'] = 'verbose'     # Query Retrieve SCU logs
+LOGGING['handlers']['store_file']['formatter'] = 'verbose'  # Store SCP logs
+LOGGING['handlers']['extractor_file']['formatter'] = 'verbose'  # Extractor logs
+
+# Set the log level. Options are 'DEBUG', 'INFO', 'WARNING', 'ERROR', and 'CRITICAL', with progressively less logging.
+LOGGING['loggers']['remapp']['level'] = os.environ.get("LOG_LEVEL", default="INFO")  # General logs
+# Query Retrieve SCU logs
+LOGGING['loggers']['remapp.netdicom.qrscu']['level'] = os.environ.get("LOG_LEVEL_QRSCU", default="INFO")
+# Store SCP logs
+LOGGING['loggers']['remapp.netdicom.storescp']['level'] = os.environ.get("LOG_LEVEL_STORE", default="INFO")
+# Toshiba RDSR creation extractor logs
+LOGGING['loggers']['remapp.extractors.ct_toshiba']['level'] = os.environ.get("LOG_LEVEL_TOSHIBA", default="INFO")
 
 # Dummy locations of various tools for DICOM RDSR creation from CT images. Don't set value here - copy variables into
 # # local_settings.py and configure there.
-DCMTK_PATH = ''
+DCMTK_PATH = '/usr/bin'
 DCMCONV = os.path.join(DCMTK_PATH, 'dcmconv.exe')
 DCMMKDIR = os.path.join(DCMTK_PATH, 'dcmmkdir.exe')
-JAVA_EXE = ''
+JAVA_EXE = '/usr/bin/java'
 JAVA_OPTIONS = '-Xms256m -Xmx512m -Xss1m -cp'
-PIXELMED_JAR = ''
+PIXELMED_JAR = '/home/app/pixelmed/pixelmed.jar'
 PIXELMED_JAR_OPTIONS = '-Djava.awt.headless=true com.pixelmed.doseocr.OCR -'
 
 # Dummy variable for running the website in a virtual_directory. Don't set value here - copy variable into
@@ -268,18 +281,9 @@ EMAIL_USE_SSL = False
 EMAIL_DOSE_ALERT_SENDER = 'your.alert@email.address'
 EMAIL_OPENREM_URL = 'http://your.openrem.server'
 
-# try:
-#     LOCAL_SETTINGS
-# except NameError:
-#     print('Name Error')
-#     try:
-#         from .openremproject.local_settings import DEBUG
-#         print('Debug should have been imported')
-#     except ImportError:
-#         print("that didn't work")
-#         try:
-#             from openrem.openremproject.local_settings import *
-#         except ImportError:
-#             pass
 
-from .local_settings import *  # NOQA: F401
+try:
+    from .local_settings import *  # NOQA: F401
+except ImportError:
+    # For Docker builds, there will not be a local_settings.py, 'local settings' are passed via environment variables
+    pass

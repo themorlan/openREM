@@ -3,7 +3,7 @@ django-filter==2.2.0
 pytz>=0a
 humanize==2.0.0
 pydicom>=1.4.2
-# pynetdicom>1.4.1  disabled until 1.5 is released - tox gets upset if left in
+pynetdicom==1.4.1  # current release is ok for docs probably
 xlsxwriter==1.2.8
 celery==4.4.2
 django-qsstats-magic==1.1.0
@@ -22,3 +22,7 @@ future==0.18.2
 defusedxml==0.6.0
 psycopg2-binary==2.8.4
 gunicorn==20.0.4
+sphinx-issues==1.2.0
+sphinxcontrib-programoutput
+sphinxcontrib-autoprogram
+sphinx-argparse
