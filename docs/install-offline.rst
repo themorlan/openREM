@@ -71,6 +71,7 @@ Download OpenREM and all other dependencies:
 
 .. code-block:: console
 
+    pip download -d django-crispy-forms==1.8.1
     pip download -d openremfiles openrem
     pip download -d openremfiles psycopg2-binary
     pip download --no-deps -d openremfiles https://bitbucket.org/edmcdonagh/pynetdicom/get/default.tar.gz#egg=pynetdicom-0.8.2b2
