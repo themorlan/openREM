@@ -150,16 +150,16 @@ export_patterns = [
 ]
 
 dicom_patterns = [
-    path('summary', views.dicom_summary, name='dicom_summary'),
-    path('store/add/', views.DicomStoreCreate.as_view(), name='dicomstore_add'),
-    path('store/<int:pk>/', views.DicomStoreUpdate.as_view(), name='dicomstore_update'),
-    path('store/<int:pk>/delete/', views.DicomStoreDelete.as_view(), name='dicomstore_delete'),
+    path('summary', dicomviews.dicom_summary, name='dicom_summary'),
+    path('store/add/', dicomviews.DicomStoreCreate.as_view(), name='dicomstore_add'),
+    path('store/<int:pk>/', dicomviews.DicomStoreUpdate.as_view(), name='dicomstore_update'),
+    path('store/<int:pk>/delete/', dicomviews.DicomStoreDelete.as_view(), name='dicomstore_delete'),
     path('store/<int:pk>/start/', dicomviews.run_store, name='run_store'),
     path('store/<int:pk>/stop/', dicomviews.stop_store, name='stop_store'),
     path('store/statusupdate', dicomviews.status_update_store, name='status_update_store'),
-    path('qr/add/', views.DicomQRCreate.as_view(), name='dicomqr_add'),
-    path('qr/<int:pk>/', views.DicomQRUpdate.as_view(), name='dicomqr_update'),
-    path('qr/<int:pk>/delete/', views.DicomQRDelete.as_view(), name='dicomqr_delete'),
+    path('qr/add/', dicomviews.DicomQRCreate.as_view(), name='dicomqr_add'),
+    path('qr/<int:pk>/', dicomviews.DicomQRUpdate.as_view(), name='dicomqr_update'),
+    path('qr/<int:pk>/delete/', dicomviews.DicomQRDelete.as_view(), name='dicomqr_delete'),
     path('queryupdate', dicomviews.q_update, name='query_update'),
     path('queryprocess', dicomviews.q_process, name='q_process'),
     path('queryremote', dicomviews.dicom_qr_page, name='dicom_qr_page'),

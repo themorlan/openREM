@@ -45,9 +45,9 @@ from .dx import dx
 from .mam import mam
 from .ct_philips import ct_philips
 from .ct_toshiba import ct_toshiba
+from .. import (__docs_version__, __version__)
 from ..forms import SizeHeadersForm, SizeUploadForm
 from ..models import SizeUpload
-from ..version import (__version__, __docs_version__)
 from openrem.openremproject.settings import (MEDIA_ROOT)
 
 logger = logging.getLogger(__name__)
