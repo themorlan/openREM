@@ -47,7 +47,7 @@ from .tools import echoscu
 from .. import (__docs_version__, __version__)
 from ..forms import (DicomQueryForm, DicomQRForm, DicomStoreForm)
 from ..models import (DicomDeleteSettings, DicomQuery, DicomStoreSCP, DicomRemoteQR)
-from ..views import _create_admin_dict
+from ..views_admin import _create_admin_dict
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 
