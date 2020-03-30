@@ -91,12 +91,12 @@ review_patterns = [
 
 
 patient_size_patterns = [
-    path('sizeupload/', views.size_upload, name='size_upload'),
-    path('sizeprocess/<int:pk>/', views.size_process, name='size_process'),
-    path('sizeimports/', views.size_imports, name='size_imports'),
-    path('sizedelete/', views.size_delete, name='size_delete'),
-    path('sizeimport/abort/<int:pk>/', views.size_abort, name='size_abort'),
-    path('sizelogs/<uuid:task_id>/', views.size_download, name='size_download'),
+    path('sizeupload/', import_views.size_upload, name='size_upload'),
+    path('sizeprocess/<int:pk>/', import_views.size_process, name='size_process'),
+    path('sizeimports/', import_views.size_imports, name='size_imports'),
+    path('sizedelete/', import_views.size_delete, name='size_delete'),
+    path('sizeimport/abort/<int:pk>/', import_views.size_abort, name='size_abort'),
+    path('sizelogs/<uuid:task_id>/', import_views.size_download, name='size_download'),
 ]
 
 
