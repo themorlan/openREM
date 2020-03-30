@@ -2,6 +2,15 @@
 Installing OpenREM
 ******************
 
+Install specific package versions
+=================================
+
+*Activate virtualenv if you are using one*
+
+.. sourcecode:: bash
+
+    pip install django-crispy-forms==1.8.1
+
 Windows only - install Celery
 =============================
 For Linux users, the correct version of Celery will be install automatically with OpenREM.

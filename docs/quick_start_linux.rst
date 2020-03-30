@@ -119,6 +119,7 @@ Install Python packages
 .. code-block:: console
 
     pip install numpy psycopg2-binary gunicorn
+    pip install django-crispy-forms==1.8.1
     pip install openrem
     pip install https://bitbucket.org/edmcdonagh/pynetdicom/get/default.tar.gz#egg=pynetdicom-0.8.2b2
 
