@@ -8,6 +8,7 @@ OpenREM version history
 * :issue:`820`  Documentation: converted changes to use sphinx-issues
 * :issue:`819`  Removed colons from commands in documentation as they don't format correctly in PDF
 * :issue:`818`  Interface: refactored event number filtering
+* :issue:`817`  SkinDose: fixed PEP8 and Codacy issues for skinDose
 * :issue:`816`  Interface: fixed password change error
 * :issue:`815`  Interface: fixed patient name filtering
 * :issue:`814`  Deployment: automated deployment to dev.openrem.org and testing.openrem.org reintroduced
