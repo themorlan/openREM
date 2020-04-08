@@ -72,7 +72,7 @@
                     </tr>
                 </table>
               <input class="btn btn-primary" type="submit" value="Submit">
-              <a class="btn btn-default" href="/" role="button">Cancel</a>
+              <a class="btn btn-default" href="{% url 'home' %}" role="button">Cancel</a>
             </form>
         {% else %}
             <p>Only users in the Admin group can modify these settings.</p>

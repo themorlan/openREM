@@ -42,7 +42,7 @@ class ImportDualRDSRs(TestCase):
         unique_equip.user_defined_modality = 'dual'
         unique_equip.save()
 
-        from remapp.views import reset_dual
+        from ..views_admin import reset_dual
         reset_dual(unique_equip.pk)
 
         rdsr.rdsr(rf_path)
@@ -95,7 +95,7 @@ class ImportDualRDSRs(TestCase):
         unique_equip.user_defined_modality = 'dual'
         unique_equip.save()
 
-        from remapp.views import reset_dual
+        from ..views_admin import reset_dual
         reset_dual(unique_equip.pk)
         reset_dual(unique_equip.pk)
 

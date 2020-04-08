@@ -39,14 +39,15 @@ from django.http import HttpResponse
 from django.shortcuts import (redirect, render)
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from .. import (__docs_version__, __version__)
-from ..forms import DicomQueryForm
-from ..models import (DicomQuery, DicomStoreSCP, DicomRemoteQR)
 from .qrscu import (movescu, qrscu)
 from .storescp import start_store
 from .tools import echoscu
-
+from .. import (__docs_version__, __version__)
+from ..forms import (DicomQueryForm, DicomQRForm, DicomStoreForm)
+from ..models import (DicomDeleteSettings, DicomQuery, DicomStoreSCP, DicomRemoteQR)
+from ..views_admin import _create_admin_dict
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 
@@ -406,3 +407,128 @@ def get_store_status(request):
         status = "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>" \
                              "<span class='sr-only'>Error:</span> {0}".format(echo_response)
     return HttpResponse(json.dumps(status), content_type='application/json')
+
+
+@login_required
+def dicom_summary(request):
+    """Displays current DICOM configuration
+    """
+
+    try:
+        del_settings = DicomDeleteSettings.objects.get()
+    except ObjectDoesNotExist:
+        DicomDeleteSettings.objects.create()
+        del_settings = DicomDeleteSettings.objects.get()
+
+    store = DicomStoreSCP.objects.all()
+    remoteqr = DicomRemoteQR.objects.all()
+
+    admin = _create_admin_dict(request)
+
+    # Render list page with the documents and the form
+    return render(request,
+        'remapp/dicomsummary.html',
+        {'store': store, 'remoteqr': remoteqr, 'admin': admin, 'del_settings': del_settings},
+    )
+
+
+class DicomStoreCreate(CreateView):  # pylint: disable=unused-variable
+    """CreateView to add details of a DICOM Store to the database
+
+    """
+
+    model = DicomStoreSCP
+    form_class = DicomStoreForm
+
+    def get_context_data(self, **context):
+        context = super(DicomStoreCreate, self).get_context_data(**context)
+        admin = {'openremversion': __version__, 'docsversion': __docs_version__}
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context['admin'] = admin
+        return context
+
+
+class DicomStoreUpdate(UpdateView):  # pylint: disable=unused-variable
+    """UpdateView to update details of a DICOM store in the database
+
+    """
+
+    model = DicomStoreSCP
+    form_class = DicomStoreForm
+
+    def get_context_data(self, **context):
+        context = super(DicomStoreUpdate, self).get_context_data(**context)
+        admin = {'openremversion': __version__, 'docsversion': __docs_version__}
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context['admin'] = admin
+        return context
+
+
+class DicomStoreDelete(DeleteView):  # pylint: disable=unused-variable
+    """DeleteView to delete DICOM store information from the database
+
+    """
+
+    model = DicomStoreSCP
+    success_url = reverse_lazy('dicom_summary')
+
+    def get_context_data(self, **context):
+        context[self.context_object_name] = self.object
+        admin = {'openremversion': __version__, 'docsversion': __docs_version__}
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context['admin'] = admin
+        return context
+
+
+class DicomQRCreate(CreateView):  # pylint: disable=unused-variable
+    """CreateView to add details of a DICOM query-retrieve node
+
+    """
+
+    model = DicomRemoteQR
+    form_class = DicomQRForm
+
+    def get_context_data(self, **context):
+        context = super(DicomQRCreate, self).get_context_data(**context)
+        admin = {'openremversion': __version__, 'docsversion': __docs_version__}
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context['admin'] = admin
+        return context
+
+
+class DicomQRUpdate(UpdateView):  # pylint: disable=unused-variable
+    """UpdateView to update details of a DICOM query-retrieve node
+
+    """
+
+    model = DicomRemoteQR
+    form_class = DicomQRForm
+
+    def get_context_data(self, **context):
+        context = super(DicomQRUpdate, self).get_context_data(**context)
+        admin = {'openremversion': __version__, 'docsversion': __docs_version__}
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context['admin'] = admin
+        return context
+
+
+class DicomQRDelete(DeleteView):  # pylint: disable=unused-variable
+    """DeleteView to delete details of a DICOM query-retrieve node
+
+    """
+
+    model = DicomRemoteQR
+    success_url = reverse_lazy('dicom_summary')
+
+    def get_context_data(self, **context):
+        context[self.context_object_name] = self.object
+        admin = {'openremversion': __version__, 'docsversion': __docs_version__}
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context['admin'] = admin
+        return context
