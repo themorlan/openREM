@@ -37,7 +37,6 @@ from .netdicom import dicomviews
 from .extractors import import_views
 
 
-app_name = 'remapp'
 main_patterns = [
     path('rf/<int:pk>/', views.rf_detail_view, name='rf_detail_view'),
     path('', views.openrem_home, name='home'),
