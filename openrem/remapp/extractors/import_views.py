@@ -141,10 +141,10 @@ def size_process(request, *args, **kwargs):
 
     if request.method == 'POST':
 
-        itemsInPost = len(list(request.POST.values()))
-        uniqueItemsInPost = len(set(request.POST.values()))
+        items_in_post = len(list(request.POST.values()))
+        unique_items_in_post = len(set(request.POST.values()))
 
-        if itemsInPost == uniqueItemsInPost:
+        if items_in_post == unique_items_in_post:
             csvrecord = SizeUpload.objects.all().filter(id__exact=kwargs['pk'])[0]
 
             if not csvrecord.sizefile:
