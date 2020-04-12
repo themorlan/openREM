@@ -208,6 +208,7 @@ def size_imports(request, *args, **kwargs):
 
     :param request:
     """
+
     if not request.user.groups.filter(name="importsizegroup") and not request.user.groups.filter(name="admingroup"):
         messages.error(request, "You are not in the import size group - please contact your administrator")
         return redirect(reverse_lazy('home'))
@@ -260,12 +261,12 @@ def size_abort(request, pk):
 
     :param pk: Size upload task primary key
     """
-    from openrem.openremproject.celeryapp import app
+    from openremproject.celeryapp import app as celery_app
 
     size_import = get_object_or_404(SizeUpload, pk=pk)
 
     if request.user.groups.filter(name="importsizegroup") or request.users.groups.filter(name="admingroup"):
-        app.control.revoke(size_import.task_id, terminate=True)
+        celery_app.control.revoke(size_import.task_id, terminate=True)
         size_import.logfile.delete()
         size_import.sizefile.delete()
         size_import.delete()
