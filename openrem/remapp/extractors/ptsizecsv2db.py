@@ -30,12 +30,14 @@
 import argparse
 import csv
 import datetime
+from decimal import Decimal
 import logging
 import os
 import sys
 
 from celery import shared_task
 import django
+from django import db
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
 
@@ -51,9 +53,12 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 django.setup()
 
 
-def _patientstudymoduleattributes(exam, height, weight, verbose, log_file=None):  # C.7.2.2
-    from decimal import Decimal
+from remapp.models import (GeneralStudyModuleAttr, SizeUpload)  # Absolute import path to prevent issues with script
 
+
+def _patientstudymoduleattributes(size_upload=None, exam=None, height=None, weight=None, verbose=False):  # C.7.2.2
+
+    log_file = size_upload.logfile
     try:
         patient_attributes = exam.patientstudymoduleattr_set.get()
     except ObjectDoesNotExist:
@@ -73,15 +78,23 @@ def _patientstudymoduleattributes(exam, height, weight, verbose, log_file=None):
             log_file.write(f"\r\n    Inserted height of {height} cm")
             log_file.file.close()
             if verbose:
-                print(f"    Inserted height of {height}")
+                print(f"    Inserted height of {height} cm")
+        elif size_upload.overwrite:
+            existing_height = patient_attributes.patient_size * Decimal(100.)
+            patient_attributes.patient_size = Decimal(height) / Decimal(100.)
+            log_file.file.open("a")
+            log_file.write(f"\r\n    Inserted height of {height} cm replacing {existing_height:.0f} cm")
+            log_file.file.close()
+            if verbose:
+                print(f"    Inserted height of {height} cm replacing {existing_height:.0f} cm")
         else:
             existing_height = patient_attributes.patient_size * Decimal(100.)
             log_file.file.open("a")
-            log_file.write(f"\r\n    Height of {height} cm not inserted as {existing_height:.2f} cm already in "
+            log_file.write(f"\r\n    Height of {height} cm not inserted as {existing_height:.0f} cm already in "
                           f"the database")
             log_file.file.close()
             if verbose:
-                print(f"    Height of {height} cm not inserted as {existing_height:.2f} cm already in the database")
+                print(f"    Height of {height} cm not inserted as {existing_height:.0f} cm already in the database")
 
     if weight:
         if not patient_attributes.patient_weight:
@@ -90,24 +103,31 @@ def _patientstudymoduleattributes(exam, height, weight, verbose, log_file=None):
             log_file.write("\r\n    Inserted weight of {0} kg".format(weight))
             log_file.file.close()
             if verbose:
-                print(f"    Inserted weight of {weight}")
+                print(f"    Inserted weight of {weight} kg")
+        elif size_upload.overwrite:
+            existing_weight = patient_attributes.patient_weight
+            patient_attributes.patient_weight = weight
+            log_file.file.open("a")
+            log_file.write(f"\r\n    Inserted weight of {weight} kg replacing {existing_weight:.1f} kg")
+            log_file.file.close()
+            if verbose:
+                print(f"    Inserted weight of {weight} kg replacing {existing_weight:.1f} kg")
         else:
             log_file.file.open("a")
             log_file.write(
-                "\r\n    Weight of {0} kg not inserted as {1:.1f} kg already in the "
-                "database".format(weight, patient_attributes.patient_weight))
+                f"\r\n    Weight of {weight} kg not inserted as "
+                f"{patient_attributes.patient_weight:.1f} kg already in the database")
             log_file.file.close()
             if verbose:
-                print(f"    Weight of {weight} kg not inserted as {patient_attributes.patient_weight:.1f} kg already"
-                      f" in the database")
+                print(f"    Weight of {weight} kg not inserted as "
+                      f"{patient_attributes.patient_weight:.1f} kg already in the database")
 
     patient_attributes.save()
 
 
-def _ptsizeinsert(accno, height, weight, siuid, verbose, log_file):
-    from ..models import GeneralStudyModuleAttr
-    from django import db
+def _ptsizeinsert(size_upload=None, accno=None, height=None, weight=None, siuid=False, verbose=False):
 
+    log_file = size_upload.logfile
     if (height or weight) and accno:
         if not siuid:
             exams = GeneralStudyModuleAttr.objects.filter(accession_number__exact=accno)
@@ -120,7 +140,8 @@ def _ptsizeinsert(accno, height, weight, siuid, verbose, log_file):
                 log_file.file.close()
                 if verbose:
                     print(accno)
-                _patientstudymoduleattributes(exam, height, weight, verbose, log_file=log_file)
+                _patientstudymoduleattributes(size_upload=size_upload, exam=exam,
+                                              height=height, weight=weight, verbose=verbose)
 
     db.reset_queries()
 
@@ -133,7 +154,6 @@ def websizeimport(csv_pk=None):
         the path to the import csv file and the field header details.
 
     """
-    from ..models import SizeUpload
 
     if csv_pk:
         csvrecord = SizeUpload.objects.all().filter(id__exact=csv_pk)[0]
@@ -180,8 +200,9 @@ def websizeimport(csv_pk=None):
                 for i, line in enumerate(dataset):
                     csvrecord.progress = "Processing row {0} of {1}".format(i + 1, csvrecord.num_records)
                     csvrecord.save()
-                    _ptsizeinsert(line[csvrecord.id_field], line[csvrecord.height_field], line[csvrecord.weight_field],
-                                  si_uid, verbose, log_file=log_file)
+                    _ptsizeinsert(size_upload=csvrecord, accno=line[csvrecord.id_field],
+                                  height=line[csvrecord.height_field], weight=line[csvrecord.weight_field],
+                                  siuid=si_uid, verbose=verbose)
             finally:
                 csvrecord.sizefile.delete()
                 csvrecord.processtime = (datetime.datetime.now() - datestamp).total_seconds()
@@ -196,6 +217,7 @@ def _create_parser():
     parser.add_argument("-u", "--si-uid", action="store_true",
                         help="use Study Instance UID instead of Accession Number")
     parser.add_argument("-v", "--verbose", help="also print log to shell", action="store_true")
+    parser.add_argument("-o", "--overwrite", help="overwrite existing values", action="store_true")
     parser.add_argument("csvfile", help="csv file with height, weight and study identifier")
     parser.add_argument("id", help="column title for the accession number or study instance UID")
     parser.add_argument("height", help="column title for the patient height, values in cm")
@@ -214,7 +236,6 @@ def csv2db():
         openrem_ptsizecsv.py -s MyRISExport.csv StudyInstanceUID height weight
 
     """
-    from remapp.models import SizeUpload  # absolute import else script fails
 
     args = _create_parser().parse_args()
 
@@ -229,6 +250,7 @@ def csv2db():
         date_stamp = datetime.datetime.now()
         size_upload.progress = 'Patient zie data import from shell started'
         size_upload.status = 'CURRENT'
+        size_upload.overwrite = args.overwrite
         size_upload.save()
         log_file_name = "pt_size_import_log_{0}.txt".format(date_stamp.strftime("%Y%m%d-%H%M%S%f"))
         log_header_row = ContentFile(f"Patient size import from {args.csvfile}\r\n")
@@ -239,7 +261,8 @@ def csv2db():
 
         for line in dataset:
             _ptsizeinsert(
-                line[args.id], line[args.height], line[args.weight], args.si_uid, args.verbose, log_file=log_file)
+                size_upload=size_upload, accno=line[args.id], height=line[args.height], weight=line[args.weight],
+                siuid=args.si_uid, verbose=args.verbose)
 
     size_upload.processtime = (datetime.datetime.now() - date_stamp).total_seconds()
     size_upload.status = 'COMPLETE'

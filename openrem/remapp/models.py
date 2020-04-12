@@ -513,6 +513,7 @@ class SizeUpload(models.Model):
     weight_field = models.TextField(blank=True, null=True)
     id_field = models.TextField(blank=True, null=True)
     id_type = models.TextField(blank=True, null=True)
+    overwrite = models.BooleanField(default=False)
     task_id = models.TextField(blank=True, null=True)
     status = models.TextField(blank=True, null=True)
     progress = models.TextField(blank=True, null=True)
