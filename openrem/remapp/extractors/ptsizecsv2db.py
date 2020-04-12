@@ -39,13 +39,10 @@ import django
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
 
-from ..models import SizeUpload
-
 
 logger = logging.getLogger(__name__)
 
 
-# setup django/OpenREM
 basepath = os.path.dirname(__file__)
 projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
 if projectpath not in sys.path:
@@ -136,6 +133,7 @@ def websizeimport(csv_pk=None):
         the path to the import csv file and the field header details.
 
     """
+    from ..models import SizeUpload
 
     if csv_pk:
         csvrecord = SizeUpload.objects.all().filter(id__exact=csv_pk)[0]
@@ -206,7 +204,7 @@ def _create_parser():
     return parser
 
 
-def csv2db(args):
+def csv2db():
     """ Import patient height and weight data from csv RIS exports. Called from ``openrem_ptsizecsv.py`` script
 
     :param args: sys.argv from the command line call
@@ -216,6 +214,7 @@ def csv2db(args):
         openrem_ptsizecsv.py -s MyRISExport.csv StudyInstanceUID height weight
 
     """
+    from remapp.models import SizeUpload  # absolute import else script fails
 
     args = _create_parser().parse_args()
 
