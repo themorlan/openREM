@@ -22,7 +22,8 @@
                 From the select boxes below, choose the column title that
                 corresponds to each of the height (in cm), weight (in kg) and ID fields.
                 In the last select box, specify if the ID field is the
-                accession number or the study instance UID.
+                accession number or the study instance UID. Tick the checkbox if you want any existing values to be
+                overwritten, else only missing values will be updated.
             </p>
         </div>
 
@@ -38,6 +39,7 @@
                 <th>{{ form.weight_field.label_tag }}</th>
                 <th>{{ form.id_field.label_tag }}</th>
                 <th>{{ form.id_type.label_tag }}</th>
+                <th>{{ form.overwrite.label_tag }}</th>
                 <tr>
                     <td>
                         {{ form.height_field.errors }}
@@ -54,6 +56,10 @@
                     <td>
                         {{ form.id_type.errors }}
                         {{ form.id_type }}
+                    </td>
+                    <td>
+                        {{ form.overwrite.errors }}
+                        {{ form.overwrite }}
                     </td>
                 </tr>
             </table>

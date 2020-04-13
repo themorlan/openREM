@@ -155,6 +155,8 @@ def size_process(request, *args, **kwargs):
             csvrecord.weight_field = request.POST['weight_field']
             csvrecord.id_field = request.POST['id_field']
             csvrecord.id_type = request.POST['id_type']
+            if 'overwrite' in request.POST:
+                csvrecord.overwrite = True
             csvrecord.save()
 
             websizeimport.delay(csv_pk=kwargs['pk'])
