@@ -76,9 +76,19 @@ class CSVUpdateHeightWeight(TestCase):
         self.assertIsNone(studies[2].patientstudymoduleattr_set.get().patient_size)
         self.assertIsNone(studies[2].patientstudymoduleattr_set.get().patient_weight)
 
-        _ptsizeinsert('ACC12345601', '170',	'90', False, False)
-        _ptsizeinsert('74624646290', '165', '80.6', False, False)
-        _ptsizeinsert('00938475', '198', '102.3', False, False)
+        size_upload = SizeUpload()
+        log_file_name = "test_pt_size_import_log.txt"
+        log_header_row = ContentFile(f"Patient size import for testing\r\n")
+        size_upload.logfile.save(log_file_name, log_header_row)
+        size_upload.save()
+        log_file = size_upload.logfile
+        log_file.file.close()
+        _ptsizeinsert(size_upload=size_upload, accno='ACC12345601', height='170', weight='90',
+                      siuid=False, verbose=False)
+        _ptsizeinsert(size_upload=size_upload, accno='74624646290', height='165', weight='80.6',
+                      siuid=False, verbose=False)
+        _ptsizeinsert(size_upload=size_upload, accno='00938475', height='198', weight='102.3',
+                      siuid=False, verbose=False)
 
         studies = GeneralStudyModuleAttr.objects.order_by('id')
         self.assertAlmostEqual(studies[0].patientstudymoduleattr_set.get().patient_size, Decimal(1.86))

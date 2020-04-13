@@ -34,6 +34,7 @@ from decimal import Decimal
 import logging
 import os
 import sys
+import uuid
 
 from celery import shared_task
 import django
@@ -128,6 +129,7 @@ def _patientstudymoduleattributes(size_upload=None, exam=None, height=None, weig
 def _ptsizeinsert(size_upload=None, accno=None, height=None, weight=None, siuid=False, verbose=False):
 
     log_file = size_upload.logfile
+
     if (height or weight) and accno:
         if not siuid:
             exams = GeneralStudyModuleAttr.objects.filter(accession_number__exact=accno)
@@ -248,7 +250,9 @@ def csv2db():
             return
         size_upload = SizeUpload()
         date_stamp = datetime.datetime.now()
-        size_upload.progress = 'Patient zie data import from shell started'
+        size_upload.import_date = date_stamp
+        size_upload.task_id = uuid.uuid4()
+        size_upload.progress = 'Patient size data import from shell started'
         size_upload.status = 'CURRENT'
         size_upload.overwrite = args.overwrite
         size_upload.save()
@@ -258,6 +262,9 @@ def csv2db():
         size_upload.save()
         log_file = size_upload.logfile
         log_file.file.close()
+        size_upload.num_records = len(csv_file.readlines())
+        size_upload.save()
+        csv_file.seek(0)
 
         for line in dataset:
             _ptsizeinsert(
