@@ -27,6 +27,7 @@ OpenREM version history
 * :issue:`791`  Exports: prevented error when trying to export DX data that has no filter information
 * :issue:`787`  Interface: fixed login error
 * :issue:`777`  Updated OpenREM to use pydicom 1.3
+* :issue:`744`  Added overwrite mode to size import
 * :issue:`530`  Updated OpenREM to use pynetdicom 1.4
 * :issue:`457`  Updated OpenREM to use Django 2.2
 * :issue:`437`  Updated OpenREM to use django-filters v2

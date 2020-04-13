@@ -158,58 +158,58 @@ def websizeimport(csv_pk=None):
     """
 
     if csv_pk:
-        csvrecord = SizeUpload.objects.all().filter(id__exact=csv_pk)[0]
-        csvrecord.task_id = websizeimport.request.id
+        size_upload = SizeUpload.objects.all().filter(id__exact=csv_pk)[0]
+        size_upload.task_id = websizeimport.request.id
         datestamp = datetime.datetime.now()
-        csvrecord.import_date = datestamp
-        csvrecord.progress = 'Patient size data import started'
-        csvrecord.status = 'CURRENT'
-        csvrecord.save()
-        if csvrecord.id_type and csvrecord.id_field and csvrecord.height_field and csvrecord.weight_field:
+        size_upload.import_date = datestamp
+        size_upload.progress = 'Patient size data import started'
+        size_upload.status = 'CURRENT'
+        size_upload.save()
+        if size_upload.id_type and size_upload.id_field and size_upload.height_field and size_upload.weight_field:
             si_uid = False
             verbose = False
-            if csvrecord.id_type == "si-uid":
+            if size_upload.id_type == "si-uid":
                 si_uid = True
 
             log_file = "pt_size_import_log_{0}.txt".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
-            headerrow = ContentFile("Patient size import from {0}\r\n".format(csvrecord.sizefile.name))
+            headerrow = ContentFile("Patient size import from {0}\r\n".format(size_upload.sizefile.name))
 
             try:
-                csvrecord.logfile.save(log_file, headerrow)
+                size_upload.logfile.save(log_file, headerrow)
             except OSError as e:
-                csvrecord.progress = "Error saving export file - please contact an administrator. " \
+                size_upload.progress = "Error saving export file - please contact an administrator. " \
                                      "Error({0}): {1}".format(e.errno, e.strerror)
-                csvrecord.status = 'ERROR'
-                csvrecord.save()
+                size_upload.status = 'ERROR'
+                size_upload.save()
                 return
             except:
-                csvrecord.progress = "Unexpected error saving export file - please contact an " \
+                size_upload.progress = "Unexpected error saving export file - please contact an " \
                                      "administrator: {0}".format(sys.exc_info()[0])
-                csvrecord.status = 'ERROR'
-                csvrecord.save()
+                size_upload.status = 'ERROR'
+                size_upload.save()
                 return
 
-            log_file = csvrecord.logfile
+            log_file = size_upload.logfile
             log_file.file.close()
             # Method used for opening and writing to file as per https://code.djangoproject.com/ticket/13809
 
-            csvrecord.sizefile.open(mode='r')
-            f = csvrecord.sizefile.readlines()
-            csvrecord.num_records = len(f) - 1
-            csvrecord.save()
+            size_upload.sizefile.open(mode='r')
+            f = size_upload.sizefile.readlines()
+            size_upload.num_records = len(f) - 1
+            size_upload.save()
             try:
                 dataset = csv.DictReader(f)
                 for i, line in enumerate(dataset):
-                    csvrecord.progress = "Processing row {0} of {1}".format(i + 1, csvrecord.num_records)
-                    csvrecord.save()
-                    _ptsizeinsert(size_upload=csvrecord, accno=line[csvrecord.id_field],
-                                  height=line[csvrecord.height_field], weight=line[csvrecord.weight_field],
+                    size_upload.progress = "Processing row {0} of {1}".format(i + 1, size_upload.num_records)
+                    size_upload.save()
+                    _ptsizeinsert(size_upload=size_upload, accno=line[size_upload.id_field],
+                                  height=line[size_upload.height_field], weight=line[size_upload.weight_field],
                                   siuid=si_uid, verbose=verbose)
             finally:
-                csvrecord.sizefile.delete()
-                csvrecord.processtime = (datetime.datetime.now() - datestamp).total_seconds()
-                csvrecord.status = 'COMPLETE'
-                csvrecord.save()
+                size_upload.sizefile.delete()
+                size_upload.processtime = (datetime.datetime.now() - datestamp).total_seconds()
+                size_upload.status = 'COMPLETE'
+                size_upload.save()
 
 
 def _create_parser():
