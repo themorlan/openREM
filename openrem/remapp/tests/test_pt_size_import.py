@@ -83,12 +83,15 @@ class CSVUpdateHeightWeight(TestCase):
         size_upload.save()
         log_file = size_upload.logfile
         log_file.file.close()
-        _ptsizeinsert(size_upload=size_upload, accno='ACC12345601', height='170', weight='90',
-                      siuid=False, verbose=False)
-        _ptsizeinsert(size_upload=size_upload, accno='74624646290', height='165', weight='80.6',
-                      siuid=False, verbose=False)
-        _ptsizeinsert(size_upload=size_upload, accno='00938475', height='198', weight='102.3',
-                      siuid=False, verbose=False)
+        size_dict_height_and_weight = {'acc_no': 'ACC12345601', 'height': '170', 'weight': '90',
+                                       'si_uid': False, 'verbose': False}
+        size_dict_weight_only = {'acc_no': '74624646290', 'height': '165', 'weight': '80.6',
+                                 'si_uid': False, 'verbose': False}
+        size_dict_no_size = {'acc_no': '00938475', 'height': '198', 'weight': '102.3',
+                             'si_uid': False, 'verbose': False}
+        _ptsizeinsert(size_upload=size_upload, size_dict=size_dict_height_and_weight)
+        _ptsizeinsert(size_upload=size_upload, size_dict=size_dict_weight_only)
+        _ptsizeinsert(size_upload=size_upload, size_dict=size_dict_no_size)
 
         studies = GeneralStudyModuleAttr.objects.order_by('id')
         self.assertAlmostEqual(studies[0].patientstudymoduleattr_set.get().patient_size, Decimal(1.86))

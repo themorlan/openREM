@@ -54,96 +54,96 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 django.setup()
 
 
-from remapp.models import (GeneralStudyModuleAttr, SizeUpload)  # Absolute import path to prevent issues with script
+# Absolute import path to prevent issues with script
+from remapp.models import (GeneralStudyModuleAttr, SizeUpload)  # pylint: disable=wrong-import-position
 
 
-def _patientstudymoduleattributes(size_upload=None, exam=None, height=None, weight=None, verbose=False):  # C.7.2.2
+def _patientstudymoduleattributes(size_upload=None, exam=None, size_dict=None):  # C.7.2.2
 
     log_file = size_upload.logfile
     try:
         patient_attributes = exam.patientstudymoduleattr_set.get()
     except ObjectDoesNotExist:
-        logger.error(u"Attempt to import pt size info for study UID {0}/acc. number {1} failed due to a "
-                     u"failed import".format(exam.study_instance_uid, exam.accession_number))
+        logger.error(f"Attempt to import pt size info for study UID {exam.study_instance_uid}/acc. number"
+                     f" {exam.accession_number} failed due to a failed import")
         log_file.file.open("a")
         log_file.write("\r\n    ********* Failed to insert size - database entry incomplete *********")
         log_file.file.close()
-        if verbose:
+        if size_dict['verbose']:
             print("    ********* Failed to insert size - database entry incomplete *********")
         return
 
-    if height:
+    if size_dict['height']:
         if not patient_attributes.patient_size:
-            patient_attributes.patient_size = Decimal(height) / Decimal(100.)
+            patient_attributes.patient_size = Decimal(size_dict['height']) / Decimal(100.)
             log_file.file.open("a")
-            log_file.write(f"\r\n    Inserted height of {height} cm")
+            log_file.write(f"\r\n    Inserted height of {size_dict['height']} cm")
             log_file.file.close()
-            if verbose:
-                print(f"    Inserted height of {height} cm")
+            if size_dict['verbose']:
+                print(f"    Inserted height of {size_dict['height']} cm")
         elif size_upload.overwrite:
             existing_height = patient_attributes.patient_size * Decimal(100.)
-            patient_attributes.patient_size = Decimal(height) / Decimal(100.)
+            patient_attributes.patient_size = Decimal(size_dict['height']) / Decimal(100.)
             log_file.file.open("a")
-            log_file.write(f"\r\n    Inserted height of {height} cm replacing {existing_height:.0f} cm")
+            log_file.write(f"\r\n    Inserted height of {size_dict['height']} cm replacing {existing_height:.0f} cm")
             log_file.file.close()
-            if verbose:
-                print(f"    Inserted height of {height} cm replacing {existing_height:.0f} cm")
+            if size_dict['verbose']:
+                print(f"    Inserted height of {size_dict['height']} cm replacing {existing_height:.0f} cm")
         else:
             existing_height = patient_attributes.patient_size * Decimal(100.)
             log_file.file.open("a")
-            log_file.write(f"\r\n    Height of {height} cm not inserted as {existing_height:.0f} cm already in "
-                          f"the database")
+            log_file.write(f"\r\n    Height of {size_dict['height']} cm not inserted as {existing_height:.0f} cm "
+                           f"already in the database")
             log_file.file.close()
-            if verbose:
-                print(f"    Height of {height} cm not inserted as {existing_height:.0f} cm already in the database")
+            if size_dict['verbose']:
+                print(f"    Height of {size_dict['height']} cm not inserted as {existing_height:.0f} cm already in "
+                      f"the database")
 
-    if weight:
+    if size_dict['weight']:
         if not patient_attributes.patient_weight:
-            patient_attributes.patient_weight = weight
+            patient_attributes.patient_weight = size_dict['weight']
             log_file.file.open("a")
-            log_file.write("\r\n    Inserted weight of {0} kg".format(weight))
+            log_file.write(f"\r\n    Inserted weight of {size_dict['weight']} kg")
             log_file.file.close()
-            if verbose:
-                print(f"    Inserted weight of {weight} kg")
+            if size_dict['verbose']:
+                print(f"    Inserted weight of {size_dict['weight']} kg")
         elif size_upload.overwrite:
             existing_weight = patient_attributes.patient_weight
-            patient_attributes.patient_weight = weight
+            patient_attributes.patient_weight = size_dict['weight']
             log_file.file.open("a")
-            log_file.write(f"\r\n    Inserted weight of {weight} kg replacing {existing_weight:.1f} kg")
+            log_file.write(f"\r\n    Inserted weight of {size_dict['weight']} kg replacing {existing_weight:.1f} kg")
             log_file.file.close()
-            if verbose:
-                print(f"    Inserted weight of {weight} kg replacing {existing_weight:.1f} kg")
+            if size_dict['verbose']:
+                print(f"    Inserted weight of {size_dict['weight']} kg replacing {existing_weight:.1f} kg")
         else:
             log_file.file.open("a")
             log_file.write(
-                f"\r\n    Weight of {weight} kg not inserted as "
+                f"\r\n    Weight of {size_dict['weight']} kg not inserted as "
                 f"{patient_attributes.patient_weight:.1f} kg already in the database")
             log_file.file.close()
-            if verbose:
-                print(f"    Weight of {weight} kg not inserted as "
+            if size_dict['verbose']:
+                print(f"    Weight of {size_dict['weight']} kg not inserted as "
                       f"{patient_attributes.patient_weight:.1f} kg already in the database")
 
     patient_attributes.save()
 
 
-def _ptsizeinsert(size_upload=None, accno=None, height=None, weight=None, siuid=False, verbose=False):
+def _ptsizeinsert(size_upload=None, size_dict=None):
 
     log_file = size_upload.logfile
-
-    if (height or weight) and accno:
-        if not siuid:
-            exams = GeneralStudyModuleAttr.objects.filter(accession_number__exact=accno)
+    if (size_dict['height'] or size_dict['weight']) and size_dict['acc_no']:
+        if not size_dict['si_uid']:
+            exams = GeneralStudyModuleAttr.objects.filter(accession_number__exact=size_dict['acc_no'])
         else:
-            exams = GeneralStudyModuleAttr.objects.filter(study_instance_uid__exact=accno)
+            exams = GeneralStudyModuleAttr.objects.filter(study_instance_uid__exact=size_dict['acc_no'])
         if exams:
             for exam in exams:
                 log_file.file.open('a')
-                log_file.write(f'\r\n{accno}:')
+                log_file.write(f"\r\n{size_dict['acc_no']}:")
                 log_file.file.close()
-                if verbose:
-                    print(accno)
-                _patientstudymoduleattributes(size_upload=size_upload, exam=exam,
-                                              height=height, weight=weight, verbose=verbose)
+                if size_dict['verbose']:
+                    print(size_dict['acc_no'])
+                _patientstudymoduleattributes(size_upload=size_upload, exam=exam, size_dict=size_dict)
 
     db.reset_queries()
 
@@ -172,7 +172,7 @@ def websizeimport(csv_pk=None):
                 si_uid = True
 
             log_file = "pt_size_import_log_{0}.txt".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
-            headerrow = ContentFile("Patient size import from {0}\r\n".format(size_upload.sizefile.name))
+            headerrow = ContentFile(f"Patient size import from {size_upload.sizefile.name}\r\n")
 
             try:
                 size_upload.logfile.save(log_file, headerrow)
@@ -194,17 +194,17 @@ def websizeimport(csv_pk=None):
             # Method used for opening and writing to file as per https://code.djangoproject.com/ticket/13809
 
             size_upload.sizefile.open(mode='r')
-            f = size_upload.sizefile.readlines()
-            size_upload.num_records = len(f) - 1
+            csv_file = size_upload.sizefile.readlines()
+            size_upload.num_records = len(csv_file) - 1
             size_upload.save()
             try:
-                dataset = csv.DictReader(f)
+                dataset = csv.DictReader(csv_file)
                 for i, line in enumerate(dataset):
-                    size_upload.progress = "Processing row {0} of {1}".format(i + 1, size_upload.num_records)
+                    size_upload.progress = f"Processing row {i + 1} of {size_upload.num_records}"
                     size_upload.save()
-                    _ptsizeinsert(size_upload=size_upload, accno=line[size_upload.id_field],
-                                  height=line[size_upload.height_field], weight=line[size_upload.weight_field],
-                                  siuid=si_uid, verbose=verbose)
+                    size_dict = {'acc_no': line[size_upload.id_field], 'height': line[size_upload.height_field],
+                                 'weight': line[size_upload.weight_field], 'si_uid': si_uid, 'verbose': verbose}
+                    _ptsizeinsert(size_upload=size_upload, size_dict=size_dict)
             finally:
                 size_upload.sizefile.delete()
                 size_upload.processtime = (datetime.datetime.now() - datestamp).total_seconds()
@@ -267,9 +267,9 @@ def csv2db():
         csv_file.seek(0)
 
         for line in dataset:
-            _ptsizeinsert(
-                size_upload=size_upload, accno=line[args.id], height=line[args.height], weight=line[args.weight],
-                siuid=args.si_uid, verbose=args.verbose)
+            size_dict = {'acc_no': line[args.id], 'height': line[args.height], 'weight': line[args.weight],
+                         'si_uid': args.si_uid, 'verbose': args.verbose}
+            _ptsizeinsert(size_upload=size_upload, size_dict=size_dict)
 
     size_upload.processtime = (datetime.datetime.now() - date_stamp).total_seconds()
     size_upload.status = 'COMPLETE'
