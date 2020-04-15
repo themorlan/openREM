@@ -16,6 +16,7 @@
 
       <div class="row">
         <div class="col-md-offset-2 col-md-8">
+        {% if not docker_install %}
             <h3>Create or modify local DICOM Store Service Class Providers</h3>
             <p>
                 Use this form to create or modify the details of the DICOM store node you are using
@@ -32,6 +33,14 @@
                     the documentation.
                 </a>
             </p>
+        {% else %}
+            <h3>Declare Docker Orthanc DICOM Store Service Class Providers</h3>
+            <p>
+                Use this form to declare or modify the details of the Orthanc containers configured in
+                docker-compose. It is particularly important that the AE Title declared here matches the one
+                configured on your remote PACS as that is how the PACS knows where to send DICOM objects to.
+            </p>
+        {% endif %}
 
             {% if admin.admingroup %}
                 {% load crispy_forms_tags %}

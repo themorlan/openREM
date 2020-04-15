@@ -281,6 +281,8 @@ EMAIL_USE_SSL = False
 EMAIL_DOSE_ALERT_SENDER = 'your.alert@email.address'
 EMAIL_OPENREM_URL = 'http://your.openrem.server'
 
+DOCKER_INSTALL = int(os.environ.get("DOCKER_INSTALL", default=False))
+
 
 try:
     from .local_settings import *  # NOQA: F401
