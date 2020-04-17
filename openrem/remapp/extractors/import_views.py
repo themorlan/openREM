@@ -141,10 +141,10 @@ def size_process(request, *args, **kwargs):
 
     if request.method == 'POST':
 
-        itemsInPost = len(list(request.POST.values()))
-        uniqueItemsInPost = len(set(request.POST.values()))
+        items_in_post = len(list(request.POST.values()))
+        unique_items_in_post = len(set(request.POST.values()))
 
-        if itemsInPost == uniqueItemsInPost:
+        if items_in_post == unique_items_in_post:
             csvrecord = SizeUpload.objects.all().filter(id__exact=kwargs['pk'])[0]
 
             if not csvrecord.sizefile:
@@ -155,6 +155,8 @@ def size_process(request, *args, **kwargs):
             csvrecord.weight_field = request.POST['weight_field']
             csvrecord.id_field = request.POST['id_field']
             csvrecord.id_type = request.POST['id_type']
+            if 'overwrite' in request.POST:
+                csvrecord.overwrite = True
             csvrecord.save()
 
             websizeimport.delay(csv_pk=kwargs['pk'])
@@ -208,6 +210,7 @@ def size_imports(request, *args, **kwargs):
 
     :param request:
     """
+
     if not request.user.groups.filter(name="importsizegroup") and not request.user.groups.filter(name="admingroup"):
         messages.error(request, "You are not in the import size group - please contact your administrator")
         return redirect(reverse_lazy('home'))
@@ -260,12 +263,12 @@ def size_abort(request, pk):
 
     :param pk: Size upload task primary key
     """
-    from openrem.openremproject.celeryapp import app
+    from openremproject.celeryapp import app as celery_app
 
     size_import = get_object_or_404(SizeUpload, pk=pk)
 
     if request.user.groups.filter(name="importsizegroup") or request.users.groups.filter(name="admingroup"):
-        app.control.revoke(size_import.task_id, terminate=True)
+        celery_app.control.revoke(size_import.task_id, terminate=True)
         size_import.logfile.delete()
         size_import.sizefile.delete()
         size_import.delete()
