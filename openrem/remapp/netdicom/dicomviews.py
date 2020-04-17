@@ -428,11 +428,10 @@ def dicom_summary(request):
     docker_install = settings.DOCKER_INSTALL
 
     # Render list page with the documents and the form
-    return render(request,
-        'remapp/dicomsummary.html',
-        {'store': store, 'remoteqr': remoteqr, 'admin': admin, 'del_settings': del_settings,
-         'docker_install': docker_install},
-    )
+    return render(request, 'remapp/dicomsummary.html',
+                  {'store': store, 'remoteqr': remoteqr, 'admin': admin, 'del_settings': del_settings,
+                   'docker_install': docker_install},
+                  )
 
 
 class DicomStoreCreate(CreateView):  # pylint: disable=unused-variable

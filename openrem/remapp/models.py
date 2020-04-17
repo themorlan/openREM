@@ -903,6 +903,8 @@ class Exposure(models.Model):  # EV 113736
         from numbers import Number
         if isinstance(self.exposure, Number):
             return old_div(self.exposure, Decimal(1000.))
+        else:
+            return None
 
 
 class XrayFilters(models.Model):  # EV 113771
