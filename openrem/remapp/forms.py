@@ -112,6 +112,7 @@ class SizeHeadersForm(forms.Form):
     weight_field = forms.ChoiceField(choices='')
     id_field = forms.ChoiceField(choices='')
     id_type = forms.ChoiceField(choices='')
+    overwrite = forms.BooleanField(initial=False, required=False)
 
     def __init__(self, my_choice=None, **kwargs):
         super(SizeHeadersForm, self).__init__(**kwargs)

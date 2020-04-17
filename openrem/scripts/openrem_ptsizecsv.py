@@ -1,5 +1,4 @@
 #!/usr/local/bin/python
-# This Python file uses the following encoding: utf-8
 # scripts/openrem_ptsizecsv
 
 """Script to launch the rdsr to import information from DICOM Radiation SR objects
@@ -13,6 +12,6 @@
 """
 
 import sys
-from openrem.remapp.extractors import ptsizecsv2db
+from openrem.remapp.extractors.ptsizecsv2db import csv2db
 
-sys.exit(ptsizecsv2db.csv2db(sys.argv))
+sys.exit(csv2db())

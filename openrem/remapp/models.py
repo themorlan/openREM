@@ -32,8 +32,6 @@ from __future__ import division
 # Following two lines added so that sphinx autodocumentation works.
 from past.utils import old_div
 from builtins import object  # pylint: disable=redefined-builtin
-import os
-os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 import json
 from django.db import models
 from django.db.models.aggregates import Aggregate as SQLAggregate
@@ -42,7 +40,9 @@ from solo.models import SingletonModel
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
+# hoping to remove the next two lines
+# import os
+# os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 # pylint: disable=unused-variable
 
 
@@ -513,6 +513,7 @@ class SizeUpload(models.Model):
     weight_field = models.TextField(blank=True, null=True)
     id_field = models.TextField(blank=True, null=True)
     id_type = models.TextField(blank=True, null=True)
+    overwrite = models.BooleanField(default=False)
     task_id = models.TextField(blank=True, null=True)
     status = models.TextField(blank=True, null=True)
     progress = models.TextField(blank=True, null=True)
