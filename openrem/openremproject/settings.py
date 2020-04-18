@@ -79,14 +79,14 @@ SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
-USE_I18N = True
+USE_I18N = os.environ.get('USE_I18N', default=True)
 
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale.
-USE_L10N = True
+USE_L10N = os.environ.get('USE_L10N', default=True)
 
 # If you set this to False, Django will not use timezone-aware datetimes.
-USE_TZ = False
+USE_TZ = os.environ.get('USE_TZ', default=False)
 
 XLSX_DATE = os.environ.get("XLSX_DATE", default='dd/mm/yyyy')
 XLSX_TIME = os.environ.get("XLSX_TIME", default='hh:mm:ss')
