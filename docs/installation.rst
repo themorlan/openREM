@@ -8,17 +8,18 @@ Windows or Linux: Docker install
 * Install Docker
 * Download and extract https://bitbucket.org/openrem/docker/get/develop.zip and open a shell (command window) in the
   new folder
-* Customise any variables in ``.env.prod`` and in the ``environment`` section of ``orthanc_1``
-  in ``docker-compose.yml`` as necessary. A full description of the options is found in:
+* Customise any variables in ``.env.prod`` and in the ``orthanc_1`` section
+  in ``docker-compose.yml`` as necessary. A full description of the options are found in:
 
 ..  toctree::
     :maxdepth: 1
 
     env_variables
+    docker_orthanc
 
 Start the containers with:
 
-``docker-compose up -d``
+* ``docker-compose up -d``
 
 Get the database ready:
 
