@@ -18,13 +18,19 @@ Find the ``orthanc_1`` definition near the end of the file.
 Port
 ^^^^
 
-The default port for DICOM store is set to ``104``. If you wish to use a different port, edit the ``104`` as required.
-The ``4242`` part is the internal port used by Orthanc; this cannot be changed:
+The default port for DICOM store is set to ``104``.
+
+To use a different port, change both the ``ports`` section and the ``environment`` section as required. In the ports
+section the first number is the port exposed outside of Docker, the second number is used internally. Set them to
+be the same and set the environment port accordingly to enable the same port to be used within the OpenREM interface:
+For example, to use port 8104:
 
 .. code-block:: yaml
 
     ports:
-      - 104:4242
+      - 8104:8104
+    environment:
+      DICOM_PORT: 8104
 
 DICOM Application Entity Title
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -84,5 +90,6 @@ also used to stop the containers, so if you are removing the additional Orthanc 
 Additional Orthanc configuration options
 ----------------------------------------
 
-Stump for now - need to add some of the options from
-https://osimis.atlassian.net/wiki/spaces/OKB/pages/26738689/How+to+use+osimis+orthanc+Docker+images#Howtouseosimis/orthancDockerimages?-DICOM
+More configuration options can be found on the `osimis/orthanc Docker Images page
+<https://osimis.atlassian.net/wiki/spaces/OKB/pages/26738689/How+to+use+osimis+orthanc+Docker+images#Howtouseosimis/orthancDockerimages?-DICOM>`_
+
