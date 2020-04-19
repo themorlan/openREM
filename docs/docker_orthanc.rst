@@ -18,7 +18,8 @@ Find the ``orthanc_1`` definition near the end of the file.
 Port
 ^^^^
 
-The default port for DICOM store is set to ``104``. If you wish to use a different port, edit the ``104`` as required:
+The default port for DICOM store is set to ``104``. If you wish to use a different port, edit the ``104`` as required.
+The ``4242`` part is the internal port used by Orthanc; this cannot be changed:
 
 .. code-block:: yaml
 
@@ -28,8 +29,8 @@ The default port for DICOM store is set to ``104``. If you wish to use a differe
 DICOM Application Entity Title
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Application Entity Title of the Store Server. Should be up to 16 characters, no spaces. Server isn't fussy, so if
-remote nodes connect using a different AETitle that is ok.
+Application Entity Title of the Store Server. Should be up to 16 characters, no spaces. This server isn't fussy
+by default, so if remote nodes connect using a different AETitle that is ok.
 
 .. code-block:: yaml
 
@@ -40,7 +41,7 @@ Objects to be ignored
 ^^^^^^^^^^^^^^^^^^^^^
 
 Lists of things to ignore. Orthanc will ignore anything matching the content of these comma separated lists: they will
-not be imported into OpenREM. Some examples have been added below:
+not be imported into OpenREM. Some examples have been added below - note the formatting syntax:
 
 .. code-block:: yaml
 
@@ -79,3 +80,9 @@ any other changes as necessary.
 
 Next time ``docker-compose`` is started the additional Orthanc container will be started. ``docker-compose.yml`` is
 also used to stop the containers, so if you are removing the additional Orthanc container stop the containers first.
+
+Additional Orthanc configuration options
+----------------------------------------
+
+Stump for now - need to add some of the options from
+https://osimis.atlassian.net/wiki/spaces/OKB/pages/26738689/How+to+use+osimis+orthanc+Docker+images#Howtouseosimis/orthancDockerimages?-DICOM
