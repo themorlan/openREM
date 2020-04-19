@@ -274,8 +274,8 @@ VIRTUAL_DIRECTORY = ''
 # E-mail server settings - see https://docs.djangoproject.com/en/1.8/topics/email/
 EMAIL_HOST = os.environ.get('EMAIL_HOST', default='localhost')
 EMAIL_PORT = os.environ.get('EMAIL_PORT', default='25')
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', default='a.user.that.can.send')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', default='the.above.user.password')  # nosec
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', default='')  # nosec
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', default=False)
 EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', default=False)
 EMAIL_DOSE_ALERT_SENDER = os.environ.get('EMAIL_DOSE_ALERT_SENDER', default='your.alert@email.address')
