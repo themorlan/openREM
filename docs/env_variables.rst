@@ -22,13 +22,13 @@ Variables that should always be changed
 Variables to help with debugging problems
 -----------------------------------------
 
-.. sourcecode::
+.. code-block:: none
 
     DEBUG=
 
 Set to 1 to enable Django debugging mode.
 
-.. sourcecode::
+.. code-block:: none
 
     LOG_LEVEL=``
     LOG_LEVEL_QRSCU=``
@@ -43,7 +43,7 @@ Variables to be changed for your environment
 E-mail server settings
 ^^^^^^^^^^^^^^^^^^^^^^
 
-.. sourcecode::
+.. code-block:: none
 
     EMAIL_HOST=
     EMAIL_PORT=
