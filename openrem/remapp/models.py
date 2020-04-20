@@ -217,7 +217,7 @@ class DicomStoreSCP(models.Model):
     aetitle = models.CharField(max_length=16, blank=True, null=True,
                                verbose_name="AE Title of this node - 16 or fewer letters and numbers, no spaces")
     peer = models.CharField(max_length=32, blank=True)
-    port = models.IntegerField(default=4242)
+    port = models.IntegerField(default=104)
     task_id = models.CharField(max_length=64, blank=True, null=True)
     status = models.CharField(max_length=64, blank=True, null=True)
     run = models.BooleanField(default=False)

@@ -93,12 +93,11 @@
                           <th>Docker container name</th>
                           <td>{{ scp.peer }}</td>
                       </tr>
-                      {% else %}
+                      {% endif %}
                       <tr>
                           <th>Port</th>
                           <td>{{ scp.port }}</td>
                       </tr>
-                      {% endif %}
                       <tr>
                           <th>Database ID</th>
                           <td>{{ scp.pk }}</td>

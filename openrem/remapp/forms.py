@@ -636,8 +636,7 @@ class DicomStoreForm(forms.ModelForm):
         }
         if settings.DOCKER_INSTALL:
             labels['peer'] = 'Docker container name: initial default is orthanc_1'
-            labels['port'] = 'Port: must be 4242 in a docker install; exposed port will be as per docker-compose' \
-                             ' setting'
+            labels['port'] = 'Port: set to the same as the DICOM_PORT setting in docker-compose.yml'
 
 
 class SkinDoseMapCalcSettingsForm(forms.ModelForm):
