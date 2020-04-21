@@ -16,6 +16,7 @@ This study
 	Institution:		{{ equipment.institution_name }}
 	Display name:		{{ study.generalequipmentmoduleattr_set.get.unique_equipment_name.display_name }}
 	Accession number:	{{ study.accession_number }}
+	peak skin dose:		{{ peak_skin_dose }}
 	OpenREM link:		{{ server_url }}/openrem/rf/{{ study.pk }}/
 {% for record in accumxraydose_set_all_planes %}{% with accumprojection=record.accumintegratedprojradiogdose_set.get %}
 	Total DAP, {{ record.acquisition_plane }} (cGy.cm2):	{{ accumprojection.convert_gym2_to_cgycm2|floatformat:1 }}{% if accumprojection.convert_gym2_to_cgycm2 >= alert_levels.alert_total_dap_rf %}	(This is above the alert level of {{ alert_levels.alert_total_dap_rf|floatformat:1 }}){% endif %}

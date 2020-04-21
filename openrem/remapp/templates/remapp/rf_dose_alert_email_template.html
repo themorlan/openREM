@@ -160,6 +160,21 @@
                             </td>
                         </tr>
                     {% endwith %}{% endfor %}
+                <tr>
+                    <td>Peak skin dose</td>
+                    <td>{% if peak_skin_dose == None %}
+                            Not calculated
+                        {%  else %}
+                            {% if peak_skin_dose >= alert_levels.alert_skindose %}
+                                <strong style="color: red;">{{ peak_skin_dose|floatformat:1 }}</strong>
+                                (This is above the alert level of
+                                {{ alert_levels.alert_skindose|floatformat:1 }})
+                            {% else %}
+                                {{ peak_skin_dose|floatformat:1 }}
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
             </table>
 
             {% if alert_levels.show_accum_dose_over_delta_weeks %}
