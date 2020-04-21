@@ -24,6 +24,7 @@
         <h1>DICOM Network configuration</h1>
       </div>
       <div class="col-md-5 col-md-offset-1">
+        {% if not docker_install %}
           <h2>DICOM Store SCP settings</h2>
           <p>
               Set up and manage DICOM Store nodes here. Once started, remote systems can send DICOM objects to this
@@ -34,6 +35,14 @@
               another store service running, then set up the details of the other node here, just don't set the
               server to start.
           </p>
+        {% else %}
+          <h2>Orthanc Docker settings</h2>
+          <p>
+            Declare the Orthanc Docker container configuration(s) here so that we can use them with the query-retrieve
+            function. If query-retrieve isn't used, you don't need to add them here, they'll still work as Store Service
+            Class Providers and automatically import objects to OpenREM.
+          </p>
+        {% endif %}
           <p>
               <a class="btn btn-primary" href="{% url 'dicomstore_add' %}" role="button">Add new Store</a>
           </p>
@@ -79,6 +88,12 @@
                           <th>AE Title</th>
                           <td>{{ scp.aetitle }}</td>
                       </tr>
+                      {% if docker_install %}
+                      <tr>
+                          <th>Docker container name</th>
+                          <td>{{ scp.peer }}</td>
+                      </tr>
+                      {% endif %}
                       <tr>
                           <th>Port</th>
                           <td>{{ scp.port }}</td>
@@ -87,10 +102,12 @@
                           <th>Database ID</th>
                           <td>{{ scp.pk }}</td>
                       </tr>
+                      {% if not docker_install %}
                       <tr>
                           <th>Auto start and keep-alive?</th>
                           <td>{{ scp.keep_alive }}</td>
                       </tr>
+                      {% endif %}
                       <tr>
                           <th>Status</th>
                           <td><div id="store-status-{{ scp.pk }}"></div>
@@ -145,12 +162,12 @@
                               <td>{{ qr.callingaet }}</td>
                           </tr>
                           <tr>
-                              <th>Port</th>
-                              <td>{{ qr.port }}</td>
+                              <th>Peer</th>
+                              <td>{{ qr.hostname }}</td>
                           </tr>
                           <tr>
-                              <th>Hostname</th>
-                              <td>{{ qr.hostname }}</td>
+                              <th>Port</th>
+                              <td>{{ qr.port }}</td>
                           </tr>
                           <tr>
                               <th>IP Address</th>

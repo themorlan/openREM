@@ -33,21 +33,19 @@ logger = logging.getLogger(__name__)
 qr_logger = logging.getLogger('remapp.netdicom.qrscu')
 
 
-def echoscu(scp_pk=None, store_scp=False, qr_scp=False, *args, **kwargs):
+def echoscu(scp_pk=None, store_scp=False, qr_scp=False):
     """
     Function to check if built-in Store SCP or remote Query-Retrieve SCP returns a DICOM echo
     :param scp_pk: Primary key if either Store or QR SCP in database
     :param store_scp: True if checking Store SCP
     :param qr_scp: True if checking QR SCP
-    :param args:
-    :param kwargs:
     :return: 'AssocFail', Success or ?
     """
     from ..models import DicomRemoteQR, DicomStoreSCP
 
     if store_scp and scp_pk:
         scp = DicomStoreSCP.objects.get(pk=scp_pk)
-        remote_host = "localhost"
+        remote_host = scp.peer
         our_aet = "OPENREMECHO"
     elif qr_scp and scp_pk:
         scp = DicomRemoteQR.objects.get(pk=scp_pk)

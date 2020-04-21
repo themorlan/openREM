@@ -27,17 +27,18 @@
 """
 
 
-from builtins import object  # pylint: disable=redefined-builtin
+import logging
+
 from django import forms
+from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, HTML, Div
 from crispy_forms.bootstrap import FormActions, PrependedText, InlineCheckboxes, Accordion, AccordionGroup
-import logging
-from openremproject import settings
-from remapp.models import DicomDeleteSettings, DicomRemoteQR, DicomStoreSCP, SkinDoseMapCalcSettings, \
-    NotPatientIndicatorsName, NotPatientIndicatorsID, HighDoseMetricAlertSettings
+
+from .models import (DicomDeleteSettings, DicomRemoteQR, DicomStoreSCP, SkinDoseMapCalcSettings,
+                     NotPatientIndicatorsName, NotPatientIndicatorsID, HighDoseMetricAlertSettings)
 
 logger = logging.getLogger()
 
@@ -405,7 +406,7 @@ class DicomQueryForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(DicomQueryForm, self).__init__(*args, **kwargs)
-        from remapp.models import DicomRemoteQR, DicomStoreSCP
+
         self.fields['remote_host_field'].choices = [(x.pk, x.name) for x in DicomRemoteQR.objects.all()]
         self.fields['store_scp_field'].choices = [(x.pk, x.name) for x in DicomStoreSCP.objects.all()]
         self.helper = FormHelper(self)
@@ -566,52 +567,76 @@ class DicomStoreForm(forms.ModelForm):
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-md-8'
         self.helper.field_class = 'col-md-4'
-        self.helper.layout = Layout(
-            Div(
-                'name', 'aetitle', 'port',
-            ),
-            Accordion(
-                AccordionGroup(
-                    'Advanced - test/development use only',
-                    Div(
-                        HTML("""
-                        <p>
-                          DICOM store node built in to OpenREM is not yet ready for production. See
-                            <a href="https://docs.openrem.org/en/{{ admin.docsversion }}/netdicom-nodes.html"
-                                target="_blank" data-toggle="tooltip"
-                                title="DICOM store documentation - opens in a new tab">
-                                DICOM store documentation (Advanced)
-                            </a>
-                        </p>
-                        """)
-                    ),
-                    PrependedText('controlled', ''),  # Trick to force label to join the other labels, otherwise sits to right
-                    PrependedText('keep_alive', ''),
-                    active=False
+        if not settings.DOCKER_INSTALL:
+            self.helper.layout = Layout(
+                Div(
+                    'name', 'aetitle', 'peer', 'port',
+                ),
+                Accordion(
+                    AccordionGroup(
+                        'Advanced - test/development use only',
+                        Div(
+                            HTML("""
+                            <p>
+                              DICOM store node built in to OpenREM is not yet ready for production. See
+                                <a href="https://docs.openrem.org/en/{{ admin.docsversion }}/netdicom-nodes.html"
+                                    target="_blank" data-toggle="tooltip"
+                                    title="DICOM store documentation - opens in a new tab">
+                                    DICOM store documentation (Advanced)
+                                </a>
+                            </p>
+                            """)
+                        ),
+                        # Trick to force label to join the other labels, otherwise sits to right
+                        PrependedText('controlled', ''),
+                        PrependedText('keep_alive', ''),
+                        active=False
+                    )
+                ),
+                FormActions(
+                    Submit('submit', 'Submit')
+                ),
+                Div(
+                    HTML("""
+                    <div class="col-lg-4 col-lg-offset-4">
+                        <a href='""" + reverse('dicom_summary') + """' role="button" class="btn btn-default">
+                            Cancel and return to DICOM configuration summary page
+                        </a>
+                    </div>
+                    """)
                 )
-            ),
-            FormActions(
-                Submit('submit', 'Submit')
-            ),
-            Div(
-                HTML("""
-                <div class="col-lg-4 col-lg-offset-4">
-                    <a href='""" + reverse('dicom_summary') + """' role="button" class="btn btn-default">
-                        Cancel and return to DICOM configuration summary page
-                    </a>
-                </div>
-                """)
             )
-        )
+        else:
+            self.helper.layout = Layout(
+                Div(
+                    'name', 'aetitle', 'peer', 'port',
+                ),
+                FormActions(
+                    Submit('submit', 'Submit')
+                ),
+                Div(
+                    HTML("""
+                    <div class="col-lg-4 col-lg-offset-4">
+                        <a href='""" + reverse('dicom_summary') + """' role="button" class="btn btn-default">
+                            Cancel and return to DICOM configuration summary page
+                        </a>
+                    </div>
+                    """)
+                )
+            )
 
     class Meta(object):
         model = DicomStoreSCP
-        fields = ['name', 'aetitle', 'port', 'controlled', 'keep_alive']
+        fields = ['name', 'aetitle', 'peer', 'port', 'controlled', 'keep_alive']
         labels = {
-            'port': "Port: 104 is standard for DICOM but ports higher than 1024 requires fewer admin rights",
+            'peer': 'Peer: Set this to localhost',
+            'port': "Port: port 104 is standard for DICOM but ports higher than 1024 require fewer admin rights",
             'controlled': "Advanced use only: tick this box to control the server using OpenREM",
             'keep_alive': "Advanced use only: tick this box to auto-start this server using celery beat"
         }
+        if settings.DOCKER_INSTALL:
+            labels['peer'] = 'Docker container name: initial default is orthanc_1'
+            labels['port'] = 'Port: set to the same as the DICOM_PORT setting in docker-compose.yml'
 
 
 class SkinDoseMapCalcSettingsForm(forms.ModelForm):

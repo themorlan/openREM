@@ -216,7 +216,8 @@ class DicomStoreSCP(models.Model):
                             verbose_name="Name of local store node - fewer than 64 characters, spaces allowed")
     aetitle = models.CharField(max_length=16, blank=True, null=True,
                                verbose_name="AE Title of this node - 16 or fewer letters and numbers, no spaces")
-    port = models.IntegerField(blank=True, null=True, verbose_name="Port: 104 is standard for DICOM but over 1024 requires fewer admin rights")
+    peer = models.CharField(max_length=32, blank=True)
+    port = models.IntegerField(default=104)
     task_id = models.CharField(max_length=64, blank=True, null=True)
     status = models.CharField(max_length=64, blank=True, null=True)
     run = models.BooleanField(default=False)
@@ -902,6 +903,8 @@ class Exposure(models.Model):  # EV 113736
         from numbers import Number
         if isinstance(self.exposure, Number):
             return old_div(self.exposure, Decimal(1000.))
+        else:
+            return None
 
 
 class XrayFilters(models.Model):  # EV 113771

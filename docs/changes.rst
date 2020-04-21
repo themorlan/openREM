@@ -5,6 +5,7 @@ OpenREM version history
 1.0.0b1 (2020-xx-xx)
 --------------------
 * :issue:`826`  Code quality: split views to make more manageable and testable
+* :issue:`824`  DICOM Networking: enabled declaration and testing of Orthanc Store SCP in Docker
 * :issue:`821`  Code quality: fixed literal comparisons Docker was complaining about
 * :issue:`820`  Documentation: converted changes to use sphinx-issues
 * :issue:`819`  Removed colons from commands in documentation as they don't format correctly in PDF
