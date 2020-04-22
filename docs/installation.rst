@@ -2,20 +2,51 @@
 Installation
 ************
 
+Windows or Linux: Docker install
+=================================
+
+* Install Docker
+* Download and extract https://bitbucket.org/openrem/docker/get/develop.zip and open a shell (command window) in the
+  new folder
+* Customise any variables in ``.env.prod`` and in the ``orthanc_1`` section
+  in ``docker-compose.yml`` as necessary. A full description of the options are found in:
+
 ..  toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
-    install-prep
-    install
+    env_variables
+    docker_orthanc
 
-A standard installation assumes access to the internet from the computer where OpenREM is being installed. Sometimes
-this isn't possible, so we've added instructions for an offline installation too. Currently it focuses on Windows only
-(for the server - the computer connected to the internet can be running any operating system).
+Start the containers with:
+
+* ``docker-compose up -d``
+
+Get the database ready:
+
+* ``docker-compose exec openrem python manage.py makemigrations remapp --noinput``
+* ``docker-compose exec openrem python manage.py migrate --noinput``
+* ``docker-compose exec openrem python manage.py createsuperuser``
+* ``docker-compose exec openrem python manage.py collectstatic --noinput --clear``
+
+Open a web browser and go to http://localhost/
+
+Non-docker alternative - Linux only
+===================================
+
+We recommend all installations to use the Docker method described above. However, it is possible to install without
+Docker, but only on Linux. The instructions are a prescriptive install on Ubuntu:
 
 ..  toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
-    install-offline
+    quick_start_linux
+
+
+Offline Docker installations
+============================
+
+*To be written* See https://bitbucket.org/openrem/openrem/issues/829/document-docker-install-for-offline
+
 
 Upgrading an existing installation
 ==================================
@@ -31,10 +62,7 @@ Upgrading an existing installation
 Databases
 =========
 
-During the installation process, you will need to install a database. For testing only, you can use the built in
-SQLite3 database, but for production use you will need a production grade database. This is covered in the
-:doc:`install-prep` documentation, but as you will probably want to find the database instructions again, the links
-are repeated here.
+To be removed here, but we need some of the content in other pages, so leaving for now
 
 ..  toctree::
     :maxdepth: 2
@@ -49,42 +77,11 @@ are repeated here.
 Web servers
 ===========
 
-Unlike the database, the production webserver can be left till later and can be changed again at any time. However,
-for performance it is recommended that a production webserver is used instead of the inbuilt 'runserver'.
-
-On Windows or Linux, it is possible to use `Apache <http://httpd.apache.org>`_, however for reasons relating to how
-Python, Apache and mod_wsgi are compiled using old Microsoft tools, this is now nearly impossible to do on the Windows
-platform. There is no reason for existing Windows installs with Apache to change webserver.
-
-For Apache installs on Linux, the
-`django website <https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/modwsgi/>`_ has instructions and links to
-get you set up.
-
-Our recommendations for Windows and Linux are:
-
-..  toctree::
-    :maxdepth: 1
-
-    iis_on_windows
-    nginx_on_linux
-
-If you want to run OpenREM-webinterface in a virtual directory (other than the root virtual directory), take a look at
-the following documentation before setting up the web server:
+Don't need this section, but need to work out what to do about virtual_directory installs
 
 ..  toctree::
     :maxdepth: 1
 
     virtual_directory
-
-
-Quick start: One page complete install
-======================================
-
-..  toctree::
-    :maxdepth: 1
-
-    quick_start_linux
-
-
 
 

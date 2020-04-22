@@ -515,12 +515,12 @@ def export_abort(request, pk):
     from django.http import HttpResponseRedirect
     from django.shortcuts import get_object_or_404
     from remapp.models import Exports
-    from openremproject.celeryapp import app
+    from openremproject.celeryapp import app as celery_app
 
     export_task = get_object_or_404(Exports, pk=pk)
 
     if request.user.groups.filter(name="exportgroup"):
-        app.control.revoke(export_task.task_id, terminate=True)
+        celery_app.control.revoke(export_task.task_id, terminate=True)
         export_task.delete()
         logger.info(u"Export task {0} terminated from the Exports interface".format(export_task.task_id))
 

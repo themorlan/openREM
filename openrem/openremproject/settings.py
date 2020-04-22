@@ -79,14 +79,14 @@ SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
-USE_I18N = True
+USE_I18N = os.environ.get('USE_I18N', default=True)
 
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale.
-USE_L10N = True
+USE_L10N = os.environ.get('USE_L10N', default=True)
 
 # If you set this to False, Django will not use timezone-aware datetimes.
-USE_TZ = False
+USE_TZ = os.environ.get('USE_TZ', default=False)
 
 XLSX_DATE = os.environ.get("XLSX_DATE", default='dd/mm/yyyy')
 XLSX_TIME = os.environ.get("XLSX_TIME", default='hh:mm:ss')
@@ -272,14 +272,16 @@ PIXELMED_JAR_OPTIONS = '-Djava.awt.headless=true com.pixelmed.doseocr.OCR -'
 VIRTUAL_DIRECTORY = ''
 
 # E-mail server settings - see https://docs.djangoproject.com/en/1.8/topics/email/
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 25
-EMAIL_HOST_USER = 'a.user.that.can.send'
-EMAIL_HOST_PASSWORD = 'the.above.user.password'  # nosec
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = False
-EMAIL_DOSE_ALERT_SENDER = 'your.alert@email.address'
-EMAIL_OPENREM_URL = 'http://your.openrem.server'
+EMAIL_HOST = os.environ.get('EMAIL_HOST', default='localhost')
+EMAIL_PORT = os.environ.get('EMAIL_PORT', default='25')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', default='')  # nosec
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', default=False)
+EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', default=False)
+EMAIL_DOSE_ALERT_SENDER = os.environ.get('EMAIL_DOSE_ALERT_SENDER', default='your.alert@email.address')
+EMAIL_OPENREM_URL = os.environ.get('EMAIL_OPENREM_URL', default='http://your.openrem.server')
+
+DOCKER_INSTALL = int(os.environ.get("DOCKER_INSTALL", default=False))
 
 
 try:

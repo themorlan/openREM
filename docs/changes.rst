@@ -5,6 +5,7 @@ OpenREM version history
 1.0.0b1 (2020-xx-xx)
 --------------------
 * :issue:`826`  Code quality: split views to make more manageable and testable
+* :issue:`824`  DICOM Networking: enabled declaration and testing of Orthanc Store SCP in Docker
 * :issue:`821`  Code quality: fixed literal comparisons Docker was complaining about
 * :issue:`820`  Documentation: converted changes to use sphinx-issues
 * :issue:`819`  Removed colons from commands in documentation as they don't format correctly in PDF
@@ -27,6 +28,7 @@ OpenREM version history
 * :issue:`791`  Exports: prevented error when trying to export DX data that has no filter information
 * :issue:`787`  Interface: fixed login error
 * :issue:`777`  Updated OpenREM to use pydicom 1.3
+* :issue:`744`  Added overwrite mode to size import
 * :issue:`530`  Updated OpenREM to use pynetdicom 1.4
 * :issue:`457`  Updated OpenREM to use Django 2.2
 * :issue:`437`  Updated OpenREM to use django-filters v2
