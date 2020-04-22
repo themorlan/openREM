@@ -32,8 +32,6 @@ from __future__ import division
 # Following two lines added so that sphinx autodocumentation works.
 from past.utils import old_div
 from builtins import object  # pylint: disable=redefined-builtin
-import os
-os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 import json
 from django.db import models
 from django.db.models.aggregates import Aggregate as SQLAggregate
@@ -42,7 +40,9 @@ from solo.models import SingletonModel
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
+# hoping to remove the next two lines
+# import os
+# os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
 # pylint: disable=unused-variable
 
 
@@ -234,7 +234,8 @@ class DicomStoreSCP(models.Model):
                             verbose_name="Name of local store node - fewer than 64 characters, spaces allowed")
     aetitle = models.CharField(max_length=16, blank=True, null=True,
                                verbose_name="AE Title of this node - 16 or fewer letters and numbers, no spaces")
-    port = models.IntegerField(blank=True, null=True, verbose_name="Port: 104 is standard for DICOM but over 1024 requires fewer admin rights")
+    peer = models.CharField(max_length=32, blank=True)
+    port = models.IntegerField(default=104)
     task_id = models.CharField(max_length=64, blank=True, null=True)
     status = models.CharField(max_length=64, blank=True, null=True)
     run = models.BooleanField(default=False)
@@ -531,6 +532,7 @@ class SizeUpload(models.Model):
     weight_field = models.TextField(blank=True, null=True)
     id_field = models.TextField(blank=True, null=True)
     id_type = models.TextField(blank=True, null=True)
+    overwrite = models.BooleanField(default=False)
     task_id = models.TextField(blank=True, null=True)
     status = models.TextField(blank=True, null=True)
     progress = models.TextField(blank=True, null=True)
@@ -938,6 +940,8 @@ class Exposure(models.Model):  # EV 113736
         from numbers import Number
         if isinstance(self.exposure, Number):
             return old_div(self.exposure, Decimal(1000.))
+        else:
+            return None
 
 
 class XrayFilters(models.Model):  # EV 113771

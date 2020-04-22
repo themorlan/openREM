@@ -31,6 +31,7 @@ import json
 import os
 import uuid
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -424,12 +425,13 @@ def dicom_summary(request):
     remoteqr = DicomRemoteQR.objects.all()
 
     admin = _create_admin_dict(request)
+    docker_install = settings.DOCKER_INSTALL
 
     # Render list page with the documents and the form
-    return render(request,
-        'remapp/dicomsummary.html',
-        {'store': store, 'remoteqr': remoteqr, 'admin': admin, 'del_settings': del_settings},
-    )
+    return render(request, 'remapp/dicomsummary.html',
+                  {'store': store, 'remoteqr': remoteqr, 'admin': admin, 'del_settings': del_settings,
+                   'docker_install': docker_install},
+                  )
 
 
 class DicomStoreCreate(CreateView):  # pylint: disable=unused-variable
@@ -446,6 +448,7 @@ class DicomStoreCreate(CreateView):  # pylint: disable=unused-variable
         for group in self.request.user.groups.all():
             admin[group.name] = True
         context['admin'] = admin
+        context['docker_install'] = settings.DOCKER_INSTALL
         return context
 
 
