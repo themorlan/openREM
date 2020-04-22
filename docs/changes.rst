@@ -4,6 +4,7 @@ OpenREM version history
 
 1.0.0b1 (2020-xx-xx)
 --------------------
+* :issue:`827`  SkinDose: Made SkinDose results available in OpenREM and made alert triggering possible
 * :issue:`826`  Code quality: split views to make more manageable and testable
 * :issue:`824`  DICOM Networking: enabled declaration and testing of Orthanc Store SCP in Docker
 * :issue:`821`  Code quality: fixed literal comparisons Docker was complaining about
