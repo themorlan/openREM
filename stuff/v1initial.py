@@ -145,7 +145,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=64, unique=True, verbose_name='Name of local store node - fewer than 64 characters, spaces allowed')),
                 ('aetitle', models.CharField(blank=True, max_length=16, null=True, verbose_name='AE Title of this node - 16 or fewer letters and numbers, no spaces')),
                 ('peer', models.CharField(blank=True, max_length=32)),
-                ('port', models.IntegerField(default=104),
+                ('port', models.IntegerField(default=104)),
                 ('task_id', models.CharField(blank=True, max_length=64, null=True)),
                 ('status', models.CharField(blank=True, max_length=64, null=True)),
                 ('run', models.BooleanField(default=False)),
