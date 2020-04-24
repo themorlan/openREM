@@ -23,9 +23,62 @@ Upgrading an OpenREM server with no internet access
 Follow the instructions found at :doc:`upgrade-offline`, before returning here to update the configuration, migrate the
 database and complete the upgrade.
 
-***************
-Upgrade process
-***************
+******************************************
+Upgrade process from a PostgresQL database
+******************************************
+
+Establish existing database details
+===================================
+
+* Review the current ``local_settings.py`` for the database settings. The file is in:
+    * Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/openremproject/local_settings.py``
+    * Other linux: ``/usr/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
+    * Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
+    * Windows: ``C:\Python27\Lib\site-packages\openrem\openremproject\local_settings.py``
+    * Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\openremproject\local_settings.py``
+
+
+Export the database
+===================
+
+* Open a command line window
+* Windows: go to Postgres bin folder, for example:
+
+    .. code-block:: none
+
+        cd "C:\Program Files\PostgreSQL\9.6\bin"
+
+* Dump the database:
+    * Use the username and database name from ``local_settings.py``
+    * Use the password from ``local_settings.py`` when prompted
+    * For linux, the command is ``pg_dump`` (no ``.exe``)
+    * Set the path to somewhere suitable to dump the exported database file
+
+    .. code-block:: none
+
+        pg_dump.exe -U openremuser -d openremdb -F c -f path/to/export/openremdump.bak
+
+Set up the new installation
+===========================
+
+* Install Docker
+* Download and extract https://bitbucket.org/openrem/docker/get/develop.zip and open a shell (command window) in the
+  new folder
+* Customise variables in ``.env.prod`` and in the ``orthanc_1`` section in ``docker-compose.yml`` as necessary.
+  Make sure the database user matches the details in the current ``local_settings.py``.
+  A full description of the options are found in:
+
+..  toctree::
+    :maxdepth: 1
+
+    env_variables
+    docker_orthanc
+
+Start the containers with:
+
+* ``docker-compose up -d``
+
+
 
 Upgrade
 =======
