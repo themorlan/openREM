@@ -8,6 +8,7 @@ Headline changes
 
 * Python 3!
 * Django 2.2!
+* Docker!
 
 *******************
 Upgrade preparation
@@ -30,12 +31,13 @@ Upgrade process from a PostgresQL database
 Establish existing database details
 ===================================
 
-* Review the current ``local_settings.py`` for the database settings. The file is in:
-    * Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/openremproject/local_settings.py``
-    * Other linux: ``/usr/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
-    * Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
-    * Windows: ``C:\Python27\Lib\site-packages\openrem\openremproject\local_settings.py``
-    * Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\openremproject\local_settings.py``
+Review the current ``local_settings.py`` for the database settings. The file is in:
+
+* Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/openremproject/local_settings.py``
+* Other linux: ``/usr/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
+* Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
+* Windows: ``C:\Python27\Lib\site-packages\openrem\openremproject\local_settings.py``
+* Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\openremproject\local_settings.py``
 
 
 Export the database
@@ -49,6 +51,7 @@ Export the database
         cd "C:\Program Files\PostgreSQL\9.6\bin"
 
 * Dump the database:
+
     * Use the username and database name from ``local_settings.py``
     * Use the password from ``local_settings.py`` when prompted
     * For linux, the command is ``pg_dump`` (no ``.exe``)
@@ -76,8 +79,31 @@ Set up the new installation
 
 Start the containers with:
 
-* ``docker-compose up -d``
+.. code-block:: none
 
+    docker-compose up -d
+
+Copy the database backup to the postgres docker container and import it:
+
+.. code-block:: none
+
+    docker cp /path/to/openremdump.bak  openrem-db:/db_backup
+    docker-compose exec db pg_restore -U openremuser -d openrem_prod /db_backup/openremdump.bak
+
+db stuff
+
+.. code-block:: none
+
+    docker-compose exec openrem mv remapp/migrations/0001_initial.py{.1-0-upgrade,}
+    docker-compose exec openrem python manage.py migrate --fake-initial
+    docker-compose exec openrem python manage.py migrate remapp --fake
+    docker-compose exec openrem python manage.py makemigrations remapp
+    docker-compose exec openrem python manage.py migrate
+    docker-compose exec openrem python manage.py collectstatic --noinput --clear
+
+***************************************************************
+Old style, deprecated, to be pruned down for Ubuntu alternative
+***************************************************************
 
 
 Upgrade
