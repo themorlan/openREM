@@ -58,6 +58,19 @@ not be imported into OpenREM. Some examples have been added below - note the for
       SOFTWARE_VERSIONS_TO_IGNORE: "{'VixWin Platinum v3.3'}"
       DEVICE_SERIAL_NUMBERS_TO_IGNORE: "{'SCB1312016'}"
 
+Extractor for older Toshiba CT dose summary files
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Enable or disable additional functionality to extract dose information from older Toshiba and GE scanners, and specify
+which CT scanners should use this method:
+
+.. code-block:: yaml
+
+    environment:
+      USE_TOSHIBA_CT_EXTRACTOR: "true"
+      TOSHIBA_EXTRACTOR_SYSTEMS: |
+        {{'Toshiba', 'Aquilion'}, {'GE Medical Systems', 'Discovery STE'},}
+
 Physics Filtering
 ^^^^^^^^^^^^^^^^^
 
