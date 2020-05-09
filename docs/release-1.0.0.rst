@@ -17,12 +17,6 @@ Upgrade preparation
 * These instructions assume you are upgrading from 0.10.0.
 * **Upgrades from 0.9.1 or earlier should review** :doc:`upgrade_previous_0.10.0`. -- needs changing
 
-***************************************************
-Upgrading an OpenREM server with no internet access
-***************************************************
-
-Follow the instructions found at :doc:`upgrade-offline`, before returning here to update the configuration, migrate the
-database and complete the upgrade.
 
 ******************************************
 Upgrade process from a PostgresQL database
@@ -90,7 +84,8 @@ Copy the database backup to the postgres docker container and import it:
     docker cp /path/to/openremdump.bak  openrem-db:/db_backup
     docker-compose exec db pg_restore -U openremuser -d openrem_prod /db_backup/openremdump.bak
 
-db stuff
+Rename the 0.10 upgrade migration file, migrate the database (the steps and fakes are required as it is not a new
+database), and create the static files:
 
 .. code-block:: none
 
@@ -100,6 +95,21 @@ db stuff
     docker-compose exec openrem python manage.py makemigrations remapp
     docker-compose exec openrem python manage.py migrate
     docker-compose exec openrem python manage.py collectstatic --noinput --clear
+
+The new OpenREM installation should now be ready to be used.
+
+***************************************************
+Upgrading an OpenREM server with no internet access
+***************************************************
+
+Follow the instructions found at :doc:`upgrade-offline`, before returning here to update the configuration, migrate the
+database and complete the upgrade.
+
+**********************************************************
+Upgrading an OpenREM server that uses a different database
+**********************************************************
+
+
 
 ***************************************************************
 Old style, deprecated, to be pruned down for Ubuntu alternative
