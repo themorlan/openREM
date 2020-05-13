@@ -81,7 +81,7 @@ Copy the database backup to the postgres docker container and import it:
 
 .. code-block:: none
 
-    docker cp /path/to/openremdump.bak  openrem-db:/db_backup
+    docker cp /path/to/openremdump.bak db_backup/
     docker-compose exec db pg_restore -U openremuser -d openrem_prod /db_backup/openremdump.bak
 
 Rename the 0.10 upgrade migration file, migrate the database (the steps and fakes are required as it is not a new
@@ -89,7 +89,7 @@ database), and create the static files:
 
 .. code-block:: none
 
-    docker-compose exec openrem mv remapp/migrations/0001_initial.py{.1-0-upgrade,}
+    docker-compose exec openrem mv remapp/migrations/0001_initial.py.1-0-upgrade remapp/migrations/0001_initial.py
     docker-compose exec openrem python manage.py migrate --fake-initial
     docker-compose exec openrem python manage.py migrate remapp --fake
     docker-compose exec openrem python manage.py makemigrations remapp
