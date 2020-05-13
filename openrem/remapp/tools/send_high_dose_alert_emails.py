@@ -66,7 +66,8 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
                 html_msg_content = render_to_string('remapp/email_test_template.html')
                 recipients = [test_user]
                 msg_subject = 'OpenREM e-mail test message'
-                msg = EmailMultiAlternatives(msg_subject, text_msg_content, settings.EMAIL_DOSE_ALERT_SENDER, recipients)
+                msg = EmailMultiAlternatives(msg_subject, text_msg_content, settings.EMAIL_DOSE_ALERT_SENDER,
+                                             recipients)
                 msg.attach_alternative(html_msg_content, 'text/html')
                 msg.send()
             except (SSLError, SMTPException, ValueError, gai_error, socket_error) as the_error:
@@ -88,12 +89,18 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
     except ObjectDoesNotExist:
         peak_skin_dose = None
 
-    this_study_dap = study.projectionxrayradiationdose_set.get().accumxraydose_set.last().accumintegratedprojradiogdose_set.get().convert_gym2_to_cgycm2()
-    this_study_rp_dose = study.projectionxrayradiationdose_set.get().accumxraydose_set.last().accumintegratedprojradiogdose_set.get().dose_rp_total
-    accum_dap = study.projectionxrayradiationdose_set.get().accumxraydose_set.last().accumintegratedprojradiogdose_set.get().total_dap_delta_gym2_to_cgycm2()
-    accum_rp_dose = study.projectionxrayradiationdose_set.get().accumxraydose_set.last().accumintegratedprojradiogdose_set.get().dose_rp_total_over_delta_weeks
+    this_study_dap = study.projectionxrayradiationdose_set.get().accumxraydose_set.last().\
+        accumintegratedprojradiogdose_set.get().convert_gym2_to_cgycm2()
+    this_study_rp_dose = study.projectionxrayradiationdose_set.get().accumxraydose_set.last().\
+        accumintegratedprojradiogdose_set.get().dose_rp_total
+    accum_dap = study.projectionxrayradiationdose_set.get().accumxraydose_set.last().\
+        accumintegratedprojradiogdose_set.get().total_dap_delta_gym2_to_cgycm2()
+    accum_rp_dose = study.projectionxrayradiationdose_set.get().accumxraydose_set.last().\
+        accumintegratedprojradiogdose_set.get().dose_rp_total_over_delta_weeks
 
-    alert_levels = HighDoseMetricAlertSettings.objects.values('show_accum_dose_over_delta_weeks', 'alert_total_dap_rf', 'alert_total_rp_dose_rf', 'accum_dose_delta_weeks','alert_skindose')[0]
+    alert_levels = HighDoseMetricAlertSettings.objects.values('show_accum_dose_over_delta_weeks', 'alert_total_dap_rf',
+                                                              'alert_total_rp_dose_rf', 'accum_dose_delta_weeks',
+                                                              'alert_skindose')[0]
 
     if alert_levels['show_accum_dose_over_delta_weeks']:
         patient_id = study.patientmoduleattr_set.values_list('patient_id', flat=True)[0]
@@ -101,7 +108,9 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
             study_date = study.study_date
             week_delta = HighDoseMetricAlertSettings.objects.values_list('accum_dose_delta_weeks', flat=True)[0]
             oldest_date = (study_date - timedelta(weeks=week_delta))
-            included_studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF', patientmoduleattr__patient_id__exact=patient_id, study_date__range=[oldest_date, study_date])
+            included_studies = GeneralStudyModuleAttr.objects.filter(
+                modality_type__exact='RF', patientmoduleattr__patient_id__exact=patient_id,
+                study_date__range=[oldest_date, study_date])
         else:
             included_studies = None
             week_delta = None

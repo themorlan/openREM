@@ -1025,7 +1025,7 @@ class AccumProjXRayDose(models.Model):  # TID 10004
     # TODO: Ensure rdsr.py and dx.py use the other table and do not populate this one any further.
     dose_area_product_total = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
     dose_rp_total = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
-    total_number_of_radiographic_frames  = models.DecimalField(max_digits=6, decimal_places=0, blank=True, null=True)
+    total_number_of_radiographic_frames = models.DecimalField(max_digits=6, decimal_places=0, blank=True, null=True)
     reference_point_definition = models.TextField(blank=True, null=True)
     reference_point_definition_code = models.ForeignKey(ContextID, blank=True, null=True, on_delete=models.CASCADE)
 
@@ -1089,7 +1089,8 @@ class AccumIntegratedProjRadiogDose(models.Model):  # TID 10007
         if self.dose_area_product_total:
             return 1000000*self.dose_area_product_total
 
-    dose_area_product_total_over_delta_weeks = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+    dose_area_product_total_over_delta_weeks = models.DecimalField(max_digits=16, decimal_places=12, blank=True,
+                                                                   null=True)
     dose_rp_total_over_delta_weeks = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
 
     def total_dap_delta_gym2_to_cgycm2(self):
