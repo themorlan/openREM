@@ -25,7 +25,8 @@ Upgrade process from a PostgresQL database
 Establish existing database details
 ===================================
 
-Review the current ``local_settings.py`` for the database settings. The file is in:
+Review the current ``local_settings.py`` for the database settings and location of the ``MEDIA_ROOT`` folder. The file
+is in:
 
 * Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/openremproject/local_settings.py``
 * Other linux: ``/usr/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
@@ -95,6 +96,13 @@ database), and create the static files:
     docker-compose exec openrem python manage.py makemigrations remapp
     docker-compose exec openrem python manage.py migrate
     docker-compose exec openrem python manage.py collectstatic --noinput --clear
+
+Copy in any existing skin dose map pickle files from your existing ``MEDIA_ROOT/skin_maps`` folder (optional, they can
+be calculated again):
+
+.. code-block:: none
+
+    docker cp path/to/skin_maps/. openrem:/home/app/openrem/mediafiles/skin_maps/
 
 The new OpenREM installation should now be ready to be used.
 
