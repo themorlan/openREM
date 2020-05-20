@@ -47,7 +47,7 @@ Export the database
 
 * Dump the database:
 
-    * Use the username and database name from ``local_settings.py``
+    * Use the username (``-U openremuser``) and database name (``-d openremuser``) from ``local_settings.py``
     * Use the password from ``local_settings.py`` when prompted
     * For linux, the command is ``pg_dump`` (no ``.exe``)
     * Set the path to somewhere suitable to dump the exported database file
@@ -63,7 +63,6 @@ Set up the new installation
 * Download and extract https://bitbucket.org/openrem/docker/get/develop.zip and open a shell (command window) in the
   new folder
 * Customise variables in ``.env.prod`` and in the ``orthanc_1`` section in ``docker-compose.yml`` as necessary.
-  Make sure the database user matches the details in the current ``local_settings.py``.
   A full description of the options are found in:
 
 ..  toctree::
@@ -78,12 +77,29 @@ Start the containers with:
 
     docker-compose up -d
 
-Copy the database backup to the postgres docker container and import it:
+Copy the database backup to the postgres docker container and import it. If you have changed the database variables,
+ensure that:
+
+* the database user (``-U openremuser``) matches ``POSTGRES_USER`` in ``.env.prod``
+* the database name (``-d openrem_prod``) matches ``POSTGRES_DB`` in ``.env.prod``
+
+They don't have to match the old database settings.
 
 .. code-block:: none
 
     docker cp /path/to/openremdump.bak db_backup/
-    docker-compose exec db pg_restore -U openremuser -d openrem_prod /db_backup/openremdump.bak
+    docker-compose exec db pg_restore --no-privileges --no-owner -U openremuser -d openrem_prod /db_backup/openremdump.bak
+
+It is normal to get an error about the public schema, for example:
+
+.. code-block:: none
+
+    pg_restore: while PROCESSING TOC:
+    pg_restore: from TOC entry 3; 2615 2200 SCHEMA public postgres
+    pg_restore: error: could not execute query: ERROR:  schema "public" already exists
+    Command was: CREATE SCHEMA public;
+
+    pg_restore: warning: errors ignored on restore: 1
 
 Rename the 0.10 upgrade migration file, migrate the database (the steps and fakes are required as it is not a new
 database), and create the static files:
