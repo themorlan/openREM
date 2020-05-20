@@ -83,7 +83,8 @@ ensure that:
 * the database user (``-U openremuser``) matches ``POSTGRES_USER`` in ``.env.prod``
 * the database name (``-d openrem_prod``) matches ``POSTGRES_DB`` in ``.env.prod``
 
-They don't have to match the old database settings.
+They don't have to match the old database settings. The filename in both commands (``openremdump.bak``) should match
+your backup filename.
 
 .. code-block:: none
 
