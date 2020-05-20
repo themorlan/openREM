@@ -8,6 +8,7 @@ Headline changes
 
 * Python 3!
 * Django 2.2!
+* Docker!
 
 *******************
 Upgrade preparation
@@ -16,6 +17,112 @@ Upgrade preparation
 * These instructions assume you are upgrading from 0.10.0.
 * **Upgrades from 0.9.1 or earlier should review** :doc:`upgrade_previous_0.10.0`. -- needs changing
 
+
+******************************************
+Upgrade process from a PostgresQL database
+******************************************
+
+Establish existing database details
+===================================
+
+Review the current ``local_settings.py`` for the database settings and location of the ``MEDIA_ROOT`` folder. The file
+is in:
+
+* Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/openremproject/local_settings.py``
+* Other linux: ``/usr/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
+* Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
+* Windows: ``C:\Python27\Lib\site-packages\openrem\openremproject\local_settings.py``
+* Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\openremproject\local_settings.py``
+
+
+Export the database
+===================
+
+* Open a command line window
+* Windows: go to Postgres bin folder, for example:
+
+    .. code-block:: none
+
+        cd "C:\Program Files\PostgreSQL\9.6\bin"
+
+* Dump the database:
+
+    * Use the username (``-U openremuser``) and database name (``-d openremuser``) from ``local_settings.py``
+    * Use the password from ``local_settings.py`` when prompted
+    * For linux, the command is ``pg_dump`` (no ``.exe``)
+    * Set the path to somewhere suitable to dump the exported database file
+
+    .. code-block:: none
+
+        pg_dump.exe -U openremuser -d openremdb -F c -f path/to/export/openremdump.bak
+
+Set up the new installation
+===========================
+
+* Install Docker
+* Download and extract https://bitbucket.org/openrem/docker/get/develop.zip and open a shell (command window) in the
+  new folder
+* Customise variables in ``.env.prod`` and in the ``orthanc_1`` section in ``docker-compose.yml`` as necessary.
+  A full description of the options are found in:
+
+..  toctree::
+    :maxdepth: 1
+
+    env_variables
+    docker_orthanc
+
+Start the containers with:
+
+.. code-block:: none
+
+    docker-compose up -d
+
+Copy the database backup to the postgres docker container and import it. If you have changed the database variables,
+ensure that:
+
+* the database user (``-U openremuser``) matches ``POSTGRES_USER`` in ``.env.prod``
+* the database name (``-d openrem_prod``) matches ``POSTGRES_DB`` in ``.env.prod``
+
+They don't have to match the old database settings. The filename in both commands (``openremdump.bak``) should match
+your backup filename.
+
+.. code-block:: none
+
+    docker cp /path/to/openremdump.bak db_backup/
+    docker-compose exec db pg_restore --no-privileges --no-owner -U openremuser -d openrem_prod /db_backup/openremdump.bak
+
+It is normal to get an error about the public schema, for example:
+
+.. code-block:: none
+
+    pg_restore: while PROCESSING TOC:
+    pg_restore: from TOC entry 3; 2615 2200 SCHEMA public postgres
+    pg_restore: error: could not execute query: ERROR:  schema "public" already exists
+    Command was: CREATE SCHEMA public;
+
+    pg_restore: warning: errors ignored on restore: 1
+
+Rename the 0.10 upgrade migration file, migrate the database (the steps and fakes are required as it is not a new
+database), and create the static files:
+
+.. code-block:: none
+
+    docker-compose exec openrem mv remapp/migrations/0001_initial.py.1-0-upgrade remapp/migrations/0001_initial.py
+    docker-compose exec openrem python manage.py migrate --fake-initial
+    docker-compose exec openrem python manage.py migrate remapp --fake
+    docker-compose exec openrem python manage.py makemigrations remapp
+    docker-compose exec openrem python manage.py migrate
+    docker-compose exec openrem python manage.py collectstatic --noinput --clear
+
+Copy in any existing skin dose map pickle files from your existing ``MEDIA_ROOT/skin_maps`` folder (optional, they can
+be calculated again):
+
+.. code-block:: none
+
+    docker cp path/to/skin_maps/. openrem:/home/app/openrem/mediafiles/skin_maps/
+
+The new OpenREM installation should now be ready to be used.
+
 ***************************************************
 Upgrading an OpenREM server with no internet access
 ***************************************************
@@ -23,9 +130,16 @@ Upgrading an OpenREM server with no internet access
 Follow the instructions found at :doc:`upgrade-offline`, before returning here to update the configuration, migrate the
 database and complete the upgrade.
 
-***************
-Upgrade process
-***************
+**********************************************************
+Upgrading an OpenREM server that uses a different database
+**********************************************************
+
+
+
+***************************************************************
+Old style, deprecated, to be pruned down for Ubuntu alternative
+***************************************************************
+
 
 Upgrade
 =======

@@ -30,7 +30,7 @@ For example, to use port 8104:
     ports:
       - 8104:8104
     environment:
-      DICOM_PORT: 8104
+      ORTHANC__DICOM_PORT: 8104
 
 DICOM Application Entity Title
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -41,7 +41,7 @@ by default, so if remote nodes connect using a different AETitle that is ok.
 .. code-block:: yaml
 
     environment:
-      DICOM_AET: "OPENREM"
+      ORTHANC__DICOM_AET: "OPENREM"
 
 Objects to be ignored
 ^^^^^^^^^^^^^^^^^^^^^
@@ -57,6 +57,20 @@ not be imported into OpenREM. Some examples have been added below - note the for
       STATION_NAMES_TO_IGNORE: "{'CR85 Main', 'CR75 Main'}"
       SOFTWARE_VERSIONS_TO_IGNORE: "{'VixWin Platinum v3.3'}"
       DEVICE_SERIAL_NUMBERS_TO_IGNORE: "{'SCB1312016'}"
+
+Extractor for older Toshiba CT dose summary files
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Enable or disable additional functionality to extract dose information from older Toshiba and GE scanners, and specify
+which CT scanners should use this method. Each system should be listed as ``{'Manufacturer', 'Model name'}``, with
+systems in a comma separated list within curly brackets, as per the example below:
+
+.. code-block:: yaml
+
+    environment:
+      USE_TOSHIBA_CT_EXTRACTOR: "true"
+      TOSHIBA_EXTRACTOR_SYSTEMS: |
+        {{'Toshiba', 'Aquilion'}, {'GE Medical Systems', 'Discovery STE'},}
 
 Physics Filtering
 ^^^^^^^^^^^^^^^^^
@@ -76,6 +90,28 @@ Orthanc will put anything that matches this in the ``physics_to_keep_folder``.
 
     environment:
       PHYSICS_TO_KEEP: "{'physics',}"
+
+Orthanc web interface
+^^^^^^^^^^^^^^^^^^^^^
+
+There will normally not be any studies in the Orthanc database once they have been processed, but if you want to
+enable the Orthanc web viewer, change ``ORTHANC__REMOTE_ACCESS_ALLOWED`` to ``"true"`` and uncomment the port
+declaration, changing the first number if required:
+
+.. code-block:: yaml
+
+    ports:
+      - 8042:8042
+    environment:
+      ORTHANC__REMOTE_ACCESS_ALLOWED: "true"
+      ORTHANC__AUTHENTICATION_ENABLED: "true"
+      ORTHANC__REGISTERED_USERS: |
+        {"orthancuser": "demo"}
+
+Lua script path
+^^^^^^^^^^^^^^^
+
+The path within the Orthanc container for the OpenREM Lua script is specified here - this should not be changed.
 
 Multiple Orthanc Store nodes
 ----------------------------
