@@ -316,10 +316,12 @@ class RFHighDoseFluoroAlertsForm(forms.ModelForm):
             Div(
                 'alert_total_dap_rf',
                 'alert_total_rp_dose_rf',
+                'alert_skindose',
                 'accum_dose_delta_weeks',
                 'show_accum_dose_over_delta_weeks',
                 'calc_accum_dose_over_delta_weeks_on_import',
-                'send_high_dose_metric_alert_emails',
+                'send_high_dose_metric_alert_emails_ref',
+                'send_high_dose_metric_alert_emails_skin'
             ),
             FormActions(
                 Submit('submit', 'Submit')
@@ -330,10 +332,12 @@ class RFHighDoseFluoroAlertsForm(forms.ModelForm):
         model = HighDoseMetricAlertSettings
         fields = ['alert_total_dap_rf',
                   'alert_total_rp_dose_rf',
+                  'alert_skindose',
                   'accum_dose_delta_weeks',
                   'show_accum_dose_over_delta_weeks',
                   'calc_accum_dose_over_delta_weeks_on_import',
-                  'send_high_dose_metric_alert_emails']
+                  'send_high_dose_metric_alert_emails_ref',
+                  'send_high_dose_metric_alert_emails_skin']
 
 
 class HomepageOptionsForm(forms.Form):

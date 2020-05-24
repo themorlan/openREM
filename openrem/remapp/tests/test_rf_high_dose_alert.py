@@ -5,7 +5,8 @@ import os
 from django.contrib.auth.models import User, Group
 from django.test import RequestFactory, TestCase, override_settings
 from remapp.extractors import rdsr
-from remapp.models import PatientIDSettings, GeneralStudyModuleAttr, HighDoseMetricAlertSettings
+from remapp.models import PatientIDSettings, GeneralStudyModuleAttr, HighDoseMetricAlertSettings, SkinDoseMapResults
+from remapp.tools.make_skin_map import make_skin_map
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from remapp.interface.mod_filters import RFSummaryListFilter
@@ -63,17 +64,23 @@ class RFHighDoseAlert(TestCase):
     def test_cumulative_dap(self):
         """ Test that the calculated cumulative DAP over delta weeks is correct for the two studies
         """
+
         self.client.login(username='temporary', password='temporary')
         filter_set = ''
-        f = RFSummaryListFilter(filter_set, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by('-pk').distinct())
+        f = RFSummaryListFilter(filter_set, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF')
+                                .order_by('-pk').distinct())
 
         # Test that cumulative DAP matches what I expect below
         # Using AlmostEqual as comparing floating point numbers
-        total_dap_over_week_delta = f.qs.values_list('projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total_over_delta_weeks', flat=True)[0]
+        total_dap_over_week_delta = f.qs.values_list(
+            'projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__'
+            'dose_area_product_total_over_delta_weeks', flat=True)[0]
         expected_value = Decimal(0.0000320)
         self.assertAlmostEqual(total_dap_over_week_delta, expected_value, places=7, msg=None)
 
-        total_dap_over_week_delta = f.qs.values_list('projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_area_product_total_over_delta_weeks', flat=True)[1]
+        total_dap_over_week_delta = f.qs.values_list(
+            'projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__'
+            'dose_area_product_total_over_delta_weeks', flat=True)[1]
         expected_value = Decimal(0.0000160)
         self.assertAlmostEqual(total_dap_over_week_delta, expected_value, places=7, msg=None)
 
@@ -82,15 +89,20 @@ class RFHighDoseAlert(TestCase):
         """
         self.client.login(username='temporary', password='temporary')
         filter_set = ''
-        f = RFSummaryListFilter(filter_set, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by('-pk').distinct())
+        f = RFSummaryListFilter(filter_set, queryset=GeneralStudyModuleAttr.objects.filter(
+            modality_type__exact='RF').order_by('-pk').distinct())
 
         # Test that cumulative DAP matches what I expect below
         # Using AlmostEqual as comparing floating point numbers
-        total_rp_dose_over_week_delta = f.qs.values_list('projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_rp_total_over_delta_weeks', flat=True)[0]
+        total_rp_dose_over_week_delta = f.qs.values_list(
+            'projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__'
+            'dose_rp_total_over_delta_weeks', flat=True)[0]
         expected_value = Decimal(0.0050400)
         self.assertAlmostEqual(total_rp_dose_over_week_delta, expected_value, places=7, msg=None)
 
-        total_rp_dose_over_week_delta = f.qs.values_list('projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__dose_rp_total_over_delta_weeks', flat=True)[1]
+        total_rp_dose_over_week_delta = f.qs.values_list(
+            'projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose__'
+            'dose_rp_total_over_delta_weeks', flat=True)[1]
         expected_value = Decimal(0.0025200)
         self.assertAlmostEqual(total_rp_dose_over_week_delta, expected_value, places=7, msg=None)
 
@@ -119,7 +131,8 @@ class RFHighDoseAlert(TestCase):
         # The other should not
         self.assertNotContains(response, self.dap_16_text)
 
-        # The string (2 exams) should appear twice for the more recent study (once in the DAP field, once in the RP field)
+        # The string (2 exams) should appear twice for the more recent study (once in the DAP field, once in the
+        # RP field)
         self.assertContains(response, self.two_exams_text, count=2)
 
         # The string (1 exam) should appear twice for the earlier study (once in the DAP field, once in the RP field)
@@ -207,7 +220,8 @@ class RFHighDoseAlert(TestCase):
 
         # Obtain the private keys of the two studies
         filter_set = ''
-        f = RFSummaryListFilter(filter_set, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF').order_by().distinct())
+        f = RFSummaryListFilter(filter_set, queryset=GeneralStudyModuleAttr.objects.filter(
+            modality_type__exact='RF').order_by().distinct())
         pk_20160510 = f.qs.filter(study_date='2016-05-10').values_list('pk', flat=True)[0]
         pk_20160512 = f.qs.filter(study_date='2016-05-12').values_list('pk', flat=True)[0]
 
@@ -249,10 +263,12 @@ class RFHighDoseAlert(TestCase):
         # Cumulative RP dose should be highlighted for the latest study
         self.assertContains(response, self.rp_504_text, count=1)
 
-        # Total DAP should be highlighted for the most recent study, and twice in the summary of studies in past two weeks
+        # Total DAP should be highlighted for the most recent study, and twice in the summary of studies in past
+        # two weeks
         self.assertContains(response, self.dap_16_text, count=3)
 
-        # Total dose at RP dose should be highlighted for the latest study, and twice in the summary of studies in past two weeks
+        # Total dose at RP dose should be highlighted for the latest study, and twice in the summary of studies
+        # in past two weeks
         # The two entries in the summary table are rounded
         self.assertContains(response, self.rp_252_text, count=1)
         self.assertContains(response, self.rp_000_text, count=2)
@@ -260,10 +276,28 @@ class RFHighDoseAlert(TestCase):
         # Obtain the response from the RF summary list filter for the older study - this includes the html of the page
         response = self.client.get(reverse('rf_detail_view', kwargs={'pk': pk_20160510}), follow=True)
 
-        # Cumulative DAP should be highlighted for the older study, together with total DAP and total DAP in summary over past two weeks
+        # Cumulative DAP should be highlighted for the older study, together with total DAP and total DAP in summary
+        # over past two weeks
         self.assertContains(response, self.dap_16_text, count=3)
 
-        # Cumulative RP dose should be highlighted for the older study, together with total dose at RP and total dose at RP in summary of past two weeks
+        # Cumulative RP dose should be highlighted for the older study, together with total dose at RP and
+        # total dose at RP in summary of past two weeks
         # The two entries in the summary table are rounded
         self.assertContains(response, self.rp_252_text, count=2)
         self.assertContains(response, self.rp_000_text, count=1)
+
+    def test_skin_dose(self):
+        """Test that the peak skin dose is calculated correctly
+        """
+        self.client.login(username='temporary', password='temporary')
+        # Obtain the pk
+        filter_set = ''
+        f = RFSummaryListFilter(filter_set, queryset=GeneralStudyModuleAttr.objects.filter(
+            modality_type__exact='RF').order_by().distinct())
+        pk_20160512 = f.qs.filter(study_date='2016-05-12').values_list('pk', flat=True)[0]
+
+        # Obtain peak skin dose
+        make_skin_map(pk_20160512)
+        skinresult = SkinDoseMapResults.objects.get(general_study_module_attributes=pk_20160512)
+        expected_max_value = Decimal(0.0016)
+        self.assertAlmostEqual(skinresult.peak_skin_dose, expected_max_value, places=7, msg=None)

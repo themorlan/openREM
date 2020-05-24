@@ -46,11 +46,12 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
     """
     Function to send users a fluoroscopy high dose alert e-mail
     """
-    from remapp.models import GeneralStudyModuleAttr, HighDoseMetricAlertSettings
+    from remapp.models import GeneralStudyModuleAttr, HighDoseMetricAlertSettings, SkinDoseMapResults
     from datetime import timedelta
     from django.contrib.auth.models import User
     from django.core.mail import EmailMultiAlternatives
     from django.template.loader import render_to_string
+    from django.core.exceptions import ObjectDoesNotExist
     from openremproject import settings
     from socket import error as socket_error
     from socket import gaierror as gai_error
@@ -65,7 +66,8 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
                 html_msg_content = render_to_string('remapp/email_test_template.html')
                 recipients = [test_user]
                 msg_subject = 'OpenREM e-mail test message'
-                msg = EmailMultiAlternatives(msg_subject, text_msg_content, settings.EMAIL_DOSE_ALERT_SENDER, recipients)
+                msg = EmailMultiAlternatives(msg_subject, text_msg_content, settings.EMAIL_DOSE_ALERT_SENDER,
+                                             recipients)
                 msg.attach_alternative(html_msg_content, 'text/html')
                 msg.send()
             except (SSLError, SMTPException, ValueError, gai_error, socket_error) as the_error:
@@ -81,13 +83,24 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
     else:
         return
+    try:
+        skinresult = SkinDoseMapResults.objects.get(general_study_module_attributes=study)
+        peak_skin_dose = skinresult.peak_skin_dose
+    except ObjectDoesNotExist:
+        peak_skin_dose = None
 
-    this_study_dap = study.projectionxrayradiationdose_set.get().accumxraydose_set.last().accumintegratedprojradiogdose_set.get().convert_gym2_to_cgycm2()
-    this_study_rp_dose = study.projectionxrayradiationdose_set.get().accumxraydose_set.last().accumintegratedprojradiogdose_set.get().dose_rp_total
-    accum_dap = study.projectionxrayradiationdose_set.get().accumxraydose_set.last().accumintegratedprojradiogdose_set.get().total_dap_delta_gym2_to_cgycm2()
-    accum_rp_dose = study.projectionxrayradiationdose_set.get().accumxraydose_set.last().accumintegratedprojradiogdose_set.get().dose_rp_total_over_delta_weeks
+    this_study_dap = study.projectionxrayradiationdose_set.get().accumxraydose_set.last().\
+        accumintegratedprojradiogdose_set.get().convert_gym2_to_cgycm2()
+    this_study_rp_dose = study.projectionxrayradiationdose_set.get().accumxraydose_set.last().\
+        accumintegratedprojradiogdose_set.get().dose_rp_total
+    accum_dap = study.projectionxrayradiationdose_set.get().accumxraydose_set.last().\
+        accumintegratedprojradiogdose_set.get().total_dap_delta_gym2_to_cgycm2()
+    accum_rp_dose = study.projectionxrayradiationdose_set.get().accumxraydose_set.last().\
+        accumintegratedprojradiogdose_set.get().dose_rp_total_over_delta_weeks
 
-    alert_levels = HighDoseMetricAlertSettings.objects.values('show_accum_dose_over_delta_weeks', 'alert_total_dap_rf', 'alert_total_rp_dose_rf', 'accum_dose_delta_weeks')[0]
+    alert_levels = HighDoseMetricAlertSettings.objects.values('show_accum_dose_over_delta_weeks', 'alert_total_dap_rf',
+                                                              'alert_total_rp_dose_rf', 'accum_dose_delta_weeks',
+                                                              'alert_skindose')[0]
 
     if alert_levels['show_accum_dose_over_delta_weeks']:
         patient_id = study.patientmoduleattr_set.values_list('patient_id', flat=True)[0]
@@ -95,7 +108,9 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
             study_date = study.study_date
             week_delta = HighDoseMetricAlertSettings.objects.values_list('accum_dose_delta_weeks', flat=True)[0]
             oldest_date = (study_date - timedelta(weeks=week_delta))
-            included_studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact='RF', patientmoduleattr__patient_id__exact=patient_id, study_date__range=[oldest_date, study_date])
+            included_studies = GeneralStudyModuleAttr.objects.filter(
+                modality_type__exact='RF', patientmoduleattr__patient_id__exact=patient_id,
+                study_date__range=[oldest_date, study_date])
         else:
             included_studies = None
             week_delta = None
@@ -103,10 +118,16 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
         included_studies = None
         week_delta = None
 
-    if this_study_dap >= alert_levels['alert_total_dap_rf'] or this_study_rp_dose >= alert_levels['alert_total_rp_dose_rf'] or accum_dap >= alert_levels['alert_total_dap_rf'] or accum_rp_dose >= alert_levels['alert_total_rp_dose_rf']:
+    # Python 3 can't compare None to int. Compare to 0 if variable is None
+    if this_study_dap >= alert_levels['alert_total_dap_rf'] \
+            or (this_study_rp_dose or 0) >= alert_levels['alert_total_rp_dose_rf'] \
+            or (accum_dap or 0) >= alert_levels['alert_total_dap_rf'] \
+            or (accum_rp_dose or 0) >= alert_levels['alert_total_rp_dose_rf'] \
+            or (peak_skin_dose or 0) >= alert_levels['alert_skindose']:
 
         projection_xray_dose_set = study.projectionxrayradiationdose_set.get()
-        accumxraydose_set_all_planes = projection_xray_dose_set.accumxraydose_set.select_related('acquisition_plane').all()
+        accumxraydose_set_all_planes = \
+            projection_xray_dose_set.accumxraydose_set.select_related('acquisition_plane').all()
 
         content_dict = {
             'study': study,
@@ -115,12 +136,14 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
             'week_delta': week_delta,
             'alert_levels': alert_levels,
             'studies_in_week_delta': included_studies,
-            'server_url': settings.EMAIL_OPENREM_URL
+            'server_url': settings.EMAIL_OPENREM_URL,
+            'peak_skin_dose': peak_skin_dose
         }
 
         text_msg_content = render_to_string('remapp/rf_dose_alert_email_template.txt', content_dict)
         html_msg_content = render_to_string('remapp/rf_dose_alert_email_template.html', content_dict)
-        recipients = User.objects.filter(highdosemetricalertrecipients__receive_high_dose_metric_alerts__exact=True).values_list('email', flat=True)
+        recipients = User.objects.filter(
+            highdosemetricalertrecipients__receive_high_dose_metric_alerts__exact=True).values_list('email', flat=True)
         msg_subject = 'OpenREM high dose alert'
         msg = EmailMultiAlternatives(msg_subject, text_msg_content, settings.EMAIL_DOSE_ALERT_SENDER, recipients)
         msg.attach_alternative(html_msg_content, 'text/html')

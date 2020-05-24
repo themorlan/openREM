@@ -104,13 +104,32 @@ class HighDoseMetricAlertSettings(SingletonModel):
     """
     Table to store high dose fluoroscopy alert settings
     """
-    alert_total_dap_rf = models.IntegerField(blank=True, null=True, default=20000, verbose_name="Alert level for total DAP from fluoroscopy examination (cGy.cm<sup>2</sup>)")
-    alert_total_rp_dose_rf = models.FloatField(blank=True, null=True, default=2.0, verbose_name="Alert level for total dose at reference point from fluoroscopy examination (Gy)")
-    accum_dose_delta_weeks = models.IntegerField(blank=True, null=True, default=12, verbose_name="Number of previous weeks over which to sum DAP and RP dose for each patient")
+    alert_total_dap_rf = models.IntegerField(
+        blank=True, null=True, default=20000,
+        verbose_name="Alert level for total DAP from fluoroscopy examination (cGy.cm<sup>2</sup>)")
+    alert_total_rp_dose_rf = models.FloatField(
+        blank=True, null=True, default=2.0,
+        verbose_name="Alert level for total dose at reference point from fluoroscopy examination (Gy)")
+    alert_skindose = models.FloatField(
+        blank=True, null=True, default=2.0,
+        verbose_name="Alert level for the peak skin dose from fluoroscopy examination (Gy)")
+    accum_dose_delta_weeks = models.IntegerField(
+        blank=True, null=True, default=12,
+        verbose_name="Number of previous weeks over which to sum DAP and RP dose for each patient")
     changed_accum_dose_delta_weeks = models.BooleanField(default=True)
-    show_accum_dose_over_delta_weeks = models.BooleanField(default=True, verbose_name="Enable display of summed DAP and RP dose in e-mail alerts and on summary and detail pages?")
-    calc_accum_dose_over_delta_weeks_on_import = models.BooleanField(default=True, verbose_name="Calculate summed DAP and RP dose for incoming fluoroscopy studies?")
-    send_high_dose_metric_alert_emails = models.BooleanField(default=False, verbose_name="Send notification e-mails when alert levels are exceeded?")
+    show_accum_dose_over_delta_weeks = models.BooleanField(
+        default=True,
+        verbose_name="Enable display of summed DAP and RP dose in e-mail alerts and on summary and detail pages?")
+    calc_accum_dose_over_delta_weeks_on_import = models.BooleanField(
+        default=True,
+        verbose_name="Calculate summed DAP and RP dose for incoming fluoroscopy studies?")
+    send_high_dose_metric_alert_emails_ref = models.BooleanField(
+        default=False,
+        verbose_name="Send notification e-mails when alert levels for total DAP or total dose at reference point are' \
+                         'exceeded?")
+    send_high_dose_metric_alert_emails_skin = models.BooleanField(
+        default=False,
+        verbose_name="Send notification e-mails when alert levels for peak skin dose are exceeded?")
 
     def get_absolute_url(self):
         return reverse('rf_alert_settings_update', kwargs={'pk': 1})
@@ -644,6 +663,25 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
             return 1000000*self.total_dap_delta_weeks
 
 
+class SkinDoseMapResults(models.Model):
+    """Table to hold the results from OpenSkin
+
+    """
+
+    general_study_module_attributes = models.ForeignKey(GeneralStudyModuleAttr, on_delete=models.CASCADE)
+    phantom_width = models.DecimalField(max_digits=16, decimal_places=1, blank=True, null=True)
+    phantom_height = models.DecimalField(max_digits=16, decimal_places=1, blank=True, null=True)
+    phantom_depth = models.DecimalField(max_digits=16, decimal_places=1, blank=True, null=True)
+    patient_mass = models.DecimalField(max_digits=16, decimal_places=1, blank=True, null=True)
+    patient_mass_assumed = models.CharField(max_length=16, null=True, blank=True)
+    patient_size = models.DecimalField(max_digits=16, decimal_places=1, blank=True, null=True)
+    patient_size_assumed = models.CharField(max_length=16, null=True, blank=True)
+    patient_orientation = models.CharField(max_length=16, blank=True, null=True)
+    patient_orientation_assumed = models.CharField(max_length=16, null=True, blank=True)
+    peak_skin_dose = models.DecimalField(max_digits=16, decimal_places=4, null=True, blank=True)
+    skin_map_version = models.CharField(max_length=16, null=True, blank=True)
+
+
 class ObjectUIDsProcessed(models.Model):
     """Table to hold the SOP Instance UIDs of the objects that have been processed against this study to enable
     duplicate sorting.
@@ -988,7 +1026,7 @@ class AccumProjXRayDose(models.Model):  # TID 10004
     # TODO: Ensure rdsr.py and dx.py use the other table and do not populate this one any further.
     dose_area_product_total = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
     dose_rp_total = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
-    total_number_of_radiographic_frames  = models.DecimalField(max_digits=6, decimal_places=0, blank=True, null=True)
+    total_number_of_radiographic_frames = models.DecimalField(max_digits=6, decimal_places=0, blank=True, null=True)
     reference_point_definition = models.TextField(blank=True, null=True)
     reference_point_definition_code = models.ForeignKey(ContextID, blank=True, null=True, on_delete=models.CASCADE)
 
@@ -1052,7 +1090,8 @@ class AccumIntegratedProjRadiogDose(models.Model):  # TID 10007
         if self.dose_area_product_total:
             return 1000000*self.dose_area_product_total
 
-    dose_area_product_total_over_delta_weeks = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+    dose_area_product_total_over_delta_weeks = models.DecimalField(max_digits=16, decimal_places=12, blank=True,
+                                                                   null=True)
     dose_rp_total_over_delta_weeks = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
 
     def total_dap_delta_gym2_to_cgycm2(self):

@@ -1618,9 +1618,11 @@ def _rdsr2db(dataset):
                 populate_rf_delta_weeks_summary(g)
 
         # Send an e-mail to all high dose alert recipients if this study is at or above threshold levels
-        send_alert_emails = \
-        HighDoseMetricAlertSettings.objects.values_list('send_high_dose_metric_alert_emails', flat=True)[0]
-        if send_alert_emails:
+        send_alert_emails_ref = \
+        HighDoseMetricAlertSettings.objects.values_list('send_high_dose_metric_alert_emails_ref', flat=True)[0]
+        send_alert_emails_skin = \
+        HighDoseMetricAlertSettings.objects.values_list('send_high_dose_metric_alert_emails_skin', flat=True)[0]
+        if send_alert_emails_ref and not send_alert_emails_skin:
             from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
             send_rf_high_dose_alert_email(g.pk)
 
