@@ -151,31 +151,24 @@ Upgrade
     * For a non-production SQLite3 database, simply make a copy of the database file
 
 * Stop any Celery workers
-
-* Consider temporarily disabling your DICOM Store SCP, or redirecting the data to be processed later
-
+* Disable DICOM Store SCP
 * Create a new virtualenv with Python 3:
 
-.. code-block:: console
-
-    python3 -m venv virtualenv3
-    . virtualenv3/bin/activate
-    # add location and Windows alternatives - go with strong recommendation for virtualenv this time...
-
-
-*Ubuntu one page instructions*::
+.. code-block:: none
 
     sudo systemctl stop openrem-celery
     sudo systemctl stop orthanc
-    . /var/dose/veopenrem/bin/activate
+    cd /var/dose
+    python3 -m venv veopenrem3
+    . veopenrem3/bin/activate
 
 * Install the new version of OpenREM:
 
     .. code-block:: console
 
+        pip install --upgrade pip
+        pip install http://github.com/pydicom/pynetdicom/tarball/master#egg=pynetdicom
         pip install openrem==1.0.0b1
-
-* Install ``gunicorn`` if required.
 
 .. _update_configuration0100:
 
@@ -189,18 +182,24 @@ Update the local_settings.py file
 Migrate the database
 ====================
 
-In a shell/command window, move into the ``openrem`` folder:
+In a shell/command window, move into the ``openrem`` folder - ``python3.6`` might be ``3.7`` or ``3.8``:
 
-* Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``
-* Other linux: ``/usr/lib/python2.7/site-packages/openrem/``
-* Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/``
-* Windows: ``C:\Python27\Lib\site-packages\openrem\``
-* Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\``
+.. code-block:: none
+
+    cd /var/dose/veopenrem3/lib/python3.6/site-packages/openrem/
 
 Prepare the migrations folder:
 
-* Delete everything except ``__init__.py`` in ``remapp/migrations``
+* Delete everything except ``__init__.py`` and ``0001_initial.py.1-0-upgrade`` in ``remapp/migrations``
 * Rename ``0001_initial.py.1-0-upgrade`` to ``0001_initial.py``
+
+.. code-block:: none
+
+    rm remapp/migrations/0*.py
+    rm remapp/migrations/0*.pyc
+    mv remapp/migrations/0001_initial.py{.1-0-upgrade,}
+
+Migrate the database:
 
 .. code-block:: console
 
@@ -212,10 +211,6 @@ Prepare the migrations folder:
 
 Update static files
 ===================
-
-In the same shell/command window as you used above run the following command to clear the static files
-belonging to your previous OpenREM version and replace them with those belonging to the version you have
-just installed (assuming you are using a production web server...):
 
 .. code-block:: console
 
@@ -242,6 +237,8 @@ just installed (assuming you are using a production web server...):
 
 Update all the services configurations
 ======================================
+
+********* TODO from here *********
 
 * Change paths to python, celery and flower binaries to Python 3 versions
 
