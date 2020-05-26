@@ -91,52 +91,62 @@ function updateOverTimeChart(nameList, overTimeData, seriesColours, urlStart, ch
     var dateAxis, currentValue, tempDate, dateAfter, dateBefore, temp, i, j;
     var chart = $("#"+chartDiv).highcharts();
 
-    // Replace all items in nameList that match an item in blankIndicators with "Blank"
-    nameList = replaceBlankNames(nameList);
-
-    dateAxis = [];
-    for (i = 0; i < overTimeData[0].length; i++) {
-        tempDate = new Date(Date.parse(overTimeData[0][i][0]));
-        tempDate = formatDate(tempDate);
-        dateAxis.push(tempDate);
+    if (overTimeData.length === 0) {
+        chart.xAxis[0].setCategories(dateAxis);
+        chart.addSeries({name: "No data", data: [null, null]});
+        chart.redraw({duration: 1000});
     }
-    chart.xAxis[0].setCategories(dateAxis);
 
-    for (i = 0; i < overTimeData.length; i++) {
-        temp = [];
-        for (j = 0; j < overTimeData[0].length; j++) {
-            tempDate = new Date(Date.parse(overTimeData[i][j][0]));
-            dateAfter = formatDate(tempDate);
-            dateBefore = formatDate(new Date((new Date((tempDate).setMonth((tempDate).getMonth() + 1))).setDate((new Date((tempDate).setMonth((tempDate).getMonth() + 1))).getDate() - 1)));
+    else {
+        // Replace all items in nameList that match an item in blankIndicators with "Blank"
+        nameList = replaceBlankNames(nameList);
 
-            currentValue = parseFloat(overTimeData[i][j][1]);
-            if (currentValue === 0 || isNaN(currentValue)) {currentValue = null;}
+        dateAxis = [];
+        for (i = 0; i < overTimeData[0].length; i++) {
+            tempDate = new Date(Date.parse(overTimeData[0][i][0]));
+            tempDate = formatDate(tempDate);
+            dateAxis.push(tempDate);
+        }
+        chart.xAxis[0].setCategories(dateAxis);
 
-            temp.push({
-                y: currentValue,
-                url: encodeURI(urlStart + nameList[i] + "&date_after=" + dateAfter + "&date_before=" + dateBefore)
+        for (i = 0; i < overTimeData.length; i++) {
+            temp = [];
+            for (j = 0; j < overTimeData[0].length; j++) {
+                tempDate = new Date(Date.parse(overTimeData[i][j][0]));
+                dateAfter = formatDate(tempDate);
+                dateBefore = formatDate(new Date((new Date((tempDate).setMonth((tempDate).getMonth() + 1))).setDate((new Date((tempDate).setMonth((tempDate).getMonth() + 1))).getDate() - 1)));
+
+                currentValue = parseFloat(overTimeData[i][j][1]);
+                if (currentValue === 0 || isNaN(currentValue)) {
+                    currentValue = null;
+                }
+
+                temp.push({
+                    y: currentValue,
+                    url: encodeURI(urlStart + nameList[i] + "&date_after=" + dateAfter + "&date_before=" + dateBefore)
+                });
+            }
+
+            chart.addSeries({
+                name: nameList[i],
+                color: seriesColours[i],
+                marker: {enabled: true},
+                point: {
+                    events: {
+                        click: function (e) {
+                            location.href = e.point.url;
+                            e.preventDefault();
+                        }
+                    }
+                },
+                data: temp
             });
         }
 
-        chart.addSeries({
-            name: nameList[i],
-            color: seriesColours[i],
-            marker: {enabled: true},
-            point: {
-                events: {
-                    click: function (e) {
-                        location.href = e.point.url;
-                        e.preventDefault();
-                    }
-                }
-            },
-            data: temp
-        });
+        chart.options.exporting.sourceWidth = $(window).width();
+        chart.options.exporting.sourceHeight = $(window).height();
+        chart.redraw({duration: 1000});
     }
-
-    chart.options.exporting.sourceWidth = $(window).width();
-    chart.options.exporting.sourceHeight = $(window).height();
-    chart.redraw({duration: 1000});
 }
 
 
