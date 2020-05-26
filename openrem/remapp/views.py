@@ -310,7 +310,7 @@ def dx_plot_calculations(f, plot_acquisition_mean_dap, plot_acquisition_freq,
         except MultiValueDictKeyError:
             study_events = f.qs
         except KeyError:
-            pass
+            study_events = f.qs
 
     if plot_request_mean_dap or plot_request_freq:
         try:
