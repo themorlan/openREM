@@ -150,25 +150,27 @@ Upgrade
     * For PostgreSQL on Windows you can refer to :doc:`backupRestorePostgreSQL`
     * For a non-production SQLite3 database, simply make a copy of the database file
 
-* Stop any Celery workers
+* Stop any Celery workers, Flower and Gunicorn
 * Disable DICOM Store SCP
 * Create a new virtualenv with Python 3:
 
 .. code-block:: none
 
     sudo systemctl stop openrem-celery
+    sudo systemctl stop openrem-flower
+    sudo systemctl stop openrem-gunicorn
     sudo systemctl stop orthanc
     cd /var/dose
     python3 -m venv veopenrem3
     . veopenrem3/bin/activate
 
-* Install the new version of OpenREM:
+Install the new version of OpenREM:
 
-    .. code-block:: console
+.. code-block:: console
 
-        pip install --upgrade pip
-        pip install http://github.com/pydicom/pynetdicom/tarball/master#egg=pynetdicom
-        pip install openrem==1.0.0b1
+    pip install --upgrade pip
+    pip install http://github.com/pydicom/pynetdicom/tarball/master#egg=pynetdicom
+    pip install openrem==1.0.0b1
 
 .. _update_configuration0100:
 
@@ -238,22 +240,53 @@ Update static files
 Update all the services configurations
 ======================================
 
-********* TODO from here *********
+Edit the Gunicorn systemd file ``WorkingDirectory`` and ``ExecStart``. Modify the Python 3 version in the path:
 
-* Change paths to python, celery and flower binaries to Python 3 versions
+``sudo nano /etc/systemd/system/openrem-gunicorn.service``
 
-Restart all the services
-========================
+.. code-block:: none
 
-Follow the guide at :doc:`startservices`.
+    WorkingDirectory=/var/dose/veopenrem3/lib/python3.6/site-packages/openrem
 
-    *Ubuntu one page instructions*::
+    ExecStart=/var/dose/veopenrem3/bin/gunicorn \
+        --bind unix:/tmp/openrem-server.socket \
+        openremproject.wsgi:application --timeout 300 --workers 4
 
-        sudo systemctl start openrem-celery
-        sudo systemctl start orthanc
-        sudo systemctl restart openrem-gunicorn
+Edit the Celery configuration file ``CELERY_BIN``:
+
+``nano /var/dose/celery/celery.conf``
+
+.. code-block:: none
+
+    CELERY_BIN="/var/dose/veopenrem3/bin/celery"
+
+Edit the Celery systemd file ``WorkingDirectory``. Modify the Python 3 version in the path:
+
+``sudo nano /etc/systemd/system/openrem-celery.service``
+
+.. code-block:: none
+
+    WorkingDirectory=/var/dose/veopenrem3/lib/python3.6/site-packages/openrem
+
+Edit the Flower systemd file ``WorkingDirectory``. Modify the Python 3 version in the path:
+
+``sudo nano /etc/systemd/system/openrem-flower.service``
+
+.. code-block:: none
+
+    WorkingDirectory=/var/dose/veopenrem3/lib/python3.6/site-packages/openrem
+
+Reload systemd and restart the services
+=======================================
+
+.. code-block:: none
+
+    sudo systemctl daemon-reload
+    sudo systemctl restart openrem-gunicorn.service
+    sudo systemctl restart nginx.service
+    sudo systemctl start openrem-celery.service
+    sudo systemctl start openrem-flower.service
+    sudo systemctl start orthanc.service
+
 
 .. _post_upgrade0100:
-
-
-.. _CP1676: https://www.dicomstandard.org/cps/
