@@ -76,16 +76,9 @@ class CalcExpMap:
         :return:
         """
         pat_pos = pat_pos.upper()
-        if pat_pos == "FFS":
+        if pat_pos in ["FFS", "HFP"]:
             delta_x = -delta_x
-            delta_y = -delta_y
-        elif pat_pos == "HFP":
-            delta_z = -delta_z
-            delta_x = -delta_x
-        elif pat_pos == "FFP":
-            delta_y = -delta_y
-            delta_z = -delta_z
-        elif pat_pos == "HFS":
+        elif pat_pos in ["FFP", "HFS"]:
             pass
         else:
             print("No orientation known. Quitting skin dose calculator")

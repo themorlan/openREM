@@ -158,24 +158,20 @@ class Phantom3:
 
         if pat_pos == "HFS":
             prone = False
-            pat_pos_z = 1.
             pat_pos_y = 1.
             origin[1] = origin[1] - 24 * height / ref_height
         elif pat_pos == "FFS":
             prone = False
-            pat_pos_z = 1.
             pat_pos_y = -1.
-            origin[1] = origin[1] - 174 * height / ref_height
+            origin[1] = origin[1] + 174 * height / ref_height
         elif pat_pos == "HFP":
             prone = True
-            pat_pos_z = -1.
             pat_pos_y = 1.
             origin[1] = origin[1] - 24 * height / ref_height
         elif pat_pos == "FFP":
             prone = True
-            pat_pos_z = -1.
             pat_pos_y = -1.
-            origin[1] = origin[1] - 174 * height / ref_height
+            origin[1] = origin[1] + 174 * height / ref_height
         else:
             raise ValueError('patient position has an unknown value ({patpos})'.format(patpos=pat_pos))
 
@@ -211,41 +207,41 @@ class Phantom3:
             z_offset = -origin[2]
 
             if row_index < transition1:
-                my_z = (2. * radius + z_offset) * pat_pos_z
+                my_z = (2. * radius + z_offset)
                 my_x = row_index * flat_spacing - (round_flat / 2.) + round(round_flat / 2., 0)
                 my_y = col_index * pat_pos_y
-                normal = Segment3(np.array([my_x, my_y, my_z + pat_pos_z]), np.array([my_x, my_y, my_z]))
+                normal = Segment3(np.array([my_x, my_y, my_z + 1]), np.array([my_x, my_y, my_z]))
             elif transition1 <= row_index < transition2:
                 my_y = col_index * pat_pos_y
                 my_x = flat_spacing * round(transition1, 0) - 1 + radius * math.sin(
                     angle_step * (row_index - round(transition1, 0) + 1)) - (round_flat / 2.) + round(round_flat / 2.,
                                                                                                       0)
                 my_z = (2. * radius + z_offset + radius * math.cos(
-                    angle_step * (row_index - round(transition1, 0) + 1)) - radius) * pat_pos_z
+                    angle_step * (row_index - round(transition1, 0) + 1)) - radius)
                 normal_x = my_x + math.sin(angle_step * (row_index - round(transition1, 0) + 1))
-                normal_z = my_z + pat_pos_z * math.cos(angle_step * (row_index - round(transition1, 0) + 1))
+                normal_z = my_z + math.cos(angle_step * (row_index - round(transition1, 0) + 1))
                 normal = Segment3(np.array([normal_x, my_y, normal_z]), np.array([my_x, my_y, my_z]))
             elif transition2 <= row_index < transition3:
-                my_z = z_offset * pat_pos_z
+                my_z = z_offset
                 my_x = flat_width - (row_index - round_circumference) * flat_spacing + ((round_flat / 2.) - round(
                     round_flat / 2., 0)) * (row_index - round_circumference) / abs(row_index - round_circumference)
                 my_y = col_index * pat_pos_y
-                normal = Segment3(np.array([my_x, my_y, my_z - pat_pos_z]), np.array([my_x, my_y, my_z]))
+                normal = Segment3(np.array([my_x, my_y, my_z - 1]), np.array([my_x, my_y, my_z]))
             elif transition3 <= row_index < transition4:
                 my_y = col_index * pat_pos_y
                 my_x = -flat_spacing * round(round_flat / 2, 0) - radius * math.sin(
                     angle_step * (row_index - round(transition3, 0) + 1)) - (round_flat / 2.) + round(round_flat / 2.,
                                                                                                       0)
                 my_z = (z_offset - radius * math.cos(
-                    angle_step * (row_index - round(transition3, 0) + 1)) + radius) * pat_pos_z
+                    angle_step * (row_index - round(transition3, 0) + 1)) + radius)
                 normal_x = my_x - math.sin(angle_step * (row_index - round(transition3, 0) + 1))
-                normal_z = my_z - pat_pos_z * math.cos(angle_step * (row_index - round(transition3, 0) + 1))
+                normal_z = my_z - math.cos(angle_step * (row_index - round(transition3, 0) + 1))
                 normal = Segment3(np.array([normal_x, my_y, normal_z]), np.array([my_x, my_y, my_z]))
             else:
-                my_z = (2. * radius + z_offset) * pat_pos_z
+                my_z = (2. * radius + z_offset)
                 my_x = (row_index - self.width) * flat_spacing - (round_flat / 2.) + round(round_flat / 2., 0)
                 my_y = col_index * pat_pos_y
-                normal = Segment3(np.array([my_x, my_y, my_z + pat_pos_z]), np.array([my_x, my_y, my_z]))
+                normal = Segment3(np.array([my_x, my_y, my_z + 1]), np.array([my_x, my_y, my_z]))
             self.phantom_map[iterator.multi_index[0], iterator.multi_index[1]] = np.array([my_x, my_y, my_z])
             self.normal_map[iterator.multi_index[0], iterator.multi_index[1]] = normal
             iterator.iternext()
