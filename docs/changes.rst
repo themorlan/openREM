@@ -4,6 +4,7 @@ OpenREM version history
 
 1.0.0b1 (2020-xx-xx)
 --------------------
+* :issue:`838`  Imports: fixed issues with changed PersonName behaviour in pydicom 2.0
 * :issue:`827`  SkinDose: Made SkinDose results available in OpenREM and made alert triggering possible
 * :issue:`826`  Code quality: split views to make more manageable and testable
 * :issue:`824`  DICOM Networking: enabled declaration and testing of Orthanc Store SCP in Docker
