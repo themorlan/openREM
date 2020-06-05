@@ -43,7 +43,9 @@ def hash_id(id_string, *args, **kwargs):
 
     if id_string:
         # print("hash_id id_string before is of type {0}".format(type(id_string)))
-        if isinstance(id_string, (pydicom.multival.MultiValue, list, pydicom.valuerep.PersonNameUnicode)):
+        if isinstance(id_string, pydicom.valuerep.PersonName):
+            id_string = str(id_string)
+        if isinstance(id_string, (pydicom.multival.MultiValue, list)):
             id_string = ''.join(id_string)
         id_string = smart_bytes(id_string, encoding='utf-8')
         return hashlib.sha256(id_string).hexdigest()
