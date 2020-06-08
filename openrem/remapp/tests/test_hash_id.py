@@ -3,7 +3,8 @@
 
 from __future__ import unicode_literals
 from django.test import TestCase
-from pydicom.valuerep import MultiString
+from pydicom.multival import MultiValue
+from pydicom.valuerep import MultiString, PersonName
 from remapp.tools.hash_id import hash_id
 
 class HashIDTests(TestCase):
@@ -39,4 +40,12 @@ class HashIDTests(TestCase):
         """
         id = u'123íä日本語文字列'
         hashed_id = 'a74d459c48304dfdb56808558f783e1761eef18b4a59f5c1b3fef348b809f434'
-        self.assertEqual(hash_id(id),hashed_id)
+        self.assertEqual(hash_id(id), hashed_id)
+
+    def test_multivalue_names(self):
+        """
+        Test hash of multivalued name
+        :return:
+        """
+        multiname = MultiValue(PersonName, [PersonName('Müller'), PersonName('Smith')])
+        self.assertEqual(hash_id(multiname), '1234')
