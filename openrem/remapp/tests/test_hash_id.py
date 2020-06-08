@@ -56,5 +56,4 @@ class HashIDTests(TestCase):
         :return:
         """
         multiname = MultiValue(PersonName, [PersonName('Müller'), PersonName('Smith')])
-        print(multiname)
         self.assertEqual(hash_id(multiname), 'b0b1b8027aecb0fef1831a0165deee00a77842d17409f3f3c8a186a6b5b4cda3')
