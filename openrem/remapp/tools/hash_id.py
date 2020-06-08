@@ -55,3 +55,4 @@ def hash_id(id_string):
                 id_string = id_string_concat
         id_string = smart_bytes(id_string, encoding='utf-8')
         return hashlib.sha256(id_string).hexdigest()
+    return None
