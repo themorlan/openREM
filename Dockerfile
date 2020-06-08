@@ -31,8 +31,6 @@ ENV PATH="$APP_VENV/bin:$PATH"
 # install dependencies
 # hadolint ignore=DL3013
 RUN pip install --upgrade pip
-# hadolint ignore=DL3013
-# RUN pip install --no-cache-dir http://github.com/pydicom/pynetdicom/tarball/master#egg=pynetdicom
 COPY --chown=app:app ./requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
