@@ -46,6 +46,12 @@ def hash_id(id_string, *args, **kwargs):
         if isinstance(id_string, pydicom.valuerep.PersonName):
             id_string = str(id_string)
         if isinstance(id_string, (pydicom.multival.MultiValue, list)):
-            id_string = ''.join(id_string)
+            try:
+                id_string = ''.join(id_string)
+            except TypeError:
+                id_string_concat = ''
+                for name in id_string:
+                    id_string_concat += str(name)
+                id_string = id_string_concat
         id_string = smart_bytes(id_string, encoding='utf-8')
         return hashlib.sha256(id_string).hexdigest()

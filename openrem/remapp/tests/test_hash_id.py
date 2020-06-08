@@ -42,10 +42,19 @@ class HashIDTests(TestCase):
         hashed_id = 'a74d459c48304dfdb56808558f783e1761eef18b4a59f5c1b3fef348b809f434'
         self.assertEqual(hash_id(id), hashed_id)
 
+    def test_hash_name(self):
+        """
+        Test hash of PersonName
+        :return:
+        """
+        name = PersonName('Fysiikka^kuvanlaatu')
+        self.assertEqual(hash_id(name), '6a67e5fff39b58e1a6ab96373f263f391036b8a138c7c5e298a88dbb12416a49')
+
     def test_multivalue_names(self):
         """
-        Test hash of multivalued name
+        Test hash of multivalued name. Shouldn't be used, but shouldn't cause error.
         :return:
         """
         multiname = MultiValue(PersonName, [PersonName('Müller'), PersonName('Smith')])
-        self.assertEqual(hash_id(multiname), '1234')
+        print(multiname)
+        self.assertEqual(hash_id(multiname), 'b0b1b8027aecb0fef1831a0165deee00a77842d17409f3f3c8a186a6b5b4cda3')
