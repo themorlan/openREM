@@ -202,8 +202,7 @@ def list_to_string(dicom_value):
             name_str += ' | '
         name_str = name_str[:-3]
         return name_str
-    else:
-        return dicom_value
+    return dicom_value
 
 
 def get_keys_by_value(dict_of_elements, value_to_find):
