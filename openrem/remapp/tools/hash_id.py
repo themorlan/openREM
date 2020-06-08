@@ -30,7 +30,7 @@
 """
 
 
-def hash_id(id_string, *args, **kwargs):
+def hash_id(id_string):
     """Return a one-way hash of the provided ID value
 
     :param id_string:         ID to create hash from
