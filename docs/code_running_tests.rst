@@ -2,6 +2,8 @@
 Running the test suite
 **********************
 
+**TODO: Update for Python 3, OpenREM 1.0**
+
 Preparation
 ===========
 
