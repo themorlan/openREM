@@ -2,6 +2,9 @@
 Installing OpenREM
 ******************
 
+**Doc to be deleted...** Not linked from anywhere
+
+
 Windows only - install Celery
 =============================
 For Linux users, the correct version of Celery will be install automatically with OpenREM.
