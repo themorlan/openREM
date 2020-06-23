@@ -47,7 +47,7 @@ Export the database
 
 * Dump the database:
 
-    * Use the username (``-U openremuser``) and database name (``-d openremuser``) from ``local_settings.py``
+    * Use the username (``-U openremuser``) and database name (``-d openremdb``) from ``local_settings.py``
     * Use the password from ``local_settings.py`` when prompted
     * For linux, the command is ``pg_dump`` (no ``.exe``)
     * Set the path to somewhere suitable to dump the exported database file
@@ -136,40 +136,46 @@ Upgrading an OpenREM server that uses a different database
 
 
 
-***************************************************************
-Old style, deprecated, to be pruned down for Ubuntu alternative
-***************************************************************
+*******************************************
+Upgrading without using Docker - linux only
+*******************************************
 
+Upgrading without using Docker is not recommended, and not supported on Windows. Instructions are only provided for
+Linux and assume a configuration similar to the 'One page complete Ubuntu install' provided with release 0.8.1 and
+later.
 
-Upgrade
-=======
+Preparation
+===========
 
-* Back up your database
+Back up the database:
 
-    * For PostgreSQL on linux you can refer to :ref:`backup-psql-db`
-    * For PostgreSQL on Windows you can refer to :doc:`backupRestorePostgreSQL`
-    * For a non-production SQLite3 database, simply make a copy of the database file
+.. code-block:: none
 
-* Stop any Celery workers, Flower and Gunicorn
-* Disable DICOM Store SCP
-* Create a new virtualenv with Python 3:
+    pg_dump -U openremuser -d openremdb -F c -f pre-1-0-upgrade-dump.bak
+
+Stop any Celery workers, Flower and Gunicorn, disable DICOM Store SCP:
 
 .. code-block:: none
 
     sudo systemctl stop openrem-celery
     sudo systemctl stop openrem-flower
     sudo systemctl stop openrem-gunicorn
-    sudo systemctl stop orthanc
+    sudo systmectl stop orthanc
+
+Create a new virtualenv with Python 3:
+
+.. code-block:: none
+
     cd /var/dose
     python3 -m venv veopenrem3
     . veopenrem3/bin/activate
 
-Install the new version of OpenREM:
+Install the new version of OpenREM
+==================================
 
 .. code-block:: console
 
     pip install --upgrade pip
-    pip install http://github.com/pydicom/pynetdicom/tarball/master#egg=pynetdicom
     pip install openrem==1.0.0b1
 
 .. _update_configuration0100:
@@ -184,7 +190,7 @@ Update the local_settings.py file
 Migrate the database
 ====================
 
-In a shell/command window, move into the ``openrem`` folder - ``python3.6`` might be ``3.7`` or ``3.8``:
+In a shell/command window, move into the ``openrem`` folder:
 
 .. code-block:: none
 

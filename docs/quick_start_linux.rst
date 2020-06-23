@@ -1,15 +1,23 @@
 One page complete Ubuntu install
 ================================
 
-A one page install based on Ubuntu 18.04 using:
+This setup is no longer recommended - the Docker :doc:`installation` method is instead. If a non-Docker installation is
+required then this guide can be followed.
 
-* Python 2.7 running in a virtualenv
+This install is based on Ubuntu 18.04 using:
+
+* Python 3.6 running in a virtualenv
 * Database: PostgreSQL
 * DICOM Store SCP: Orthanc running on port 104
 * Webserver: NGINX with Gunicorn
 * Daemonisation: systemd scripts for Celery and Gunicorn
 * All OpenREM files in ``/var/dose/`` with group owner of ``openrem``
 * Collects any Physics (QA) images and zips them
+
+The instructions should work for Ubuntu 20.04 too; any references in paths to python3.6 will need to be python3.8
+instead.
+
+**1.0 release review only to this point so far**
 
 Initial prep
 ^^^^^^^^^^^^
