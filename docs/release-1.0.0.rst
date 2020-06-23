@@ -162,12 +162,13 @@ Stop any Celery workers, Flower and Gunicorn, disable DICOM Store SCP:
     sudo systemctl stop openrem-gunicorn
     sudo systmectl stop orthanc
 
-Create a new virtualenv with Python 3:
+Install Python 3.8 and create a new virtualenv:
 
 .. code-block:: none
 
+    sudo apt-get install python3.8 python3.8-dev python3.8-distutils python3.8-venv
     cd /var/dose
-    python3 -m venv veopenrem3
+    python3.8 -m venv veopenrem3
     . veopenrem3/bin/activate
 
 Install the new version of OpenREM
@@ -194,7 +195,7 @@ In a shell/command window, move into the ``openrem`` folder:
 
 .. code-block:: none
 
-    cd /var/dose/veopenrem3/lib/python3.6/site-packages/openrem/
+    cd /var/dose/veopenrem3/lib/python3.8/site-packages/openrem/
 
 Prepare the migrations folder:
 
@@ -246,13 +247,13 @@ Update static files
 Update all the services configurations
 ======================================
 
-Edit the Gunicorn systemd file ``WorkingDirectory`` and ``ExecStart``. Modify the Python 3 version in the path:
+Edit the Gunicorn systemd file ``WorkingDirectory`` and ``ExecStart``:
 
 ``sudo nano /etc/systemd/system/openrem-gunicorn.service``
 
 .. code-block:: none
 
-    WorkingDirectory=/var/dose/veopenrem3/lib/python3.6/site-packages/openrem
+    WorkingDirectory=/var/dose/veopenrem3/lib/python3.8/site-packages/openrem
 
     ExecStart=/var/dose/veopenrem3/bin/gunicorn \
         --bind unix:/tmp/openrem-server.socket \
@@ -266,21 +267,21 @@ Edit the Celery configuration file ``CELERY_BIN``:
 
     CELERY_BIN="/var/dose/veopenrem3/bin/celery"
 
-Edit the Celery systemd file ``WorkingDirectory``. Modify the Python 3 version in the path:
+Edit the Celery systemd file ``WorkingDirectory``:
 
 ``sudo nano /etc/systemd/system/openrem-celery.service``
 
 .. code-block:: none
 
-    WorkingDirectory=/var/dose/veopenrem3/lib/python3.6/site-packages/openrem
+    WorkingDirectory=/var/dose/veopenrem3/lib/python3.8/site-packages/openrem
 
-Edit the Flower systemd file ``WorkingDirectory``. Modify the Python 3 version in the path:
+Edit the Flower systemd file ``WorkingDirectory``:
 
 ``sudo nano /etc/systemd/system/openrem-flower.service``
 
 .. code-block:: none
 
-    WorkingDirectory=/var/dose/veopenrem3/lib/python3.6/site-packages/openrem
+    WorkingDirectory=/var/dose/veopenrem3/lib/python3.8/site-packages/openrem
 
 Reload systemd and restart the services
 =======================================
