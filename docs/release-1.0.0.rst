@@ -166,7 +166,7 @@ Install Python 3.8 and create a new virtualenv:
 
 .. code-block:: none
 
-    sudo apt-get install python3.8 python3.8-dev python3.8-distutils python3.8-venv
+    sudo apt install python3.8 python3.8-dev python3.8-distutils python3.8-venv
     cd /var/dose
     python3.8 -m venv veopenrem3
     . veopenrem3/bin/activate

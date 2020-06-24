@@ -6,7 +6,7 @@ required then this guide can be followed.
 
 This install is based on Ubuntu 18.04 using:
 
-* Python 3.6 running in a virtualenv
+* Python 3.8 running in a virtualenv
 * Database: PostgreSQL
 * DICOM Store SCP: Orthanc running on port 104
 * Webserver: NGINX with Gunicorn
@@ -14,8 +14,7 @@ This install is based on Ubuntu 18.04 using:
 * All OpenREM files in ``/var/dose/`` with group owner of ``openrem``
 * Collects any Physics (QA) images and zips them
 
-The instructions should work for Ubuntu 20.04 too; any references in paths to python3.6 will need to be python3.8
-instead.
+The instructions should work for Ubuntu 20.04 too, references to bionic will be focal instead.
 
 
 Initial prep
@@ -88,13 +87,12 @@ be added to the ``openrem`` group, and the 'sticky' group setting below will ena
 
 Install apt packages and direct downloads
 -----------------------------------------
-The ``\`` just allows the ``sudo apt install`` command to spread to two lines -- feel free to put it all on one line.
 
 .. code-block:: console
 
     sudo apt update
     sudo apt upgrade
-    sudo apt-get install python3.8 python3.8-dev python3.8-distutils python3.8-venv
+    sudo apt install python3.8 python3.8-dev python3.8-distutils python3.8-venv
     sudo apt install rabbitmq-server postgresql nginx orthanc dcmtk default-jre zip
 
     cd /var/dose/pixelmed
