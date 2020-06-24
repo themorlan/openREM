@@ -1,15 +1,21 @@
 One page complete Ubuntu install
 ================================
 
-A one page install based on Ubuntu 18.04 using:
+This setup is no longer recommended - the Docker :doc:`installation` method is instead. If a non-Docker installation is
+required then this guide can be followed.
 
-* Python 2.7 running in a virtualenv
+This install is based on Ubuntu 18.04 using:
+
+* Python 3.8 running in a virtualenv
 * Database: PostgreSQL
 * DICOM Store SCP: Orthanc running on port 104
 * Webserver: NGINX with Gunicorn
 * Daemonisation: systemd scripts for Celery and Gunicorn
 * All OpenREM files in ``/var/dose/`` with group owner of ``openrem``
 * Collects any Physics (QA) images and zips them
+
+The instructions should work for Ubuntu 20.04 too, references to bionic will be focal instead.
+
 
 Initial prep
 ^^^^^^^^^^^^
@@ -73,7 +79,7 @@ be added to the ``openrem`` group, and the 'sticky' group setting below will ena
     mkdir -p orthanc/physics
     mkdir pixelmed
     mkdir static
-    mkdir veopenrem
+    mkdir veopenrem3
     sudo chown -R $USER:openrem /var/dose/*
     sudo chmod -R g+s /var/dose/*
     sudo setfacl -R -dm u::rwx,g::rwx,o::r /var/dose/
@@ -81,14 +87,13 @@ be added to the ``openrem`` group, and the 'sticky' group setting below will ena
 
 Install apt packages and direct downloads
 -----------------------------------------
-The ``\`` just allows the ``sudo apt install`` command to spread to two lines -- feel free to put it all on one line.
 
 .. code-block:: console
 
     sudo apt update
     sudo apt upgrade
-    sudo apt install python python-pip virtualenv rabbitmq-server \
-    postgresql nginx orthanc dcmtk default-jre zip
+    sudo apt install python3.8 python3.8-dev python3.8-distutils python3.8-venv
+    sudo apt install rabbitmq-server postgresql nginx orthanc dcmtk default-jre zip
 
     cd /var/dose/pixelmed
     wget http://www.dclunie.com/pixelmed/software/webstart/pixelmed.jar
@@ -100,7 +105,7 @@ Create a virtualenv (Python local environment) in the folder we created:
 
 .. code-block:: console
 
-    virtualenv /var/dose/veopenrem
+    python3.8 -m venv /var/dose/veopenrem3
 
 .. _activatevirtualenv:
 
@@ -111,21 +116,15 @@ Activate the virtualenv (note the ``.`` -- you can also use the word ``source``)
 
 .. code-block:: console
 
-    . /var/dose/veopenrem/bin/activate
+    . /var/dose/veopenrem3/bin/activate
 
 Install Python packages
 -----------------------
 
 .. code-block:: console
 
-    pip install numpy psycopg2-binary gunicorn
+    pip install --upgrade pip
     pip install openrem
-    pip install git+git://github.com/pydicom/pynetdicom.git@master#egg=pynetdicom
-
-.. note::
-
-    There will be error messages when you install pynetdicom from this source. As long as the final line is
-    ``Successfully installed pynetdicom-0.8.2b2`` then everything is ok!
 
 Add orthanc and www-data users to openrem group
 -----------------------------------------------
@@ -176,7 +175,7 @@ First navigate to the Python openrem folder and copy the example local_settings 
 
 .. code-block:: console
 
-    cd /var/dose/veopenrem/lib/python2.7/site-packages/openrem/
+    cd /var/dose/veopenrem3/lib/python3.8/site-packages/openrem/
     cp openremproject/local_settings.py{.example,}
     cp openremproject/wsgi.py{.example,}
 
@@ -243,7 +242,7 @@ Edit the new local_settings file (``nano openremproject/local_settings.py``)
 
 Now create the database. Make sure you are still in the openrem python folder and
 the virtualenv is active (prompt will look like
-``(veopenrem)username@hostname:/var/dose/veopenrem/lib/python2.7/site-packages/openrem/$``). Otherwise see
+``(veopenrem3)username@hostname:/var/dose/veopenrem3/lib/python3.8/site-packages/openrem/$``). Otherwise see
 :ref:`activatevirtualenv` and navigate back to that folder:
 
 .. code-block:: console
@@ -306,9 +305,9 @@ Create the Gunicorn systemd service file:
     [Service]
     Restart=on-failure
     User=www-data
-    WorkingDirectory=/var/dose/veopenrem/lib/python2.7/site-packages/openrem
+    WorkingDirectory=/var/dose/veopenrem3/lib/python3.8/site-packages/openrem
 
-    ExecStart=/var/dose/veopenrem/bin/gunicorn \
+    ExecStart=/var/dose/veopenrem3/bin/gunicorn \
         --bind unix:/tmp/openrem-server.socket \
         openremproject.wsgi:application --timeout 300 --workers 4
 
@@ -362,7 +361,7 @@ First, create a Celery configuration file:
     CELERYD_NODES="default"
 
     # Absolute or relative path to the 'celery' command:
-    CELERY_BIN="/var/dose/veopenrem/bin/celery"
+    CELERY_BIN="/var/dose/veopenrem3/bin/celery"
 
     # App instance to use
     CELERY_APP="openremproject"
@@ -402,7 +401,7 @@ Now create the systemd service files:
     User=www-data
     Group=www-data
     EnvironmentFile=/var/dose/celery/celery.conf
-    WorkingDirectory=/var/dose/veopenrem/lib/python2.7/site-packages/openrem
+    WorkingDirectory=/var/dose/veopenrem3/lib/python3.8/site-packages/openrem
     ExecStart=/bin/sh -c '${CELERY_BIN} multi start ${CELERYD_NODES} \
       -A ${CELERY_APP} --pidfile=${CELERYD_PID_FILE} \
       --logfile=${CELERYD_LOG_FILE} --loglevel=${CELERYD_LOG_LEVEL} ${CELERYD_OPTS}'
@@ -427,7 +426,7 @@ Now create the systemd service files:
     User=www-data
     Group=www-data
     EnvironmentFile=/var/dose/celery/celery.conf
-    WorkingDirectory=/var/dose/veopenrem/lib/python2.7/site-packages/openrem
+    WorkingDirectory=/var/dose/veopenrem3/lib/python3.8/site-packages/openrem
     ExecStart=/bin/sh -c '${CELERY_BIN} flower -A ${CELERY_APP} --port=${FLOWER_PORT} \
       --address=127.0.0.1 --log-file-prefix=${FLOWER_LOG_PREFIX} --loglevel=${FLOWER_LOG_LEVEL}'
     Restart=on-failure
@@ -466,10 +465,10 @@ There are other settings too that you might like to change in the second section
     -- OpenREM python environment and other settings
 
     -- Set this to the path and name of the python executable used by OpenREM
-    local python_executable = '/var/dose/veopenrem/bin/python'
+    local python_executable = '/var/dose/veopenrem3/bin/python'
 
     -- Set this to the path of the python scripts folder used by OpenREM
-    local python_scripts_path = '/var/dose/veopenrem/bin/'
+    local python_scripts_path = '/var/dose/veopenrem3/bin/'
 
     -- Set this to the path where you want Orthanc to temporarily store DICOM files
     local temp_path = '/var/dose/orthanc/dicom/'

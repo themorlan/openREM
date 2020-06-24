@@ -47,7 +47,7 @@ Export the database
 
 * Dump the database:
 
-    * Use the username (``-U openremuser``) and database name (``-d openremuser``) from ``local_settings.py``
+    * Use the username (``-U openremuser``) and database name (``-d openremdb``) from ``local_settings.py``
     * Use the password from ``local_settings.py`` when prompted
     * For linux, the command is ``pg_dump`` (no ``.exe``)
     * Set the path to somewhere suitable to dump the exported database file
@@ -136,46 +136,48 @@ Upgrading an OpenREM server that uses a different database
 
 
 
-***************************************************************
-Old style, deprecated, to be pruned down for Ubuntu alternative
-***************************************************************
+*******************************************
+Upgrading without using Docker - linux only
+*******************************************
 
+Upgrading without using Docker is not recommended, and not supported on Windows. Instructions are only provided for
+Linux and assume a configuration similar to the 'One page complete Ubuntu install' provided with release 0.8.1 and
+later.
 
-Upgrade
-=======
+Preparation
+===========
 
-* Back up your database
+Back up the database:
 
-    * For PostgreSQL on linux you can refer to :ref:`backup-psql-db`
-    * For PostgreSQL on Windows you can refer to :doc:`backupRestorePostgreSQL`
-    * For a non-production SQLite3 database, simply make a copy of the database file
+.. code-block:: none
 
-* Stop any Celery workers
+    pg_dump -U openremuser -d openremdb -F c -f pre-1-0-upgrade-dump.bak
 
-* Consider temporarily disabling your DICOM Store SCP, or redirecting the data to be processed later
+Stop any Celery workers, Flower and Gunicorn, disable DICOM Store SCP:
 
-* Create a new virtualenv with Python 3:
+.. code-block:: none
+
+    sudo systemctl stop openrem-celery
+    sudo systemctl stop openrem-flower
+    sudo systemctl stop openrem-gunicorn
+    sudo systmectl stop orthanc
+
+Install Python 3.8 and create a new virtualenv:
+
+.. code-block:: none
+
+    sudo apt install python3.8 python3.8-dev python3.8-distutils python3.8-venv
+    cd /var/dose
+    python3.8 -m venv veopenrem3
+    . veopenrem3/bin/activate
+
+Install the new version of OpenREM
+==================================
 
 .. code-block:: console
 
-    python3 -m venv virtualenv3
-    . virtualenv3/bin/activate
-    # add location and Windows alternatives - go with strong recommendation for virtualenv this time...
-
-
-*Ubuntu one page instructions*::
-
-    sudo systemctl stop openrem-celery
-    sudo systemctl stop orthanc
-    . /var/dose/veopenrem/bin/activate
-
-* Install the new version of OpenREM:
-
-    .. code-block:: console
-
-        pip install openrem==1.0.0b1
-
-* Install ``gunicorn`` if required.
+    pip install --upgrade pip
+    pip install openrem==1.0.0b1
 
 .. _update_configuration0100:
 
@@ -191,16 +193,22 @@ Migrate the database
 
 In a shell/command window, move into the ``openrem`` folder:
 
-* Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``
-* Other linux: ``/usr/lib/python2.7/site-packages/openrem/``
-* Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/``
-* Windows: ``C:\Python27\Lib\site-packages\openrem\``
-* Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\``
+.. code-block:: none
+
+    cd /var/dose/veopenrem3/lib/python3.8/site-packages/openrem/
 
 Prepare the migrations folder:
 
-* Delete everything except ``__init__.py`` in ``remapp/migrations``
+* Delete everything except ``__init__.py`` and ``0001_initial.py.1-0-upgrade`` in ``remapp/migrations``
 * Rename ``0001_initial.py.1-0-upgrade`` to ``0001_initial.py``
+
+.. code-block:: none
+
+    rm remapp/migrations/0*.py
+    rm remapp/migrations/0*.pyc
+    mv remapp/migrations/0001_initial.py{.1-0-upgrade,}
+
+Migrate the database:
 
 .. code-block:: console
 
@@ -212,10 +220,6 @@ Prepare the migrations folder:
 
 Update static files
 ===================
-
-In the same shell/command window as you used above run the following command to clear the static files
-belonging to your previous OpenREM version and replace them with those belonging to the version you have
-just installed (assuming you are using a production web server...):
 
 .. code-block:: console
 
@@ -243,20 +247,53 @@ just installed (assuming you are using a production web server...):
 Update all the services configurations
 ======================================
 
-* Change paths to python, celery and flower binaries to Python 3 versions
+Edit the Gunicorn systemd file ``WorkingDirectory`` and ``ExecStart``:
 
-Restart all the services
-========================
+``sudo nano /etc/systemd/system/openrem-gunicorn.service``
 
-Follow the guide at :doc:`startservices`.
+.. code-block:: none
 
-    *Ubuntu one page instructions*::
+    WorkingDirectory=/var/dose/veopenrem3/lib/python3.8/site-packages/openrem
 
-        sudo systemctl start openrem-celery
-        sudo systemctl start orthanc
-        sudo systemctl restart openrem-gunicorn
+    ExecStart=/var/dose/veopenrem3/bin/gunicorn \
+        --bind unix:/tmp/openrem-server.socket \
+        openremproject.wsgi:application --timeout 300 --workers 4
+
+Edit the Celery configuration file ``CELERY_BIN``:
+
+``nano /var/dose/celery/celery.conf``
+
+.. code-block:: none
+
+    CELERY_BIN="/var/dose/veopenrem3/bin/celery"
+
+Edit the Celery systemd file ``WorkingDirectory``:
+
+``sudo nano /etc/systemd/system/openrem-celery.service``
+
+.. code-block:: none
+
+    WorkingDirectory=/var/dose/veopenrem3/lib/python3.8/site-packages/openrem
+
+Edit the Flower systemd file ``WorkingDirectory``:
+
+``sudo nano /etc/systemd/system/openrem-flower.service``
+
+.. code-block:: none
+
+    WorkingDirectory=/var/dose/veopenrem3/lib/python3.8/site-packages/openrem
+
+Reload systemd and restart the services
+=======================================
+
+.. code-block:: none
+
+    sudo systemctl daemon-reload
+    sudo systemctl restart openrem-gunicorn.service
+    sudo systemctl restart nginx.service
+    sudo systemctl start openrem-celery.service
+    sudo systemctl start openrem-flower.service
+    sudo systemctl start orthanc.service
+
 
 .. _post_upgrade0100:
-
-
-.. _CP1676: https://www.dicomstandard.org/cps/
