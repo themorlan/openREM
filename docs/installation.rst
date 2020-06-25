@@ -5,9 +5,16 @@ Installation
 Windows or Linux: Docker install
 =================================
 
+Preparation
+-----------
 * Install Docker
-* Download and extract https://bitbucket.org/openrem/docker/get/develop.zip and open a shell (command window) in the
-  new folder
+* Download https://bitbucket.org/openrem/docker/get/develop.zip
+
+.. _dockerinstall:
+
+Install
+-------
+* Extract the zip file and open a shell (command window) in the new folder
 * Customise any variables in ``.env.prod`` and in the ``orthanc_1`` section
   in ``docker-compose.yml`` as necessary. A full description of the options are found in:
 
