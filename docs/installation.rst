@@ -52,7 +52,10 @@ Docker, but only on Linux. The instructions are a prescriptive install on Ubuntu
 Offline Docker installations
 ============================
 
-*To be written* See https://bitbucket.org/openrem/openrem/issues/829/document-docker-install-for-offline
+..  toctree::
+    :maxdepth: 1
+
+    install-offline
 
 
 Upgrading an existing installation
