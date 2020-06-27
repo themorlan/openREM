@@ -31,6 +31,7 @@
 
 import datetime
 
+
 def get_date(tag, dataset):
     """Get DICOM date string and return Python date.
 
@@ -93,12 +94,15 @@ def make_time(dicomtime):
     :type dicomdate:    str.
     :returns:           Python time value
     """
-    if '+' in dicomtime or '-' in dicomtime:
+    if "+" in dicomtime or "-" in dicomtime:
         import re
-        dicomtime = re.split('\+|-', dicomtime)[0]
+
+        dicomtime = re.split("\+|-", dicomtime)[0]
     try:
-        if '.' in dicomtime:
-            return datetime.datetime.strptime(dicomtime, "%H%M%S.%f")  # should be .time()
+        if "." in dicomtime:
+            return datetime.datetime.strptime(
+                dicomtime, "%H%M%S.%f"
+            )  # should be .time()
         return datetime.datetime.strptime(dicomtime, "%H%M%S")  # should be .time()
     except ValueError:
         return None
@@ -112,13 +116,15 @@ def make_date_time(dicomdatetime):
     :returns:           Python date time value
     """
     import datetime
+
     if not dicomdatetime:
         return None
-    if '+' in dicomdatetime or '-' in dicomdatetime:
+    if "+" in dicomdatetime or "-" in dicomdatetime:
         import re
-        dicomdatetime = re.split('\+|-', dicomdatetime)[0]
+
+        dicomdatetime = re.split("\+|-", dicomdatetime)[0]
     try:
-        if '.' in dicomdatetime:
+        if "." in dicomdatetime:
             return datetime.datetime.strptime(dicomdatetime, "%Y%m%d%H%M%S.%f")
         elif len(dicomdatetime) <= 8:
             return datetime.datetime.strptime(dicomdatetime, "%Y%m%d")
@@ -182,12 +188,12 @@ def make_dcm_date_range(date1=None, date2=None, single_date=False):
         date_from = make_dcm_date(date1_python)
         date_until = make_dcm_date(datetime.date.today())
     elif date2_python:
-        date_from = '19000101'
+        date_from = "19000101"
         date_until = make_dcm_date(date2_python)
     else:
         return None
 
-    return '{0}-{1}'.format(date_from, date_until)
+    return "{0}-{1}".format(date_from, date_until)
 
 
 def make_dcm_time(python_time):
@@ -218,20 +224,24 @@ def make_dcm_time_range(time1=None, time2=None):
 
     if time1:
         try:
-            time1_python = datetime.datetime.strptime(time1, '%H%M').time()
+            time1_python = datetime.datetime.strptime(time1, "%H%M").time()
         except ValueError:
             time1_python = None
     if time2:
         try:
-            time2_python = datetime.datetime.strptime(time2, '%H%M').time()
+            time2_python = datetime.datetime.strptime(time2, "%H%M").time()
         except ValueError:
             time2_python = None
 
     if time1_python and time2_python:
         if time1_python < time2_python:
-            return "{0}-{1}".format(make_dcm_time(time1_python), make_dcm_time(time2_python))
+            return "{0}-{1}".format(
+                make_dcm_time(time1_python), make_dcm_time(time2_python)
+            )
         else:
-            return "{1}-{0}".format(make_dcm_time(time1_python), make_dcm_time(time2_python))
+            return "{1}-{0}".format(
+                make_dcm_time(time1_python), make_dcm_time(time2_python)
+            )
     elif time1_python:
         return "{0}-2359".format(make_dcm_time(time1_python))
     elif time2_python:

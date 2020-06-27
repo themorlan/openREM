@@ -35,4 +35,4 @@ def sigdig(value, digits=3):
             fmtstr = "%.0f"
         return Decimal(fmtstr % (round(value, places)))
     except TypeError:
-        return ''
+        return ""

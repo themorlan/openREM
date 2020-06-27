@@ -30,7 +30,7 @@
 """
 
 
-def check_uid(uid, level='Study'):
+def check_uid(uid, level="Study"):
     """Check if UID already exists in database.
 
     :param uid:         Study UID.
@@ -38,12 +38,13 @@ def check_uid(uid, level='Study'):
     :returns:           1 if it does exist, 0 otherwise
     """
     from remapp.models import GeneralStudyModuleAttr
-    
-    if level == 'Study':
+
+    if level == "Study":
         existing = GeneralStudyModuleAttr.objects.filter(study_instance_uid__exact=uid)
-    elif level == 'Event':
+    elif level == "Event":
         existing = GeneralStudyModuleAttr.objects.filter(
-            projectionxrayradiationdose__irradeventxraydata__irradiation_event_uid__exact=uid)
+            projectionxrayradiationdose__irradeventxraydata__irradiation_event_uid__exact=uid
+        )
     else:
         return 0
     if existing:
@@ -62,7 +63,8 @@ def record_sop_instance_uid(study, sop_instance_uid):
     """
     from remapp.models import ObjectUIDsProcessed
 
-    new_object = ObjectUIDsProcessed.objects.create(general_study_module_attributes=study)
+    new_object = ObjectUIDsProcessed.objects.create(
+        general_study_module_attributes=study
+    )
     new_object.sop_instance_uid = sop_instance_uid
     new_object.save()
-

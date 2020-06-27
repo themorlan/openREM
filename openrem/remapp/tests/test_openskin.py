@@ -23,7 +23,7 @@ class OpenSkinBlackBox(TestCase):
         Load in all the rf objects
         """
         PatientIDSettings.objects.create()
-        User.objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
+        User.objects.create_user("temporary", "temporary@gmail.com", "temporary")
 
         rf1 = "test_files/RF-RDSR-Siemens-Zee.dcm"
         root_tests = os.path.dirname(os.path.abspath(__file__))
@@ -33,29 +33,36 @@ class OpenSkinBlackBox(TestCase):
 
     def test_skin_map_zee(self):
         """Test known Siemens Zee RDSR"""
-        study = GeneralStudyModuleAttr.objects.order_by('id')[0]
+        study = GeneralStudyModuleAttr.objects.order_by("id")[0]
         make_skin_map(study.pk)
         study_date = study.study_date
-        skin_map_path = os.path.join(MEDIA_ROOT, 'skin_maps', "{0:0>4}".format(study_date.year),
-                                     "{0:0>2}".format(study_date.month), "{0:0>2}".format(study_date.day),
-                                     'skin_map_' + str(study.pk) + '.p')
-        with gzip.open(skin_map_path, 'rb') as f:
+        skin_map_path = os.path.join(
+            MEDIA_ROOT,
+            "skin_maps",
+            "{0:0>4}".format(study_date.year),
+            "{0:0>2}".format(study_date.month),
+            "{0:0>2}".format(study_date.day),
+            "skin_map_" + str(study.pk) + ".p",
+        )
+        with gzip.open(skin_map_path, "rb") as f:
             existing_skin_map_data = pickle.load(f)
 
-            self.assertAlmostEqual(existing_skin_map_data['width'], 90)
-            self.assertAlmostEqual(existing_skin_map_data['height'], 70)
-            self.assertAlmostEqual(existing_skin_map_data['phantom_width'], 34)
-            self.assertAlmostEqual(existing_skin_map_data['phantom_height'], 70)
-            self.assertAlmostEqual(existing_skin_map_data['phantom_depth'], 20)
-            self.assertAlmostEqual(existing_skin_map_data['phantom_flat_dist'], 14)
-            self.assertAlmostEqual(existing_skin_map_data['phantom_curved_dist'], 31)
-            self.assertAlmostEqual(existing_skin_map_data['patient_height'], 178.6)
-            self.assertAlmostEqual(existing_skin_map_data['patient_mass'], 73.2)
-            self.assertEqual(existing_skin_map_data['patient_orientation'], 'HFS')
-            self.assertEqual(existing_skin_map_data['patient_height_source'], 'assumed')
-            self.assertEqual(existing_skin_map_data['patient_mass_source'], 'assumed')
-            self.assertEqual(existing_skin_map_data['patient_orientation_source'], 'extracted')
-            self.assertEqual(existing_skin_map_data['skin_map_version'], '0.7')
-            self.assertEqual(existing_skin_map_data['skin_map'], ZEE_SKIN_MAP)
+            self.assertAlmostEqual(existing_skin_map_data["width"], 90)
+            self.assertAlmostEqual(existing_skin_map_data["height"], 70)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_width"], 34)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_height"], 70)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_depth"], 20)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_flat_dist"], 14)
+            self.assertAlmostEqual(existing_skin_map_data["phantom_curved_dist"], 31)
+            self.assertAlmostEqual(existing_skin_map_data["patient_height"], 178.6)
+            self.assertAlmostEqual(existing_skin_map_data["patient_mass"], 73.2)
+            self.assertEqual(existing_skin_map_data["patient_orientation"], "HFS")
+            self.assertEqual(existing_skin_map_data["patient_height_source"], "assumed")
+            self.assertEqual(existing_skin_map_data["patient_mass_source"], "assumed")
+            self.assertEqual(
+                existing_skin_map_data["patient_orientation_source"], "extracted"
+            )
+            self.assertEqual(existing_skin_map_data["skin_map_version"], "0.7")
+            self.assertEqual(existing_skin_map_data["skin_map"], ZEE_SKIN_MAP)
 
         os.remove(skin_map_path)

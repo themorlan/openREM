@@ -13,12 +13,13 @@ class FilterViewTests(TestCase):
     """
     Class to test the filter views for radiography
     """
+
     def setUp(self):
         """
         Load in all the dx objects so that there is something to filter!
         """
         PatientIDSettings.objects.create()
-        User.objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
+        User.objects.create_user("temporary", "temporary@gmail.com", "temporary")
 
         dx1 = "test_files/DX-Im-Carestream_DR7500-1.dcm"
         dx2 = "test_files/DX-Im-Carestream_DR7500-2.dcm"
@@ -51,23 +52,26 @@ class FilterViewTests(TestCase):
         """
         Initial test to ensure five studies are listed with no filter
         """
-        self.client.login(username='temporary', password='temporary')
-        response = self.client.get(reverse('dx_summary_list_filter'), follow=True)
+        self.client.login(username="temporary", password="temporary")
+        response = self.client.get(reverse("dx_summary_list_filter"), follow=True)
         self.assertEqual(response.status_code, 200)
-        responses_text = u'There are 5 studies in this list.'
+        responses_text = u"There are 5 studies in this list."
         self.assertContains(response, responses_text)
 
     def test_filter_study_desc(self):
         """
         Apply study description filter
         """
-        self.client.login(username='temporary', password='temporary')
-        response = self.client.get(reverse_lazy('dx_summary_list_filter') + '?study_description=CR', follow=True)
+        self.client.login(username="temporary", password="temporary")
+        response = self.client.get(
+            reverse_lazy("dx_summary_list_filter") + "?study_description=CR",
+            follow=True,
+        )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u'There are 2 studies in this list.'
+        one_responses_text = u"There are 2 studies in this list."
         self.assertContains(response, one_responses_text)
-        accession_number1 = u'3599305798462538'  # Accession number of study with matching study description
-        accession_number2 = u'7698466579781854'  # Accession number of study with matching study description
+        accession_number1 = u"3599305798462538"  # Accession number of study with matching study description
+        accession_number2 = u"7698466579781854"  # Accession number of study with matching study description
         self.assertContains(response, accession_number1)
         self.assertContains(response, accession_number2)
 
@@ -75,11 +79,14 @@ class FilterViewTests(TestCase):
         """
         Apply acquisition protocol filter
         """
-        self.client.login(username='temporary', password='temporary')
+        self.client.login(username="temporary", password="temporary")
         response = self.client.get(
-            reverse_lazy('dx_summary_list_filter') + '?projectionxrayradiationdose__irradeventxraydata__acquisition_protocol=thigh', follow=True)
+            reverse_lazy("dx_summary_list_filter")
+            + "?projectionxrayradiationdose__irradeventxraydata__acquisition_protocol=thigh",
+            follow=True,
+        )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u'There are 1 studies in this list.'
+        one_responses_text = u"There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
-        accession_number = u'7698466579781854'  # Accession number of study with matching acquisition protocol
+        accession_number = u"7698466579781854"  # Accession number of study with matching acquisition protocol
         self.assertContains(response, accession_number)

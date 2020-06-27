@@ -31,22 +31,24 @@ import logging
 import os
 import sys
 
-logger = logging.getLogger('remapp.netdicom.storescp')
+logger = logging.getLogger("remapp.netdicom.storescp")
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
 projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
 if projectpath not in sys.path:
     sys.path.insert(1, projectpath)
-os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
+os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
 from pynetdicom import (
-    AE, evt,
+    AE,
+    evt,
     StoragePresentationContexts,
 )
 from pynetdicom.sop_class import VerificationSOPClass
 from ..version import __implementation_uid__ as OPENREM_UID
+
 # from ..version import __openrem_root_uid__ as ROOT_UID
 from ..version import __version__ as OPENREM_VERSION
 
@@ -68,51 +70,63 @@ def handle_store(event):
     # Add the File Meta Information
     ds.file_meta = event.file_meta
     ds.file_meta.ImplementationClassUID = OPENREM_UID
-    ds.file_meta.ImplementationVersionName = f'OpenREM_{OPENREM_VERSION}'
+    ds.file_meta.ImplementationVersionName = f"OpenREM_{OPENREM_VERSION}"
 
     # Save the dataset using the SOP Instance UID as the filename
-    path = os.path.join(
-        MEDIA_ROOT, "dicom_in"
-    )
+    path = os.path.join(MEDIA_ROOT, "dicom_in")
     os.makedirs(path, exist_ok=True)
     filename = os.path.join(path, "{0}.dcm".format(ds.SOPInstanceUID))
     ds.save_as(filename=filename, write_like_original=False)
 
-    if (ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.88.67'  # X-Ray Radiation Dose SR
-        or ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.88.22'  # Enhanced SR, as used by GE
-        ):
+    if (
+        ds.SOPClassUID == "1.2.840.10008.5.1.4.1.1.88.67"  # X-Ray Radiation Dose SR
+        or ds.SOPClassUID
+        == "1.2.840.10008.5.1.4.1.1.88.22"  # Enhanced SR, as used by GE
+    ):
         logger.info("Processing as RDSR")
         rdsr.delay(filename)
-    elif (ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.1'  # CR Image Storage
-          or ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.1.1'  # Digital X-Ray Image Storage for Presentation
-          or ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.1.1.1'  # Digital X-Ray Image Storage for Processing
-          ):
+    elif (
+        ds.SOPClassUID == "1.2.840.10008.5.1.4.1.1.1"  # CR Image Storage
+        or ds.SOPClassUID
+        == "1.2.840.10008.5.1.4.1.1.1.1"  # Digital X-Ray Image Storage for Presentation
+        or ds.SOPClassUID
+        == "1.2.840.10008.5.1.4.1.1.1.1.1"  # Digital X-Ray Image Storage for Processing
+    ):
         logger.info("Processing as DX")
         dx.delay(filename)
-    elif (ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.1.2'  # Digital Mammography X-Ray Image Storage for Presentation
-          or ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.1.2.1'  # Digital Mammography X-Ray Image Storage for Processing
-          or (ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.7'  # Secondary Capture Image Storage, for processing
-              and ds.Modality == 'MG'  # Selenia proprietary DBT projection objects
-              and 'ORIGINAL' in ds.ImageType
-              )
-          ):
+    elif (
+        ds.SOPClassUID
+        == "1.2.840.10008.5.1.4.1.1.1.2"  # Digital Mammography X-Ray Image Storage for Presentation
+        or ds.SOPClassUID
+        == "1.2.840.10008.5.1.4.1.1.1.2.1"  # Digital Mammography X-Ray Image Storage for Processing
+        or (
+            ds.SOPClassUID
+            == "1.2.840.10008.5.1.4.1.1.7"  # Secondary Capture Image Storage, for processing
+            and ds.Modality == "MG"  # Selenia proprietary DBT projection objects
+            and "ORIGINAL" in ds.ImageType
+        )
+    ):
         logger.info("Processing as MG")
         mam.delay(filename)
-    elif ds.SOPClassUID == '1.2.840.10008.5.1.4.1.1.7':
+    elif ds.SOPClassUID == "1.2.840.10008.5.1.4.1.1.7":
         try:
             manufacturer = ds.Manufacturer
             series_description = ds.SeriesDescription
         except AttributeError:
             if del_settings.del_no_match:
                 os.remove(filename)
-                logger.info("Secondary capture object with either no manufacturer or series description. Deleted.")
+                logger.info(
+                    "Secondary capture object with either no manufacturer or series description. Deleted."
+                )
             return 0x0000
-        if manufacturer == 'Philips' and series_description == 'Dose Info':
+        if manufacturer == "Philips" and series_description == "Dose Info":
             logger.info("Processing as Philips Dose Info series")
             ct_philips.delay(filename)
         elif del_settings.del_no_match:
             os.remove(filename)
-            logger.info("Can't find anything to do with this file - it has been deleted")
+            logger.info(
+                "Can't find anything to do with this file - it has been deleted"
+            )
     elif del_settings.del_no_match:
         os.remove(filename)
         logger.info("Can't find anything to do with this file - it has been deleted")
@@ -146,16 +160,18 @@ def start_store(store_pk=None):
     ae.supported_contexts = StoragePresentationContexts
     ae.add_supported_context(VerificationSOPClass)
     ae.implementation_class_uid = OPENREM_UID
-    ae.implementation_version_name = f'OpenREM_{OPENREM_VERSION}'
+    ae.implementation_version_name = f"OpenREM_{OPENREM_VERSION}"
 
     # Start listening for incoming association requests
     try:
-        msg = f'Starting Store SCP AET {our_aet}, port {our_port}'
+        msg = f"Starting Store SCP AET {our_aet}, port {our_port}"
         logger.info(msg)
         conf.status = msg
         conf.save()
-        scp = ae.start_server(('', our_port), ae_title=our_aet, evt_handlers=handlers, block=False)
-        msg = f'Started Store SCP AET {our_aet}, port {our_port}'
+        scp = ae.start_server(
+            ("", our_port), ae_title=our_aet, evt_handlers=handlers, block=False
+        )
+        msg = f"Started Store SCP AET {our_aet}, port {our_port}"
         logger.info(msg)
         conf.status = msg
         conf.save()
@@ -165,7 +181,7 @@ def start_store(store_pk=None):
             stay_alive = DicomStoreSCP.objects.get(pk__exact=store_pk)
             if not stay_alive.run:
                 scp.shutdown()
-                logger.info(f'Stopped Store SCP AET {our_aet}, port {our_port}')
+                logger.info(f"Stopped Store SCP AET {our_aet}, port {our_port}")
                 break
 
     except PermissionError:
@@ -178,15 +194,16 @@ def start_store(store_pk=None):
         if e.errno == 98:
             conf.status = msg + " port already in use."
             conf.save()
-            logger.error = msg + f' Err {e.errno} {e.strerror}'
+            logger.error = msg + f" Err {e.errno} {e.strerror}"
         else:
-            conf.status = msg + f'Err {e.errno} {e.strerror}'
+            conf.status = msg + f"Err {e.errno} {e.strerror}"
             conf.save()
-            logger.error = msg + f'Err {e.errno} {e.strerror}'
+            logger.error = msg + f"Err {e.errno} {e.strerror}"
 
 
 def _interrupt(store_pk=None):
     from ..models import DicomStoreSCP
+
     stay_alive = DicomStoreSCP.objects.get(pk__exact=store_pk)
     stay_alive.run = False
     stay_alive.status = "Store interrupted from the shell"

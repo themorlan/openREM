@@ -27,12 +27,16 @@ class ImportCTRDSRPhilips(TestCase):
         bigbore_path = os.path.join(root_tests, bigbore)
 
         rdsr.rdsr(bigbore_path)
-        studies = GeneralStudyModuleAttr.objects.order_by('id')
+        studies = GeneralStudyModuleAttr.objects.order_by("id")
 
         # Test that one study has been imported
         self.assertEqual(studies.count(), 1)
 
         # Test we have some data at event level
         self.assertAlmostEqual(
-            studies[0].ctradiationdose_set.get().ctirradiationeventdata_set.order_by('id')[0].mean_ctdivol,
-            Decimal(23.7))
+            studies[0]
+            .ctradiationdose_set.get()
+            .ctirradiationeventdata_set.order_by("id")[0]
+            .mean_ctdivol,
+            Decimal(23.7),
+        )

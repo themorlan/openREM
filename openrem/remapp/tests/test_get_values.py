@@ -1,11 +1,14 @@
 # This Python file uses the following encoding: utf-8
 # test_get_values.py
 
-from __future__ import unicode_literals
 from django.test import TestCase
 from pydicom.sequence import Sequence
 from pydicom.dataset import Dataset
-from remapp.tools.get_values import get_seq_code_value, get_seq_code_meaning, get_value_kw
+from remapp.tools.get_values import (
+    get_seq_code_value,
+    get_seq_code_meaning,
+    get_value_kw,
+)
 
 
 class GetCodeValueTests(TestCase):
@@ -15,11 +18,11 @@ class GetCodeValueTests(TestCase):
         """
         dummy_seq = Dataset()
         ds = Dataset()
-        dummy_seq.CodeValue = '1234'
+        dummy_seq.CodeValue = "1234"
         ds.ViewCodeSequence = Sequence([dummy_seq])
-        val = get_seq_code_value('ViewCodeSequence', ds)
-        
-        self.assertEqual(val, '1234')
+        val = get_seq_code_value("ViewCodeSequence", ds)
+
+        self.assertEqual(val, "1234")
 
     def test_get_code_value_attr_not_present(self):
         """
@@ -28,8 +31,8 @@ class GetCodeValueTests(TestCase):
         dummy_seq = Dataset()
         ds = Dataset()
         ds.ViewCodeSequence = Sequence([dummy_seq])
-        val = get_seq_code_value('ViewCodeSequence', ds)
-        
+        val = get_seq_code_value("ViewCodeSequence", ds)
+
         self.assertEqual(val, None)
 
 
@@ -40,11 +43,11 @@ class GetCodeMeaningTests(TestCase):
         """
         dummy_seq = Dataset()
         ds = Dataset()
-        dummy_seq.CodeMeaning = 'A code meaning'
+        dummy_seq.CodeMeaning = "A code meaning"
         ds.ViewCodeSequence = Sequence([dummy_seq])
-        val = get_seq_code_meaning('ViewCodeSequence', ds)
-        
-        self.assertEqual(val, 'A code meaning')
+        val = get_seq_code_meaning("ViewCodeSequence", ds)
+
+        self.assertEqual(val, "A code meaning")
 
     def test_get_code_value_attr_not_present(self):
         """
@@ -53,8 +56,8 @@ class GetCodeMeaningTests(TestCase):
         dummy_seq = Dataset()
         ds = Dataset()
         ds.ViewCodeSequence = Sequence([dummy_seq])
-        val = get_seq_code_meaning('ViewCodeSequence', ds)
-        
+        val = get_seq_code_meaning("ViewCodeSequence", ds)
+
         self.assertEqual(val, None)
 
 
@@ -64,6 +67,6 @@ class GetValueKWTests(TestCase):
         get_value_kw should return appropriate unicode string
         """
         ds = Dataset()
-        ds.ProtocolName = 'mamografíaマンモグラフィー'
-        val = get_value_kw('ProtocolName', ds)
-        self.assertEqual(val, 'mamografíaマンモグラフィー')
+        ds.ProtocolName = "mamografíaマンモグラフィー"
+        val = get_value_kw("ProtocolName", ds)
+        self.assertEqual(val, "mamografíaマンモグラフィー")
