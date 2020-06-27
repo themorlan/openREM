@@ -7,14 +7,14 @@ https://hub.docker.com would make installation and upgrades much easier.
 
 The server will need to have Docker installed.
 
-Collecting installation files
-=============================
+Collect installation files
+==========================
 
 On a computer with internet access:
 
 * Install Docker - this is required to download the images
 * Download https://bitbucket.org/openrem/docker/get/develop.zip
-* Download and save the images to tar files:
+* Download and save the Docker images as tar files:
 
 .. code-block:: none
 
@@ -39,8 +39,10 @@ gzip, for example:
 
 Copy all the tar files and the zip file to the server where OpenREM is to be installed.
 
-Loading the docker images on OpenREM server
-===========================================
+Load the docker images
+======================
+
+On the server where OpenREM is to be installed, in the folder containing the Docker images:
 
 .. code-block:: none
 
@@ -49,6 +51,12 @@ Loading the docker images on OpenREM server
     docker load -i openrem-nginx.tar
     docker load -i openrem-rabbitmq.tar
     docker load -i openrem-orthanc.tar
+
+If you have compressed the images with gzip the command is the same but with the ``.gz`` suffix, for example:
+
+.. code-block:: none
+
+    docker load -i openrem.tar.gz
 
 Check that the images have been loaded:
 
