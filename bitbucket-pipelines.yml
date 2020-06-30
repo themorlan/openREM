@@ -20,9 +20,12 @@ definitions:
         name: run code quality tests
         caches:
           - sonar
+          - docker
 #        size: 2x
         script:
           - pipe: sonarsource/sonarcloud-scan:1.0.1
+            variables:
+              DEBUG: 'true'
           - pipe: sonarsource/sonarcloud-quality-gate:0.1.3
     - step: &test
         name: run django tests
