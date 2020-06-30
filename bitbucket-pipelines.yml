@@ -1,5 +1,8 @@
 image: python:3.6
 
+clone:
+  depth: full    # SonarCloud scanner needs the full history to assign issues properly
+
 definitions:
   services:
     postgres:
@@ -9,6 +12,11 @@ definitions:
         POSTGRES_USER: openremuser
         POSTGRES_PASSWORD: openremuserpass
   steps:
+    - step: &sonarcloud
+        name: run code quality tests
+        script:
+          - pipe: sonarsource/sonarcloud-scan:1.0.1
+          - pipe: sonarsource/sonarcloud-quality-gate:0.1.3
     - step: &test
         name: run django tests
         script:
@@ -67,15 +75,18 @@ definitions:
           - docker
 pipelines:
   default:  # Standard commits are tested but not deployed
+    - step: *sonarcloud
     - step: *test
   branches:
     develop:  # Commits to the develop branch are tested and deployed to dev.openrem.org on success
+      - step: *sonarcloud
       - step:
           <<: *test
           name: run django tests - develop
       - step: *deploy-to-openrem-org
       - step: *build-and-deploy-to-docker
     master:  # Commits to the master branch are tested and pushed to Docker Hub
+      - step: *sonarcloud
       - step:
           <<: *test
           name: run django tests - master
