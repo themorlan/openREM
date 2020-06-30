@@ -4,6 +4,8 @@ clone:
   depth: full    # SonarCloud scanner needs the full history to assign issues properly
 
 definitions:
+  caches:
+    sonar: ~/.sonar/cache  # Caching SonarCloud artifacts will speed up your build
   services:
     postgres:
       image: postgres
@@ -11,9 +13,14 @@ definitions:
         POSTGRES_DB: openremdb
         POSTGRES_USER: openremuser
         POSTGRES_PASSWORD: openremuserpass
+    docker:
+      memory: 2048
   steps:
     - step: &sonarcloud
         name: run code quality tests
+        caches:
+          - sonar
+        size: 2x
         script:
           - pipe: sonarsource/sonarcloud-scan:1.0.1
           - pipe: sonarsource/sonarcloud-quality-gate:0.1.3
