@@ -48,6 +48,8 @@ Development version
 .. image:: https://img.shields.io/bitbucket/issues/openrem/openrem.svg?
     :target: https://bitbucket.org/openrem/openrem/issues?status=new&status=open
 
+.. image:: https://img.shields.io/bitbucket/pipelines/openrem/openrem
+
 .. image:: https://coveralls.io/repos/bitbucket/openrem/openrem/badge.svg?branch=develop
     :target: https://coveralls.io/bitbucket/openrem/openrem?branch=develop
 
