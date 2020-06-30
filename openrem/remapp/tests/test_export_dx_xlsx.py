@@ -14,7 +14,8 @@ class ExportDXxlsx(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.user = User.objects.create_user(
-            username='jacob', email='jacob@…', password='top_secret')
+            username="jacob", email="jacob@…", password="top_secret"
+        )
         eg = Group(name="exportgroup")
         eg.save()
         eg.user_set.add(self.user)
@@ -31,8 +32,12 @@ class ExportDXxlsx(TestCase):
         dx_ge_xr220_1 = os.path.join("test_files", "DX-Im-GE_XR220-1.dcm")
         dx_ge_xr220_2 = os.path.join("test_files", "DX-Im-GE_XR220-2.dcm")
         dx_ge_xr220_3 = os.path.join("test_files", "DX-Im-GE_XR220-3.dcm")
-        dx_carestream_dr7500_1 = os.path.join("test_files", "DX-Im-Carestream_DR7500-1.dcm")
-        dx_carestream_dr7500_2 = os.path.join("test_files", "DX-Im-Carestream_DR7500-2.dcm")
+        dx_carestream_dr7500_1 = os.path.join(
+            "test_files", "DX-Im-Carestream_DR7500-1.dcm"
+        )
+        dx_carestream_dr7500_2 = os.path.join(
+            "test_files", "DX-Im-Carestream_DR7500-2.dcm"
+        )
         root_tests = os.path.dirname(os.path.abspath(__file__))
 
         dx.dx(os.path.join(root_tests, dx_ge_xr220_1))
@@ -50,22 +55,33 @@ class ExportDXxlsx(TestCase):
         dxxlsx(filter_set, pid=pid, name=name, patid=patient_id, user=self.user)
 
         import xlrd
-        task = Exports.objects.order_by('id')[0]
+
+        task = Exports.objects.order_by("id")[0]
 
         book = xlrd.open_workbook(task.filename.path)
-        all_data_sheet = book.sheet_by_name('All data')
+        all_data_sheet = book.sheet_by_name("All data")
         headers = all_data_sheet.row(0)
 
-        patient_id_col = [i for i, x in enumerate(headers) if x.value == 'Patient ID'][0]
-        accession_number_col = [i for i, x in enumerate(headers) if x.value == 'Accession number'][0]
-        exposure_index_col = [i for i, x in enumerate(headers) if x.value == 'E1 Exposure index'][0]
+        patient_id_col = [i for i, x in enumerate(headers) if x.value == "Patient ID"][
+            0
+        ]
+        accession_number_col = [
+            i for i, x in enumerate(headers) if x.value == "Accession number"
+        ][0]
+        exposure_index_col = [
+            i for i, x in enumerate(headers) if x.value == "E1 Exposure index"
+        ][0]
 
         self.assertEqual(all_data_sheet.cell_type(1, patient_id_col), xlrd.XL_CELL_TEXT)
-        self.assertEqual(all_data_sheet.cell_type(1, accession_number_col), xlrd.XL_CELL_TEXT)
-        self.assertEqual(all_data_sheet.cell_type(1, exposure_index_col), xlrd.XL_CELL_NUMBER)
+        self.assertEqual(
+            all_data_sheet.cell_type(1, accession_number_col), xlrd.XL_CELL_TEXT
+        )
+        self.assertEqual(
+            all_data_sheet.cell_type(1, exposure_index_col), xlrd.XL_CELL_NUMBER
+        )
 
-        self.assertEqual(all_data_sheet.cell_value(1, patient_id_col), '00098765')
-        self.assertEqual(all_data_sheet.cell_value(1, accession_number_col), '00938475')
+        self.assertEqual(all_data_sheet.cell_value(1, patient_id_col), "00098765")
+        self.assertEqual(all_data_sheet.cell_value(1, accession_number_col), "00938475")
         self.assertEqual(all_data_sheet.cell_value(1, exposure_index_col), 51.745061)
 
         # cleanup
@@ -83,19 +99,22 @@ class ExportDXxlsx(TestCase):
         dxxlsx(filter_set, pid=pid, name=name, patid=patient_id, user=self.user)
 
         import xlrd
-        task = Exports.objects.order_by('id')[0]
+
+        task = Exports.objects.order_by("id")[0]
 
         book = xlrd.open_workbook(task.filename.path)
-        aec_sheet = book.sheet_by_name('aec')
+        aec_sheet = book.sheet_by_name("aec")
         headers = aec_sheet.row(0)
 
-        filter_col = [i for i, x in enumerate(headers) if x.value == 'Filters'][0]
-        filter_thick_col = [i for i, x in enumerate(headers) if x.value == 'Filter thicknesses (mm)'][0]
+        filter_col = [i for i, x in enumerate(headers) if x.value == "Filters"][0]
+        filter_thick_col = [
+            i for i, x in enumerate(headers) if x.value == "Filter thicknesses (mm)"
+        ][0]
 
-        self.assertEqual(aec_sheet.cell_value(1, filter_col), 'Al')
-        self.assertEqual(aec_sheet.cell_value(1, filter_thick_col), '1.0000')
-        self.assertEqual(aec_sheet.cell_value(2, filter_col), 'Al | Cu')
-        self.assertEqual(aec_sheet.cell_value(2, filter_thick_col), '1.0000 | 0.2000')
+        self.assertEqual(aec_sheet.cell_value(1, filter_col), "Al")
+        self.assertEqual(aec_sheet.cell_value(1, filter_thick_col), "1.0000")
+        self.assertEqual(aec_sheet.cell_value(2, filter_col), "Al | Cu")
+        self.assertEqual(aec_sheet.cell_value(2, filter_thick_col), "1.0000 | 0.2000")
 
         # cleanup
         task.filename.delete()  # delete file so local testing doesn't get too messy!

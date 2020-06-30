@@ -42,14 +42,16 @@ import sys
 import django
 import logging
 
-logger = logging.getLogger('remapp.extractors.dx')  # Explicitly named so that it is still handled when using __main__
+logger = logging.getLogger(
+    "remapp.extractors.dx"
+)  # Explicitly named so that it is still handled when using __main__
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
 projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
 if projectpath not in sys.path:
     sys.path.insert(1, projectpath)
-os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
+os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
 from celery import shared_task
@@ -58,38 +60,63 @@ from celery import shared_task
 def _xrayfilters(filttype, material, thickmax, thickmin, source):
     from remapp.models import XrayFilters
     from remapp.tools.get_values import get_or_create_cid
+
     filters = XrayFilters.objects.create(irradiation_event_xray_source_data=source)
     if filttype:
-        filter_types = {'STRIP': {"code": '113650', "meaning": "Strip filter"},
-                        'WEDGE': {"code": '113651', "meaning": "Wedge filter"},
-                        'BUTTERFLY': {"code:": '113652', "meaning": "Butterfly filter"},
-                        'NONE': {"code": '111609', "meaning": "No filter"},
-                        'FLAT': {"code": '113653', "meaning": "Flat filter"},
-                        }
+        filter_types = {
+            "STRIP": {"code": "113650", "meaning": "Strip filter"},
+            "WEDGE": {"code": "113651", "meaning": "Wedge filter"},
+            "BUTTERFLY": {"code:": "113652", "meaning": "Butterfly filter"},
+            "NONE": {"code": "111609", "meaning": "No filter"},
+            "FLAT": {"code": "113653", "meaning": "Flat filter"},
+        }
         if filttype in filter_types:
             filters.xray_filter_type = get_or_create_cid(
                 filter_types[filttype]["code"], filter_types[filttype]["meaning"]
             )
     if material:
-        logger.debug("In _xrayfilters, attempting to match material {0}".format(material.strip().lower()))
-        if material.strip().lower() == 'molybdenum':
-            filters.xray_filter_material = get_or_create_cid('C-150F9', 'Molybdenum or Molybdenum compound')
-        if material.strip().lower() == 'rhodium':
-            filters.xray_filter_material = get_or_create_cid('C-167F9', 'Rhodium or Rhodium compound')
-        if material.strip().lower() == 'silver':
-            filters.xray_filter_material = get_or_create_cid('C-137F9', 'Silver or Silver compound')
-        if material.strip().lower() in ['aluminum', 'aluminium']:  # Illegal spelling of Aluminium found in Philips DiDi
-            filters.xray_filter_material = get_or_create_cid('C-120F9', 'Aluminum or Aluminum compound')
-        if material.strip().lower() == 'copper':
-            filters.xray_filter_material = get_or_create_cid('C-127F9', 'Copper or Copper compound')
-        if material.strip().lower() == 'niobium':
-            filters.xray_filter_material = get_or_create_cid('C-1190E', 'Niobium or Niobium compound')
-        if material.strip().lower() == 'europium':
-            filters.xray_filter_material = get_or_create_cid('C-1190F', 'Europium or Europium compound')
-        if material.strip().lower() == 'lead':
-            filters.xray_filter_material = get_or_create_cid('C-132F9', 'Lead or Lead compound')
-        if material.strip().lower() == 'tantalum':
-            filters.xray_filter_material = get_or_create_cid('C-156F9', 'Tantalum or Tantalum compound')
+        logger.debug(
+            f"In _xrayfilters, attempting to match material {material.strip().lower()}"
+        )
+        if material.strip().lower() == "molybdenum":
+            filters.xray_filter_material = get_or_create_cid(
+                "C-150F9", "Molybdenum or Molybdenum compound"
+            )
+        if material.strip().lower() == "rhodium":
+            filters.xray_filter_material = get_or_create_cid(
+                "C-167F9", "Rhodium or Rhodium compound"
+            )
+        if material.strip().lower() == "silver":
+            filters.xray_filter_material = get_or_create_cid(
+                "C-137F9", "Silver or Silver compound"
+            )
+        if material.strip().lower() in [
+            "aluminum",
+            "aluminium",
+        ]:  # Illegal spelling of Aluminium found in Philips DiDi
+            filters.xray_filter_material = get_or_create_cid(
+                "C-120F9", "Aluminum or Aluminum compound"
+            )
+        if material.strip().lower() == "copper":
+            filters.xray_filter_material = get_or_create_cid(
+                "C-127F9", "Copper or Copper compound"
+            )
+        if material.strip().lower() == "niobium":
+            filters.xray_filter_material = get_or_create_cid(
+                "C-1190E", "Niobium or Niobium compound"
+            )
+        if material.strip().lower() == "europium":
+            filters.xray_filter_material = get_or_create_cid(
+                "C-1190F", "Europium or Europium compound"
+            )
+        if material.strip().lower() == "lead":
+            filters.xray_filter_material = get_or_create_cid(
+                "C-132F9", "Lead or Lead compound"
+            )
+        if material.strip().lower() == "tantalum":
+            filters.xray_filter_material = get_or_create_cid(
+                "C-156F9", "Tantalum or Tantalum compound"
+            )
     if thickmax is not None and thickmin is not None:
         if thickmax < thickmin:
             tempmin = thickmax
@@ -105,12 +132,18 @@ def _xrayfilters(filttype, material, thickmax, thickmin, source):
 def _xrayfiltersnone(source):
     from remapp.models import XrayFilters
     from remapp.tools.get_values import get_value_kw, get_or_create_cid
+
     filters = XrayFilters.objects.create(irradiation_event_xray_source_data=source)
-    filters.xray_filter_type = get_or_create_cid('111609', "No filter")
+    filters.xray_filter_type = get_or_create_cid("111609", "No filter")
     filters.save()
 
 
-def _xray_filters_multiple(xray_filter_material, xray_filter_thickness_maximum, xray_filter_thickness_minimum, source):
+def _xray_filters_multiple(
+    xray_filter_material,
+    xray_filter_thickness_maximum,
+    xray_filter_thickness_minimum,
+    source,
+):
     for i, material in enumerate(xray_filter_material):
         try:
             thickmax = None
@@ -119,19 +152,20 @@ def _xray_filters_multiple(xray_filter_material, xray_filter_thickness_maximum, 
                 thickmax = xray_filter_thickness_maximum[i]
             if isinstance(xray_filter_thickness_minimum, list):
                 thickmin = xray_filter_thickness_minimum[i]
-            _xrayfilters('FLAT', material, thickmax, thickmin, source)
+            _xrayfilters("FLAT", material, thickmax, thickmin, source)
         except IndexError:
             pass
+
 
 def _xray_filters_prep(dataset, source):
     from pydicom.valuerep import MultiValue
     from remapp.tools.get_values import get_value_kw
 
-    xray_filter_type = get_value_kw('FilterType', dataset)
-    xray_filter_material = get_value_kw('FilterMaterial', dataset)
+    xray_filter_type = get_value_kw("FilterType", dataset)
+    xray_filter_material = get_value_kw("FilterMaterial", dataset)
 
     # Explicit no filter, register as such
-    if xray_filter_type == 'NONE':
+    if xray_filter_type == "NONE":
         _xrayfiltersnone(source)
         return
     # Implicit no filter, just ignore
@@ -139,27 +173,31 @@ def _xray_filters_prep(dataset, source):
         return
 
     # Get multiple filters into pydicom MultiValue or lists
-    if ',' in xray_filter_material and not isinstance(xray_filter_material, MultiValue):
-        xray_filter_material = xray_filter_material.split(',')
+    if "," in xray_filter_material and not isinstance(xray_filter_material, MultiValue):
+        xray_filter_material = xray_filter_material.split(",")
 
-    xray_filter_thickness_minimum = get_value_kw('FilterThicknessMinimum', dataset)
-    xray_filter_thickness_maximum = get_value_kw('FilterThicknessMaximum', dataset)
+    xray_filter_thickness_minimum = get_value_kw("FilterThicknessMinimum", dataset)
+    xray_filter_thickness_maximum = get_value_kw("FilterThicknessMaximum", dataset)
     if not isinstance(xray_filter_thickness_minimum, (MultiValue, list)):
         try:
             float(xray_filter_thickness_minimum)
         except ValueError:
-            if ',' in xray_filter_thickness_minimum:
-                xray_filter_thickness_minimum = xray_filter_thickness_minimum.split(',')
+            if "," in xray_filter_thickness_minimum:
+                xray_filter_thickness_minimum = xray_filter_thickness_minimum.split(",")
     if not isinstance(xray_filter_thickness_maximum, (MultiValue, list)):
         try:
             float(xray_filter_thickness_maximum)
         except ValueError:
-            if ',' in xray_filter_thickness_maximum:
-                xray_filter_thickness_maximum = xray_filter_thickness_maximum.split(',')
+            if "," in xray_filter_thickness_maximum:
+                xray_filter_thickness_maximum = xray_filter_thickness_maximum.split(",")
 
     if isinstance(xray_filter_material, (MultiValue, list)):
         _xray_filters_multiple(
-            xray_filter_material, xray_filter_thickness_maximum, xray_filter_thickness_minimum, source)
+            xray_filter_material,
+            xray_filter_thickness_maximum,
+            xray_filter_thickness_minimum,
+            source,
+        )
     else:
         # deal with known Siemens filter records
         siemens_filters = ("CU_0.1_MM", "CU_0.2_MM", "CU_0.3_MM")
@@ -176,26 +214,32 @@ def _xray_filters_prep(dataset, source):
             _xrayfilters("FLAT", "COPPER", thickmax, thickmin, source)
         else:
             _xrayfilters(
-                xray_filter_type, xray_filter_material, xray_filter_thickness_maximum,
-                xray_filter_thickness_minimum, source
+                xray_filter_type,
+                xray_filter_material,
+                xray_filter_thickness_maximum,
+                xray_filter_thickness_minimum,
+                source,
             )
 
 
 def _kvp(dataset, source):
     from remapp.models import Kvp
     from remapp.tools.get_values import get_value_kw
+
     kv = Kvp.objects.create(irradiation_event_xray_source_data=source)
-    kv.kvp = get_value_kw('KVP', dataset)
+    kv.kvp = get_value_kw("KVP", dataset)
     kv.save()
 
 
 def _exposure(dataset, source):
     from remapp.models import Exposure
+
     exp = Exposure.objects.create(irradiation_event_xray_source_data=source)
     from remapp.tools.get_values import get_value_kw
-    exp.exposure = get_value_kw('ExposureInuAs', dataset)  # uAs
+
+    exp.exposure = get_value_kw("ExposureInuAs", dataset)  # uAs
     if not exp.exposure:
-        exposure = get_value_kw('Exposure', dataset)
+        exposure = get_value_kw("Exposure", dataset)
         if exposure:
             exp.exposure = exposure * 1000
     exp.save()
@@ -204,52 +248,56 @@ def _exposure(dataset, source):
 def _xraygrid(gridcode, source):
     from remapp.models import XrayGrid
     from remapp.tools.get_values import get_or_create_cid
+
     grid = XrayGrid.objects.create(irradiation_event_xray_source_data=source)
-    if gridcode == '111646':
-        grid.xray_grid = get_or_create_cid('111646', 'No grid')
-    elif gridcode == '111641':
-        grid.xray_grid = get_or_create_cid('111641', 'Fixed grid')
-    elif gridcode == '111642':
-        grid.xray_grid = get_or_create_cid('111642', 'Focused grid')
-    elif gridcode == '111643':
-        grid.xray_grid = get_or_create_cid('111643', 'Reciprocating grid')
-    elif gridcode == '111644':
-        grid.xray_grid = get_or_create_cid('111644', 'Parallel grid')
-    elif gridcode == '111645':
-        grid.xray_grid = get_or_create_cid('111645', 'Crossed grid')
+    if gridcode == "111646":
+        grid.xray_grid = get_or_create_cid("111646", "No grid")
+    elif gridcode == "111641":
+        grid.xray_grid = get_or_create_cid("111641", "Fixed grid")
+    elif gridcode == "111642":
+        grid.xray_grid = get_or_create_cid("111642", "Focused grid")
+    elif gridcode == "111643":
+        grid.xray_grid = get_or_create_cid("111643", "Reciprocating grid")
+    elif gridcode == "111644":
+        grid.xray_grid = get_or_create_cid("111644", "Parallel grid")
+    elif gridcode == "111645":
+        grid.xray_grid = get_or_create_cid("111645", "Crossed grid")
     grid.save()
 
 
 def _irradiationeventxraydetectordata(dataset, event):
     from remapp.models import IrradEventXRayDetectorData
     from remapp.tools.get_values import get_value_kw, get_or_create_cid
-    detector = IrradEventXRayDetectorData.objects.create(irradiation_event_xray_data=event)
-    detector.exposure_index = get_value_kw('ExposureIndex', dataset)
-    detector.relative_xray_exposure = get_value_kw('RelativeXRayExposure', dataset)
-    manufacturer = \
-        detector.irradiation_event_xray_data.projection_xray_radiation_dose.general_study_module_attributes.generalequipmentmoduleattr_set.all()[
-            0].manufacturer.lower()
-    if 'fuji' in manufacturer:
-        detector.relative_exposure_unit = 'S ()'
-    elif 'carestream' in manufacturer:
-        detector.relative_exposure_unit = 'EI (Mbels)'
-    elif 'kodak' in manufacturer:
-        detector.relative_exposure_unit = 'EI (Mbels)'
-    elif 'agfa' in manufacturer:
-        detector.relative_exposure_unit = 'lgM (Bels)'
-    elif 'konica' in manufacturer:
-        detector.relative_exposure_unit = 'S ()'
-    elif 'canon' in manufacturer:
-        detector.relative_exposure_unit = 'REX ()'
-    elif 'swissray' in manufacturer:
-        detector.relative_exposure_unit = 'DI ()'
-    elif 'philips' in manufacturer:
-        detector.relative_exposure_unit = 'EI ()'
-    elif 'siemens' in manufacturer:
-        detector.relative_exposure_unit = u'EXI (μGy)'
-    detector.sensitivity = get_value_kw('Sensitivity', dataset)
-    detector.target_exposure_index = get_value_kw('TargetExposureIndex', dataset)
-    detector.deviation_index = get_value_kw('DeviationIndex', dataset)
+
+    detector = IrradEventXRayDetectorData.objects.create(
+        irradiation_event_xray_data=event
+    )
+    detector.exposure_index = get_value_kw("ExposureIndex", dataset)
+    detector.relative_xray_exposure = get_value_kw("RelativeXRayExposure", dataset)
+    manufacturer = detector.irradiation_event_xray_data.projection_xray_radiation_dose.general_study_module_attributes.generalequipmentmoduleattr_set.all()[
+        0
+    ].manufacturer.lower()
+    if "fuji" in manufacturer:
+        detector.relative_exposure_unit = "S ()"
+    elif "carestream" in manufacturer:
+        detector.relative_exposure_unit = "EI (Mbels)"
+    elif "kodak" in manufacturer:
+        detector.relative_exposure_unit = "EI (Mbels)"
+    elif "agfa" in manufacturer:
+        detector.relative_exposure_unit = "lgM (Bels)"
+    elif "konica" in manufacturer:
+        detector.relative_exposure_unit = "S ()"
+    elif "canon" in manufacturer:
+        detector.relative_exposure_unit = "REX ()"
+    elif "swissray" in manufacturer:
+        detector.relative_exposure_unit = "DI ()"
+    elif "philips" in manufacturer:
+        detector.relative_exposure_unit = "EI ()"
+    elif "siemens" in manufacturer:
+        detector.relative_exposure_unit = "EXI (μGy)"
+    detector.sensitivity = get_value_kw("Sensitivity", dataset)
+    detector.target_exposure_index = get_value_kw("TargetExposureIndex", dataset)
+    detector.deviation_index = get_value_kw("DeviationIndex", dataset)
     detector.save()
 
 
@@ -257,42 +305,49 @@ def _irradiationeventxraysourcedata(dataset, event):
     # TODO: review model to convert to cid where appropriate, and add additional fields such as field height and width
     from remapp.models import IrradEventXRaySourceData
     from remapp.tools.get_values import get_value_kw, get_or_create_cid
+
     source = IrradEventXRaySourceData.objects.create(irradiation_event_xray_data=event)
-    source.average_xray_tube_current = get_value_kw('XRayTubeCurrent', dataset)
-    if not source.average_xray_tube_current: source.average_xray_tube_current = get_value_kw('AverageXRayTubeCurrent',
-                                                                                             dataset)
-    source.exposure_time = get_value_kw('ExposureTime', dataset)
-    source.irradiation_duration = get_value_kw('IrradiationDuration', dataset)
-    source.focal_spot_size = get_value_kw('FocalSpots', dataset)
-    collimated_field_area = get_value_kw('FieldOfViewDimensions', dataset)
+    source.average_xray_tube_current = get_value_kw("XRayTubeCurrent", dataset)
+    if not source.average_xray_tube_current:
+        source.average_xray_tube_current = get_value_kw(
+            "AverageXRayTubeCurrent", dataset
+        )
+    source.exposure_time = get_value_kw("ExposureTime", dataset)
+    source.irradiation_duration = get_value_kw("IrradiationDuration", dataset)
+    source.focal_spot_size = get_value_kw("FocalSpots", dataset)
+    collimated_field_area = get_value_kw("FieldOfViewDimensions", dataset)
     if collimated_field_area:
-        source.collimated_field_area = float(collimated_field_area[0]) * float(collimated_field_area[1]) / 1000000
-    exp_ctrl_mode = get_value_kw('ExposureControlMode', dataset)
+        source.collimated_field_area = (
+            float(collimated_field_area[0]) * float(collimated_field_area[1]) / 1000000
+        )
+    exp_ctrl_mode = get_value_kw("ExposureControlMode", dataset)
     if exp_ctrl_mode:
         source.exposure_control_mode = exp_ctrl_mode
-    xray_grid = get_value_kw('Grid', dataset)
+    xray_grid = get_value_kw("Grid", dataset)
     if xray_grid:
-        if xray_grid == 'NONE':
-            _xraygrid('111646', source)
+        if xray_grid == "NONE":
+            _xraygrid("111646", source)
         else:
             for gtype in xray_grid:
-                if 'FI' in gtype:  # Fixed; abbreviated due to fitting two keywords in 16 characters
-                    _xraygrid('111641', source)
-                elif 'FO' in gtype:  # Focused
-                    _xraygrid('111642', source)
-                elif 'RE' in gtype:  # Reciprocating
-                    _xraygrid('111643', source)
-                elif 'PA' in gtype:  # Parallel
-                    _xraygrid('111644', source)
-                elif 'CR' in gtype:  # Crossed
-                    _xraygrid('111645', source)
-    source.grid_absorbing_material = get_value_kw('GridAbsorbingMaterial', dataset)
-    source.grid_spacing_material = get_value_kw('GridSpacingMaterial', dataset)
-    source.grid_thickness = get_value_kw('GridThickness', dataset)
-    source.grid_pitch = get_value_kw('GridPitch', dataset)
-    source.grid_aspect_ratio = get_value_kw('GridAspectRatio', dataset)
-    source.grid_period = get_value_kw('GridPeriod', dataset)
-    source.grid_focal_distance = get_value_kw('GridFocalDistance', dataset)
+                if (
+                    "FI" in gtype
+                ):  # Fixed; abbreviated due to fitting two keywords in 16 characters
+                    _xraygrid("111641", source)
+                elif "FO" in gtype:  # Focused
+                    _xraygrid("111642", source)
+                elif "RE" in gtype:  # Reciprocating
+                    _xraygrid("111643", source)
+                elif "PA" in gtype:  # Parallel
+                    _xraygrid("111644", source)
+                elif "CR" in gtype:  # Crossed
+                    _xraygrid("111645", source)
+    source.grid_absorbing_material = get_value_kw("GridAbsorbingMaterial", dataset)
+    source.grid_spacing_material = get_value_kw("GridSpacingMaterial", dataset)
+    source.grid_thickness = get_value_kw("GridThickness", dataset)
+    source.grid_pitch = get_value_kw("GridPitch", dataset)
+    source.grid_aspect_ratio = get_value_kw("GridAspectRatio", dataset)
+    source.grid_period = get_value_kw("GridPeriod", dataset)
+    source.grid_focal_distance = get_value_kw("GridFocalDistance", dataset)
     source.save()
     _xray_filters_prep(dataset, source)
     _kvp(dataset, source)
@@ -302,25 +357,37 @@ def _irradiationeventxraysourcedata(dataset, event):
 def _doserelateddistancemeasurements(dataset, mech):
     from remapp.models import DoseRelatedDistanceMeasurements
     from remapp.tools.get_values import get_value_kw, get_value_num
-    dist = DoseRelatedDistanceMeasurements.objects.create(irradiation_event_xray_mechanical_data=mech)
-    manufacturer = \
-        dist.irradiation_event_xray_mechanical_data.irradiation_event_xray_data.projection_xray_radiation_dose.\
-            general_study_module_attributes.generalequipmentmoduleattr_set.all()[0].manufacturer
-    model_name = \
-        dist.irradiation_event_xray_mechanical_data.irradiation_event_xray_data.projection_xray_radiation_dose.\
-            general_study_module_attributes.generalequipmentmoduleattr_set.all()[0].manufacturer_model_name
-    dist.distance_source_to_detector = get_value_kw('DistanceSourceToDetector', dataset)
-    if dist.distance_source_to_detector and manufacturer and model_name and "kodak" in manufacturer.lower() \
-            and "dr 7500" in model_name.lower():
+
+    dist = DoseRelatedDistanceMeasurements.objects.create(
+        irradiation_event_xray_mechanical_data=mech
+    )
+    manufacturer = dist.irradiation_event_xray_mechanical_data.irradiation_event_xray_data.projection_xray_radiation_dose.general_study_module_attributes.generalequipmentmoduleattr_set.all()[
+        0
+    ].manufacturer
+    model_name = dist.irradiation_event_xray_mechanical_data.irradiation_event_xray_data.projection_xray_radiation_dose.general_study_module_attributes.generalequipmentmoduleattr_set.all()[
+        0
+    ].manufacturer_model_name
+    dist.distance_source_to_detector = get_value_kw("DistanceSourceToDetector", dataset)
+    if (
+        dist.distance_source_to_detector
+        and manufacturer
+        and model_name
+        and "kodak" in manufacturer.lower()
+        and "dr 7500" in model_name.lower()
+    ):
         dist.distance_source_to_detector *= 100  # convert dm to mm
-    dist.distance_source_to_entrance_surface = get_value_kw('DistanceSourceToPatient', dataset)
-    dist.distance_source_to_isocenter = get_value_kw('DistanceSourceToIsocenter', dataset)
+    dist.distance_source_to_entrance_surface = get_value_kw(
+        "DistanceSourceToPatient", dataset
+    )
+    dist.distance_source_to_isocenter = get_value_kw(
+        "DistanceSourceToIsocenter", dataset
+    )
     # DistanceSourceToReferencePoint isn't a DICOM tag. Same as DistanceSourceToPatient?
     #    dist.distance_source_to_reference_point = get_value_kw('DistanceSourceToReferencePoint',dataset)
     # Table longitudinal and lateral positions not DICOM elements.
     #    dist.table_longitudinal_position = get_value_kw('TableLongitudinalPosition',dataset)
     #    dist.table_lateral_position = get_value_kw('TableLateralPosition',dataset)
-    dist.table_height_position = get_value_kw('TableHeight', dataset)
+    dist.table_height_position = get_value_kw("TableHeight", dataset)
     # DistanceSourceToTablePlane not a DICOM tag.
     #    dist.distance_source_to_table_plane = get_value_kw('DistanceSourceToTablePlane',dataset)
     dist.radiological_thickness = get_value_num(0x00451049, dataset)
@@ -330,17 +397,26 @@ def _doserelateddistancemeasurements(dataset, mech):
 def _irradiationeventxraymechanicaldata(dataset, event):
     from remapp.models import IrradEventXRayMechanicalData
     from remapp.tools.get_values import get_value_kw
-    mech = IrradEventXRayMechanicalData.objects.create(irradiation_event_xray_data=event)
-    mech.magnification_factor = get_value_kw('EstimatedRadiographicMagnificationFactor', dataset)
-    mech.dxdr_mechanical_configuration = get_value_kw('DX/DRMechanicalConfiguration', dataset)
-    mech.primary_angle = get_value_kw('PositionerPrimaryAngle', dataset)
-    mech.secondary_angle = get_value_kw('PositionerSecondaryAngle', dataset)
-    mech.primary_end_angle = get_value_kw('PositionerPrimaryEndAngle', dataset)
-    mech.secondary_angle = get_value_kw('PositionerSecondaryEndAngle', dataset)
-    mech.column_angulation = get_value_kw('ColumnAngulation', dataset)
-    mech.table_head_tilt_angle = get_value_kw('TableHeadTiltAngle', dataset)
-    mech.table_horizontal_rotation_angle = get_value_kw('TableHorizontalRotationAngle', dataset)
-    mech.table_cradle_tilt_angle = get_value_kw('TableCradleTiltAngle', dataset)
+
+    mech = IrradEventXRayMechanicalData.objects.create(
+        irradiation_event_xray_data=event
+    )
+    mech.magnification_factor = get_value_kw(
+        "EstimatedRadiographicMagnificationFactor", dataset
+    )
+    mech.dxdr_mechanical_configuration = get_value_kw(
+        "DX/DRMechanicalConfiguration", dataset
+    )
+    mech.primary_angle = get_value_kw("PositionerPrimaryAngle", dataset)
+    mech.secondary_angle = get_value_kw("PositionerSecondaryAngle", dataset)
+    mech.primary_end_angle = get_value_kw("PositionerPrimaryEndAngle", dataset)
+    mech.secondary_angle = get_value_kw("PositionerSecondaryEndAngle", dataset)
+    mech.column_angulation = get_value_kw("ColumnAngulation", dataset)
+    mech.table_head_tilt_angle = get_value_kw("TableHeadTiltAngle", dataset)
+    mech.table_horizontal_rotation_angle = get_value_kw(
+        "TableHorizontalRotationAngle", dataset
+    )
+    mech.table_cradle_tilt_angle = get_value_kw("TableCradleTiltAngle", dataset)
     mech.save()
     _doserelateddistancemeasurements(dataset, mech)
 
@@ -348,52 +424,69 @@ def _irradiationeventxraymechanicaldata(dataset, event):
 def _irradiationeventxraydata(dataset, proj, ch):  # TID 10003
     # TODO: review model to convert to cid where appropriate, and add additional fields
     from remapp.models import IrradEventXRayData
-    from remapp.tools.get_values import get_value_kw, get_or_create_cid, get_seq_code_value, get_seq_code_meaning
+    from remapp.tools.get_values import (
+        get_value_kw,
+        get_or_create_cid,
+        get_seq_code_value,
+        get_seq_code_meaning,
+    )
     from remapp.tools.dcmdatetime import make_date_time
+
     event = IrradEventXRayData.objects.create(projection_xray_radiation_dose=proj)
-    event.acquisition_plane = get_or_create_cid('113622', 'Single Plane')
-    event.irradiation_event_uid = get_value_kw('SOPInstanceUID', dataset)
-    event_time = get_value_kw('AcquisitionTime', dataset)
-    if not event_time: event_time = get_value_kw('ContentTime', dataset)
-    if not event_time: event_time = get_value_kw('StudyTime', dataset)
-    event_date = get_value_kw('AcquisitionDate', dataset)
-    if not event_date: event_date = get_value_kw('ContentDate', dataset)
-    if not event_date: event_date = get_value_kw('StudyDate', dataset)
-    event.date_time_started = make_date_time('{0}{1}'.format(event_date, event_time))
-    event.irradiation_event_type = get_or_create_cid('113611', 'Stationary Acquisition')
-    event.acquisition_protocol = get_value_kw('ProtocolName', dataset)
+    event.acquisition_plane = get_or_create_cid("113622", "Single Plane")
+    event.irradiation_event_uid = get_value_kw("SOPInstanceUID", dataset)
+    event_time = get_value_kw("AcquisitionTime", dataset)
+    if not event_time:
+        event_time = get_value_kw("ContentTime", dataset)
+    if not event_time:
+        event_time = get_value_kw("StudyTime", dataset)
+    event_date = get_value_kw("AcquisitionDate", dataset)
+    if not event_date:
+        event_date = get_value_kw("ContentDate", dataset)
+    if not event_date:
+        event_date = get_value_kw("StudyDate", dataset)
+    event.date_time_started = make_date_time("{0}{1}".format(event_date, event_time))
+    event.irradiation_event_type = get_or_create_cid("113611", "Stationary Acquisition")
+    event.acquisition_protocol = get_value_kw("ProtocolName", dataset)
     if not event.acquisition_protocol:
-        manufacturer = get_value_kw('Manufacturer', dataset)
-        software_versions = get_value_kw('SoftwareVersions', dataset)
-        if manufacturer == 'TOSHIBA_MEC' and software_versions == 'TM_TFD_1.0':
-            event.acquisition_protocol = get_value_kw('ImageComments', dataset)
-    if not event.acquisition_protocol: event.acquisition_protocol = get_value_kw('SeriesDescription', dataset)
-    if not event.acquisition_protocol: event.acquisition_protocol = get_seq_code_meaning(
-        'PerformedProtocolCodeSequence', dataset)
-    series_description = get_value_kw('SeriesDescription', dataset)
+        manufacturer = get_value_kw("Manufacturer", dataset)
+        software_versions = get_value_kw("SoftwareVersions", dataset)
+        if manufacturer == "TOSHIBA_MEC" and software_versions == "TM_TFD_1.0":
+            event.acquisition_protocol = get_value_kw("ImageComments", dataset)
+    if not event.acquisition_protocol:
+        event.acquisition_protocol = get_value_kw("SeriesDescription", dataset)
+    if not event.acquisition_protocol:
+        event.acquisition_protocol = get_seq_code_meaning(
+            "PerformedProtocolCodeSequence", dataset
+        )
+    series_description = get_value_kw("SeriesDescription", dataset)
     if series_description:
         event.comment = series_description
-    event.anatomical_structure = get_or_create_cid(get_seq_code_value('AnatomicRegionSequence', dataset),
-                                                   get_seq_code_meaning('AnatomicRegionSequence', dataset))
-    laterality = get_value_kw('ImageLaterality', dataset)
+    event.anatomical_structure = get_or_create_cid(
+        get_seq_code_value("AnatomicRegionSequence", dataset),
+        get_seq_code_meaning("AnatomicRegionSequence", dataset),
+    )
+    laterality = get_value_kw("ImageLaterality", dataset)
     if laterality:
-        if laterality.strip() == 'R':
-            event.laterality = get_or_create_cid('G-A100', 'Right')
-        if laterality.strip() == 'L':
-            event.laterality = get_or_create_cid('G-A101', 'Left')
+        if laterality.strip() == "R":
+            event.laterality = get_or_create_cid("G-A100", "Right")
+        if laterality.strip() == "L":
+            event.laterality = get_or_create_cid("G-A101", "Left")
 
-    event.image_view = get_or_create_cid(get_seq_code_value('ViewCodeSequence', dataset),
-                                         get_seq_code_meaning('ViewCodeSequence', dataset))
+    event.image_view = get_or_create_cid(
+        get_seq_code_value("ViewCodeSequence", dataset),
+        get_seq_code_meaning("ViewCodeSequence", dataset),
+    )
     if not event.image_view:
-        projection = get_value_kw('ViewPosition', dataset)
-        if projection == 'AP':
-            event.image_view = get_or_create_cid('R-10206', 'antero-posterior')
-        elif projection == 'PA':
-            event.image_view = get_or_create_cid('R-10214', 'postero-anterior')
-        elif projection == 'LL':
-            event.image_view = get_or_create_cid('R-10236', 'left lateral')
-        elif projection == 'RL':
-            event.image_view = get_or_create_cid('R-10232', 'right lateral')
+        projection = get_value_kw("ViewPosition", dataset)
+        if projection == "AP":
+            event.image_view = get_or_create_cid("R-10206", "antero-posterior")
+        elif projection == "PA":
+            event.image_view = get_or_create_cid("R-10214", "postero-anterior")
+        elif projection == "LL":
+            event.image_view = get_or_create_cid("R-10236", "left lateral")
+        elif projection == "RL":
+            event.image_view = get_or_create_cid("R-10232", "right lateral")
             # http://dicomlookup.com/lookup.asp?sw=Tnumber&q=(0018,5101) lists four other views: RLD (Right Lateral Decubitus),
             # LLD (Left Lateral Decubitus), RLO (Right Lateral Oblique) and LLO (Left Lateral Oblique). There isn't an exact
             # match for these views in the CID 4010 DX View (http://dicom.nema.org/medical/dicom/current/output/chtml/part16/sect_CID_4010.html)
@@ -401,19 +494,24 @@ def _irradiationeventxraydata(dataset, proj, ch):  # TID 10003
     # image view modifier?
     if event.anatomical_structure:
         event.target_region = event.anatomical_structure
-    event.entrance_exposure_at_rp = get_value_kw('EntranceDoseInmGy', dataset)
+    event.entrance_exposure_at_rp = get_value_kw("EntranceDoseInmGy", dataset)
     # reference point definition?
-    pc_fibroglandular = get_value_kw('CommentsOnRadiationDose', dataset)
+    pc_fibroglandular = get_value_kw("CommentsOnRadiationDose", dataset)
     if pc_fibroglandular:
-        if '%' in pc_fibroglandular:
-            event.percent_fibroglandular_tissue = pc_fibroglandular.replace('%', '').strip()
-    exposure_control = get_value_kw('ExposureControlModeDescription', dataset)
+        if "%" in pc_fibroglandular:
+            event.percent_fibroglandular_tissue = pc_fibroglandular.replace(
+                "%", ""
+            ).strip()
+    exposure_control = get_value_kw("ExposureControlModeDescription", dataset)
 
     if event.comment and exposure_control:
-        event.comment = event.comment + ', ' + exposure_control
+        event.comment = event.comment + ", " + exposure_control
 
-    dap = get_value_kw('ImageAndFluoroscopyAreaDoseProduct', dataset)
-    if dap: event.dose_area_product = old_div(dap, 100000)  # Value of DICOM tag (0018,115e) in dGy.cm2, converted to Gy.m2
+    dap = get_value_kw("ImageAndFluoroscopyAreaDoseProduct", dataset)
+    if dap:
+        event.dose_area_product = old_div(
+            dap, 100000
+        )  # Value of DICOM tag (0018,115e) in dGy.cm2, converted to Gy.m2
     event.save()
 
     _irradiationeventxraydetectordata(dataset, event)
@@ -425,8 +523,9 @@ def _irradiationeventxraydata(dataset, proj, ch):  # TID 10003
 def _accumulatedxraydose(proj):
     from remapp.models import AccumXRayDose, AccumIntegratedProjRadiogDose
     from remapp.tools.get_values import get_or_create_cid
+
     accum = AccumXRayDose.objects.create(projection_xray_radiation_dose=proj)
-    accum.acquisition_plane = get_or_create_cid('113622', 'Single Plane')
+    accum.acquisition_plane = get_or_create_cid("113622", "Single Plane")
     accum.save()
     accumint = AccumIntegratedProjRadiogDose.objects.create(accumulated_xray_dose=accum)
     accumint.dose_area_product_total = 0.0
@@ -436,8 +535,13 @@ def _accumulatedxraydose(proj):
 
 def _accumulatedxraydose_update(event):
     from decimal import Decimal
-    accumint = event.projection_xray_radiation_dose.accumxraydose_set.get().accumintegratedprojradiogdose_set.get()
-    accumint.total_number_of_radiographic_frames = accumint.total_number_of_radiographic_frames + 1
+
+    accumint = (
+        event.projection_xray_radiation_dose.accumxraydose_set.get().accumintegratedprojradiogdose_set.get()
+    )
+    accumint.total_number_of_radiographic_frames = (
+        accumint.total_number_of_radiographic_frames + 1
+    )
     if event.dose_area_product:
         accumint.dose_area_product_total += Decimal(event.dose_area_product)
     accumint.save()
@@ -446,14 +550,17 @@ def _accumulatedxraydose_update(event):
 def _projectionxrayradiationdose(dataset, g, ch):
     from remapp.models import ProjectionXRayRadiationDose
     from remapp.tools.get_values import get_or_create_cid
+
     proj = ProjectionXRayRadiationDose.objects.create(general_study_module_attributes=g)
-    proj.procedure_reported = get_or_create_cid('113704', 'Projection X-Ray')
-    proj.has_intent = get_or_create_cid('R-408C3', 'Diagnostic Intent')
-    proj.scope_of_accumulation = get_or_create_cid('113014', 'Study')
-    proj.source_of_dose_information = get_or_create_cid('113866', 'Copied From Image Attributes')
-    proj.xray_detector_data_available = get_or_create_cid('R-00339', 'No')
-    proj.xray_source_data_available = get_or_create_cid('R-0038D', 'Yes')
-    proj.xray_mechanical_data_available = get_or_create_cid('R-0038D', 'Yes')
+    proj.procedure_reported = get_or_create_cid("113704", "Projection X-Ray")
+    proj.has_intent = get_or_create_cid("R-408C3", "Diagnostic Intent")
+    proj.scope_of_accumulation = get_or_create_cid("113014", "Study")
+    proj.source_of_dose_information = get_or_create_cid(
+        "113866", "Copied From Image Attributes"
+    )
+    proj.xray_detector_data_available = get_or_create_cid("R-00339", "No")
+    proj.xray_source_data_available = get_or_create_cid("R-0038D", "Yes")
+    proj.xray_mechanical_data_available = get_or_create_cid("R-0038D", "Yes")
     proj.save()
     _accumulatedxraydose(proj)
     _irradiationeventxraydata(dataset, proj, ch)
@@ -464,12 +571,17 @@ def _generalequipmentmoduleattributes(dataset, study, ch):
     from remapp.tools.dcmdatetime import get_date, get_time
     from remapp.tools.get_values import get_value_kw
     from remapp.tools.hash_id import hash_id
-    equip = GeneralEquipmentModuleAttr.objects.create(general_study_module_attributes=study)
+
+    equip = GeneralEquipmentModuleAttr.objects.create(
+        general_study_module_attributes=study
+    )
     equip.manufacturer = get_value_kw("Manufacturer", dataset)
     equip.institution_name = get_value_kw("InstitutionName", dataset)
     equip.institution_address = get_value_kw("InstitutionAddress", dataset)
     equip.station_name = get_value_kw("StationName", dataset)
-    equip.institutional_department_name = get_value_kw("InstitutionalDepartmentName", dataset)
+    equip.institutional_department_name = get_value_kw(
+        "InstitutionalDepartmentName", dataset
+    )
     equip.manufacturer_model_name = get_value_kw("ManufacturerModelName", dataset)
     equip.device_serial_number = get_value_kw("DeviceSerialNumber", dataset)
     equip.software_versions = get_value_kw("SoftwareVersions", dataset)
@@ -497,17 +609,19 @@ def _generalequipmentmoduleattributes(dataset, study, ch):
         gantry_id_hash=hash_id(equip.gantry_id),
         hash_generated=True,
         device_observer_uid=None,
-        device_observer_uid_hash=None
+        device_observer_uid_hash=None,
     )
     if created:
         if equip.institution_name and equip.station_name:
-            equip_display_name.display_name = equip.institution_name + ' ' + equip.station_name
+            equip_display_name.display_name = (
+                equip.institution_name + " " + equip.station_name
+            )
         elif equip.institution_name:
             equip_display_name.display_name = equip.institution_name
         elif equip.station_name:
             equip_display_name.display_name = equip.station_name
         else:
-            equip_display_name.display_name = 'Blank'
+            equip_display_name.display_name = "Blank"
         equip_display_name.save()
 
     equip.unique_equipment_name = UniqueEquipmentNames(pk=equip_display_name.pk)
@@ -518,8 +632,11 @@ def _generalequipmentmoduleattributes(dataset, study, ch):
 def _patientstudymoduleattributes(dataset, g):  # C.7.2.2
     from remapp.models import PatientStudyModuleAttr
     from remapp.tools.get_values import get_value_kw
-    patientatt = PatientStudyModuleAttr.objects.create(general_study_module_attributes=g)
-    patientatt.patient_age = get_value_kw('PatientAge', dataset)
+
+    patientatt = PatientStudyModuleAttr.objects.create(
+        general_study_module_attributes=g
+    )
+    patientatt.patient_age = get_value_kw("PatientAge", dataset)
     patientatt.patient_weight = get_value_kw("PatientWeight", dataset)
     patientatt.patient_size = get_value_kw("PatientSize", dataset)
     patientatt.save()
@@ -535,22 +652,30 @@ def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
     from remapp.tools.hash_id import hash_id
 
     pat = PatientModuleAttr.objects.create(general_study_module_attributes=g)
-    pat.patient_sex = get_value_kw('PatientSex', dataset)
-    patient_birth_date = get_date('PatientBirthDate', dataset)
+    pat.patient_sex = get_value_kw("PatientSex", dataset)
+    patient_birth_date = get_date("PatientBirthDate", dataset)
     pat.not_patient_indicator = get_not_pt(dataset)
     patientatt = PatientStudyModuleAttr.objects.get(general_study_module_attributes=g)
     if patient_birth_date:
-        patientatt.patient_age_decimal = old_div(Decimal((g.study_date.date() - patient_birth_date.date()).days), Decimal(
-            '365.25'))
+        patientatt.patient_age_decimal = old_div(
+            Decimal((g.study_date.date() - patient_birth_date.date()).days),
+            Decimal("365.25"),
+        )
     elif patientatt.patient_age:
-        if patientatt.patient_age[-1:] == 'Y':
+        if patientatt.patient_age[-1:] == "Y":
             patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1])
-        elif patientatt.patient_age[-1:] == 'M':
-            patientatt.patient_age_decimal = old_div(Decimal(patientatt.patient_age[:-1]), Decimal('12'))
-        elif patientatt.patient_age[-1:] == 'D':
-            patientatt.patient_age_decimal = old_div(Decimal(patientatt.patient_age[:-1]), Decimal('365.25'))
+        elif patientatt.patient_age[-1:] == "M":
+            patientatt.patient_age_decimal = old_div(
+                Decimal(patientatt.patient_age[:-1]), Decimal("12")
+            )
+        elif patientatt.patient_age[-1:] == "D":
+            patientatt.patient_age_decimal = old_div(
+                Decimal(patientatt.patient_age[:-1]), Decimal("365.25")
+            )
     if patientatt.patient_age_decimal:
-        patientatt.patient_age_decimal = patientatt.patient_age_decimal.quantize(Decimal('.1'))
+        patientatt.patient_age_decimal = patientatt.patient_age_decimal.quantize(
+            Decimal(".1")
+        )
     patientatt.save()
 
     patient_id_settings = PatientIDSettings.objects.get()
@@ -575,58 +700,105 @@ def _generalstudymoduleattributes(dataset, g):
     from datetime import datetime
     from remapp.extractors.extract_common import populate_dx_rf_summary
     from remapp.models import PatientIDSettings
-    from remapp.tools.get_values import get_value_kw, get_seq_code_meaning, get_seq_code_value, get_value_num, \
-        list_to_string
+    from remapp.tools.get_values import (
+        get_value_kw,
+        get_seq_code_meaning,
+        get_seq_code_value,
+        get_value_num,
+        list_to_string,
+    )
     from remapp.tools.dcmdatetime import get_date, get_time
     from remapp.tools.hash_id import hash_id
 
-    ch = get_value_kw('SpecificCharacterSet', dataset)
-    g.study_date = get_date('StudyDate', dataset)
-    g.study_time = get_time('StudyTime', dataset)
-    g.study_workload_chart_time = datetime.combine(datetime.date(datetime(1900, 1, 1)), datetime.time(g.study_time))
-    g.referring_physician_name = list_to_string(get_value_kw('ReferringPhysicianName', dataset))
-    g.referring_physician_identification = list_to_string(get_value_kw('ReferringPhysicianIdentification', dataset))
-    g.study_id = get_value_kw('StudyID', dataset)
-    accession_number = get_value_kw('AccessionNumber', dataset)
+    ch = get_value_kw("SpecificCharacterSet", dataset)
+    g.study_date = get_date("StudyDate", dataset)
+    g.study_time = get_time("StudyTime", dataset)
+    g.study_workload_chart_time = datetime.combine(
+        datetime.date(datetime(1900, 1, 1)), datetime.time(g.study_time)
+    )
+    g.referring_physician_name = list_to_string(
+        get_value_kw("ReferringPhysicianName", dataset)
+    )
+    g.referring_physician_identification = list_to_string(
+        get_value_kw("ReferringPhysicianIdentification", dataset)
+    )
+    g.study_id = get_value_kw("StudyID", dataset)
+    accession_number = get_value_kw("AccessionNumber", dataset)
     patient_id_settings = PatientIDSettings.objects.get()
     if accession_number and patient_id_settings.accession_hashed:
         accession_number = hash_id(accession_number)
         g.accession_hashed = True
     g.accession_number = accession_number
-    g.study_description = get_value_kw('StudyDescription', dataset)
-    if not g.study_description: g.study_description = get_value_kw('SeriesDescription', dataset)
-    if not g.study_description: g.study_description = get_seq_code_meaning('ProcedureCodeSequence', dataset)
-    g.modality_type = get_value_kw('Modality', dataset)
-    g.physician_of_record = list_to_string(get_value_kw('PhysicianOfRecord', dataset))
-    g.name_of_physician_reading_study = list_to_string(get_value_kw('NameOfPhysicianReadingStudy', dataset))
-    g.performing_physician_name = list_to_string(get_value_kw('PerformingPhysicianName', dataset))
-    g.operator_name = list_to_string(get_value_kw('OperatorsName', dataset))
+    g.study_description = get_value_kw("StudyDescription", dataset)
+    if not g.study_description:
+        g.study_description = get_value_kw("SeriesDescription", dataset)
+    if not g.study_description:
+        g.study_description = get_seq_code_meaning("ProcedureCodeSequence", dataset)
+    g.modality_type = get_value_kw("Modality", dataset)
+    g.physician_of_record = list_to_string(get_value_kw("PhysicianOfRecord", dataset))
+    g.name_of_physician_reading_study = list_to_string(
+        get_value_kw("NameOfPhysicianReadingStudy", dataset)
+    )
+    g.performing_physician_name = list_to_string(
+        get_value_kw("PerformingPhysicianName", dataset)
+    )
+    g.operator_name = list_to_string(get_value_kw("OperatorsName", dataset))
     # Being used to summarise protocol for study:
-    g.procedure_code_meaning = get_seq_code_meaning('ProcedureCodeSequence', dataset)
-    if not g.procedure_code_meaning: g.procedure_code_meaning = get_value_kw('ProtocolName', dataset)
-    if not g.procedure_code_meaning: g.procedure_code_meaning = get_value_kw('StudyDescription', dataset)
-    if not g.procedure_code_meaning: g.procedure_code_meaning = get_value_kw('SeriesDescription', dataset)
-    g.requested_procedure_code_value = get_seq_code_value('RequestedProcedureCodeSequence', dataset)
-    g.requested_procedure_code_meaning = get_seq_code_meaning('RequestedProcedureCodeSequence', dataset)
-    if not g.requested_procedure_code_value: g.requested_procedure_code_value = get_seq_code_value(
-        'RequestAttributesSequence', dataset)
-    if not g.requested_procedure_code_value: g.requested_procedure_code_value = get_seq_code_value(
-        'ProcedureCodeSequence', dataset)
-    if not g.requested_procedure_code_value: g.requested_procedure_code_value = get_seq_code_value(
-        'PerformedProtocolCodeSequence', dataset)
-    if not g.requested_procedure_code_meaning: g.requested_procedure_code_meaning = get_seq_code_meaning(
-        'RequestAttributesSequence', dataset)
-    if not g.requested_procedure_code_meaning: g.requested_procedure_code_meaning = get_seq_code_meaning(
-        'ProcedureCodeSequence', dataset)
-    if not g.requested_procedure_code_meaning: g.requested_procedure_code_meaning = get_value_num(0x00321060, dataset)
-    if not g.requested_procedure_code_meaning: g.requested_procedure_code_meaning = get_seq_code_meaning(
-        'PerformedProtocolCodeSequence', dataset)
+    g.procedure_code_meaning = get_seq_code_meaning("ProcedureCodeSequence", dataset)
+    if not g.procedure_code_meaning:
+        g.procedure_code_meaning = get_value_kw("ProtocolName", dataset)
+    if not g.procedure_code_meaning:
+        g.procedure_code_meaning = get_value_kw("StudyDescription", dataset)
+    if not g.procedure_code_meaning:
+        g.procedure_code_meaning = get_value_kw("SeriesDescription", dataset)
+    g.requested_procedure_code_value = get_seq_code_value(
+        "RequestedProcedureCodeSequence", dataset
+    )
+    g.requested_procedure_code_meaning = get_seq_code_meaning(
+        "RequestedProcedureCodeSequence", dataset
+    )
+    if not g.requested_procedure_code_value:
+        g.requested_procedure_code_value = get_seq_code_value(
+            "RequestAttributesSequence", dataset
+        )
+    if not g.requested_procedure_code_value:
+        g.requested_procedure_code_value = get_seq_code_value(
+            "ProcedureCodeSequence", dataset
+        )
+    if not g.requested_procedure_code_value:
+        g.requested_procedure_code_value = get_seq_code_value(
+            "PerformedProtocolCodeSequence", dataset
+        )
+    if not g.requested_procedure_code_meaning:
+        g.requested_procedure_code_meaning = get_seq_code_meaning(
+            "RequestAttributesSequence", dataset
+        )
+    if not g.requested_procedure_code_meaning:
+        g.requested_procedure_code_meaning = get_seq_code_meaning(
+            "ProcedureCodeSequence", dataset
+        )
+    if not g.requested_procedure_code_meaning:
+        g.requested_procedure_code_meaning = get_value_num(0x00321060, dataset)
+    if not g.requested_procedure_code_meaning:
+        g.requested_procedure_code_meaning = get_seq_code_meaning(
+            "PerformedProtocolCodeSequence", dataset
+        )
     if not g.requested_procedure_code_meaning:
         manufacturer = get_value_kw("Manufacturer", dataset)
         model = get_value_kw("ManufacturerModelName", dataset)
-        if manufacturer and model and 'canon' in manufacturer.lower() and 'cxdi' in model.lower():
+        if (
+            manufacturer
+            and model
+            and "canon" in manufacturer.lower()
+            and "cxdi" in model.lower()
+        ):
             g.requested_procedure_code_meaning = get_value_num(0x00081030, dataset)
-        if manufacturer and model and 'carestream health' in manufacturer.lower() and 'drx-revolution' in model.lower():
+        if (
+            manufacturer
+            and model
+            and "carestream health" in manufacturer.lower()
+            and "drx-revolution" in model.lower()
+        ):
             g.requested_procedure_code_meaning = get_value_num(0x00081030, dataset)
     g.save()
 
@@ -635,8 +807,11 @@ def _generalstudymoduleattributes(dataset, g):
     _patientstudymoduleattributes(dataset, g)
     _patientmoduleattributes(dataset, g, ch)
     populate_dx_rf_summary(g)
-    g.number_of_events = g.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
+    g.number_of_events = (
+        g.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
+    )
     g.save()
+
 
 # The routine will accept three types of image:
 # CR image storage                               (SOP UID = '1.2.840.10008.5.1.4.1.1.1')
@@ -645,7 +820,11 @@ def _generalstudymoduleattributes(dataset, g):
 # These SOP UIDs were taken from http://www.dicomlibrary.com/dicom/sop/
 def _test_if_dx(dataset):
     """ Test if dicom object passed is a DX or CR radiographic file by looking at SOP Class UID"""
-    if dataset.SOPClassUID != '1.2.840.10008.5.1.4.1.1.1' and dataset.SOPClassUID != '1.2.840.10008.5.1.4.1.1.1.1' and dataset.SOPClassUID != '1.2.840.10008.5.1.4.1.1.1.1.1':
+    if (
+        dataset.SOPClassUID != "1.2.840.10008.5.1.4.1.1.1"
+        and dataset.SOPClassUID != "1.2.840.10008.5.1.4.1.1.1.1"
+        and dataset.SOPClassUID != "1.2.840.10008.5.1.4.1.1.1.1.1"
+    ):
         return 0
     return 1
 
@@ -654,41 +833,53 @@ def _dx2db(dataset):
     import sys
     from time import sleep
     from random import random
-    from remapp.extractors.extract_common import get_study_check_dup, populate_dx_rf_summary
+    from remapp.extractors.extract_common import (
+        get_study_check_dup,
+        populate_dx_rf_summary,
+    )
     from remapp.models import GeneralStudyModuleAttr
     from remapp.tools import check_uid
     from remapp.tools.get_values import get_value_kw
 
-    study_uid = get_value_kw('StudyInstanceUID', dataset)
+    study_uid = get_value_kw("StudyInstanceUID", dataset)
     if not study_uid:
-        sys.exit('No UID returned')
+        sys.exit("No UID returned")
     study_in_db = check_uid.check_uid(study_uid)
-    ch = get_value_kw('SpecificCharacterSet', dataset)
+    ch = get_value_kw("SpecificCharacterSet", dataset)
 
     if study_in_db:
-        sleep(2.)  # Give initial event a chance to get to save on _projectionxrayradiationdose
-        this_study = get_study_check_dup(dataset, modality='DX')
+        sleep(
+            2.0
+        )  # Give initial event a chance to get to save on _projectionxrayradiationdose
+        this_study = get_study_check_dup(dataset, modality="DX")
         if this_study:
-            _irradiationeventxraydata(dataset, this_study.projectionxrayradiationdose_set.get(), ch)
+            _irradiationeventxraydata(
+                dataset, this_study.projectionxrayradiationdose_set.get(), ch
+            )
             populate_dx_rf_summary(this_study)
-            this_study.number_of_events = this_study.projectionxrayradiationdose_set.get(
-                ).irradeventxraydata_set.count()
+            this_study.number_of_events = (
+                this_study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
+            )
             this_study.save()
 
     if not study_in_db:
         # study doesn't exist, start from scratch
         g = GeneralStudyModuleAttr.objects.create()
-        g.study_instance_uid = get_value_kw('StudyInstanceUID', dataset)
+        g.study_instance_uid = get_value_kw("StudyInstanceUID", dataset)
         g.save()
-        logger.debug("Started importing DX with Study Instance UID of {0}".format(g.study_instance_uid))
-        event_uid = get_value_kw('SOPInstanceUID', dataset)
+        logger.debug(
+            "Started importing DX with Study Instance UID of {0}".format(
+                g.study_instance_uid
+            )
+        )
+        event_uid = get_value_kw("SOPInstanceUID", dataset)
         check_uid.record_sop_instance_uid(g, event_uid)
         # check study again
         study_in_db = check_uid.check_uid(study_uid)
         if study_in_db == 1:
             _generalstudymoduleattributes(dataset, g)
         elif not study_in_db:
-            sys.exit(u"Something went wrong, GeneralStudyModuleAttr wasn't created")
+            sys.exit("Something went wrong, GeneralStudyModuleAttr wasn't created")
         elif study_in_db > 1:
             sleep(random())  # nosec - not being used for cryptography
             # Check if other instance(s) has deleted the study yet
@@ -704,13 +895,19 @@ def _dx2db(dataset):
                     # Check if other instance has created the study again yet
                     study_in_db = check_uid.check_uid(study_uid)
                     if study_in_db == 1:
-                        sleep(2.)  # Give initial event a chance to get to save on _projectionxrayradiationdose
-                        this_study = get_study_check_dup(dataset, modality='DX')
+                        sleep(
+                            2.0
+                        )  # Give initial event a chance to get to save on _projectionxrayradiationdose
+                        this_study = get_study_check_dup(dataset, modality="DX")
                         if this_study:
-                            _irradiationeventxraydata(dataset, this_study.projectionxrayradiationdose_set.get(), ch)
+                            _irradiationeventxraydata(
+                                dataset,
+                                this_study.projectionxrayradiationdose_set.get(),
+                                ch,
+                            )
                     while not study_in_db:
                         g = GeneralStudyModuleAttr.objects.create()
-                        g.study_instance_uid = get_value_kw('StudyInstanceUID', dataset)
+                        g.study_instance_uid = get_value_kw("StudyInstanceUID", dataset)
                         g.save()
                         check_uid.record_sop_instance_uid(g, event_uid)
                         # check again
@@ -722,16 +919,27 @@ def _dx2db(dataset):
                             sleep(random())  # nosec - not being used for cryptography
                             study_in_db = check_uid.check_uid(study_uid)
                             if study_in_db == 1:
-                                sleep(2.)  # Give initial event a chance to get to save on _projectionxrayradiationdose
-                                this_study = get_study_check_dup(dataset, modality='DX')
+                                sleep(
+                                    2.0
+                                )  # Give initial event a chance to get to save on _projectionxrayradiationdose
+                                this_study = get_study_check_dup(dataset, modality="DX")
                                 if this_study:
-                                    _irradiationeventxraydata(dataset, this_study.projectionxrayradiationdose_set.get(),
-                                                              ch)
+                                    _irradiationeventxraydata(
+                                        dataset,
+                                        this_study.projectionxrayradiationdose_set.get(),
+                                        ch,
+                                    )
                 elif study_in_db == 1:
-                    sleep(2.)  # Give initial event a chance to get to save on _projectionxrayradiationdose
-                    this_study = get_study_check_dup(dataset, modality='DX')
+                    sleep(
+                        2.0
+                    )  # Give initial event a chance to get to save on _projectionxrayradiationdose
+                    this_study = get_study_check_dup(dataset, modality="DX")
                     if this_study:
-                        _irradiationeventxraydata(dataset, this_study.projectionxrayradiationdose_set.get(), ch)
+                        _irradiationeventxraydata(
+                            dataset,
+                            this_study.projectionxrayradiationdose_set.get(),
+                            ch,
+                        )
 
 
 def _fix_kodak_filters(dataset):
@@ -743,22 +951,30 @@ def _fix_kodak_filters(dataset):
     from remapp.tools.get_values import get_value_kw
 
     try:  # Black magic pydicom method suggested by Darcy Mason: https://groups.google.com/forum/?hl=en-GB#!topic/pydicom/x_WsC2gCLck
-        xray_filter_thickness_minimum = get_value_kw('FilterThicknessMinimum', dataset)
-    except (ValueError):  # Assumes ValueError will be a comma separated pair of numbers, as per Kodak.
-        thick = dict.__getitem__(dataset, 0x187052)  # pydicom black magic as suggested by
-        thickval = thick.__getattribute__('value')
-        if ',' in thickval:
-            thickval = thickval.replace(',', '\\')
+        xray_filter_thickness_minimum = get_value_kw("FilterThicknessMinimum", dataset)
+    except (
+        ValueError
+    ):  # Assumes ValueError will be a comma separated pair of numbers, as per Kodak.
+        thick = dict.__getitem__(
+            dataset, 0x187052
+        )  # pydicom black magic as suggested by
+        thickval = thick.__getattribute__("value")
+        if "," in thickval:
+            thickval = thickval.replace(",", "\\")
             thick2 = thick._replace(value=thickval)
             dict.__setitem__(dataset, 0x187052, thick2)
 
     try:
-        xray_filter_thickness_maximum = get_value_kw('FilterThicknessMaximum', dataset)
-    except (ValueError):  # Assumes ValueError will be a comma separated pair of numbers, as per Kodak.
-        thick = dict.__getitem__(dataset, 0x187054)  # pydicom black magic as suggested by
-        thickval = thick.__getattribute__('value')
-        if ',' in thickval:
-            thickval = thickval.replace(',', '\\')
+        xray_filter_thickness_maximum = get_value_kw("FilterThicknessMaximum", dataset)
+    except (
+        ValueError
+    ):  # Assumes ValueError will be a comma separated pair of numbers, as per Kodak.
+        thick = dict.__getitem__(
+            dataset, 0x187054
+        )  # pydicom black magic as suggested by
+        thickval = thick.__getattribute__("value")
+        if "," in thickval:
+            thickval = thickval.replace(",", "\\")
             thick2 = thick._replace(value=thickval)
             dict.__setitem__(dataset, 0x187054, thick2)
 
@@ -775,13 +991,14 @@ def dx(dig_file):
     import pydicom
     from django.core.exceptions import ObjectDoesNotExist
     from remapp.models import DicomDeleteSettings
+
     try:
         del_settings = DicomDeleteSettings.objects.get()
         del_dx_im = del_settings.del_dx_im
     except ObjectDoesNotExist:
         del_dx_im = False
 
-    logger.debug(u"About to read DX")
+    logger.debug("About to read DX")
     dataset = pydicom.dcmread(dig_file)
     try:
         dataset.decode()
@@ -791,9 +1008,9 @@ def dx(dig_file):
             dataset.decode()
     isdx = _test_if_dx(dataset)
     if not isdx:
-        return u'{0} is not a DICOM DX radiographic image'.format(dig_file)
+        return "{0} is not a DICOM DX radiographic image".format(dig_file)
 
-    logger.debug(u"About to launch _dx2db")
+    logger.debug("About to launch _dx2db")
     _dx2db(dataset)
 
     if del_dx_im:
@@ -806,6 +1023,8 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) != 2:
-        sys.exit(u'Error: Supply exactly one argument - the DICOM DX radiographic image file')
+        sys.exit(
+            "Error: Supply exactly one argument - the DICOM DX radiographic image file"
+        )
 
     sys.exit(dx(sys.argv[1]))

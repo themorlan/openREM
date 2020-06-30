@@ -34,9 +34,21 @@ import logging
 from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
 
-from .export_common import (common_headers, text_and_date_formats, generate_sheets, create_summary_sheet,
-                            get_common_data, get_anode_target_material, get_xray_filter_info, create_csv, create_xlsx,
-                            write_export, sheet_name, abort_if_zero_studies, create_export_task)
+from .export_common import (
+    common_headers,
+    text_and_date_formats,
+    generate_sheets,
+    create_summary_sheet,
+    get_common_data,
+    get_anode_target_material,
+    get_xray_filter_info,
+    create_csv,
+    create_xlsx,
+    write_export,
+    sheet_name,
+    abort_if_zero_studies,
+    create_export_task,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -50,27 +62,27 @@ def _series_headers(max_events):
     series_headers = []
     for series_number in range(max_events):
         series_headers += [
-            u'E' + str(series_number+1) + u' View',
-            u'E' + str(series_number+1) + u' Laterality',
-            u'E' + str(series_number+1) + u' Acquisition',
-            u'E' + str(series_number+1) + u' Thickness',
-            u'E' + str(series_number+1) + u' Radiological thickness',
-            u'E' + str(series_number+1) + u' Force',
-            u'E' + str(series_number+1) + u' Mag',
-            u'E' + str(series_number+1) + u' Area',
-            u'E' + str(series_number+1) + u' Mode',
-            u'E' + str(series_number+1) + u' Target',
-            u'E' + str(series_number+1) + u' Filter',
-            u'E' + str(series_number+1) + u' Filter thickness',
-            u'E' + str(series_number+1) + u' Focal spot size',
-            u'E' + str(series_number+1) + u' kVp',
-            u'E' + str(series_number+1) + u' mA',
-            u'E' + str(series_number+1) + u' ms',
-            u'E' + str(series_number+1) + u' uAs',
-            u'E' + str(series_number+1) + u' ESD',
-            u'E' + str(series_number+1) + u' AGD',
-            u'E' + str(series_number+1) + u' % Fibroglandular tissue',
-            u'E' + str(series_number+1) + u' Exposure mode description'
+            "E" + str(series_number + 1) + " View",
+            "E" + str(series_number + 1) + " Laterality",
+            "E" + str(series_number + 1) + " Acquisition",
+            "E" + str(series_number + 1) + " Thickness",
+            "E" + str(series_number + 1) + " Radiological thickness",
+            "E" + str(series_number + 1) + " Force",
+            "E" + str(series_number + 1) + " Mag",
+            "E" + str(series_number + 1) + " Area",
+            "E" + str(series_number + 1) + " Mode",
+            "E" + str(series_number + 1) + " Target",
+            "E" + str(series_number + 1) + " Filter",
+            "E" + str(series_number + 1) + " Filter thickness",
+            "E" + str(series_number + 1) + " Focal spot size",
+            "E" + str(series_number + 1) + " kVp",
+            "E" + str(series_number + 1) + " mA",
+            "E" + str(series_number + 1) + " ms",
+            "E" + str(series_number + 1) + " uAs",
+            "E" + str(series_number + 1) + " ESD",
+            "E" + str(series_number + 1) + " AGD",
+            "E" + str(series_number + 1) + " % Fibroglandular tissue",
+            "E" + str(series_number + 1) + " Exposure mode description",
         ]
     return series_headers
 
@@ -92,8 +104,11 @@ def _mg_get_series_data(event):
         magnification_factor = None
 
     try:
-        radiological_thickness = event.irradeventxraymechanicaldata_set.get().doserelateddistancemeasurements_set.get(
-            ).radiological_thickness
+        radiological_thickness = (
+            event.irradeventxraymechanicaldata_set.get()
+            .doserelateddistancemeasurements_set.get()
+            .radiological_thickness
+        )
     except ObjectDoesNotExist:
         radiological_thickness = None
 
@@ -185,12 +200,18 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
 
     datestamp = datetime.datetime.now()
     if xlsx:
-        export_type = u"XLSX export"
+        export_type = "XLSX export"
     else:
-        export_type = u"CSV export"
-    tsk = create_export_task(celery_uuid=exportMG2excel.request.id, modality='MG', export_type=export_type,
-                             date_stamp=datestamp, pid=bool(pid and (name or patid)), user=user,
-                             filters_dict=filterdict)
+        export_type = "CSV export"
+    tsk = create_export_task(
+        celery_uuid=exportMG2excel.request.id,
+        modality="MG",
+        export_type=export_type,
+        date_stamp=datestamp,
+        pid=bool(pid and (name or patid)),
+        user=user,
+        filters_dict=filterdict,
+    )
 
     if xlsx:
         tmpfile, book = create_xlsx(tsk)
@@ -203,21 +224,28 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
 
     # Resetting the ordering key to avoid duplicates
     if isinstance(filterdict, dict):
-        if u'o' in filterdict and filterdict[u'o'] == '-projectionxrayradiationdose__accumxraydose__' \
-                                                      'accummammographyxraydose__accumulated_average_glandular_dose':
+        if (
+            "o" in filterdict
+            and filterdict["o"] == "-projectionxrayradiationdose__accumxraydose__"
+            "accummammographyxraydose__accumulated_average_glandular_dose"
+        ):
             logger.info("Replacing AGD ordering with study date to avoid duplication")
-            filterdict['o'] = '-study_date'
+            filterdict["o"] = "-study_date"
 
     # Get the data!
     if pid:
         df_filtered_qs = MGFilterPlusPid(
-            filterdict, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact=u'MG'))
+            filterdict,
+            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG"),
+        )
     else:
         df_filtered_qs = MGSummaryListFilter(
-            filterdict, queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact=u'MG'))
+            filterdict,
+            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG"),
+        )
     studies = df_filtered_qs.qs
 
-    tsk.progress = u'Required study filter complete.'
+    tsk.progress = "Required study filter complete."
     tsk.save()
 
     tsk.num_records = studies.count()
@@ -227,58 +255,66 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
     if xlsx:
         # Add summary sheet and all data sheet
         summarysheet = book.add_worksheet("Summary")
-        wsalldata = book.add_worksheet('All data')
+        wsalldata = book.add_worksheet("All data")
         book = text_and_date_formats(book, wsalldata, pid=pid, name=name, patid=patid)
 
-    headings = common_headers(modality=u"MG", pid=pid, name=name, patid=patid)
+    headings = common_headers(modality="MG", pid=pid, name=name, patid=patid)
     all_data_headings = list(headings)
     headings += [
-        u'View',
-        u'Laterality',
-        u'Acquisition',
-        u'Thickness',
-        u'Radiological thickness',
-        u'Force',
-        u'Mag',
-        u'Area',
-        u'Mode',
-        u'Target',
-        u'Filter',
-        u'Filter thickness',
-        u'Focal spot size',
-        u'kVp',
-        u'mA',
-        u'ms',
-        u'uAs',
-        u'ESD',
-        u'AGD',
-        u'% Fibroglandular tissue',
-        u'Exposure mode description'
-        ]
+        "View",
+        "Laterality",
+        "Acquisition",
+        "Thickness",
+        "Radiological thickness",
+        "Force",
+        "Mag",
+        "Area",
+        "Mode",
+        "Target",
+        "Filter",
+        "Filter thickness",
+        "Focal spot size",
+        "kVp",
+        "mA",
+        "ms",
+        "uAs",
+        "ESD",
+        "AGD",
+        "% Fibroglandular tissue",
+        "Exposure mode description",
+    ]
 
     if not xlsx:
         writer.writerow(headings)
     else:
         # Generate list of protocols in queryset and create worksheets for each
-        tsk.progress = u'Generating list of protocols in the dataset...'
+        tsk.progress = "Generating list of protocols in the dataset..."
         tsk.save()
 
-        tsk.progress = u'Creating an Excel safe version of protocol names and creating a worksheet for each...'
+        tsk.progress = "Creating an Excel safe version of protocol names and creating a worksheet for each..."
         tsk.save()
 
-        book, sheet_list = generate_sheets(studies, book, headings, modality=u"MG", pid=pid, name=name, patid=patid)
+        book, sheet_list = generate_sheets(
+            studies, book, headings, modality="MG", pid=pid, name=name, patid=patid
+        )
 
     max_events = 0
     for study_index, exam in enumerate(studies):
-        tsk.progress = u"{0} of {1}".format(study_index + 1, tsk.num_records)
+        tsk.progress = "{0} of {1}".format(study_index + 1, tsk.num_records)
         tsk.save()
 
         try:
-            common_exam_data = get_common_data(u"MG", exam, pid=pid, name=name, patid=patid)
+            common_exam_data = get_common_data(
+                "MG", exam, pid=pid, name=name, patid=patid
+            )
             all_exam_data = list(common_exam_data)
 
             this_study_max_events = 0
-            for series in exam.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id'):
+            for (
+                series
+            ) in exam.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by(
+                "id"
+            ):
                 this_study_max_events += 1
                 if this_study_max_events > max_events:
                     max_events = this_study_max_events
@@ -287,44 +323,59 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
                     series_data = list(common_exam_data) + series_data
                     for index, item in enumerate(series_data):
                         if item is None:
-                            series_data[index] = ''
-                        if isinstance(item, str) and u',' in item:
-                            series_data[index] = item.replace(u',', u';')
+                            series_data[index] = ""
+                        if isinstance(item, str) and "," in item:
+                            series_data[index] = item.replace(",", ";")
                     writer.writerow([str(data_string) for data_string in series_data])
                 else:
                     all_exam_data += series_data  # For all data
                     protocol = series.acquisition_protocol
                     if not protocol:
-                        protocol = u'Unknown'
+                        protocol = "Unknown"
                     tabtext = sheet_name(protocol)
-                    sheet_list[tabtext]['count'] += 1
+                    sheet_list[tabtext]["count"] += 1
                     try:
-                        sheet_list[tabtext]['sheet'].write_row(sheet_list[tabtext]['count'], 0,
-                                                               common_exam_data + series_data)
+                        sheet_list[tabtext]["sheet"].write_row(
+                            sheet_list[tabtext]["count"],
+                            0,
+                            common_exam_data + series_data,
+                        )
                     except TypeError:
-                        logger.error("Common is |{0}| series is |{1}|".format(common_exam_data, series_data))
+                        logger.error(
+                            "Common is |{0}| series is |{1}|".format(
+                                common_exam_data, series_data
+                            )
+                        )
                         exit()
             if xlsx:
                 wsalldata.write_row(study_index + 1, 0, all_exam_data)
         except ObjectDoesNotExist:
-            error_message = u"DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number" \
-                            u" {3} - maybe database entry was deleted as part of importing later version of same" \
-                            u" study?".format(
-                                study_index + 1, tsk.num_records, exam.study_instance_uid, exam.accession_number)
+            error_message = (
+                "DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number"
+                " {3} - maybe database entry was deleted as part of importing later version of same"
+                " study?".format(
+                    study_index + 1,
+                    tsk.num_records,
+                    exam.study_instance_uid,
+                    exam.accession_number,
+                )
+            )
             logger.error(error_message)
             if xlsx:
                 wsalldata.write(study_index + 1, 0, error_message)
             else:
-                writer.writerow([error_message, ])
+                writer.writerow(
+                    [error_message,]
+                )
 
     if xlsx:
         all_data_headings += _series_headers(max_events)
-        wsalldata.write_row('A1', all_data_headings)
+        wsalldata.write_row("A1", all_data_headings)
         numrows = studies.count()
         wsalldata.autofilter(0, 0, numrows, len(all_data_headings) - 1)
         create_summary_sheet(tsk, studies, book, summarysheet, sheet_list)
 
-    tsk.progress = u'All study data written.'
+    tsk.progress = "All study data written."
     tsk.save()
 
     if xlsx:
@@ -333,6 +384,6 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
         write_export(tsk, export_filename, tmpfile, datestamp)
     else:
         tmpfile.close()
-        tsk.status = u'COMPLETE'
+        tsk.status = "COMPLETE"
         tsk.processtime = (datetime.datetime.now() - datestamp).total_seconds()
         tsk.save()

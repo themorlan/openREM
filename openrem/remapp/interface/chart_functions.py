@@ -33,12 +33,22 @@ from builtins import filter  # pylint: disable=redefined-builtin
 from builtins import range  # pylint: disable=redefined-builtin
 
 
-def average_chart_inc_histogram_data(database_events, db_display_name_relationship, db_series_names, db_value_name,
-                                     value_multiplier, plot_average, plot_freq, plot_series_per_system,
-                                     plot_average_choice, median_available, num_hist_bins,
-                                     exclude_constant_angle=False,
-                                     calculate_histograms=False,
-                                     case_insensitive_categories=False):
+def average_chart_inc_histogram_data(
+    database_events,
+    db_display_name_relationship,
+    db_series_names,
+    db_value_name,
+    value_multiplier,
+    plot_average,
+    plot_freq,
+    plot_series_per_system,
+    plot_average_choice,
+    median_available,
+    num_hist_bins,
+    exclude_constant_angle=False,
+    calculate_histograms=False,
+    case_insensitive_categories=False,
+):
     """ This function calculates the data for an OpenREM Highcharts plot of average value vs. a category, as well as a
     histogram of values for each category. It is also used for OpenREM Highcharts frequency plots.
 
@@ -71,7 +81,17 @@ def average_chart_inc_histogram_data(database_events, db_display_name_relationsh
         summary: a list of lists: the top list has one entry per item in system_list. Each of these then contains a list of series_names items with the average and frequency data for that name and system
         histogram_data: a list of lists: the top list has one entry per item in system_list_entry. Each of these then contains histogram data for each item in series_names for that system
     """
-    from django.db.models import Avg, Count, Min, Max, FloatField, When, Case, Sum, IntegerField
+    from django.db.models import (
+        Avg,
+        Count,
+        Min,
+        Max,
+        FloatField,
+        When,
+        Case,
+        Sum,
+        IntegerField,
+    )
     from remapp.models import Median
     import numpy as np
 
@@ -80,10 +100,16 @@ def average_chart_inc_histogram_data(database_events, db_display_name_relationsh
 
     if case_insensitive_categories:
         from django.db.models.functions import Lower
-        database_events = database_events.annotate(db_series_names_to_use=Lower(db_series_names))
+
+        database_events = database_events.annotate(
+            db_series_names_to_use=Lower(db_series_names)
+        )
     else:
         from django.db.models.functions import Concat
-        database_events = database_events.annotate(db_series_names_to_use=Concat(db_series_names, None))
+
+        database_events = database_events.annotate(
+            db_series_names_to_use=Concat(db_series_names, None)
+        )
 
     return_structure = {}
 
@@ -91,173 +117,291 @@ def average_chart_inc_histogram_data(database_events, db_display_name_relationsh
 
     if plot_average or plot_freq:
         # Obtain a list of series names
-        return_structure['series_names'] = list(
-            database_events.values_list('db_series_names_to_use', flat=True).distinct()
-                                                .order_by('db_series_names_to_use'))
+        return_structure["series_names"] = list(
+            database_events.values_list("db_series_names_to_use", flat=True)
+            .distinct()
+            .order_by("db_series_names_to_use")
+        )
 
         if plot_series_per_system:
             # Obtain a list of x-ray systems
-            return_structure['system_list'] = list(database_events.values_list(db_display_name_relationship, flat=True)
-                                                   .distinct().order_by(db_display_name_relationship))
+            return_structure["system_list"] = list(
+                database_events.values_list(db_display_name_relationship, flat=True)
+                .distinct()
+                .order_by(db_display_name_relationship)
+            )
         else:
-            return_structure['system_list'] = ['All systems']
+            return_structure["system_list"] = ["All systems"]
 
-        return_structure['summary'] = []
+        return_structure["summary"] = []
 
         if plot_average or plot_freq:
             # Calculate the mean, median and frequency for each x-ray system
             if exclude_constant_angle:
                 if plot_average:
-                    if plot_average_choice == 'both' or plot_average_choice == 'mean':
-                        summary_annotations['mean'] = Avg(
-                            Case(
-                                When(
-                                    ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=None),
-                                    default=db_value_name, output_field=FloatField()
+                    if plot_average_choice == "both" or plot_average_choice == "mean":
+                        summary_annotations["mean"] = (
+                            Avg(
+                                Case(
+                                    When(
+                                        ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact="Constant Angle Acquisition",
+                                        then=None,
+                                    ),
+                                    default=db_value_name,
+                                    output_field=FloatField(),
+                                )
                             )
-                        ) * value_multiplier
-                    if plot_average_choice == 'both' or plot_average_choice == 'median':
-                        summary_annotations['median'] = Median(
-                            Case(
-                                When(
-                                    ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=None),
-                                    default=db_value_name, output_field=FloatField()
+                            * value_multiplier
+                        )
+                    if plot_average_choice == "both" or plot_average_choice == "median":
+                        summary_annotations["median"] = (
+                            Median(
+                                Case(
+                                    When(
+                                        ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact="Constant Angle Acquisition",
+                                        then=None,
+                                    ),
+                                    default=db_value_name,
+                                    output_field=FloatField(),
+                                )
                             )
-                        ) * value_multiplier
+                            * value_multiplier
+                        )
                 if plot_average or plot_freq:
-                    summary_annotations['num'] = Sum(
+                    summary_annotations["num"] = Sum(
                         Case(
-                            When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=0),
-                            default=1, output_field=IntegerField()
+                            When(
+                                ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact="Constant Angle Acquisition",
+                                then=0,
+                            ),
+                            default=1,
+                            output_field=IntegerField(),
                         )
                     )
             else:
                 # Don't exclude "Constant Angle Acquisitions" from the calculations
                 if plot_average:
-                    if plot_average_choice == 'both' or plot_average_choice == 'mean':
-                        summary_annotations['mean'] = Avg(db_value_name) * value_multiplier
-                    if plot_average_choice == 'both' or plot_average_choice == 'median':
-                        summary_annotations['median'] = Median(db_value_name) * value_multiplier
+                    if plot_average_choice == "both" or plot_average_choice == "mean":
+                        summary_annotations["mean"] = (
+                            Avg(db_value_name) * value_multiplier
+                        )
+                    if plot_average_choice == "both" or plot_average_choice == "median":
+                        summary_annotations["median"] = (
+                            Median(db_value_name) * value_multiplier
+                        )
                 if plot_average or plot_freq:
-                    summary_annotations['num'] = Count(db_value_name)
+                    summary_annotations["num"] = Count(db_value_name)
 
             if plot_series_per_system:
-                for system in return_structure['system_list']:
-                    return_structure['summary'].append(database_events.filter(
-                        **{db_display_name_relationship: system}).values('db_series_names_to_use').annotate(
-                        **summary_annotations).order_by('db_series_names_to_use'))
+                for system in return_structure["system_list"]:
+                    return_structure["summary"].append(
+                        database_events.filter(**{db_display_name_relationship: system})
+                        .values("db_series_names_to_use")
+                        .annotate(**summary_annotations)
+                        .order_by("db_series_names_to_use")
+                    )
             else:
-                return_structure['summary'].append(
-                    database_events.values('db_series_names_to_use').annotate(**summary_annotations).order_by(
-                        'db_series_names_to_use'))
+                return_structure["summary"].append(
+                    database_events.values("db_series_names_to_use")
+                    .annotate(**summary_annotations)
+                    .order_by("db_series_names_to_use")
+                )
 
         # Force each item in return_structure['summary'] to be a list
-        for index in range(len(return_structure['summary'])):
-            return_structure['summary'][index] = list(return_structure['summary'][index])
+        for index in range(len(return_structure["summary"])):
+            return_structure["summary"][index] = list(
+                return_structure["summary"][index]
+            )
 
         # Fill in default values where data for a series name is missing for any of
         # the systems even if plot_series_per_system is false
-        for index in range(len(return_structure['system_list'])):
-            missing_names =\
-                list(set(return_structure['series_names']) -
-                     set([d['db_series_names_to_use'] for d in return_structure['summary'][index]]))
+        for index in range(len(return_structure["system_list"])):
+            missing_names = list(
+                set(return_structure["series_names"])
+                - set(
+                    [
+                        d["db_series_names_to_use"]
+                        for d in return_structure["summary"][index]
+                    ]
+                )
+            )
             for missing_name in missing_names:
                 if plot_average:
-                    if median_available and plot_average_choice == 'both':
-                        (return_structure['summary'][index]).append(
-                            {'median': 0, 'mean': 0, 'db_series_names_to_use': missing_name, 'num': 0})
-                    elif median_available and plot_average_choice == 'median':
-                        (return_structure['summary'][index]).append(
-                            {'median': 0, 'db_series_names_to_use': missing_name, 'num': 0})
+                    if median_available and plot_average_choice == "both":
+                        (return_structure["summary"][index]).append(
+                            {
+                                "median": 0,
+                                "mean": 0,
+                                "db_series_names_to_use": missing_name,
+                                "num": 0,
+                            }
+                        )
+                    elif median_available and plot_average_choice == "median":
+                        (return_structure["summary"][index]).append(
+                            {
+                                "median": 0,
+                                "db_series_names_to_use": missing_name,
+                                "num": 0,
+                            }
+                        )
                     else:
-                        (return_structure['summary'][index]).append(
-                            {'mean': 0, 'db_series_names_to_use': missing_name, 'num': 0})
+                        (return_structure["summary"][index]).append(
+                            {
+                                "mean": 0,
+                                "db_series_names_to_use": missing_name,
+                                "num": 0,
+                            }
+                        )
                 elif plot_freq:
-                    (return_structure['summary'][index]).append(
-                        {'db_series_names_to_use': missing_name, 'num': 0})
+                    (return_structure["summary"][index]).append(
+                        {"db_series_names_to_use": missing_name, "num": 0}
+                    )
 
             # Rearrange the series using the same method that is used to sort the series_names below
             if case_insensitive_categories:
-                return_structure['summary'][index] = sorted(return_structure['summary'][index], key=lambda k: stringIfNone(k['db_series_names_to_use']).lower())
+                return_structure["summary"][index] = sorted(
+                    return_structure["summary"][index],
+                    key=lambda k: stringIfNone(k["db_series_names_to_use"]).lower(),
+                )
             else:
-                return_structure['summary'][index] = sorted(return_structure['summary'][index], key=lambda k: stringIfNone(k['db_series_names_to_use']))
+                return_structure["summary"][index] = sorted(
+                    return_structure["summary"][index],
+                    key=lambda k: stringIfNone(k["db_series_names_to_use"]),
+                )
 
     # Replace None with '' in return_structure['series_names'] and sort the result using lowercase - will now be sorted in the same order as the return_structure['summary'][0,1,2,etc] data
     if case_insensitive_categories:
-        return_structure['series_names'] = sorted([stringIfNone(entry).lower() for entry in return_structure['series_names']])
+        return_structure["series_names"] = sorted(
+            [stringIfNone(entry).lower() for entry in return_structure["series_names"]]
+        )
     else:
-        return_structure['series_names'] = sorted([stringIfNone(entry) for entry in return_structure['series_names']])
+        return_structure["series_names"] = sorted(
+            [stringIfNone(entry) for entry in return_structure["series_names"]]
+        )
 
     if plot_average and calculate_histograms:
         histogram_annotations = {}
         # Calculate histogram data for each series from each system
-        return_structure['histogram_data'] =\
-            [[[None for k in range(2)] for j in range(len(return_structure['series_names']))]
-             for i in range(len(return_structure['system_list']))]
+        return_structure["histogram_data"] = [
+            [
+                [None for k in range(2)]
+                for j in range(len(return_structure["series_names"]))
+            ]
+            for i in range(len(return_structure["system_list"]))
+        ]
 
         if exclude_constant_angle:
             # Exclude "Constant Angle Acquisitions" from the calculations
-            histogram_annotations['min_value'] = Min(
-                    Case(
-                        When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=None),
-                        default=db_value_name, output_field=FloatField()
-                    )
+            histogram_annotations["min_value"] = Min(
+                Case(
+                    When(
+                        ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact="Constant Angle Acquisition",
+                        then=None,
+                    ),
+                    default=db_value_name,
+                    output_field=FloatField(),
                 )
-            histogram_annotations['max_value'] = Max(
-                    Case(
-                        When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=None),
-                        default=db_value_name, output_field=FloatField()
-                    )
+            )
+            histogram_annotations["max_value"] = Max(
+                Case(
+                    When(
+                        ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact="Constant Angle Acquisition",
+                        then=None,
+                    ),
+                    default=db_value_name,
+                    output_field=FloatField(),
                 )
+            )
         else:
             # Don't exclude "Constant Angle Acquisitions" from the calculations
-            histogram_annotations['min_value'] = Min(db_value_name, output_field=FloatField())
-            histogram_annotations['max_value'] = Max(db_value_name, output_field=FloatField())
+            histogram_annotations["min_value"] = Min(
+                db_value_name, output_field=FloatField()
+            )
+            histogram_annotations["max_value"] = Max(
+                db_value_name, output_field=FloatField()
+            )
 
-        value_ranges = database_events.values('db_series_names_to_use').annotate(
-            **histogram_annotations).order_by('db_series_names_to_use')
+        value_ranges = (
+            database_events.values("db_series_names_to_use")
+            .annotate(**histogram_annotations)
+            .order_by("db_series_names_to_use")
+        )
 
-        for system_i, system in enumerate(return_structure['system_list']):
-            for series_i, series_name in enumerate(return_structure['series_names']):
+        for system_i, system in enumerate(return_structure["system_list"]):
+            for series_i, series_name in enumerate(return_structure["series_names"]):
                 if plot_series_per_system:
-                    subqs = database_events.filter(**{
+                    subqs = database_events.filter(
+                        **{
                             db_display_name_relationship: system,
-                            'db_series_names_to_use': series_name})
+                            "db_series_names_to_use": series_name,
+                        }
+                    )
                 else:
-                    subqs = database_events.filter(**{'db_series_names_to_use': series_name})
+                    subqs = database_events.filter(
+                        **{"db_series_names_to_use": series_name}
+                    )
 
                 if exclude_constant_angle:
                     # Exclude "Constant Angle Acquisitions" from the calculations
                     data_values = subqs.annotate(
                         values=Case(
-                            When(ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact='Constant Angle Acquisition', then=None),
-                            default=db_value_name, output_field=FloatField()
+                            When(
+                                ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact="Constant Angle Acquisition",
+                                then=None,
+                            ),
+                            default=db_value_name,
+                            output_field=FloatField(),
                         ),
-                    ).values_list('values', flat=True)
+                    ).values_list("values", flat=True)
                 else:
                     # Don't exclude "Constant Angle Acquisitions" from the calculations
                     data_values = subqs.values_list(db_value_name, flat=True)
 
-                if None in value_ranges.values_list('min_value', 'max_value')[series_i]:
-                    return_structure['histogram_data'][system_i][series_i][0] = [0] * num_hist_bins
-                    return_structure['histogram_data'][system_i][series_i][1] = [0] * (num_hist_bins+1)
+                if None in value_ranges.values_list("min_value", "max_value")[series_i]:
+                    return_structure["histogram_data"][system_i][series_i][0] = [
+                        0
+                    ] * num_hist_bins
+                    return_structure["histogram_data"][system_i][series_i][1] = [0] * (
+                        num_hist_bins + 1
+                    )
                 else:
-                    return_structure['histogram_data'][system_i][series_i][0], \
-                        return_structure['histogram_data'][system_i][series_i][1] = \
-                        np.histogram([floatIfValueNone(x) for x in data_values], bins=num_hist_bins, range=value_ranges.values_list('min_value', 'max_value')[series_i])
+                    (
+                        return_structure["histogram_data"][system_i][series_i][0],
+                        return_structure["histogram_data"][system_i][series_i][1],
+                    ) = np.histogram(
+                        [floatIfValueNone(x) for x in data_values],
+                        bins=num_hist_bins,
+                        range=value_ranges.values_list("min_value", "max_value")[
+                            series_i
+                        ],
+                    )
 
-                    return_structure['histogram_data'][system_i][series_i][0] = \
-                        return_structure['histogram_data'][system_i][series_i][0].tolist()
+                    return_structure["histogram_data"][system_i][series_i][
+                        0
+                    ] = return_structure["histogram_data"][system_i][series_i][
+                        0
+                    ].tolist()
 
-                    return_structure['histogram_data'][system_i][series_i][1] = \
-                        (return_structure['histogram_data'][system_i][series_i][1] * value_multiplier).tolist()
+                    return_structure["histogram_data"][system_i][series_i][1] = (
+                        return_structure["histogram_data"][system_i][series_i][1]
+                        * value_multiplier
+                    ).tolist()
 
     return return_structure
 
 
-def average_chart_over_time_data(database_events, db_series_names, db_value_name, db_date_field, db_date_time_field,
-                                 median_available, plot_average_choice, value_multiplier, time_period,
-                                 case_insensitive_categories=False):
+def average_chart_over_time_data(
+    database_events,
+    db_series_names,
+    db_value_name,
+    db_date_field,
+    db_date_time_field,
+    median_available,
+    plot_average_choice,
+    value_multiplier,
+    time_period,
+    case_insensitive_categories=False,
+):
     """ This function calculates the data for an OpenREM Highcharts plot of average value per category over time. It
     uses the time_series function of the qsstats package to do this.
 
@@ -292,31 +436,62 @@ def average_chart_over_time_data(database_events, db_series_names, db_value_name
 
     if case_insensitive_categories:
         from django.db.models.functions import Lower
-        database_events = database_events.annotate(db_series_names_to_use=Lower(db_series_names))
+
+        database_events = database_events.annotate(
+            db_series_names_to_use=Lower(db_series_names)
+        )
     else:
         from django.db.models.functions import Concat
-        database_events = database_events.annotate(db_series_names_to_use=Concat(db_series_names, None))
 
-    return_structure['series_names'] = list(database_events.values_list(
-        'db_series_names_to_use', flat=True).distinct().order_by('db_series_names_to_use'))
+        database_events = database_events.annotate(
+            db_series_names_to_use=Concat(db_series_names, None)
+        )
 
-    start_date = database_events.aggregate(Min(db_date_field)).get(db_date_field+'__min')
+    return_structure["series_names"] = list(
+        database_events.values_list("db_series_names_to_use", flat=True)
+        .distinct()
+        .order_by("db_series_names_to_use")
+    )
+
+    start_date = database_events.aggregate(Min(db_date_field)).get(
+        db_date_field + "__min"
+    )
     today = datetime.date.today()
 
-    if median_available and (plot_average_choice == 'median' or plot_average_choice == 'both'):
-        return_structure['median_over_time'] = [None] * len(return_structure['series_names'])
-    if plot_average_choice == 'mean' or plot_average_choice == 'both':
-        return_structure['mean_over_time'] = [None] * len(return_structure['series_names'])
+    if median_available and (
+        plot_average_choice == "median" or plot_average_choice == "both"
+    ):
+        return_structure["median_over_time"] = [None] * len(
+            return_structure["series_names"]
+        )
+    if plot_average_choice == "mean" or plot_average_choice == "both":
+        return_structure["mean_over_time"] = [None] * len(
+            return_structure["series_names"]
+        )
 
-    for i, series_name in enumerate(return_structure['series_names']):
-        subqs = database_events.filter(**{'db_series_names_to_use': series_name})
+    for i, series_name in enumerate(return_structure["series_names"]):
+        subqs = database_events.filter(**{"db_series_names_to_use": series_name})
 
-        if plot_average_choice == 'mean' or plot_average_choice == 'both':
-            qss = qsstats.QuerySetStats(subqs, db_date_time_field, aggregate=Avg(db_value_name) * value_multiplier)
-            return_structure['mean_over_time'][i] = qss.time_series(start_date, today, interval=time_period)
-        if median_available and (plot_average_choice == 'median' or plot_average_choice == 'both'):
-            qss = qsstats.QuerySetStats(subqs, db_date_time_field, aggregate=Median(db_value_name) * value_multiplier)
-            return_structure['median_over_time'][i] = qss.time_series(start_date, today, interval=time_period)
+        if plot_average_choice == "mean" or plot_average_choice == "both":
+            qss = qsstats.QuerySetStats(
+                subqs,
+                db_date_time_field,
+                aggregate=Avg(db_value_name) * value_multiplier,
+            )
+            return_structure["mean_over_time"][i] = qss.time_series(
+                start_date, today, interval=time_period
+            )
+        if median_available and (
+            plot_average_choice == "median" or plot_average_choice == "both"
+        ):
+            qss = qsstats.QuerySetStats(
+                subqs,
+                db_date_time_field,
+                aggregate=Median(db_value_name) * value_multiplier,
+            )
+            return_structure["median_over_time"][i] = qss.time_series(
+                start_date, today, interval=time_period
+            )
 
     return return_structure
 
@@ -340,22 +515,35 @@ def workload_chart_data(database_events):
 
     return_structure = dict()
 
-    return_structure['workload'] = [[0 for x in range(24)] for x in range(7)]
+    return_structure["workload"] = [[0 for x in range(24)] for x in range(7)]
     for day in range(7):
-        study_times_on_this_weekday = database_events.filter(study_date__week_day=day + 1).values(
-            'study_workload_chart_time')
+        study_times_on_this_weekday = database_events.filter(
+            study_date__week_day=day + 1
+        ).values("study_workload_chart_time")
 
         if study_times_on_this_weekday:
-            qss = qsstats.QuerySetStats(study_times_on_this_weekday, 'study_workload_chart_time')
-            hourly_breakdown = qss.time_series(datetime.datetime(1900, 1, 1, 0, 0),
-                                               datetime.datetime(1900, 1, 1, 23, 59), interval='hours')
+            qss = qsstats.QuerySetStats(
+                study_times_on_this_weekday, "study_workload_chart_time"
+            )
+            hourly_breakdown = qss.time_series(
+                datetime.datetime(1900, 1, 1, 0, 0),
+                datetime.datetime(1900, 1, 1, 23, 59),
+                interval="hours",
+            )
             for hour in range(24):
-                return_structure['workload'][day][hour] = hourly_breakdown[hour][1]
+                return_structure["workload"][day][hour] = hourly_breakdown[hour][1]
 
     return return_structure
 
 
-def scatter_plot_data(database_events, x_field, y_field, y_value_multiplier, plot_series_per_system, db_display_name_relationship):
+def scatter_plot_data(
+    database_events,
+    x_field,
+    y_field,
+    y_value_multiplier,
+    plot_series_per_system,
+    db_display_name_relationship,
+):
     """ This function calculates the data for an OpenREM Highcharts plot of average value vs. a category, as well as a
     histogram of values for each category. It is also used for OpenREM Highcharts frequency plots.
 
@@ -378,29 +566,43 @@ def scatter_plot_data(database_events, x_field, y_field, y_value_multiplier, plo
     return_structure = dict()
 
     if plot_series_per_system:
-        return_structure['system_list'] = list(database_events.values_list(db_display_name_relationship, flat=True)
-                                               .distinct().order_by(db_display_name_relationship))
+        return_structure["system_list"] = list(
+            database_events.values_list(db_display_name_relationship, flat=True)
+            .distinct()
+            .order_by(db_display_name_relationship)
+        )
     else:
-        return_structure['system_list'] = ['All systems']
+        return_structure["system_list"] = ["All systems"]
 
-    return_structure['scatterData'] = []
+    return_structure["scatterData"] = []
     if plot_series_per_system:
-        for system in return_structure['system_list']:
-            return_structure['scatterData'].append(database_events.filter(
-                **{db_display_name_relationship: system}).values_list(x_field, y_field))
+        for system in return_structure["system_list"]:
+            return_structure["scatterData"].append(
+                database_events.filter(
+                    **{db_display_name_relationship: system}
+                ).values_list(x_field, y_field)
+            )
     else:
-        return_structure['scatterData'].append(database_events.values_list(x_field, y_field))
+        return_structure["scatterData"].append(
+            database_events.values_list(x_field, y_field)
+        )
 
-    for index in range(len(return_structure['scatterData'])):
-        return_structure['scatterData'][index] = [[floatIfValue(i[0]), floatIfValue(i[1]) * y_value_multiplier] for i in return_structure['scatterData'][index]]
+    for index in range(len(return_structure["scatterData"])):
+        return_structure["scatterData"][index] = [
+            [floatIfValue(i[0]), floatIfValue(i[1]) * y_value_multiplier]
+            for i in return_structure["scatterData"][index]
+        ]
 
     import numpy as np
+
     max_data = [0, 0]
-    for index in range(len(return_structure['scatterData'])):
-        current_max = np.amax(return_structure['scatterData'][index], 0).tolist()
-        if current_max[0] > max_data[0]: max_data[0] = current_max[0]
-        if current_max[1] > max_data[1]: max_data[1] = current_max[1]
-    return_structure['maxXandY'] = max_data
+    for index in range(len(return_structure["scatterData"])):
+        current_max = np.amax(return_structure["scatterData"][index], 0).tolist()
+        if current_max[0] > max_data[0]:
+            max_data[0] = current_max[0]
+        if current_max[1] > max_data[1]:
+            max_data[1] = current_max[1]
+    return_structure["maxXandY"] = max_data
 
     return return_structure
 
@@ -416,6 +618,7 @@ def floatIfValue(val):
         float(val) if val is a number; otherwise 0.0
     """
     import numbers
+
     return float(val) if isinstance(val, numbers.Number) else 0.0
 
 
@@ -429,6 +632,7 @@ def floatIfValueNone(val):
         float(val) if val is a number; otherwise None
     """
     import numbers
+
     return float(val) if isinstance(val, numbers.Number) else None
 
 
@@ -441,4 +645,4 @@ def stringIfNone(val):
     Returns:
         str if it is a string; otherwise ''
     """
-    return val if isinstance(val, basestring) else ''
+    return val if isinstance(val, str) else ""

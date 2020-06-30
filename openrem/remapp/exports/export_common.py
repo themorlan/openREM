@@ -57,9 +57,9 @@ def text_and_date_formats(book, sheet, pid=False, name=None, patid=None):
     :return: book
     """
 
-    textformat = book.add_format({'num_format': '@'})
-    dateformat = book.add_format({'num_format': settings.XLSX_DATE})
-    timeformat = book.add_format({'num_format': settings.XLSX_TIME})
+    textformat = book.add_format({"num_format": "@"})
+    dateformat = book.add_format({"num_format": settings.XLSX_DATE})
+    timeformat = book.add_format({"num_format": settings.XLSX_TIME})
 
     date_column = 7
     patid_column = 0
@@ -68,13 +68,23 @@ def text_and_date_formats(book, sheet, pid=False, name=None, patid=None):
     if pid and name:
         date_column += 1
         patid_column += 1
-    sheet.set_column(date_column, date_column, 10, dateformat)  # allow date to be displayed.
-    sheet.set_column(date_column + 1, date_column + 1, None, timeformat)  # allow time to be displayed.
+    sheet.set_column(
+        date_column, date_column, 10, dateformat
+    )  # allow date to be displayed.
+    sheet.set_column(
+        date_column + 1, date_column + 1, None, timeformat
+    )  # allow time to be displayed.
     if pid and (name or patid):
-        sheet.set_column(date_column + 2, date_column + 2, 10, dateformat)  # Birth date column
+        sheet.set_column(
+            date_column + 2, date_column + 2, 10, dateformat
+        )  # Birth date column
     if pid and patid:
-        sheet.set_column(patid_column, patid_column, None, textformat)  # make sure leading zeros are not dropped
-    sheet.set_column(date_column - 2, date_column - 2, None, textformat) # Accession number as text
+        sheet.set_column(
+            patid_column, patid_column, None, textformat
+        )  # make sure leading zeros are not dropped
+    sheet.set_column(
+        date_column - 2, date_column - 2, None, textformat
+    )  # Accession number as text
 
     return book
 
@@ -90,40 +100,40 @@ def common_headers(modality=None, pid=False, name=None, patid=None):
     """
     pid_headings = []
     if pid and name:
-        pid_headings += [u'Patient name']
+        pid_headings += ["Patient name"]
     if pid and patid:
-        pid_headings += [u'Patient ID']
+        pid_headings += ["Patient ID"]
     headers = pid_headings + [
-        u'Institution',
-        u'Manufacturer',
-        u'Model name',
-        u'Station name',
-        u'Display name',
-        u'Accession number',
-        u'Operator',
-        u'Study date',
-        u'Study time',
+        "Institution",
+        "Manufacturer",
+        "Model name",
+        "Station name",
+        "Display name",
+        "Accession number",
+        "Operator",
+        "Study date",
+        "Study time",
     ]
     if pid and (name or patid):
         headers += [
-            u'Date of birth',
+            "Date of birth",
         ]
     headers += [
-        u'Age',
-        u'Sex',
+        "Age",
+        "Sex",
     ]
-    mammo = bool(modality == u"MG")
+    mammo = bool(modality == "MG")
     if not mammo:
         headers += [
-            u'Height',
-            u'Mass (kg)',
+            "Height",
+            "Mass (kg)",
         ]
     headers += [
-        u'Test patient?',
-        u'Study description',
-        u'Requested procedure',
-        u'Study Comments',
-        u'No. events',
+        "Test patient?",
+        "Study description",
+        "Requested procedure",
+        "Study Comments",
+        "No. events",
     ]
 
     return headers
@@ -135,15 +145,24 @@ def sheet_name(protocol_name):
     :param protocol_name: string, protocol name
     :return: string, Excel safe sheet name for tab text
     """
-    tab_text = protocol_name.lower().replace(u" ", u"_")
-    translation_table = {ord(u'['): ord(u'('), ord(u']'): ord(u')'), ord(u':'): ord(u';'), ord(u'*'): ord(u'#'),
-                         ord(u'?'): ord(u';'), ord(u'/'): ord(u'|'), ord(u'\\'): ord(u'|')}
+    tab_text = protocol_name.lower().replace(" ", "_")
+    translation_table = {
+        ord("["): ord("("),
+        ord("]"): ord(")"),
+        ord(":"): ord(";"),
+        ord("*"): ord("#"),
+        ord("?"): ord(";"),
+        ord("/"): ord("|"),
+        ord("\\"): ord("|"),
+    }
     tab_text = tab_text.translate(translation_table)  # remove illegal characters
     tab_text = tab_text[:31]
     return tab_text
 
 
-def generate_sheets(studies, book, protocol_headers, modality=None, pid=False, name=None, patid=None):
+def generate_sheets(
+    studies, book, protocol_headers, modality=None, pid=False, name=None, patid=None
+):
     """
     Function to generate the sheets in the xlsx book based on the protocol names
     :param studies: filtered queryset of exams
@@ -159,20 +178,26 @@ def generate_sheets(studies, book, protocol_headers, modality=None, pid=False, n
     protocols_list = []
     for exams in studies:
         try:
-            if modality in [u"DX", u"RF", u"MG"]:
-                events = exams.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by('id')
-            elif modality in u"CT":
-                events = exams.ctradiationdose_set.get().ctirradiationeventdata_set.all()
+            if modality in ["DX", "RF", "MG"]:
+                events = exams.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by(
+                    "id"
+                )
+            elif modality in "CT":
+                events = (
+                    exams.ctradiationdose_set.get().ctirradiationeventdata_set.all()
+                )
             for s in events:
                 if s.acquisition_protocol:
                     safe_protocol = s.acquisition_protocol
                 else:
-                    safe_protocol = u'Unknown'
+                    safe_protocol = "Unknown"
                 if safe_protocol not in protocols_list:
                     protocols_list.append(safe_protocol)
         except ObjectDoesNotExist:
-            logger.error(u"Study missing during generation of sheet names; most likely due to study being deleted "
-                         u"whilst export in progress to be replace by later version of RDSR.")
+            logger.error(
+                "Study missing during generation of sheet names; most likely due to study being deleted "
+                "whilst export in progress to be replace by later version of RDSR."
+            )
             continue
     protocols_list.sort()
 
@@ -180,14 +205,17 @@ def generate_sheets(studies, book, protocol_headers, modality=None, pid=False, n
         tab_text = sheet_name(protocol)
         if tab_text not in sheet_list:
             sheet_list[tab_text] = {
-                'sheet': book.add_worksheet(tab_text),
-                'count': 0,
-                'protocolname': [protocol]}
-            sheet_list[tab_text]['sheet'].write_row(0, 0, protocol_headers)
-            book = text_and_date_formats(book, sheet_list[tab_text]['sheet'], pid=pid, name=name, patid=patid)
+                "sheet": book.add_worksheet(tab_text),
+                "count": 0,
+                "protocolname": [protocol],
+            }
+            sheet_list[tab_text]["sheet"].write_row(0, 0, protocol_headers)
+            book = text_and_date_formats(
+                book, sheet_list[tab_text]["sheet"], pid=pid, name=name, patid=patid
+            )
         else:
-            if protocol not in sheet_list[tab_text]['protocolname']:
-                sheet_list[tab_text]['protocolname'].append(protocol)
+            if protocol not in sheet_list[tab_text]["protocolname"]:
+                sheet_list[tab_text]["protocolname"].append(protocol)
 
     return book, sheet_list
 
@@ -207,12 +235,15 @@ def get_patient_study_data(exam):
         patient_size = patient_study_module.patient_size
         patient_weight = patient_study_module.patient_weight
     except ObjectDoesNotExist:
-        logger.debug("Export {0}; patientstudymoduleattr_set object does not exist. AccNum {1}, Date {2}".format(
-            exam.modality_type, exam.accession_number, exam.study_date))
+        logger.debug(
+            "Export {0}; patientstudymoduleattr_set object does not exist. AccNum {1}, Date {2}".format(
+                exam.modality_type, exam.accession_number, exam.study_date
+            )
+        )
     return {
-        'patient_age_decimal': patient_age_decimal,
-        'patient_size': patient_size,
-        'patient_weight': patient_weight,
+        "patient_age_decimal": patient_age_decimal,
+        "patient_size": patient_size,
+        "patient_weight": patient_weight,
     }
 
 
@@ -243,8 +274,11 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
             if patid:
                 patient_id = patient_module.patient_id
     except ObjectDoesNotExist:
-        logger.debug("Export {0}; patientmoduleattr_set object does not exist. AccNum {1}, Date {2}".format(
-            modality, exams.accession_number, exams.study_date))
+        logger.debug(
+            "Export {0}; patientmoduleattr_set object does not exist. AccNum {1}, Date {2}".format(
+                modality, exams.accession_number, exams.study_date
+            )
+        )
 
     institution_name = None
     manufacturer = None
@@ -260,11 +294,17 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
         try:
             display_name = equipment_module.unique_equipment_name.display_name
         except AttributeError:
-            logger.debug("Export {0}; unique_equipment_name object does not exist. AccNum {1}, Date {2}".format(
-                modality, exams.accession_number, exams.study_date))
+            logger.debug(
+                "Export {0}; unique_equipment_name object does not exist. AccNum {1}, Date {2}".format(
+                    modality, exams.accession_number, exams.study_date
+                )
+            )
     except ObjectDoesNotExist:
-        logger.debug("Export {0}; generalequipmentmoduleattr_set object does not exist. AccNum {1}, Date {2}".format(
-            modality, exams.accession_number, exams.study_date))
+        logger.debug(
+            "Export {0}; generalequipmentmoduleattr_set object does not exist. AccNum {1}, Date {2}".format(
+                modality, exams.accession_number, exams.study_date
+            )
+        )
 
     patient_study_data = get_patient_study_data(exams)
 
@@ -272,25 +312,36 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
     cgycm2 = None
     comment = None
     ct_dose_length_product_total = None
-    if modality in u"CT":
+    if modality in "CT":
         try:
             comment = exams.ctradiationdose_set.get().comment
-            ct_accumulated = exams.ctradiationdose_set.get().ctaccumulateddosedata_set.get()
+            ct_accumulated = (
+                exams.ctradiationdose_set.get().ctaccumulateddosedata_set.get()
+            )
             ct_dose_length_product_total = ct_accumulated.ct_dose_length_product_total
             try:
                 event_count = int(ct_accumulated.total_number_of_irradiation_events)
             except TypeError:
-                logger.debug("Export CT; couldn't get number of irradiation events. AccNum {0}, Date {1}".format(
-                    exams.accession_number, exams.study_date))
+                logger.debug(
+                    "Export CT; couldn't get number of irradiation events. AccNum {0}, Date {1}".format(
+                        exams.accession_number, exams.study_date
+                    )
+                )
         except ObjectDoesNotExist:
-            logger.debug("Export CT; ctradiationdose_set object does not exist. AccNum {0}, Date {1}".format(
-                exams.accession_number, exams.study_date))
+            logger.debug(
+                "Export CT; ctradiationdose_set object does not exist. AccNum {0}, Date {1}".format(
+                    exams.accession_number, exams.study_date
+                )
+            )
 
-    elif modality in u"DX":
+    elif modality in "DX":
         try:
             comment = exams.projectionxrayradiationdose_set.get().comment
-            dx_accumulated = exams.projectionxrayradiationdose_set.get().accumxraydose_set.get(
-                            ).accumintegratedprojradiogdose_set.get()
+            dx_accumulated = (
+                exams.projectionxrayradiationdose_set.get()
+                .accumxraydose_set.get()
+                .accumintegratedprojradiogdose_set.get()
+            )
             event_count = dx_accumulated.total_number_of_radiographic_frames
             dap_total = dx_accumulated.dose_area_product_total
             if dap_total:
@@ -298,15 +349,25 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
             else:
                 cgycm2 = None
         except ObjectDoesNotExist:
-            logger.debug("Export DX; projectionxrayradiationdose_set object does not exist."
-                         " AccNum {0}, Date {1}".format(exams.accession_number, exams.study_date))
-    elif modality in [u"RF", u"MG"]:
+            logger.debug(
+                "Export DX; projectionxrayradiationdose_set object does not exist."
+                " AccNum {0}, Date {1}".format(exams.accession_number, exams.study_date)
+            )
+    elif modality in ["RF", "MG"]:
         try:
-            event_count = exams.projectionxrayradiationdose_set.get().irradeventxraydata_set.all().count()
+            event_count = (
+                exams.projectionxrayradiationdose_set.get()
+                .irradeventxraydata_set.all()
+                .count()
+            )
             comment = exams.projectionxrayradiationdose_set.get().comment
         except ObjectDoesNotExist:
-            logger.debug("Export {0}; projectionxrayradiationdose_set object does not exist."
-                         " AccNum {1}, Date {2}".format(modality, exams.accession_number, exams.study_date))
+            logger.debug(
+                "Export {0}; projectionxrayradiationdose_set object does not exist."
+                " AccNum {1}, Date {2}".format(
+                    modality, exams.accession_number, exams.study_date
+                )
+            )
 
     examdata = []
     if pid and name:
@@ -329,13 +390,13 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
             patient_birth_date,
         ]
     examdata += [
-        patient_study_data['patient_age_decimal'],
+        patient_study_data["patient_age_decimal"],
         patient_sex,
     ]
-    if modality not in u"MG":
+    if modality not in "MG":
         examdata += [
-            patient_study_data['patient_size'],
-            patient_study_data['patient_weight'],
+            patient_study_data["patient_size"],
+            patient_study_data["patient_weight"],
         ]
     examdata += [
         not_patient_indicator,
@@ -343,17 +404,17 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
         exams.requested_procedure_code_meaning,
         comment,
     ]
-    if modality in u"CT":
+    if modality in "CT":
         examdata += [
             event_count,
             ct_dose_length_product_total,
         ]
-    elif modality in u"DX":
+    elif modality in "DX":
         examdata += [
             event_count,
             cgycm2,
         ]
-    elif modality in [u"RF", u"MG"]:
+    elif modality in ["RF", "MG"]:
         examdata += [
             event_count,
         ]
@@ -375,8 +436,12 @@ def get_pulse_data(source_data, modality=None):
     try:
         kvp = source_data.kvp_set.get().kvp
     except MultipleObjectsReturned:
-        kvp = source_data.kvp_set.all().exclude(kvp__isnull=True).exclude(kvp__exact=0).aggregate(
-            Avg('kvp'))['kvp__avg']
+        kvp = (
+            source_data.kvp_set.all()
+            .exclude(kvp__isnull=True)
+            .exclude(kvp__exact=0)
+            .aggregate(Avg("kvp"))["kvp__avg"]
+        )
     except ObjectDoesNotExist:
         kvp = None
 
@@ -389,9 +454,13 @@ def get_pulse_data(source_data, modality=None):
             else:
                 mas = None
         except MultipleObjectsReturned:
-            mas = source_data.exposure_set.all().exclude(exposure__isnull=True).exclude(exposure__exact=0).aggregate(
-                Avg('exposure'))['exposure__avg']
-            mas = mas / 1000.
+            mas = (
+                source_data.exposure_set.all()
+                .exclude(exposure__isnull=True)
+                .exclude(exposure__exact=0)
+                .aggregate(Avg("exposure"))["exposure__avg"]
+            )
+            mas = mas / 1000.0
         except ObjectDoesNotExist:
             mas = None
     else:
@@ -401,10 +470,12 @@ def get_pulse_data(source_data, modality=None):
         try:
             xray_tube_current = source_data.xraytubecurrent_set.get().xray_tube_current
         except MultipleObjectsReturned:
-            xray_tube_current = source_data.xraytubecurrent_set.all().exclude(
-                xray_tube_current__isnull=True).exclude(
-                xray_tube_current__exact=0).aggregate(
-                Avg('xray_tube_current'))['xray_tube_current__avg']
+            xray_tube_current = (
+                source_data.xraytubecurrent_set.all()
+                .exclude(xray_tube_current__isnull=True)
+                .exclude(xray_tube_current__exact=0)
+                .aggregate(Avg("xray_tube_current"))["xray_tube_current__avg"]
+            )
         except ObjectDoesNotExist:
             xray_tube_current = None
     else:
@@ -414,16 +485,23 @@ def get_pulse_data(source_data, modality=None):
         try:
             pulse_width = source_data.pulsewidth_set.get().pulse_width
         except MultipleObjectsReturned:
-            pulse_width = source_data.pulsewidth_set.all().exclude(
-                pulse_width__isnull=True).exclude(
-                pulse_width__exact=0).aggregate(
-                Avg('pulse_width'))['pulse_width__avg']
+            pulse_width = (
+                source_data.pulsewidth_set.all()
+                .exclude(pulse_width__isnull=True)
+                .exclude(pulse_width__exact=0)
+                .aggregate(Avg("pulse_width"))["pulse_width__avg"]
+            )
         except ObjectDoesNotExist:
             pulse_width = None
     else:
         pulse_width = None
 
-    return {'kvp': kvp, 'mas': mas, 'xray_tube_current': xray_tube_current, 'pulse_width': pulse_width}
+    return {
+        "kvp": kvp,
+        "mas": mas,
+        "xray_tube_current": xray_tube_current,
+        "pulse_width": pulse_width,
+    }
 
 
 def get_xray_filter_info(source):
@@ -433,33 +511,35 @@ def get_xray_filter_info(source):
     :return: two strings of filters and filter thicknesses
     """
     try:
-        filters = u''
-        filter_thicknesses = u''
+        filters = ""
+        filter_thicknesses = ""
         for current_filter in source.xrayfilters_set.all():
-            if u'Aluminum' in str(current_filter.xray_filter_material.code_meaning):
-                filters += u'Al'
-            elif u'Copper' in str(current_filter.xray_filter_material.code_meaning):
-                filters += u'Cu'
-            elif u'Tantalum' in str(current_filter.xray_filter_material.code_meaning):
-                filters += u'Ta'
-            elif u'Molybdenum' in str(current_filter.xray_filter_material.code_meaning):
-                filters += u'Mo'
-            elif u'Rhodium' in str(current_filter.xray_filter_material.code_meaning):
-                filters += u'Rh'
-            elif u'Silver' in str(current_filter.xray_filter_material.code_meaning):
-                filters += u'Ag'
-            elif u'Niobium' in str(current_filter.xray_filter_material.code_meaning):
-                filters += u'Nb'
-            elif u'Europium' in str(current_filter.xray_filter_material.code_meaning):
-                filters += u'Eu'
-            elif u'Lead' in str(current_filter.xray_filter_material.code_meaning):
-                filters += u'Pb'
+            if "Aluminum" in str(current_filter.xray_filter_material.code_meaning):
+                filters += "Al"
+            elif "Copper" in str(current_filter.xray_filter_material.code_meaning):
+                filters += "Cu"
+            elif "Tantalum" in str(current_filter.xray_filter_material.code_meaning):
+                filters += "Ta"
+            elif "Molybdenum" in str(current_filter.xray_filter_material.code_meaning):
+                filters += "Mo"
+            elif "Rhodium" in str(current_filter.xray_filter_material.code_meaning):
+                filters += "Rh"
+            elif "Silver" in str(current_filter.xray_filter_material.code_meaning):
+                filters += "Ag"
+            elif "Niobium" in str(current_filter.xray_filter_material.code_meaning):
+                filters += "Nb"
+            elif "Europium" in str(current_filter.xray_filter_material.code_meaning):
+                filters += "Eu"
+            elif "Lead" in str(current_filter.xray_filter_material.code_meaning):
+                filters += "Pb"
             else:
                 filters += str(current_filter.xray_filter_material.code_meaning)
-            filters += u' | '
-            thicknesses = [current_filter.xray_filter_thickness_minimum,
-                           current_filter.xray_filter_thickness_maximum]
-            thick = u''
+            filters += " | "
+            thicknesses = [
+                current_filter.xray_filter_thickness_minimum,
+                current_filter.xray_filter_thickness_maximum,
+            ]
+            thick = ""
             if thicknesses[0] is not None and thicknesses[1] is not None:
                 thick = sum(thicknesses) / len(thicknesses)
             elif thicknesses[0] is not None:
@@ -468,7 +548,7 @@ def get_xray_filter_info(source):
                 thick = thicknesses[1]
             if thick:
                 thick = round(thick, 4)
-            filter_thicknesses += str(thick) + u' | '
+            filter_thicknesses += str(thick) + " | "
         filters = filters[:-3]
         filter_thicknesses = filter_thicknesses[:-3]
     except (ObjectDoesNotExist, AttributeError):
@@ -483,12 +563,12 @@ def get_anode_target_material(source):
     :param source: x-ray source data for the exposure
     :return: string containing target material abbreviation
     """
-    if u"Molybdenum" in str(source.anode_target_material.code_meaning):
-        anode = u"Mo"
-    elif u"Rhodium" in str(source.anode_target_material.code_meaning):
-        anode = u"Rh"
-    elif u"Tungsten" in str(source.anode_target_material.code_meaning):
-        anode = u"W"
+    if "Molybdenum" in str(source.anode_target_material.code_meaning):
+        anode = "Mo"
+    elif "Rhodium" in str(source.anode_target_material.code_meaning):
+        anode = "Rh"
+    elif "Tungsten" in str(source.anode_target_material.code_meaning):
+        anode = "W"
     else:
         anode = str(source.anode_target_material.code_meaning)
 
@@ -504,13 +584,15 @@ def create_xlsx(task):
 
     try:
         temp_xlsx = TemporaryFile()
-        book = Workbook(temp_xlsx, {'strings_to_numbers':  False})
+        book = Workbook(temp_xlsx, {"strings_to_numbers": False})
     except (OSError, IOError) as e:
-        logger.error("Error saving xlsx temporary file ({0}): {1}".format(e.errno, e.strerror))
+        logger.error(
+            "Error saving xlsx temporary file ({0}): {1}".format(e.errno, e.strerror)
+        )
     except Exception:
         logger.error("Unexpected error: {0}".format(sys.exc_info()[0]))
     else:
-        task.progress = u'Workbook created'
+        task.progress = "Workbook created"
         task.save()
         return temp_xlsx, book
 
@@ -526,14 +608,16 @@ def create_csv(task):
         export_filename = f'{task.modality.lower()}export{task.export_date.strftime("%Y%m%d-%H%M%S%f")}.csv'
         task.filename.save(export_filename, ContentFile(codecs.BOM_UTF8))
         task.save()
-        temp_csv = open(task.filename.path, 'a', newline='', encoding='utf-8')
-        writer = csv.writer(temp_csv, dialect='excel')
+        temp_csv = open(task.filename.path, "a", newline="", encoding="utf-8")
+        writer = csv.writer(temp_csv, dialect="excel")
     except (OSError, IOError) as e:
-        logger.error("Error saving csv temporary file ({0}): {1}".format(e.errno, e.strerror))
+        logger.error(
+            "Error saving csv temporary file ({0}): {1}".format(e.errno, e.strerror)
+        )
     except Exception:
         logger.error("Unexpected error: {0}".format(sys.exc_info()[0]))
     else:
-        task.progress = u'CSV file created'
+        task.progress = "CSV file created"
         task.save()
         return temp_csv, writer
 
@@ -555,7 +639,7 @@ def write_export(task, filename, temp_file, datestamp):
     except (OSError, IOError) as e:
         logger.error("Error saving export file ({0}): {1}".format(e.errno, e.strerror))
 
-    task.status = u'COMPLETE'
+    task.status = "COMPLETE"
     task.processtime = (datetime.datetime.now() - datestamp).total_seconds()
     task.save()
 
@@ -575,51 +659,61 @@ def create_summary_sheet(task, studies, book, summary_sheet, sheet_list):
     from django.db.models import Count
 
     # Populate summary sheet
-    task.progress = u'Now populating the summary sheet...'
+    task.progress = "Now populating the summary sheet..."
     task.save()
 
     vers = pkg_resources.require("openrem")[0].version
     version = vers
     titleformat = book.add_format()
     titleformat.set_font_size = 22
-    titleformat.set_font_color = '#FF0000'
+    titleformat.set_font_color = "#FF0000"
     titleformat.set_bold()
-    toplinestring = u'XLSX Export from OpenREM version {0} on {1}'.format(version, str(datetime.datetime.now()))
-    linetwostring = u'OpenREM is copyright 2019 The Royal Marsden NHS Foundation Trust, and available under the GPL. ' \
-                    u'See http://openrem.org'
+    toplinestring = "XLSX Export from OpenREM version {0} on {1}".format(
+        version, str(datetime.datetime.now())
+    )
+    linetwostring = (
+        "OpenREM is copyright 2019 The Royal Marsden NHS Foundation Trust, and available under the GPL. "
+        "See http://openrem.org"
+    )
     summary_sheet.write(0, 0, toplinestring, titleformat)
     summary_sheet.write(1, 0, linetwostring)
 
     # Number of exams
-    summary_sheet.write(3, 0, u"Total number of exams")
+    summary_sheet.write(3, 0, "Total number of exams")
     summary_sheet.write(3, 1, studies.count())
 
     # Generate list of Study Descriptions
-    summary_sheet.write(5, 0, u"Study Description")
-    summary_sheet.write(5, 1, u"Frequency")
+    summary_sheet.write(5, 0, "Study Description")
+    summary_sheet.write(5, 1, "Frequency")
     study_descriptions = studies.values("study_description").annotate(n=Count("pk"))
-    for row, item in enumerate(study_descriptions.order_by('n').reverse()):
-        summary_sheet.write(row+6, 0, item['study_description'])
-        summary_sheet.write(row+6, 1, item['n'])
-    summary_sheet.set_column('A:A', 25)
+    for row, item in enumerate(study_descriptions.order_by("n").reverse()):
+        summary_sheet.write(row + 6, 0, item["study_description"])
+        summary_sheet.write(row + 6, 1, item["n"])
+    summary_sheet.set_column("A:A", 25)
 
     # Generate list of Requested Procedures
-    summary_sheet.write(5, 3, u"Requested Procedure")
-    summary_sheet.write(5, 4, u"Frequency")
-    requested_procedure = studies.values("requested_procedure_code_meaning").annotate(n=Count("pk"))
-    for row, item in enumerate(requested_procedure.order_by('n').reverse()):
-        summary_sheet.write(row+6, 3, item['requested_procedure_code_meaning'])
-        summary_sheet.write(row+6, 4, item['n'])
-    summary_sheet.set_column('D:D', 25)
+    summary_sheet.write(5, 3, "Requested Procedure")
+    summary_sheet.write(5, 4, "Frequency")
+    requested_procedure = studies.values("requested_procedure_code_meaning").annotate(
+        n=Count("pk")
+    )
+    for row, item in enumerate(requested_procedure.order_by("n").reverse()):
+        summary_sheet.write(row + 6, 3, item["requested_procedure_code_meaning"])
+        summary_sheet.write(row + 6, 4, item["n"])
+    summary_sheet.set_column("D:D", 25)
 
     # Generate list of Series Protocols
-    summary_sheet.write(5, 6, u"Series Protocol")
-    summary_sheet.write(5, 7, u"Frequency")
-    sorted_protocols = sorted(iter(sheet_list.items()), key=lambda k_v: k_v[1]['count'], reverse=True)
+    summary_sheet.write(5, 6, "Series Protocol")
+    summary_sheet.write(5, 7, "Frequency")
+    sorted_protocols = sorted(
+        iter(sheet_list.items()), key=lambda k_v: k_v[1]["count"], reverse=True
+    )
     for row, item in enumerate(sorted_protocols):
-        summary_sheet.write(row+6, 6, u', '.join(item[1]['protocolname']))  # Join - can't write list to a single cell.
-        summary_sheet.write(row+6, 7, item[1]['count'])
-    summary_sheet.set_column('G:G', 15)
+        summary_sheet.write(
+            row + 6, 6, ", ".join(item[1]["protocolname"])
+        )  # Join - can't write list to a single cell.
+        summary_sheet.write(row + 6, 7, item[1]["count"])
+    summary_sheet.set_column("G:G", 15)
 
 
 def abort_if_zero_studies(num_studies, tsk):
@@ -630,17 +724,19 @@ def abort_if_zero_studies(num_studies, tsk):
     :return: bool - True if should abort
     """
     if not num_studies:
-        tsk.status = u"ERROR"
-        tsk.progress = u"Export aborted - zero studies in the filter!"
+        tsk.status = "ERROR"
+        tsk.progress = "Export aborted - zero studies in the filter!"
         tsk.save()
         return True
     else:
-        tsk.progress = u'Required study filter complete.'
+        tsk.progress = "Required study filter complete."
         tsk.save()
         return False
 
 
-def create_export_task(celery_uuid, modality, export_type, date_stamp, pid, user, filters_dict):
+def create_export_task(
+    celery_uuid, modality, export_type, date_stamp, pid, user, filters_dict
+):
     """ Create export task, add filter details and Celery UUID to export table to track later
 
     :param celery_uuid: UUID allocated by Celery for task
@@ -658,25 +754,27 @@ def create_export_task(celery_uuid, modality, export_type, date_stamp, pid, user
 
     removed_blanks = {k: v for k, v in filters_dict.items() if v}
     if removed_blanks:
-        if 'submit' in removed_blanks:
-            del removed_blanks['submit']
-        if 'csrfmiddlewaretoken' in removed_blanks:
-            del removed_blanks['csrfmiddlewaretoken']
-        if 'itemsPerPage' in removed_blanks:
-            del removed_blanks['itemsPerPage']
-    no_plot_filters_dict = {k: v for k, v in removed_blanks.items() if 'plot' not in k}
+        if "submit" in removed_blanks:
+            del removed_blanks["submit"]
+        if "csrfmiddlewaretoken" in removed_blanks:
+            del removed_blanks["csrfmiddlewaretoken"]
+        if "itemsPerPage" in removed_blanks:
+            del removed_blanks["itemsPerPage"]
+    no_plot_filters_dict = {k: v for k, v in removed_blanks.items() if "plot" not in k}
 
     task = Exports.objects.create()
     task.task_id = celery_uuid
     task.modality = modality
     task.export_type = export_type
     task.export_date = date_stamp
-    task.progress = 'Query filters imported, task started'
-    task.status = 'CURRENT'
+    task.progress = "Query filters imported, task started"
+    task.status = "CURRENT"
     task.includes_pid = pid
     task.export_user_id = user
     try:
-        task.export_summary = "<br/>".join(": ".join(_) for _ in no_plot_filters_dict.items())
+        task.export_summary = "<br/>".join(
+            ": ".join(_) for _ in no_plot_filters_dict.items()
+        )
     except TypeError:
         task.export_summary = no_plot_filters_dict
     task.save()

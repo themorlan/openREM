@@ -27,10 +27,10 @@
 # anthing else.
 
 import logging
-from pynetdicom import (AE, VerificationPresentationContexts)
+from pynetdicom import AE, VerificationPresentationContexts
 
 logger = logging.getLogger(__name__)
-qr_logger = logging.getLogger('remapp.netdicom.qrscu')
+qr_logger = logging.getLogger("remapp.netdicom.qrscu")
 
 
 def echoscu(scp_pk=None, store_scp=False, qr_scp=False):
@@ -74,33 +74,47 @@ def echoscu(scp_pk=None, store_scp=False, qr_scp=False):
 
         if status:
             if status.Status == 0x0000:
-                logger.info(u"Returning Success response from echo to {0} {1} {2}".format(
-                    remote_host, remote_port, remote_aet))
+                logger.info(
+                    f"Returning Success response from echo to {remote_host} {remote_port} {remote_aet}"
+                )
                 assoc.release()
                 return "Success"
             else:
-                logger.info("Returning EchoFail response from echo to {0} {1} {2}. Type is {3}.".format(
-                    remote_host, remote_port, remote_aet, status.Status))
+                logger.info(
+                    "Returning EchoFail response from echo to {0} {1} {2}. Type is {3}.".format(
+                        remote_host, remote_port, remote_aet, status.Status
+                    )
+                )
                 assoc.release()
                 return "Association created, but EchoFail"
         else:
-            print('Connection timed out, was aborted or received invalid response')
-            logger.info(u"Returning EchoFail response from echo to {0} {1} {2}. No status.".format(
-                remote_host, remote_port, remote_aet))
+            print("Connection timed out, was aborted or received invalid response")
+            logger.info(
+                "Returning EchoFail response from echo to {0} {1} {2}. No status.".format(
+                    remote_host, remote_port, remote_aet
+                )
+            )
             assoc.release()
             return "EchoFail"
     else:
         if assoc.is_rejected:
-            msg = ('{0}: {1}'.format(
-                assoc.acceptor.primitive.result_str,
-                assoc.acceptor.primitive.reason_str
-            ))
-            logger.info("Association rejected from {0} {1} {2}. {3}".format(remote_host, remote_port, remote_aet, msg))
+            msg = "{0}: {1}".format(
+                assoc.acceptor.primitive.result_str, assoc.acceptor.primitive.reason_str
+            )
+            logger.info(
+                "Association rejected from {0} {1} {2}. {3}".format(
+                    remote_host, remote_port, remote_aet, msg
+                )
+            )
             return msg
         if assoc.is_aborted:
             msg = "Association aborted or never connected"
-            logger.info("{3} to {0} {1} {2}".format(remote_host, remote_port, remote_aet, msg))
+            logger.info(
+                "{3} to {0} {1} {2}".format(remote_host, remote_port, remote_aet, msg)
+            )
             return msg
         msg = "Association Failed"
-        logger.info("{3} with {0} {1} {2}".format(remote_host, remote_port, remote_aet, msg))
+        logger.info(
+            "{3} with {0} {1} {2}".format(remote_host, remote_port, remote_aet, msg)
+        )
         return msg

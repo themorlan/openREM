@@ -31,7 +31,7 @@
 # Following two lines added so that sphinx autodocumentation works.
 import os
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
+os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 
 import logging
 from django.views.decorators.csrf import csrf_exempt
@@ -54,7 +54,7 @@ def include_pid(request, name, pat_id):
     :return: dict, with pidgroup, include_names and include_pat_id as bools
     """
 
-    pid = bool(request.user.groups.filter(name='pidgroup'))
+    pid = bool(request.user.groups.filter(name="pidgroup"))
 
     include_names = False
     include_pat_id = False
@@ -70,7 +70,11 @@ def include_pid(request, name, pat_id):
         except ValueError:
             pass
 
-    return {'pidgroup': pid, 'include_names': include_names, 'include_pat_id': include_pat_id}
+    return {
+        "pidgroup": pid,
+        "include_names": include_names,
+        "include_pat_id": include_pat_id,
+    }
 
 
 @csrf_exempt
@@ -92,13 +96,20 @@ def ctcsv1(request, name=None, pat_id=None):
         # The 'ct_acquisition_type' filter values must be passed to ct_csv as a list, so convert the GET to a dict and
         # then update the 'ct_acquisition_type' value with a list.
         filter_dict = request.GET.dict()
-        if 'ct_acquisition_type' in filter_dict:
-            filter_dict['ct_acquisition_type'] = request.GET.getlist('ct_acquisition_type')
+        if "ct_acquisition_type" in filter_dict:
+            filter_dict["ct_acquisition_type"] = request.GET.getlist(
+                "ct_acquisition_type"
+            )
 
-        job = ct_csv.delay(filter_dict, pid['pidgroup'], pid['include_names'],
-                           pid['include_pat_id'], request.user.id)
-        logger.debug(u'Export CT to CSV job is {0}'.format(job))
-    return redirect(reverse_lazy('export'))
+        job = ct_csv.delay(
+            filter_dict,
+            pid["pidgroup"],
+            pid["include_names"],
+            pid["include_pat_id"],
+            request.user.id,
+        )
+        logger.debug(f"Export CT to CSV job is {job}")
+    return redirect(reverse_lazy("export"))
 
 
 @csrf_exempt
@@ -120,14 +131,21 @@ def ctxlsx1(request, name=None, pat_id=None):
         # The 'ct_acquisition_type' filter values must be passed to ctxlsx as a list, so convert the GET to a dict and
         # then update the 'ct_acquisition_type' value with a list.
         filter_dict = request.GET.dict()
-        if 'ct_acquisition_type' in filter_dict:
-            filter_dict['ct_acquisition_type'] = request.GET.getlist('ct_acquisition_type')
+        if "ct_acquisition_type" in filter_dict:
+            filter_dict["ct_acquisition_type"] = request.GET.getlist(
+                "ct_acquisition_type"
+            )
 
-        job = ctxlsx.delay(filter_dict, pid['pidgroup'], pid['include_names'],
-                           pid['include_pat_id'], request.user.id)
-        logger.debug(u'Export CT to XLSX job is {0}'.format(job))
+        job = ctxlsx.delay(
+            filter_dict,
+            pid["pidgroup"],
+            pid["include_names"],
+            pid["include_pat_id"],
+            request.user.id,
+        )
+        logger.debug("Export CT to XLSX job is {0}".format(job))
 
-    return redirect(reverse_lazy('export'))
+    return redirect(reverse_lazy("export"))
 
 
 @csrf_exempt
@@ -139,10 +157,11 @@ def ct_xlsx_phe2019(request):
     """
     from django.shortcuts import redirect
     from remapp.exports.ct_export import ct_phe_2019
+
     if request.user.groups.filter(name="exportgroup"):
         job = ct_phe_2019.delay(request.GET, request.user.id)
-        logger.debug(u'Export CT to XLSX job is {0}'.format(job))
-    return redirect(reverse_lazy('export'))
+        logger.debug("Export CT to XLSX job is {0}".format(job))
+    return redirect(reverse_lazy("export"))
 
 
 @csrf_exempt
@@ -161,11 +180,16 @@ def dxcsv1(request, name=None, pat_id=None):
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = exportDX2excel.delay(request.GET, pid['pidgroup'], pid['include_names'],
-                                   pid['include_pat_id'], request.user.id)
-        logger.debug(u'Export DX to CSV job is {0}'.format(job))
+        job = exportDX2excel.delay(
+            request.GET,
+            pid["pidgroup"],
+            pid["include_names"],
+            pid["include_pat_id"],
+            request.user.id,
+        )
+        logger.debug("Export DX to CSV job is {0}".format(job))
 
-    return redirect(reverse_lazy('export'))
+    return redirect(reverse_lazy("export"))
 
 
 @csrf_exempt
@@ -184,11 +208,16 @@ def dxxlsx1(request, name=None, pat_id=None):
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = dxxlsx.delay(request.GET, pid['pidgroup'], pid['include_names'],
-                           pid['include_pat_id'], request.user.id)
-        logger.debug(u'Export DX to XLSX job is {0}'.format(job))
+        job = dxxlsx.delay(
+            request.GET,
+            pid["pidgroup"],
+            pid["include_names"],
+            pid["include_pat_id"],
+            request.user.id,
+        )
+        logger.debug("Export DX to XLSX job is {0}".format(job))
 
-    return redirect(reverse_lazy('export'))
+    return redirect(reverse_lazy("export"))
 
 
 @csrf_exempt
@@ -204,49 +233,79 @@ def dx_xlsx_phe2019(request, export_type=None):
     from django.shortcuts import redirect
     from remapp.exports.dx_export import dx_phe_2019
     from remapp.interface.mod_filters import dx_acq_filter
+
     if request.user.groups.filter(name="exportgroup"):
-        if export_type in ('exam', 'projection'):
+        if export_type in ("exam", "projection"):
             bespoke = False
             exams = dx_acq_filter(request.GET, pid=False).qs
             if not exams.count():
-                messages.error(request, u"No studies in export, nothing to do!")
-                return redirect("{0}?{1}".format(reverse_lazy('dx_summary_list_filter'), urllib.urlencode(request.GET)))
-            max_events_dict = exams.aggregate(Max('number_of_events'))
-            max_events = max_events_dict['number_of_events__max']
-            if 'projection' in export_type:
+                messages.error(request, "No studies in export, nothing to do!")
+                return redirect(
+                    "{0}?{1}".format(
+                        reverse_lazy("dx_summary_list_filter"),
+                        urllib.urlencode(request.GET),
+                    )
+                )
+            max_events_dict = exams.aggregate(Max("number_of_events"))
+            max_events = max_events_dict["number_of_events__max"]
+            if "projection" in export_type:
                 if max_events > 1:
-                    messages.warning(request, u"PHE 2019 DX Projection export is expecting one exposure per study - "
-                                              u"some studies selected have more than one. Only the first exposure will "
-                                              u"be considered.")
+                    messages.warning(
+                        request,
+                        "PHE 2019 DX Projection export is expecting one exposure per study - "
+                        "some studies selected have more than one. Only the first exposure will "
+                        "be considered.",
+                    )
                 else:
-                    messages.info(request, u"PHE 2019 DX single projection export started.")
+                    messages.info(
+                        request, "PHE 2019 DX single projection export started."
+                    )
                 job = dx_phe_2019.delay(request.GET, request.user.id, projection=True)
-                logger.debug(u'Export PHE 2019 DX survey format job is {0}'.format(job))
-                return redirect(reverse_lazy('export'))
-            elif 'exam' in export_type:
+                logger.debug("Export PHE 2019 DX survey format job is {0}".format(job))
+                return redirect(reverse_lazy("export"))
+            elif "exam" in export_type:
                 if max_events > 6:
                     bespoke = True
                     if max_events > 20:
-                        messages.warning(request, u"PHE 2019 DX Study sheets expect a maximum of six projections. You "
-                                                  u"need to request a bespoke workbook from PHE. This export has a "
-                                                  u"maximum of {0} projections, but only the first 20 will be included "
-                                                  u"in the main columns of the bespoke worksheet.".format(max_events))
+                        messages.warning(
+                            request,
+                            "PHE 2019 DX Study sheets expect a maximum of six projections. You "
+                            "need to request a bespoke workbook from PHE. This export has a "
+                            "maximum of {0} projections, but only the first 20 will be included "
+                            "in the main columns of the bespoke worksheet.".format(
+                                max_events
+                            ),
+                        )
                     else:
-                        messages.warning(request, u"PHE 2019 DX Study sheets expect a maximum of six projections. This "
-                                                  u"export has a maximum of {0} projections so you will need to request"
-                                                  u" a bespoke workbook from PHE. This has space for 20 "
-                                                  u"projections.".format(max_events))
+                        messages.warning(
+                            request,
+                            "PHE 2019 DX Study sheets expect a maximum of six projections. This "
+                            "export has a maximum of {0} projections so you will need to request"
+                            " a bespoke workbook from PHE. This has space for 20 "
+                            "projections.".format(max_events),
+                        )
                 else:
-                    messages.info(request, u"PHE 2019 DX Study export started.")
-                job = dx_phe_2019.delay(request.GET, request.user.id, projection=False, bespoke=bespoke)
-                logger.debug(u'Export PHE 2019 DX survey format job is {0}'.format(job))
-                return redirect(reverse_lazy('export'))
+                    messages.info(request, "PHE 2019 DX Study export started.")
+                job = dx_phe_2019.delay(
+                    request.GET, request.user.id, projection=False, bespoke=bespoke
+                )
+                logger.debug("Export PHE 2019 DX survey format job is {0}".format(job))
+                return redirect(reverse_lazy("export"))
         else:
-            messages.error(request, u"Malformed export URL {0}".format(type))
-            return redirect("{0}?{1}".format(reverse_lazy('dx_summary_list_filter'), urllib.urlencode(request.GET)))
+            messages.error(request, "Malformed export URL {0}".format(type))
+            return redirect(
+                "{0}?{1}".format(
+                    reverse_lazy("dx_summary_list_filter"),
+                    urllib.urlencode(request.GET),
+                )
+            )
     else:
-        messages.error(request, u"Only users in the Export group can launch exports")
-        return redirect("{0}?{1}".format(reverse_lazy('dx_summary_list_filter'), urllib.urlencode(request.GET)))
+        messages.error(request, "Only users in the Export group can launch exports")
+        return redirect(
+            "{0}?{1}".format(
+                reverse_lazy("dx_summary_list_filter"), urllib.urlencode(request.GET)
+            )
+        )
 
 
 @csrf_exempt
@@ -265,11 +324,16 @@ def flcsv1(request, name=None, pat_id=None):
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = exportFL2excel.delay(request.GET, pid['pidgroup'], pid['include_names'],
-                                   pid['include_pat_id'], request.user.id)
-        logger.debug(u'Export Fluoro to CSV job is {0}'.format(job))
+        job = exportFL2excel.delay(
+            request.GET,
+            pid["pidgroup"],
+            pid["include_names"],
+            pid["include_pat_id"],
+            request.user.id,
+        )
+        logger.debug("Export Fluoro to CSV job is {0}".format(job))
 
-    return redirect(reverse_lazy('export'))
+    return redirect(reverse_lazy("export"))
 
 
 @csrf_exempt
@@ -288,11 +352,16 @@ def rfxlsx1(request, name=None, pat_id=None):
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = rfxlsx.delay(request.GET, pid['pidgroup'], pid['include_names'],
-                           pid['include_pat_id'], request.user.id)
-        logger.debug(u'Export Fluoro to XLSX job is {0}'.format(job))
+        job = rfxlsx.delay(
+            request.GET,
+            pid["pidgroup"],
+            pid["include_names"],
+            pid["include_pat_id"],
+            request.user.id,
+        )
+        logger.debug("Export Fluoro to XLSX job is {0}".format(job))
 
-    return redirect(reverse_lazy('export'))
+    return redirect(reverse_lazy("export"))
 
 
 @csrf_exempt
@@ -311,9 +380,9 @@ def rfopenskin(request, pk):
 
     if request.user.groups.filter(name="exportgroup"):
         job = rfopenskin.delay(export.pk)
-        logger.debug(u'Export Fluoro to openSkin CSV job is {0}'.format(job))
+        logger.debug("Export Fluoro to openSkin CSV job is {0}".format(job))
 
-    return redirect(reverse_lazy('export'))
+    return redirect(reverse_lazy("export"))
 
 
 @csrf_exempt
@@ -326,14 +395,19 @@ def rf_xlsx_phe2019(request):
     import urllib
     from django.shortcuts import redirect
     from remapp.exports.rf_export import rf_phe_2019
+
     if request.user.groups.filter(name="exportgroup"):
-        messages.info(request, u"PHE 2019 IR/fluoro export started")
+        messages.info(request, "PHE 2019 IR/fluoro export started")
         job = rf_phe_2019.delay(request.GET, request.user.id)
-        logger.debug(u"Export PHE 2019 IR/fluoro survey format job is {0}.".format(job))
-        return redirect(reverse_lazy('export'))
+        logger.debug("Export PHE 2019 IR/fluoro survey format job is {0}.".format(job))
+        return redirect(reverse_lazy("export"))
     else:
-        messages.error(request, u"Only users in the Export group can launch exports")
-        return redirect("{0}?{1}".format(reverse_lazy('rf_summary_list_filter'), urllib.urlencode(request.GET)))
+        messages.error(request, "Only users in the Export group can launch exports")
+        return redirect(
+            "{0}?{1}".format(
+                reverse_lazy("rf_summary_list_filter"), urllib.urlencode(request.GET)
+            )
+        )
 
 
 @csrf_exempt
@@ -352,11 +426,16 @@ def mgcsv1(request, name=None, pat_id=None):
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = exportMG2excel.delay(request.GET, pid['pidgroup'], pid['include_names'],
-                                   pid['include_pat_id'], request.user.id)
-        logger.debug(u'Export MG to CSV job is {0}'.format(job))
+        job = exportMG2excel.delay(
+            request.GET,
+            pid["pidgroup"],
+            pid["include_names"],
+            pid["include_pat_id"],
+            request.user.id,
+        )
+        logger.debug("Export MG to CSV job is {0}".format(job))
 
-    return redirect(reverse_lazy('export'))
+    return redirect(reverse_lazy("export"))
 
 
 @csrf_exempt
@@ -375,11 +454,17 @@ def mgxlsx1(request, name=None, pat_id=None):
     pid = include_pid(request, name, pat_id)
 
     if request.user.groups.filter(name="exportgroup"):
-        job = exportMG2excel.delay(request.GET, pid=pid['pidgroup'], name=pid['include_names'],
-                                   patid=pid['include_pat_id'], user=request.user.id, xlsx=True)
-        logger.debug(u'Export MG to xlsx job is {0}'.format(job))
+        job = exportMG2excel.delay(
+            request.GET,
+            pid=pid["pidgroup"],
+            name=pid["include_names"],
+            patid=pid["include_pat_id"],
+            user=request.user.id,
+            xlsx=True,
+        )
+        logger.debug("Export MG to xlsx job is {0}".format(job))
 
-    return redirect(reverse_lazy('export'))
+    return redirect(reverse_lazy("export"))
 
 
 @csrf_exempt
@@ -395,9 +480,9 @@ def mgnhsbsp(request):
 
     if request.user.groups.filter(name="exportgroup"):
         job = mg_csv_nhsbsp.delay(request.GET, request.user.id)
-        logger.debug(u'Export MG to CSV NHSBSP job is {0}'.format(job))
+        logger.debug("Export MG to CSV NHSBSP job is {0}".format(job))
 
-    return redirect(reverse_lazy('export'))
+    return redirect(reverse_lazy("export"))
 
 
 @csrf_exempt
@@ -410,18 +495,31 @@ def export(request):
     from remapp.models import Exports
 
     try:
-        complete = Exports.objects.filter(status__contains=u'COMPLETE').order_by('-export_date')
+        complete = Exports.objects.filter(status__contains="COMPLETE").order_by(
+            "-export_date"
+        )
         latest_complete_pk = complete[0].pk
     except IndexError:
         complete = None
         latest_complete_pk = 0
 
-    admin = {'openremversion': remapp.__version__, 'docsversion': remapp.__docs_version__}
+    admin = {
+        "openremversion": remapp.__version__,
+        "docsversion": remapp.__docs_version__,
+    }
     for group in request.user.groups.all():
         admin[group.name] = True
-    template = 'remapp/exports.html'
+    template = "remapp/exports.html"
 
-    return render(request, template, {'admin': admin, 'latest_complete_pk': latest_complete_pk, 'complete': complete})
+    return render(
+        request,
+        template,
+        {
+            "admin": admin,
+            "latest_complete_pk": latest_complete_pk,
+            "complete": complete,
+        },
+    )
 
 
 @login_required
@@ -452,25 +550,29 @@ def download(request, task_id):
     try:
         exp = Exports.objects.get(task_id__exact=task_id)
     except ObjectDoesNotExist:
-        messages.error(request, u"Can't match the task ID, download aborted")
-        return redirect(reverse_lazy('export'))
+        messages.error(request, "Can't match the task ID, download aborted")
+        return redirect(reverse_lazy("export"))
 
     if not exportperm:
-        messages.error(request, u"You don't have permission to download exported data")
-        return redirect(reverse_lazy('export'))
+        messages.error(request, "You don't have permission to download exported data")
+        return redirect(reverse_lazy("export"))
 
     if exp.includes_pid and not pidperm:
-        messages.error(request,
-                       u"You don't have permission to download export data that includes patient identifiable information")
-        return redirect(reverse_lazy('export'))
+        messages.error(
+            request,
+            "You don't have permission to download export data that includes patient identifiable information",
+        )
+        return redirect(reverse_lazy("export"))
 
     file_path = os.path.join(settings.MEDIA_ROOT, exp.filename.name)
-    file_wrapper = FileWrapper(open(file_path, mode='rb'))
+    file_wrapper = FileWrapper(open(file_path, mode="rb"))
     file_mimetype = mimetypes.guess_type(file_path)
     response = HttpResponse(file_wrapper, content_type=file_mimetype)
-    response['X-Sendfile'] = file_path
-    response['Content-Length'] = os.stat(file_path).st_size
-    response['Content-Disposition'] = u'attachment; filename=%s' % smart_str(exp.filename)
+    response["X-Sendfile"] = file_path
+    response["Content-Length"] = os.stat(file_path).st_size
+    response["Content-Disposition"] = "attachment; filename=%s" % smart_str(
+        exp.filename
+    )
     return response
 
 
@@ -493,14 +595,23 @@ def deletefile(request):
             try:
                 export_object.filename.delete()
                 export_object.delete()
-                messages.success(request, u"Export file and database entry deleted successfully.")
+                messages.success(
+                    request, "Export file and database entry deleted successfully."
+                )
             except OSError as e:
-                messages.error(request,
-                               u"Export file delete failed - please contact an administrator. Error({0}): {1}".format(
-                                   e.errno, e.strerror))
+                messages.error(
+                    request,
+                    "Export file delete failed - please contact an administrator. Error({0}): {1}".format(
+                        e.errno, e.strerror
+                    ),
+                )
             except Exception:
-                messages.error(request,
-                               u"Unexpected error - please contact an administrator: {0}".format(sys.exc_info()[0]))
+                messages.error(
+                    request,
+                    "Unexpected error - please contact an administrator: {0}".format(
+                        sys.exc_info()[0]
+                    ),
+                )
 
     return HttpResponseRedirect(reverse(export))
 
@@ -522,9 +633,13 @@ def export_abort(request, pk):
     if request.user.groups.filter(name="exportgroup"):
         celery_app.control.revoke(export_task.task_id, terminate=True)
         export_task.delete()
-        logger.info(u"Export task {0} terminated from the Exports interface".format(export_task.task_id))
+        logger.info(
+            "Export task {0} terminated from the Exports interface".format(
+                export_task.task_id
+            )
+        )
 
-    return HttpResponseRedirect(reverse_lazy('export'))
+    return HttpResponseRedirect(reverse_lazy("export"))
 
 
 @csrf_exempt
@@ -538,10 +653,12 @@ def update_active(request):
     from remapp.models import Exports
 
     if request.is_ajax():
-        current_export_tasks = Exports.objects.filter(status__contains=u'CURRENT').order_by('-export_date')
+        current_export_tasks = Exports.objects.filter(
+            status__contains="CURRENT"
+        ).order_by("-export_date")
         template = "remapp/exports-active.html"
 
-        return render(request, template, {'current': current_export_tasks})
+        return render(request, template, {"current": current_export_tasks})
 
 
 @csrf_exempt
@@ -555,10 +672,12 @@ def update_error(request):
     from remapp.models import Exports
 
     if request.is_ajax():
-        error_export_tasks = Exports.objects.filter(status__contains=u'ERROR').order_by('-export_date')
+        error_export_tasks = Exports.objects.filter(status__contains="ERROR").order_by(
+            "-export_date"
+        )
         template = "remapp/exports-error.html"
 
-        return render(request, template, {'errors': error_export_tasks})
+        return render(request, template, {"errors": error_export_tasks})
 
 
 @csrf_exempt
@@ -573,9 +692,15 @@ def update_complete(request):
 
     if request.is_ajax():
         data = request.POST
-        latest_complete_pk = data.get('latest_complete_pk')
-        in_pid_group = data.get('in_pid_group')
-        complete_export_tasks = Exports.objects.filter(status__contains=u'COMPLETE').filter(pk__gt=latest_complete_pk)
+        latest_complete_pk = data.get("latest_complete_pk")
+        in_pid_group = data.get("in_pid_group")
+        complete_export_tasks = Exports.objects.filter(
+            status__contains="COMPLETE"
+        ).filter(pk__gt=latest_complete_pk)
         template = "remapp/exports-complete.html"
 
-        return render(request, template, {'complete': complete_export_tasks, 'in_pid_group': in_pid_group})
+        return render(
+            request,
+            template,
+            {"complete": complete_export_tasks, "in_pid_group": in_pid_group},
+        )

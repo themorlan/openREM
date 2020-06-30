@@ -4,7 +4,11 @@
 import os
 from django.test import TestCase
 from remapp.extractors import rdsr
-from remapp.models import GeneralStudyModuleAttr, PatientIDSettings, UniqueEquipmentNames  #, SkinDoseMapCalcSettings
+from remapp.models import (
+    GeneralStudyModuleAttr,
+    PatientIDSettings,
+    UniqueEquipmentNames,
+)  # , SkinDoseMapCalcSettings
 
 
 class ImportDualRDSRs(TestCase):
@@ -34,19 +38,20 @@ class ImportDualRDSRs(TestCase):
         dx_path = os.path.join(root_tests, dx_file)
 
         rdsr.rdsr(dx_path)
-        dx_study = GeneralStudyModuleAttr.objects.order_by('id')[0]
-        unique_equip = UniqueEquipmentNames.objects.order_by('id')[0]
+        dx_study = GeneralStudyModuleAttr.objects.order_by("id")[0]
+        unique_equip = UniqueEquipmentNames.objects.order_by("id")[0]
 
         self.assertEqual(dx_study.modality_type, u"DX")
 
-        unique_equip.user_defined_modality = 'dual'
+        unique_equip.user_defined_modality = "dual"
         unique_equip.save()
 
         from ..views_admin import reset_dual
+
         reset_dual(unique_equip.pk)
 
         rdsr.rdsr(rf_path)
-        rf_study = GeneralStudyModuleAttr.objects.order_by('id')[1]
+        rf_study = GeneralStudyModuleAttr.objects.order_by("id")[1]
         # Make sure second study has fallen into same equipment entry
         self.assertEqual(UniqueEquipmentNames.objects.count(), 1)
         # Should have the correct modality type
@@ -56,8 +61,8 @@ class ImportDualRDSRs(TestCase):
         reset_dual(unique_equip.pk)
 
         # After reset, all existing studies are correct.
-        dx_study = GeneralStudyModuleAttr.objects.order_by('id')[0]
-        rf_study = GeneralStudyModuleAttr.objects.order_by('id')[1]
+        dx_study = GeneralStudyModuleAttr.objects.order_by("id")[0]
+        rf_study = GeneralStudyModuleAttr.objects.order_by("id")[1]
         self.assertEqual(rf_study.modality_type, u"RF")
         self.assertEqual(dx_study.modality_type, u"DX")
 
@@ -83,26 +88,25 @@ class ImportDualRDSRs(TestCase):
 
         rdsr.rdsr(dx_path)
         rdsr.rdsr(rf_path)
-        dx_study = GeneralStudyModuleAttr.objects.order_by('id')[0]
-        rf_study = GeneralStudyModuleAttr.objects.order_by('id')[1]
+        dx_study = GeneralStudyModuleAttr.objects.order_by("id")[0]
+        rf_study = GeneralStudyModuleAttr.objects.order_by("id")[1]
         # Make sure second study has fallen into same equipment entry
         self.assertEqual(UniqueEquipmentNames.objects.count(), 1)
-        unique_equip = UniqueEquipmentNames.objects.order_by('id')[0]
+        unique_equip = UniqueEquipmentNames.objects.order_by("id")[0]
 
         self.assertEqual(rf_study.modality_type, u"RF")
         self.assertEqual(dx_study.modality_type, u"DX")
 
-        unique_equip.user_defined_modality = 'dual'
+        unique_equip.user_defined_modality = "dual"
         unique_equip.save()
 
         from ..views_admin import reset_dual
+
         reset_dual(unique_equip.pk)
         reset_dual(unique_equip.pk)
 
         # After reset, all existing studies are correct.
-        dx_study = GeneralStudyModuleAttr.objects.order_by('id')[0]
-        rf_study = GeneralStudyModuleAttr.objects.order_by('id')[1]
+        dx_study = GeneralStudyModuleAttr.objects.order_by("id")[0]
+        rf_study = GeneralStudyModuleAttr.objects.order_by("id")[1]
         self.assertEqual(rf_study.modality_type, u"RF")
         self.assertEqual(dx_study.modality_type, u"DX")
-
-

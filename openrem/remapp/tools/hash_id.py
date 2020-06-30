@@ -47,12 +47,12 @@ def hash_id(id_string):
             id_string = str(id_string)
         if isinstance(id_string, (pydicom.multival.MultiValue, list)):
             try:
-                id_string = ''.join(id_string)
+                id_string = "".join(id_string)
             except TypeError:
-                id_string_concat = ''
+                id_string_concat = ""
                 for name in id_string:
                     id_string_concat += str(name)
                 id_string = id_string_concat
-        id_string = smart_bytes(id_string, encoding='utf-8')
+        id_string = smart_bytes(id_string, encoding="utf-8")
         return hashlib.sha256(id_string).hexdigest()
     return None

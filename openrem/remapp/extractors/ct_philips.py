@@ -47,7 +47,7 @@ basepath = os.path.dirname(__file__)
 projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
 if projectpath not in sys.path:
     sys.path.insert(1, projectpath)
-os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
+os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
 from celery import shared_task
@@ -56,18 +56,20 @@ from celery import shared_task
 def _scanninglength(dataset, event):  # TID 10014
     from remapp.models import ScanningLength
     from remapp.tools.get_values import get_value_kw
+
     scanlen = ScanningLength.objects.create(ct_irradiation_event_data=event)
-    scanlen.scanning_length = get_value_kw('ScanLength', dataset)
+    scanlen.scanning_length = get_value_kw("ScanLength", dataset)
     scanlen.save()
 
 
 def _ctxraysourceparameters(dataset, event):
     from remapp.models import CtXRaySourceParameters
     from remapp.tools.get_values import get_value_kw
+
     param = CtXRaySourceParameters.objects.create(ct_irradiation_event_data=event)
-    param.identification_of_the_xray_source = 'A'
-    param.kvp = get_value_kw('KVP', dataset)
-    mA = get_value_kw('XRayTubeCurrentInuA', dataset)
+    param.identification_of_the_xray_source = "A"
+    param.kvp = get_value_kw("KVP", dataset)
+    mA = get_value_kw("XRayTubeCurrentInuA", dataset)
     if mA:
         param.xray_tube_current = mA / 1000.0
     # exposure time per rotation mandatory for non-localizer exposures, but we don't have it.
@@ -79,42 +81,56 @@ def _ctirradiationeventdata(dataset, ct):  # TID 10013
     from remapp.tools.get_values import get_value_kw, get_value_num, get_or_create_cid
     from remapp.tools.dcmdatetime import get_date_time
     from pydicom import uid
+
     event = CtIrradiationEventData.objects.create(ct_radiation_dose=ct)
-    event.acquisition_protocol = get_value_kw('SeriesDescription', dataset)
+    event.acquisition_protocol = get_value_kw("SeriesDescription", dataset)
     # target region is mandatory, but I don't have it
-    acqtype = get_value_kw('AcquisitionType', dataset)
-    if acqtype == 'CONSTANT_ANGLE':
-        event.ct_acquisition_type = get_or_create_cid('113805', 'Constant Angle Acquisition')
-    elif acqtype == 'SPIRAL':
-        event.ct_acquisition_type = get_or_create_cid('P5-08001', 'Spiral Acquisition')
-    elif acqtype == 'SEQUENCED':  # guessed
-        event.ct_acquisition_type = get_or_create_cid('113804', 'Sequenced Acquisition')
-    elif acqtype == 'STATIONARY':  # guessed
-        event.ct_acquisition_type = get_or_create_cid('113806', 'Stationary Acquisition')
-    elif acqtype == 'FREE':  # guessed, for completeness
-        event.ct_acquisition_type = get_or_create_cid('113807', 'Free Acquisition')
+    acqtype = get_value_kw("AcquisitionType", dataset)
+    if acqtype == "CONSTANT_ANGLE":
+        event.ct_acquisition_type = get_or_create_cid(
+            "113805", "Constant Angle Acquisition"
+        )
+    elif acqtype == "SPIRAL":
+        event.ct_acquisition_type = get_or_create_cid("P5-08001", "Spiral Acquisition")
+    elif acqtype == "SEQUENCED":  # guessed
+        event.ct_acquisition_type = get_or_create_cid("113804", "Sequenced Acquisition")
+    elif acqtype == "STATIONARY":  # guessed
+        event.ct_acquisition_type = get_or_create_cid(
+            "113806", "Stationary Acquisition"
+        )
+    elif acqtype == "FREE":  # guessed, for completeness
+        event.ct_acquisition_type = get_or_create_cid("113807", "Free Acquisition")
     # procedure context is optional and not reported (contrast or not)
     # irradiation event uid would be available in image headers, but assuming just working from dose report image:
     event.irradiation_event_uid = uid.generate_uid()
-    exptime = get_value_kw('ExposureTime', dataset)
+    exptime = get_value_kw("ExposureTime", dataset)
     if exptime:
         event.exposure_time = exptime / 1000.0
     _scanninglength(dataset, event)
-    event.nominal_single_collimation_width = get_value_kw('SingleCollimationWidth', dataset)
-    event.nominal_total_collimation_width = get_value_kw('TotalCollimationWidth', dataset)
-    event.pitch_factor = get_value_kw('SpiralPitchFactor',
-                                      dataset)  # not sure what would be there for an axial scan: SequencedPitchFactor?
+    event.nominal_single_collimation_width = get_value_kw(
+        "SingleCollimationWidth", dataset
+    )
+    event.nominal_total_collimation_width = get_value_kw(
+        "TotalCollimationWidth", dataset
+    )
+    event.pitch_factor = get_value_kw(
+        "SpiralPitchFactor", dataset
+    )  # not sure what would be there for an axial scan: SequencedPitchFactor?
     event.number_of_xray_sources = 1
-    ctdiwphantom = get_value_num(0x01e11026, dataset)  # Philips private tag
-    if ctdiwphantom == '16 CM':
-        event.ctdiw_phantom_type = get_or_create_cid('113690', 'IEC Head Dosimetry Phantom')
-    if ctdiwphantom == '32 CM':
-        event.ctdiw_phantom_type = get_or_create_cid('113691', 'IEC Body Dosimetry Phantom')
+    ctdiwphantom = get_value_num(0x01E11026, dataset)  # Philips private tag
+    if ctdiwphantom == "16 CM":
+        event.ctdiw_phantom_type = get_or_create_cid(
+            "113690", "IEC Head Dosimetry Phantom"
+        )
+    if ctdiwphantom == "32 CM":
+        event.ctdiw_phantom_type = get_or_create_cid(
+            "113691", "IEC Body Dosimetry Phantom"
+        )
     event.save()
     _ctxraysourceparameters(dataset, event)
-    event.mean_ctdivol = get_value_kw('CTDIvol', dataset)
-    event.dlp = Decimal(get_value_num(0x00e11021, dataset))  # Philips private tag
-    event.date_time_started = get_date_time('AcquisitionDateTime', dataset)
+    event.mean_ctdivol = get_value_kw("CTDIvol", dataset)
+    event.dlp = Decimal(get_value_num(0x00E11021, dataset))  # Philips private tag
+    event.date_time_started = get_date_time("AcquisitionDateTime", dataset)
     #    event.series_description = get_value_kw('SeriesDescription',dataset)
     event.save()
 
@@ -122,10 +138,15 @@ def _ctirradiationeventdata(dataset, ct):  # TID 10013
 def _ctaccumulateddosedata(dataset, ct, ch):  # TID 10012
     from remapp.models import CtAccumulatedDoseData
     from remapp.tools.get_values import get_value_kw, get_value_num
+
     ctacc = CtAccumulatedDoseData.objects.create(ct_radiation_dose=ct)
-    ctacc.total_number_of_irradiation_events = get_value_kw('TotalNumberOfExposures', dataset)
-    ctacc.ct_dose_length_product_total = Decimal(get_value_num(0x00e11021, dataset))  # Philips private tag
-    ctacc.comment = get_value_kw('CommentsOnRadiationDose', dataset)
+    ctacc.total_number_of_irradiation_events = get_value_kw(
+        "TotalNumberOfExposures", dataset
+    )
+    ctacc.ct_dose_length_product_total = Decimal(
+        get_value_num(0x00E11021, dataset)
+    )  # Philips private tag
+    ctacc.comment = get_value_kw("CommentsOnRadiationDose", dataset)
     ctacc.save()
 
 
@@ -134,26 +155,31 @@ def _ctradiationdose(dataset, g, ch):
     from remapp.tools.get_values import get_value_kw, get_value_num, get_or_create_cid
     from datetime import timedelta
     from django.db.models import Min, Max
+
     proj = CtRadiationDose.objects.create(general_study_module_attributes=g)
-    proj.procedure_reported = get_or_create_cid('P5-08000', 'Computed Tomography X-Ray')
-    proj.has_intent = get_or_create_cid('R-408C3', 'Diagnostic Intent')
-    proj.scope_of_accumulation = get_or_create_cid('113014', 'Study')
-    comment_dose = get_value_kw('CommentsOnRadiationDose', dataset)
-    comment_protocol_file = get_value_num(0x00e11061, dataset)
-    comment_study_description = get_value_kw('StudyDescription', dataset)
+    proj.procedure_reported = get_or_create_cid("P5-08000", "Computed Tomography X-Ray")
+    proj.has_intent = get_or_create_cid("R-408C3", "Diagnostic Intent")
+    proj.scope_of_accumulation = get_or_create_cid("113014", "Study")
+    comment_dose = get_value_kw("CommentsOnRadiationDose", dataset)
+    comment_protocol_file = get_value_num(0x00E11061, dataset)
+    comment_study_description = get_value_kw("StudyDescription", dataset)
     if not comment_dose:
-        comment_dose = ''
+        comment_dose = ""
     if not comment_protocol_file:
-        comment_protocol_file = ''
+        comment_protocol_file = ""
     if not comment_study_description:
-        comment_study_description = ''
-    proj.comment = (u"StudyDescription: {0}. Comments on radiation dose: {1}. ProtocolFilename: {2}".format(
-        comment_study_description, comment_dose, comment_protocol_file))
-    proj.source_of_dose_information = get_or_create_cid('113866', 'Copied From Image Attributes')
+        comment_study_description = ""
+    proj.comment = (
+        f"StudyDescription: {comment_study_description}. Comments on radiation dose: {comment_dose}. "
+        f"ProtocolFilename: {comment_protocol_file}"
+    )
+    proj.source_of_dose_information = get_or_create_cid(
+        "113866", "Copied From Image Attributes"
+    )
     proj.save()
     _ctaccumulateddosedata(dataset, proj, ch)
     for series in dataset.ExposureDoseSequence:
-        if 'AcquisitionType' in series:
+        if "AcquisitionType" in series:
             _ctirradiationeventdata(series, proj)
     events = proj.ctirradiationeventdata_set.all()
     if not events:
@@ -164,14 +190,27 @@ def _ctradiationdose(dataset, g, ch):
         study_time = g.study_time.time()
         accession_number = g.accession_number
         logger.warning(
-            u"There were no events in ct_philips import, or they couldn't be read. {0} {1} {2} {3} {4} {5}".format(
-                station_name, manufacturer, manufacturer_model_name, study_date, study_time, accession_number))
+            "There were no events in ct_philips import, or they couldn't be read. {0} {1} {2} {3} {4} {5}".format(
+                station_name,
+                manufacturer,
+                manufacturer_model_name,
+                study_date,
+                study_time,
+                accession_number,
+            )
+        )
     else:
         # Come back and set start and end of irradiation after creating the x-ray events
-        proj.start_of_xray_irradiation = events.aggregate(Min('date_time_started'))['date_time_started__min']
+        proj.start_of_xray_irradiation = events.aggregate(Min("date_time_started"))[
+            "date_time_started__min"
+        ]
         try:
-            latestlength = int(events.latest('date_time_started').exposure_time * 1000)  # in microseconds
-            lastevent = events.aggregate(Max('date_time_started'))['date_time_started__max']
+            latestlength = int(
+                events.latest("date_time_started").exposure_time * 1000
+            )  # in microseconds
+            lastevent = events.aggregate(Max("date_time_started"))[
+                "date_time_started__max"
+            ]
             if lastevent and latestlength:
                 last = lastevent + timedelta(microseconds=latestlength)
                 proj.end_of_xray_irradiation = last
@@ -185,18 +224,24 @@ def _generalequipmentmoduleattributes(dataset, study, ch):
     from remapp.tools.dcmdatetime import get_date, get_time
     from remapp.tools.get_values import get_value_kw
     from remapp.tools.hash_id import hash_id
-    equip = GeneralEquipmentModuleAttr.objects.create(general_study_module_attributes=study)
+
+    equip = GeneralEquipmentModuleAttr.objects.create(
+        general_study_module_attributes=study
+    )
     equip.manufacturer = get_value_kw("Manufacturer", dataset)
     equip.institution_name = get_value_kw("InstitutionName", dataset)
     equip.institution_address = get_value_kw("InstitutionAddress", dataset)
     equip.station_name = get_value_kw("StationName", dataset)
-    equip.institutional_department_name = get_value_kw("InstitutionalDepartmentName", dataset)
+    equip.institutional_department_name = get_value_kw(
+        "InstitutionalDepartmentName", dataset
+    )
     equip.manufacturer_model_name = get_value_kw("ManufacturerModelName", dataset)
     equip.device_serial_number = get_value_kw("DeviceSerialNumber", dataset)
     equip.software_versions = get_value_kw("SoftwareVersions", dataset)
     equip.gantry_id = get_value_kw("GantryID", dataset)
-    equip.spatial_resolution = get_value_kw("SpatialResolution",
-                                            dataset)  # might fall over if field present but blank - check!
+    equip.spatial_resolution = get_value_kw(
+        "SpatialResolution", dataset
+    )  # might fall over if field present but blank - check!
     equip.date_of_last_calibration = get_date("DateOfLastCalibration", dataset)
     equip.time_of_last_calibration = get_time("TimeOfLastCalibration", dataset)
 
@@ -219,17 +264,19 @@ def _generalequipmentmoduleattributes(dataset, study, ch):
         gantry_id_hash=hash_id(equip.gantry_id),
         hash_generated=True,
         device_observer_uid=None,
-        device_observer_uid_hash=None
+        device_observer_uid_hash=None,
     )
     if created:
         if equip.institution_name and equip.station_name:
-            equip_display_name.display_name = equip.institution_name + ' ' + equip.station_name
+            equip_display_name.display_name = (
+                equip.institution_name + " " + equip.station_name
+            )
         elif equip.institution_name:
             equip_display_name.display_name = equip.institution_name
         elif equip.station_name:
             equip_display_name.display_name = equip.station_name
         else:
-            equip_display_name.display_name = 'Blank'
+            equip_display_name.display_name = "Blank"
         equip_display_name.save()
 
     equip.unique_equipment_name = UniqueEquipmentNames(pk=equip_display_name.pk)
@@ -240,7 +287,10 @@ def _generalequipmentmoduleattributes(dataset, study, ch):
 def _patientstudymoduleattributes(dataset, g):  # C.7.2.2
     from remapp.models import PatientStudyModuleAttr
     from remapp.tools.get_values import get_value_kw
-    patientatt = PatientStudyModuleAttr.objects.create(general_study_module_attributes=g)
+
+    patientatt = PatientStudyModuleAttr.objects.create(
+        general_study_module_attributes=g
+    )
     patientatt.patient_age = get_value_kw("PatientAge", dataset)
     patientatt.patient_weight = get_value_kw("PatientWeight", dataset)
     patientatt.save()
@@ -261,17 +311,25 @@ def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
     pat.not_patient_indicator = get_not_pt(dataset)
     patientatt = PatientStudyModuleAttr.objects.get(general_study_module_attributes=g)
     if patient_birth_date:
-        patientatt.patient_age_decimal = old_div(Decimal((g.study_date.date() - patient_birth_date.date()).days), Decimal(
-            '365.25'))
+        patientatt.patient_age_decimal = old_div(
+            Decimal((g.study_date.date() - patient_birth_date.date()).days),
+            Decimal("365.25"),
+        )
     elif patientatt.patient_age:
-        if patientatt.patient_age[-1:] == 'Y':
+        if patientatt.patient_age[-1:] == "Y":
             patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1])
-        elif patientatt.patient_age[-1:] == 'M':
-            patientatt.patient_age_decimal = old_div(Decimal(patientatt.patient_age[:-1]), Decimal('12'))
-        elif patientatt.patient_age[-1:] == 'D':
-            patientatt.patient_age_decimal = old_div(Decimal(patientatt.patient_age[:-1]), Decimal('365.25'))
+        elif patientatt.patient_age[-1:] == "M":
+            patientatt.patient_age_decimal = old_div(
+                Decimal(patientatt.patient_age[:-1]), Decimal("12")
+            )
+        elif patientatt.patient_age[-1:] == "D":
+            patientatt.patient_age_decimal = old_div(
+                Decimal(patientatt.patient_age[:-1]), Decimal("365.25")
+            )
     if patientatt.patient_age_decimal:
-        patientatt.patient_age_decimal = patientatt.patient_age_decimal.quantize(Decimal('.1'))
+        patientatt.patient_age_decimal = patientatt.patient_age_decimal.quantize(
+            Decimal(".1")
+        )
     patientatt.save()
 
     patient_id_settings = PatientIDSettings.objects.get()
@@ -296,60 +354,85 @@ def _generalstudymoduleattributes(dataset, g, ch):
     from datetime import datetime
     from remapp.extractors.extract_common import ct_event_type_count
     from remapp.models import PatientIDSettings
-    from remapp.tools.get_values import get_value_kw, get_seq_code_meaning, get_seq_code_value, list_to_string
+    from remapp.tools.get_values import (
+        get_value_kw,
+        get_seq_code_meaning,
+        get_seq_code_value,
+        list_to_string,
+    )
     from remapp.tools.dcmdatetime import get_date, get_time
     from remapp.tools.hash_id import hash_id
 
-    g.study_instance_uid = get_value_kw('StudyInstanceUID', dataset)
-    g.study_date = get_date('StudyDate', dataset)
-    g.study_time = get_time('StudyTime', dataset)
-    g.study_workload_chart_time = datetime.combine(datetime.date(datetime(1900, 1, 1)), datetime.time(g.study_time))
-    g.referring_physician_name = list_to_string(get_value_kw('RequestingPhysician', dataset))
-    g.study_id = get_value_kw('StudyID', dataset)
-    accession_number = get_value_kw('AccessionNumber', dataset)
+    g.study_instance_uid = get_value_kw("StudyInstanceUID", dataset)
+    g.study_date = get_date("StudyDate", dataset)
+    g.study_time = get_time("StudyTime", dataset)
+    g.study_workload_chart_time = datetime.combine(
+        datetime.date(datetime(1900, 1, 1)), datetime.time(g.study_time)
+    )
+    g.referring_physician_name = list_to_string(
+        get_value_kw("RequestingPhysician", dataset)
+    )
+    g.study_id = get_value_kw("StudyID", dataset)
+    accession_number = get_value_kw("AccessionNumber", dataset)
     patient_id_settings = PatientIDSettings.objects.get()
     if accession_number and patient_id_settings.accession_hashed:
         accession_number = hash_id(accession_number)
         g.accession_hashed = True
     g.accession_number = accession_number
-    g.modality_type = 'CT'
-    g.study_description = get_value_kw('ProtocolName', dataset)
-    g.operator_name = list_to_string(get_value_kw('OperatorsName', dataset))
-    if 'RequestAttributesSequence' in dataset:
-        g.procedure_code_value = get_seq_code_value('ScheduledProtocolCodeSequence',
-                                                    dataset.RequestAttributesSequence[0])
-        g.procedure_code_meaning = get_seq_code_meaning('ScheduledProtocolCodeSequence',
-                                                        dataset.RequestAttributesSequence[0])
-    g.requested_procedure_code_meaning = get_value_kw('RequestedProcedureDescription', dataset)
+    g.modality_type = "CT"
+    g.study_description = get_value_kw("ProtocolName", dataset)
+    g.operator_name = list_to_string(get_value_kw("OperatorsName", dataset))
+    if "RequestAttributesSequence" in dataset:
+        g.procedure_code_value = get_seq_code_value(
+            "ScheduledProtocolCodeSequence", dataset.RequestAttributesSequence[0]
+        )
+        g.procedure_code_meaning = get_seq_code_meaning(
+            "ScheduledProtocolCodeSequence", dataset.RequestAttributesSequence[0]
+        )
+    g.requested_procedure_code_meaning = get_value_kw(
+        "RequestedProcedureDescription", dataset
+    )
     g.save()
     _ctradiationdose(dataset, g, ch)
     try:
-        g.number_of_events = g.ctradiationdose_set.get().ctirradiationeventdata_set.count()
+        g.number_of_events = (
+            g.ctradiationdose_set.get().ctirradiationeventdata_set.count()
+        )
         g.save()
     except ObjectDoesNotExist:
-        logger.warning(u"Study UID {0} of modality {1}. Unable to get event count!".format(
-            g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
+        logger.warning(
+            "Study UID {0} of modality {1}. Unable to get event count!".format(
+                g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)
+            )
+        )
     ct_event_type_count(g)
     try:
-        g.total_dlp = g.ctradiationdose_set.get().ctaccumulateddosedata_set.get().ct_dose_length_product_total
+        g.total_dlp = (
+            g.ctradiationdose_set.get()
+            .ctaccumulateddosedata_set.get()
+            .ct_dose_length_product_total
+        )
         g.save()
     except ObjectDoesNotExist:
-        logger.warning(u"Study UID {0} of modality {1}. Unable to set summary total_dlp".format(
-            g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)))
+        logger.warning(
+            "Study UID {0} of modality {1}. Unable to set summary total_dlp".format(
+                g.study_instance_uid, get_value_kw("ManufacturerModelName", dataset)
+            )
+        )
 
 
 def _philips_ct2db(dataset):
     from remapp.models import GeneralStudyModuleAttr
     from remapp.tools.get_values import get_value_kw
 
-    if 'StudyInstanceUID' in dataset:
+    if "StudyInstanceUID" in dataset:
         uid = dataset.StudyInstanceUID
         existing = GeneralStudyModuleAttr.objects.filter(study_instance_uid__exact=uid)
         if existing:
             return
 
     g = GeneralStudyModuleAttr.objects.create()
-    ch = get_value_kw('SpecificCharacterSet', dataset)
+    ch = get_value_kw("SpecificCharacterSet", dataset)
     _generalstudymoduleattributes(dataset, g, ch)
     _generalequipmentmoduleattributes(dataset, g, ch)
     _patientstudymoduleattributes(dataset, g)
@@ -370,6 +453,7 @@ def ct_philips(philips_file):
 
     import pydicom
     from remapp.models import DicomDeleteSettings
+
     try:
         del_settings = DicomDeleteSettings.objects.get()
         del_ct_phil = del_settings.del_ct_phil
@@ -378,9 +462,12 @@ def ct_philips(philips_file):
 
     dataset = pydicom.dcmread(philips_file)
     dataset.decode()
-    if dataset.SOPClassUID != '1.2.840.10008.5.1.4.1.1.7' or dataset.Manufacturer != 'Philips' \
-            or dataset.SeriesDescription != 'Dose Info':
-        return u'{0} is not a Philips CT dose report image'.format(philips_file)
+    if (
+        dataset.SOPClassUID != "1.2.840.10008.5.1.4.1.1.7"
+        or dataset.Manufacturer != "Philips"
+        or dataset.SeriesDescription != "Dose Info"
+    ):
+        return "{0} is not a Philips CT dose report image".format(philips_file)
 
     _philips_ct2db(dataset)
 
@@ -393,6 +480,6 @@ def ct_philips(philips_file):
 if __name__ == "__main__":
 
     if len(sys.argv) != 2:
-        sys.exit(u'Error: Supply exactly one argument - the Philips dose report image')
+        sys.exit("Error: Supply exactly one argument - the Philips dose report image")
 
     sys.exit(ct_philips(sys.argv[1]))

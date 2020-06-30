@@ -8,11 +8,16 @@
 """
 
 
-from __future__ import unicode_literals
 import datetime
 from django.test import TestCase
 from pydicom.dataset import Dataset
-from remapp.tools.dcmdatetime import get_date, get_time, get_date_time, make_dcm_date, make_dcm_date_range
+from remapp.tools.dcmdatetime import (
+    get_date,
+    get_time,
+    get_date_time,
+    make_dcm_date,
+    make_dcm_date_range,
+)
 
 
 class DCMDateTimeConversionTests(TestCase):
@@ -23,7 +28,9 @@ class DCMDateTimeConversionTests(TestCase):
         ds = Dataset()
         ds.StudyDate = "20180131"
         date_object = get_date("StudyDate", ds)
-        ref_date_object = datetime.datetime(2018, 1, 31, 0, 0)  # Date returned I think is actually a datetime
+        ref_date_object = datetime.datetime(
+            2018, 1, 31, 0, 0
+        )  # Date returned I think is actually a datetime
 
         self.assertIsInstance(date_object, datetime.date)
         self.assertEqual(date_object, ref_date_object)
@@ -59,7 +66,9 @@ class DCMDateTimeConversionTests(TestCase):
         ds.SeriesTime = "130426"
         time_object_decimal = get_time("StudyTime", ds)
         time_object_seconds = get_time("SeriesTime", ds)
-        ref_time_decimal = datetime.datetime(1900, 1, 1, 13, 4, 26, 214000)  # Again object is datetime rather than time
+        ref_time_decimal = datetime.datetime(
+            1900, 1, 1, 13, 4, 26, 214000
+        )  # Again object is datetime rather than time
         # Optional offset from UTC is currently ignored. Not sure how much TZ aware dates are used
         ref_time_seconds = datetime.datetime(1900, 1, 1, 13, 4, 26)
 
@@ -104,7 +113,9 @@ class DCMDateTimeConversionTests(TestCase):
         time_date_object_millisecond = get_date_time("FrameAcquisitionDateTime", ds)
         time_date_object_date_only = get_date_time("FrameReferenceDateTime", ds)
         time_date_object_date_time = get_date_time("StartAcquisitionDateTime", ds)
-        ref_date_time_millisecond_object = datetime.datetime(2018, 6, 29, 17, 23, 4, 23000)
+        ref_date_time_millisecond_object = datetime.datetime(
+            2018, 6, 29, 17, 23, 4, 23000
+        )
         # Optional offset from UTC is currently ignored. Not sure how much TZ aware dates are used
         ref_date_object = datetime.datetime(2018, 6, 29)
         ref_date_time_object = datetime.datetime(2018, 6, 29, 17, 23, 4)
@@ -176,5 +187,3 @@ class DCMDateTimeConversionTests(TestCase):
         self.assertIsNone(single_bad)
         self.assertEqual(date1_only, "20120314-{0}".format(date_today))
         self.assertEqual(date2_only, "19000101-20140523")
-
-

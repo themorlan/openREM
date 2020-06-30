@@ -4,6 +4,7 @@ OpenREM version history
 
 1.0.0b1 (2020-xx-xx)
 --------------------
+* :issue:`841`  Code quality: format code with black
 * :issue:`838`  Imports: fixed issues with changed PersonName behaviour in pydicom 2.0
 * :issue:`836`  Installation: updated requirements, Docker and docs for pynetdicom 1.5, pydicom 2.0
 * :issue:`827`  SkinDose: Made SkinDose results available in OpenREM and made alert triggering possible
