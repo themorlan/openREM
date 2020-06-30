@@ -30,7 +30,7 @@ OpenREM currently ships with charts that use the HighCharts libraries. This is f
 For other environments please contact Highcharts for licencing. For more information, please see
 `their website <http://highcharts.com>`_, or the `Non-Commercial FAQ <https://shop.highsoft.com/faq>`_.
 
-.
+Current release version:
 
 .. image:: https://img.shields.io/pypi/v/openrem.svg?
     :target: https://badge.fury.io/py/openrem
@@ -40,6 +40,10 @@ For other environments please contact Highcharts for licencing. For more informa
 
 .. image:: https://img.shields.io/badge/License-GPLv3-blue.svg?
    :target: https://bitbucket.org/openrem/openrem/raw/develop/LICENSE
+
+Development version
+
+.. image:: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue
 
 .. image:: https://img.shields.io/bitbucket/issues/openrem/openrem.svg?
     :target: https://bitbucket.org/openrem/openrem/issues?status=new&status=open
