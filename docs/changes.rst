@@ -7,6 +7,7 @@ OpenREM version history
 * :issue:`841`  Code quality: format code with black
 * :issue:`838`  Imports: fixed issues with changed PersonName behaviour in pydicom 2.0
 * :issue:`836`  Installation: updated requirements, Docker and docs for pynetdicom 1.5, pydicom 2.0
+* :issue:`829`  Installation: added docs for Docker install on computer without internet access
 * :issue:`827`  SkinDose: Made SkinDose results available in OpenREM and made alert triggering possible
 * :issue:`826`  Code quality: split views to make more manageable and testable
 * :issue:`824`  DICOM Networking: enabled declaration and testing of Orthanc Store SCP in Docker
