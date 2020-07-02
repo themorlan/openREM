@@ -45,9 +45,17 @@ definitions:
           - >-
             sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
           - mv openrem/openremproject/wsgi.py{.example,}
-          - pip install -U tox
+#          - pip install -U tox
           - pip install -r requirements.txt
-          - tox -e ci
+          - pip install coverage
+          - pip install coveralls
+          - pip install tblib
+          - python openrem/manage.py makemigrations remapp
+          - coverage run openrem/manage.py test remapp --parallel
+          - coverage combine
+          - coveralls
+          - coverage xml
+#          - tox -e ci
         services:
           - postgres
         caches:
@@ -85,14 +93,14 @@ definitions:
           - docker
 pipelines:
   default:  # Standard commits are tested but not deployed
-    - step: *sonarcloud
     - step: *test
+    - step: *sonarcloud
   branches:
     develop:  # Commits to the develop branch are tested and deployed to dev.openrem.org on success
-      - step: *sonarcloud
       - step:
           <<: *test
           name: run django tests - develop
+      - step: *sonarcloud
       - step: *deploy-to-openrem-org
       - step: *build-and-deploy-to-docker
     master:  # Commits to the master branch are tested and pushed to Docker Hub
