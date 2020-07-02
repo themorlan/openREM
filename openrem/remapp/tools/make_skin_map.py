@@ -201,7 +201,7 @@ def make_skin_map(study_pk=None):
                         pass
 
             if irrad.irradiation_event_type:
-                run_type = str(irrad.irradiation_event_type)
+                run_type = irrad.irradiation_event_type.code_meaning
             else:
                 run_type = None
             try:
