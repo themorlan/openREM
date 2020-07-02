@@ -169,10 +169,9 @@ sorttable = {
     for (var i=0; i<table.tBodies[0].rows.length; i++) {
       text = sorttable.getInnerText(table.tBodies[0].rows[i].cells[column]);
       if (text != '') {
-    if (text.match(/^-?[Ł$¤]?[\d,.]+%?$/)) {
-        return sorttable.sort_numeric;
-    }
-}
+        if (text.match(/^-?[Ł$¤]?[\d,.]+%?$/)) {
+          return sorttable.sort_numeric;
+        }
         // check for a date: dd/mm/yyyy or dd/mm/yy
         // can have / or . or - as separator
         // can be mm/dd as well
