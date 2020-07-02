@@ -13,7 +13,7 @@ definitions:
         POSTGRES_DB: openremdb
         POSTGRES_USER: openremuser
         POSTGRES_PASSWORD: openremuserpass
-    docker:
+#    docker:
 #      memory: 3072
   steps:
     - step: &sonarcloud
