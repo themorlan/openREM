@@ -57,6 +57,8 @@ definitions:
           - coveralls
           - coverage xml
 #          - tox -e ci
+        artifacts:
+          - coverage.xml
         services:
           - postgres
         caches:
