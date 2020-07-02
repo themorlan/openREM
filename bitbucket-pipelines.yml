@@ -17,7 +17,7 @@ definitions:
       memory: 3072
   steps:
     - step: &sonarcloud
-        name: run code quality tests
+        name: run sonarcloud scan
         caches:
           - sonar
           - docker
@@ -26,6 +26,13 @@ definitions:
           - pipe: sonarsource/sonarcloud-scan:1.0.1
             variables:
               DEBUG: 'true'
+    - step: &sonarcloudqualitygate
+        name: run sonarcloud quality gate
+        caches:
+          - sonar
+          - docker
+#        size: 2x
+        script:
           - pipe: sonarsource/sonarcloud-quality-gate:0.1.3
     - step: &test
         name: run django tests
@@ -98,6 +105,7 @@ pipelines:
   default:  # Standard commits are tested but not deployed
     - step: *test
     - step: *sonarcloud
+    - step: *sonarcloudqualitygate
   branches:
     develop:  # Commits to the develop branch are tested and deployed to dev.openrem.org on success
       - step:
