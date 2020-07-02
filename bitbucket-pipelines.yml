@@ -14,7 +14,7 @@ definitions:
         POSTGRES_USER: openremuser
         POSTGRES_PASSWORD: openremuserpass
     docker:
-      memory: 2048
+      memory: 3072
   steps:
     - step: &sonarcloud
         name: run code quality tests
