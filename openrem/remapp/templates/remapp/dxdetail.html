@@ -107,10 +107,10 @@
                 <td>{{ event.date_time_started|time:"H:i.s" }}</td>
                 <td>{{ event.acquisition_protocol }}</td>
                 <td>
-                  {% if event.anatomical_structure %} {{ event.anatomical_structure }} {% endif %}
-                  {% if event.laterality %}{{ event.laterality }} {% endif %}<br>
-                  {% if event.target_region %}{{ event.target_region }} {% endif %}<br>
-                  {% if event.image_view %}{{ event.image_view }} {% endif %}
+                  {% if event.anatomical_structure %} {{ event.anatomical_structure.code_meaning }} {% endif %}
+                  {% if event.laterality %}{{ event.laterality.code_meaning }} {% endif %}<br>
+                  {% if event.target_region %}{{ event.target_region.code_meaning }} {% endif %}<br>
+                  {% if event.image_view %}{{ event.image_view.code_meaning }} {% endif %}
                 </td>
                 <td>
                   {% for kvp_value in sourcedata.kvp_set.all %}
