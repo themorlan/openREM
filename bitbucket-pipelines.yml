@@ -14,14 +14,13 @@ definitions:
         POSTGRES_USER: openremuser
         POSTGRES_PASSWORD: openremuserpass
     docker:
-      memory: 128
+      memory: 3072
   steps:
     - step: &sonarcloud
         name: run sonarcloud scan
         caches:
           - sonar
           - docker
-#        size: 2x
         script:
           - pipe: sonarsource/sonarcloud-scan:1.0.1
     - step: &sonarcloudqualitygate
