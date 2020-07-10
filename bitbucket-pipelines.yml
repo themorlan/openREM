@@ -21,7 +21,7 @@ definitions:
         caches:
           - sonar
           - docker
-        size: 2x
+#        size: 2x
         script:
           - pipe: sonarsource/sonarcloud-scan:1.0.1
     - step: &sonarcloudqualitygate
