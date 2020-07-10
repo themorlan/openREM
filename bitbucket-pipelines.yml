@@ -14,7 +14,7 @@ definitions:
         POSTGRES_USER: openremuser
         POSTGRES_PASSWORD: openremuserpass
     docker:
-      memory: 3072
+      memory: 2560
   steps:
     - step: &flake8
         name: run flake8
@@ -33,6 +33,8 @@ definitions:
           - docker
         script:
           - pipe: sonarsource/sonarcloud-scan:1.0.1
+        services:
+          - docker
     - step: &sonarcloudqualitygate
         name: run sonarcloud quality gate
         caches:
@@ -43,6 +45,8 @@ definitions:
           - pipe: sonarsource/sonarcloud-quality-gate:0.1.3
             variables:
               DEBUG: 'true'
+        services:
+          - docker
     - step: &test
         name: run django tests
         script:
