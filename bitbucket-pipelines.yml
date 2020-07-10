@@ -13,15 +13,15 @@ definitions:
         POSTGRES_DB: openremdb
         POSTGRES_USER: openremuser
         POSTGRES_PASSWORD: openremuserpass
-#    docker:
-#      memory: 3072
+    docker:
+      memory: 3072
   steps:
     - step: &sonarcloud
         name: run sonarcloud scan
         caches:
           - sonar
           - docker
-#        size: 2x
+        size: 2x
         script:
           - pipe: sonarsource/sonarcloud-scan:1.0.1
     - step: &sonarcloudqualitygate
