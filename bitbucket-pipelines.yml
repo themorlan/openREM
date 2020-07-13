@@ -21,7 +21,7 @@ definitions:
         script:
           - pip install flake8
           - mkdir test-reports
-          - flake8 --select=C,E,F,W,B,B950 --ignore=E203,E501,W503 --max-line-length=120 --exit-zero > test-reports/flake8.txt
+          - flake8 --select=C,E,F,W,B,B950 --ignore=E203,E501,W503 --max-line-length=120 --exit-zero > flake8.txt
         caches:
           - pip
         artifacts:
