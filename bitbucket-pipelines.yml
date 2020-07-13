@@ -116,25 +116,26 @@ definitions:
           - docker
 pipelines:
   default:  # Standard commits are tested but not deployed
+    - step: *test
     - step: *flake8
     - step: *sonarcloud
     - step: *sonarcloudqualitygate
-    - step: *test
   branches:
     develop:  # Commits to the develop branch are tested and deployed to dev.openrem.org on success
-      - step: *flake8
-      - step: *sonarcloud
       - step:
           <<: *test
           name: run django tests - develop
+      - step: *flake8
+      - step: *sonarcloud
       - step: *deploy-to-openrem-org
       - step: *build-and-deploy-to-docker
     master:  # Commits to the master branch are tested and pushed to Docker Hub
-      - step: *sonarcloud
       - step:
           <<: *test
           name: run django tests - master
           deployment: Staging
+      - step: *flake8
+      - step: *sonarcloud
       - step: *build-and-deploy-to-docker
     '*stage':  # Commits to any branch ending in 'stage' are tested and deployed to testing.openrem.org
       - step:
