@@ -396,7 +396,11 @@
             </script>
 
             <script src="{{ STATIC_URL }}js/django_reverse/reverse.js"></script>
-            <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMappingAjax.js"></script>
+            {% if admin.phantomhead %}
+                <script src="{{ STATIC_URL }}js/skin-dose-maps2/rfSkinDoseMappingAjax.js"></script>
+            {% else %}
+                <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMappingAjax.js"></script>
+            {% endif %}
         </div>
         {% else %}
         <div class="col-md-7">
