@@ -11,6 +11,8 @@ openrem/openremproject/wsgi.py
 OpenREM.egg-info/
 .coverage
 coverage.xml
+.scannerwork/
+flake8*
 
 # docker related
 *.whl
