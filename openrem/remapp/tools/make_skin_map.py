@@ -201,7 +201,7 @@ def make_skin_map(study_pk=None):
                         pass
 
             if irrad.irradiation_event_type:
-                run_type = str(irrad.irradiation_event_type)
+                run_type = irrad.irradiation_event_type.code_meaning
             else:
                 run_type = None
             try:
@@ -235,6 +235,7 @@ def make_skin_map(study_pk=None):
         # assume that calculation failed if max(peak_skin_dose) == 0 ==> set peak_skin_dose to None
         max_skin_dose = np.max(my_exp_map.my_dose.total_dose)
         max_skin_dose = max_skin_dose if max_skin_dose > 0 else None
+
         SkinDoseMapResults(general_study_module_attributes=study,
                            patient_orientation=pat_pos,
                            patient_mass=pat_mass,
@@ -254,6 +255,8 @@ def make_skin_map(study_pk=None):
             'height': my_exp_map.phantom.height,
             'phantom_width': my_exp_map.phantom.phantom_width,
             'phantom_height': my_exp_map.phantom.phantom_height,
+            'phantom_head_height': my_exp_map.phantom.phantom_head_height,
+            'phantom_head_radius': my_exp_map.phantom.phantom_head_radius,
             'phantom_depth': my_exp_map.phantom.phantom_depth,
             'phantom_flat_dist': my_exp_map.phantom.phantom_flat_dist,
             'phantom_curved_dist': my_exp_map.phantom.phantom_curved_dist,

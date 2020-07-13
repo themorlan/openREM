@@ -1,10 +1,15 @@
 {% extends "remapp/base.html" %}
 
 {% block headextras %}
-    {% if admin.enable_skin_dose_maps %}
+    {% if admin.enable_skin_dose_maps%}
         <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/jquery.qtip.min.css">
-        <script src="{{ STATIC_URL }}js/skin-dose-maps/jquery.qtip.min.js"></script>
-        <script src="{{ STATIC_URL }}js/skin-dose-maps/three.min.js"></script>
+        {% if admin.phantomhead %}
+            <script src="{{ STATIC_URL }}js/skin-dose-maps2/jquery.qtip.min.js"></script>
+            <script src="{{ STATIC_URL }}js/skin-dose-maps2/three.min.js"></script>
+        {% else %}
+            <script src="{{ STATIC_URL }}js/skin-dose-maps/jquery.qtip.min.js"></script>
+            <script src="{{ STATIC_URL }}js/skin-dose-maps/three.min.js"></script>
+        {% endif %}
     {% endif %}
   <script src="{{ STATIC_URL }}js/sorttable.js"></script>
 {% endblock %}
