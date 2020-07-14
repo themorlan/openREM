@@ -18,6 +18,7 @@ definitions:
   steps:
     - step: &flake8
         name: run flake8
+        trigger: manual
         script:
           - pip install flake8
           - mkdir test-reports
