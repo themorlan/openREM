@@ -86,7 +86,6 @@ definitions:
           - pip
     - step: &deploy-to-openrem-org
         name: deploy to $server
-        trigger: manual
         deployment: develop  # deployment has $server as a variable = dev.openrem.org
         script:
           - mkdir -p ~/.ssh
@@ -106,7 +105,6 @@ definitions:
           - ssh deploy@$server "sudo /usr/sbin/service gunicorn-$server restart"
     - step: &build-and-deploy-to-docker
         name: build and push to docker
-        trigger: manual
         script:
           - export IMAGE_NAME=openrem/openrem:$BITBUCKET_BRANCH-$BITBUCKET_COMMIT
           - docker build -t openrem/openrem:$BITBUCKET_BRANCH-$BITBUCKET_COMMIT -t openrem/openrem:$BITBUCKET_BRANCH .
