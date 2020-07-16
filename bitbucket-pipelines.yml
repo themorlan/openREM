@@ -116,7 +116,7 @@ definitions:
           - docker
 pipelines:
   custom:
-    deploy-to-demo:
+    deploy-to-dev:
       - step: *deploy-to-openrem-org
     deploy-to-test:
       - step:
