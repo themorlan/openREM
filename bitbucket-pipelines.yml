@@ -129,9 +129,6 @@ pipelines:
     - step: *flake8
     - step: *sonarcloud
     - step: *sonarcloudqualitygate
-    - step:
-        <<: *deploy-to-openrem-org
-        trigger: manual
   branches:
     develop:  # Commits to the develop branch are tested and deployed to dev.openrem.org on success
       - step:
