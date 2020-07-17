@@ -137,6 +137,7 @@ pipelines:
       - step: *flake8
       - step: *sonarcloud
       - step: *sonarcloudqualitygate
+      - step: *deploy-to-openrem-org
     master:  # Commits to the master branch are tested and pushed to Docker Hub
       - step:
           <<: *test
