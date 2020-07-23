@@ -35,6 +35,7 @@ OpenREM version history
 * :issue:`793`  Installation: added Docker installation
 * :issue:`791`  Exports: prevented error when trying to export DX data that has no filter information
 * :issue:`790`  Python 3: remove basestring type
+* :issue:`788`  Python 3: Docker only installs for Windows fixes Celery 3/Python 3.7 incompatibility
 * :issue:`787`  Interface: fixed login error
 * :issue:`777`  Updated OpenREM to use pydicom 1.3
 * :issue:`744`  Added overwrite mode to size import
