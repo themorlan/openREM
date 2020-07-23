@@ -34,6 +34,7 @@ OpenREM version history
 * :issue:`795`  Exports: included acquisition name in PHE radiographic projection export
 * :issue:`793`  Installation: added Docker installation
 * :issue:`791`  Exports: prevented error when trying to export DX data that has no filter information
+* :issue:`790`  Python 3: remove basestring type
 * :issue:`787`  Interface: fixed login error
 * :issue:`777`  Updated OpenREM to use pydicom 1.3
 * :issue:`744`  Added overwrite mode to size import
