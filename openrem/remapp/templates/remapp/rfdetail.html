@@ -345,23 +345,13 @@
             been validated. Contributions are welcome, see <a href="http://bitbucket.org/openskin/openskin">openSkin website</a> for details. Create
             <a href="{% url 'rfopenskin' pk=generalstudymoduleattr.id %}">openSkin export</a>. (Not available if you don't have export permissions.)</div>
 
-            {% if admin.phantomhead %}
-                <script src="{{ STATIC_URL }}js/skin-dose-maps2/rfSkinDoseMapColourScaleObject.js"></script>
-                <script src="{{ STATIC_URL }}js/skin-dose-maps2/rfSkinDoseMapObject.js"></script>
-                <script src="{{ STATIC_URL }}js/skin-dose-maps2/rfSkinDoseMap3dObject.js"></script>
-                <script src="{{ STATIC_URL }}js/skin-dose-maps2/rfSkinDoseMap3dPersonObject.js"></script>
-                <script src="{{ STATIC_URL }}js/skin-dose-maps2/rfSkinDoseMap3dHUDObject.js"></script>
-                <script src="{{ STATIC_URL }}js/skin-dose-maps2/rfSkinDoseMapping.js"></script>
-                <script src="{{ STATIC_URL }}js/skin-dose-maps2/rfSkinDoseMapping3d.js"></script>
-            {% else %}
-                <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMapColourScaleObject.js"></script>
-                <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMapObject.js"></script>
-                <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMap3dObject.js"></script>
-                <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMap3dPersonObject.js"></script>
-                <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMap3dHUDObject.js"></script>
-                <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMapping.js"></script>
-                <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMapping3d.js"></script>
-            {% endif %}
+            <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMapColourScaleObject.js"></script>
+            <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMapObject.js"></script>
+            <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMap3dObject.js"></script>
+            <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMap3dPersonObject.js"></script>
+            <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMap3dHUDObject.js"></script>
+            <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMapping.js"></script>
+            <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMapping3d.js"></script>
 
             <script>
                 if (isCanvasSupported()) {
@@ -396,11 +386,8 @@
             </script>
 
             <script src="{{ STATIC_URL }}js/django_reverse/reverse.js"></script>
-            {% if admin.phantomhead %}
-                <script src="{{ STATIC_URL }}js/skin-dose-maps2/rfSkinDoseMappingAjax.js"></script>
-            {% else %}
-                <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMappingAjax.js"></script>
-            {% endif %}
+            <script src="{{ STATIC_URL }}js/skin-dose-maps/rfSkinDoseMappingAjax.js"></script>
+
         </div>
         {% else %}
         <div class="col-md-7">

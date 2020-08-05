@@ -1160,7 +1160,6 @@ def rf_detail_view(request, pk=None):
     admin = {
         "openremversion": remapp.__version__,
         "docsversion": remapp.__docs_version__,
-        "phantomhead": version.parse(remapp.version.__skin_map_version__) > version.parse("0.7"),
         "enable_skin_dose_maps": SkinDoseMapCalcSettings.objects.values_list(
             "enable_skin_dose_maps", flat=True
         )[0],
