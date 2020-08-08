@@ -26,7 +26,7 @@ Install
 
 Start the containers with:
 
-.. code-block:: none
+.. code-block:: console
 
     $ docker-compose up -d
 
