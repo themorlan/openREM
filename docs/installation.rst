@@ -32,12 +32,12 @@ Start the containers with:
 
 Get the database ready:
 
-.. code-block:: none
+.. code-block:: console
 
-    docker-compose exec openrem python manage.py makemigrations remapp --noinput
-    docker-compose exec openrem python manage.py migrate --noinput
-    docker-compose exec openrem python manage.py collectstatic --noinput --clear
-    docker-compose exec openrem python manage.py createsuperuser
+    $ docker-compose exec openrem python manage.py makemigrations remapp --noinput
+    $ docker-compose exec openrem python manage.py migrate --noinput
+    $ docker-compose exec openrem python manage.py collectstatic --noinput --clear
+    $ docker-compose exec openrem python manage.py createsuperuser
 
 Open a web browser and go to http://localhost/
 
