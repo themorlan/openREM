@@ -41,9 +41,9 @@ Export the database
 * Open a command line window
 * Windows: go to Postgres bin folder, for example:
 
-    .. code-block:: none
+    .. code-block:: console
 
-        cd "C:\Program Files\PostgreSQL\9.6\bin"
+        $ cd "C:\Program Files\PostgreSQL\9.6\bin"
 
 * Dump the database:
 
@@ -52,9 +52,9 @@ Export the database
     * For linux, the command is ``pg_dump`` (no ``.exe``)
     * Set the path to somewhere suitable to dump the exported database file
 
-    .. code-block:: none
+    .. code-block:: console
 
-        pg_dump.exe -U openremuser -d openremdb -F c -f path/to/export/openremdump.bak
+        $ pg_dump.exe -U openremuser -d openremdb -F c -f path/to/export/openremdump.bak
 
 Set up the new installation
 ===========================
@@ -73,9 +73,9 @@ Set up the new installation
 
 Start the containers with:
 
-.. code-block:: none
+.. code-block:: console
 
-    docker-compose up -d
+    $ docker-compose up -d
 
 Copy the database backup to the postgres docker container and import it. If you have changed the database variables,
 ensure that:
@@ -105,21 +105,36 @@ It is normal to get an error about the public schema, for example:
 Rename the 0.10 upgrade migration file, migrate the database (the steps and fakes are required as it is not a new
 database), and create the static files:
 
-.. code-block:: none
+.. code-block:: console
 
-    docker-compose exec openrem mv remapp/migrations/0001_initial.py.1-0-upgrade remapp/migrations/0001_initial.py
-    docker-compose exec openrem python manage.py migrate --fake-initial
-    docker-compose exec openrem python manage.py migrate remapp --fake
-    docker-compose exec openrem python manage.py makemigrations remapp
-    docker-compose exec openrem python manage.py migrate
-    docker-compose exec openrem python manage.py collectstatic --noinput --clear
+    $ docker-compose exec openrem mv remapp/migrations/0001_initial.py.1-0-upgrade remapp/migrations/0001_initial.py
+
+.. code-block:: console
+
+    $ docker-compose exec openrem python manage.py migrate --fake-initial
+
+.. code-block:: console
+
+    $ docker-compose exec openrem python manage.py migrate remapp --fake
+
+.. code-block:: console
+
+    $ docker-compose exec openrem python manage.py makemigrations remapp
+
+.. code-block:: console
+
+    $ docker-compose exec openrem python manage.py migrate
+
+.. code-block:: console
+
+    $ docker-compose exec openrem python manage.py collectstatic --noinput --clear
 
 Copy in any existing skin dose map pickle files from your existing ``MEDIA_ROOT/skin_maps`` folder (optional, they can
 be calculated again):
 
-.. code-block:: none
+.. code-block:: console
 
-    docker cp path/to/skin_maps/. openrem:/home/app/openrem/mediafiles/skin_maps/
+    $ docker cp path/to/skin_maps/. openrem:/home/app/openrem/mediafiles/skin_maps/
 
 The new OpenREM installation should now be ready to be used.
 
@@ -149,35 +164,41 @@ Preparation
 
 Back up the database:
 
-.. code-block:: none
+.. code-block:: console
 
-    pg_dump -U openremuser -d openremdb -F c -f pre-1-0-upgrade-dump.bak
+    $ pg_dump -U openremuser -d openremdb -F c -f pre-1-0-upgrade-dump.bak
 
 Stop any Celery workers, Flower and Gunicorn, disable DICOM Store SCP:
 
-.. code-block:: none
+.. code-block:: console
 
-    sudo systemctl stop openrem-celery
-    sudo systemctl stop openrem-flower
-    sudo systemctl stop openrem-gunicorn
-    sudo systmectl stop orthanc
+    $ sudo systemctl stop openrem-celery
+    $ sudo systemctl stop openrem-flower
+    $ sudo systemctl stop openrem-gunicorn
+    $ sudo systmectl stop orthanc
 
 Install Python 3.8 and create a new virtualenv:
 
-.. code-block:: none
+.. code-block:: console
 
-    sudo apt install python3.8 python3.8-dev python3.8-distutils python3.8-venv
-    cd /var/dose
-    python3.8 -m venv veopenrem3
-    . veopenrem3/bin/activate
+    $ sudo apt install python3.8 python3.8-dev python3.8-distutils python3.8-venv
+
+.. code-block:: console
+
+    $ cd /var/dose
+    $ python3.8 -m venv veopenrem3
+    $ . veopenrem3/bin/activate
 
 Install the new version of OpenREM
 ==================================
 
 .. code-block:: console
 
-    pip install --upgrade pip
-    pip install openrem==1.0.0b1
+    $ pip install --upgrade pip
+
+.. code-block:: console
+
+    $ pip install openrem==1.0.0b1
 
 .. _update_configuration0100:
 
@@ -193,29 +214,38 @@ Migrate the database
 
 In a shell/command window, move into the ``openrem`` folder:
 
-.. code-block:: none
+.. code-block:: console
 
-    cd /var/dose/veopenrem3/lib/python3.8/site-packages/openrem/
+    $ cd /var/dose/veopenrem3/lib/python3.8/site-packages/openrem/
 
 Prepare the migrations folder:
 
 * Delete everything except ``__init__.py`` and ``0001_initial.py.1-0-upgrade`` in ``remapp/migrations``
 * Rename ``0001_initial.py.1-0-upgrade`` to ``0001_initial.py``
 
-.. code-block:: none
+.. code-block:: console
 
-    rm remapp/migrations/0*.py
-    rm remapp/migrations/0*.pyc
-    mv remapp/migrations/0001_initial.py{.1-0-upgrade,}
+    $ rm remapp/migrations/0*.py
+    $ rm remapp/migrations/0*.pyc
+    $ mv remapp/migrations/0001_initial.py{.1-0-upgrade,}
 
 Migrate the database:
 
 .. code-block:: console
 
-    python manage.py migrate --fake-initial
-    python manage.py migrate remapp --fake
-    python manage.py makemigrations remapp
-    python manage.py migrate
+    $ python manage.py migrate --fake-initial
+
+.. code-block:: console
+
+    $ python manage.py migrate remapp --fake
+
+.. code-block:: console
+
+    $ python manage.py makemigrations remapp
+
+.. code-block:: console
+
+    $ python manage.py migrate
 
 
 Update static files
@@ -223,7 +253,7 @@ Update static files
 
 .. code-block:: console
 
-    python manage.py collectstatic --clear
+    $ python manage.py collectstatic --clear
 
 ..  admonition:: Virtual directory users
 
@@ -231,7 +261,7 @@ Update static files
     To get the file in the correct path, take care that you insert just after the declaration of
     ``STATIC_ROOT`` the following line in your ``local_settings.py`` (see also the sample ``local_settings.py.example``):
 
-    .. code-block:: console
+    .. code-block:: none
 
         JS_REVERSE_OUTPUT_PATH = os.path.join(STATIC_ROOT, 'js', 'django_reverse')
 
@@ -239,7 +269,7 @@ Update static files
 
     .. code-block:: console
 
-        python manage.py collectstatic_js_reverse
+        $ python manage.py collectstatic_js_reverse
 
     See  :doc:`virtual_directory` for more details.
 
@@ -249,7 +279,9 @@ Update all the services configurations
 
 Edit the Gunicorn systemd file ``WorkingDirectory`` and ``ExecStart``:
 
-``sudo nano /etc/systemd/system/openrem-gunicorn.service``
+.. code-block:: console
+
+    $ sudo nano /etc/systemd/system/openrem-gunicorn.service
 
 .. code-block:: none
 
@@ -261,7 +293,9 @@ Edit the Gunicorn systemd file ``WorkingDirectory`` and ``ExecStart``:
 
 Edit the Celery configuration file ``CELERY_BIN``:
 
-``nano /var/dose/celery/celery.conf``
+.. code-block:: console
+
+    $ nano /var/dose/celery/celery.conf
 
 .. code-block:: none
 
@@ -269,7 +303,9 @@ Edit the Celery configuration file ``CELERY_BIN``:
 
 Edit the Celery systemd file ``WorkingDirectory``:
 
-``sudo nano /etc/systemd/system/openrem-celery.service``
+.. code-block:: console
+
+    $ sudo nano /etc/systemd/system/openrem-celery.service
 
 .. code-block:: none
 
@@ -277,7 +313,9 @@ Edit the Celery systemd file ``WorkingDirectory``:
 
 Edit the Flower systemd file ``WorkingDirectory``:
 
-``sudo nano /etc/systemd/system/openrem-flower.service``
+.. code-block:: console
+
+    $ sudo nano /etc/systemd/system/openrem-flower.service
 
 .. code-block:: none
 
@@ -286,14 +324,14 @@ Edit the Flower systemd file ``WorkingDirectory``:
 Reload systemd and restart the services
 =======================================
 
-.. code-block:: none
+.. code-block:: console
 
-    sudo systemctl daemon-reload
-    sudo systemctl restart openrem-gunicorn.service
-    sudo systemctl restart nginx.service
-    sudo systemctl start openrem-celery.service
-    sudo systemctl start openrem-flower.service
-    sudo systemctl start orthanc.service
+    $ sudo systemctl daemon-reload
+    $ sudo systemctl restart openrem-gunicorn.service
+    $ sudo systemctl restart nginx.service
+    $ sudo systemctl start openrem-celery.service
+    $ sudo systemctl start openrem-flower.service
+    $ sudo systemctl start orthanc.service
 
 
 .. _post_upgrade0100:

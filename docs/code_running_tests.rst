@@ -13,18 +13,18 @@ the project requirements installed (``pip install -e .``) plus Black (``pip inst
 
 Run black against the code:
 
-.. sourcecode:: console
+.. code-block:: console
 
-    black --exclude stuff/ .
+    $ black --exclude stuff/ .
 
 Check the changes made, edit where necessary. Black is an opinionated Python formatter and in general
 OpenREM code should be subjected to it. The flake8 tests are tuned to agree with Black.
 
 Run the Django tests:
 
-.. sourcecode:: console
+.. code-block:: console
 
-    python openrem/manage.py test remapp --parallel
+    $ python openrem/manage.py test remapp --parallel
 
 
 
