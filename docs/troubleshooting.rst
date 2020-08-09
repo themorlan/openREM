@@ -82,6 +82,10 @@ Run the django python shell:
     >>> a.count()  # Just to see that we are doing something!
     53423
 
+And if you are sure you want to delete all the studies...
+
+.. code-block:: python
+
     >>> a.delete()
     >>> a.count()
     0
