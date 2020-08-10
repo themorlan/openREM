@@ -6,9 +6,9 @@ Upgrade to OpenREM 1.0.0
 Headline changes
 ****************
 
-* Python 3!
-* Django 2.2!
-* Docker!
+* Python 3
+* Django 2.2
+* Docker
 
 *******************
 Upgrade preparation
@@ -86,10 +86,13 @@ ensure that:
 They don't have to match the old database settings. The filename in both commands (``openremdump.bak``) should match
 your backup filename.
 
-.. code-block:: none
+.. code-block:: console
 
-    docker cp /path/to/openremdump.bak db_backup/
-    docker-compose exec db pg_restore --no-privileges --no-owner -U openremuser -d openrem_prod /db_backup/openremdump.bak
+    $ docker cp /path/to/openremdump.bak db_backup/
+
+.. code-block:: console
+
+    $ docker-compose exec db pg_restore --no-privileges --no-owner -U openremuser -d openrem_prod /db_backup/openremdump.bak
 
 It is normal to get an error about the public schema, for example:
 

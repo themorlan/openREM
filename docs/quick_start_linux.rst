@@ -59,6 +59,9 @@ running as) :
 .. code-block:: console
 
     $ sudo groupadd openrem
+
+.. code-block:: console
+
     $ sudo adduser $USER openrem
 
 .. note::
@@ -75,6 +78,9 @@ be added to the ``openrem`` group, and the 'sticky' group setting below will ena
     $ sudo mkdir /var/dose
     $ sudo chown $USER:openrem /var/dose
     $ sudo chmod 775 /var/dose
+
+.. code-block:: console
+
     $ cd /var/dose
     $ mkdir celery
     $ mkdir log
@@ -84,6 +90,9 @@ be added to the ``openrem`` group, and the 'sticky' group setting below will ena
     $ mkdir pixelmed
     $ mkdir static
     $ mkdir veopenrem3
+
+.. code-block:: console
+
     $ sudo chown -R $USER:openrem /var/dose/*
     $ sudo chmod -R g+s /var/dose/*
     $ sudo setfacl -R -dm u::rwx,g::rwx,o::r /var/dose/
@@ -94,10 +103,11 @@ Install apt packages and direct downloads
 
 .. code-block:: console
 
-    $ sudo apt update
-    $ sudo apt upgrade
-    $ sudo apt install python3.8 python3.8-dev python3.8-distutils python3.8-venv
-    $ sudo apt install rabbitmq-server postgresql nginx orthanc dcmtk default-jre zip
+    $ sudo apt update && sudo apt upgrade
+    $ sudo apt install python3.8 python3.8-dev python3.8-distutils python3.8-venv \
+    install rabbitmq-server postgresql nginx orthanc dcmtk default-jre zip
+
+.. code-block:: console
 
     $ cd /var/dose/pixelmed
     $ wget http://www.dclunie.com/pixelmed/software/webstart/pixelmed.jar
@@ -128,6 +138,9 @@ Install Python packages
 .. code-block:: console
 
     $ pip install --upgrade pip
+
+.. code-block:: console
+
     $ pip install openrem
 
 Add orthanc and www-data users to openrem group
@@ -136,6 +149,9 @@ Add orthanc and www-data users to openrem group
 .. code-block:: console
 
     $ sudo adduser orthanc openrem
+
+.. code-block:: console
+
     $ sudo adduser www-data openrem
 
 Database and OpenREM config
@@ -150,6 +166,9 @@ when configuring OpenREM:
 .. code-block:: console
 
     $ sudo -u postgres createuser -P openremuser
+
+.. code-block:: console
+
     $ sudo -u postgres createdb -T template1 -O openremuser -E 'UTF8' openremdb
 
 If you are migrating from another server, you could at this point create a template0 database to restore into. See
@@ -254,8 +273,17 @@ the virtualenv is active (prompt will look like
 .. code-block:: console
 
     $ python manage.py makemigrations remapp
+
+.. code-block:: console
+
     $ python manage.py migrate
+
+.. code-block:: console
+
     $ python manage.py createsuperuser
+
+.. code-block:: console
+
     $ mv remapp/migrations/0002_0_7_fresh_install_add_median.py{.inactive,}
     $ python manage.py migrate
 
@@ -290,6 +318,9 @@ Remove the default config and make ours active:
 .. code-block:: console
 
     $ sudo rm /etc/nginx/sites-enabled/default
+
+.. code-block:: console
+
     $ sudo ln -s /etc/nginx/sites-available/openrem-server /etc/nginx/sites-enabled/openrem-server
 
 Add the static files to the static folder for NGINX to serve. Again, you need to ensure the virtualenv is active in your
@@ -351,6 +382,9 @@ You can check that NGINX and Gunicorn are running with the following two command
 .. code-block:: console
 
     $ sudo systemctl status openrem-gunicorn.service
+
+.. code-block:: console
+
     $ sudo systemctl status nginx.service
 
 
