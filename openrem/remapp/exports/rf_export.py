@@ -218,7 +218,9 @@ def _all_data_headers(pid=False, name=None, patid=None):
     :param patid: has patient ID been selected for export
     :return: list of headers for all_data sheet and csv sheet
     """
-    all_data_headers = common_headers(modality="RF", pid=pid, name=name, patid=patid) + [
+    all_data_headers = common_headers(
+        modality="RF", pid=pid, name=name, patid=patid
+    ) + [
         "A DAP total (Gy.m^2)",
         "A Dose RP total (Gy)",
         "A Fluoro DAP total (Gy.m^2)",

@@ -115,7 +115,7 @@ def common_headers(modality=None, pid=False, name=None, patid=None):
     if modality == "RF":
         headers += [
             "Physician",
-            ]
+        ]
     headers += [
         "Study date",
         "Study time",
@@ -388,11 +388,9 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
         display_name,
         exams.accession_number,
         exams.operator_name,
-        ]
+    ]
     if modality == "RF":
-        examdata += [
-            exams.performing_physician_name
-        ]
+        examdata += [exams.performing_physician_name]
     examdata += [
         exams.study_date,
         exams.study_time,
