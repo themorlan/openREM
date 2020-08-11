@@ -205,7 +205,7 @@ Prepare the migrations folder:
 .. code-block:: none
 
     rm remapp/migrations/0*.py
-    rm remapp/migrations/0*.pyc
+    rm remapp/migrations/0*.pyc  # may result in cannot remove if there are none
     mv remapp/migrations/0001_initial.py{.1-0-upgrade,}
 
 Migrate the database:
