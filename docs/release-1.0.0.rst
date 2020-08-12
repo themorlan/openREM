@@ -10,6 +10,8 @@ Headline changes
 * Django 2.2!
 * Docker!
 
+* Performing physician added to standard fluoroscopy exports (:issue:`840`)
+
 *******************
 Upgrade preparation
 *******************
