@@ -14,8 +14,8 @@
 #
 #    Additional permission under section 7 of GPLv3:
 #    You shall not make any use of the name of The Royal Marsden NHS
-#    Foundation trust in connection with this Program in any press or 
-#    other public announcement without the prior written consent of 
+#    Foundation trust in connection with this Program in any press or
+#    other public announcement without the prior written consent of
 #    The Royal Marsden NHS Foundation Trust.
 #
 #    You should have received a copy of the GNU General Public License
@@ -29,11 +29,11 @@
 
 """
 from builtins import str  # pylint: disable=redefined-builtin
-from pydicom.valuerep import PersonName
 from pydicom import charset
 from pydicom.charset import default_encoding
 from django.utils.encoding import smart_text
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -48,8 +48,9 @@ def get_value_kw(tag, dataset):
     """
     if tag in dataset:
         val = getattr(dataset, tag)
-        if val != '':
+        if val != "":
             return val
+    return None
 
 
 def get_value_num(tag, dataset):
@@ -70,8 +71,9 @@ def get_value_num(tag, dataset):
             val = val.decode(default_encoding)
         except AttributeError:
             pass
-        if val != '':
+        if val != "":
             return val
+    return None
 
 
 def get_seq_code_value(sequence, dataset):
@@ -85,8 +87,9 @@ def get_seq_code_value(sequence, dataset):
     """
     if sequence in dataset:
         seq = getattr(dataset, sequence)
-        if seq and hasattr(seq[0], 'CodeValue'):
+        if seq and hasattr(seq[0], "CodeValue"):
             return seq[0].CodeValue
+    return None
 
 
 def get_seq_code_meaning(sequence, dataset):
@@ -100,10 +103,11 @@ def get_seq_code_meaning(sequence, dataset):
     """
     if sequence in dataset:
         seq = getattr(dataset, sequence)
-        if seq and hasattr(seq[0], 'CodeMeaning'):
+        if seq and hasattr(seq[0], "CodeMeaning"):
             meaning = seq[0].CodeMeaning
-            if meaning != '':
+            if meaning != "":
                 return meaning
+    return None
 
 
 def get_or_create_cid(codevalue, codemeaning):
@@ -117,18 +121,18 @@ def get_or_create_cid(codevalue, codemeaning):
     :returns:           ContextID entry for code value passed
     """
     from remapp.models import ContextID
+
     if codevalue:
         if not ContextID.objects.all().filter(code_value=codevalue).exists():
-            cid = ContextID(
-                code_value=codevalue,
-                code_meaning=codemeaning,
-                )
+            cid = ContextID(code_value=codevalue, code_meaning=codemeaning,)
             cid.save()
-        code = ContextID.objects.filter(code_value__exact = codevalue)
+        code = ContextID.objects.filter(code_value__exact=codevalue)
         if code.count() > 1:
-            logger.warning(u"Duplicate entry in the ContextID table: {0}/{1}, import continuing".format(
-                codevalue, codemeaning))
+            logger.warning(
+                f"Duplicate entry in the ContextID table: {codevalue}/{codemeaning}, import continuing"
+            )
         return code[0]
+    return None
 
 
 def return_for_export(model, field):
@@ -140,6 +144,7 @@ def return_for_export(model, field):
     """
     import datetime
     from django.core.exceptions import ObjectDoesNotExist
+
     try:
         val = getattr(model, field)
         if val:
@@ -165,17 +170,17 @@ def test_numeric_value(string_number):
 
 
 def safe_strings(string, char_set=charset.default_encoding):
+    """
+    Function to encode non-ASCII characters correctly. Probably not required any longer, but leaving in for now.
+    :param string: String to encode
+    :param char_set: Character set used by DICOM file
+    :return: Encoded string
+    """
     try:
         python_char_set = charset.python_encoding[char_set]
     except KeyError:
         python_char_set = charset.default_encoding
     return smart_text(string, encoding=python_char_set)
-
-
-def replace_comma(comma_string):
-    if comma_string:
-        no_comma_string = comma_string.replace(",", " ").replace(";", " ")
-        return no_comma_string
 
 
 def list_to_string(dicom_value):
@@ -184,27 +189,31 @@ def list_to_string(dicom_value):
     :param dicom_value: returned DICOM value, usually a name field. Might be single (string) or multivalue (list)
     :return: string of name(s)
     """
-    from pydicom.dataelem import isMultiValue
-    if dicom_value:
-        if isMultiValue(dicom_value):
-            name_str = ''
-            for name in dicom_value:
-                if name.name_suffix:
-                    name_str += name.formatted(
-                        '%(family_name)s^%(given_name)s^%(middle_name)s^%(name_prefix)s^%(name_suffix)s')
-                elif name.name_prefix:
-                    name_str += name.formatted('%(family_name)s^%(given_name)s^%(middle_name)s^%(name_prefix)s')
-                elif name.middle_name:
-                    name_str += name.formatted('%(family_name)s^%(given_name)s^%(middle_name)s')
-                elif name.given_name:
-                    name_str += name.formatted('%(family_name)s^%(given_name)s')
-                elif name.family_name:
-                    name_str += name.formatted('%(family_name)s')
-                # name_str += name.original_string.decode()
-                name_str += ' | '
-            name_str = name_str[:-3]
-            return name_str
-        return dicom_value
+    from pydicom.multival import MultiValue
+
+    if dicom_value and isinstance(dicom_value, MultiValue):
+        name_str = ""
+        for name in dicom_value:
+            if name.name_suffix:
+                name_str += name.formatted(
+                    "%(family_name)s^%(given_name)s^%(middle_name)s^%(name_prefix)s^%(name_suffix)s"
+                )
+            elif name.name_prefix:
+                name_str += name.formatted(
+                    "%(family_name)s^%(given_name)s^%(middle_name)s^%(name_prefix)s"
+                )
+            elif name.middle_name:
+                name_str += name.formatted(
+                    "%(family_name)s^%(given_name)s^%(middle_name)s"
+                )
+            elif name.given_name:
+                name_str += name.formatted("%(family_name)s^%(given_name)s")
+            elif name.family_name:
+                name_str += name.formatted("%(family_name)s")
+            name_str += " | "
+        name_str = name_str[:-3]
+        return name_str
+    return dicom_value
 
 
 def get_keys_by_value(dict_of_elements, value_to_find):

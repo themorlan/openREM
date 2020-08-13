@@ -16,12 +16,12 @@ Alert level configuration
    Figure 1: The ``Config`` menu (user and admin)
 
 The system highlights fluoroscopy studies that have exceeded defined levels of
-DAP and total dose at reference point. These alert levels can be configured by
+DAP, total dose at reference point and peak skin dose. These alert levels can be configured by
 an OpenREM administrator via the `Fluoro alert levels` option in the ``Config``
 menu (figure 1).
 
-The default alert levels are 20000 cGy.cm\ :sup:`2` DAP and 2 Gy total dose at
-reference point (figure 2).
+The default alert levels are 20000 cGy.cm\ :sup:`2` DAP, 2 Gy total dose at
+reference point and 2 Gy peak skin dose(figure 2).
 
 .. figure:: img/fluoroHighDoseAlertSettings.png
    :figwidth: 100%
@@ -61,7 +61,8 @@ for studies with matching patient IDs. When this is activated, for each study
 OpenREM looks for earlier fluoroscopy studies that have taken place that share
 the same patient ID, or encrypted patient ID, and sums the study DAP and total
 dose at reference point values. The time period that is used is configured by
-an OpenREM administrator, and defaults to 12 weeks (figure 2).
+an OpenREM administrator, and defaults to 12 weeks (figure 2). This feature has
+not yet been implemented for the skin dose.
 
 For this feature to work the storage of patient ID or encrypted patient ID must
 be enabled (see the :doc:`patientid` documentation).

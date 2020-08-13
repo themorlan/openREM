@@ -30,7 +30,7 @@ OpenREM currently ships with charts that use the HighCharts libraries. This is f
 For other environments please contact Highcharts for licencing. For more information, please see
 `their website <http://highcharts.com>`_, or the `Non-Commercial FAQ <https://shop.highsoft.com/faq>`_.
 
-.
+Current release version:
 
 .. image:: https://img.shields.io/pypi/v/openrem.svg?
     :target: https://badge.fury.io/py/openrem
@@ -41,8 +41,15 @@ For other environments please contact Highcharts for licencing. For more informa
 .. image:: https://img.shields.io/badge/License-GPLv3-blue.svg?
    :target: https://bitbucket.org/openrem/openrem/raw/develop/LICENSE
 
+Development version
+
+.. image:: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue
+
 .. image:: https://img.shields.io/bitbucket/issues/openrem/openrem.svg?
     :target: https://bitbucket.org/openrem/openrem/issues?status=new&status=open
+
+.. image:: https://img.shields.io/bitbucket/pipelines/openrem/openrem/develop
+    :target: https://bitbucket.org/openrem/openrem/addon/pipelines/home
 
 .. image:: https://coveralls.io/repos/bitbucket/openrem/openrem/badge.svg?branch=develop
     :target: https://coveralls.io/bitbucket/openrem/openrem?branch=develop
@@ -52,3 +59,20 @@ For other environments please contact Highcharts for licencing. For more informa
 
 .. image:: https://api.codacy.com/project/badge/Coverage/2117af7281134e42ace3efe5fc4a5255
     :target: https://www.codacy.com/app/OpenREM/openrem
+
+Sonar Cloud
+
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=openrem_openrem&metric=coverage
+    :target: https://sonarcloud.io/dashboard?id=openrem_openrem
+
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=openrem_openrem&metric=sqale_rating
+    :target: https://sonarcloud.io/dashboard?id=openrem_openrem
+
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=openrem_openrem&metric=alert_status
+    :target: https://sonarcloud.io/dashboard?id=openrem_openrem
+
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=openrem_openrem&metric=reliability_rating
+    :target: https://sonarcloud.io/dashboard?id=openrem_openrem
+
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=openrem_openrem&metric=security_rating
+    :target: https://sonarcloud.io/dashboard?id=openrem_openrem

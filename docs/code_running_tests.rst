@@ -2,6 +2,34 @@
 Running the test suite
 **********************
 
+**TODO: Update for Python 3, OpenREM 1.0**
+
+Code formatting and tests
+=========================
+
+Steps before pushing to Bitbucket. Commands assume you are in the root directory of the git repository,
+at the same level as README.rst and requirements.txt etc, and that you have activated a virtualenv with
+the project requirements installed (``pip install -e .``) plus Black (``pip install black``)
+
+Run black against the code:
+
+.. code-block:: console
+
+    $ black --exclude stuff/ .
+
+Check the changes made, edit where necessary. Black is an opinionated Python formatter and in general
+OpenREM code should be subjected to it. The flake8 tests are tuned to agree with Black.
+
+Run the Django tests:
+
+.. code-block:: console
+
+    $ python openrem/manage.py test remapp --parallel
+
+
+
+**old stuff to be updated**
+
 Preparation
 ===========
 

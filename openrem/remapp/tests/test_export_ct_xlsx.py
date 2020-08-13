@@ -14,10 +14,12 @@ class ExportCTxlsx(TestCase):
     """Test class for CT exports to XLSX
 
     """
+
     def setUp(self):
         self.factory = RequestFactory()
         self.user = User.objects.create_user(
-            username='jacob', email='jacob@…', password='top_secret')
+            username="jacob", email="jacob@…", password="top_secret"
+        )
         eg = Group(name="exportgroup")
         eg.save()
         eg.user_set.add(self.user)
@@ -33,8 +35,12 @@ class ExportCTxlsx(TestCase):
 
         ct_ge_ct660 = os.path.join("test_files", "CT-ESR-GE_Optima.dcm")
         ct_ge_vct = os.path.join("test_files", "CT-ESR-GE_VCT.dcm")
-        ct_siemens_flash_ss = os.path.join("test_files", "CT-RDSR-Siemens_Flash-TAP-SS.dcm")
-        ct_toshiba_dosecheck = os.path.join("test_files", "CT-RDSR-Toshiba_DoseCheck.dcm")
+        ct_siemens_flash_ss = os.path.join(
+            "test_files", "CT-RDSR-Siemens_Flash-TAP-SS.dcm"
+        )
+        ct_toshiba_dosecheck = os.path.join(
+            "test_files", "CT-RDSR-Toshiba_DoseCheck.dcm"
+        )
         root_tests = os.path.dirname(os.path.abspath(__file__))
 
         rdsr.rdsr(os.path.join(root_tests, ct_ge_ct660))
@@ -53,35 +59,63 @@ class ExportCTxlsx(TestCase):
         task = Exports.objects.all()[0]
 
         book = xlrd.open_workbook(task.filename.path)
-        all_data_sheet = book.sheet_by_name('All data')
+        all_data_sheet = book.sheet_by_name("All data")
         headers = all_data_sheet.row(0)
 
-        patient_id_col = [i for i, x in enumerate(headers) if x.value == 'Patient ID'][0]
-        accession_number_col = [i for i, x in enumerate(headers) if x.value == 'Accession number'][0]
-        dlp_total_col = [i for i, x in enumerate(headers) if x.value == 'DLP total (mGy.cm)'][0]
-        e1_dose_check_col = [i for i, x in enumerate(headers) if x.value == 'E1 Dose check details'][0]
-        e2_dose_check_col = [i for i, x in enumerate(headers) if x.value == 'E2 Dose check details'][0]
+        patient_id_col = [i for i, x in enumerate(headers) if x.value == "Patient ID"][
+            0
+        ]
+        accession_number_col = [
+            i for i, x in enumerate(headers) if x.value == "Accession number"
+        ][0]
+        dlp_total_col = [
+            i for i, x in enumerate(headers) if x.value == "DLP total (mGy.cm)"
+        ][0]
+        e1_dose_check_col = [
+            i for i, x in enumerate(headers) if x.value == "E1 Dose check details"
+        ][0]
+        e2_dose_check_col = [
+            i for i, x in enumerate(headers) if x.value == "E2 Dose check details"
+        ][0]
 
         self.assertEqual(all_data_sheet.cell_type(2, patient_id_col), xlrd.XL_CELL_TEXT)
         self.assertEqual(all_data_sheet.cell_type(3, patient_id_col), xlrd.XL_CELL_TEXT)
-        self.assertEqual(all_data_sheet.cell_type(2, accession_number_col), xlrd.XL_CELL_TEXT)
-        self.assertEqual(all_data_sheet.cell_type(3, accession_number_col), xlrd.XL_CELL_TEXT)
-        self.assertEqual(all_data_sheet.cell_type(2, dlp_total_col), xlrd.XL_CELL_NUMBER)
+        self.assertEqual(
+            all_data_sheet.cell_type(2, accession_number_col), xlrd.XL_CELL_TEXT
+        )
+        self.assertEqual(
+            all_data_sheet.cell_type(3, accession_number_col), xlrd.XL_CELL_TEXT
+        )
+        self.assertEqual(
+            all_data_sheet.cell_type(2, dlp_total_col), xlrd.XL_CELL_NUMBER
+        )
 
-        self.assertEqual(all_data_sheet.cell_value(2, patient_id_col), '008F/g234')
-        self.assertEqual(all_data_sheet.cell_value(3, patient_id_col), '00001234')
-        self.assertEqual(all_data_sheet.cell_value(2, accession_number_col), '001234512345678')
-        self.assertEqual(all_data_sheet.cell_value(3, accession_number_col), '0012345.12345678')
+        self.assertEqual(all_data_sheet.cell_value(2, patient_id_col), "008F/g234")
+        self.assertEqual(all_data_sheet.cell_value(3, patient_id_col), "00001234")
+        self.assertEqual(
+            all_data_sheet.cell_value(2, accession_number_col), "001234512345678"
+        )
+        self.assertEqual(
+            all_data_sheet.cell_value(3, accession_number_col), "0012345.12345678"
+        )
         self.assertEqual(all_data_sheet.cell_value(2, dlp_total_col), 2002.39)
 
-        e1_dose_check_string = u"Dose Check Alerts: DLP alert is configured at 100.00 mGy.cm with an accumulated " \
-                               u"forward estimate of 251.20 mGy.cm. CTDIvol alert is configured at 10.00 mGy with no " \
-                               u"accumulated forward estimate recorded. Person authorizing irradiation: Luuk. "
-        e2_dose_check_string = u"Dose Check Alerts: DLP alert is configured at 100.00 mGy.cm with an accumulated " \
-                               u"forward estimate of 502.40 mGy.cm. CTDIvol alert is configured at 10.00 mGy with an " \
-                               u"accumulated forward estimate of 10.60 mGy. Person authorizing irradiation: Luuk. "
-        self.assertEqual(all_data_sheet.cell_value(1, e1_dose_check_col), e1_dose_check_string)
-        self.assertEqual(all_data_sheet.cell_value(1, e2_dose_check_col), e2_dose_check_string)
+        e1_dose_check_string = (
+            u"Dose Check Alerts: DLP alert is configured at 100.00 mGy.cm with an accumulated "
+            u"forward estimate of 251.20 mGy.cm. CTDIvol alert is configured at 10.00 mGy with no "
+            u"accumulated forward estimate recorded. Person authorizing irradiation: Luuk. "
+        )
+        e2_dose_check_string = (
+            u"Dose Check Alerts: DLP alert is configured at 100.00 mGy.cm with an accumulated "
+            u"forward estimate of 502.40 mGy.cm. CTDIvol alert is configured at 10.00 mGy with an "
+            u"accumulated forward estimate of 10.60 mGy. Person authorizing irradiation: Luuk. "
+        )
+        self.assertEqual(
+            all_data_sheet.cell_value(1, e1_dose_check_col), e1_dose_check_string
+        )
+        self.assertEqual(
+            all_data_sheet.cell_value(1, e2_dose_check_col), e2_dose_check_string
+        )
 
         # cleanup
         task.filename.delete()  # delete file so local testing doesn't get too messy!
@@ -106,8 +140,10 @@ class ExportCTxlsx(TestCase):
 
         """
         filter_set = {
-            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning": ["Spiral Acquisition"],
-            "o": "-study_date"
+            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning": [
+                "Spiral Acquisition"
+            ],
+            "o": "-study_date",
         }
         pid = True
         name = False
@@ -127,8 +163,10 @@ class ExportCTxlsx(TestCase):
 
         """
         filter_set = {
-            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning": ["Sequenced Acquisition"],
-            "o": "-study_date"
+            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning": [
+                "Sequenced Acquisition"
+            ],
+            "o": "-study_date",
         }
         pid = True
         name = False
@@ -148,9 +186,11 @@ class ExportCTxlsx(TestCase):
 
         """
         filter_set = {
-            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning": ["Spiral Acquisition",
-                                                                                           "Sequenced Acquisition"],
-            "o": "-study_date"
+            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning": [
+                "Spiral Acquisition",
+                "Sequenced Acquisition",
+            ],
+            "o": "-study_date",
         }
         pid = True
         name = False
@@ -169,11 +209,11 @@ class ExportCTxlsx(TestCase):
 
         ct_phe_2019(filter_set, user=self.user)
 
-        task = Exports.objects.order_by('pk')[0]
+        task = Exports.objects.order_by("pk")[0]
         self.assertEqual(3, task.num_records)
 
         book = xlrd.open_workbook(task.filename.path)
-        phe_sheet = book.sheet_by_name('PHE CT 2019')
+        phe_sheet = book.sheet_by_name("PHE CT 2019")
 
         self.assertEqual(phe_sheet.cell_value(1, 4), 487)  # first series imaged length
         self.assertEqual(phe_sheet.cell_value(2, 4), 5)

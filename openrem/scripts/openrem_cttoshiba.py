@@ -20,7 +20,9 @@ from glob import glob
 from openrem.remapp.extractors.ct_toshiba import ct_toshiba
 
 if len(sys.argv) < 2:
-    sys.exit('Error: supply at least one argument - the folder containing the DICOM objects')
+    sys.exit(
+        "Error: supply at least one argument - the folder containing the DICOM objects"
+    )
 
 for arg in sys.argv[1:]:
     for folder_name in glob(arg):

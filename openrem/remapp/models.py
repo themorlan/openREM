@@ -27,7 +27,6 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-from __future__ import division
 
 # Following two lines added so that sphinx autodocumentation works.
 from past.utils import old_div
@@ -40,6 +39,7 @@ from solo.models import SingletonModel
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
 # hoping to remove the next two lines
 # import os
 # os.environ['DJANGO_SETTINGS_MODULE'] = 'openremproject.settings'
@@ -50,6 +50,7 @@ class AdminTaskQuestions(SingletonModel):
     """
     Record if admin tasks have been dealt with
     """
+
     ask_revert_to_074_question = models.BooleanField(default=True)
 
 
@@ -57,71 +58,119 @@ class NotPatientIndicatorsID(models.Model):
     """
     Table to record strings that indicate a patient ID is really a test or QA ID
     """
+
     not_patient_id = models.CharField(max_length=64)
 
     def get_absolute_url(self):
-        return reverse('not_patient_indicators')
+        return reverse("not_patient_indicators")
 
     def __unicode__(self):
         return self.not_patient_id
 
     class Meta(object):
         """Meta class to define verbose names for not patient indicators for IDs"""
-        verbose_name = u'Not-patient indicator ID'
-        verbose_name_plural = u'Not-patient indicator IDs'
+
+        verbose_name = "Not-patient indicator ID"
+        verbose_name_plural = "Not-patient indicator IDs"
 
 
 class NotPatientIndicatorsName(models.Model):
     """
     Table to record strings that indicate a patient name is really a test or QA name
     """
+
     not_patient_name = models.CharField(max_length=64)
 
     def get_absolute_url(self):
-        return reverse('not_patient_indicators')
+        return reverse("not_patient_indicators")
 
     def __unicode__(self):
         return self.not_patient_name
 
     class Meta(object):
         """Meta class to define verbose names for not-patient indicator names table"""
-        verbose_name = u'Not-patient indicator name'
-        verbose_name_plural = u'Not-patient indicator names'
+
+        verbose_name = "Not-patient indicator name"
+        verbose_name_plural = "Not-patient indicator names"
 
 
 class SkinDoseMapCalcSettings(SingletonModel):
     """
     Table to store skin dose map calculation settings
     """
-    enable_skin_dose_maps = models.BooleanField(default=False, verbose_name="Enable skin dose maps?")
-    calc_on_import = models.BooleanField(default=True, verbose_name="Calculate skin dose map on import?")
+
+    enable_skin_dose_maps = models.BooleanField(
+        default=False, verbose_name="Enable skin dose maps?"
+    )
+    calc_on_import = models.BooleanField(
+        default=True, verbose_name="Calculate skin dose map on import?"
+    )
 
     def get_absolute_url(self):
-        return reverse('skin_dose_map_settings_update', kwargs={'pk': 1})
+        return reverse("skin_dose_map_settings_update", kwargs={"pk": 1})
 
 
 class HighDoseMetricAlertSettings(SingletonModel):
     """
     Table to store high dose fluoroscopy alert settings
     """
-    alert_total_dap_rf = models.IntegerField(blank=True, null=True, default=20000, verbose_name="Alert level for total DAP from fluoroscopy examination (cGy.cm<sup>2</sup>)")
-    alert_total_rp_dose_rf = models.FloatField(blank=True, null=True, default=2.0, verbose_name="Alert level for total dose at reference point from fluoroscopy examination (Gy)")
-    accum_dose_delta_weeks = models.IntegerField(blank=True, null=True, default=12, verbose_name="Number of previous weeks over which to sum DAP and RP dose for each patient")
+
+    alert_total_dap_rf = models.IntegerField(
+        blank=True,
+        null=True,
+        default=20000,
+        verbose_name="Alert level for total DAP from fluoroscopy examination (cGy.cm<sup>2</sup>)",
+    )
+    alert_total_rp_dose_rf = models.FloatField(
+        blank=True,
+        null=True,
+        default=2.0,
+        verbose_name="Alert level for total dose at reference point from fluoroscopy examination (Gy)",
+    )
+    alert_skindose = models.FloatField(
+        blank=True,
+        null=True,
+        default=2.0,
+        verbose_name="Alert level for the peak skin dose from fluoroscopy examination (Gy)",
+    )
+    accum_dose_delta_weeks = models.IntegerField(
+        blank=True,
+        null=True,
+        default=12,
+        verbose_name="Number of previous weeks over which to sum DAP and RP dose for each patient",
+    )
     changed_accum_dose_delta_weeks = models.BooleanField(default=True)
-    show_accum_dose_over_delta_weeks = models.BooleanField(default=True, verbose_name="Enable display of summed DAP and RP dose in e-mail alerts and on summary and detail pages?")
-    calc_accum_dose_over_delta_weeks_on_import = models.BooleanField(default=True, verbose_name="Calculate summed DAP and RP dose for incoming fluoroscopy studies?")
-    send_high_dose_metric_alert_emails = models.BooleanField(default=False, verbose_name="Send notification e-mails when alert levels are exceeded?")
+    show_accum_dose_over_delta_weeks = models.BooleanField(
+        default=True,
+        verbose_name="Enable display of summed DAP and RP dose in e-mail alerts and on summary and detail pages?",
+    )
+    calc_accum_dose_over_delta_weeks_on_import = models.BooleanField(
+        default=True,
+        verbose_name="Calculate summed DAP and RP dose for incoming fluoroscopy studies?",
+    )
+    send_high_dose_metric_alert_emails_ref = models.BooleanField(
+        default=False,
+        verbose_name="Send notification e-mails when alert levels for total DAP or total dose at reference point are' \
+                         'exceeded?",
+    )
+    send_high_dose_metric_alert_emails_skin = models.BooleanField(
+        default=False,
+        verbose_name="Send notification e-mails when alert levels for peak skin dose are exceeded?",
+    )
 
     def get_absolute_url(self):
-        return reverse('rf_alert_settings_update', kwargs={'pk': 1})
+        return reverse("rf_alert_settings_update", kwargs={"pk": 1})
 
 
 class HighDoseMetricAlertRecipients(models.Model):
     """
     Table to store whether users should receive high dose fluoroscopy alerts
     """
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    receive_high_dose_metric_alerts = models.BooleanField(default=False, verbose_name="Receive high dose e-mail alerts?")
+    receive_high_dose_metric_alerts = models.BooleanField(
+        default=False, verbose_name="Receive high dose e-mail alerts?"
+    )
 
 
 @receiver(post_save, sender=User)
@@ -129,7 +178,7 @@ def create_or_save_high_dose_metric_alert_recipient_setting(sender, instance, **
     """
     Function to create or save fluoroscopy high dose alert recipient settings
     """
-    if not hasattr(instance, 'highdosemetricalertrecipients'):
+    if not hasattr(instance, "highdosemetricalertrecipients"):
         new_objects = HighDoseMetricAlertRecipients.objects.create(user=instance)
         new_objects.save()
     else:
@@ -140,9 +189,12 @@ class HomePageAdminSettings(SingletonModel):
     """
     Table to store home page settings
     """
-    enable_workload_stats = models.BooleanField(default=False,
-                                                verbose_name="Enable calculation and display of workload stats on "
-                                                             "home page?")
+
+    enable_workload_stats = models.BooleanField(
+        default=False,
+        verbose_name="Enable calculation and display of workload stats on "
+        "home page?",
+    )
     #
     # def get_absolute_url(self):
     #     return '/admin/homepagesettings/1/'
@@ -152,9 +204,10 @@ class MergeOnDeviceObserverUIDSettings(SingletonModel):
     """
     Table to store setting(s) for autmoatic setting of Display Name and Modality type based on same Device observer UID
     """
+
     match_on_device_observer_uid = models.BooleanField(
         default=False,
-        verbose_name="Set Display Name and Modality type if Device Observer UID is matching."
+        verbose_name="Set Display Name and Modality type if Device Observer UID is matching.",
     )
 
 
@@ -162,32 +215,43 @@ class DicomDeleteSettings(SingletonModel):
     """
     Table to store DICOM deletion settings
     """
-    del_no_match = models.BooleanField(default=False,
-                    verbose_name="delete objects that don't match any import functions?")
-    del_rdsr = models.BooleanField(default=False,
-                   verbose_name="delete radiation dose structured reports after processing?")
-    del_mg_im = models.BooleanField(default=False,
-                    verbose_name="delete mammography images after processing?")
-    del_dx_im = models.BooleanField(default=False,
-                    verbose_name="delete radiography images after processing?")
-    del_ct_phil = models.BooleanField(default=False,
-                    verbose_name="delete Philips CT dose info images after processing?")
+
+    del_no_match = models.BooleanField(
+        default=False,
+        verbose_name="delete objects that don't match any import functions?",
+    )
+    del_rdsr = models.BooleanField(
+        default=False,
+        verbose_name="delete radiation dose structured reports after processing?",
+    )
+    del_mg_im = models.BooleanField(
+        default=False, verbose_name="delete mammography images after processing?"
+    )
+    del_dx_im = models.BooleanField(
+        default=False, verbose_name="delete radiography images after processing?"
+    )
+    del_ct_phil = models.BooleanField(
+        default=False,
+        verbose_name="delete Philips CT dose info images after processing?",
+    )
 
     def __unicode__(self):
-        return u"Delete DICOM objects settings"
+        return "Delete DICOM objects settings"
 
     class Meta(object):
         """Meta class to define verbose name for DICOM delete settings"""
+
         verbose_name = "Delete DICOM objects settings"
 
     def get_absolute_url(self):
-        return reverse('dicom_summary')
+        return reverse("dicom_summary")
 
 
 class PatientIDSettings(SingletonModel):
     """
     Table to store patient ID settings
     """
+
     name_stored = models.BooleanField(default=False)
     name_hashed = models.BooleanField(default=True)
     id_stored = models.BooleanField(default=False)
@@ -196,56 +260,88 @@ class PatientIDSettings(SingletonModel):
     dob_stored = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return u"Patient ID Settings"
+        return "Patient ID Settings"
 
     class Meta(object):
         """
         Verbose name for PatientIDSettings
         """
+
         verbose_name = "Patient ID Settings"
 
     def get_absolute_url(self):
-        return reverse('home')
+        return reverse("home")
 
 
 class DicomStoreSCP(models.Model):
     """
     Table to store DICOM store settings
     """
-    name = models.CharField(max_length=64, unique=True,
-                            verbose_name="Name of local store node - fewer than 64 characters, spaces allowed")
-    aetitle = models.CharField(max_length=16, blank=True, null=True,
-                               verbose_name="AE Title of this node - 16 or fewer letters and numbers, no spaces")
+
+    name = models.CharField(
+        max_length=64,
+        unique=True,
+        verbose_name="Name of local store node - fewer than 64 characters, spaces allowed",
+    )
+    aetitle = models.CharField(
+        max_length=16,
+        blank=True,
+        null=True,
+        verbose_name="AE Title of this node - 16 or fewer letters and numbers, no spaces",
+    )
     peer = models.CharField(max_length=32, blank=True)
     port = models.IntegerField(default=104)
     task_id = models.CharField(max_length=64, blank=True, null=True)
     status = models.CharField(max_length=64, blank=True, null=True)
     run = models.BooleanField(default=False)
-    keep_alive = models.BooleanField(default=False, verbose_name="Should this server be kept auto-started and kept alive (using celery beat)")
-    controlled = models.BooleanField(default=False, verbose_name="Is this server controlled by OpenREM")
+    keep_alive = models.BooleanField(
+        default=False,
+        verbose_name="Should this server be kept auto-started and kept alive (using celery beat)",
+    )
+    controlled = models.BooleanField(
+        default=False, verbose_name="Is this server controlled by OpenREM"
+    )
 
     def get_absolute_url(self):
-        return reverse('dicom_summary')
+        return reverse("dicom_summary")
 
 
 class DicomRemoteQR(models.Model):
     """
     Table to store DICOM remote QR settings
     """
-    name = models.CharField(max_length=64, unique=True,
-                            verbose_name="Name of QR node - fewer than 64 characters, spaces allowed")
-    aetitle = models.CharField(max_length=16, blank=True, null=True,
-                               verbose_name="AE Title of the remote node - 16 or fewer letters and numbers, no spaces")
+
+    name = models.CharField(
+        max_length=64,
+        unique=True,
+        verbose_name="Name of QR node - fewer than 64 characters, spaces allowed",
+    )
+    aetitle = models.CharField(
+        max_length=16,
+        blank=True,
+        null=True,
+        verbose_name="AE Title of the remote node - 16 or fewer letters and numbers, no spaces",
+    )
     port = models.IntegerField(blank=True, null=True, verbose_name="Remote port")
-    ip = models.GenericIPAddressField(blank=True, null=True, verbose_name="Remote IP address")
-    hostname = models.CharField(max_length=32, blank=True, null=True, verbose_name="Or remote hostname")
-    callingaet = models.CharField(max_length=16, blank=True, null=True,
-                                  verbose_name="AE Title of this OpenREM server - 16 or fewer letters and numbers, no spaces")
-    use_modality_tag = models.BooleanField(default=False, verbose_name="Use modality tag in study query")
+    ip = models.GenericIPAddressField(
+        blank=True, null=True, verbose_name="Remote IP address"
+    )
+    hostname = models.CharField(
+        max_length=32, blank=True, null=True, verbose_name="Or remote hostname"
+    )
+    callingaet = models.CharField(
+        max_length=16,
+        blank=True,
+        null=True,
+        verbose_name="AE Title of this OpenREM server - 16 or fewer letters and numbers, no spaces",
+    )
+    use_modality_tag = models.BooleanField(
+        default=False, verbose_name="Use modality tag in study query"
+    )
     enabled = models.BooleanField(default=False)
 
     def get_absolute_url(self):
-        return reverse('dicom_summary')
+        return reverse("dicom_summary")
 
     def __unicode__(self):
         return self.name
@@ -255,14 +351,19 @@ class DicomQuery(models.Model):
     """
     Table to store DICOM query settings
     """
+
     complete = models.BooleanField(default=False)
     query_id = models.CharField(max_length=64)
     query_summary = models.TextField(blank=True, null=True)
     failed = models.BooleanField(default=False)
     message = models.TextField(blank=True, null=True)
     stage = models.TextField(blank=True, null=True)
-    qr_scp_fk = models.ForeignKey(DicomRemoteQR, blank=True, null=True, on_delete=models.CASCADE)
-    store_scp_fk = models.ForeignKey(DicomStoreSCP, blank=True, null=True, on_delete=models.CASCADE)
+    qr_scp_fk = models.ForeignKey(
+        DicomRemoteQR, blank=True, null=True, on_delete=models.CASCADE
+    )
+    store_scp_fk = models.ForeignKey(
+        DicomStoreSCP, blank=True, null=True, on_delete=models.CASCADE
+    )
     move_completed_sub_ops = models.IntegerField(default=0)
     move_failed_sub_ops = models.IntegerField(default=0)
     move_warning_sub_ops = models.IntegerField(default=0)
@@ -316,78 +417,74 @@ class UserProfile(models.Model):
     """
     Table to store user profile settings
     """
-    DAYS = 'days'
-    WEEKS = 'weeks'
-    MONTHS = 'months'
-    YEARS = 'years'
+
+    DAYS = "days"
+    WEEKS = "weeks"
+    MONTHS = "months"
+    YEARS = "years"
     TIME_PERIOD = (
-        (DAYS, 'Days'),
-        (WEEKS, 'Weeks'),
-        (MONTHS, 'Months'),
-        (YEARS, 'Years'),
+        (DAYS, "Days"),
+        (WEEKS, "Weeks"),
+        (MONTHS, "Months"),
+        (YEARS, "Years"),
     )
 
-    MEAN = 'mean'
-    MEDIAN = 'median'
-    BOTH = 'both'
+    MEAN = "mean"
+    MEDIAN = "median"
+    BOTH = "both"
     AVERAGES = (
-        (MEAN, 'mean'),
-        (MEDIAN, 'median'),
-        (BOTH, 'both'),
+        (MEAN, "mean"),
+        (MEDIAN, "median"),
+        (BOTH, "both"),
     )
 
-    DLP = 'dlp'
-    CTDI = 'ctdi'
-    FREQ = 'freq'
-    NAME = 'name'
+    DLP = "dlp"
+    CTDI = "ctdi"
+    FREQ = "freq"
+    NAME = "name"
     SORTING_CHOICES_CT = (
-        (DLP, 'DLP'),
-        (CTDI, 'CTDI'),
-        (FREQ, 'Frequency'),
-        (NAME, 'Name'),
+        (DLP, "DLP"),
+        (CTDI, "CTDI"),
+        (FREQ, "Frequency"),
+        (NAME, "Name"),
     )
 
-    DAP = 'dap'
+    DAP = "dap"
     SORTING_CHOICES_DX = (
-        (DAP, 'DAP'),
-        (FREQ, 'Frequency'),
-        (NAME, 'Name'),
+        (DAP, "DAP"),
+        (FREQ, "Frequency"),
+        (NAME, "Name"),
     )
 
     ASCENDING = 1
     DESCENDING = -1
     SORTING_DIRECTION = (
-        (ASCENDING, 'Ascending'),
-        (DESCENDING, 'Descending'),
+        (ASCENDING, "Ascending"),
+        (DESCENDING, "Descending"),
     )
 
     ITEMS_PER_PAGE = (
-        (10, '10'),
-        (25, '25'),
-        (50, '50'),
-        (100, '100'),
-        (200, '200'),
-        (400, '400'),
+        (10, "10"),
+        (25, "25"),
+        (50, "50"),
+        (100, "100"),
+        (200, "200"),
+        (400, "400"),
     )
 
-    itemsPerPage = models.IntegerField(null=True,
-                                       choices=ITEMS_PER_PAGE,
-                                       default=25)
+    itemsPerPage = models.IntegerField(null=True, choices=ITEMS_PER_PAGE, default=25)
 
     # This field is required.
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     # Flag to set whether median calculations can be carried out
-    median_available = models.BooleanField(default=False,
-                                           editable=False)
+    median_available = models.BooleanField(default=False, editable=False)
 
-    plotAverageChoice = models.CharField(max_length=6,
-                                         choices=AVERAGES,
-                                         default=MEAN)
+    plotAverageChoice = models.CharField(max_length=6, choices=AVERAGES, default=MEAN)
 
-    plotInitialSortingDirection = models.IntegerField(null=True,
-                                                      choices=SORTING_DIRECTION,
-                                                      default=DESCENDING)
+    plotInitialSortingDirection = models.IntegerField(
+        null=True, choices=SORTING_DIRECTION, default=DESCENDING
+    )
 
     # Plotting controls
     plotCharts = models.BooleanField(default=False)
@@ -403,12 +500,12 @@ class UserProfile(models.Model):
     plotDXAcquisitionMeankVpOverTime = models.BooleanField(default=False)
     plotDXAcquisitionMeanmAsOverTime = models.BooleanField(default=False)
     plotDXAcquisitionMeanDAPOverTime = models.BooleanField(default=False)
-    plotDXAcquisitionMeanDAPOverTimePeriod = models.CharField(max_length=6,
-                                                              choices=TIME_PERIOD,
-                                                              default=MONTHS)
-    plotDXInitialSortingChoice = models.CharField(max_length=4,
-                                                  choices=SORTING_CHOICES_DX,
-                                                  default=FREQ)
+    plotDXAcquisitionMeanDAPOverTimePeriod = models.CharField(
+        max_length=6, choices=TIME_PERIOD, default=MONTHS
+    )
+    plotDXInitialSortingChoice = models.CharField(
+        max_length=4, choices=SORTING_CHOICES_DX, default=FREQ
+    )
 
     plotCTAcquisitionMeanDLP = models.BooleanField(default=True)
     plotCTAcquisitionMeanCTDI = models.BooleanField(default=True)
@@ -422,21 +519,21 @@ class UserProfile(models.Model):
     plotCTRequestNumEvents = models.BooleanField(default=False)
     plotCTStudyPerDayAndHour = models.BooleanField(default=False)
     plotCTStudyMeanDLPOverTime = models.BooleanField(default=False)
-    plotCTStudyMeanDLPOverTimePeriod = models.CharField(max_length=6,
-                                                        choices=TIME_PERIOD,
-                                                        default=MONTHS)
-    plotCTInitialSortingChoice = models.CharField(max_length=4,
-                                                  choices=SORTING_CHOICES_CT,
-                                                  default=FREQ)
+    plotCTStudyMeanDLPOverTimePeriod = models.CharField(
+        max_length=6, choices=TIME_PERIOD, default=MONTHS
+    )
+    plotCTInitialSortingChoice = models.CharField(
+        max_length=4, choices=SORTING_CHOICES_CT, default=FREQ
+    )
 
     plotRFStudyPerDayAndHour = models.BooleanField(default=False)
     plotRFStudyFreq = models.BooleanField(default=False)
     plotRFStudyDAP = models.BooleanField(default=True)
     plotRFRequestDAP = models.BooleanField(default=True)
     plotRFRequestFreq = models.BooleanField(default=True)
-    plotRFInitialSortingChoice = models.CharField(max_length=4,
-                                                  choices=SORTING_CHOICES_DX,
-                                                  default=FREQ)
+    plotRFInitialSortingChoice = models.CharField(
+        max_length=4, choices=SORTING_CHOICES_DX, default=FREQ
+    )
 
     plotMGStudyPerDayAndHour = models.BooleanField(default=False)
     plotMGAGDvsThickness = models.BooleanField(default=False)
@@ -456,12 +553,24 @@ class UserProfile(models.Model):
 
     plotCaseInsensitiveCategories = models.BooleanField(default=False)
 
-    summaryWorkloadDaysA = models.IntegerField(blank=True, null=True, default=7, verbose_name="Number of days over which to sum studies A")
-    summaryWorkloadDaysB = models.IntegerField(blank=True, null=True, default=28, verbose_name="Number of days over which to sum studies B")
+    summaryWorkloadDaysA = models.IntegerField(
+        blank=True,
+        null=True,
+        default=7,
+        verbose_name="Number of days over which to sum studies A",
+    )
+    summaryWorkloadDaysB = models.IntegerField(
+        blank=True,
+        null=True,
+        default=28,
+        verbose_name="Number of days over which to sum studies B",
+    )
+
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
+
 
 post_save.connect(create_user_profile, sender=User)
 
@@ -470,6 +579,7 @@ class UniqueEquipmentNames(models.Model):
     """
     Table to unique equipment name information
     """
+
     manufacturer = models.TextField(blank=True, null=True)
     manufacturer_hash = models.CharField(max_length=64, blank=True, null=True)
     institution_name = models.TextField(blank=True, null=True)
@@ -477,9 +587,13 @@ class UniqueEquipmentNames(models.Model):
     station_name = models.CharField(max_length=32, blank=True, null=True)
     station_name_hash = models.CharField(max_length=64, blank=True, null=True)
     institutional_department_name = models.TextField(blank=True, null=True)
-    institutional_department_name_hash = models.CharField(max_length=64, blank=True, null=True)
+    institutional_department_name_hash = models.CharField(
+        max_length=64, blank=True, null=True
+    )
     manufacturer_model_name = models.TextField(blank=True, null=True)
-    manufacturer_model_name_hash = models.CharField(max_length=64, blank=True, null=True)
+    manufacturer_model_name_hash = models.CharField(
+        max_length=64, blank=True, null=True
+    )
     device_serial_number = models.TextField(blank=True, null=True)
     device_serial_number_hash = models.CharField(max_length=64, blank=True, null=True)
     software_versions = models.TextField(blank=True, null=True)
@@ -496,10 +610,18 @@ class UniqueEquipmentNames(models.Model):
         """
         Define unique_together Meta class to enable sorting of similar devices
         """
-        unique_together = ('manufacturer_hash', 'institution_name_hash', 'station_name_hash',
-                           'institutional_department_name_hash', 'manufacturer_model_name_hash',
-                           'device_serial_number_hash', 'software_versions_hash', 'gantry_id_hash',
-                           'device_observer_uid_hash')
+
+        unique_together = (
+            "manufacturer_hash",
+            "institution_name_hash",
+            "station_name_hash",
+            "institutional_department_name_hash",
+            "manufacturer_model_name_hash",
+            "device_serial_number_hash",
+            "software_versions_hash",
+            "gantry_id_hash",
+            "device_observer_uid_hash",
+        )
 
     def __unicode__(self):
         return self.display_name
@@ -509,7 +631,8 @@ class SizeUpload(models.Model):
     """
     Table to store patient size information
     """
-    sizefile = models.FileField(upload_to='sizeupload')
+
+    sizefile = models.FileField(upload_to="sizeupload")
     height_field = models.TextField(blank=True, null=True)
     weight_field = models.TextField(blank=True, null=True)
     id_field = models.TextField(blank=True, null=True)
@@ -519,7 +642,7 @@ class SizeUpload(models.Model):
     status = models.TextField(blank=True, null=True)
     progress = models.TextField(blank=True, null=True)
     num_records = models.IntegerField(blank=True, null=True)
-    logfile = models.FileField(upload_to='sizelogs/%Y/%m/%d', null=True)
+    logfile = models.FileField(upload_to="sizelogs/%Y/%m/%d", null=True)
     import_date = models.DateTimeField(blank=True, null=True)
     processtime = models.FloatField(blank=True, null=True)
 
@@ -527,8 +650,9 @@ class SizeUpload(models.Model):
 class Exports(models.Model):
     """Table to hold the export status and filenames
     """
+
     task_id = models.TextField()
-    filename = models.FileField(upload_to='exports/%Y/%m/%d', null=True)
+    filename = models.FileField(upload_to="exports/%Y/%m/%d", null=True)
     export_summary = models.TextField(blank=True, null=True)
     status = models.TextField(blank=True, null=True)
     progress = models.TextField(blank=True, null=True)
@@ -536,9 +660,13 @@ class Exports(models.Model):
     num_records = models.IntegerField(blank=True, null=True)
     export_type = models.TextField(blank=True, null=True)
     export_date = models.DateTimeField(blank=True, null=True)
-    processtime = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
+    processtime = models.DecimalField(
+        max_digits=30, decimal_places=10, blank=True, null=True
+    )
     includes_pid = models.BooleanField(default=False)
-    export_user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
+    export_user = models.ForeignKey(
+        User, blank=True, null=True, on_delete=models.CASCADE
+    )
 
 
 class ContextID(models.Model):
@@ -547,6 +675,7 @@ class ContextID(models.Model):
     + Could be prefilled from the tables in DICOM 3.16, but is actually populated as the codes occur. \
     This assumes they are used correctly.
     """
+
     code_value = models.TextField()
     code_meaning = models.TextField(blank=True, null=True)
     cid_table = models.CharField(max_length=16, blank=True)
@@ -556,7 +685,8 @@ class ContextID(models.Model):
 
     class Meta(object):
         """Meta class to define ordering of objects in ContextID tables"""
-        ordering = ['code_value']
+
+        ordering = ["code_value"]
 
 
 class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
@@ -573,6 +703,7 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
         * procedure_code_value_and_meaning
         * requested_procedure_code_value_and_meaning
     """
+
     study_instance_uid = models.TextField(blank=True, null=True)
     study_date = models.DateField(blank=True, null=True)
     study_time = models.TimeField(blank=True, null=True)
@@ -607,17 +738,37 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
     number_of_spiral = models.IntegerField(blank=True, null=True)
     number_of_stationary = models.IntegerField(blank=True, null=True)
     number_of_const_angle = models.IntegerField(blank=True, null=True)
-    total_dlp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    total_dap_a = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
-    total_dap_b = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+    total_dlp = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    total_dap_a = models.DecimalField(
+        max_digits=16, decimal_places=12, blank=True, null=True
+    )
+    total_dap_b = models.DecimalField(
+        max_digits=16, decimal_places=12, blank=True, null=True
+    )
     total_dap = models.DecimalField(max_digits=16, decimal_places=12, null=True)
-    total_rp_dose_a = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
-    total_rp_dose_b = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
-    total_dap_delta_weeks = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
-    total_rp_dose_delta_weeks = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
-    total_agd_left = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    total_agd_right = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    total_agd_both = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)  # for legacy
+    total_rp_dose_a = models.DecimalField(
+        max_digits=16, decimal_places=12, blank=True, null=True
+    )
+    total_rp_dose_b = models.DecimalField(
+        max_digits=16, decimal_places=12, blank=True, null=True
+    )
+    total_dap_delta_weeks = models.DecimalField(
+        max_digits=16, decimal_places=12, blank=True, null=True
+    )
+    total_rp_dose_delta_weeks = models.DecimalField(
+        max_digits=16, decimal_places=12, blank=True, null=True
+    )
+    total_agd_left = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    total_agd_right = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    total_agd_both = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )  # for legacy
     number_of_planes = models.IntegerField(blank=True, null=True)
 
     def __unicode__(self):
@@ -626,22 +777,55 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
     def dap_a_cgycm2(self):
         """Converts DAP A to cGy.cm2 from Gy.m2 for display or export"""
         if self.total_dap_a:
-            return 1000000*self.total_dap_a
+            return 1000000 * self.total_dap_a
 
     def dap_b_cgycm2(self):
         """Converts DAP B to cGy.cm2 from Gy.m2 for display or export"""
         if self.total_dap_b:
-            return 1000000*self.total_dap_b
+            return 1000000 * self.total_dap_b
 
     def dap_total_cgycm2(self):
         """Converts DAP A+B to cGy.cm2 from Gy.m2 for display or export"""
         if self.total_dap:
-            return 1000000*self.total_dap
+            return 1000000 * self.total_dap
 
     def dap_delta_weeks_cgycm2(self):
         """Converts DAP delta weeks to cGy.cm2 from Gy.m2 for display"""
         if self.total_dap_delta_weeks:
-            return 1000000*self.total_dap_delta_weeks
+            return 1000000 * self.total_dap_delta_weeks
+
+
+class SkinDoseMapResults(models.Model):
+    """Table to hold the results from OpenSkin
+
+    """
+
+    general_study_module_attributes = models.ForeignKey(
+        GeneralStudyModuleAttr, on_delete=models.CASCADE
+    )
+    phantom_width = models.DecimalField(
+        max_digits=16, decimal_places=1, blank=True, null=True
+    )
+    phantom_height = models.DecimalField(
+        max_digits=16, decimal_places=1, blank=True, null=True
+    )
+    phantom_depth = models.DecimalField(
+        max_digits=16, decimal_places=1, blank=True, null=True
+    )
+    patient_mass = models.DecimalField(
+        max_digits=16, decimal_places=1, blank=True, null=True
+    )
+    patient_mass_assumed = models.CharField(max_length=16, null=True, blank=True)
+    patient_size = models.DecimalField(
+        max_digits=16, decimal_places=1, blank=True, null=True
+    )
+    patient_size_assumed = models.CharField(max_length=16, null=True, blank=True)
+    patient_orientation = models.CharField(max_length=16, blank=True, null=True)
+    patient_orientation_assumed = models.CharField(max_length=16, null=True, blank=True)
+    peak_skin_dose = models.DecimalField(
+        max_digits=16, decimal_places=4, null=True, blank=True
+    )
+    skin_map_version = models.CharField(max_length=16, null=True, blank=True)
 
 
 class ObjectUIDsProcessed(models.Model):
@@ -649,7 +833,10 @@ class ObjectUIDsProcessed(models.Model):
     duplicate sorting.
 
     """
-    general_study_module_attributes = models.ForeignKey(GeneralStudyModuleAttr, on_delete=models.CASCADE)
+
+    general_study_module_attributes = models.ForeignKey(
+        GeneralStudyModuleAttr, on_delete=models.CASCADE
+    )
     sop_instance_uid = models.TextField(blank=True, null=True)
 
 
@@ -664,25 +851,68 @@ class ProjectionXRayRadiationDose(models.Model):  # TID 10001
         values will be kept separate for each plane.
 
     """
-    general_study_module_attributes = models.ForeignKey(GeneralStudyModuleAttr, on_delete=models.CASCADE)
+
+    general_study_module_attributes = models.ForeignKey(
+        GeneralStudyModuleAttr, on_delete=models.CASCADE
+    )
     procedure_reported = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10001_procedure', on_delete=models.CASCADE)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10001_procedure",
+        on_delete=models.CASCADE,
+    )
     has_intent = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10001_intent', on_delete=models.CASCADE)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10001_intent",
+        on_delete=models.CASCADE,
+    )
     acquisition_device_type_cid = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10001_type', on_delete=models.CASCADE)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10001_type",
+        on_delete=models.CASCADE,
+    )
     scope_of_accumulation = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10001_scope', on_delete=models.CASCADE)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10001_scope",
+        on_delete=models.CASCADE,
+    )
     xray_detector_data_available = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10001_detector', on_delete=models.CASCADE)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10001_detector",
+        on_delete=models.CASCADE,
+    )
     xray_source_data_available = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10001_source', on_delete=models.CASCADE)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10001_source",
+        on_delete=models.CASCADE,
+    )
     xray_mechanical_data_available = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10001_mech', on_delete=models.CASCADE)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10001_mech",
+        on_delete=models.CASCADE,
+    )
     comment = models.TextField(blank=True, null=True)
     # might need to be a table on its own as is 1-n, even though it should only list the primary source...
     source_of_dose_information = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10001_infosource', on_delete=models.CASCADE)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10001_infosource",
+        on_delete=models.CASCADE,
+    )
 
 
 class AccumXRayDose(models.Model):  # TID 10002
@@ -693,8 +923,13 @@ class AccumXRayDose(models.Model):  # TID 10002
         several irradiation events from the same equipment (typically a study or a performed procedure step).
 
     """
-    projection_xray_radiation_dose = models.ForeignKey(ProjectionXRayRadiationDose, on_delete=models.CASCADE)
-    acquisition_plane = models.ForeignKey(ContextID, blank=True, null=True, on_delete=models.CASCADE)
+
+    projection_xray_radiation_dose = models.ForeignKey(
+        ProjectionXRayRadiationDose, on_delete=models.CASCADE
+    )
+    acquisition_plane = models.ForeignKey(
+        ContextID, blank=True, null=True, on_delete=models.CASCADE
+    )
 
 
 class Calibration(models.Model):
@@ -703,11 +938,18 @@ class Calibration(models.Model):
     + Container in TID 10002 Accumulated X-ray dose
 
     """
+
     accumulated_xray_dose = models.ForeignKey(AccumXRayDose, on_delete=models.CASCADE)
-    dose_measurement_device = models.ForeignKey(ContextID, blank=True, null=True, on_delete=models.CASCADE)
+    dose_measurement_device = models.ForeignKey(
+        ContextID, blank=True, null=True, on_delete=models.CASCADE
+    )
     calibration_date = models.DateTimeField(blank=True, null=True)
-    calibration_factor = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    calibration_uncertainty = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    calibration_factor = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    calibration_uncertainty = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     calibration_responsible_party = models.TextField(blank=True, null=True)
 
 
@@ -718,52 +960,137 @@ class IrradEventXRayData(models.Model):  # TID 10003
         This template conveys the dose and equipment parameters of a single irradiation event.
 
     """
-    projection_xray_radiation_dose = models.ForeignKey(ProjectionXRayRadiationDose, on_delete=models.CASCADE)
+
+    projection_xray_radiation_dose = models.ForeignKey(
+        ProjectionXRayRadiationDose, on_delete=models.CASCADE
+    )
     acquisition_plane = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10003_plane', on_delete=models.CASCADE)  # CID 10003
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10003_plane",
+        on_delete=models.CASCADE,
+    )  # CID 10003
     irradiation_event_uid = models.TextField(blank=True, null=True)
     irradiation_event_label = models.TextField(blank=True, null=True)
     label_type = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10003_labeltype', on_delete=models.CASCADE)  # CID 10022
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10003_labeltype",
+        on_delete=models.CASCADE,
+    )  # CID 10022
     date_time_started = models.DateTimeField(blank=True, null=True)
     irradiation_event_type = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10003_eventtype', on_delete=models.CASCADE)  # CID 10002
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10003_eventtype",
+        on_delete=models.CASCADE,
+    )  # CID 10002
     acquisition_protocol = models.TextField(blank=True, null=True)
     anatomical_structure = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10003_anatomy', on_delete=models.CASCADE)  # CID 4009
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10003_anatomy",
+        on_delete=models.CASCADE,
+    )  # CID 4009
     laterality = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10003_laterality', on_delete=models.CASCADE)  # CID 244
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10003_laterality",
+        on_delete=models.CASCADE,
+    )  # CID 244
     image_view = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10003_view', on_delete=models.CASCADE
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10003_view",
+        on_delete=models.CASCADE,
     )  # CID 4010 "DX View" or CID 4014 "View for Mammography"
     # Lines below are incorrect, but exist in current databases. Replace with lines below them:
-    projection_eponymous_name = models.CharField(max_length=16, blank=True, null=True)  # Added null to originals
+    projection_eponymous_name = models.CharField(
+        max_length=16, blank=True, null=True
+    )  # Added null to originals
     patient_table_relationship = models.CharField(max_length=16, blank=True, null=True)
     patient_orientation = models.CharField(max_length=16, blank=True, null=True)
-    patient_orientation_modifier = models.CharField(max_length=16, blank=True, null=True)
+    patient_orientation_modifier = models.CharField(
+        max_length=16, blank=True, null=True
+    )
     # TODO: Projection Eponymous Name should be in ImageViewModifier, not here :-(
     projection_eponymous_name_cid = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10003_pojectioneponymous', on_delete=models.CASCADE)  # CID 4012
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10003_pojectioneponymous",
+        on_delete=models.CASCADE,
+    )  # CID 4012
     patient_table_relationship_cid = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10003_pttablerel', on_delete=models.CASCADE)  # CID 21
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10003_pttablerel",
+        on_delete=models.CASCADE,
+    )  # CID 21
     patient_orientation_cid = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10003_ptorientation', on_delete=models.CASCADE)  # CID 19
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10003_ptorientation",
+        on_delete=models.CASCADE,
+    )  # CID 19
     patient_orientation_modifier_cid = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10003_ptorientationmod', on_delete=models.CASCADE)  # CID 20
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10003_ptorientationmod",
+        on_delete=models.CASCADE,
+    )  # CID 20
     target_region = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name="tid10003_region", on_delete=models.CASCADE)  # CID 4031
-    dose_area_product = models.DecimalField(max_digits=16, decimal_places=10, blank=True, null=True)
-    half_value_layer = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    patient_equivalent_thickness = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    entrance_exposure_at_rp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    reference_point_definition_text = models.TextField(blank=True, null=True) # in other models the code version is _code
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10003_region",
+        on_delete=models.CASCADE,
+    )  # CID 4031
+    dose_area_product = models.DecimalField(
+        max_digits=16, decimal_places=10, blank=True, null=True
+    )
+    half_value_layer = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    patient_equivalent_thickness = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    entrance_exposure_at_rp = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    reference_point_definition_text = models.TextField(
+        blank=True, null=True
+    )  # in other models the code version is _code
     reference_point_definition = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10003_rpdefinition', on_delete=models.CASCADE)  # CID 10025
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10003_rpdefinition",
+        on_delete=models.CASCADE,
+    )  # CID 10025
     # Another char field that should be a cid
-    breast_composition = models.CharField(max_length=16, blank=True, null=True)  # TID 4007, CID 6000
+    breast_composition = models.CharField(
+        max_length=16, blank=True, null=True
+    )  # TID 4007, CID 6000
     breast_composition_cid = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10003_breastcomposition', on_delete=models.CASCADE)  # CID 6000/6001
-    percent_fibroglandular_tissue = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)  # TID 4007
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10003_breastcomposition",
+        on_delete=models.CASCADE,
+    )  # CID 6000/6001
+    percent_fibroglandular_tissue = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )  # TID 4007
     comment = models.TextField(blank=True, null=True)
 
     def __unicode__(self):
@@ -784,7 +1111,10 @@ class ImageViewModifier(models.Model):  # EV 111032
         + Code Meaning Image View Modifier
         + Code Definition Modifier for image view
     """
-    irradiation_event_xray_data = models.ForeignKey(IrradEventXRayData, on_delete=models.CASCADE)
+
+    irradiation_event_xray_data = models.ForeignKey(
+        IrradEventXRayData, on_delete=models.CASCADE
+    )
     image_view_modifier = models.ForeignKey(
         ContextID, blank=True, null=True, on_delete=models.CASCADE
     )  # CID 4011 "DX View Modifier" or CID 4015 "View Modifier for Mammography"
@@ -798,14 +1128,27 @@ class IrradEventXRayDetectorData(models.Model):  # TID 10003a
         This template contains data which is expected to be available to the X-ray detector or plate reader component of
         the equipment.
     """
-    irradiation_event_xray_data = models.ForeignKey(IrradEventXRayData, on_delete=models.CASCADE)
-    exposure_index = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    target_exposure_index = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    deviation_index = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+
+    irradiation_event_xray_data = models.ForeignKey(
+        IrradEventXRayData, on_delete=models.CASCADE
+    )
+    exposure_index = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    target_exposure_index = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    deviation_index = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     # New fields added to record the non-IEC exposure index from CR/DX image headers
-    relative_xray_exposure = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    relative_xray_exposure = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     relative_exposure_unit = models.CharField(max_length=16, blank=True, null=True)
-    sensitivity = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    sensitivity = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
 
 
 class IrradEventXRaySourceData(models.Model):  # TID 10003b
@@ -819,45 +1162,98 @@ class IrradEventXRaySourceData(models.Model):  # TID 10003b
         * exposure_control_mode
         * grid information over and above grid type
     """
-    irradiation_event_xray_data = models.ForeignKey(IrradEventXRayData, on_delete=models.CASCADE)
-    dose_rp = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+
+    irradiation_event_xray_data = models.ForeignKey(
+        IrradEventXRayData, on_delete=models.CASCADE
+    )
+    dose_rp = models.DecimalField(
+        max_digits=16, decimal_places=12, blank=True, null=True
+    )
     reference_point_definition = models.TextField(blank=True, null=True)
     reference_point_definition_code = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10003b_rpdefinition', on_delete=models.CASCADE)  # CID 10025
-    average_glandular_dose = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10003b_rpdefinition",
+        on_delete=models.CASCADE,
+    )  # CID 10025
+    average_glandular_dose = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     fluoro_mode = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10003b_fluoromode', on_delete=models.CASCADE)  # CID 10004
-    pulse_rate = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    number_of_pulses = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10003b_fluoromode",
+        on_delete=models.CASCADE,
+    )  # CID 10004
+    pulse_rate = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    number_of_pulses = models.DecimalField(
+        max_digits=16, decimal_places=2, blank=True, null=True
+    )
     # derivation should be a cid - has never been used in extractor, but was non null=True so will exist in database :-(
     derivation = models.CharField(max_length=16, blank=True, null=True)
     derivation_cid = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10003b_derivation', on_delete=models.CASCADE)  # R-10260, "Estimated"
-    irradiation_duration = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    average_xray_tube_current = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    exposure_time = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
-    focal_spot_size = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10003b_derivation",
+        on_delete=models.CASCADE,
+    )  # R-10260, "Estimated"
+    irradiation_duration = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    average_xray_tube_current = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    exposure_time = models.DecimalField(
+        max_digits=16, decimal_places=2, blank=True, null=True
+    )
+    focal_spot_size = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     anode_target_material = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10003b_anodetarget', on_delete=models.CASCADE)  # CID 10016
-    collimated_field_area = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    collimated_field_height = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    collimated_field_width = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10003b_anodetarget",
+        on_delete=models.CASCADE,
+    )  # CID 10016
+    collimated_field_area = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    collimated_field_height = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    collimated_field_width = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     # not in DICOM standard - 'image intensifier' field size and exposure control mode
     ii_field_size = models.IntegerField(blank=True, null=True)
     exposure_control_mode = models.CharField(max_length=16, blank=True, null=True)
     grid_absorbing_material = models.TextField(blank=True, null=True)
     grid_spacing_material = models.TextField(blank=True, null=True)
-    grid_thickness = models.DecimalField(max_digits=16, decimal_places=6, blank=True, null=True)
-    grid_pitch = models.DecimalField(max_digits=16, decimal_places=6, blank=True, null=True)
+    grid_thickness = models.DecimalField(
+        max_digits=16, decimal_places=6, blank=True, null=True
+    )
+    grid_pitch = models.DecimalField(
+        max_digits=16, decimal_places=6, blank=True, null=True
+    )
     grid_aspect_ratio = models.TextField(blank=True, null=True)
-    grid_period = models.DecimalField(max_digits=16, decimal_places=6, blank=True, null=True)
-    grid_focal_distance = models.DecimalField(max_digits=16, decimal_places=6, blank=True, null=True)
+    grid_period = models.DecimalField(
+        max_digits=16, decimal_places=6, blank=True, null=True
+    )
+    grid_focal_distance = models.DecimalField(
+        max_digits=16, decimal_places=6, blank=True, null=True
+    )
 
     def convert_gy_to_mgy(self):
         """Converts Gy to mGy for display in web interface
         """
         if self.dose_rp:
-            return 1000*self.dose_rp
+            return 1000 * self.dose_rp
 
 
 class XrayGrid(models.Model):
@@ -865,44 +1261,68 @@ class XrayGrid(models.Model):
 
     From DICOM Part 16
     """
-    irradiation_event_xray_source_data = models.ForeignKey(IrradEventXRaySourceData, on_delete=models.CASCADE)
-    xray_grid = models.ForeignKey(ContextID, blank=True, null=True, on_delete=models.CASCADE)  # CID 10017
+
+    irradiation_event_xray_source_data = models.ForeignKey(
+        IrradEventXRaySourceData, on_delete=models.CASCADE
+    )
+    xray_grid = models.ForeignKey(
+        ContextID, blank=True, null=True, on_delete=models.CASCADE
+    )  # CID 10017
 
 
 class PulseWidth(models.Model):  # EV 113793
     """In TID 10003b. Code value 113793 (ms)
     """
-    irradiation_event_xray_source_data = models.ForeignKey(IrradEventXRaySourceData, on_delete=models.CASCADE)
-    pulse_width = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+
+    irradiation_event_xray_source_data = models.ForeignKey(
+        IrradEventXRaySourceData, on_delete=models.CASCADE
+    )
+    pulse_width = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
 
 
 class Kvp(models.Model):  # EV 113733
     """In TID 10003b. Code value 113733 (kV)
     """
-    irradiation_event_xray_source_data = models.ForeignKey(IrradEventXRaySourceData, on_delete=models.CASCADE)
+
+    irradiation_event_xray_source_data = models.ForeignKey(
+        IrradEventXRaySourceData, on_delete=models.CASCADE
+    )
     kvp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
 
 
 class XrayTubeCurrent(models.Model):  # EV 113734
     """In TID 10003b. Code value 113734 (mA)
     """
-    irradiation_event_xray_source_data = models.ForeignKey(IrradEventXRaySourceData, on_delete=models.CASCADE)
-    xray_tube_current = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+
+    irradiation_event_xray_source_data = models.ForeignKey(
+        IrradEventXRaySourceData, on_delete=models.CASCADE
+    )
+    xray_tube_current = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
 
 
 class Exposure(models.Model):  # EV 113736
     """In TID 10003b. Code value 113736 (uAs)
     """
-    irradiation_event_xray_source_data = models.ForeignKey(IrradEventXRaySourceData, on_delete=models.CASCADE)
-    exposure = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
+
+    irradiation_event_xray_source_data = models.ForeignKey(
+        IrradEventXRaySourceData, on_delete=models.CASCADE
+    )
+    exposure = models.DecimalField(
+        max_digits=16, decimal_places=2, blank=True, null=True
+    )
 
     def convert_uAs_to_mAs(self):
         """Converts uAs to mAs for display in web interface
         """
         from decimal import Decimal
         from numbers import Number
+
         if isinstance(self.exposure, Number):
-            return old_div(self.exposure, Decimal(1000.))
+            return old_div(self.exposure, Decimal(1000.0))
         else:
             return None
 
@@ -910,13 +1330,30 @@ class Exposure(models.Model):  # EV 113736
 class XrayFilters(models.Model):  # EV 113771
     """Container in TID 10003b. Code value 113771
     """
-    irradiation_event_xray_source_data = models.ForeignKey(IrradEventXRaySourceData, on_delete=models.CASCADE)
+
+    irradiation_event_xray_source_data = models.ForeignKey(
+        IrradEventXRaySourceData, on_delete=models.CASCADE
+    )
     xray_filter_type = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='xrayfilters_type', on_delete=models.CASCADE)  # CID 10007
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="xrayfilters_type",
+        on_delete=models.CASCADE,
+    )  # CID 10007
     xray_filter_material = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='xrayfilters_material', on_delete=models.CASCADE)  # CID 10006
-    xray_filter_thickness_minimum = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    xray_filter_thickness_maximum = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="xrayfilters_material",
+        on_delete=models.CASCADE,
+    )  # CID 10006
+    xray_filter_thickness_minimum = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    xray_filter_thickness_maximum = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
 
 
 class IrradEventXRayMechanicalData(models.Model):  # TID 10003c
@@ -930,20 +1367,47 @@ class IrradEventXRayMechanicalData(models.Model):  # TID 10003c
         * compression_force
         * magnification_factor
     """
-    irradiation_event_xray_data = models.ForeignKey(IrradEventXRayData, on_delete=models.CASCADE)
-    crdr_mechanical_configuration = models.ForeignKey(ContextID, blank=True, null=True, on_delete=models.CASCADE)
-    positioner_primary_angle = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    positioner_secondary_angle = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    positioner_primary_end_angle = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    positioner_secondary_end_angle = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    column_angulation = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    table_head_tilt_angle = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    table_horizontal_rotation_angle = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    table_cradle_tilt_angle = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    compression_thickness = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+
+    irradiation_event_xray_data = models.ForeignKey(
+        IrradEventXRayData, on_delete=models.CASCADE
+    )
+    crdr_mechanical_configuration = models.ForeignKey(
+        ContextID, blank=True, null=True, on_delete=models.CASCADE
+    )
+    positioner_primary_angle = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    positioner_secondary_angle = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    positioner_primary_end_angle = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    positioner_secondary_end_angle = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    column_angulation = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    table_head_tilt_angle = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    table_horizontal_rotation_angle = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    table_cradle_tilt_angle = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    compression_thickness = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     # not in DICOM standard - compression force in N
-    compression_force = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    magnification_factor = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    compression_force = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    magnification_factor = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
 
 
 class DoseRelatedDistanceMeasurements(models.Model):  # CID 10008
@@ -951,20 +1415,47 @@ class DoseRelatedDistanceMeasurements(models.Model):  # CID 10008
 
     Called from TID 10003c
     """
-    irradiation_event_xray_mechanical_data = models.ForeignKey(IrradEventXRayMechanicalData, on_delete=models.CASCADE)
-    distance_source_to_isocenter = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    distance_source_to_reference_point = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    distance_source_to_detector = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    table_longitudinal_position = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    table_lateral_position = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    table_height_position = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    distance_source_to_table_plane = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    table_longitudinal_end_position = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    table_lateral_end_position = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    table_height_end_position = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+
+    irradiation_event_xray_mechanical_data = models.ForeignKey(
+        IrradEventXRayMechanicalData, on_delete=models.CASCADE
+    )
+    distance_source_to_isocenter = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    distance_source_to_reference_point = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    distance_source_to_detector = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    table_longitudinal_position = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    table_lateral_position = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    table_height_position = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    distance_source_to_table_plane = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    table_longitudinal_end_position = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    table_lateral_end_position = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    table_height_end_position = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     # not in DICOM standard - distance source to entrance surface distance in mm
-    distance_source_to_entrance_surface = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    radiological_thickness = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    distance_source_to_entrance_surface = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    radiological_thickness = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
 
 
 class AccumProjXRayDose(models.Model):  # TID 10004
@@ -975,34 +1466,55 @@ class AccumProjXRayDose(models.Model):  # TID 10004
         several irradiation events from the same equipment (typically a study or a performed procedure step).
 
     """
+
     accumulated_xray_dose = models.ForeignKey(AccumXRayDose, on_delete=models.CASCADE)
-    fluoro_dose_area_product_total = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
-    fluoro_dose_rp_total = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
-    total_fluoro_time = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
-    acquisition_dose_area_product_total = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
-    acquisition_dose_rp_total = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
-    total_acquisition_time = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    fluoro_dose_area_product_total = models.DecimalField(
+        max_digits=16, decimal_places=12, blank=True, null=True
+    )
+    fluoro_dose_rp_total = models.DecimalField(
+        max_digits=16, decimal_places=12, blank=True, null=True
+    )
+    total_fluoro_time = models.DecimalField(
+        max_digits=7, decimal_places=2, blank=True, null=True
+    )
+    acquisition_dose_area_product_total = models.DecimalField(
+        max_digits=16, decimal_places=12, blank=True, null=True
+    )
+    acquisition_dose_rp_total = models.DecimalField(
+        max_digits=16, decimal_places=12, blank=True, null=True
+    )
+    total_acquisition_time = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     # The following fields should not be in this table, and are duplicated in the
     # AccumCassetteBsdProjRadiogDose and AccumIntegratedProjRadiogDose
     # tables below.
     # TODO: Ensure rdsr.py and dx.py use the other table and do not populate this one any further.
-    dose_area_product_total = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
-    dose_rp_total = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
-    total_number_of_radiographic_frames  = models.DecimalField(max_digits=6, decimal_places=0, blank=True, null=True)
+    dose_area_product_total = models.DecimalField(
+        max_digits=16, decimal_places=12, blank=True, null=True
+    )
+    dose_rp_total = models.DecimalField(
+        max_digits=16, decimal_places=12, blank=True, null=True
+    )
+    total_number_of_radiographic_frames = models.DecimalField(
+        max_digits=6, decimal_places=0, blank=True, null=True
+    )
     reference_point_definition = models.TextField(blank=True, null=True)
-    reference_point_definition_code = models.ForeignKey(ContextID, blank=True, null=True, on_delete=models.CASCADE)
+    reference_point_definition_code = models.ForeignKey(
+        ContextID, blank=True, null=True, on_delete=models.CASCADE
+    )
 
     def fluoro_gym2_to_cgycm2(self):
         """Converts fluoroscopy DAP total from Gy.m2 to cGy.cm2 for display in web interface
         """
         if self.fluoro_dose_area_product_total:
-            return 1000000*self.fluoro_dose_area_product_total
+            return 1000000 * self.fluoro_dose_area_product_total
 
     def acq_gym2_to_cgycm2(self):
         """Converts acquisition DAP total from Gy.m2 to cGy.cm2 for display in web interface
         """
         if self.acquisition_dose_area_product_total:
-            return 1000000*self.acquisition_dose_area_product_total
+            return 1000000 * self.acquisition_dose_area_product_total
 
 
 class AccumMammographyXRayDose(models.Model):  # TID 10005
@@ -1013,9 +1525,14 @@ class AccumMammographyXRayDose(models.Model):  # TID 10005
         accumulations over several irradiation events from the same equipment (typically a study or a performed
         procedure step).
     """
+
     accumulated_xray_dose = models.ForeignKey(AccumXRayDose, on_delete=models.CASCADE)
-    accumulated_average_glandular_dose = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
-    laterality = models.ForeignKey(ContextID, blank=True, null=True, on_delete=models.CASCADE)
+    accumulated_average_glandular_dose = models.DecimalField(
+        max_digits=8, decimal_places=4, blank=True, null=True
+    )
+    laterality = models.ForeignKey(
+        ContextID, blank=True, null=True, on_delete=models.CASCADE
+    )
 
 
 class AccumCassetteBsdProjRadiogDose(models.Model):  # TID 10006
@@ -1026,9 +1543,14 @@ class AccumCassetteBsdProjRadiogDose(models.Model):  # TID 10006
         based systems over one or more irradiation events (typically a study or a performed procedure step) from
         the same equipment.
     """
+
     accumulated_xray_dose = models.ForeignKey(AccumXRayDose, on_delete=models.CASCADE)
-    detector_type = models.ForeignKey(ContextID, blank=True, null=True, on_delete=models.CASCADE)
-    total_number_of_radiographic_frames = models.DecimalField(max_digits=6, decimal_places=0, blank=True, null=True)
+    detector_type = models.ForeignKey(
+        ContextID, blank=True, null=True, on_delete=models.CASCADE
+    )
+    total_number_of_radiographic_frames = models.DecimalField(
+        max_digits=6, decimal_places=0, blank=True, null=True
+    )
 
 
 class AccumIntegratedProjRadiogDose(models.Model):  # TID 10007
@@ -1039,34 +1561,50 @@ class AccumIntegratedProjRadiogDose(models.Model):  # TID 10007
         systems over one or more irradiation events (typically a study or a performed procedure step) from the
         same equipment.
     """
+
     accumulated_xray_dose = models.ForeignKey(AccumXRayDose, on_delete=models.CASCADE)
-    dose_area_product_total = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
-    dose_rp_total = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
-    total_number_of_radiographic_frames = models.DecimalField(max_digits=6, decimal_places=0, blank=True, null=True)
-    reference_point_definition_code = models.ForeignKey(ContextID, blank=True, null=True, on_delete=models.CASCADE)
+    dose_area_product_total = models.DecimalField(
+        max_digits=16, decimal_places=12, blank=True, null=True
+    )
+    dose_rp_total = models.DecimalField(
+        max_digits=16, decimal_places=12, blank=True, null=True
+    )
+    total_number_of_radiographic_frames = models.DecimalField(
+        max_digits=6, decimal_places=0, blank=True, null=True
+    )
+    reference_point_definition_code = models.ForeignKey(
+        ContextID, blank=True, null=True, on_delete=models.CASCADE
+    )
     reference_point_definition = models.TextField(blank=True, null=True)
 
     def convert_gym2_to_cgycm2(self):
         """Converts Gy.m2 to cGy.cm2 for display in web interface
         """
         if self.dose_area_product_total:
-            return 1000000*self.dose_area_product_total
+            return 1000000 * self.dose_area_product_total
 
-    dose_area_product_total_over_delta_weeks = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
-    dose_rp_total_over_delta_weeks = models.DecimalField(max_digits=16, decimal_places=12, blank=True, null=True)
+    dose_area_product_total_over_delta_weeks = models.DecimalField(
+        max_digits=16, decimal_places=12, blank=True, null=True
+    )
+    dose_rp_total_over_delta_weeks = models.DecimalField(
+        max_digits=16, decimal_places=12, blank=True, null=True
+    )
 
     def total_dap_delta_gym2_to_cgycm2(self):
         """Converts total DAP over delta days from Gy.m2 to cGy.cm2 for display in web interface
         """
         if self.dose_area_product_total_over_delta_weeks:
-            return 1000000*self.dose_area_product_total_over_delta_weeks
+            return 1000000 * self.dose_area_product_total_over_delta_weeks
 
 
 class PKsForSummedRFDoseStudiesInDeltaWeeks(models.Model):
     """Table to hold foreign keys of all studies that fall within the delta
     weeks of each RF study.
     """
-    general_study_module_attributes = models.ForeignKey(GeneralStudyModuleAttr, on_delete=models.CASCADE)
+
+    general_study_module_attributes = models.ForeignKey(
+        GeneralStudyModuleAttr, on_delete=models.CASCADE
+    )
     study_pk_in_delta_weeks = models.IntegerField(blank=True, null=True)
 
 
@@ -1079,7 +1617,10 @@ class PatientModuleAttr(models.Model):  # C.7.1.1
         for diagnostic interpretation of the Image and are common for all studies performed on the
         patient. It contains Attributes that are also included in the Patient Modules in Section C.2.
     """
-    general_study_module_attributes = models.ForeignKey(GeneralStudyModuleAttr, on_delete=models.CASCADE)
+
+    general_study_module_attributes = models.ForeignKey(
+        GeneralStudyModuleAttr, on_delete=models.CASCADE
+    )
     patient_name = models.TextField(blank=True, null=True)
     name_hashed = models.BooleanField(default=False)
     patient_id = models.TextField(blank=True, null=True)
@@ -1097,13 +1638,22 @@ class PatientStudyModuleAttr(models.Model):  # C.7.2.2
         Defines Attributes that provide information about the Patient at the time the Study
         started.
     """
-    general_study_module_attributes = models.ForeignKey(GeneralStudyModuleAttr, on_delete=models.CASCADE)
+
+    general_study_module_attributes = models.ForeignKey(
+        GeneralStudyModuleAttr, on_delete=models.CASCADE
+    )
     admitting_diagnosis_description = models.TextField(blank=True, null=True)
     admitting_diagnosis_code_sequence = models.TextField(blank=True, null=True)
     patient_age = models.CharField(max_length=4, blank=True, null=True)
-    patient_age_decimal = models.DecimalField(max_digits=7, decimal_places=3, blank=True, null=True)
-    patient_size = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    patient_weight = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    patient_age_decimal = models.DecimalField(
+        max_digits=7, decimal_places=3, blank=True, null=True
+    )
+    patient_size = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    patient_weight = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     # TODO: Add patient size code sequence
 
 
@@ -1114,7 +1664,10 @@ class GeneralEquipmentModuleAttr(models.Model):  # C.7.5.1
         Specifies the Attributes that identify and describe the piece of equipment that
         produced a Series of Composite Instances.
     """
-    general_study_module_attributes = models.ForeignKey(GeneralStudyModuleAttr, on_delete=models.CASCADE)
+
+    general_study_module_attributes = models.ForeignKey(
+        GeneralStudyModuleAttr, on_delete=models.CASCADE
+    )
     manufacturer = models.TextField(blank=True, null=True)
     institution_name = models.TextField(blank=True, null=True)
     institution_address = models.TextField(blank=True, null=True)
@@ -1124,16 +1677,21 @@ class GeneralEquipmentModuleAttr(models.Model):  # C.7.5.1
     device_serial_number = models.TextField(blank=True, null=True)
     software_versions = models.TextField(blank=True, null=True)
     gantry_id = models.TextField(blank=True, null=True)
-    spatial_resolution = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
+    spatial_resolution = models.DecimalField(
+        max_digits=8, decimal_places=4, blank=True, null=True
+    )
     date_of_last_calibration = models.DateTimeField(blank=True, null=True)
     time_of_last_calibration = models.DateTimeField(blank=True, null=True)
-    unique_equipment_name = models.ForeignKey(UniqueEquipmentNames, null=True, on_delete=models.CASCADE)
+    unique_equipment_name = models.ForeignKey(
+        UniqueEquipmentNames, null=True, on_delete=models.CASCADE
+    )
 
     def __unicode__(self):
         return self.station_name
 
 
 # CT
+
 
 class CtRadiationDose(models.Model):  # TID 10011
     """CT Radiation Dose TID 10011
@@ -1145,30 +1703,60 @@ class CtRadiationDose(models.Model):  # TID 10011
         Study or at least a part of a Study, if the Study is divided in the workflow of the examination, or a
         performed procedure step. Multiple CT Radiation Dose objects may be created for one Study.
     """
-    general_study_module_attributes = models.ForeignKey(GeneralStudyModuleAttr, on_delete=models.CASCADE)
+
+    general_study_module_attributes = models.ForeignKey(
+        GeneralStudyModuleAttr, on_delete=models.CASCADE
+    )
     procedure_reported = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10011_procedure', on_delete=models.CASCADE)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10011_procedure",
+        on_delete=models.CASCADE,
+    )
     has_intent = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10011_intent', on_delete=models.CASCADE)  # CID 3629
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10011_intent",
+        on_delete=models.CASCADE,
+    )  # CID 3629
     start_of_xray_irradiation = models.DateTimeField(blank=True, null=True)
     end_of_xray_irradiation = models.DateTimeField(blank=True, null=True)
     scope_of_accumulation = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10011_scope', on_delete=models.CASCADE)  # CID 10000
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10011_scope",
+        on_delete=models.CASCADE,
+    )  # CID 10000
     uid_type = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid1011_uid', on_delete=models.CASCADE)  # CID 10001
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid1011_uid",
+        on_delete=models.CASCADE,
+    )  # CID 10001
     comment = models.TextField(blank=True, null=True)
     # does need to be a table on its own as is 1-n
     source_of_dose_information = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10011_source', on_delete=models.CASCADE)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10011_source",
+        on_delete=models.CASCADE,
+    )
 
 
 class SourceOfCTDoseInformation(models.Model):  # CID 10021
     """Source of CT Dose Information
     """
+
     # TODO: populate this table when extracting and move existing data. Task #164
     ct_radiation_dose = models.ForeignKey(CtRadiationDose, on_delete=models.CASCADE)
     source_of_dose_information = models.ForeignKey(
-        ContextID, blank=True, null=True, on_delete=models.CASCADE)  # CID 10021
+        ContextID, blank=True, null=True, on_delete=models.CASCADE
+    )  # CID 10021
 
 
 class CtAccumulatedDoseData(models.Model):  # TID 10012
@@ -1179,15 +1767,32 @@ class CtAccumulatedDoseData(models.Model):  # TID 10012
         irradiation events from the same equipment and over the scope of accumulation specified for the report
         (typically a Study or a Performed Procedure Step).
     """
+
     ct_radiation_dose = models.ForeignKey(CtRadiationDose, on_delete=models.CASCADE)
-    total_number_of_irradiation_events = models.DecimalField(max_digits=16, decimal_places=0, blank=True, null=True)
-    ct_dose_length_product_total = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    ct_effective_dose_total = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    total_number_of_irradiation_events = models.DecimalField(
+        max_digits=16, decimal_places=0, blank=True, null=True
+    )
+    ct_dose_length_product_total = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    ct_effective_dose_total = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     reference_authority_code = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10012_authority', on_delete=models.CASCADE)  # CID 10015 (ICRP60/103)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10012_authority",
+        on_delete=models.CASCADE,
+    )  # CID 10015 (ICRP60/103)
     reference_authority_text = models.TextField(blank=True, null=True)
     measurement_method = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10012_method', on_delete=models.CASCADE)  # CID 10011
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10012_method",
+        on_delete=models.CASCADE,
+    )  # CID 10011
     patient_model = models.TextField(blank=True, null=True)
     effective_dose_phantom_type = models.TextField(blank=True, null=True)
     dosimeter_type = models.TextField(blank=True, null=True)
@@ -1204,34 +1809,85 @@ class CtIrradiationEventData(models.Model):  # TID 10013
         + date_time_started
         + series_description
     """
+
     ct_radiation_dose = models.ForeignKey(CtRadiationDose, on_delete=models.CASCADE)
     acquisition_protocol = models.TextField(blank=True, null=True)
     target_region = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10013_region', on_delete=models.CASCADE)  # CID 4030
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10013_region",
+        on_delete=models.CASCADE,
+    )  # CID 4030
     ct_acquisition_type = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10013_type', on_delete=models.CASCADE)  # CID 10013
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10013_type",
+        on_delete=models.CASCADE,
+    )  # CID 10013
     procedure_context = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10013_context', on_delete=models.CASCADE)  # CID 10014
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10013_context",
+        on_delete=models.CASCADE,
+    )  # CID 10014
     irradiation_event_uid = models.TextField(blank=True, null=True)
     #  TODO: Add extraction of the label and label type (Series, acquisition, instance number) Issue #167
     irradiation_event_label = models.TextField(blank=True, null=True)
     label_type = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10013_labeltype', on_delete=models.CASCADE)  # CID 10022
-    exposure_time = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    nominal_single_collimation_width = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    nominal_total_collimation_width = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    pitch_factor = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    number_of_xray_sources = models.DecimalField(max_digits=8, decimal_places=0, blank=True, null=True)
-    mean_ctdivol = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10013_labeltype",
+        on_delete=models.CASCADE,
+    )  # CID 10022
+    exposure_time = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    nominal_single_collimation_width = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    nominal_total_collimation_width = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    pitch_factor = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    number_of_xray_sources = models.DecimalField(
+        max_digits=8, decimal_places=0, blank=True, null=True
+    )
+    mean_ctdivol = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     ctdiw_phantom_type = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10013_phantom', on_delete=models.CASCADE)  # CID 4052
-    ctdifreeair_calculation_factor = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    mean_ctdifreeair = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10013_phantom",
+        on_delete=models.CASCADE,
+    )  # CID 4052
+    ctdifreeair_calculation_factor = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    mean_ctdifreeair = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     dlp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    effective_dose = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    effective_dose = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     measurement_method = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10013_method', on_delete=models.CASCADE)  # CID 10011
-    effective_dose_conversion_factor = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid10013_method",
+        on_delete=models.CASCADE,
+    )  # CID 10011
+    effective_dose_conversion_factor = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     xray_modulation_type = models.TextField(blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
     # Not in DICOM standard:
@@ -1242,21 +1898,37 @@ class CtIrradiationEventData(models.Model):  # TID 10013
 class CtReconstructionAlgorithm(models.Model):
     """Container in TID 10013 to hold CT reconstruction methods
     """
+
     # TODO: Add this to the rdsr extraction routines. Issue #166
-    ct_irradiation_event_data = models.ForeignKey(CtIrradiationEventData, on_delete=models.CASCADE)
-    reconstruction_algorithm = models.ForeignKey(ContextID, blank=True, null=True, on_delete=models.CASCADE)  # CID 10033
+    ct_irradiation_event_data = models.ForeignKey(
+        CtIrradiationEventData, on_delete=models.CASCADE
+    )
+    reconstruction_algorithm = models.ForeignKey(
+        ContextID, blank=True, null=True, on_delete=models.CASCADE
+    )  # CID 10033
 
 
 class CtXRaySourceParameters(models.Model):
     """Container in TID 10013 to hold CT x-ray source parameters
     """
-    ct_irradiation_event_data = models.ForeignKey(CtIrradiationEventData, on_delete=models.CASCADE)
+
+    ct_irradiation_event_data = models.ForeignKey(
+        CtIrradiationEventData, on_delete=models.CASCADE
+    )
     identification_of_the_xray_source = models.TextField(blank=True, null=True)
     kvp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    maximum_xray_tube_current = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    xray_tube_current = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    exposure_time_per_rotation = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    xray_filter_aluminum_equivalent = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    maximum_xray_tube_current = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    xray_tube_current = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    exposure_time_per_rotation = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    xray_filter_aluminum_equivalent = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
 
 
 class ScanningLength(models.Model):  # TID 10014
@@ -1265,39 +1937,80 @@ class ScanningLength(models.Model):  # TID 10014
     From DICOM Part 16:
         No description
     """
-    ct_irradiation_event_data = models.ForeignKey(CtIrradiationEventData, on_delete=models.CASCADE)
-    scanning_length = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    length_of_reconstructable_volume = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    exposed_range = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+
+    ct_irradiation_event_data = models.ForeignKey(
+        CtIrradiationEventData, on_delete=models.CASCADE
+    )
+    scanning_length = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    length_of_reconstructable_volume = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    exposed_range = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     top_z_location_of_reconstructable_volume = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True)
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     bottom_z_location_of_reconstructable_volume = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True)
-    top_z_location_of_scanning_length = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    bottom_z_location_of_scanning_length = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    top_z_location_of_scanning_length = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    bottom_z_location_of_scanning_length = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     frame_of_reference_uid = models.TextField(blank=True, null=True)
 
 
 class SizeSpecificDoseEstimation(models.Model):
     """Container in TID 10013 to hold size specific dose estimation details
     """
+
     # TODO: Add this to the rdsr extraction routines. Issue #168
-    ct_irradiation_event_data = models.ForeignKey(CtIrradiationEventData, on_delete=models.CASCADE)
+    ct_irradiation_event_data = models.ForeignKey(
+        CtIrradiationEventData, on_delete=models.CASCADE
+    )
     measurement_method = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='ssde_method', on_delete=models.CASCADE)  # CID 10023
-    measured_lateral_dimension = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    measured_ap_dimension = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    derived_effective_diameter = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    water_equivalent_diameter = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="ssde_method",
+        on_delete=models.CASCADE,
+    )  # CID 10023
+    measured_lateral_dimension = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    measured_ap_dimension = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    derived_effective_diameter = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    water_equivalent_diameter = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     water_equivalent_diameter_method = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='ssde_wed_method', on_delete=models.CASCADE)  # CID 10024
-    wed_estimate_location_z = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="ssde_wed_method",
+        on_delete=models.CASCADE,
+    )  # CID 10024
+    wed_estimate_location_z = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
 
 
 class WEDSeriesOrInstances(models.Model):
     """From TID 10013 Series or Instance used for Water Equivalent Diameter estimation
     """
-    size_specific_dose_estimation = models.ForeignKey(SizeSpecificDoseEstimation, on_delete=models.CASCADE)
+
+    size_specific_dose_estimation = models.ForeignKey(
+        SizeSpecificDoseEstimation, on_delete=models.CASCADE
+    )
     wed_series_or_instance = models.TextField(blank=True, null=True)  # referenced UID
 
 
@@ -1307,26 +2020,46 @@ class CtDoseCheckDetails(models.Model):  # TID 10015
     From DICOM Part 16:
         This template records details related to the use of the NEMA Dose Check Standard (NEMA XR-25-2010).
     """
-    ct_irradiation_event_data = models.ForeignKey(CtIrradiationEventData, on_delete=models.CASCADE)
+
+    ct_irradiation_event_data = models.ForeignKey(
+        CtIrradiationEventData, on_delete=models.CASCADE
+    )
     dlp_alert_value_configured = models.NullBooleanField()
     ctdivol_alert_value_configured = models.NullBooleanField()
-    dlp_alert_value = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    ctdivol_alert_value = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    accumulated_dlp_forward_estimate = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    accumulated_ctdivol_forward_estimate = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    dlp_alert_value = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    ctdivol_alert_value = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    accumulated_dlp_forward_estimate = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    accumulated_ctdivol_forward_estimate = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     # alert_ added to allow two fields that are in different containers in std
     alert_reason_for_proceeding = models.TextField(blank=True, null=True)
     dlp_notification_value_configured = models.NullBooleanField()
     ctdivol_notification_value_configured = models.NullBooleanField()
-    dlp_notification_value = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
-    ctdivol_notification_value = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
-    dlp_forward_estimate = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
-    ctdivol_forward_estimate = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
+    dlp_notification_value = models.DecimalField(
+        max_digits=8, decimal_places=4, blank=True, null=True
+    )
+    ctdivol_notification_value = models.DecimalField(
+        max_digits=8, decimal_places=4, blank=True, null=True
+    )
+    dlp_forward_estimate = models.DecimalField(
+        max_digits=8, decimal_places=4, blank=True, null=True
+    )
+    ctdivol_forward_estimate = models.DecimalField(
+        max_digits=8, decimal_places=4, blank=True, null=True
+    )
     # notification_ added to allow two fields that are in different containers in std
     notification_reason_for_proceeding = models.TextField(blank=True, null=True)
 
 
 # Models common to both
+
 
 class ObserverContext(models.Model):  # TID 1002
     """Observer Context TID 1002
@@ -1334,25 +2067,51 @@ class ObserverContext(models.Model):  # TID 1002
     From DICOM Part 16:
         The observer (person or device) that created the Content Items to which this context applies.
     """
+
     projection_xray_radiation_dose = models.ForeignKey(
-        ProjectionXRayRadiationDose, blank=True, null=True, on_delete=models.CASCADE)
-    ct_radiation_dose = models.ForeignKey(CtRadiationDose, blank=True, null=True, on_delete=models.CASCADE)
+        ProjectionXRayRadiationDose, blank=True, null=True, on_delete=models.CASCADE
+    )
+    ct_radiation_dose = models.ForeignKey(
+        CtRadiationDose, blank=True, null=True, on_delete=models.CASCADE
+    )
     observer_type = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid1002_observertype', on_delete=models.CASCADE)  # CID 270
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid1002_observertype",
+        on_delete=models.CASCADE,
+    )  # CID 270
     person_observer_name = models.TextField(blank=True, null=True)
     person_observer_organization_name = models.TextField(blank=True, null=True)
     person_observer_role_in_organization = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid1002_ptroleorg', on_delete=models.CASCADE)  # CID 7452
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid1002_ptroleorg",
+        on_delete=models.CASCADE,
+    )  # CID 7452
     person_observer_role_in_procedure = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid1002_ptroleproc', on_delete=models.CASCADE)  # CID 7453
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid1002_ptroleproc",
+        on_delete=models.CASCADE,
+    )  # CID 7453
     device_observer_uid = models.TextField(blank=True, null=True)
     device_observer_name = models.TextField(blank=True, null=True)
     device_observer_manufacturer = models.TextField(blank=True, null=True)
     device_observer_model_name = models.TextField(blank=True, null=True)
     device_observer_serial_number = models.TextField(blank=True, null=True)
-    device_observer_physical_location_during_observation = models.TextField(blank=True, null=True)
+    device_observer_physical_location_during_observation = models.TextField(
+        blank=True, null=True
+    )
     device_role_in_procedure = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid1002_role', on_delete=models.CASCADE)  # CID 7445
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid1002_role",
+        on_delete=models.CASCADE,
+    )  # CID 7445
 
     def __unicode__(self):
         return self.device_observer_name
@@ -1365,16 +2124,25 @@ class DeviceParticipant(models.Model):  # TID 1021
         This template describes a device participating in an activity as other than an observer or subject. E.g. for
         a dose report documenting an irradiating procedure, participants include the irradiating device.
     """
-    accumulated_xray_dose = models.ForeignKey(AccumXRayDose, blank=True, null=True, on_delete=models.CASCADE)
+
+    accumulated_xray_dose = models.ForeignKey(
+        AccumXRayDose, blank=True, null=True, on_delete=models.CASCADE
+    )
     irradiation_event_xray_detector_data = models.ForeignKey(
-        IrradEventXRayDetectorData, blank=True, null=True, on_delete=models.CASCADE)
+        IrradEventXRayDetectorData, blank=True, null=True, on_delete=models.CASCADE
+    )
     irradiation_event_xray_source_data = models.ForeignKey(
-        IrradEventXRaySourceData, blank=True, null=True, on_delete=models.CASCADE)
+        IrradEventXRaySourceData, blank=True, null=True, on_delete=models.CASCADE
+    )
     ct_accumulated_dose_data = models.ForeignKey(
-        CtAccumulatedDoseData, blank=True, null=True, on_delete=models.CASCADE)
+        CtAccumulatedDoseData, blank=True, null=True, on_delete=models.CASCADE
+    )
     ct_irradiation_event_data = models.ForeignKey(
-        CtIrradiationEventData, blank=True, null=True, on_delete=models.CASCADE)
-    device_role_in_procedure = models.ForeignKey(ContextID, blank=True, null=True, on_delete=models.CASCADE)
+        CtIrradiationEventData, blank=True, null=True, on_delete=models.CASCADE
+    )
+    device_role_in_procedure = models.ForeignKey(
+        ContextID, blank=True, null=True, on_delete=models.CASCADE
+    )
     device_name = models.TextField(blank=True, null=True)
     device_manufacturer = models.TextField(blank=True, null=True)
     device_model_name = models.TextField(blank=True, null=True)
@@ -1390,44 +2158,71 @@ class PersonParticipant(models.Model):  # TID 1020
         a dose report documenting an irradiating procedure, participants include the person administering the
         irradiation and the person authorizing the irradiation.
     """
+
     projection_xray_radiation_dose = models.ForeignKey(
-        ProjectionXRayRadiationDose, blank=True, null=True, on_delete=models.CASCADE)
-    ct_radiation_dose = models.ForeignKey(CtRadiationDose, blank=True, null=True, on_delete=models.CASCADE)
+        ProjectionXRayRadiationDose, blank=True, null=True, on_delete=models.CASCADE
+    )
+    ct_radiation_dose = models.ForeignKey(
+        CtRadiationDose, blank=True, null=True, on_delete=models.CASCADE
+    )
     irradiation_event_xray_data = models.ForeignKey(
-        IrradEventXRayData, blank=True, null=True, on_delete=models.CASCADE)
+        IrradEventXRayData, blank=True, null=True, on_delete=models.CASCADE
+    )
     ct_accumulated_dose_data = models.ForeignKey(
-        CtAccumulatedDoseData, blank=True, null=True, on_delete=models.CASCADE)
+        CtAccumulatedDoseData, blank=True, null=True, on_delete=models.CASCADE
+    )
     ct_irradiation_event_data = models.ForeignKey(
-        CtIrradiationEventData, blank=True, null=True, on_delete=models.CASCADE)
+        CtIrradiationEventData, blank=True, null=True, on_delete=models.CASCADE
+    )
     ct_dose_check_details_alert = models.ForeignKey(
-        CtDoseCheckDetails, blank=True, null=True, related_name='tid1020_alert', on_delete=models.CASCADE)
+        CtDoseCheckDetails,
+        blank=True,
+        null=True,
+        related_name="tid1020_alert",
+        on_delete=models.CASCADE,
+    )
     ct_dose_check_details_notification = models.ForeignKey(
-        CtDoseCheckDetails, blank=True, null=True, related_name='tid1020_notification', on_delete=models.CASCADE)
+        CtDoseCheckDetails,
+        blank=True,
+        null=True,
+        related_name="tid1020_notification",
+        on_delete=models.CASCADE,
+    )
     person_name = models.TextField(blank=True, null=True)
     # CharField version is a mistake and shouldn't be used
     person_role_in_procedure = models.CharField(max_length=16, blank=True)
     person_role_in_procedure_cid = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid1020_roleproc', on_delete=models.CASCADE)
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid1020_roleproc",
+        on_delete=models.CASCADE,
+    )
     person_id = models.TextField(blank=True, null=True)
     person_id_issuer = models.TextField(blank=True, null=True)
     organization_name = models.TextField(blank=True, null=True)
     # TextField version is a mistake and shouldn't be used
     person_role_in_organization = models.TextField(blank=True, null=True)
     person_role_in_organization_cid = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid1020_roleorg', on_delete=models.CASCADE)  # CID 7452
+        ContextID,
+        blank=True,
+        null=True,
+        related_name="tid1020_roleorg",
+        on_delete=models.CASCADE,
+    )  # CID 7452
 
     def __unicode__(self):
         return self.person_name
 
 
 class MedianSQL(SQLAggregate):
-    sql_function = 'Median'
-    sql_template = '%(function)s(%(field)s)'
+    sql_function = "Median"
+    sql_template = "%(function)s(%(field)s)"
     is_ordinal = True
 
 
 class Median(models.Aggregate):
-    name = 'Median'
+    name = "Median"
     sql = MedianSQL
 
     def add_to_query(self, query, alias, col, source, is_summary):
@@ -1451,4 +2246,5 @@ class UpgradeStatus(SingletonModel):
     """
     Record upgrade status activity
     """
+
     from_0_9_1_summary_fields = models.BooleanField(default=False)

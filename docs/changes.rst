@@ -4,6 +4,17 @@ OpenREM version history
 
 1.0.0b1 (2020-xx-xx)
 --------------------
+* :issue:`847`  Documentation: added copy button to commands, added prompts where appropriate
+* :issue:`845`  Docker: moved Nginx config to bind folder
+* :issue:`844`  Code quality: getting the pipelines right
+* :issue:`843`  Code quality: closing target _blank phishing vulnerability
+* :issue:`842`  Imports: ContextID code_meaning in make_skin_map and dxdetail
+* :issue:`841`  Code quality: format code with black
+* :issue:`838`  Imports: fixed issues with changed PersonName behaviour in pydicom 2.0
+* :issue:`836`  Installation: updated requirements, Docker and docs for pynetdicom 1.5, pydicom 2.0
+* :issue:`835`  Docker: fixed timeout issue with slow pagination
+* :issue:`829`  Installation: added docs for Docker install on computer without internet access
+* :issue:`827`  SkinDose: Made SkinDose results available in OpenREM and made alert triggering possible
 * :issue:`826`  Code quality: split views to make more manageable and testable
 * :issue:`824`  DICOM Networking: enabled declaration and testing of Orthanc Store SCP in Docker
 * :issue:`821`  Code quality: fixed literal comparisons Docker was complaining about
@@ -26,6 +37,8 @@ OpenREM version history
 * :issue:`795`  Exports: included acquisition name in PHE radiographic projection export
 * :issue:`793`  Installation: added Docker installation
 * :issue:`791`  Exports: prevented error when trying to export DX data that has no filter information
+* :issue:`790`  Python 3: remove basestring type
+* :issue:`788`  Python 3: Docker only installs for Windows fixes Celery 3/Python 3.7 incompatibility
 * :issue:`787`  Interface: fixed login error
 * :issue:`777`  Updated OpenREM to use pydicom 1.3
 * :issue:`744`  Added overwrite mode to size import

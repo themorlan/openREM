@@ -46,11 +46,11 @@ def get_not_pt(dataset):
     from remapp.tools.get_values import get_value_kw
     from remapp.models import NotPatientIndicatorsID, NotPatientIndicatorsName
 
-    patient_id = get_value_kw('PatientID', dataset)
-    patient_name = get_value_kw('PatientName', dataset)
+    patient_id = get_value_kw("PatientID", dataset)
+    patient_name = get_value_kw("PatientName", dataset)
 
-    id_indicators = NotPatientIndicatorsID.objects.order_by('id')
-    name_indicators = NotPatientIndicatorsName.objects.order_by('id')
+    id_indicators = NotPatientIndicatorsID.objects.order_by("id")
+    name_indicators = NotPatientIndicatorsName.objects.order_by("id")
 
     id_contains = []
     name_contains = []
@@ -62,8 +62,11 @@ def get_not_pt(dataset):
 
     if patient_name:
         for pattern in name_indicators:
-            if fnmatch.fnmatch(patient_name.family_comma_given().lower(), pattern.not_patient_name.lower()):
+            if fnmatch.fnmatch(
+                patient_name.family_comma_given().lower(),
+                pattern.not_patient_name.lower(),
+            ):
                 name_contains += [pattern.not_patient_name.lower()]
 
     if id_contains or name_contains:
-        return u'IDs: {0} | Names: {1}'.format(u' '.join(id_contains), u' '.join(name_contains))
+        return f"IDs: {' '.join(id_contains)} | Names: {' '.join(name_contains)}"

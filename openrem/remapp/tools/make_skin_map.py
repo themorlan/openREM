@@ -55,14 +55,9 @@ logger = logging.getLogger('remapp.tools.make_skin_map')
 
 @shared_task(name='remapp.tools.make_skin_map', ignore_result=True)
 def make_skin_map(study_pk=None):
-    """
-    Calculate and save skin-dose map
-
-    :param study_pk: primary key of study used for calculations
-    :return: dictionary with skin-dose map and accompanying information
-    """
     import remapp.tools.openskin.calc_exp_map as calc_exp_map
-    from remapp.models import GeneralStudyModuleAttr
+    from remapp.models import GeneralStudyModuleAttr, HighDoseMetricAlertSettings, SkinDoseMapResults
+    from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
     from openremproject.settings import MEDIA_ROOT
     import pickle
     import gzip
@@ -72,7 +67,11 @@ def make_skin_map(study_pk=None):
 
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
-
+        HighDoseMetricAlertSettings.objects.get()
+        send_alert_emails_skin = \
+            HighDoseMetricAlertSettings.objects.values_list('send_high_dose_metric_alert_emails_skin', flat=True)[0]
+        send_alert_emails_ref = \
+            HighDoseMetricAlertSettings.objects.values_list('send_high_dose_metric_alert_emails_ref', flat=True)[0]
         pat_mass_source = u'assumed'
         try:
             pat_mass = float(study.patientstudymoduleattr_set.get().patient_weight)
@@ -202,7 +201,7 @@ def make_skin_map(study_pk=None):
                         pass
 
             if irrad.irradiation_event_type:
-                run_type = str(irrad.irradiation_event_type)
+                run_type = irrad.irradiation_event_type.code_meaning
             else:
                 run_type = None
             try:
@@ -229,7 +228,26 @@ def make_skin_map(study_pk=None):
             my_exp_map.my_dose.total_dose = np.rot90(my_exp_map.my_dose.total_dose)
         except ValueError:
             pass
-
+        try:
+            SkinDoseMapResults.objects.get(general_study_module_attributes=study).delete()
+        except ObjectDoesNotExist:
+            pass
+        # assume that calculation failed if max(peak_skin_dose) == 0 ==> set peak_skin_dose to None
+        max_skin_dose = np.max(my_exp_map.my_dose.total_dose)
+        max_skin_dose = max_skin_dose if max_skin_dose > 0 else None
+        SkinDoseMapResults(general_study_module_attributes=study,
+                           patient_orientation=pat_pos,
+                           patient_mass=pat_mass,
+                           patient_mass_assumed=pat_mass_source,
+                           patient_size_assumed=pat_height_source,
+                           patient_orientation_assumed=pat_pos_source,
+                           phantom_width=my_exp_map.phantom.phantom_width,
+                           phantom_height=my_exp_map.phantom.phantom_height,
+                           phantom_depth=my_exp_map.phantom.phantom_depth,
+                           patient_size=pat_height,
+                           skin_map_version=__skin_map_version__,
+                           peak_skin_dose=max_skin_dose,
+                           ).save()
         return_structure = {
             'skin_map': my_exp_map.my_dose.total_dose.flatten().tolist(),
             'width': my_exp_map.phantom.width,
@@ -264,3 +282,6 @@ def make_skin_map(study_pk=None):
 
         with gzip.open(os.path.join(skin_map_path, 'skin_map_' + str(study_pk) + '.p'), 'wb') as pickle_file:
             pickle.dump(return_structure, pickle_file)
+
+        if send_alert_emails_skin or send_alert_emails_ref:
+            send_rf_high_dose_alert_email(study.pk)

@@ -8,7 +8,6 @@ from remapp.extractors import mam
 from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
 
 
-
 class ImportMGImgHologicPropProjection(TestCase):
     def test_import_mg_img_hol_proj(self):
         """
@@ -26,12 +25,21 @@ class ImportMGImgHologicPropProjection(TestCase):
         study = GeneralStudyModuleAttr.objects.all()[0]
 
         # Test that laterality is recorded (see https://bitbucket.org/openrem/openrem/issues/411)
-        self.assertEqual(study.projectionxrayradiationdose_set.get().irradeventxraydata_set.get(
-            ).laterality.code_meaning, u'Right')
+        self.assertEqual(
+            study.projectionxrayradiationdose_set.get()
+            .irradeventxraydata_set.get()
+            .laterality.code_meaning,
+            u"Right",
+        )
 
         # Test that accumulated AGD is recorded (see issue 411 again)
-        self.assertAlmostEqual(study.projectionxrayradiationdose_set.get().accumxraydose_set.get(
-            ).accummammographyxraydose_set.all()[0].accumulated_average_glandular_dose, Decimal(0.26))
+        self.assertAlmostEqual(
+            study.projectionxrayradiationdose_set.get()
+            .accumxraydose_set.get()
+            .accummammographyxraydose_set.all()[0]
+            .accumulated_average_glandular_dose,
+            Decimal(0.26),
+        )
 
         # Test summary fields
         self.assertAlmostEqual(study.total_agd_right, Decimal(0.26))

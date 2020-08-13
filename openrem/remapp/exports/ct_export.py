@@ -32,8 +32,16 @@ import logging
 from django.core.exceptions import ObjectDoesNotExist
 from celery import shared_task
 
-from .export_common import (get_common_data, common_headers, create_xlsx, create_csv, write_export,
-                            create_summary_sheet, abort_if_zero_studies, create_export_task)
+from .export_common import (
+    get_common_data,
+    common_headers,
+    create_xlsx,
+    create_csv,
+    write_export,
+    create_summary_sheet,
+    abort_if_zero_studies,
+    create_export_task,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -56,9 +64,15 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     from ..interface.mod_filters import ct_acq_filter
 
     datestamp = datetime.datetime.now()
-    tsk = create_export_task(celery_uuid=ctxlsx.request.id, modality='CT', export_type='XLSX_export',
-                             date_stamp=datestamp, pid=bool(pid and (name or patid)), user=user,
-                             filters_dict=filterdict)
+    tsk = create_export_task(
+        celery_uuid=ctxlsx.request.id,
+        modality="CT",
+        export_type="XLSX_export",
+        date_stamp=datestamp,
+        pid=bool(pid and (name or patid)),
+        user=user,
+        filters_dict=filterdict,
+    )
 
     tmpxlsx, book = create_xlsx(tsk)
     if not tmpxlsx:
@@ -72,77 +86,88 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         return
 
     # Add summary sheet and all data sheet
-    summarysheet = book.add_worksheet(u"Summary")
-    wsalldata = book.add_worksheet(u'All data')
+    summarysheet = book.add_worksheet("Summary")
+    wsalldata = book.add_worksheet("All data")
 
     book = text_and_date_formats(book, wsalldata, pid=pid, name=name, patid=patid)
 
     # Some prep
     commonheaders = common_headers(pid=pid, name=name, patid=patid)
     commonheaders += [
-        u'DLP total (mGy.cm)',
-        ]
+        "DLP total (mGy.cm)",
+    ]
     protocolheaders = commonheaders + [
-        u'Protocol',
-        u'Type',
-        u'Exposure time',
-        u'Scanning length',
-        u'Slice thickness',
-        u'Total collimation',
-        u'Pitch',
-        u'No. sources',
-        u'CTDIvol',
-        u'Phantom',
-        u'DLP',
-        u'S1 name',
-        u'S1 kVp',
-        u'S1 max mA',
-        u'S1 mA',
-        u'S1 Exposure time/rotation',
-        u'S2 name',
-        u'S2 kVp',
-        u'S2 max mA',
-        u'S2 mA',
-        u'S2 Exposure time/rotation',
-        u'mA Modulation type',
-        u'Dose check details',
-        u'Comments',
-        ]
+        "Protocol",
+        "Type",
+        "Exposure time",
+        "Scanning length",
+        "Slice thickness",
+        "Total collimation",
+        "Pitch",
+        "No. sources",
+        "CTDIvol",
+        "Phantom",
+        "DLP",
+        "S1 name",
+        "S1 kVp",
+        "S1 max mA",
+        "S1 mA",
+        "S1 Exposure time/rotation",
+        "S2 name",
+        "S2 kVp",
+        "S2 max mA",
+        "S2 mA",
+        "S2 Exposure time/rotation",
+        "mA Modulation type",
+        "Dose check details",
+        "Comments",
+    ]
 
     # Generate list of protocols in queryset and create worksheets for each
-    tsk.progress = u'Generating list of protocols in the dataset...'
+    tsk.progress = "Generating list of protocols in the dataset..."
     tsk.save()
 
-    book, sheet_list = generate_sheets(e, book, protocolheaders, modality=u"CT", pid=pid, name=name, patid=patid)
+    book, sheet_list = generate_sheets(
+        e, book, protocolheaders, modality="CT", pid=pid, name=name, patid=patid
+    )
 
-    max_events_dict = e.aggregate(Max('ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events'))
-    max_events = max_events_dict['ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events__max']
+    max_events_dict = e.aggregate(
+        Max(
+            "ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events"
+        )
+    )
+    max_events = max_events_dict[
+        "ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events__max"
+    ]
 
     alldataheaders = list(commonheaders)
 
-    tsk.progress = u'Generating headers for the all data sheet...'
+    tsk.progress = "Generating headers for the all data sheet..."
     tsk.save()
 
     if not max_events:
         max_events = 1
     alldataheaders += _generate_all_data_headers_ct(max_events)
 
-    wsalldata.write_row('A1', alldataheaders)
+    wsalldata.write_row("A1", alldataheaders)
     numcolumns = len(alldataheaders) - 1
     numrows = e.count()
     wsalldata.autofilter(0, 0, numrows, numcolumns)
 
     for row, exams in enumerate(e):
 
-        tsk.progress = u'Writing study {0} of {1} to All data sheet and individual protocol sheets'.format(
-            row + 1, numrows)
+        tsk.progress = f"Writing study {row + 1} of {numrows} to All data sheet and individual protocol sheets"
         tsk.save()
 
         try:
-            common_exam_data = get_common_data(u"CT", exams, pid, name, patid)
+            common_exam_data = get_common_data("CT", exams, pid, name, patid)
             all_exam_data = list(common_exam_data)
 
-            for s in exams.ctradiationdose_set.get().ctirradiationeventdata_set.order_by('id'):
+            for (
+                s
+            ) in exams.ctradiationdose_set.get().ctirradiationeventdata_set.order_by(
+                "id"
+            ):
                 # Get series data
                 series_data = _ct_get_series_data(s)
                 # Add series to all data
@@ -150,26 +175,32 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
                 # Add series data to series tab
                 protocol = s.acquisition_protocol
                 if not protocol:
-                    protocol = u'Unknown'
+                    protocol = "Unknown"
                 tabtext = sheet_name(protocol)
-                sheet_list[tabtext]['count'] += 1
-                sheet_list[tabtext]['sheet'].write_row(sheet_list[tabtext]['count'], 0, common_exam_data + series_data)
+                sheet_list[tabtext]["count"] += 1
+                sheet_list[tabtext]["sheet"].write_row(
+                    sheet_list[tabtext]["count"], 0, common_exam_data + series_data
+                )
 
             wsalldata.write_row(row + 1, 0, all_exam_data)
         except ObjectDoesNotExist:
-            error_message = u"DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number" \
-                            u" {3} - maybe database entry was deleted as part of importing later version of same" \
-                            u" study?".format(row + 1, numrows, exams.study_instance_uid, exams.accession_number)
+            error_message = (
+                "DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number"
+                " {3} - maybe database entry was deleted as part of importing later version of same"
+                " study?".format(
+                    row + 1, numrows, exams.study_instance_uid, exams.accession_number
+                )
+            )
             logger.error(error_message)
             wsalldata.write(row + 1, 0, error_message)
 
     create_summary_sheet(tsk, e, book, summarysheet, sheet_list)
 
     book.close()
-    tsk.progress = u'XLSX book written.'
+    tsk.progress = "XLSX book written."
     tsk.save()
 
-    xlsxfilename = u"ctexport{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
+    xlsxfilename = "ctexport{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
 
     write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
 
@@ -191,9 +222,15 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
     from ..interface.mod_filters import ct_acq_filter
 
     datestamp = datetime.datetime.now()
-    tsk = create_export_task(celery_uuid=ct_csv.request.id, modality='CT', export_type='CSV export',
-                             date_stamp=datestamp, pid=bool(pid and (name or patid)), user=user,
-                             filters_dict=filterdict)
+    tsk = create_export_task(
+        celery_uuid=ct_csv.request.id,
+        modality="CT",
+        export_type="CSV export",
+        date_stamp=datestamp,
+        pid=bool(pid and (name or patid)),
+        user=user,
+        filters_dict=filterdict,
+    )
 
     tmpfile, writer = create_csv(tsk)
     if not tmpfile:
@@ -206,51 +243,70 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
     if abort_if_zero_studies(tsk.num_records, tsk):
         return
 
-    tsk.progress = u'{0} studies in query.'.format(tsk.num_records)
+    tsk.progress = "{0} studies in query.".format(tsk.num_records)
     tsk.save()
 
     headings = common_headers(pid=pid, name=name, patid=patid)
     headings += [
-        u'DLP total (mGy.cm)',
-        ]
+        "DLP total (mGy.cm)",
+    ]
 
-    max_events_dict = e.aggregate(Max('ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events'))
-    max_events = max_events_dict['ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events__max']
+    max_events_dict = e.aggregate(
+        Max(
+            "ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events"
+        )
+    )
+    max_events = max_events_dict[
+        "ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events__max"
+    ]
     if not max_events:
         max_events = 1
     headings += _generate_all_data_headers_ct(max_events)
     writer.writerow(headings)
 
-    tsk.progress = u'CSV header row written.'
+    tsk.progress = "CSV header row written."
     tsk.save()
 
     for i, exams in enumerate(e):
-        tsk.progress = u"{0} of {1}".format(i+1, tsk.num_records)
+        tsk.progress = "{0} of {1}".format(i + 1, tsk.num_records)
         tsk.save()
         try:
-            exam_data = get_common_data(u"CT", exams, pid, name, patid)
-            for s in exams.ctradiationdose_set.get().ctirradiationeventdata_set.order_by('id'):
+            exam_data = get_common_data("CT", exams, pid, name, patid)
+            for (
+                s
+            ) in exams.ctradiationdose_set.get().ctirradiationeventdata_set.order_by(
+                "id"
+            ):
                 # Get series data
                 exam_data += _ct_get_series_data(s)
             # Clear out any commas
             for index, item in enumerate(exam_data):
                 if item is None:
-                    exam_data[index] = ''
-                if isinstance(item, str) and ',' in item:
-                    exam_data[index] = item.replace(',', ';')
+                    exam_data[index] = ""
+                if isinstance(item, str) and "," in item:
+                    exam_data[index] = item.replace(",", ";")
             writer.writerow([str(data_string) for data_string in exam_data])
         except ObjectDoesNotExist:
-            error_message = u"DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number" \
-                            u" {3} - maybe database entry was deleted as part of importing later version of same" \
-                            u" study?".format(i + 1, tsk.num_records, exams.study_instance_uid, exams.accession_number)
+            error_message = (
+                "DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number"
+                " {3} - maybe database entry was deleted as part of importing later version of same"
+                " study?".format(
+                    i + 1,
+                    tsk.num_records,
+                    exams.study_instance_uid,
+                    exams.accession_number,
+                )
+            )
             logger.error(error_message)
-            writer.writerow([error_message, ])
+            writer.writerow(
+                [error_message,]
+            )
 
-    tsk.progress = u'All study data written.'
+    tsk.progress = "All study data written."
     tsk.save()
 
     tmpfile.close()
-    tsk.status = u'COMPLETE'
+    tsk.status = "COMPLETE"
     tsk.processtime = (datetime.datetime.now() - datestamp).total_seconds()
     tsk.save()
 
@@ -265,31 +321,31 @@ def _generate_all_data_headers_ct(max_events):
     repeating_series_headers = []
     for h in range(int(max_events)):
         repeating_series_headers += [
-            u'E' + str(h+1) + u' Protocol',
-            u'E' + str(h+1) + u' Type',
-            u'E' + str(h+1) + u' Exposure time',
-            u'E' + str(h+1) + u' Scanning length',
-            u'E' + str(h+1) + u' Slice thickness',
-            u'E' + str(h+1) + u' Total collimation',
-            u'E' + str(h+1) + u' Pitch',
-            u'E' + str(h+1) + u' No. sources',
-            u'E' + str(h+1) + u' CTDIvol',
-            u'E' + str(h+1) + u' Phantom',
-            u'E' + str(h+1) + u' DLP',
-            u'E' + str(h+1) + u' S1 name',
-            u'E' + str(h+1) + u' S1 kVp',
-            u'E' + str(h+1) + u' S1 max mA',
-            u'E' + str(h+1) + u' S1 mA',
-            u'E' + str(h+1) + u' S1 Exposure time/rotation',
-            u'E' + str(h+1) + u' S2 name',
-            u'E' + str(h+1) + u' S2 kVp',
-            u'E' + str(h+1) + u' S2 max mA',
-            u'E' + str(h+1) + u' S2 mA',
-            u'E' + str(h+1) + u' S2 Exposure time/rotation',
-            u'E' + str(h+1) + u' mA Modulation type',
-            u'E' + str(h+1) + u' Dose check details',
-            u'E' + str(h+1) + u' Comments',
-            ]
+            "E" + str(h + 1) + " Protocol",
+            "E" + str(h + 1) + " Type",
+            "E" + str(h + 1) + " Exposure time",
+            "E" + str(h + 1) + " Scanning length",
+            "E" + str(h + 1) + " Slice thickness",
+            "E" + str(h + 1) + " Total collimation",
+            "E" + str(h + 1) + " Pitch",
+            "E" + str(h + 1) + " No. sources",
+            "E" + str(h + 1) + " CTDIvol",
+            "E" + str(h + 1) + " Phantom",
+            "E" + str(h + 1) + " DLP",
+            "E" + str(h + 1) + " S1 name",
+            "E" + str(h + 1) + " S1 kVp",
+            "E" + str(h + 1) + " S1 max mA",
+            "E" + str(h + 1) + " S1 mA",
+            "E" + str(h + 1) + " S1 Exposure time/rotation",
+            "E" + str(h + 1) + " S2 name",
+            "E" + str(h + 1) + " S2 kVp",
+            "E" + str(h + 1) + " S2 max mA",
+            "E" + str(h + 1) + " S2 mA",
+            "E" + str(h + 1) + " S2 Exposure time/rotation",
+            "E" + str(h + 1) + " mA Modulation type",
+            "E" + str(h + 1) + " Dose check details",
+            "E" + str(h + 1) + " Comments",
+        ]
 
     return repeating_series_headers
 
@@ -298,10 +354,10 @@ def _ct_get_series_data(s):
     from collections import OrderedDict
 
     try:
-        if s.ctdiw_phantom_type.code_value == u'113691':
-            phantom = u'32 cm'
-        elif s.ctdiw_phantom_type.code_value == u'113690':
-            phantom = u'16 cm'
+        if s.ctdiw_phantom_type.code_value == "113691":
+            phantom = "32 cm"
+        elif s.ctdiw_phantom_type.code_value == "113690":
+            phantom = "16 cm"
         else:
             phantom = s.ctdiw_phantom_type.code_meaning
     except AttributeError:
@@ -324,93 +380,148 @@ def _ct_get_series_data(s):
         s.mean_ctdivol,
         phantom,
         s.dlp,
-        ]
+    ]
     source_parameters = OrderedDict()
-    source_parameters[0] = {'id': None, 'kvp': None, 'max_current': None, 'current': None, 'time': None}
-    source_parameters[1] = {'id': None, 'kvp': None, 'max_current': None, 'current': None, 'time': None}
+    source_parameters[0] = {
+        "id": None,
+        "kvp": None,
+        "max_current": None,
+        "current": None,
+        "time": None,
+    }
+    source_parameters[1] = {
+        "id": None,
+        "kvp": None,
+        "max_current": None,
+        "current": None,
+        "time": None,
+    }
     try:
         for index, source in enumerate(s.ctxraysourceparameters_set.all()):
-            source_parameters[index]['id'] = source.identification_of_the_xray_source
-            source_parameters[index]['kvp'] = source.kvp
-            source_parameters[index]['max_current'] = source.maximum_xray_tube_current
-            source_parameters[index]['current'] = source.xray_tube_current
-            source_parameters[index]['time'] = source.exposure_time_per_rotation
+            source_parameters[index]["id"] = source.identification_of_the_xray_source
+            source_parameters[index]["kvp"] = source.kvp
+            source_parameters[index]["max_current"] = source.maximum_xray_tube_current
+            source_parameters[index]["current"] = source.xray_tube_current
+            source_parameters[index]["time"] = source.exposure_time_per_rotation
     except (ObjectDoesNotExist, KeyError):
         logger.debug("Export: ctxraysourceparameters_set does not exist")
     for source in source_parameters:
         seriesdata += [
-            source_parameters[source]['id'],
-            source_parameters[source]['kvp'],
-            source_parameters[source]['max_current'],
-            source_parameters[source]['current'],
-            source_parameters[source]['time'],
+            source_parameters[source]["id"],
+            source_parameters[source]["kvp"],
+            source_parameters[source]["max_current"],
+            source_parameters[source]["current"],
+            source_parameters[source]["time"],
         ]
     try:
         dose_check = s.ctdosecheckdetails_set.get()
         dose_check_string = []
-        if dose_check.dlp_alert_value_configured or dose_check.ctdivol_alert_value_configured:
-            dose_check_string += [u"Dose Check Alerts: "]
+        if (
+            dose_check.dlp_alert_value_configured
+            or dose_check.ctdivol_alert_value_configured
+        ):
+            dose_check_string += ["Dose Check Alerts: "]
             if dose_check.dlp_alert_value_configured:
                 dose_check_string += [
-                    u"DLP alert is configured at {0:.2f} mGy.cm with ".format(dose_check.dlp_alert_value)]
+                    "DLP alert is configured at {0:.2f} mGy.cm with ".format(
+                        dose_check.dlp_alert_value
+                    )
+                ]
                 if dose_check.accumulated_dlp_forward_estimate:
-                    dose_check_string += [u"an accumulated forward estimate of {0:.2f} mGy.cm. ".format(
-                        dose_check.accumulated_dlp_forward_estimate)]
+                    dose_check_string += [
+                        "an accumulated forward estimate of {0:.2f} mGy.cm. ".format(
+                            dose_check.accumulated_dlp_forward_estimate
+                        )
+                    ]
                 else:
-                    dose_check_string += [u"no accumulated forward estimate recorded. "]
+                    dose_check_string += ["no accumulated forward estimate recorded. "]
             if dose_check.ctdivol_alert_value_configured:
                 dose_check_string += [
-                    u"CTDIvol alert is configured at {0:.2f} mGy with ".format(dose_check.ctdivol_alert_value)]
+                    "CTDIvol alert is configured at {0:.2f} mGy with ".format(
+                        dose_check.ctdivol_alert_value
+                    )
+                ]
                 if dose_check.accumulated_ctdivol_forward_estimate:
-                    dose_check_string += [u"an accumulated forward estimate of {0:.2f} mGy. ".format(
-                        dose_check.accumulated_ctdivol_forward_estimate)]
+                    dose_check_string += [
+                        "an accumulated forward estimate of {0:.2f} mGy. ".format(
+                            dose_check.accumulated_ctdivol_forward_estimate
+                        )
+                    ]
                 else:
-                    dose_check_string += [u"no accumulated forward estimate recorded. "]
+                    dose_check_string += ["no accumulated forward estimate recorded. "]
             if dose_check.alert_reason_for_proceeding:
-                dose_check_string += [u"Reason for proceeding: {0}. ".format(dose_check.alert_reason_for_proceeding)]
+                dose_check_string += [
+                    "Reason for proceeding: {0}. ".format(
+                        dose_check.alert_reason_for_proceeding
+                    )
+                ]
             try:
                 dose_check_person_alert = dose_check.tid1020_alert.get()
                 if dose_check_person_alert.person_name:
                     dose_check_string += [
-                        u"Person authorizing irradiation: {0}. ".format(dose_check_person_alert.person_name)]
+                        "Person authorizing irradiation: {0}. ".format(
+                            dose_check_person_alert.person_name
+                        )
+                    ]
             except ObjectDoesNotExist:
                 pass
-        if dose_check.dlp_notification_value_configured or dose_check.ctdivol_notification_value_configured:
-            dose_check_string += [u"Dose Check Notifications: "]
+        if (
+            dose_check.dlp_notification_value_configured
+            or dose_check.ctdivol_notification_value_configured
+        ):
+            dose_check_string += ["Dose Check Notifications: "]
             if dose_check.dlp_notification_value_configured:
                 dose_check_string += [
-                    u"DLP notification is configured at {0:.2f} mGy.cm with ".format(dose_check.dlp_notification_value)]
+                    "DLP notification is configured at {0:.2f} mGy.cm with ".format(
+                        dose_check.dlp_notification_value
+                    )
+                ]
                 if dose_check.dlp_forward_estimate:
                     dose_check_string += [
-                        u"an accumulated forward estimate of {0:.2f} mGy.cm. ".format(dose_check.dlp_forward_estimate)]
+                        "an accumulated forward estimate of {0:.2f} mGy.cm. ".format(
+                            dose_check.dlp_forward_estimate
+                        )
+                    ]
                 else:
-                    dose_check_string += [u"no accumulated forward estimate recorded. "]
+                    dose_check_string += ["no accumulated forward estimate recorded. "]
             if dose_check.ctdivol_notification_value_configured:
-                dose_check_string += [u"CTDIvol notification is configured at {0:.2f} mGy with ".format(
-                    dose_check.ctdivol_notification_value)]
+                dose_check_string += [
+                    "CTDIvol notification is configured at {0:.2f} mGy with ".format(
+                        dose_check.ctdivol_notification_value
+                    )
+                ]
                 if dose_check.ctdivol_forward_estimate:
                     dose_check_string += [
-                        u"a forward estimate of {0:.2f} mGy. ".format(dose_check.ctdivol_forward_estimate)]
+                        "a forward estimate of {0:.2f} mGy. ".format(
+                            dose_check.ctdivol_forward_estimate
+                        )
+                    ]
                 else:
-                    dose_check_string += [u"no forward estimate recorded. "]
+                    dose_check_string += ["no forward estimate recorded. "]
             if dose_check.notification_reason_for_proceeding:
                 dose_check_string += [
-                    u"Reason for proceeding: {0}. ".format(dose_check.notification_reason_for_proceeding)]
+                    "Reason for proceeding: {0}. ".format(
+                        dose_check.notification_reason_for_proceeding
+                    )
+                ]
             try:
                 dose_check_person_notification = dose_check.tid1020_notification.get()
                 if dose_check_person_notification.person_name:
                     dose_check_string += [
-                        u"Person authorizing irradiation: {0}. ".format(dose_check_person_notification.person_name)]
+                        "Person authorizing irradiation: {0}. ".format(
+                            dose_check_person_notification.person_name
+                        )
+                    ]
             except ObjectDoesNotExist:
                 pass
-        dose_check_string = ''.join(dose_check_string)
+        dose_check_string = "".join(dose_check_string)
     except ObjectDoesNotExist:
         dose_check_string = ""
     seriesdata += [
         s.xray_modulation_type,
         dose_check_string,
         s.comment,
-        ]
+    ]
     return seriesdata
 
 
@@ -429,8 +540,15 @@ def ct_phe_2019(filterdict, user=None):
     from ..interface.mod_filters import ct_acq_filter
 
     datestamp = datetime.datetime.now()
-    tsk = create_export_task(celery_uuid=ct_phe_2019.request.id, modality='CT', export_type='PHE CT 2019 export',
-                             date_stamp=datestamp, pid=False, user=user, filters_dict=filterdict)
+    tsk = create_export_task(
+        celery_uuid=ct_phe_2019.request.id,
+        modality="CT",
+        export_type="PHE CT 2019 export",
+        date_stamp=datestamp,
+        pid=False,
+        user=user,
+        filters_dict=filterdict,
+    )
 
     tmp_xlsx, book = create_xlsx(tsk)
     if not tmp_xlsx:
@@ -443,36 +561,36 @@ def ct_phe_2019(filterdict, user=None):
     if abort_if_zero_studies(tsk.num_records, tsk):
         return
 
-    tsk.progress = u'{0} studies in query.'.format(tsk.num_records)
+    tsk.progress = "{0} studies in query.".format(tsk.num_records)
     tsk.save()
 
     headings = [
-        u'Patient No',
-        u'Age (yrs)',
-        u'Weight (kg)',
-        u'Height (cm)',
+        "Patient No",
+        "Age (yrs)",
+        "Weight (kg)",
+        "Height (cm)",
     ]
-    for x in range(4):  #pylint: disable=unused-variable
+    for x in range(4):  # pylint: disable=unused-variable
         headings += [
-            u'Imaged length',
-            u'Start position',
-            u'End position',
-            u'kV',
-            u'CTDI phantom',
-            u'Scan FOV (mm)',
-            u'CTDIvol (mGy)*',
-            u'DLP (mGy.cm)*',
+            "Imaged length",
+            "Start position",
+            "End position",
+            "kV",
+            "CTDI phantom",
+            "Scan FOV (mm)",
+            "CTDIvol (mGy)*",
+            "DLP (mGy.cm)*",
         ]
     headings += [
-        u"Total DLP* (whole scan) mGy.cm",
-        u"Patient comments",
+        "Total DLP* (whole scan) mGy.cm",
+        "Patient comments",
     ]
     sheet = book.add_worksheet("PHE CT 2019")
     sheet.write_row(0, 0, headings)
 
     num_rows = exams.count()
     for row, exam in enumerate(exams):
-        tsk.progress = u"Writing study {0} of {1}".format(row+1, num_rows)
+        tsk.progress = "Writing study {0} of {1}".format(row + 1, num_rows)
         tsk.save()
 
         exam_data = []
@@ -485,30 +603,41 @@ def ct_phe_2019(filterdict, user=None):
             patient_age_decimal = patient_study_module.patient_age_decimal
             patient_size = patient_study_module.patient_size
             try:
-                patient_size = patient_study_module.patient_size * Decimal(100.)
+                patient_size = patient_study_module.patient_size * Decimal(100.0)
             except TypeError:
                 pass
             patient_weight = patient_study_module.patient_weight
         except ObjectDoesNotExist:
-            logger.debug(u"PHE CT 2019 export: patientstudymoduleattr_set object does not exist."
-                         u" AccNum {0}, Date {1}".format(exam.accession_number, exam.study_date))
+            logger.debug(
+                "PHE CT 2019 export: patientstudymoduleattr_set object does not exist."
+                " AccNum {0}, Date {1}".format(exam.accession_number, exam.study_date)
+            )
         exam_data += [
-            row+1,
+            row + 1,
             patient_age_decimal,
             patient_weight,
             patient_size,
         ]
         series_index = 0
-        for event in exam.ctradiationdose_set.get().ctirradiationeventdata_set.order_by('id'):
+        for event in exam.ctradiationdose_set.get().ctirradiationeventdata_set.order_by(
+            "id"
+        ):
             try:
                 ct_acquisition_type = event.ct_acquisition_type.code_meaning
-                if ct_acquisition_type in u"Constant Angle Acquisition":
+                if ct_acquisition_type in "Constant Angle Acquisition":
                     continue
-                comments += [ct_acquisition_type, ]
+                comments += [
+                    ct_acquisition_type,
+                ]
             except (ObjectDoesNotExist, AttributeError):
-                comments += ["unknown type", ]
+                comments += [
+                    "unknown type",
+                ]
             if series_index == 4:
-                exam_data += ['', '', ]
+                exam_data += [
+                    "",
+                    "",
+                ]
             series_index += 1
             scanning_length = None
             start_position = None
@@ -519,23 +648,27 @@ def ct_phe_2019(filterdict, user=None):
             try:
                 scanning_length_data = event.scanninglength_set.get()
                 scanning_length = scanning_length_data.scanning_length
-                start_position = scanning_length_data.bottom_z_location_of_scanning_length
+                start_position = (
+                    scanning_length_data.bottom_z_location_of_scanning_length
+                )
                 end_position = scanning_length_data.top_z_location_of_scanning_length
             except ObjectDoesNotExist:
                 pass
             try:
-                source_parameters = event.ctxraysourceparameters_set.order_by('pk')
+                source_parameters = event.ctxraysourceparameters_set.order_by("pk")
                 if source_parameters.count() == 2:
-                    kv = u"{0} | {1}".format(source_parameters[0].kvp, source_parameters[1].kvp)
+                    kv = "{0} | {1}".format(
+                        source_parameters[0].kvp, source_parameters[1].kvp
+                    )
                 else:
                     kv = source_parameters[0].kvp
             except (ObjectDoesNotExist, IndexError):
                 pass
             try:
-                if event.ctdiw_phantom_type.code_value == u'113691':
-                    ctdi_phantom = u'32 cm'
-                elif event.ctdiw_phantom_type.code_value == u'113690':
-                    ctdi_phantom = u'16 cm'
+                if event.ctdiw_phantom_type.code_value == "113691":
+                    ctdi_phantom = "32 cm"
+                elif event.ctdiw_phantom_type.code_value == "113690":
+                    ctdi_phantom = "16 cm"
                 else:
                     ctdi_phantom = event.ctdiw_phantom_type.code_meaning
             except AttributeError:
@@ -552,24 +685,20 @@ def ct_phe_2019(filterdict, user=None):
             ]
         ct_dose_length_product_total = None
         try:
-            ct_accumulated = exam.ctradiationdose_set.get().ctaccumulateddosedata_set.get()
+            ct_accumulated = (
+                exam.ctradiationdose_set.get().ctaccumulateddosedata_set.get()
+            )
             ct_dose_length_product_total = ct_accumulated.ct_dose_length_product_total
         except ObjectDoesNotExist:
             pass
-        sheet.write_row(row+1, 0, exam_data)
-        sheet.write(row+1, 36, ct_dose_length_product_total)
-        patient_comment_cell = u"Series types: " + u", ".join(comments)
-        sheet.write(row+1, 37, patient_comment_cell)
+        sheet.write_row(row + 1, 0, exam_data)
+        sheet.write(row + 1, 36, ct_dose_length_product_total)
+        patient_comment_cell = "Series types: " + ", ".join(comments)
+        sheet.write(row + 1, 37, patient_comment_cell)
     book.close()
-    tsk.progress = u"PHE CT 2019 export complete"
+    tsk.progress = "PHE CT 2019 export complete"
     tsk.save()
 
-    xlsxfilename = u"PHE_CT2019{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
+    xlsxfilename = "PHE_CT2019{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
 
     write_export(tsk, xlsxfilename, tmp_xlsx, datestamp)
-
-
-
-
-
-

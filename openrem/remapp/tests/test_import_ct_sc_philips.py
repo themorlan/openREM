@@ -8,11 +8,11 @@ from remapp.extractors import ct_philips
 from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
 
 
-
 class ImportCTPhilipsSC(TestCase):
     """
     Class for testing Philips SC Dose Info series
     """
+
     def test_missing_time_stamps(self):
         """
         Imports known Philips Secondary Capture object. Initially just checks it is imported as the missing
@@ -42,4 +42,3 @@ class ImportCTPhilipsSC(TestCase):
         self.assertEqual(studies[0].number_of_spiral, 3)
         self.assertEqual(studies[0].number_of_stationary, 0)
         self.assertEqual(studies[0].number_of_const_angle, 1)
-
