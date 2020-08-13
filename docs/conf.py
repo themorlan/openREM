@@ -40,7 +40,7 @@ extensions = [
     "sphinxcontrib.autoprogram",
     "sphinxarg.ext",
     "sphinx_issues",
-    'sphinx_copybutton',
+    "sphinx_copybutton",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
