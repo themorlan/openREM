@@ -3,23 +3,60 @@ Server 500 errors
 
 **Turn on debug mode**
 
+This will render a debug report in the browser - usually revealing the problem.
+
+Docker installs
+---------------
+
+Edit the ``.env.prod`` file. Find the following line and change it from ``0`` to ``1``:
+
+.. code-block:: none
+
+    DEBUG=1
+
+Restart the containers using a command line in the folder containing your intallation:
+
+.. code-block:: console
+
+    docker-compose down
+    docker-compose up -d
+
+Non-Docker Linux installs
+-------------------------
+
 Locate and edit your local_settings file
 
-* Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/openremproject/local_settings.py``
-* Other linux: ``/usr/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
-* Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
-* Windows: ``C:\Python27\Lib\site-packages\openrem\openremproject\local_settings.py``
-* Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\openremproject\local_settings.py``
+.. code-block:: console
 
-* Change the line::
+    nano /var/dose/veopenrem3/lib/python3.8/site-packages/openrem/local_settings.py
 
-    # DEBUG = True
+Find the following line and make it active:
 
-* to::
+.. code-block:: python
 
     DEBUG = True
 
-This will render a debug report in the browser - usually revealing the problem.
+Restart the web service:
+
+.. code-block:: console
+
+    sudo systemctl reload openrem-gunicorn.service
+
+Returning to normal mode
+------------------------
+
+You should always disable debug mode when you have fixed the error. If you leave debug mode
+in place, the system is likely to run out of memory as database queries are cached in this mode.
+
+Docker:
+
+* Edit ``.env.prod`` to set ``DEBUG=0``
+* Restart ``docker-compose``
+
+Non-docker Linux:
+
+* Edit ``local_settings.py`` again to comment out the ``DEBUG`` line (add a ``#`` to the start) or set it to ``False``
+* Reload the web service
 
 Once the problem is fixed, change ``DEBUG`` to ``False``, or comment it again using a ``#``. If you leave debug mode
 in place, the system is likely to run out of memory as database queries are cached.
