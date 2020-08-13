@@ -14,7 +14,13 @@ Edit the ``.env.prod`` file. Find the following line and change it from ``0`` to
 
     DEBUG=1
 
-Restart the containers using a command line in the folder containing your intallation:
+Restart the containers using a command line in the folder containing your installation. This might be enough:
+
+.. code-block:: console
+
+    docker-compose up -d
+
+If the webserver fails, then restart all the containers:
 
 .. code-block:: console
 
@@ -57,6 +63,3 @@ Non-docker Linux:
 
 * Edit ``local_settings.py`` again to comment out the ``DEBUG`` line (add a ``#`` to the start) or set it to ``False``
 * Reload the web service
-
-Once the problem is fixed, change ``DEBUG`` to ``False``, or comment it again using a ``#``. If you leave debug mode
-in place, the system is likely to run out of memory as database queries are cached.
