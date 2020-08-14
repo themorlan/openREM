@@ -4,6 +4,7 @@ OpenREM version history
 
 1.0.0b1 (2020-xx-xx)
 --------------------
+* :issue:`849`  Docker: make docker URL an env variable
 * :issue:`847`  Documentation: added copy button to commands, added prompts where appropriate
 * :issue:`845`  Docker: moved Nginx config to bind folder
 * :issue:`844`  Code quality: getting the pipelines right

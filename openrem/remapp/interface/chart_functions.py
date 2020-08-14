@@ -430,7 +430,9 @@ def average_chart_over_time_data(
     from remapp.models import Median
 
     # Exclude all zero value events from the calculations
-    database_events = database_events.exclude(**{db_value_name: 0})
+    database_events = database_events.exclude(
+        **{db_value_name: 0, db_value_name: None,}
+    )
 
     return_structure = dict()
 
