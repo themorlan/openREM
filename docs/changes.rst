@@ -11,6 +11,7 @@ OpenREM version history
 * :issue:`843`  Code quality: closing target _blank phishing vulnerability
 * :issue:`842`  Imports: ContextID code_meaning in make_skin_map and dxdetail
 * :issue:`841`  Code quality: format code with black
+* :issue:`839`  Documentation: removed redundant troubleshooting docs
 * :issue:`838`  Imports: fixed issues with changed PersonName behaviour in pydicom 2.0
 * :issue:`836`  Installation: updated requirements, Docker and docs for pynetdicom 1.5, pydicom 2.0
 * :issue:`835`  Docker: fixed timeout issue with slow pagination
