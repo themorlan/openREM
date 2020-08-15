@@ -79,7 +79,7 @@ There are two conf files in ``nginx-conf/conf.d`` - the default one is ``openrem
 named ``openrem-secure.conf.example``. Edit the second file as required, then rename them both so the secure version
 is the only one to have a ``.conf`` ending.
 
-Ensure the the following lines are update for the name of your server and the names of your signed certificate and key:
+Ensure the the following lines are updated for the name of your server and the names of your signed certificate and key:
 
 .. code-block:: nginx
 
