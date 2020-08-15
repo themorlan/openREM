@@ -204,7 +204,11 @@ First navigate to the Python openrem folder and copy the example local_settings 
     $ cp openremproject/local_settings.py{.example,}
     $ cp openremproject/wsgi.py{.example,}
 
-Edit the new local_settings file (``nano openremproject/local_settings.py``)
+Edit the new local_settings file
+
+.. code-block:: console
+
+    $ nano openremproject/local_settings.py
 
 .. code-block:: python
 
@@ -267,8 +271,12 @@ Edit the new local_settings file (``nano openremproject/local_settings.py``)
 
 Now create the database. Make sure you are still in the openrem python folder and
 the virtualenv is active (prompt will look like
-``(veopenrem3)username@hostname:/var/dose/veopenrem3/lib/python3.8/site-packages/openrem/$``). Otherwise see
-:ref:`activatevirtualenv` and navigate back to that folder:
+
+.. code-block:: console
+
+    (veopenrem3)username@hostname:/var/dose/veopenrem3/lib/python3.8/site-packages/openrem/$
+
+Otherwise see :ref:`activatevirtualenv` and navigate back to that folder:
 
 .. code-block:: console
 
@@ -294,7 +302,11 @@ Webserver
 Configure NGINX and Gunicorn
 ----------------------------
 
-Create the OpenREM site config file ``sudo nano /etc/nginx/sites-available/openrem-server``
+Create the OpenREM site config file
+
+.. code-block:: console
+
+    $ sudo nano /etc/nginx/sites-available/openrem-server
 
 .. code-block:: nginx
 
@@ -348,7 +360,7 @@ Create the Gunicorn systemd service file:
 
     ExecStart=/var/dose/veopenrem3/bin/gunicorn \
         --bind unix:/tmp/openrem-server.socket \
-        openremproject.wsgi:application --timeout 300 --workers 4
+        openremproject.wsgi:application --timeout 300
 
     [Install]
     WantedBy=multi-user.target
