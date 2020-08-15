@@ -27,7 +27,7 @@ Edit ``nginx-conf/conf.d/openrem.conf`` and set the same timeout:
         listen 80;
         location / {
             proxy_pass http://openremproject;
-            ...
+            # ...
             proxy_read_timeout 300s;
         }
 
@@ -83,11 +83,11 @@ Ensure the the following lines are update for the name of your server and the na
 
 .. code-block:: nginx
 
-server {
-    listen 443 ssl;
-    server_name add_server_name_here;
-    ssl_certificate /etc/ssl/private/openrem.cer;
-    ssl_certificate_key /etc/ssl/private/openrem.key;
+    server {
+        listen 443 ssl;
+        server_name add_server_name_here;
+        ssl_certificate /etc/ssl/private/openrem.cer;
+        ssl_certificate_key /etc/ssl/private/openrem.key;
 
-    ...
-}
+        # ...
+    }
