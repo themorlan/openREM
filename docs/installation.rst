@@ -91,11 +91,10 @@ To be removed here, but we need some of the content in other pages, so leaving f
 Web servers
 ===========
 
-Don't need this section, but need to work out what to do about virtual_directory installs
-
 ..  toctree::
     :maxdepth: 1
 
+    webserver_config
     virtual_directory
 
 
