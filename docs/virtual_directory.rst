@@ -12,8 +12,8 @@ The following steps are necessary:
 - Update the ``reverse.js`` file
 - Restart the containers
 
-Docker setup (recommended)
-==========================
+Docker setup
+============
 
 Stop the containers if they are running before changing the configuration, using a shell (command prompt) in the Docker
 OpenREM installation folder
@@ -129,6 +129,7 @@ Update reverse.js
 .. code-block:: console
 
     $ . /var/dose/veopenrem3/bin/activate
+    $ cd /var/dose/veopenrem3/lib/python3.8/site-packages/openrem/
     $ python manage.py collectstatic_js_reverse
 
 Restart the services
