@@ -3,60 +3,138 @@ Running the OpenREM website in a virtual directory
 **************************************************
 
 If you want to run the OpenREM in a virtual directory (like http://server/dms/) you need to configure this in your
-web server application that you are using (IIS or nginx). Next to that you also need to configure this in OpenREM.
+web server configuration as well as in the OpenREM configuration.
+
 The following steps are necessary:
 
+- Configure virtual directory settings in the Docker ``.env.prod`` file
+- Update Nginx webserver configuration
+- Update the ``reverse.js`` file
+- Restart the containers
 
-    - Configure virtual directory in ``local_settings.py``
-    - Update the ``reverse.js`` file
+Docker setup (recommended)
+==========================
 
-Configure virtual directory in local_settings.py
-================================================
+Stop the containers if they are running before changing the configuration, using a shell (command prompt) in the Docker
+OpenREM installation folder
 
-Django should know in what virtual directory you are running OpenREM. Perform the following steps to do this.
+.. code-block:: console
 
+    $ docker-compose down
 
-    - In the OpenREM ``local_settings.py`` file, located in the openremproject directory
-      (e.g. ``C:\Python27\Lib\site-packages\openrem\oprenremproject\local_settings.py``) find the ``VIRTUAL_DIRECTORY``
-      variable - if there isn't one, somewhere in the ``local_settings.py`` file add ``VIRTUAL_DIRECTORY=''`` at the
-      start of a line.
-    - Set this variable to the desired virtual directory
-    - Add under this line the following code to set the ``STATIC_URL`` variable
+Configure virtual directory settings in .env.prod
+-------------------------------------------------
 
-        .. code-block:: python
+Django needs to know the virtual directory name and which URLs the static and media files are served from.
 
-            STATIC_URL = '/' + os.path.join(VIRTUAL_DIRECTORY, STATIC_URL.lstrip('/'))
+Edit ``.env.prod``, uncomment the following lines (remove the ``#``) and set them as appropriate. For example, to serve
+the website from a subfolder/virtual directory named ``dms``:
 
-    - In order to make this command work ``os`` has to be imported, add in ``local_settings.py`` as third line
+.. code-block:: none
 
-        .. code-block:: python
+    ## For installations in a virtual directory
+    VIRTUAL_DIRECTORY=dms/
+    STATIC_URL=/dms/static/
+    MEDIA_URL=/dms/media/
 
-            import os
+Modify webserver configuration
+------------------------------
 
-    - Instead of the above two changes, you can also put a hard-coded STATIC_URL as follows
+Edit ``nginx-conf/conf.d/openrem.conf`` to update the locations — again using the example virtual directory ``dms``:
 
-        .. code-block:: python
+.. code-block:: nginx
 
-            STATIC_URL = '/VIRTUAL_DIRECTORY/static/'
-
-     (replace ``VIRTUAL_DIRECTORY`` by the actual value):
-
-
-    ..  note::
-
-        - Take care the virtual directory name ends with a slash (``/``)
-        - Take care the virtual directory name is exactly the same as configured in the web server (this is
-          case-sensitive)
+    server {
+        listen 80;
+        location /dms/ {
+            proxy_pass http://openremproject;
+            # ...
+        }
+        location /dms/static/ {
+            alias /home/app/openrem/staticfiles/;
+        }
+        location /dms/media/ {
+            alias /home/app/openrem/mediafiles/;
+        }
+    }
 
 Update reverse.js
-=================
+-----------------
 
-The static reverse.js file should be updated in order to change the URLs in the static javascript files also.
+The static reverse.js file should be updated in order to change the URLs in the static javascript files.
 
-    - Open a command prompt and navigate to the openrem directory, e.g. ``C:\Python27\Lib\site-packages\openrem``
-    - Type ``python manage.py collectstatic_js_reverse``
+Open a shell (command prompt) and navigate to the Docker OpenREM installation folder
 
-    ..  note::
+.. code-block:: console
 
-        Take care the resulting ``reverse.js`` is written to the correct static directory.
-        If that is not the case copy the file manually to the correct location.
+    $ docker-compose exec openrem python manage.py collectstatic_js_reverse
+
+
+Restart the containers:
+-----------------------
+
+.. code-block:: console
+
+    $ docker-compose up -d
+
+
+Non-Docker Linux install
+========================
+
+.. code-block:: console
+
+    $ sudo systemctl stop openrem-gunicorn.service
+    $ sudo systemctl stop nginx.service
+
+Update local_settings.py
+------------------------
+
+Update ``local_settings.py`` with the same variables as in the ``.env.prod`` file. If the values aren't in your copy
+of the file just add them in:
+
+.. code-block:: console
+
+    $ cd /var/dose/veopenrem3/lib/python3.8/site-packages/openrem/
+    $ nano openremproject/local_settings.py
+
+.. code-block:: python
+
+    VIRTUAL_DIRECTORY = "dms/"
+    STATIC_URL = "/dms/static/"
+    MEDIA_URL = "/dms/media/"
+
+Modify webserver configuration
+------------------------------
+
+.. code-block:: console
+
+    $ sudo nano /etc/nginx/sites-available/openrem-server
+
+.. code-block:: nginx
+
+    server {
+        # ...
+        location /dms/static {
+            alias /var/dose/static;
+        }
+        location /dms {
+            proxy_pass http://unix:/tmp/openrem-server.socket;
+            # ...
+        }
+    }
+
+Update reverse.js
+-----------------
+
+.. code-block:: console
+
+    $ . /var/dose/veopenrem3/bin/activate
+    $ python manage.py collectstatic_js_reverse
+
+Restart the services
+--------------------
+
+.. code-block:: console
+
+    $ sudo systemctl start openrem-gunicorn.service
+    $ sudo systemctl start nginx.service
