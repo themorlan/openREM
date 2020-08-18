@@ -38,7 +38,6 @@ from solo.models import SingletonModel
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from abc import ABC
 
 # hoping to remove the next two lines
 # import os
@@ -2215,7 +2214,7 @@ class PersonParticipant(models.Model):  # TID 1020
         return self.person_name
 
 
-class Median(models.Aggregate, ABC):
+class Median(models.Aggregate):
     function = "PERCENTILE_CONT"
     name = "median"
     output_field = models.FloatField()
