@@ -26,3 +26,4 @@ sphinx-issues==1.2.0
 sphinxcontrib-programoutput
 sphinxcontrib-autoprogram
 sphinx-argparse
+sphinx-copybutton

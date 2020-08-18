@@ -6,8 +6,6 @@ Troubleshooting
     :maxdepth: 1
 
     trouble500
-    troubleencoding
-    trouble_dictionary
     troubledbtlaterality
 
 If you have a modality where every study has one event (usually CT), review
@@ -71,13 +69,23 @@ In a shell/command window, move into the openrem folder:
 
 Run the django python shell:
 
-.. sourcecode:: python
+.. code-block:: console
 
-    python manage.py shell
+    $ python manage.py shell
 
-    from remapp.models import GeneralStudyModuleAttr
-    a = GeneralStudyModuleAttr.objects.all()
-    a.count()  # Just to see that we are doing something!
-    a.delete()
-    a.count()
-    exit()
+.. code-block:: python
+
+    >>> from remapp.models import GeneralStudyModuleAttr
+    >>> a = GeneralStudyModuleAttr.objects.all()
+    >>> a.count()  # Just to see that we are doing something!
+    53423
+
+And if you are sure you want to delete all the studies...
+
+.. code-block:: python
+
+    >>> a.delete()
+    >>> a.count()
+    0
+
+    >>> exit()

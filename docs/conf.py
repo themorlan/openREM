@@ -40,6 +40,7 @@ extensions = [
     "sphinxcontrib.autoprogram",
     "sphinxarg.ext",
     "sphinx_issues",
+    "sphinx_copybutton",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -111,6 +112,10 @@ pygments_style = "sphinx"
 # If true, keep warnings as "system message" paragraphs in the built documents.
 # keep_warnings = False
 
+# -- Options for sphinx-copybutton ----------------------------------------
+
+copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_is_regexp = True
 
 # -- Options for HTML output ----------------------------------------------
 
