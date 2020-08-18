@@ -29,8 +29,6 @@
 """
 
 # Following two lines added so that sphinx autodocumentation works.
-from abc import ABC
-
 from past.utils import old_div
 from builtins import object  # pylint: disable=redefined-builtin
 import json
@@ -40,6 +38,7 @@ from solo.models import SingletonModel
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from abc import ABC
 
 # hoping to remove the next two lines
 # import os
