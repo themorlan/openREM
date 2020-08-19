@@ -51,7 +51,8 @@ $(document).ready(function() {
 
             // DLP per request chart data start
             if(typeof plotCTRequestMeanDLP !== "undefined") {
-                updateAverageChart(json.requestNameList, json.requestSystemList, json.requestSummary, json.requestHistogramData, plotAverageChoice, "histogramRequestPlotDIV", colourScale);
+                updateAverageChart(json.requestData, plotAverageChoice, "histogramRequestPlotDIV", colourScale);
+                //updateAverageChart(json.requestNameList, json.requestSystemList, json.requestSummary, json.requestHistogramData, plotAverageChoice, "histogramRequestPlotDIV", colourScale);
                 sortChartDataToDefault(chartSorting, chartSortingDirection, "histogramRequestPlotDIV");
                 hideButtonsIfOneSeries("histogramRequestPlotDIV", "req_dlp_series_");
             }

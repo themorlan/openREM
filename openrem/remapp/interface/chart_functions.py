@@ -403,7 +403,8 @@ def average_chart_inc_histogram_data(
                         * value_multiplier
                     ).tolist()
 
-    return return_structure
+    #return return_structure
+    return df.to_json()
 
 
 def average_chart_over_time_data(

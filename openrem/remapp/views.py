@@ -1764,11 +1764,12 @@ def ct_plot_calculations(
             case_insensitive_categories=plot_case_insensitive_categories,
         )
 
-        return_structure["requestSystemList"] = result["system_list"]
-        return_structure["requestNameList"] = result["series_names"]
-        return_structure["requestSummary"] = result["summary"]
-        if plot_request_mean_dlp and plot_histograms:
-            return_structure["requestHistogramData"] = result["histogram_data"]
+        #return_structure["requestSystemList"] = result["system_list"]
+        #return_structure["requestNameList"] = result["series_names"]
+        #return_structure["requestSummary"] = result["summary"]
+        #if plot_request_mean_dlp and plot_histograms:
+        #    return_structure["requestHistogramData"] = result["histogram_data"]
+        return_structure["requestData"] = result
 
     if plot_request_num_events:
         result = average_chart_inc_histogram_data(
