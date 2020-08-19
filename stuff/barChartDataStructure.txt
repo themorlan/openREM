@@ -2,42 +2,11 @@ Data structure for bar charts with optional histogram
 
 CT example using "Requested procedure name" and "Total DLP"
 
+A flat data structure in a Pandas dataframe?
 
-Requested procedure name 1
-  System name 1
-  Request frequency
-  Mean DLP
-  Median DLP
-  DLP histogram
-
-  System name 2
-  Request frequency
-  Mean DLP
-  Median DLP
-  DLP histogram
-
-  System name 3
-  Request frequency
-  Mean DLP
-  Median DLP
-  DLP histogram
-
-
-Requested procedure name 2
-  System name 1
-  Request frequency
-  Mean DLP
-  Median DLP
-  DLP histogram
-
-  System name 2
-  Request frequency
-  Mean DLP
-  Median DLP
-  DLP histogram
-
-  System name 3
-  Request frequency
-  Mean DLP
-  Median DLP
-  DLP histogram
+Requested procedure name
+X-ray system name
+Request frequency
+Mean DLP
+Median DLP
+DLP histogram []
