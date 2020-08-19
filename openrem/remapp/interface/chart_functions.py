@@ -94,6 +94,7 @@ def average_chart_inc_histogram_data(
     )
     from remapp.models import Median
     import numpy as np
+    import pandas as pd
 
     # Exclude all zero value events from the calculations
     database_events = database_events.exclude(**{db_value_name: 0})
@@ -191,6 +192,21 @@ def average_chart_inc_histogram_data(
                         )
                 if plot_average or plot_freq:
                     summary_annotations["num"] = Count(db_value_name)
+
+
+
+            # New method of obtaining the mean, median and frequency.
+            # Not doing anything with this at the moment.
+            # Need to be able to add histogram data to this if required.
+            if plot_series_per_system:
+                df = pd.DataFrame.from_records(database_events.values(db_display_name_relationship, "db_series_names_to_use").annotate(**summary_annotations).order_by("db_series_names_to_use"))
+                df.rename(columns={db_display_name_relationship:"system_name"}, inplace=True)
+            else:
+                df = pd.DataFrame.from_records(database_events.values("db_series_names_to_use").annotate(**summary_annotations).order_by("db_series_names_to_use"))
+                df.insert(0, "system_name", "All systems")
+
+            df.rename(columns={"db_series_names_to_use":"series_name"}, inplace=True)
+
 
             if plot_series_per_system:
                 for system in return_structure["system_list"]:
