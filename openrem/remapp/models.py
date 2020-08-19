@@ -33,7 +33,6 @@ from past.utils import old_div
 from builtins import object  # pylint: disable=redefined-builtin
 import json
 from django.db import models
-from django.db.models.aggregates import Aggregate as SQLAggregate
 from django.urls import reverse
 from solo.models import SingletonModel
 from django.contrib.auth.models import User
@@ -2215,19 +2214,11 @@ class PersonParticipant(models.Model):  # TID 1020
         return self.person_name
 
 
-class MedianSQL(SQLAggregate):
-    sql_function = "Median"
-    sql_template = "%(function)s(%(field)s)"
-    is_ordinal = True
-
-
 class Median(models.Aggregate):
-    name = "Median"
-    sql = MedianSQL
-
-    def add_to_query(self, query, alias, col, source, is_summary):
-        aggregate = self.sql(col, **self.extra)
-        query.aggregates[alias] = aggregate
+    function = "PERCENTILE_CONT"
+    name = "median"
+    output_field = models.FloatField()
+    template = "%(function)s(0.5) WITHIN GROUP (ORDER BY %(expressions)s)"
 
 
 class SummaryFields(models.Model):
