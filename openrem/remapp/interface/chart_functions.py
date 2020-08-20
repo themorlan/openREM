@@ -95,6 +95,7 @@ def average_chart_inc_histogram_data(
     from remapp.models import Median
     import numpy as np
     import pandas as pd
+    import altair as alt
 
     # Exclude all zero value events from the calculations
     database_events = database_events.exclude(**{db_value_name: 0})
@@ -117,294 +118,107 @@ def average_chart_inc_histogram_data(
     summary_annotations = {}
 
     if plot_average or plot_freq:
-        # Obtain a list of series names
-        return_structure["series_names"] = list(
-            database_events.values_list("db_series_names_to_use", flat=True)
-            .distinct()
-            .order_by("db_series_names_to_use")
-        )
-
-        if plot_series_per_system:
-            # Obtain a list of x-ray systems
-            return_structure["system_list"] = list(
-                database_events.values_list(db_display_name_relationship, flat=True)
-                .distinct()
-                .order_by(db_display_name_relationship)
-            )
-        else:
-            return_structure["system_list"] = ["All systems"]
-
-        return_structure["summary"] = []
-
-        if plot_average or plot_freq:
-            # Calculate the mean, median and frequency for each x-ray system
-            if exclude_constant_angle:
-                if plot_average:
-                    if plot_average_choice == "both" or plot_average_choice == "mean":
-                        summary_annotations["mean"] = (
-                            Avg(
-                                Case(
-                                    When(
-                                        ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact="Constant Angle Acquisition",
-                                        then=None,
-                                    ),
-                                    default=db_value_name,
-                                    output_field=FloatField(),
-                                )
-                            )
-                            * value_multiplier
-                        )
-                    if plot_average_choice == "both" or plot_average_choice == "median":
-                        summary_annotations["median"] = (
-                            Median(
-                                Case(
-                                    When(
-                                        ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact="Constant Angle Acquisition",
-                                        then=None,
-                                    ),
-                                    default=db_value_name,
-                                    output_field=FloatField(),
-                                )
-                            )
-                            * value_multiplier
-                        )
-                if plot_average or plot_freq:
-                    summary_annotations["num"] = Sum(
-                        Case(
-                            When(
-                                ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact="Constant Angle Acquisition",
-                                then=0,
-                            ),
-                            default=1,
-                            output_field=IntegerField(),
-                        )
-                    )
-            else:
-                # Don't exclude "Constant Angle Acquisitions" from the calculations
-                if plot_average:
-                    if plot_average_choice == "both" or plot_average_choice == "mean":
-                        summary_annotations["mean"] = (
-                            Avg(db_value_name) * value_multiplier
-                        )
-                    if plot_average_choice == "both" or plot_average_choice == "median":
-                        summary_annotations["median"] = (
-                            Median(db_value_name) * value_multiplier
-                        )
-                if plot_average or plot_freq:
-                    summary_annotations["num"] = Count(db_value_name)
-
-
-
-            # New method of obtaining the mean, median and frequency.
-            # Not doing anything with this at the moment.
-            # Need to be able to add histogram data to this if required.
-            if plot_series_per_system:
-                df = pd.DataFrame.from_records(database_events.values(db_display_name_relationship, "db_series_names_to_use").annotate(**summary_annotations).order_by("db_series_names_to_use"))
-                df.rename(columns={db_display_name_relationship:"system_name"}, inplace=True)
-            else:
-                df = pd.DataFrame.from_records(database_events.values("db_series_names_to_use").annotate(**summary_annotations).order_by("db_series_names_to_use"))
-                df.insert(0, "system_name", "All systems")
-
-            df.rename(columns={"db_series_names_to_use":"series_name"}, inplace=True)
-
-
-            if plot_series_per_system:
-                for system in return_structure["system_list"]:
-                    return_structure["summary"].append(
-                        database_events.filter(**{db_display_name_relationship: system})
-                        .values("db_series_names_to_use")
-                        .annotate(**summary_annotations)
-                        .order_by("db_series_names_to_use")
-                    )
-            else:
-                return_structure["summary"].append(
-                    database_events.values("db_series_names_to_use")
-                    .annotate(**summary_annotations)
-                    .order_by("db_series_names_to_use")
-                )
-
-        # Force each item in return_structure['summary'] to be a list
-        for index in range(len(return_structure["summary"])):
-            return_structure["summary"][index] = list(
-                return_structure["summary"][index]
-            )
-
-        # Fill in default values where data for a series name is missing for any of
-        # the systems even if plot_series_per_system is false
-        for index in range(len(return_structure["system_list"])):
-            missing_names = list(
-                set(return_structure["series_names"])
-                - set(
-                    [
-                        d["db_series_names_to_use"]
-                        for d in return_structure["summary"][index]
-                    ]
-                )
-            )
-            for missing_name in missing_names:
-                if plot_average:
-                    if median_available and plot_average_choice == "both":
-                        (return_structure["summary"][index]).append(
-                            {
-                                "median": 0,
-                                "mean": 0,
-                                "db_series_names_to_use": missing_name,
-                                "num": 0,
-                            }
-                        )
-                    elif median_available and plot_average_choice == "median":
-                        (return_structure["summary"][index]).append(
-                            {
-                                "median": 0,
-                                "db_series_names_to_use": missing_name,
-                                "num": 0,
-                            }
-                        )
-                    else:
-                        (return_structure["summary"][index]).append(
-                            {
-                                "mean": 0,
-                                "db_series_names_to_use": missing_name,
-                                "num": 0,
-                            }
-                        )
-                elif plot_freq:
-                    (return_structure["summary"][index]).append(
-                        {"db_series_names_to_use": missing_name, "num": 0}
-                    )
-
-            # Rearrange the series using the same method that is used to sort the series_names below
-            if case_insensitive_categories:
-                return_structure["summary"][index] = sorted(
-                    return_structure["summary"][index],
-                    key=lambda k: stringIfNone(k["db_series_names_to_use"]).lower(),
-                )
-            else:
-                return_structure["summary"][index] = sorted(
-                    return_structure["summary"][index],
-                    key=lambda k: stringIfNone(k["db_series_names_to_use"]),
-                )
-
-    # Replace None with '' in return_structure['series_names'] and sort the result using lowercase - will now be sorted in the same order as the return_structure['summary'][0,1,2,etc] data
-    if case_insensitive_categories:
-        return_structure["series_names"] = sorted(
-            [stringIfNone(entry).lower() for entry in return_structure["series_names"]]
-        )
-    else:
-        return_structure["series_names"] = sorted(
-            [stringIfNone(entry) for entry in return_structure["series_names"]]
-        )
-
-    if plot_average and calculate_histograms:
-        histogram_annotations = {}
-        # Calculate histogram data for each series from each system
-        return_structure["histogram_data"] = [
-            [
-                [None for k in range(2)]
-                for j in range(len(return_structure["series_names"]))
-            ]
-            for i in range(len(return_structure["system_list"]))
-        ]
-
+        # Determine the mean, median and frequency annotations to use
         if exclude_constant_angle:
-            # Exclude "Constant Angle Acquisitions" from the calculations
-            histogram_annotations["min_value"] = Min(
-                Case(
-                    When(
-                        ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact="Constant Angle Acquisition",
-                        then=None,
-                    ),
-                    default=db_value_name,
-                    output_field=FloatField(),
+            if plot_average:
+                if plot_average_choice == "both" or plot_average_choice == "mean":
+                    summary_annotations["mean"] = (
+                        Avg(
+                            Case(
+                                When(
+                                    ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact="Constant Angle Acquisition",
+                                    then=None,
+                                ),
+                                default=db_value_name,
+                                output_field=FloatField(),
+                            )
+                        )
+                        * value_multiplier
+                    )
+                if plot_average_choice == "both" or plot_average_choice == "median":
+                    summary_annotations["median"] = (
+                        Median(
+                            Case(
+                                When(
+                                    ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact="Constant Angle Acquisition",
+                                    then=None,
+                                ),
+                                default=db_value_name,
+                                output_field=FloatField(),
+                            )
+                        )
+                        * value_multiplier
+                    )
+            if plot_average or plot_freq:
+                summary_annotations["num"] = Sum(
+                    Case(
+                        When(
+                            ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact="Constant Angle Acquisition",
+                            then=0,
+                        ),
+                        default=1,
+                        output_field=IntegerField(),
+                    )
                 )
-            )
-            histogram_annotations["max_value"] = Max(
-                Case(
-                    When(
-                        ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact="Constant Angle Acquisition",
-                        then=None,
-                    ),
-                    default=db_value_name,
-                    output_field=FloatField(),
-                )
-            )
         else:
             # Don't exclude "Constant Angle Acquisitions" from the calculations
-            histogram_annotations["min_value"] = Min(
-                db_value_name, output_field=FloatField()
-            )
-            histogram_annotations["max_value"] = Max(
-                db_value_name, output_field=FloatField()
-            )
-
-        value_ranges = (
-            database_events.values("db_series_names_to_use")
-            .annotate(**histogram_annotations)
-            .order_by("db_series_names_to_use")
-        )
-
-        for system_i, system in enumerate(return_structure["system_list"]):
-            for series_i, series_name in enumerate(return_structure["series_names"]):
-                if plot_series_per_system:
-                    subqs = database_events.filter(
-                        **{
-                            db_display_name_relationship: system,
-                            "db_series_names_to_use": series_name,
-                        }
+            if plot_average:
+                if plot_average_choice == "both" or plot_average_choice == "mean":
+                    summary_annotations["mean"] = (
+                        Avg(db_value_name) * value_multiplier
                     )
-                else:
-                    subqs = database_events.filter(
-                        **{"db_series_names_to_use": series_name}
+                if plot_average_choice == "both" or plot_average_choice == "median":
+                    summary_annotations["median"] = (
+                        Median(db_value_name) * value_multiplier
                     )
+            if plot_average or plot_freq:
+                summary_annotations["num"] = Count(db_value_name)
 
-                if exclude_constant_angle:
-                    # Exclude "Constant Angle Acquisitions" from the calculations
-                    data_values = subqs.annotate(
-                        values=Case(
-                            When(
-                                ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact="Constant Angle Acquisition",
-                                then=None,
-                            ),
-                            default=db_value_name,
-                            output_field=FloatField(),
-                        ),
-                    ).values_list("values", flat=True)
-                else:
-                    # Don't exclude "Constant Angle Acquisitions" from the calculations
-                    data_values = subqs.values_list(db_value_name, flat=True)
+        # Create a Pandas DataFrame from database_events including the annotations determined above
+        if plot_series_per_system:
+            df = pd.DataFrame.from_records(database_events.values(db_display_name_relationship, "db_series_names_to_use").annotate(**summary_annotations).order_by("db_series_names_to_use"))
+            df.rename(columns={db_display_name_relationship:"x_ray_system_name"}, inplace=True)
+        else:
+            df = pd.DataFrame.from_records(database_events.values("db_series_names_to_use").annotate(**summary_annotations).order_by("db_series_names_to_use"))
+            df.insert(0, "system_name", "All systems")
 
-                if None in value_ranges.values_list("min_value", "max_value")[series_i]:
-                    return_structure["histogram_data"][system_i][series_i][0] = [
-                        0
-                    ] * num_hist_bins
-                    return_structure["histogram_data"][system_i][series_i][1] = [0] * (
-                        num_hist_bins + 1
-                    )
-                else:
-                    (
-                        return_structure["histogram_data"][system_i][series_i][0],
-                        return_structure["histogram_data"][system_i][series_i][1],
-                    ) = np.histogram(
-                        [floatIfValueNone(x) for x in data_values],
-                        bins=num_hist_bins,
-                        range=value_ranges.values_list("min_value", "max_value")[
-                            series_i
-                        ],
-                    )
+        df.rename(columns={"db_series_names_to_use":"data_point_name"}, inplace=True)
 
-                    return_structure["histogram_data"][system_i][series_i][
-                        0
-                    ] = return_structure["histogram_data"][system_i][series_i][
-                        0
-                    ].tolist()
+        # Change Decimal values to float so that to_json() works (Decimal values can't be JSON serialised)
+        if plot_average_choice == "both" or plot_average_choice == "mean":
+            df["mean"] = df["mean"].astype(float)
 
-                    return_structure["histogram_data"][system_i][series_i][1] = (
-                        return_structure["histogram_data"][system_i][series_i][1]
-                        * value_multiplier
-                    ).tolist()
+        # Change Decimal values to float so that to_json() works (Decimal values can't be JSON serialised)
+        if plot_average_choice == "both" or plot_average_choice == "median":
+            df["median"] = df["median"].astype(float)
 
-    #return return_structure
-    return df.to_json()
+        # Create a plot with either the mean, median or both values
+        if plot_average_choice == "mean":
+            chart = alt.Chart(df).mark_bar().encode(
+                column=alt.Column("data_point_name"),
+                x=alt.X("x_ray_system_name"),
+                y=alt.Y("mean"),
+                color="x_ray_system_name"
+            ).interactive()
+        elif plot_average_choice == "median":
+            chart = alt.Chart(df).mark_bar().encode(
+                column=alt.Column("data_point_name"),
+                x=alt.X("x_ray_system_name"),
+                y=alt.Y("median"),
+                color="x_ray_system_name"
+            ).interactive()
+        else:
+            # This doesn't produce what is needed at the moment - the mean and median values are stacked
+            # on top of one another, resulting in a bar height that is the sum of the two values.
+            data = pd.melt(df, id_vars=["x_ray_system_name", "data_point_name"], value_vars=["mean", "median"])
+            chart = alt.Chart(data).mark_bar().encode(
+                column=alt.Column("data_point_name"),
+                x=alt.X("x_ray_system_name"),
+                y=alt.Y("value"),
+                color="variable"
+            ).interactive()
+
+        return chart
 
 
 def average_chart_over_time_data(

@@ -51,10 +51,7 @@ $(document).ready(function() {
 
             // DLP per request chart data start
             if(typeof plotCTRequestMeanDLP !== "undefined") {
-                updateAverageChart(json.requestData, plotAverageChoice, "histogramRequestPlotDIV", colourScale);
-                //updateAverageChart(json.requestNameList, json.requestSystemList, json.requestSummary, json.requestHistogramData, plotAverageChoice, "histogramRequestPlotDIV", colourScale);
-                sortChartDataToDefault(chartSorting, chartSortingDirection, "histogramRequestPlotDIV");
-                hideButtonsIfOneSeries("histogramRequestPlotDIV", "req_dlp_series_");
+                vegaEmbed('#histogramRequestPlotDIV', JSON.parse(json.requestData)).catch(console.error);
             }
 
             // Number of events per study chart data

@@ -191,7 +191,6 @@ function updateFrequencyChart(nameList, systemList, summaryData, urlStart, chart
 function updateAverageChart(chartData, averageChoice, chartDiv, colourScale) {
     //var dataCounts = []; while(dataCounts.push([]) < systemList.length);
     //var dataBins = []; while(dataBins.push([]) < systemList.length);
-    nameList =
 
     var totalCountsPerName = [];
     var currentCounts;

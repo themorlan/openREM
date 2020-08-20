@@ -1769,7 +1769,7 @@ def ct_plot_calculations(
         #return_structure["requestSummary"] = result["summary"]
         #if plot_request_mean_dlp and plot_histograms:
         #    return_structure["requestHistogramData"] = result["histogram_data"]
-        return_structure["requestData"] = result
+        return_structure["requestData"] = result.to_json()
 
     if plot_request_num_events:
         result = average_chart_inc_histogram_data(
