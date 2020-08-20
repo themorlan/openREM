@@ -251,7 +251,7 @@ class Phantom3:
                 my_x = (row_index - self.width) * flat_spacing - (round_flat / 2.) + round(round_flat / 2., 0)
                 my_y = col_index * pat_pos_y
                 normal = Segment3(np.array([my_x, my_y, my_z + pat_pos_z]), np.array([my_x, my_y, my_z]))
-            elif row_index < head_circumference and col_index <= self.phantom_head_height - origin[1]:  # q1
+            elif row_index < head_circumference and col_index <= self.phantom_head_height - origin[1]:  #phantom head map
                 my_y = (col_index) * pat_pos_y
                 my_x = radius_head * math.cos(angle_step_head * (row_index)) - (round_flat / 2.) + round(round_flat / 2., 0)
                 my_z = (z_offset + radius_head * (math.sin(angle_step_head * row_index) + 1))* pat_pos_z
@@ -259,9 +259,11 @@ class Phantom3:
                 normal_z = my_y + math.cos(angle_step_head * (row_index + 0))
                 normal = Segment3(np.array([normal_x, my_y, normal_z]), np.array([my_x, my_y, my_z]))
             else:
-                my_y, my_x, my_z = [-999, -999, -999]
+                my_y, my_x, my_z = [-999, -999, -999] 
                 normal = Segment3(np.array([-999, -999, -999]), np.array([-999, -999, -999]))
-
+                #for now a trick to have single phantom map for both head and torso, it would be neater to
+                #implement a phantom map for both head and torso.    
+                #this region of the phantom map will never intersect with ray segments and will not be used in JS             
             self.phantom_map[iterator.multi_index[0], iterator.multi_index[1]] = np.array([my_x, my_y, my_z])
             self.normal_map[iterator.multi_index[0], iterator.multi_index[1]] = normal
             iterator.iternext()
