@@ -176,6 +176,10 @@ def average_chart_inc_histogram_data(
 
         # Create a Pandas DataFrame from database_events including the annotations determined above
         if plot_series_per_system:
+            # df_test includes all of the data rows - no calculation of mean, median or frequency required by the server
+            df_test = pd.DataFrame.from_records(database_events.values(db_display_name_relationship, "db_series_names_to_use", db_value_name))
+            df_test.rename(columns={db_display_name_relationship:"x_ray_system_name"}, inplace=True)
+
             df = pd.DataFrame.from_records(database_events.values(db_display_name_relationship, "db_series_names_to_use").annotate(**summary_annotations).order_by("db_series_names_to_use"))
             df.rename(columns={db_display_name_relationship:"x_ray_system_name"}, inplace=True)
         else:
@@ -183,6 +187,9 @@ def average_chart_inc_histogram_data(
             df.insert(0, "system_name", "All systems")
 
         df.rename(columns={"db_series_names_to_use":"data_point_name"}, inplace=True)
+
+        df_test.rename(columns={"db_series_names_to_use":"data_point_name"}, inplace=True)
+        df_test[db_value_name] = df_test[db_value_name].astype(float)
 
         # Change Decimal values to float so that to_json() works (Decimal values can't be JSON serialised)
         if plot_average_choice == "both" or plot_average_choice == "mean":
@@ -200,6 +207,16 @@ def average_chart_inc_histogram_data(
                 y=alt.Y("mean"),
                 color="x_ray_system_name"
             ).interactive()
+
+            # Create a plot using the raw data, getting the browser to calculate the mean
+            alt.data_transformers.disable_max_rows()
+            chart = alt.Chart(df_test).mark_bar().encode(
+                column=alt.Column("data_point_name"),
+                x=alt.X("x_ray_system_name"),
+                y=alt.Y(db_value_name, "mean"),
+                color="x_ray_system_name"
+            ).interactive()
+
         elif plot_average_choice == "median":
             chart = alt.Chart(df).mark_bar().encode(
                 column=alt.Column("data_point_name"),
@@ -207,6 +224,16 @@ def average_chart_inc_histogram_data(
                 y=alt.Y("median"),
                 color="x_ray_system_name"
             ).interactive()
+
+            # Create a plot using the raw data, getting the browser to calculate the median
+            alt.data_transformers.disable_max_rows()
+            chart = alt.Chart(df_test).mark_bar().encode(
+                column=alt.Column("data_point_name"),
+                x=alt.X("x_ray_system_name"),
+                y=alt.Y(db_value_name, "median"),
+                color="x_ray_system_name"
+            ).interactive()
+
         else:
             # This doesn't produce what is needed at the moment - the mean and median values are stacked
             # on top of one another, resulting in a bar height that is the sum of the two values.
@@ -217,6 +244,8 @@ def average_chart_inc_histogram_data(
                 y=alt.Y("value"),
                 color="variable"
             ).interactive()
+
+            # Not sure how to calculate a mean and median plot using the raw data
 
         return chart
 
