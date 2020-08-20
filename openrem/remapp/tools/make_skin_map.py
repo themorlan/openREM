@@ -28,12 +28,6 @@
 ..  moduleauthor:: Ed McDonagh, David Platten
 
 """
-from __future__ import division
-
-from future import standard_library
-
-standard_library.install_aliases()
-from builtins import str  # pylint: disable=redefined-builtin
 from past.utils import old_div
 import os
 import sys
@@ -122,15 +116,11 @@ def make_skin_map(study_pk=None):
                 )
         except AttributeError:
             logger.info(
-                "Study PK {0}: Patient table relationship not found. Assuming head first.".format(
-                    study_pk
-                )
+                f"Study PK {study_pk}: Patient table relationship not found. Assuming head first."
             )
         except IndexError:
             logger.info(
-                "Study PK {0}: No irradiation event x-ray data found. Assuming head first.".format(
-                    study_pk
-                )
+                f"Study PK {study_pk}: No irradiation event x-ray data found. Assuming head first."
             )
         try:
             orientation_modifier_meaning = (
@@ -144,20 +134,16 @@ def make_skin_map(study_pk=None):
                 orientation_modifier = "P"
             else:
                 logger.info(
-                    "Study PK {0}: Orientation modifier not recognised ({1}). "
-                    "Assuming supine.".format(study_pk, orientation_modifier_meaning)
+                    f"Study PK {study_pk}: Orientation modifier not recognised ({orientation_modifier_meaning}). "
+                    f"Assuming supine."
                 )
         except AttributeError:
             logger.info(
-                "Study PK {0}: Orientation modifier not found. Assuming supine.".format(
-                    study_pk
-                )
+                f"Study PK {study_pk}: Orientation modifier not found. Assuming supine."
             )
         except IndexError:
             logger.info(
-                "Study PK {0}: No irradiation event x-ray data found. Assuming supine.".format(
-                    study_pk
-                )
+                f"Study PK {study_pk}: No irradiation event x-ray data found. Assuming supine."
             )
         if ptr and orientation_modifier:
             pat_pos_source = "extracted"
@@ -171,7 +157,7 @@ def make_skin_map(study_pk=None):
         else:
             pat_pos_source = "assumed"
             pat_pos = "HFS"
-        logger.debug("patPos is {0} and source is {1}".format(pat_pos, pat_pos_source))
+        logger.debug(f"patPos is {pat_pos} and source is {pat_pos_source}")
 
         my_exp_map = calc_exp_map.CalcExpMap(
             phantom_type="3D",
@@ -374,9 +360,9 @@ def make_skin_map(study_pk=None):
                 skin_map_path = os.path.join(
                     MEDIA_ROOT,
                     "skin_maps",
-                    "{0:0>4}".format(study_date.year),
-                    "{0:0>2}".format(study_date.month),
-                    "{0:0>2}".format(study_date.day),
+                    f"{study_date.year:0>4}",
+                    f"{study_date.month:0>2}",
+                    f"{study_date.day:0>2}",
                 )
             else:
                 skin_map_path = os.path.join(MEDIA_ROOT, "skin_maps")
