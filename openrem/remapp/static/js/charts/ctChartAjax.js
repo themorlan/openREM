@@ -51,12 +51,7 @@ $(document).ready(function() {
 
             // DLP per request chart data start
             if(typeof plotCTRequestMeanDLP !== "undefined") {
-                let chartData = JSON.parse(json.requestData);
-                // Setting the chart width controls the width for each column, so
-                // I need to reduce this value, but not sure how to at the moment.
-                // Need to account for how many columns,
-                //chartData.width = $('#histogramRequestPlotDIV').width();
-                vegaEmbed('#histogramRequestPlotDIV', chartData).catch(console.error);
+                vegaEmbed('#histogramRequestPlotDIV',  JSON.parse(json.requestData)).catch(console.error);
             }
 
             // Number of events per study chart data
@@ -84,9 +79,9 @@ $(document).ready(function() {
                 updateFrequencyChart(json.studyNameList, json.studySystemList, json.studySummary, urlStartStudy, "piechartStudyDIV", colourScale);
             }
 
-            // Study frequency chart data start
+            // Request frequency chart data start
             if(typeof plotCTRequestFreq !== "undefined") {
-                updateFrequencyChart(json.requestNameList, json.requestSystemList, json.requestSummary, urlStartReq, "piechartRequestDIV", colourScale);
+                vegaEmbed('#requestFreqChartDiv',  JSON.parse(json.requestFreqData)).catch(console.error);
             }
 
             // DLP over time chart data

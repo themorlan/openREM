@@ -1771,7 +1771,14 @@ def ct_plot_calculations(
         #return_structure["requestSummary"] = result["summary"]
         #if plot_request_mean_dlp and plot_histograms:
         #    return_structure["requestHistogramData"] = result["histogram_data"]
-        return_structure["requestData"] = result.to_json()
+        if plot_request_mean_dlp and plot_request_freq:
+            return_structure["requestData"], return_structure["requestFreqData"] = result
+            return_structure["requestData"] = return_structure["requestData"].to_json()
+            return_structure["requestFreqData"] = return_structure["requestFreqData"].to_json()
+        elif plot_request_mean_dlp:
+            return_structure["requestData"] = result.to_json()
+        else:
+            return_structure["requestFreqData"] = result.to_json()
 
     if plot_request_num_events:
         result = average_chart_inc_histogram_data(

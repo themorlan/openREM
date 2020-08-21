@@ -188,81 +188,99 @@ def average_chart_inc_histogram_data(
             df.rename(columns={db_display_name_relationship:"x_ray_system_name"}, inplace=True)
         else:
             df = pd.DataFrame.from_records(database_events.values("db_series_names_to_use").annotate(**summary_annotations).order_by("db_series_names_to_use"))
-            df.insert(0, "system_name", "All systems")
+            df.insert(0, "x_ray_system_name", "All systems")
 
         df.rename(columns={"db_series_names_to_use":"data_point_name"}, inplace=True)
-
         # df_test.rename(columns={"db_series_names_to_use":"data_point_name"}, inplace=True)
-        # df_test[db_value_name] = df_test[db_value_name].astype(float)
 
-        # Change Decimal values to float so that to_json() works (Decimal values can't be JSON serialised)
-        if plot_average_choice == "both" or plot_average_choice == "mean":
-            df["mean"] = df["mean"].astype(float)
+        if plot_average:
+            # df_test[db_value_name] = df_test[db_value_name].astype(float)
 
-        # Change Decimal values to float so that to_json() works (Decimal values can't be JSON serialised)
-        if plot_average_choice == "both" or plot_average_choice == "median":
-            df["median"] = df["median"].astype(float)
+            # Change Decimal values to float so that to_json() works (Decimal values can't be JSON serialised)
+            if plot_average_choice == "both" or plot_average_choice == "mean":
+                df["mean"] = df["mean"].astype(float)
 
-        # Create a plot with either the mean, median or both values
-        if plot_average_choice == "mean":
-            chart = alt.Chart(df).mark_bar().encode(
-                column=alt.Column("data_point_name", title=chart_column_name),
-                x=alt.X("x_ray_system_name", axis=alt.Axis(labels=False, title="")),
-                y=alt.Y("mean", title="Mean " + chart_y_axis_title),
-                color=alt.Color("x_ray_system_name", legend=alt.Legend(title="System")),
+            # Change Decimal values to float so that to_json() works (Decimal values can't be JSON serialised)
+            if plot_average_choice == "both" or plot_average_choice == "median":
+                df["median"] = df["median"].astype(float)
+
+            # Create a plot with either the mean, median or both values
+            if plot_average_choice == "mean":
+                average_chart = alt.Chart(df).mark_bar().encode(
+                    column=alt.Column("data_point_name", title=chart_column_name),
+                    x=alt.X("x_ray_system_name", axis=alt.Axis(labels=False, title="")),
+                    y=alt.Y("mean", title="Mean " + chart_y_axis_title),
+                    color=alt.Color("x_ray_system_name", legend=alt.Legend(title="System")),
+                    tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
+                             alt.Tooltip("data_point_name", title="Name"),
+                             alt.Tooltip("mean", format=".2f", title="Mean"),
+                             alt.Tooltip("num", format=".0f", title="Frequency")]
+                ).interactive()
+
+                # # Create a plot using the raw data, getting the browser to calculate the mean
+                # alt.data_transformers.disable_max_rows()
+                # chart = alt.Chart(df_test).mark_bar().encode(
+                #     column=alt.Column("data_point_name"),
+                #     x=alt.X("x_ray_system_name"),
+                #     y=alt.Y(db_value_name, "mean"),
+                #     color="x_ray_system_name"
+                # ).interactive()
+
+            elif plot_average_choice == "median":
+                average_chart = alt.Chart(df).mark_bar().encode(
+                    column=alt.Column("data_point_name", title=chart_column_name),
+                    x=alt.X("x_ray_system_name", axis=alt.Axis(labels=False, title="")),
+                    y=alt.Y("median", title="Median " + chart_y_axis_title),
+                    color=alt.Color("x_ray_system_name", legend=alt.Legend(title="System")),
+                    tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
+                             alt.Tooltip("data_point_name", title="Name"),
+                             alt.Tooltip("median", format=".2f", title="Median"),
+                             alt.Tooltip("num", format=".0f", title="Frequency")]
+                ).interactive()
+
+                # # Create a plot using the raw data, getting the browser to calculate the median
+                # alt.data_transformers.disable_max_rows()
+                # chart = alt.Chart(df_test).mark_bar().encode(
+                #     column=alt.Column("data_point_name"),
+                #     x=alt.X("x_ray_system_name"),
+                #     y=alt.Y(db_value_name, "median"),
+                #     color="x_ray_system_name"
+                # ).interactive()
+
+            else:
+                # This doesn't produce what is needed at the moment - the mean and median values are stacked
+                # on top of one another, resulting in a bar height that is the sum of the two values.
+                data = pd.melt(df, id_vars=["x_ray_system_name", "data_point_name"], value_vars=["mean", "median"])
+                average_chart = alt.Chart(data).mark_bar().encode(
+                    column=alt.Column("data_point_name", title=chart_column_name),
+                    x=alt.X("x_ray_system_name", title=""),
+                    y=alt.Y("value", title="Mean and median " + chart_y_axis_title),
+                    color=alt.Color("variable", legend=alt.Legend(title="Average")),
+                    tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
+                             alt.Tooltip("data_point_name", title="Name"),
+                             alt.Tooltip("value", format=".2f", title="Value")]
+                ).interactive()
+
+                # Not sure how to calculate a mean and median plot using the raw data
+
+        if plot_freq:
+            # Create a plot that shows the frequencies - used to be a pie chart.
+            freq_chart = alt.Chart(df).mark_bar().encode(
+                x=alt.X("num", title="Frequency"),
+                y=alt.Y("x_ray_system_name", axis=alt.Axis(labels=False, title="")),
+                color=alt.Color("data_point_name", legend=alt.Legend(title="Name")),
+                order=alt.Order("num", sort="descending"),
                 tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
                          alt.Tooltip("data_point_name", title="Name"),
-                         alt.Tooltip("mean", format=".2f", title="Mean"),
                          alt.Tooltip("num", format=".0f", title="Frequency")]
             ).interactive()
 
-            # # Create a plot using the raw data, getting the browser to calculate the mean
-            # alt.data_transformers.disable_max_rows()
-            # chart = alt.Chart(df_test).mark_bar().encode(
-            #     column=alt.Column("data_point_name"),
-            #     x=alt.X("x_ray_system_name"),
-            #     y=alt.Y(db_value_name, "mean"),
-            #     color="x_ray_system_name"
-            # ).interactive()
-
-        elif plot_average_choice == "median":
-            chart = alt.Chart(df).mark_bar().encode(
-                column=alt.Column("data_point_name", title=chart_column_name),
-                x=alt.X("x_ray_system_name", axis=alt.Axis(labels=False, title="")),
-                y=alt.Y("median", title="Median " + chart_y_axis_title),
-                color=alt.Color("x_ray_system_name", legend=alt.Legend(title="System")),
-                tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
-                         alt.Tooltip("data_point_name", title="Name"),
-                         alt.Tooltip("median", format=".2f", title="Median"),
-                         alt.Tooltip("num", format=".0f", title="Frequency")]
-            ).interactive()
-
-            # # Create a plot using the raw data, getting the browser to calculate the median
-            # alt.data_transformers.disable_max_rows()
-            # chart = alt.Chart(df_test).mark_bar().encode(
-            #     column=alt.Column("data_point_name"),
-            #     x=alt.X("x_ray_system_name"),
-            #     y=alt.Y(db_value_name, "median"),
-            #     color="x_ray_system_name"
-            # ).interactive()
-
+        if plot_average and plot_freq:
+            return average_chart, freq_chart
+        elif plot_average:
+            return average_chart
         else:
-            # This doesn't produce what is needed at the moment - the mean and median values are stacked
-            # on top of one another, resulting in a bar height that is the sum of the two values.
-            data = pd.melt(df, id_vars=["x_ray_system_name", "data_point_name"], value_vars=["mean", "median"])
-            chart = alt.Chart(data).mark_bar().encode(
-                column=alt.Column("data_point_name", title=chart_column_name),
-                x=alt.X("x_ray_system_name", title=""),
-                y=alt.Y("value", title="Mean and median " + chart_y_axis_title),
-                color=alt.Color("variable", legend=alt.Legend(title="Average")),
-                tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
-                         alt.Tooltip("data_point_name", title="Name"),
-                         alt.Tooltip("value", format=".2f", title="Value")]
-            ).interactive()
-
-            # Not sure how to calculate a mean and median plot using the raw data
-
-        return chart
+            return freq_chart
 
 
 def average_chart_over_time_data(
