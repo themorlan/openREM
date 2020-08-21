@@ -1762,6 +1762,8 @@ def ct_plot_calculations(
             plot_histogram_bins,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
+            chart_y_axis_title="DLP (mGy.cm)",
+            chart_column_name="Requested procedure name",
         )
 
         #return_structure["requestSystemList"] = result["system_list"]

@@ -51,7 +51,12 @@ $(document).ready(function() {
 
             // DLP per request chart data start
             if(typeof plotCTRequestMeanDLP !== "undefined") {
-                vegaEmbed('#histogramRequestPlotDIV', JSON.parse(json.requestData)).catch(console.error);
+                let chartData = JSON.parse(json.requestData);
+                // Setting the chart width controls the width for each column, so
+                // I need to reduce this value, but not sure how to at the moment.
+                // Need to account for how many columns,
+                //chartData.width = $('#histogramRequestPlotDIV').width();
+                vegaEmbed('#histogramRequestPlotDIV', chartData).catch(console.error);
             }
 
             // Number of events per study chart data
