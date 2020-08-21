@@ -67,8 +67,8 @@ function skinDoseMap3dObject(skinDoseMap3dCanvasName, colourScaleName) {
      this.draw = function () {
         var _this = this;
         var currentDose, scaledDose, newColour, i, j, k;
-        var torsoStart = _this.phantomHeadHeight
-        var torsoEnd = _this.phantomHeadHeight + _this.phantomHeight
+        var torsoStart = _this.phantomHeadHeight;
+        var torsoEnd = _this.phantomHeadHeight + _this.phantomHeight;
         var phantomHeadCircumference = 2 * Math.PI * _this.phantomHeadRadius
         k = 0;
         for (i = torsoStart; i < torsoEnd; i++) {
@@ -139,8 +139,7 @@ function skinDoseMap3dObject(skinDoseMap3dCanvasName, colourScaleName) {
         k = 0;
         for (i = 0; i < torsoStart; i++) {
             for (j = 0; j < phantomHeadCircumference; j++) {
-                indexdose = j *(_this.phantomHeight + _this.phantomHeadHeight) + i;
-                currentDose = _this.skinDoseMap[indexdose];
+                currentDose = _this.skinDoseMap[j *(_this.phantomHeight + _this.phantomHeadHeight) + i];
                 scaledDose = currentDose - (_this.windowLevel - (_this.windowWidth / 2.0));
                 if (scaledDose < 0) {scaledDose = 0;}
                 if (scaledDose > _this.windowWidth) {scaledDose = _this.windowWidth;}
@@ -199,7 +198,7 @@ function skinDoseMap3dObject(skinDoseMap3dCanvasName, colourScaleName) {
 
         _this.skinDoseMap = new Array(skinDoseMap.length);
         _this.skinDoseMapWidth = 2*phantomFlatWidth + 2*phantomCurvedEdgeWidth;
-        _this.skinDoseMapHeight = phantomHeight + phantomHeadHeight;;
+        _this.skinDoseMapHeight = phantomHeight + phantomHeadHeight;
         _this.phantomFlatWidth = phantomFlatWidth;
         _this.phantomCurvedEdgeWidth = phantomCurvedEdgeWidth;
         _this.phantomHeight = phantomHeight;
@@ -219,7 +218,7 @@ function skinDoseMap3dObject(skinDoseMap3dCanvasName, colourScaleName) {
         backData  = new Uint8Array(_this.phantomFlatWidth*_this.phantomHeight*4);
         leftData  = new Uint8Array(_this.phantomCurvedEdgeWidth*_this.phantomHeight*4);
         rightData = new Uint8Array(_this.phantomCurvedEdgeWidth*_this.phantomHeight*4);
-        headData = new Uint8Array(2 * Math.PI * _this.phantomHeadRadius*_this.phantomHeadHeight*4)
+        headData = new Uint8Array(2 * Math.PI * _this.phantomHeadRadius*_this.phantomHeadHeight*4);
 
         dataTextureFront = new THREE.DataTexture( frontData, _this.phantomFlatWidth, _this.phantomHeight,  THREE.RGBAFormat );
         dataTextureBack  = new THREE.DataTexture( backData,  _this.phantomFlatWidth, _this.phantomHeight,  THREE.RGBAFormat );
@@ -257,7 +256,7 @@ function skinDoseMap3dObject(skinDoseMap3dCanvasName, colourScaleName) {
 
         var endMaterial = new THREE.MeshLambertMaterial( { color: 0x7092be } );
         var materials = [materialBack, materialLeft, materialFront, materialRight, endMaterial, endMaterial, endMaterial,
-            endMaterial, endMaterial, endMaterial, materialHead, endMaterial]
+            endMaterial, endMaterial, endMaterial, materialHead, endMaterial];
         var meshFaceMaterial = new THREE.MeshFaceMaterial(materials);
 
         geometry = new THREE.PlaneGeometry(_this.phantomFlatWidth, _this.phantomHeight);
