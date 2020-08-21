@@ -267,7 +267,7 @@ def average_chart_inc_histogram_data(
             # Create a plot that shows the frequencies - used to be a pie chart.
             freq_chart = alt.Chart(df).mark_bar().encode(
                 x=alt.X("num", title="Frequency"),
-                y=alt.Y("x_ray_system_name", axis=alt.Axis(labels=False, title="")),
+                y=alt.Y("x_ray_system_name", axis=alt.Axis(title="")),
                 color=alt.Color("data_point_name", legend=alt.Legend(title="Name")),
                 order=alt.Order("num", sort="descending"),
                 tooltip=[alt.Tooltip("x_ray_system_name", title="System"),

@@ -1644,13 +1644,18 @@ def ct_plot_calculations(
             exclude_constant_angle=True,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
+            chart_y_axis_title="DLP (mGy.cm)",
+            chart_column_name="Acquisition protocol name",
         )
 
-        return_structure["acquisitionSystemList"] = result["system_list"]
-        return_structure["acquisitionNameList"] = result["series_names"]
-        return_structure["acquisitionSummary"] = result["summary"]
-        if plot_acquisition_mean_dlp and plot_histograms:
-            return_structure["acquisitionHistogramData"] = result["histogram_data"]
+        if plot_acquisition_mean_dlp and plot_acquisition_freq:
+            return_structure["acquisitionDLPData"], return_structure["acquisitionFreqData"] = result
+            return_structure["acquisitionDLPData"] = return_structure["acquisitionDLPData"].to_json()
+            return_structure["acquisitionFreqData"] = return_structure["acquisitionFreqData"].to_json()
+        elif plot_acquisition_mean_dlp:
+            return_structure["acquisitionDLPData"] = result.to_json()
+        else:
+            return_structure["acquisitionFreqData"] = result.to_json()
 
     if plot_acquisition_mean_ctdi:
         result = average_chart_inc_histogram_data(
@@ -1660,7 +1665,7 @@ def ct_plot_calculations(
             "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
             1,
             plot_acquisition_mean_ctdi,
-            plot_acquisition_freq,
+            0,
             plot_series_per_systems,
             plot_average_choice,
             median_available,
@@ -1668,13 +1673,11 @@ def ct_plot_calculations(
             exclude_constant_angle=True,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
+            chart_y_axis_title="CTDI (mGy)",
+            chart_column_name="Acquisition protocol name",
         )
 
-        return_structure["acquisitionSystemListCTDI"] = result["system_list"]
-        return_structure["acquisitionNameListCTDI"] = result["series_names"]
-        return_structure["acquisitionSummaryCTDI"] = result["summary"]
-        if plot_histograms:
-            return_structure["acquisitionHistogramDataCTDI"] = result["histogram_data"]
+        return_structure["acquisitionCTDIData"] = result.to_json()
 
     if plot_study_mean_dlp or plot_study_freq:
         result = average_chart_inc_histogram_data(
@@ -1691,13 +1694,18 @@ def ct_plot_calculations(
             plot_histogram_bins,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
+            chart_y_axis_title="DLP (mGy.cm)",
+            chart_column_name="Study description",
         )
 
-        return_structure["studySystemList"] = result["system_list"]
-        return_structure["studyNameList"] = result["series_names"]
-        return_structure["studySummary"] = result["summary"]
-        if plot_study_mean_dlp and plot_histograms:
-            return_structure["studyHistogramData"] = result["histogram_data"]
+        if plot_study_mean_dlp and plot_study_freq:
+            return_structure["studyDLPData"], return_structure["studyFreqData"] = result
+            return_structure["studyDLPData"] = return_structure["studyDLPData"].to_json()
+            return_structure["studyFreqData"] = return_structure["studyFreqData"].to_json()
+        elif plot_study_mean_dlp:
+            return_structure["studyDLPData"] = result.to_json()
+        else:
+            return_structure["studyFreqData"] = result.to_json()
 
     if plot_study_mean_ctdi:
         result = average_chart_inc_histogram_data(
@@ -1715,13 +1723,11 @@ def ct_plot_calculations(
             exclude_constant_angle=True,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
+            chart_y_axis_title="CTDI (mGy)",
+            chart_column_name="Study description",
         )
 
-        return_structure["studySystemListCTDI"] = result["system_list"]
-        return_structure["studyNameListCTDI"] = result["series_names"]
-        return_structure["studySummaryCTDI"] = result["summary"]
-        if plot_histograms:
-            return_structure["studyHistogramDataCTDI"] = result["histogram_data"]
+        return_structure["studyCTDIData"] = result.to_json()
 
     if plot_study_num_events:
         result = average_chart_inc_histogram_data(
@@ -1766,11 +1772,6 @@ def ct_plot_calculations(
             chart_column_name="Requested procedure name",
         )
 
-        #return_structure["requestSystemList"] = result["system_list"]
-        #return_structure["requestNameList"] = result["series_names"]
-        #return_structure["requestSummary"] = result["summary"]
-        #if plot_request_mean_dlp and plot_histograms:
-        #    return_structure["requestHistogramData"] = result["histogram_data"]
         if plot_request_mean_dlp and plot_request_freq:
             return_structure["requestData"], return_structure["requestFreqData"] = result
             return_structure["requestData"] = return_structure["requestData"].to_json()

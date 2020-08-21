@@ -23,35 +23,27 @@ $(document).ready(function() {
 
             // DLP per acquisition chart data
             if(typeof plotCTAcquisitionMeanDLP !== "undefined") {
-                updateAverageChart(json.acquisitionNameList, json.acquisitionSystemList, json.acquisitionSummary, json.acquisitionHistogramData, plotAverageChoice, "histogramAcquisitionPlotDLPdiv", colourScale);
-                sortChartDataToDefault(chartSorting, chartSortingDirection, "histogramAcquisitionPlotDLPdiv");
-                hideButtonsIfOneSeries("histogramAcquisitionPlotDLPdiv", "acq_dlp_series_");
+                vegaEmbed('#acquisitionAverageDLPChartDiv',  JSON.parse(json.acquisitionDLPData)).catch(console.error);
             }
 
             // CTDI per acquisition chart data
             if(typeof plotCTAcquisitionMeanCTDI !== "undefined") {
-                updateAverageChart(json.acquisitionNameListCTDI, json.acquisitionSystemListCTDI, json.acquisitionSummaryCTDI, json.acquisitionHistogramDataCTDI, plotAverageChoice, "histogramAcquisitionPlotCTDIdiv", colourScale);
-                sortChartDataToDefault(chartSorting, chartSortingDirection, "histogramAcquisitionPlotCTDIdiv");
-                hideButtonsIfOneSeries("histogramAcquisitionPlotCTDIdiv", "acq_ctdi_series_");
+                vegaEmbed('#acquisitionAverageCTDIChartDiv',  JSON.parse(json.acquisitionCTDIData)).catch(console.error);
             }
 
             // DLP per study chart data
             if(typeof plotCTStudyMeanDLP !== "undefined") {
-                updateAverageChart(json.studyNameList, json.studySystemList, json.studySummary, json.studyHistogramData, plotAverageChoice, "histogramStudyPlotDIV", colourScale);
-                sortChartDataToDefault(chartSorting, chartSortingDirection, "histogramStudyPlotDIV");
-                hideButtonsIfOneSeries("histogramStudyPlotDIV", "study_dlp_series_");
+                vegaEmbed('#studyAverageDLPChartDiv',  JSON.parse(json.studyDLPData)).catch(console.error);
             }
 
             // CTDI per study chart data
             if(typeof plotCTStudyMeanCTDI !== "undefined") {
-                updateAverageChart(json.studyNameListCTDI, json.studySystemListCTDI, json.studySummaryCTDI, json.studyHistogramDataCTDI, plotAverageChoice, "histogramStudyPlotCTDIdiv", colourScale);
-                sortChartDataToDefault(chartSorting, chartSortingDirection, "histogramStudyPlotCTDIdiv");
-                hideButtonsIfOneSeries("histogramStudyPlotCTDIdiv", "study_ctdi_series_");
+                vegaEmbed('#studyAverageCTDIChartDiv',  JSON.parse(json.studyCTDIData)).catch(console.error);
             }
 
             // DLP per request chart data start
             if(typeof plotCTRequestMeanDLP !== "undefined") {
-                vegaEmbed('#histogramRequestPlotDIV',  JSON.parse(json.requestData)).catch(console.error);
+                vegaEmbed('#requestAverageDLPChartDiv',  JSON.parse(json.requestData)).catch(console.error);
             }
 
             // Number of events per study chart data
@@ -67,16 +59,13 @@ $(document).ready(function() {
             }
 
             // Acquisition frequency chart data start
-            if(typeof plotCTAcquisitionFreq !== "undefined" && typeof plotCTAcquisitionMeanCTDI !== "undefined") {
-                updateFrequencyChart(json.acquisitionNameList, json.acquisitionSystemList, json.acquisitionSummaryCTDI, urlStartAcq, "piechartAcquisitionDIV", colourScale);
-            }
-            else if(typeof plotCTAcquisitionFreq !== "undefined") {
-                updateFrequencyChart(json.acquisitionNameList, json.acquisitionSystemList, json.acquisitionSummary, urlStartAcq, "piechartAcquisitionDIV", colourScale);
+            if(typeof plotCTAcquisitionFreq !== "undefined" || typeof plotCTAcquisitionMeanCTDI !== "undefined") {
+                vegaEmbed('#acquisitionFreqChartDiv',  JSON.parse(json.acquisitionFreqData)).catch(console.error);
             }
 
             // Study frequency chart data start
             if(typeof plotCTStudyFreq !== "undefined") {
-                updateFrequencyChart(json.studyNameList, json.studySystemList, json.studySummary, urlStartStudy, "piechartStudyDIV", colourScale);
+                vegaEmbed('#studyFreqChartDiv',  JSON.parse(json.studyFreqData)).catch(console.error);
             }
 
             // Request frequency chart data start
