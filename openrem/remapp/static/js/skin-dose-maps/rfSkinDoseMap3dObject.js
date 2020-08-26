@@ -69,7 +69,7 @@ function skinDoseMap3dObject(skinDoseMap3dCanvasName, colourScaleName) {
         var currentDose, scaledDose, newColour, i, j, k;
         var torsoStart = _this.phantomHeadHeight;
         var torsoEnd = _this.phantomHeadHeight + _this.phantomHeight;
-        var phantomHeadCircumference = 2 * Math.PI * _this.phantomHeadRadius
+        var phantomHeadCircumference = 2 * Math.PI * _this.phantomHeadRadius;
         k = 0;
         for (i = torsoStart; i < torsoEnd; i++) {
             for (j = 0; j < _this.phantomFlatWidth; j++) {
