@@ -4,6 +4,7 @@ OpenREM version history
 
 1.0.0b1 (2020-xx-xx)
 --------------------
+* :issue:`853`  Testing: reduced Bitbucket pipeline minutes usage
 * :issue:`850`  Emails: added oldest study accession number to high fluoro dose alert email subject
 * :issue:`849`  Docker: make docker URL an env variable
 * :issue:`847`  Documentation: added copy button to commands, added prompts where appropriate
