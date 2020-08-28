@@ -1644,8 +1644,8 @@ def ct_plot_calculations(
             exclude_constant_angle=True,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
-            chart_y_axis_title="DLP (mGy.cm)",
-            chart_column_name="Acquisition protocol name",
+            chart_value_axis_title="DLP (mGy.cm)",
+            chart_category_name="Acquisition protocol name",
         )
 
         if plot_acquisition_mean_dlp and plot_acquisition_freq:
@@ -1673,8 +1673,8 @@ def ct_plot_calculations(
             exclude_constant_angle=True,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
-            chart_y_axis_title="CTDI (mGy)",
-            chart_column_name="Acquisition protocol name",
+            chart_value_axis_title="CTDI (mGy)",
+            chart_category_name="Acquisition protocol name",
         )
 
         return_structure["acquisitionCTDIData"] = result.to_json()
@@ -1694,8 +1694,8 @@ def ct_plot_calculations(
             plot_histogram_bins,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
-            chart_y_axis_title="DLP (mGy.cm)",
-            chart_column_name="Study description",
+            chart_value_axis_title="DLP (mGy.cm)",
+            chart_category_name="Study description",
         )
 
         if plot_study_mean_dlp and plot_study_freq:
@@ -1723,8 +1723,8 @@ def ct_plot_calculations(
             exclude_constant_angle=True,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
-            chart_y_axis_title="CTDI (mGy)",
-            chart_column_name="Study description",
+            chart_value_axis_title="CTDI (mGy)",
+            chart_category_name="Study description",
         )
 
         return_structure["studyCTDIData"] = result.to_json()
@@ -1768,8 +1768,8 @@ def ct_plot_calculations(
             plot_histogram_bins,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
-            chart_y_axis_title="DLP (mGy.cm)",
-            chart_column_name="Requested procedure name",
+            chart_value_axis_title="DLP (mGy.cm)",
+            chart_category_name="Requested procedure name",
         )
 
         if plot_request_mean_dlp and plot_request_freq:

@@ -48,8 +48,8 @@ def average_chart_inc_histogram_data(
     exclude_constant_angle=False,
     calculate_histograms=False,
     case_insensitive_categories=False,
-    chart_y_axis_title="",
-    chart_column_name="",
+    chart_value_axis_title="",
+    chart_category_name="",
 ):
     """ This function calculates the data for an OpenREM Highcharts plot of average value vs. a category, as well as a
     histogram of values for each category. It is also used for OpenREM Highcharts frequency plots.
@@ -69,8 +69,8 @@ def average_chart_inc_histogram_data(
         exclude_constant_angle: boolean used to set whether to exclude CT constant angle acquisitions
         calculate_histograms: boolean used to set whether to calculate histogram data
         case_insensitive_categories: boolean to set whether to make categories case-insensitive
-        chart_y_axis_title: string to use for the y-axis label
-        chart_column_name: string to use for the column label
+        chart_value_axis_title: string to use for the value axis label
+        chart_category_name: string to use for the category label
 
 
     Params:
@@ -207,9 +207,11 @@ def average_chart_inc_histogram_data(
             # Create a plot with either the mean, median or both values
             if plot_average_choice == "mean":
                 average_chart = alt.Chart(df).mark_bar().encode(
-                    column=alt.Column("data_point_name", title=chart_column_name),
-                    x=alt.X("x_ray_system_name", axis=alt.Axis(labels=False, title="")),
-                    y=alt.Y("mean", title="Mean " + chart_y_axis_title),
+                    row=alt.Row("data_point_name",
+                                title=chart_category_name,
+                                header=alt.Header(labelAngle=0, labelAlign="left")),
+                    y=alt.Y("x_ray_system_name", axis=alt.Axis(labels=False, title="")),
+                    x=alt.X("mean", title="Mean " + chart_value_axis_title),
                     color=alt.Color("x_ray_system_name", legend=alt.Legend(title="System")),
                     tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
                              alt.Tooltip("data_point_name", title="Name"),
@@ -228,9 +230,11 @@ def average_chart_inc_histogram_data(
 
             elif plot_average_choice == "median":
                 average_chart = alt.Chart(df).mark_bar().encode(
-                    column=alt.Column("data_point_name", title=chart_column_name),
-                    x=alt.X("x_ray_system_name", axis=alt.Axis(labels=False, title="")),
-                    y=alt.Y("median", title="Median " + chart_y_axis_title),
+                    row=alt.Row("data_point_name",
+                                title=chart_category_name,
+                                header=alt.Header(labelAngle=0, labelAlign="left")),
+                    y=alt.Y("x_ray_system_name", axis=alt.Axis(labels=False, title="")),
+                    x=alt.X("median", title="Median " + chart_value_axis_title),
                     color=alt.Color("x_ray_system_name", legend=alt.Legend(title="System")),
                     tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
                              alt.Tooltip("data_point_name", title="Name"),
@@ -252,9 +256,11 @@ def average_chart_inc_histogram_data(
                 # on top of one another, resulting in a bar height that is the sum of the two values.
                 data = pd.melt(df, id_vars=["x_ray_system_name", "data_point_name"], value_vars=["mean", "median"])
                 average_chart = alt.Chart(data).mark_bar().encode(
-                    column=alt.Column("data_point_name", title=chart_column_name),
-                    x=alt.X("x_ray_system_name", title=""),
-                    y=alt.Y("value", title="Mean and median " + chart_y_axis_title),
+                    row=alt.Row("data_point_name",
+                                title=chart_category_name,
+                                header=alt.Header(labelAngle=0, labelAlign="left")),
+                    y=alt.Y("x_ray_system_name", title=""),
+                    x=alt.X("value", title="Mean and median " + chart_value_axis_title),
                     color=alt.Color("variable", legend=alt.Legend(title="Average")),
                     tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
                              alt.Tooltip("data_point_name", title="Name"),
