@@ -21,7 +21,7 @@ from .geomclass import Triangle3, Segment3
 
 
 def intersect(a_ray, a_triangle):
-    """ Derived from example code at http://geomalgorithms.com/a06-_intersect-2.html
+    """Derived from example code at http://geomalgorithms.com/a06-_intersect-2.html
     provided under the following license:
 
     Copyright 2001 softSurfer, 2012 Dan Sunday
@@ -89,7 +89,7 @@ def intersect(a_ray, a_triangle):
 
 
 def collimate(a_ray, area, d_ref):
-    """ This function produces a pair of triangles representing a square field
+    """This function produces a pair of triangles representing a square field
     of a collimated x-ray beam. These are then used for intersection checks to
     see if the phantom cell sees radiation.
 
@@ -104,22 +104,34 @@ def collimate(a_ray, area, d_ref):
     """
     side_length = math.sqrt(area) * 10 / d_ref  # Side at 10 cm
 
-    centre_point = a_ray.source + a_ray.vector / a_ray.length * 10  # point at 10 cm up on the midline of the ray
+    centre_point = (
+        a_ray.source + a_ray.vector / a_ray.length * 10
+    )  # point at 10 cm up on the midline of the ray
 
     xvector = np.array([np.sin(a_ray.xangle), 0, -np.cos(a_ray.xangle)])
     yvector = np.array([0, np.sin(a_ray.yangle), np.cos(a_ray.yangle)])
-    point_a = centre_point + ((side_length / 2) * xvector) + ((side_length / 2) * yvector)
-    point_b = centre_point + ((side_length / 2) * xvector) - ((side_length / 2) * yvector)
-    point_c = centre_point - ((side_length / 2) * xvector) + ((side_length / 2) * yvector)
-    point_d = centre_point - ((side_length / 2) * xvector) - ((side_length / 2) * yvector)
+    point_a = (
+        centre_point + ((side_length / 2) * xvector) + ((side_length / 2) * yvector)
+    )
+    point_b = (
+        centre_point + ((side_length / 2) * xvector) - ((side_length / 2) * yvector)
+    )
+    point_c = (
+        centre_point - ((side_length / 2) * xvector) + ((side_length / 2) * yvector)
+    )
+    point_d = (
+        centre_point - ((side_length / 2) * xvector) - ((side_length / 2) * yvector)
+    )
 
     triangle_1 = Triangle3(point_d, point_b, point_c)
     triangle_2 = Triangle3(point_a, point_b, point_c)
     return triangle_1, triangle_2
 
 
-def build_ray(table_longitudinal, table_lateral, table_height, lr_angle, cc_angle, d_ref):
-    """ This function takes RDSR geometry information and uses it to build
+def build_ray(
+    table_longitudinal, table_lateral, table_height, lr_angle, cc_angle, d_ref
+):
+    """This function takes RDSR geometry information and uses it to build
     an x-ray (Segment_3) taking into account translation and rotation.
 
     Args:
@@ -137,8 +149,8 @@ def build_ray(table_longitudinal, table_lateral, table_height, lr_angle, cc_angl
     y = 0
     z = -d_ref
 
-    lr_rads = (lr_angle / 360.) * 2. * math.pi
-    cc_rads = (cc_angle / 360.) * 2. * math.pi
+    lr_rads = (lr_angle / 360.0) * 2.0 * math.pi
+    cc_rads = (cc_angle / 360.0) * 2.0 * math.pi
 
     sin_lr = math.sin(lr_rads)
     cos_lr = math.cos(lr_rads)
@@ -172,7 +184,7 @@ def build_ray(table_longitudinal, table_lateral, table_height, lr_angle, cc_angl
 
 
 def check_orthogonal(segment1, segment2):
-    """ This function checks whether two segments are within 90 degrees
+    """This function checks whether two segments are within 90 degrees
 
     Args:
         segment1: A Segment_3 line segment
@@ -186,7 +198,7 @@ def check_orthogonal(segment1, segment2):
 
 
 def check_miss(source, centre, target1, target2):
-    """ This function compares two angles between a source and two targets.
+    """This function compares two angles between a source and two targets.
     If the second target is at a steeper angle than the first, it misses.
 
     Args:
@@ -203,10 +215,18 @@ def check_miss(source, centre, target1, target2):
     main_length = np.linalg.norm(main_line)
     target1_vec = target1 - source
     # target1_length = np.linalg.norm(target1_vec)
-    target1_length = math.sqrt(math.pow(target1_vec[0], 2) + math.pow(target1_vec[1], 2) + math.pow(target1_vec[2], 2))
+    target1_length = math.sqrt(
+        math.pow(target1_vec[0], 2)
+        + math.pow(target1_vec[1], 2)
+        + math.pow(target1_vec[2], 2)
+    )
     target2_vec = target2 - source
     # target2_length = np.linalg.norm(target2_vec)
-    target2_length = math.sqrt(math.pow(target2_vec[0], 2) + math.pow(target2_vec[1], 2) + math.pow(target2_vec[2], 2))
+    target2_length = math.sqrt(
+        math.pow(target2_vec[0], 2)
+        + math.pow(target2_vec[1], 2)
+        + math.pow(target2_vec[2], 2)
+    )
 
     angle1 = np.arccos(np.dot(main_line, target1_vec) / (main_length * target1_length))
     angle2 = np.arccos(np.dot(main_line, target2_vec) / (main_length * target2_length))
@@ -215,7 +235,7 @@ def check_miss(source, centre, target1, target2):
 
 
 def find_nearest(array, value):
-    """ This function finds the closest match to a value from an array.
+    """This function finds the closest match to a value from an array.
 
     Args:
         The array to search and the value to compare.
@@ -227,7 +247,7 @@ def find_nearest(array, value):
 
 
 def get_bsf(tube_voltage, cu_thickness, size):
-    """ This function gives a BSF and f-factor combined. Data from:
+    """This function gives a BSF and f-factor combined. Data from:
     Backscatter factors and mass energy-absorption coefficient ratios for diagnostic radiology dosimetry
     Hamza Benmakhlouf et al 2011 Phys. Med. Biol. 56 7179 doi:10.1088/0031-9155/56/22/012
 
@@ -247,22 +267,48 @@ def get_bsf(tube_voltage, cu_thickness, size):
     lookup_cu = find_nearest(cu_table, cu_thickness)
     lookup_size = find_nearest(size_table, size)
 
-    lookup_array = np.array([
-        [[1.2, 1.3, 1.3, 1.3], [1.3, 1.3, 1.4, 1.4], [1.3, 1.4, 1.4, 1.4], [1.3, 1.4, 1.4, 1.5], [1.3, 1.4, 1.5, 1.5],
-         [1.3, 1.5, 1.5, 1.6]],
-        [[1.3, 1.4, 1.4, 1.5], [1.3, 1.4, 1.5, 1.5], [1.3, 1.5, 1.6, 1.6], [1.4, 1.5, 1.6, 1.7], [1.4, 1.5, 1.7, 1.7],
-         [1.4, 1.5, 1.7, 1.7]],
-        [[1.3, 1.4, 1.5, 1.5], [1.3, 1.5, 1.6, 1.6], [1.3, 1.5, 1.6, 1.7], [1.4, 1.5, 1.6, 1.7], [1.4, 1.5, 1.7, 1.7],
-         [1.3, 1.5, 1.7, 1.7]],
-        [[1.3, 1.5, 1.5, 1.6], [1.3, 1.5, 1.6, 1.6], [1.3, 1.5, 1.6, 1.7], [1.3, 1.5, 1.6, 1.7], [1.3, 1.5, 1.6, 1.7],
-         [1.3, 1.5, 1.6, 1.7]]
-    ])
+    lookup_array = np.array(
+        [
+            [
+                [1.2, 1.3, 1.3, 1.3],
+                [1.3, 1.3, 1.4, 1.4],
+                [1.3, 1.4, 1.4, 1.4],
+                [1.3, 1.4, 1.4, 1.5],
+                [1.3, 1.4, 1.5, 1.5],
+                [1.3, 1.5, 1.5, 1.6],
+            ],
+            [
+                [1.3, 1.4, 1.4, 1.5],
+                [1.3, 1.4, 1.5, 1.5],
+                [1.3, 1.5, 1.6, 1.6],
+                [1.4, 1.5, 1.6, 1.7],
+                [1.4, 1.5, 1.7, 1.7],
+                [1.4, 1.5, 1.7, 1.7],
+            ],
+            [
+                [1.3, 1.4, 1.5, 1.5],
+                [1.3, 1.5, 1.6, 1.6],
+                [1.3, 1.5, 1.6, 1.7],
+                [1.4, 1.5, 1.6, 1.7],
+                [1.4, 1.5, 1.7, 1.7],
+                [1.3, 1.5, 1.7, 1.7],
+            ],
+            [
+                [1.3, 1.5, 1.5, 1.6],
+                [1.3, 1.5, 1.6, 1.6],
+                [1.3, 1.5, 1.6, 1.7],
+                [1.3, 1.5, 1.6, 1.7],
+                [1.3, 1.5, 1.6, 1.7],
+                [1.3, 1.5, 1.6, 1.7],
+            ],
+        ]
+    )
 
     return lookup_array[lookup_kv, lookup_cu, lookup_size]
 
 
 def rotate_ray_y(segment1, angle):
-    """ This function rotates a ray around the end point of the ray by angle degrees.
+    """This function rotates a ray around the end point of the ray by angle degrees.
 
     Args:
         segment1: the ray to rotate_ray_y
@@ -273,16 +319,20 @@ def rotate_ray_y(segment1, angle):
     """
     isocentre = segment1.target
     translate_source = segment1.source - isocentre
-    angle_rads = angle / 360 * 2. * math.pi
+    angle_rads = angle / 360 * 2.0 * math.pi
     my_y = translate_source[1]
-    my_x = translate_source[2] * math.sin(angle_rads) + translate_source[0] * math.cos(angle_rads)
-    my_z = translate_source[2] * math.cos(angle_rads) - translate_source[0] * math.sin(angle_rads)
+    my_x = translate_source[2] * math.sin(angle_rads) + translate_source[0] * math.cos(
+        angle_rads
+    )
+    my_z = translate_source[2] * math.cos(angle_rads) - translate_source[0] * math.sin(
+        angle_rads
+    )
     new_source = np.array([my_x, my_y, my_z])
     return Segment3(new_source + isocentre, isocentre)
 
 
 def get_table_trans(tube_voltage, cu_thickness):
-    """ This function gives just the table transmission factor based
+    """This function gives just the table transmission factor based
     on measurements made at the Royal Free Hospital on a Siemens Artis Zeego
     in early 2016.
 
@@ -299,20 +349,22 @@ def get_table_trans(tube_voltage, cu_thickness):
     lookup_kv = find_nearest(kv_table, tube_voltage)
     lookup_cu = find_nearest(cu_table, cu_thickness)
 
-    lookup_array = np.array([
-        [0.80, 0.82, 0.82, 0.82],
-        [0.84, 0.84, 0.86, 0.87],
-        [0.86, 0.86, 0.88, 0.88],
-        [0.84, 0.86, 0.88, 0.89],
-        [0.86, 0.87, 0.88, 0.90],
-        [0.86, 0.87, 0.89, 0.90]
-    ])
+    lookup_array = np.array(
+        [
+            [0.80, 0.82, 0.82, 0.82],
+            [0.84, 0.84, 0.86, 0.87],
+            [0.86, 0.86, 0.88, 0.88],
+            [0.84, 0.86, 0.88, 0.89],
+            [0.86, 0.87, 0.88, 0.90],
+            [0.86, 0.87, 0.89, 0.90],
+        ]
+    )
 
     return lookup_array[lookup_cu, lookup_kv]
 
 
 def get_table_mattress_trans(tube_voltage, cu_thickness):
-    """ This function gives a table and mattress transmission factor based
+    """This function gives a table and mattress transmission factor based
     on measurements made at the Royal Free Hospital on a Siemens Artis Zeego
     in early 2016.
 
@@ -329,13 +381,15 @@ def get_table_mattress_trans(tube_voltage, cu_thickness):
     lookup_kv = find_nearest(kv_table, tube_voltage)
     lookup_cu = find_nearest(cu_table, cu_thickness)
 
-    lookup_array = np.array([
-        [0.66, 0.68, 0.71, 0.72],
-        [0.73, 0.75, 0.78, 0.78],
-        [0.75, 0.78, 0.81, 0.81],
-        [0.76, 0.79, 0.83, 0.83],
-        [0.79, 0.81, 0.85, 0.85],
-        [0.80, 0.82, 0.85, 0.86]
-    ])
+    lookup_array = np.array(
+        [
+            [0.66, 0.68, 0.71, 0.72],
+            [0.73, 0.75, 0.78, 0.78],
+            [0.75, 0.78, 0.81, 0.81],
+            [0.76, 0.79, 0.83, 0.83],
+            [0.79, 0.81, 0.85, 0.85],
+            [0.80, 0.82, 0.85, 0.86],
+        ]
+    )
 
     return lookup_array[lookup_cu, lookup_kv]
