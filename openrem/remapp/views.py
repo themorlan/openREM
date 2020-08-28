@@ -1509,7 +1509,7 @@ def ct_summary_chart_data(request):
         user_profile.plotSeriesPerSystem,
         user_profile.plotHistogramBins,
         user_profile.plotHistograms,
-        user_profile.plotCaseInsensitiveCategories,
+        user_profile.plotCaseInsensitiveCategories
     )
 
     if settings.DEBUG:
@@ -1538,7 +1538,7 @@ def ct_plot_calculations(
     plot_series_per_systems,
     plot_histogram_bins,
     plot_histograms,
-    plot_case_insensitive_categories,
+    plot_case_insensitive_categories
 ):
     """CT chart data calculations
     """
@@ -1679,33 +1679,33 @@ def ct_plot_calculations(
 
         return_structure["acquisitionCTDIData"] = result.to_json()
 
-    if plot_study_mean_dlp or plot_study_freq:
+    if plot_study_mean_dlp or plot_study_freq or plot_study_mean_dlp_over_time:
         result = average_chart_inc_histogram_data(
             study_and_request_events,
             "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
             "study_description",
             "total_dlp",
-            1,
-            plot_study_mean_dlp,
-            plot_study_freq,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
+            value_multiplier=1.0,
+            plot_average=plot_study_mean_dlp,
+            plot_freq=plot_study_freq,
+            plot_series_per_system=plot_series_per_systems,
+            plot_average_choice=plot_average_choice,
+            median_available=median_available,
+            num_hist_bins=plot_histogram_bins,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
             chart_value_axis_title="DLP (mGy.cm)",
             chart_category_name="Study description",
+            plot_average_over_time=plot_study_mean_dlp_over_time,
+            time_period=plot_study_mean_dlp_over_time_period
         )
 
-        if plot_study_mean_dlp and plot_study_freq:
-            return_structure["studyDLPData"], return_structure["studyFreqData"] = result
-            return_structure["studyDLPData"] = return_structure["studyDLPData"].to_json()
-            return_structure["studyFreqData"] = return_structure["studyFreqData"].to_json()
-        elif plot_study_mean_dlp:
-            return_structure["studyDLPData"] = result.to_json()
-        else:
-            return_structure["studyFreqData"] = result.to_json()
+        if plot_study_mean_dlp_over_time:
+            return_structure["studyDLPoverTime"] = result["averageOverTimeChart"].to_json()
+        if plot_study_mean_dlp:
+            return_structure["studyDLPData"] = result["averageChart"].to_json()
+        if plot_study_freq:
+            return_structure["studyFreqData"] = result["frequencyChart"].to_json()
 
     if plot_study_mean_ctdi:
         result = average_chart_inc_histogram_data(

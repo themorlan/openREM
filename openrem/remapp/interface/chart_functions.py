@@ -38,18 +38,20 @@ def average_chart_inc_histogram_data(
     db_display_name_relationship,
     db_series_names,
     db_value_name,
-    value_multiplier,
-    plot_average,
-    plot_freq,
-    plot_series_per_system,
-    plot_average_choice,
-    median_available,
-    num_hist_bins,
+    value_multiplier=1.0,
+    plot_average=False,
+    plot_freq=False,
+    plot_series_per_system=False,
+    plot_average_choice="mean",
+    median_available=False,
+    num_hist_bins=10,
     exclude_constant_angle=False,
     calculate_histograms=False,
     case_insensitive_categories=False,
     chart_value_axis_title="",
     chart_category_name="",
+    plot_average_over_time=False,
+    time_period="yearmonth"
 ):
     """ This function calculates the data for an OpenREM Highcharts plot of average value vs. a category, as well as a
     histogram of values for each category. It is also used for OpenREM Highcharts frequency plots.
@@ -119,209 +121,85 @@ def average_chart_inc_histogram_data(
 
     return_structure = {}
 
-    summary_annotations = {}
+    fields_to_include = {"db_series_names_to_use", db_value_name}
+    if plot_series_per_system:
+        fields_to_include.add(db_display_name_relationship)
+    if plot_average_over_time:
+        fields_to_include.add("study_date")
 
-    if plot_average or plot_freq:
-        # Determine the mean, median and frequency annotations to use
-        if exclude_constant_angle:
-            if plot_average:
-                if plot_average_choice == "both" or plot_average_choice == "mean":
-                    summary_annotations["mean"] = (
-                        Avg(
-                            Case(
-                                When(
-                                    ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact="Constant Angle Acquisition",
-                                    then=None,
-                                ),
-                                default=db_value_name,
-                                output_field=FloatField(),
-                            )
-                        )
-                        * value_multiplier
-                    )
-                if plot_average_choice == "both" or plot_average_choice == "median":
-                    summary_annotations["median"] = (
-                        Median(
-                            Case(
-                                When(
-                                    ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact="Constant Angle Acquisition",
-                                    then=None,
-                                ),
-                                default=db_value_name,
-                                output_field=FloatField(),
-                            )
-                        )
-                        * value_multiplier
-                    )
-            if plot_average or plot_freq:
-                summary_annotations["num"] = Sum(
-                    Case(
-                        When(
-                            ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__exact="Constant Angle Acquisition",
-                            then=0,
-                        ),
-                        default=1,
-                        output_field=IntegerField(),
-                    )
-                )
-        else:
-            # Don't exclude "Constant Angle Acquisitions" from the calculations
-            if plot_average:
-                if plot_average_choice == "both" or plot_average_choice == "mean":
-                    summary_annotations["mean"] = (
-                        Avg(db_value_name) * value_multiplier
-                    )
-                if plot_average_choice == "both" or plot_average_choice == "median":
-                    summary_annotations["median"] = (
-                        Median(db_value_name) * value_multiplier
-                    )
-            if plot_average or plot_freq:
-                summary_annotations["num"] = Count(db_value_name)
+    df_test = pd.DataFrame.from_records(database_events.values(*fields_to_include))
 
-        # Create a Pandas DataFrame from database_events including the annotations determined above
-        if plot_series_per_system:
+    if plot_series_per_system:
+        df_test.rename(columns={db_display_name_relationship:"x_ray_system_name"}, inplace=True)
+    else:
+        df_test.insert(0, "x_ray_system_name", "All systems")
 
-            ########################################
-            # Time series chart testing
-            # df_test includes all of the data rows - no calculation of mean, median or frequency required by the server
-            # Including study date to see if I can make a time series plot from this same data frame
-            df_test = pd.DataFrame.from_records(database_events.values(db_display_name_relationship, "db_series_names_to_use", db_value_name, "study_date"))
-            df_test.rename(columns={db_display_name_relationship:"x_ray_system_name"}, inplace=True)
-            ########################################
+    df_test.rename(columns={"db_series_names_to_use":"data_point_name"}, inplace=True)
+    df_test[db_value_name] = df_test[db_value_name].astype(float)
 
-            df = pd.DataFrame.from_records(database_events.values(db_display_name_relationship, "db_series_names_to_use").annotate(**summary_annotations).order_by("db_series_names_to_use"))
-            df.rename(columns={db_display_name_relationship:"x_ray_system_name"}, inplace=True)
+    alt.data_transformers.disable_max_rows()
 
-        else:
-            df = pd.DataFrame.from_records(database_events.values("db_series_names_to_use").annotate(**summary_annotations).order_by("db_series_names_to_use"))
-            df.insert(0, "x_ray_system_name", "All systems")
-
-            ########################################
-            # Time series chart testing
-            df_test = pd.DataFrame.from_records(database_events.values("db_series_names_to_use", db_value_name, "study_date"))
-            df_test.insert(0, "x_ray_system_name", "All systems")
-            ########################################
-
-        df.rename(columns={"db_series_names_to_use":"data_point_name"}, inplace=True)
-
-        ########################################
-        # Time series chart testing
-        df_test.rename(columns={"db_series_names_to_use":"data_point_name"}, inplace=True)
+    if plot_average_over_time:
         df_test["study_date"] = pd.to_datetime(df_test["study_date"])
 
-        if plot_average: # Need to change this to "if plot_over_time"...
-            df_test[db_value_name] = df_test[db_value_name].astype(float)
+        return_structure["averageOverTimeChart"] = alt.Chart(df_test).mark_line(point=True).encode(
+            x=alt.X("yearmonth(study_date):T", title="Study date (months)"),
+            y=alt.Y("mean(total_dlp)", title="Mean " + chart_value_axis_title),
+            color=alt.Color("data_point_name", legend=alt.Legend(title="System")),
+            tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
+                     alt.Tooltip("data_point_name", title="Name"),
+                     alt.Tooltip("mean(total_dlp)", format=".2f", title="Mean")]
+        ).facet(
+            row=alt.Row("x_ray_system_name:N", title="")
+        ).interactive()
 
-            # A line plot of mean total_dlp per month, once chart facet per x-ray system:
-            alt.data_transformers.disable_max_rows()
-            over_time_chart = alt.Chart(df_test).mark_line(point=True).encode(
-                x=alt.X("yearmonth(study_date):T", title="Study date (months)"),
-                y=alt.Y("mean(total_dlp)", title="Mean " + chart_value_axis_title),
-                color=alt.Color("data_point_name", legend=alt.Legend(title="System")),
+    if plot_average:
+        # Create a plot with either the mean or median
+        if plot_average_choice == "mean" or "median":
+            return_structure["averageChart"] = alt.Chart(df_test).mark_bar().encode(
+                row=alt.Row("data_point_name",
+                            title=chart_category_name,
+                            header=alt.Header(labelAngle=0, labelAlign="left")),
+                y=alt.Y("x_ray_system_name", axis=alt.Axis(labels=False, title="")),
+                x=alt.X(plot_average_choice + "(" + db_value_name + ")", title=plot_average_choice.capitalize() + " " + chart_value_axis_title),
+                color=alt.Color("x_ray_system_name", legend=alt.Legend(title="System")),
                 tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
                          alt.Tooltip("data_point_name", title="Name"),
-                         alt.Tooltip("mean(total_dlp)", format=".2f", title="Mean")]
-            ).facet(
-                row=alt.Row("x_ray_system_name:N", title="")
-            ).interactive()
-        #######################################
-
-        if plot_average:
-            # Change Decimal values to float so that to_json() works (Decimal values can't be JSON serialised)
-            if plot_average_choice == "both" or plot_average_choice == "mean":
-                df["mean"] = df["mean"].astype(float)
-
-            # Change Decimal values to float so that to_json() works (Decimal values can't be JSON serialised)
-            if plot_average_choice == "both" or plot_average_choice == "median":
-                df["median"] = df["median"].astype(float)
-
-            # Create a plot with either the mean, median or both values
-            if plot_average_choice == "mean":
-                average_chart = alt.Chart(df).mark_bar().encode(
-                    row=alt.Row("data_point_name",
-                                title=chart_category_name,
-                                header=alt.Header(labelAngle=0, labelAlign="left")),
-                    y=alt.Y("x_ray_system_name", axis=alt.Axis(labels=False, title="")),
-                    x=alt.X("mean", title="Mean " + chart_value_axis_title),
-                    color=alt.Color("x_ray_system_name", legend=alt.Legend(title="System")),
-                    tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
-                             alt.Tooltip("data_point_name", title="Name"),
-                             alt.Tooltip("mean", format=".2f", title="Mean"),
-                             alt.Tooltip("num", format=".0f", title="Frequency")]
-                ).interactive()
-
-                # # Create a plot using the raw data, getting the browser to calculate the mean
-                # alt.data_transformers.disable_max_rows()
-                # chart = alt.Chart(df_test).mark_bar().encode(
-                #     column=alt.Column("data_point_name"),
-                #     x=alt.X("x_ray_system_name"),
-                #     y=alt.Y(db_value_name, "mean"),
-                #     color="x_ray_system_name"
-                # ).interactive()
-
-            elif plot_average_choice == "median":
-                average_chart = alt.Chart(df).mark_bar().encode(
-                    row=alt.Row("data_point_name",
-                                title=chart_category_name,
-                                header=alt.Header(labelAngle=0, labelAlign="left")),
-                    y=alt.Y("x_ray_system_name", axis=alt.Axis(labels=False, title="")),
-                    x=alt.X("median", title="Median " + chart_value_axis_title),
-                    color=alt.Color("x_ray_system_name", legend=alt.Legend(title="System")),
-                    tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
-                             alt.Tooltip("data_point_name", title="Name"),
-                             alt.Tooltip("median", format=".2f", title="Median"),
-                             alt.Tooltip("num", format=".0f", title="Frequency")]
-                ).interactive()
-
-                # # Create a plot using the raw data, getting the browser to calculate the median
-                # alt.data_transformers.disable_max_rows()
-                # chart = alt.Chart(df_test).mark_bar().encode(
-                #     column=alt.Column("data_point_name"),
-                #     x=alt.X("x_ray_system_name"),
-                #     y=alt.Y(db_value_name, "median"),
-                #     color="x_ray_system_name"
-                # ).interactive()
-
-            else:
-                # This doesn't produce what is needed at the moment - the mean and median values are stacked
-                # on top of one another, resulting in a bar height that is the sum of the two values.
-                data = pd.melt(df, id_vars=["x_ray_system_name", "data_point_name"], value_vars=["mean", "median"])
-                average_chart = alt.Chart(data).mark_bar().encode(
-                    row=alt.Row("data_point_name",
-                                title=chart_category_name,
-                                header=alt.Header(labelAngle=0, labelAlign="left")),
-                    y=alt.Y("x_ray_system_name", title=""),
-                    x=alt.X("value", title="Mean and median " + chart_value_axis_title),
-                    color=alt.Color("variable", legend=alt.Legend(title="Average")),
-                    tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
-                             alt.Tooltip("data_point_name", title="Name"),
-                             alt.Tooltip("value", format=".2f", title="Value")]
-                ).interactive()
-
-                # Not sure how to calculate a mean and median plot using the raw data
-
-        if plot_freq:
-            # Create a plot that shows the frequencies - used to be a pie chart.
-            freq_chart = alt.Chart(df).mark_bar().encode(
-                x=alt.X("num", title="Frequency"),
-                y=alt.Y("x_ray_system_name", axis=alt.Axis(title="")),
-                color=alt.Color("data_point_name", legend=alt.Legend(title="Name")),
-                # Use the line below to sort the legend entries by most frequent first, rather than
-                # alphabetically
-                # color=alt.Color("data_point_name", legend=alt.Legend(title="Name"), sort=alt.EncodingSortField("num", order="descending")),
-                order=alt.Order("num", sort="descending"),
-                tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
-                         alt.Tooltip("data_point_name", title="Name"),
-                         alt.Tooltip("num", format=".0f", title="Frequency")]
+                         alt.Tooltip(plot_average_choice + "(" + db_value_name + ")", format=".2f", title="Mean"),
+                         alt.Tooltip("count(" + db_value_name + ")", format=".0f", title="Frequency")]
             ).interactive()
 
-        if plot_average and plot_freq:
-            return average_chart, freq_chart
-        elif plot_average:
-            #return average_chart
-            return over_time_chart
-        else:
-            return freq_chart
+        # Create a plot with both the mean and median
+        if plot_average_choice == "both":
+            return_structure["averageChart"] = alt.Chart(df_test).transform_aggregate(
+                mean="mean(" + db_value_name + ")",
+                median="median(" + db_value_name + ")",
+                groupby=["data_point_name"]
+            ).transform_fold(
+                ["mean", "median"],
+                as_=["aggregate", "value"]
+            ).mark_bar().encode(
+                y=alt.Y("value:Q", title=""),
+                x=alt.X("data_point_name"),
+                color="aggregate:N",
+            ).interactive()
+
+    if plot_freq:
+        # Create a plot that shows the frequencies - used to be a pie chart.
+        return_structure["frequencyChart"] = alt.Chart(df_test).mark_bar().encode(
+            x=alt.X(chart_category_name, "num", title="Frequency"),
+            y=alt.Y("x_ray_system_name", axis=alt.Axis(title="")),
+            color=alt.Color("data_point_name", legend=alt.Legend(title="Name")),
+            # Use the line below to sort the legend entries by most frequent first, rather than
+            # alphabetically
+            # color=alt.Color("data_point_name", legend=alt.Legend(title="Name"), sort=alt.EncodingSortField("num", order="descending")),
+            order=alt.Order("num", sort="descending"),
+            tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
+                     alt.Tooltip("data_point_name", title="Name"),
+                     alt.Tooltip("num", format=".0f", title="Frequency")]
+        ).interactive()
+
+    return return_structure
 
 
 def average_chart_over_time_data(
