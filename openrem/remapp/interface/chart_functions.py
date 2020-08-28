@@ -275,6 +275,9 @@ def average_chart_inc_histogram_data(
                 x=alt.X("num", title="Frequency"),
                 y=alt.Y("x_ray_system_name", axis=alt.Axis(title="")),
                 color=alt.Color("data_point_name", legend=alt.Legend(title="Name")),
+                # Use the line below to sort the legend entries by most frequent first, rather than
+                # alphabetically
+                # color=alt.Color("data_point_name", legend=alt.Legend(title="Name"), sort=alt.EncodingSortField("num", order="descending")),
                 order=alt.Order("num", sort="descending"),
                 tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
                          alt.Tooltip("data_point_name", title="Name"),
