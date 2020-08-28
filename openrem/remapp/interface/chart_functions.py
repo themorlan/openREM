@@ -191,6 +191,7 @@ def average_chart_inc_histogram_data(
 
             df = pd.DataFrame.from_records(database_events.values(db_display_name_relationship, "db_series_names_to_use").annotate(**summary_annotations).order_by("db_series_names_to_use"))
             df.rename(columns={db_display_name_relationship:"x_ray_system_name"}, inplace=True)
+
         else:
             df = pd.DataFrame.from_records(database_events.values("db_series_names_to_use").annotate(**summary_annotations).order_by("db_series_names_to_use"))
             df.insert(0, "x_ray_system_name", "All systems")
@@ -211,12 +212,18 @@ def average_chart_inc_histogram_data(
         if plot_average: # Need to change this to "if plot_over_time"...
             df_test[db_value_name] = df_test[db_value_name].astype(float)
 
-            # A line plot of mean total_dlp per month (all systems together):
-            over_time_chart = alt.Chart(df_test).mark_line().encode(
-                x="month(study_date):T",
-                y="mean(total_dlp)",
-                color="data_point_name"
-            )
+            # A line plot of mean total_dlp per month, once chart facet per x-ray system:
+            alt.data_transformers.disable_max_rows()
+            over_time_chart = alt.Chart(df_test).mark_line(point=True).encode(
+                x=alt.X("yearmonth(study_date):T", title="Study date (months)"),
+                y=alt.Y("mean(total_dlp)", title="Mean " + chart_value_axis_title),
+                color=alt.Color("data_point_name", legend=alt.Legend(title="System")),
+                tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
+                         alt.Tooltip("data_point_name", title="Name"),
+                         alt.Tooltip("mean(total_dlp)", format=".2f", title="Mean")]
+            ).facet(
+                row=alt.Row("x_ray_system_name:N", title="")
+            ).interactive()
         #######################################
 
         if plot_average:
