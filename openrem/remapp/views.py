@@ -1634,13 +1634,13 @@ def ct_plot_calculations(
             "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
             "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
             "ctradiationdose__ctirradiationeventdata__dlp",
-            1,
-            plot_acquisition_mean_dlp,
-            plot_acquisition_freq,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
+            value_multiplier=1.0,
+            plot_average=plot_acquisition_mean_dlp,
+            plot_freq=plot_acquisition_freq,
+            plot_series_per_system=plot_series_per_systems,
+            plot_average_choice=plot_average_choice,
+            median_available=median_available,
+            num_hist_bins=plot_histogram_bins,
             exclude_constant_angle=True,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
@@ -1648,14 +1648,10 @@ def ct_plot_calculations(
             chart_category_name="Acquisition protocol name",
         )
 
-        if plot_acquisition_mean_dlp and plot_acquisition_freq:
-            return_structure["acquisitionDLPData"], return_structure["acquisitionFreqData"] = result
-            return_structure["acquisitionDLPData"] = return_structure["acquisitionDLPData"].to_json()
-            return_structure["acquisitionFreqData"] = return_structure["acquisitionFreqData"].to_json()
-        elif plot_acquisition_mean_dlp:
-            return_structure["acquisitionDLPData"] = result.to_json()
-        else:
-            return_structure["acquisitionFreqData"] = result.to_json()
+        if plot_acquisition_mean_dlp:
+            return_structure["acquisitionDLPData"] = result["averageChart"].to_json()
+        if plot_acquisition_freq:
+            return_structure["acquisitionFreqData"] = result["frequencyChart"].to_json()
 
     if plot_acquisition_mean_ctdi:
         result = average_chart_inc_histogram_data(
@@ -1663,13 +1659,13 @@ def ct_plot_calculations(
             "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
             "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
             "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-            1,
-            plot_acquisition_mean_ctdi,
-            0,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
+            value_multiplier=1.0,
+            plot_average=plot_acquisition_mean_ctdi,
+            plot_freq=0,
+            plot_series_per_system=plot_series_per_systems,
+            plot_average_choice=plot_average_choice,
+            median_available=median_available,
+            num_hist_bins=plot_histogram_bins,
             exclude_constant_angle=True,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
@@ -1677,7 +1673,7 @@ def ct_plot_calculations(
             chart_category_name="Acquisition protocol name",
         )
 
-        return_structure["acquisitionCTDIData"] = result.to_json()
+        return_structure["acquisitionCTDIData"] = result["averageChart"].to_json()
 
     if plot_study_mean_dlp or plot_study_freq or plot_study_mean_dlp_over_time:
         result = average_chart_inc_histogram_data(
@@ -1713,13 +1709,13 @@ def ct_plot_calculations(
             "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
             "study_description",
             "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-            1,
-            plot_study_mean_ctdi,
-            0,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
+            value_multiplier=1.0,
+            plot_average=plot_study_mean_ctdi,
+            plot_freq=0,
+            plot_series_per_system=plot_series_per_systems,
+            plot_average_choice=plot_average_choice,
+            median_available=median_available,
+            num_hist_bins=plot_histogram_bins,
             exclude_constant_angle=True,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
@@ -1727,7 +1723,7 @@ def ct_plot_calculations(
             chart_category_name="Study description",
         )
 
-        return_structure["studyCTDIData"] = result.to_json()
+        return_structure["studyCTDIData"] = result["averageChart"].to_json()
 
     if plot_study_num_events:
         result = average_chart_inc_histogram_data(
@@ -1735,23 +1731,20 @@ def ct_plot_calculations(
             "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
             "study_description",
             "number_of_events",
-            1,
-            plot_study_num_events,
-            0,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
+            value_multiplier=1.0,
+            plot_average=plot_study_num_events,
+            plot_freq=0,
+            plot_series_per_system=plot_series_per_systems,
+            plot_average_choice=plot_average_choice,
+            median_available=median_available,
+            num_hist_bins=plot_histogram_bins,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
+            chart_value_axis_title="Events",
+            chart_category_name="Study description"
         )
 
-        return_structure["studySummaryNumEvents"] = result["summary"]
-        if not plot_study_mean_dlp and not plot_study_freq:
-            return_structure["studySystemList"] = result["system_list"]
-            return_structure["studyNameList"] = result["series_names"]
-        if plot_study_num_events and plot_histograms:
-            return_structure["studyHistogramDataNumEvents"] = result["histogram_data"]
+        return_structure["studyNumEventsData"] = result["averageChart"].to_json()
 
     if plot_request_mean_dlp or plot_request_freq:
         result = average_chart_inc_histogram_data(
@@ -1759,27 +1752,23 @@ def ct_plot_calculations(
             "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
             "requested_procedure_code_meaning",
             "total_dlp",
-            1,
-            plot_request_mean_dlp,
-            plot_request_freq,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
+            value_multiplier=1.0,
+            plot_average=plot_request_mean_dlp,
+            plot_freq=plot_request_freq,
+            plot_series_per_system=plot_series_per_systems,
+            plot_average_choice=plot_average_choice,
+            median_available=median_available,
+            num_hist_bins=plot_histogram_bins,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
             chart_value_axis_title="DLP (mGy.cm)",
-            chart_category_name="Requested procedure name",
+            chart_category_name="Requested procedure name"
         )
 
-        if plot_request_mean_dlp and plot_request_freq:
-            return_structure["requestData"], return_structure["requestFreqData"] = result
-            return_structure["requestData"] = return_structure["requestData"].to_json()
-            return_structure["requestFreqData"] = return_structure["requestFreqData"].to_json()
-        elif plot_request_mean_dlp:
-            return_structure["requestData"] = result.to_json()
-        else:
-            return_structure["requestFreqData"] = result.to_json()
+        if plot_request_mean_dlp:
+            return_structure["requestData"] = result["averageChart"].to_json()
+        if plot_request_freq:
+            return_structure["requestFreqData"] = result["frequencychart"].to_json()
 
     if plot_request_num_events:
         result = average_chart_inc_histogram_data(
@@ -1787,45 +1776,20 @@ def ct_plot_calculations(
             "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
             "requested_procedure_code_meaning",
             "number_of_events",
-            1,
-            plot_request_num_events,
-            0,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
+            value_multiplier=1.0,
+            plot_average=plot_request_num_events,
+            plot_freq=0,
+            plot_series_per_system=plot_series_per_systems,
+            plot_average_choice=plot_average_choice,
+            median_available=median_available,
+            num_hist_bins=plot_histogram_bins,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
+            chart_value_axis_title="Events",
+            chart_category_name="Requested procedure name"
         )
 
-        return_structure["requestSummaryNumEvents"] = result["summary"]
-        if not plot_request_mean_dlp and not plot_request_freq:
-            return_structure["requestSystemList"] = result["system_list"]
-            return_structure["requestNameList"] = result["series_names"]
-        if plot_request_num_events and plot_histograms:
-            return_structure["requestHistogramDataNumEvents"] = result["histogram_data"]
-
-    if plot_study_mean_dlp_over_time:
-        result = average_chart_over_time_data(
-            study_and_request_events,
-            "study_description",
-            "total_dlp",
-            "study_date",
-            "study_date",
-            median_available,
-            plot_average_choice,
-            1,
-            plot_study_mean_dlp_over_time_period,
-            case_insensitive_categories=plot_case_insensitive_categories,
-        )
-        if median_available and (
-            plot_average_choice == "median" or plot_average_choice == "both"
-        ):
-            return_structure["studyMedianDLPoverTime"] = result["median_over_time"]
-        if plot_average_choice == "mean" or plot_average_choice == "both":
-            return_structure["studyMeanDLPoverTime"] = result["mean_over_time"]
-        if not plot_study_mean_dlp and not plot_study_freq:
-            return_structure["studyNameList"] = result["series_names"]
+        return_structure["requestNumEventsData"] = result["averageChart"].to_json()
 
     if plot_study_per_day_and_hour:
         result = workload_chart_data(study_and_request_events)

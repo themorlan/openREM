@@ -48,14 +48,12 @@ $(document).ready(function() {
 
             // Number of events per study chart data
             if(typeof plotCTStudyNumEvents !== "undefined") {
-                updateAverageChart(json.studyNameList, json.studySystemList, json.studySummaryNumEvents, json.studyHistogramDataNumEvents, plotAverageChoice, "studyNumEventsDIV", colourScale);
-                sortChartDataToDefault(chartSorting, chartSortingDirection, "studyNumEventsDIV");
+                vegaEmbed('#studyAverageNumEventsChartDiv',  JSON.parse(json.studyNumEventsData)).catch(console.error);
             }
 
             // Number of events per request chart data
             if(typeof plotCTRequestNumEvents !== "undefined") {
-                updateAverageChart(json.requestNameList, json.requestSystemList, json.requestSummaryNumEvents, json.requestHistogramDataNumEvents, plotAverageChoice, "requestPlotNumEventsDIV", colourScale);
-                sortChartDataToDefault(chartSorting, chartSortingDirection, "requestPlotNumEventsDIV");
+                vegaEmbed('#requestAverageNumEventsChartDiv',  JSON.parse(json.requestNumEventsData)).catch(console.error);
             }
 
             // Acquisition frequency chart data start
@@ -75,20 +73,7 @@ $(document).ready(function() {
 
             // DLP over time chart data
             if(typeof plotCTStudyMeanDLPOverTime !== "undefined") {
-                var studyLineColours = new Array(json.studyNameList.length);
-                if (typeof plotCTStudyFreq !== "undefined") {
-                    studyLineColours = [];
-                    var piechartStudyDiv = $("#piechartStudyDIV");
-                    for (i = 0; i < piechartStudyDiv.highcharts().series[0].data.length; i++) {
-                        studyLineColours.push(piechartStudyDiv.highcharts().series[0].data.sort(sortByName)[i].color);
-                    }
-                    piechartStudyDiv.highcharts().series[0].data.sort(sortByY);
-                }
-                else {studyLineColours = colourScale.colors(json.studyNameList.length);}
-
-                var studyDlpOverTime = (plotAverageChoice === "mean") ? json.studyMeanDLPoverTime : json.studyMedianDLPoverTime;
-                updateOverTimeChart(json.studyNameList, studyDlpOverTime, studyLineColours, urlStartStudyOverTime, "studyMeanDLPOverTimeDIV");
-                hideButtonsIfOneSeries("studyMeanDLPOverTimeDIV", "study_dlp_time_series_");
+                vegaEmbed('#studyAverageDLPOverTimeChartDiv',  JSON.parse(json.studyDLPoverTime)).catch(console.error);
             }
 
             // Study workload chart data

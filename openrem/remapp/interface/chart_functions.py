@@ -174,14 +174,18 @@ def average_chart_inc_histogram_data(
             return_structure["averageChart"] = alt.Chart(df_test).transform_aggregate(
                 mean="mean(" + db_value_name + ")",
                 median="median(" + db_value_name + ")",
-                groupby=["data_point_name"]
+                groupby=["data_point_name", "x_ray_system_name"]
             ).transform_fold(
                 ["mean", "median"],
                 as_=["aggregate", "value"]
             ).mark_bar().encode(
-                y=alt.Y("value:Q", title=""),
-                x=alt.X("data_point_name"),
+                row=alt.Row("x_ray_system_name"),
+                x=alt.X("value:Q", title=""),
+                y=alt.Y("data_point_name", axis=alt.Axis(title="")),
                 color="aggregate:N",
+                tooltip = [alt.Tooltip("x_ray_system_name", title="System"),
+                           alt.Tooltip("data_point_name", title="Name"),
+                           alt.Tooltip("value:Q", format=".2f", title="Average")]
             ).interactive()
 
     if plot_freq:
