@@ -180,9 +180,14 @@ def average_chart_inc_histogram_data(
 
         # Create a Pandas DataFrame from database_events including the annotations determined above
         if plot_series_per_system:
-            # # df_test includes all of the data rows - no calculation of mean, median or frequency required by the server
-            # df_test = pd.DataFrame.from_records(database_events.values(db_display_name_relationship, "db_series_names_to_use", db_value_name))
-            # df_test.rename(columns={db_display_name_relationship:"x_ray_system_name"}, inplace=True)
+
+            ########################################
+            # Time series chart testing
+            # df_test includes all of the data rows - no calculation of mean, median or frequency required by the server
+            # Including study date to see if I can make a time series plot from this same data frame
+            df_test = pd.DataFrame.from_records(database_events.values(db_display_name_relationship, "db_series_names_to_use", db_value_name, "study_date"))
+            df_test.rename(columns={db_display_name_relationship:"x_ray_system_name"}, inplace=True)
+            ########################################
 
             df = pd.DataFrame.from_records(database_events.values(db_display_name_relationship, "db_series_names_to_use").annotate(**summary_annotations).order_by("db_series_names_to_use"))
             df.rename(columns={db_display_name_relationship:"x_ray_system_name"}, inplace=True)
@@ -190,12 +195,31 @@ def average_chart_inc_histogram_data(
             df = pd.DataFrame.from_records(database_events.values("db_series_names_to_use").annotate(**summary_annotations).order_by("db_series_names_to_use"))
             df.insert(0, "x_ray_system_name", "All systems")
 
+            ########################################
+            # Time series chart testing
+            df_test = pd.DataFrame.from_records(database_events.values("db_series_names_to_use", db_value_name, "study_date"))
+            df_test.insert(0, "x_ray_system_name", "All systems")
+            ########################################
+
         df.rename(columns={"db_series_names_to_use":"data_point_name"}, inplace=True)
-        # df_test.rename(columns={"db_series_names_to_use":"data_point_name"}, inplace=True)
+
+        ########################################
+        # Time series chart testing
+        df_test.rename(columns={"db_series_names_to_use":"data_point_name"}, inplace=True)
+        df_test["study_date"] = pd.to_datetime(df_test["study_date"])
+
+        if plot_average: # Need to change this to "if plot_over_time"...
+            df_test[db_value_name] = df_test[db_value_name].astype(float)
+
+            # A line plot of mean total_dlp per month (all systems together):
+            over_time_chart = alt.Chart(df_test).mark_line().encode(
+                x="month(study_date):T",
+                y="mean(total_dlp)",
+                color="data_point_name"
+            )
+        #######################################
 
         if plot_average:
-            # df_test[db_value_name] = df_test[db_value_name].astype(float)
-
             # Change Decimal values to float so that to_json() works (Decimal values can't be JSON serialised)
             if plot_average_choice == "both" or plot_average_choice == "mean":
                 df["mean"] = df["mean"].astype(float)
@@ -287,7 +311,8 @@ def average_chart_inc_histogram_data(
         if plot_average and plot_freq:
             return average_chart, freq_chart
         elif plot_average:
-            return average_chart
+            #return average_chart
+            return over_time_chart
         else:
             return freq_chart
 
