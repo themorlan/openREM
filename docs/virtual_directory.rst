@@ -34,8 +34,8 @@ the website from a subfolder/virtual directory named ``dms``:
 
     ## For installations in a virtual directory
     VIRTUAL_DIRECTORY=dms/
-    STATIC_URL=/dms/static/
     MEDIA_URL=/dms/media/
+    STATIC_URL=/dms/static/
 
 Modify webserver configuration
 ------------------------------
@@ -58,6 +58,13 @@ Edit ``nginx-conf/conf.d/openrem.conf`` to update the locations — again using 
         }
     }
 
+Start the containers
+--------------------
+
+.. code-block:: console
+
+    $ docker-compose up -d
+
 Update reverse.js
 -----------------
 
@@ -70,12 +77,10 @@ Open a shell (command prompt) and navigate to the Docker OpenREM installation fo
     $ docker-compose exec openrem python manage.py collectstatic_js_reverse
 
 
-Restart the containers:
------------------------
+Test!
+-----
 
-.. code-block:: console
-
-    $ docker-compose up -d
+You should now be able to reach the OpenREM interface using the virtual directory address.
 
 
 Non-Docker Linux install

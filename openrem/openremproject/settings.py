@@ -268,10 +268,6 @@ JAVA_OPTIONS = "-Xms256m -Xmx512m -Xss1m -cp"
 PIXELMED_JAR = "/home/app/pixelmed/pixelmed.jar"
 PIXELMED_JAR_OPTIONS = "-Djava.awt.headless=true com.pixelmed.doseocr.OCR -"
 
-# Dummy variable for running the website in a virtual_directory. Don't set value here - copy variable into
-# local_settings.py and configure there.
-VIRTUAL_DIRECTORY = ""
-
 # E-mail server settings - see https://docs.djangoproject.com/en/1.8/topics/email/
 EMAIL_HOST = os.environ.get("EMAIL_HOST", default="localhost")
 EMAIL_PORT = os.environ.get("EMAIL_PORT", default="25")
