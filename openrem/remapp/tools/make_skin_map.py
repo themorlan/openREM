@@ -39,6 +39,19 @@ import os
 import sys
 import logging
 import django
+import remapp.tools.openskin.calc_exp_map as calc_exp_map
+from remapp.models import (
+    GeneralStudyModuleAttr,
+    HighDoseMetricAlertSettings,
+    SkinDoseMapResults,
+)
+from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
+from openremproject.settings import MEDIA_ROOT
+import pickle
+import gzip
+from remapp.version import __skin_map_version__
+from django.core.exceptions import ObjectDoesNotExist
+import numpy as np
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -56,19 +69,6 @@ logger = logging.getLogger("remapp.tools.make_skin_map")
 
 @shared_task(name="remapp.tools.make_skin_map", ignore_result=True)
 def make_skin_map(study_pk=None):
-    import remapp.tools.openskin.calc_exp_map as calc_exp_map
-    from remapp.models import (
-        GeneralStudyModuleAttr,
-        HighDoseMetricAlertSettings,
-        SkinDoseMapResults,
-    )
-    from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
-    from openremproject.settings import MEDIA_ROOT
-    import pickle
-    import gzip
-    from remapp.version import __skin_map_version__
-    from django.core.exceptions import ObjectDoesNotExist
-    import numpy as np
 
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
