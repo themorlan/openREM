@@ -146,12 +146,12 @@ def average_chart_inc_histogram_data(
 
         return_structure["averageOverTimeChart"] = alt.Chart(df_test).mark_line(point=True).encode(
             x=alt.X("yearmonth(study_date):T", title="Study date (months)"),
-            y=alt.Y("mean(total_dlp)", title="Mean " + chart_value_axis_title),
+            y=alt.Y(plot_average_choice + "(" + db_value_name + ")", title=plot_average_choice.capitalize() + " " + chart_value_axis_title),
             color=alt.Color("data_point_name", legend=alt.Legend(title="System")),
             opacity=alt.condition(selection, alt.value(1), alt.value(0.1)),
             tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
                      alt.Tooltip("data_point_name", title="Name"),
-                     alt.Tooltip("mean(total_dlp)", format=".2f", title="Mean")]
+                     alt.Tooltip(plot_average_choice + "(" + db_value_name + ")", format=".2f", title=plot_average_choice.capitalize())]
         ).facet(
             row=alt.Row("x_ray_system_name:N", title="")
         ).add_selection(
@@ -173,7 +173,7 @@ def average_chart_inc_histogram_data(
                 opacity=alt.condition(selection, alt.value(1), alt.value(0.1)),
                 tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
                          alt.Tooltip("data_point_name", title="Name"),
-                         alt.Tooltip(plot_average_choice + "(" + db_value_name + ")", format=".2f", title="Mean"),
+                         alt.Tooltip(plot_average_choice + "(" + db_value_name + ")", format=".2f", title=plot_average_choice.capitalize()),
                          alt.Tooltip("count(" + db_value_name + ")", format=".0f", title="Frequency")]
             ).add_selection(
                 selection
