@@ -165,18 +165,20 @@ def average_chart_inc_histogram_data(
 
             return_structure["averageChart"] = alt.Chart(df_test).mark_bar().encode(
                 row=alt.Row("data_point_name",
-                            title=chart_category_name,
+                            title="",
                             header=alt.Header(labelAngle=0, labelAlign="left")),
                 y=alt.Y("x_ray_system_name", axis=alt.Axis(labels=False, title="")),
                 x=alt.X(plot_average_choice + "(" + db_value_name + ")", title=plot_average_choice.capitalize() + " " + chart_value_axis_title),
                 color=alt.Color("x_ray_system_name", legend=alt.Legend(title="System")),
-                opacity=alt.condition(selection, alt.value(1), alt.value(0.1)),
+                opacity=alt.condition(selection, alt.value(1.0), alt.value(0.05)),
                 tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
                          alt.Tooltip("data_point_name", title="Name"),
                          alt.Tooltip(plot_average_choice + "(" + db_value_name + ")", format=".2f", title=plot_average_choice.capitalize()),
                          alt.Tooltip("count(" + db_value_name + ")", format=".0f", title="Frequency")]
             ).add_selection(
                 selection
+            ).resolve_axis(
+                x="independent"
             ).interactive()
 
         # Create a plot with both the mean and median
@@ -191,11 +193,11 @@ def average_chart_inc_histogram_data(
                 ["mean", "median"],
                 as_=["aggregate", "value"]
             ).mark_bar().encode(
-                row=alt.Row("x_ray_system_name"),
-                x=alt.X("value:Q", title=""),
+                row=alt.Row("x_ray_system_name", title=""),
+                x=alt.X("value:Q", title="", stack=None),
                 y=alt.Y("data_point_name", axis=alt.Axis(title="")),
-                color="aggregate:N",
-                opacity=alt.condition(selection, alt.value(1), alt.value(0.1)),
+                color=alt.Color("aggregate:N", legend=alt.Legend(title="Average " + chart_value_axis_title)),
+                opacity=alt.condition(selection, alt.value(1.0), alt.value(0.05)),
                 tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
                          alt.Tooltip("data_point_name", title="Name"),
                          alt.Tooltip("value:Q", format=".2f", title="Average")]
@@ -203,21 +205,26 @@ def average_chart_inc_histogram_data(
                 selection
             ).interactive()
 
-    if calculate_histograms:
-        # Calculate histogram for each category.
-        # Not sure how to create a chart per system at the moment
-        return_structure["histogramChart"] = alt.Chart(df_test).mark_bar().encode(
-            row=alt.Row("data_point_name",
-                        title=chart_category_name,
-                        header=alt.Header(labelAngle=0, labelAlign="left")),
-            x=alt.X(db_value_name, bin=alt.Bin(maxbins=num_hist_bins)),
-            y=alt.Y("count()", title="Frequency"),
-            tooltip=[alt.Tooltip("count()", title="Frequency"),
-                     alt.Tooltip(db_value_name, bin=alt.Bin(maxbins=num_hist_bins), title="Bin range")]
-        ).resolve_scale(
-            y="independent",
-            x="independent"
-        ).interactive()
+        if calculate_histograms:
+            # Calculate histogram for each category and system.
+            selection = alt.selection_multi(fields=["x_ray_system_name"], bind="legend")
+
+            return_structure["histogramChart"] = alt.Chart(df_test).mark_bar().encode(
+                row=alt.Row("data_point_name",
+                            title="",
+                            header=alt.Header(labelAngle=0, labelAlign="left")),
+                x=alt.X(db_value_name, bin=alt.Bin(maxbins=num_hist_bins), title="Binned " + chart_value_axis_title),
+                y=alt.Y("count()", title="Frequency", stack=None),
+                color=alt.Color("x_ray_system_name", legend=alt.Legend(title="System")),
+                opacity=alt.condition(selection, alt.value(1.0), alt.value(0.05)),
+                tooltip=[alt.Tooltip("count()", title="Frequency"),
+                         alt.Tooltip(db_value_name, bin=alt.Bin(maxbins=num_hist_bins), title="Bin range")]
+            ).add_selection(
+                selection
+            ).resolve_scale(
+                y="independent",
+                x="independent"
+            ).interactive()
 
     if plot_freq:
         # Create a plot that shows the frequencies - used to be a pie chart.
@@ -227,7 +234,7 @@ def average_chart_inc_histogram_data(
             x=alt.X("count(data_point_name)", title="Frequency"),
             y=alt.Y("x_ray_system_name", axis=alt.Axis(title="")),
             color=alt.Color("data_point_name", sort=alt.EncodingSortField("data_point_name", op="count", order="descending"), legend=alt.Legend(title=chart_category_name, symbolLimit=250)),
-            opacity=alt.condition(selection, alt.value(1), alt.value(0.1)),
+            opacity=alt.condition(selection, alt.value(1.0), alt.value(0.05)),
             order=alt.Order("count(data_point_name)", sort="descending"),
             tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
                      alt.Tooltip("data_point_name", title="Name"),
