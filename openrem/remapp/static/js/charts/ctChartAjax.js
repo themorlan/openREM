@@ -44,6 +44,9 @@ $(document).ready(function() {
             // DLP per request chart data start
             if(typeof plotCTRequestMeanDLP !== "undefined") {
                 vegaEmbed('#requestAverageDLPChartDiv',  JSON.parse(json.requestData)).catch(console.error);
+                if(typeof json.requestHistData !== "undefined") {
+                    vegaEmbed('#requestHistogramDLPChartDiv', JSON.parse(json.requestHistData)).catch(console.error);
+                }
             }
 
             // Number of events per study chart data

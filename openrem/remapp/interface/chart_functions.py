@@ -203,6 +203,17 @@ def average_chart_inc_histogram_data(
                 selection
             ).interactive()
 
+    if calculate_histograms:
+        # Calculate histogram for each category.
+        # Not sure how to create a chart per system at the moment
+        return_structure["histogramChart"] = alt.Chart(df_test).mark_bar().encode(
+            row=alt.Row("data_point_name",
+                        title=chart_category_name,
+                        header=alt.Header(labelAngle=0, labelAlign="left")),
+            x=alt.X(db_value_name, bin=alt.Bin(maxbins=num_hist_bins)),
+            y="count()"
+        ).interactive()
+
     if plot_freq:
         # Create a plot that shows the frequencies - used to be a pie chart.
         selection = alt.selection_multi(fields=["data_point_name"], bind="legend")
