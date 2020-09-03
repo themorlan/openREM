@@ -23,7 +23,6 @@ Should be a single string of hosts with a space between each. For example:
         DJANGO_ALLOWED_HOSTS=
 
 
-
 Variables to help with debugging problems
 -----------------------------------------
 

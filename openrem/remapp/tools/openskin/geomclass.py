@@ -230,7 +230,6 @@ class Phantom3:
         iterator = np.nditer(
             self.phantom_map, op_flags=["readwrite"], flags=["multi_index", "refs_ok"]
         )
-
         while not iterator.finished:
             # Start top, centre line.
             row_index = iterator.multi_index[0] - origin[0]

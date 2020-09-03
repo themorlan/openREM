@@ -59,3 +59,20 @@ Development version
 
 .. image:: https://api.codacy.com/project/badge/Coverage/2117af7281134e42ace3efe5fc4a5255
     :target: https://www.codacy.com/app/OpenREM/openrem
+
+Sonar Cloud
+
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=openrem_openrem&metric=coverage
+    :target: https://sonarcloud.io/dashboard?id=openrem_openrem
+
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=openrem_openrem&metric=sqale_rating
+    :target: https://sonarcloud.io/dashboard?id=openrem_openrem
+
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=openrem_openrem&metric=alert_status
+    :target: https://sonarcloud.io/dashboard?id=openrem_openrem
+
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=openrem_openrem&metric=reliability_rating
+    :target: https://sonarcloud.io/dashboard?id=openrem_openrem
+
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=openrem_openrem&metric=security_rating
+    :target: https://sonarcloud.io/dashboard?id=openrem_openrem

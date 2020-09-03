@@ -28,30 +28,10 @@
 ..  moduleauthor:: Ed McDonagh, David Platten
 
 """
-from __future__ import division
-
-from future import standard_library
-
-standard_library.install_aliases()
-from builtins import str  # pylint: disable=redefined-builtin
-from past.utils import old_div
 import os
 import sys
 import logging
 import django
-import remapp.tools.openskin.calc_exp_map as calc_exp_map
-from remapp.models import (
-    GeneralStudyModuleAttr,
-    HighDoseMetricAlertSettings,
-    SkinDoseMapResults,
-)
-from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
-from openremproject.settings import MEDIA_ROOT
-import pickle
-import gzip
-from remapp.version import __skin_map_version__
-from django.core.exceptions import ObjectDoesNotExist
-import numpy as np
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -69,6 +49,20 @@ logger = logging.getLogger("remapp.tools.make_skin_map")
 
 @shared_task(name="remapp.tools.make_skin_map", ignore_result=True)
 def make_skin_map(study_pk=None):
+    import remapp.tools.openskin.calc_exp_map as calc_exp_map
+    from remapp.models import (
+        GeneralStudyModuleAttr,
+        HighDoseMetricAlertSettings,
+        SkinDoseMapResults,
+    )
+    from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
+    from openremproject.settings import MEDIA_ROOT
+    import pickle
+    import gzip
+    from remapp.version import __skin_map_version__
+    from django.core.exceptions import ObjectDoesNotExist
+    import numpy as np
+
 
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
@@ -79,29 +73,31 @@ def make_skin_map(study_pk=None):
         send_alert_emails_ref = HighDoseMetricAlertSettings.objects.values_list(
             "send_high_dose_metric_alert_emails_ref", flat=True
         )[0]
-        pat_mass_source = u"assumed"
+
+        pat_mass_source = "assumed"
         try:
             pat_mass = float(study.patientstudymoduleattr_set.get().patient_weight)
-            pat_mass_source = u"extracted"
+            pat_mass_source = "extracted"
         except (ValueError, TypeError):
             pat_mass = 73.2
 
         if pat_mass == 0.0:
             pat_mass = 73.2
-            pat_mass_source = u"assumed"
+            pat_mass_source = "assumed"
 
-        pat_height_source = u"assumed"
+        pat_height_source = "assumed"
         try:
             pat_height = (
                 float(study.patientstudymoduleattr_set.get().patient_size) * 100
             )
-            pat_height_source = u"extracted"
+
+            pat_height_source = "extracted"
         except (ValueError, TypeError):
             pat_height = 178.6
 
         if pat_height == 0.0:
             pat_height = 178.6
-            pat_height_source = u"assumed"
+            pat_height_source = "assumed"
 
         ptr = None
         orientation_modifier = None
@@ -111,26 +107,22 @@ def make_skin_map(study_pk=None):
                 .irradeventxraydata_set.all()[0]
                 .patient_table_relationship_cid.code_meaning.lower()
             )
-            if ptr_meaning in u"headfirst":
-                ptr = u"H"
-            elif ptr_meaning in u"feet-first":
-                ptr = u"F"
+            if ptr_meaning in "headfirst":
+                ptr = "H"
+            elif ptr_meaning in "feet-first":
+                ptr = "F"
             else:
                 logger.info(
-                    u"Study PK {0}: Patient table relationship not recognised ({1}). "
-                    u"Assuming head first.".format(study_pk, ptr_meaning)
+                    f"Study PK {study_pk}: Patient table relationship not recognised ({ptr_meaning}). "
+                    f"Assuming head first."
                 )
         except AttributeError:
             logger.info(
-                u"Study PK {0}: Patient table relationship not found. Assuming head first.".format(
-                    study_pk
-                )
+                f"Study PK {study_pk}: Patient table relationship not found. Assuming head first."
             )
         except IndexError:
             logger.info(
-                u"Study PK {0}: No irradiation event x-ray data found. Assuming head first.".format(
-                    study_pk
-                )
+                f"Study PK {study_pk}: No irradiation event x-ray data found. Assuming head first."
             )
         try:
             orientation_modifier_meaning = (
@@ -138,40 +130,36 @@ def make_skin_map(study_pk=None):
                 .irradeventxraydata_set.all()[0]
                 .patient_orientation_modifier_cid.code_meaning.lower()
             )
-            if orientation_modifier_meaning in u"supine":
-                orientation_modifier = u"S"
-            elif orientation_modifier_meaning in u"prone":
-                orientation_modifier = u"P"
+            if orientation_modifier_meaning in "supine":
+                orientation_modifier = "S"
+            elif orientation_modifier_meaning in "prone":
+                orientation_modifier = "P"
             else:
                 logger.info(
-                    u"Study PK {0}: Orientation modifier not recognised ({1}). "
-                    u"Assuming supine.".format(study_pk, orientation_modifier_meaning)
+                    f"Study PK {study_pk}: Orientation modifier not recognised ({orientation_modifier_meaning}). "
+                    f"Assuming supine."
                 )
         except AttributeError:
             logger.info(
-                u"Study PK {0}: Orientation modifier not found. Assuming supine.".format(
-                    study_pk
-                )
+                f"Study PK {study_pk}: Orientation modifier not found. Assuming supine."
             )
         except IndexError:
             logger.info(
-                u"Study PK {0}: No irradiation event x-ray data found. Assuming supine.".format(
-                    study_pk
-                )
+                f"Study PK {study_pk}: No irradiation event x-ray data found. Assuming supine."
             )
         if ptr and orientation_modifier:
-            pat_pos_source = u"extracted"
-            pat_pos = ptr + u"F" + orientation_modifier
+            pat_pos_source = "extracted"
+            pat_pos = ptr + "F" + orientation_modifier
         elif ptr:
-            pat_pos_source = u"supine assumed"
-            pat_pos = ptr + u"FS"
+            pat_pos_source = "supine assumed"
+            pat_pos = ptr + "FS"
         elif orientation_modifier:
-            pat_pos_source = u"head first assumed"
-            pat_pos = u"HF" + orientation_modifier
+            pat_pos_source = "head first assumed"
+            pat_pos = "HF" + orientation_modifier
         else:
-            pat_pos_source = u"assumed"
-            pat_pos = u"HFS"
-        logger.debug(u"patPos is {0} and source is {1}".format(pat_pos, pat_pos_source))
+            pat_pos_source = "assumed"
+            pat_pos = "HFS"
+        logger.debug(f"patPos is {pat_pos} and source is {pat_pos_source}")
 
         my_exp_map = calc_exp_map.CalcExpMap(
             phantom_type="3D",
@@ -319,7 +307,7 @@ def make_skin_map(study_pk=None):
         # my_exp_map.my_dose.fliplr()
         my_exp_map.my_dose.total_dose = np.roll(
             my_exp_map.my_dose.total_dose,
-            int(old_div(my_exp_map.phantom.phantom_flat_dist, 2)),
+            int(my_exp_map.phantom.phantom_flat_dist//2),
             axis=0,
         )
         try:
@@ -335,7 +323,6 @@ def make_skin_map(study_pk=None):
         # assume that calculation failed if max(peak_skin_dose) == 0 ==> set peak_skin_dose to None
         max_skin_dose = np.max(my_exp_map.my_dose.total_dose)
         max_skin_dose = max_skin_dose if max_skin_dose > 0 else None
-
         SkinDoseMapResults(
             general_study_module_attributes=study,
             patient_orientation=pat_pos,
@@ -377,9 +364,9 @@ def make_skin_map(study_pk=None):
                 skin_map_path = os.path.join(
                     MEDIA_ROOT,
                     "skin_maps",
-                    "{0:0>4}".format(study_date.year),
-                    "{0:0>2}".format(study_date.month),
-                    "{0:0>2}".format(study_date.day),
+                    f"{study_date.year:0>4}",
+                    f"{study_date.month:0>2}",
+                    f"{study_date.day:0>2}",
                 )
             else:
                 skin_map_path = os.path.join(MEDIA_ROOT, "skin_maps")

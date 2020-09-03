@@ -37,7 +37,7 @@ def skin_map(
     transmission,
     table_mattress_thickness,
 ):
-    """This function calculates a skin dose map.
+    """ This function calculates a skin dose map.
 
     Args:
         x_ray: the x-ray beam as a Segment_3
@@ -127,7 +127,6 @@ def skin_map(
                         math.sqrt(mylength_squared / ref_length_squared),
                     )
                 ).quantize(Decimal("0.000000001"), rounding=ROUND_HALF_UP)
-
         iterator.iternext()
 
     return skin_dose_map
@@ -149,7 +148,7 @@ def rotational(
     transmission,
     table_mattress_thickness,
 ):
-    """This function computes the dose from a rotational exposure.
+    """ This function computes the dose from a rotational exposure.
 
     Args:
         xray: the initial ray
@@ -218,7 +217,7 @@ def rotational(
 def skinmap_to_png(
     colour, total_dose, filename, test_phantom, encode_16_bit_colour=None
 ):
-    """Writes a dose map to a PNG file.
+    """ Writes a dose map to a PNG file.
 
     Args:
         colour: a boolean choice of colour or black and white
