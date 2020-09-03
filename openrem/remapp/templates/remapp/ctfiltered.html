@@ -554,7 +554,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion10" href="#collapseWeeklyStudyMeanChart" onclick="setTimeout(function() {fitChartToDiv('studyMeanDLPOverTimeDIV');}, 0);">
+                            <a data-toggle="collapse" data-parent="#accordion10" href="#collapseWeeklyStudyMeanChart">
                                 {% if request.user.userprofile.plotAverageChoice == 'mean' %}
                                     Chart of mean DLP of each study type over time ({{ request.user.userprofile.plotCTStudyMeanDLPOverTimePeriod }}).
                                 {% else %}
@@ -566,12 +566,6 @@
                     <div id="collapseWeeklyStudyMeanChart" class="panel-collapse collapse">
                         <div class="panel-body">
                             <div id="studyAverageDLPOverTimeChartDiv"></div>
-                            <p>Click on the legend entries to show or hide the corresponding series. Click and drag the mouse over a date range to zoom in.</p>
-                            <a onclick="$('#studyMeanDLPOverTimeDIV').highcharts().viewData(false, false, true); enterFullScreen('collapseWeeklyStudyMeanChart', 'studyMeanDLPOverTimeDIV'); $('#toggle_study_ot_data_btn').toggle();" class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
-                            <a onclick="$('#studyMeanDLPOverTimeDIV').highcharts().viewData(true, true);" class="btn btn-default btn-sm" role="button" id="toggle_study_ot_data_btn">Toggle data table</a>
-                            <a onclick="hideOrShowAllSeries('studyMeanDLPOverTimeDIV', 'hide', 'study_dlp_time_series_')" class="btn btn-default btn-sm" role="button" id="study_dlp_time_series_hide">Hide all series</a>
-                            <a onclick="hideOrShowAllSeries('studyMeanDLPOverTimeDIV', 'show', 'study_dlp_time_series_')" class="btn btn-default btn-sm" role="button" id="study_dlp_time_series_show">Show all series</a>
-                            <a onclick="toggleAllSeries('studyMeanDLPOverTimeDIV')" class="btn btn-default btn-sm" role="button" id="study_dlp_time_series_toggle">Toggle all series</a>
                         </div>
                     </div>
                 </div>
