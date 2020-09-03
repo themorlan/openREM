@@ -210,10 +210,7 @@ def average_chart_inc_histogram_data(
         return_structure["frequencyChart"] = alt.Chart(df_test).mark_bar().encode(
             x=alt.X("count(data_point_name)", title="Frequency"),
             y=alt.Y("x_ray_system_name", axis=alt.Axis(title="")),
-            color=alt.Color("data_point_name", legend=alt.Legend(title="Name", symbolLimit=250)),
-            # Use the line below to sort the legend entries by most frequent first, rather than
-            # alphabetically
-            # color=alt.Color("data_point_name", legend=alt.Legend(title="Name"), sort=alt.EncodingSortField("num", order="descending")),
+            color=alt.Color("data_point_name", sort=alt.EncodingSortField("data_point_name", op="count", order="descending"), legend=alt.Legend(title=chart_category_name, symbolLimit=250)),
             opacity=alt.condition(selection, alt.value(1), alt.value(0.1)),
             order=alt.Order("count(data_point_name)", sort="descending"),
             tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
