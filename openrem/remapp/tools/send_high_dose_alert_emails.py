@@ -192,7 +192,13 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
         recipients = User.objects.filter(
             highdosemetricalertrecipients__receive_high_dose_metric_alerts__exact=True
         ).values_list("email", flat=True)
-        msg_subject = "OpenREM high dose alert"
+        if included_studies:
+            oldest_accession = included_studies.order_by("study_date", "study_time")[
+                0
+            ].accession_number
+        else:
+            oldest_accession = study.accession_number
+        msg_subject = f"OpenREM high dose alert {oldest_accession}"
         msg = EmailMultiAlternatives(
             msg_subject, text_msg_content, settings.EMAIL_DOSE_ALERT_SENDER, recipients
         )
