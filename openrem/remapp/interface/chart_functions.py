@@ -196,9 +196,9 @@ def average_chart_inc_histogram_data(
                 y=alt.Y("data_point_name", axis=alt.Axis(title="")),
                 color="aggregate:N",
                 opacity=alt.condition(selection, alt.value(1), alt.value(0.1)),
-                tooltip = [alt.Tooltip("x_ray_system_name", title="System"),
-                           alt.Tooltip("data_point_name", title="Name"),
-                           alt.Tooltip("value:Q", format=".2f", title="Average")]
+                tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
+                         alt.Tooltip("data_point_name", title="Name"),
+                         alt.Tooltip("value:Q", format=".2f", title="Average")]
             ).add_selection(
                 selection
             ).interactive()
@@ -211,7 +211,12 @@ def average_chart_inc_histogram_data(
                         title=chart_category_name,
                         header=alt.Header(labelAngle=0, labelAlign="left")),
             x=alt.X(db_value_name, bin=alt.Bin(maxbins=num_hist_bins)),
-            y="count()"
+            y=alt.Y("count()", title="Frequency"),
+            tooltip=[alt.Tooltip("count()", title="Frequency"),
+                     alt.Tooltip(db_value_name, bin=alt.Bin(maxbins=num_hist_bins), title="Bin range")]
+        ).resolve_scale(
+            y="independent",
+            x="independent"
         ).interactive()
 
     if plot_freq:
