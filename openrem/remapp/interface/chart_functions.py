@@ -161,22 +161,34 @@ def average_chart_inc_histogram_data(
     if plot_average:
         # Create a plot with either the mean or median
         if plot_average_choice == "mean" or "median":
-            selection = alt.selection_multi(fields=["x_ray_system_name"], bind="legend")
+            # selection = alt.selection_multi(fields=["x_ray_system_name"], bind="legend")
+            #
+            # return_structure["averageChart"] = alt.Chart(df_test).mark_bar().encode(
+            #     row=alt.Row("data_point_name",
+            #                 title="",
+            #                 header=alt.Header(labelAngle=0, labelAlign="left")),
+            #     y=alt.Y("x_ray_system_name", axis=alt.Axis(labels=False, title="")),
+            #     x=alt.X(plot_average_choice + "(" + db_value_name + ")", title=plot_average_choice.capitalize() + " " + chart_value_axis_title),
+            #     color=alt.Color("x_ray_system_name", legend=alt.Legend(title="System")),
+            #     opacity=alt.condition(selection, alt.value(1.0), alt.value(0.05)),
+            #     tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
+            #              alt.Tooltip("data_point_name", title="Name"),
+            #              alt.Tooltip(plot_average_choice + "(" + db_value_name + ")", format=".2f", title=plot_average_choice.capitalize()),
+            #              alt.Tooltip("count(" + db_value_name + ")", format=".0f", title="Frequency")]
+            # ).add_selection(
+            #     selection
+            # ).resolve_axis(
+            #     x="independent"
+            # ).interactive()
 
-            return_structure["averageChart"] = alt.Chart(df_test).mark_bar().encode(
+            # Temporary boxplot code as proof-of-concept
+            return_structure["averageChart"] = alt.Chart(df_test).mark_boxplot().encode(
                 row=alt.Row("data_point_name",
                             title="",
                             header=alt.Header(labelAngle=0, labelAlign="left")),
                 y=alt.Y("x_ray_system_name", axis=alt.Axis(labels=False, title="")),
-                x=alt.X(plot_average_choice + "(" + db_value_name + ")", title=plot_average_choice.capitalize() + " " + chart_value_axis_title),
-                color=alt.Color("x_ray_system_name", legend=alt.Legend(title="System")),
-                opacity=alt.condition(selection, alt.value(1.0), alt.value(0.05)),
-                tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
-                         alt.Tooltip("data_point_name", title="Name"),
-                         alt.Tooltip(plot_average_choice + "(" + db_value_name + ")", format=".2f", title=plot_average_choice.capitalize()),
-                         alt.Tooltip("count(" + db_value_name + ")", format=".0f", title="Frequency")]
-            ).add_selection(
-                selection
+                x=alt.X(db_value_name, title=chart_value_axis_title),
+                color=alt.Color("x_ray_system_name", legend=alt.Legend(title="System"))
             ).resolve_axis(
                 x="independent"
             ).interactive()
