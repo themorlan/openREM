@@ -14,7 +14,7 @@ Preparation
 
 Install
 -------
-* Extract the zip file and open a shell (command window) in the new folder
+* Extract the zip file and open a shell (command prompt) in the new folder
 * Customise any variables in ``.env.prod`` and in the ``orthanc_1`` section
   in ``docker-compose.yml`` as necessary. A full description of the options are found in:
 
@@ -91,11 +91,10 @@ To be removed here, but we need some of the content in other pages, so leaving f
 Web servers
 ===========
 
-Don't need this section, but need to work out what to do about virtual_directory installs
-
 ..  toctree::
     :maxdepth: 1
 
+    webserver_config
     virtual_directory
 
 

@@ -120,6 +120,11 @@ XLSX date and time settings for exports:
         XLSX_DATE=dd/mm/yyyy
         XLSX_TIME=hh:mm:ss
 
+Virtual directory settings
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+See :doc:`virtual_directory` for details of these variables - normally these can be left commented out.
+
 Variables that should only be changed if you know what you are doing
 --------------------------------------------------------------------
 

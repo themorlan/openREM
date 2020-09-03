@@ -270,7 +270,7 @@ Edit the new local_settings file
     PIXELMED_JAR_OPTIONS = '-Djava.awt.headless=true com.pixelmed.doseocr.OCR -'
 
 Now create the database. Make sure you are still in the openrem python folder and
-the virtualenv is active (prompt will look like
+the virtualenv is active — prompt will look like
 
 .. code-block:: console
 

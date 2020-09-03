@@ -34,9 +34,9 @@ DEBUG = int(os.environ.get("DEBUG", default=0))
 # For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default="localhost").split(" ")
 
-MEDIA_URL = "/media/"
+MEDIA_URL = os.environ.get("MEDIA_URL", default="/media/")
 MEDIA_ROOT = os.environ.get("MEDIA_ROOT", default=os.path.join(BASE_DIR, "mediafiles"))
-STATIC_URL = "/static/"
+STATIC_URL = os.environ.get("STATIC_URL", default="/static/")
 STATIC_ROOT = os.environ.get(
     "STATIC_ROOT", default=os.path.join(BASE_DIR, "staticfiles")
 )
@@ -267,10 +267,6 @@ JAVA_EXE = "/usr/bin/java"
 JAVA_OPTIONS = "-Xms256m -Xmx512m -Xss1m -cp"
 PIXELMED_JAR = "/home/app/pixelmed/pixelmed.jar"
 PIXELMED_JAR_OPTIONS = "-Djava.awt.headless=true com.pixelmed.doseocr.OCR -"
-
-# Dummy variable for running the website in a virtual_directory. Don't set value here - copy variable into
-# local_settings.py and configure there.
-VIRTUAL_DIRECTORY = ""
 
 # E-mail server settings - see https://docs.djangoproject.com/en/1.8/topics/email/
 EMAIL_HOST = os.environ.get("EMAIL_HOST", default="localhost")
