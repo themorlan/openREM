@@ -142,20 +142,27 @@ def average_chart_inc_histogram_data(
     if plot_average_over_time:
         df_test["study_date"] = pd.to_datetime(df_test["study_date"])
 
+        selection = alt.selection_multi(fields=["data_point_name"], bind="legend")
+
         return_structure["averageOverTimeChart"] = alt.Chart(df_test).mark_line(point=True).encode(
             x=alt.X("yearmonth(study_date):T", title="Study date (months)"),
             y=alt.Y("mean(total_dlp)", title="Mean " + chart_value_axis_title),
             color=alt.Color("data_point_name", legend=alt.Legend(title="System")),
+            opacity=alt.condition(selection, alt.value(1), alt.value(0.1)),
             tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
                      alt.Tooltip("data_point_name", title="Name"),
                      alt.Tooltip("mean(total_dlp)", format=".2f", title="Mean")]
         ).facet(
             row=alt.Row("x_ray_system_name:N", title="")
+        ).add_selection(
+            selection
         ).interactive()
 
     if plot_average:
         # Create a plot with either the mean or median
         if plot_average_choice == "mean" or "median":
+            selection = alt.selection_multi(fields=["x_ray_system_name"], bind="legend")
+
             return_structure["averageChart"] = alt.Chart(df_test).mark_bar().encode(
                 row=alt.Row("data_point_name",
                             title=chart_category_name,
@@ -163,14 +170,19 @@ def average_chart_inc_histogram_data(
                 y=alt.Y("x_ray_system_name", axis=alt.Axis(labels=False, title="")),
                 x=alt.X(plot_average_choice + "(" + db_value_name + ")", title=plot_average_choice.capitalize() + " " + chart_value_axis_title),
                 color=alt.Color("x_ray_system_name", legend=alt.Legend(title="System")),
+                opacity=alt.condition(selection, alt.value(1), alt.value(0.1)),
                 tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
                          alt.Tooltip("data_point_name", title="Name"),
                          alt.Tooltip(plot_average_choice + "(" + db_value_name + ")", format=".2f", title="Mean"),
                          alt.Tooltip("count(" + db_value_name + ")", format=".0f", title="Frequency")]
+            ).add_selection(
+                selection
             ).interactive()
 
         # Create a plot with both the mean and median
         if plot_average_choice == "both":
+            selection = alt.selection_multi(fields=["aggregate"], bind="legend")
+
             return_structure["averageChart"] = alt.Chart(df_test).transform_aggregate(
                 mean="mean(" + db_value_name + ")",
                 median="median(" + db_value_name + ")",
@@ -183,13 +195,18 @@ def average_chart_inc_histogram_data(
                 x=alt.X("value:Q", title=""),
                 y=alt.Y("data_point_name", axis=alt.Axis(title="")),
                 color="aggregate:N",
+                opacity=alt.condition(selection, alt.value(1), alt.value(0.1)),
                 tooltip = [alt.Tooltip("x_ray_system_name", title="System"),
                            alt.Tooltip("data_point_name", title="Name"),
                            alt.Tooltip("value:Q", format=".2f", title="Average")]
+            ).add_selection(
+                selection
             ).interactive()
 
     if plot_freq:
         # Create a plot that shows the frequencies - used to be a pie chart.
+        selection = alt.selection_multi(fields=["data_point_name"], bind="legend")
+
         return_structure["frequencyChart"] = alt.Chart(df_test).mark_bar().encode(
             x=alt.X("count(data_point_name)", title="Frequency"),
             y=alt.Y("x_ray_system_name", axis=alt.Axis(title="")),
@@ -197,10 +214,13 @@ def average_chart_inc_histogram_data(
             # Use the line below to sort the legend entries by most frequent first, rather than
             # alphabetically
             # color=alt.Color("data_point_name", legend=alt.Legend(title="Name"), sort=alt.EncodingSortField("num", order="descending")),
+            opacity=alt.condition(selection, alt.value(1), alt.value(0.1)),
             order=alt.Order("count(data_point_name)", sort="descending"),
             tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
                      alt.Tooltip("data_point_name", title="Name"),
                      alt.Tooltip("count(data_point_name)", format=".0f", title="Frequency")]
+        ).add_selection(
+            selection
         ).interactive()
 
     return return_structure
