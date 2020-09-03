@@ -1,3 +1,4 @@
+{% load i18n %}
 {% extends "remapp/base.html" %}
 
 {% block headextras %}
@@ -58,7 +59,10 @@
     {% endif %}
 
     <p>
-        There are {{ homedata.total }} studies in this database. Page last refreshed on {% now "jS F Y \a\t H:i" %}.
+        {# Translators: Number of studies in DB losted above home-page table #}
+        {% blocktrans with total_studies=homedata.total date=now "jS F Y \a\t H:i" %}
+        There are {{ total_studies }} studies in this database. Page last refreshed on {{ date }}.
+        {% endblocktrans %}
         {% if user.is_authenticated %}
             {% if request.user.userprofile.plotCharts %}
                 Chart plotting on.
