@@ -145,7 +145,7 @@ def average_chart_inc_histogram_data(
         selection = alt.selection_multi(fields=["data_point_name"], bind="legend")
 
         return_structure["averageOverTimeChart"] = alt.Chart(df_test).mark_line(point=True).encode(
-            x=alt.X("yearmonth(study_date):T", title="Study date (months)"),
+            x=alt.X(time_period + "(study_date):T", title="Study date", axis=alt.Axis(labelAngle=90)),
             y=alt.Y(plot_average_choice + "(" + db_value_name + ")", title=plot_average_choice.capitalize() + " " + chart_value_axis_title),
             color=alt.Color("data_point_name", legend=alt.Legend(title="System")),
             opacity=alt.condition(selection, alt.value(1), alt.value(0.1)),

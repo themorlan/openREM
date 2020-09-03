@@ -1489,6 +1489,11 @@ def ct_summary_chart_data(request):
 
         start_time = datetime.now()
 
+    # Obtain the key name in the TIME_PERIOD tuple from the user time period choice (the key value)
+    keys = list(dict(user_profile.TIME_PERIOD).keys())
+    values = list(dict(user_profile.TIME_PERIOD).values())
+    altair_timeunit = keys[[x.lower() for x in values].index(user_profile.plotCTStudyMeanDLPOverTimePeriod)]
+
     return_structure = ct_plot_calculations(
         f,
         user_profile.plotCTAcquisitionFreq,
@@ -1502,7 +1507,7 @@ def ct_summary_chart_data(request):
         user_profile.plotCTStudyMeanCTDI,
         user_profile.plotCTStudyNumEvents,
         user_profile.plotCTStudyMeanDLPOverTime,
-        user_profile.plotCTStudyMeanDLPOverTimePeriod,
+        altair_timeunit,
         user_profile.plotCTStudyPerDayAndHour,
         median_available,
         user_profile.plotAverageChoice,

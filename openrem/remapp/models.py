@@ -417,13 +417,11 @@ class UserProfile(models.Model):
     Table to store user profile settings
     """
 
-    DAYS = "days"
-    WEEKS = "weeks"
-    MONTHS = "months"
-    YEARS = "years"
+    DAYS = "yearmonthdate"
+    MONTHS = "yearmonth"
+    YEARS = "year"
     TIME_PERIOD = (
         (DAYS, "Days"),
-        (WEEKS, "Weeks"),
         (MONTHS, "Months"),
         (YEARS, "Years"),
     )
@@ -500,7 +498,7 @@ class UserProfile(models.Model):
     plotDXAcquisitionMeanmAsOverTime = models.BooleanField(default=False)
     plotDXAcquisitionMeanDAPOverTime = models.BooleanField(default=False)
     plotDXAcquisitionMeanDAPOverTimePeriod = models.CharField(
-        max_length=6, choices=TIME_PERIOD, default=MONTHS
+        max_length=13, choices=TIME_PERIOD, default=MONTHS
     )
     plotDXInitialSortingChoice = models.CharField(
         max_length=4, choices=SORTING_CHOICES_DX, default=FREQ
@@ -519,7 +517,7 @@ class UserProfile(models.Model):
     plotCTStudyPerDayAndHour = models.BooleanField(default=False)
     plotCTStudyMeanDLPOverTime = models.BooleanField(default=False)
     plotCTStudyMeanDLPOverTimePeriod = models.CharField(
-        max_length=6, choices=TIME_PERIOD, default=MONTHS
+        max_length=13, choices=TIME_PERIOD, default=MONTHS
     )
     plotCTInitialSortingChoice = models.CharField(
         max_length=4, choices=SORTING_CHOICES_CT, default=FREQ
