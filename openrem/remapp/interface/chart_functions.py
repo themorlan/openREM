@@ -50,7 +50,8 @@ def average_chart_inc_histogram_data(
     chart_value_axis_title="",
     chart_category_name="",
     plot_average_over_time=False,
-    time_period="yearmonth"
+    time_period="yearmonth",
+    plot_workload=False
 ):
     """ This function calculates the data for an OpenREM Highcharts plot of average value vs. a category, as well as a
     histogram of values for each category. It is also used for OpenREM Highcharts frequency plots.
@@ -98,8 +99,6 @@ def average_chart_inc_histogram_data(
         Sum,
         IntegerField,
     )
-    from remapp.models import Median
-    import numpy as np
     import pandas as pd
     import altair as alt
 
@@ -108,10 +107,12 @@ def average_chart_inc_histogram_data(
 
     return_structure = {}
 
-    fields_to_include = {db_series_names, db_value_name}
+    fields_to_include = {db_series_names}
+    if plot_average or plot_average_over_time:
+        fields_to_include.add(db_value_name)
     if plot_series_per_system:
         fields_to_include.add(db_display_name_relationship)
-    if plot_average_over_time:
+    if plot_average_over_time or plot_workload:
         fields_to_include.add("study_date")
 
     df_test = pd.DataFrame.from_records(database_events.values(*fields_to_include))
@@ -119,8 +120,10 @@ def average_chart_inc_histogram_data(
     if case_insensitive_categories:
         df_test[db_series_names] = df_test[db_series_names].str.lower()
 
-    if value_multiplier != 1.0:
-        df_test[db_value_name] *= value_multiplier
+    if plot_average or plot_average_over_time:
+        df_test[db_value_name] = df_test[db_value_name].astype(float)
+        if value_multiplier != 1.0:
+            df_test[db_value_name] *= value_multiplier
 
     if plot_series_per_system:
         df_test.rename(columns={db_display_name_relationship:"x_ray_system_name"}, inplace=True)
@@ -128,13 +131,13 @@ def average_chart_inc_histogram_data(
         df_test.insert(0, "x_ray_system_name", "All systems")
 
     df_test.rename(columns={db_series_names:"data_point_name"}, inplace=True)
-    df_test[db_value_name] = df_test[db_value_name].astype(float)
 
     alt.data_transformers.disable_max_rows()
 
-    if plot_average_over_time:
+    if plot_average_over_time or plot_workload:
         df_test["study_date"] = pd.to_datetime(df_test["study_date"])
 
+    if plot_average_over_time:
         selection = alt.selection_multi(fields=["data_point_name"], bind="legend")
 
         return_structure["averageOverTimeChart"] = alt.Chart(df_test).mark_line(point=True).encode(
@@ -145,6 +148,25 @@ def average_chart_inc_histogram_data(
             tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
                      alt.Tooltip("data_point_name", title="Name"),
                      alt.Tooltip(plot_average_choice + "(" + db_value_name + ")", format=".2f", title=plot_average_choice.capitalize())]
+        ).facet(
+            row=alt.Row("x_ray_system_name:N", title="")
+        ).add_selection(
+            selection
+        ).resolve_axis(
+            x="independent"
+        ).interactive()
+
+    if plot_workload:
+        selection = alt.selection_multi(fields=["x_ray_system_name"], bind="legend")
+
+        return_structure["workloadChart"] = alt.Chart(df_test).mark_bar().encode(
+            y=alt.Y("day(study_date):O", title=""),
+            x=alt.X("count(x_ray_system_name)", title=chart_category_name + " frequency"),
+            color=alt.Color("x_ray_system_name", legend=alt.Legend(title="System", symbolLimit=250)),
+            opacity=alt.condition(selection, alt.value(1), alt.value(0.1)),
+            tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
+                     alt.Tooltip("day(study_date)", title="Day"),
+                     alt.Tooltip("count()", format=".0f", title="Frequency")]
         ).facet(
             row=alt.Row("x_ray_system_name:N", title="")
         ).add_selection(

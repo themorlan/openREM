@@ -1647,7 +1647,7 @@ def ct_plot_calculations(
 
         return_structure["acquisitionCTDIData"] = result["averageChart"].to_json()
 
-    if plot_study_mean_dlp or plot_study_freq or plot_study_mean_dlp_over_time:
+    if plot_study_mean_dlp or plot_study_freq or plot_study_mean_dlp_over_time or plot_study_per_day_and_hour:
         result = average_chart_inc_histogram_data(
             study_and_request_events,
             "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
@@ -1664,7 +1664,8 @@ def ct_plot_calculations(
             chart_value_axis_title="DLP (mGy.cm)",
             chart_category_name="Study description",
             plot_average_over_time=plot_study_mean_dlp_over_time,
-            time_period=plot_study_mean_dlp_over_time_period
+            time_period=plot_study_mean_dlp_over_time_period,
+            plot_workload=plot_study_per_day_and_hour
         )
 
         if plot_study_mean_dlp_over_time:
@@ -1673,6 +1674,8 @@ def ct_plot_calculations(
             return_structure["studyDLPData"] = result["averageChart"].to_json()
         if plot_study_freq:
             return_structure["studyFreqData"] = result["frequencyChart"].to_json()
+        if plot_study_per_day_and_hour:
+            return_structure["studyWorkloadData"] = result["workloadChart"].to_json()
 
     if plot_study_mean_ctdi:
         result = average_chart_inc_histogram_data(

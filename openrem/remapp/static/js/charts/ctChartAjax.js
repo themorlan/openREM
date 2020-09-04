@@ -77,8 +77,8 @@ $(document).ready(function() {
             }
 
             // Study workload chart data
-            if(typeof json.studiesPerHourInWeekdays !== "undefined") {
-                vegaEmbed('#piechartStudyWorkloadDIV',  JSON.parse(json.studiesPerHourInWeekdays)).catch(console.error);
+            if(typeof json.studyWorkloadData !== "undefined") {
+                vegaEmbed('#studyWorkloadChartDiv',  JSON.parse(json.studyWorkloadData)).catch(console.error);
             }
 
             $(".ajax-progress").hide();

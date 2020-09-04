@@ -494,31 +494,19 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion9" href="#collapseStudyWorkloadPieChart" onclick="setTimeout(function() {fitChartToDiv('piechartStudyWorkloadDIV');}, 0);">
-                                Pie chart showing a breakdown of number of studies per weekday.
+                            <a data-toggle="collapse" data-parent="#accordion9" href="#collapseStudyWorkload">
+                                Charts of study workload.
                             </a>
                         </h4>
                     </div>
-                    <div id="collapseStudyWorkloadPieChart" class="panel-collapse collapse">
+                    <div id="collapseStudyWorkload" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <div id="piechartStudyWorkloadDIV" style="height: auto; margin: 0 0"></div>
-                            <p>Click on a segment to be taken to a pie chart showing the breakdown per hour for that weekday.</p>
-                            <a onclick="$('#piechartStudyWorkloadDIV').highcharts().viewData(false, false, true); enterFullScreen('collapseStudyWorkloadPieChart', 'piechartStudyWorkloadDIV'); $('#toggle_study_wl_data_btn').toggle();" class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
-                            <a onclick="$('#piechartStudyWorkloadDIV').highcharts().viewData(true, true);" class="btn btn-default btn-sm" role="button" id="toggle_study_wl_data_btn">Toggle data table</a>
+                            <div id="studyWorkloadChartDiv"></div>
                         </div>
                     </div>
                 </div>
             </div>
             <!-- End of HTML to include div container for studies per week day pie chart -->
-
-            <script>
-                var plotCTStudyPerDayAndHour = true;
-                $(window).resize(function() {
-                    chartSetExportSize('piechartStudyWorkloadDIV');
-                    fitChartToDiv('piechartStudyWorkloadDIV');
-                });
-                result = chartWorkload('piechartStudyWorkloadDIV', 'Studies');
-            </script>
         {% endif %}
 
         {% if request.user.userprofile.plotCTStudyMeanDLPOverTime %}
