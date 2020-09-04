@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-04 10:36+0100\n"
-"PO-Revision-Date: 2020-09-04 10:36+0100\n"
+"POT-Creation-Date: 2020-09-04 11:05+0100\n"
+"PO-Revision-Date: 2020-09-04 11:05+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -17,14 +17,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 2.4.1\n"
-
-#: openremproject/settings.py:285
-msgid "German"
-msgstr "Deutsch"
-
-#: openremproject/settings.py:286
-msgid "English"
-msgstr "Englisch"
 
 #. Translators: CT xlsx export progress
 #: remapp/exports/ct_export.py:160
@@ -62,7 +54,7 @@ msgstr "Nummer in den letzten %(day_delta)s-Tagen"
 #, python-format
 msgid ""
 "There are %(total_studies)s studies in this database. Page last refreshed on "
-"%(current_time)s."
+"%(current_time)s"
 msgstr ""
 "In dieser Datenbank sind %(total_studies)s-Studien vorhanden. Die Seite "
 "wurde zuletzt auf %(current_time)s aktualisiert."
@@ -78,6 +70,12 @@ msgstr "Diagramm-Plotten aus."
 #: remapp/templates/remapp/home.html:214
 msgid "Please wait - querying the database"
 msgstr "Bitte warten Sie - fragen Sie die Datenbank ab"
+
+#~ msgid "German"
+#~ msgstr "Deutsch"
+
+#~ msgid "English"
+#~ msgstr "Englisch"
 
 #~ msgid "Number in last %(day_delta_b)s days"
 #~ msgstr "Nummer in den letzten %(day_delta_b)s-Tagen"

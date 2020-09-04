@@ -281,10 +281,6 @@ EMAIL_OPENREM_URL = os.environ.get(
 DOCKER_INSTALL = int(os.environ.get("DOCKER_INSTALL", default=False))
 
 LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
-LANGUAGES = [
-  ('de', _('German')),
-  ('en', _('English')),
-]
 
 try:
     from .local_settings import *  # NOQA: F401
