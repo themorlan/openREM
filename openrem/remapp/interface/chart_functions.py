@@ -154,6 +154,9 @@ def average_chart_inc_histogram_data(
             selection
         ).resolve_axis(
             x="independent"
+#        ).properties(
+#            width="container",
+#            height="container"
         ).interactive()
 
     if plot_workload:
@@ -167,6 +170,9 @@ def average_chart_inc_histogram_data(
             tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
                      alt.Tooltip("day(study_date)", title="Day"),
                      alt.Tooltip("count()", format=".0f", title="Frequency")]
+        ).properties(
+            width="container",
+            height="container"
         ).facet(
             row=alt.Row("x_ray_system_name:N", title="")
         ).add_selection(
@@ -194,6 +200,9 @@ def average_chart_inc_histogram_data(
                 selection
             ).resolve_axis(
                 x="independent"
+            ).properties(
+                width="container",
+                height="container"
             ).interactive()
 
             # Temporary boxplot code as proof-of-concept
@@ -230,6 +239,9 @@ def average_chart_inc_histogram_data(
                          alt.Tooltip("value:Q", format=".2f", title="Average")]
             ).add_selection(
                 selection
+            ).properties(
+                width="container",
+                height="container"
             ).interactive()
 
         if calculate_histograms:
@@ -251,6 +263,9 @@ def average_chart_inc_histogram_data(
             ).resolve_scale(
                 y="independent",
                 x="independent"
+            ).properties(
+                width="container",
+                height="container"
             ).interactive()
 
     if plot_freq:
@@ -258,16 +273,19 @@ def average_chart_inc_histogram_data(
         selection = alt.selection_multi(fields=["data_point_name"], bind="legend")
 
         return_structure["frequencyChart"] = alt.Chart(df_test).mark_bar().encode(
-            x=alt.X("count(data_point_name)", title="Frequency"),
+            x=alt.X("count(data_point_name):Q", title="Frequency"),
             y=alt.Y("x_ray_system_name", axis=alt.Axis(title="")),
             color=alt.Color("data_point_name", sort=alt.EncodingSortField("data_point_name", op="count", order="descending"), legend=alt.Legend(title=chart_category_name, symbolLimit=250)),
             opacity=alt.condition(selection, alt.value(1.0), alt.value(0.05)),
             order=alt.Order("count(data_point_name)", sort="descending"),
             tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
                      alt.Tooltip("data_point_name", title="Name"),
-                     alt.Tooltip("count(data_point_name)", format=".0f", title="Frequency")]
+                     alt.Tooltip("count(data_point_name):Q", format=".0f", title="Frequency")]
         ).add_selection(
             selection
+        ).properties(
+            width="container",
+            height="container"
         ).interactive()
 
     return return_structure

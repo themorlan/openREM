@@ -371,3 +371,17 @@ ul.no-marker {
     /*overflow: scroll;*/
     /*overflow-x: hidden;*/
 }
+
+div.altair-chart-container {
+  width: 100%;
+  height: auto!important;
+  min-width: 200px;
+  min-height: 100px;
+}
+
+canvas.marks {
+  max-width: 100%!important;
+  height: auto!important;
+  min-width: 200px;
+  min-height: 100px;
+}
