@@ -73,6 +73,8 @@ This will leave the generated files in the folder ``_build/gettext``.
 
 Generate the translation files - for German and Portuguese/Brazil for example:
 
+.. code-block:: console
+
     $ sphinx-intl update -p _build/gettext -l de -l pt_BR
 
 This will create a ``locale`` folder with a translation file (``.po``) per ``.rst`` file in the documentation per
