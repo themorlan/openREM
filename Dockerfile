@@ -20,7 +20,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 RUN mkdir -p /usr/share/man/man1
-RUN apt-get update && apt-get -y dist-upgrade && apt install -y netcat dcmtk default-jre \
+RUN apt-get update && apt-get -y dist-upgrade && apt install -y netcat dcmtk default-jre gettext \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
