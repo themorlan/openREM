@@ -1,0 +1,173 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../env_variables.rst:2 cbe8b2381ec94e22b8bf4623303756a2
+msgid "Docker env configuration"
+msgstr ""
+
+#: ../../env_variables.rst:4 d5ae4914c8504010a425cb348e0f6141
+msgid ""
+"Edit the ``.env.prod`` file to customise your installation. There should "
+"be no space between the variable name, the ``=`` and the value. "
+"Everything after the ``=`` until the end of the line is transferred as "
+"the value. These settings take effect when docker-compose is started or "
+"restarted."
+msgstr ""
+
+#: ../../env_variables.rst:9 1ae034d7c80a4407803827cc4a96a0c4
+msgid "Variables that should always be changed"
+msgstr ""
+
+#: ../../env_variables.rst:11 03b55e89de7e444cb8f34b434d4c374a
+msgid ""
+"Set a new secret key. Create your own, or generate one by using a tool "
+"like http://www.miniwebtool.com/django-secret-key-generator/ for this:"
+msgstr ""
+
+#: ../../env_variables.rst:18 78c52f03d46748fb9742493af15d623d
+msgid ""
+"Should be a single string of hosts with a space between each. For "
+"example: ``DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1] myservername``"
+msgstr ""
+
+#: ../../env_variables.rst:27 2546ca4ec0f14f8a9cbf7d5637b237a9
+msgid "Variables to help with debugging problems"
+msgstr ""
+
+#: ../../env_variables.rst:29 9178a0d5a7114ebe8653962de5730b00
+msgid "Set to 1 to enable Django debugging mode."
+msgstr ""
+
+#: ../../env_variables.rst:35 aa8ace21ec0d45609a91fdc883eb0df5
+msgid ""
+"Set the log level. Options are ``DEBUG``, ``INFO``, ``WARNING``, "
+"``ERROR``, and ``CRITICAL``, with progressively less logging."
+msgstr ""
+
+#: ../../env_variables.rst:46 85da3ca2ae2d4e0ebd25c791109e6548
+msgid "Variables to be changed for your environment"
+msgstr ""
+
+#: ../../env_variables.rst:49 4c688bc273894781a0eb9b48679af66e
+msgid "E-mail server settings"
+msgstr ""
+
+#: ../../env_variables.rst:62 2d84453ba35c486397a5ebaf0e00778d
+msgid ""
+"The host name and port of the e-mail server that you wish to use must be "
+"entered in the ``EMAIL_HOST`` and ``EMAIL_PORT`` fields. ``EMAIL_HOST`` "
+"might be your institution's Outlook/Exchange server."
+msgstr ""
+
+#: ../../env_variables.rst:65 221e0fd2b0b6465d9a45b9b073304740
+msgid ""
+"If the e-mail server is set to only allow authenticated users to send "
+"messages then a suitable user and password must be entered in the "
+"``EMAIL_HOST_USER`` and ``EMAIL_HOST_PASSWORD`` fields. If this approach "
+"is used then it may be useful to request that an e-mail account be "
+"created specifically for sending these OpenREM alert messages."
+msgstr ""
+
+#: ../../env_variables.rst:69 2b41df88a0554c15b312dcada89b0132
+msgid ""
+"It may be possible to configure the e-mail server to allow sending of "
+"messages that originate from the OpenREM server without authentication, "
+"in which case the user and password settings should not be required."
+msgstr ""
+
+#: ../../env_variables.rst:72 837d1845d03a4654ae2dead0f46048fd
+msgid ""
+"The ``EMAIL_USE_TLS`` and ``EMAIL_USE_TLS`` options should be configured "
+"to match the encryption requirements of the e-mail server."
+msgstr ""
+
+#: ../../env_variables.rst:75 5dad84a622d84b9daaddcdc53a902bc4
+msgid ""
+"The ``EMAIL_DOSE_ALERT_SENDER`` should contain the e-mail address that "
+"you want to use as the sender address."
+msgstr ""
+
+#: ../../env_variables.rst:77 00ef07ade9d24a4dadb15038ddfa183f
+msgid ""
+"The ``EMAIL_OPENREM_URL`` must contain the URL of your OpenREM "
+"installation in order for hyperlinks in the e-mail alert messages to "
+"function correctly."
+msgstr ""
+
+#: ../../env_variables.rst:81 76298f469c764081acfe0e3b7f46aec8
+msgid "Regionalisation"
+msgstr ""
+
+#: ../../env_variables.rst:83 49f08d1a9fd54a9dadc110f022df310b
+msgid ""
+"Local time zone for this installation. Choices can be found here: "
+"http://en.wikipedia.org/wiki/List_of_tz_zones_by_name although not all "
+"choices may be available on all operating systems:"
+msgstr ""
+
+#: ../../env_variables.rst:91 30aa097efe1a4d7db0dc4ce834d0d751
+msgid ""
+"Language code for this installation. All choices can be found here: "
+"http://www.i18nguy.com/unicode/language-identifiers.html"
+msgstr ""
+
+#: ../../env_variables.rst:98 2dd21c0e61d649f5a12e5d83722b7def
+msgid ""
+"If you set this to False, Django will make some optimizations so as not "
+"to load the internationalization machinery:"
+msgstr ""
+
+#: ../../env_variables.rst:104 3bb00f8898294799a85d2133ad2032e7
+msgid ""
+"If you set this to False, Django will not format dates, numbers and "
+"calendars according to the current locale:"
+msgstr ""
+
+#: ../../env_variables.rst:110 52580e04ee9548a7b83e318317e2f8f9
+msgid ""
+"If you set this to False (default), Django will not use timezone-aware "
+"datetimes:"
+msgstr ""
+
+#: ../../env_variables.rst:116 8f5f87b9f38142e9ad3287fc527df99e
+msgid "XLSX date and time settings for exports:"
+msgstr ""
+
+#: ../../env_variables.rst:124 2c0cdd5ffe5f454c8e75540c62f208eb
+msgid "Virtual directory settings"
+msgstr ""
+
+#: ../../env_variables.rst:126 c23681fc797245cc8378f1e885d58d28
+msgid ""
+"See :doc:`virtual_directory` for details of these variables - normally "
+"these can be left commented out."
+msgstr ""
+
+#: ../../env_variables.rst:129 93e3f7751da44374839afbab84e9fda3
+msgid "Variables that should only be changed if you know what you are doing"
+msgstr ""
+
+#: ../../env_variables.rst:152 e1f58a39253c4d0c90d91e8468421c69
+msgid "Variables that shouldn't be changed"
+msgstr ""
+
+#: ../../env_variables.rst:154 fda5c98ffb4d45c4803fe158bad532d0
+msgid "Changing this will mean some OpenREM functions will fail"
+msgstr ""
+
