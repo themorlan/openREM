@@ -43,7 +43,6 @@ def average_chart_inc_histogram_data(
     plot_freq=False,
     plot_series_per_system=False,
     plot_average_choice="mean",
-    median_available=False,
     num_hist_bins=10,
     exclude_constant_angle=False,
     calculate_histograms=False,
@@ -66,7 +65,8 @@ def average_chart_inc_histogram_data(
         plot_freq: boolean to set whether frequency data should be calculated
         plot_series_per_system: boolean to set whether to calculate a series for each value found in db_display_name_relationship
         plot_average_choice: string set to either mean, median or both
-        median_available: boolean to set whether the database can calculate median values
+        plot_average_over_time: boolean to set whether to calculate an over-time chart
+        time_period: string to set the TimeUnit to use for the over-time chart
         num_hist_bins: integer value to set how many histogram bins to calculate
         exclude_constant_angle: boolean used to set whether to exclude CT constant angle acquisitions
         calculate_histograms: boolean used to set whether to calculate histogram data
@@ -106,22 +106,9 @@ def average_chart_inc_histogram_data(
     # Exclude all zero value events from the calculations
     database_events = database_events.exclude(**{db_value_name: 0})
 
-    if case_insensitive_categories:
-        from django.db.models.functions import Lower
-
-        database_events = database_events.annotate(
-            db_series_names_to_use=Lower(db_series_names)
-        )
-    else:
-        from django.db.models.functions import Concat
-
-        database_events = database_events.annotate(
-            db_series_names_to_use=Concat(db_series_names, None)
-        )
-
     return_structure = {}
 
-    fields_to_include = {"db_series_names_to_use", db_value_name}
+    fields_to_include = {db_series_names, db_value_name}
     if plot_series_per_system:
         fields_to_include.add(db_display_name_relationship)
     if plot_average_over_time:
@@ -129,12 +116,18 @@ def average_chart_inc_histogram_data(
 
     df_test = pd.DataFrame.from_records(database_events.values(*fields_to_include))
 
+    if case_insensitive_categories:
+        df_test[db_series_names] = df_test[db_series_names].str.lower()
+
+    if value_multiplier != 1.0:
+        df_test[db_value_name] *= value_multiplier
+
     if plot_series_per_system:
         df_test.rename(columns={db_display_name_relationship:"x_ray_system_name"}, inplace=True)
     else:
         df_test.insert(0, "x_ray_system_name", "All systems")
 
-    df_test.rename(columns={"db_series_names_to_use":"data_point_name"}, inplace=True)
+    df_test.rename(columns={db_series_names:"data_point_name"}, inplace=True)
     df_test[db_value_name] = df_test[db_value_name].astype(float)
 
     alt.data_transformers.disable_max_rows()
