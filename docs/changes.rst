@@ -48,6 +48,8 @@ OpenREM version history
 * :issue:`777`  Updated OpenREM to use pydicom 1.3
 * :issue:`744`  Added overwrite mode to size import
 * :issue:`530`  Updated OpenREM to use pynetdicom 1.4
+* :issue:`513`  Internationalization: first translation strings added to documentation
+* :issue:`512`  Internationalization: first translation strings added to interface
 * :issue:`457`  Updated OpenREM to use Django 2.2
 * :issue:`437`  Updated OpenREM to use django-filters v2
 * :issue:`404`  Ported OpenREM to Python 3
