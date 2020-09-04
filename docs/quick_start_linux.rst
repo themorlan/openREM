@@ -295,6 +295,11 @@ Otherwise see :ref:`activatevirtualenv` and navigate back to that folder:
     $ mv remapp/migrations/0002_0_7_fresh_install_add_median.py{.inactive,}
     $ python manage.py migrate
 
+Generate translation binary files
+
+.. code-block:: console
+
+    $ python django-admin compilemessages
 
 Webserver
 ^^^^^^^^^
