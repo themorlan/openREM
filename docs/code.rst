@@ -7,6 +7,7 @@ Contents:
     :maxdepth: 2
    
     code_running_tests
+    translations
     enabling_debug_toolbar
     code_dicomimport
     code_nondicomimport
