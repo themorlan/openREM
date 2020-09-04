@@ -114,7 +114,7 @@ pygments_style = "sphinx"
 
 # -- Options for sphinx-copybutton ----------------------------------------
 
-copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: |PS [A-Z]:\\[^>]*> "
 copybutton_prompt_is_regexp = True
 
 # -- Options for HTML output ----------------------------------------------
