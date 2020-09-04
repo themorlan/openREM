@@ -435,11 +435,11 @@
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#accordion7" href="#collapseRequestAveDLP">
                                 {% if request.user.userprofile.plotAverageChoice == 'mean' %}
-                                    Chart of mean DLP for each requested procedure name.
+                                    Charts of mean DLP for each requested procedure name.
                                 {% elif request.user.userprofile.plotAverageChoice == 'median' %}
-                                    Chart of median DLP for each requested procedure name.
+                                    Charts of median DLP for each requested procedure name.
                                 {% else %}
-                                    Chart of mean and median DLP for each requested procedure name.
+                                    Charts of mean and median DLP for each requested procedure name.
                                 {% endif %}
                             </a>
                         </h4>
@@ -447,12 +447,32 @@
                     <div id="collapseRequestAveDLP" class="panel-collapse collapse">
                         <div class="panel-body">
                             <div id="requestAverageDLPChartDiv"></div>
-                            <div id="requestHistogramDLPChartDiv"></div>
                         </div>
                     </div>
                 </div>
             </div>
             <!-- End of HTML to include div container for request plot -->
+
+            {% if request.user.userprofile.plotHistograms %}
+                <!-- HTML to include div container for request histograms -->
+                <div class="panel-group" id="requestHistogramDiv">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#requestHistogramDiv" href="#collapseRequestHistogramDLP">
+                                    Histograms of DLP for each requested procedure name.
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseRequestHistogramDLP" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div id="requestHistogramDLPChartDiv"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End of HTML to include div container for request histograms -->
+            {% endif %}
         {% endif %}
 
         {% if request.user.userprofile.plotCTRequestFreq %}
