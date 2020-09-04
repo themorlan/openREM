@@ -215,14 +215,7 @@
         <script src="{{ STATIC_URL }}js/charts/ctChartAjax.js"></script>
         <!-- End of JavaScript chart AJAX code. -->
 
-        <script>var plotAverageChoice = '{{ request.user.userprofile.plotAverageChoice }}';</script>
-        <!-- End of flags to determine if charts should be plotted -->
-
         {% if request.user.userprofile.plotCTAcquisitionMeanDLP %}
-            <script>
-                var plotCTAcquisitionMeanDLP = true;
-            </script>
-
             <!-- HTML to include div container for acquisition plot -->
             <div class="panel-group" id="accordion2">
                 <div class="panel panel-default">
@@ -250,10 +243,6 @@
         {% endif %}
 
         {% if request.user.userprofile.plotCTAcquisitionMeanCTDI %}
-            <script>
-                var plotCTAcquisitionMeanCTDI = true;
-            </script>
-
             <!-- HTML to include div container for acquisition CTDI plot -->
             <div class="panel-group" id="accordion3">
                 <div class="panel panel-default">
@@ -281,10 +270,6 @@
         {% endif %}
 
         {% if request.user.userprofile.plotCTAcquisitionFreq %}
-            <script>
-                var plotCTAcquisitionFreq = true;
-            </script>
-
             <!-- HTML to include div container for acquisition frequency chart -->
             <div class="panel-group" id="accordion4">
                 <div class="panel panel-default">
@@ -306,10 +291,6 @@
         {% endif %}
 
         {% if request.user.userprofile.plotCTStudyMeanDLP %}
-            <script>
-                var plotCTStudyMeanDLP = true;
-            </script>
-
             <!-- HTML to include div container for study plot -->
             <div class="panel-group" id="accordion5">
                 <div class="panel panel-default">
@@ -337,10 +318,6 @@
         {% endif %}
 
         {% if request.user.userprofile.plotCTStudyMeanCTDI %}
-            <script>
-                var plotCTStudyMeanCTDI = true;
-            </script>
-
             <!-- HTML to include div container for study CTDI plot -->
             <div class="panel-group" id="accordionStudyCTDI">
                 <div class="panel panel-default">
@@ -368,10 +345,6 @@
         {% endif %}
 
         {% if request.user.userprofile.plotCTStudyFreq %}
-            <script>
-                var plotCTStudyFreq = true;
-            </script>
-
             <!-- HTML to include div container for study frequency chart -->
             <div class="panel-group" id="accordion6">
                 <div class="panel panel-default">
@@ -393,10 +366,6 @@
         {% endif %}
 
         {% if request.user.userprofile.plotCTStudyNumEvents %}
-            <script>
-                var plotCTStudyNumEvents = true;
-            </script>
-
             <!-- HTML to include div container for study plot -->
             <div class="panel-group" id="accordion11">
                 <div class="panel panel-default">
@@ -424,10 +393,6 @@
         {% endif %}
 
         {% if request.user.userprofile.plotCTRequestMeanDLP %}
-            <script>
-                var plotCTRequestMeanDLP = true;
-            </script>
-
             <!-- HTML to include div container for request plot -->
             <div class="panel-group" id="accordion7">
                 <div class="panel panel-default">
@@ -476,10 +441,6 @@
         {% endif %}
 
         {% if request.user.userprofile.plotCTRequestFreq %}
-            <script>
-                var plotCTRequestFreq = true;
-            </script>
-
             <!-- HTML to include div container for request frequency chart -->
             <div class="panel-group" id="accordion8">
                 <div class="panel panel-default">
@@ -501,10 +462,6 @@
         {% endif %}
 
         {% if request.user.userprofile.plotCTRequestNumEvents %}
-            <script>
-                var plotCTRequestNumEvents = true;
-            </script>
-
             <!-- HTML to include div container for request plot -->
             <div class="panel-group" id="accordionRequestNumEvents">
                 <div class="panel panel-default">
@@ -565,11 +522,6 @@
         {% endif %}
 
         {% if request.user.userprofile.plotCTStudyMeanDLPOverTime %}
-            <script>
-                var plotCTStudyMeanDLPOverTime = true;
-                var plotCTStudyMeanDLPOverTimePeriod = '{{ request.user.userprofile.plotCTStudyMeanDLPOverTimePeriod }}';
-            </script>
-
             <!-- HTML to include div container for mean study DLP per week -->
             <div class="panel-group" id="accordion10">
                 <div class="panel panel-default">
