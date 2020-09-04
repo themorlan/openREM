@@ -132,6 +132,12 @@ database), and create the static files:
 
     $ docker-compose exec openrem python manage.py collectstatic --noinput --clear
 
+Generate translation binary files
+
+.. code-block:: console
+
+    $ docker-compose exec openrem python django-admin compilemessages
+
 Copy in any existing skin dose map pickle files from your existing ``MEDIA_ROOT/skin_maps`` folder (optional, they can
 be calculated again):
 
@@ -276,6 +282,11 @@ Update static files
 
     See  :doc:`virtual_directory` for more details.
 
+Generate translation binary files
+
+.. code-block:: console
+
+    $ python django-admin compilemessages
 
 Update all the services configurations
 ======================================

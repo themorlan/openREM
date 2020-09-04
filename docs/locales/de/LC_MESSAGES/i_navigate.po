@@ -1,0 +1,248 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../i_navigate.rst:2 5754a12025284606816a23d5ef09f0fd
+msgid "Navigating, filtering and study details"
+msgstr ""
+
+#: ../../i_navigate.rst:6 12880f15966f474b9762194b925bcdef
+msgid "Navigating the OpenREM web interface"
+msgstr ""
+
+#: ../../i_navigate.rst:8 799f18cc69004d27b6610644dd6b0b0b
+msgid ""
+"Depending on your web server setup, your web interface to OpenREM will "
+"usually be at http://yourserver/openrem or if you are using the test web "
+"server then it might be at http://localhost:8000/openrem."
+msgstr ""
+
+#: ../../i_navigate.rst:12 8aae19d5ba25478da42962ff75c8898a
+msgid ""
+"The home page for OpenREM should look something like this when it is "
+"populated with studies:"
+msgstr ""
+
+#: ../../i_navigate.rst:21 712f58082e4542acbe6765ebd0f97611
+msgid "OpenREM homepage screenshot"
+msgstr ""
+
+#: ../../i_navigate.rst:23 3611159b29184fec9ec7a80d19c410d2
+msgid ""
+"By selecting the links in the navigation bar at the top, you can view all"
+" of the CT, fluoroscopy, mammography or radiographic studies. "
+"Alternatively, click on any row to filter by that system."
+msgstr ""
+
+#: ../../i_navigate.rst:26 0e0c89daba674a91a9060efd3466d1bb
+msgid ""
+"The modality tables can be sorted by any of the columns by clicking on "
+"the column header that you wish to sort by."
+msgstr ""
+
+#: ../../i_navigate.rst:29 283eef52287b4c5782192c700efbdf1c
+msgid ""
+"If you are not logged in, clicking any of the links will bring up the log"
+" in page."
+msgstr ""
+
+#: ../../i_navigate.rst:32 b95844ecf5c14982bc89fda37e528f6b
+msgid "Filtering for specific studies"
+msgstr ""
+
+#: ../../i_navigate.rst:34 6bb2df3a152b46dbbcdf6dada3b0010c
+msgid ""
+"This image shows the CT studies view, available to any logged in user, "
+"filtered by entering terms in the boxes on the right hand side to show "
+"just the studies where the modality manufacturer name includes the term "
+"'Siemens':"
+msgstr ""
+
+#: ../../i_navigate.rst:44 d1d7776935234dc5bb5d9b78c1e5a1a1
+msgid "Filtering CT studies"
+msgstr ""
+
+#: ../../i_navigate.rst:46 dcd7fd9189644da0949230edbf709dc2
+msgid ""
+"The search fields can all be used on their own or together, and they are "
+"all case insensitive 'contains' searches. The exception is the date "
+"field, where both from and to have to be filled in (if either are), and "
+"the format must be ``yyyy-mm-dd``. There currently isn't any more complex"
+" filtering available, but it does exist as `issue 17 "
+"<https://bitbucket.org/openrem/openrem/issue/17/>`_ for a future release."
+msgstr ""
+
+#: ../../i_navigate.rst:53 3b2640fa70ac435fb81c74413a54d864
+msgid "The last box below the filtering search boxes is the ordering preference."
+msgstr ""
+
+#: ../../i_navigate.rst:56 cd6e5da08fe94f0b884d5fe0e4fe18f2
+msgid "CT: acquisition type restriction"
+msgstr ""
+
+#: ../../i_navigate.rst:58 30e41daa03ae47018c7654cf0155f5ab
+msgid ""
+"The CT study filters includes the ability to restrict the displayed "
+"studies by acquisition type, such as ``Spiral`` or ``Axial``. By default "
+"none of these are selected, and studies containing all acquisition types "
+"are shown. Ticking one of the acquisition type restrictions and clicking "
+"submit will filter the displayed studies to only include those which have"
+" at least one acquisition of the selected type. Ticking more than one "
+"acquisition type restriction will show studies that contain at least one "
+"acquisition of any of the selected acquisition types."
+msgstr ""
+
+#: ../../i_navigate.rst:67 6938b3c50e2548748b40531b67dd8ae9
+msgid ""
+"Acquisition-level charts will only show acquisition protocols that "
+"correspond to the chosen acquisition type restrictions. Acquisitions of "
+"any other type present within the study data will not be shown on these "
+"charts."
+msgstr ""
+
+#: ../../i_navigate.rst:71 19a249fc47b84f1fa570adabd64b4354
+msgid ""
+"Study- and request-level charts will show studies that have at least one "
+"acquisition of a type matching the selected restrictions: these studies "
+"and requests may contain acquisition types other than those chosen in the"
+" restrictions."
+msgstr ""
+
+#: ../../i_navigate.rst:76 a9ff0d263aed4144be416a5dc275676e
+msgid ""
+"For example, if all studies contain a mixture of ``Axial`` and ``Spiral``"
+" acquisitions and the user ticks the ``Axial`` acquisition type "
+"restriction then all studies will still be displayed in the filtered "
+"list. However, any acquisition-level charts will only show ``Axial`` "
+"acquisitions: the ``Spiral`` acquisitions present in the studies will not"
+" be shown in the chart. Any study- or request-level chart will show all "
+"the data as every one of them includes at least one ``Axial`` "
+"acquisition."
+msgstr ""
+
+#: ../../i_navigate.rst:85 4dcb0b417f4440068717ebde05212f3d
+msgid "CT: specifying number of event types"
+msgstr ""
+
+#: ../../i_navigate.rst:87 aec788cb60ee4c8f97d16906e7934351
+msgid ""
+"In addition (or as an alternative) to specifying that studies must have "
+"at least one of one of the acquisition type restrictions, if any are "
+"selected, it is also possible to filter for studies that have specific "
+"numbers of each acquisition type."
+msgstr ""
+
+#: ../../i_navigate.rst:91 b8a3d666a8064a628c8cf78ae1ec3e69
+msgid ""
+"For example, if the standard ``CT Abdomen`` on a particular scanner has "
+"two localisers and one spiral scan, then to filter for all the studies "
+"that followed this without deviation (an extra localiser or an extra "
+"series) the filters might be set to the particular Display Name and "
+"Requested Procedure, and Num. spiral events set to one and Num. "
+"localisers set to two. This can be useful for exporting a clean set of "
+"data to process for a dose audit."
+msgstr ""
+
+#: ../../i_navigate.rst:98 4dc901829c0e41a980bc7b0e9833303d
+msgid "Setting the number of studies displayed per page"
+msgstr ""
+
+#: ../../i_navigate.rst:100 6d139c987b2b4186b726bd4c6d430108
+msgid ""
+"The number of studies displayed per page can be controlled by changing "
+"the value selected in the ``Items per page`` drop down box, located "
+"beneath the chart options:"
+msgstr ""
+
+#: ../../i_navigate.rst:110 ecd01fd35523491987cab93fa02b9488
+msgid "Setting the number of studies per page"
+msgstr ""
+
+#: ../../i_navigate.rst:113 a1bf1a3f1a924adaabb99e9b58e9cd1f
+msgid "Viewing study details"
+msgstr ""
+
+#: ../../i_navigate.rst:115 c44dc1764339401893ab76f776f9f2c7
+msgid ""
+"By clicking on the study description link (in blue), you can see more "
+"details for an individual study:"
+msgstr ""
+
+#: ../../i_navigate.rst:124 03c93b86991947c4b7fe8b1d86d48c5b
+msgid "Individual CT study"
+msgstr ""
+
+#: ../../i_navigate.rst:126 e0af2c162ed646ab83e0c87a5626b67e
+msgid ""
+"Not all the details stored for any one study are displayed, just those "
+"thought to be most useful. If there are others you'd like to see, add an "
+"issue to the tracker."
+msgstr ""
+
+#: ../../i_navigate.rst:129 c8bf1fae536a4aca883e95587f24fcbf
+msgid ""
+"The final field in the summary at the top is called 'Test patient "
+"indicators?' When studies are imported the ID and patient name fields are"
+" both ignored, but they are parsed to check if they have 'phy', 'test' or"
+" 'qa' in them to help exclude them from the data analysis. If they do, "
+"then this information is added to the field and is displayed both in the "
+"web interface as a Test patient indicator and in the Excel export. The "
+"name and ID themselves are not reproduced, simply the presence of one of "
+"the key words. Therefore a patient named 'Phyliss' would trigger this, "
+"but only 'Phy' would be reproduced in this field. Other fields will also "
+"help to confirm whether a study is for a real patient such as the lack of"
+" an Accession Number and an unusual patient age."
+msgstr ""
+
+#: ../../i_navigate.rst:142 188a609fec6848e19a9845cbf6a95c86
+msgid ""
+"For fluoroscopy the table showing details of each exposure can be sorted "
+"by clicking on the table headings."
+msgstr ""
+
+#: ../../i_navigate.rst:146 999b59f9d68f41a99eca38ce28c353e2
+msgid "A note on time data for fluoroscopy studies"
+msgstr ""
+
+#: ../../i_navigate.rst:148 eb02914f7c4c4e7d952a22d77f1492c7
+msgid ""
+"On the page showing a specific fluoroscopy study there is a table that "
+"shows the details of each irradiation event in the study. This table "
+"includes a column labelled as::"
+msgstr ""
+
+#: ../../i_navigate.rst:155 e6cc04f5d39a4d7f8c56b70faad4d2b2
+msgid ""
+"The ``Duration`` value is the amount of time that the exposure switch or "
+"pedal was pressed (technically, this should be the time from the loading "
+"of the first x-ray pulse to the time of the trailing edge of the final "
+"pulse for that irradiation event). The ``Exposure time`` value is "
+"different: this is the total time that the x-ray beam was actually "
+"switched on for during the irradiation event. So for pulsed fluoroscopy "
+"the ``Exposure time`` will be (much) shorter than the ``Duration``."
+msgstr ""
+
+#: ../../i_navigate.rst:163 bcc3fdb5b0d5436490348c11e7ad23aa
+msgid ""
+"Near the top of each fluoroscopy study in the detail view is a table "
+"summarising the DAP, dose at reference point and duration for each "
+"irradiation type used in the study. Totals are also shown. The ``Total "
+"duration`` values in this table show the amount of time that the exposure"
+" switch or pedal was pressed."
+msgstr ""
+

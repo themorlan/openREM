@@ -1,0 +1,79 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../backupMySQLWindows.rst:2 a6d228107fc44e2194de360c08d7b37f
+msgid "Backing up MySQL on Windows"
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:4 107d5b63e2bd4720b4ef91fe99774eca
+msgid "Content contributed by DJ Platten"
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:6 3f8c2020359248fdbbe8772bb92868f8
+msgid "These instructions are based on Windows XP."
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:9 3dd6b086c9664861a0706d31992d5713
+msgid ""
+"As a one-off, create a MySQL user called ``backup`` with a password of "
+"``backup`` that has full rights to the database:"
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:15 7ff9300e268843df822a1197d69a48a6
+msgid ""
+"Grant the ``backup`` user full privileges on the database called "
+"``openremdatabasemysql``:"
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:21 233e67c7dbbc4e3f99f7851a531417a0
+msgid "Grant the ``backup`` user privileges to create databases:"
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:27 a0558fdf6dd043678af3c1216598f0f8
+msgid "Reload the privileges to ensure that MySQL registers the new ones:"
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:34 c33e2aabf8264a21b72a83ff41442497
+msgid ""
+"To backup the contents of the database from the command line to a file "
+"called ``backup.sql`` (note that the lack of spaces after the ``-u`` and "
+"``-p`` is not a typo):"
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:40 5e9b1877748644138b2bcaf57e571807
+msgid ""
+"To restore the database, assuming that it doesn't exist anymore, first it"
+" needs to be created:"
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:46 855f79bf6a0a4283a08cbcd86e912540
+msgid ""
+"Then restore the contents of the database from a file called "
+"``backup.sql``:"
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:54 d04a18bb8c8f416a83e672c3b771876c
+msgid ""
+"An example DOS batch file to back up the contents of the "
+"``openremdatabasemysql`` database using a time stamp of the form ``yyyy-"
+"mm-dd_hhmm``, zip up the resulting file, delete the uncompressed version "
+"and then copy it to a network location (the network copy will only work "
+"if the user that runs the batch file has permission on the network):"
+msgstr ""
+

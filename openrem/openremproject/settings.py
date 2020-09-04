@@ -1,12 +1,7 @@
 # Django settings for OpenREM project.
 
-from __future__ import absolute_import
-
-# ^^^ The above is required if you want to import from the celery
-# library.  If you don't have this then `from celery.schedules import`
-# becomes `proj.celery.schedules` in Python 2.x since it allows
-# for relative imports by default.
 from celery.schedules import crontab
+from django.utils.translation import gettext_lazy as _
 import os
 
 
@@ -129,6 +124,7 @@ TEMPLATES = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -284,6 +280,7 @@ EMAIL_OPENREM_URL = os.environ.get(
 
 DOCKER_INSTALL = int(os.environ.get("DOCKER_INSTALL", default=False))
 
+LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
 
 try:
     from .local_settings import *  # NOQA: F401
