@@ -3,20 +3,28 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-03 22:41+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2020-09-04 10:36+0100\n"
+"PO-Revision-Date: 2020-09-04 10:36+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.4.1\n"
+
+#: openremproject/settings.py:285
+msgid "German"
+msgstr "Deutsch"
+
+#: openremproject/settings.py:286
+msgid "English"
+msgstr "Englisch"
 
 #. Translators: CT xlsx export progress
 #: remapp/exports/ct_export.py:160
@@ -25,13 +33,51 @@ msgid ""
 "Writing study {row} of {numrows} to All data sheet and individual protocol "
 "sheets"
 msgstr ""
+"Schreiben von Studien-{row} von {numrows} in All data blatt und einzelnen "
+"Protokollblätter"
 
-#. Translators: Number of studies in DB losted above home-page table
-#: remapp/templates/remapp/home.html:63
+#: remapp/templates/remapp/home-list-modalities.html:7
+#: remapp/templates/remapp/home.html:202
+msgid "System name"
+msgstr "Systemname"
+
+#: remapp/templates/remapp/home-list-modalities.html:8
+#: remapp/templates/remapp/home.html:203
+msgid "Total number of studies"
+msgstr "Gesamtzahl der Studien"
+
+#: remapp/templates/remapp/home-list-modalities.html:9
+#: remapp/templates/remapp/home.html:204
+msgid "Latest study"
+msgstr "Neueste Studie"
+
+#: remapp/templates/remapp/home-list-modalities.html:11
+#: remapp/templates/remapp/home-list-modalities.html:13
+#: remapp/templates/remapp/home.html:206 remapp/templates/remapp/home.html:208
+#, python-format
+msgid "Number in last %(day_delta)s days"
+msgstr "Nummer in den letzten %(day_delta)s-Tagen"
+
+#: remapp/templates/remapp/home.html:64
 #, python-format
 msgid ""
-"\n"
-"        There are %(total_studies)s studies in this database. Page last "
-"refreshed on %(date)s.\n"
-"        "
+"There are %(total_studies)s studies in this database. Page last refreshed on "
+"%(current_time)s."
 msgstr ""
+"In dieser Datenbank sind %(total_studies)s-Studien vorhanden. Die Seite "
+"wurde zuletzt auf %(current_time)s aktualisiert."
+
+#: remapp/templates/remapp/home.html:69
+msgid "Chart plotting on."
+msgstr "Diagramm-Plotten auf."
+
+#: remapp/templates/remapp/home.html:71
+msgid "Chart plotting off."
+msgstr "Diagramm-Plotten aus."
+
+#: remapp/templates/remapp/home.html:214
+msgid "Please wait - querying the database"
+msgstr "Bitte warten Sie - fragen Sie die Datenbank ab"
+
+#~ msgid "Number in last %(day_delta_b)s days"
+#~ msgstr "Nummer in den letzten %(day_delta_b)s-Tagen"
