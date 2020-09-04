@@ -1313,20 +1313,6 @@ def ct_summary_list_filter(request):
         create_user_profile(sender=request.user, instance=request.user, created=True)
         user_profile = request.user.userprofile
 
-    if (
-        user_profile.median_available
-        and "postgresql" in settings.DATABASES["default"]["ENGINE"]
-    ):
-        median_available = True
-    elif "postgresql" in settings.DATABASES["default"]["ENGINE"]:
-        user_profile.median_available = True
-        user_profile.save()
-        median_available = True
-    else:
-        user_profile.median_available = False
-        user_profile.save()
-        median_available = False
-
     # Obtain the chart options from the request
     chart_options_form = CTChartOptionsForm(request.GET)
     # Check whether the form data is valid
@@ -1374,10 +1360,9 @@ def ct_summary_list_filter(request):
             user_profile.plotCTStudyMeanDLPOverTimePeriod = chart_options_form.cleaned_data[
                 "plotCTStudyMeanDLPOverTimePeriod"
             ]
-            if median_available:
-                user_profile.plotAverageChoice = chart_options_form.cleaned_data[
-                    "plotMeanMedianOrBoth"
-                ]
+            user_profile.plotAverageChoice = chart_options_form.cleaned_data[
+                "plotMeanMedianOrBoth"
+            ]
             user_profile.plotSeriesPerSystem = chart_options_form.cleaned_data[
                 "plotSeriesPerSystem"
             ]
@@ -1470,20 +1455,6 @@ def ct_summary_chart_data(request):
         create_user_profile(sender=request.user, instance=request.user, created=True)
         user_profile = request.user.userprofile
 
-    if (
-        user_profile.median_available
-        and "postgresql" in settings.DATABASES["default"]["ENGINE"]
-    ):
-        median_available = True
-    elif "postgresql" in settings.DATABASES["default"]["ENGINE"]:
-        user_profile.median_available = True
-        user_profile.save()
-        median_available = True
-    else:
-        user_profile.median_available = False
-        user_profile.save()
-        median_available = False
-
     if settings.DEBUG:
         from datetime import datetime
 
@@ -1509,7 +1480,6 @@ def ct_summary_chart_data(request):
         user_profile.plotCTStudyMeanDLPOverTime,
         altair_timeunit,
         user_profile.plotCTStudyPerDayAndHour,
-        median_available,
         user_profile.plotAverageChoice,
         user_profile.plotSeriesPerSystem,
         user_profile.plotHistogramBins,
@@ -1538,7 +1508,6 @@ def ct_plot_calculations(
     plot_study_mean_dlp_over_time,
     plot_study_mean_dlp_over_time_period,
     plot_study_per_day_and_hour,
-    median_available,
     plot_average_choice,
     plot_series_per_systems,
     plot_histogram_bins,
@@ -1644,7 +1613,6 @@ def ct_plot_calculations(
             plot_freq=plot_acquisition_freq,
             plot_series_per_system=plot_series_per_systems,
             plot_average_choice=plot_average_choice,
-            median_available=median_available,
             num_hist_bins=plot_histogram_bins,
             exclude_constant_angle=True,
             calculate_histograms=plot_histograms,
@@ -1669,7 +1637,6 @@ def ct_plot_calculations(
             plot_freq=0,
             plot_series_per_system=plot_series_per_systems,
             plot_average_choice=plot_average_choice,
-            median_available=median_available,
             num_hist_bins=plot_histogram_bins,
             exclude_constant_angle=True,
             calculate_histograms=plot_histograms,
@@ -1691,7 +1658,6 @@ def ct_plot_calculations(
             plot_freq=plot_study_freq,
             plot_series_per_system=plot_series_per_systems,
             plot_average_choice=plot_average_choice,
-            median_available=median_available,
             num_hist_bins=plot_histogram_bins,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
@@ -1719,7 +1685,6 @@ def ct_plot_calculations(
             plot_freq=0,
             plot_series_per_system=plot_series_per_systems,
             plot_average_choice=plot_average_choice,
-            median_available=median_available,
             num_hist_bins=plot_histogram_bins,
             exclude_constant_angle=True,
             calculate_histograms=plot_histograms,
@@ -1741,7 +1706,6 @@ def ct_plot_calculations(
             plot_freq=0,
             plot_series_per_system=plot_series_per_systems,
             plot_average_choice=plot_average_choice,
-            median_available=median_available,
             num_hist_bins=plot_histogram_bins,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
@@ -1762,7 +1726,6 @@ def ct_plot_calculations(
             plot_freq=plot_request_freq,
             plot_series_per_system=plot_series_per_systems,
             plot_average_choice=plot_average_choice,
-            median_available=median_available,
             num_hist_bins=plot_histogram_bins,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
@@ -1788,7 +1751,6 @@ def ct_plot_calculations(
             plot_freq=0,
             plot_series_per_system=plot_series_per_systems,
             plot_average_choice=plot_average_choice,
-            median_available=median_available,
             num_hist_bins=plot_histogram_bins,
             calculate_histograms=plot_histograms,
             case_insensitive_categories=plot_case_insensitive_categories,
@@ -1875,13 +1837,6 @@ def mg_summary_list_filter(request):
         # Create a default userprofile for the user if one doesn't exist
         create_user_profile(sender=request.user, instance=request.user, created=True)
         user_profile = request.user.userprofile
-
-    if "postgresql" in settings.DATABASES["default"]["ENGINE"]:
-        user_profile.median_available = True
-        user_profile.save()
-    else:
-        user_profile.median_available = False
-        user_profile.save()
 
     # Obtain the chart options from the request
     chart_options_form = MGChartOptionsForm(request.GET)
