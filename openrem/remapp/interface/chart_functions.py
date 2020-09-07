@@ -80,6 +80,57 @@ def create_dataframe(
     return df
 
 
+def plotly_boxplot(
+        df,
+        df_name_col,
+        df_value_col,
+        value_axis_title="",
+        name_axis_title=""
+):
+    from plotly.offline import plot
+    import plotly.express as px
+
+    fig = px.box(
+        df,
+        x=df_name_col,
+        y=df_value_col,
+        color="x_ray_system_name",
+        labels={
+            df_value_col:value_axis_title,
+            df_name_col:name_axis_title,
+            "x_ray_system_name": "System"
+        }
+    )
+    fig.update_traces(quartilemethod="exclusive")
+    return plot(fig, output_type="div")
+
+
+def plotly_barchart(
+        df,
+        df_name_col,
+        df_value_col,
+        value_axis_title="",
+        name_axis_title=""
+):
+    from plotly.offline import plot
+    import plotly.express as px
+
+    fig = px.histogram(
+        df,
+        x=df_name_col,
+        y=df_value_col,
+        color="x_ray_system_name",
+        barmode="group",
+        histfunc="avg",
+        labels={
+            df_value_col:value_axis_title,
+            df_name_col:name_axis_title,
+            "x_ray_system_name": "System"
+        }
+    )
+    return plot(fig, output_type="div")
+
+
 def altair_barchart_average(
     df,
     df_name_col,

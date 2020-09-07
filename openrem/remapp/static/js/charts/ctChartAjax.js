@@ -58,6 +58,13 @@ $(document).ready(function() {
                 }
             }
 
+            if(typeof  json.plotlyBoxplotTest !=="undefined") {
+                $("#plotlyBoxplotTestingDiv").replaceWith(json.plotlyBoxplotTest);
+            }
+            if(typeof  json.plotlyBarchartTest !=="undefined") {
+                $("#plotlyBarchartTestingDiv").replaceWith(json.plotlyBarchartTest);
+            }
+
             // Number of events per study chart data
             if(typeof json.studyNumEventsData !== "undefined") {
                 vegaEmbed('#studyAverageNumEventsChartDiv',  JSON.parse(json.studyNumEventsData)).catch(console.error);
