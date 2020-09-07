@@ -31,6 +31,296 @@
 
 from builtins import filter  # pylint: disable=redefined-builtin
 from builtins import range  # pylint: disable=redefined-builtin
+import pandas as pd
+
+
+def create_dataframe(
+        database_events,
+        data_point_name_fields=None,
+        data_point_value_fields=None,
+        data_point_date_fields=None,
+        system_name_field=None,
+        data_point_name_lowercase=None,
+        data_point_value_multiplier=None
+):
+
+    fields_to_include = set()
+    if data_point_name_fields:
+        for field in data_point_name_fields:
+            fields_to_include.add(field)
+    if data_point_value_fields:
+        for field in data_point_value_fields:
+            fields_to_include.add(field)
+    if data_point_date_fields:
+        for field in data_point_date_fields:
+            fields_to_include.add(field)
+    if system_name_field:
+        fields_to_include.add(system_name_field)
+
+    # NOTE: I am not excluding zero-value events from the calculations (zero DLP or zero CTDI)
+    df = pd.DataFrame.from_records(database_events.values(*fields_to_include))
+
+    if data_point_name_lowercase:
+        for name_field in data_point_name_fields:
+            df[name_field] = df[name_field].str.lower()
+
+    if system_name_field:
+        df.rename(columns={system_name_field: "x_ray_system_name"}, inplace=True)
+    else:
+        df.insert(0, "x_ray_system_name", "All systems")
+
+    for value_field in data_point_value_fields:
+        df[value_field] = df[value_field].astype(float)
+        if data_point_value_multiplier:
+            df[value_field] *= data_point_value_multiplier
+
+    for date_field in data_point_date_fields:
+        df[date_field] = pd.to_datetime(df[date_field])
+
+    return df
+
+
+def altair_barchart_average(
+    df,
+    df_name_col,
+    df_value_col,
+    average_choice="mean",
+    value_axis_title=""
+):
+    """ This function creates an Altair bar chart of average value vs. a category.
+
+    Args:
+        df: Pandas DataFrame containing the data to be charted
+        df_name_col: the column containing data names
+        df_value_col: the column containing data values
+        average_choice: string, default="mean; set to either mean, median or both
+        value_axis_title: string, default=""; to use for the value axis label
+
+    Returns:
+        An Altair chart object
+    """
+    import altair as alt
+
+    # Disable maximum of 5000 rows in a DataFrame
+    alt.data_transformers.disable_max_rows()
+
+    # Create a plot with either the mean or median
+    if average_choice in ["mean", "median"]:
+        selection = alt.selection_multi(fields=["x_ray_system_name"], bind="legend")
+
+        return alt.Chart(df).mark_bar().encode(
+            row=alt.Row(df_name_col, title="", header=alt.Header(labelAngle=0, labelAlign="left")),
+            y=alt.Y("x_ray_system_name", axis=alt.Axis(labels=False, title="")),
+            x=alt.X(average_choice + "(" + df_value_col + ")", title=average_choice.capitalize() + " " + value_axis_title),
+            color=alt.Color("x_ray_system_name", legend=alt.Legend(title="System")),
+            opacity=alt.condition(selection, alt.value(1.0), alt.value(0.05)),
+            tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
+                     alt.Tooltip(df_name_col, title="Name"),
+                     alt.Tooltip(average_choice + "(" + df_value_col + ")", format=".2f", title=average_choice.capitalize()),
+                     alt.Tooltip("count(" + df_value_col + ")", format=".0f", title="Frequency")]
+        ).add_selection(
+            selection
+        ).resolve_axis(
+            x="independent"
+        ).interactive()
+
+    # Assume the user must have selected "both"
+    else:
+        selection = alt.selection_multi(fields=["aggregate"], bind="legend")
+
+        return alt.Chart(df).transform_aggregate(
+            mean="mean(" + df_value_col + ")",
+            median="median(" + df_value_col + ")",
+            groupby=[df_name_col, "x_ray_system_name"]
+        ).transform_fold(
+            ["mean", "median"],
+            as_=["aggregate", "value"]
+        ).mark_bar().encode(
+            row=alt.Row("x_ray_system_name", title=""),
+            x=alt.X("value:Q", title="", stack=None),
+            y=alt.Y(df_name_col, axis=alt.Axis(title="")),
+            color=alt.Color("aggregate:N", legend=alt.Legend(title="Average " + value_axis_title)),
+            opacity=alt.condition(selection, alt.value(1.0), alt.value(0.05)),
+            tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
+                     alt.Tooltip(df_name_col, title="Name"),
+                     alt.Tooltip("value:Q", format=".2f", title="Average")]
+        ).add_selection(
+            selection
+        ).interactive()
+
+
+def altair_barchart_histogram(
+        df,
+        df_name_col,
+        df_value_col,
+        n_bins=10,
+        value_axis_title=""
+):
+    """ This function creates an Altair bar chart histogram of values.
+
+    Args:
+        df: Pandas DataFrame containing the data to be charted
+        df_name_col: the column containing data names
+        df_value_col: the column containing data values
+        n_bins: integer, default=10; the maximum number of bins to use
+        value_axis_title: string, default=""; to use for the value axis label
+
+    Returns:
+        An Altair chart object
+    """
+    import altair as alt
+
+    selection = alt.selection_multi(fields=["x_ray_system_name"], bind="legend")
+
+    return alt.Chart(df).mark_bar().encode(
+        row=alt.Row(df_name_col, title="", header=alt.Header(labelAngle=0, labelAlign="left")),
+        x=alt.X(df_value_col, bin=alt.Bin(maxbins=n_bins), title="Binned " + value_axis_title),
+        y=alt.Y("count()", title="Frequency", stack=None),
+        color=alt.Color("x_ray_system_name", legend=alt.Legend(title="System")),
+        opacity=alt.condition(selection, alt.value(1.0), alt.value(0.05)),
+        tooltip=[alt.Tooltip("count()", title="Frequency"),
+                 alt.Tooltip(df_name_col, bin=alt.Bin(maxbins=n_bins), title="Bin range")]
+    ).add_selection(
+        selection
+    ).resolve_scale(
+        y="independent",
+        x="independent"
+    ).interactive()
+
+
+def altair_barchart_frequency(
+    df,
+    df_name_col,
+    legend_title=""
+):
+    """ This function creates an Altair bar chart of category frequency.
+
+    Args:
+        df: Pandas DataFrame containing the data to be charted
+        df_name_col: the column containing data names
+        legend_title: string, default=""; to use for the legend title
+
+    Returns:
+        An Altair chart object
+    """
+    import altair as alt
+
+    # Disable maximum of 5000 rows in a DataFrame
+    alt.data_transformers.disable_max_rows()
+
+    selection = alt.selection_multi(fields=[df_name_col], bind="legend")
+
+    return alt.Chart(df).mark_bar().encode(
+        x=alt.X("count(" + df_name_col + "):Q", title="Frequency"),
+        y=alt.Y("x_ray_system_name", axis=alt.Axis(title="")),
+        color=alt.Color(df_name_col,
+                        sort=alt.EncodingSortField(df_name_col, op="count", order="descending"),
+                        legend=alt.Legend(title=legend_title, symbolLimit=250)),
+        opacity=alt.condition(selection, alt.value(1.0), alt.value(0.05)),
+        order=alt.Order("count(" + df_name_col + "):Q", sort="descending"),
+        tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
+                 alt.Tooltip(df_name_col, title="Name"),
+                 alt.Tooltip("count(" + df_name_col + "):Q", format=".0f", title="Frequency")]
+    ).add_selection(
+        selection
+    ).interactive()
+
+
+def altair_linechart_average(
+    df,
+    df_name_col,
+    df_value_col,
+    average_choice="mean",
+    time_unit="yearmonth",
+    value_axis_title="",
+    legend_title=""
+):
+    """ This function creates an Altair line chart of average value over time.
+
+    Args:
+        df: Pandas DataFrame containing the data to be charted
+        df_name_col: the column containing data names
+        df_value_col: the column containing data values
+        average_choice: string, default="mean; set to either mean, median or both
+        time_unit: string, default="yearmonth"; set to determine the time increment
+        value_axis_title: string, default=""; to use for the value axis label
+        legend_title: string, default=""; to use for the legend title
+
+    Returns:
+        An Altair chart object
+    """
+    import altair as alt
+
+    # Disable maximum of 5000 rows in a DataFrame
+    alt.data_transformers.disable_max_rows()
+
+    if average_choice == "both":
+        averages = ["mean", "median"]
+    else:
+        averages = [average_choice]
+
+    selection = alt.selection_multi(fields=[df_name_col], bind="legend")
+
+    chart = alt.Chart(df).mark_line(point=True).encode(
+        row=alt.Row("x_ray_system_name:N", title=""),
+        x=alt.X(time_unit + "(study_date):T", title="Study date", axis=alt.Axis(labelAngle=90)),
+        y=alt.Y(averages[0] + "(" + df_value_col + "):Q",
+                title=averages[0].capitalize() + " " + value_axis_title),
+        color=alt.Color(df_name_col, legend=alt.Legend(title=legend_title, symbolLimit=250)),
+        opacity=alt.condition(selection, alt.value(1), alt.value(0.1)),
+        tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
+                 alt.Tooltip(df_name_col, title="Name"),
+                 alt.Tooltip(averages[0] + "(" + df_value_col + "):Q", format=".2f", title=averages[0].capitalize())]
+    ).add_selection(
+        selection
+    ).interactive()
+
+    if average_choice == "both":
+        other = chart.encode(
+            y=alt.Y("median(" + df_value_col + "):Q",
+                    title="Median " + value_axis_title),
+            tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
+                     alt.Tooltip(df_name_col, title="Name"),
+                     alt.Tooltip("median(" + df_value_col + "):Q", format=".2f", title="Median")]
+        ).interactive()
+
+        chart = alt.hconcat(chart, other)
+
+    return chart
+
+
+def altair_barchart_workload(
+        df,
+        value_axis_title=""
+):
+    """ This function creates an Altair bar chart of workload.
+
+    Args:
+        df: Pandas DataFrame containing the data to be charted
+        value_axis_title: string, default=""; to use for the value axis label
+
+    Returns:
+        An Altair chart object
+    """
+    import altair as alt
+
+    # Disable maximum of 5000 rows in a DataFrame
+    alt.data_transformers.disable_max_rows()
+
+    selection = alt.selection_single(encodings=["y"])
+
+    return alt.Chart(df).mark_bar().encode(
+        row=alt.Row("x_ray_system_name:N", title=""),
+        y=alt.Y("day(study_date):O", title=""),
+        x=alt.X("count(x_ray_system_name)", title=value_axis_title + " frequency"),
+        color=alt.Color("x_ray_system_name", legend=alt.Legend(title="System", symbolLimit=250)),
+        opacity=alt.condition(selection, alt.value(1), alt.value(0.1)),
+        tooltip=[alt.Tooltip("x_ray_system_name", title="System"),
+                 alt.Tooltip("day(study_date)", title="Day"),
+                 alt.Tooltip("count()", format=".0f", title="Frequency")]
+    ).add_selection(
+        selection
+    ).interactive()
 
 
 def average_chart_inc_histogram_data(

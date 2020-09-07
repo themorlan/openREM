@@ -21,21 +21,33 @@ $(document).ready(function() {
             // DLP per acquisition chart data
             if(typeof json.acquisitionDLPData !== "undefined") {
                 vegaEmbed('#acquisitionAverageDLPChartDiv',  JSON.parse(json.acquisitionDLPData)).catch(console.error);
+                if(typeof json.acquisitionHistDLPData !== "undefined") {
+                    vegaEmbed('#acquisitionHistogramDLPChartDiv',  JSON.parse(json.acquisitionHistDLPData)).catch(console.error);
+                }
             }
 
             // CTDI per acquisition chart data
             if(typeof json.acquisitionCTDIData !== "undefined") {
                 vegaEmbed('#acquisitionAverageCTDIChartDiv',  JSON.parse(json.acquisitionCTDIData)).catch(console.error);
+                if(typeof json.acquisitionHistCTDIData !== "undefined") {
+                    vegaEmbed('#acquisitionHistogramCTDIChartDiv',  JSON.parse(json.acquisitionHistCTDIData)).catch(console.error);
+                }
             }
 
             // DLP per study chart data
             if(typeof json.studyDLPData !== "undefined") {
                 vegaEmbed('#studyAverageDLPChartDiv',  JSON.parse(json.studyDLPData)).catch(console.error);
+                if(typeof json.studyHistDLPData !== "undefined") {
+                    vegaEmbed('#studyHistogramDLPChartDiv',  JSON.parse(json.studyHistDLPData)).catch(console.error);
+                }
             }
 
             // CTDI per study chart data
             if(typeof json.studyCTDIData !== "undefined") {
                 vegaEmbed('#studyAverageCTDIChartDiv',  JSON.parse(json.studyCTDIData)).catch(console.error);
+                if(typeof json.studyHistCTDIData !== "undefined") {
+                    vegaEmbed('#studyHistogramCTDIChartDiv',  JSON.parse(json.studyHistCTDIData)).catch(console.error);
+                }
             }
 
             // DLP per request chart data start
@@ -49,11 +61,17 @@ $(document).ready(function() {
             // Number of events per study chart data
             if(typeof json.studyNumEventsData !== "undefined") {
                 vegaEmbed('#studyAverageNumEventsChartDiv',  JSON.parse(json.studyNumEventsData)).catch(console.error);
+                if(typeof json.studyHistNumEventsData !== "undefined") {
+                    vegaEmbed('#studyHistogramNumEventsChartDiv',  JSON.parse(json.studyHistNumEventsData)).catch(console.error);
+                }
             }
 
             // Number of events per request chart data
             if(typeof json.requestNumEventsData !== "undefined") {
                 vegaEmbed('#requestAverageNumEventsChartDiv',  JSON.parse(json.requestNumEventsData)).catch(console.error);
+                if(typeof json.requestNumEventsHistData !== "undefined") {
+                    vegaEmbed('#requestHistogramNumEventsChartDiv', JSON.parse(json.requestNumEventsHistData)).catch(console.error);
+                }
             }
 
             // Acquisition frequency chart data start

@@ -1517,6 +1517,12 @@ def ct_plot_calculations(
     """CT chart data calculations
     """
     from .interface.chart_functions import (
+        create_dataframe,
+        altair_barchart_average,
+        altair_barchart_frequency,
+        altair_linechart_average,
+        altair_barchart_workload,
+        altair_barchart_histogram,
         average_chart_inc_histogram_data,
         average_chart_over_time_data,
         workload_chart_data,
@@ -1602,170 +1608,241 @@ def ct_plot_calculations(
         else:
             acquisition_events = f.qs.values(*prefetch_list)
 
-    if plot_acquisition_mean_dlp or plot_acquisition_freq:
-        result = average_chart_inc_histogram_data(
-            acquisition_events,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-            "ctradiationdose__ctirradiationeventdata__dlp",
-            value_multiplier=1.0,
-            plot_average=plot_acquisition_mean_dlp,
-            plot_freq=plot_acquisition_freq,
-            plot_series_per_system=plot_series_per_systems,
-            plot_average_choice=plot_average_choice,
-            num_hist_bins=plot_histogram_bins,
-            exclude_constant_angle=True,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
-            chart_value_axis_title="DLP (mGy.cm)",
-            chart_category_name="Acquisition protocol name",
-        )
+    #######################################################################
+    # Prepare acquisition-level Pandas DataFrame to use for charts
+    if "acquisition_events" in locals():
 
+        name_fields = []
+        if plot_acquisition_mean_dlp or plot_acquisition_mean_ctdi:
+            name_fields.append("ctradiationdose__ctirradiationeventdata__acquisition_protocol")
+
+        value_fields = []
         if plot_acquisition_mean_dlp:
-            return_structure["acquisitionDLPData"] = result["averageChart"].to_json()
-        if plot_acquisition_freq:
-            return_structure["acquisitionFreqData"] = result["frequencyChart"].to_json()
+            value_fields.append("ctradiationdose__ctirradiationeventdata__dlp")
+        if plot_acquisition_mean_ctdi:
+            value_fields.append("ctradiationdose__ctirradiationeventdata__mean_ctdivol")
 
-    if plot_acquisition_mean_ctdi:
-        result = average_chart_inc_histogram_data(
+        date_fields = []
+
+        system_field = None
+        if plot_series_per_systems:
+            system_field = "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
+
+        df = create_dataframe(
             acquisition_events,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-            "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-            value_multiplier=1.0,
-            plot_average=plot_acquisition_mean_ctdi,
-            plot_freq=0,
-            plot_series_per_system=plot_series_per_systems,
-            plot_average_choice=plot_average_choice,
-            num_hist_bins=plot_histogram_bins,
-            exclude_constant_angle=True,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
-            chart_value_axis_title="CTDI (mGy)",
-            chart_category_name="Acquisition protocol name",
+            data_point_name_fields=name_fields,
+            data_point_value_fields=value_fields,
+            data_point_date_fields=date_fields,
+            system_name_field=system_field,
+            data_point_name_lowercase=plot_case_insensitive_categories
         )
+        #######################################################################
 
-        return_structure["acquisitionCTDIData"] = result["averageChart"].to_json()
+        #######################################################################
+        # Create the required acquisition-level charts
+        if plot_acquisition_mean_dlp:
+            return_structure["acquisitionDLPData"] = altair_barchart_average(
+                df,
+                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                "ctradiationdose__ctirradiationeventdata__dlp",
+                average_choice=plot_average_choice,
+                value_axis_title="DLP (mGy.cm)"
+            ).to_json()
 
-    if plot_study_mean_dlp or plot_study_freq or plot_study_mean_dlp_over_time or plot_study_per_day_and_hour:
-        result = average_chart_inc_histogram_data(
+            if plot_histograms:
+                return_structure["acquisitionHistDLPData"] = altair_barchart_histogram(
+                    df,
+                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                    "ctradiationdose__ctirradiationeventdata__dlp",
+                    n_bins=plot_histogram_bins,
+                    value_axis_title="DLP (mGy.cm)"
+                ).to_json()
+
+        if plot_acquisition_mean_ctdi:
+            return_structure["acquisitionCTDIData"] = altair_barchart_average(
+                df,
+                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                average_choice=plot_average_choice,
+                value_axis_title="CTDI (mGy)"
+            ).to_json()
+
+            if plot_histograms:
+                return_structure["acquisitionHistCTDIData"] = altair_barchart_histogram(
+                    df,
+                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                    "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    n_bins=plot_histogram_bins,
+                    value_axis_title="CTDI (mGy)"
+                ).to_json()
+
+        if plot_acquisition_freq:
+            return_structure["acquisitionFreqData"] = altair_barchart_frequency(
+                df,
+                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                legend_title="Acquisition protocol name"
+            ).to_json()
+
+
+    #######################################################################
+    # Prepare study- and request-level Pandas DataFrame to use for charts
+    if "study_and_request_events" in locals():
+
+        name_fields = []
+        if plot_study_mean_dlp or plot_study_freq or plot_study_mean_dlp_over_time or plot_study_per_day_and_hour or plot_study_num_events or plot_study_mean_ctdi:
+            name_fields.append("study_description")
+        if plot_request_mean_dlp or plot_request_freq or plot_request_num_events:
+            name_fields.append("requested_procedure_code_meaning")
+
+        value_fields = []
+        if plot_study_mean_dlp or plot_study_mean_dlp_over_time or plot_request_mean_dlp:
+            value_fields.append("total_dlp")
+        if plot_study_mean_ctdi:
+            value_fields.append("ctradiationdose__ctirradiationeventdata__mean_ctdivol")
+        if plot_study_num_events or plot_request_num_events:
+            value_fields.append("number_of_events")
+
+        date_fields = []
+        if plot_study_mean_dlp_over_time or plot_study_per_day_and_hour:
+            date_fields.append("study_date")
+
+        system_field = None
+        if plot_series_per_systems:
+            system_field = "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
+
+        df = create_dataframe(
             study_and_request_events,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "study_description",
-            "total_dlp",
-            value_multiplier=1.0,
-            plot_average=plot_study_mean_dlp,
-            plot_freq=plot_study_freq,
-            plot_series_per_system=plot_series_per_systems,
-            plot_average_choice=plot_average_choice,
-            num_hist_bins=plot_histogram_bins,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
-            chart_value_axis_title="DLP (mGy.cm)",
-            chart_category_name="Study description",
-            plot_average_over_time=plot_study_mean_dlp_over_time,
-            time_period=plot_study_mean_dlp_over_time_period,
-            plot_workload=plot_study_per_day_and_hour
+            data_point_name_fields=name_fields,
+            data_point_value_fields=value_fields,
+            data_point_date_fields=date_fields,
+            system_name_field=system_field,
+            data_point_name_lowercase=plot_case_insensitive_categories
         )
+        #######################################################################
 
-        if plot_study_mean_dlp_over_time:
-            return_structure["studyDLPoverTime"] = result["averageOverTimeChart"].to_json()
+        #######################################################################
+        # Create the required study- and request-level charts
         if plot_study_mean_dlp:
-            return_structure["studyDLPData"] = result["averageChart"].to_json()
-        if plot_study_freq:
-            return_structure["studyFreqData"] = result["frequencyChart"].to_json()
-        if plot_study_per_day_and_hour:
-            return_structure["studyWorkloadData"] = result["workloadChart"].to_json()
+            return_structure["studyDLPData"] = altair_barchart_average(
+                df,
+                "study_description",
+                "total_dlp",
+                average_choice=plot_average_choice,
+                value_axis_title="DLP (mGy.cm)"
+            ).to_json()
 
-    if plot_study_mean_ctdi:
-        result = average_chart_inc_histogram_data(
-            study_and_request_events,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "study_description",
-            "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-            value_multiplier=1.0,
-            plot_average=plot_study_mean_ctdi,
-            plot_freq=0,
-            plot_series_per_system=plot_series_per_systems,
-            plot_average_choice=plot_average_choice,
-            num_hist_bins=plot_histogram_bins,
-            exclude_constant_angle=True,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
-            chart_value_axis_title="CTDI (mGy)",
-            chart_category_name="Study description",
-        )
+            if plot_histograms:
+                return_structure["studyHistDLPData"] = altair_barchart_histogram(
+                    df,
+                    "study_description",
+                    "total_dlp",
+                    n_bins=plot_histogram_bins,
+                    value_axis_title="DLP (mGy.cm)"
+                ).to_json()
 
-        return_structure["studyCTDIData"] = result["averageChart"].to_json()
+        if plot_study_mean_ctdi:
+            return_structure["studyCTDIData"] = altair_barchart_average(
+                df,
+                "study_description",
+                "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                average_choice=plot_average_choice,
+                value_axis_title="CTDI (mGy)"
+            ).to_json()
 
-    if plot_study_num_events:
-        result = average_chart_inc_histogram_data(
-            study_and_request_events,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "study_description",
-            "number_of_events",
-            value_multiplier=1.0,
-            plot_average=plot_study_num_events,
-            plot_freq=0,
-            plot_series_per_system=plot_series_per_systems,
-            plot_average_choice=plot_average_choice,
-            num_hist_bins=plot_histogram_bins,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
-            chart_value_axis_title="Events",
-            chart_category_name="Study description"
-        )
+            if plot_histograms:
+                return_structure["studyHistCTDIData"] = altair_barchart_histogram(
+                    df,
+                    "study_description",
+                    "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    n_bins=plot_histogram_bins,
+                    value_axis_title="CTDI (mGy)"
+                ).to_json()
 
-        return_structure["studyNumEventsData"] = result["averageChart"].to_json()
+        if plot_study_num_events:
+            return_structure["studyNumEventsData"] = altair_barchart_average(
+                df,
+                "study_description",
+                "number_of_events",
+                average_choice=plot_average_choice,
+                value_axis_title="Events"
+            ).to_json()
 
-    if plot_request_mean_dlp or plot_request_freq:
-        result = average_chart_inc_histogram_data(
-            study_and_request_events,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "requested_procedure_code_meaning",
-            "total_dlp",
-            value_multiplier=1.0,
-            plot_average=plot_request_mean_dlp,
-            plot_freq=plot_request_freq,
-            plot_series_per_system=plot_series_per_systems,
-            plot_average_choice=plot_average_choice,
-            num_hist_bins=plot_histogram_bins,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
-            chart_value_axis_title="DLP (mGy.cm)",
-            chart_category_name="Requested procedure name"
-        )
+            if plot_histograms:
+                return_structure["studyHistNumEventsData"] = altair_barchart_histogram(
+                    df,
+                    "study_description",
+                    "number_of_events",
+                    n_bins=plot_histogram_bins,
+                    value_axis_title="Events"
+                ).to_json()
 
         if plot_request_mean_dlp:
-            return_structure["requestData"] = result["averageChart"].to_json()
+            return_structure["requestData"] = altair_barchart_average(
+                df,
+                "requested_procedure_code_meaning",
+                "total_dlp",
+                average_choice=plot_average_choice,
+                value_axis_title="DLP (mGy.cm)"
+            ).to_json()
+
             if plot_histograms:
-                return_structure["requestHistData"] = result["histogramChart"].to_json()
+                return_structure["requestHistData"] = altair_barchart_histogram(
+                    df,
+                    "requested_procedure_code_meaning",
+                    "total_dlp",
+                    n_bins=plot_histogram_bins,
+                    value_axis_title="DLP (mGy.cm)"
+                ).to_json()
+
+        if plot_request_num_events:
+            return_structure["requestNumEventsData"] = altair_barchart_average(
+                df,
+                "requested_procedure_code_meaning",
+                "number_of_events",
+                average_choice=plot_average_choice,
+                value_axis_title="Events"
+            ).to_json()
+
+            if plot_histograms:
+                return_structure["requestNumEventsHistData"] = altair_barchart_histogram(
+                    df,
+                    "requested_procedure_code_meaning",
+                    "number_of_events",
+                    n_bins=plot_histogram_bins,
+                    value_axis_title="Events"
+                ).to_json()
+
+        if plot_study_freq:
+            return_structure["studyFreqData"] = altair_barchart_frequency(
+                df,
+                "study_description",
+                legend_title="Study description"
+            ).to_json()
+
         if plot_request_freq:
-            return_structure["requestFreqData"] = result["frequencyChart"].to_json()
+            return_structure["requestFreqData"] = altair_barchart_frequency(
+                df,
+                "requested_procedure_code_meaning",
+                legend_title="Requested procedure name"
+            ).to_json()
 
-    if plot_request_num_events:
-        result = average_chart_inc_histogram_data(
-            study_and_request_events,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "requested_procedure_code_meaning",
-            "number_of_events",
-            value_multiplier=1.0,
-            plot_average=plot_request_num_events,
-            plot_freq=0,
-            plot_series_per_system=plot_series_per_systems,
-            plot_average_choice=plot_average_choice,
-            num_hist_bins=plot_histogram_bins,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
-            chart_value_axis_title="Events",
-            chart_category_name="Requested procedure name"
-        )
+        if plot_study_mean_dlp_over_time:
+            return_structure["studyDLPoverTime"] = altair_linechart_average(
+                df,
+                "study_description",
+                "total_dlp",
+                average_choice=plot_average_choice,
+                time_unit=plot_study_mean_dlp_over_time_period,
+                value_axis_title="DLP (mGy.cm",
+                legend_title="Study description"
+            ).to_json()
 
-        return_structure["requestNumEventsData"] = result["averageChart"].to_json()
-
-    if plot_study_per_day_and_hour:
-        result = workload_chart_data(study_and_request_events)
-        return_structure["studiesPerHourInWeekdays"] = result["workload"]
+        if plot_study_per_day_and_hour:
+            return_structure["studyWorkloadData"] = altair_barchart_workload(
+                df,
+                value_axis_title="Study description"
+            ).to_json()
+        #######################################################################
 
     return return_structure
 
