@@ -1301,9 +1301,25 @@ def ct_summary_list_filter(request):
     from remapp.interface.mod_filters import ct_acq_filter
     from remapp.forms import CTChartOptionsForm, itemsPerPageForm
     from openremproject import settings
+    from remapp.interface.advanced_search_functions import get_advanced_search_options_ct, AdvancedSearchFilter
+    advanced_search_available = False  # by default: default filtering
+    advanced_search_options = '{}'
+    advanced_search_str = ''
+    return_structure = {}
 
     pid = bool(request.user.groups.filter(name="pidgroup"))
-    f = ct_acq_filter(request.GET, pid=pid)
+    if 'advanced_search' in request.GET:
+        advanced_search_available = bool(request.GET['advanced_search'])
+    elif 'advanced_search_string' in request.GET and request.GET['advanced_search_string']:
+        advanced_search_available = True
+    if advanced_search_available:
+        if "submit" in request.GET:
+            advanced_search_str = request.GET['advanced_search_string']
+        advanced_search_options = get_advanced_search_options_ct(pid)
+        f = AdvancedSearchFilter({'advanced_search_string': advanced_search_str},
+                                 json.loads(advanced_search_options), 'CT')
+    else:
+        f = ct_acq_filter(request.GET, pid=pid)
 
     try:
         # See if the user has plot settings in userprofile
@@ -1448,7 +1464,19 @@ def ct_summary_list_filter(request):
         "itemsPerPageForm": items_per_page_form,
     }
 
-    return render(request, "remapp/ctfiltered.html", return_structure,)
+    # TODO: Is update needed?
+    if advanced_search_available:
+        return_structure["json_filter_options"] = advanced_search_options
+        # return_structure["advancedSearchForm"] = advanced_search_structure["advancedSearchForm"]
+        return_structure["advancedSearchString"] = advanced_search_str
+
+    return_structure.update({"filter": f, "admin": admin, "chartOptionsForm": chart_options_form,
+                             "advancedSearchAvailable": advanced_search_available,
+                             "json_filter_options": advanced_search_options,
+                             "advancedSearchString": advanced_search_str,
+                             "itemsPerPageForm": items_per_page_form})
+
+    return render(request, "remapp/ctfiltered.html", return_structure)
 
 
 @login_required
