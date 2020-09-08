@@ -64,6 +64,9 @@ $(document).ready(function() {
             if(typeof  json.plotlyBarchartTest !=="undefined") {
                 $("#plotlyBarchartTestingDiv").replaceWith(json.plotlyBarchartTest);
             }
+            if(typeof  json.plotlyHistogramTest !=="undefined") {
+                $("#plotlyHistogramDLPChartDiv").replaceWith(json.plotlyHistogramTest);
+            }
 
             // Number of events per study chart data
             if(typeof json.studyNumEventsData !== "undefined") {

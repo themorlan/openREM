@@ -1525,6 +1525,7 @@ def ct_plot_calculations(
         altair_barchart_histogram,
         plotly_boxplot,
         plotly_barchart,
+        plotly_histogram,
         average_chart_inc_histogram_data,
         average_chart_over_time_data,
         workload_chart_data,
@@ -1811,6 +1812,14 @@ def ct_plot_calculations(
                     n_bins=plot_histogram_bins,
                     value_axis_title="DLP (mGy.cm)"
                 ).to_json()
+
+                return_structure["plotlyHistogramTest"] = plotly_histogram(
+                    df,
+                    "requested_procedure_code_meaning",
+                    "total_dlp",
+                    value_axis_title="DLP (mGy.cm)",
+                    name_axis_title="Requested procedure name"
+                )
 
         if plot_request_num_events:
             return_structure["requestNumEventsData"] = altair_barchart_average(

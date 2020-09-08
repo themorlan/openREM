@@ -60,8 +60,11 @@ def create_dataframe(
     # NOTE: I am not excluding zero-value events from the calculations (zero DLP or zero CTDI)
     df = pd.DataFrame.from_records(database_events.values(*fields_to_include))
 
-    if data_point_name_lowercase:
-        for name_field in data_point_name_fields:
+    for name_field in data_point_name_fields:
+        # Replace any empty values with "Blank" (Plotly doesn't like empty values)
+        df[name_field].fillna(value="Blank", inplace=True)
+        # Make lowercase if required
+        if data_point_name_lowercase:
             df[name_field] = df[name_field].str.lower()
 
     if system_name_field:
@@ -128,6 +131,33 @@ def plotly_barchart(
             "x_ray_system_name": "System"
         }
     )
+    return plot(fig, output_type="div", include_plotlyjs=False)
+
+
+def plotly_histogram(
+        df,
+        df_name_col,
+        df_value_col,
+        value_axis_title="",
+        name_axis_title=""
+):
+    from plotly.offline import plot
+    import plotly.express as px
+
+    fig = px.histogram(
+        df,
+        x=df_value_col,
+        color=df_name_col,
+        barmode="group",
+        facet_col="x_ray_system_name",
+        facet_col_wrap=2,
+        labels = {
+            df_value_col: value_axis_title,
+            df_name_col: name_axis_title,
+            "x_ray_system_name": "System"
+        }
+    )
+
     return plot(fig, output_type="div", include_plotlyjs=False)
 
 
