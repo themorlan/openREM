@@ -32,14 +32,19 @@ function fitChartToDiv(chartDiv) {
 
 
 function fitPlotlyChartToDiv(chartGrandParentDiv) {
-    var chart_div_id = $("#"+chartGrandParentDiv+ " :first-child :first-child").attr("id");
+    var chartGrandParentDivElement = $("#" + chartGrandParentDiv);
 
-    var chartGrandParentDivElement = $("#"+chartGrandParentDiv);
     if (chartGrandParentDivElement.width() && chartGrandParentDivElement.height()) {
-        var update = {
-            width: chartGrandParentDivElement.width(),
-            height: chartGrandParentDivElement.height()
-        };
-        Plotly.relayout(chart_div_id, update);
+
+        var num_divs = chartGrandParentDivElement.children().length;
+
+        for (i = 0; i < num_divs; i++) {
+            var chart_div_id = $((chartGrandParentDivElement.children()[i]).innerHTML).attr("id")
+            var update = {
+                width: chartGrandParentDivElement.width(),
+                height: chartGrandParentDivElement.height() / num_divs
+            };
+            Plotly.relayout(chart_div_id, update);
+        }
     }
 }

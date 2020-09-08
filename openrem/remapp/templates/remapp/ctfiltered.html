@@ -231,11 +231,11 @@
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
                                 {% if request.user.userprofile.plotAverageChoice == 'mean' %}
-                                    Charts of mean DLP for each acquisition protocol.
+                                    Charts of mean DLP for each acquisition protocol
                                 {% elif request.user.userprofile.plotAverageChoice == 'median' %}
-                                    Charts of median DLP for each acquisition protocol.
+                                    Charts of median DLP for each acquisition protocol
                                 {% else %}
-                                    Charts of mean and median DLP for each acquisition protocol.
+                                    Charts of mean and median DLP for each acquisition protocol
                                 {% endif %}
                             </a>
                         </h4>
@@ -256,7 +256,7 @@
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#acquisitionHistogramDLPDiv" href="#collapseAcquisitionHistogramDLP">
-                                    Histograms of DLP for each acquisition protocol name.
+                                    Histograms of DLP for each acquisition protocol
                                 </a>
                             </h4>
                         </div>
@@ -279,11 +279,11 @@
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#accordion3" href="#collapseCTDI">
                                 {% if request.user.userprofile.plotAverageChoice == 'mean' %}
-                                    Charts of mean CTDI<sub>vol</sub> for each acquisition protocol.
+                                    Charts of mean CTDI<sub>vol</sub> for each acquisition protocol
                                 {% elif request.user.userprofile.plotAverageChoice == 'median' %}
-                                    Charts of median CTDI<sub>vol</sub> for each acquisition protocol.
+                                    Charts of median CTDI<sub>vol</sub> for each acquisition protocol
                                 {% else %}
-                                    Charts of mean and median CTDI<sub>vol</sub> for each acquisition protocol.
+                                    Charts of mean and median CTDI<sub>vol</sub> for each acquisition protocol
                                 {% endif %}
                             </a>
                         </h4>
@@ -304,7 +304,7 @@
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#acquisitionHistogramCTDIDiv" href="#collapseAcquisitionHistogramCTDI">
-                                    Histograms of CTDI<sub>vol</sub> for each acquisition protocol name.
+                                    Histograms of CTDI<sub>vol</sub> for each acquisition protocol
                                 </a>
                             </h4>
                         </div>
@@ -326,7 +326,7 @@
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#accordion4" href="#collapseProtocolFreqChart">
-                                Charts of acquisition protocol name frequency.
+                                Charts of acquisition protocol frequency
                             </a>
                         </h4>
                     </div>
@@ -348,11 +348,11 @@
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#accordion5" href="#collapseThree">
                                 {% if request.user.userprofile.plotAverageChoice == 'mean' %}
-                                    Charts of mean DLP for each study description.
+                                    Charts of mean DLP for each study description
                                 {% elif request.user.userprofile.plotAverageChoice == 'median' %}
-                                    Charts of median DLP for each study description.
+                                    Charts of median DLP for each study description
                                 {% else %}
-                                    Charts of mean and median DLP for each study description.
+                                    Charts of mean and median DLP for each study description
                                 {% endif %}
                             </a>
                         </h4>
@@ -373,7 +373,7 @@
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#studyHistogramDLPDiv" href="#collapseStudyHistogramDLP">
-                                    Histograms of DLP for each study description.
+                                    Histograms of DLP for each study description
                                 </a>
                             </h4>
                         </div>
@@ -421,7 +421,7 @@
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#studyHistogramCTDIDiv" href="#collapseStudyHistogramCTDI">
-                                    Histograms of CTDI for each study description.
+                                    Histograms of CTDI for each study description
                                 </a>
                             </h4>
                         </div>
@@ -443,7 +443,7 @@
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#accordion6" href="#collapseStudyFreqChart">
-                                Charts of study description frequency.
+                                Charts of study description frequency
                             </a>
                         </h4>
                     </div>
@@ -465,11 +465,11 @@
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#accordion11" href="#collapseStudyNumEvents">
                                 {% if request.user.userprofile.plotAverageChoice == 'mean' %}
-                                    Charts of mean number of events for each study description.
+                                    Charts of mean number of events for each study description
                                 {% elif request.user.userprofile.plotAverageChoice == 'median' %}
-                                    Charts of median number of events for each study description.
+                                    Charts of median number of events for each study description
                                 {% else %}
-                                    Charts of mean and median number of events for each study description.
+                                    Charts of mean and median number of events for each study description
                                 {% endif %}
                             </a>
                         </h4>
@@ -490,7 +490,7 @@
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#studyHistogramNumEventsDiv" href="#collapseStudyHistogramNumEvents">
-                                    Histograms of number of events for each study description.
+                                    Histograms of number of events for each study description
                                 </a>
                             </h4>
                         </div>
@@ -513,11 +513,11 @@
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#accordion7" href="#collapseRequestAveDLP" onclick="setTimeout(function() {fitPlotlyChartToDiv('requestAverageDLPChartParentDiv');}, 0);">
                                 {% if request.user.userprofile.plotAverageChoice == 'mean' %}
-                                    Charts of mean DLP for each requested procedure name.
+                                    Charts of mean DLP for each requested procedure
                                 {% elif request.user.userprofile.plotAverageChoice == 'median' %}
-                                    Charts of median DLP for each requested procedure name.
+                                    Charts of median DLP for each requested procedure
                                 {% else %}
-                                    Charts of mean and median DLP for each requested procedure name.
+                                    Charts of mean and median DLP for each requested procedure
                                 {% endif %}
                             </a>
                         </h4>
@@ -538,7 +538,7 @@
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#requestHistogramDiv" href="#collapseRequestHistogramDLP" onclick="setTimeout(function() {fitPlotlyChartToDiv('requestHistogramDLPChartParentDiv');}, 0);">
-                                    Histograms of DLP for each requested procedure name.
+                                    Histograms of DLP for each requested procedure
                                 </a>
                             </h4>
                         </div>
@@ -560,7 +560,7 @@
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#accordion8" href="#collapseRequestFreqChart">
-                                Charts of requested procedure name frequency.
+                                Charts of requested procedure frequency
                             </a>
                         </h4>
                     </div>
@@ -607,7 +607,7 @@
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#requestNumEventsHistogramDiv" href="#collapseRequestHistogramNumEvents">
-                                    Histograms of number of events for each requested procedure name.
+                                    Histograms of number of events for each requested procedure
                                 </a>
                             </h4>
                         </div>
