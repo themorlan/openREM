@@ -102,7 +102,7 @@ def plotly_boxplot(
         }
     )
     fig.update_traces(quartilemethod="exclusive")
-    return plot(fig, output_type="div")
+    return plot(fig, output_type="div", include_plotlyjs=False)
 
 
 def plotly_barchart(
@@ -128,7 +128,7 @@ def plotly_barchart(
             "x_ray_system_name": "System"
         }
     )
-    return plot(fig, output_type="div")
+    return plot(fig, output_type="div", include_plotlyjs=False)
 
 
 def altair_barchart_average(
