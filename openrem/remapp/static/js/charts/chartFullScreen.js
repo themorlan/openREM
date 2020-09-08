@@ -29,3 +29,17 @@ function fitChartToDiv(chartDiv) {
         chart.setSize(chartDivElement.width(), chartDivElement.height());
     }
 }
+
+
+function fitPlotlyChartToDiv(chartGrandParentDiv) {
+    var chart_div_id = $("#"+chartGrandParentDiv+ " :first-child :first-child").attr("id");
+
+    var chartGrandParentDivElement = $("#"+chartGrandParentDiv);
+    if (chartGrandParentDivElement.width() && chartGrandParentDivElement.height()) {
+        var update = {
+            width: chartGrandParentDivElement.width(),
+            height: chartGrandParentDivElement.height()
+        };
+        Plotly.relayout(chart_div_id, update);
+    }
+}

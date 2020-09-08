@@ -51,22 +51,20 @@ $(document).ready(function() {
             }
 
             // DLP per request chart data start
-            if(typeof json.requestData !== "undefined") {
-                vegaEmbed('#requestAverageDLPChartDiv',  JSON.parse(json.requestData)).catch(console.error);
-                if(typeof json.requestHistData !== "undefined") {
-                    vegaEmbed('#requestHistogramDLPChartDiv', JSON.parse(json.requestHistData)).catch(console.error);
-                }
+            if(typeof json.requestMeanData !== "undefined" && typeof json.requestBoxplotData !=="undefined") {
+                $("#requestAverageDLPChartDiv").replaceWith((json.requestMeanData).concat(json.requestBoxplotData));
+            }
+            else if(typeof json.requestMeanData !== "undefined") {
+                $("#requestAverageDLPChartDiv").replaceWith(json.requestMeanData);
+            }
+            else if(typeof  json.requestBoxplotData !=="undefined") {
+                $("#requestAverageDLPChartDiv").replaceWith(json.requestBoxplotData);
             }
 
-            if(typeof  json.plotlyBoxplotTest !=="undefined") {
-                $("#plotlyBoxplotTestingDiv").replaceWith(json.plotlyBoxplotTest);
+            if(typeof  json.requestHistData !=="undefined") {
+                $("#requestHistogramDLPChartDiv").replaceWith(json.requestHistData);
             }
-            if(typeof  json.plotlyBarchartTest !=="undefined") {
-                $("#plotlyBarchartTestingDiv").replaceWith(json.plotlyBarchartTest);
-            }
-            if(typeof  json.plotlyHistogramTest !=="undefined") {
-                $("#plotlyHistogramDLPChartDiv").replaceWith(json.plotlyHistogramTest);
-            }
+
 
             // Number of events per study chart data
             if(typeof json.studyNumEventsData !== "undefined") {

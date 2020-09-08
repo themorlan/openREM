@@ -215,6 +215,10 @@
         <script src="{{ STATIC_URL }}js/charts/plotly-latest.min.js"></script>
         <!-- End of JavaScript to enable Plotly charts -->
 
+        <!-- JavaScript Plotly chart resizing code. -->
+        <script src="{{ STATIC_URL }}js/charts/chartFullScreen.js"></script>
+        <!-- End of JavaScript Plotly chart resizing code. -->
+
         <!-- JavaScript chart AJAX code. -->
         <script src="{{ STATIC_URL }}js/charts/ctChartAjax.js"></script>
         <!-- End of JavaScript chart AJAX code. -->
@@ -507,7 +511,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion7" href="#collapseRequestAveDLP">
+                            <a data-toggle="collapse" data-parent="#accordion7" href="#collapseRequestAveDLP" onclick="setTimeout(function() {fitPlotlyChartToDiv('requestAverageDLPChartParentDiv');}, 0);">
                                 {% if request.user.userprofile.plotAverageChoice == 'mean' %}
                                     Charts of mean DLP for each requested procedure name.
                                 {% elif request.user.userprofile.plotAverageChoice == 'median' %}
@@ -519,14 +523,8 @@
                         </h4>
                     </div>
                     <div id="collapseRequestAveDLP" class="panel-collapse collapse">
-                        <div class="panel-body">
+                        <div id="requestAverageDLPChartParentDiv" class="panel-body">
                             <div id="requestAverageDLPChartDiv"></div>
-                        </div>
-                        <div class="panel-body">
-                            <div id="plotlyBoxplotTestingDiv"></div>
-                        </div>
-                        <div class="panel-body">
-                            <div id="plotlyBarchartTestingDiv"></div>
                         </div>
                     </div>
                 </div>
@@ -539,17 +537,14 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#requestHistogramDiv" href="#collapseRequestHistogramDLP">
+                                <a data-toggle="collapse" data-parent="#requestHistogramDiv" href="#collapseRequestHistogramDLP" onclick="setTimeout(function() {fitPlotlyChartToDiv('requestHistogramDLPChartParentDiv');}, 0);">
                                     Histograms of DLP for each requested procedure name.
                                 </a>
                             </h4>
                         </div>
                         <div id="collapseRequestHistogramDLP" class="panel-collapse collapse">
-                            <div class="panel-body">
+                            <div id="requestHistogramDLPChartParentDiv" class="panel-body">
                                 <div id="requestHistogramDLPChartDiv"></div>
-                            </div>
-                            <div class="panel-body">
-                                <div id="plotlyHistogramDLPChartDiv"></div>
                             </div>
                         </div>
                     </div>

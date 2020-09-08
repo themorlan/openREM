@@ -139,7 +139,8 @@ def plotly_histogram(
         df_name_col,
         df_value_col,
         value_axis_title="",
-        name_axis_title=""
+        name_axis_title="",
+        n_bins=10
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -147,16 +148,21 @@ def plotly_histogram(
     fig = px.histogram(
         df,
         x=df_value_col,
+        nbins=n_bins,
         color=df_name_col,
         barmode="group",
         facet_col="x_ray_system_name",
         facet_col_wrap=2,
+        facet_row_spacing=0.05,
+        facet_col_spacing=0.05,
         labels = {
             df_value_col: value_axis_title,
             df_name_col: name_axis_title,
             "x_ray_system_name": "System"
         }
     )
+
+    fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
     return plot(fig, output_type="div", include_plotlyjs=False)
 
