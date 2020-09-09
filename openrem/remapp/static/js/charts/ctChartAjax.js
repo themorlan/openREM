@@ -51,18 +51,14 @@ $(document).ready(function() {
             }
 
             // DLP per request chart data start
-            if(typeof json.requestMeanData !== "undefined" && typeof json.requestBoxplotData !=="undefined") {
-                $("#requestAverageDLPChartDiv").replaceWith((json.requestMeanData).concat(json.requestBoxplotData));
+            if(typeof json.requestMeanData !== "undefined") {
+                $("#requestMeanDLPChartDiv").html(json.requestMeanData);
             }
-            else if(typeof json.requestMeanData !== "undefined") {
-                $("#requestAverageDLPChartDiv").replaceWith(json.requestMeanData);
+            if(typeof json.requestBoxplotData !=="undefined") {
+                $("#requestMedianDLPChartDiv").html(json.requestBoxplotData);
             }
-            else if(typeof  json.requestBoxplotData !=="undefined") {
-                $("#requestAverageDLPChartDiv").replaceWith(json.requestBoxplotData);
-            }
-
-            if(typeof  json.requestHistData !=="undefined") {
-                $("#requestHistogramDLPChartDiv").replaceWith(json.requestHistData);
+            if(typeof json.requestHistData !=="undefined") {
+                $("#requestHistogramDLPChartDiv").html(json.requestHistData);
             }
 
 

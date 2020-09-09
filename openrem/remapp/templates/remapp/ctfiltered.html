@@ -511,7 +511,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion7" href="#collapseRequestAveDLP" onclick="setTimeout(function() {fitPlotlyChartToDiv('requestAverageDLPChartParentDiv');}, 0);">
+                            <a data-toggle="collapse" data-parent="#accordion7" href="#collapseRequestAveDLP" onclick="setTimeout(function() {fitPlotlyChartToDiv();}, 0);">
                                 {% if request.user.userprofile.plotAverageChoice == 'mean' %}
                                     Charts of mean DLP for each requested procedure
                                 {% elif request.user.userprofile.plotAverageChoice == 'median' %}
@@ -523,11 +523,20 @@
                         </h4>
                     </div>
                     <div id="collapseRequestAveDLP" class="panel-collapse collapse">
-                        <div id="requestAverageDLPChartParentDiv" class="panel-body">
-                            <div id="requestAverageDLPChartDiv"></div>
-                            <a onclick="enterFullScreenPlotly('requestAverageDLPChartParentDiv');"
+                        {% if request.user.userprofile.plotAverageChoice in 'mean both' %}
+                        <div id="requestMeanDLPChartParentDiv" class="panel-body">
+                            <div id="requestMeanDLPChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('requestMeanDLPChartDiv', 'requestMeanDLPChartParentDiv');"
                                class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
                         </div>
+                        {% endif %}
+                        {% if request.user.userprofile.plotAverageChoice in 'median both' %}
+                        <div id="requestMedianDLPChartParentDiv" class="panel-body">
+                            <div id="requestMedianDLPChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('requestMedianDLPChartDiv', 'requestMedianDLPChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
