@@ -1,7 +1,5 @@
 var chartStartHeight = 0;
 var chartStartWidth = 0;
-var chartParentStartHeight = 0;
-var chartParentStartWidth = 0;
 var chartStartFooterHeight = 0;
 var chartFullScreen = false;
 
@@ -34,44 +32,41 @@ function fitChartToDiv(chartDiv) {
 }
 
 
-function fitPlotlyChartToDiv() {
-    window.dispatchEvent(new Event("resize"));
+function triggerResizeEvent() {
+    var evt = window.document.createEvent('UIEvents');
+    evt.initUIEvent('resize', true, false, window, 0);
+    window.dispatchEvent(evt);
 }
 
 
 function enterFullScreenPlotly(chartDivId, chartParentDivId) {
 
-    var plotly_div_id = $("#"+chartDivId+ " :first-child :first-child").attr("id");
-
-    var plotlyDiv = $("#"+plotly_div_id);
+    var plotlyDiv = $("#"+chartDivId);
     var parentDiv = $("#"+chartParentDivId);
 
     if (chartFullScreen === false) {
         chartStartHeight = plotlyDiv.height();
         chartStartWidth = plotlyDiv.width();
-        chartParentStartHeight = parentDiv.height();
-        chartParentStartWidth = parentDiv.width();
 
-        chartStartFooterHeight = chartParentStartHeight - chartStartHeight;
-
-        parentDiv.width($(window).width());
-        parentDiv.height($(window).height());
+        chartStartFooterHeight = parentDiv.height() - chartStartHeight;
 
         plotlyDiv.width($(window).width());
         plotlyDiv.height($(window).height() - chartStartFooterHeight);
+        $("#"+chartDivId+" :first-child").height("100%");
 
         chartFullScreen = true;
     }
     else {
-        parentDiv.width(chartParentStartWidth);
-        parentDiv.height(chartParentStartHeight);
-
         plotlyDiv.width(chartStartWidth);
         plotlyDiv.height(chartStartHeight);
+        $("#"+chartDivId+" :first-child").height(chartStartHeight);
+
+        plotlyDiv.css("width","auto");
+        plotlyDiv.css("height","auto");
 
         chartFullScreen = false;
     }
 
     parentDiv.toggleClass("fullscreen");
-    fitPlotlyChartToDiv();
+    triggerResizeEvent();
 }

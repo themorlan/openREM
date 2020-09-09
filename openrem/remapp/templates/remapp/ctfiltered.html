@@ -511,7 +511,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion7" href="#collapseRequestAveDLP" onclick="setTimeout(function() {fitPlotlyChartToDiv();}, 0);">
+                            <a data-toggle="collapse" data-parent="#accordion7" href="#collapseRequestAveDLP" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
                                 {% if request.user.userprofile.plotAverageChoice == 'mean' %}
                                     Charts of mean DLP for each requested procedure
                                 {% elif request.user.userprofile.plotAverageChoice == 'median' %}
