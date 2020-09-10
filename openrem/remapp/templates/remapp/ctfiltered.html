@@ -368,6 +368,52 @@
             <!-- HTML to include div container for acquisition frequency chart -->
         {% endif %}
 
+        {% if request.user.userprofile.plotCTAcquisitionCTDIvsMass %}
+            <!-- HTML to include div container for acquisition CTDI vs patient mass chart -->
+            <div class="panel-group" id="acquisitionScatterCTDIvsMass">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#acquisitionScatterCTDIvsMass" href="#collapseAcquisitionScatterCTDIvsMass" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
+                                Charts of CTDI vs patient mass
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseAcquisitionScatterCTDIvsMass" class="panel-collapse collapse">
+                        <div id="acquisitionScatterCTDIvsMassChartParentDiv" class="panel-body">
+                            <div id="acquisitionScatterCTDIvsMassChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('acquisitionScatterCTDIvsMassChartDiv', 'acquisitionScatterCTDIvsMassChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End of HTML to include div container for acquisition CTDI vs patient mass chart -->
+        {% endif %}
+
+        {% if request.user.userprofile.plotCTAcquisitionDLPvsMass %}
+            <!-- HTML to include div container for acquisition DLP vs patient mass chart -->
+            <div class="panel-group" id="acquisitionScatterDLPvsMass">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#acquisitionScatterDLPvsMass" href="#collapseAcquisitionScatterDLPvsMass" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
+                                Charts of DLP vs patient mass
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseAcquisitionScatterDLPvsMass" class="panel-collapse collapse">
+                        <div id="acquisitionScatterDLPvsMassChartParentDiv" class="panel-body">
+                            <div id="acquisitionScatterDLPvsMassChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('acquisitionScatterDLPvsMassChartDiv', 'acquisitionScatterDLPvsMassChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End of HTML to include div container for acquisition DLP vs patient mass chart -->
+        {% endif %}
+
         {% if request.user.userprofile.plotCTStudyMeanDLP %}
             <!-- HTML to include div container for study plot -->
             <div class="panel-group" id="accordion5">
@@ -666,11 +712,11 @@
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#accordionRequestNumEvents" href="#collapseRequestNumEvents" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
                                 {% if request.user.userprofile.plotAverageChoice == 'mean' %}
-                                    Chart of mean number of events for each requested procedure type.
+                                    Chart of mean number of events for each requested procedure type
                                 {% elif request.user.userprofile.plotAverageChoice == 'median' %}
-                                    Chart of median number of events for each requested procedure type.
+                                    Chart of median number of events for each requested procedure type
                                 {% else %}
-                                    Charts of mean and median number of events for each requested procedure type.
+                                    Charts of mean and median number of events for each requested procedure type
                                 {% endif %}
                             </a>
                         </h4>
@@ -750,11 +796,11 @@
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#accordion10" href="#collapseWeeklyStudyMeanChart" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
                                 {% if request.user.userprofile.plotAverageChoice == 'mean' %}
-                                    Chart of mean DLP of each study type over time ({{ request.user.userprofile.plotCTStudyMeanDLPOverTimePeriod }}).
+                                    Chart of mean DLP of each study type over time ({{ request.user.userprofile.plotCTStudyMeanDLPOverTimePeriod }})
                                 {% elif request.user.userprofile.plotAverageChoice == 'median' %}
-                                    Chart of median DLP of each study type over time ({{ request.user.userprofile.plotCTStudyMeanDLPOverTimePeriod }}).
+                                    Chart of median DLP of each study type over time ({{ request.user.userprofile.plotCTStudyMeanDLPOverTimePeriod }})
                                 {% else %}
-                                    Charts of mean and median DLP of each study type over time ({{ request.user.userprofile.plotCTStudyMeanDLPOverTimePeriod }}).
+                                    Charts of mean and median DLP of each study type over time ({{ request.user.userprofile.plotCTStudyMeanDLPOverTimePeriod }})
                                 {% endif %}
                             </a>
                         </h4>
@@ -778,8 +824,6 @@
                 </div>
             </div>
             <!-- End of HTML to include div container for mean study DLP per week -->
-
         {% endif %}
-
     {% endif %}
 {% endblock %}

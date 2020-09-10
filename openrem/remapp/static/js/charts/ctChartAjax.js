@@ -100,6 +100,16 @@ $(document).ready(function() {
                 $("#acquisitionFreqChartDiv").html(json.acquisitionFreqData);
             }
 
+            // Acqusition scatter of CTDI vs patient mass
+            if(typeof json.acqusitionScatterCTDIvsMass !== "undefined") {
+                $("#acquisitionScatterCTDIvsMassChartDiv").html(json.acqusitionScatterCTDIvsMass);
+            }
+
+            // Acqusition scatter of DLP vs patient mass
+            if(typeof json.acqusitionScatterDLPvsMass !== "undefined") {
+                $("#acquisitionScatterDLPvsMassChartDiv").html(json.acqusitionScatterDLPvsMass);
+            }
+
             // Study frequency chart data start
             if(typeof json.studyFreqData !== "undefined") {
                 $("#studyFreqChartDiv").html(json.studyFreqData);
@@ -121,7 +131,6 @@ $(document).ready(function() {
             // Study workload chart data
             if(typeof json.studyWorkloadData !== "undefined") {
                 $("#studyWorkloadChartDiv").html(json.studyWorkloadData);
-                //vegaEmbed('#studyWorkloadChartDiv',  JSON.parse(json.studyWorkloadData)).catch(console.error);
             }
 
             $(".ajax-progress").hide();

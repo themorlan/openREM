@@ -1330,6 +1330,12 @@ def ct_summary_list_filter(request):
             user_profile.plotCTAcquisitionFreq = chart_options_form.cleaned_data[
                 "plotCTAcquisitionFreq"
             ]
+            user_profile.plotCTAcquisitionCTDIvsMass = chart_options_form.cleaned_data[
+                "plotCTAcquisitionCTDIvsMass"
+            ]
+            user_profile.plotCTAcquisitionDLPvsMass = chart_options_form.cleaned_data[
+                "plotCTAcquisitionDLPvsMass"
+            ]
             user_profile.plotCTStudyMeanDLP = chart_options_form.cleaned_data[
                 "plotCTStudyMeanDLP"
             ]
@@ -1377,6 +1383,8 @@ def ct_summary_list_filter(request):
                 "plotCTAcquisitionMeanDLP": user_profile.plotCTAcquisitionMeanDLP,
                 "plotCTAcquisitionMeanCTDI": user_profile.plotCTAcquisitionMeanCTDI,
                 "plotCTAcquisitionFreq": user_profile.plotCTAcquisitionFreq,
+                "plotCTAcquisitionCTDIvsMass": user_profile.plotCTAcquisitionCTDIvsMass,
+                "plotCTAcquisitionDLPvsMass": user_profile.plotCTAcquisitionDLPvsMass,
                 "plotCTStudyMeanDLP": user_profile.plotCTStudyMeanDLP,
                 "plotCTStudyMeanCTDI": user_profile.plotCTStudyMeanCTDI,
                 "plotCTStudyFreq": user_profile.plotCTStudyFreq,
@@ -1470,6 +1478,8 @@ def ct_summary_chart_data(request):
         user_profile.plotCTAcquisitionFreq,
         user_profile.plotCTAcquisitionMeanCTDI,
         user_profile.plotCTAcquisitionMeanDLP,
+        user_profile.plotCTAcquisitionCTDIvsMass,
+        user_profile.plotCTAcquisitionDLPvsMass,
         user_profile.plotCTRequestFreq,
         user_profile.plotCTRequestMeanDLP,
         user_profile.plotCTRequestNumEvents,
@@ -1498,6 +1508,8 @@ def ct_plot_calculations(
     plot_acquisition_freq,
     plot_acquisition_mean_ctdi,
     plot_acquisition_mean_dlp,
+    plot_acquisition_ctdi_vs_mass,
+    plot_acquisition_dlp_vs_mass,
     plot_request_freq,
     plot_request_mean_dlp,
     plot_request_num_events,
@@ -1531,6 +1543,7 @@ def ct_plot_calculations(
         plotly_stacked_histogram,
         plotly_timeseries_linechart,
         plotly_barchart_weekdays,
+        plotly_scatter,
         average_chart_inc_histogram_data,
         average_chart_over_time_data,
         workload_chart_data,
@@ -1579,17 +1592,19 @@ def ct_plot_calculations(
             # The user hasn't filtered on acquisition, so we can use the faster database querying.
             study_and_request_events = f.qs.values(*prefetch_list)
 
-    if plot_acquisition_mean_dlp or plot_acquisition_freq or plot_acquisition_mean_ctdi:
+    if plot_acquisition_mean_dlp or plot_acquisition_freq or plot_acquisition_mean_ctdi or plot_acquisition_ctdi_vs_mass or plot_acquisition_dlp_vs_mass:
         prefetch_list = [
             "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
             "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
         ]
-        if plot_acquisition_mean_dlp:
+        if plot_acquisition_mean_dlp or plot_acquisition_dlp_vs_mass:
             prefetch_list.append("ctradiationdose__ctirradiationeventdata__dlp")
-        if plot_acquisition_mean_ctdi:
+        if plot_acquisition_mean_ctdi or plot_acquisition_ctdi_vs_mass:
             prefetch_list.append(
                 "ctradiationdose__ctirradiationeventdata__mean_ctdivol"
             )
+        if plot_acquisition_ctdi_vs_mass or plot_acquisition_dlp_vs_mass:
+            prefetch_list.append("patientstudymoduleattr__patient_weight")
 
         if (
             plot_histograms
@@ -1620,15 +1635,15 @@ def ct_plot_calculations(
     # Prepare acquisition-level Pandas DataFrame to use for charts
     if "acquisition_events" in locals():
 
-        name_fields = []
-        if plot_acquisition_mean_dlp or plot_acquisition_mean_ctdi or plot_acquisition_freq:
-            name_fields.append("ctradiationdose__ctirradiationeventdata__acquisition_protocol")
+        name_fields = ["ctradiationdose__ctirradiationeventdata__acquisition_protocol"]
 
         value_fields = []
-        if plot_acquisition_mean_dlp:
+        if plot_acquisition_mean_dlp or plot_acquisition_dlp_vs_mass:
             value_fields.append("ctradiationdose__ctirradiationeventdata__dlp")
-        if plot_acquisition_mean_ctdi:
+        if plot_acquisition_mean_ctdi or plot_acquisition_ctdi_vs_mass:
             value_fields.append("ctradiationdose__ctirradiationeventdata__mean_ctdivol")
+        if plot_acquisition_ctdi_vs_mass or plot_acquisition_dlp_vs_mass:
+            value_fields.append("patientstudymoduleattr__patient_weight")
 
         date_fields = []
 
@@ -1712,6 +1727,29 @@ def ct_plot_calculations(
                 "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                 name_axis_title="Acquisition protocol"
             )
+
+        if plot_acquisition_ctdi_vs_mass:
+            return_structure["acqusitionScatterCTDIvsMass"] = plotly_scatter(
+                df,
+                "patientstudymoduleattr__patient_weight",
+                "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                x_axis_title="Patient mass (kg)",
+                y_axis_title="CTDI (mGy)",
+                legend_title="Acquisition protocol"
+            )
+
+        if plot_acquisition_dlp_vs_mass:
+            return_structure["acqusitionScatterDLPvsMass"] = plotly_scatter(
+                df,
+                "patientstudymoduleattr__patient_weight",
+                "ctradiationdose__ctirradiationeventdata__dlp",
+                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                x_axis_title="Patient mass (kg)",
+                y_axis_title="DLP (mGy.cm)",
+                legend_title="Acquisition protocol"
+            )
+
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts
     if "study_and_request_events" in locals():

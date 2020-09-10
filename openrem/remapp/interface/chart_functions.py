@@ -268,6 +268,40 @@ def plotly_timeseries_linechart(
     return plot(fig, output_type="div", include_plotlyjs=False)
 
 
+def plotly_scatter(
+        df,
+        df_x_value_col,
+        df_y_value_col,
+        df_category_name_col,
+        x_axis_title="",
+        y_axis_title="",
+        legend_title=""
+):
+    from plotly.offline import plot
+    import plotly.express as px
+
+    fig = px.scatter(
+        df,
+        x=df_x_value_col,
+        y=df_y_value_col,
+        color=df_category_name_col,
+        facet_col="x_ray_system_name",
+        facet_col_wrap=2,
+        facet_row_spacing=0.05,
+        facet_col_spacing=0.05,
+        labels={
+            df_x_value_col: x_axis_title,
+            df_y_value_col: y_axis_title,
+            df_category_name_col: legend_title,
+            "x_ray_system_name": "System"
+        }
+    )
+
+    fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+
+    return plot(fig, output_type="div", include_plotlyjs=False)
+
+
 def plotly_barchart_weekdays(
         df,
         df_name_col,

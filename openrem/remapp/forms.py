@@ -222,6 +222,12 @@ class CTChartOptionsForm(forms.Form):
     plotCTAcquisitionFreq = forms.BooleanField(
         label="Acquisition frequency", required=False
     )
+    plotCTAcquisitionCTDIvsMass = forms.BooleanField(
+        label="Acquisition CTDI vs mass ", required=False
+    )
+    plotCTAcquisitionDLPvsMass = forms.BooleanField(
+        label="Acquisition DLP vs mass ", required=False
+    )
     plotCTStudyMeanDLP = forms.BooleanField(label="DLP per study", required=False)
     plotCTStudyMeanCTDI = forms.BooleanField(
         label=mark_safe("CTDI<sub>vol</sub> per study"), required=False
@@ -401,6 +407,12 @@ class CTChartOptionsDisplayForm(forms.Form):
     )  # nosec
     plotCTAcquisitionFreq = forms.BooleanField(
         label="Acquisition frequency", required=False
+    )
+    plotCTAcquisitionCTDIvsMass = forms.BooleanField(
+        label="Acquisition CTDI vs mass ", required=False
+    )
+    plotCTAcquisitionDLPvsMass = forms.BooleanField(
+        label="Acquisition DLP vs mass ", required=False
     )
     plotCTStudyMeanDLP = forms.BooleanField(label="DLP per study", required=False)
     plotCTStudyMeanCTDI = forms.BooleanField(
