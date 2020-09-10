@@ -351,14 +351,16 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion4" href="#collapseProtocolFreqChart">
-                                Charts of acquisition protocol frequency
+                            <a data-toggle="collapse" data-parent="#accordion4" href="#collapseProtocolFreqChart" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
+                                Chart of acquisition protocol frequency
                             </a>
                         </h4>
                     </div>
                     <div id="collapseProtocolFreqChart" class="panel-collapse collapse">
-                        <div class="panel-body">
+                        <div id="acquisitionFreqChartParentDiv" class="panel-body">
                             <div id="acquisitionFreqChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('acquisitionFreqChartDiv', 'acquisitionFreqChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
                         </div>
                     </div>
                 </div>
@@ -494,14 +496,16 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion6" href="#collapseStudyFreqChart">
+                            <a data-toggle="collapse" data-parent="#accordion6" href="#collapseStudyFreqChart" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
                                 Charts of study description frequency
                             </a>
                         </h4>
                     </div>
                     <div id="collapseStudyFreqChart" class="panel-collapse collapse">
-                        <div class="panel-body">
+                        <div id="studyFreqChartParentDiv" class="panel-body">
                             <div id="studyFreqChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('studyFreqChartDiv', 'studyFreqChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
                         </div>
                     </div>
                 </div>
@@ -637,14 +641,16 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion8" href="#collapseRequestFreqChart">
-                                Charts of requested procedure frequency
+                            <a data-toggle="collapse" data-parent="#accordion8" href="#collapseRequestFreqChart" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
+                                Chart of requested procedure frequency
                             </a>
                         </h4>
                     </div>
                     <div id="collapseRequestFreqChart" class="panel-collapse collapse">
-                        <div class="panel-body">
+                        <div id="requestFreqChartParentDiv" class="panel-body">
                             <div id="requestFreqChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('requestFreqChartDiv', 'requestFreqChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
                         </div>
                     </div>
                 </div>

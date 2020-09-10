@@ -104,7 +104,11 @@ def plotly_boxplot(
             "x_ray_system_name": "System"
         }
     )
+
+    fig.update_xaxes(categoryorder="category ascending")
+
     fig.update_traces(quartilemethod="exclusive")
+
     return plot(fig, output_type="div", include_plotlyjs=False)
 
 
@@ -131,6 +135,9 @@ def plotly_barchart(
             "x_ray_system_name": "System"
         }
     )
+
+    fig.update_xaxes(categoryorder="category ascending")
+
     return plot(fig, output_type="div", include_plotlyjs=False)
 
 
@@ -163,6 +170,31 @@ def plotly_histogram(
     )
 
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+
+    return plot(fig, output_type="div", include_plotlyjs=False)
+
+
+def plotly_stacked_histogram(
+        df,
+        df_name_col,
+        name_axis_title=""
+):
+    from plotly.offline import plot
+    import plotly.express as px
+
+    fig = px.histogram(
+        df,
+        x="x_ray_system_name",
+        color=df_name_col,
+        barmode="relative",
+        histfunc="count",
+        labels={
+            df_name_col:name_axis_title,
+            "x_ray_system_name": "System"
+        }
+    )
+
+    fig.update_xaxes(categoryorder="category ascending")
 
     return plot(fig, output_type="div", include_plotlyjs=False)
 

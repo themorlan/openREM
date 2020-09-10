@@ -97,17 +97,17 @@ $(document).ready(function() {
 
             // Acquisition frequency chart data start
             if(typeof json.acquisitionFreqData !== "undefined") {
-                vegaEmbed('#acquisitionFreqChartDiv',  JSON.parse(json.acquisitionFreqData)).catch(console.error);
+                $("#acquisitionFreqChartDiv").html(json.acquisitionFreqData);
             }
 
             // Study frequency chart data start
             if(typeof json.studyFreqData !== "undefined") {
-                vegaEmbed('#studyFreqChartDiv',  JSON.parse(json.studyFreqData)).catch(console.error);
+                $("#studyFreqChartDiv").html(json.studyFreqData);
             }
 
             // Request frequency chart data start
             if(typeof json.requestFreqData !== "undefined") {
-                vegaEmbed('#requestFreqChartDiv',  JSON.parse(json.requestFreqData)).catch(console.error);
+                $("#requestFreqChartDiv").html(json.requestFreqData);
             }
 
             // DLP over time chart data

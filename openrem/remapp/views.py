@@ -1526,6 +1526,7 @@ def ct_plot_calculations(
         plotly_boxplot,
         plotly_barchart,
         plotly_histogram,
+        plotly_stacked_histogram,
         average_chart_inc_histogram_data,
         average_chart_over_time_data,
         workload_chart_data,
@@ -1616,7 +1617,7 @@ def ct_plot_calculations(
     if "acquisition_events" in locals():
 
         name_fields = []
-        if plot_acquisition_mean_dlp or plot_acquisition_mean_ctdi:
+        if plot_acquisition_mean_dlp or plot_acquisition_mean_ctdi or plot_acquisition_freq:
             name_fields.append("ctradiationdose__ctirradiationeventdata__acquisition_protocol")
 
         value_fields = []
@@ -1702,13 +1703,11 @@ def ct_plot_calculations(
                 )
 
         if plot_acquisition_freq:
-            return_structure["acquisitionFreqData"] = altair_barchart_frequency(
+            return_structure["acquisitionFreqData"] = plotly_stacked_histogram(
                 df,
                 "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                legend_title="Acquisition protocol name"
-            ).to_json()
-
-
+                name_axis_title="Acquisition protocol"
+            )
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts
     if "study_and_request_events" in locals():
@@ -1893,18 +1892,18 @@ def ct_plot_calculations(
                 )
 
         if plot_study_freq:
-            return_structure["studyFreqData"] = altair_barchart_frequency(
+            return_structure["studyFreqData"] = plotly_stacked_histogram(
                 df,
                 "study_description",
-                legend_title="Study description"
-            ).to_json()
+                name_axis_title="Study description"
+            )
 
         if plot_request_freq:
-            return_structure["requestFreqData"] = altair_barchart_frequency(
+            return_structure["requestFreqData"] = plotly_stacked_histogram(
                 df,
                 "requested_procedure_code_meaning",
-                legend_title="Requested procedure"
-            ).to_json()
+                name_axis_title="Requested procedure"
+            )
 
         if plot_study_mean_dlp_over_time:
             return_structure["studyDLPoverTime"] = altair_linechart_average(
