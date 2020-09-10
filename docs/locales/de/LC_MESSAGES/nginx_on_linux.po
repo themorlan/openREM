@@ -1,0 +1,490 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../nginx_on_linux.rst:3 474f7a9eea6d4ffd9c1e99a5ddbd6440
+msgid "Running OpenREM on Linux with Gunicorn and NGINX"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:5 a8b310d1315241da8e37abd5ce759152
+msgid ""
+"These instructions are for running OpenREM with Gunicorn and NGINX on "
+"Ubuntu Server, but should work on other Linux distributions with minimal "
+"modification. These instructions are based on a guide at "
+"`obeythetestingoat.com "
+"<https://www.obeythetestinggoat.com/book/chapter_making_deployment_production_ready.html>`_"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:13 24c0cbd61f6f475fa3d96f156a551b43
+msgid "Prerequisites"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:15 e313746d228147eb9fa12e1090746407
+msgid ""
+"A working OpenREM installation, that serves web pages using the built-in "
+"web server. You can test this using the instructions in "
+":doc:`startservices`"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:18 0ba510417b6f416884445733929dc8a9
+msgid "Contents"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:21 60e7f815dd984633a0486422ce1a00f4
+msgid "Steps to perform"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:25 2af913f8f4f4492e9fffc46cc00295a7
+msgid ""
+"If you get stuck somewhere in these instructions, please check the "
+":ref:`troubleshooting` section at the end of this page."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:29 66176b5467e24ca2ad9aa00d38d59a5e
+msgid "Install NGINX"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:36 d96c37c5578348b3920723694f62c32b
+msgid ""
+"You should now be able to see the 'Welcome to nginx' page if you go to "
+"your server address in a web browser."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:39 0a4ed393c87a46acaab8a6b2212009a4
+msgid "Create initial nginx configuration"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:41 c0a6cd26d4e841568b179cc7dba5aff5
+msgid ""
+"Create a new config file - you can name the file as you like, but it is "
+"usually has the server name."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:47 90b9eff4837a4be0bbfaac80b78f1451
+msgid ""
+"Start with the following settings - replace the server name with the "
+"hostname of your server. For this example, I will use ``openrem-server``"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:61 90990a7ebf994b5786b692dd3c159e74
+msgid "Save and exit (see :ref:`nano` below for tips)."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:63 934e876bde6e4878a4b443a549f7f1ab
+msgid ""
+"Now delete the default nginx configuration from ``sites-enabled`` and "
+"make a link to our new one:"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:70 a5c9e81bf24e46c98f0e0359a07a4e26
+msgid ""
+"Now we reload nginx and start our server as before to test this step. At "
+"this stage, nginx is simply passing requests to the default port (80) on "
+"to port 8000 to be dealt with (which is why we need to start the test "
+"server again)."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:80 0a28d445299546eea83bde9ce8486ffe
+msgid ""
+"Now use your web browser to look at your server again - the 'Welcome to "
+"nginx' page should be replaced by an ugly version of the OpenREM website "
+"- this is because the 'static' files are not yet being served - we'll fix"
+" this later."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:84 703c9b0f06a247e7b03546d17621ad57
+msgid "Replace runserver with Gunicorn"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:86 b536c901c50c48759c94e680cb1299ec
+msgid ""
+"Activate your virtualenv if you are using one (add sudo if your aren't), "
+"and:"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:92 e8ce64d3a04b4d4c893660e1ac4dd7c9
+msgid ""
+"Make sure you have stopped the test webserver (``Ctrl-c`` in the shell "
+"``runserver`` is running in), then from the same openrem folder:"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:99 841dd15b528e4dc2bb1bf58c5feffe44
+msgid ""
+"The Gunicorn server should start, and you should be able to see the same "
+"broken version of the web interface again."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:102 ee3fa4b772de48889f2ac2ff1083d1d0
+msgid "Serve static files using nginx"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:104 f46a6d977d364591aefe1952eea96730
+msgid ""
+"Create a folder called ``static`` somewhere that your webserver user will"
+" be able to get to - for example alongside the ``media`` folder, and set "
+"the permissions. So if you created your media folder in "
+"``/var/openrem/media``, you might do this:"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:114 f2e0071c37d549c69737e2e25f857e59
+msgid ""
+"Now edit your ``openremproject/local_settings.py`` config file to put the"
+" same path in the ``STATIC_ROOT``:"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:123 bc3190065caf48e594d01746176b4208
+msgid ""
+"Now use the Django ``manage.py`` application to pull all the static files"
+" into the new folder:"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:129 a27f682f4db24e028533e42ecbe57f41
+msgid "Now we need to tell nginx to serve them:"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:135 8b7155b8744b4ea0909fd9a2120bd9a1
+msgid ""
+"And modify the file to add the ``static`` section - remember to put the "
+"path you have used instead of ``/var/openrem/static``"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:153 298652f511874b52a846b80aa769ac4b
+msgid "Now reload nginx and gunicorn to see if it is all working..."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:162 763d98a3003d4acf966072162d499800
+msgid "Take another look, and it should all be looking nice now!"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:165 1d6be5ebbfc1402aac4ffec9163f6088
+msgid "Switch to using Unix Sockets"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:167 c9022f349419467aa1fb53acb1301ed8
+msgid ""
+"This step is optional, but does allow you more flexibility if you need to"
+" do anything else on this server using port 8000 as this installation of "
+"OpenREM will no longer be using that port. Instead we'll use 'sockets', "
+"which are like files on the disk. We put these in ``/tmp/``."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:171 86b678ad4cc84863aff98e0874f8737a
+msgid ""
+"Change the nginx configuration again (``sudo nano /etc/nginx/sites-"
+"available/openrem-server``):"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:188 92f10b6ac528414c880827356225a116
+msgid ""
+"Now restart Gunicorn, this time telling it to use the socket, after "
+"reloading nginx:"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:196 9de59cfe227d4d99bef6f01be74e2e8f
+msgid ""
+"The ``\\`` just allows the command to spread to two lines - feel free to "
+"put it all on one line."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:198 5a5a6124af1542ba89f049463ea1783a
+msgid "Check the web interface again, hopefully it should still be working!"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:201 bb5cea8970af45359c1c4bdbd48582a1
+msgid "Start Gunicorn automatically"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:203 99e969d8923e4008b3d2c9597f08ac85
+msgid ""
+"We can use systemd on Ubuntu to ensure Gunicorn starts on boot and "
+"restarts if it crashes. As before, change each instance of ``openrem-"
+"server`` for the name of your server. You will need to change the "
+"``WorkingDirectory`` to match the path to your openrem folder."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:207 adbc55f3b7714be5be5779b53213447e
+msgid ""
+"For the gunicorn command, you will need to provide the full path to "
+"gunicorn, whether that is in ``/usr/local/bin/gunicorn`` or the bin "
+"folder of your virtualenv."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:232 e976274896a44b80bc61660cd79df4df
+msgid ""
+"Make sure you have customised the ``WorkingDirectory`` path, the path to "
+"gunicorn, and the name of the socket file. The ``User`` would normally be"
+" ``www-data``."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:237 716564a7bfbf41adbde6de142e5ab648
+msgid ""
+"If the user you have configured can't write to the ``STATIC_ROOT`` "
+"folder, the ``MEDIA_ROOT`` folder and the location the logs are "
+"configured to be written (usually in ``MEDIA_ROOT``), the systemd "
+"gunicorn service is likely to fail when started."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:242 ee67712d0f2f4e2a92eb717ccc229959
+msgid "Now enable the new configuration:"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:253 72881d9b21cc4999af608d1d1f77f0c3
+msgid "You might like to see if it worked..."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:259 708389f902d745358dbdfcc728d4b9a3
+msgid "Look for ``Active: active (running)``"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:263 83bbff71c6d146afa532ecaaec00107e
+msgid "Making use of ALLOWED_HOSTS in local_settings.py"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:265 22b6ea9cd2fb43a6b3f3fb5c02231958
+msgid ""
+"The default setting of ``ALLOWED_HOSTS`` is ``*`` which isn't secure, but"
+" is convenient! We should really change this to match the hostname of the"
+" server."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:268 bdc859a614ee47efa5324d4e2e1fede4
+msgid ""
+"If your hostname is ``openrem-server``, and the fully qualified domain "
+"name is ``openrem-server.ad.hospital.org`` and IP address is "
+"``10.212.18.209``, then you might configure ``ALLOWED_HOSTS`` in "
+"``openremproject/local_settings.py`` to:"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:281 69bd46abe2404e7a8cbebda00dad6190
+msgid ""
+"Which hostnames do I need to put in ``ALLOWED_HOSTS``? You need to put in"
+" any hostnames you want people to be able to access your OpenREM web "
+"interface at. So if in your hospital you only type in the address bar the"
+" hostname (``http://openrem-server`` in this example), then that is all "
+"you need to add. If you only use the IP address, then add that. If you "
+"can use any of them, add them all :-)"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:286 ff0254319eb2420082993b09f6398061
+msgid ""
+"Next we need to edit the nginx configuration again to make sure Django "
+"can see the hostname by adding the ``proxy_set_header`` configuration "
+"(else it gets lost before Django can check it):"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:309 f8161c831c4749fabc90521f60876b0d
+msgid "Now reload the nginx configuration and reload Gunicorn:"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:316 6adf3d5691484bedbdb95225f8b3a783
+msgid ""
+"And check the web interface again. If it doesn't work due to the "
+"``ALLOWED_HOSTS`` setting, you will get a 'Bad request 400' error."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:320 5f8792d0090c48e0a022b68b9fa7e984
+msgid "Increasing the timeout"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:322 5469a32685754ec39c4413d315f905d8
+msgid ""
+"You may wish to do this to allow for :doc:`skindosemap` that can take "
+"more than 30 seconds for complex studies. Both Gunicorn and nginx "
+"configurations need to be modified:"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:329 d22c7030bf674574a7b01e6062e71cde
+msgid ""
+"Add the ``--timeout`` setting to the end of the ``ExecStart`` command, "
+"time is in seconds (300 = 5 minutes, 1200 = 20 minutes)"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:354 f0532ce3e6cc4bc7b268164ba902faca
+msgid ""
+"Add the ``proxy_read_timeout`` setting in seconds (note the trailing "
+"``s`` this time)."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:373 732804ed5a884348930ccc0eb9f63104
+msgid "Reload everything:"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:383 df645e4b791d4695bcda64e3c53c59ef
+msgid ""
+"If you have jumped straight to here to get the final config, then make "
+"sure you substitute all the following values to suit your install:"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:386 89f53fcbfde74ca48de2d6e23f47a7eb
+msgid ""
+"``gunicorn-openrem.service`` - name not important (except the "
+"``.service``, but you need to use it in the reload commands etc"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:388 4b3c9e4a4e2f45ee8d7d189a3d3db301
+msgid ""
+"``User=www-data`` as appropriate. This should either be your user or "
+"``www-data``. You will need to ensure folder permissions correspond"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:390 d9ed01d4e03c4ee39b6088cb7388c63f
+msgid ""
+"``WorkingDirectory`` needs to match the path to your ``openrem`` folder "
+"(the one with ``manage.py`` in)"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:391 78bf3f7bf021456e9fcf028ae4a6ecec
+msgid ""
+"``ExecStart=/usr/local/bin/gunicorn \\`` needs to match the path to your "
+"``gunicorn`` executable - either in your virtualenv bin folder or system "
+"wide as per the example"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:393 aeff8901d01645c99aefc297092c152b
+msgid ""
+"``--bind unix:/tmp/openrem-server.socket \\`` name in ``tmp`` doesn't "
+"matter, needs to match in gunicorn and nginx configs"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:395 2a55eb46d5b84fedb6c1b445a001712d
+msgid ""
+"``/etc/nginx/sites-available/openrem-server`` ie name of config file in "
+"nginx, doesn't matter, usually matches hostname"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:397 498f54357aac410596dc2ec79a6c365d
+msgid "``server_name openrem-server`` - should match hostname"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:398 5a421d1b76bb4b488174f41005d3c42c
+msgid ""
+"``/var/openrem/static`` folder must exist, with the right permissions. "
+"Location not important, must match setting in ``local_settings``"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:400 860fcffa33cd433c96a695ffa20e502e
+msgid ""
+"``proxy_pass http://unix:/tmp/openrem-server.socket;`` must match setting"
+" in gunicorn config, prefixed with ``http://``"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:403 fd555019eeaa4d46bf4dd8f43b5c195d
+msgid ""
+"You will also need to ``collectstatic``, symlink the nginx configuration "
+"into enabled, enable the gunicorn systemd config to start on reboot, and "
+"you should configure the ``ALLOWED_HOST`` setting. And you will need to "
+"have installed nginx and gunicorn!"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:411 81707838b69b4aba90b93006df7bb271
+msgid "Troubleshooting and tips"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:414 6890ec7ee87c4209b94f35e9959274d9
+msgid "less"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:415 7dc46750bf324bbd936c71a7faafe9a7
+msgid "Use ``less`` to review files without editing them"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:417 0429fe6cf04b42b29a8dbac55e0bb686
+msgid "Navigate using arrow keys, page up and down,"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:418 7a05a2f68885415aaec0600861a5ff32
+msgid "``Shift-G`` to go to the end"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:419 04d3c0f91c0f4cb599a75911e241eb64
+msgid ""
+"``Shift-F`` to automatically update as new logs are added. ``Ctrl-C`` to "
+"stop."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:420 e443a045ea6b4323b50c936b6d04266d
+msgid "``/`` to search"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:425 115ff6d7f3d74af8aeb7461bca5b1d3b
+msgid "nano"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:426 463fc80a37b64e38a5f0f04b648ceac7
+msgid "Use ``nano`` to edit the files."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:428 41443fd7441c432c834168935d35ac67
+msgid "``Ctrl-o`` to save ('out')"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:429 caafd6550fbb4d559f1a18d61821437b
+msgid "``Ctrl-x`` to exit"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:432 e047e05144d84c7992f7b5a7e1752103
+msgid "Nginx"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:434 2cac7bb1fa3b4904b4ab60bd39606d78
+msgid "Logs are located in ``/var/log/nginx/``"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:435 cb17a5a955cb424d9fe5f4c7e0840e65
+msgid "You need root privileges to view the files:"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:437 ce63a0d2db1c44ed958af4047bf87fcc
+msgid "To view latest error log: ``sudo less /var/log/nginx/error.log``"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:439 e0ece60278f744a0b730d615f9c8d39b
+msgid "Reload: ``sudo systemctl reload nginx``"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:440 f5001d494eee4e63b44134c00b7c21b5
+msgid "Check nginx config: ``sudo nginx -t``"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:443 3ffe5be02ccd4e458064d3f9db3c00fd
+msgid "Systemd and Gunicorn"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:445 7ab4dd55559945b2ba239e0f73c2b1ae
+msgid ""
+"Review the logs with ``sudo journalctl -u gunicorn-openrem`` (change as "
+"appropriate for the the name you have used)"
+msgstr ""
+
+#: ../../nginx_on_linux.rst:447 fa93bcc6e2e6413a9e81ccbb67d99eb5
+msgid ""
+"Check the systemd configuration with ``systemd-analyze verify "
+"/etc/systemd/system/gunicorn-openrem.service`` - again changing the name "
+"as appropriate."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:449 46e50a3d775141698aae48a1792a9609
+msgid ""
+"If you make changes, you need to use ``sudo systemctl daemon-reload`` "
+"before the changes will take effect."
+msgstr ""
+
+#: ../../nginx_on_linux.rst:450 b71afd5e1e5b4da6a53ec4f83b34fa9b
+msgid "Restart: ``sudo systemctl restart gunicorn-openrem.service``"
+msgstr ""
+

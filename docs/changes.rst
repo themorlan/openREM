@@ -5,6 +5,7 @@ OpenREM version history
 1.0.0b1 (2020-xx-xx)
 --------------------
 * :issue:`853`  Testing: reduced Bitbucket pipeline minutes usage
+* :issue:`852`  Code quality: skin dose code formatted with Black
 * :issue:`850`  Emails: added oldest study accession number to high fluoro dose alert email subject
 * :issue:`849`  Docker: make docker URL an env variable
 * :issue:`847`  Documentation: added copy button to commands, added prompts where appropriate
@@ -12,7 +13,7 @@ OpenREM version history
 * :issue:`844`  Code quality: getting the pipelines right
 * :issue:`843`  Code quality: closing target _blank phishing vulnerability
 * :issue:`842`  Imports: ContextID code_meaning in make_skin_map and dxdetail
-* :issue:`841`  Code quality: format code with black
+* :issue:`841`  Code quality: format code with Black
 * :issue:`839`  Documentation: removed redundant troubleshooting docs
 * :issue:`838`  Imports: fixed issues with changed PersonName behaviour in pydicom 2.0
 * :issue:`836`  Installation: updated requirements, Docker and docs for pynetdicom 1.5, pydicom 2.0
@@ -48,6 +49,8 @@ OpenREM version history
 * :issue:`777`  Updated OpenREM to use pydicom 1.3
 * :issue:`744`  Added overwrite mode to size import
 * :issue:`530`  Updated OpenREM to use pynetdicom 1.4
+* :issue:`513`  Internationalization: first translation strings added to documentation
+* :issue:`512`  Internationalization: first translation strings added to interface
 * :issue:`457`  Updated OpenREM to use Django 2.2
 * :issue:`437`  Updated OpenREM to use django-filters v2
 * :issue:`404`  Ported OpenREM to Python 3

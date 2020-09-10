@@ -21,3 +21,6 @@ logs/*
 imports/*
 !logs/.gitkeep
 !imports/.gitkeep
+
+# Translations related
+*.mo

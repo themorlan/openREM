@@ -270,7 +270,7 @@ Edit the new local_settings file
     PIXELMED_JAR_OPTIONS = '-Djava.awt.headless=true com.pixelmed.doseocr.OCR -'
 
 Now create the database. Make sure you are still in the openrem python folder and
-the virtualenv is active (prompt will look like
+the virtualenv is active — prompt will look like
 
 .. code-block:: console
 
@@ -295,6 +295,11 @@ Otherwise see :ref:`activatevirtualenv` and navigate back to that folder:
     $ mv remapp/migrations/0002_0_7_fresh_install_add_median.py{.inactive,}
     $ python manage.py migrate
 
+Generate translation binary files
+
+.. code-block:: console
+
+    $ python django-admin compilemessages
 
 Webserver
 ^^^^^^^^^

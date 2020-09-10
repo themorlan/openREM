@@ -1,12 +1,7 @@
 # Django settings for OpenREM project.
 
-from __future__ import absolute_import
-
-# ^^^ The above is required if you want to import from the celery
-# library.  If you don't have this then `from celery.schedules import`
-# becomes `proj.celery.schedules` in Python 2.x since it allows
-# for relative imports by default.
 from celery.schedules import crontab
+from django.utils.translation import gettext_lazy as _
 import os
 
 
@@ -34,9 +29,9 @@ DEBUG = int(os.environ.get("DEBUG", default=0))
 # For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default="localhost").split(" ")
 
-MEDIA_URL = "/media/"
+MEDIA_URL = os.environ.get("MEDIA_URL", default="/media/")
 MEDIA_ROOT = os.environ.get("MEDIA_ROOT", default=os.path.join(BASE_DIR, "mediafiles"))
-STATIC_URL = "/static/"
+STATIC_URL = os.environ.get("STATIC_URL", default="/static/")
 STATIC_ROOT = os.environ.get(
     "STATIC_ROOT", default=os.path.join(BASE_DIR, "staticfiles")
 )
@@ -129,6 +124,7 @@ TEMPLATES = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -268,10 +264,6 @@ JAVA_OPTIONS = "-Xms256m -Xmx512m -Xss1m -cp"
 PIXELMED_JAR = "/home/app/pixelmed/pixelmed.jar"
 PIXELMED_JAR_OPTIONS = "-Djava.awt.headless=true com.pixelmed.doseocr.OCR -"
 
-# Dummy variable for running the website in a virtual_directory. Don't set value here - copy variable into
-# local_settings.py and configure there.
-VIRTUAL_DIRECTORY = ""
-
 # E-mail server settings - see https://docs.djangoproject.com/en/1.8/topics/email/
 EMAIL_HOST = os.environ.get("EMAIL_HOST", default="localhost")
 EMAIL_PORT = os.environ.get("EMAIL_PORT", default="25")
@@ -288,6 +280,7 @@ EMAIL_OPENREM_URL = os.environ.get(
 
 DOCKER_INSTALL = int(os.environ.get("DOCKER_INSTALL", default=False))
 
+LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
 
 try:
     from .local_settings import *  # NOQA: F401
