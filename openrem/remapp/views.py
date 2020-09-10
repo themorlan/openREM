@@ -1748,58 +1748,91 @@ def ct_plot_calculations(
         #######################################################################
         # Create the required study- and request-level charts
         if plot_study_mean_dlp:
-            return_structure["studyDLPData"] = altair_barchart_average(
-                df,
-                "study_description",
-                "total_dlp",
-                average_choice=plot_average_choice,
-                value_axis_title="DLP (mGy.cm)"
-            ).to_json()
-
-            if plot_histograms:
-                return_structure["studyHistDLPData"] = altair_barchart_histogram(
+            if plot_average_choice in ["mean", "both"]:
+                return_structure["studyMeanDLPData"] = plotly_barchart(
                     df,
                     "study_description",
                     "total_dlp",
-                    n_bins=plot_histogram_bins,
-                    value_axis_title="DLP (mGy.cm)"
-                ).to_json()
+                    value_axis_title="DLP (mGy.cm)",
+                    name_axis_title="Study description"
+                )
 
-        if plot_study_mean_ctdi:
-            return_structure["studyCTDIData"] = altair_barchart_average(
-                df,
-                "study_description",
-                "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                average_choice=plot_average_choice,
-                value_axis_title="CTDI (mGy)"
-            ).to_json()
+            if plot_average_choice in ["median", "both"]:
+                return_structure["studyBoxplotDLPData"] = plotly_boxplot(
+                    df,
+                    "study_description",
+                    "total_dlp",
+                    value_axis_title="DLP (mGy.cm)",
+                    name_axis_title="Study description"
+                )
 
             if plot_histograms:
-                return_structure["studyHistCTDIData"] = altair_barchart_histogram(
+                return_structure["studyHistDLPData"] = plotly_histogram(
+                    df,
+                    "study_description",
+                    "total_dlp",
+                    value_axis_title="DLP (mGy.cm)",
+                    name_axis_title="Study description",
+                    n_bins=plot_histogram_bins
+                )
+
+        if plot_study_mean_ctdi:
+            if plot_average_choice in ["mean", "both"]:
+                return_structure["studyMeanCTDIData"] = plotly_barchart(
                     df,
                     "study_description",
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    n_bins=plot_histogram_bins,
-                    value_axis_title="CTDI (mGy)"
-                ).to_json()
+                    value_axis_title="CTDI (mGy)",
+                    name_axis_title="Study description"
+                )
 
-        if plot_study_num_events:
-            return_structure["studyNumEventsData"] = altair_barchart_average(
-                df,
-                "study_description",
-                "number_of_events",
-                average_choice=plot_average_choice,
-                value_axis_title="Events"
-            ).to_json()
+            if plot_average_choice in ["median", "both"]:
+                return_structure["studyBoxplotCTDIData"] = plotly_boxplot(
+                    df,
+                    "study_description",
+                    "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    value_axis_title="CTDI (mGy)",
+                    name_axis_title="Study description"
+                )
 
             if plot_histograms:
-                return_structure["studyHistNumEventsData"] = altair_barchart_histogram(
+                return_structure["studyHistCTDIData"] = plotly_histogram(
+                    df,
+                    "study_description",
+                    "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    value_axis_title="CTDI (mGy)",
+                    name_axis_title="Study description",
+                    n_bins=plot_histogram_bins
+                )
+
+        if plot_study_num_events:
+            if plot_average_choice in ["mean", "both"]:
+                return_structure["studyMeanNumEventsData"] = plotly_barchart(
                     df,
                     "study_description",
                     "number_of_events",
-                    n_bins=plot_histogram_bins,
-                    value_axis_title="Events"
-                ).to_json()
+                    value_axis_title="Events",
+                    name_axis_title="Study description"
+                )
+
+            if plot_average_choice in ["median", "both"]:
+                return_structure["studyBoxplotNumEventsData"] = plotly_boxplot(
+                    df,
+                    "study_description",
+                    "number_of_events",
+                    value_axis_title="Events",
+                    name_axis_title="Study description"
+                )
+
+            if plot_histograms:
+                return_structure["studyHistNumEventsData"] = plotly_histogram(
+                    df,
+                    "study_description",
+                    "number_of_events",
+                    value_axis_title="Events",
+                    name_axis_title="Study description",
+                    n_bins=plot_histogram_bins
+                )
 
         if plot_request_mean_dlp:
             if plot_average_choice in ["mean", "both"]:
@@ -1808,7 +1841,7 @@ def ct_plot_calculations(
                     "requested_procedure_code_meaning",
                     "total_dlp",
                     value_axis_title="DLP (mGy.cm)",
-                    name_axis_title="Requested procedure name"
+                    name_axis_title="Requested procedure"
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -1817,7 +1850,7 @@ def ct_plot_calculations(
                     "requested_procedure_code_meaning",
                     "total_dlp",
                     value_axis_title="DLP (mGy.cm)",
-                    name_axis_title="Requested procedure name"
+                    name_axis_title="Requested procedure"
                 )
 
             if plot_histograms:
@@ -1826,27 +1859,38 @@ def ct_plot_calculations(
                     "requested_procedure_code_meaning",
                     "total_dlp",
                     value_axis_title="DLP (mGy.cm)",
-                    name_axis_title="Requested procedure name",
+                    name_axis_title="Requested procedure",
                     n_bins=plot_histogram_bins
                 )
 
         if plot_request_num_events:
-            return_structure["requestNumEventsData"] = altair_barchart_average(
-                df,
-                "requested_procedure_code_meaning",
-                "number_of_events",
-                average_choice=plot_average_choice,
-                value_axis_title="Events"
-            ).to_json()
-
-            if plot_histograms:
-                return_structure["requestNumEventsHistData"] = altair_barchart_histogram(
+            if plot_average_choice in ["mean", "both"]:
+                return_structure["requestMeanNumEventsData"] = plotly_barchart(
                     df,
                     "requested_procedure_code_meaning",
                     "number_of_events",
-                    n_bins=plot_histogram_bins,
-                    value_axis_title="Events"
-                ).to_json()
+                    value_axis_title="Events",
+                    name_axis_title="Requested procedure"
+                )
+
+            if plot_average_choice in ["median", "both"]:
+                return_structure["requestBoxplotNumEventsData"] = plotly_boxplot(
+                    df,
+                    "requested_procedure_code_meaning",
+                    "number_of_events",
+                    value_axis_title="Events",
+                    name_axis_title="Requested procedure"
+                )
+
+            if plot_histograms:
+                return_structure["requestHistNumEventsData"] = plotly_histogram(
+                    df,
+                    "requested_procedure_code_meaning",
+                    "number_of_events",
+                    value_axis_title="Events",
+                    name_axis_title="Requested procedure",
+                    n_bins=plot_histogram_bins
+                )
 
         if plot_study_freq:
             return_structure["studyFreqData"] = altair_barchart_frequency(
@@ -1859,7 +1903,7 @@ def ct_plot_calculations(
             return_structure["requestFreqData"] = altair_barchart_frequency(
                 df,
                 "requested_procedure_code_meaning",
-                legend_title="Requested procedure name"
+                legend_title="Requested procedure"
             ).to_json()
 
         if plot_study_mean_dlp_over_time:

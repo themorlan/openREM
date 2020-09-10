@@ -372,21 +372,32 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion5" href="#collapseThree">
+                            <a data-toggle="collapse" data-parent="#accordion5" href="#collapseStudyAveDLP" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
                                 {% if request.user.userprofile.plotAverageChoice == 'mean' %}
-                                    Charts of mean DLP for each study description
+                                    Chart of mean DLP for each study description
                                 {% elif request.user.userprofile.plotAverageChoice == 'median' %}
-                                    Charts of median DLP for each study description
+                                    Chart of median DLP for each study description
                                 {% else %}
                                     Charts of mean and median DLP for each study description
                                 {% endif %}
                             </a>
                         </h4>
                     </div>
-                    <div id="collapseThree" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div id="studyAverageDLPChartDiv"></div>
+                    <div id="collapseStudyAveDLP" class="panel-collapse collapse">
+                        {% if request.user.userprofile.plotAverageChoice in 'mean both' %}
+                        <div id="studyMeanDLPChartParentDiv" class="panel-body">
+                            <div id="studyMeanDLPChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('studyMeanDLPChartDiv', 'studyMeanDLPChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
                         </div>
+                        {% endif %}
+                        {% if request.user.userprofile.plotAverageChoice in 'median both' %}
+                        <div id="studyMedianDLPChartParentDiv" class="panel-body">
+                            <div id="studyMedianDLPChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('studyMedianDLPChartDiv', 'studyMedianDLPChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -398,14 +409,16 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#studyHistogramDLPDiv" href="#collapseStudyHistogramDLP">
-                                    Histograms of DLP for each study description
+                                <a data-toggle="collapse" data-parent="#studyHistogramDLPDiv" href="#collapseStudyHistogramDLP" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
+                                    Histograms of DLP for each study protocol
                                 </a>
                             </h4>
                         </div>
                         <div id="collapseStudyHistogramDLP" class="panel-collapse collapse">
-                            <div class="panel-body">
+                            <div id="studyHistogramDLPChartParentDiv" class="panel-body">
                                 <div id="studyHistogramDLPChartDiv"></div>
+                                <a onclick="enterFullScreenPlotly('studyHistogramDLPChartDiv', 'studyHistogramDLPChartParentDiv');"
+                                   class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
                             </div>
                         </div>
                     </div>
@@ -420,21 +433,32 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordionStudyCTDI" href="#collapseStudyCTDI">
+                            <a data-toggle="collapse" data-parent="#accordionStudyCTDI" href="#collapseStudyAveCTDI" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
                                 {% if request.user.userprofile.plotAverageChoice == 'mean' %}
-                                    Charts of mean CTDI<sub>vol</sub> for each study description (may include multiple acquisition protocols per study).
+                                    Chart of mean CTDI<sub>vol</sub> for each study description (may include multiple acquisition protocols per study).
                                 {% elif request.user.userprofile.plotAverageChoice == 'median' %}
-                                    Charts of median CTDI<sub>vol</sub> for each study description (may include multiple acquisition protocols per study).
+                                    Chart of median CTDI<sub>vol</sub> for each study description (may include multiple acquisition protocols per study).
                                 {% else %}
                                     Charts of mean and median CTDI<sub>vol</sub> for each study description (may include multiple acquisition protocols per study).
                                 {% endif %}
                             </a>
                         </h4>
                     </div>
-                    <div id="collapseStudyCTDI" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div id="studyAverageCTDIChartDiv"></div>
+                    <div id="collapseStudyAveCTDI" class="panel-collapse collapse">
+                        {% if request.user.userprofile.plotAverageChoice in 'mean both' %}
+                        <div id="studyMeanCTDIChartParentDiv" class="panel-body">
+                            <div id="studyMeanCTDIChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('studyMeanCTDIChartDiv', 'studyMeanCTDIChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
                         </div>
+                        {% endif %}
+                        {% if request.user.userprofile.plotAverageChoice in 'median both' %}
+                        <div id="studyMedianCTDIChartParentDiv" class="panel-body">
+                            <div id="studyMedianCTDIChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('studyMedianCTDIChartDiv', 'studyMedianCTDIChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -446,14 +470,16 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#studyHistogramCTDIDiv" href="#collapseStudyHistogramCTDI">
+                                <a data-toggle="collapse" data-parent="#studyHistogramCTDIDiv" href="#collapseStudyHistogramCTDI" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
                                     Histograms of CTDI for each study description
                                 </a>
                             </h4>
                         </div>
                         <div id="collapseStudyHistogramCTDI" class="panel-collapse collapse">
-                            <div class="panel-body">
+                            <div id="studyHistogramCTDIChartParentDiv" class="panel-body">
                                 <div id="studyHistogramCTDIChartDiv"></div>
+                                <a onclick="enterFullScreenPlotly('studyHistogramCTDIChartDiv', 'studyHistogramCTDIChartParentDiv');"
+                                   class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
                             </div>
                         </div>
                     </div>
@@ -489,11 +515,11 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion11" href="#collapseStudyNumEvents">
+                            <a data-toggle="collapse" data-parent="#accordion11" href="#collapseStudyNumEvents" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
                                 {% if request.user.userprofile.plotAverageChoice == 'mean' %}
-                                    Charts of mean number of events for each study description
+                                    Chart of mean number of events for each study description
                                 {% elif request.user.userprofile.plotAverageChoice == 'median' %}
-                                    Charts of median number of events for each study description
+                                    Chart of median number of events for each study description
                                 {% else %}
                                     Charts of mean and median number of events for each study description
                                 {% endif %}
@@ -501,9 +527,20 @@
                         </h4>
                     </div>
                     <div id="collapseStudyNumEvents" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div id="studyAverageNumEventsChartDiv"></div>
+                        {% if request.user.userprofile.plotAverageChoice in 'mean both' %}
+                        <div id="studyMeanNumEventsChartParentDiv" class="panel-body">
+                            <div id="studyMeanNumEventsChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('studyMeanNumEventsChartDiv', 'studyMeanNumEventsChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
                         </div>
+                        {% endif %}
+                        {% if request.user.userprofile.plotAverageChoice in 'median both' %}
+                        <div id="studyMedianNumEventsChartParentDiv" class="panel-body">
+                            <div id="studyMedianNumEventsChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('studyMedianNumEventsChartDiv', 'studyMedianNumEventsChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -515,14 +552,16 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#studyHistogramNumEventsDiv" href="#collapseStudyHistogramNumEvents">
+                                <a data-toggle="collapse" data-parent="#studyHistogramNumEventsDiv" href="#collapseStudyHistogramNumEvents" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
                                     Histograms of number of events for each study description
                                 </a>
                             </h4>
                         </div>
                         <div id="collapseStudyHistogramNumEvents" class="panel-collapse collapse">
-                            <div class="panel-body">
+                            <div id="studyHistogramNumEventsChartParentDiv" class="panel-body">
                                 <div id="studyHistogramNumEventsChartDiv"></div>
+                                <a onclick="enterFullScreenPlotly('studyHistogramNumEventsChartDiv', 'studyHistogramNumEventsChartParentDiv');"
+                                   class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
                             </div>
                         </div>
                     </div>
@@ -619,11 +658,11 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordionRequestNumEvents" href="#collapseRequestNumEvents" onclick="setTimeout(function() {fitChartToDiv('requestPlotNumEventsDIV');}, 0);">
+                            <a data-toggle="collapse" data-parent="#accordionRequestNumEvents" href="#collapseRequestNumEvents" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
                                 {% if request.user.userprofile.plotAverageChoice == 'mean' %}
-                                    Charts of mean number of events for each requested procedure type.
+                                    Chart of mean number of events for each requested procedure type.
                                 {% elif request.user.userprofile.plotAverageChoice == 'median' %}
-                                    Charts of median number of events for each requested procedure type.
+                                    Chart of median number of events for each requested procedure type.
                                 {% else %}
                                     Charts of mean and median number of events for each requested procedure type.
                                 {% endif %}
@@ -631,9 +670,20 @@
                         </h4>
                     </div>
                     <div id="collapseRequestNumEvents" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div id="requestAverageNumEventsChartDiv"></div>
+                        {% if request.user.userprofile.plotAverageChoice in 'mean both' %}
+                        <div id="requestMeanNumEventsChartParentDiv" class="panel-body">
+                            <div id="requestMeanNumEventsChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('requestMeanNumEventsChartDiv', 'requestMeanNumEventsChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
                         </div>
+                        {% endif %}
+                        {% if request.user.userprofile.plotAverageChoice in 'median both' %}
+                        <div id="requestMedianNumEventsChartParentDiv" class="panel-body">
+                            <div id="requestMedianNumEventsChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('requestMedianNumEventsChartDiv', 'requestMedianNumEventsChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -645,14 +695,16 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#requestNumEventsHistogramDiv" href="#collapseRequestHistogramNumEvents">
+                                <a data-toggle="collapse" data-parent="#requestNumEventsHistogramDiv" href="#collapseRequestHistogramNumEvents" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
                                     Histograms of number of events for each requested procedure
                                 </a>
                             </h4>
                         </div>
                         <div id="collapseRequestHistogramNumEvents" class="panel-collapse collapse">
-                            <div class="panel-body">
+                            <div id="requestHistogramNumEventsChartParentDiv" class="panel-body">
                                 <div id="requestHistogramNumEventsChartDiv"></div>
+                                <a onclick="enterFullScreenPlotly('requestHistogramNumEventsChartDiv', 'requestHistogramNumEventsChartParentDiv');"
+                                   class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
                             </div>
                         </div>
                     </div>

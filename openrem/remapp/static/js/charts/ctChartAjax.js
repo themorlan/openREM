@@ -41,19 +41,25 @@ $(document).ready(function() {
             }
 
             // DLP per study chart data
-            if(typeof json.studyDLPData !== "undefined") {
-                vegaEmbed('#studyAverageDLPChartDiv',  JSON.parse(json.studyDLPData)).catch(console.error);
-                if(typeof json.studyHistDLPData !== "undefined") {
-                    vegaEmbed('#studyHistogramDLPChartDiv',  JSON.parse(json.studyHistDLPData)).catch(console.error);
-                }
+            if(typeof json.studyMeanDLPData !== "undefined") {
+                $("#studyMeanDLPChartDiv").html(json.studyMeanDLPData);
+            }
+            if(typeof json.studyBoxplotDLPData !=="undefined") {
+                $("#studyMedianDLPChartDiv").html(json.studyBoxplotDLPData);
+            }
+            if(typeof json.studyHistDLPData !=="undefined") {
+                $("#studyHistogramDLPChartDiv").html(json.studyHistDLPData);
             }
 
             // CTDI per study chart data
-            if(typeof json.studyCTDIData !== "undefined") {
-                vegaEmbed('#studyAverageCTDIChartDiv',  JSON.parse(json.studyCTDIData)).catch(console.error);
-                if(typeof json.studyHistCTDIData !== "undefined") {
-                    vegaEmbed('#studyHistogramCTDIChartDiv',  JSON.parse(json.studyHistCTDIData)).catch(console.error);
-                }
+            if(typeof json.studyMeanCTDIData !== "undefined") {
+                $("#studyMeanCTDIChartDiv").html(json.studyMeanCTDIData);
+            }
+            if(typeof json.studyBoxplotCTDIData !=="undefined") {
+                $("#studyMedianCTDIChartDiv").html(json.studyBoxplotCTDIData);
+            }
+            if(typeof json.studyHistCTDIData !=="undefined") {
+                $("#studyHistogramCTDIChartDiv").html(json.studyHistCTDIData);
             }
 
             // DLP per request chart data start
@@ -68,19 +74,25 @@ $(document).ready(function() {
             }
 
             // Number of events per study chart data
-            if(typeof json.studyNumEventsData !== "undefined") {
-                vegaEmbed('#studyAverageNumEventsChartDiv',  JSON.parse(json.studyNumEventsData)).catch(console.error);
-                if(typeof json.studyHistNumEventsData !== "undefined") {
-                    vegaEmbed('#studyHistogramNumEventsChartDiv',  JSON.parse(json.studyHistNumEventsData)).catch(console.error);
-                }
+            if(typeof json.studyMeanNumEventsData !== "undefined") {
+                $("#studyMeanNumEventsChartDiv").html(json.studyMeanNumEventsData);
+            }
+            if(typeof json.studyBoxplotNumEventsData !=="undefined") {
+                $("#studyMedianNumEventsChartDiv").html(json.studyBoxplotNumEventsData);
+            }
+            if(typeof json.studyHistNumEventsData !=="undefined") {
+                $("#studyHistogramNumEventsChartDiv").html(json.studyHistNumEventsData);
             }
 
             // Number of events per request chart data
-            if(typeof json.requestNumEventsData !== "undefined") {
-                vegaEmbed('#requestAverageNumEventsChartDiv',  JSON.parse(json.requestNumEventsData)).catch(console.error);
-                if(typeof json.requestNumEventsHistData !== "undefined") {
-                    vegaEmbed('#requestHistogramNumEventsChartDiv', JSON.parse(json.requestNumEventsHistData)).catch(console.error);
-                }
+            if(typeof json.requestMeanNumEventsData !== "undefined") {
+                $("#requestMeanNumEventsChartDiv").html(json.requestMeanNumEventsData);
+            }
+            if(typeof json.requestBoxplotNumEventsData !=="undefined") {
+                $("#requestMedianNumEventsChartDiv").html(json.requestBoxplotNumEventsData);
+            }
+            if(typeof json.requestHistNumEventsData !=="undefined") {
+                $("#requestHistogramNumEventsChartDiv").html(json.requestHistNumEventsData);
             }
 
             // Acquisition frequency chart data start
