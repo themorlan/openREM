@@ -47,7 +47,6 @@ function enterFullScreenPlotly(chartDivId, chartParentDivId) {
     if (chartFullScreen === false) {
         chartStartHeight = plotlyDiv.height();
         chartStartWidth = plotlyDiv.width();
-
         chartStartFooterHeight = parentDiv.height() - chartStartHeight;
 
         plotlyDiv.width($(window).width());
@@ -59,10 +58,8 @@ function enterFullScreenPlotly(chartDivId, chartParentDivId) {
     else {
         plotlyDiv.width(chartStartWidth);
         plotlyDiv.height(chartStartHeight);
-        $("#"+chartDivId+" :first-child").height(chartStartHeight);
 
         plotlyDiv.css("width","auto");
-        plotlyDiv.css("height","auto");
 
         chartFullScreen = false;
     }
