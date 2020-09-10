@@ -2531,6 +2531,8 @@ def update_study_workload(request):
                 "studies_in_past_days_b": display_name_studies.filter(
                     study_date__range=[date_b, today]
                 ).count(),
+                "date_a": datetime.strptime(date_a, "%Y-%m-%d"),
+                "date_b": datetime.strptime(date_b, "%Y-%m-%d"),
                 "displayname": displayname,
                 "displayname_pk": modality.lower() + str(pk),
             }

@@ -78,10 +78,10 @@
         </td>
         {% if home_config.display_workload_stats %}
           <td style="width:12.5%">
-            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date" id="{{ details.displayname_pk }}_a"></a>
+            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date&study_date__gt={{ details.date_a }}" id="{{ details.displayname_pk }}_a"></a>
           </td>
           <td style="width:12.5%">
-            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date" id="{{ details.displayname_pk }}_b"></a>
+            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date&study_date__gt={{ details.date_b }}" id="{{ details.displayname_pk }}_b"></a>
           </td>
         {% endif %}
       {% endif %}
