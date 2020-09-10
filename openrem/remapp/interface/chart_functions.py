@@ -102,6 +102,19 @@ def create_dataframe_time_series(
     return df_time_series
 
 
+def create_dataframe_weekdays(
+        df,
+        df_name_col,
+        df_date_col="study_date",
+):
+    temp = pd.DatetimeIndex(df[df_date_col])
+    df["weekday"] = temp.day_name()
+
+    df_time_series = df.groupby(["x_ray_system_name", "weekday"]).agg({df_name_col: "count"})
+    df_time_series = df_time_series.reset_index()
+    return df_time_series
+
+
 def plotly_boxplot(
         df,
         df_name_col,
@@ -118,8 +131,8 @@ def plotly_boxplot(
         y=df_value_col,
         color="x_ray_system_name",
         labels={
-            df_value_col:value_axis_title,
-            df_name_col:name_axis_title,
+            df_value_col: value_axis_title,
+            df_name_col: name_axis_title,
             "x_ray_system_name": "System"
         }
     )
@@ -149,8 +162,8 @@ def plotly_barchart(
         barmode="group",
         histfunc="avg",
         labels={
-            df_value_col:value_axis_title,
-            df_name_col:name_axis_title,
+            df_value_col: value_axis_title,
+            df_name_col: name_axis_title,
             "x_ray_system_name": "System"
         }
     )
@@ -249,6 +262,39 @@ def plotly_timeseries_linechart(
 
     for data_set in fig.data:
         data_set.update(mode="markers+lines")
+
+    fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+
+    return plot(fig, output_type="div", include_plotlyjs=False)
+
+
+def plotly_barchart_weekdays(
+        df,
+        df_name_col,
+        df_value_col,
+        name_axis_title="",
+        value_axis_title=""
+):
+    from plotly.offline import plot
+    import plotly.express as px
+
+    fig = px.bar(
+        df,
+        x=df_name_col,
+        y=df_value_col,
+        facet_col="x_ray_system_name",
+        facet_col_wrap=2,
+        facet_row_spacing=0.10,
+        facet_col_spacing=0.05,
+        color="x_ray_system_name",
+        labels={
+            df_name_col: name_axis_title,
+            df_value_col: value_axis_title,
+            "x_ray_system_name": "System"
+        }
+    )
+
+    fig.update_xaxes(categoryarray=["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])
 
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 

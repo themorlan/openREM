@@ -1519,6 +1519,7 @@ def ct_plot_calculations(
     from .interface.chart_functions import (
         create_dataframe,
         create_dataframe_time_series,
+        create_dataframe_weekdays,
         altair_barchart_average,
         altair_barchart_frequency,
         altair_linechart_average,
@@ -1529,6 +1530,7 @@ def ct_plot_calculations(
         plotly_histogram,
         plotly_stacked_histogram,
         plotly_timeseries_linechart,
+        plotly_barchart_weekdays,
         average_chart_inc_histogram_data,
         average_chart_over_time_data,
         workload_chart_data,
@@ -1940,10 +1942,19 @@ def ct_plot_calculations(
                 )
 
         if plot_study_per_day_and_hour:
-            return_structure["studyWorkloadData"] = altair_barchart_workload(
+            df_time_series_per_weekday = create_dataframe_weekdays(
                 df,
-                value_axis_title="Study description"
-            ).to_json()
+                "study_description",
+                df_date_col="study_date"
+            )
+
+            return_structure["studyWorkloadData"] = plotly_barchart_weekdays(
+                df_time_series_per_weekday,
+                "weekday",
+                "study_description",
+                name_axis_title="Weekday",
+                value_axis_title="Frequency"
+            )
         #######################################################################
 
     return return_structure

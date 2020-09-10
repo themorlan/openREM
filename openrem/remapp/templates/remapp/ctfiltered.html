@@ -725,14 +725,16 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion9" href="#collapseStudyWorkload">
+                            <a data-toggle="collapse" data-parent="#accordion9" href="#collapseStudyWorkload" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
                                 Charts of study workload.
                             </a>
                         </h4>
                     </div>
-                    <div id="collapseStudyWorkload" class="panel-collapse">
-                        <div class="panel-body">
+                    <div id="collapseStudyWorkload" class="panel-collapse collapse">
+                        <div id="studyWorkloadChartParentDiv" class="panel-body">
                             <div id="studyWorkloadChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('studyWorkloadChartDiv', 'studyWorkloadChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
                         </div>
                     </div>
                 </div>

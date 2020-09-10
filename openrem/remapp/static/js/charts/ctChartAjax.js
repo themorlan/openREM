@@ -120,7 +120,8 @@ $(document).ready(function() {
 
             // Study workload chart data
             if(typeof json.studyWorkloadData !== "undefined") {
-                vegaEmbed('#studyWorkloadChartDiv',  JSON.parse(json.studyWorkloadData)).catch(console.error);
+                $("#studyWorkloadChartDiv").html(json.studyWorkloadData);
+                //vegaEmbed('#studyWorkloadChartDiv',  JSON.parse(json.studyWorkloadData)).catch(console.error);
             }
 
             $(".ajax-progress").hide();
