@@ -1644,40 +1644,62 @@ def ct_plot_calculations(
         #######################################################################
         # Create the required acquisition-level charts
         if plot_acquisition_mean_dlp:
-            return_structure["acquisitionDLPData"] = altair_barchart_average(
-                df,
-                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                "ctradiationdose__ctirradiationeventdata__dlp",
-                average_choice=plot_average_choice,
-                value_axis_title="DLP (mGy.cm)"
-            ).to_json()
-
-            if plot_histograms:
-                return_structure["acquisitionHistDLPData"] = altair_barchart_histogram(
+            if plot_average_choice in ["mean", "both"]:
+                return_structure["acquisitionMeanDLPData"] = plotly_barchart(
                     df,
                     "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                     "ctradiationdose__ctirradiationeventdata__dlp",
-                    n_bins=plot_histogram_bins,
-                    value_axis_title="DLP (mGy.cm)"
-                ).to_json()
+                    value_axis_title="DLP (mGy.cm)",
+                    name_axis_title="Acquisition protocol"
+                )
 
-        if plot_acquisition_mean_ctdi:
-            return_structure["acquisitionCTDIData"] = altair_barchart_average(
-                df,
-                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                average_choice=plot_average_choice,
-                value_axis_title="CTDI (mGy)"
-            ).to_json()
+            if plot_average_choice in ["median", "both"]:
+                return_structure["acquisitionBoxplotDLPData"] = plotly_boxplot(
+                    df,
+                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                    "ctradiationdose__ctirradiationeventdata__dlp",
+                    value_axis_title="DLP (mGy.cm)",
+                    name_axis_title="Acquisition protocol"
+                )
 
             if plot_histograms:
-                return_structure["acquisitionHistCTDIData"] = altair_barchart_histogram(
+                return_structure["acquisitionHistDLPData"] = plotly_histogram(
+                    df,
+                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                    "ctradiationdose__ctirradiationeventdata__dlp",
+                    value_axis_title="DLP (mGy.cm)",
+                    name_axis_title="Acquisition protocol",
+                    n_bins=plot_histogram_bins
+                )
+
+        if plot_acquisition_mean_ctdi:
+            if plot_average_choice in ["mean", "both"]:
+                return_structure["acquisitionMeanCTDIData"] = plotly_barchart(
                     df,
                     "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    n_bins=plot_histogram_bins,
-                    value_axis_title="CTDI (mGy)"
-                ).to_json()
+                    value_axis_title="CTDI (mGy.cm)",
+                    name_axis_title="Acquisition protocol"
+                )
+
+            if plot_average_choice in ["median", "both"]:
+                return_structure["acquisitionBoxplotCTDIData"] = plotly_boxplot(
+                    df,
+                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                    "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    value_axis_title="CTDI (mGy.cm)",
+                    name_axis_title="Acquisition protocol"
+                )
+
+            if plot_histograms:
+                return_structure["acquisitionHistCTDIData"] = plotly_histogram(
+                    df,
+                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                    "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    value_axis_title="CTDI (mGy.cm)",
+                    name_axis_title="Acquisition protocol",
+                    n_bins=plot_histogram_bins
+                )
 
         if plot_acquisition_freq:
             return_structure["acquisitionFreqData"] = altair_barchart_frequency(
@@ -1797,15 +1819,6 @@ def ct_plot_calculations(
                     value_axis_title="DLP (mGy.cm)",
                     name_axis_title="Requested procedure name"
                 )
-
-
-            # return_structure["requestData"] = altair_barchart_average(
-            #     df,
-            #     "requested_procedure_code_meaning",
-            #     "total_dlp",
-            #     average_choice=plot_average_choice,
-            #     value_axis_title="DLP (mGy.cm)"
-            # ).to_json()
 
             if plot_histograms:
                 return_structure["requestHistData"] = plotly_histogram(

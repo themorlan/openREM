@@ -19,19 +19,25 @@ $(document).ready(function() {
         success: function( json ) {
 
             // DLP per acquisition chart data
-            if(typeof json.acquisitionDLPData !== "undefined") {
-                vegaEmbed('#acquisitionAverageDLPChartDiv',  JSON.parse(json.acquisitionDLPData)).catch(console.error);
-                if(typeof json.acquisitionHistDLPData !== "undefined") {
-                    vegaEmbed('#acquisitionHistogramDLPChartDiv',  JSON.parse(json.acquisitionHistDLPData)).catch(console.error);
-                }
+            if(typeof json.acquisitionMeanDLPData !== "undefined") {
+                $("#acquisitionMeanDLPChartDiv").html(json.acquisitionMeanDLPData);
+            }
+            if(typeof json.acquisitionBoxplotDLPData !=="undefined") {
+                $("#acquisitionMedianDLPChartDiv").html(json.acquisitionBoxplotDLPData);
+            }
+            if(typeof json.acquisitionHistDLPData !=="undefined") {
+                $("#acquisitionHistogramDLPChartDiv").html(json.acquisitionHistDLPData);
             }
 
             // CTDI per acquisition chart data
-            if(typeof json.acquisitionCTDIData !== "undefined") {
-                vegaEmbed('#acquisitionAverageCTDIChartDiv',  JSON.parse(json.acquisitionCTDIData)).catch(console.error);
-                if(typeof json.acquisitionHistCTDIData !== "undefined") {
-                    vegaEmbed('#acquisitionHistogramCTDIChartDiv',  JSON.parse(json.acquisitionHistCTDIData)).catch(console.error);
-                }
+            if(typeof json.acquisitionMeanCTDIData !== "undefined") {
+                $("#acquisitionMeanCTDIChartDiv").html(json.acquisitionMeanCTDIData);
+            }
+            if(typeof json.acquisitionBoxplotCTDIData !=="undefined") {
+                $("#acquisitionMedianCTDIChartDiv").html(json.acquisitionBoxplotCTDIData);
+            }
+            if(typeof json.acquisitionHistCTDIData !=="undefined") {
+                $("#acquisitionHistogramCTDIChartDiv").html(json.acquisitionHistCTDIData);
             }
 
             // DLP per study chart data
@@ -60,7 +66,6 @@ $(document).ready(function() {
             if(typeof json.requestHistData !=="undefined") {
                 $("#requestHistogramDLPChartDiv").html(json.requestHistData);
             }
-
 
             // Number of events per study chart data
             if(typeof json.studyNumEventsData !== "undefined") {

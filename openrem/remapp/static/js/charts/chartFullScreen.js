@@ -33,7 +33,7 @@ function fitChartToDiv(chartDiv) {
 
 
 function triggerResizeEvent() {
-    var evt = window.document.createEvent('UIEvents');
+    let evt = window.document.createEvent('UIEvents');
     evt.initUIEvent('resize', true, false, window, 0);
     window.dispatchEvent(evt);
 }
@@ -41,8 +41,8 @@ function triggerResizeEvent() {
 
 function enterFullScreenPlotly(chartDivId, chartParentDivId) {
 
-    var plotlyDiv = $("#"+chartDivId);
-    var parentDiv = $("#"+chartParentDivId);
+    let plotlyDiv = $("#"+chartDivId);
+    let parentDiv = $("#"+chartParentDivId);
 
     if (chartFullScreen === false) {
         chartStartHeight = plotlyDiv.height();
