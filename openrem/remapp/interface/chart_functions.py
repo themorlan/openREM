@@ -83,6 +83,25 @@ def create_dataframe(
     return df
 
 
+def create_dataframe_time_series(
+        df,
+        df_name_col,
+        df_value_col,
+        df_date_col="study_date",
+        time_period="M",
+        average="mean"
+):
+    if average == "both":
+        average = ["mean", "median"]
+    else:
+        average = [average]
+
+    df_time_series = df.set_index(df_date_col).groupby(["x_ray_system_name", df_name_col, pd.Grouper(freq=time_period)]).agg({df_value_col: average})
+    df_time_series.columns = [s + df_value_col for s in average]
+    df_time_series = df_time_series.reset_index()
+    return df_time_series
+
+
 def plotly_boxplot(
         df,
         df_name_col,
@@ -195,6 +214,43 @@ def plotly_stacked_histogram(
     )
 
     fig.update_xaxes(categoryorder="category ascending")
+
+    return plot(fig, output_type="div", include_plotlyjs=False)
+
+
+def plotly_timeseries_linechart(
+        df,
+        df_name_col,
+        df_value_col,
+        df_date_col,
+        value_axis_title="",
+        name_axis_title="",
+        legend_title=""
+):
+    from plotly.offline import plot
+    import plotly.express as px
+
+    fig = px.scatter(
+        df,
+        x=df_date_col,
+        y=df_value_col,
+        color=df_name_col,
+        facet_col="x_ray_system_name",
+        facet_col_wrap=2,
+        facet_row_spacing=0.05,
+        facet_col_spacing=0.05,
+        labels={
+            df_value_col: value_axis_title,
+            df_name_col: legend_title,
+            df_date_col: name_axis_title,
+            "x_ray_system_name": "System"
+        }
+    )
+
+    for data_set in fig.data:
+        data_set.update(mode="markers+lines")
+
+    fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
     return plot(fig, output_type="div", include_plotlyjs=False)
 

@@ -1518,6 +1518,7 @@ def ct_plot_calculations(
     """
     from .interface.chart_functions import (
         create_dataframe,
+        create_dataframe_time_series,
         altair_barchart_average,
         altair_barchart_frequency,
         altair_linechart_average,
@@ -1527,6 +1528,7 @@ def ct_plot_calculations(
         plotly_barchart,
         plotly_histogram,
         plotly_stacked_histogram,
+        plotly_timeseries_linechart,
         average_chart_inc_histogram_data,
         average_chart_over_time_data,
         workload_chart_data,
@@ -1906,15 +1908,36 @@ def ct_plot_calculations(
             )
 
         if plot_study_mean_dlp_over_time:
-            return_structure["studyDLPoverTime"] = altair_linechart_average(
+            df_time_series = create_dataframe_time_series(
                 df,
                 "study_description",
                 "total_dlp",
-                average_choice=plot_average_choice,
-                time_unit=plot_study_mean_dlp_over_time_period,
-                value_axis_title="DLP (mGy.cm",
-                legend_title="Study description"
-            ).to_json()
+                df_date_col="study_date",
+                time_period=plot_study_mean_dlp_over_time_period,
+                average=plot_average_choice
+            )
+
+            if plot_average_choice in ["mean", "both"]:
+                return_structure["studyMeanDLPoverTime"] = plotly_timeseries_linechart(
+                    df_time_series,
+                    "study_description",
+                    "meantotal_dlp",
+                    "study_date",
+                    value_axis_title="Mean DLP (mGy.cm)",
+                    name_axis_title="Study date",
+                    legend_title="Study description"
+                )
+
+            if plot_average_choice in ["median", "both"]:
+                return_structure["studyMedianDLPoverTime"] = plotly_timeseries_linechart(
+                    df_time_series,
+                    "study_description",
+                    "mediantotal_dlp",
+                    "study_date",
+                    value_axis_title="Median DLP (mGy.cm)",
+                    name_axis_title="Study date",
+                    legend_title="Study description"
+                )
 
         if plot_study_per_day_and_hour:
             return_structure["studyWorkloadData"] = altair_barchart_workload(

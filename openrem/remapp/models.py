@@ -417,12 +417,16 @@ class UserProfile(models.Model):
     Table to store user profile settings
     """
 
-    DAYS = "yearmonthdate"
-    MONTHS = "yearmonth"
-    YEARS = "year"
+    DAYS = "D"
+    WEEKS = "W"
+    MONTHS = "M"
+    QUARTERS = "Q"
+    YEARS = "A"
     TIME_PERIOD = (
         (DAYS, "Days"),
+        (WEEKS, "Weeks"),
         (MONTHS, "Months"),
+        (QUARTERS, "Quarters"),
         (YEARS, "Years"),
     )
 

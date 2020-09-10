@@ -111,8 +111,11 @@ $(document).ready(function() {
             }
 
             // DLP over time chart data
-            if(typeof json.studyDLPoverTime !== "undefined") {
-                vegaEmbed('#studyAverageDLPOverTimeChartDiv',  JSON.parse(json.studyDLPoverTime)).catch(console.error);
+            if(typeof json.studyMeanDLPoverTime !== "undefined") {
+                $("#studyMeanDLPOverTimeChartDiv").html(json.studyMeanDLPoverTime);
+            }
+            if(typeof json.studyMedianDLPoverTime !== "undefined") {
+                $("#studyMedianDLPOverTimeChartDiv").html(json.studyMedianDLPoverTime);
             }
 
             // Study workload chart data

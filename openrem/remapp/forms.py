@@ -56,11 +56,15 @@ from .models import (
 logger = logging.getLogger()
 
 DAYS = "days"
+WEEKS = "weeks"
 MONTHS = "months"
+QUARTERS = "quarters"
 YEARS = "years"
 TIME_PERIOD = (
     (DAYS, "Days"),
+    (WEEKS, "Weeks"),
     (MONTHS, "Months"),
+    (QUARTERS, "Quarters"),
     (YEARS, "Years"),
 )
 

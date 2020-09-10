@@ -746,19 +746,32 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion10" href="#collapseWeeklyStudyMeanChart">
+                            <a data-toggle="collapse" data-parent="#accordion10" href="#collapseWeeklyStudyMeanChart" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
                                 {% if request.user.userprofile.plotAverageChoice == 'mean' %}
-                                    Charts of mean DLP of each study type over time ({{ request.user.userprofile.plotCTStudyMeanDLPOverTimePeriod }}).
+                                    Chart of mean DLP of each study type over time ({{ request.user.userprofile.plotCTStudyMeanDLPOverTimePeriod }}).
+                                {% elif request.user.userprofile.plotAverageChoice == 'median' %}
+                                    Chart of median DLP of each study type over time ({{ request.user.userprofile.plotCTStudyMeanDLPOverTimePeriod }}).
                                 {% else %}
-                                    Charts of median DLP of each study type over time ({{ request.user.userprofile.plotCTStudyMeanDLPOverTimePeriod }}).
+                                    Charts of mean and median DLP of each study type over time ({{ request.user.userprofile.plotCTStudyMeanDLPOverTimePeriod }}).
                                 {% endif %}
                             </a>
                         </h4>
                     </div>
                     <div id="collapseWeeklyStudyMeanChart" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div id="studyAverageDLPOverTimeChartDiv"></div>
+                        {% if request.user.userprofile.plotAverageChoice in 'mean both' %}
+                        <div id="studyMeanDLPOverTimeChartParentDiv" class="panel-body">
+                            <div id="studyMeanDLPOverTimeChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('studyMeanDLPOverTimeChartDiv', 'studyMeanDLPOverTimeChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
                         </div>
+                        {% endif %}
+                        {% if request.user.userprofile.plotAverageChoice in 'median both' %}
+                        <div id="studyMedianDLPOverTimeChartParentDiv" class="panel-body">
+                            <div id="studyMedianDLPOverTimeChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('studyMedianDLPOverTimeChartDiv', 'studyMedianDLPOverTimeChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
