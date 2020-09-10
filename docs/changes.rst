@@ -4,6 +4,7 @@ OpenREM version history
 
 1.0.0b1 (2020-xx-xx)
 --------------------
+* :issue:`854`  Interface: added date constraints to links on homepage
 * :issue:`853`  Testing: reduced Bitbucket pipeline minutes usage
 * :issue:`852`  Code quality: skin dose code formatted with Black
 * :issue:`850`  Emails: added oldest study accession number to high fluoro dose alert email subject
