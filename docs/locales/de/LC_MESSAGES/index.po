@@ -32,20 +32,10 @@ msgid ""
 "form that is suitable for further analysis by suitably qualified medical "
 "physics personnel."
 msgstr ""
-"OpenREM is a free, open source application for patient radiation dose "
-"monitoring. The software is capable of importing and displaying data "
-"from a wide variety of x-ray dose related sources with filtering, charts "
-"and analysis. The software also enables easy export of the data in a "
-"form that is suitable for further analysis by suitably qualified medical "
-"physics personnel. Please see `openrem.org <http://openrem.org>`_ for "
-"more details."
 
 #: ../../index.rst:16 5ddd8706b5a54da396546d06ba69dfd9
-#, fuzzy
 msgid "Please see `openrem.org <https://openrem.org>`_ for more details."
 msgstr ""
-"Die deutsche Übersetzung der Dokumente befindet sich in der "
-"Anfangsphase, wird jedoch hier angezeigt, wenn sie erstellt werden."
 
 #: ../../index.rst:18 bdf2e13bf7ce4db08941ac0f54fd37c8
 msgid ""
@@ -61,8 +51,9 @@ msgid ""
 "These docs are in British English - if you want to help translate them "
 "into other languages please get in touch:"
 msgstr ""
-"Diese Dokumente sind in britischem Englisch - wenn Sie helfen möchten, "
-"sie in andere Sprachen zu übersetzen, kontaktieren Sie uns bitte:"
+"Dies ist die deutsche Übersetzung der Dokumente in einem frühen Stadium. "
+"Wenn Sie bei der Übersetzung helfen möchten, setzen Sie sich bitte mit uns "
+"in Verbindung:"
 
 #: ../../index.rst:24 65d9f38feb094fb4a0a11ee5b95b09fc
 msgid "`@_OpenREM <https://twitter.com/_OpenREM>`_"
