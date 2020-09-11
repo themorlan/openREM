@@ -1369,6 +1369,9 @@ def ct_summary_list_filter(request):
             user_profile.plotAverageChoice = chart_options_form.cleaned_data[
                 "plotMeanMedianOrBoth"
             ]
+            user_profile.plotGroupingChoice = chart_options_form.cleaned_data[
+                "plotGrouping"
+            ]
             user_profile.plotSeriesPerSystem = chart_options_form.cleaned_data[
                 "plotSeriesPerSystem"
             ]
@@ -1396,6 +1399,7 @@ def ct_summary_list_filter(request):
                 "plotCTStudyMeanDLPOverTime": user_profile.plotCTStudyMeanDLPOverTime,
                 "plotCTStudyMeanDLPOverTimePeriod": user_profile.plotCTStudyMeanDLPOverTimePeriod,
                 "plotMeanMedianOrBoth": user_profile.plotAverageChoice,
+                "plotGrouping": user_profile.plotGroupingChoice,
                 "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
                 "plotHistograms": user_profile.plotHistograms,
             }
@@ -1491,6 +1495,7 @@ def ct_summary_chart_data(request):
         altair_timeunit,
         user_profile.plotCTStudyPerDayAndHour,
         user_profile.plotAverageChoice,
+        user_profile.plotGroupingChoice,
         user_profile.plotSeriesPerSystem,
         user_profile.plotHistogramBins,
         user_profile.plotHistograms,
@@ -1521,6 +1526,7 @@ def ct_plot_calculations(
     plot_study_mean_dlp_over_time_period,
     plot_study_per_day_and_hour,
     plot_average_choice,
+    plot_grouping_choice,
     plot_series_per_systems,
     plot_histogram_bins,
     plot_histograms,
@@ -1683,12 +1689,21 @@ def ct_plot_calculations(
                 )
 
             if plot_histograms:
+                category_names_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+                group_by_col = "x_ray_system_name"
+                legend_title = "Acquisition protocol"
+                if plot_grouping_choice == "series":
+                    category_names_col = "x_ray_system_name"
+                    group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+                    legend_title = "System"
+
                 return_structure["acquisitionHistDLPData"] = plotly_histogram(
                     df,
-                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                    group_by_col,
                     "ctradiationdose__ctirradiationeventdata__dlp",
+                    df_category_name_col=category_names_col,
                     value_axis_title="DLP (mGy.cm)",
-                    name_axis_title="Acquisition protocol",
+                    legend_title=legend_title,
                     n_bins=plot_histogram_bins
                 )
 
@@ -1712,12 +1727,21 @@ def ct_plot_calculations(
                 )
 
             if plot_histograms:
+                category_names_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+                group_by_col = "x_ray_system_name"
+                legend_title = "Acquisition protocol"
+                if plot_grouping_choice == "series":
+                    category_names_col = "x_ray_system_name"
+                    group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+                    legend_title = "System"
+
                 return_structure["acquisitionHistCTDIData"] = plotly_histogram(
                     df,
-                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                    group_by_col,
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    df_category_name_col=category_names_col,
                     value_axis_title="CTDI (mGy.cm)",
-                    name_axis_title="Acquisition protocol",
+                    legend_title=legend_title,
                     n_bins=plot_histogram_bins
                 )
 
@@ -1729,25 +1753,43 @@ def ct_plot_calculations(
             )
 
         if plot_acquisition_ctdi_vs_mass:
+            category_names_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+            group_by_col = "x_ray_system_name"
+            legend_title = "Acquisition protocol"
+            if plot_grouping_choice == "series":
+                category_names_col = "x_ray_system_name"
+                group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+                legend_title = "System"
+
             return_structure["acqusitionScatterCTDIvsMass"] = plotly_scatter(
                 df,
                 "patientstudymoduleattr__patient_weight",
                 "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                category_names_col,
+                df_facet_col=group_by_col,
                 x_axis_title="Patient mass (kg)",
                 y_axis_title="CTDI (mGy)",
-                legend_title="Acquisition protocol"
+                legend_title=legend_title
             )
 
         if plot_acquisition_dlp_vs_mass:
+            category_names_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+            group_by_col = "x_ray_system_name"
+            legend_title = "Acquisition protocol"
+            if plot_grouping_choice == "series":
+                category_names_col = "x_ray_system_name"
+                group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+                legend_title = "System"
+
             return_structure["acqusitionScatterDLPvsMass"] = plotly_scatter(
                 df,
                 "patientstudymoduleattr__patient_weight",
                 "ctradiationdose__ctirradiationeventdata__dlp",
-                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                category_names_col,
+                df_facet_col=group_by_col,
                 x_axis_title="Patient mass (kg)",
                 y_axis_title="DLP (mGy.cm)",
-                legend_title="Acquisition protocol"
+                legend_title=legend_title
             )
 
     #######################################################################
@@ -1808,12 +1850,21 @@ def ct_plot_calculations(
                 )
 
             if plot_histograms:
+                category_names_col = "study_description"
+                group_by_col = "x_ray_system_name"
+                legend_title = "Study description"
+                if plot_grouping_choice == "series":
+                    category_names_col = "x_ray_system_name"
+                    group_by_col = "study_description"
+                    legend_title = "System"
+
                 return_structure["studyHistDLPData"] = plotly_histogram(
                     df,
-                    "study_description",
+                    group_by_col,
                     "total_dlp",
+                    df_category_name_col=category_names_col,
                     value_axis_title="DLP (mGy.cm)",
-                    name_axis_title="Study description",
+                    legend_title=legend_title,
                     n_bins=plot_histogram_bins
                 )
 
@@ -1837,12 +1888,21 @@ def ct_plot_calculations(
                 )
 
             if plot_histograms:
+                category_names_col = "study_description"
+                group_by_col = "x_ray_system_name"
+                legend_title = "Study description"
+                if plot_grouping_choice == "series":
+                    category_names_col = "x_ray_system_name"
+                    group_by_col = "study_description"
+                    legend_title = "System"
+
                 return_structure["studyHistCTDIData"] = plotly_histogram(
                     df,
-                    "study_description",
+                    group_by_col,
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    df_category_name_col=category_names_col,
                     value_axis_title="CTDI (mGy)",
-                    name_axis_title="Study description",
+                    legend_title=legend_title,
                     n_bins=plot_histogram_bins
                 )
 
@@ -1866,12 +1926,21 @@ def ct_plot_calculations(
                 )
 
             if plot_histograms:
+                category_names_col = "study_description"
+                group_by_col = "x_ray_system_name"
+                legend_title = "Study description"
+                if plot_grouping_choice == "series":
+                    category_names_col = "x_ray_system_name"
+                    group_by_col = "study_description"
+                    legend_title = "System"
+
                 return_structure["studyHistNumEventsData"] = plotly_histogram(
                     df,
-                    "study_description",
+                    group_by_col,
                     "number_of_events",
+                    df_category_name_col=category_names_col,
                     value_axis_title="Events",
-                    name_axis_title="Study description",
+                    legend_title=legend_title,
                     n_bins=plot_histogram_bins
                 )
 
@@ -1895,12 +1964,21 @@ def ct_plot_calculations(
                 )
 
             if plot_histograms:
+                category_names_col = "requested_procedure_code_meaning"
+                group_by_col = "x_ray_system_name"
+                legend_title = "Requested procedure"
+                if plot_grouping_choice == "series":
+                    category_names_col = "x_ray_system_name"
+                    group_by_col = "requested_procedure_code_meaning"
+                    legend_title = "System"
+
                 return_structure["requestHistData"] = plotly_histogram(
                     df,
-                    "requested_procedure_code_meaning",
+                    group_by_col,
                     "total_dlp",
+                    df_category_name_col=category_names_col,
                     value_axis_title="DLP (mGy.cm)",
-                    name_axis_title="Requested procedure",
+                    legend_title=legend_title,
                     n_bins=plot_histogram_bins
                 )
 
@@ -1924,12 +2002,21 @@ def ct_plot_calculations(
                 )
 
             if plot_histograms:
+                category_names_col = "requested_procedure_code_meaning"
+                group_by_col = "x_ray_system_name"
+                legend_title = "Requested procedure"
+                if plot_grouping_choice == "series":
+                    category_names_col = "x_ray_system_name"
+                    group_by_col = "requested_procedure_code_meaning"
+                    legend_title = "System"
+
                 return_structure["requestHistNumEventsData"] = plotly_histogram(
                     df,
-                    "requested_procedure_code_meaning",
+                    group_by_col,
                     "number_of_events",
+                    df_category_name_col=category_names_col,
                     value_axis_title="Events",
-                    name_axis_title="Requested procedure",
+                    legend_title=legend_title,
                     n_bins=plot_histogram_bins
                 )
 

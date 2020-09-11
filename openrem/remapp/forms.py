@@ -111,6 +111,13 @@ ITEMS_PER_PAGE = (
     (400, "400"),
 )
 
+SYSTEM = "system"
+SERIES = "series"
+CHART_GROUPING = (
+    (SYSTEM, "System names"),
+    (SERIES, "Series item names"),
+)
+
 
 class SizeUploadForm(forms.Form):
     """Form for patient size csv file upload
@@ -196,10 +203,9 @@ class DXChartOptionsForm(forms.Form):
     plotDXAcquisitionMeanDAPOverTimePeriod = forms.ChoiceField(
         label="Time period", choices=TIME_PERIOD, required=False
     )
-    if "postgresql" in settings.DATABASES["default"]["ENGINE"]:
-        plotMeanMedianOrBoth = forms.ChoiceField(
-            label="Average to use", choices=AVERAGES, required=False
-        )
+    plotMeanMedianOrBoth = forms.ChoiceField(
+        label="Average to use", choices=AVERAGES, required=False
+    )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
     )
@@ -254,10 +260,12 @@ class CTChartOptionsForm(forms.Form):
     plotCTStudyMeanDLPOverTimePeriod = forms.ChoiceField(
         label="Time period", choices=TIME_PERIOD, required=False
     )
-    if "postgresql" in settings.DATABASES["default"]["ENGINE"]:
-        plotMeanMedianOrBoth = forms.ChoiceField(
-            label="Average to use", choices=AVERAGES, required=False
-        )
+    plotMeanMedianOrBoth = forms.ChoiceField(
+        label="Average to use", choices=AVERAGES, required=False
+    )
+    plotGrouping = forms.ChoiceField(
+        label="Histogram and scatter grouping", choices=CHART_GROUPING, required=False
+    )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
     )
@@ -278,10 +286,9 @@ class RFChartOptionsForm(forms.Form):
     plotRFStudyDAP = forms.BooleanField(label="DAP per study", required=False)
     plotRFRequestFreq = forms.BooleanField(label="Request frequency", required=False)
     plotRFRequestDAP = forms.BooleanField(label="DAP per request", required=False)
-    if "postgresql" in settings.DATABASES["default"]["ENGINE"]:
-        plotMeanMedianOrBoth = forms.ChoiceField(
-            label="Average to use", choices=AVERAGES, required=False
-        )
+    plotMeanMedianOrBoth = forms.ChoiceField(
+        label="Average to use", choices=AVERAGES, required=False
+    )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
     )
@@ -323,8 +330,7 @@ class MGChartOptionsForm(forms.Form):
     plotMGmAsvsThickness = forms.BooleanField(
         label="mAs vs. compressed thickness", required=False
     )
-    # if 'postgresql' in settings.DATABASES['default']['ENGINE']:
-    #     plotMeanMedianOrBoth = forms.ChoiceField(label='Average to use', choices=AVERAGES, required=False)
+    # plotMeanMedianOrBoth = forms.ChoiceField(label='Average to use', choices=AVERAGES, required=False)
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
     )
@@ -450,10 +456,9 @@ class GeneralChartOptionsDisplayForm(forms.Form):
     """
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
-    if "postgresql" in settings.DATABASES["default"]["ENGINE"]:
-        plotMeanMedianOrBoth = forms.ChoiceField(
-            label="Average to use", choices=AVERAGES, required=False
-        )
+    plotMeanMedianOrBoth = forms.ChoiceField(
+        label="Average to use", choices=AVERAGES, required=False
+    )
     plotInitialSortingDirection = forms.ChoiceField(
         label="Default sorting direction", choices=SORTING_DIRECTION, required=False
     )
@@ -468,6 +473,9 @@ class GeneralChartOptionsDisplayForm(forms.Form):
     )
     plotCaseInsensitiveCategories = forms.BooleanField(
         label="Case-insensitive categories", required=False
+    )
+    plotGrouping = forms.ChoiceField(
+        label="Histogram and scatter grouping", choices=CHART_GROUPING, required=False
     )
 
 

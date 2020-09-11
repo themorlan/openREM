@@ -175,10 +175,11 @@ def plotly_barchart(
 
 def plotly_histogram(
         df,
-        df_name_col,
+        df_facet_col,
         df_value_col,
+        df_category_name_col="x_ray_system_name",
         value_axis_title="",
-        name_axis_title="",
+        legend_title="System",
         n_bins=10
 ):
     from plotly.offline import plot
@@ -188,16 +189,15 @@ def plotly_histogram(
         df,
         x=df_value_col,
         nbins=n_bins,
-        color=df_name_col,
         barmode="group",
-        facet_col="x_ray_system_name",
-        facet_col_wrap=2,
+        color=df_category_name_col,
+        facet_col=df_facet_col,
+        facet_col_wrap=3,
         facet_row_spacing=0.05,
         facet_col_spacing=0.05,
-        labels = {
+        labels={
             df_value_col: value_axis_title,
-            df_name_col: name_axis_title,
-            "x_ray_system_name": "System"
+            df_category_name_col: legend_title
         }
     )
 
@@ -249,7 +249,7 @@ def plotly_timeseries_linechart(
         y=df_value_col,
         color=df_name_col,
         facet_col="x_ray_system_name",
-        facet_col_wrap=2,
+        facet_col_wrap=3,
         facet_row_spacing=0.05,
         facet_col_spacing=0.05,
         labels={
@@ -273,6 +273,8 @@ def plotly_scatter(
         df_x_value_col,
         df_y_value_col,
         df_category_name_col,
+        df_facet_col="x_ray_system_name",
+        facet_title="System",
         x_axis_title="",
         y_axis_title="",
         legend_title=""
@@ -285,15 +287,15 @@ def plotly_scatter(
         x=df_x_value_col,
         y=df_y_value_col,
         color=df_category_name_col,
-        facet_col="x_ray_system_name",
-        facet_col_wrap=2,
+        facet_col=df_facet_col,
+        facet_col_wrap=3,
         facet_row_spacing=0.05,
         facet_col_spacing=0.05,
         labels={
             df_x_value_col: x_axis_title,
             df_y_value_col: y_axis_title,
             df_category_name_col: legend_title,
-            "x_ray_system_name": "System"
+            df_facet_col: facet_title
         }
     )
 
@@ -317,7 +319,7 @@ def plotly_barchart_weekdays(
         x=df_name_col,
         y=df_value_col,
         facet_col="x_ray_system_name",
-        facet_col_wrap=2,
+        facet_col_wrap=3,
         facet_row_spacing=0.10,
         facet_col_spacing=0.05,
         color="x_ray_system_name",

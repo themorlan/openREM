@@ -473,6 +473,13 @@ class UserProfile(models.Model):
         (400, "400"),
     )
 
+    SYSTEM = "system"
+    SERIES = "series"
+    CHART_GROUPING = (
+        (SYSTEM, "System names"),
+        (SERIES, "Series item names"),
+    )
+
     itemsPerPage = models.IntegerField(null=True, choices=ITEMS_PER_PAGE, default=25)
 
     # This field is required.
@@ -482,6 +489,8 @@ class UserProfile(models.Model):
     median_available = models.BooleanField(default=False, editable=False)
 
     plotAverageChoice = models.CharField(max_length=6, choices=AVERAGES, default=MEAN)
+
+    plotGroupingChoice = models.CharField(max_length=6, choices=CHART_GROUPING, default=MEAN)
 
     plotInitialSortingDirection = models.IntegerField(
         null=True, choices=SORTING_DIRECTION, default=DESCENDING
