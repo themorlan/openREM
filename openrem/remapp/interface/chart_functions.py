@@ -125,23 +125,27 @@ def plotly_boxplot(
     from plotly.offline import plot
     import plotly.express as px
 
-    fig = px.box(
-        df,
-        x=df_name_col,
-        y=df_value_col,
-        color="x_ray_system_name",
-        labels={
-            df_value_col: value_axis_title,
-            df_name_col: name_axis_title,
-            "x_ray_system_name": "System"
-        }
-    )
+    try:
+        fig = px.box(
+            df,
+            x=df_name_col,
+            y=df_value_col,
+            color="x_ray_system_name",
+            labels={
+                df_value_col: value_axis_title,
+                df_name_col: name_axis_title,
+                "x_ray_system_name": "System"
+            }
+        )
 
-    fig.update_xaxes(categoryorder="category ascending")
+        fig.update_xaxes(categoryorder="category ascending")
 
-    fig.update_traces(quartilemethod="exclusive")
+        fig.update_traces(quartilemethod="exclusive")
 
-    return plot(fig, output_type="div", include_plotlyjs=False)
+        return plot(fig, output_type="div", include_plotlyjs=False)
+
+    except ValueError:
+        return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
 
 
 def plotly_barchart(
@@ -154,23 +158,27 @@ def plotly_barchart(
     from plotly.offline import plot
     import plotly.express as px
 
-    fig = px.histogram(
-        df,
-        x=df_name_col,
-        y=df_value_col,
-        color="x_ray_system_name",
-        barmode="group",
-        histfunc="avg",
-        labels={
-            df_value_col: value_axis_title,
-            df_name_col: name_axis_title,
-            "x_ray_system_name": "System"
-        }
-    )
+    try:
+        fig = px.histogram(
+            df,
+            x=df_name_col,
+            y=df_value_col,
+            color="x_ray_system_name",
+            barmode="group",
+            histfunc="avg",
+            labels={
+                df_value_col: value_axis_title,
+                df_name_col: name_axis_title,
+                "x_ray_system_name": "System"
+            }
+        )
 
-    fig.update_xaxes(categoryorder="category ascending")
+        fig.update_xaxes(categoryorder="category ascending")
 
-    return plot(fig, output_type="div", include_plotlyjs=False)
+        return plot(fig, output_type="div", include_plotlyjs=False)
+
+    except ValueError:
+        return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
 
 
 def plotly_histogram(
@@ -185,25 +193,29 @@ def plotly_histogram(
     from plotly.offline import plot
     import plotly.express as px
 
-    fig = px.histogram(
-        df,
-        x=df_value_col,
-        nbins=n_bins,
-        barmode="group",
-        color=df_category_name_col,
-        facet_col=df_facet_col,
-        facet_col_wrap=3,
-        facet_row_spacing=0.05,
-        facet_col_spacing=0.05,
-        labels={
-            df_value_col: value_axis_title,
-            df_category_name_col: legend_title
-        }
-    )
+    try:
+        fig = px.histogram(
+            df,
+            x=df_value_col,
+            nbins=n_bins,
+            barmode="group",
+            color=df_category_name_col,
+            facet_col=df_facet_col,
+            facet_col_wrap=3,
+            facet_row_spacing=0.05,
+            facet_col_spacing=0.05,
+            labels={
+                df_value_col: value_axis_title,
+                df_category_name_col: legend_title
+            }
+        )
 
-    fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+        fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
-    return plot(fig, output_type="div", include_plotlyjs=False)
+        return plot(fig, output_type="div", include_plotlyjs=False)
+
+    except ValueError:
+        return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
 
 
 def plotly_stacked_histogram(
@@ -214,21 +226,25 @@ def plotly_stacked_histogram(
     from plotly.offline import plot
     import plotly.express as px
 
-    fig = px.histogram(
-        df,
-        x="x_ray_system_name",
-        color=df_name_col,
-        barmode="relative",
-        histfunc="count",
-        labels={
-            df_name_col:name_axis_title,
-            "x_ray_system_name": "System"
-        }
-    )
+    try:
+        fig = px.histogram(
+            df,
+            x="x_ray_system_name",
+            color=df_name_col,
+            barmode="relative",
+            histfunc="count",
+            labels={
+                df_name_col:name_axis_title,
+                "x_ray_system_name": "System"
+            }
+        )
 
-    fig.update_xaxes(categoryorder="category ascending")
+        fig.update_xaxes(categoryorder="category ascending")
 
-    return plot(fig, output_type="div", include_plotlyjs=False)
+        return plot(fig, output_type="div", include_plotlyjs=False)
+
+    except ValueError:
+        return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
 
 
 def plotly_timeseries_linechart(
@@ -244,29 +260,33 @@ def plotly_timeseries_linechart(
     from plotly.offline import plot
     import plotly.express as px
 
-    fig = px.scatter(
-        df,
-        x=df_date_col,
-        y=df_value_col,
-        color=df_name_col,
-        facet_col=facet_col,
-        facet_col_wrap=3,
-        facet_row_spacing=0.05,
-        facet_col_spacing=0.05,
-        labels={
-            df_value_col: value_axis_title,
-            df_name_col: legend_title,
-            df_date_col: name_axis_title,
-            "x_ray_system_name": "System"
-        }
-    )
+    try:
+        fig = px.scatter(
+            df,
+            x=df_date_col,
+            y=df_value_col,
+            color=df_name_col,
+            facet_col=facet_col,
+            facet_col_wrap=3,
+            facet_row_spacing=0.05,
+            facet_col_spacing=0.05,
+            labels={
+                df_value_col: value_axis_title,
+                df_name_col: legend_title,
+                df_date_col: name_axis_title,
+                "x_ray_system_name": "System"
+            }
+        )
 
-    for data_set in fig.data:
-        data_set.update(mode="markers+lines")
+        for data_set in fig.data:
+            data_set.update(mode="markers+lines")
 
-    fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+        fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
-    return plot(fig, output_type="div", include_plotlyjs=False)
+        return plot(fig, output_type="div", include_plotlyjs=False)
+
+    except ValueError:
+        return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
 
 
 def plotly_scatter(
@@ -283,26 +303,29 @@ def plotly_scatter(
     from plotly.offline import plot
     import plotly.express as px
 
-    fig = px.scatter(
-        df,
-        x=df_x_value_col,
-        y=df_y_value_col,
-        color=df_category_name_col,
-        facet_col=df_facet_col,
-        facet_col_wrap=3,
-        facet_row_spacing=0.05,
-        facet_col_spacing=0.05,
-        labels={
-            df_x_value_col: x_axis_title,
-            df_y_value_col: y_axis_title,
-            df_category_name_col: legend_title,
-            df_facet_col: facet_title
-        }
-    )
+    try:
+        fig = px.scatter(
+            df,
+            x=df_x_value_col,
+            y=df_y_value_col,
+            color=df_category_name_col,
+            facet_col=df_facet_col,
+            facet_col_wrap=3,
+            facet_row_spacing=0.05,
+            facet_col_spacing=0.05,
+            labels={
+                df_x_value_col: x_axis_title,
+                df_y_value_col: y_axis_title,
+                df_category_name_col: legend_title,
+                df_facet_col: facet_title
+            }
+        )
+        fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
-    fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+        return plot(fig, output_type="div", include_plotlyjs=False)
 
-    return plot(fig, output_type="div", include_plotlyjs=False)
+    except ValueError:
+        return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
 
 
 def plotly_barchart_weekdays(
@@ -315,27 +338,31 @@ def plotly_barchart_weekdays(
     from plotly.offline import plot
     import plotly.express as px
 
-    fig = px.bar(
-        df,
-        x=df_name_col,
-        y=df_value_col,
-        facet_col="x_ray_system_name",
-        facet_col_wrap=3,
-        facet_row_spacing=0.10,
-        facet_col_spacing=0.05,
-        color="x_ray_system_name",
-        labels={
-            df_name_col: name_axis_title,
-            df_value_col: value_axis_title,
-            "x_ray_system_name": "System"
-        }
-    )
+    try:
+        fig = px.bar(
+            df,
+            x=df_name_col,
+            y=df_value_col,
+            facet_col="x_ray_system_name",
+            facet_col_wrap=3,
+            facet_row_spacing=0.10,
+            facet_col_spacing=0.05,
+            color="x_ray_system_name",
+            labels={
+                df_name_col: name_axis_title,
+                df_value_col: value_axis_title,
+                "x_ray_system_name": "System"
+            }
+        )
 
-    fig.update_xaxes(categoryarray=["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])
+        fig.update_xaxes(categoryarray=["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])
 
-    fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+        fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
-    return plot(fig, output_type="div", include_plotlyjs=False)
+        return plot(fig, output_type="div", include_plotlyjs=False)
+
+    except ValueError:
+        return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
 
 
 def altair_barchart_average(

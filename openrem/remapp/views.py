@@ -1336,6 +1336,12 @@ def ct_summary_list_filter(request):
             user_profile.plotCTAcquisitionDLPvsMass = chart_options_form.cleaned_data[
                 "plotCTAcquisitionDLPvsMass"
             ]
+            user_profile.plotCTAcquisitionCTDIOverTime = chart_options_form.cleaned_data[
+                "plotCTAcquisitionCTDIOverTime"
+            ]
+            user_profile.plotCTAcquisitionDLPOverTime = chart_options_form.cleaned_data[
+                "plotCTAcquisitionDLPOverTime"
+            ]
             user_profile.plotCTStudyMeanDLP = chart_options_form.cleaned_data[
                 "plotCTStudyMeanDLP"
             ]
@@ -1348,6 +1354,12 @@ def ct_summary_list_filter(request):
             user_profile.plotCTStudyNumEvents = chart_options_form.cleaned_data[
                 "plotCTStudyNumEvents"
             ]
+            user_profile.plotCTStudyPerDayAndHour = chart_options_form.cleaned_data[
+                "plotCTStudyPerDayAndHour"
+            ]
+            user_profile.plotCTStudyMeanDLPOverTime = chart_options_form.cleaned_data[
+                "plotCTStudyMeanDLPOverTime"
+            ]
             user_profile.plotCTRequestMeanDLP = chart_options_form.cleaned_data[
                 "plotCTRequestMeanDLP"
             ]
@@ -1357,11 +1369,8 @@ def ct_summary_list_filter(request):
             user_profile.plotCTRequestNumEvents = chart_options_form.cleaned_data[
                 "plotCTRequestNumEvents"
             ]
-            user_profile.plotCTStudyPerDayAndHour = chart_options_form.cleaned_data[
-                "plotCTStudyPerDayAndHour"
-            ]
-            user_profile.plotCTStudyMeanDLPOverTime = chart_options_form.cleaned_data[
-                "plotCTStudyMeanDLPOverTime"
+            user_profile.plotCTRequestDLPOverTime = chart_options_form.cleaned_data[
+                "plotCTRequestDLPOverTime"
             ]
             user_profile.plotCTOverTimePeriod = chart_options_form.cleaned_data[
                 "plotCTOverTimePeriod"
@@ -1388,6 +1397,8 @@ def ct_summary_list_filter(request):
                 "plotCTAcquisitionFreq": user_profile.plotCTAcquisitionFreq,
                 "plotCTAcquisitionCTDIvsMass": user_profile.plotCTAcquisitionCTDIvsMass,
                 "plotCTAcquisitionDLPvsMass": user_profile.plotCTAcquisitionDLPvsMass,
+                "plotCTAcquisitionCTDIOverTime": user_profile.plotCTAcquisitionCTDIOverTime,
+                "plotCTAcquisitionDLPOverTime": user_profile.plotCTAcquisitionDLPOverTime,
                 "plotCTStudyMeanDLP": user_profile.plotCTStudyMeanDLP,
                 "plotCTStudyMeanCTDI": user_profile.plotCTStudyMeanCTDI,
                 "plotCTStudyFreq": user_profile.plotCTStudyFreq,
@@ -1395,6 +1406,7 @@ def ct_summary_list_filter(request):
                 "plotCTRequestMeanDLP": user_profile.plotCTRequestMeanDLP,
                 "plotCTRequestFreq": user_profile.plotCTRequestFreq,
                 "plotCTRequestNumEvents": user_profile.plotCTRequestNumEvents,
+                "plotCTRequestDLPOverTime": user_profile.plotCTRequestDLPOverTime,
                 "plotCTStudyPerDayAndHour": user_profile.plotCTStudyPerDayAndHour,
                 "plotCTStudyMeanDLPOverTime": user_profile.plotCTStudyMeanDLPOverTime,
                 "plotCTOverTimePeriod": user_profile.plotCTOverTimePeriod,
@@ -1483,12 +1495,28 @@ def generate_required_charts_list(profile):
                                 "var_name": "acquisitionFrequency"})
 
     if profile.plotCTAcquisitionCTDIvsMass:
-        required_charts.append({"title": "Chart of CTDI vs patient mass",
+        required_charts.append({"title": "Chart of CTDI vs patient mass for each acquisition protocol",
                                 "var_name": "acquisitionScatterCTDIvsMass"})
 
     if profile.plotCTAcquisitionDLPvsMass:
-        required_charts.append({"title": "Chart of DLP vs patient mass",
+        required_charts.append({"title": "Chart of DLP vs patient mass for each acquisition protocol",
                                 "var_name": "acquisitionScatterDLPvsMass"})
+
+    if profile.plotCTAcquisitionCTDIOverTime:
+        if profile.plotAverageChoice in ["mean", "both"]:
+            required_charts.append({"title": "Chart of mean CTDI per acquisition protocol over time (" + profile.plotCTOverTimePeriod + ")",
+                                    "var_name": "acquisitionMeanCTDIOverTime"})
+        if profile.plotAverageChoice in ["median", "both"]:
+            required_charts.append({"title": "Chart of median CTDI per acquisition protocol over time (" + profile.plotCTOverTimePeriod + ")",
+                                    "var_name": "acquisitionMedianCTDIOverTime"})
+
+    if profile.plotCTAcquisitionDLPOverTime:
+        if profile.plotAverageChoice in ["mean", "both"]:
+            required_charts.append({"title": "Chart of mean DLP per acquisition protocol over time (" + profile.plotCTOverTimePeriod + ")",
+                                    "var_name": "acquisitionMeanDLPOverTime"})
+        if profile.plotAverageChoice in ["median", "both"]:
+            required_charts.append({"title": "Chart of median DLP per acquisition protocol over time (" + profile.plotCTOverTimePeriod + ")",
+                                    "var_name": "acquisitionMedianDLPOverTime"})
 
     if profile.plotCTStudyMeanDLP:
         if profile.plotAverageChoice in ["mean", "both"]:
@@ -1538,6 +1566,10 @@ def generate_required_charts_list(profile):
             required_charts.append({"title": "Histogram of DLP for each requested procedure",
                                     "var_name": "requestHistogramDLP"})
 
+    if profile.plotCTRequestFreq:
+        required_charts.append({"title": "Chart of requested procedure frequency",
+                                "var_name": "requestFrequency"})
+
     if profile.plotCTRequestNumEvents:
         if profile.plotAverageChoice in ["mean", "both"]:
             required_charts.append({"title": "Chart of mean number of events for each requested procedure",
@@ -1548,6 +1580,16 @@ def generate_required_charts_list(profile):
         if profile.plotHistograms:
             required_charts.append({"title": "Histogram of number of events for each requested procedure",
                                     "var_name": "requestHistogramNumEvents"})
+
+    if profile.plotCTRequestDLPOverTime:
+        if profile.plotAverageChoice in ["mean", "both"]:
+            required_charts.append({
+                                       "title": "Chart of mean DLP per requested procedure over time (" + profile.plotCTOverTimePeriod + ")",
+                                       "var_name": "requestMeanDLPOverTime"})
+        if profile.plotAverageChoice in ["median", "both"]:
+            required_charts.append({
+                                       "title": "Chart of median DLP per requested procedure over time (" + profile.plotCTOverTimePeriod + ")",
+                                       "var_name": "requestMedianDLPOverTime"})
 
     if profile.plotCTStudyPerDayAndHour:
         required_charts.append({"title": "Chart of study description workload",
@@ -1602,9 +1644,12 @@ def ct_summary_chart_data(request):
         user_profile.plotCTAcquisitionMeanDLP,
         user_profile.plotCTAcquisitionCTDIvsMass,
         user_profile.plotCTAcquisitionDLPvsMass,
+        user_profile.plotCTAcquisitionCTDIOverTime,
+        user_profile.plotCTAcquisitionDLPOverTime,
         user_profile.plotCTRequestFreq,
         user_profile.plotCTRequestMeanDLP,
         user_profile.plotCTRequestNumEvents,
+        user_profile.plotCTRequestDLPOverTime,
         user_profile.plotCTStudyFreq,
         user_profile.plotCTStudyMeanDLP,
         user_profile.plotCTStudyMeanCTDI,
@@ -1633,15 +1678,18 @@ def ct_plot_calculations(
     plot_acquisition_mean_dlp,
     plot_acquisition_ctdi_vs_mass,
     plot_acquisition_dlp_vs_mass,
+    plot_acquisition_ctdi_over_time,
+    plot_acquisition_dlp_over_time,
     plot_request_freq,
     plot_request_mean_dlp,
     plot_request_num_events,
+    plot_request_dlp_over_time,
     plot_study_freq,
     plot_study_mean_dlp,
     plot_study_mean_ctdi,
     plot_study_num_events,
     plot_study_mean_dlp_over_time,
-    plot_study_mean_dlp_over_time_period,
+    plot_over_time_period,
     plot_study_per_day_and_hour,
     plot_average_choice,
     plot_grouping_choice,
@@ -1677,6 +1725,7 @@ def ct_plot_calculations(
         or plot_request_mean_dlp
         or plot_request_freq
         or plot_request_num_events
+        or plot_request_dlp_over_time
     ):
         prefetch_list = [
             "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
@@ -1708,14 +1757,22 @@ def ct_plot_calculations(
             # The user hasn't filtered on acquisition, so we can use the faster database querying.
             study_and_request_events = f.qs.values(*prefetch_list)
 
-    if plot_acquisition_mean_dlp or plot_acquisition_freq or plot_acquisition_mean_ctdi or plot_acquisition_ctdi_vs_mass or plot_acquisition_dlp_vs_mass:
+    if (
+        plot_acquisition_mean_dlp
+        or plot_acquisition_freq
+        or plot_acquisition_mean_ctdi
+        or plot_acquisition_ctdi_vs_mass
+        or plot_acquisition_dlp_vs_mass
+        or plot_acquisition_ctdi_over_time
+        or plot_acquisition_dlp_over_time
+    ):
         prefetch_list = [
             "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
             "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
         ]
-        if plot_acquisition_mean_dlp or plot_acquisition_dlp_vs_mass:
+        if plot_acquisition_mean_dlp or plot_acquisition_dlp_vs_mass or plot_acquisition_dlp_over_time:
             prefetch_list.append("ctradiationdose__ctirradiationeventdata__dlp")
-        if plot_acquisition_mean_ctdi or plot_acquisition_ctdi_vs_mass:
+        if plot_acquisition_mean_ctdi or plot_acquisition_ctdi_vs_mass or plot_acquisition_ctdi_over_time:
             prefetch_list.append(
                 "ctradiationdose__ctirradiationeventdata__mean_ctdivol"
             )
@@ -1754,14 +1811,16 @@ def ct_plot_calculations(
         name_fields = ["ctradiationdose__ctirradiationeventdata__acquisition_protocol"]
 
         value_fields = []
-        if plot_acquisition_mean_dlp or plot_acquisition_dlp_vs_mass:
+        if plot_acquisition_mean_dlp or plot_acquisition_dlp_vs_mass or plot_acquisition_dlp_over_time:
             value_fields.append("ctradiationdose__ctirradiationeventdata__dlp")
-        if plot_acquisition_mean_ctdi or plot_acquisition_ctdi_vs_mass:
+        if plot_acquisition_mean_ctdi or plot_acquisition_ctdi_vs_mass or plot_acquisition_ctdi_over_time:
             value_fields.append("ctradiationdose__ctirradiationeventdata__mean_ctdivol")
         if plot_acquisition_ctdi_vs_mass or plot_acquisition_dlp_vs_mass:
             value_fields.append("patientstudymoduleattr__patient_weight")
 
         date_fields = []
+        if plot_acquisition_ctdi_over_time or plot_acquisition_dlp_over_time:
+            date_fields.append("study_date")
 
         system_field = None
         if plot_series_per_systems:
@@ -1902,18 +1961,110 @@ def ct_plot_calculations(
                 legend_title=legend_title
             )
 
+        if plot_acquisition_ctdi_over_time:
+            df_time_series = create_dataframe_time_series(
+                df,
+                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                df_date_col="study_date",
+                time_period=plot_over_time_period,
+                average=plot_average_choice
+            )
+
+            category_names_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+            group_by_col = "x_ray_system_name"
+            if plot_grouping_choice == "series":
+                category_names_col = "x_ray_system_name"
+                group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+
+            if plot_average_choice in ["mean", "both"]:
+                return_structure["acquisitionMeanCTDIOverTime"] = plotly_timeseries_linechart(
+                    df_time_series,
+                    category_names_col,
+                    "meanctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    "study_date",
+                    facet_col=group_by_col,
+                    value_axis_title="Mean CTDI (mGy)",
+                    name_axis_title="Study date",
+                    legend_title="Acquisition protocol"
+                )
+
+            if plot_average_choice in ["median", "both"]:
+                return_structure["acquisitionMedianCTDIOverTime"] = plotly_timeseries_linechart(
+                    df_time_series,
+                    category_names_col,
+                    "medianctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    "study_date",
+                    facet_col=group_by_col,
+                    value_axis_title="Median CTDI (mGy)",
+                    name_axis_title="Study date",
+                    legend_title="Acquisition protocol"
+                )
+
+        if plot_acquisition_dlp_over_time:
+            df_time_series = create_dataframe_time_series(
+                df,
+                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                "ctradiationdose__ctirradiationeventdata__dlp",
+                df_date_col="study_date",
+                time_period=plot_over_time_period,
+                average=plot_average_choice
+            )
+
+            category_names_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+            group_by_col = "x_ray_system_name"
+            if plot_grouping_choice == "series":
+                category_names_col = "x_ray_system_name"
+                group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+
+            if plot_average_choice in ["mean", "both"]:
+                return_structure["acquisitionMeanDLPOverTime"] = plotly_timeseries_linechart(
+                    df_time_series,
+                    category_names_col,
+                    "meanctradiationdose__ctirradiationeventdata__dlp",
+                    "study_date",
+                    facet_col=group_by_col,
+                    value_axis_title="Mean DLP (mGy.cm)",
+                    name_axis_title="Study date",
+                    legend_title="Acquisition protocol"
+                )
+
+            if plot_average_choice in ["median", "both"]:
+                return_structure["acquisitionMedianDLPOverTime"] = plotly_timeseries_linechart(
+                    df_time_series,
+                    category_names_col,
+                    "medianctradiationdose__ctirradiationeventdata__dlp",
+                    "study_date",
+                    facet_col=group_by_col,
+                    value_axis_title="Median DLP (mGy.cm)",
+                    name_axis_title="Study date",
+                    legend_title="Acquisition protocol"
+                )
+
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts
     if "study_and_request_events" in locals():
 
         name_fields = []
-        if plot_study_mean_dlp or plot_study_freq or plot_study_mean_dlp_over_time or plot_study_per_day_and_hour or plot_study_num_events or plot_study_mean_ctdi:
+        if (
+            plot_study_mean_dlp
+            or plot_study_freq
+            or plot_study_mean_dlp_over_time
+            or plot_study_per_day_and_hour
+            or plot_study_num_events
+            or plot_study_mean_ctdi
+        ):
             name_fields.append("study_description")
-        if plot_request_mean_dlp or plot_request_freq or plot_request_num_events:
+        if (
+            plot_request_mean_dlp
+            or plot_request_freq
+            or plot_request_num_events
+            or plot_request_dlp_over_time
+        ):
             name_fields.append("requested_procedure_code_meaning")
 
         value_fields = []
-        if plot_study_mean_dlp or plot_study_mean_dlp_over_time or plot_request_mean_dlp:
+        if plot_study_mean_dlp or plot_study_mean_dlp_over_time or plot_request_mean_dlp or plot_request_dlp_over_time:
             value_fields.append("total_dlp")
         if plot_study_mean_ctdi:
             value_fields.append("ctradiationdose__ctirradiationeventdata__mean_ctdivol")
@@ -1921,7 +2072,7 @@ def ct_plot_calculations(
             value_fields.append("number_of_events")
 
         date_fields = []
-        if plot_study_mean_dlp_over_time or plot_study_per_day_and_hour:
+        if plot_study_mean_dlp_over_time or plot_study_per_day_and_hour or plot_request_dlp_over_time:
             date_fields.append("study_date")
 
         system_field = None
@@ -2150,7 +2301,7 @@ def ct_plot_calculations(
                 "study_description",
                 "total_dlp",
                 df_date_col="study_date",
-                time_period=plot_study_mean_dlp_over_time_period,
+                time_period=plot_over_time_period,
                 average=plot_average_choice
             )
 
@@ -2182,6 +2333,46 @@ def ct_plot_calculations(
                     value_axis_title="Median DLP (mGy.cm)",
                     name_axis_title="Study date",
                     legend_title="Study description"
+                )
+
+        if plot_request_dlp_over_time:
+            df_time_series = create_dataframe_time_series(
+                df,
+                "requested_procedure_code_meaning",
+                "total_dlp",
+                df_date_col="study_date",
+                time_period=plot_over_time_period,
+                average=plot_average_choice
+            )
+
+            category_names_col = "requested_procedure_code_meaning"
+            group_by_col = "x_ray_system_name"
+            if plot_grouping_choice == "series":
+                category_names_col = "x_ray_system_name"
+                group_by_col = "requested_procedure_code_meaning"
+
+            if plot_average_choice in ["mean", "both"]:
+                return_structure["requestMeanDLPOverTime"] = plotly_timeseries_linechart(
+                    df_time_series,
+                    category_names_col,
+                    "meantotal_dlp",
+                    "study_date",
+                    facet_col=group_by_col,
+                    value_axis_title="Mean DLP (mGy.cm)",
+                    name_axis_title="Study date",
+                    legend_title="Requested procedure"
+                )
+
+            if plot_average_choice in ["median", "both"]:
+                return_structure["requestMedianDLPOverTime"] = plotly_timeseries_linechart(
+                    df_time_series,
+                    category_names_col,
+                    "mediantotal_dlp",
+                    "study_date",
+                    facet_col=group_by_col,
+                    value_axis_title="Median DLP (mGy.cm)",
+                    name_axis_title="Study date",
+                    legend_title="Requested procedure"
                 )
 
         if plot_study_per_day_and_hour:

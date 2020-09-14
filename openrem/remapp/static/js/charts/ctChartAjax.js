@@ -40,6 +40,23 @@ $(document).ready(function() {
                 $("#acquisitionHistogramCTDIChartDiv").html(json.acquisitionHistogramCTDIData);
             }
 
+            // Acquisition CTDI over time chart data
+            if(typeof json.acquisitionMeanCTDIOverTime !== "undefined") {
+                $("#acquisitionMeanCTDIOverTimeChartDiv").html(json.acquisitionMeanCTDIOverTime);
+            }
+            if(typeof json.acquisitionMedianCTDIOverTime !== "undefined") {
+                $("#acquisitionMedianCTDIOverTimeChartDiv").html(json.acquisitionMedianCTDIOverTime);
+            }
+
+            // Acquisition DLP over time chart data
+            if(typeof json.acquisitionMeanDLPOverTime !== "undefined") {
+                $("#acquisitionMeanDLPOverTimeChartDiv").html(json.acquisitionMeanDLPOverTime);
+            }
+            if(typeof json.acquisitionMedianDLPOverTime !== "undefined") {
+                $("#acquisitionMedianDLPOverTimeChartDiv").html(json.acquisitionMedianDLPOverTime);
+            }
+
+
             // DLP per study chart data
             if(typeof json.studyMeanDLPData !== "undefined") {
                 $("#studyMeanDLPChartDiv").html(json.studyMeanDLPData);
@@ -93,6 +110,14 @@ $(document).ready(function() {
             }
             if(typeof json.requestHistogramNumEventsData !=="undefined") {
                 $("#requestHistogramNumEventsChartDiv").html(json.requestHistogramNumEventsData);
+            }
+
+            // Requested procedure DLP over time chart data
+            if(typeof json.requestMeanDLPOverTime !== "undefined") {
+                $("#requestMeanDLPOverTimeChartDiv").html(json.requestMeanDLPOverTime);
+            }
+            if(typeof json.requestMedianDLPOverTime !== "undefined") {
+                $("#requestMedianDLPOverTimeChartDiv").html(json.requestMedianDLPOverTime);
             }
 
             // Acquisition frequency chart data start

@@ -220,42 +220,51 @@ class CTChartOptionsForm(forms.Form):
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
     plotCTAcquisitionMeanDLP = forms.BooleanField(
-        label="DLP per acquisition", required=False
+        label="Acquisition DLP", required=False
     )
     plotCTAcquisitionMeanCTDI = forms.BooleanField(
-        label=mark_safe("CTDI<sub>vol</sub> per acquisition"), required=False
+        label=mark_safe("Acquisition CTDI<sub>vol</sub>"), required=False
     )  # nosec
     plotCTAcquisitionFreq = forms.BooleanField(
         label="Acquisition frequency", required=False
     )
     plotCTAcquisitionCTDIvsMass = forms.BooleanField(
-        label="Acquisition CTDI vs mass ", required=False
+        label=mark_safe("Acquisition CTDI<sub>vol</sub> vs mass"), required=False
     )
     plotCTAcquisitionDLPvsMass = forms.BooleanField(
-        label="Acquisition DLP vs mass ", required=False
+        label="Acquisition DLP vs mass", required=False
     )
-    plotCTStudyMeanDLP = forms.BooleanField(label="DLP per study", required=False)
+    plotCTAcquisitionCTDIOverTime = forms.BooleanField(
+        label=mark_safe("Acquisition CTDI<sub>vol</sub> over time"), required=False
+    )
+    plotCTAcquisitionDLPOverTime = forms.BooleanField(
+        label="Acquisition DLP over time", required=False
+    )
+    plotCTStudyMeanDLP = forms.BooleanField(label="Study DLP", required=False)
     plotCTStudyMeanCTDI = forms.BooleanField(
-        label=mark_safe("CTDI<sub>vol</sub> per study"), required=False
+        label=mark_safe("Study CTDI<sub>vol</sub>"), required=False
     )  # nosec
     plotCTStudyFreq = forms.BooleanField(label="Study frequency", required=False)
     plotCTStudyNumEvents = forms.BooleanField(
-        label="# events per study", required=False
-    )
-    plotCTRequestMeanDLP = forms.BooleanField(
-        label="DLP per requested procedure", required=False
-    )
-    plotCTRequestFreq = forms.BooleanField(
-        label="Requested procedure frequency", required=False
-    )
-    plotCTRequestNumEvents = forms.BooleanField(
-        label="# events per requested procedure", required=False
+        label="Study events", required=False
     )
     plotCTStudyPerDayAndHour = forms.BooleanField(
         label="Study workload", required=False
     )
     plotCTStudyMeanDLPOverTime = forms.BooleanField(
         label="Study DLP over time", required=False
+    )
+    plotCTRequestMeanDLP = forms.BooleanField(
+        label="Requested procedure DLP", required=False
+    )
+    plotCTRequestFreq = forms.BooleanField(
+        label="Requested procedure frequency", required=False
+    )
+    plotCTRequestNumEvents = forms.BooleanField(
+        label="Requested procedure events", required=False
+    )
+    plotCTRequestDLPOverTime = forms.BooleanField(
+        label="Requested procedure DLP over time", required=False
     )
     plotCTOverTimePeriod = forms.ChoiceField(
         label="Time period", choices=TIME_PERIOD, required=False
@@ -264,7 +273,7 @@ class CTChartOptionsForm(forms.Form):
         label="Average to use", choices=AVERAGES, required=False
     )
     plotGrouping = forms.ChoiceField(
-        label="Histogram, scatter and over-time grouping", choices=CHART_GROUPING, required=False
+        label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
     )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
@@ -406,42 +415,51 @@ class CTChartOptionsDisplayForm(forms.Form):
     """
 
     plotCTAcquisitionMeanDLP = forms.BooleanField(
-        label="DLP per acquisition", required=False
+        label="Acquisition DLP", required=False
     )
     plotCTAcquisitionMeanCTDI = forms.BooleanField(
-        label=mark_safe("CTDI<sub>vol</sub> per acquisition"), required=False
+        label=mark_safe("Acquisition CTDI<sub>vol</sub>"), required=False
     )  # nosec
     plotCTAcquisitionFreq = forms.BooleanField(
         label="Acquisition frequency", required=False
     )
     plotCTAcquisitionCTDIvsMass = forms.BooleanField(
-        label="Acquisition CTDI vs mass ", required=False
+        label="Acquisition CTDI vs mass", required=False
     )
     plotCTAcquisitionDLPvsMass = forms.BooleanField(
-        label="Acquisition DLP vs mass ", required=False
+        label="Acquisition DLP vs mass", required=False
     )
-    plotCTStudyMeanDLP = forms.BooleanField(label="DLP per study", required=False)
+    plotCTAcquisitionCTDIOverTime = forms.BooleanField(
+        label=mark_safe("Acquisition CTDI<sub>vol</sub> over time"), required=False
+    )
+    plotCTAcquisitionDLPOverTime = forms.BooleanField(
+        label="Acquisition DLP over time", required=False
+    )
+    plotCTStudyMeanDLP = forms.BooleanField(label="Study DLP", required=False)
     plotCTStudyMeanCTDI = forms.BooleanField(
-        label=mark_safe("CTDI<sub>vol</sub> per study"), required=False
+        label=mark_safe("Study CTDI<sub>vol</sub>"), required=False
     )  # nosec
     plotCTStudyFreq = forms.BooleanField(label="Study frequency", required=False)
     plotCTStudyNumEvents = forms.BooleanField(
-        label="# events per study", required=False
-    )
-    plotCTRequestMeanDLP = forms.BooleanField(
-        label="DLP per requested procedure", required=False
-    )
-    plotCTRequestFreq = forms.BooleanField(
-        label="Requested procedure frequency", required=False
-    )
-    plotCTRequestNumEvents = forms.BooleanField(
-        label="# events per requested procedure", required=False
+        label="Study events", required=False
     )
     plotCTStudyPerDayAndHour = forms.BooleanField(
         label="Study workload", required=False
     )
     plotCTStudyMeanDLPOverTime = forms.BooleanField(
         label="Study DLP over time", required=False
+    )
+    plotCTRequestMeanDLP = forms.BooleanField(
+        label="Requested procedure DLP", required=False
+    )
+    plotCTRequestFreq = forms.BooleanField(
+        label="Requested procedure frequency", required=False
+    )
+    plotCTRequestNumEvents = forms.BooleanField(
+        label="Requested procedure events", required=False
+    )
+    plotCTRequestDLPOverTime = forms.BooleanField(
+        label="Requested procedure DLP over time", required=False
     )
     plotCTOverTimePeriod = forms.ChoiceField(
         label="Time period", choices=TIME_PERIOD, required=False
@@ -475,7 +493,7 @@ class GeneralChartOptionsDisplayForm(forms.Form):
         label="Case-insensitive categories", required=False
     )
     plotGrouping = forms.ChoiceField(
-        label="Histogram, scatter and over-time grouping", choices=CHART_GROUPING, required=False
+        label="Chart grouping", choices=CHART_GROUPING, required=False
     )
 
 

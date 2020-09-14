@@ -522,6 +522,8 @@ class UserProfile(models.Model):
     plotCTAcquisitionFreq = models.BooleanField(default=False)
     plotCTAcquisitionCTDIvsMass = models.BooleanField(default=False)
     plotCTAcquisitionDLPvsMass = models.BooleanField(default=False)
+    plotCTAcquisitionCTDIOverTime = models.BooleanField(default=False)
+    plotCTAcquisitionDLPOverTime = models.BooleanField(default=False)
     plotCTStudyMeanDLP = models.BooleanField(default=True)
     plotCTStudyMeanCTDI = models.BooleanField(default=True)
     plotCTStudyFreq = models.BooleanField(default=False)
@@ -529,6 +531,7 @@ class UserProfile(models.Model):
     plotCTRequestMeanDLP = models.BooleanField(default=False)
     plotCTRequestFreq = models.BooleanField(default=False)
     plotCTRequestNumEvents = models.BooleanField(default=False)
+    plotCTRequestDLPOverTime = models.BooleanField(default=False)
     plotCTStudyPerDayAndHour = models.BooleanField(default=False)
     plotCTStudyMeanDLPOverTime = models.BooleanField(default=False)
     plotCTOverTimePeriod = models.CharField(
