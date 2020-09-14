@@ -236,6 +236,7 @@ def plotly_timeseries_linechart(
         df_name_col,
         df_value_col,
         df_date_col,
+        facet_col="x_ray_system_name",
         value_axis_title="",
         name_axis_title="",
         legend_title=""
@@ -248,7 +249,7 @@ def plotly_timeseries_linechart(
         x=df_date_col,
         y=df_value_col,
         color=df_name_col,
-        facet_col="x_ray_system_name",
+        facet_col=facet_col,
         facet_col_wrap=3,
         facet_row_spacing=0.05,
         facet_col_spacing=0.05,

@@ -531,7 +531,7 @@ class UserProfile(models.Model):
     plotCTRequestNumEvents = models.BooleanField(default=False)
     plotCTStudyPerDayAndHour = models.BooleanField(default=False)
     plotCTStudyMeanDLPOverTime = models.BooleanField(default=False)
-    plotCTStudyMeanDLPOverTimePeriod = models.CharField(
+    plotCTOverTimePeriod = models.CharField(
         max_length=13, choices=TIME_PERIOD, default=MONTHS
     )
     plotCTInitialSortingChoice = models.CharField(

@@ -1363,8 +1363,8 @@ def ct_summary_list_filter(request):
             user_profile.plotCTStudyMeanDLPOverTime = chart_options_form.cleaned_data[
                 "plotCTStudyMeanDLPOverTime"
             ]
-            user_profile.plotCTStudyMeanDLPOverTimePeriod = chart_options_form.cleaned_data[
-                "plotCTStudyMeanDLPOverTimePeriod"
+            user_profile.plotCTOverTimePeriod = chart_options_form.cleaned_data[
+                "plotCTOverTimePeriod"
             ]
             user_profile.plotAverageChoice = chart_options_form.cleaned_data[
                 "plotMeanMedianOrBoth"
@@ -1397,7 +1397,7 @@ def ct_summary_list_filter(request):
                 "plotCTRequestNumEvents": user_profile.plotCTRequestNumEvents,
                 "plotCTStudyPerDayAndHour": user_profile.plotCTStudyPerDayAndHour,
                 "plotCTStudyMeanDLPOverTime": user_profile.plotCTStudyMeanDLPOverTime,
-                "plotCTStudyMeanDLPOverTimePeriod": user_profile.plotCTStudyMeanDLPOverTimePeriod,
+                "plotCTOverTimePeriod": user_profile.plotCTOverTimePeriod,
                 "plotMeanMedianOrBoth": user_profile.plotAverageChoice,
                 "plotGrouping": user_profile.plotGroupingChoice,
                 "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
@@ -1556,11 +1556,11 @@ def generate_required_charts_list(profile):
     if profile.plotCTStudyMeanDLPOverTime:
         if profile.plotAverageChoice in ["mean", "both"]:
             required_charts.append({
-                                       "title": "Chart of mean DLP per study description over time (" + profile.plotCTStudyMeanDLPOverTimePeriod + ")",
+                                       "title": "Chart of mean DLP per study description over time (" + profile.plotCTOverTimePeriod + ")",
                                        "var_name": "studyMeanDLPOverTime"})
         if profile.plotAverageChoice in ["median", "both"]:
             required_charts.append({
-                                       "title": "Chart of median DLP per study description over time (" + profile.plotCTStudyMeanDLPOverTimePeriod + ")",
+                                       "title": "Chart of median DLP per study description over time (" + profile.plotCTOverTimePeriod + ")",
                                        "var_name": "studyMedianDLPOverTime"})
 
     return required_charts
@@ -1593,7 +1593,7 @@ def ct_summary_chart_data(request):
     # Obtain the key name in the TIME_PERIOD tuple from the user time period choice (the key value)
     keys = list(dict(user_profile.TIME_PERIOD).keys())
     values = list(dict(user_profile.TIME_PERIOD).values())
-    plot_timeunit_period = keys[[x.lower() for x in values].index(user_profile.plotCTStudyMeanDLPOverTimePeriod)]
+    plot_timeunit_period = keys[[tp.lower() for tp in values].index(user_profile.plotCTOverTimePeriod)]
 
     return_structure = ct_plot_calculations(
         f,
@@ -2154,12 +2154,19 @@ def ct_plot_calculations(
                 average=plot_average_choice
             )
 
+            category_names_col = "study_description"
+            group_by_col = "x_ray_system_name"
+            if plot_grouping_choice == "series":
+                category_names_col = "x_ray_system_name"
+                group_by_col = "study_description"
+
             if plot_average_choice in ["mean", "both"]:
                 return_structure["studyMeanDLPOverTime"] = plotly_timeseries_linechart(
                     df_time_series,
-                    "study_description",
+                    category_names_col,
                     "meantotal_dlp",
                     "study_date",
+                    facet_col=group_by_col,
                     value_axis_title="Mean DLP (mGy.cm)",
                     name_axis_title="Study date",
                     legend_title="Study description"
@@ -2168,9 +2175,10 @@ def ct_plot_calculations(
             if plot_average_choice in ["median", "both"]:
                 return_structure["studyMedianDLPOverTime"] = plotly_timeseries_linechart(
                     df_time_series,
-                    "study_description",
+                    category_names_col,
                     "mediantotal_dlp",
                     "study_date",
+                    facet_col=group_by_col,
                     value_axis_title="Median DLP (mGy.cm)",
                     name_axis_title="Study date",
                     legend_title="Study description"

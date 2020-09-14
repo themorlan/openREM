@@ -257,14 +257,14 @@ class CTChartOptionsForm(forms.Form):
     plotCTStudyMeanDLPOverTime = forms.BooleanField(
         label="Study DLP over time", required=False
     )
-    plotCTStudyMeanDLPOverTimePeriod = forms.ChoiceField(
+    plotCTOverTimePeriod = forms.ChoiceField(
         label="Time period", choices=TIME_PERIOD, required=False
     )
     plotMeanMedianOrBoth = forms.ChoiceField(
         label="Average to use", choices=AVERAGES, required=False
     )
     plotGrouping = forms.ChoiceField(
-        label="Histogram and scatter grouping", choices=CHART_GROUPING, required=False
+        label="Histogram, scatter and over-time grouping", choices=CHART_GROUPING, required=False
     )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
@@ -443,7 +443,7 @@ class CTChartOptionsDisplayForm(forms.Form):
     plotCTStudyMeanDLPOverTime = forms.BooleanField(
         label="Study DLP over time", required=False
     )
-    plotCTStudyMeanDLPOverTimePeriod = forms.ChoiceField(
+    plotCTOverTimePeriod = forms.ChoiceField(
         label="Time period", choices=TIME_PERIOD, required=False
     )
     plotCTInitialSortingChoice = forms.ChoiceField(
@@ -475,7 +475,7 @@ class GeneralChartOptionsDisplayForm(forms.Form):
         label="Case-insensitive categories", required=False
     )
     plotGrouping = forms.ChoiceField(
-        label="Histogram and scatter grouping", choices=CHART_GROUPING, required=False
+        label="Histogram, scatter and over-time grouping", choices=CHART_GROUPING, required=False
     )
 
 

@@ -1321,8 +1321,8 @@ def chart_options_view(request):
             user_profile.plotCTStudyMeanDLPOverTime = ct_form.cleaned_data[
                 "plotCTStudyMeanDLPOverTime"
             ]
-            user_profile.plotCTStudyMeanDLPOverTimePeriod = ct_form.cleaned_data[
-                "plotCTStudyMeanDLPOverTimePeriod"
+            user_profile.plotCTOverTimePeriod = ct_form.cleaned_data[
+                "plotCTOverTimePeriod"
             ]
             user_profile.plotCTInitialSortingChoice = ct_form.cleaned_data[
                 "plotCTInitialSortingChoice"
@@ -1432,7 +1432,7 @@ def chart_options_view(request):
         "plotCTRequestNumEvents": user_profile.plotCTRequestNumEvents,
         "plotCTStudyPerDayAndHour": user_profile.plotCTStudyPerDayAndHour,
         "plotCTStudyMeanDLPOverTime": user_profile.plotCTStudyMeanDLPOverTime,
-        "plotCTStudyMeanDLPOverTimePeriod": user_profile.plotCTStudyMeanDLPOverTimePeriod,
+        "plotCTOverTimePeriod": user_profile.plotCTOverTimePeriod,
         "plotCTInitialSortingChoice": user_profile.plotCTInitialSortingChoice,
     }
 
