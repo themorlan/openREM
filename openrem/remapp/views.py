@@ -1452,6 +1452,8 @@ def ct_summary_list_filter(request):
 
 
 def generate_required_charts_list(profile):
+    """Obtain a list of dictionaries containing the title string and base
+    variable name for each required chart"""
     required_charts = []
 
     if profile.plotCTAcquisitionMeanDLP:
@@ -1654,11 +1656,6 @@ def ct_plot_calculations(
         create_dataframe,
         create_dataframe_time_series,
         create_dataframe_weekdays,
-        altair_barchart_average,
-        altair_barchart_frequency,
-        altair_linechart_average,
-        altair_barchart_workload,
-        altair_barchart_histogram,
         plotly_boxplot,
         plotly_barchart,
         plotly_histogram,
@@ -1666,9 +1663,6 @@ def ct_plot_calculations(
         plotly_timeseries_linechart,
         plotly_barchart_weekdays,
         plotly_scatter,
-        average_chart_inc_histogram_data,
-        average_chart_over_time_data,
-        workload_chart_data,
     )
 
     return_structure = {}
