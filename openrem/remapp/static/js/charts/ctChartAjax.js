@@ -25,8 +25,8 @@ $(document).ready(function() {
             if(typeof json.acquisitionBoxplotDLPData !=="undefined") {
                 $("#acquisitionMedianDLPChartDiv").html(json.acquisitionBoxplotDLPData);
             }
-            if(typeof json.acquisitionHistDLPData !=="undefined") {
-                $("#acquisitionHistogramDLPChartDiv").html(json.acquisitionHistDLPData);
+            if(typeof json.acquisitionHistogramDLPData !=="undefined") {
+                $("#acquisitionHistogramDLPChartDiv").html(json.acquisitionHistogramDLPData);
             }
 
             // CTDI per acquisition chart data
@@ -36,8 +36,8 @@ $(document).ready(function() {
             if(typeof json.acquisitionBoxplotCTDIData !=="undefined") {
                 $("#acquisitionMedianCTDIChartDiv").html(json.acquisitionBoxplotCTDIData);
             }
-            if(typeof json.acquisitionHistCTDIData !=="undefined") {
-                $("#acquisitionHistogramCTDIChartDiv").html(json.acquisitionHistCTDIData);
+            if(typeof json.acquisitionHistogramCTDIData !=="undefined") {
+                $("#acquisitionHistogramCTDIChartDiv").html(json.acquisitionHistogramCTDIData);
             }
 
             // DLP per study chart data
@@ -47,8 +47,8 @@ $(document).ready(function() {
             if(typeof json.studyBoxplotDLPData !=="undefined") {
                 $("#studyMedianDLPChartDiv").html(json.studyBoxplotDLPData);
             }
-            if(typeof json.studyHistDLPData !=="undefined") {
-                $("#studyHistogramDLPChartDiv").html(json.studyHistDLPData);
+            if(typeof json.studyHistogramDLPData !=="undefined") {
+                $("#studyHistogramDLPChartDiv").html(json.studyHistogramDLPData);
             }
 
             // CTDI per study chart data
@@ -58,8 +58,8 @@ $(document).ready(function() {
             if(typeof json.studyBoxplotCTDIData !=="undefined") {
                 $("#studyMedianCTDIChartDiv").html(json.studyBoxplotCTDIData);
             }
-            if(typeof json.studyHistCTDIData !=="undefined") {
-                $("#studyHistogramCTDIChartDiv").html(json.studyHistCTDIData);
+            if(typeof json.studyHistogramCTDIData !=="undefined") {
+                $("#studyHistogramCTDIChartDiv").html(json.studyHistogramCTDIData);
             }
 
             // DLP per request chart data start
@@ -69,8 +69,8 @@ $(document).ready(function() {
             if(typeof json.requestBoxplotData !=="undefined") {
                 $("#requestMedianDLPChartDiv").html(json.requestBoxplotData);
             }
-            if(typeof json.requestHistData !=="undefined") {
-                $("#requestHistogramDLPChartDiv").html(json.requestHistData);
+            if(typeof json.requestHistogramData !=="undefined") {
+                $("#requestHistogramDLPChartDiv").html(json.requestHistogramData);
             }
 
             // Number of events per study chart data
@@ -80,8 +80,8 @@ $(document).ready(function() {
             if(typeof json.studyBoxplotNumEventsData !=="undefined") {
                 $("#studyMedianNumEventsChartDiv").html(json.studyBoxplotNumEventsData);
             }
-            if(typeof json.studyHistNumEventsData !=="undefined") {
-                $("#studyHistogramNumEventsChartDiv").html(json.studyHistNumEventsData);
+            if(typeof json.studyHistogramNumEventsData !=="undefined") {
+                $("#studyHistogramNumEventsChartDiv").html(json.studyHistogramNumEventsData);
             }
 
             // Number of events per request chart data
@@ -91,41 +91,41 @@ $(document).ready(function() {
             if(typeof json.requestBoxplotNumEventsData !=="undefined") {
                 $("#requestMedianNumEventsChartDiv").html(json.requestBoxplotNumEventsData);
             }
-            if(typeof json.requestHistNumEventsData !=="undefined") {
-                $("#requestHistogramNumEventsChartDiv").html(json.requestHistNumEventsData);
+            if(typeof json.requestHistogramNumEventsData !=="undefined") {
+                $("#requestHistogramNumEventsChartDiv").html(json.requestHistogramNumEventsData);
             }
 
             // Acquisition frequency chart data start
-            if(typeof json.acquisitionFreqData !== "undefined") {
-                $("#acquisitionFreqChartDiv").html(json.acquisitionFreqData);
+            if(typeof json.acquisitionFrequencyData !== "undefined") {
+                $("#acquisitionFrequencyChartDiv").html(json.acquisitionFrequencyData);
             }
 
             // Acqusition scatter of CTDI vs patient mass
-            if(typeof json.acqusitionScatterCTDIvsMass !== "undefined") {
-                $("#acquisitionScatterCTDIvsMassChartDiv").html(json.acqusitionScatterCTDIvsMass);
+            if(typeof json.acquisitionScatterCTDIvsMass !== "undefined") {
+                $("#acquisitionScatterCTDIvsMassChartDiv").html(json.acquisitionScatterCTDIvsMass);
             }
 
             // Acqusition scatter of DLP vs patient mass
-            if(typeof json.acqusitionScatterDLPvsMass !== "undefined") {
-                $("#acquisitionScatterDLPvsMassChartDiv").html(json.acqusitionScatterDLPvsMass);
+            if(typeof json.acquisitionScatterDLPvsMass !== "undefined") {
+                $("#acquisitionScatterDLPvsMassChartDiv").html(json.acquisitionScatterDLPvsMass);
             }
 
             // Study frequency chart data start
-            if(typeof json.studyFreqData !== "undefined") {
-                $("#studyFreqChartDiv").html(json.studyFreqData);
+            if(typeof json.studyFrequencyData !== "undefined") {
+                $("#studyFrequencyChartDiv").html(json.studyFrequencyData);
             }
 
             // Request frequency chart data start
-            if(typeof json.requestFreqData !== "undefined") {
-                $("#requestFreqChartDiv").html(json.requestFreqData);
+            if(typeof json.requestFrequencyData !== "undefined") {
+                $("#requestFrequencyChartDiv").html(json.requestFrequencyData);
             }
 
             // DLP over time chart data
-            if(typeof json.studyMeanDLPoverTime !== "undefined") {
-                $("#studyMeanDLPOverTimeChartDiv").html(json.studyMeanDLPoverTime);
+            if(typeof json.studyMeanDLPOverTime !== "undefined") {
+                $("#studyMeanDLPOverTimeChartDiv").html(json.studyMeanDLPOverTime);
             }
-            if(typeof json.studyMedianDLPoverTime !== "undefined") {
-                $("#studyMedianDLPOverTimeChartDiv").html(json.studyMedianDLPoverTime);
+            if(typeof json.studyMedianDLPOverTime !== "undefined") {
+                $("#studyMedianDLPOverTimeChartDiv").html(json.studyMedianDLPOverTime);
             }
 
             // Study workload chart data

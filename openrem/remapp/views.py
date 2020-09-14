@@ -1445,7 +1445,123 @@ def ct_summary_list_filter(request):
         "itemsPerPageForm": items_per_page_form,
     }
 
+    if user_profile.plotCharts:
+        return_structure["required_charts"] = generate_required_charts_list(user_profile)
+
     return render(request, "remapp/ctfiltered.html", return_structure,)
+
+
+def generate_required_charts_list(profile):
+    required_charts = []
+
+    if profile.plotCTAcquisitionMeanDLP:
+        if profile.plotAverageChoice in ["mean", "both"]:
+            required_charts.append({"title": "Chart of mean DLP for each acquisition protocol",
+                                    "var_name": "acquisitionMeanDLP"})
+        if profile.plotAverageChoice in ["median", "both"]:
+            required_charts.append({"title": "Chart of median DLP for each acquisition protocol",
+                                    "var_name": "acquisitionMedianDLP"})
+        if profile.plotHistograms:
+            required_charts.append({"title": "Histogram of DLP for each acquisition protocol",
+                                    "var_name": "acquisitionHistogramDLP"})
+
+    if profile.plotCTAcquisitionMeanCTDI:
+        if profile.plotAverageChoice in ["mean", "both"]:
+            required_charts.append({"title": "Chart of mean CTDI for each acquisition protocol",
+                                    "var_name": "acquisitionMeanCTDI"})
+        if profile.plotAverageChoice in ["median", "both"]:
+            required_charts.append({"title": "Chart of median CTDI for each acquisition protocol",
+                                    "var_name": "acquisitionMedianCTDI"})
+        if profile.plotHistograms:
+            required_charts.append({"title": "Histogram of CTDI for each acquisition protocol",
+                                    "var_name": "acquisitionHistogramCTDI"})
+
+    if profile.plotCTAcquisitionFreq:
+        required_charts.append({"title": "Chart of acquisition protocol frequency",
+                                "var_name": "acquisitionFrequency"})
+
+    if profile.plotCTAcquisitionCTDIvsMass:
+        required_charts.append({"title": "Chart of CTDI vs patient mass",
+                                "var_name": "acquisitionScatterCTDIvsMass"})
+
+    if profile.plotCTAcquisitionDLPvsMass:
+        required_charts.append({"title": "Chart of DLP vs patient mass",
+                                "var_name": "acquisitionScatterDLPvsMass"})
+
+    if profile.plotCTStudyMeanDLP:
+        if profile.plotAverageChoice in ["mean", "both"]:
+            required_charts.append({"title": "Chart of mean DLP for each study description",
+                                    "var_name": "studyMeanDLP"})
+        if profile.plotAverageChoice in ["median", "both"]:
+            required_charts.append({"title": "Chart of median DLP for each study description",
+                                    "var_name": "studyMedianDLP"})
+        if profile.plotHistograms:
+            required_charts.append({"title": "Histogram of DLP for each study description",
+                                    "var_name": "studyHistogramDLP"})
+
+    if profile.plotCTStudyMeanCTDI:
+        if profile.plotAverageChoice in ["mean", "both"]:
+            required_charts.append({"title": "Chart of mean CTDI for each study description",
+                                    "var_name": "studyMeanCTDI"})
+        if profile.plotAverageChoice in ["median", "both"]:
+            required_charts.append({"title": "Chart of median CTDI for each study description",
+                                    "var_name": "studyMedianCTDI"})
+        if profile.plotHistograms:
+            required_charts.append({"title": "Histogram of CTDI for each study description",
+                                    "var_name": "studyHistogramCTDI"})
+
+    if profile.plotCTStudyFreq:
+        required_charts.append({"title": "Chart of study description frequency",
+                                "var_name": "studyFrequency"})
+
+    if profile.plotCTStudyNumEvents:
+        if profile.plotAverageChoice in ["mean", "both"]:
+            required_charts.append({"title": "Chart of mean number of events for each study description",
+                                    "var_name": "studyMeanNumEvents"})
+        if profile.plotAverageChoice in ["median", "both"]:
+            required_charts.append({"title": "Chart of median number of events for each study description",
+                                    "var_name": "studyMedianNumEvents"})
+        if profile.plotHistograms:
+            required_charts.append({"title": "Histogram of number of events for each study description",
+                                    "var_name": "studyHistogramNumEvents"})
+
+    if profile.plotCTRequestMeanDLP:
+        if profile.plotAverageChoice in ["mean", "both"]:
+            required_charts.append({"title": "Chart of mean DLP for each requested procedure",
+                                    "var_name": "requestMeanDLP"})
+        if profile.plotAverageChoice in ["median", "both"]:
+            required_charts.append({"title": "Chart of median DLP for each requested procedure",
+                                    "var_name": "requestMedianDLP"})
+        if profile.plotHistograms:
+            required_charts.append({"title": "Histogram of DLP for each requested procedure",
+                                    "var_name": "requestHistogramDLP"})
+
+    if profile.plotCTRequestNumEvents:
+        if profile.plotAverageChoice in ["mean", "both"]:
+            required_charts.append({"title": "Chart of mean number of events for each requested procedure",
+                                    "var_name": "requestMeanNumEvents"})
+        if profile.plotAverageChoice in ["median", "both"]:
+            required_charts.append({"title": "Chart of median number of events for each requested procedure",
+                                    "var_name": "requestMedianNumEvents"})
+        if profile.plotHistograms:
+            required_charts.append({"title": "Histogram of number of events for each requested procedure",
+                                    "var_name": "requestHistogramNumEvents"})
+
+    if profile.plotCTStudyPerDayAndHour:
+        required_charts.append({"title": "Chart of study description workload",
+                                "var_name": "studyWorkload"})
+
+    if profile.plotCTStudyMeanDLPOverTime:
+        if profile.plotAverageChoice in ["mean", "both"]:
+            required_charts.append({
+                                       "title": "Chart of mean DLP per study description over time (" + profile.plotCTStudyMeanDLPOverTimePeriod + ")",
+                                       "var_name": "studyMeanDLPOverTime"})
+        if profile.plotAverageChoice in ["median", "both"]:
+            required_charts.append({
+                                       "title": "Chart of median DLP per study description over time (" + profile.plotCTStudyMeanDLPOverTimePeriod + ")",
+                                       "var_name": "studyMedianDLPOverTime"})
+
+    return required_charts
 
 
 @login_required
@@ -1475,7 +1591,7 @@ def ct_summary_chart_data(request):
     # Obtain the key name in the TIME_PERIOD tuple from the user time period choice (the key value)
     keys = list(dict(user_profile.TIME_PERIOD).keys())
     values = list(dict(user_profile.TIME_PERIOD).values())
-    altair_timeunit = keys[[x.lower() for x in values].index(user_profile.plotCTStudyMeanDLPOverTimePeriod)]
+    plot_timeunit_period = keys[[x.lower() for x in values].index(user_profile.plotCTStudyMeanDLPOverTimePeriod)]
 
     return_structure = ct_plot_calculations(
         f,
@@ -1492,7 +1608,7 @@ def ct_summary_chart_data(request):
         user_profile.plotCTStudyMeanCTDI,
         user_profile.plotCTStudyNumEvents,
         user_profile.plotCTStudyMeanDLPOverTime,
-        altair_timeunit,
+        plot_timeunit_period,
         user_profile.plotCTStudyPerDayAndHour,
         user_profile.plotAverageChoice,
         user_profile.plotGroupingChoice,
@@ -1697,7 +1813,7 @@ def ct_plot_calculations(
                     group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
                     legend_title = "System"
 
-                return_structure["acquisitionHistDLPData"] = plotly_histogram(
+                return_structure["acquisitionHistogramDLPData"] = plotly_histogram(
                     df,
                     group_by_col,
                     "ctradiationdose__ctirradiationeventdata__dlp",
@@ -1735,7 +1851,7 @@ def ct_plot_calculations(
                     group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
                     legend_title = "System"
 
-                return_structure["acquisitionHistCTDIData"] = plotly_histogram(
+                return_structure["acquisitionHistogramCTDIData"] = plotly_histogram(
                     df,
                     group_by_col,
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
@@ -1746,7 +1862,7 @@ def ct_plot_calculations(
                 )
 
         if plot_acquisition_freq:
-            return_structure["acquisitionFreqData"] = plotly_stacked_histogram(
+            return_structure["acquisitionFrequencyData"] = plotly_stacked_histogram(
                 df,
                 "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                 name_axis_title="Acquisition protocol"
@@ -1761,7 +1877,7 @@ def ct_plot_calculations(
                 group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
                 legend_title = "System"
 
-            return_structure["acqusitionScatterCTDIvsMass"] = plotly_scatter(
+            return_structure["acquisitionScatterCTDIvsMass"] = plotly_scatter(
                 df,
                 "patientstudymoduleattr__patient_weight",
                 "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
@@ -1781,7 +1897,7 @@ def ct_plot_calculations(
                 group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
                 legend_title = "System"
 
-            return_structure["acqusitionScatterDLPvsMass"] = plotly_scatter(
+            return_structure["acquisitionScatterDLPvsMass"] = plotly_scatter(
                 df,
                 "patientstudymoduleattr__patient_weight",
                 "ctradiationdose__ctirradiationeventdata__dlp",
@@ -1858,7 +1974,7 @@ def ct_plot_calculations(
                     group_by_col = "study_description"
                     legend_title = "System"
 
-                return_structure["studyHistDLPData"] = plotly_histogram(
+                return_structure["studyHistogramDLPData"] = plotly_histogram(
                     df,
                     group_by_col,
                     "total_dlp",
@@ -1896,7 +2012,7 @@ def ct_plot_calculations(
                     group_by_col = "study_description"
                     legend_title = "System"
 
-                return_structure["studyHistCTDIData"] = plotly_histogram(
+                return_structure["studyHistogramCTDIData"] = plotly_histogram(
                     df,
                     group_by_col,
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
@@ -1934,7 +2050,7 @@ def ct_plot_calculations(
                     group_by_col = "study_description"
                     legend_title = "System"
 
-                return_structure["studyHistNumEventsData"] = plotly_histogram(
+                return_structure["studyHistogramNumEventsData"] = plotly_histogram(
                     df,
                     group_by_col,
                     "number_of_events",
@@ -1972,7 +2088,7 @@ def ct_plot_calculations(
                     group_by_col = "requested_procedure_code_meaning"
                     legend_title = "System"
 
-                return_structure["requestHistData"] = plotly_histogram(
+                return_structure["requestHistogramData"] = plotly_histogram(
                     df,
                     group_by_col,
                     "total_dlp",
@@ -2010,7 +2126,7 @@ def ct_plot_calculations(
                     group_by_col = "requested_procedure_code_meaning"
                     legend_title = "System"
 
-                return_structure["requestHistNumEventsData"] = plotly_histogram(
+                return_structure["requestHistogramNumEventsData"] = plotly_histogram(
                     df,
                     group_by_col,
                     "number_of_events",
@@ -2021,14 +2137,14 @@ def ct_plot_calculations(
                 )
 
         if plot_study_freq:
-            return_structure["studyFreqData"] = plotly_stacked_histogram(
+            return_structure["studyFrequencyData"] = plotly_stacked_histogram(
                 df,
                 "study_description",
                 name_axis_title="Study description"
             )
 
         if plot_request_freq:
-            return_structure["requestFreqData"] = plotly_stacked_histogram(
+            return_structure["requestFrequencyData"] = plotly_stacked_histogram(
                 df,
                 "requested_procedure_code_meaning",
                 name_axis_title="Requested procedure"
@@ -2045,7 +2161,7 @@ def ct_plot_calculations(
             )
 
             if plot_average_choice in ["mean", "both"]:
-                return_structure["studyMeanDLPoverTime"] = plotly_timeseries_linechart(
+                return_structure["studyMeanDLPOverTime"] = plotly_timeseries_linechart(
                     df_time_series,
                     "study_description",
                     "meantotal_dlp",
@@ -2056,7 +2172,7 @@ def ct_plot_calculations(
                 )
 
             if plot_average_choice in ["median", "both"]:
-                return_structure["studyMedianDLPoverTime"] = plotly_timeseries_linechart(
+                return_structure["studyMedianDLPOverTime"] = plotly_timeseries_linechart(
                     df_time_series,
                     "study_description",
                     "mediantotal_dlp",
