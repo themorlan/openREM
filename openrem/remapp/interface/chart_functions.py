@@ -43,7 +43,8 @@ def global_config(filename):
             "width": 1920,
             "scale": 1
         },
-        "displaylogo": False
+        "displaylogo": False,
+        "scrollZoom": True
     }
 
 
