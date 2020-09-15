@@ -118,6 +118,17 @@ CHART_GROUPING = (
     (SERIES, "Series item names"),
 )
 
+PLOTLY_THEME = "plotly"
+CHART_THEMES = (
+    (PLOTLY_THEME, "Plotly (default)"),
+    ('plotly_white', "Plotly white"),
+    ('plotly_dark', "Plotly dark"),
+    ('presentation', "Presentation"),
+    ('ggplot2', "ggplot2"),
+    ('seaborn', "Seaborn"),
+    ('simple_white', "Simple white"),
+)
+
 
 class SizeUploadForm(forms.Form):
     """Form for patient size csv file upload
@@ -494,6 +505,9 @@ class GeneralChartOptionsDisplayForm(forms.Form):
     )
     plotGrouping = forms.ChoiceField(
         label="Chart grouping", choices=CHART_GROUPING, required=False
+    )
+    plotThemeChoice = forms.ChoiceField(
+        label="Chart theme", choices=CHART_THEMES, required=False
     )
 
 

@@ -1276,10 +1276,12 @@ def chart_options_view(request):
             user_profile.plotInitialSortingDirection = general_form.cleaned_data[
                 "plotInitialSortingDirection"
             ]
-            if "postgresql" in settings.DATABASES["default"]["ENGINE"]:
-                user_profile.plotAverageChoice = general_form.cleaned_data[
-                    "plotMeanMedianOrBoth"
-                ]
+            user_profile.plotThemeChoice = general_form.cleaned_data[
+                "plotThemeChoice"
+            ]
+            user_profile.plotAverageChoice = general_form.cleaned_data[
+                "plotMeanMedianOrBoth"
+            ]
             user_profile.plotSeriesPerSystem = general_form.cleaned_data[
                 "plotSeriesPerSystem"
             ]
@@ -1417,6 +1419,7 @@ def chart_options_view(request):
         "plotHistogramBins": user_profile.plotHistogramBins,
         "plotHistograms": user_profile.plotHistograms,
         "plotCaseInsensitiveCategories": user_profile.plotCaseInsensitiveCategories,
+        "plotThemeChoice": user_profile.plotThemeChoice,
     }
 
     ct_form_data = {

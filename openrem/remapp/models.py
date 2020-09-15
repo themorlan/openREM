@@ -480,6 +480,17 @@ class UserProfile(models.Model):
         (SERIES, "Series item names"),
     )
 
+    PLOTLY_THEME = "plotly"
+    CHART_THEMES = (
+        (PLOTLY_THEME, "Plotly (default)"),
+        ('plotly_white', "Plotly white"),
+        ('plotly_dark', "Plotly dark"),
+        ('presentation', "Presentation"),
+        ('ggplot2', "ggplot2"),
+        ('seaborn', "Seaborn"),
+        ('simple_white', "Simple white"),
+    )
+
     itemsPerPage = models.IntegerField(null=True, choices=ITEMS_PER_PAGE, default=25)
 
     # This field is required.
@@ -491,6 +502,8 @@ class UserProfile(models.Model):
     plotAverageChoice = models.CharField(max_length=6, choices=AVERAGES, default=MEAN)
 
     plotGroupingChoice = models.CharField(max_length=6, choices=CHART_GROUPING, default=MEAN)
+
+    plotThemeChoice = models.CharField(max_length=12, choices=CHART_THEMES, default=PLOTLY_THEME)
 
     plotInitialSortingDirection = models.IntegerField(
         null=True, choices=SORTING_DIRECTION, default=DESCENDING

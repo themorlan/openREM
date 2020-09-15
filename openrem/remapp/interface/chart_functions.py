@@ -115,6 +115,12 @@ def create_dataframe_weekdays(
     return df_time_series
 
 
+def plotly_set_default_theme(theme_name):
+    import plotly.io as pio
+
+    pio.templates.default = theme_name
+
+
 def plotly_boxplot(
         df,
         df_name_col,
@@ -320,6 +326,7 @@ def plotly_scatter(
                 df_facet_col: facet_title
             }
         )
+
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
         return plot(fig, output_type="div", include_plotlyjs=False)

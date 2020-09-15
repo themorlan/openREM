@@ -1662,7 +1662,8 @@ def ct_summary_chart_data(request):
         user_profile.plotSeriesPerSystem,
         user_profile.plotHistogramBins,
         user_profile.plotHistograms,
-        user_profile.plotCaseInsensitiveCategories
+        user_profile.plotCaseInsensitiveCategories,
+        user_profile.plotThemeChoice
     )
 
     if settings.DEBUG:
@@ -1696,7 +1697,8 @@ def ct_plot_calculations(
     plot_series_per_systems,
     plot_histogram_bins,
     plot_histograms,
-    plot_case_insensitive_categories
+    plot_case_insensitive_categories,
+    plot_theme_choice
 ):
     """CT chart data calculations
     """
@@ -1711,7 +1713,11 @@ def ct_plot_calculations(
         plotly_timeseries_linechart,
         plotly_barchart_weekdays,
         plotly_scatter,
+        plotly_set_default_theme
     )
+
+    # Set the Plotly chart theme
+    plotly_set_default_theme(plot_theme_choice)
 
     return_structure = {}
 
