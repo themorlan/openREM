@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"POT-Creation-Date: 2020-09-15 17:58+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,43 +17,43 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: ../../code_tools.rst:3 05817d71955c4b94a94c9ab1ecbb1c88
+#: ../../code_tools.rst:3 b05b9651d83e438386232a88b0ab7212
 msgid "Tools and helper modules"
 msgstr ""
 
-#: ../../code_tools.rst:6 8a074e84ffb64cd68d1b364c70f79f0c
+#: ../../code_tools.rst:6 47583fddc80b45efb1caae0ce84a23d3
 msgid "OpenREM settings"
 msgstr ""
 
-#: ../../code_tools.rst:7 b9a11ca457844a41a6b9d4937407de7b
+#: ../../code_tools.rst:7 5e85d04225e3460a9f847eb498fcabf7
 msgid ""
 "Administrative module to define the name of the project and to add it to "
 "the Python path"
 msgstr ""
 
-#: ../../code_tools.rst:15 2f4d074026cd4d8d82dd84db2f8f4639
+#: ../../code_tools.rst:15 0c1fadd541454f23bb6d6e38016f7e83
 msgid "Get values"
 msgstr ""
 
-#: ../../code_tools.rst:16 54f2c8c8f2f840ccbb7d4927c7032037
+#: ../../code_tools.rst:16 4c06d597ddd5477e9a831b19a2974b6f
 msgid ""
 "Tiny modules to reduce repetition in the main code when extracting "
 "information from DICOM headers using pydicom."
 msgstr ""
 
-#: c3a8366f123a43308ccc7712de842077 of remapp.tools.get_values.get_value_kw:1
+#: c2b663993a7a4eeeae68ac42ecbcb397 of remapp.tools.get_values.get_value_kw:1
 msgid "Get DICOM value by keyword reference."
 msgstr ""
 
-#: 093836f1abf341aeab4bbf8b1013ce49 1cf89d88f27e426b81dfb844e3529241
-#: 24fe693da25f4fa0ad6826293bfe7d20 256b781bd36445c3a74f95f32a93adcc
-#: 3023eaf013ca4858ae717ad8f3b415b7 321d5268784f46f1a925952b3a6ae054
-#: 50156caad67e4b7faf17a0c6964eba46 54e36d3127d04f5b89dddcc3de623eda
-#: 5fba89e4001540f99a2e14cd3365cef2 6924b4f788e64382aa7366c90d127f27
-#: 6d53513cddc8474b955791313c6f0c6d 92977784a7e24dfda16b72254c775677
-#: a6480dc93c3c4974aefb47ad0e7e10ac ab63bdc60f884e849d9de7353c201693
-#: e50d9bf29ffa4956b2de47aebcb2308d ea04a1b0bb1144439229c0242ca7e79f
-#: ffde6ac1832544069af8b6c30c1c5964 of remapp.tools.check_uid.check_uid
+#: 02aabcd9044b45df97b0c50342f8d196 08f4bc8733d74570bf32defa96adc699
+#: 23b8a1754e9d49948b61c668aca30fd4 42853c879283471b8770148d30cb50b8
+#: 552a09f72e714aa2b7c9a65af6110447 6a6a49b70d6046ea9c5dd35cfcaae85d
+#: 81e297e323b1487e976d7d4476be8f97 9ea8b1d6bde84622a7533141db99ef97
+#: b045d405340442b9b94356eb804de73b b4dae216458d4800ba8b1ac9f9e079da
+#: d66a51f969d747669cd5786c0d5e9333 e4b4e7000cc54c598a2b42423a729184
+#: ecb05ad50c3e46378820e1c43ca80f44 f1eb596a04ed4a7cb66024a292e42627
+#: f48903341d6747369fc12457d726cb17 f576fa2e057749dd8507532d2a7c80b9
+#: fbccd392fcb8441dafedb7a33fb2e92b of remapp.tools.check_uid.check_uid
 #: remapp.tools.check_uid.record_sop_instance_uid
 #: remapp.tools.dcmdatetime.get_date remapp.tools.dcmdatetime.get_date_time
 #: remapp.tools.dcmdatetime.get_time remapp.tools.dcmdatetime.make_date
@@ -69,31 +69,31 @@ msgstr ""
 msgid "Parameters"
 msgstr ""
 
-#: 1735c9e131434a49a3b2b66f0982596b 74510bc4e1df4fdca658923de2e9dd80
-#: d257a5507842408cbdbe84bf9e0e36ce fe72bc9212024b31a5bd021a55cc51f2 of
+#: 358797d9e9dd47b59bdd3bcca47f2b50 5b82a310d0834e13ac3f9f03f818b08e
+#: 5ead61042e3e4135921c0cfd9220121c 7d1359e93ea74f96967f8611d403df43 of
 #: remapp.tools.dcmdatetime.get_date:3 remapp.tools.dcmdatetime.get_date_time:3
 #: remapp.tools.dcmdatetime.get_time:3 remapp.tools.get_values.get_value_kw:3
 msgid "DICOM keyword, no spaces or plural as per dictionary."
 msgstr ""
 
-#: 5e89ba1867584d9187d641c8c39d8b85 5ecd48ed33b44469b36262fff369393d
-#: 7579e7b60be54a73b14988877f8281be a83b59e30afa46d19a1023412f3e008b
-#: dcfd08506c21405faabb3b1e74ff7ec1 of remapp.tools.dcmdatetime.get_date:5
+#: 39304f05a1ae4cb7b86e6e73b64edaef 742817a3562b4266b2e31eb5ccd18930
+#: 8b5657807c494d5c9ff4cdc11dbb721b b3ec730c2e6047e788287bcfdf5629b8
+#: dd0ab3af9e3648eb90d5bb2b46e3ab9e of remapp.tools.dcmdatetime.get_date:5
 #: remapp.tools.dcmdatetime.get_date_time:5 remapp.tools.dcmdatetime.get_time:5
 #: remapp.tools.get_values.get_value_kw:5
 #: remapp.tools.get_values.get_value_num:8
 msgid "The DICOM dataset containing the tag."
 msgstr ""
 
-#: 035638c6bea5476083796f8741c7ba1c 0bca79d187ef475fa0a580b557927211
-#: 17abf7e79be44265b3d83517192fe080 1a91eb44b74b453f93eb9d05a7e5648c
-#: 22a120085de64ddeaea4d344947d2c18 49cf8c2d84ff4d27a3b2fbed984454bb
-#: 5aa29251a40046c7be89c74b32e80034 63ef66d97cba4b6293abd60c67424388
-#: 801ac3f5e7124d879d4c9d4287af349c 8feaf90cf6fe4d0d87b4f40a145add27
-#: a393f84531424fcd9064bde7459f4d2e a902cf5cc56d4a518640b3abd2e9297f
-#: a9e6de33a22f40a1b63c2be6bae8695a d39a7e8f2a9f48f5880b9fd6f4ca993e
-#: f143c313d89d4290b271d2abd21f52c4 fae4d610e06a4bea9457fcbbc5987a71
-#: ff158300a2c1489e806f1e7e5c01b9eb of remapp.tools.check_uid.check_uid
+#: 1460d68dd1b1429ea545fe19ed8b38a3 1ae317db0ffa4d82a94333f7b78e34b6
+#: 22032680a8aa4423889dbc2b1c4af37d 24dd797b14574687a6be0d04d1901613
+#: 27bb800f59364e4c86460d1a5b016b94 59e300749fb64c26a218df39ce8cb15a
+#: 7a99ce7ef97144faba6f51b6d7f50111 7aeb4156539d41cfa3b8ba54a0c450ff
+#: 7e2c438b17af419d8fde3b8d11b255a8 7fdb5fab4d544c1aadec3353f2032252
+#: 8c99072dca24425bb2870356c28b6a2c b79be44f625e48d1a9e1969ead38b08f
+#: be4ee02c43334a89bb5e7e8142ed62ca be5edef36bdf40a6a0c51880ce485581
+#: d2f1b29b53034867ae7e7102c9bd603a dfc0a4c9d92f4b25bd2069a9ce01080d
+#: e47ab79fae2c44a4a0f9253198ba5080 of remapp.tools.check_uid.check_uid
 #: remapp.tools.check_uid.record_sop_instance_uid
 #: remapp.tools.dcmdatetime.get_date remapp.tools.dcmdatetime.get_date_time
 #: remapp.tools.dcmdatetime.get_time remapp.tools.dcmdatetime.make_date
@@ -109,88 +109,88 @@ msgstr ""
 msgid "Returns"
 msgstr ""
 
-#: 6a6a271f0de8458d846352f1294f4031 b2a86b38591f4536b234cba88bac8a64 of
+#: 2f9dde3ce1994956b3ca020eac127dfe bca8aa18556444bab05c7b61940eb8ee of
 #: remapp.tools.get_values.get_value_kw:7
 #: remapp.tools.get_values.get_value_num:10
 msgid "str. -- value"
 msgstr ""
 
-#: 2ec03d3646124dcda8f8e577b8e1b3a4 of remapp.tools.get_values.get_value_num:1
+#: a5febe8c4ba74919b779c8de92300f5c of remapp.tools.get_values.get_value_num:1
 msgid "Get DICOM value by tag group and element number."
 msgstr ""
 
-#: 475050814b204f74940432cfed960f5b of remapp.tools.get_values.get_value_num:3
+#: 055395c2ab714f2caea68fd5a91cf6e8 of remapp.tools.get_values.get_value_num:3
 msgid ""
 "Always use get_value_kw by preference for readability. This module can be"
 " required when reading private elements."
 msgstr ""
 
-#: 86b1c05432544566b7832debbeb7179c of remapp.tools.get_values.get_value_num:6
+#: ef4398ee226a4ecf9e504a93cab119f5 of remapp.tools.get_values.get_value_num:6
 msgid "DICOM group and element number as a single hexadecimal number (prefix 0x)."
 msgstr ""
 
-#: 920e6033dab54a8baefb3ee6c141497d of
+#: 16380d1081a648ca8c2120a35b3e5286 of
 #: remapp.tools.get_values.get_seq_code_value:1
 msgid "From a DICOM sequence, get the code value."
 msgstr ""
 
-#: 2dfd6c7be32d4705ac5a71e2655581bd db18725c84e04297ab8531ac4dcb9323 of
+#: 9908fdcb0e944722a637ec5097a14d4d f81a3b2649ad42b3ab838f0e5f13b0b2 of
 #: remapp.tools.get_values.get_seq_code_meaning:3
 #: remapp.tools.get_values.get_seq_code_value:3
 msgid "DICOM sequence name."
 msgstr ""
 
-#: 0f8506aa940f4badb5b2c4a70194cf1f a759e35578d44d0ab53604c273a92138 of
+#: 14ef2eb4d25e4114a8e36654d3f280d0 d34a5eceffc2428792790edcbbee9e81 of
 #: remapp.tools.get_values.get_seq_code_meaning:5
 #: remapp.tools.get_values.get_seq_code_value:5
 msgid "The DICOM dataset containing the sequence."
 msgstr ""
 
-#: dd4306b4db7a4053bde919451c1ffaf7 of
+#: 8e98def3241848d3a957d67d9377b38e of
 #: remapp.tools.get_values.get_seq_code_value:7
 msgid "int. -- code value"
 msgstr ""
 
-#: 9d2da84f1aaf4dd6ac86ab37b94816e2 of
+#: 4bbc46a58c394d758166ad579adfaccc of
 #: remapp.tools.get_values.get_seq_code_meaning:1
 msgid "From a DICOM sequence, get the code meaning."
 msgstr ""
 
-#: 5faa45e784c94d3ead255de1843dd74c of
+#: b51ff5d70599418cbe2d28d3e74cb86e of
 #: remapp.tools.get_values.get_seq_code_meaning:7
 msgid "str. -- code meaning"
 msgstr ""
 
-#: 5053d8e58a434ea3a0e1d3d3f1d4de5e of
+#: 0fe596636bfb4adeb15b1c98c5ad31b3 of
 #: remapp.tools.get_values.get_or_create_cid:1
 msgid ""
 "Create a code_value code_meaning pair entry in the ContextID table if it "
 "doesn't already exist."
 msgstr ""
 
-#: 1b9782ad762c4cf3b2ef713313076f33 of
+#: b0baaac3cd76430bb18c9546790b121e of
 #: remapp.tools.get_values.get_or_create_cid:4
 msgid "Code value as defined in the DICOM standard part 16"
 msgstr ""
 
-#: 985ddabe7d504371b9597f4a92b58313 of
+#: ded9144d6d3e4acf85577f0f8b0beba1 of
 #: remapp.tools.get_values.get_or_create_cid:6
 msgid "Code meaning as defined in the DICOM standard part 16"
 msgstr ""
 
-#: 5d8cb3ae93e244138ebc80dd33b0d411 of
+#: 3ad27e7fffcd45e7832bc1409f70eb7c of
 #: remapp.tools.get_values.get_or_create_cid:8
 msgid "ContextID entry for code value passed"
 msgstr ""
 
-#: 98997e2a17a64fc180ebc9974bffac7f of
+#: 17fa276493294d66b9ac7c0ddbba1141 of
 #: remapp.tools.get_values.return_for_export:1
 msgid ""
 "Prevent errors due to missing data in models :param model: database table"
 " :param field: database field :return: value or None"
 msgstr ""
 
-#: b7fb5ee38f9241b8a277e23a65a41894 of
+#: 3b948ffbcbf148bdb8f4b5a2db953d0a of
 #: remapp.tools.get_values.test_numeric_value:1
 msgid ""
 "Tests if string can be converted to a float. If it can, return it :param "
@@ -198,14 +198,14 @@ msgid ""
 "nothing otherwise"
 msgstr ""
 
-#: ab8fcb29bf8c44efacf65b39beffc4b1 of remapp.tools.get_values.safe_strings:1
+#: 1ca96a22429549d484b56e6b15e6c295 of remapp.tools.get_values.safe_strings:1
 msgid ""
 "Function to encode non-ASCII characters correctly. Probably not required "
 "any longer, but leaving in for now. :param string: String to encode "
 ":param char_set: Character set used by DICOM file :return: Encoded string"
 msgstr ""
 
-#: d60f3f4913d34c30a4e56c1f2103d7e6 of remapp.tools.get_values.list_to_string:1
+#: 1b2c4230f94f4cde8b58513b12bbf569 of remapp.tools.get_values.list_to_string:1
 msgid ""
 "Turn multivalue names into a single string for correct encoding and "
 "pretty reproduction :param dicom_value: returned DICOM value, usually a "
@@ -213,7 +213,7 @@ msgid ""
 " of name(s)"
 msgstr ""
 
-#: 6d231b567f9b461db425d7cc2354094e of
+#: 861b013f85094c8484677fc38b807be6 of
 #: remapp.tools.get_values.get_keys_by_value:1
 msgid ""
 "Get a list of keys from a dictionary which have the given value :param "
@@ -222,27 +222,27 @@ msgid ""
 "the given value"
 msgstr ""
 
-#: ../../code_tools.rst:23 235c6f3e73134260a88c382aa6ba5af4
+#: ../../code_tools.rst:23 9e8f52d6189344dfa38d48d45e2d8645
 msgid "Check if UID exists"
 msgstr ""
 
-#: ../../code_tools.rst:24 d011780f2aae43819912753f45f249f9
+#: ../../code_tools.rst:24 b6a79983e7424a1d9dda9550ac309640
 msgid "Small module to check if UID already exists in the database."
 msgstr ""
 
-#: 5d90b4b01d8c4e928b04716c47d7d162 of remapp.tools.check_uid.check_uid:1
+#: 1374504ef674421a96c8d798b5f5d5c4 of remapp.tools.check_uid.check_uid:1
 msgid "Check if UID already exists in database."
 msgstr ""
 
-#: 13784eca83ca4ae1a29d9c9f6162327d of remapp.tools.check_uid.check_uid:3
+#: 67764fbae3d644e4b8e27d0d8f162a2a of remapp.tools.check_uid.check_uid:3
 msgid "Study UID."
 msgstr ""
 
-#: 3f0a757e35f5433789e67a2198ab8e47 of remapp.tools.check_uid.check_uid:5
+#: 4a43f2535722499e9e869e976c7cf5ec of remapp.tools.check_uid.check_uid:5
 msgid "1 if it does exist, 0 otherwise"
 msgstr ""
 
-#: f621fc5521784c1ebe08d6997ef4a818 of
+#: cbe9cecc1b8e400599ac118032971bda of
 #: remapp.tools.check_uid.record_sop_instance_uid:1
 msgid ""
 "Record the object's SOP Instance UID so we can ignore it next time. If an"
@@ -250,156 +250,156 @@ msgid ""
 "deleted first."
 msgstr ""
 
-#: 1f657c4249b94e5c91e84e2c52032711 of
+#: 464945e1a9444e96b31a0964a811592c of
 #: remapp.tools.check_uid.record_sop_instance_uid:4
 msgid "GeneralStudyModuleAttr database object"
 msgstr ""
 
-#: c10d255702894e4eb5052f19f66b4c6f of
+#: 75fdf4f734ae4c1bbcd2dc785e82c580 of
 #: remapp.tools.check_uid.record_sop_instance_uid:5
 msgid "SOP Instance UID of object being imported"
 msgstr ""
 
-#: ../../code_tools.rst:30 12c7a138f16f4e18a9cc4d1961c140a2
+#: ../../code_tools.rst:30 6254d239d0b147ba99a2636ea4c0de88
 msgid "DICOM time and date values"
 msgstr ""
 
-#: ../../code_tools.rst:31 909d69373898419a8c71f50cdfd34327
+#: ../../code_tools.rst:31 bfcda9eaea8a42ab99a1f876282b542e
 msgid "Module to convert betweeen DICOM and Python dates and times."
 msgstr ""
 
-#: 27e08d2a44da4d9da9e8a1ebac1ca0b4 of remapp.tools.dcmdatetime.get_date:1
+#: 1a4cba0dcadf4247b587d32e804fa09a of remapp.tools.dcmdatetime.get_date:1
 msgid "Get DICOM date string and return Python date."
 msgstr ""
 
-#: 5f4da5d535774b8486d72cad4c359f4e fbbf8cc9f97d448bb4d2806580d2189d of
+#: 5938649cb0194900b20d7c9dd2beb609 9fa28097e5bf4f419914b3fb985d1473 of
 #: remapp.tools.dcmdatetime.get_date:7 remapp.tools.dcmdatetime.make_date:5
 msgid "Python date value"
 msgstr ""
 
-#: 55df3c5d34dd4f64a0022ed20e97da20 of remapp.tools.dcmdatetime.get_time:1
+#: 357af341bc414b49a27cf41b78491d09 of remapp.tools.dcmdatetime.get_time:1
 msgid "Get DICOM time string and return Python time."
 msgstr ""
 
-#: d98b63ec5edc42e4b36e990cbcb2e34a of remapp.tools.dcmdatetime.get_time:7
+#: 6231faefa3dd4ec38fbfb13c8e0ecb8e of remapp.tools.dcmdatetime.get_time:7
 msgid "python time value"
 msgstr ""
 
-#: ba6204b24b78472f9fa424ed7ec22dd5 of remapp.tools.dcmdatetime.get_date_time:1
+#: c597160820034f5e89b2aa6d3d641f9f of remapp.tools.dcmdatetime.get_date_time:1
 msgid "Get DICOM date time string and return Python date time."
 msgstr ""
 
-#: 637673bd166d4648ab707265de2fbeaa 6707fb231b734939b49e089d6adde8de of
+#: 52a52de24fbe4216b22aaf2bda13cc28 be9cca8d54e04b578f5f728773ddf37d of
 #: remapp.tools.dcmdatetime.get_date_time:7
 #: remapp.tools.dcmdatetime.make_date_time:5
 msgid "Python date time value"
 msgstr ""
 
-#: f651803f529c4d11801994b50076ae6c of remapp.tools.dcmdatetime.make_date:1
+#: f4b7938c5d9b4f12a94efb919311b572 of remapp.tools.dcmdatetime.make_date:1
 msgid "Given a DICOM date, return a Python date."
 msgstr ""
 
-#: 6570b4df2c394e30998e0a041d6087cc of remapp.tools.dcmdatetime.make_date:3
+#: 99248b9944cb42aeb261b876d2ad9a80 of remapp.tools.dcmdatetime.make_date:3
 msgid "DICOM style date."
 msgstr ""
 
-#: bc581446933948fbadaf6d94bd5d2d18 of remapp.tools.dcmdatetime.make_time:1
+#: bd2b3875aefe43f8ab86febf768ba254 of remapp.tools.dcmdatetime.make_time:1
 msgid "Given a DICOM time, return a Python time."
 msgstr ""
 
-#: f7a1377d4e9641418541bda9d1c8f783 of remapp.tools.dcmdatetime.make_time:3
+#: 44f3496dfb9745e6b212863049f58d94 of remapp.tools.dcmdatetime.make_time:3
 msgid "DICOM style time."
 msgstr ""
 
-#: 508e1bb33364463b8f4e9edeb339e34d of remapp.tools.dcmdatetime.make_time:5
+#: f413bf9b79884ec79feb1a8be08c9a97 of remapp.tools.dcmdatetime.make_time:5
 msgid "Python time value"
 msgstr ""
 
-#: 29cec004de9a4709af1a7b6f946aa63f of
+#: e130c628af964762883b37ab3feb2074 of
 #: remapp.tools.dcmdatetime.make_date_time:1
 msgid "Given a DICOM date time, return a Python date time."
 msgstr ""
 
-#: a3d01853df5c46178eabf198cade3db9 of
+#: 83aefabb303c469cab82b650005d0d2b of
 #: remapp.tools.dcmdatetime.make_date_time:3
 msgid "DICOM style date time."
 msgstr ""
 
-#: b3ace64e546b491bb02207fd4a9ce763 of remapp.tools.dcmdatetime.make_dcm_date:1
+#: c6bbc4786b64423e8ed17bdf7d83c8ba of remapp.tools.dcmdatetime.make_dcm_date:1
 msgid ""
 "Given a Python date, return a DICOM date :param pythondate:  Date :type "
 "pythondate:   Python date object :returns:           DICOM date as string"
 msgstr ""
 
-#: 422725b99f8c47c89b4558eb3196d38f of
+#: d811f7cd9dd24951b024872fc34dd1b8 of
 #: remapp.tools.dcmdatetime.make_dcm_date_range:1
 msgid "Given one or two dates of the form yyyy-mm-dd, return a DICOM date range."
 msgstr ""
 
-#: a52a24fea52746beac6d8ab1b168e6b2 of
+#: f2be4c7838674b9b818a48ccb49e6183 of
 #: remapp.tools.dcmdatetime.make_dcm_date_range:3
 msgid "Date from, string, yyyy-mm-dd, 1900-01-01 if None or badly formatted"
 msgstr ""
 
-#: a6f59e210b864373966f5a0a49454227 of
+#: d8c238a9fc7b4e51856855b0be303539 of
 #: remapp.tools.dcmdatetime.make_dcm_date_range:4
 msgid "Date until, string, yyyy-mm-dd, today if None or badly formatted"
 msgstr ""
 
-#: cc12bbcad08b43ae9422412ed63a8c4d of
+#: dd95dbd31abf4e34a7733937ad804c8b of
 #: remapp.tools.dcmdatetime.make_dcm_date_range:5
 msgid "Single date range, bool, default False"
 msgstr ""
 
-#: 8b8b2352cebc424995023f21e7a8c849 of
+#: d8b6331a35a34eb8b7de96cf6f9f4d4b of
 #: remapp.tools.dcmdatetime.make_dcm_date_range:6
 msgid "DICOM formatted date range or single date"
 msgstr ""
 
-#: c017f5cf5ff14a279858f7bc0d679d61 of remapp.tools.dcmdatetime.make_dcm_time:1
+#: ac6994f243b94348b5d9a6dc1fd47b4e of remapp.tools.dcmdatetime.make_dcm_time:1
 msgid "Return DICOM formatted time without seconds from python time"
 msgstr ""
 
-#: 8491254f2a8d4a2eaecfada2fe7df520 of remapp.tools.dcmdatetime.make_dcm_time:3
+#: 959a71239d8442e5a22fc9bd272399c5 of remapp.tools.dcmdatetime.make_dcm_time:3
 msgid "Python datetime.time object"
 msgstr ""
 
-#: 167a531553144c2c9083e14f60d85355 of remapp.tools.dcmdatetime.make_dcm_time:4
+#: d14060891ee9470fa6177066f15e8694 of remapp.tools.dcmdatetime.make_dcm_time:4
 msgid "string, %H%M"
 msgstr ""
 
-#: 569f32f7e6af44d4bae09a793f403980 of
+#: a9c4f2fa523f40c692077f5b30837ecf of
 #: remapp.tools.dcmdatetime.make_dcm_time_range:1
 msgid ""
 "Given one or two times of the format 0123, return DICOM formatted time "
 "range (without seconds)"
 msgstr ""
 
-#: 3237c773bca842e3a88bf0788744f6d5 of
+#: 7bf4a2c222e44b4eac46adf1a2c46e33 of
 #: remapp.tools.dcmdatetime.make_dcm_time_range:3
 msgid "time, format 0123, 0000 if None"
 msgstr ""
 
-#: e2beca9e31084d0f92252c320f5a407b of
+#: 88aa18ad4a6b42999b7fa83382dd3f76 of
 #: remapp.tools.dcmdatetime.make_dcm_time_range:4
 msgid "time, format 0123, 2359 if None"
 msgstr ""
 
-#: 05ac5fb39e084eccb9c2c18260b1d214 of
+#: 4ec9c1341c1b494fb9b73bc21c221234 of
 #: remapp.tools.dcmdatetime.make_dcm_time_range:5
 msgid "time range, string, format 0123-1234"
 msgstr ""
 
-#: ../../code_tools.rst:37 c9c2b045c1c8479197c5bb830f992059
+#: ../../code_tools.rst:37 a530782da6a4477c832c77fe8cb4e385
 msgid "Test for QA or other non-patient related studies"
 msgstr ""
 
-#: b07a5e9b5db64e938960b1b5e16e5aad of
+#: f2cf5cc5224c483391ee8f8b1ca8f757 of
 #: remapp.tools.not_patient_indicators.get_not_pt:1
 msgid "Looks for indications that a study might be a test or QA study."
 msgstr ""
 
-#: 6a8b607e973941c5b01e75543e9f7392 of
+#: 2583fa97d10144f7bd9229ab56916fee of
 #: remapp.tools.not_patient_indicators.get_not_pt:3
 msgid ""
 "Some values that might indicate a study was for QA or similar purposes "
@@ -408,13 +408,252 @@ msgid ""
 "string that can be recorded in the database on study import."
 msgstr ""
 
-#: fb3d05ae111243f89bad61ba3b8ff8a3 of
+#: 31262874b416446ea84d22d8f98873d3 of
 #: remapp.tools.not_patient_indicators.get_not_pt:8
 msgid "The DICOM dataset."
 msgstr ""
 
-#: 5980a87f56cd4cdaaf68af60d806dd75 of
+#: 303accb5881e4f6cb9975105787c8530 of
 #: remapp.tools.not_patient_indicators.get_not_pt:10
 msgid "str. -- xml style string if any trigger values are found."
 msgstr ""
+
+#~ msgid "Get DICOM value by keyword reference."
+#~ msgstr ""
+
+#~ msgid "Parameters"
+#~ msgstr ""
+
+#~ msgid "DICOM keyword, no spaces or plural as per dictionary."
+#~ msgstr ""
+
+#~ msgid "The DICOM dataset containing the tag."
+#~ msgstr ""
+
+#~ msgid "Returns"
+#~ msgstr ""
+
+#~ msgid "str. -- value"
+#~ msgstr ""
+
+#~ msgid "Get DICOM value by tag group and element number."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Always use get_value_kw by preference "
+#~ "for readability. This module can be "
+#~ "required when reading private elements."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "DICOM group and element number as "
+#~ "a single hexadecimal number (prefix 0x)."
+#~ msgstr ""
+
+#~ msgid "From a DICOM sequence, get the code value."
+#~ msgstr ""
+
+#~ msgid "DICOM sequence name."
+#~ msgstr ""
+
+#~ msgid "The DICOM dataset containing the sequence."
+#~ msgstr ""
+
+#~ msgid "int. -- code value"
+#~ msgstr ""
+
+#~ msgid "From a DICOM sequence, get the code meaning."
+#~ msgstr ""
+
+#~ msgid "str. -- code meaning"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Create a code_value code_meaning pair "
+#~ "entry in the ContextID table if it"
+#~ " doesn't already exist."
+#~ msgstr ""
+
+#~ msgid "Code value as defined in the DICOM standard part 16"
+#~ msgstr ""
+
+#~ msgid "Code meaning as defined in the DICOM standard part 16"
+#~ msgstr ""
+
+#~ msgid "ContextID entry for code value passed"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Prevent errors due to missing data "
+#~ "in models :param model: database table"
+#~ " :param field: database field :return: "
+#~ "value or None"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Tests if string can be converted "
+#~ "to a float. If it can, return "
+#~ "it :param string_number: string to test"
+#~ " if is a number :return: string "
+#~ "if number, nothing otherwise"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Function to encode non-ASCII characters"
+#~ " correctly. Probably not required any "
+#~ "longer, but leaving in for now. "
+#~ ":param string: String to encode :param"
+#~ " char_set: Character set used by "
+#~ "DICOM file :return: Encoded string"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Turn multivalue names into a single "
+#~ "string for correct encoding and pretty"
+#~ " reproduction :param dicom_value: returned "
+#~ "DICOM value, usually a name field. "
+#~ "Might be single (string) or multivalue"
+#~ " (list) :return: string of name(s)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Get a list of keys from a "
+#~ "dictionary which have the given value"
+#~ " :param dict_of_elements: a dictionary of"
+#~ " elements :param value_to_find: the value"
+#~ " to look for in the dictionary "
+#~ ":return: list of key names matching "
+#~ "the given value"
+#~ msgstr ""
+
+#~ msgid "Check if UID already exists in database."
+#~ msgstr ""
+
+#~ msgid "Study UID."
+#~ msgstr ""
+
+#~ msgid "1 if it does exist, 0 otherwise"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Record the object's SOP Instance UID "
+#~ "so we can ignore it next time. "
+#~ "If an object does need to be "
+#~ "imported again, the original one needs"
+#~ " to be deleted first."
+#~ msgstr ""
+
+#~ msgid "GeneralStudyModuleAttr database object"
+#~ msgstr ""
+
+#~ msgid "SOP Instance UID of object being imported"
+#~ msgstr ""
+
+#~ msgid "Get DICOM date string and return Python date."
+#~ msgstr ""
+
+#~ msgid "Python date value"
+#~ msgstr ""
+
+#~ msgid "Get DICOM time string and return Python time."
+#~ msgstr ""
+
+#~ msgid "python time value"
+#~ msgstr ""
+
+#~ msgid "Get DICOM date time string and return Python date time."
+#~ msgstr ""
+
+#~ msgid "Python date time value"
+#~ msgstr ""
+
+#~ msgid "Given a DICOM date, return a Python date."
+#~ msgstr ""
+
+#~ msgid "DICOM style date."
+#~ msgstr ""
+
+#~ msgid "Given a DICOM time, return a Python time."
+#~ msgstr ""
+
+#~ msgid "DICOM style time."
+#~ msgstr ""
+
+#~ msgid "Python time value"
+#~ msgstr ""
+
+#~ msgid "Given a DICOM date time, return a Python date time."
+#~ msgstr ""
+
+#~ msgid "DICOM style date time."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Given a Python date, return a "
+#~ "DICOM date :param pythondate:  Date "
+#~ ":type pythondate:   Python date object "
+#~ ":returns:           DICOM date as string"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Given one or two dates of the "
+#~ "form yyyy-mm-dd, return a DICOM"
+#~ " date range."
+#~ msgstr ""
+
+#~ msgid "Date from, string, yyyy-mm-dd, 1900-01-01 if None or badly formatted"
+#~ msgstr ""
+
+#~ msgid "Date until, string, yyyy-mm-dd, today if None or badly formatted"
+#~ msgstr ""
+
+#~ msgid "Single date range, bool, default False"
+#~ msgstr ""
+
+#~ msgid "DICOM formatted date range or single date"
+#~ msgstr ""
+
+#~ msgid "Return DICOM formatted time without seconds from python time"
+#~ msgstr ""
+
+#~ msgid "Python datetime.time object"
+#~ msgstr ""
+
+#~ msgid "string, %H%M"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Given one or two times of the "
+#~ "format 0123, return DICOM formatted time"
+#~ " range (without seconds)"
+#~ msgstr ""
+
+#~ msgid "time, format 0123, 0000 if None"
+#~ msgstr ""
+
+#~ msgid "time, format 0123, 2359 if None"
+#~ msgstr ""
+
+#~ msgid "time range, string, format 0123-1234"
+#~ msgstr ""
+
+#~ msgid "Looks for indications that a study might be a test or QA study."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Some values that might indicate a "
+#~ "study was for QA or similar "
+#~ "purposes are not recorded in the "
+#~ "database, for example patient name. "
+#~ "Therefore this module attempts to find"
+#~ " such indications and creates an xml"
+#~ " style string that can be recorded"
+#~ " in the database on study import."
+#~ msgstr ""
+
+#~ msgid "The DICOM dataset."
+#~ msgstr ""
+
+#~ msgid "str. -- xml style string if any trigger values are found."
+#~ msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"POT-Creation-Date: 2020-09-15 17:58+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,213 +17,217 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: ../../release-1.0.0.rst:3 7794d6fe16ce430bbaed8f2cd83912ce
+#: ../../release-1.0.0.rst:3 a2054518aa5241b1885d968b54113bc4
 msgid "Upgrade to OpenREM 1.0.0"
 msgstr ""
 
-#: ../../release-1.0.0.rst:7 5fd680a5280c4ab9ae4f0812af6f55b8
+#: ../../release-1.0.0.rst:7 b1f41107545842dcacad8016a55e4b4c
 msgid "Headline changes"
 msgstr ""
 
-#: ../../release-1.0.0.rst:9 f219bdd1e7cc4eeaa6515995c6c11ecc
+#: ../../release-1.0.0.rst:9 db1b2ee431a24b28b4b6a609864350a1
 msgid "Python 3"
 msgstr ""
 
-#: ../../release-1.0.0.rst:10 d538696c7bfd42f2ac9e2a6eaf3f439a
+#: ../../release-1.0.0.rst:10 ce3b788ab5884f9287d43178450d6469
 msgid "Django 2.2"
 msgstr ""
 
-#: ../../release-1.0.0.rst:11 400bef95b6ec493984315df562629982
+#: ../../release-1.0.0.rst:11 60619efdffa64c849ecbb6050f190ce0
 msgid "Docker"
 msgstr ""
 
-#: ../../release-1.0.0.rst:15 447d63484a0e469582bca2725847b7aa
+#: ../../release-1.0.0.rst:13 0fa9ef3a3da24757af7a0d2f8d228ce4
+msgid "Performing physician added to standard fluoroscopy exports (:issue:`840`)"
+msgstr ""
+
+#: ../../release-1.0.0.rst:17 d4b579e0ee8e44438e6b48d3b06c7d0c
 msgid "Upgrade preparation"
 msgstr ""
 
-#: ../../release-1.0.0.rst:17 8058e8dc4d3745348ddfd2ba34c3dbc2
+#: ../../release-1.0.0.rst:19 4474ea504ae44a0999245c462e55afa3
 msgid "These instructions assume you are upgrading from 0.10.0."
 msgstr ""
 
-#: ../../release-1.0.0.rst:18 f792f086a62244409427802b050eea2d
+#: ../../release-1.0.0.rst:20 14e75ece525e46deaf2f00e882966163
 msgid ""
 "**Upgrades from 0.9.1 or earlier should review** "
 ":doc:`upgrade_previous_0.10.0`. -- needs changing"
 msgstr ""
 
-#: ../../release-1.0.0.rst:23 97a0b37079ba451cba2991233066e677
+#: ../../release-1.0.0.rst:25 76868c63f176423f8de1157d46f230e5
 msgid "Upgrade process from a PostgresQL database"
 msgstr ""
 
-#: ../../release-1.0.0.rst:26 36f3dcdf3ea14a6ebc34e98fe762c142
+#: ../../release-1.0.0.rst:28 6feb963523f84afabd694263219a4ff5
 msgid "Establish existing database details"
 msgstr ""
 
-#: ../../release-1.0.0.rst:28 a0afabf533b24269976c8386fa700a39
+#: ../../release-1.0.0.rst:30 18cdddc544434245aa046b14fa42e4ba
 msgid ""
 "Review the current ``local_settings.py`` for the database settings and "
 "location of the ``MEDIA_ROOT`` folder. The file is in:"
 msgstr ""
 
-#: ../../release-1.0.0.rst:31 78f0a5e682ae49499ec0565e53a09ef8
+#: ../../release-1.0.0.rst:33 fd34c3d4f980497faea229852958fd70
 msgid ""
 "Ubuntu linux: ``/usr/local/lib/python2.7/dist-"
 "packages/openrem/openremproject/local_settings.py``"
 msgstr ""
 
-#: ../../release-1.0.0.rst:32 3faab6ac8f07491488689bc3f397537f
+#: ../../release-1.0.0.rst:34 8cf6b69b1e3f4910a2463c45982d6555
 msgid ""
 "Other linux: ``/usr/lib/python2.7/site-"
 "packages/openrem/openremproject/local_settings.py``"
 msgstr ""
 
-#: ../../release-1.0.0.rst:33 1a9706e1388044d5b2cebfb70f1cd1f7
+#: ../../release-1.0.0.rst:35 123d33f363e04a298ea5ea48cc733cb6
 msgid ""
 "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-"
 "packages/openrem/openremproject/local_settings.py``"
 msgstr ""
 
-#: ../../release-1.0.0.rst:34 f581cbc2f9b644cc9f83137ce81b6ac0
+#: ../../release-1.0.0.rst:36 d786901342a744ffbd2a394181270a8f
 msgid ""
 "Windows: ``C:\\Python27\\Lib\\site-"
 "packages\\openrem\\openremproject\\local_settings.py``"
 msgstr ""
 
-#: ../../release-1.0.0.rst:35 66bc09cb77fe487f8c08935eb823375f
+#: ../../release-1.0.0.rst:37 2e398a26969a4dbaa72c3c34c3199d7d
 msgid ""
 "Windows virtualenv: ``virtualenvfolder\\Lib\\site-"
 "packages\\openrem\\openremproject\\local_settings.py``"
 msgstr ""
 
-#: ../../release-1.0.0.rst:39 b349c2c9ed284e6e9356e7485aae5fc6
+#: ../../release-1.0.0.rst:41 ff339d67acf54ad0ae63dcb9cb22ecb5
 msgid "Export the database"
 msgstr ""
 
-#: ../../release-1.0.0.rst:41 6197113253084fdcb04c0b7c692b8924
+#: ../../release-1.0.0.rst:43 f0d63927cede4feda2f16dfad31e24a8
 msgid "Open a command line window"
 msgstr ""
 
-#: ../../release-1.0.0.rst:42 55167913a9414752a71b8040e8dd82ba
+#: ../../release-1.0.0.rst:44 d25607400d9d406d8d22d9879789d0d4
 msgid "Windows: go to Postgres bin folder, for example:"
 msgstr ""
 
-#: ../../release-1.0.0.rst:48 5900c75bc16844aab4294e0e2ba539d9
+#: ../../release-1.0.0.rst:50 bb9c52a7251149b8a18b2d3b248d8c63
 msgid "Dump the database:"
 msgstr ""
 
-#: ../../release-1.0.0.rst:50 0ae20ed1190d4b0599130c76d6997633
+#: ../../release-1.0.0.rst:52 b04e18a018974825b118e8ae090d3189
 msgid ""
 "Use the username (``-U openremuser``) and database name (``-d "
 "openremdb``) from ``local_settings.py``"
 msgstr ""
 
-#: ../../release-1.0.0.rst:51 201e2ff1404c4a7c9e4b8a33151639f9
+#: ../../release-1.0.0.rst:53 7a0efadc5d4c49019b88a0ffdd26346e
 msgid "Use the password from ``local_settings.py`` when prompted"
 msgstr ""
 
-#: ../../release-1.0.0.rst:52 0c12768870594f9997923ff186a035d0
+#: ../../release-1.0.0.rst:54 467dd63fa44f4b19a205ec5f4961831d
 msgid "For linux, the command is ``pg_dump`` (no ``.exe``)"
 msgstr ""
 
-#: ../../release-1.0.0.rst:53 35d214b7c37543cdbdc1afba0bf1caf6
+#: ../../release-1.0.0.rst:55 69137312ce294df1b36038c8e6e9a595
 msgid "Set the path to somewhere suitable to dump the exported database file"
 msgstr ""
 
-#: ../../release-1.0.0.rst:60 59fce2018b2046ddae80a50e3ddcbf70
+#: ../../release-1.0.0.rst:62 b7ee712adb784fba876c9b789146fbe1
 msgid "Set up the new installation"
 msgstr ""
 
-#: ../../release-1.0.0.rst:62 097fab3740904628be751a7e5fa1affc
+#: ../../release-1.0.0.rst:64 f5c371e2ffac4d1eb9d91177bae2eac8
 msgid "Install Docker"
 msgstr ""
 
-#: ../../release-1.0.0.rst:63 f67ba8409f4342a381eec7fb76d753ee
+#: ../../release-1.0.0.rst:65 b489b90d594044d582627ad3f5322a6f
 msgid ""
 "Download and extract https://bitbucket.org/openrem/docker/get/develop.zip"
 " and open a shell (command window) in the new folder"
 msgstr ""
 
-#: ../../release-1.0.0.rst:65 5876c62427914e568b055a19b486f441
+#: ../../release-1.0.0.rst:67 15f4a90cc0d846ceaf314d44088374f2
 msgid ""
 "Customise variables in ``.env.prod`` and in the ``orthanc_1`` section in "
 "``docker-compose.yml`` as necessary. A full description of the options "
 "are found in:"
 msgstr ""
 
-#: ../../release-1.0.0.rst:74 f483c1569d494d4097fd4d36fa3811de
+#: ../../release-1.0.0.rst:76 5ed180524fe145f19eb830a20e705bf2
 msgid "Start the containers with:"
 msgstr ""
 
-#: ../../release-1.0.0.rst:80 0648dec66ec74c7aaeff2df48973440a
+#: ../../release-1.0.0.rst:82 eb8a6f5fd64e41e69ca320071bced323
 msgid ""
 "Copy the database backup to the postgres docker container and import it. "
 "If you have changed the database variables, ensure that:"
 msgstr ""
 
-#: ../../release-1.0.0.rst:83 312f2fc0ae284c229115e4f72b0d2186
+#: ../../release-1.0.0.rst:85 c372b4c8da3e4f408e9a8d1ee8645c62
 msgid ""
 "the database user (``-U openremuser``) matches ``POSTGRES_USER`` in "
 "``.env.prod``"
 msgstr ""
 
-#: ../../release-1.0.0.rst:84 aed2129e99964d0d9048678b68aace8f
+#: ../../release-1.0.0.rst:86 5325ee0388a94fc1a5e8e5d2078e27ea
 msgid ""
 "the database name (``-d openrem_prod``) matches ``POSTGRES_DB`` in "
 "``.env.prod``"
 msgstr ""
 
-#: ../../release-1.0.0.rst:86 3b28604cb6af4fa99621fad34261747f
+#: ../../release-1.0.0.rst:88 1e09985abbbc4bc58fb1fac5001f48c5
 msgid ""
 "They don't have to match the old database settings. The filename in both "
 "commands (``openremdump.bak``) should match your backup filename."
 msgstr ""
 
-#: ../../release-1.0.0.rst:97 c6768b710c8a435e93664de5d87a1eee
+#: ../../release-1.0.0.rst:99 0b3330a806aa4bc68e53af34b5471bb7
 msgid "It is normal to get an error about the public schema, for example:"
 msgstr ""
 
-#: ../../release-1.0.0.rst:108 b4d4334bdfcc452da2d75263930227d4
+#: ../../release-1.0.0.rst:110 870ab61a4ea64b5e9ef1a439ce381507
 msgid ""
 "Rename the 0.10 upgrade migration file, migrate the database (the steps "
 "and fakes are required as it is not a new database), and create the "
 "static files:"
 msgstr ""
 
-#: ../../release-1.0.0.rst:135 ../../release-1.0.0.rst:285
-#: e57e7d712f0042d3aeb0316ab36c5683 f4432356d10d45e8b6e64e83110a320a
+#: ../../release-1.0.0.rst:137 ../../release-1.0.0.rst:287
+#: 2e40ba3798634c61b1e325e857ca3fac 50486d358f1a4b3280f45ab82010b425
 msgid "Generate translation binary files"
 msgstr ""
 
-#: ../../release-1.0.0.rst:141 bed3d1fb3efc4b18b0ad592d72f52c45
+#: ../../release-1.0.0.rst:143 a7774c01c8ba4c96b552ac6e6bbdc706
 msgid ""
 "Copy in any existing skin dose map pickle files from your existing "
 "``MEDIA_ROOT/skin_maps`` folder (optional, they can be calculated again):"
 msgstr ""
 
-#: ../../release-1.0.0.rst:148 edac5ebf6c9f459ebe91c058c38fadb7
+#: ../../release-1.0.0.rst:150 d03bbde1c8f4430a8861b6d0bb46ca88
 msgid "The new OpenREM installation should now be ready to be used."
 msgstr ""
 
-#: ../../release-1.0.0.rst:152 3a56125bfb674310b3b399f209a1f735
+#: ../../release-1.0.0.rst:154 9d21a78c2abf4325a0858bbf458490a0
 msgid "Upgrading an OpenREM server with no internet access"
 msgstr ""
 
-#: ../../release-1.0.0.rst:154 3f86b8f7c28b4e75afbd534067bdc92b
+#: ../../release-1.0.0.rst:156 787343ed50a142a7b8d6737d68b4bd2e
 msgid ""
 "Follow the instructions found at :doc:`upgrade-offline`, before returning"
 " here to update the configuration, migrate the database and complete the "
 "upgrade."
 msgstr ""
 
-#: ../../release-1.0.0.rst:159 6e7e5a426f114a049f65c6baa80cb177
+#: ../../release-1.0.0.rst:161 16b2399287ec4ad69f593c49335ebb8b
 msgid "Upgrading an OpenREM server that uses a different database"
 msgstr ""
 
-#: ../../release-1.0.0.rst:165 d50e5ed1f50a4d0f99662e4ba8c60436
+#: ../../release-1.0.0.rst:167 a3c84a8d5e724ca998b2ab435b827701
 msgid "Upgrading without using Docker - linux only"
 msgstr ""
 
-#: ../../release-1.0.0.rst:167 a122335fe5214b19a8b7f2afa0cdff7d
+#: ../../release-1.0.0.rst:169 fca7d7bb6acd415da7406de9050fb17c
 msgid ""
 "Upgrading without using Docker is not recommended, and not supported on "
 "Windows. Instructions are only provided for Linux and assume a "
@@ -231,79 +235,79 @@ msgid ""
 "with release 0.8.1 and later."
 msgstr ""
 
-#: ../../release-1.0.0.rst:172 bc6f0c86af2d4ae688088312c1bde997
+#: ../../release-1.0.0.rst:174 ab72cd769d98450aad31e826eed22aec
 msgid "Preparation"
 msgstr ""
 
-#: ../../release-1.0.0.rst:174 7542aa69b1914d82886d8dafa2a40185
+#: ../../release-1.0.0.rst:176 af21cde98b8e4999a8576073444a85f6
 msgid "Back up the database:"
 msgstr ""
 
-#: ../../release-1.0.0.rst:180 9685b73cd8774617bade21b821e3d88d
+#: ../../release-1.0.0.rst:182 1ca4a247a7e845fbaf39e9904bc0e58f
 msgid "Stop any Celery workers, Flower and Gunicorn, disable DICOM Store SCP:"
 msgstr ""
 
-#: ../../release-1.0.0.rst:189 a9a401a468b449d6ae0f434f03e86c28
+#: ../../release-1.0.0.rst:191 e6d1407af33c45678b6a1fe89caed86a
 msgid "Install Python 3.8 and create a new virtualenv:"
 msgstr ""
 
-#: ../../release-1.0.0.rst:202 3a46bd51b78c41569761c41f21327d76
+#: ../../release-1.0.0.rst:204 94cee990a2d74e3f8f4f707f9865f786
 msgid "Install the new version of OpenREM"
 msgstr ""
 
-#: ../../release-1.0.0.rst:215 c42219ec25014190b6ed2c2287e99f7b
+#: ../../release-1.0.0.rst:217 ce9324a9052d4b4bb76c7b77964db9e9
 msgid "Update the local_settings.py file"
 msgstr ""
 
-#: ../../release-1.0.0.rst:217 d6df170e66fd48a4bec9cc069d116095
+#: ../../release-1.0.0.rst:219 451beca75e3e452e809dd77c85e16c65
 msgid "Remove the first line ``LOCAL_SETTINGS = True``"
 msgstr ""
 
-#: ../../release-1.0.0.rst:218 fbce95cb0d974f6083f7a4ba229eca36
+#: ../../release-1.0.0.rst:220 fe13dd59a4af4ad3883187e9883a9f14
 msgid "Change second line to ``from .settings import *``"
 msgstr ""
 
-#: ../../release-1.0.0.rst:219 ee4de8ae0e674c34b38f7d67ecf73809
+#: ../../release-1.0.0.rst:221 056933bc035e41e4b242d6c9eff0164e
 msgid ""
 "Compare file to local_settings.py.example to see if there are other "
 "sections that should be updated"
 msgstr ""
 
-#: ../../release-1.0.0.rst:222 8dfaf2a8a6c44204856c0b6531e0b6f7
+#: ../../release-1.0.0.rst:224 27b1d810f615454b8ccdc5e3fb014051
 msgid "Migrate the database"
 msgstr ""
 
-#: ../../release-1.0.0.rst:224 a96d7550b5c14544a276854ba6d691e1
+#: ../../release-1.0.0.rst:226 cc82275907e3478abd63031d68a30372
 msgid "In a shell/command window, move into the ``openrem`` folder:"
 msgstr ""
 
-#: ../../release-1.0.0.rst:230 e0d72e54687948cb82c6192af7df6af3
+#: ../../release-1.0.0.rst:232 17d8583bf5f3470aacda151abf8c6f56
 msgid "Prepare the migrations folder:"
 msgstr ""
 
-#: ../../release-1.0.0.rst:232 a7d54e67353b4caa9bf5d112d3805bcb
+#: ../../release-1.0.0.rst:234 0348974e0af748f08cc09a06178a17e4
 msgid ""
 "Delete everything except ``__init__.py`` and "
 "``0001_initial.py.1-0-upgrade`` in ``remapp/migrations``"
 msgstr ""
 
-#: ../../release-1.0.0.rst:233 532cfff19bd9421ebce0b05a71d51241
+#: ../../release-1.0.0.rst:235 3f070e9cf6b1407f9d04ec29abda8a2e
 msgid "Rename ``0001_initial.py.1-0-upgrade`` to ``0001_initial.py``"
 msgstr ""
 
-#: ../../release-1.0.0.rst:241 cb820778f16044749a3e7cf0616c6acd
+#: ../../release-1.0.0.rst:243 3face72ec70346e0ad5e4ed319937436
 msgid "Migrate the database:"
 msgstr ""
 
-#: ../../release-1.0.0.rst:261 9e9801151458430797d4acc926cebf6f
+#: ../../release-1.0.0.rst:263 bb1f5f0227ea4e418f63de54ae744416
 msgid "Update static files"
 msgstr ""
 
-#: ../../release-1.0.0.rst:267 3ac52d6c425e412ab462763634d617cd
+#: ../../release-1.0.0.rst:269 169eb9702f204971ac062988f52d6bee
 msgid "Virtual directory users"
 msgstr ""
 
-#: ../../release-1.0.0.rst:269 96ae5e5767124831a094d6ba69f7e587
+#: ../../release-1.0.0.rst:271 24b80dbc2c2c44cbba93b850933e463f
 msgid ""
 "If you are running your website in a virtual directory, you also have to "
 "update the reverse.js file. To get the file in the correct path, take "
@@ -312,35 +316,35 @@ msgid ""
 "``local_settings.py.example``):"
 msgstr ""
 
-#: ../../release-1.0.0.rst:277 e80f47564bef4e98ac13c3bb2617358a
+#: ../../release-1.0.0.rst:279 93dde6e1c660405b82f35d9e76c28551
 msgid "To update the reverse.js file execute the following command:"
 msgstr ""
 
-#: ../../release-1.0.0.rst:283 72597f2c7e4445b5a0a935b91ece5944
+#: ../../release-1.0.0.rst:285 865dc88f7a914c87bb869c628ccf318a
 msgid "See  :doc:`virtual_directory` for more details."
 msgstr ""
 
-#: ../../release-1.0.0.rst:292 9012e0bf84b34d98af59dd24ca52d47a
+#: ../../release-1.0.0.rst:294 29aa2dfd69d9487887706f83c977e5a5
 msgid "Update all the services configurations"
 msgstr ""
 
-#: ../../release-1.0.0.rst:294 05ca98d1221e40669139a47abcdbc3b5
+#: ../../release-1.0.0.rst:296 5bd6f2257a0d45dea6cf9e6c194c294c
 msgid "Edit the Gunicorn systemd file ``WorkingDirectory`` and ``ExecStart``:"
 msgstr ""
 
-#: ../../release-1.0.0.rst:308 bf0ce6f8a6c443dc8d364a45ed928e6b
+#: ../../release-1.0.0.rst:310 ebe3dac7da1645b88c02c83eadf74f42
 msgid "Edit the Celery configuration file ``CELERY_BIN``:"
 msgstr ""
 
-#: ../../release-1.0.0.rst:318 33b4668b777f423d809901e41cdf8e07
+#: ../../release-1.0.0.rst:320 256caeae3d534cc6bce55a4b2e4e824f
 msgid "Edit the Celery systemd file ``WorkingDirectory``:"
 msgstr ""
 
-#: ../../release-1.0.0.rst:328 340e2fd83bbd460fae170bf9f423c4db
+#: ../../release-1.0.0.rst:330 00ab8b1291cc43348d92e49bb8fe79be
 msgid "Edit the Flower systemd file ``WorkingDirectory``:"
 msgstr ""
 
-#: ../../release-1.0.0.rst:339 407f1c5f028242bca9ec0984b41924d5
+#: ../../release-1.0.0.rst:341 a743be4c6db44a1a8a825b3d941ada32
 msgid "Reload systemd and restart the services"
 msgstr ""
 

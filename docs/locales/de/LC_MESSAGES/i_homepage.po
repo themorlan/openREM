@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"POT-Creation-Date: 2020-09-11 09:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,27 +17,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: ../../i_homepage.rst:2 1d0b2f3d9a9348f3b77e0e2e48486224
+#: ../../i_homepage.rst:2 5b299a4705b4426392fd517906df7ecd
 msgid "Home page options"
 msgstr ""
 
-#: ../../i_homepage.rst:3 1e40816219504dfdb3e0e277fabdd2ad
+#: ../../i_homepage.rst:3 4a6d7871ccb94ebda337395c4d7a6065
 msgid "*New in 0.8.2*"
 msgstr ""
 
-#: ../../i_homepage.rst:5 ea4a10799716467d8c80000518eed8c4
+#: ../../i_homepage.rst:5 4b6f9168a52f4fd783f7c8033364d190
 msgid "Contents"
 msgstr ""
 
-#: ../../i_homepage.rst:8 e8c124af27fb41bcbfc6324ed5dd33e3
+#: ../../i_homepage.rst:8 a7936211e28d443ca54041595549b327
 msgid "Display of workload information"
 msgstr ""
 
-#: ../../i_homepage.rst:15 7485ebe1c35540a6928a713c142887b9
+#: ../../i_homepage.rst:15 2d710b95496745aa972c70ad34c1e2d2
 msgid "Figure 1: The ``Config`` menu (user and admin)"
 msgstr ""
 
-#: ../../i_homepage.rst:17 aa1ccb40675245768b9588dd3c141d39
+#: ../../i_homepage.rst:17 8bfd97b11d77434aa78e78595ba854ba
 msgid ""
 "The home page can be configured to show the number of studies carried out"
 " in the past 7 (default) and 28 (default) days for each system. These "
@@ -48,11 +48,11 @@ msgid ""
 "time periods can be viewed and updated (figure 2)."
 msgstr ""
 
-#: ../../i_homepage.rst:30 9bf937304eae4c89afc64890a970d46b
+#: ../../i_homepage.rst:30 39e19a54ad08408f91c76a445bcd2e5d
 msgid "Figure 2: The home page options form"
 msgstr ""
 
-#: ../../i_homepage.rst:32 ca0983ab57134024af0098d33f7d3abc
+#: ../../i_homepage.rst:32 04ddacfdfa2c4fe7938aab6e11ef3ecc
 msgid ""
 "By default the display of workload information is disabled; this can be "
 "changed by an OpenREM administrator via the ``Home page options``. When "
@@ -61,7 +61,14 @@ msgid ""
 "home page (figure 3)."
 msgstr ""
 
-#: ../../i_homepage.rst:42 272224a97d7646a1a0499b25debb4e82
+#: ../../i_homepage.rst:42 090a8b63ed854cae9c810bf1268aaecd
 msgid "Figure 3: The home page options admin form"
+msgstr ""
+
+#: ../../i_homepage.rst:44 4785c51fd5454253aa67e7ae59173063
+msgid ""
+"When workload information is displayed, the link to the system data is "
+"modified in the workload cells to filter the studies to the same date "
+"range."
 msgstr ""
 
