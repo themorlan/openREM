@@ -2379,7 +2379,7 @@ def update_latest_studies(request):
     :return: HTML table of modalities
     """
     from django.db.models import Q, Min
-    from datetime import datetime
+    from datetime import datetime, timedelta
     from collections import OrderedDict
     from remapp.models import HomePageAdminSettings
 
@@ -2450,10 +2450,15 @@ def update_latest_studies(request):
         display_workload_stats = HomePageAdminSettings.objects.values_list(
             "enable_workload_stats", flat=True
         )[0]
+        today = datetime.now()
+        date_a = today - timedelta(days=day_delta_a)
+        date_b = today - timedelta(days=day_delta_b)
         home_config = {
             "display_workload_stats": display_workload_stats,
             "day_delta_a": day_delta_a,
             "day_delta_b": day_delta_b,
+            "date_a": datetime.strftime(date_a, "%Y-%m-%d"),
+            "date_b": datetime.strftime(date_b, "%Y-%m-%d"),
         }
 
         return render(
