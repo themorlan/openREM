@@ -1279,6 +1279,9 @@ def chart_options_view(request):
             user_profile.plotThemeChoice = general_form.cleaned_data[
                 "plotThemeChoice"
             ]
+            user_profile.plotColourMapChoice = general_form.cleaned_data[
+                "plotColourMapChoice"
+            ]
             user_profile.plotAverageChoice = general_form.cleaned_data[
                 "plotMeanMedianOrBoth"
             ]
@@ -1420,6 +1423,7 @@ def chart_options_view(request):
         "plotHistograms": user_profile.plotHistograms,
         "plotCaseInsensitiveCategories": user_profile.plotCaseInsensitiveCategories,
         "plotThemeChoice": user_profile.plotThemeChoice,
+        "plotColourMapChoice": user_profile.plotColourMapChoice
     }
 
     ct_form_data = {

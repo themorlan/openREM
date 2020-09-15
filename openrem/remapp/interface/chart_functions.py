@@ -69,6 +69,7 @@ def create_dataframe(
 
     if system_name_field:
         df.rename(columns={system_name_field: "x_ray_system_name"}, inplace=True)
+        df.sort_values(by="x_ray_system_name", inplace=True)
     else:
         df.insert(0, "x_ray_system_name", "All systems")
 
@@ -121,15 +122,35 @@ def plotly_set_default_theme(theme_name):
     pio.templates.default = theme_name
 
 
+def calculate_colour_sequence(
+        scale_name="jet",
+        n_colours=10
+):
+    import matplotlib.cm
+    import matplotlib.colors
+
+    colour_seq = []
+    cmap = matplotlib.cm.get_cmap(scale_name)
+    for i in range(n_colours):
+        c = cmap(i / (n_colours-1))
+        colour_seq.append(matplotlib.colors.rgb2hex(c))
+
+    return colour_seq
+
+
 def plotly_boxplot(
         df,
         df_name_col,
         df_value_col,
         value_axis_title="",
-        name_axis_title=""
+        name_axis_title="",
+        colourmap="RdYlBu"
 ):
     from plotly.offline import plot
     import plotly.express as px
+
+    n_colours = len(df.x_ray_system_name.unique())
+    colour_sequence = calculate_colour_sequence(colourmap, n_colours)
 
     try:
         fig = px.box(
@@ -141,7 +162,8 @@ def plotly_boxplot(
                 df_value_col: value_axis_title,
                 df_name_col: name_axis_title,
                 "x_ray_system_name": "System"
-            }
+            },
+            color_discrete_sequence=colour_sequence
         )
 
         fig.update_xaxes(categoryorder="category ascending")
@@ -159,10 +181,14 @@ def plotly_barchart(
         df_name_col,
         df_value_col,
         value_axis_title="",
-        name_axis_title=""
+        name_axis_title="",
+        colourmap="RdYlBu"
 ):
     from plotly.offline import plot
     import plotly.express as px
+
+    n_colours = len(df.x_ray_system_name.unique())
+    colour_sequence = calculate_colour_sequence(colourmap, n_colours)
 
     try:
         fig = px.histogram(
@@ -176,7 +202,8 @@ def plotly_barchart(
                 df_value_col: value_axis_title,
                 df_name_col: name_axis_title,
                 "x_ray_system_name": "System"
-            }
+            },
+            color_discrete_sequence=colour_sequence
         )
 
         fig.update_xaxes(categoryorder="category ascending")
@@ -194,10 +221,14 @@ def plotly_histogram(
         df_category_name_col="x_ray_system_name",
         value_axis_title="",
         legend_title="System",
-        n_bins=10
+        n_bins=10,
+        colourmap="RdYlBu"
 ):
     from plotly.offline import plot
     import plotly.express as px
+
+    n_colours = len(df[df_category_name_col].unique())
+    colour_sequence = calculate_colour_sequence(colourmap, n_colours)
 
     try:
         fig = px.histogram(
@@ -213,7 +244,8 @@ def plotly_histogram(
             labels={
                 df_value_col: value_axis_title,
                 df_category_name_col: legend_title
-            }
+            },
+            color_discrete_sequence=colour_sequence
         )
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
@@ -227,10 +259,14 @@ def plotly_histogram(
 def plotly_stacked_histogram(
         df,
         df_name_col,
-        name_axis_title=""
+        name_axis_title="",
+        colourmap="RdYlBu"
 ):
     from plotly.offline import plot
     import plotly.express as px
+
+    n_colours = len(df[df_name_col].unique())
+    colour_sequence = calculate_colour_sequence(colourmap, n_colours)
 
     try:
         fig = px.histogram(
@@ -242,7 +278,8 @@ def plotly_stacked_histogram(
             labels={
                 df_name_col:name_axis_title,
                 "x_ray_system_name": "System"
-            }
+            },
+            color_discrete_sequence=colour_sequence
         )
 
         fig.update_xaxes(categoryorder="category ascending")
@@ -261,10 +298,14 @@ def plotly_timeseries_linechart(
         facet_col="x_ray_system_name",
         value_axis_title="",
         name_axis_title="",
-        legend_title=""
+        legend_title="",
+        colourmap="RdYlBu"
 ):
     from plotly.offline import plot
     import plotly.express as px
+
+    n_colours = len(df[df_name_col].unique())
+    colour_sequence = calculate_colour_sequence(colourmap, n_colours)
 
     try:
         fig = px.scatter(
@@ -281,7 +322,8 @@ def plotly_timeseries_linechart(
                 df_name_col: legend_title,
                 df_date_col: name_axis_title,
                 "x_ray_system_name": "System"
-            }
+            },
+            color_discrete_sequence=colour_sequence
         )
 
         for data_set in fig.data:
@@ -304,10 +346,14 @@ def plotly_scatter(
         facet_title="System",
         x_axis_title="",
         y_axis_title="",
-        legend_title=""
+        legend_title="",
+        colourmap="RdYlBu"
 ):
     from plotly.offline import plot
     import plotly.express as px
+
+    n_colours = len(df[df_category_name_col].unique())
+    colour_sequence = calculate_colour_sequence(colourmap, n_colours)
 
     try:
         fig = px.scatter(
@@ -324,7 +370,8 @@ def plotly_scatter(
                 df_y_value_col: y_axis_title,
                 df_category_name_col: legend_title,
                 df_facet_col: facet_title
-            }
+            },
+            color_discrete_sequence=colour_sequence
         )
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
@@ -340,10 +387,14 @@ def plotly_barchart_weekdays(
         df_name_col,
         df_value_col,
         name_axis_title="",
-        value_axis_title=""
+        value_axis_title="",
+        colourmap="RdYlBu"
 ):
     from plotly.offline import plot
     import plotly.express as px
+
+    n_colours = len(df.x_ray_system_name.unique())
+    colour_sequence = calculate_colour_sequence(colourmap, n_colours)
 
     try:
         fig = px.bar(
@@ -359,7 +410,8 @@ def plotly_barchart_weekdays(
                 df_name_col: name_axis_title,
                 df_value_col: value_axis_title,
                 "x_ray_system_name": "System"
-            }
+            },
+            color_discrete_sequence=colour_sequence
         )
 
         fig.update_xaxes(categoryarray=["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])

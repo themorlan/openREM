@@ -1663,7 +1663,8 @@ def ct_summary_chart_data(request):
         user_profile.plotHistogramBins,
         user_profile.plotHistograms,
         user_profile.plotCaseInsensitiveCategories,
-        user_profile.plotThemeChoice
+        user_profile.plotThemeChoice,
+        user_profile.plotColourMapChoice
     )
 
     if settings.DEBUG:
@@ -1698,7 +1699,8 @@ def ct_plot_calculations(
     plot_histogram_bins,
     plot_histograms,
     plot_case_insensitive_categories,
-    plot_theme_choice
+    plot_theme_choice,
+    plot_colour_map_choice
 ):
     """CT chart data calculations
     """
@@ -1851,7 +1853,8 @@ def ct_plot_calculations(
                     "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                     "ctradiationdose__ctirradiationeventdata__dlp",
                     value_axis_title="DLP (mGy.cm)",
-                    name_axis_title="Acquisition protocol"
+                    name_axis_title="Acquisition protocol",
+                    colourmap=plot_colour_map_choice
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -1860,7 +1863,8 @@ def ct_plot_calculations(
                     "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                     "ctradiationdose__ctirradiationeventdata__dlp",
                     value_axis_title="DLP (mGy.cm)",
-                    name_axis_title="Acquisition protocol"
+                    name_axis_title="Acquisition protocol",
+                    colourmap=plot_colour_map_choice
                 )
 
             if plot_histograms:
@@ -1879,7 +1883,8 @@ def ct_plot_calculations(
                     df_category_name_col=category_names_col,
                     value_axis_title="DLP (mGy.cm)",
                     legend_title=legend_title,
-                    n_bins=plot_histogram_bins
+                    n_bins=plot_histogram_bins,
+                    colourmap=plot_colour_map_choice
                 )
 
         if plot_acquisition_mean_ctdi:
@@ -1889,7 +1894,8 @@ def ct_plot_calculations(
                     "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                     value_axis_title="CTDI (mGy.cm)",
-                    name_axis_title="Acquisition protocol"
+                    name_axis_title="Acquisition protocol",
+                    colourmap=plot_colour_map_choice
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -1898,7 +1904,8 @@ def ct_plot_calculations(
                     "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                     value_axis_title="CTDI (mGy.cm)",
-                    name_axis_title="Acquisition protocol"
+                    name_axis_title="Acquisition protocol",
+                    colourmap=plot_colour_map_choice
                 )
 
             if plot_histograms:
@@ -1917,14 +1924,16 @@ def ct_plot_calculations(
                     df_category_name_col=category_names_col,
                     value_axis_title="CTDI (mGy.cm)",
                     legend_title=legend_title,
-                    n_bins=plot_histogram_bins
+                    n_bins=plot_histogram_bins,
+                    colourmap=plot_colour_map_choice
                 )
 
         if plot_acquisition_freq:
             return_structure["acquisitionFrequencyData"] = plotly_stacked_histogram(
                 df,
                 "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                name_axis_title="Acquisition protocol"
+                name_axis_title="Acquisition protocol",
+                colourmap=plot_colour_map_choice
             )
 
         if plot_acquisition_ctdi_vs_mass:
@@ -1944,7 +1953,8 @@ def ct_plot_calculations(
                 df_facet_col=group_by_col,
                 x_axis_title="Patient mass (kg)",
                 y_axis_title="CTDI (mGy)",
-                legend_title=legend_title
+                legend_title=legend_title,
+                colourmap=plot_colour_map_choice
             )
 
         if plot_acquisition_dlp_vs_mass:
@@ -1964,7 +1974,8 @@ def ct_plot_calculations(
                 df_facet_col=group_by_col,
                 x_axis_title="Patient mass (kg)",
                 y_axis_title="DLP (mGy.cm)",
-                legend_title=legend_title
+                legend_title=legend_title,
+                colourmap=plot_colour_map_choice
             )
 
         if plot_acquisition_ctdi_over_time:
@@ -1992,7 +2003,8 @@ def ct_plot_calculations(
                     facet_col=group_by_col,
                     value_axis_title="Mean CTDI (mGy)",
                     name_axis_title="Study date",
-                    legend_title="Acquisition protocol"
+                    legend_title="Acquisition protocol",
+                    colourmap=plot_colour_map_choice
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2004,7 +2016,8 @@ def ct_plot_calculations(
                     facet_col=group_by_col,
                     value_axis_title="Median CTDI (mGy)",
                     name_axis_title="Study date",
-                    legend_title="Acquisition protocol"
+                    legend_title="Acquisition protocol",
+                    colourmap=plot_colour_map_choice
                 )
 
         if plot_acquisition_dlp_over_time:
@@ -2032,7 +2045,8 @@ def ct_plot_calculations(
                     facet_col=group_by_col,
                     value_axis_title="Mean DLP (mGy.cm)",
                     name_axis_title="Study date",
-                    legend_title="Acquisition protocol"
+                    legend_title="Acquisition protocol",
+                    colourmap=plot_colour_map_choice
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2044,7 +2058,8 @@ def ct_plot_calculations(
                     facet_col=group_by_col,
                     value_axis_title="Median DLP (mGy.cm)",
                     name_axis_title="Study date",
-                    legend_title="Acquisition protocol"
+                    legend_title="Acquisition protocol",
+                    colourmap=plot_colour_map_choice
                 )
 
     #######################################################################
@@ -2104,7 +2119,8 @@ def ct_plot_calculations(
                     "study_description",
                     "total_dlp",
                     value_axis_title="DLP (mGy.cm)",
-                    name_axis_title="Study description"
+                    name_axis_title="Study description",
+                    colourmap=plot_colour_map_choice
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2113,7 +2129,8 @@ def ct_plot_calculations(
                     "study_description",
                     "total_dlp",
                     value_axis_title="DLP (mGy.cm)",
-                    name_axis_title="Study description"
+                    name_axis_title="Study description",
+                    colourmap=plot_colour_map_choice
                 )
 
             if plot_histograms:
@@ -2132,7 +2149,8 @@ def ct_plot_calculations(
                     df_category_name_col=category_names_col,
                     value_axis_title="DLP (mGy.cm)",
                     legend_title=legend_title,
-                    n_bins=plot_histogram_bins
+                    n_bins=plot_histogram_bins,
+                    colourmap=plot_colour_map_choice
                 )
 
         if plot_study_mean_ctdi:
@@ -2142,7 +2160,8 @@ def ct_plot_calculations(
                     "study_description",
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                     value_axis_title="CTDI (mGy)",
-                    name_axis_title="Study description"
+                    name_axis_title="Study description",
+                    colourmap=plot_colour_map_choice
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2151,7 +2170,8 @@ def ct_plot_calculations(
                     "study_description",
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                     value_axis_title="CTDI (mGy)",
-                    name_axis_title="Study description"
+                    name_axis_title="Study description",
+                    colourmap=plot_colour_map_choice
                 )
 
             if plot_histograms:
@@ -2170,7 +2190,8 @@ def ct_plot_calculations(
                     df_category_name_col=category_names_col,
                     value_axis_title="CTDI (mGy)",
                     legend_title=legend_title,
-                    n_bins=plot_histogram_bins
+                    n_bins=plot_histogram_bins,
+                    colourmap=plot_colour_map_choice
                 )
 
         if plot_study_num_events:
@@ -2180,7 +2201,8 @@ def ct_plot_calculations(
                     "study_description",
                     "number_of_events",
                     value_axis_title="Events",
-                    name_axis_title="Study description"
+                    name_axis_title="Study description",
+                    colourmap=plot_colour_map_choice
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2189,7 +2211,8 @@ def ct_plot_calculations(
                     "study_description",
                     "number_of_events",
                     value_axis_title="Events",
-                    name_axis_title="Study description"
+                    name_axis_title="Study description",
+                    colourmap=plot_colour_map_choice
                 )
 
             if plot_histograms:
@@ -2208,7 +2231,8 @@ def ct_plot_calculations(
                     df_category_name_col=category_names_col,
                     value_axis_title="Events",
                     legend_title=legend_title,
-                    n_bins=plot_histogram_bins
+                    n_bins=plot_histogram_bins,
+                    colourmap=plot_colour_map_choice
                 )
 
         if plot_request_mean_dlp:
@@ -2218,7 +2242,8 @@ def ct_plot_calculations(
                     "requested_procedure_code_meaning",
                     "total_dlp",
                     value_axis_title="DLP (mGy.cm)",
-                    name_axis_title="Requested procedure"
+                    name_axis_title="Requested procedure",
+                    colourmap=plot_colour_map_choice
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2227,7 +2252,8 @@ def ct_plot_calculations(
                     "requested_procedure_code_meaning",
                     "total_dlp",
                     value_axis_title="DLP (mGy.cm)",
-                    name_axis_title="Requested procedure"
+                    name_axis_title="Requested procedure",
+                    colourmap=plot_colour_map_choice
                 )
 
             if plot_histograms:
@@ -2246,7 +2272,8 @@ def ct_plot_calculations(
                     df_category_name_col=category_names_col,
                     value_axis_title="DLP (mGy.cm)",
                     legend_title=legend_title,
-                    n_bins=plot_histogram_bins
+                    n_bins=plot_histogram_bins,
+                    colourmap=plot_colour_map_choice
                 )
 
         if plot_request_num_events:
@@ -2256,7 +2283,8 @@ def ct_plot_calculations(
                     "requested_procedure_code_meaning",
                     "number_of_events",
                     value_axis_title="Events",
-                    name_axis_title="Requested procedure"
+                    name_axis_title="Requested procedure",
+                    colourmap=plot_colour_map_choice
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2265,7 +2293,8 @@ def ct_plot_calculations(
                     "requested_procedure_code_meaning",
                     "number_of_events",
                     value_axis_title="Events",
-                    name_axis_title="Requested procedure"
+                    name_axis_title="Requested procedure",
+                    colourmap=plot_colour_map_choice
                 )
 
             if plot_histograms:
@@ -2284,21 +2313,24 @@ def ct_plot_calculations(
                     df_category_name_col=category_names_col,
                     value_axis_title="Events",
                     legend_title=legend_title,
-                    n_bins=plot_histogram_bins
+                    n_bins=plot_histogram_bins,
+                    colourmap=plot_colour_map_choice
                 )
 
         if plot_study_freq:
             return_structure["studyFrequencyData"] = plotly_stacked_histogram(
                 df,
                 "study_description",
-                name_axis_title="Study description"
+                name_axis_title="Study description",
+                colourmap=plot_colour_map_choice
             )
 
         if plot_request_freq:
             return_structure["requestFrequencyData"] = plotly_stacked_histogram(
                 df,
                 "requested_procedure_code_meaning",
-                name_axis_title="Requested procedure"
+                name_axis_title="Requested procedure",
+                colourmap=plot_colour_map_choice
             )
 
         if plot_study_mean_dlp_over_time:
@@ -2326,7 +2358,8 @@ def ct_plot_calculations(
                     facet_col=group_by_col,
                     value_axis_title="Mean DLP (mGy.cm)",
                     name_axis_title="Study date",
-                    legend_title="Study description"
+                    legend_title="Study description",
+                    colourmap=plot_colour_map_choice
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2338,7 +2371,8 @@ def ct_plot_calculations(
                     facet_col=group_by_col,
                     value_axis_title="Median DLP (mGy.cm)",
                     name_axis_title="Study date",
-                    legend_title="Study description"
+                    legend_title="Study description",
+                    colourmap=plot_colour_map_choice
                 )
 
         if plot_request_dlp_over_time:
@@ -2366,7 +2400,8 @@ def ct_plot_calculations(
                     facet_col=group_by_col,
                     value_axis_title="Mean DLP (mGy.cm)",
                     name_axis_title="Study date",
-                    legend_title="Requested procedure"
+                    legend_title="Requested procedure",
+                    colourmap=plot_colour_map_choice
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2378,7 +2413,8 @@ def ct_plot_calculations(
                     facet_col=group_by_col,
                     value_axis_title="Median DLP (mGy.cm)",
                     name_axis_title="Study date",
-                    legend_title="Requested procedure"
+                    legend_title="Requested procedure",
+                    colourmap=plot_colour_map_choice
                 )
 
         if plot_study_per_day_and_hour:
@@ -2393,7 +2429,8 @@ def ct_plot_calculations(
                 "weekday",
                 "study_description",
                 name_axis_title="Weekday",
-                value_axis_title="Frequency"
+                value_axis_title="Frequency",
+                colourmap=plot_colour_map_choice
             )
         #######################################################################
 

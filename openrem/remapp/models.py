@@ -491,6 +491,24 @@ class UserProfile(models.Model):
         ('simple_white', "Simple white"),
     )
 
+    DEFAULT_COLOUR_MAP = "RdYlBu"
+    CHART_COLOUR_MAPS = (
+        (DEFAULT_COLOUR_MAP, "Red-yellow-blue (default)"),
+        ("RdYlGn", "Red-yellow-green"),
+        ("PiYG", "Pink-green"),
+        ("PRGn", "Purple-green"),
+        ("BrBG", "Brown-green"),
+        ("PuOr", "Orange-purple"),
+        ("RdGy", "Red-grey"),
+        ("RdBu", "Red-blue"),
+        ("viridis", "Viridis"),
+        ("plasma", "Plasma"),
+        ("inferno", "Inferno"),
+        ("magma", "Magma"),
+        ("cividis", "Cividis"),
+        ("Spectral", "Spectral"),
+    )
+
     itemsPerPage = models.IntegerField(null=True, choices=ITEMS_PER_PAGE, default=25)
 
     # This field is required.
@@ -504,6 +522,8 @@ class UserProfile(models.Model):
     plotGroupingChoice = models.CharField(max_length=6, choices=CHART_GROUPING, default=MEAN)
 
     plotThemeChoice = models.CharField(max_length=12, choices=CHART_THEMES, default=PLOTLY_THEME)
+
+    plotColourMapChoice = models.CharField(max_length=8, choices=CHART_COLOUR_MAPS, default=DEFAULT_COLOUR_MAP)
 
     plotInitialSortingDirection = models.IntegerField(
         null=True, choices=SORTING_DIRECTION, default=DESCENDING

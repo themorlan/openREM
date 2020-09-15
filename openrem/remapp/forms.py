@@ -129,6 +129,24 @@ CHART_THEMES = (
     ('simple_white', "Simple white"),
 )
 
+DEFAULT_COLOUR_MAP = "RdYlBu"
+CHART_COLOUR_MAPS = (
+    (DEFAULT_COLOUR_MAP, "Red-yellow-blue (default)"),
+    ("RdYlGn", "Red-yellow-green"),
+    ("PiYG", "Pink-green"),
+    ("PRGn", "Purple-green"),
+    ("BrBG", "Brown-green"),
+    ("PuOr", "Orange-purple"),
+    ("RdGy", "Red-grey"),
+    ("RdBu", "Red-blue"),
+    ("viridis", "Viridis"),
+    ("plasma", "Plasma"),
+    ("inferno", "Inferno"),
+    ("magma", "Magma"),
+    ("cividis", "Cividis"),
+    ("Spectral", "Spectral"),
+)
+
 
 class SizeUploadForm(forms.Form):
     """Form for patient size csv file upload
@@ -508,6 +526,9 @@ class GeneralChartOptionsDisplayForm(forms.Form):
     )
     plotThemeChoice = forms.ChoiceField(
         label="Chart theme", choices=CHART_THEMES, required=False
+    )
+    plotColourMapChoice = forms.ChoiceField(
+        label="Colour map", choices=CHART_COLOUR_MAPS, required=False
     )
 
 
