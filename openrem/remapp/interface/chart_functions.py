@@ -259,7 +259,7 @@ def plotly_histogram(
             barmode="group",
             color=df_category_name_col,
             facet_col=df_facet_col,
-            facet_col_wrap=3,
+            facet_col_wrap=4,
             facet_row_spacing=0.05,
             facet_col_spacing=0.05,
             labels={
@@ -337,7 +337,7 @@ def plotly_timeseries_linechart(
             y=df_value_col,
             color=df_name_col,
             facet_col=facet_col,
-            facet_col_wrap=3,
+            facet_col_wrap=4,
             facet_row_spacing=0.05,
             facet_col_spacing=0.05,
             labels={
@@ -386,7 +386,7 @@ def plotly_scatter(
             y=df_y_value_col,
             color=df_category_name_col,
             facet_col=df_facet_col,
-            facet_col_wrap=3,
+            facet_col_wrap=4,
             facet_row_spacing=0.05,
             facet_col_spacing=0.05,
             labels={
@@ -427,7 +427,7 @@ def plotly_barchart_weekdays(
             x=df_name_col,
             y=df_value_col,
             facet_col="x_ray_system_name",
-            facet_col_wrap=3,
+            facet_col_wrap=4,
             facet_row_spacing=0.10,
             facet_col_spacing=0.05,
             color="x_ray_system_name",
