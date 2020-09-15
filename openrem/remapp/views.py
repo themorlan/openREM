@@ -2116,8 +2116,10 @@ def ct_plot_calculations(
             value_fields.append("number_of_events")
 
         date_fields = []
+        time_fields = []
         if plot_study_mean_dlp_over_time or plot_study_per_day_and_hour or plot_request_dlp_over_time:
             date_fields.append("study_date")
+            time_fields.append("study_time")
 
         system_field = None
         if plot_series_per_systems:
@@ -2128,6 +2130,7 @@ def ct_plot_calculations(
             data_point_name_fields=name_fields,
             data_point_value_fields=value_fields,
             data_point_date_fields=date_fields,
+            data_point_time_fields=time_fields,
             system_name_field=system_field,
             data_point_name_lowercase=plot_case_insensitive_categories
         )

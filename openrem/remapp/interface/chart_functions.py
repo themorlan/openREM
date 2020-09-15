@@ -53,6 +53,7 @@ def create_dataframe(
         data_point_name_fields=None,
         data_point_value_fields=None,
         data_point_date_fields=None,
+        data_point_time_fields=None,
         system_name_field=None,
         data_point_name_lowercase=None,
         data_point_value_multiplier=None
@@ -67,6 +68,9 @@ def create_dataframe(
             fields_to_include.add(field)
     if data_point_date_fields:
         for field in data_point_date_fields:
+            fields_to_include.add(field)
+    if data_point_time_fields:
+        for field in data_point_time_fields:
             fields_to_include.add(field)
     if system_name_field:
         fields_to_include.add(system_name_field)
@@ -87,13 +91,19 @@ def create_dataframe(
     else:
         df.insert(0, "x_ray_system_name", "All systems")
 
-    for value_field in data_point_value_fields:
-        df[value_field] = df[value_field].astype(float)
-        if data_point_value_multiplier:
-            df[value_field] *= data_point_value_multiplier
+    if data_point_value_fields:
+        for value_field in data_point_value_fields:
+            df[value_field] = df[value_field].astype(float)
+            if data_point_value_multiplier:
+                df[value_field] *= data_point_value_multiplier
 
-    for date_field in data_point_date_fields:
-        df[date_field] = pd.to_datetime(df[date_field])
+    if data_point_date_fields:
+        for date_field in data_point_date_fields:
+            df[date_field] = pd.to_datetime(df[date_field])
+
+#    if data_point_time_fields:
+#        for time_field in data_point_time_fields:
+#            df[time_field] = pd.to_timedelta(df[time_field])
 
     return df
 
@@ -122,10 +132,10 @@ def create_dataframe_weekdays(
         df_name_col,
         df_date_col="study_date",
 ):
-    temp = pd.DatetimeIndex(df[df_date_col])
-    df["weekday"] = temp.day_name()
+    df["weekday"] = pd.DatetimeIndex(df[df_date_col]).day_name()
+    df["hour"] = [x.hour for x in df["study_time"]]
 
-    df_time_series = df.groupby(["x_ray_system_name", "weekday"]).agg({df_name_col: "count"})
+    df_time_series = df.groupby(["x_ray_system_name", "weekday", "hour"]).agg({df_name_col: "count"})
     df_time_series = df_time_series.reset_index()
     return df_time_series
 
@@ -422,9 +432,6 @@ def plotly_barchart_weekdays(
     from plotly.offline import plot
     import plotly.express as px
 
-    n_colours = len(df.x_ray_system_name.unique())
-    colour_sequence = calculate_colour_sequence(colourmap, n_colours)
-
     try:
         fig = px.bar(
             df,
@@ -434,15 +441,19 @@ def plotly_barchart_weekdays(
             facet_col_wrap=facet_col_wrap,
             facet_row_spacing=0.10,
             facet_col_spacing=0.05,
-            color="x_ray_system_name",
+            color="hour",
             labels={
                 df_name_col: name_axis_title,
                 df_value_col: value_axis_title,
-                "x_ray_system_name": "System"
+                "x_ray_system_name": "System",
+                "hour": "Hour"
             },
-            color_discrete_sequence=colour_sequence
+            color_continuous_scale=colourmap,
+            hover_data={"x_ray_system_name": True,
+                        "weekday": True,
+                        "hour": ":.2f",
+                        df_value_col: True}
         )
-
         fig.update_xaxes(categoryarray=["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
