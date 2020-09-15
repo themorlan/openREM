@@ -40,3 +40,6 @@ disables the display of workload data on the home page (figure 3).
    :alt: The home page options admin form
 
    Figure 3: The home page options admin form
+
+When workload information is displayed, the link to the system data is modified in the workload cells
+to filter the studies to the same date range.

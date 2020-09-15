@@ -4,6 +4,7 @@ OpenREM version history
 
 1.0.0b1 (2020-xx-xx)
 --------------------
+* :issue:`854`  Interface: added date constraints to links on homepage
 * :issue:`853`  Testing: reduced Bitbucket pipeline minutes usage
 * :issue:`852`  Code quality: skin dose code formatted with Black
 * :issue:`850`  Emails: added oldest study accession number to high fluoro dose alert email subject
@@ -14,6 +15,7 @@ OpenREM version history
 * :issue:`843`  Code quality: closing target _blank phishing vulnerability
 * :issue:`842`  Imports: ContextID code_meaning in make_skin_map and dxdetail
 * :issue:`841`  Code quality: format code with Black
+* :issue:`840`  Exports: added performing physician to fluoroscopy standard exports
 * :issue:`839`  Documentation: removed redundant troubleshooting docs
 * :issue:`838`  Imports: fixed issues with changed PersonName behaviour in pydicom 2.0
 * :issue:`836`  Installation: updated requirements, Docker and docs for pynetdicom 1.5, pydicom 2.0
