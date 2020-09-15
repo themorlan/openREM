@@ -10,6 +10,8 @@ Headline changes
 * Django 2.2
 * Docker
 
+* Performing physician added to standard fluoroscopy exports (:issue:`840`)
+
 *******************
 Upgrade preparation
 *******************
@@ -235,7 +237,7 @@ Prepare the migrations folder:
 .. code-block:: console
 
     $ rm remapp/migrations/0*.py
-    $ rm remapp/migrations/0*.pyc
+    $ rm remapp/migrations/0*.pyc  # may result in 'cannot remove' if there are none
     $ mv remapp/migrations/0001_initial.py{.1-0-upgrade,}
 
 Migrate the database:
