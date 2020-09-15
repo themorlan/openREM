@@ -104,17 +104,25 @@ class PhantomFlat:
             z_offset = -origin[2]
             self.phantom_map = np.empty((width, height), dtype=object)
             self.normal_map = np.empty((width, height), dtype=object)
-            iterator = np.nditer(self.phantom_map, op_flags=['readwrite'], flags=['multi_index', 'refs_ok'])
+            iterator = np.nditer(
+                self.phantom_map,
+                op_flags=["readwrite"],
+                flags=["multi_index", "refs_ok"],
+            )
             while not iterator.finished:
                 my_x = iterator.multi_index[0] * scale - origin[0]
                 my_y = iterator.multi_index[1] * scale - origin[1]
-                self.phantom_map[iterator.multi_index[0], iterator.multi_index[1]] = np.array([my_x, my_y, z_offset])
+                self.phantom_map[
+                    iterator.multi_index[0], iterator.multi_index[1]
+                ] = np.array([my_x, my_y, z_offset])
 
                 plane_point = np.array([my_x, my_y, z_offset])
                 outside_point = np.array([my_x, my_y, z_offset - 1])
                 # The normal is defined going back in to the plane, to make checking alignment easier
                 normal = Segment3(outside_point, plane_point)
-                self.normal_map[iterator.multi_index[0], iterator.multi_index[1]] = normal
+                self.normal_map[
+                    iterator.multi_index[0], iterator.multi_index[1]
+                ] = normal
                 iterator.iternext()
 
 
@@ -150,34 +158,40 @@ class Phantom3:
 
         ref_height = 178.6
         ref_mass = 73.2
-        ref_torso = 70.
-        ref_radius = 10.
+        ref_torso = 70.0
+        ref_radius = 10.0
         ref_width = 14.4
         torso = ref_torso * height / ref_height
-        radius = ref_radius / math.sqrt(height / ref_height) * math.sqrt(mass / ref_mass)
+        radius = (
+            ref_radius / math.sqrt(height / ref_height) * math.sqrt(mass / ref_mass)
+        )
 
         if pat_pos == "HFS":
             prone = False
-            pat_pos_z = 1.
-            pat_pos_y = 1.
+            pat_pos_z = 1.0
+            pat_pos_y = 1.0
             origin[1] = origin[1] - 24 * height / ref_height
         elif pat_pos == "FFS":
             prone = False
-            pat_pos_z = 1.
-            pat_pos_y = -1.
+            pat_pos_z = 1.0
+            pat_pos_y = -1.0
             origin[1] = origin[1] - 174 * height / ref_height
         elif pat_pos == "HFP":
             prone = True
-            pat_pos_z = -1.
-            pat_pos_y = 1.
+            pat_pos_z = -1.0
+            pat_pos_y = 1.0
             origin[1] = origin[1] - 24 * height / ref_height
         elif pat_pos == "FFP":
             prone = True
-            pat_pos_z = -1.
-            pat_pos_y = -1.
+            pat_pos_z = -1.0
+            pat_pos_y = -1.0
             origin[1] = origin[1] - 174 * height / ref_height
         else:
-            raise ValueError('patient position has an unknown value ({patpos})'.format(patpos=pat_pos))
+            raise ValueError(
+                "patient position has an unknown value ({patpos})".format(
+                    patpos=pat_pos
+                )
+            )
 
         part_circumference = math.pi * radius
         round_circumference = round(part_circumference, 0)
@@ -198,11 +212,17 @@ class Phantom3:
         self.phantom_type = "3d"
         self.phantom_map = np.empty((self.width, self.height), dtype=object)
         self.normal_map = np.empty((self.width, self.height), dtype=object)
-        transition1 = (round_flat / 2.) + 0.5  # Centre line flat to start of curve.
-        transition2 = transition1 + round_circumference  # End of first curve to table flat
+        transition1 = (round_flat / 2.0) + 0.5  # Centre line flat to start of curve.
+        transition2 = (
+            transition1 + round_circumference
+        )  # End of first curve to table flat
         transition3 = transition2 + round_flat  # End of table flat to second curve
-        transition4 = transition3 + round_circumference  # End of second curve to flat back to centre line
-        iterator = np.nditer(self.phantom_map, op_flags=['readwrite'], flags=['multi_index', 'refs_ok'])
+        transition4 = (
+            transition3 + round_circumference
+        )  # End of second curve to flat back to centre line
+        iterator = np.nditer(
+            self.phantom_map, op_flags=["readwrite"], flags=["multi_index", "refs_ok"]
+        )
         while not iterator.finished:
             # Start top, centre line.
             row_index = iterator.multi_index[0] - origin[0]
@@ -211,42 +231,96 @@ class Phantom3:
             z_offset = -origin[2]
 
             if row_index < transition1:
-                my_z = (2. * radius + z_offset) * pat_pos_z
-                my_x = row_index * flat_spacing - (round_flat / 2.) + round(round_flat / 2., 0)
+                my_z = (2.0 * radius + z_offset) * pat_pos_z
+                my_x = (
+                    row_index * flat_spacing
+                    - (round_flat / 2.0)
+                    + round(round_flat / 2.0, 0)
+                )
                 my_y = col_index * pat_pos_y
-                normal = Segment3(np.array([my_x, my_y, my_z + pat_pos_z]), np.array([my_x, my_y, my_z]))
+                normal = Segment3(
+                    np.array([my_x, my_y, my_z + pat_pos_z]),
+                    np.array([my_x, my_y, my_z]),
+                )
             elif transition1 <= row_index < transition2:
                 my_y = col_index * pat_pos_y
-                my_x = flat_spacing * round(transition1, 0) - 1 + radius * math.sin(
-                    angle_step * (row_index - round(transition1, 0) + 1)) - (round_flat / 2.) + round(round_flat / 2.,
-                                                                                                      0)
-                my_z = (2. * radius + z_offset + radius * math.cos(
-                    angle_step * (row_index - round(transition1, 0) + 1)) - radius) * pat_pos_z
-                normal_x = my_x + math.sin(angle_step * (row_index - round(transition1, 0) + 1))
-                normal_z = my_z + pat_pos_z * math.cos(angle_step * (row_index - round(transition1, 0) + 1))
-                normal = Segment3(np.array([normal_x, my_y, normal_z]), np.array([my_x, my_y, my_z]))
+                my_x = (
+                    flat_spacing * round(transition1, 0)
+                    - 1
+                    + radius
+                    * math.sin(angle_step * (row_index - round(transition1, 0) + 1))
+                    - (round_flat / 2.0)
+                    + round(round_flat / 2.0, 0)
+                )
+                my_z = (
+                    2.0 * radius
+                    + z_offset
+                    + radius
+                    * math.cos(angle_step * (row_index - round(transition1, 0) + 1))
+                    - radius
+                ) * pat_pos_z
+                normal_x = my_x + math.sin(
+                    angle_step * (row_index - round(transition1, 0) + 1)
+                )
+                normal_z = my_z + pat_pos_z * math.cos(
+                    angle_step * (row_index - round(transition1, 0) + 1)
+                )
+                normal = Segment3(
+                    np.array([normal_x, my_y, normal_z]), np.array([my_x, my_y, my_z])
+                )
             elif transition2 <= row_index < transition3:
                 my_z = z_offset * pat_pos_z
-                my_x = flat_width - (row_index - round_circumference) * flat_spacing + ((round_flat / 2.) - round(
-                    round_flat / 2., 0)) * (row_index - round_circumference) / abs(row_index - round_circumference)
+                my_x = (
+                    flat_width
+                    - (row_index - round_circumference) * flat_spacing
+                    + ((round_flat / 2.0) - round(round_flat / 2.0, 0))
+                    * (row_index - round_circumference)
+                    / abs(row_index - round_circumference)
+                )
                 my_y = col_index * pat_pos_y
-                normal = Segment3(np.array([my_x, my_y, my_z - pat_pos_z]), np.array([my_x, my_y, my_z]))
+                normal = Segment3(
+                    np.array([my_x, my_y, my_z - pat_pos_z]),
+                    np.array([my_x, my_y, my_z]),
+                )
             elif transition3 <= row_index < transition4:
                 my_y = col_index * pat_pos_y
-                my_x = -flat_spacing * round(round_flat / 2, 0) - radius * math.sin(
-                    angle_step * (row_index - round(transition3, 0) + 1)) - (round_flat / 2.) + round(round_flat / 2.,
-                                                                                                      0)
-                my_z = (z_offset - radius * math.cos(
-                    angle_step * (row_index - round(transition3, 0) + 1)) + radius) * pat_pos_z
-                normal_x = my_x - math.sin(angle_step * (row_index - round(transition3, 0) + 1))
-                normal_z = my_z - pat_pos_z * math.cos(angle_step * (row_index - round(transition3, 0) + 1))
-                normal = Segment3(np.array([normal_x, my_y, normal_z]), np.array([my_x, my_y, my_z]))
+                my_x = (
+                    -flat_spacing * round(round_flat / 2, 0)
+                    - radius
+                    * math.sin(angle_step * (row_index - round(transition3, 0) + 1))
+                    - (round_flat / 2.0)
+                    + round(round_flat / 2.0, 0)
+                )
+                my_z = (
+                    z_offset
+                    - radius
+                    * math.cos(angle_step * (row_index - round(transition3, 0) + 1))
+                    + radius
+                ) * pat_pos_z
+                normal_x = my_x - math.sin(
+                    angle_step * (row_index - round(transition3, 0) + 1)
+                )
+                normal_z = my_z - pat_pos_z * math.cos(
+                    angle_step * (row_index - round(transition3, 0) + 1)
+                )
+                normal = Segment3(
+                    np.array([normal_x, my_y, normal_z]), np.array([my_x, my_y, my_z])
+                )
             else:
-                my_z = (2. * radius + z_offset) * pat_pos_z
-                my_x = (row_index - self.width) * flat_spacing - (round_flat / 2.) + round(round_flat / 2., 0)
+                my_z = (2.0 * radius + z_offset) * pat_pos_z
+                my_x = (
+                    (row_index - self.width) * flat_spacing
+                    - (round_flat / 2.0)
+                    + round(round_flat / 2.0, 0)
+                )
                 my_y = col_index * pat_pos_y
-                normal = Segment3(np.array([my_x, my_y, my_z + pat_pos_z]), np.array([my_x, my_y, my_z]))
-            self.phantom_map[iterator.multi_index[0], iterator.multi_index[1]] = np.array([my_x, my_y, my_z])
+                normal = Segment3(
+                    np.array([my_x, my_y, my_z + pat_pos_z]),
+                    np.array([my_x, my_y, my_z]),
+                )
+            self.phantom_map[
+                iterator.multi_index[0], iterator.multi_index[1]
+            ] = np.array([my_x, my_y, my_z])
             self.normal_map[iterator.multi_index[0], iterator.multi_index[1]] = normal
             iterator.iternext()
         # Flip to correct left and right so iterator becomes a view of the back.
@@ -255,8 +329,16 @@ class Phantom3:
         self.phantom_map = np.fliplr(self.phantom_map)
         self.normal_map = np.fliplr(self.normal_map)
         if prone:
-            self.normal_map = np.roll(self.normal_map, int(self.phantom_flat_dist + self.phantom_curved_dist), axis=0)
-            self.phantom_map = np.roll(self.phantom_map, int(self.phantom_flat_dist + self.phantom_curved_dist), axis=0)
+            self.normal_map = np.roll(
+                self.normal_map,
+                int(self.phantom_flat_dist + self.phantom_curved_dist),
+                axis=0,
+            )
+            self.phantom_map = np.roll(
+                self.phantom_map,
+                int(self.phantom_flat_dist + self.phantom_curved_dist),
+                axis=0,
+            )
             self.phantom_map = np.flipud(self.phantom_map)
             self.normal_map = np.flipud(self.normal_map)
 

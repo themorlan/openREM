@@ -114,7 +114,7 @@ pygments_style = "sphinx"
 
 # -- Options for sphinx-copybutton ----------------------------------------
 
-copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: |PS [A-Z]:\\[^>]*> "
 copybutton_prompt_is_regexp = True
 
 # -- Options for HTML output ----------------------------------------------
@@ -279,6 +279,9 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 # texinfo_no_detailmenu = False
+
+gettext_uuid = True
+gettext_compact = False
 
 
 autodoc_member_order = "bysource"

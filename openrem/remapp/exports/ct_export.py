@@ -30,6 +30,7 @@
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import gettext as _
 from celery import shared_task
 
 from .export_common import (
@@ -155,8 +156,9 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     wsalldata.autofilter(0, 0, numrows, numcolumns)
 
     for row, exams in enumerate(e):
-
-        tsk.progress = f"Writing study {row + 1} of {numrows} to All data sheet and individual protocol sheets"
+        # Translators: CT xlsx export progress
+        tsk.progress = _("Writing study {row} of {numrows} to All data sheet and individual protocol sheets".format(row=row+1, numrows=numrows))
+        # tsk.progress = f"Writing study {row + 1} of {numrows} to All data sheet and individual protocol sheets"
         tsk.save()
 
         try:

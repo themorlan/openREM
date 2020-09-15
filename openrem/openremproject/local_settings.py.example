@@ -1,5 +1,6 @@
 from .settings import *
 
+import os
 
 # Choose your database and fill in the details below. If testing, you
 # can use the sqlite3 database as it doesn't require any further configuration
@@ -47,7 +48,7 @@ ALLOWED_HOSTS = [
 ]
 
 # If running OpenREM in a virtual directory specify the virtual directory here.
-# Eg. if OpenREM is in a virtual directory TST (http://server/TST), specify 'TST/' below.
+# Eg. if OpenREM is in a virtual directory dms (http://server/dms/), specify 'dms/' below.
 # LOGIN_URL (always) should be overridden to include the VIRTUAL_DIRECTORY
 VIRTUAL_DIRECTORY = ''
 
@@ -60,7 +61,6 @@ VIRTUAL_DIRECTORY = ''
 # Set the log file location. The example places the log file in the media directory. Change as required - on linux
 # systems you might put these in a subdirectory of /var/log/. If you want all the logs in one file, set the filename
 # to be the same for each one.
-import os
 LOG_ROOT = MEDIA_ROOT
 LOG_FILENAME = os.path.join(LOG_ROOT, "openrem.log")
 QR_FILENAME = os.path.join(LOG_ROOT, "openrem_qr.log")

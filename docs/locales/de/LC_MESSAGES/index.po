@@ -1,0 +1,90 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-11 22:20+0100\n"
+"PO-Revision-Date: 2020-09-11 22:24+0100\n"
+"Last-Translator: \n"
+"Language: de\n"
+"Language-Team: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+"X-Generator: Poedit 2.4.1\n"
+
+#: ../../index.rst:3 6331e0df5fb248a69b25a5a0d132f987
+msgid "Welcome to OpenREM's documentation!"
+msgstr ""
+
+#: ../../index.rst:11 0f86be2b6ca146cd8e11fda585c64bb1
+msgid ""
+"OpenREM is a free, open source application for patient radiation dose "
+"monitoring. The software is capable of importing and displaying data "
+"from a wide variety of x-ray dose related sources with filtering, charts "
+"and analysis. The software also enables easy export of the data in a "
+"form that is suitable for further analysis by suitably qualified medical "
+"physics personnel."
+msgstr ""
+
+#: ../../index.rst:16 5ddd8706b5a54da396546d06ba69dfd9
+msgid "Please see `openrem.org <https://openrem.org>`_ for more details."
+msgstr ""
+
+#: ../../index.rst:18 bdf2e13bf7ce4db08941ac0f54fd37c8
+msgid ""
+"These docs are for the version of OpenREM currently in development. For "
+"the current release version, see https://docs.openrem.org/"
+msgstr ""
+"Diese Dokumente beziehen sich auf die Version von OpenREM, die sich "
+"derzeit in der Entwicklung befindet. Informationen zur aktuellen Version "
+"finden Sie unter https://docs.openrem.org/"
+
+#: ../../index.rst:21 5ae72a994c424914bddf0f4649a5d632
+msgid ""
+"These docs are in British English - if you want to help translate them "
+"into other languages please get in touch:"
+msgstr ""
+"Dies ist die deutsche Übersetzung der Dokumente in einem frühen Stadium. "
+"Wenn Sie bei der Übersetzung helfen möchten, setzen Sie sich bitte mit uns "
+"in Verbindung:"
+
+#: ../../index.rst:24 65d9f38feb094fb4a0a11ee5b95b09fc
+msgid "`@_OpenREM <https://twitter.com/_OpenREM>`_"
+msgstr ""
+
+#: ../../index.rst:25 8f692afee202417ca932b368cc789291
+msgid ""
+"`Bitbucket <https://bitbucket.org/openrem/openrem/issues/855/add-other-"
+"languages-as-people-volunteer>`_"
+msgstr ""
+
+#: ../../index.rst:26 8789603297d44cd6bfd090b5b913e2ce
+msgid "`Google Groups <mailto:openrem@googlegroups.com>`_"
+msgstr ""
+
+#: ../../index.rst:28 1faf0b6474fa475eb33bc8b1355dc1d5
+msgid "Contents:"
+msgstr ""
+
+#: ../../index.rst:48 e68602def50e41bda8512aca15883022
+msgid "Indices and tables"
+msgstr ""
+
+#: ../../index.rst:50 8c166d8685b545a1831b37a87c1e8282
+msgid ":ref:`genindex`"
+msgstr ""
+
+#: ../../index.rst:51 14bdd495d67d4e82be609cfc5b8f7fcf
+msgid ":ref:`modindex`"
+msgstr ""
+
+#: ../../index.rst:52 872d399b65684c01a7ee38180752e8fa
+msgid ":ref:`search`"
+msgstr ""

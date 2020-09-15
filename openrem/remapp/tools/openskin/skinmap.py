@@ -24,8 +24,19 @@ import time
 from decimal import Decimal, ROUND_HALF_UP
 
 
-def skin_map(x_ray, phantom, area, ref_ak, tube_voltage, cu_thickness, d_ref, table_length, table_width, transmission,
-             table_mattress_thickness):
+def skin_map(
+    x_ray,
+    phantom,
+    area,
+    ref_ak,
+    tube_voltage,
+    cu_thickness,
+    d_ref,
+    table_length,
+    table_width,
+    transmission,
+    table_mattress_thickness,
+):
     """ This function calculates a skin dose map.
 
     Args:
@@ -48,12 +59,20 @@ def skin_map(x_ray, phantom, area, ref_ak, tube_voltage, cu_thickness, d_ref, ta
 
     skin_dose_map = np.zeros((phantom.width, phantom.height), dtype=np.dtype(Decimal))
     focus = x_ray.source
-    table1 = Triangle3(np.array([-table_width / 2, 0, 0]), np.array([table_width / 2, 0, 0]),
-                       np.array([-table_width / 2, table_length, 0]))
-    table2 = Triangle3(np.array([-table_width / 2, table_length, 0]), np.array([table_width / 2, table_length, 0]),
-                       np.array([table_width / 2, 0, 0]))
+    table1 = Triangle3(
+        np.array([-table_width / 2, 0, 0]),
+        np.array([table_width / 2, 0, 0]),
+        np.array([-table_width / 2, table_length, 0]),
+    )
+    table2 = Triangle3(
+        np.array([-table_width / 2, table_length, 0]),
+        np.array([table_width / 2, table_length, 0]),
+        np.array([table_width / 2, 0, 0]),
+    )
 
-    iterator = np.nditer(skin_dose_map, op_flags=['readwrite'], flags=['multi_index', 'refs_ok'])
+    iterator = np.nditer(
+        skin_dose_map, op_flags=["readwrite"], flags=["multi_index", "refs_ok"]
+    )
 
     (triangle1, triangle2) = collimate(x_ray, area, d_ref)
 
@@ -94,17 +113,37 @@ def skin_map(x_ray, phantom, area, ref_ak, tube_voltage, cu_thickness, d_ref, ta
 
                 # Calculate the dose at the skin point by correcting for distance and BSF
                 mylength_squared = pow(my_ray.length, 2)
-                iterator[0] = Decimal(ref_length_squared / mylength_squared * ref_ak_cor *
-                                      get_bsf(tube_voltage, cu_thickness, math.sqrt(
-                                          mylength_squared / ref_length_squared))).quantize(Decimal('0.000000001'),
-                                                                                            rounding=ROUND_HALF_UP)
+                iterator[0] = Decimal(
+                    ref_length_squared
+                    / mylength_squared
+                    * ref_ak_cor
+                    * get_bsf(
+                        tube_voltage,
+                        cu_thickness,
+                        math.sqrt(mylength_squared / ref_length_squared),
+                    )
+                ).quantize(Decimal("0.000000001"), rounding=ROUND_HALF_UP)
         iterator.iternext()
 
     return skin_dose_map
 
 
-def rotational(xray, start_angle, end_angle, frames, phantom, area, ref_ak, tube_voltage, cu_thickness, d_ref,
-               table_length, table_width, transmission, table_mattress_thickness):
+def rotational(
+    xray,
+    start_angle,
+    end_angle,
+    frames,
+    phantom,
+    area,
+    ref_ak,
+    tube_voltage,
+    cu_thickness,
+    d_ref,
+    table_length,
+    table_width,
+    transmission,
+    table_mattress_thickness,
+):
     """ This function computes the dose from a rotational exposure.
 
     Args:
@@ -140,16 +179,40 @@ def rotational(xray, start_angle, end_angle, frames, phantom, area, ref_ak, tube
             raise type_error
         rotation_angle = (end_angle - start_angle) / frames
 
-    my_dose = skin_map(xray, phantom, area, ref_ak / frames, tube_voltage, cu_thickness, d_ref, table_length,
-                       table_width, transmission, table_mattress_thickness)
+    my_dose = skin_map(
+        xray,
+        phantom,
+        area,
+        ref_ak / frames,
+        tube_voltage,
+        cu_thickness,
+        d_ref,
+        table_length,
+        table_width,
+        transmission,
+        table_mattress_thickness,
+    )
     for i in range(1, frames - 1):
         xray = rotate_ray_y(xray, rotation_angle)
-        my_dose = my_dose + skin_map(xray, phantom, area, ref_ak / frames, tube_voltage, cu_thickness, d_ref,
-                                     table_length, table_width, transmission, table_mattress_thickness)
+        my_dose = my_dose + skin_map(
+            xray,
+            phantom,
+            area,
+            ref_ak / frames,
+            tube_voltage,
+            cu_thickness,
+            d_ref,
+            table_length,
+            table_width,
+            transmission,
+            table_mattress_thickness,
+        )
     return my_dose
 
 
-def skinmap_to_png(colour, total_dose, filename, test_phantom, encode_16_bit_colour=None):
+def skinmap_to_png(
+    colour, total_dose, filename, test_phantom, encode_16_bit_colour=None
+):
     """ Writes a dose map to a PNG file.
 
     Args:
@@ -171,14 +234,14 @@ def skinmap_to_png(colour, total_dose, filename, test_phantom, encode_16_bit_col
     # changed flow somewhat to keep Codacy happy, but didn't change behaviour in order not to break down anything.
     if colour or encode_16_bit_colour:
         if colour:
-            thresh_dose = 5.
+            thresh_dose = 5.0
 
             blue = np.zeros((test_phantom.width, test_phantom.height))
 
-            red = total_dose * (255. / thresh_dose)
+            red = total_dose * (255.0 / thresh_dose)
             red[total_dose[:, :] > thresh_dose] = 255
 
-            green = (total_dose - thresh_dose) * (-255. / thresh_dose) + 255.
+            green = (total_dose - thresh_dose) * (-255.0 / thresh_dose) + 255.0
             green[green[:, :] > 255] = 255
             green[total_dose[:, :] == 0] = 0
 
@@ -200,8 +263,10 @@ def skinmap_to_png(colour, total_dose, filename, test_phantom, encode_16_bit_col
         image_3d = np.dstack((red, green, blue))
         image_3d = np.reshape(image_3d, (-1, test_phantom.height * 3))
 
-        with open(filename, 'wb') as png_file:
-            png_writer = png.Writer(test_phantom.height, test_phantom.width, greyscale=False, bitdepth=8)
+        with open(filename, "wb") as png_file:
+            png_writer = png.Writer(
+                test_phantom.height, test_phantom.width, greyscale=False, bitdepth=8
+            )
             png_writer.write(png_file, image_3d)
 
     else:
@@ -209,8 +274,10 @@ def skinmap_to_png(colour, total_dose, filename, test_phantom, encode_16_bit_col
         thresh_dose = Decimal(10)
         total_dose = (total_dose * Decimal(65535)) / thresh_dose
 
-        with open(filename, 'wb') as png_file:
-            png_writer = png.Writer(test_phantom.height, test_phantom.width, greyscale=True, bitdepth=16)
+        with open(filename, "wb") as png_file:
+            png_writer = png.Writer(
+                test_phantom.height, test_phantom.width, greyscale=True, bitdepth=16
+            )
             png_writer.write(png_file, total_dose)
 
 
@@ -228,13 +295,27 @@ def write_results_to_txt(txtfile, csvfile, test_phantom, my_dose):
 
     """
     total_dose = my_dose.total_dose
-    phantom_txt = str(test_phantom.width) + 'x' + str(test_phantom.height) + ' ' + \
-                  test_phantom.phantom_type + ' phantom'
-    with open(txtfile, 'w') as text_file:
-        text_file.write('{0:15} : {1:30}\n'.format('File created', time.strftime("%c")))
-        text_file.write('{0:15} : {1:30}\n'.format('Data file', csvfile))
-        text_file.write('{0:15} : {1:30}\n'.format('Phantom', phantom_txt))
-        text_file.write('{0:15} : {1:30}\n'.format('Peak dose (Gy)', np.amax(total_dose)))
-        text_file.write('{0:15} : {1:30}\n'.format('Cells > 3 Gy', np.sum(total_dose >= 3)))
-        text_file.write('{0:15} : {1:30}\n'.format('Cells > 5 Gy', np.sum(total_dose >= 5)))
-        text_file.write('{0:15} : {1:30}\n'.format('Cells > 10 Gy', np.sum(total_dose >= 10)))
+    phantom_txt = (
+        str(test_phantom.width)
+        + "x"
+        + str(test_phantom.height)
+        + " "
+        + test_phantom.phantom_type
+        + " phantom"
+    )
+    with open(txtfile, "w") as text_file:
+        text_file.write("{0:15} : {1:30}\n".format("File created", time.strftime("%c")))
+        text_file.write("{0:15} : {1:30}\n".format("Data file", csvfile))
+        text_file.write("{0:15} : {1:30}\n".format("Phantom", phantom_txt))
+        text_file.write(
+            "{0:15} : {1:30}\n".format("Peak dose (Gy)", np.amax(total_dose))
+        )
+        text_file.write(
+            "{0:15} : {1:30}\n".format("Cells > 3 Gy", np.sum(total_dose >= 3))
+        )
+        text_file.write(
+            "{0:15} : {1:30}\n".format("Cells > 5 Gy", np.sum(total_dose >= 5))
+        )
+        text_file.write(
+            "{0:15} : {1:30}\n".format("Cells > 10 Gy", np.sum(total_dose >= 10))
+        )
