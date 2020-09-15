@@ -525,6 +525,8 @@ class UserProfile(models.Model):
 
     plotColourMapChoice = models.CharField(max_length=8, choices=CHART_COLOUR_MAPS, default=DEFAULT_COLOUR_MAP)
 
+    plotFacetColWrapVal = models.PositiveSmallIntegerField(default=3)
+
     plotInitialSortingDirection = models.IntegerField(
         null=True, choices=SORTING_DIRECTION, default=DESCENDING
     )

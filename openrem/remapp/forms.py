@@ -530,6 +530,9 @@ class GeneralChartOptionsDisplayForm(forms.Form):
     plotColourMapChoice = forms.ChoiceField(
         label="Colour map", choices=CHART_COLOUR_MAPS, required=False
     )
+    plotFacetColWrapVal = forms.IntegerField(
+        label="Number of sub-charts per row", min_value=1, max_value=10, required=False
+    )
 
 
 class UpdateDisplayNamesForm(forms.Form):

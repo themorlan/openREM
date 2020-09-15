@@ -243,7 +243,8 @@ def plotly_histogram(
         legend_title="System",
         n_bins=10,
         colourmap="RdYlBu",
-        filename="OpenREM_histogram_chart"
+        filename="OpenREM_histogram_chart",
+        facet_col_wrap=3
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -259,7 +260,7 @@ def plotly_histogram(
             barmode="group",
             color=df_category_name_col,
             facet_col=df_facet_col,
-            facet_col_wrap=4,
+            facet_col_wrap=facet_col_wrap,
             facet_row_spacing=0.05,
             facet_col_spacing=0.05,
             labels={
@@ -322,7 +323,8 @@ def plotly_timeseries_linechart(
         name_axis_title="",
         legend_title="",
         colourmap="RdYlBu",
-        filename="OpenREM_over_time_chart"
+        filename="OpenREM_over_time_chart",
+        facet_col_wrap=3
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -337,7 +339,7 @@ def plotly_timeseries_linechart(
             y=df_value_col,
             color=df_name_col,
             facet_col=facet_col,
-            facet_col_wrap=4,
+            facet_col_wrap=facet_col_wrap,
             facet_row_spacing=0.05,
             facet_col_spacing=0.05,
             labels={
@@ -371,7 +373,8 @@ def plotly_scatter(
         y_axis_title="",
         legend_title="",
         colourmap="RdYlBu",
-        filename="OpenREM_scatter_chart"
+        filename="OpenREM_scatter_chart",
+        facet_col_wrap=3
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -386,7 +389,7 @@ def plotly_scatter(
             y=df_y_value_col,
             color=df_category_name_col,
             facet_col=df_facet_col,
-            facet_col_wrap=4,
+            facet_col_wrap=facet_col_wrap,
             facet_row_spacing=0.05,
             facet_col_spacing=0.05,
             labels={
@@ -413,7 +416,8 @@ def plotly_barchart_weekdays(
         name_axis_title="",
         value_axis_title="",
         colourmap="RdYlBu",
-        filename="OpenREM_worload_chart"
+        filename="OpenREM_worload_chart",
+        facet_col_wrap=3
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -427,7 +431,7 @@ def plotly_barchart_weekdays(
             x=df_name_col,
             y=df_value_col,
             facet_col="x_ray_system_name",
-            facet_col_wrap=4,
+            facet_col_wrap=facet_col_wrap,
             facet_row_spacing=0.10,
             facet_col_spacing=0.05,
             color="x_ray_system_name",
