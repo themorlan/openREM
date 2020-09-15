@@ -441,7 +441,7 @@ def plotly_barchart_weekdays(
             facet_col_wrap=facet_col_wrap,
             facet_row_spacing=0.10,
             facet_col_spacing=0.05,
-            color="hour",
+            color=df_value_col,
             labels={
                 df_name_col: name_axis_title,
                 df_value_col: value_axis_title,
