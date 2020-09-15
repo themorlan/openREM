@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-11 09:00+0100\n"
+"POT-Creation-Date: 2020-09-11 22:14+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,1652 +17,1648 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: ../../changes.rst:3 c858074da133414c8831d6fabd6c4883
+#: ../../changes.rst:3 54ade14ece7148efb5bc0b55a368f246
 msgid "OpenREM version history"
 msgstr ""
 
-#: ../../changes.rst:6 c51f39b4c90045ac96727139110e6ea8
+#: ../../changes.rst:6 a6c8afe7b426469c8a54686aa2a98ede
 msgid "1.0.0b1 (2020-xx-xx)"
 msgstr ""
 
-#: ../../changes.rst:7 cd28af7fc2ea44c3a0233e57247e0a21
-msgid ":issue:`854`  Interface: added date constraints to links on homepage"
-msgstr ""
-
-#: ../../changes.rst:8 1e4257c2198c4357b4cf983fc64e02a5
+#: ../../changes.rst:7 df3e37d65de44da78e6ade46c6ed5f2e
 msgid ":issue:`853`  Testing: reduced Bitbucket pipeline minutes usage"
 msgstr ""
 
-#: ../../changes.rst:9 5bb6d9ffead348c6a168203c489d5172
+#: ../../changes.rst:8 de8990ee990146f0b7d9dfeacc2c7d62
 msgid ":issue:`852`  Code quality: skin dose code formatted with Black"
 msgstr ""
 
-#: ../../changes.rst:10 318d1c9545264f14ae90c0ded5035cf3
+#: ../../changes.rst:9 4087c6d00c67483f80f358332093641e
 msgid ""
 ":issue:`850`  Emails: added oldest study accession number to high fluoro "
 "dose alert email subject"
 msgstr ""
 
-#: ../../changes.rst:11 77cb4c2c9c1148beac7e83b7cbf6e706
+#: ../../changes.rst:10 b51ef850560c4942af9b29bd9e3139bf
 msgid ":issue:`849`  Docker: make docker URL an env variable"
 msgstr ""
 
-#: ../../changes.rst:12 4b4fb320d576403b8a133afe43c1bf8e
+#: ../../changes.rst:11 0c07ff7c6fbe4406ab1bb2f0dac3ccd8
 msgid ""
 ":issue:`847`  Documentation: added copy button to commands, added prompts"
 " where appropriate"
 msgstr ""
 
-#: ../../changes.rst:13 3685f82c3bff4f8da43e8eab5f1d465c
+#: ../../changes.rst:12 eacc9698af9b4f66a21d1a040cb4a9cc
 msgid ":issue:`845`  Docker: moved Nginx config to bind folder"
 msgstr ""
 
-#: ../../changes.rst:14 4615142c0d204d49a8b661c298240076
+#: ../../changes.rst:13 f0b82ee341fc4888b9796bddcfe55b84
 msgid ":issue:`844`  Code quality: getting the pipelines right"
 msgstr ""
 
-#: ../../changes.rst:15 7b1703825313430595e281e064c07081
+#: ../../changes.rst:14 3545361f11f04370a5306efa4a752610
 msgid ":issue:`843`  Code quality: closing target _blank phishing vulnerability"
 msgstr ""
 
-#: ../../changes.rst:16 c9c1ea27021d47c980bf5547d05d3a91
+#: ../../changes.rst:15 c5a6e976c3354e6d8c6ea43aec64a7a5
 msgid ""
 ":issue:`842`  Imports: ContextID code_meaning in make_skin_map and "
 "dxdetail"
 msgstr ""
 
-#: ../../changes.rst:17 abe7c78d823a4ebfabea47199d0d20d3
+#: ../../changes.rst:16 21c6c171ac5e498993f242f4d4a34f38
 msgid ":issue:`841`  Code quality: format code with Black"
 msgstr ""
 
-#: ../../changes.rst:18 464bd608100e4ca19208653f80071c5f
+#: ../../changes.rst:17 1a06995522054f6ea8e09736e2adf49c
 msgid ":issue:`839`  Documentation: removed redundant troubleshooting docs"
 msgstr ""
 
-#: ../../changes.rst:19 3bf20a2d4e3a4ceebe5945772d51220d
+#: ../../changes.rst:18 0f72a50eb10b4a9c9809431f36c4aaac
 msgid ""
 ":issue:`838`  Imports: fixed issues with changed PersonName behaviour in "
 "pydicom 2.0"
 msgstr ""
 
-#: ../../changes.rst:20 9b8b08c3afcf486ab63e9d9236d7e88d
+#: ../../changes.rst:19 db47ca8759d5465e9936d0e3f05d95c0
 msgid ""
 ":issue:`836`  Installation: updated requirements, Docker and docs for "
 "pynetdicom 1.5, pydicom 2.0"
 msgstr ""
 
-#: ../../changes.rst:21 a1e719de34364975833f3acb36af1b56
+#: ../../changes.rst:20 730bb6f3def44fe795b8f0dbfe7085b7
 msgid ":issue:`835`  Docker: fixed timeout issue with slow pagination"
 msgstr ""
 
-#: ../../changes.rst:22 5adffe6ac4b54d1e825b0d9f73d5ea0c
+#: ../../changes.rst:21 1231a857dbc24f0a9b773566af40fa9c
 msgid ""
 ":issue:`829`  Installation: added docs for Docker install on computer "
 "without internet access"
 msgstr ""
 
-#: ../../changes.rst:23 b4f5c2c4364d4541a03dc75b7c02f64b
+#: ../../changes.rst:22 d693b603f81e4423aaa4d3cedca1db5d
 msgid ""
 ":issue:`827`  SkinDose: Made SkinDose results available in OpenREM and "
 "made alert triggering possible"
 msgstr ""
 
-#: ../../changes.rst:24 03a472449f384233b76bd483870571de
+#: ../../changes.rst:23 e4d86819c02e4349af16651981ea2f12
 msgid ""
 ":issue:`826`  Code quality: split views to make more manageable and "
 "testable"
 msgstr ""
 
-#: ../../changes.rst:25 c94352447c3e46f988664e85cb71b2d7
+#: ../../changes.rst:24 1fdd9333a61c46ee883d7b19bcf0e069
 msgid ""
 ":issue:`824`  DICOM Networking: enabled declaration and testing of "
 "Orthanc Store SCP in Docker"
 msgstr ""
 
-#: ../../changes.rst:26 353244c03db74915a981802fe79c1f08
+#: ../../changes.rst:25 b2a679dab8c34b0793344e439d5e5de7
 msgid ""
 ":issue:`821`  Code quality: fixed literal comparisons Docker was "
 "complaining about"
 msgstr ""
 
-#: ../../changes.rst:27 f9328ba5c5294ac89bdd1f8aa60ade26
+#: ../../changes.rst:26 84fdcef80782457fab5969be3de62b8d
 msgid ":issue:`820`  Documentation: converted changes to use sphinx-issues"
 msgstr ""
 
-#: ../../changes.rst:28 1de28325320348eb947122faabf4b3c1
+#: ../../changes.rst:27 b9fb98fd47c64dab8f3dd942e99c11fd
 msgid ""
 ":issue:`819`  Removed colons from commands in documentation as they don't"
 " format correctly in PDF"
 msgstr ""
 
-#: ../../changes.rst:29 e706d91e43204f5da1bb7076f6459a84
+#: ../../changes.rst:28 d7658d93f3174a37a4237fd32694b9cb
 msgid ":issue:`818`  Interface: refactored event number filtering"
 msgstr ""
 
-#: ../../changes.rst:30 0fabd70e9246487bb7d56e59226dd2bc
+#: ../../changes.rst:29 d060b42fd03d4a508d0ad3201b8ec82c
 msgid ":issue:`817`  SkinDose: fixed PEP8 and Codacy issues for skinDose"
 msgstr ""
 
-#: ../../changes.rst:31 a4618e4bb3e44e3db3f125c407ccddc5
+#: ../../changes.rst:30 a367793da10c455292193f83c57f44de
 msgid ":issue:`816`  Interface: fixed password change error"
 msgstr ""
 
-#: ../../changes.rst:32 05f09558f63a4372ba58fdce4fff5497
+#: ../../changes.rst:31 ada1b3582c6c425686b6ab19f354726e
 msgid ":issue:`815`  Interface: fixed patient name filtering"
 msgstr ""
 
-#: ../../changes.rst:33 d73d021167374227808ed0dd39b717e9
+#: ../../changes.rst:32 32a068a9a2a042c4bba493afcb12bcb0
 msgid ""
 ":issue:`814`  Deployment: automated deployment to dev.openrem.org and "
 "testing.openrem.org reintroduced"
 msgstr ""
 
-#: ../../changes.rst:34 81e8f48b512447ab86c0bb989cd8fb64
+#: ../../changes.rst:33 a510c5cb8fa94ef8ace19e53ff2469cc
 msgid ""
 ":issue:`808`  Imports: caters for illegal use of mGy units in RDSR for "
 "dose at RP values"
 msgstr ""
 
-#: ../../changes.rst:35 5a9220d7f0c34f3e91c5bf3bfe617daf
+#: ../../changes.rst:34 32bc4c3c52f94425a2f1efffb83021c6
 msgid ""
 ":issue:`807`  Exports: fixed errors in PHE fluoro export when values are "
 "None"
 msgstr ""
 
-#: ../../changes.rst:36 8cf79f8d18a646268dad61b3a994a2a9
+#: ../../changes.rst:35 864adb7dffa649799cbd03ad6af67d44
 msgid ""
 ":issue:`805`  DICOM Networking: fix errors on \"association release\" and"
 " \"move complete\""
 msgstr ""
 
-#: ../../changes.rst:37 783d849aa45c49a59571c97fa9e0c4e0
+#: ../../changes.rst:36 b349eb31e23c475a94b41a9e4ed05b6e
 msgid ""
 ":issue:`803`  Fixed problem with multiple ModalitiesInStudy entries in "
 "c-find response"
 msgstr ""
 
-#: ../../changes.rst:38 f66c7beea1374d87ae370a51ad9da66c
+#: ../../changes.rst:37 c2ea7f55c0434fa6be1d30e69d90afc2
 msgid ""
 ":issue:`800`  Tasks: import and export tasks and DICOM queries and moves "
 "now listed with more information"
 msgstr ""
 
-#: ../../changes.rst:39 4a2963055b474be9b98b618af84d8f87
+#: ../../changes.rst:38 117546ba201846acad782f88a19e731e
 msgid ""
 ":issue:`799`  DICOM Networking: workaround for stationnames > 16 "
 "characters"
 msgstr ""
 
-#: ../../changes.rst:40 6d8f8328583e4d729cef89344af1e0b2
+#: ../../changes.rst:39 9772881c75bc450eb9c3ffe48ee6322f
 msgid ""
 ":issue:`798`  Exports: prevented error in export view if task_id is "
 "missing"
 msgstr ""
 
-#: ../../changes.rst:41 762f4a73904c488c9d667cf5acd4f2f2
+#: ../../changes.rst:40 b6195b3a086c4acd9554b972870c6477
 msgid ":issue:`797`  Exports: fixed string/byte issues with csv exports"
 msgstr ""
 
-#: ../../changes.rst:42 23760b4450884a35906b19a384483f8e
+#: ../../changes.rst:41 0efa2a058a5e47bdb1d032d88d0f6fb5
 msgid ""
 ":issue:`796`  Exports: replaced file() with open() for Python 3.x "
 "compatibility"
 msgstr ""
 
-#: ../../changes.rst:43 d41699c0c8ee4d4b826d3dcd0b031cfe
+#: ../../changes.rst:42 adc38b251aef49c99186f20d8f3b602d
 msgid ""
 ":issue:`795`  Exports: included acquisition name in PHE radiographic "
 "projection export"
 msgstr ""
 
-#: ../../changes.rst:44 0cfe34201a1242e7a099ab6d18980510
+#: ../../changes.rst:43 9a84e366338a4166b36f889d97052ea7
 msgid ":issue:`793`  Installation: added Docker installation"
 msgstr ""
 
-#: ../../changes.rst:45 8058440b827a433d9c21a02260f3e0a1
+#: ../../changes.rst:44 6d4dd8b89efd41068d267b32c15965da
 msgid ""
 ":issue:`791`  Exports: prevented error when trying to export DX data that"
 " has no filter information"
 msgstr ""
 
-#: ../../changes.rst:46 c88e882639d2413580c5631ede6bbbe7
+#: ../../changes.rst:45 e26826e83eac430f84711dbbc545b48a
 msgid ":issue:`790`  Python 3: remove basestring type"
 msgstr ""
 
-#: ../../changes.rst:47 faff8db8afc64b62817ad746fd26521e
+#: ../../changes.rst:46 b6443f01dc454c00ba5519421eca5acf
 msgid ""
 ":issue:`789`  Python 3: Median function aggregation code simplified; "
 "works with Python 3.7"
 msgstr ""
 
-#: ../../changes.rst:48 1b12d29908c64f1d9f002aab417e83cb
+#: ../../changes.rst:47 d19e7542e69445b59bb3f88a595abfe3
 msgid ""
 ":issue:`788`  Python 3: Docker only installs for Windows fixes Celery "
 "3/Python 3.7 incompatibility"
 msgstr ""
 
-#: ../../changes.rst:49 dc3d205c6b83431e91cf22c08259920b
+#: ../../changes.rst:48 4ee59c6191ea487189c52199f04782c1
 msgid ":issue:`787`  Interface: fixed login error"
 msgstr ""
 
-#: ../../changes.rst:50 e8dcd99359dd47a29ceed423dfcf7713
+#: ../../changes.rst:49 2541403859694fd5a6a9e674f06c8fcb
 msgid ":issue:`777`  Updated OpenREM to use pydicom 1.3"
 msgstr ""
 
-#: ../../changes.rst:51 a5d00a18121342a78dff1217bcdf4582
+#: ../../changes.rst:50 2227b9e407004ae08c93f64858bbc626
 msgid ":issue:`744`  Added overwrite mode to size import"
 msgstr ""
 
-#: ../../changes.rst:52 d01750fa571b4447bace52f5c9983bfd
+#: ../../changes.rst:51 a702209dd8b04063b5aa7e463b6131bd
 msgid ":issue:`530`  Updated OpenREM to use pynetdicom 1.4"
 msgstr ""
 
-#: ../../changes.rst:53 3d8b0b5b201d4a6f9b8a4454f22206b6
+#: ../../changes.rst:52 ec43366c816d409db1ba9c4aba60b4a7
 msgid ""
 ":issue:`513`  Internationalization: first translation strings added to "
 "documentation"
 msgstr ""
 
-#: ../../changes.rst:54 83b2c38d6ca14537ac6b2ad8ea2176b1
+#: ../../changes.rst:53 4e8c427fdb47463db20a00ae8fbebfc1
 msgid ""
 ":issue:`512`  Internationalization: first translation strings added to "
 "interface"
 msgstr ""
 
-#: ../../changes.rst:55 b337b58d52b2463ebc00a8700b6b58f7
+#: ../../changes.rst:54 e31db6d4d22b476fac6deb4e41a18839
 msgid ":issue:`457`  Updated OpenREM to use Django 2.2"
 msgstr ""
 
-#: ../../changes.rst:56 0cbe9f0dc4fc4f7887484953464184ba
+#: ../../changes.rst:55 413c17d6150e4dd3a8b8715e6b7466c3
 msgid ":issue:`437`  Updated OpenREM to use django-filters v2"
 msgstr ""
 
-#: ../../changes.rst:57 9767f7a623774e41867a1ad57a0b0177
+#: ../../changes.rst:56 23bc9f77a2ff4eb596fde1a3fa610d17
 msgid ":issue:`404`  Ported OpenREM to Python 3"
 msgstr ""
 
-#: ../../changes.rst:60 5ac5a834179e4b4ab5d2326a1bbdaa6e
+#: ../../changes.rst:59 a4d9a983a6bf43f0a65b962308372a97
 msgid "0.10.0 (2019-11-08)"
 msgstr ""
 
-#: ../../changes.rst:61 507d051409a5421098ce9ccccdaf3d51
+#: ../../changes.rst:60 bddd8e3dd28f401281818e1386cb3ff6
 msgid ":issue:`785`  Interface: added study level comments to rfdetail.html"
 msgstr ""
 
-#: ../../changes.rst:62 bb1dd5046c3c423e88c71ec74bcaed65
+#: ../../changes.rst:61 112a7657f0ae4e4cb2685dbae383a4bd
 msgid ""
 ":issue:`784`  Imports: added laterality under target region as per 2017 "
 "CP 1676 change"
 msgstr ""
 
-#: ../../changes.rst:63 12ab90cfb456415c911bab448c5fdf9c
+#: ../../changes.rst:62 d5374f6db51e430fa5191802ea9a855f
 msgid ""
 ":issue:`783`  Interface: replaced static links by dynamic versions in "
 "rfdetail.html"
 msgstr ""
 
-#: ../../changes.rst:64 297737e20760466ab068d6433994d9b6
+#: ../../changes.rst:63 6de88d7de96a4465bbf54025401ad62b
 msgid ""
 ":issue:`782`  Exports: fixed RF export issue with studies containing "
 "multiple modalities"
 msgstr ""
 
-#: ../../changes.rst:65 64a038c1eeda423784bbb54ba698de15
+#: ../../changes.rst:64 902702a4d0094ca6b501253d42859f48
 msgid ""
 ":issue:`781`  Charts: fixed issue where charts were mis-labelled if "
 "\"Case-insensitive categories\" was unchecked"
 msgstr ""
 
-#: ../../changes.rst:66 7e5d1556f82a4791b334d836feef5c34
+#: ../../changes.rst:65 29280c345e96425baadb162e57bc8d71
 msgid ""
 ":issue:`780`  Interface: changed mammography accumulated laterality to "
 "use code_value rather than code_meaning"
 msgstr ""
 
-#: ../../changes.rst:67 6ce26a2d33974c48b460d6126faab143
+#: ../../changes.rst:66 6ecbad905f014930b370d44c37a5fbe2
 msgid ""
 ":issue:`779`  Installation: added restriction to django-qsstats-magic "
 "version"
 msgstr ""
 
-#: ../../changes.rst:68 7da2a51d22e6495cbac453de2a0db6ad
+#: ../../changes.rst:67 8013031b73bd4839927b961c532b49a1
 msgid ""
 ":issue:`778`  Imports: added summary field population tests, fixed CT "
 "RDSR Total DLP import error"
 msgstr ""
 
-#: ../../changes.rst:69 cf9f7402f0c54be19ac520e7df85696c
+#: ../../changes.rst:68 262f8bcb2de34174ac2d28228ccb6ebc
 msgid ""
 ":issue:`776`  Documentation: grammar and spelling correction for PHE "
 "exports"
 msgstr ""
 
-#: ../../changes.rst:70 401c45d47f1540b79caa36c83d02b690
+#: ../../changes.rst:69 c175491705904de0b2e5f0d1b36d9664
 msgid ""
 ":issue:`775`  Exports, documentation: fixed units issue and minor docs "
 "issue for PHE DX export"
 msgstr ""
 
-#: ../../changes.rst:71 1b13dcd9182d4f51a8e8f7de680dc31f
+#: ../../changes.rst:70 92474cd3db45441289c7af8a73cf6345
 msgid ""
 ":issue:`774`  Charts: fixed issue where charts were mis-labelled if "
 "\"Plot a series per system\" was unchecked"
 msgstr ""
 
-#: ../../changes.rst:72 b732f925bf7d47669d4a3ccb80dd94d5
+#: ../../changes.rst:71 593ac445078e41a7800929e70a41f281
 msgid ""
 ":issue:`771`  Interface: entire fluoro exam row now highlighted when dose"
 " alert exceeded"
 msgstr ""
 
-#: ../../changes.rst:73 d025975e9deb42b3ac1496b76e7c1b74
+#: ../../changes.rst:72 66701dc89d5f45f6acf3387fb159cabf
 msgid ":issue:`770`  Imports: fix to allow non-conformant Opera Swing to import"
 msgstr ""
 
-#: ../../changes.rst:74 82ff7e095afa440cb71223becbe4d91a
+#: ../../changes.rst:73 3a37fc07f56845ff8bf5ee768645a68f
 msgid ""
 ":issue:`769`  Interface: modified to allow detail view display of Ziehm "
 "studies with missing summary data"
 msgstr ""
 
-#: ../../changes.rst:75 6e13fc672050421691e350ed904ed816
+#: ../../changes.rst:74 ef68eb6cac6243caa14fc0857cd4e176
 msgid ""
 ":issue:`768`  Charts: study- and request-level charts now use study-level"
 " summary fields to improve performance"
 msgstr ""
 
-#: ../../changes.rst:76 a7ab468af6384a43b488a187ffa04c4f
+#: ../../changes.rst:75 517b97440513498ab250f3d1615af3ad
 msgid ""
 ":issue:`765`  Imports: updated error catching to allow Philips BigBore "
 "4DCT RDSR to import"
 msgstr ""
 
-#: ../../changes.rst:77 0650724293d648c8909b52d8c2c297b3
+#: ../../changes.rst:76 2c980925d7b846ba9b844dc58b460b10
 msgid ""
 ":issue:`763`  Imports: corrected delta week fluoro study counting for "
 "dual plane modalities"
 msgstr ""
 
-#: ../../changes.rst:78 ba1ce661b9244128be3f197b9ad26d3f
+#: ../../changes.rst:77 aceca1417e7e40109f44f1799c6dca48
 msgid ""
 ":issue:`762`  Interface: fixed error when deleting dual plane radiography"
 " studies"
 msgstr ""
 
-#: ../../changes.rst:79 7526249cae714a1aaebd8d254e496b74
+#: ../../changes.rst:78 d237f0b9838b466a93145e9747dbbeaf
 msgid ""
 ":issue:`761`  Imports: fixed issue in high dose alert e-mail code where "
 "week_delta may be used before assignment"
 msgstr ""
 
-#: ../../changes.rst:80 9304cac328f040dca233a01bea8b244d
+#: ../../changes.rst:79 ce7d5ae7c6eb4e8fbdd452043812520e
 msgid ""
 ":issue:`759`  Database: added study level summary fields and migration "
 "function"
 msgstr ""
 
-#: ../../changes.rst:81 e36ac2270b514cf8bcf2e92b90dac80f
+#: ../../changes.rst:80 2d7d9a1c5dad447a976ca3690f59def2
 msgid ""
 ":issue:`758`  Configuration: corrected issues with location of js_reverse"
 " static files"
 msgstr ""
 
-#: ../../changes.rst:82 34ad43bb91f94ab3914c1443e0a910d7
+#: ../../changes.rst:81 30d2c01a9ad24abaa43ce9272ea6522d
 msgid ""
 ":issue:`750`  Exports: added export tailored to the 2019 PHE DX dose "
 "survey"
 msgstr ""
 
-#: ../../changes.rst:83 b01ebec3d8e148b4991cf28164961229
+#: ../../changes.rst:82 326df8178f5945e88fda85188847bb39
 msgid ""
 ":issue:`746`  Imports: enabled import of GE Elite Mini View C-arm RDSR "
 "with no template declaration"
 msgstr ""
 
-#: ../../changes.rst:84 1661f9e1994e4541846d8609292fc728
+#: ../../changes.rst:83 0fc043196806488c9a89061a7b63cf95
 msgid ":issue:`181`  Imports: corrected import of grid information from RDSRs"
 msgstr ""
 
-#: ../../changes.rst:87 e1e7a81cea744e9d8cbbbe26e08308bc
+#: ../../changes.rst:86 c42306d8238d48c9a5044a1cc5ed17cd
 msgid "0.9.1 (2019-05-16)"
 msgstr ""
 
-#: ../../changes.rst:88 2c95bbdc0bbf460ca5a7a0f4b29fd24d
+#: ../../changes.rst:87 e24a852d2fdd4e26a1cb165c8a48d03b
 msgid ""
 ":issue:`766`  Documentation: updated the Windows Celery documentation to "
 "reflect changes required to shutdown Celery 3.1.25"
 msgstr ""
 
-#: ../../changes.rst:89 7844d4eba93e4cb782c3c3c9d9f880a2
+#: ../../changes.rst:88 d159c65cd374469fb307b58ca921b5ef
 msgid ""
 ":issue:`755`  Interface: fix more static URLs to allow virtual directory "
 "web server configurations"
 msgstr ""
 
-#: ../../changes.rst:90 721255562c944d9fb4cfb7813d10d88f
+#: ../../changes.rst:89 148790cf77f14c6d932a719fe7e46d34
 msgid ""
 ":issue:`754`  Documentation and install: updated docs and minimum version"
 " for collectstatic_js_reverse"
 msgstr ""
 
-#: ../../changes.rst:91 2bc87603ffb44a2b82ccb668fe05aa3f
+#: ../../changes.rst:90 41c9303be82b410499ef70c0e74ff6f5
 msgid ""
 ":issue:`753`  Query-retrieve: removed patient age fields from study level"
 " C-FIND that were not used"
 msgstr ""
 
-#: ../../changes.rst:92 be18be1cff4445ea9f3b4c6d9be7dccb
+#: ../../changes.rst:91 3179238415d54ba5b7a19356db197844
 msgid ":issue:`752`  Exports: fixed missing weight field in PHE CT 2019 export"
 msgstr ""
 
-#: ../../changes.rst:93 622aca27a04a4b469b02fc0411241a14
+#: ../../changes.rst:92 8638060cac8446aab462337567377d70
 msgid ":issue:`749`  Documentation: updated the Linux quick install docs"
 msgstr ""
 
-#: ../../changes.rst:94 4acad493439c4d46bc5316c3c9dd08bc
+#: ../../changes.rst:93 06482bf12b824398a3d7e5734810ffbe
 msgid ""
 ":issue:`748`  Charts: fixed error that caused blank charts if series per "
 "system was selected"
 msgstr ""
 
-#: ../../changes.rst:95 cf94465df53842dbb20804e541ec4ef3
+#: ../../changes.rst:94 f77e03a6590e49e4a15566bf4181c189
 msgid ""
 ":issue:`747`  Installation: changed minimum Python version for current "
 "version of Flower"
 msgstr ""
 
-#: ../../changes.rst:96 de6f1103a6eb4d8791cffbbba2388e94
+#: ../../changes.rst:95 e32404dc341741de8bb90613b34d1d7d
 msgid ""
 ":issue:`743`  Testing: added configuration to enable testing with default"
 " logging"
 msgstr ""
 
-#: ../../changes.rst:97 d2014f142ef641fdb579528863eee34b
+#: ../../changes.rst:96 c39eddc7ffe746b689e539b883c76c3a
 msgid ""
 ":issue:`742`  Interface: sorting of task tables now works in Internet "
 "Explorer 11"
 msgstr ""
 
-#: ../../changes.rst:98 899a721a13c04d5e8b84a3a77c80e30e
+#: ../../changes.rst:97 837cef8200f642dc925690c4c82acaf6
 msgid ""
 ":issue:`740`  Installation: fixed Celery version to avoid dependency on "
 "Django 1.11"
 msgstr ""
 
-#: ../../changes.rst:99 08602bb2f254482c8e53b023f9c8f874
+#: ../../changes.rst:98 d288083121754b6bb373a7580b390494
 msgid ":issue:`739`  Imports: fixed import errors for GE surgical fluoroscopy"
 msgstr ""
 
-#: ../../changes.rst:100 6026d26681204b4cba15095e6c3a9dfe
+#: ../../changes.rst:99 fba3a40430ed44ac82d028243147b7f2
 msgid ""
 ":issue:`738`  Logging: added single_date query date to log, added tasks "
 "aborts to logs"
 msgstr ""
 
-#: ../../changes.rst:101 6f5c569b70ed4aa5bfe5ab2287302f4f
+#: ../../changes.rst:100 0e645e32486a43e0acc4ddef88a0b874
 msgid ""
 ":issue:`737`  Interface and exports: specify number of events and export "
 "to PHE 2019 CT survey specification"
 msgstr ""
 
-#: ../../changes.rst:102 9b2d3d8a97244baca189144287aef063
+#: ../../changes.rst:101 49b9374987284f14bf4fa47299c91cc3
 msgid ""
 ":issue:`736`  Query-retrieve: duplicate study level responses now removed"
 " from query"
 msgstr ""
 
-#: ../../changes.rst:103 bf056e9864e148cf8090844a92e65791
+#: ../../changes.rst:102 095bb27599364e918d3f3199629f9761
 msgid ""
 ":issue:`735`  Imports: switched to more secure defusedxml for parsing XML"
 " in comments"
 msgstr ""
 
-#: ../../changes.rst:104 37239db279c146ccb4caf2771f3086af
+#: ../../changes.rst:103 47bc72ea80904f24b4f5d7a95e59723f
 msgid ""
 ":issue:`734`  Query-retrieve: handle illegal image level response with no"
 " instance number"
 msgstr ""
 
-#: ../../changes.rst:105 4b602d6e8b7547698566aaaba5eaa150
+#: ../../changes.rst:104 43938ceb54c64f7eb60c0e98deea937c
 msgid ""
 ":issue:`732`  Query-retrieve: added advanced option to workaround empty "
 "series issue"
 msgstr ""
 
-#: ../../changes.rst:106 d7eb7989883d41fc8ae4b9933ae91b43
+#: ../../changes.rst:105 f2343de0ca8343a2aba6d8fe31a7c455
 msgid ""
 ":issue:`710`  Interface: time-based columns in Celery and RabbitMQ tables"
 " now sorted correctly"
 msgstr ""
 
-#: ../../changes.rst:107 254993bc48c94ab99f59f2892a45d11a
+#: ../../changes.rst:106 bca7eaaf863041fcaea105ea267bbf73
 msgid ":issue:`404`  Code quality: changes to lead toward Python 3 compliance"
 msgstr ""
 
-#: ../../changes.rst:110 7c47aab8076f4a80afcefa2ce04d9c47
+#: ../../changes.rst:109 d68f55a75d824e0eab33db7e96633663
 msgid "0.9.0 (2019-03-06)"
 msgstr ""
 
-#: ../../changes.rst:111 dd91fd79e12c4ade9c344fe52f495de5
+#: ../../changes.rst:110 4c4d5e8d945343b995baed8afaff2fd3
 msgid ":issue:`733`  Documentation: post-release fixes for 0.9.0 docs"
 msgstr ""
 
-#: ../../changes.rst:112 da7fb9980b9d42208e6949b2f65ff68b
+#: ../../changes.rst:111 0039d92d9f364b6e97c682b18387162e
 msgid ""
 ":issue:`731`  Imports: fixed another issue with display names on upgrade "
 "to 0.9"
 msgstr ""
 
-#: ../../changes.rst:113 158ce18d3428469e953e5c31335fdf63
+#: ../../changes.rst:112 47b63b279de64e1a95cd5251d8183438
 msgid ""
 ":issue:`729`  Interface: replaced hard coded URLs in displaynameview.html"
 " and review_failed_imports.html with url names"
 msgstr ""
 
-#: ../../changes.rst:114 33d7b92ada174805b96d72a6f458db09
+#: ../../changes.rst:113 a1b87a916b8f4d1b81a9f42f2a11993c
 msgid ":issue:`727`  Imports: fixed issue with display names on upgrade to 0.9"
 msgstr ""
 
-#: ../../changes.rst:115 9985ae323f8a4e7cbd2585ece10c596c
+#: ../../changes.rst:114 23190921f2a54c79b761d469317e6bd9
 msgid ""
 ":issue:`726`  Documentation: updated to include the new task management "
 "function"
 msgstr ""
 
-#: ../../changes.rst:116 bbad766d1f1e411083d3dd7f7f473650
+#: ../../changes.rst:115 cb2487ab32f84024ac0d229aa840eec0
 msgid ""
 ":issue:`725`  Charts: added fluoroscopy charts of DAP and frequency per "
 "requested procedure"
 msgstr ""
 
-#: ../../changes.rst:117 ad7ceab74c7a4258bf7197dcd8e16ca6
+#: ../../changes.rst:116 d79cc30b7253436db73dabb568342809
 msgid ""
 ":issue:`723`  Task management: fixed issue with latest version of kombu "
 "and amqp on Windows"
 msgstr ""
 
-#: ../../changes.rst:118 6f0ef6ca29ab4af693472206b106d8ae
+#: ../../changes.rst:117 334bfd848d884c4b920d9dd5f1228140
 msgid ""
 ":issue:`722`  Interface: dual-plane DX studies are now displayed without "
 "error in filtered list and study detail page"
 msgstr ""
 
-#: ../../changes.rst:119 ff7c5f5e73034b7291e094c6acaee9ad
+#: ../../changes.rst:118 d41e7a2417f54aa79b7d8fb4e502bc08
 msgid ""
 ":issue:`721`  Documentation: removed Django Debug Toolbar from default "
 "install and documented how to install and use it"
 msgstr ""
 
-#: ../../changes.rst:120 8482e1ca5565485c8e017255c1ccc0e5
+#: ../../changes.rst:119 a7128def885f4daf8f0b338137b60485
 msgid ""
 ":issue:`720`  Interface: fixed small overlap between skin dose map and "
 "irradiation type table"
 msgstr ""
 
-#: ../../changes.rst:121 81750f1f39094e4e97122e353d81f74e
+#: ../../changes.rst:120 d751c8cae116403b83a9820551bd2650
 msgid ":issue:`719`  Interface: fixed hardcoded link in template rffiltered.html"
 msgstr ""
 
-#: ../../changes.rst:122 a2c7e40b7db14383b1e9a760544a811c
+#: ../../changes.rst:121 fe2308bb186c4dff80fcc9ce3ad1c887
 msgid ""
 ":issue:`717`  Query-retrieve: fixed problem where an error was thrown if "
 "association is None"
 msgstr ""
 
-#: ../../changes.rst:123 fc085ebf0a164132a21fbecf23d6f85c
+#: ../../changes.rst:122 b80a922eff3f4c8f8ad453933d615b81
 msgid ""
 ":issue:`716`  Task manager: removed assumption of queue name from "
 "RabbitMQ management interface"
 msgstr ""
 
-#: ../../changes.rst:124 77400a42d5f54c25a301bcaedb8d6476
+#: ../../changes.rst:123 0a451e9f236e4a3082f3f86ca98e30b1
 msgid ""
 ":issue:`714`  Documentation: add missing documentation about changing "
 "STATIC_URL if serving OpenREM in a virtual directory"
 msgstr ""
 
-#: ../../changes.rst:125 daaa452bb94e464787eedc1b01d330f9
+#: ../../changes.rst:124 017652a231c84c78b16fa2e3dcb441e5
 msgid ""
 ":issue:`711`  Query-retrieve: fixed problem for zero image series when "
 "using -toshiba flag"
 msgstr ""
 
-#: ../../changes.rst:126 6dd6d05b4a7c4225b1ce04cc55cdb9b4
+#: ../../changes.rst:125 dbd3bfc12ab14f1ebb8bedc92824706d
 msgid ""
 ":issue:`710`  Interface: Celery and RabbitMQ tables can now be sorted by "
 "clicking on column headings"
 msgstr ""
 
-#: ../../changes.rst:127 58ec8d9a19de45e2b793190e3b1647fa
+#: ../../changes.rst:126 020bba9246694a37b464da274fe2c307
 msgid ""
 ":issue:`709`  Query-retrieve: corrected query logic for multiple "
 "modalities using :issue:`627` Modality tag at study level fix"
 msgstr ""
 
-#: ../../changes.rst:128 27d4f2cad5524c01abdb5f4c042ad06b
+#: ../../changes.rst:127 6d841c56ab03427a954790388aa90018
 msgid ":issue:`708`  Query-retrieve: fixed problem for empty Series Number"
 msgstr ""
 
-#: ../../changes.rst:129 a8783340d1734d3bbe182858cce167a0
+#: ../../changes.rst:128 5b5380b6d9164543a8820193878da22b
 msgid ""
 ":issue:`707`  Interface: fixed issue where sigdig returned an error if it"
 " was passed an empty string"
 msgstr ""
 
-#: ../../changes.rst:130 65adae141d9e4889baa1c1ce211ffb88
+#: ../../changes.rst:129 c91d9ae558574feab1d4f9e94eaf42de
 msgid ""
 ":issue:`706`  Exports: fixed problem where filters were not respected for"
 " radiographic exports"
 msgstr ""
 
-#: ../../changes.rst:131 cf6b984fb4b244d78ede4cae1b07c1fc
+#: ../../changes.rst:130 d87a8dbc729444b78e7ee246c0457301
 msgid ""
 ":issue:`705`  Task manager: added Flower to install and integrated to "
 "interface"
 msgstr ""
 
-#: ../../changes.rst:132 d0fe9ab479184d929d77b8f637504bd8
+#: ../../changes.rst:131 1c9efff6cd1440dcb565fe6c80294c9b
 msgid ""
 ":issue:`704`  Imports: caters for illegal use of dGy.cm2 units in RDSR "
 "for DAP values"
 msgstr ""
 
-#: ../../changes.rst:133 ede3531a1cd5471d966909d7d70ce638
+#: ../../changes.rst:132 74d3d4b92e254634927a9a69de03f7fc
 msgid ""
 ":issue:`703`  Interface: fixed URL lookup error for failed imports on "
 "homepage"
 msgstr ""
 
-#: ../../changes.rst:134 28582bac58de4a9db3a0c671c45d9026
+#: ../../changes.rst:133 497e84021190408dbc88d04feb189ce5
 msgid ""
 ":issue:`702`  Query-retrieve: fixed URLs in DICOM javascript files to "
 "allow virtual-directories"
 msgstr ""
 
-#: ../../changes.rst:135 d4096894f78f4b7f91c042ef816fbc00
+#: ../../changes.rst:134 b80dbe6121cc46ee9b9610fe7a00868d
 msgid ""
 ":issue:`701`  Interface: made the fluoroscopy exposure detail table "
 "sortable by clicking on headers"
 msgstr ""
 
-#: ../../changes.rst:136 c8eba5e8fb0c41648378802ebed378c2
+#: ../../changes.rst:135 3eac77829d434bff979e341956c0f72c
 msgid ""
 ":issue:`698`  Imports: allow for incorrect case in Procedure reported tag"
 " in RDSR"
 msgstr ""
 
-#: ../../changes.rst:137 b38833f4b7f34546b7e46e7381ef0865
+#: ../../changes.rst:136 1e647946953044c8a652091eef85b0e2
 msgid ""
 ":issue:`697`  Testing: added tests for fluoroscopy high dose alerts "
 "(single-plane systems)"
 msgstr ""
 
-#: ../../changes.rst:138 3f3cc7270a0f4e4f908a35ae4a9b8812
+#: ../../changes.rst:137 71a8544502f64e24b14416655ea68e95
 msgid ":issue:`696`  Interface: fixed broken Delete Studies and Entry button"
 msgstr ""
 
-#: ../../changes.rst:139 64f19c6d28014c97b90ae2045e216725
+#: ../../changes.rst:138 43d16a373e6642728525156589b7d291
 msgid ":issue:`695`  Imports: added missing name attribute for size_abort url"
 msgstr ""
 
-#: ../../changes.rst:140 70ff292b10f84a0082b933c72d452e53
+#: ../../changes.rst:139 3b58244475664864ab294de7a9dff73d
 msgid ""
 ":issue:`694`  Query-retrieve: added extensive logging and summary to "
 "interface"
 msgstr ""
 
-#: ../../changes.rst:141 f4ff3e2aa2304e4c9c01706363a28f74
+#: ../../changes.rst:140 33b7b788d1b64be1b2e1c0025c0723ab
 msgid ""
 ":issue:`693`  Interface: fixed display of numbers with significant places"
 " settings and comma localisation"
 msgstr ""
 
-#: ../../changes.rst:142 5d28bd66f27a4a99a441746a3d3917fb
+#: ../../changes.rst:141 f9c5e5f86554445094506aaa85566f62
 msgid ":issue:`691`  Interface: fixed URL lookup error for Display Names page"
 msgstr ""
 
-#: ../../changes.rst:143 a97f2ecd15dd4455be7fb42679be0cbd
+#: ../../changes.rst:142 416bd6c588c942d29645b45cd4fbf45d
 msgid ""
 ":issue:`690`  Interface: added workload stats user option entry back into"
 " config menu"
 msgstr ""
 
-#: ../../changes.rst:144 fefd6c0304944ebd9480c2a49deaa0f7
+#: ../../changes.rst:143 9f352538845c419eaeb1e1b9f0bea0ce
 msgid ":issue:`689`  Interface: fixed URL lookup error for DICOM summary page"
 msgstr ""
 
-#: ../../changes.rst:145 f4d4880b1c5548afba5c21d90811d5d0
+#: ../../changes.rst:144 70bb312e378644a29722a2f2b5305060
 msgid ""
 ":issue:`688`  Interface: Add possibility to apply known display name "
 "based on Device Observer UID (default: disabled)"
 msgstr ""
 
-#: ../../changes.rst:146 814f2b5f6fec4ebc9c4797fac7bedde8
+#: ../../changes.rst:145 67fb63cf3de941e197d0030695ddc246
 msgid ""
 ":issue:`685`  Charts: fixed link code that would otherwise cause DLP per "
 "acquisition protocol chart histogram links to fail"
 msgstr ""
 
-#: ../../changes.rst:147 6b2613fb4bda4d2fb3a4cf826117869d
+#: ../../changes.rst:146 b4e72e08aab04396a91fe9ca9381fc8e
 msgid ""
 ":issue:`683`  Installation: added VIRTUAL_DIRECTORY to the settings file "
 "to avoid updating local_settings file on upgrade"
 msgstr ""
 
-#: ../../changes.rst:148 6158ac5138e542879d9a50cfd88ed46b
+#: ../../changes.rst:147 fd4f71f958aa47fb896416d4e1d1ad41
 msgid ""
 ":issue:`682`  Charts: fixed problem where links from histogram bars "
 "didn't filter correctly when case-insensitive categories selected"
 msgstr ""
 
-#: ../../changes.rst:149 a112cd518a614575a8346f822ea27209
+#: ../../changes.rst:148 7c3a98884903479f88f4b0f5f81c5bcb
 msgid ":issue:`681`  Imports: modified RDSR import to work with Varian RDSRs"
 msgstr ""
 
-#: ../../changes.rst:150 fc5f39bf77af4fb2aabe47a129224062
+#: ../../changes.rst:149 1a4a9a1d29cc4683aa44ba259f8c06e3
 msgid ""
 ":issue:`679`  Interface: added ability to filter CT studies on "
 "acquisition type"
 msgstr ""
 
-#: ../../changes.rst:151 280a79f8f1e048cda776509cec2f4305
+#: ../../changes.rst:150 ab9febb63e1b46e38d95f3e426880ea1
 msgid ""
 ":issue:`677`  Interface: added additional filter materials to convert to "
 "abbreviations"
 msgstr ""
 
-#: ../../changes.rst:152 7bcd202b98f84d2da4d2180333716b30
+#: ../../changes.rst:151 9add1f563d464a59baf7979f09042439
 msgid ":issue:`676`  Imports: improved error handling on patient size imports"
 msgstr ""
 
-#: ../../changes.rst:153 ecc56a1953be4397a233bec526c3156d
+#: ../../changes.rst:152 f73fe4d590e44725b640eae02953056d
 msgid ""
 ":issue:`675`  Exports: improved resilience when export includes malformed"
 " studies"
 msgstr ""
 
-#: ../../changes.rst:154 3db0320d26554aa9b6b761e5513655d8
+#: ../../changes.rst:153 761f4193dbd8468f8eb479de0b66f4a9
 msgid ""
 ":issue:`674`  Documentation: amended zip command in example Orthanc "
 "configuration to work with Linux and Windows"
 msgstr ""
 
-#: ../../changes.rst:155 3b39031612114fdebf31dad56745552c
+#: ../../changes.rst:154 1f91c345f7014b80a2aecae746016b40
 msgid ""
 ":issue:`673`  Imports: handle empty NumericValues and workaround for "
 "incorrect Philips Azurion AcquisitionDeviceType"
 msgstr ""
 
-#: ../../changes.rst:156 8034e7fa8cd747d19bc96328155b38f7
+#: ../../changes.rst:155 819a55c0e1d54905a48c31d0bac84b82
 msgid ":issue:`672`  Documentation: improve and extend linux one-page install"
 msgstr ""
 
-#: ../../changes.rst:157 bd415a61572249f8b487c43dcdd4d961
+#: ../../changes.rst:156 cf25c3b7b1c1477792381d41b616f5a6
 msgid ""
 ":issue:`670`  Imports: handle illegal multi-value number in Toshiba RDSR "
 "with vHP"
 msgstr ""
 
-#: ../../changes.rst:158 69f7bd4a33344678826ed25c879d8f4e
+#: ../../changes.rst:157 a8a5450248df40fc8325027efdaca44c
 msgid ":issue:`668`  Code quality: library import and blank space cleanup"
 msgstr ""
 
-#: ../../changes.rst:159 56f12c6e4df74f8597f079494b710452
+#: ../../changes.rst:158 d197adc353cc4acca44e9ad603752337
 msgid ""
 ":issue:`667`  Web server: enable OpenREM to be hosted from a non-root "
 "folder/virtual-directory"
 msgstr ""
 
-#: ../../changes.rst:160 3df6ca43f194412b8c69fdd9a30345c6
+#: ../../changes.rst:159 d74df6cd4e3844d891ff41eb09229618
 msgid ""
 ":issue:`666`  Query-retrieve: handle non-return of ModalitiesInStudy "
 "correctly"
 msgstr ""
 
-#: ../../changes.rst:161 c60cb8c1fcb3477fa42f67191836cb00
+#: ../../changes.rst:160 7a9d144bf5ef42189b94cc54e0aacd86
 msgid ""
 ":issue:`665`  Interface: added fluoroscopy high dose highlighting and "
 "e-mail alerts"
 msgstr ""
 
-#: ../../changes.rst:162 12679777610140cfbb7110f28a185f77
+#: ../../changes.rst:161 115149db53ad476ab57b66d537a8f088
 msgid ""
 ":issue:`662`  Administration: added facility to list and purge RabbitMQ "
 "queues"
 msgstr ""
 
-#: ../../changes.rst:163 d5d7dcdd3e764a0bb8b131b73bfb2f27
+#: ../../changes.rst:162 59c3563ee8344dd5ad7eaeab1308e2b6
 msgid ""
 ":issue:`659`  Interface: made the latest study field in summary tables on"
 " the home page sort correctly"
 msgstr ""
 
-#: ../../changes.rst:164 90287b8d208546de8f1020a5343ed777
+#: ../../changes.rst:163 12725ebee5ba45169aadcf8a38c52fc3
 msgid ""
 ":issue:`658`  Interface: added display of workload stats in home page "
 "modality tables"
 msgstr ""
 
-#: ../../changes.rst:165 523eab7c48a8419ebfb409a599601647
+#: ../../changes.rst:164 867b8a124c894be6a0a8d61f2c94de82
 msgid ""
 ":issue:`637`  Administration: added facility to list and purge RabbitMQ "
 "queues"
 msgstr ""
 
-#: ../../changes.rst:166 d1641152706c488b93e7b1c3d5ffc7a2
+#: ../../changes.rst:165 54c2145ad14341559ef23ca10deb61cd
 msgid ""
 ":issue:`554`  Query-retrieve: added time as matching argument for command"
 " line use"
 msgstr ""
 
-#: ../../changes.rst:167 97c0373f53504603a583b54b5fb62d6c
+#: ../../changes.rst:166 9a6a652f89c440e5beff77fc8300bfd5
 msgid ""
 ":issue:`461`  Web server: enable OpenREM to be hosted from a non-root "
 "folder/virtual-directory (via :issue:`667`)"
 msgstr ""
 
-#: ../../changes.rst:168 74793ae4203f4453ab48f586c694bcfb
+#: ../../changes.rst:167 3c67e9f8ae884f8799a8661aab4d0ec5
 msgid ""
 ":issue:`479`  Administration: added facility to list and delete failed "
 "import studies"
 msgstr ""
 
-#: ../../changes.rst:169 d1fa2e39943f466b9049762286aebe9d
+#: ../../changes.rst:168 6f2595e3b5d04c058426c3f29e6b9742
 msgid ""
 ":issue:`349`  Task management: fixed issue with Windows tasks not being "
 "killed on request"
 msgstr ""
 
-#: ../../changes.rst:172 f09798fc9a124fb1bbad21aac5c27d01
+#: ../../changes.rst:171 b67478e162174bf3ad5fc735c81bedaa
 msgid "0.8.1 (2018-09-16)"
 msgstr ""
 
-#: ../../changes.rst:173 d718baef8ee142ffadaf057f9ab95140
+#: ../../changes.rst:172 6fb7d6083d224c89b6d91d0e632aeae7
 msgid ":issue:`663`  Interface: updated column headings on home page"
 msgstr ""
 
-#: ../../changes.rst:174 10ec1cc4bca84a6c9b0ef1ee84212fb4
+#: ../../changes.rst:173 641b5d26c9f744be8ec4dab6d22e1c83
 msgid ":issue:`660`  Documentation: corrected and improved Linux one-page install"
 msgstr ""
 
-#: ../../changes.rst:175 ba8e0771035846ea88ad7528bc780695
+#: ../../changes.rst:174 78ce693bc67943c58b9de60f86ee684b
 msgid ""
 ":issue:`659`  Interface: made the summary tables on the home page "
 "sortable by clicking on headers"
 msgstr ""
 
-#: ../../changes.rst:176 13299604557c44dd818e10aebfb67cce
+#: ../../changes.rst:175 b5b9b93578a64a86b484f6061f4c9885
 msgid ""
 ":issue:`656`  Install: pegged django-debug-toolbar to 1.9.1 until Django "
 "is upgraded"
 msgstr ""
 
-#: ../../changes.rst:177 71cc1a76ae4f45399a5850cf92050472
+#: ../../changes.rst:176 ddca8b059509495c98996e0df0c6510d
 msgid ""
 ":issue:`654`  Documentation: supplemented the Orthanc Lua file config "
 "option docs"
 msgstr ""
 
-#: ../../changes.rst:178 3280d6c1039a452abf7baba2a6ac4a29
+#: ../../changes.rst:177 88acaf688b5147c9b56c27fa6e1d4d40
 msgid ""
 ":issue:`653`  Docs: clarified notes to get link to Orthanc lua file "
 "correct on release"
 msgstr ""
 
-#: ../../changes.rst:179 17552768f066420ea115a39a0ddc05f5
+#: ../../changes.rst:178 f5a37090424344ddae5c173c450a7d15
 msgid ""
 ":issue:`652`  Documentation: added docs showing Celery daemonisation in "
 "Linux"
 msgstr ""
 
-#: ../../changes.rst:180 ed6806b1f7824f3cb45e34794979cc3b
+#: ../../changes.rst:179 461b849e6aab47f7ad96d52cc447e923
 msgid ""
 ":issue:`651`  Documentation: added one-page full setup Ubuntu 18.04 "
 "install instructions"
 msgstr ""
 
-#: ../../changes.rst:181 e8e02bf9f4cf4ab592f1d299d5a8c7a7
+#: ../../changes.rst:180 b86aedc848ed4657bb9c6ad2767eb9d0
 msgid ":issue:`650`  Documentation: modified quick install virtualenv docs"
 msgstr ""
 
-#: ../../changes.rst:182 7da1bfe86e66458eaf02119bac102bfa
+#: ../../changes.rst:181 69bfd7674a584894a57bbfcdb5cf3da9
 msgid ""
 ":issue:`649`  Documentation: instructions for updating hosts file for "
 "Ubuntu and RabbitMQ"
 msgstr ""
 
-#: ../../changes.rst:183 16bcedd8f21f4905bc08db2a47875201
+#: ../../changes.rst:182 6420b53f95e84f20a58dbe4df96f6329
 msgid ":issue:`648`  Documentation: clarified Toshiba options when not required"
 msgstr ""
 
-#: ../../changes.rst:184 349df3d75867451cb0a056e49ed9ef33
+#: ../../changes.rst:183 3409f1243e894a189b6ef642cdbd28a9
 msgid ":issue:`647`  Documentation: updated link to pixelmed"
 msgstr ""
 
-#: ../../changes.rst:185 2468f434349841dd94460baffd1ed86a
+#: ../../changes.rst:184 9aee5186576c4275aa3df0e85e167eeb
 msgid ""
 ":issue:`646`  Modified Celery import to avoid name clash in some "
 "circumstances"
 msgstr ""
 
-#: ../../changes.rst:186 fffb68b2d6b548dcbbf1434cdd9118a3
+#: ../../changes.rst:185 4f12f9f3be2741d99a617905511a1e6f
 msgid ""
 ":issue:`645`  Imports: prevent import failure when text is used in filter"
 " thickness field in DX image"
 msgstr ""
 
-#: ../../changes.rst:187 4c7db68a6da049c58e20207ee5526e27
+#: ../../changes.rst:186 e0618ee1fdb8438eae46fe244370bbde
 msgid ""
 ":issue:`644`  Exports: fixed error in exporting non-ASCII CT protocol "
 "acquisition names"
 msgstr ""
 
-#: ../../changes.rst:188 eb6e9d57d184493fbe2169d1c284e594
+#: ../../changes.rst:187 eca245854480430bb18179f7ab1a0ca4
 msgid ""
 ":issue:`643`  Installation: updated docs to make use of pip binaries for "
 "Postgres connector and numpy, Windows and Linux"
 msgstr ""
 
-#: ../../changes.rst:189 ab5c6c7e48da495795f0f223d91394c6
+#: ../../changes.rst:188 4af604a4d3e3415b8afc7767ae7af2e2
 msgid ""
 ":issue:`642`  Skin dose maps: added catch for error when there are no "
 "events in the study"
 msgstr ""
 
-#: ../../changes.rst:190 47f56c4ce5c3448ca9619304e3055a56
+#: ../../changes.rst:189 f3f3138ed5ab4c8b8d9b2f68b799c6de
 msgid ""
 ":issue:`641`  Exports: mammography exports from filtered pages sorted by "
 "AGD no longer result in duplicate studies"
 msgstr ""
 
-#: ../../changes.rst:191 83e8d68a668f44419c9c50eaba16eeb0
+#: ../../changes.rst:190 35c40f5ae21147979d0727570ee4b6c5
 msgid ""
 ":issue:`640`  Exports: error in filter listing for NHSBSP csv exports "
 "corrected"
 msgstr ""
 
-#: ../../changes.rst:192 3e2edc2750bc4f89b8159efa67d057bd
+#: ../../changes.rst:191 a351750d0e934364bf05ddeabd84990d
 msgid ""
 ":issue:`639`  Charts: fixed problem where a blank category name may not "
 "be displayed correctly"
 msgstr ""
 
-#: ../../changes.rst:193 4c9c76b38c7b4572bac195beb6d19cfc
+#: ../../changes.rst:192 eb4b4fe2b8294007bd056488e0648045
 msgid ""
 ":issue:`638`  Skin dose maps: added a link to download data for stand-"
 "alone openSkin even when map displayed"
 msgstr ""
 
-#: ../../changes.rst:194 1a0582b23f0746c088f57090c48f8857
+#: ../../changes.rst:193 446851d93a84418e8995267d35188ec6
 msgid ""
 ":issue:`627`  DICOM Networking: implemented workaround for query \"bug\" "
 "in Impax 6.6"
 msgstr ""
 
-#: ../../changes.rst:195 2677b6317e934bcdb3fb501d344d2874
+#: ../../changes.rst:194 0d8f11ab7a414c418c9621f82f731aec
 msgid ""
 ":issue:`606`  Interface: Made it possible for the user to change his/her "
 "password"
 msgstr ""
 
-#: ../../changes.rst:198 61c168e3e69048ef9c30bf85b28d3662
+#: ../../changes.rst:197 1de6575f8e4b40939b1c39a3a9bfc792
 msgid "0.8.0 (2018-06-11)"
 msgstr ""
 
-#: ../../changes.rst:199 6dc9c6809d734bbcbea1714781600700
+#: ../../changes.rst:198 ac5ea93b2bff4648825e9df74c0f0671
 msgid ""
 ":issue:`635`  Documentation: added Orthanc as preferred third party DICOM"
 " Store service"
 msgstr ""
 
-#: ../../changes.rst:200 e7ba942b7e7b444ab7472a9df7477ed2
+#: ../../changes.rst:199 fd2dedaaa5964967a4e24f85e83e6146
 msgid ""
 ":issue:`634`  Documentation: updated docs for import and query-retrieve "
 "duplicates processing"
 msgstr ""
 
-#: ../../changes.rst:201 44ab8f8dd5164b72b7e3f3bdf5dffda1
+#: ../../changes.rst:200 872681c689e54cb2909344ba2534d066
 msgid ""
 ":issue:`633`  Charts: fixed issue where charts failed if bar chart series"
 " name was null"
 msgstr ""
 
-#: ../../changes.rst:202 b6363dd8d02a430f90f697d4595be69a
+#: ../../changes.rst:201 70a7f2b7d0eb4cdd8245215654a359ca
 msgid ""
 ":issue:`632`  DICOM: move requests for queries that don't exist now fail "
 "gracefully"
 msgstr ""
 
-#: ../../changes.rst:203 824d1a05512b4a0fa0467c1ea6d4ad6c
+#: ../../changes.rst:202 399a4479452f4dd4986f520ba93a5594
 msgid ""
 ":issue:`631`  Skin dose maps: bug fixed that prevented message from "
 "displaying on screen when skin dose map cannot be calculated"
 msgstr ""
 
-#: ../../changes.rst:204 e1f3ac6ea44d4d8e8215c43fdb9028d2
+#: ../../changes.rst:203 f26d301983e94ec38a3a213caba62366
 msgid ":issue:`630`  Documentation: improved installation instructions"
 msgstr ""
 
-#: ../../changes.rst:205 222c4a87c96242f4be5c3cdd60aa6afe
+#: ../../changes.rst:204 484a027c463846c89b47c417532bea89
 msgid ""
 ":issue:`628`  Imports: fixed code for importing when there are duplicate "
 "DX or MG studies in the database"
 msgstr ""
 
-#: ../../changes.rst:206 dfa14bbad1d447e5953d0176e2d66fab
+#: ../../changes.rst:205 e7f4b0d335874ce6a85416537c2e4d61
 msgid ""
 ":issue:`626`  DICOM: isolated the generate modalities in study function "
 "and added testing"
 msgstr ""
 
-#: ../../changes.rst:207 927e237e77a146b6ab73ea938423b42f
+#: ../../changes.rst:206 dcd2fd97cd3c4c12b7fdca034196f507
 msgid ""
 ":issue:`625`  Imports: now using event level UIDs to process continued, "
 "cumulative and duplicate RDSRs"
 msgstr ""
 
-#: ../../changes.rst:208 ce9ce1d3cb6f40cb8d8009c1f828fb3b
+#: ../../changes.rst:207 c3abbe293d8d4dcb9c36510f5d6bac17
 msgid ""
 ":issue:`624`  Charts: removed filter link on number of events histogram "
 "as it was not functioning correctly"
 msgstr ""
 
-#: ../../changes.rst:209 2afb107fe6a344e7851d0168b8aa9642
+#: ../../changes.rst:208 40bd4928f582419ebaf53a6f9c6ed192
 msgid ""
 ":issue:`623`  Imports: changed name of Toshiba image based extractor "
 "routine"
 msgstr ""
 
-#: ../../changes.rst:210 32a22fdfd8df42f491d5f647f0f196d3
+#: ../../changes.rst:209 e9f849f09f09416787f232e44fab5d22
 msgid ""
 ":issue:`621`  Documentation: reversed install order of openrem and "
 "pynetdicom due to new pydicom release"
 msgstr ""
 
-#: ../../changes.rst:211 fca6db75375d4cb381edbdb2cd793bdb
+#: ../../changes.rst:210 a0e0c06f951e4b20865d70fe145fdc12
 msgid ""
 ":issue:`619`  Documentation: added workaround for outdated dictionary "
 "issues"
 msgstr ""
 
-#: ../../changes.rst:212 ba7f6cd8843644bb908e54cf1eae7015
+#: ../../changes.rst:211 24a2a67531164f5eaf01c1e72480d564
 msgid ""
 ":issue:`618`  DICOM: fixed image level query that prevented RDSRs from "
 "being found"
 msgstr ""
 
-#: ../../changes.rst:213 5a730870f8af4f1984f7284aedc8e327
+#: ../../changes.rst:212 6e99150eb1714d92a9e9d17615cf98fd
 msgid ""
 ":issue:`617`  Imports: fixed issue with multi study exams crashing the "
 "Toshiba extractor"
 msgstr ""
 
-#: ../../changes.rst:214 3caa3b6e1fd5411787904f28eeb75710
+#: ../../changes.rst:213 49ace52239f441089fd5143daf158eae
 msgid ":issue:`616`  Documentation: added information for pip download -d"
 msgstr ""
 
-#: ../../changes.rst:215 86f0c86059104ad88f36e9b193493013
+#: ../../changes.rst:214 f4ed654e0b2e40df8e7b18bce088842f
 msgid ""
 ":issue:`615`  Exports: added Target Exposure Index and Deviation Index to"
 " radiographic exports"
 msgstr ""
 
-#: ../../changes.rst:216 c336e9eb174a45b8aed140e11f42c9c9
+#: ../../changes.rst:215 9ca9f2a1c8874e6fb294f4431ad08ffb
 msgid ""
 ":issue:`614`  Exports: handle error when study is deleted during sheet "
 "creation for exports"
 msgstr ""
 
-#: ../../changes.rst:217 15d12783549543a38c93b3343182cc28
+#: ../../changes.rst:216 546135c0ccfa4cc191265a96616f6e3c
 msgid ""
 ":issue:`613`  Imports: fixed dual modality type imports after 'dual' "
 "designation from ref :issue:`580`"
 msgstr ""
 
-#: ../../changes.rst:218 5eb0e7b85fe94ae5be539bff57454d40
+#: ../../changes.rst:217 bc19ca79139d495297b558d97f317854
 msgid ""
 ":issue:`612`  Imports: prevented crash when RDSR was imported with "
 "AcquisitionProtocol sequence with no TextValue"
 msgstr ""
 
-#: ../../changes.rst:219 40d5215d258b4f0fa72c8b6b27320c4d
+#: ../../changes.rst:218 b73d206a9fdf4121bce08efa85d65690
 msgid ""
 ":issue:`610`  DICOM: query-retrieve changed to work for duplicate RDSRs, "
 "ref :issue:`114`"
 msgstr ""
 
-#: ../../changes.rst:220 a5111054b7f24fd49ea748faef8b8b8f
+#: ../../changes.rst:219 e4a4f04ab37f4e0ebac843565b6282f1
 msgid ""
 ":issue:`609`  Interface: fixed the feature that toggles the selection "
 "when clicking anywhere on a display name table row"
 msgstr ""
 
-#: ../../changes.rst:221 a136d433cae84982acbd24db654a8402
+#: ../../changes.rst:220 1712516179164babbe482ec7c0653b64
 msgid ":issue:`608`  Interface: fixed the broken sorting of display name table"
 msgstr ""
 
-#: ../../changes.rst:222 cd78c8ae447f4d1f838fbc93a445a3bd
+#: ../../changes.rst:221 572286fad9764e94831498052f9ad883
 msgid ""
 ":issue:`603`  Interface: fixed JavaScript error if there are any None "
 "values in fluoro detail irradiation type table"
 msgstr ""
 
-#: ../../changes.rst:223 8d506c094a534c01b5554cb61d912668
+#: ../../changes.rst:222 96f6aa7853d04b48b39c91fd920305c1
 msgid ""
 ":issue:`602`  Skin dose maps: fixed error when there are multiple kVp "
 "values for a single irradiation event"
 msgstr ""
 
-#: ../../changes.rst:224 dac64e9049524b1c9288f42deee40c6b
+#: ../../changes.rst:223 339c37e99c3d425a9b1dfa586223920e
 msgid ""
 ":issue:`599`  Installation: postgres instructions now include note about "
 "differing security choices"
 msgstr ""
 
-#: ../../changes.rst:225 dff36dc7297b418d85dae4a0fc08bcb0
+#: ../../changes.rst:224 ce4515338ad042cb999bfd08b7c9681e
 msgid ""
 ":issue:`597`  Skin dose maps: documented that using a production "
 "webserver the default timeout value must be increased"
 msgstr ""
 
-#: ../../changes.rst:226 ab04e631a62d498580b9eb7df3081d28
+#: ../../changes.rst:225 835824bcf06d443b92f338a5f3a5e933
 msgid ""
 ":issue:`596`  Documentation: added docs for using Gunicorn and NGINX on "
 "linux"
 msgstr ""
 
-#: ../../changes.rst:227 4bcb671c37e04d63ba2e902ab0ee0f07
+#: ../../changes.rst:226 15de0fcf57f445dea53434d06dc8cb46
 msgid ""
 ":issue:`594`  Display: corrected display of dual-plane DAP and RP dose in"
 " RF filtered view"
 msgstr ""
 
-#: ../../changes.rst:228 e26d0bca550c408cb261b79040fc40a9
+#: ../../changes.rst:227 11da962c5939496dbf5778553691467f
 msgid ""
 ":issue:`593`  Imports: properly handles MultiValue filter material tags "
 "and permits aluminium spelling"
 msgstr ""
 
-#: ../../changes.rst:229 3cb0fb9e4f8b4723852f4ba256a1a668
+#: ../../changes.rst:228 3202e9869c5a489281aa954453e772c9
 msgid ":issue:`592`  Documentation: added docs for using IIS on Windows"
 msgstr ""
 
-#: ../../changes.rst:230 416fbf07bbd74b0591f0f37d8a6b99a7
+#: ../../changes.rst:229 1953b8ae41474917a331fc98b7553a6c
 msgid ""
 ":issue:`589`  Exports: now handles zero studies and studies deleted "
 "during exports sensibly"
 msgstr ""
 
-#: ../../changes.rst:231 536e26d8ec4d48cfbbf089f0d17c167b
+#: ../../changes.rst:230 d3abb443ba4b494889fde9d8de16cfd1
 msgid ""
 ":issue:`587`  Documentation: added instructions for Linux users to rotate"
 " logs"
 msgstr ""
 
-#: ../../changes.rst:232 c0a66c4737fa4c02ad92cefd7be8e1bb
+#: ../../changes.rst:231 caad0329e36945c58e20d47fda16542e
 msgid ""
 ":issue:`586`  Documentation: updated exports and detailed how pulse level"
 " data is exported"
 msgstr ""
 
-#: ../../changes.rst:233 525d16dcefe24067b8949751be0a5353
+#: ../../changes.rst:232 8c1aa56cf201475bbce08d871703940a
 msgid ""
 ":issue:`585`  Documentation: added information about multiple cumulative "
 "RDSRs"
 msgstr ""
 
-#: ../../changes.rst:234 cf09fac352044e45bc8b73daff7182a3
+#: ../../changes.rst:233 da40fab361194bf492489fe67796936c
 msgid ""
 ":issue:`584`  Import, Interface, Export: RDSR with pulse level data now "
 "function"
 msgstr ""
 
-#: ../../changes.rst:235 43cd5f60a7194cc19f33ea90fdd3a7cf
+#: ../../changes.rst:234 8dac476ecb4a4dfe9ff3cf71f4833d7d
 msgid ""
 ":issue:`583`  Documentation: added information about dual mode modalities"
 " and deleting all from an X-ray unit"
 msgstr ""
 
-#: ../../changes.rst:236 19e01c9d84f44b16ba6aa48a620b6ab5
+#: ../../changes.rst:235 3bf1f266470e4c52b3e3f4756a51c96b
 msgid ":issue:`582`  Celery: updated results backend as amqp deprecated and slow"
 msgstr ""
 
-#: ../../changes.rst:237 7c97690deef94f24bc872ec829ea1d76
+#: ../../changes.rst:236 5edf70b3dcaa4cab9e2f0fbf7ca5861a
 msgid ""
 ":issue:`581`  Import scripts: interpreter line now always first, "
 "functions imported specifically"
 msgstr ""
 
-#: ../../changes.rst:238 1881f674ac704a328bb173a193713150
+#: ../../changes.rst:237 d77c01f2dc7142be88a8e5e3fd7c790f
 msgid ""
 ":issue:`580`  Imports and Interface: one modality creating both DX and RF"
 " can now be handled appropriately"
 msgstr ""
 
-#: ../../changes.rst:239 9901f82be3494d6baf1d252c448199f0
+#: ../../changes.rst:238 4b83dec780c84923b5f8069498ddd592
 msgid ""
 ":issue:`579`  Imports: dummy values for Toshiba CT import function now in"
 " settings.py, log file config in docs"
 msgstr ""
 
-#: ../../changes.rst:240 f9d7f5a8733a46aebdc150395630d577
+#: ../../changes.rst:239 d03a68d765c44494aa0cf68cce844902
 msgid ""
 ":issue:`578`  Exports: fixed NHSBSP export that was excluding RDSR "
 "imported Hologic studies"
 msgstr ""
 
-#: ../../changes.rst:241 5c6cee06334741a0bbe41398f41951b3
+#: ../../changes.rst:240 72aa9d5bdd844b6fa2995724712431dd
 msgid ""
 ":issue:`575`  Exports: export page now updates using AJAX and has a "
 "select all button"
 msgstr ""
 
-#: ../../changes.rst:242 9fb6c73a7acc4921b19f9379aa0b3fcd
+#: ../../changes.rst:241 ffab9b5a82924e32aefd2f79795265a1
 msgid ""
 ":issue:`573`  Exports: corrected and clarified exposure time and duration"
 " units, added number of pulses"
 msgstr ""
 
-#: ../../changes.rst:243 b31d2e0f1ef44d809b38d8472c98f7a5
+#: ../../changes.rst:242 1945401229a443c98940b9e998a05909
 msgid ""
 ":issue:`572`  Interface: homepage now populates as AJAX to increase "
 "responsiveness"
 msgstr ""
 
-#: ../../changes.rst:244 4b47bad6818a4257b4da6a40d3cfa2cb
+#: ../../changes.rst:243 3eaeeeca4bb14192a42b1807e41fd98e
 msgid ":issue:`570`  Charts: simplified chart function code"
 msgstr ""
 
-#: ../../changes.rst:245 8dfe82b8f2fb4fd48f33aa556fdc7294
+#: ../../changes.rst:244 c0002f9722484458839f7355d712e4c0
 msgid ":issue:`569`  Charts: fixed frequency issue with mean averages selected"
 msgstr ""
 
-#: ../../changes.rst:246 ecefb7ee65d8481c89e526910fb330fb
+#: ../../changes.rst:245 a02894d77283474888ac99e721b4adeb
 msgid ":issue:`568`  Imports: missing DICOM date-time no longer causes an error"
 msgstr ""
 
-#: ../../changes.rst:247 1d80b5c2589f46a786bac3657a5e4478
+#: ../../changes.rst:246 fba72324a39d4c9d9776d68f2c2f6573
 msgid ":issue:`567`  Celery: fixed dual-namespace imports of tasks"
 msgstr ""
 
-#: ../../changes.rst:248 7a09813d98434ea3a6eef4356fd0f196
+#: ../../changes.rst:247 ec540500d7c347d8a48ee49cbe363912
 msgid ""
 ":issue:`566`  Interface: correctly show \"assumed patient mass\" in case "
 "of set value of zero"
 msgstr ""
 
-#: ../../changes.rst:249 daa99f162be844d8a21bb4f86c29e78a
+#: ../../changes.rst:248 f8573be0e31f4b619c91deae7b1ed0a8
 msgid ""
 ":issue:`565`  Interface: correctly handle dose area product with zero "
 "value"
 msgstr ""
 
-#: ../../changes.rst:250 c8d3d6fe57604181b1a1565beb44635a
+#: ../../changes.rst:249 d5c97d4e4171463ca297747093a3145a
 msgid ""
 ":issue:`564`  Skin dose maps: text information on skin dose maps now "
 "embedded when saving the 2d or 3d map as a graphic"
 msgstr ""
 
-#: ../../changes.rst:251 c551c4b2aacb49b1bd00705972748474
+#: ../../changes.rst:250 db72af5093f44edc9dd7d8cf70642056
 msgid ""
 ":issue:`562`  Skin dose maps: error message on calculation failure now "
 "more explicit"
 msgstr ""
 
-#: ../../changes.rst:252 3b3c097c6454427d9496bbea8319e18f
+#: ../../changes.rst:251 85902a97172943bcbad430fd22c5789c
 msgid ""
 ":issue:`561`  Imports: patient orientation modifier now correctly "
 "extracted from RDSR"
 msgstr ""
 
-#: ../../changes.rst:253 d763de2bcaed4361907214c44c950b56
+#: ../../changes.rst:252 814a46becd514855859ae81d20081530
 msgid ":issue:`560`  Exports: added study level comments"
 msgstr ""
 
-#: ../../changes.rst:254 62694f7840314406977d3a8c1f6aaff0
+#: ../../changes.rst:253 2e3d85ce20114689a404c1059f9c75d5
 msgid ":issue:`559`  Interface: date pickers inconsistent start day fixed"
 msgstr ""
 
-#: ../../changes.rst:255 b15ee96ae3b849f3ba330d3e2a7c4924
+#: ../../changes.rst:254 8b2b2eb609234f39a335053d478f780f
 msgid ""
 ":issue:`558`  Skin dose maps: set defaults instead of crashing if kV, "
 "dose, table or tube/detector position are missing"
 msgstr ""
 
-#: ../../changes.rst:256 fd4393a239884c4abe6793cfe585abee
+#: ../../changes.rst:255 e3c65ec53c0e4b5fbe15258afb74e19c
 msgid ""
 ":issue:`557`  Skin dose maps: improved construction of patient "
 "orientation code"
 msgstr ""
 
-#: ../../changes.rst:257 6a5e3fe91a884c3ba315f295575021da
+#: ../../changes.rst:256 d12afce6aef641c39e788f6d874a09d7
 msgid ""
 ":issue:`556`  Exports: DX exports where TotalNumberOfRadiographicFrames "
 "is not populated now export"
 msgstr ""
 
-#: ../../changes.rst:258 26babac31ae9486296af5ceca6134620
+#: ../../changes.rst:257 24926c469c3243b38f0d0c90f52f203e
 msgid ""
 ":issue:`552`  Documentation: documented extractor for older Toshiba CT "
 "scanners"
 msgstr ""
 
-#: ../../changes.rst:259 8cf03f12a3104aa6af78090215a86338
+#: ../../changes.rst:258 549b534936b84ceea456b7a8badfe37d
 msgid ""
 ":issue:`551`  Documentation: added procedure for opening csv files in "
 "Excel with non-ASCII characters"
 msgstr ""
 
-#: ../../changes.rst:260 bf7f84edcf18404898bda0f07e7e0045
+#: ../../changes.rst:259 67448c22c48e486582f57cba14198c77
 msgid ""
 ":issue:`550`  Documentation: added a note to describe exposure time and "
 "duration for fluoroscopy studies"
 msgstr ""
 
-#: ../../changes.rst:261 b59ec5c6f98d425786540496e3956bcb
+#: ../../changes.rst:260 983c39bd432640ecab234e28eab5a1af
 msgid ""
 ":issue:`549`  Documentation: added procedure for fixing laterality on "
 "Hologic studies, ref :issue:`411`"
 msgstr ""
 
-#: ../../changes.rst:262 40fca6cb457a4ec68b4e01aa48f7665b
+#: ../../changes.rst:261 b17f4f920140493496d3b70320181437
 msgid ""
 ":issue:`547`  Interface: improved handling of available time information "
 "for fluoro studies"
 msgstr ""
 
-#: ../../changes.rst:263 2c9f3e3b933d4a3297422786f18bf8df
+#: ../../changes.rst:262 726720127b1a41fbb79ad20534710a24
 msgid ""
 ":issue:`546`  Query Retrieve: added flag and functionality to query for "
 "Toshiba images"
 msgstr ""
 
-#: ../../changes.rst:264 b1337ab4e28b47b4a5919baa8d13dfc5
+#: ../../changes.rst:263 4affa3a5df6146cb855a2effd2564480
 msgid ""
 ":issue:`544`  Interface: added procedure, requested procedure to summary "
 "listings and details and filtering"
 msgstr ""
 
-#: ../../changes.rst:265 0b2cf81a24884f0a970b8535bc551e74
+#: ../../changes.rst:264 2e163bb0285f423d93eab5ef0c06bed7
 msgid ""
 ":issue:`543`  Interface: added drop-down box to choose how many studies "
 "are displayed on filtered pages"
 msgstr ""
 
-#: ../../changes.rst:266 4d8f9285f95340bc83ddbdc3aa127d6c
+#: ../../changes.rst:265 cd92c2fd50294cd0af41ee32c9ba040d
 msgid ":issue:`542`  Interface: added display name to all detailed html pages"
 msgstr ""
 
-#: ../../changes.rst:267 308f1a1201584aa1af8df337a888a767
+#: ../../changes.rst:266 eb1980a8ff5c47b3a8971f1e67e7865b
 msgid ":issue:`541`  Documentation: updated for celery on Windows"
 msgstr ""
 
-#: ../../changes.rst:268 c651c557beb340f08beb0bb622d98c84
+#: ../../changes.rst:267 b70a3ca580494cf6a955b8c16bb059ff
 msgid ":issue:`540`  Documentation: updated for current skinDose functionality"
 msgstr ""
 
-#: ../../changes.rst:269 8a607a12a5b5432eabb5d4985080ccc8
+#: ../../changes.rst:268 9435ebff59bb403ba4992f2aa8256d4b
 msgid ""
 ":issue:`539`  Documentation: updated chart document to include series "
 "toggle buttons"
 msgstr ""
 
-#: ../../changes.rst:270 921f62485ccb4d9da245dd7961e36226
+#: ../../changes.rst:269 dd73e1a016d34edab2cc189fec7db9a4
 msgid ":issue:`537`  Charts: hide series function added"
 msgstr ""
 
-#: ../../changes.rst:271 edc78114ba9344c9a94ee3e470ebf5fc
+#: ../../changes.rst:270 1dbc8761abf646fb98b42279a05fff4b
 msgid ""
 ":issue:`536`  Code quality: reduced javascript duplication and collected "
 "file groups into subfolders"
 msgstr ""
 
-#: ../../changes.rst:272 b854a034000f42968f46edc3990953ce
+#: ../../changes.rst:271 a5aedfdc3c094ec78b3bfc04073fc140
 msgid ""
 ":issue:`535`  Interface: fixed problem where category names that included"
 " a plus symbol caused filtering and chart issues"
 msgstr ""
 
-#: ../../changes.rst:273 ae6e5d3471b44675b3b6b323991a8d6a
+#: ../../changes.rst:272 a303d983df3e462392ed1fdd56538ba0
 msgid ""
 ":issue:`534`  Interface: chart drilldown reported as not working - was "
 "actually due to a user's database migrations"
 msgstr ""
 
-#: ../../changes.rst:274 df6f9199c9a4413fb2748b7797af98fb
+#: ../../changes.rst:273 e87a3cef5c7b4f85b2f1693816cce90f
 msgid ""
 ":issue:`533`  Query Retrieve: Reduced number of simultaneous associations"
 " to one, reused for everything"
 msgstr ""
 
-#: ../../changes.rst:275 152dfa3786dc4a9ba29338dfceb9a39d
+#: ../../changes.rst:274 b626dd8b7a994dbea2db880faa3cc234
 msgid ""
 ":issue:`532`  DICOM: documented how to work-around missing encoding "
 "charsets due to old pydicom"
 msgstr ""
 
-#: ../../changes.rst:276 838cbb717053408e943856f1f76395d9
+#: ../../changes.rst:275 3ff1d28430674c6dbfc45fc9e5928db7
 msgid ""
 ":issue:`529`  Charts: added CT charts of number of irradiation events per"
 " study description and requested procedure"
 msgstr ""
 
-#: ../../changes.rst:277 ad5acd94b53c44e3b302726cf4ee7e41
+#: ../../changes.rst:276 08254da63da84609994b2b805c93d21b
 msgid ""
 ":issue:`528`  Query Retrieve: reduced number of simultaneous associations"
 " to one, reused for everything"
 msgstr ""
 
-#: ../../changes.rst:278 e2e9b2bbe8bd407aa6bfdd30767212fb
+#: ../../changes.rst:277 00653833e6b74e839513e6b97fadadf9
 msgid ""
 ":issue:`526`  Code quality: addressed some of the code quality/style "
 "issues raised by `Codacy`"
 msgstr ""
 
-#: ../../changes.rst:279 337f6da067a14abe90a0975266e8c5aa
+#: ../../changes.rst:278 b41e8b215b794715a9778eec21aa04d3
 msgid ""
 ":issue:`525`  Importing: improved mammo import by checking compression "
 "force before converting to float"
 msgstr ""
 
-#: ../../changes.rst:280 13bad23c88ac4172a2276074c5179b04
+#: ../../changes.rst:279 92ccf036a67942d3b28d97261574b64a
 msgid ""
 ":issue:`524`  Importing: improved mammo import by checking anode exists "
 "before converting to DICOM terms"
 msgstr ""
 
-#: ../../changes.rst:281 a02ac7131a0240448cb272fec51f7c4e
+#: ../../changes.rst:280 3bd34afff2c04414b87e22301c507fc1
 msgid ""
 ":issue:`523`  Importing: changed mammo import to use del_no_match instead"
 " of del_mg_im if not mammo"
 msgstr ""
 
-#: ../../changes.rst:282 92396ddb89874bc686299ce254a619a7
+#: ../../changes.rst:281 6d3ec0165fd14036b97a09d7bf0be378
 msgid ""
 ":issue:`522`  Documentation: made it clearer on offline-install docs that"
 " version numbers will change"
 msgstr ""
 
-#: ../../changes.rst:283 35bc7a2c9cbf4c40b402ac85d4e655f2
+#: ../../changes.rst:282 907c117f93b44cb986c2a4c3ee48183c
 msgid ":issue:`521`  Testing: added tests for dual source CT imports"
 msgstr ""
 
-#: ../../changes.rst:284 48143ae89899481bac0be0eb2dccb5b0
+#: ../../changes.rst:283 805b81e758b94fa3b1b854452f43305d
 msgid ""
 ":issue:`520`  Imports: removed XML styling from Philips legacy CT comment"
 " creation"
 msgstr ""
 
-#: ../../changes.rst:285 aaebd4206d504804a517d84e29900519
+#: ../../changes.rst:284 f1d9097ca26e414e9f350872d82d7d6b
 msgid ":issue:`519`  Skin dose maps: fixed black on black text issue"
 msgstr ""
 
-#: ../../changes.rst:286 fa5fc1bff6ce4cbcbbe27ce5da643744
+#: ../../changes.rst:285 8f1e091a94c74c1fb63f2d965cb5366d
 msgid ""
 ":issue:`518`  Importing: fixed imports where CT Target Region isn't "
 "specified"
 msgstr ""
 
-#: ../../changes.rst:287 b85961413ce44cb09a5bad4b7c4fde0d
+#: ../../changes.rst:286 1776e8916e7e4ec197846200f74099c7
 msgid ""
 ":issue:`517`  Interface: operator name is now displayed on the detail "
 "page for each modality, along with physician for CT and fluoro"
 msgstr ""
 
-#: ../../changes.rst:288 9c1228f4271f4457a9c3edacc6d8336f
+#: ../../changes.rst:287 8267b2fc30f94ebc92c08fef118f3b4a
 msgid ""
 ":issue:`516`  Imports: MultiValue person names are now stored as a "
 "decoded string, not a list"
 msgstr ""
 
-#: ../../changes.rst:289 47f08b0d37f048a3a5543a9ea0e3999b
+#: ../../changes.rst:288 9021211622dc41ff8b32b281071c5f30
 msgid ""
 ":issue:`511`  Testing: develop and other branches can now be deployed to "
 "dev.openrem.org and testing.openrem.org automatically"
 msgstr ""
 
-#: ../../changes.rst:290 732ff15459d44721a37ad57eebf9c120
+#: ../../changes.rst:289 06a04ca99ded474f975ece7c7b41ba48
 msgid ""
 ":issue:`510`  Imports: 'not-patient-indicators' can now be configured in "
 "the interface"
 msgstr ""
 
-#: ../../changes.rst:291 cc30944070a64de9a20e9eff739fa876
+#: ../../changes.rst:290 062c3fc7cb7c4e20a5f850d83077c819
 msgid ""
 ":issue:`509`  Skin dose maps: now recalculated on view if recorded height"
 " or weight has changed since last calculation"
 msgstr ""
 
-#: ../../changes.rst:292 25c5a8a685fc4090881246d2b99eddde
+#: ../../changes.rst:291 73e1f9cd775648348c8e62015da8836c
 msgid ":issue:`508`  Testing: DX sample files are now tested"
 msgstr ""
 
-#: ../../changes.rst:293 04fe7b0aae1a4cff9ccb82ae96ac2f9f
+#: ../../changes.rst:292 5b0575fc65d94ab8980e98e8fd51b40b
 msgid ""
 ":issue:`507`  Interface: Mammo now filterable by study description, "
 "procedure, requested procedure and acquisition protocol"
 msgstr ""
 
-#: ../../changes.rst:294 74a76467cb8b43019941894d70e3d105
+#: ../../changes.rst:293 21f9815e278b4c80bd32b9c8843b3269
 msgid ":issue:`506`  Documentation: updated query-retrieve docs"
 msgstr ""
 
-#: ../../changes.rst:295 292d491479e54879bff99416000b6371
+#: ../../changes.rst:294 3733790cbf2e485f945fff834183e45e
 msgid ":issue:`505`  Charts: n is now displayed on charts"
 msgstr ""
 
-#: ../../changes.rst:296 7a5a71549a6545b38c7449fa14a84154
+#: ../../changes.rst:295 544c81f51d3b45ecb8cac9ad4bbaa0e3
 msgid ":issue:`504`  Charts: Fixed issue with null values"
 msgstr ""
 
-#: ../../changes.rst:297 f2e6066f0cfa4a3fa4f6c96e3ebba291
+#: ../../changes.rst:296 d4d9df7aee1f486aa5b0f713fc842c7e
 msgid ""
 ":issue:`503`  Internationalisation: more robust decoding and use of "
 "unicode throughout"
 msgstr ""
 
-#: ../../changes.rst:298 93c3900bf04546518473476aee6a59dd
+#: ../../changes.rst:297 afd6d380a46f4d548857c577f9a6859c
 msgid ""
 ":issue:`502`  Testing: tests now work with SQLite3 and PostgreSQL "
 "databases"
 msgstr ""
 
-#: ../../changes.rst:299 d3fa13a7a432464ab979ffc0acdff66e
+#: ../../changes.rst:298 8faf86de97e6418aa4ba5f0990a800a5
 msgid ""
 ":issue:`501`  Imports: Changed field type for CodeValue  from 16 chars to"
 " text, allows for illegal long values"
 msgstr ""
 
-#: ../../changes.rst:300 ffabc04eb88e4730a1f5d8525a89683f
+#: ../../changes.rst:299 c8654f19ebae41a296591abe297de56c
 msgid ""
 ":issue:`500`  Imports: Philips SC Dose Info with missing time stamps now "
 "import"
 msgstr ""
 
-#: ../../changes.rst:301 caaf6bd5a44748f0bd311078fb7d824c
+#: ../../changes.rst:300 ca3025b6e97344088728168a0e8d49fc
 msgid ""
 ":issue:`499`  Imports: Now aborts gracefully with error log if no "
 "template in RDSR"
 msgstr ""
 
-#: ../../changes.rst:302 f69695df453444bba0f4eee602f622cf
+#: ../../changes.rst:301 222ffe15f4e54f1993183667727d8557
 msgid ":issue:`498`  Exports: Missing units added to header fields"
 msgstr ""
 
-#: ../../changes.rst:303 021ced6493aa491c8aaf390775129791
+#: ../../changes.rst:302 5eae9038f4dd451fb904afe543f8f7df
 msgid ""
 ":issue:`497`  Interface: Detailed fluoro study view: added irradiation "
 "type, pulse rate, dose to ref. point, secondary angle, total DAP and ref."
 " point dose from each irradition type"
 msgstr ""
 
-#: ../../changes.rst:304 1a96cc2f921c40bd9216ac130834a64d
+#: ../../changes.rst:303 964c1036a7a846f18c83146b5a9dd5e2
 msgid ""
 ":issue:`495`  Charts: Reduced time taken to render scatter plots with "
 "multiple series"
 msgstr ""
 
-#: ../../changes.rst:305 8a48d74b0d0d4d44a060650d8059666c
+#: ../../changes.rst:304 a031c5432389404f8f47c678532eade6
 msgid ""
 ":issue:`494`  Charts: Charts now ignore blank and zero-value data when "
 "calculating mean, median and number of events"
 msgstr ""
 
-#: ../../changes.rst:306 0a616fbd7e3b470bbbcbca83304c114a
+#: ../../changes.rst:305 85734eda310e41a58abb4775256de645
 msgid ""
 ":issue:`493`  Charts: Added user option to made chart categories all "
 "lower case"
 msgstr ""
 
-#: ../../changes.rst:307 eaf011ccaf7a4997a3c296f4ac7f5b2f
+#: ../../changes.rst:306 b782af92bc4641f79bc5e90b4b205f3e
 msgid ""
 ":issue:`492`  Exports: Each view is now unique for NHSBSP mammo exports "
 "as required by the NCCPM database"
 msgstr ""
 
-#: ../../changes.rst:308 c733ab20916547e6895b83d79039c38e
+#: ../../changes.rst:307 ab38438896ec44058f7c63ac836a69ca
 msgid ""
 ":issue:`491`  Imports, Interface and Exports: CT Dose Check alerts and "
 "notifications are now extracted, displayed and exported"
 msgstr ""
 
-#: ../../changes.rst:309 9c39ae74970f4a57b9b32fb397fbd21b
+#: ../../changes.rst:308 1edd3c9f339549439bfbcad9497f13c0
 msgid ""
 ":issue:`490`  Exports: Response object included for messages - removed as"
 " now asynchronous"
 msgstr ""
 
-#: ../../changes.rst:310 bf2f16c188ef416fbd5ee6a318ab6573
+#: ../../changes.rst:309 629f84a271cf47daa8f752b5ffede06a
 msgid ""
 ":issue:`489`  Exports: NHSBSP mammo exports deals with all views, "
 "excludes biopsies and specimens"
 msgstr ""
 
-#: ../../changes.rst:311 91efa7cf75ec42ddab09d40c15d1aab3
+#: ../../changes.rst:310 b5bc17a7378446999bc6f8a1ab2afd47
 msgid ":issue:`488`  Exports: All exports now include study time"
 msgstr ""
 
-#: ../../changes.rst:312 e35c100faa224a7bae0c2349ff8b7ba7
+#: ../../changes.rst:311 ef58c1b4589d4c0c852d3fc5d6b4abcd
 msgid ":issue:`487`  Imports: CT RDSR now imports 'procedure context' correctly"
 msgstr ""
 
-#: ../../changes.rst:313 e3aea0d3a22348f4934e08a8da473bd2
+#: ../../changes.rst:312 0038d6ffb55e4a03b9b8018e58be1190
 msgid ""
 ":issue:`486`  Imports: CT RDSR now imports 'NameOfPhysiciansReadingStudy'"
 " correctly"
 msgstr ""
 
-#: ../../changes.rst:314 53584b6a1c8f450bb488cc64bc9bc56b
+#: ../../changes.rst:313 db12383ee1274e37b91bf953210c1b32
 msgid ":issue:`485`  Imports: CT RDSR now imports 'target region' correctly"
 msgstr ""
 
-#: ../../changes.rst:315 dc4cd46a81234da8a8c236927927ee63
+#: ../../changes.rst:314 ad48e3387d10456bba0ebeef85aaf5f0
 msgid ""
 ":issue:`484`  Exports and Interface: Exports and interface page views are"
 " now more efficient and (much) faster"
 msgstr ""
 
-#: ../../changes.rst:316 8488e086362c4b2b86225c215e8dc0fe
+#: ../../changes.rst:315 1759e7c246764684bb1be8389942f426
 msgid ""
 ":issue:`482`  Imports: DX extractor now extracts acquisition protocol, "
 "requested procedure name and study name for Fuji Go mobile; extracts "
@@ -1670,520 +1666,520 @@ msgid ""
 "procedure name from Carestream DRX-Revolution mobiles"
 msgstr ""
 
-#: ../../changes.rst:317 76a3803de6424cedaa856402027b1e89
+#: ../../changes.rst:316 86530791e33d4062b494c004f94eb9cb
 msgid ""
 ":issue:`480`  Imports: Code and instructions to create and import an RDSR"
 " from Toshiba CT dose summary images and studies"
 msgstr ""
 
-#: ../../changes.rst:318 f6c1c7b429824e3cae4ef862985d0813
+#: ../../changes.rst:317 8c8153e77a6d4d54be8bc6996f115643
 msgid ""
 ":issue:`476`  Imports: Mixed latin-1 and UTF8 characters now imported, "
 "but need to be handled better if possible"
 msgstr ""
 
-#: ../../changes.rst:319 52aed7e7e76342149b025e7ffd81be73
+#: ../../changes.rst:318 4b615eca9904483f9668f9c07c1e7c46
 msgid ""
 ":issue:`475`  Query Retrieve: Made -sr a stand-alone option - it has a "
 "very niche use-case!"
 msgstr ""
 
-#: ../../changes.rst:320 30990f936fc543559f726437a1737f1d
+#: ../../changes.rst:319 194945c08aad4d0c972fdf3671b4a650
 msgid ""
 ":issue:`474`  Logging: Changing to DEBUG logging level in "
 "``local_settings.py`` will now be respected"
 msgstr ""
 
-#: ../../changes.rst:321 301bcfbe07a04c52bae335f42cfc9d22
+#: ../../changes.rst:320 4591a9a9b6b84c4a9d0df56c423e0733
 msgid ":issue:`473`  Query Retrieve: Added tests"
 msgstr ""
 
-#: ../../changes.rst:322 2d21a0c489a641ec85e50a1335f7ee82
+#: ../../changes.rst:321 a18a076dee184572903eb230ca98cc86
 msgid ":issue:`472`  Query Retrieve: Overhauled the query retrieve routines"
 msgstr ""
 
-#: ../../changes.rst:323 24d7e996a8f9448ba4788bc7cca04fad
+#: ../../changes.rst:322 32612cd808b84cc2b406cf1b10a54078
 msgid ""
 ":issue:`471`  Internationalisation: added configuration and docs to set "
 "the timezone"
 msgstr ""
 
-#: ../../changes.rst:324 ae273ebce4b646518aacbb50caac1ada
+#: ../../changes.rst:323 4445d87e50bc49cbbb54f2c02d7b511b
 msgid ":issue:`470`  Query Retrieve: Optimised CT filtering"
 msgstr ""
 
-#: ../../changes.rst:325 0a2557ff8dd54f5fbe8c8ffc9a781243
+#: ../../changes.rst:324 2eeb64c275d04e39a5a874ae071e7324
 msgid ""
 ":issue:`468`  Query Retrieve: Station names can now be used for filtering"
 " if returned"
 msgstr ""
 
-#: ../../changes.rst:326 e352297d6f91434eadac405a2ceccdc9
+#: ../../changes.rst:325 2538662a9d944650b199d9edc9d6805e
 msgid ":issue:`467`  Testing: Added tests for mammography RDSR imports"
 msgstr ""
 
-#: ../../changes.rst:327 9df8e74bc39d4a45b2a1125fd0954251
+#: ../../changes.rst:326 2168ef4c9cd8494aaaa007ced718832c
 msgid ""
 ":issue:`466`  Query Retrieve: RDSR now retrieved in preference to images "
 "for MG and DX/CR"
 msgstr ""
 
-#: ../../changes.rst:328 0f2fb77967074817bc24a2cb40fc9e49
+#: ../../changes.rst:327 15064915d90d4f70bc9029536dd74fa3
 msgid ""
 ":issue:`465`  Added newer SSDE and water equivalent diameter fields to "
 "database"
 msgstr ""
 
-#: ../../changes.rst:329 6ee8df71aaa74f548a32cfcb9be6947f
+#: ../../changes.rst:328 f3c27dfddecc4ed9b07c5eab503e1984
 msgid ":issue:`464`  Imports: DX RDSR now imported properly"
 msgstr ""
 
-#: ../../changes.rst:330 189ff0e673f84849a94cce082d16356f
+#: ../../changes.rst:329 3eb3aada94b343518898d92a0dd67e57
 msgid ""
 ":issue:`463`  Imports: Properly checks that Enhanced SR are GE dose "
 "reports before importing"
 msgstr ""
 
-#: ../../changes.rst:331 55eddc6b5c5d480085914bf58cea2a1a
+#: ../../changes.rst:330 975a4285c4b04ee6bf30f55546351fa6
 msgid ":issue:`460`  Interface: Display names table now sortable"
 msgstr ""
 
-#: ../../changes.rst:332 93f33efb4900493c840c1b3b8bbb0e9a
+#: ../../changes.rst:331 63b8b8a02dab4a4b86c7400b468bdbe8
 msgid ""
 ":issue:`458`  Exports: Filter thicknesses are rounded to max 4 "
 "significant figures on export"
 msgstr ""
 
-#: ../../changes.rst:333 4f4d1c5afa4640d6bf0f44e532d59fff
+#: ../../changes.rst:332 db80a877264b47bd830356fded7962ce
 msgid ":issue:`454`  Exports: Mean filter thickness now reported in exports"
 msgstr ""
 
-#: ../../changes.rst:334 b4750879c0d74d1d8a7f6d7c9d041826
+#: ../../changes.rst:333 b555c225a7c0474aa69ea0a82bb69a30
 msgid ""
 ":issue:`453`  Imports: DX with min filter thickness greater than max have"
 " values switched on import"
 msgstr ""
 
-#: ../../changes.rst:335 5f126c2db53b4471a41546fa9e19ced2
+#: ../../changes.rst:334 aaad0bf2b8394d27a4105a98891f1dd9
 msgid ":issue:`452`  Exports: Added CTDIw phantom size to CT exports"
 msgstr ""
 
-#: ../../changes.rst:336 a928e2d9abbf4b62aa1976d91b571586
+#: ../../changes.rst:335 257112ea5141470298e582a3284db28b
 msgid ""
 ":issue:`451`  Skin dose maps: fixed issue with filters being referenced "
 "before being defined"
 msgstr ""
 
-#: ../../changes.rst:337 f3c1730f9c1d407283eeb7d9a2ba4755
+#: ../../changes.rst:336 43c88ee7f69c4b78b2a09f4e63726955
 msgid ""
 ":issue:`450`  Imports: DX imports with filter thickness of 0.00 are now "
 "recorded as such"
 msgstr ""
 
-#: ../../changes.rst:338 5c3880606eae4a508059dec33eb9b57a
+#: ../../changes.rst:337 440fddfc5bf74f1c932cb8eaa39b635d
 msgid ""
 ":issue:`449`  Exports: Fixed a bug that prevented fluoro exports if "
 "protocol names had non-ASCII characters"
 msgstr ""
 
-#: ../../changes.rst:339 42de7473a2074fd8980e3d6a4a1fe2c1
+#: ../../changes.rst:338 7b2585b29bc040998ed012709af0e658
 msgid ""
 ":issue:`448`  Documentation: Added a diagram showing the relationship "
 "between the OpenREM system components"
 msgstr ""
 
-#: ../../changes.rst:340 67dfe0d3c49f4e0c96fe95d6819d819f
+#: ../../changes.rst:339 c30f1c0653e44122a2c59d507c4f60c4
 msgid ""
 ":issue:`447`  Imports: Modified rdsr and ctdetail template to import and "
 "display data from Pixelmed generated Toshiba RDSR"
 msgstr ""
 
-#: ../../changes.rst:341 3bc586bf245547b2b91ab6954ae44599
+#: ../../changes.rst:340 40d3a20cb2504cf28dfb0af2150b0f39
 msgid ""
 ":issue:`446`  Import: Extract additional Philips private information for "
 "Allura Xper systems, create workaround for missing end angles for "
 "rotational acquisitions"
 msgstr ""
 
-#: ../../changes.rst:342 394b4ee6926c48cda0e6372441d01a09
+#: ../../changes.rst:341 9137a4fc031c4010834725322108c122
 msgid ""
 ":issue:`445`  Interface: Added function for user to determine between DX "
 "and fluoro for ambiguous modalities"
 msgstr ""
 
-#: ../../changes.rst:343 82941b6d58ce4cacbad4aa87935d6063
+#: ../../changes.rst:342 97d5a4832918407587728ff774355d41
 msgid ""
 ":issue:`444`  Imports: DX systems that submit RDSRs that look like fluoro"
 " can now be reclassified using :issue:`445`"
 msgstr ""
 
-#: ../../changes.rst:344 32dd83b827c84da4bf6ea51ed68f93bd
+#: ../../changes.rst:343 3d3e43f39ab64a169f7059709b7145e6
 msgid ""
 ":issue:`443`  Exports: Accession number and ID are now exported to XLSX "
 "as text. Thanks to `@LuukO`_"
 msgstr ""
 
-#: ../../changes.rst:345 06b16ff9350242a495a2a802c058a5dd
+#: ../../changes.rst:344 660db6f0b02b4733a6ff7e5de56a0ae3
 msgid ""
 ":issue:`442`  Exports: Fixed RF exports with multiple filters, added "
 "tests. Thanks to `@LuukO`_"
 msgstr ""
 
-#: ../../changes.rst:346 ea0dbfb6d3114d06bbc0cc81efd1df58
+#: ../../changes.rst:345 c534820ff76d42e483f4b11f08a17769
 msgid ""
 ":issue:`441`  Charts: Fixed a bug that broke chart links containing non-"
 "ASCII characters"
 msgstr ""
 
-#: ../../changes.rst:347 b64d104555d54bc0b9863bd188cef8a2
+#: ../../changes.rst:346 0f1fada995b64765b6fb4870b6ead420
 msgid ""
 ":issue:`440`  Charts: Fixed a bug in sorting.js so that undefined strings"
 " are handled correctly"
 msgstr ""
 
-#: ../../changes.rst:348 ff0fe35f2fa044d2af71a627be60027c
+#: ../../changes.rst:347 22a430564cd14ac39445d874c268c8cd
 msgid ""
 ":issue:`439`  Charts: Added controls for plotting a series per system and"
 " calculation histogram data to each filtered view"
 msgstr ""
 
-#: ../../changes.rst:349 3c9bf3775ac644c8a755b7915722a01f
+#: ../../changes.rst:348 b18ee2bc70b64e38a018605deb7fb841
 msgid ""
 ":issue:`438`  Skin dose maps: skin dose maps successfully calculated from"
 " existing studies; indication of assumed or extracted data shown"
 msgstr ""
 
-#: ../../changes.rst:350 ffc431d37dba4847afedb220c81d1435
+#: ../../changes.rst:349 4a934aa7fb58431fbce9dcfecb404a5c
 msgid ""
 ":issue:`434`  Internationalisation: added passing char_set throughout the"
 " extractor functions (since largely made redundant again!)"
 msgstr ""
 
-#: ../../changes.rst:351 9879b9134c204c77bfeeac8c51098f1b
+#: ../../changes.rst:350 c96b89cbfffa40a1b51042dc376b1145
 msgid ""
 ":issue:`432`  Imports: RDSR import function now looks in comment field "
 "for `patient_table_relationship` data"
 msgstr ""
 
-#: ../../changes.rst:352 308d342512dc4b4485085974172a6000
+#: ../../changes.rst:351 94e3fa8ab3b74e6f959f483757c2d6b3
 msgid ""
 ":issue:`431`  Imports: fixed DX imports with MultiValue filter values "
 "(Cu+Al) again!"
 msgstr ""
 
-#: ../../changes.rst:353 d6225587ecf247a0b888b51617ade1f8
+#: ../../changes.rst:352 7972ab53437e48f2ba407a51d90acab8
 msgid ""
 ":issue:`430`  Exports: fixed DX exports with multiple filters again, "
 "added tests"
 msgstr ""
 
-#: ../../changes.rst:354 c9b4719f256849d791857a50770b89f0
+#: ../../changes.rst:353 79d03399934243e1b9cdc23d14ae1497
 msgid ""
 ":issue:`429`  Charts: added new mammo scatter plots. Thanks to "
 "`@rijkhorst`_"
 msgstr ""
 
-#: ../../changes.rst:355 f5466e8382a74e55864aa11cd2063f9a
+#: ../../changes.rst:354 12ed70681e6b456c99f5acaa54ab85fc
 msgid ""
 ":issue:`427`  Testing: added a large number of tests that are "
 "automatically run on commit to bitbucket"
 msgstr ""
 
-#: ../../changes.rst:356 ac4ae37e3c2d481bb0acc89b2dbaca8c
+#: ../../changes.rst:355 8b2b46a8b5004013b649e7bc04825c35
 msgid ""
 ":issue:`414`  Reduced use of JavaScript global variables and improved "
 "JavaScript objects"
 msgstr ""
 
-#: ../../changes.rst:357 c164087e3971460ebdfae6435c1f8b4d
+#: ../../changes.rst:356 ab69e2ddddec4f95a52e1d7c1c2ca3fb
 msgid ""
 ":issue:`411`  Imports: fixed laterality and accumulated AGD failure for "
 "Hologic DBT proprietary projection images"
 msgstr ""
 
-#: ../../changes.rst:358 91350092ab4b4a7f92c09d7bb6d5dd01
+#: ../../changes.rst:357 adbd4c7213e841ad8d2b5ca255b80a32
 msgid ""
 ":issue:`323`  Documentation: code autodocumentation largely now working "
 "again"
 msgstr ""
 
-#: ../../changes.rst:359 8933773c08ae40c589140cb68de56a41
+#: ../../changes.rst:358 0a0ec4ca97f94936a51e99816cefc5c6
 msgid ""
 ":issue:`318`  Database management: Display names view can be used to "
 "review and delete all studies from one source"
 msgstr ""
 
-#: ../../changes.rst:360 c465ed8370c94aec83dfd6a350ddbcc2
+#: ../../changes.rst:359 25db92b62c5e48dfa642a673a0a4be4c
 msgid ""
 ":issue:`114`  Imports: Subsequent RDSRs of the same study will now "
 "replace existing study in database"
 msgstr ""
 
-#: ../../changes.rst:361 1abe54907f34449fab9fcfc4b615c220
+#: ../../changes.rst:360 caa1459d8de8465f9974f1b2e526b527
 msgid ""
 ":issue:`61`  Skin dose maps: These have been re-enabled, and currently "
 "work for Siemens systems"
 msgstr ""
 
-#: ../../changes.rst:364 f8e33a8d846146f2b5ebe8e5f4a301b4
+#: ../../changes.rst:363 4d4c0b0fb76f4338a9d3398bc3dbc4ad
 msgid "0.7.4 (2016-10-17)"
 msgstr ""
 
-#: ../../changes.rst:366 4537df50d8744fd694f91b8ea29edb94
+#: ../../changes.rst:365 5b828f6156cb4dfbafeea7ce6cac3386
 msgid ""
 ":issue:`436`  Install: temporary fix blocking django-filter latest "
 "version that breaks OpenREM"
 msgstr ""
 
-#: ../../changes.rst:367 f99cc496a2d04cfb8714d4dc11e1b548
+#: ../../changes.rst:366 7d0c399987634868aa50187fbc9eb203
 msgid ""
 ":issue:`431`  Imports: fixed DX imports with MultiValue filter values "
 "(Cu+Al)"
 msgstr ""
 
-#: ../../changes.rst:368 96820fc09d4142a3b9bb0e90abd1a15f
+#: ../../changes.rst:367 766749462a594b92a88aabf1aa8d33e6
 msgid ":issue:`430`  Exports: fixed DX exports with multiple filters (Cu + Al)"
 msgstr ""
 
-#: ../../changes.rst:372 e6d967c3dd944fca90e34d5fb6bbe4bd
+#: ../../changes.rst:371 a33469e4313b477c961cf996524185b2
 msgid "0.7.3 (2016-08-30)"
 msgstr ""
 
-#: ../../changes.rst:374 516441818e4747f39856661cbe3ea78a
+#: ../../changes.rst:373 c243b73a4be04c1584abf666f328effc
 msgid ""
 ":issue:`426`  Charts: added css so that wide chart data tables are "
 "displayed above the filter form div"
 msgstr ""
 
-#: ../../changes.rst:375 ea304fee9e824e428f97071f81b740d7
+#: ../../changes.rst:374 fa276458ba2645f194cb25bc2f3fb2ab
 msgid ""
 ":issue:`425`  Exports: fixed error with non-ASCII characters being "
 "exported to csv"
 msgstr ""
 
-#: ../../changes.rst:376 00d3fdc7441f43b5997f0bb098a30f58
+#: ../../changes.rst:375 c0803c8dea9d43b2adab8be896c4747b
 msgid ""
 ":issue:`424`  Charts: fixed error where png or svg export of chart would "
 "show incorrect x-axis labels"
 msgstr ""
 
-#: ../../changes.rst:377 573798ecc7ef4f3ebcf9aaed9db74d49
+#: ../../changes.rst:376 dc3de6e37b28420ebddd1cdac8f45bf1
 msgid ""
 ":issue:`423`  Charts: fixed error where some chart plotting options were "
 "not updated after being changed by the user"
 msgstr ""
 
-#: ../../changes.rst:378 7efe623db89a4ff780f523e774c57ec4
+#: ../../changes.rst:377 3b2539bc96a943a2835e032247c32bf7
 msgid ""
 ":issue:`422`  Charts: added a button below each chart to toggle the "
 "display of the data table"
 msgstr ""
 
-#: ../../changes.rst:379 9e8d1fed32e74c9ebbf1f02efaf82a5f
+#: ../../changes.rst:378 c9ef43fe509d4c0097a6921ce5a3fdbc
 msgid ""
 ":issue:`421`  Charts: fixed error where only some scatter plot data was "
 "being exported to csv or xls files"
 msgstr ""
 
-#: ../../changes.rst:380 e168ad11b5964fa49083b433edb7d77f
+#: ../../changes.rst:379 68ad16c4a6154eb9a7fc517e47023843
 msgid ""
 ":issue:`420`  Charts: fixed error where frequency pie charts were only "
 "showing data from the first system"
 msgstr ""
 
-#: ../../changes.rst:381 6dad648e9e4a48e495f86e241162849a
+#: ../../changes.rst:380 7017ea7429a441e3849cdc1b82085083
 msgid ""
 ":issue:`419`  Interface: fixed error where \"Cancel\" was ignored when "
 "deleting study in Firefox browser"
 msgstr ""
 
-#: ../../changes.rst:382 091b873fabae467aa7b20830df233f6d
+#: ../../changes.rst:381 e0ad356715614d19999df5680c50b923
 msgid ""
 ":issue:`418`  Exports: fixed error when exporting fluoroscopy study with "
 "missing xray_filter_material"
 msgstr ""
 
-#: ../../changes.rst:383 8e2bda1eeaf94fa5b7d6b735adff93b6
+#: ../../changes.rst:382 a78ad04929184c46a338801186100b2b
 msgid ":issue:`416`  Charts: improved efficiency of JavaScript"
 msgstr ""
 
-#: ../../changes.rst:384 8e06c014ea7744c3ad68ecab9edbf747
+#: ../../changes.rst:383 2d639efb64104d3d932f6367065cb2e9
 msgid ""
 ":issue:`415`  Database: migration for 0.6 upgraded installs to fix "
 "acquisition_device_type failures"
 msgstr ""
 
-#: ../../changes.rst:385 ac9aa4ef6f664ce28d8568d36cefcb45
+#: ../../changes.rst:384 37664e682c6a49dfa7d8730983623cbe
 msgid ""
 ":issue:`413`  Documentation: removed erroneous reference to store queue "
 "in stop celery command"
 msgstr ""
 
-#: ../../changes.rst:386 81004823c32c48afa1e7543aea552774
+#: ../../changes.rst:385 a70fd6b116ed46b896a6d420603df996
 msgid ""
 ":issue:`410`  Charts: fixed display of bar charts containing only one "
 "data point"
 msgstr ""
 
-#: ../../changes.rst:387 80d1ada1347c4d0e9789cd15b31c2067
+#: ../../changes.rst:386 e4848b083f0f488e9b399f423c1f6caf
 msgid ""
 ":issue:`408`  Charts: Increased number of items that can be shown on some"
 " Highcharts plots"
 msgstr ""
 
-#: ../../changes.rst:388 cf54ac446d9a46f49b17641c13d9b128
+#: ../../changes.rst:387 6b2b17b8453f486b985c76707293d802
 msgid ""
 ":issue:`407`  Fixed issue where skin dose map data was not being "
 "calculated on import"
 msgstr ""
 
-#: ../../changes.rst:389 748365456cde4a5bab431a05b80d20a1
+#: ../../changes.rst:388 785171ddc55e44d5a322dd472c4016e3
 msgid ""
 ":issue:`406`  Replaced Math.log10 JavaScript function with alternative "
 "function to fix IE11 skin dose map error"
 msgstr ""
 
-#: ../../changes.rst:390 0575d5709d6d446ea576bddb36f7a6a5
+#: ../../changes.rst:389 c5aa75ab9a14430a93218f75b69f2700
 msgid ""
 ":issue:`405`  Altered multi-line cell links in filtered pages so they "
 "work with IE8"
 msgstr ""
 
-#: ../../changes.rst:393 33b6ccb70a48403ebd9ebdfb2a1b9bdb
+#: ../../changes.rst:392 457430b68d1c4f2fbf659f3c797e260f
 msgid "0.7.1 (2016-06-10)"
 msgstr ""
 
-#: ../../changes.rst:395 32fd807a7156473ba968428c2fbc6702
+#: ../../changes.rst:394 75586d1bf8694a0094c35581279d7150
 msgid ""
 ":issue:`403`  Now deals with PersonName fields with latin-1 extended "
 "characters correctly"
 msgstr ""
 
-#: ../../changes.rst:396 ff35d88ea3bb42ec87db8a43f40f5f73
+#: ../../changes.rst:395 24f19fb54d8b48cd8496e038c69d8243
 msgid ""
 ":issue:`402`  Skin dose map data pickle files saved using gzip "
 "compression to save space"
 msgstr ""
 
-#: ../../changes.rst:397 750e3cc8705040e293d81da0dbdcaea7
+#: ../../changes.rst:396 07fcfe8e482e461bad6da5cf9d8d704d
 msgid ""
 ":issue:`401`  Updated skin dose map documentation to say it won't be in "
 "this release"
 msgstr ""
 
-#: ../../changes.rst:398 1947338102af4b35924e07c5cb5c3999
+#: ../../changes.rst:397 e74194abeceb4972bac160fbbd18ee68
 msgid ""
 ":issue:`400`  Strings are encoded as UTF-8 before being hashed to prevent"
 " errors with non-ASCII characters"
 msgstr ""
 
-#: ../../changes.rst:399 d24d0466d206405d9f286b2bfd0ce5b6
+#: ../../changes.rst:398 17e78bee98f14be18ddd002824bdb0bc
 msgid ":issue:`399`  Migration file brought up to date for 0.6 to 0.7 upgrades"
 msgstr ""
 
-#: ../../changes.rst:400 ffc325d8c2544c5b827fad335878a08b
+#: ../../changes.rst:399 760180c5d3b34fd2a93d0ff5df7ba351
 msgid ""
 ":issue:`398`  Skin exposure maps are now stored in folders (feature "
 "postponed for future release)"
 msgstr ""
 
-#: ../../changes.rst:401 d523b4d4191447d5986c26164163480f
+#: ../../changes.rst:400 a71c6eee362e46f7aa616eed26bed78e
 msgid ""
 ":issue:`397`  Skin exposure maps no longer available until orientation "
 "errors are fixed"
 msgstr ""
 
-#: ../../changes.rst:402 eccc4fb05abb47f6a3df58d68270edf8
+#: ../../changes.rst:401 830fa6c5910e4230be9dae0b0802dcbf
 msgid ""
 ":issue:`396`  Charts: zooming on bar charts of average value vs. category"
 " now works"
 msgstr ""
 
-#: ../../changes.rst:403 a44567bce7c0447cb96127b8d60e6f61
+#: ../../changes.rst:402 04774533c4c24226997dd52cdd8e9128
 msgid ""
 ":issue:`395`  Docs: offline Windows install instructions created, plus "
 "offline upgrade instructions"
 msgstr ""
 
-#: ../../changes.rst:404 72ec0d1a8eff4b82b55d62ae93aadb8a
+#: ../../changes.rst:403 f9ab782c78984259b09e567e35bea929
 msgid ""
 ":issue:`394`  Charts: made charts resize to fit containing div when "
 "browser is resized"
 msgstr ""
 
-#: ../../changes.rst:405 a552b0608dcb4ec388f089cdf05c3751
+#: ../../changes.rst:404 c72aa17069434ebda6a56e9f1bbba28e
 msgid ""
 ":issue:`392`  Charts: normalised histogram tooltip now correctly reports "
 "frequency"
 msgstr ""
 
-#: ../../changes.rst:406 cc8744ac85484102998b10ed5ab7e85e
+#: ../../changes.rst:405 d54717777a00459f812d7e64f24157e0
 msgid ":issue:`391`  Basic troubleshooting is now documented"
 msgstr ""
 
-#: ../../changes.rst:407 8637aaedf96c4334889c8d6ccd5b5819
+#: ../../changes.rst:406 c55225238bc244ca8db86be2bd750a68
 msgid ":issue:`390`  Charts: mammography and fluoroscopy charts added"
 msgstr ""
 
-#: ../../changes.rst:408 b1fb83ce8757485c83931e62d79948e9
+#: ../../changes.rst:407 d06a139226e34af4a691996dd76b83c2
 msgid ""
 ":issue:`389`  Charts: series without a name are now plotted under the "
 "name of `Blank` rather than not being plotted at all"
 msgstr ""
 
-#: ../../changes.rst:409 580154ba725d4ce1aa047fa6706ebf75
+#: ../../changes.rst:408 fd1a9a5ace254581b37ee6fce09596cf
 msgid ":issue:`387`  Added laterality to mammography exports"
 msgstr ""
 
-#: ../../changes.rst:410 1d482a0286444b8d9f7ad3da5de3deb3
+#: ../../changes.rst:409 c59cf88eb4f3452db71ce093e3f4034e
 msgid ""
 ":issue:`385`  Fixed issue with non-ASCII letters in RDSR sequence "
 "TextValue fields"
 msgstr ""
 
-#: ../../changes.rst:411 b8b09c632e97473aad1a5e8f1f9caa37
+#: ../../changes.rst:410 8e8bc82499464a7ba4a1e1df6de73604
 msgid ":issue:`384`  Fluoro exports for OpenSkin only consider copper filters now"
 msgstr ""
 
-#: ../../changes.rst:412 a410a87fd89249b48c4edf4a142bdd51
+#: ../../changes.rst:411 34fbd41fdb184846a4c18d4353bebd83
 msgid ""
 ":issue:`383`  Refreshed settings.py to django 1.8 including updating "
 "template settings and TEMPLATE_CONTEXT_PROCESSORS"
 msgstr ""
 
-#: ../../changes.rst:413 0e196656ca304a46a0dbef15c1de7900
+#: ../../changes.rst:412 e615ed359f364570951c0b43e2f0294f
 msgid ""
 ":issue:`380`  Tube current now extracted from Siemens Intevo RDSR despite"
 " non-conformance"
 msgstr ""
 
-#: ../../changes.rst:414 c34d40c69c0a4f148cef39093e0891ae
+#: ../../changes.rst:413 a845d6ec44884a209b15781887209509
 msgid ""
 ":issue:`379`  Exposure time now populated for fluoro if not supplied by "
 "RDSR"
 msgstr ""
 
-#: ../../changes.rst:415 0bbcc253f50348d1a9847c5731423bf1
+#: ../../changes.rst:414 e652ff49885a48a38d7267120bbb66be
 msgid ""
 ":issue:`378`  The display name of multiple systems can now be updated "
 "together using a single new name"
 msgstr ""
 
-#: ../../changes.rst:416 e0a8af36a26f4c628a5498bbdd671dc6
+#: ../../changes.rst:415 cc7b4cd176dc45369cf5062207f5fceb
 msgid ":issue:`376`  Corrected an ill-advised model change"
 msgstr ""
 
-#: ../../changes.rst:417 6aee6451875f4335bb0e5431f697d2d6
+#: ../../changes.rst:416 4c0e5989b90148ed932847b970ae1fcf
 msgid ":issue:`374`  CTDIw phantom size now displayed in CT detail view"
 msgstr ""
 
-#: ../../changes.rst:418 5992d95ca36c4fd9bd3446618090233e
+#: ../../changes.rst:417 69f9a9d505bb40c4912b7ea7c911349a
 msgid ""
 ":issue:`373`  Charts in some releases used GT rather than greater than or"
 " equal to for start date, now fixed"
 msgstr ""
 
-#: ../../changes.rst:419 276d2269ec6347479777c0a85fcfecf3
+#: ../../changes.rst:418 581d0db3e69142c594b0dab85ae725ad
 msgid ""
 ":issue:`372`  Mammography studies now record an accumulated AGD per "
 "breast. Existing joint accumulated AGD values won't be changed. Ordering "
@@ -2191,1266 +2187,1266 @@ msgid ""
 "breast"
 msgstr ""
 
-#: ../../changes.rst:421 74d98e1322344c678d9d809616b2d2e1
+#: ../../changes.rst:420 a7b41e8acc9c47499ba7ae3b79b33a17
 msgid ""
 ":issue:`371`  Mammo RDSR generates average mA where not recorded, mammo "
 "image populates mA"
 msgstr ""
 
-#: ../../changes.rst:422 6d10ab2f8e10479887d7f5e376ed6bb8
+#: ../../changes.rst:421 f24fd87432954dbbb6c71a2013ac9434
 msgid ":issue:`370`  Added study description to mammography export"
 msgstr ""
 
-#: ../../changes.rst:423 30d07a452e2e4b00986540b89fcd2ec9
+#: ../../changes.rst:422 662099090bcd4324b74eb4350ec8ba22
 msgid ":issue:`369`  Bi-plane fluoroscopy studies now export correctly"
 msgstr ""
 
-#: ../../changes.rst:424 386a1a9a073f439e92645129f83a3b93
+#: ../../changes.rst:423 4fd67115f91546f1a7de335c7e9621e8
 msgid ":issue:`368`  Mammo RDSR now imports correctly"
 msgstr ""
 
-#: ../../changes.rst:425 b8cb88b760df4bfa8688794a4466b82c
+#: ../../changes.rst:424 0e4c026479b84f3190d32edd137eb45b
 msgid ":issue:`365`  Tube filtration is now displayed in the RF detail view"
 msgstr ""
 
-#: ../../changes.rst:426 f6f3a8da61f94496a0fa13ec2215abcc
+#: ../../changes.rst:425 37e2cf81b0a14603ba20484eaddb3b2e
 msgid ":issue:`364`  Philips Allura fluorscopy RDSRs now import correctly"
 msgstr ""
 
-#: ../../changes.rst:427 31e41dbccd244fc4ab81912968409930
+#: ../../changes.rst:426 7324e23221de4e22b4a75f2877cf15fa
 msgid ""
 ":issue:`362`  Display of RF where bi-plane RDSRs have been imported no "
 "longer crash the interface"
 msgstr ""
 
-#: ../../changes.rst:428 382f139dbb9248729ec6be669a07194c
+#: ../../changes.rst:427 70b6ea075503458ea6d82782a15f8bda
 msgid ""
 ":issue:`360`  Charts: saving data from average data charts as csv or xls "
 "now includes frequency values"
 msgstr ""
 
-#: ../../changes.rst:429 269b2856697646ffb7c1a1788916025a
+#: ../../changes.rst:428 b3c994a38cf9440d9923967af37e6f4d
 msgid ":issue:`359`  Added missing 'y' to query retrieve command line help"
 msgstr ""
 
-#: ../../changes.rst:430 2e0386caa67248c1940118d1dbe7f049
+#: ../../changes.rst:429 cada172154b94d5cab3b2bb86c16b84d
 msgid ""
 ":issue:`358`  Charts: chart sorting links and instructions now hidden "
 "when viewing histograms"
 msgstr ""
 
-#: ../../changes.rst:431 b46c21c53bd947af814533fa426e15e3
+#: ../../changes.rst:430 bb867e2e8d444b24b07f345459bd5011
 msgid ""
 ":issue:`357`  Charts: button to return from histogram now displays the "
 "name of the main chart"
 msgstr ""
 
-#: ../../changes.rst:432 13bae82e26394fa7b371511b403d93a4
+#: ../../changes.rst:431 6f9cdb06cb554dc4be6ed39db1a59fe7
 msgid ""
 ":issue:`356`  Charts: histogram normalise button appears for all "
 "appropriate charts"
 msgstr ""
 
-#: ../../changes.rst:433 43b2568f132140b1b0a9d6424357b7fa
+#: ../../changes.rst:432 74a007256dcb4d839f7de5db66ad7d8a
 msgid ""
 ":issue:`355`  Charts: sorting now works as expected for plots with a "
 "series per system"
 msgstr ""
 
-#: ../../changes.rst:434 2c391fb12cc4474c9ea9d09dc1b5089c
+#: ../../changes.rst:433 15c3b1f3cee942e9b5880d1ba5b9ea34
 msgid ""
 ":issue:`352`  Fixed CT xlsx exports that had complete study data in each "
 "series protocol sheet (from earlier beta)"
 msgstr ""
 
-#: ../../changes.rst:435 db12d511526f462f9ed7d6f71bfb69e1
+#: ../../changes.rst:434 fcfaeef336304d47a70c98765ce5f467
 msgid ":issue:`351`  Charts: simplified chart JavaScript and Python code"
 msgstr ""
 
-#: ../../changes.rst:436 63a81bd032c244589e52ea77d5696f34
+#: ../../changes.rst:435 61ebb3bb0b6544a9b6ba89be78870bd2
 msgid ""
 ":issue:`350`  DICOM networking documented for use with 3rd party store "
 "and advanced use with native"
 msgstr ""
 
-#: ../../changes.rst:437 b27272c01a7743f0aef88badd5589450
+#: ../../changes.rst:436 30c44b8fe2dc40d7bd842b77e149948e
 msgid ""
 ":issue:`348`  Study delete confirmation page now displays total DAP for "
 "DX or CR radiographic studies"
 msgstr ""
 
-#: ../../changes.rst:438 c7c2da17f5eb4fb1a4b63d7041888f69
+#: ../../changes.rst:437 e7724f2937e84cd5b4f9f525a96287bd
 msgid ""
 ":issue:`346`  Charts: exporting a chart as an image no longer requires an"
 " internet connection"
 msgstr ""
 
-#: ../../changes.rst:439 b14d205927d44b0f830b9a14ea20705a
+#: ../../changes.rst:438 848ff4b9d0be4313a9977044c48dcdd2
 msgid ""
 ":issue:`345`  CSV size imports in cm are now stored as m in the database."
 " Interface display of size corrected."
 msgstr ""
 
-#: ../../changes.rst:440 a92912019ed74f00bdfead4b9e5e6cb9
+#: ../../changes.rst:439 3645a77e070040a29033494a8f5b2640
 msgid ""
 ":issue:`343`  Charts: user can now specify number of histogram bins in "
 "the range of 2 to 40"
 msgstr ""
 
-#: ../../changes.rst:441 7e31165ae9af48cbbf4e1728705807db
+#: ../../changes.rst:440 27b95b1271ee448287567183673263cd
 msgid ":issue:`342`  Charts: improved the colours used for plotting chart data"
 msgstr ""
 
-#: ../../changes.rst:442 9ffa3d06d996478dbfe07fedae9dc125
+#: ../../changes.rst:441 d27c7b1f4d564051a72edc33d1575ba0
 msgid ""
 ":issue:`340`  Fixed store failure to save due to illegal values in "
 "Philips private tags, improved exception code"
 msgstr ""
 
-#: ../../changes.rst:443 71dfb857186445e1aede6f6496fd3604
+#: ../../changes.rst:442 88dbbe6d6f134e1e906aba0d93f992ea
 msgid ""
 ":issue:`339`  Improved extraction of requested procedure information for "
 "radiographic studies"
 msgstr ""
 
-#: ../../changes.rst:444 179ce7641b8c412daa528ab769590cab
+#: ../../changes.rst:443 697ffe64bab140d0904adb441c9bea13
 msgid ":issue:`338`  Fix Kodak illegally using comma in filter thickness values"
 msgstr ""
 
-#: ../../changes.rst:445 06669480703544e695a291a80d891150
+#: ../../changes.rst:444 cf96d7b8a2924fcf805727ffb3138a52
 msgid ""
 ":issue:`335`  DICOM Store keep_alive and echo_scu functions now log "
 "correctly"
 msgstr ""
 
-#: ../../changes.rst:446 845184a73f54481685ed00820d5252a0
+#: ../../changes.rst:445 86a43c4072f14f82ade37de9176607fd
 msgid ":issue:`334`  Fixed issue with tasks needing to be explicitly named"
 msgstr ""
 
-#: ../../changes.rst:447 043b48fe4cba4f24a3dd35caba40214a
+#: ../../changes.rst:446 d68bd2601b3e4a9c8c81eeec31bbf102
 msgid ":issue:`333`  Fixed StoreSCP not starting in beta 11 error"
 msgstr ""
 
-#: ../../changes.rst:448 c61a2a64f43a46d094d913e6fa541507
+#: ../../changes.rst:447 1a9c9201dfed4320b661130c6a0fac2d
 msgid ""
 ":issue:`332`  Charts: some charts can now be plotted with a series per "
 "x-ray system"
 msgstr ""
 
-#: ../../changes.rst:449 e1fad2e161824e2da7f429a503074fd2
+#: ../../changes.rst:448 5247600726ca46b1a385e784cc38a7e8
 msgid ""
 ":issue:`331`  Keep_alive tasks are now discarded if not executed, so "
 "don't pile up"
 msgstr ""
 
-#: ../../changes.rst:450 7c13557a89bf413583262b3fff68ef88
+#: ../../changes.rst:449 2cccb8ec5b294ecea3f30d550161c21b
 msgid ":issue:`329`  All existing logging is now done via the same log files"
 msgstr ""
 
-#: ../../changes.rst:451 05ba85a38a3b4bb1b67710931a56c8ae
+#: ../../changes.rst:450 8b4734fdf2fa4f2b967d9311faeab245
 msgid ":issue:`328`  Store SCP no longer uses Celery tasks"
 msgstr ""
 
-#: ../../changes.rst:452 b8a283ad9e99466cae453975394ffa40
+#: ../../changes.rst:451 e3e2f4b78a5245e4b31d42d1b7129e8d
 msgid ":issue:`327`  Celery workers now only take one task at a time"
 msgstr ""
 
-#: ../../changes.rst:453 ea89385f617a43aba975c8200ee01de9
+#: ../../changes.rst:452 3c71a789643044908ceef43876ef5785
 msgid ""
 ":issue:`325`  Charts: switching charts off now leaves the user on the "
 "same page, rather than going to the home page"
 msgstr ""
 
-#: ../../changes.rst:454 be13a47ad4ce4150969a5f1206cb0f62
+#: ../../changes.rst:453 7564fd2765b147559cc3dc14eaa72e5a
 msgid ""
 ":issue:`324`  Charts: forced chart tooltip background to be opaque to "
 "make reading the text easier"
 msgstr ""
 
-#: ../../changes.rst:455 0ed3e4d1ca0540eaa143c8b39ca460ec
+#: ../../changes.rst:454 bd8d312feb55424287e6494453f9010e
 msgid ""
 ":issue:`320`  The week now begins on Monday rather than Sunday on date "
 "form fields"
 msgstr ""
 
-#: ../../changes.rst:456 ca8681c542534d25b7f729ab01967b42
+#: ../../changes.rst:455 79fe8069edd14a9bafb40b68457adaf8
 msgid ""
 ":issue:`316`  Query retrieve function can now exclude and include based "
 "on strings entered"
 msgstr ""
 
-#: ../../changes.rst:457 c0361155fbf144f6ac16cca749fd1af3
+#: ../../changes.rst:456 271041ecebf34e098a8301fc28c21fd0
 msgid ""
 ":issue:`315`  Charts: made size of exported chart graphics follow the "
 "browser window size"
 msgstr ""
 
-#: ../../changes.rst:458 a40e96a7045a4c5b85138976f6032866
+#: ../../changes.rst:457 6fe8503590184a0c8052542eb6bcbca8
 msgid ""
 ":issue:`314`  One version number declaration now used for distribute, "
 "docs and interface"
 msgstr ""
 
-#: ../../changes.rst:459 0f6edcafc7b94a1f8a02b0431201249f
+#: ../../changes.rst:458 1dfc61bff755423b9f88459736585df0
 msgid ""
 ":issue:`313`  Replaced non-working function with code to extract "
 "SeriesDescription etc in query response message"
 msgstr ""
 
-#: ../../changes.rst:460 35620823e91741fcb73531399fff0759
+#: ../../changes.rst:459 5c8afc11c5024d27854577a097b1274a
 msgid ":issue:`312`  Display names are now grouped by modality"
 msgstr ""
 
-#: ../../changes.rst:461 47ff140986b2498fb7ef084059c461e4
+#: ../../changes.rst:460 b260e5d3c59a4374b18da666a6f3b215
 msgid ":issue:`311`  Queries are deleted from database after a successful C-Move"
 msgstr ""
 
-#: ../../changes.rst:462 a36e28d4dd504d6c9c80d59abda21a48
+#: ../../changes.rst:461 54f1719144e84475b9969cb36621deb3
 msgid ""
 ":issue:`310`  Series level QR feedback now presented. Any further would "
 "require improvements in pynetdicom"
 msgstr ""
 
-#: ../../changes.rst:463 7e94750557834524856ecfa103006014
+#: ../../changes.rst:462 aa79bb49746d45a482bdfa9a053d0ed1
 msgid ""
 ":issue:`309`  StoreSCP now deals safely with incoming files with "
 "additional transfer syntax tag"
 msgstr ""
 
-#: ../../changes.rst:464 e765449ac4b84d23aa75b0ce42ee2687
+#: ../../changes.rst:463 6088f86d646643218a9f834fed27fb81
 msgid ""
 ":issue:`308`  Secondary capture images that don't have the manufacturer "
 "field no longer crash the StoreSCP function"
 msgstr ""
 
-#: ../../changes.rst:465 aeb5c050d87a4143ac8e651c139c6377
+#: ../../changes.rst:464 67c8d4bdac6f4b39acf250ae7e53a07b
 msgid ""
 ":issue:`306`  Charts: added a button to each chart to toggle full-screen "
 "display"
 msgstr ""
 
-#: ../../changes.rst:466 a198fa45f46e4fe7a737e84c0aed0306
+#: ../../changes.rst:465 1c05fd2097d548af820de0415c07d855
 msgid ":issue:`305`  Added links to documentation throughout the web interface"
 msgstr ""
 
-#: ../../changes.rst:467 9d6bbbed42a54dcfae1901d2b674e8a9
+#: ../../changes.rst:466 22612f07d358415fa6dd212f0b958a0c
 msgid ""
 ":issue:`304`  Date of birth is now included in all exports that have "
 "either patient name or ID included"
 msgstr ""
 
-#: ../../changes.rst:468 334e4be5b94848d083098599b48e5f8a
+#: ../../changes.rst:467 2725ab60df004cac9ea5027a22335178
 msgid ""
 ":issue:`303`  Fixed a typo in 0.6.0 documents relating to the storescp "
 "command"
 msgstr ""
 
-#: ../../changes.rst:469 3f2ddbc314264ef192026b5524cfea99
+#: ../../changes.rst:468 8126b63731a14a76bd40b25330f22d1b
 msgid ""
 ":issue:`302`  Improved handling of Philips Dose Info objects when series "
 "information sequence has UN value representation"
 msgstr ""
 
-#: ../../changes.rst:470 bae5631badde4bcda31780fcd4e4fdd1
+#: ../../changes.rst:469 24161f47225c4b13b10522870b6b0103
 msgid ""
 ":issue:`301`  Charts: fixed bug that could stop average kVp and mAs "
 "radiographic plots from working"
 msgstr ""
 
-#: ../../changes.rst:471 0adfaf848c704fa595458ce6bfcb70a6
+#: ../../changes.rst:470 267a5769442c4430a060a90ceb1e13f7
 msgid ""
 ":issue:`300`  Calling AE Title for Query Retrieve SCU is now configured "
 "not hardcoded"
 msgstr ""
 
-#: ../../changes.rst:472 0ea4e817011f4808b3e933be55a44abb
+#: ../../changes.rst:471 202b9dac2f0f43ebb981448db56ca206
 msgid ":issue:`299`  Hash of MultiValued DICOM elements now works"
 msgstr ""
 
-#: ../../changes.rst:473 bb70df6c6adb4e22abcb7d8222094a04
+#: ../../changes.rst:472 cb062b78a80c4a10a9ca567187e7fd83
 msgid ":issue:`298`  Added ordering by accumulated AGD for mammographic studies"
 msgstr ""
 
-#: ../../changes.rst:474 0b0b4febbfce4df29b2adf8345211550
+#: ../../changes.rst:473 e20ed1d984e0459caf685ebc799b9cb9
 msgid ":issue:`297`  Fixed ordering by Total DAP for radiographic studies"
 msgstr ""
 
-#: ../../changes.rst:475 ab1b46b5fd3b4f75a57e0fa412e66687
+#: ../../changes.rst:474 e35c7740eeb4426d81a7e97c766b738b
 msgid ""
 ":issue:`296`  StoreSCP now logs an error message and continues if "
 "incoming file has problems"
 msgstr ""
 
-#: ../../changes.rst:476 d08dfa217e7b4ca79e6616b8f2363a5a
+#: ../../changes.rst:475 93d95820751841818d5fd95d0c640253
 msgid ":issue:`295`  Charts: fixed bug that arose on non-PostgreSQL databases"
 msgstr ""
 
-#: ../../changes.rst:477 19fdd1ac184e451196b0dd381983cb3f
+#: ../../changes.rst:476 5efec20fe163452fa3be75da0a32a5a8
 msgid ""
 ":issue:`294`  Harmonised time display between filter list and detail "
 "view, both to HH:mm"
 msgstr ""
 
-#: ../../changes.rst:478 bea09cd498094d4fb2058d5d2df58a0f
+#: ../../changes.rst:477 73ab0d4fba244f97bb23641d8959a39d
 msgid ":issue:`292`  Added keep-alive and auto-start to DICOM stores"
 msgstr ""
 
-#: ../../changes.rst:479 525fff8261714398a9c32b33728a21b3
+#: ../../changes.rst:478 5aeba78bd79a4fd8bec48004440c92c2
 msgid ""
 ":issue:`291`  Charts: fixed issue with CTDI and DLP not showing correct "
 "drilldown data"
 msgstr ""
 
-#: ../../changes.rst:480 e3630ec0efc04df8884ce106343eef36
+#: ../../changes.rst:479 e2cad796ca96467481139c101f9a8992
 msgid ""
 ":issue:`290`  Added new tables and fields to migration file, uses "
 ":issue:`288` and median code from :issue:`241`"
 msgstr ""
 
-#: ../../changes.rst:481 77ea5259fea34d8ca25e9c29c6073219
+#: ../../changes.rst:480 7ec5c1ee5ab94a95a6e8ee319bcee29a
 msgid ":issue:`289`  Crispy forms added into the requires file"
 msgstr ""
 
-#: ../../changes.rst:482 4b4bfeb535a2429ab1eed27a222a9957
+#: ../../changes.rst:481 d31315f30d9a4ae2a19a362fc9288b44
 msgid ":issue:`288`  Added device name hashes to migration file"
 msgstr ""
 
-#: ../../changes.rst:483 215b93dea21a4853ab2e33a796bb91b3
+#: ../../changes.rst:482 16ff1c271feb4a268c6b33a78e6e8c89
 msgid ":issue:`286`  Increased granularity of permission groups"
 msgstr ""
 
-#: ../../changes.rst:484 8e57d3dbae394e9a89b20e18aefd572c
+#: ../../changes.rst:483 c6a528f3febb45cabd1a7a1cbf08d43c
 msgid ":issue:`285`  Tidied up Options and Admin menus"
 msgstr ""
 
-#: ../../changes.rst:485 762fadf116264300832f4bb8bdd20698
+#: ../../changes.rst:484 654f8c6f5a21407abc8cc0becdcb95ac
 msgid ""
 ":issue:`284`  Fixed DICOM Query that looped if SCP respected "
 "ModalitiesInStudy"
 msgstr ""
 
-#: ../../changes.rst:486 a8cf3dfdf18744a7986d62cddd71d657
+#: ../../changes.rst:485 e203fab2394a44d38fcd5d08dc504c61
 msgid ":issue:`282`  Missing javascript file required for IE8 and below added"
 msgstr ""
 
-#: ../../changes.rst:487 378b5323c24b4cce889fa438c6508d17
+#: ../../changes.rst:486 d06bdbb78f3e45f3a76f58b11814e5f8
 msgid ":issue:`281`  Added check to import function to prevent extract failure"
 msgstr ""
 
-#: ../../changes.rst:488 6c414564ae57441ba0b04115658f1e4c
+#: ../../changes.rst:487 fde699a60c894a47a808b728e40b4139
 msgid ":issue:`280`  Fixed typo in mammography export"
 msgstr ""
 
-#: ../../changes.rst:489 59940c8bc0e041ca8a602fb58ea0c0d8
+#: ../../changes.rst:488 b885a28322a14f42b1fb13af3eca8f99
 msgid ":issue:`279`  Charts: Fixed issue with median CTDI series from appearing"
 msgstr ""
 
-#: ../../changes.rst:490 63ad524a1ee943baaa17141002459da0
+#: ../../changes.rst:489 fdb76690fb43463c95a3695ebd3e1742
 msgid ""
 ":issue:`278`  Charts: Fixed javascript namespace pollution that caused "
 "links to fail"
 msgstr ""
 
-#: ../../changes.rst:491 885ffaadc20b4edab5c4ebf56a7943d3
+#: ../../changes.rst:490 7a4882931c014bc8bf3187c09da45cce
 msgid ""
 ":issue:`277`  Overhaul of acquisition level filters to get tooltip "
 "generated filters to follow through to export"
 msgstr ""
 
-#: ../../changes.rst:492 adb9ae6b44be456390f43de7f2e64cac
+#: ../../changes.rst:491 357d6038bd6e4858827912eb24f2e55d
 msgid ""
 ":issue:`276`  Unique fields cannot have unlimited length in MySQL - "
 "replaced with hash"
 msgstr ""
 
-#: ../../changes.rst:493 12ded31c02404460aa709a2f3decc30b
+#: ../../changes.rst:492 958d3e75b47345b0a9b5400c07cdad60
 msgid ":issue:`274`  Charts: Fixed legend display issue"
 msgstr ""
 
-#: ../../changes.rst:494 56f61445d3bc4dd5a8a8b2b328f5ddf1
+#: ../../changes.rst:493 c0e1aa04248141e98aa623f26eae5780
 msgid ":issue:`273`  Charts: Added plots of average kVp and mAs over time for DX"
 msgstr ""
 
-#: ../../changes.rst:495 81f0bfd485864ce498e131a80b385c85
+#: ../../changes.rst:494 978bb72cfba14dc6b68474f3a3e49ad8
 msgid ":issue:`272`  Tweak to display of exam description for DX"
 msgstr ""
 
-#: ../../changes.rst:496 b7277be75e554372b788c093bdf6ef70
+#: ../../changes.rst:495 87130ba45c2043a6b62b889897545ff6
 msgid ""
 ":issue:`271`  Fixed DX import failure where ``AcquisitionDate`` or "
 "``AcquisitionTime`` are ``None``"
 msgstr ""
 
-#: ../../changes.rst:497 c89a86338c4242adaea476f3ef6e28a8
+#: ../../changes.rst:496 07cb6f79f5d24d16bcc8cd085343bd12
 msgid ""
 ":issue:`270`  Django 1.8 Admin site has a 'view site' link. Pointed it "
 "back to OpenREM"
 msgstr ""
 
-#: ../../changes.rst:498 e9bdb3dbd8e649b2ab355d0f8b10a08a
+#: ../../changes.rst:497 4cb809c588ff4e47b6c52ba95841f902
 msgid ":issue:`268`  Improved population of procedure_code_meaning for DX imports"
 msgstr ""
 
-#: ../../changes.rst:499 70431c9bd81d4d7a9c464099a8a28460
+#: ../../changes.rst:498 3285b195c6c845da9e500f583cdaf609
 msgid ""
 ":issue:`266`  DICOM C-Store script added back in - largely redundant with"
 " web interface"
 msgstr ""
 
-#: ../../changes.rst:500 548853b3028e4db991e7260bbf43964b
+#: ../../changes.rst:499 9caf6651725c40968f4f054756d1699f
 msgid ":issue:`265`  DICOM Store and Query Retrieve services documented"
 msgstr ""
 
-#: ../../changes.rst:501 4b0875c804704e5fa1434a24d7e2909a
+#: ../../changes.rst:500 fc6289f90d4449f98c54ac3361eaace0
 msgid ""
 ":issue:`263`  Settings for keeping or deleting files once processed moved"
 " to database and web interface"
 msgstr ""
 
-#: ../../changes.rst:502 39fba05471a24c379ed953189509fce1
+#: ../../changes.rst:501 b2b6f59c04914f9aa31737ddd56a4d77
 msgid ""
 ":issue:`262`  Dealt with issue where two exposures from the same study "
 "would race on import"
 msgstr ""
 
-#: ../../changes.rst:503 366057cdbb934d6fa55deb14095f056d
+#: ../../changes.rst:502 f9f53c1fa6704eca8b140f91e92200ee
 msgid ""
 ":issue:`260`  Fixed issue where import and export jobs would get stuck "
 "behind StoreSCP task in queue"
 msgstr ""
 
-#: ../../changes.rst:504 3fe6eada26b44f2aaa16b299a1fe60ca
+#: ../../changes.rst:503 7969395e01ed4e3d81353e8f953c5260
 msgid ":issue:`259`  Link to manage users added to Admin menu"
 msgstr ""
 
-#: ../../changes.rst:505 0a7d47cf1267491eb5b0d52aa220c005
+#: ../../changes.rst:504 ae0b581b609a41cbb02849a56a57603d
 msgid ""
 ":issue:`258`  Fixed DX import error where manufacturer or model name was "
 "not provided"
 msgstr ""
 
-#: ../../changes.rst:506 bda7990c8523474aa4ebb820e69b870e
+#: ../../changes.rst:505 3567f11f68e64c41ae07d9f6db6927d9
 msgid ":issue:`257`  Documentation update"
 msgstr ""
 
-#: ../../changes.rst:507 cdae210f50b7436e9c92138591325d33
+#: ../../changes.rst:506 20c6da5c5b0f4f919efe80b6b9a062dd
 msgid ""
 ":issue:`256`  Fixed errors with non-ASCII characters in imports and "
 "query-retrieve"
 msgstr ""
 
-#: ../../changes.rst:508 ff4fcdb25544424fa355f15563d779a5
+#: ../../changes.rst:507 11f842fc4b614aa7a566337e2ee3a551
 msgid ""
 ":issue:`255`  Charts: Small y-axis values on histograms are more visible "
 "when viewing full-screen"
 msgstr ""
 
-#: ../../changes.rst:509 0a94665834fe42569123e1582aa0af63
+#: ../../changes.rst:508 d7ac9fa18bba4d208e9f72699ef946a7
 msgid ":issue:`254`  Charts: Simplified chart data processing in the templates"
 msgstr ""
 
-#: ../../changes.rst:510 1f5a52eb861c47a1984c04ef7715f262
+#: ../../changes.rst:509 4f309a5cf7c145b6a20069d7d603b562
 msgid ""
 ":issue:`253`  Charts: AJAX used to make pages responsive with large "
 "datasets when charts enabled"
 msgstr ""
 
-#: ../../changes.rst:511 77135403411441d2af72f7f7f28c1718
+#: ../../changes.rst:510 6e32ff1c80b448f2aee19f9d8123eec1
 msgid ""
 ":issue:`252`  Fixed duplicate entries in DX filtered data for studies "
 "with multiple exposures"
 msgstr ""
 
-#: ../../changes.rst:512 01305be4d7d343638cdc4341bb7fa0c4
+#: ../../changes.rst:511 15cd20c4967f4e84a17e4ec9a2fb22e6
 msgid ":issue:`248`  Charts: can now be ordered by frequency or alphabetically"
 msgstr ""
 
-#: ../../changes.rst:513 b287e20029ab4b0198dc8be53edf9f35
+#: ../../changes.rst:512 74a0ad7aed9b4c45b915bc99fa46d832
 msgid ":issue:`247`  Fixed incorrect reference to manufacturer_model_name"
 msgstr ""
 
-#: ../../changes.rst:514 21df26cbe50f4ff4b87c019d5547008f
+#: ../../changes.rst:513 05116b12fd23498eae07da8f07980b87
 msgid ":issue:`246`  Charts: Added median data for PostgreSQL users"
 msgstr ""
 
-#: ../../changes.rst:515 9021be3dc0d94f4b913e5440ba2fcf58
+#: ../../changes.rst:514 b1f2fbe025704b11a88080440071158e
 msgid ":issue:`245`  Fixed error in csv DX export"
 msgstr ""
 
-#: ../../changes.rst:516 021ea22f8f314a828e34fbe609e03731
+#: ../../changes.rst:515 159154258acb4ee1933203267f9d7645
 msgid ""
 ":issue:`244`  Fixed issue where scripts wouldn't function after upgrade "
 "to Django 1.8"
 msgstr ""
 
-#: ../../changes.rst:517 569eb7e4dc3946dfb6062e60492e7d5d
+#: ../../changes.rst:516 23e15b483c7b4e38a3547e44baf69619
 msgid ":issue:`243`  Added distance related data to DX exports"
 msgstr ""
 
-#: ../../changes.rst:518 7c4d6fe51081454789594d150df78347
+#: ../../changes.rst:517 53d5437c17c54822907be2c287ea25a2
 msgid ":issue:`242`  Distance source to patient now extracted from DX images"
 msgstr ""
 
-#: ../../changes.rst:519 c7c129e9fff74ae5b740cbdce3b7803a
+#: ../../changes.rst:518 18a6b8192cdc474c8bb5fb4400679b0c
 msgid ":issue:`241`  Charts: Median values can be plotted for PostgreSQL users"
 msgstr ""
 
-#: ../../changes.rst:520 4d6864f2a92546618304dd2b532a2154
+#: ../../changes.rst:519 57866287270849069bdbab507e1753f2
 msgid ":issue:`240`  Charts: Improved DAP over time calculations"
 msgstr ""
 
-#: ../../changes.rst:521 6d1acc3a8d52475ba0d12075ac9a5cfd
+#: ../../changes.rst:520 3b9e8426d0884d199a1e8e36c1e4c4e7
 msgid ""
 ":issue:`239`  Configurable equipment names to fix multiple sources with "
 "the same station name"
 msgstr ""
 
-#: ../../changes.rst:522 8e0c204ead28460fbd83f8c8dc4ef9dc
+#: ../../changes.rst:521 5c81d93d5773466e92f57f83c4acb1b8
 msgid ":issue:`237`  Charts: Tidied up plot data calculations in ``views.py``"
 msgstr ""
 
-#: ../../changes.rst:523 672ccf335a6a4767b62c1a026332f7e0
+#: ../../changes.rst:522 522f9cc54ff04916923f477709e3d397
 msgid ":issue:`235`  Added patient sex to each of the exports"
 msgstr ""
 
-#: ../../changes.rst:524 c1c48bf36d2d4ce284a326feacd74573
+#: ../../changes.rst:523 82348c4538a54769b851e3470bbfb354
 msgid ":issue:`234`  Charts: Fixed error with datetime combine"
 msgstr ""
 
-#: ../../changes.rst:525 f8e01a1efffc4c6f91b838c13ff08b93
+#: ../../changes.rst:524 acf96854c9214a0e82a40d7ee0adefa0
 msgid ":issue:`232`  Charts: on or off displayed on the home page"
 msgstr ""
 
-#: ../../changes.rst:526 cf41d3524f804f1196ac0de6cbc079f1
+#: ../../changes.rst:525 0bb8e85c7f974504a98ec384b848af00
 msgid ""
 ":issue:`231`  Charts: made links from requested procedure frequency plot "
 "respect the other filters"
 msgstr ""
 
-#: ../../changes.rst:527 3c065eb36f434292861cf8fefc50c518
+#: ../../changes.rst:526 4c04130060504d71b30ad3fa02383e4a
 msgid ":issue:`230`  Fixed error in OperatorsName field in DICOM extraction"
 msgstr ""
 
-#: ../../changes.rst:528 25856f396dac465a8de1a0b927f9df0d
+#: ../../changes.rst:527 0615a0566331424e96fbf619c2ff9bd3
 msgid ":issue:`229`  Charts: Added chart of DLP per requested procedure"
 msgstr ""
 
-#: ../../changes.rst:529 d7196dfaddfa4beb820b60f7f7be1cb5
+#: ../../changes.rst:528 78ff67a1977f45f9bcc760f7a19ab5b8
 msgid ":issue:`223`  Charts: speed improvement for weekday charts"
 msgstr ""
 
-#: ../../changes.rst:530 917536a500e2422f940ebddad4b51217
+#: ../../changes.rst:529 94b16b0215724e8d8645425209540695
 msgid ""
 ":issue:`217`  Charts: Further code optimisation to speed up calculation "
 "time"
 msgstr ""
 
-#: ../../changes.rst:531 1b371d15e66545e28d60d56f8a0c9f00
+#: ../../changes.rst:530 29a6c82aa6534e3798633326a4cccf8a
 msgid ":issue:`207`  DICOM QR SCU now available from web interface"
 msgstr ""
 
-#: ../../changes.rst:532 f64055506d9840718fe3bb77b87d7392
+#: ../../changes.rst:531 518e95804a8743508156644c2da110e0
 msgid ""
 ":issue:`206`  DICOM Store SCP configuration now available from web "
 "interface"
 msgstr ""
 
-#: ../../changes.rst:533 046dd9c064df4ea5a36379e5d0964a5b
+#: ../../changes.rst:532 be1b41cd46dc48e78250dc0ea81a6696
 msgid ""
 ":issue:`183`  Added options to store patient name and ID, and options to "
 "hash name, ID and accession number"
 msgstr ""
 
-#: ../../changes.rst:534 ac758edc833144698c02b66285316a04
+#: ../../changes.rst:533 70931b5ca5034ecfb0054a5f9b4e90f3
 msgid ":issue:`171`  Root URL now resolves so ``/openrem`` is not necessary"
 msgstr ""
 
-#: ../../changes.rst:535 bc262c88641c4cd59a679b37bf462e6c
+#: ../../changes.rst:534 6866d813a81c4c31b98a9b31fa0e11ed
 msgid ":issue:`151`  Suspected non-patient studies can now be filtered out"
 msgstr ""
 
-#: ../../changes.rst:536 3b2310102caf4866b3992f1dfb8a56ee
+#: ../../changes.rst:535 cf7bb3222a0248ecab29cacebc207a5a
 msgid ""
 ":issue:`135`  GE Senographe DS now correctly records compression force in"
 " Newtons for new imports"
 msgstr ""
 
-#: ../../changes.rst:537 d72b57bc3fb443bda73c92f442ca7259
+#: ../../changes.rst:536 21dc48aea4f44784ab1ad50ae655dd3d
 msgid ":issue:`120`  Improved testing of data existing for exports"
 msgstr ""
 
-#: ../../changes.rst:538 ffb48669a06942549d0310012410878d
+#: ../../changes.rst:537 38ae2ad867ba43db87e40e0272a67294
 msgid ":issue:`118`  Upgraded to Django 1.8"
 msgstr ""
 
-#: ../../changes.rst:539 e48ec297981d402fb94300253f1b0bb9
+#: ../../changes.rst:538 4d193f9830544d1aaba5d300a93b5377
 msgid ":issue:`70`   User is returned to the filtered view after deleting a study"
 msgstr ""
 
-#: ../../changes.rst:540 71199ee3ab1b4cefafff9468fdfc0999
+#: ../../changes.rst:539 fb4c15e07e20474eacdb6aa6f3c44b0a
 msgid ""
 ":issue:`61`   Skin dose maps for fluoroscopy systems can now be "
 "calculated and displayed"
 msgstr ""
 
-#: ../../changes.rst:543 a296e7fd9b694764889bd3101e9e3fe1
+#: ../../changes.rst:542 cf34d5f77255464d948f8ffc14f92c25
 msgid "0.6.2 (2016-01-27)"
 msgstr ""
 
-#: ../../changes.rst:544 3be0a5a67cac4045b9bb13b943c370b3
+#: ../../changes.rst:543 b43ff326365c4cc19a38f3f4a73e185b
 msgid ""
 ":issue:`347`  Django-filter v0.12 has minimum Django version of 1.8, "
 "fixed OpenREM 0.6.2 to max django-filter 0.11"
 msgstr ""
 
-#: ../../changes.rst:545 1584f30c12c346be9dc153177f545c4a
+#: ../../changes.rst:544 85c8e1bb247f440eb9ca12e35251d730
 msgid ""
 ":issue:`341`  Changed references to the OpenSkin repository for 0.6 "
 "series."
 msgstr ""
 
-#: ../../changes.rst:548 a7affda19aba4e4c8484a99274f522a7
+#: ../../changes.rst:547 d8b5e8b4713345e4bb74ad180c4c0833
 msgid "0.6.1 (2015-10-30)"
 msgstr ""
 
-#: ../../changes.rst:549 d4fb65a78d0149569b698b0bfb48c502
+#: ../../changes.rst:548 3432450cb345410db53edf9c4779ed67
 msgid ":issue:`303`  Corrected name of Store SCP command in docs"
 msgstr ""
 
-#: ../../changes.rst:552 1e5b5ca64ced4f70b970c7e4cec56da2
+#: ../../changes.rst:551 0101ec5c230b457fac6d5c0c8f8a4ec5
 msgid "0.6.0 (2015-05-14)"
 msgstr ""
 
-#: ../../changes.rst:554 f8947c4dc2d94f1687e939635fa71904
+#: ../../changes.rst:553 26837ae90747434ea9517353467a5034
 msgid ":issue:`227`  Fixed import of RDSRs from Toshiba Cath Labs"
 msgstr ""
 
-#: ../../changes.rst:555 6af2058fbdc6438ebb27e1313929462a
+#: ../../changes.rst:554 f46ff5d7985b4ebc81ef635106c17ff7
 msgid ""
 ":issue:`226`  Charts: Updated Highcharts code and partially fixed issues "
 "with CTDIvol and DLP combined chart"
 msgstr ""
 
-#: ../../changes.rst:556 255e3ba2d5a540c282b22af385c165ba
+#: ../../changes.rst:555 1c304d3b0c6843a2959205e6b59621e7
 msgid ""
 ":issue:`225`  Charts: Added link from mAs and kVp histograms to "
 "associated data"
 msgstr ""
 
-#: ../../changes.rst:557 9e11e148193b4ad6b4189a6c807b3b6e
+#: ../../changes.rst:556 802a8ada509249aab5c19b4b7c368aaa
 msgid ""
 ":issue:`224`  Charts: Added link from CTDIvol histograms to associated "
 "data"
 msgstr ""
 
-#: ../../changes.rst:558 529a37cd1337476dabc7674b0096a2db
+#: ../../changes.rst:557 a65819266c5246c8aae0408cbe7520ea
 msgid ""
 ":issue:`221`  Charts: Fixed issue where filters at acquisition event "
 "level were not adequately restricting the chart data"
 msgstr ""
 
-#: ../../changes.rst:559 9fefb62e9b474669bfc00edbd8758ad9
+#: ../../changes.rst:558 35c08a20b13249e78d0110231674f188
 msgid ""
 ":issue:`219`  Charts: Fixed issue where some charts showed data beyond "
 "the current filter"
 msgstr ""
 
-#: ../../changes.rst:560 7b7bae95ee0644c1b584b9d2969271c0
+#: ../../changes.rst:559 8e1eaa96e28e4bd5931fffc6e9cdf063
 msgid ":issue:`217`  Charts: Code optimised to speed up calculation time"
 msgstr ""
 
-#: ../../changes.rst:561 51822725cfaa4091a6b3bfc61a0438d3
+#: ../../changes.rst:560 14fb520c905447e9942d5112788abebe
 msgid ""
 ":issue:`216`  Fixed typo that prevented import of RSDR when DICOM store "
 "settings not present"
 msgstr ""
 
-#: ../../changes.rst:562 7759e04f660a45c288461fb8ca6fee9c
+#: ../../changes.rst:561 576c4f9bb035480f8eba40705b628589
 msgid ":issue:`215`  Charts: Fixed x-axis labels for mean dose over time charts"
 msgstr ""
 
-#: ../../changes.rst:563 ffaa7786b7a54b5499fa102e02aded04
+#: ../../changes.rst:562 028be20d1d7141b89c37ef3ba2e3505c
 msgid ":issue:`214`  Charts: Improved consistency of axis labels"
 msgstr ""
 
-#: ../../changes.rst:564 5c7eec6d94de4649ab5756902d948137
+#: ../../changes.rst:563 bf281dac1fe24c28a0f78b8ee6e132a6
 msgid ":issue:`213`  Fixed admin menu not working"
 msgstr ""
 
-#: ../../changes.rst:565 abec45111e6f40cbaf1e6e64e16248ea
+#: ../../changes.rst:564 95139e51f57b41478701d90ef46bc9a7
 msgid ":issue:`212`  Charts: Created off-switch for charts"
 msgstr ""
 
-#: ../../changes.rst:566 0136364d08024d03b62a73150b88c511
+#: ../../changes.rst:565 e41fe67c88f948cdb912c29fc9c62f25
 msgid ":issue:`210`  OpenSkin exports documented"
 msgstr ""
 
-#: ../../changes.rst:567 87be06e4566c488094a8326e88135995
+#: ../../changes.rst:566 67fd90575e144ccbb1ae4c454474b1f3
 msgid ""
 ":issue:`209`  Charts: Fixed server error when CT plots switched off and "
 "filter form submitted"
 msgstr ""
 
-#: ../../changes.rst:568 8043fabb94434830a29f1da1c9c12ee4
+#: ../../changes.rst:567 4cc43bd5cb844253a53729fc584fd8be
 msgid ""
 ":issue:`208`  Charts: Fixed blank chart plotting options when clicking on"
 " histogram tooltip link"
 msgstr ""
 
-#: ../../changes.rst:569 1ab7d91446d04d568685c72e48815e4e
+#: ../../changes.rst:568 6f5d5fa682634caea6f5f1ec648c95ba
 msgid ""
 ":issue:`205`  Charts: Fixed issue of histogram tooltip links to data not "
 "working"
 msgstr ""
 
-#: ../../changes.rst:570 cb3880b11c9b48e68fd3d4b6f8507805
+#: ../../changes.rst:569 4c08cea79f424f528010abb973c40710
 msgid ""
 ":issue:`204`  Charts: Fixed issue of not being able to export with the "
 "charts features added"
 msgstr ""
 
-#: ../../changes.rst:571 c60be73809114288bcf994179a40e8ae
+#: ../../changes.rst:570 8f95e0e952154fe9b4d4329d0ce7b928
 msgid ":issue:`203`  Charts: Fixed display of HTML in plots issue"
 msgstr ""
 
-#: ../../changes.rst:572 80011b571c824d63b59f201985258166
+#: ../../changes.rst:571 609192ccdf3845c480ea55e20369f97d
 msgid ":issue:`202`  Charts: Added mean CTDIvol to charts"
 msgstr ""
 
-#: ../../changes.rst:573 eee86d05b9cc4e53b00b83ba1bfcb909
+#: ../../changes.rst:572 5535b0efd696492a8320008a677bf481
 msgid ":issue:`200`  Charts: Now exclude Philips Ingenuity SPRs from plots"
 msgstr ""
 
-#: ../../changes.rst:574 4c2b8d8ce3324b7db4d78d89db9f9da1
+#: ../../changes.rst:573 33206fd95b3542d8bc4d51762dc0d1fd
 msgid ":issue:`196`  Added comments and entrance exposure data to DX export"
 msgstr ""
 
-#: ../../changes.rst:575 1963a903a8d9406ea1edd0e86d35fa78
+#: ../../changes.rst:574 028046fc78fe4a6ab70cff0a565dbf96
 msgid ":issue:`195`  Fixed error with no users on fresh install"
 msgstr ""
 
-#: ../../changes.rst:576 9230f3c520c8415595e52b880ce722a5
+#: ../../changes.rst:575 a45cdd7cea2e4e8196a0fe011372e06b
 msgid ":issue:`194`  Added more robust extraction of series description from DX"
 msgstr ""
 
-#: ../../changes.rst:577 f6a4b531580246d1aebad89b8de58488
+#: ../../changes.rst:576 b92de968648f402cbf268b63677a6fb5
 msgid ":issue:`193`  Charts: Fixed reset of filters when moving between pages"
 msgstr ""
 
-#: ../../changes.rst:578 0399920f9b294d31b8d18eb0c53a5b0e
+#: ../../changes.rst:577 b83cd4ce6e334a5387aea263236cea63
 msgid ":issue:`192`  Created RF export for OpenSkin"
 msgstr ""
 
-#: ../../changes.rst:579 6538f39cc9644db295e5c7a40cfb44bd
+#: ../../changes.rst:578 eb8199787e334ca88ab3c7fde44f6c1f
 msgid ""
 ":issue:`191`  Charts: Factored out the javascript from the filtered.html "
 "files"
 msgstr ""
 
-#: ../../changes.rst:580 a69a6bd0dd0e4431b9b1be02ac6dd6d2
+#: ../../changes.rst:579 102ec24e4de04efa876661db26393eba
 msgid ""
 ":issue:`190`  Charts: Added time period configuration to dose over time "
 "plots"
 msgstr ""
 
-#: ../../changes.rst:581 14547b90461248ec999aa806a63faa43
+#: ../../changes.rst:580 6c8cca64ce044fed82e07700ab7a8d4c
 msgid ""
 ":issue:`189`  Charts: Fixed plotting of mean doses over time when "
 "frequency not plotted"
 msgstr ""
 
-#: ../../changes.rst:582 e8542cf898f54a8183fe05d3ec5467d6
+#: ../../changes.rst:581 e02200d55ff444e4a0c36cc91f585b10
 msgid ":issue:`187`  Charts: Merged the charts work into the main develop branch"
 msgstr ""
 
-#: ../../changes.rst:583 38269d03b4a84d708b0e67ae28f5879f
+#: ../../changes.rst:582 1c79dfd5c2b543b9839ce345f83b5730
 msgid ":issue:`186`  Fixed duplicate data in DX exports"
 msgstr ""
 
-#: ../../changes.rst:584 f3d9e53771de4ee4bd66c7536432048a
+#: ../../changes.rst:583 a6c7ac09bfe44ef19baafa9e81d06433
 msgid ":issue:`179`  Charts: Added kVp and mAs plots for DX"
 msgstr ""
 
-#: ../../changes.rst:585 95b4c597891f4fb085636728be2100db
+#: ../../changes.rst:584 69b40976a39e4c29a1bc02ff371bf966
 msgid ""
 ":issue:`177`  Charts: Fixed issue with date ranges for DX mean dose over "
 "time charts"
 msgstr ""
 
-#: ../../changes.rst:586 4032d5ab80de4281a17f5c31e3002e2c
+#: ../../changes.rst:585 3415dd7734114194bd4cfce37a0ac0ab
 msgid ""
 ":issue:`176`  Charts: Added link to filtered dataset from mean dose over "
 "time charts"
 msgstr ""
 
-#: ../../changes.rst:587 40e686a4529e4c23b8c4d4480e0463ba
+#: ../../changes.rst:586 850ace9fb43a4efea6d259f5cbff8f3e
 msgid ""
 ":issue:`175`  Charts: Allowed configuration of the time period for mean "
 "dose trend charts to improve performance"
 msgstr ""
 
-#: ../../changes.rst:588 13f9bcd9d7644390ae0b9879f16a0783
+#: ../../changes.rst:587 ef737381dee7457dad3286cf5be79501
 msgid ":issue:`174`  Charts: Fixed number of decimal places for mean DLP values"
 msgstr ""
 
-#: ../../changes.rst:589 d5aa76330d5c4bec8aae3966c6269115
+#: ../../changes.rst:588 901a0ce5081c4d1baa839088e27341f9
 msgid ":issue:`173`  Charts: Fixed plot of mean DLP over time y-axis issue"
 msgstr ""
 
-#: ../../changes.rst:590 55a23bb371884724bb62136cee0da5a1
+#: ../../changes.rst:589 506ad50787664221b65f70aa754c88cb
 msgid ":issue:`170`  Charts: Added plot of mean dose over time"
 msgstr ""
 
-#: ../../changes.rst:591 ee5e703d74fe4540917b1b38f2e4da0f
+#: ../../changes.rst:590 c3c8388187e84599b41fe756b31969ab
 msgid ":issue:`169`  Charts: Improved chart colours"
 msgstr ""
 
-#: ../../changes.rst:592 9a4eaf1db7254e4bb7d2a082ec624c55
+#: ../../changes.rst:591 a2aa0eb8f54c4a149f8118ddfe49a2b2
 msgid ""
 ":issue:`157`  Charts: Added chart showing number of studies per day of "
 "the week, then hour in the day"
 msgstr ""
 
-#: ../../changes.rst:593 8d3643917c9f42ed8ed1d803186ad855
+#: ../../changes.rst:592 c5d0a17802e1436694ea0c8df8cf27f9
 msgid ":issue:`156`  Charts: Fixed issue with some protocols not being displayed"
 msgstr ""
 
-#: ../../changes.rst:594 29682c9e70c540a8acf2d77f2d40db75
+#: ../../changes.rst:593 40336a171bb543ce85b3be5dd7e5361e
 msgid ""
 ":issue:`155`  Charts: Added chart showing relative frequency of protocols"
 " and study types"
 msgstr ""
 
-#: ../../changes.rst:595 0c41c71c1a0c4a529456c248d33de5d7
+#: ../../changes.rst:594 7ad224a81c064c04b1391d1747f5aace
 msgid ":issue:`140`  Charts: Added configuration options"
 msgstr ""
 
-#: ../../changes.rst:596 f16183fc444c48fcb6ebf6c5662c5ac4
+#: ../../changes.rst:595 0ab79b54a215429ca93017f2011ff93c
 msgid ":issue:`139`  Charts: Link to filtered dataset from histogram chart"
 msgstr ""
 
-#: ../../changes.rst:597 0a90e68d90104cc5b6903d944ed24507
+#: ../../changes.rst:596 22f53c8699184125aa64a281512a005e
 msgid ":issue:`138`  Charts: Number of datapoints displayed on tooltip"
 msgstr ""
 
-#: ../../changes.rst:598 5ed6239424f24fd294e11e6bc8336ba5
+#: ../../changes.rst:597 1a111ea5079448ef8d05c0f0517b200b
 msgid ""
 ":issue:`135`  Mammography compression force now only divides by 10 if "
 "model contains *senograph ds* **Change in behaviour**"
 msgstr ""
 
-#: ../../changes.rst:599 19d568ee964d4f979f5f6db29ce84fe2
+#: ../../changes.rst:598 4aa4d213aed04c0f95f084b9e3ed7257
 msgid ":issue:`133`  Documented installation of NumPy, initially for charts"
 msgstr ""
 
-#: ../../changes.rst:600 3c17fba56b0f4f8182d886ff43120206
+#: ../../changes.rst:599 7437b7f12ef94549bdb319ac3a738427
 msgid ":issue:`41`   Preview of DICOM Store SCP now available"
 msgstr ""
 
-#: ../../changes.rst:601 d287aa1b71dc4ab99fcca852305881e9
+#: ../../changes.rst:600 ac4d8a8bb48b456bb320e9da989580fe
 msgid ":issue:`20`   Modality sections are now suppressed until populated"
 msgstr ""
 
-#: ../../changes.rst:605 a7c94f3ac842477d8a820f092bf40024
+#: ../../changes.rst:604 9f177e16b8c542a3acadabf4657e2b04
 msgid "0.5.1 (2015-03-12)"
 msgstr ""
 
-#: ../../changes.rst:607 b44a5eb0177a43928f956c699a985221
+#: ../../changes.rst:606 493288c2e5ba49528191eb90ccebc1ed
 msgid ":issue:`184`  Documentation for 0.5.1"
 msgstr ""
 
-#: ../../changes.rst:608 531bf7bf3adf4fb3a99917c051c2642a
+#: ../../changes.rst:607 ded5a23ae619447ab49e48076509b084
 msgid ":issue:`180`  Rename all reverse lookups as a result of :issue:`62`"
 msgstr ""
 
-#: ../../changes.rst:609 343470de92a34cf199d9419f990dc2d6
+#: ../../changes.rst:608 9f43179e62b44734a3aeacc45c8dc6b6
 msgid ""
 ":issue:`178`  Added documentation regarding backing up and restoring "
 "PostgreSQL OpenREM databases"
 msgstr ""
 
-#: ../../changes.rst:610 b1f46947ce8f4786aaaabeb3e74e3649
+#: ../../changes.rst:609 43d77c1f98e4421480a337cbf590d1c8
 msgid ""
 ":issue:`172`  Revert all changes made to database so :issue:`62` could "
 "take place first"
 msgstr ""
 
-#: ../../changes.rst:611 54231d48ecc24ef2b8fc564f222ace7a
+#: ../../changes.rst:610 ec6f17893526427480a074d9e20b1875
 msgid ""
 ":issue:`165`  Extract height and weight from DX, height from RDSR, all if"
 " available"
 msgstr ""
 
-#: ../../changes.rst:612 281e09057236456c869106e53bc278ea
+#: ../../changes.rst:611 6df5e04d966a4e688a8db5a89b1c5db5
 msgid ""
 ":issue:`161`  Views and exports now look for accumulated data in the "
 "right table after changes in :issue:`159` and :issue:`160`"
 msgstr ""
 
-#: ../../changes.rst:613 a2dbdf7a02a64598b0f685c8f7c24c8f
+#: ../../changes.rst:612 b03a886155254888942e083d649abf96
 msgid ""
 ":issue:`160`  Created the data migration to move all the DX accumulated "
 "data from TID 10004 to TID 10007"
 msgstr ""
 
-#: ../../changes.rst:614 9a20a588ebd3432bbfab200056cd6624
+#: ../../changes.rst:613 59f4319f0401499c8e6cce49cb5849ad
 msgid ""
 ":issue:`159`  Modified the DX import to populate TID 10007 rather than "
 "TID 10004. RDSR RF already populates both"
 msgstr ""
 
-#: ../../changes.rst:615 a8852f16e55f4651b31cdc3a9b0f5a24
+#: ../../changes.rst:614 2e69b34ce8a94985be590f0f6d53ea8b
 msgid ""
 ":issue:`158`  Demo website created by DJ Platten: "
 "http://demo.openrem.org/openrem"
 msgstr ""
 
-#: ../../changes.rst:616 f8c7cee019164f8e8d45f4b0c10f6480
+#: ../../changes.rst:615 5e111103b0e04327b858561fe8d07cf3
 msgid ""
 ":issue:`154`  Various decimal fields are defined with too few decimal "
 "places - all have now been extended."
 msgstr ""
 
-#: ../../changes.rst:617 c26ba9fce42b4a0da5927ca0c1411b68
+#: ../../changes.rst:616 86554915a3b645df877e958dcdfc09e1
 msgid ""
 ":issue:`153`  Changed home page and modality pages to have whole row "
 "clickable and highlighted"
 msgstr ""
 
-#: ../../changes.rst:618 21e30b5889ea4897857d9df390858111
+#: ../../changes.rst:617 0b7af24fd7ba410f8dc2842529af5fab
 msgid ":issue:`150`  DJ Platten has added Conquest configuration information"
 msgstr ""
 
-#: ../../changes.rst:619 ca8264c9103d491db3987328e87ddadc
+#: ../../changes.rst:618 3c25208a2f2b4bf1a57c19e6e1b0a2fa
 msgid ""
 ":issue:`137`  Carestream DX multiple filter thickness values in a DS VR "
 "now extracted correctly"
 msgstr ""
 
-#: ../../changes.rst:620 1805b6c807aa489fab91d51f1651b2b2
+#: ../../changes.rst:619 db6cf2c4b8824d83becd2aba473dad2d
 msgid ""
 ":issue:`113`  Fixed and improved recording of grid information for mammo "
 "and DX and RDSR import routines"
 msgstr ""
 
-#: ../../changes.rst:621 3c03062ee6ba4fbd867c50c26722127e
+#: ../../changes.rst:620 16a6050340ad491da7d643c1043daec5
 msgid ""
 ":issue:`62`   Refactored all model names to be less than 39 characters "
 "and be in CamelCase to allow database migrations and to come into line "
 "with PEP 8 naming conventions for classes."
 msgstr ""
 
-#: ../../changes.rst:626 f32027f2c35b4f22b12f98ce0033ea0e
+#: ../../changes.rst:625 3fd91d4049fa4e89912fb3caf8030630
 msgid "0.5.0 (2014-11-19)"
 msgstr ""
 
-#: ../../changes.rst:628 27548e530cf24b2c86bf9410331e463c
+#: ../../changes.rst:627 0e7a39cf65ee4a26aa9e4954aba84d74
 msgid ""
 "Pull request from DJ Platten: Improved display of DX data and improved "
 "export of DX data"
 msgstr ""
 
-#: ../../changes.rst:629 206187c0401d4264a3d9fbc0bdf7e147
+#: ../../changes.rst:628 d2fd4d6b3550414580a0138c820e0696
 msgid ""
 ":issue:`132`  Fixed mammo export error that slipped in before the first "
 "beta"
 msgstr ""
 
-#: ../../changes.rst:630 903f36aa8de140f494db46076f115303
+#: ../../changes.rst:629 4216c6e09689460694709ddc511036f3
 msgid ""
 ":issue:`130`  Only creates ExposureInuAs from Exposure if Exposure exists"
 " now"
 msgstr ""
 
-#: ../../changes.rst:631 6971cb21415e47e9a0c646ceaa28e77b
+#: ../../changes.rst:630 7d47a6ed42a4423a99b3ef336a0d32e3
 msgid ""
 ":issue:`128`  Updated some non-core documentation that didn't have the "
 "new local_settings.py reference or the new openremproject folder name"
 msgstr ""
 
-#: ../../changes.rst:633 0f3be7c3959045d7bbf0de0cd8c8eccf
+#: ../../changes.rst:632 bd628f73587344f7a8e5fb4e4c7eadd2
 msgid ""
 ":issue:`127`  DX IOD studies with image view populated failed to export "
 "due to lack of conversion to string"
 msgstr ""
 
-#: ../../changes.rst:634 2c998f57edfb41da9fe17e1d012bc218
+#: ../../changes.rst:633 338ac1e0ccf74c068c79c76aafa5c9c6
 msgid ":issue:`126`  Documentation created for the radiographic functionality"
 msgstr ""
 
-#: ../../changes.rst:635 7736bcaf23c04f3d85e9fb082841fa61
+#: ../../changes.rst:634 9856f988f97446259bb1537caff54a35
 msgid ""
 ":issue:`125`  Fixes issue where Hologic tomo projection objects were "
 "dropped as they have the same event time as the 2D element"
 msgstr ""
 
-#: ../../changes.rst:636 9a2b8e7e88c04c9d939cab3634b8243c
+#: ../../changes.rst:635 fc3a288ce2834cc681a79af21b11146f
 msgid ""
 ":issue:`123`  Fixed issue where filters came through on export as lists "
 "rather than strings on some installs"
 msgstr ""
 
-#: ../../changes.rst:637 fee61aaa62c24dadbe80689e4d748c9b
+#: ../../changes.rst:636 067afbec52514911b025882247f27280
 msgid ""
 ":issue:`122`  Exports of RF data should now be more useful when exporting"
 " to xlsx. Will need refinement in the future"
 msgstr ""
 
-#: ../../changes.rst:638 f0c9d548eb4c462280757ee317209306
+#: ../../changes.rst:637 42b8625decae41edb8607e3379fa27a8
 msgid ""
 ":issue:`26`   Extractors created for radiographic DICOM images. "
 "Contributed by DJ Platten"
 msgstr ""
 
-#: ../../changes.rst:639 aace669e665b432f8eb785d23b0ea9a4
+#: ../../changes.rst:638 97ad31284b4c4edd8112a772c8b97078
 msgid ""
 ":issue:`25`   Views and templates added for radiographic exposures - "
 "either from RDSRs or from images - see :issue:`26`. Contributed by DJ "
 "Platten"
 msgstr ""
 
-#: ../../changes.rst:641 d0031f8ecf164e1ca119a7f7a392ae15
+#: ../../changes.rst:640 ded91037f0344873a184ad280acbad21
 msgid ""
 ":issue:`9`    Import of \\*.dcm should now be available from Windows and "
 "Linux alike"
 msgstr ""
 
-#: ../../changes.rst:645 e571f1fe57f143babbeffde2ec00e68b
+#: ../../changes.rst:644 92567f8fbb0740d794a284b2d9601b8a
 msgid "0.4.3 (2014-10-01)"
 msgstr ""
 
-#: ../../changes.rst:647 b6bfcfb403234678be8ec8c45cfa69a7
+#: ../../changes.rst:646 04e8eb260a27461e8f13c288cffe00af
 msgid ""
 ":issue:`119`  Fixed issue where Celery didn't work on Windows. Django "
 "project folder is now called openremproject instead of openrem"
 msgstr ""
 
-#: ../../changes.rst:648 0d79ad700ff84ff1b84d6be7f5a21969
+#: ../../changes.rst:647 1052ea301a854cabbde4d251b9323d82
 msgid ":issue:`117`  Added Windows line endings to patient size import logs"
 msgstr ""
 
-#: ../../changes.rst:649 52effaca7af44ed58f12cb0c5268152c
+#: ../../changes.rst:648 de2ce5f7e18e4d6b92ad0d6fd6b065b8
 msgid ":issue:`113`  Fixed units spelling error in patient size import logs"
 msgstr ""
 
-#: ../../changes.rst:650 a5b3ffa5982e4f0e8040afeb252294d1
+#: ../../changes.rst:649 4546e39e6b31477e9a2d5a87b31e32a5
 msgid ""
 ":issue:`112`  File system errors during imports and exports are now "
 "handled properly with tasks listed in error states on the summary pages"
 msgstr ""
 
-#: ../../changes.rst:651 4eac7e3e33f647b6969ce7fda3728530
+#: ../../changes.rst:650 dabba85812974af9be12a69289a51198
 msgid ""
 ":issue:`111`  Added abort function to patient size imports and study "
 "exports"
 msgstr ""
 
-#: ../../changes.rst:652 ec3e1b14d9a7470ba8e34e04b7f299f9
+#: ../../changes.rst:651 0fa2661e2ae347f29aa1fd82d299afbe
 msgid ""
 ":issue:`110`  Converted exports to use the FileField handling for storage"
 " and access, plus modified folder structure."
 msgstr ""
 
-#: ../../changes.rst:653 0470383fc6d04b22912be36d9c928f5b
+#: ../../changes.rst:652 84ead20d90c64bb2bf1a178f366f3e39
 msgid ""
 ":issue:`109`  Added example ``MEDIA_ROOT`` path for Windows to the "
 "install docs"
 msgstr ""
 
-#: ../../changes.rst:654 6d1a1732cf2f42b484e6b06ba457d78c
+#: ../../changes.rst:653 97fe177a1dd74254bd4f122b51b13d61
 msgid ":issue:`108`  Documented ownership issues between the webserver and Celery"
 msgstr ""
 
-#: ../../changes.rst:655 3dee4b81576b4795926cfff017bc6440
+#: ../../changes.rst:654 0ef57ae256f547da9a06e8c82d57e482
 msgid ""
 ":issue:`107`  Documented process for upgrading to 0.4.2 before 0.4.3 for "
 "versions 0.3.9 or earlier"
 msgstr ""
 
-#: ../../changes.rst:656 c776876cba494f168b97b94594ee3015
+#: ../../changes.rst:655 8538a2a32101410ca02f94acfb2906bf
 msgid ""
 ":issue:`106`  Added the duration of export time to the exports table. "
 "Also added template formatting tag to convert seconds to natural time"
 msgstr ""
 
-#: ../../changes.rst:657 3b4b4a556c134e69b182b5d8286ee1bc
+#: ../../changes.rst:656 a4c6259b14d941faa60a93dc8be9750c
 msgid ""
 ":issue:`105`  Fixed bug in Philips CT import where "
 ":py:class:`decimal.Decimal` was not imported before being used in the age"
 " calculation"
 msgstr ""
 
-#: ../../changes.rst:658 6a3b6e84a61b49fb9ff8e9ef86862e4b
+#: ../../changes.rst:657 6a0e2e3a9549406680c7bb23834aec65
 msgid ""
 ":issue:`104`  Added documentation for the additional study export "
 "functions as a result of using Celery tasks in task :issue:`19` as well "
 "as documentation for the code"
 msgstr ""
 
-#: ../../changes.rst:659 dcaa13c4fc384af9b423f498240ca64c
+#: ../../changes.rst:658 b89f0ab8264042ac909dbace246e3dee
 msgid ""
 ":issue:`103`  Added documentation for using the web import of patient "
 "size information as well as the new code"
 msgstr ""
 
-#: ../../changes.rst:660 52da65437e204f3ea96cc3bc11be0712
+#: ../../changes.rst:659 78a16a7564c940b0a686ffbab8a65719
 msgid ""
 ":issue:`102`  Improved handling of attempts to process patient size files"
 " that have been deleted for when users go back in the browser after the "
 "process is finished"
 msgstr ""
 
-#: ../../changes.rst:661 74aaa227293d4d0c8202d107e4e506fb
+#: ../../changes.rst:660 b1243ac3b38f4662a2fd9291c39d7cb0
 msgid ""
 ":issue:`101`  Set the security of the new patient size imports to prevent"
 " users below admin level from using it"
 msgstr ""
 
-#: ../../changes.rst:662 8f0b8122d937408ca39c2e5d39ca3c4c
+#: ../../changes.rst:661 c5182f567ad1472d9b17e846db71176c
 msgid ""
 ":issue:`100`  Logging information for patient size imports was being "
 "written to the database - changed to write to file"
 msgstr ""
 
-#: ../../changes.rst:663 14dc212f8a8a46ad9e98bd7c244370cb
+#: ../../changes.rst:662 0e94dfa5251844099356610ee93d49da
 msgid ""
 ":issue:`99`   Method for importing remapp from scripts and for setting "
 "the `DJANGO_SETTINGS_MODULE` made more robust so that it should work out "
 "of the box on Windows, debian derivatives and virtualenvs"
 msgstr ""
 
-#: ../../changes.rst:664 00a2ab2c8a4c49c086a6ee2324bb0bcb
+#: ../../changes.rst:663 0df411f1cd954bcb89e14087efed9d2c
 msgid ""
 ":issue:`98`   Versions 0.4.0 to 0.4.2 had a settings.py.new file to avoid"
 " overwriting settings files on upgrades; renaming this file was missing "
 "from the installation documentation for new installs"
 msgstr ""
 
-#: ../../changes.rst:665 a5b275e559044871b33f0b464b8dcab8
+#: ../../changes.rst:664 49c21487df7d4b32909c441568be4494
 msgid ""
 ":issue:`97`   Changed the name of the export views file from ajaxviews as"
 " ajax wasn't used in the end"
 msgstr ""
 
-#: ../../changes.rst:666 0ae333c24ed347d5affe4f11171c7eee
+#: ../../changes.rst:665 814e7ce98cf44f1992e5b24a16286224
 msgid ""
 ":issue:`96`   Changed mammo and fluoro filters to use named fields to "
 "avoid needing to use the full database path"
 msgstr ""
 
-#: ../../changes.rst:667 474f89d9004842e99e4bc8cc1bb4e0df
+#: ../../changes.rst:666 9b9074db035b486c80dfceb423b844ca
 msgid ""
 ":issue:`93`   Set the security of the new exports to prevent users below "
 "export level from creating or downloading exports"
 msgstr ""
 
-#: ../../changes.rst:668 ca01c250cbf24c4c8378e8e00f7e802c
+#: ../../changes.rst:667 e66ef1390b2c4e64ba4bf5725afe11b5
 msgid ""
 ":issue:`92`   Add `NHSBSP specific mammography csv export` from Jonathan "
 "Cole - with Celery"
 msgstr ""
 
-#: ../../changes.rst:669 1da1408ba9b04f24899f45eb9085927b
+#: ../../changes.rst:668 f2d1cc850d984cdd9b66f13dce49c91f
 msgid ":issue:`91`   Added documentation for Celery and RabbitMQ"
 msgstr ""
 
-#: ../../changes.rst:670 42dd756b9ad244609add432b4009259b
+#: ../../changes.rst:669 ab0e0d4d5e6049e9bfc6acceb3bce641
 msgid ":issue:`90`   Added delete function for exports"
 msgstr ""
 
-#: ../../changes.rst:671 169d65c267f7452d81e969cab06481aa
+#: ../../changes.rst:670 55990498eddf4b5ea26f0ccddaa5db28
 msgid ""
 ":issue:`89`   Added the Exports navigation item to all templates, limited"
 " to export or admin users"
 msgstr ""
 
-#: ../../changes.rst:672 16ef3a1a8998437b8a6748db137dff94
+#: ../../changes.rst:671 07753d36b4614c72a5528edef6b8ba6f
 msgid ""
 ":issue:`88`   Converted fluoroscopy objects to using the Celery task "
 "manager after starting with CT for :issue:`19`"
 msgstr ""
 
-#: ../../changes.rst:673 2e1895c6db2e419782cefd5a8c8dcd26
+#: ../../changes.rst:672 5b12687b4d0c46bba2d522a0a1b3c71e
 msgid ""
 ":issue:`87`   Converted mammography objects to using the Celery task "
 "manager after starting with CT for :issue:`19`"
 msgstr ""
 
-#: ../../changes.rst:674 ae60d691b6cd442499bb30b3aaecdc35
+#: ../../changes.rst:673 949784103b5c42d0a7ba596a1664cfb6
 msgid ""
 ":issue:`86`   Digital Breast Tomosynthesis systems have a projections "
 "object that for Hologic contains required dosimetry information"
 msgstr ""
 
-#: ../../changes.rst:675 b871271aaa2d431db156db8286ea6838
+#: ../../changes.rst:674 6bc3bdd8f25b40e58ef4b10f8d183eeb
 msgid ""
 ":issue:`85`   Fix for bug introduced in :issue:`75` where adaption of "
 "ptsize import for procedure import broke ptsize imports"
 msgstr ""
 
-#: ../../changes.rst:676 475ec18a774849f8ac9dca319ff7eac0
+#: ../../changes.rst:675 aa19fb6f095f4db382e74d8a70720bc5
 msgid ""
 ":issue:`74`   'Time since last study' is now correct when daylight saving"
 " time kicks in"
 msgstr ""
 
-#: ../../changes.rst:677 a084be817c3c409891268e249f377ecb
+#: ../../changes.rst:676 7830ee62a4dc45f2a4b082ecf8af3b95
 msgid ":issue:`39`   Debug mode now defaults to False"
 msgstr ""
 
-#: ../../changes.rst:678 4af1a20befba4a4eacd1bb8df457640d
+#: ../../changes.rst:677 86841835562a49fcaea9c41ad3537f79
 msgid ""
 ":issue:`21`   Height and weight data can now be imported through forms in"
 " the web interface"
 msgstr ""
 
-#: ../../changes.rst:679 3491e16e703743aa964dc1b176874fc5
+#: ../../changes.rst:678 74d1f6c1111c4fd0bc8d0f717a14103b
 msgid ""
 ":issue:`19`   Exports are now sent to a task manager instead of locking "
 "up the web interface"
 msgstr ""
 
-#: ../../changes.rst:682 efb6eefa30fb4737ac50ec3b472d8108
+#: ../../changes.rst:681 516999e40df24f21983a2990d709bea1
 msgid "Reopened issue"
 msgstr ""
 
-#: ../../changes.rst:684 aec10130ab58456782e68775644709a2
+#: ../../changes.rst:683 fe856eac5e6a4481be9101d96e8b6a91
 msgid ""
 ":issue:`9`    Issue tracking import using \\*.dcm style wildcards "
 "reopened as Windows ``cmd.exe`` shell doesn't do wildcard expansion, so "
 "this will need to be handled by OpenREM in a future version"
 msgstr ""
 
-#: ../../changes.rst:687 3fabb14e55d3401590444107cb6fdbe4
+#: ../../changes.rst:686 57dcfd4d9e0849d08df8aa18f61a07a5
 msgid "0.4.2 (2014-04-15)"
 msgstr ""
 
-#: ../../changes.rst:689 9667857b652c41a1a0287c7490b1918e
+#: ../../changes.rst:688 367b997a551f4a1c99a7204ad63214aa
 msgid ""
 ":issue:`83`   Fix for bug introduced in :issue:`73` that prevents the "
 "import scripts from working."
 msgstr ""
 
-#: ../../changes.rst:692 4bf63004e30b4dc18901f92476598ebf
+#: ../../changes.rst:691 78fff875949c4f5dab8b984e76d4217a
 msgid "0.4.1 (2014-04-15)"
 msgstr ""
 
-#: ../../changes.rst:694 5ab2dea370cc4e8092c7ae41e2869e72
+#: ../../changes.rst:693 1be2b9d8eb9c47c899b6e1fc14dfc15d
 msgid ":issue:`82`   Added instructions for adding users to the release notes"
 msgstr ""
 
-#: ../../changes.rst:697 69b8d60803c142889440bc57d1248933
+#: ../../changes.rst:696 660f26edbeb04b029008897f5746103c
 msgid "0.4.0 (2014-04-15)"
 msgstr ""
 
-#: ../../changes.rst:701 b04bcb0d9662416d91f48f5ac85d73bb
+#: ../../changes.rst:700 17ffd2991e874626b19135860abf66a5
 msgid ""
 ":issue:`64` includes **changes to the database schema and needs a user "
 "response** - see `version 0.4.0 release notes "
 "<https://docs.openrem.org/page/release-0.4.0.html>`_"
 msgstr ""
 
-#: ../../changes.rst:702 292e2170743d4c069005ddebb543749a
+#: ../../changes.rst:701 96dfba5bf10d42e9acdba79d71a041ae
 msgid ""
 ":issue:`65` includes changes to the settings file which **require "
 "settings information to be copied** and files moved/renamed - see "
@@ -3458,414 +3454,414 @@ msgid ""
 "<https://docs.openrem.org/page/release-0.4.0.html>`_"
 msgstr ""
 
-#: ../../changes.rst:705 70dbf52631e142d99321c17fbd072725
+#: ../../changes.rst:704 65337860bc614bff879190c822f56c7e
 msgid ""
 ":issue:`80`   Added docs for installing Apache with auto-start on Windows"
 " Server 2012. Contributed by JA Cole"
 msgstr ""
 
-#: ../../changes.rst:706 a27b2b42d724412db5d098252e8c45b5
+#: ../../changes.rst:705 6198ec78736a43068c406336a885ecdb
 msgid ":issue:`79`   Updated README.rst instructions"
 msgstr ""
 
-#: ../../changes.rst:707 ea6ca21cb3314614974c052382895b12
+#: ../../changes.rst:706 aa79dbeee99e495ca1ae201153deae12
 msgid ":issue:`78`   Moved upgrade documentation into the release notes page"
 msgstr ""
 
-#: ../../changes.rst:708 3508f6a5a29c4fbc98941285294a047e
+#: ../../changes.rst:707 98d0ca6368474c23b2bb84a60e0dbc47
 msgid ":issue:`77`   Removed docs builds from repository"
 msgstr ""
 
-#: ../../changes.rst:709 03757f90e0a241a5933a9e73750a0606
+#: ../../changes.rst:708 7be18d28d18e4ca48565df2ae7e283b1
 msgid ":issue:`76`   Fixed crash if exporting from development environment"
 msgstr ""
 
-#: ../../changes.rst:710 f26a0dabe4284e469be0a2fe4389918f
+#: ../../changes.rst:709 bfebd319f51c45c4ac0f3d068ddbcc04
 msgid ""
 ":issue:`75`   Fixed bug where requested procedure wasn't being captured "
 "on one modality"
 msgstr ""
 
-#: ../../changes.rst:711 66dc4d90d1744fd49d13f8e53f6e08f3
+#: ../../changes.rst:710 bb2160403eaf4079a48a8b864d6a4541
 msgid ":issue:`73`   Made launch scripts and ptsizecsv2db more robust"
 msgstr ""
 
-#: ../../changes.rst:712 fed6068203c2467193222c4a09b70108
+#: ../../changes.rst:711 baeddee6fae74feb8b59056f6c94da47
 msgid ""
 ":issue:`72`   Moved the secret key into the local documentation and added"
 " instructions to change it to release notes and install instructions"
 msgstr ""
 
-#: ../../changes.rst:713 5c9fc4b98f2b4ed9ab0dfba09808a271
+#: ../../changes.rst:712 fe3801c775ce49399a6e0fa70e763da4
 msgid ""
 ":issue:`71`   Added information about configuring users to the install "
 "documentation"
 msgstr ""
 
-#: ../../changes.rst:714 4cfb2cc7621241c296fa6f4490f62831
+#: ../../changes.rst:713 5019155a0b8c453caf8a0e7d3e11680b
 msgid ":issue:`69`   Added documentation about the new delete study function"
 msgstr ""
 
-#: ../../changes.rst:715 96a4eae97152407da76b795277672694
+#: ../../changes.rst:714 a818b76e4fc44403bca8354a8a1b842c
 msgid ""
 ":issue:`68`   Now checks sequence code meaning and value exists before "
 "assigning them. Thanks to JA Cole"
 msgstr ""
 
-#: ../../changes.rst:716 011eefe02d8447abb6b4c522cbf93f15
+#: ../../changes.rst:715 53684854b3ae4eecb0e2582de0c8e732
 msgid ":issue:`67`   Added 'Contributing authors' section of documentation"
 msgstr ""
 
-#: ../../changes.rst:717 ddd09683bfac4453a81f479388f0ba9d
+#: ../../changes.rst:716 b85c5d78443348d19afaa61520463329
 msgid ""
 ":issue:`66`   Added 'Release notes' section of documentation, incuding "
 "this file"
 msgstr ""
 
-#: ../../changes.rst:718 3d83bbe4b3ec479d98e3e9f9322b3889
+#: ../../changes.rst:717 91bdfd742cbb4eb88b55b3077ceed362
 msgid ""
 ":issue:`65`   Added new ``local_settings.py`` file for database settings "
 "and other local settings"
 msgstr ""
 
-#: ../../changes.rst:719 c450d4796e45405b901007931b72aa0a
+#: ../../changes.rst:718 ce5ec8dc762543fca88c95c00112f239
 msgid ""
 ":issue:`64`   Fixed imports failing due to non-conforming strings that "
 "were too long"
 msgstr ""
 
-#: ../../changes.rst:720 faaf16a042914077b8dc9c229e17f0f0
+#: ../../changes.rst:719 36967181114e4f04863a302461efce5e
 msgid ""
 ":issue:`63`   The mammography import code stored the date of birth "
 "unnecessarily. Also now gets decimal_age from age field if necessary"
 msgstr ""
 
-#: ../../changes.rst:721 a9a68ae91466427d89fc5056e67458ef
+#: ../../changes.rst:720 3b2442434bd2461e91689a064663e35e
 msgid ":issue:`60`   Removed extraneous colon from interface data field"
 msgstr ""
 
-#: ../../changes.rst:722 36acbe5219764173821281fbf85dc3a5
+#: ../../changes.rst:721 4df04f763a7c42a9bb4cc2a374127def
 msgid ""
 ":issue:`18`   Studies can now be deleted from the web interface with the "
 "correct login"
 msgstr ""
 
-#: ../../changes.rst:723 b5a5aa56bf6543adbcdd2adfc1b26984
+#: ../../changes.rst:722 c34335ffceb4473387d8ee1b7872910f
 msgid ":issue:`16`   Added user authentication with different levels of access"
 msgstr ""
 
-#: ../../changes.rst:724 9d08e38770d34e329caba13c00bdb0f6
+#: ../../changes.rst:723 84cea864a8324690b191973dca16a93e
 msgid ":issue:`9`    Enable import of ``*.dcm``"
 msgstr ""
 
-#: ../../changes.rst:728 fdf7f02aba0a448dad5b05bda0af28e9
+#: ../../changes.rst:727 cfc1d5ce705748a3ae709b1f1ec1b561
 msgid "0.3.9 (2014-03-08)"
 msgstr ""
 
-#: ../../changes.rst:729 001d5fae42b947cf882e9b333a7c1f6c
+#: ../../changes.rst:728 289ce0a7e3c54ae998aea71be6669c2b
 msgid ""
 ":issue:`51` includes changes to the database schema -- make sure South is"
 " in use before upgrading. See https://docs.openrem.org/page/upgrade.html"
 msgstr ""
 
-#: ../../changes.rst:731 667ea2f22ac04ca9a8d5e91e89c95bc6
+#: ../../changes.rst:730 0df75bf268744a69a4b4a4d5c83eab4e
 msgid ""
 ":issue:`59`   CSS stylesheet referenced particular fonts that are not in "
 "the distribution -- references removed"
 msgstr ""
 
-#: ../../changes.rst:732 5e16246a0be6455e94bfb8145d5b03f5
+#: ../../changes.rst:731 5d1e1ceb599642b385ff1ba9781e42c2
 msgid ""
 ":issue:`58`   Export to xlsx more robust - limitation of 31 characters "
 "for sheet names now enforced"
 msgstr ""
 
-#: ../../changes.rst:733 363fa926ecc84673bc39b8cb751aed42
+#: ../../changes.rst:732 51876120421d4b30a3839c234b5c8c9b
 msgid ""
 ":issue:`57`   Modified the docs slightly to include notice to convert to "
 "South before upgrading"
 msgstr ""
 
-#: ../../changes.rst:734 3336e6edff4c46babc45ccb35f1fd9d2
+#: ../../changes.rst:733 ef3c4945167a4a82a60a1cb6617ea5af
 msgid ""
 ":issue:`56`   Corrected the mammography target and filter options added "
 "for issue :issue:`44`"
 msgstr ""
 
-#: ../../changes.rst:735 247f071e022d4bfeb957463b5cf12746
+#: ../../changes.rst:734 a95696e0a393486898ef3a97cb6d2933
 msgid ""
 ":issue:`53`   Dates can now be selected from a date picker widget for "
 "filtering studies"
 msgstr ""
 
-#: ../../changes.rst:736 9540abda5d99414e9393d9658fc9f8ab
+#: ../../changes.rst:735 a9ce855931b143f88bb61337d6845684
 msgid ""
 ":issue:`52`   Split the date field into two so either, both or neither "
 "can be specified"
 msgstr ""
 
-#: ../../changes.rst:737 eff69489b16b4f8fa04abece2990bc9f
+#: ../../changes.rst:736 c0353d5182014e39b06fdbbab9b5cbf9
 msgid ""
 ":issue:`51`   Remove import modifications from issue :issue:`28` and "
 ":issue:`43` now that exports are filtered in a better way after "
 ":issue:`48` and :issue:`49` changes."
 msgstr ""
 
-#: ../../changes.rst:738 4da31e76c7a741319682cfe6ecc1eebe
+#: ../../changes.rst:737 e3e28d0374a440bfb874b06203db4967
 msgid ""
 ":issue:`50`   No longer necessary to apply a filter before exporting -- "
 "docs changed to reflect this"
 msgstr ""
 
-#: ../../changes.rst:739 0528f056ccfe4040916fa053f233263f
+#: ../../changes.rst:738 f3737b4b0bcb41d98255373970feaac1
 msgid ""
 ":issue:`49`   CSV exports changed to use the same filtering routine "
 "introduced for :issue:`48` to better handle missing attributes"
 msgstr ""
 
-#: ../../changes.rst:740 c9a4221ccd9b4ae69f93a79985206d17
+#: ../../changes.rst:739 f948badd994447d0a9a078445d05608e
 msgid ""
 ":issue:`48`   New feature -- can now filter by patient age. Improved "
 "export to xlsx to better handle missing attributes"
 msgstr ""
 
-#: ../../changes.rst:741 494c47bbe6724bb8af298b61bc638431
+#: ../../changes.rst:740 c7258b4f859d42919a69e7facce3d3ac
 msgid ":issue:`47`   Install was failing on pydicom -- fixed upstream"
 msgstr ""
 
-#: ../../changes.rst:744 c6e78c25af7544088eb5fa6d46c317d1
+#: ../../changes.rst:743 ce449d504e9b4a4baffc5d9174e83b3c
 msgid "0.3.8 (2014-03-05)"
 msgstr ""
 
-#: ../../changes.rst:746 f918efb4b760422bbb2147489e2478ed
+#: ../../changes.rst:745 2e5f5ae754ce437c9b663cc1ae66cc88
 msgid "--    File layout modified to conform to norms"
 msgstr ""
 
-#: ../../changes.rst:747 7a0a9b79281b4b49b7e6fdd1b91fd2ea
+#: ../../changes.rst:746 5e14ef028e97434481a774619aa7c18a
 msgid ""
 ":issue:`46`   Updated documentation to reflect limited testing of mammo "
 "import on additional modalities"
 msgstr ""
 
-#: ../../changes.rst:748 dc7f4c6f015f4232bfead5a520d14bf0
+#: ../../changes.rst:747 db1f47cbe7a14b7cac2be925215c1616
 msgid ":issue:`45`   mam.py was missing the licence header - fixed"
 msgstr ""
 
-#: ../../changes.rst:749 dfaa776a6bc34e7997d42da77e741230
+#: ../../changes.rst:748 24db3a564348413b82c7bfc1b5c59a27
 msgid ""
 ":issue:`44`   Added Tungsten, Silver and Aluminum to mammo target/filter "
 "strings to match -- thanks to DJ Platten for strings"
 msgstr ""
 
-#: ../../changes.rst:750 9a1095475620405eabf4201bc951e905
+#: ../../changes.rst:749 12a86eb7dd124e08ab95c8efd6f86fee
 msgid ""
 ":issue:`43`   Mammography and Philips CT import and export now more "
 "robust for images with missing information such as accession number and "
 "collimated field size"
 msgstr ""
 
-#: ../../changes.rst:751 cfe2389ba59f4ca4bdbaa0a6ea7a7185
+#: ../../changes.rst:750 17f0ce3ebaac4481bd44c95d92ed91b7
 msgid ":issue:`42`   Documentation updated to reflect :issue:`37`"
 msgstr ""
 
-#: ../../changes.rst:752 046977251de34e7f8a49502949ab7107
+#: ../../changes.rst:751 76368f2a92a346aba83378c28536334c
 msgid ":issue:`37`   Studies now sort by time and date"
 msgstr ""
 
-#: ../../changes.rst:756 ef19d3bea5fa40418fe4a19d7e8f418d
+#: ../../changes.rst:755 a16020f615ad4fd194357619401ff82d
 msgid "0.3.7 (2014-02-25)"
 msgstr ""
 
-#: ../../changes.rst:758 35839f408e42473c99d2fa38b9d195d7
+#: ../../changes.rst:757 05c5e9d7c4f7478cbc82eb1bd85e82cd
 msgid ""
 ":issue:`40`   Restyled the filter section in the web interface and added "
 "a title to that section"
 msgstr ""
 
-#: ../../changes.rst:759 1dc8281f58ec4b14a61e4ecec144d119
+#: ../../changes.rst:758 a3ed1cf32119474ebc46022b8d59d7c7
 msgid ":issue:`38`   Column titles tidied up in Excel exports"
 msgstr ""
 
-#: ../../changes.rst:760 ed966a1cb86b455d885b48aa80dd40af
+#: ../../changes.rst:759 b6ee633f61b14bf989653012936fe4fc
 msgid ":issue:`36`   openrem_ptsizecsv output of log now depends on verbose flag"
 msgstr ""
 
-#: ../../changes.rst:761 0e6910e2df664334aafae1ddcae50e40
+#: ../../changes.rst:760 f61f4016cb7148ccbaddeae4474338fa
 msgid ":issue:`35`   Numbers no longer stored as text in Excel exports"
 msgstr ""
 
-#: ../../changes.rst:764 cea8b6d82527449d852894386a08eaac
+#: ../../changes.rst:763 244431d630c94082bb94c547630392c7
 msgid "0.3.6 (2014-02-24)"
 msgstr ""
 
-#: ../../changes.rst:766 233f2ea6a3fc4fb09ab7b79b0a5fa1c7
+#: ../../changes.rst:765 e4fc457b1dca40918b23b7b5d4bcf1fa
 msgid ""
 ":issue:`34`   Localised scripts that were on remote web servers in "
 "default Bootstrap code"
 msgstr ""
 
-#: ../../changes.rst:767 c725a0da22d943beaf868e6abb672800
+#: ../../changes.rst:766 02be2e55eb3445fbac73660b1b906d4e
 msgid ":issue:`33`   Documentation now exists for adding data via csv file"
 msgstr ""
 
-#: ../../changes.rst:768 d018088cf64f4642a2a6b67e81c4ccd4
+#: ../../changes.rst:767 b362fb6a6c8544cbb131a011c3f19f3a
 msgid ":issue:`24`   Web interface has been upgraded to Bootstrap v3"
 msgstr ""
 
-#: ../../changes.rst:769 c6024d5294624657aca661852fc25b15
+#: ../../changes.rst:768 0701cc3246594e5cabbf647359edac25
 msgid ""
 ":issue:`5`    Web interface and export function now have some "
 "documentation with screenshots"
 msgstr ""
 
-#: ../../changes.rst:773 8923beaa340744d9902179ef79fe1331
+#: ../../changes.rst:772 03cfa7d466ad4e658c8e9aafb31ed2e7
 msgid "0.3.5-rc2 (2014-02-17)"
 msgstr ""
 
-#: ../../changes.rst:775 44767d499022448594ac0c2cbab6ad70
+#: ../../changes.rst:774 d1a7ec7f9faa4dff928a58178b8fc560
 msgid ""
 ":issue:`32`   Missing sys import bug prevented new patient size import "
 "from working"
 msgstr ""
 
-#: ../../changes.rst:778 2975150ade7646869fa1ba898f8ce904
+#: ../../changes.rst:777 289f934ceaa4447288207e23b627036b
 msgid "0.3.5 (2014-02-17)"
 msgstr ""
 
-#: ../../changes.rst:780 87bb5be2825441258c84dbbd34d8b1c9
+#: ../../changes.rst:779 a0791aa6bc53408c9ab3364bc22095fc
 msgid "--    Prettified this document!"
 msgstr ""
 
-#: ../../changes.rst:781 b3c70f69914149adb3d29a5911d7d95c
+#: ../../changes.rst:780 ea45c9637c32469997e68d9948ea9aec
 msgid ""
 ":issue:`31`   Promoted patient size import from csv function to the "
 "scripts folder so it will install and can be called from the path"
 msgstr ""
 
-#: ../../changes.rst:782 7c0ff6bd6eb9430b9288e0be73f2db21
+#: ../../changes.rst:781 9030fdeaed0b4067a77f02e99ef40787
 msgid ""
 ":issue:`30`   Improved patient size import from csv to allow for arbitary"
 " column titles and study instance UID in addition to accession number."
 msgstr ""
 
-#: ../../changes.rst:783 b9b561c184ad44919d3ae0d4123e1721
+#: ../../changes.rst:782 ee04774272844545afba1cffa4f175ff
 msgid ":issue:`29`   Corrected the docs URL in the readme"
 msgstr ""
 
-#: ../../changes.rst:786 4c36e47b05ff4f06b176fb0fb00c2c3f
+#: ../../changes.rst:785 e7d22e7c6a8d43b2b291b8927f3904ce
 msgid "0.3.4-rc2 (2014-02-14)"
 msgstr ""
 
-#: ../../changes.rst:788 ec02359db2ec40f880d0b4970824bc0d
+#: ../../changes.rst:787 42301c6c6a0147ecb5b6ba8ff8664f6d
 msgid ""
 ":issue:`28`   XLSX export crashed if any of the filter fields were "
 "missing. Now fills on import with 'None'"
 msgstr ""
 
-#: ../../changes.rst:789 133f3d5e446b4e23b13fcb65eddf8870
+#: ../../changes.rst:788 6aed61edc1c5412a9d0647debd79b3da
 msgid ""
 ":issue:`27`   Use requested procedure description if requested procedure "
 "code description is missing"
 msgstr ""
 
-#: ../../changes.rst:793 3692a7a022a5419e92bbd9d40bce5d70
+#: ../../changes.rst:792 8da6821230c2459180d715f69ec393ca
 msgid "0.3.4 (2014-02-14)"
 msgstr ""
 
-#: ../../changes.rst:795 e48057d0741a406eb9d2b1f30db6ba34
+#: ../../changes.rst:794 d231f5a4576c4ba088e61af111beb10b
 msgid "--    General improvements and addition of logo to docs"
 msgstr ""
 
-#: ../../changes.rst:796 c6400226d5ab43bf84d442d3faa9a230
+#: ../../changes.rst:795 e4772a3924cd48e6b137028fc1511be8
 msgid ":issue:`23`   Added Windows XP MySQL backup guide to docs"
 msgstr ""
 
-#: ../../changes.rst:797 a73c4c877c5f4b59bb3df28739627341
+#: ../../changes.rst:796 b74f03d27e4d4e8fbe1bb732366c226e
 msgid ":issue:`22`   Added running Conquest as a Windows XP service to docs"
 msgstr ""
 
-#: ../../changes.rst:798 af318754c5184bd4bedacb7034e0c8ca
+#: ../../changes.rst:797 04bbd95ccb0e4919b326d66ce5a6dff2
 msgid ""
 ":issue:`15`   Added version number and copyright information to xlsx "
 "exports"
 msgstr ""
 
-#: ../../changes.rst:799 05ea1058bff148859cf05279ae3ecd7b
+#: ../../changes.rst:798 d2ef8052f02844e48fd324c3da6cb89b
 msgid ":issue:`14`   Added version number to the web interface"
 msgstr ""
 
-#: ../../changes.rst:800 b71852d2934b4e66ac7cba45918d992f
+#: ../../changes.rst:799 da71a1fd621642da8e330cdf6f426564
 msgid ":issue:`13`   Improve the docs with respect to South database migrations"
 msgstr ""
 
-#: ../../changes.rst:804 1480079fd68f4be1be33236dac268977
+#: ../../changes.rst:803 7c69ebf1b65347419563e6fff638de15
 msgid "0.3.3-r2 (2014-02-04)"
 msgstr ""
 
-#: ../../changes.rst:806 6df9bd124370438fb1f7b813a7268d4c
+#: ../../changes.rst:805 d1b9a51a0a81440dbf4dae9b667b7100
 msgid ":issue:`12`   Added this version history"
 msgstr ""
 
-#: ../../changes.rst:807 0c5c9000b8f84c2e81705829fe33977a
+#: ../../changes.rst:806 9e8f5611bf48430197f424a552fcc4cd
 msgid ""
 ":issue:`11`   Documentation is no longer included in the tar.gz install "
 "file -- see http://openrem.trfd.org instead"
 msgstr ""
 
-#: ../../changes.rst:810 9fb834d24e0d44da814cc9c7a02c7888
+#: ../../changes.rst:809 b1d94ff0aa9345fab8babfde5111b12d
 msgid "0.3.3 (2014-02-01)"
 msgstr ""
 
-#: ../../changes.rst:814 691efd45485d4c8cb18b0f92a04a476f
+#: ../../changes.rst:813 0192de96e4694c239441c8bbd7126352
 msgid ""
 "Installs of OpenREM earlier than 0.3.3 will break on upgrade if the "
 "scripts are called from other programs. For example openrem_rdsr is now "
 "called openrem_rdsr.py"
 msgstr ""
 
-#: ../../changes.rst:817 7a8a67b3d8c34ee7aab4b36257424c6f
+#: ../../changes.rst:816 e649b8d2c31740b0b0ca2d7572bc742e
 msgid "--    Added warning of upgrade breaking existing installs to docs"
 msgstr ""
 
-#: ../../changes.rst:818 3393211aa52d4aa6b087a5a76bb1f93c
+#: ../../changes.rst:817 7edcc21b84c349a18a8d47fd514122a1
 msgid ""
 ":issue:`10`   Added .py suffix to the scripts to allow them to be "
 "executed on Windows (thanks to DJ Platten)"
 msgstr ""
 
-#: ../../changes.rst:819 819488bfd868407aba07d655b960baaa
+#: ../../changes.rst:818 60082a67ec1e46868b12992c15cc4d73
 msgid ""
 ":issue:`8`    Removed superfluous '/' in base html file, harmless on "
 "linux, prevented Windows loading stylesheets (thanks to DJ Platten)"
 msgstr ""
 
-#: ../../changes.rst:820 5ff3f20d7dc9436b855cd833f1b6cb0c
+#: ../../changes.rst:819 33a50b7f946643d5b17415e8642ade55
 msgid ""
 ":issue:`7`    Added windows and linux path examples for test SQLite "
 "database creation"
 msgstr ""
 
-#: ../../changes.rst:821 6b92d21db53d4f90b6c60e7d95b5761b
+#: ../../changes.rst:820 7081a990a4d14201920b00f5987b5c41
 msgid ""
 ":issue:`6`    Corrected renaming of example files installation "
 "instruction (thanks to DJ Platten)"
 msgstr ""
 
-#: ../../changes.rst:822 ad8450cff8204e048258fdb4dd3a4d6b
+#: ../../changes.rst:821 d7407ae5821e43d0a804d09f0f31b210
 msgid ""
 ":issue:`4`    Added some text to the documentation relating to importing "
 "files to OpenREM"
 msgstr ""
 
-#: ../../changes.rst:823 c35ea486fddf4e478db02d5ed8ecc717
+#: ../../changes.rst:822 8118e725a9114525b692013c75fd310d
 msgid ":issue:`3`    Corrected copyright notice in documentation"
 msgstr ""
 
-#: ../../changes.rst:827 5fae0f96435341feb7b42be2832f7c56
+#: ../../changes.rst:826 255fd12a169e4ca6bbe49c1c9ea7cf73
 msgid "0.3.2 (2014-01-29)"
 msgstr ""
 
-#: ../../changes.rst:829 eebdea5233bd4d0491f5cabc4ac8feed
+#: ../../changes.rst:828 7d181413731b49beac950ea09f30a8e9
 msgid "Initial version uploaded to bitbucket.org"
 msgstr ""
 
