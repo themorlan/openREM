@@ -131,8 +131,12 @@ def calculate_colour_sequence(
 
     colour_seq = []
     cmap = matplotlib.cm.get_cmap(scale_name)
-    for i in range(n_colours):
-        c = cmap(i / (n_colours-1))
+    if n_colours > 1:
+        for i in range(n_colours):
+            c = cmap(i / (n_colours-1))
+            colour_seq.append(matplotlib.colors.rgb2hex(c))
+    else:
+        c = cmap(0)
         colour_seq.append(matplotlib.colors.rgb2hex(c))
 
     return colour_seq
