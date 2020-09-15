@@ -34,6 +34,19 @@ from builtins import range  # pylint: disable=redefined-builtin
 import pandas as pd
 
 
+def global_config(filename):
+    return {
+        "toImageButtonOptions": {
+            "format": "png",
+            "filename": filename,
+            "height": 1080,
+            "width": 1920,
+            "scale": 1
+        },
+        "displaylogo": False
+    }
+
+
 def create_dataframe(
         database_events,
         data_point_name_fields=None,
@@ -148,7 +161,8 @@ def plotly_boxplot(
         df_value_col,
         value_axis_title="",
         name_axis_title="",
-        colourmap="RdYlBu"
+        colourmap="RdYlBu",
+        filename="OpenREM_boxplot_chart"
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -174,7 +188,7 @@ def plotly_boxplot(
 
         fig.update_traces(quartilemethod="exclusive")
 
-        return plot(fig, output_type="div", include_plotlyjs=False)
+        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
 
     except ValueError:
         return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
@@ -186,7 +200,8 @@ def plotly_barchart(
         df_value_col,
         value_axis_title="",
         name_axis_title="",
-        colourmap="RdYlBu"
+        colourmap="RdYlBu",
+        filename="OpenREM_bar_chart"
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -212,7 +227,7 @@ def plotly_barchart(
 
         fig.update_xaxes(categoryorder="category ascending")
 
-        return plot(fig, output_type="div", include_plotlyjs=False)
+        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
 
     except ValueError:
         return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
@@ -226,7 +241,8 @@ def plotly_histogram(
         value_axis_title="",
         legend_title="System",
         n_bins=10,
-        colourmap="RdYlBu"
+        colourmap="RdYlBu",
+        filename="OpenREM_histogram_chart"
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -254,7 +270,7 @@ def plotly_histogram(
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
-        return plot(fig, output_type="div", include_plotlyjs=False)
+        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
 
     except ValueError:
         return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
@@ -264,7 +280,8 @@ def plotly_stacked_histogram(
         df,
         df_name_col,
         name_axis_title="",
-        colourmap="RdYlBu"
+        colourmap="RdYlBu",
+        filename="OpenREM_frequency_chart"
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -288,7 +305,7 @@ def plotly_stacked_histogram(
 
         fig.update_xaxes(categoryorder="category ascending")
 
-        return plot(fig, output_type="div", include_plotlyjs=False)
+        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
 
     except ValueError:
         return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
@@ -303,7 +320,8 @@ def plotly_timeseries_linechart(
         value_axis_title="",
         name_axis_title="",
         legend_title="",
-        colourmap="RdYlBu"
+        colourmap="RdYlBu",
+        filename="OpenREM_over_time_chart"
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -335,7 +353,7 @@ def plotly_timeseries_linechart(
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
-        return plot(fig, output_type="div", include_plotlyjs=False)
+        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
 
     except ValueError:
         return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
@@ -351,7 +369,8 @@ def plotly_scatter(
         x_axis_title="",
         y_axis_title="",
         legend_title="",
-        colourmap="RdYlBu"
+        colourmap="RdYlBu",
+        filename="OpenREM_scatter_chart"
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -380,7 +399,7 @@ def plotly_scatter(
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
-        return plot(fig, output_type="div", include_plotlyjs=False)
+        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
 
     except ValueError:
         return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
@@ -392,7 +411,8 @@ def plotly_barchart_weekdays(
         df_value_col,
         name_axis_title="",
         value_axis_title="",
-        colourmap="RdYlBu"
+        colourmap="RdYlBu",
+        filename="OpenREM_worload_chart"
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -422,7 +442,7 @@ def plotly_barchart_weekdays(
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
-        return plot(fig, output_type="div", include_plotlyjs=False)
+        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
 
     except ValueError:
         return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"

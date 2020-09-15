@@ -1854,7 +1854,8 @@ def ct_plot_calculations(
                     "ctradiationdose__ctirradiationeventdata__dlp",
                     value_axis_title="DLP (mGy.cm)",
                     name_axis_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT acquisition protocol DLP mean"
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -1864,7 +1865,8 @@ def ct_plot_calculations(
                     "ctradiationdose__ctirradiationeventdata__dlp",
                     value_axis_title="DLP (mGy.cm)",
                     name_axis_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT acquisition protocol DLP boxplot"
                 )
 
             if plot_histograms:
@@ -1884,7 +1886,8 @@ def ct_plot_calculations(
                     value_axis_title="DLP (mGy.cm)",
                     legend_title=legend_title,
                     n_bins=plot_histogram_bins,
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT acquisition protocol DLP histogram"
                 )
 
         if plot_acquisition_mean_ctdi:
@@ -1895,7 +1898,8 @@ def ct_plot_calculations(
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                     value_axis_title="CTDI (mGy.cm)",
                     name_axis_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT acquisition protocol CTDI mean"
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -1905,7 +1909,8 @@ def ct_plot_calculations(
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                     value_axis_title="CTDI (mGy.cm)",
                     name_axis_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT acquisition protocol CTDI boxplot"
                 )
 
             if plot_histograms:
@@ -1925,7 +1930,8 @@ def ct_plot_calculations(
                     value_axis_title="CTDI (mGy.cm)",
                     legend_title=legend_title,
                     n_bins=plot_histogram_bins,
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT acquisition protocol CTDI histogram"
                 )
 
         if plot_acquisition_freq:
@@ -1933,7 +1939,8 @@ def ct_plot_calculations(
                 df,
                 "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                 name_axis_title="Acquisition protocol",
-                colourmap=plot_colour_map_choice
+                colourmap=plot_colour_map_choice,
+                filename="OpenREM CT acquisition protocol frequency"
             )
 
         if plot_acquisition_ctdi_vs_mass:
@@ -1954,7 +1961,8 @@ def ct_plot_calculations(
                 x_axis_title="Patient mass (kg)",
                 y_axis_title="CTDI (mGy)",
                 legend_title=legend_title,
-                colourmap=plot_colour_map_choice
+                colourmap=plot_colour_map_choice,
+                filename="OpenREM CT acquisition protocol CTDI vs patient mass"
             )
 
         if plot_acquisition_dlp_vs_mass:
@@ -1975,7 +1983,8 @@ def ct_plot_calculations(
                 x_axis_title="Patient mass (kg)",
                 y_axis_title="DLP (mGy.cm)",
                 legend_title=legend_title,
-                colourmap=plot_colour_map_choice
+                colourmap=plot_colour_map_choice,
+                filename="OpenREM CT acquisition protocol DLP vs patient mass"
             )
 
         if plot_acquisition_ctdi_over_time:
@@ -2004,7 +2013,8 @@ def ct_plot_calculations(
                     value_axis_title="Mean CTDI (mGy)",
                     name_axis_title="Study date",
                     legend_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT acquisition protocol CTDI mean over time"
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2017,7 +2027,8 @@ def ct_plot_calculations(
                     value_axis_title="Median CTDI (mGy)",
                     name_axis_title="Study date",
                     legend_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename = "OpenREM CT acquisition protocol CTDI median over time"
                 )
 
         if plot_acquisition_dlp_over_time:
@@ -2046,7 +2057,8 @@ def ct_plot_calculations(
                     value_axis_title="Mean DLP (mGy.cm)",
                     name_axis_title="Study date",
                     legend_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT acquisition protocol DLP mean over time"
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2059,7 +2071,8 @@ def ct_plot_calculations(
                     value_axis_title="Median DLP (mGy.cm)",
                     name_axis_title="Study date",
                     legend_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT acquisition protocol DLP median over time"
                 )
 
     #######################################################################
@@ -2120,7 +2133,8 @@ def ct_plot_calculations(
                     "total_dlp",
                     value_axis_title="DLP (mGy.cm)",
                     name_axis_title="Study description",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT study description DLP mean"
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2130,7 +2144,8 @@ def ct_plot_calculations(
                     "total_dlp",
                     value_axis_title="DLP (mGy.cm)",
                     name_axis_title="Study description",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT study description DLP boxplot"
                 )
 
             if plot_histograms:
@@ -2150,7 +2165,8 @@ def ct_plot_calculations(
                     value_axis_title="DLP (mGy.cm)",
                     legend_title=legend_title,
                     n_bins=plot_histogram_bins,
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT study description DLP histogram"
                 )
 
         if plot_study_mean_ctdi:
@@ -2161,7 +2177,8 @@ def ct_plot_calculations(
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                     value_axis_title="CTDI (mGy)",
                     name_axis_title="Study description",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT study description CTDI mean"
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2171,7 +2188,8 @@ def ct_plot_calculations(
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                     value_axis_title="CTDI (mGy)",
                     name_axis_title="Study description",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT study description CTDI boxplot"
                 )
 
             if plot_histograms:
@@ -2191,7 +2209,8 @@ def ct_plot_calculations(
                     value_axis_title="CTDI (mGy)",
                     legend_title=legend_title,
                     n_bins=plot_histogram_bins,
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT study description CTDI histogram"
                 )
 
         if plot_study_num_events:
@@ -2202,7 +2221,8 @@ def ct_plot_calculations(
                     "number_of_events",
                     value_axis_title="Events",
                     name_axis_title="Study description",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT study description events mean"
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2212,7 +2232,8 @@ def ct_plot_calculations(
                     "number_of_events",
                     value_axis_title="Events",
                     name_axis_title="Study description",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT study description events boxplot"
                 )
 
             if plot_histograms:
@@ -2232,7 +2253,8 @@ def ct_plot_calculations(
                     value_axis_title="Events",
                     legend_title=legend_title,
                     n_bins=plot_histogram_bins,
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT study description events histogram"
                 )
 
         if plot_request_mean_dlp:
@@ -2243,7 +2265,8 @@ def ct_plot_calculations(
                     "total_dlp",
                     value_axis_title="DLP (mGy.cm)",
                     name_axis_title="Requested procedure",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT requested procedure DLP mean"
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2253,7 +2276,8 @@ def ct_plot_calculations(
                     "total_dlp",
                     value_axis_title="DLP (mGy.cm)",
                     name_axis_title="Requested procedure",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT requested procedure DLP boxplot"
                 )
 
             if plot_histograms:
@@ -2273,7 +2297,8 @@ def ct_plot_calculations(
                     value_axis_title="DLP (mGy.cm)",
                     legend_title=legend_title,
                     n_bins=plot_histogram_bins,
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT requested procedure DLP histogram"
                 )
 
         if plot_request_num_events:
@@ -2284,7 +2309,8 @@ def ct_plot_calculations(
                     "number_of_events",
                     value_axis_title="Events",
                     name_axis_title="Requested procedure",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT requested procedure events mean"
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2294,7 +2320,8 @@ def ct_plot_calculations(
                     "number_of_events",
                     value_axis_title="Events",
                     name_axis_title="Requested procedure",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT requested procedure events boxplot"
                 )
 
             if plot_histograms:
@@ -2314,7 +2341,8 @@ def ct_plot_calculations(
                     value_axis_title="Events",
                     legend_title=legend_title,
                     n_bins=plot_histogram_bins,
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT requested procedure events histogram"
                 )
 
         if plot_study_freq:
@@ -2322,7 +2350,8 @@ def ct_plot_calculations(
                 df,
                 "study_description",
                 name_axis_title="Study description",
-                colourmap=plot_colour_map_choice
+                colourmap=plot_colour_map_choice,
+                filename="OpenREM CT study description frequency"
             )
 
         if plot_request_freq:
@@ -2330,7 +2359,8 @@ def ct_plot_calculations(
                 df,
                 "requested_procedure_code_meaning",
                 name_axis_title="Requested procedure",
-                colourmap=plot_colour_map_choice
+                colourmap=plot_colour_map_choice,
+                filename="OpenREM CT requested procedure frequency"
             )
 
         if plot_study_mean_dlp_over_time:
@@ -2359,7 +2389,8 @@ def ct_plot_calculations(
                     value_axis_title="Mean DLP (mGy.cm)",
                     name_axis_title="Study date",
                     legend_title="Study description",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT study description DLP mean over time"
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2372,7 +2403,8 @@ def ct_plot_calculations(
                     value_axis_title="Median DLP (mGy.cm)",
                     name_axis_title="Study date",
                     legend_title="Study description",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT study description DLP median over time"
                 )
 
         if plot_request_dlp_over_time:
@@ -2401,7 +2433,8 @@ def ct_plot_calculations(
                     value_axis_title="Mean DLP (mGy.cm)",
                     name_axis_title="Study date",
                     legend_title="Requested procedure",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT requested procedure DLP mean over time"
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2414,7 +2447,8 @@ def ct_plot_calculations(
                     value_axis_title="Median DLP (mGy.cm)",
                     name_axis_title="Study date",
                     legend_title="Requested procedure",
-                    colourmap=plot_colour_map_choice
+                    colourmap=plot_colour_map_choice,
+                    filename="OpenREM CT requested procedure DLP median over time"
                 )
 
         if plot_study_per_day_and_hour:
@@ -2430,7 +2464,8 @@ def ct_plot_calculations(
                 "study_description",
                 name_axis_title="Weekday",
                 value_axis_title="Frequency",
-                colourmap=plot_colour_map_choice
+                colourmap=plot_colour_map_choice,
+                filename="OpenREM CT study description workload"
             )
         #######################################################################
 
