@@ -439,15 +439,13 @@ class UserProfile(models.Model):
         (BOTH, "both"),
     )
 
-    DLP = "dlp"
-    CTDI = "ctdi"
-    FREQ = "freq"
     NAME = "name"
+    FREQ = "frequency"
+    VALUE = "value"
     SORTING_CHOICES_CT = (
-        (DLP, "DLP"),
-        (CTDI, "CTDI"),
-        (FREQ, "Frequency"),
         (NAME, "Name"),
+        (FREQ, "Frequency"),
+        (VALUE, "Value"),
     )
 
     DAP = "dap"
@@ -458,7 +456,7 @@ class UserProfile(models.Model):
     )
 
     ASCENDING = 1
-    DESCENDING = -1
+    DESCENDING = 0
     SORTING_DIRECTION = (
         (ASCENDING, "Ascending"),
         (DESCENDING, "Descending"),
@@ -573,7 +571,7 @@ class UserProfile(models.Model):
         max_length=13, choices=TIME_PERIOD, default=MONTHS
     )
     plotCTInitialSortingChoice = models.CharField(
-        max_length=4, choices=SORTING_CHOICES_CT, default=FREQ
+        max_length=9, choices=SORTING_CHOICES_CT, default=FREQ
     )
 
     plotRFStudyPerDayAndHour = models.BooleanField(default=False)

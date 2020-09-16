@@ -77,15 +77,13 @@ AVERAGES = (
     (BOTH, "Both"),
 )
 
-DLP = "dlp"
-CTDI = "ctdi"
-FREQ = "freq"
 NAME = "name"
+FREQ = "frequency"
+VALUE = "value"
 SORTING_CHOICES_CT = (
-    (DLP, "DLP"),
-    (CTDI, "CTDI"),
-    (FREQ, "Frequency"),
     (NAME, "Name"),
+    (FREQ, "Frequency"),
+    (VALUE, "Value"),
 )
 
 DAP = "dap"
@@ -96,7 +94,7 @@ SORTING_CHOICES_DX = (
 )
 
 ASCENDING = 1
-DESCENDING = -1
+DESCENDING = 0
 SORTING_DIRECTION = (
     (ASCENDING, "Ascending"),
     (DESCENDING, "Descending"),
@@ -310,6 +308,12 @@ class CTChartOptionsForm(forms.Form):
     plotHistograms = forms.BooleanField(
         label="Calculate histogram data", required=False
     )
+    plotCTInitialSortingChoice = forms.ChoiceField(
+        label="Chart sorting", choices=SORTING_CHOICES_CT, required=False
+    )
+    plotInitialSortingDirection = forms.ChoiceField(
+        label="Sorting direction", choices=SORTING_DIRECTION, required=False
+    )
 
 
 class RFChartOptionsForm(forms.Form):
@@ -494,7 +498,7 @@ class CTChartOptionsDisplayForm(forms.Form):
         label="Time period", choices=TIME_PERIOD, required=False
     )
     plotCTInitialSortingChoice = forms.ChoiceField(
-        label="Default chart sorting", choices=SORTING_CHOICES_CT, required=False
+        label="Chart sorting", choices=SORTING_CHOICES_CT, required=False
     )
 
 
@@ -507,7 +511,7 @@ class GeneralChartOptionsDisplayForm(forms.Form):
         label="Average to use", choices=AVERAGES, required=False
     )
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Default sorting direction", choices=SORTING_DIRECTION, required=False
+        label="Sorting direction", choices=SORTING_DIRECTION, required=False
     )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False

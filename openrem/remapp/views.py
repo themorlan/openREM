@@ -1387,6 +1387,12 @@ def ct_summary_list_filter(request):
             user_profile.plotHistograms = chart_options_form.cleaned_data[
                 "plotHistograms"
             ]
+            user_profile.plotCTInitialSortingChoice = chart_options_form.cleaned_data[
+                "plotCTInitialSortingChoice"
+            ]
+            user_profile.plotInitialSortingDirection = chart_options_form.cleaned_data[
+                "plotInitialSortingDirection"
+            ]
             user_profile.save()
 
         else:
@@ -1414,6 +1420,8 @@ def ct_summary_list_filter(request):
                 "plotGrouping": user_profile.plotGroupingChoice,
                 "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
                 "plotHistograms": user_profile.plotHistograms,
+                "plotCTInitialSortingChoice": user_profile.plotCTInitialSortingChoice,
+                "plotInitialSortingDirection": user_profile.plotInitialSortingDirection
             }
             chart_options_form = CTChartOptionsForm(form_data)
 
@@ -1665,7 +1673,9 @@ def ct_summary_chart_data(request):
         user_profile.plotCaseInsensitiveCategories,
         user_profile.plotThemeChoice,
         user_profile.plotColourMapChoice,
-        user_profile.plotFacetColWrapVal
+        user_profile.plotFacetColWrapVal,
+        user_profile.plotInitialSortingDirection,
+        user_profile.plotCTInitialSortingChoice
     )
 
     if settings.DEBUG:
@@ -1702,7 +1712,9 @@ def ct_plot_calculations(
     plot_case_insensitive_categories,
     plot_theme_choice,
     plot_colour_map_choice,
-    plot_facet_col_wrap_val
+    plot_facet_col_wrap_val,
+    plot_sorting_direction,
+    plot_sorting_field
 ):
     """CT chart data calculations
     """
@@ -1710,6 +1722,7 @@ def ct_plot_calculations(
         create_dataframe,
         create_dataframe_time_series,
         create_dataframe_weekdays,
+        create_dataframe_aggregates,
         plotly_boxplot,
         plotly_barchart,
         plotly_histogram,
@@ -1857,7 +1870,8 @@ def ct_plot_calculations(
                     value_axis_title="DLP (mGy.cm)",
                     name_axis_title="Acquisition protocol",
                     colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT acquisition protocol DLP mean"
+                    filename="OpenREM CT acquisition protocol DLP mean",
+                    sorting=[plot_sorting_direction, plot_sorting_field]
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -1868,7 +1882,8 @@ def ct_plot_calculations(
                     value_axis_title="DLP (mGy.cm)",
                     name_axis_title="Acquisition protocol",
                     colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT acquisition protocol DLP boxplot"
+                    filename="OpenREM CT acquisition protocol DLP boxplot",
+                    sorting=[plot_sorting_direction, plot_sorting_field]
                 )
 
             if plot_histograms:
@@ -1902,7 +1917,8 @@ def ct_plot_calculations(
                     value_axis_title="CTDI (mGy.cm)",
                     name_axis_title="Acquisition protocol",
                     colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT acquisition protocol CTDI mean"
+                    filename="OpenREM CT acquisition protocol CTDI mean",
+                    sorting=[plot_sorting_direction, plot_sorting_field]
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -1913,7 +1929,8 @@ def ct_plot_calculations(
                     value_axis_title="CTDI (mGy.cm)",
                     name_axis_title="Acquisition protocol",
                     colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT acquisition protocol CTDI boxplot"
+                    filename="OpenREM CT acquisition protocol CTDI boxplot",
+                    sorting=[plot_sorting_direction, plot_sorting_field]
                 )
 
             if plot_histograms:
@@ -1944,7 +1961,8 @@ def ct_plot_calculations(
                 "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                 name_axis_title="Acquisition protocol",
                 colourmap=plot_colour_map_choice,
-                filename="OpenREM CT acquisition protocol frequency"
+                filename="OpenREM CT acquisition protocol frequency",
+                sorting=[plot_sorting_direction, plot_sorting_field]
             )
 
         if plot_acquisition_ctdi_vs_mass:
@@ -2136,6 +2154,7 @@ def ct_plot_calculations(
         )
         #######################################################################
 
+
         #######################################################################
         # Create the required study- and request-level charts
         if plot_study_mean_dlp:
@@ -2144,10 +2163,11 @@ def ct_plot_calculations(
                     df,
                     "study_description",
                     "total_dlp",
-                    value_axis_title="DLP (mGy.cm)",
+                    value_axis_title="Mean DLP (mGy.cm)",
                     name_axis_title="Study description",
                     colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT study description DLP mean"
+                    filename="OpenREM CT study description DLP mean",
+                    sorting=[plot_sorting_direction, plot_sorting_field]
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2158,7 +2178,8 @@ def ct_plot_calculations(
                     value_axis_title="DLP (mGy.cm)",
                     name_axis_title="Study description",
                     colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT study description DLP boxplot"
+                    filename="OpenREM CT study description DLP boxplot",
+                    sorting=[plot_sorting_direction, plot_sorting_field]
                 )
 
             if plot_histograms:
@@ -2192,7 +2213,8 @@ def ct_plot_calculations(
                     value_axis_title="CTDI (mGy)",
                     name_axis_title="Study description",
                     colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT study description CTDI mean"
+                    filename="OpenREM CT study description CTDI mean",
+                    sorting=[plot_sorting_direction, plot_sorting_field]
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2203,7 +2225,8 @@ def ct_plot_calculations(
                     value_axis_title="CTDI (mGy)",
                     name_axis_title="Study description",
                     colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT study description CTDI boxplot"
+                    filename="OpenREM CT study description CTDI boxplot",
+                    sorting=[plot_sorting_direction, plot_sorting_field]
                 )
 
             if plot_histograms:
@@ -2237,7 +2260,8 @@ def ct_plot_calculations(
                     value_axis_title="Events",
                     name_axis_title="Study description",
                     colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT study description events mean"
+                    filename="OpenREM CT study description events mean",
+                    sorting=[plot_sorting_direction, plot_sorting_field]
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2248,7 +2272,8 @@ def ct_plot_calculations(
                     value_axis_title="Events",
                     name_axis_title="Study description",
                     colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT study description events boxplot"
+                    filename="OpenREM CT study description events boxplot",
+                    sorting=[plot_sorting_direction, plot_sorting_field]
                 )
 
             if plot_histograms:
@@ -2279,10 +2304,11 @@ def ct_plot_calculations(
                     df,
                     "requested_procedure_code_meaning",
                     "total_dlp",
-                    value_axis_title="DLP (mGy.cm)",
+                    value_axis_title="Mean DLP (mGy.cm)",
                     name_axis_title="Requested procedure",
                     colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT requested procedure DLP mean"
+                    filename="OpenREM CT requested procedure DLP mean",
+                    sorting=[plot_sorting_direction, plot_sorting_field]
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2293,7 +2319,8 @@ def ct_plot_calculations(
                     value_axis_title="DLP (mGy.cm)",
                     name_axis_title="Requested procedure",
                     colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT requested procedure DLP boxplot"
+                    filename="OpenREM CT requested procedure DLP boxplot",
+                    sorting=[plot_sorting_direction, plot_sorting_field]
                 )
 
             if plot_histograms:
@@ -2327,7 +2354,8 @@ def ct_plot_calculations(
                     value_axis_title="Events",
                     name_axis_title="Requested procedure",
                     colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT requested procedure events mean"
+                    filename="OpenREM CT requested procedure events mean",
+                    sorting=[plot_sorting_direction, plot_sorting_field]
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2338,7 +2366,8 @@ def ct_plot_calculations(
                     value_axis_title="Events",
                     name_axis_title="Requested procedure",
                     colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT requested procedure events boxplot"
+                    filename="OpenREM CT requested procedure events boxplot",
+                    sorting=[plot_sorting_direction, plot_sorting_field]
                 )
 
             if plot_histograms:
@@ -2369,7 +2398,8 @@ def ct_plot_calculations(
                 "study_description",
                 name_axis_title="Study description",
                 colourmap=plot_colour_map_choice,
-                filename="OpenREM CT study description frequency"
+                filename="OpenREM CT study description frequency",
+                sorting=[plot_sorting_direction, plot_sorting_field]
             )
 
         if plot_request_freq:
@@ -2378,7 +2408,8 @@ def ct_plot_calculations(
                 "requested_procedure_code_meaning",
                 name_axis_title="Requested procedure",
                 colourmap=plot_colour_map_choice,
-                filename="OpenREM CT requested procedure frequency"
+                filename="OpenREM CT requested procedure frequency",
+                sorting=[plot_sorting_direction, plot_sorting_field]
             )
 
         if plot_study_mean_dlp_over_time:

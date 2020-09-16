@@ -140,6 +140,33 @@ def create_dataframe_weekdays(
     return df_time_series
 
 
+def create_dataframe_aggregates(
+        df,
+        df_name_cols,
+        df_value_cols,
+        stats=None
+):
+    # Make it possible to have multiple value cols (DLP, CTDI, for example)
+    if stats is None:
+        stats = ["mean"]
+
+    groupby_cols = ["x_ray_system_name"]
+    groupby_cols.extend(df_name_cols)
+
+    aggregates = {}
+    for value_col in df_value_cols:
+        aggregates[value_col] = stats
+
+    test = df.groupby(groupby_cols).agg(aggregates)
+
+    # Append value name to agg fields in case there are multiple values to aggregate
+
+    #df_time_series = df.set_index(df_date_col).groupby(["x_ray_system_name", df_name_col, pd.Grouper(freq=time_period)]).agg({df_value_col: average})
+    #df_time_series.columns = [s + df_value_col for s in average]
+    #df_time_series = df_time_series.reset_index()
+    return test
+
+
 def plotly_set_default_theme(theme_name):
     import plotly.io as pio
 
@@ -173,8 +200,14 @@ def plotly_boxplot(
         value_axis_title="",
         name_axis_title="",
         colourmap="RdYlBu",
-        filename="OpenREM_boxplot_chart"
+        filename="OpenREM_boxplot_chart",
+        sorting = None
 ):
+    if sorting is None:
+        sorting = [False, "frequency"]
+
+    categories_sorted = sorted_category_list(df, df_name_col, df_value_col, sorting)
+
     from plotly.offline import plot
     import plotly.express as px
 
@@ -192,10 +225,9 @@ def plotly_boxplot(
                 df_name_col: name_axis_title,
                 "x_ray_system_name": "System"
             },
-            color_discrete_sequence=colour_sequence
+            color_discrete_sequence=colour_sequence,
+            category_orders=categories_sorted
         )
-
-        fig.update_xaxes(categoryorder="category ascending")
 
         fig.update_traces(quartilemethod="exclusive")
 
@@ -205,6 +237,26 @@ def plotly_boxplot(
         return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
 
 
+def sorted_category_list(df, df_name_col, df_value_col, sorting):
+    # Calculate the required aggregates for creating a list of categories for sorting
+    grouped_df = df.groupby([df_name_col]).agg({df_value_col: ["mean", "count"]})
+    grouped_df.columns = grouped_df.columns.droplevel(level=0)
+    grouped_df = grouped_df.reset_index()
+
+    if sorting[1] == "name":
+        sort_by = df_name_col
+    elif sorting[1] == "frequency":
+        sort_by = "count"
+    else:
+        sort_by = "mean"
+
+    categories_sorted = {
+        df_name_col: list(grouped_df.sort_values(by=sort_by, ascending=sorting[0])[df_name_col])
+    }
+
+    return categories_sorted
+
+
 def plotly_barchart(
         df,
         df_name_col,
@@ -212,36 +264,46 @@ def plotly_barchart(
         value_axis_title="",
         name_axis_title="",
         colourmap="RdYlBu",
-        filename="OpenREM_bar_chart"
+        filename="OpenREM_bar_chart",
+        sorting=None
 ):
+    if sorting is None:
+        sorting = [False, "frequency"]
+
     from plotly.offline import plot
     import plotly.express as px
 
     n_colours = len(df.x_ray_system_name.unique())
     colour_sequence = calculate_colour_sequence(colourmap, n_colours)
 
-    try:
-        fig = px.histogram(
-            df,
-            x=df_name_col,
-            y=df_value_col,
-            color="x_ray_system_name",
-            barmode="group",
-            histfunc="avg",
-            labels={
-                df_value_col: value_axis_title,
-                df_name_col: name_axis_title,
-                "x_ray_system_name": "System"
-            },
-            color_discrete_sequence=colour_sequence
-        )
+    # Calculate the required aggregates for the chart
+    grouped_df = df.groupby(["x_ray_system_name", df_name_col]).agg({df_value_col: ["mean", "count"]})
+    grouped_df.columns = grouped_df.columns.droplevel(level=0)
+    grouped_df = grouped_df.rename(columns={"mean": "average_val", "count": "count_val"}).reset_index()
 
-        fig.update_xaxes(categoryorder="category ascending")
+    categories_sorted = sorted_category_list(df, df_name_col, df_value_col, sorting)
 
-        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
+    fig = px.bar(
+        grouped_df,
+        x=df_name_col,
+        y="average_val",
+        color="x_ray_system_name",
+        barmode="group",
+        labels={
+            "average_val": value_axis_title,
+            df_name_col: name_axis_title,
+            "x_ray_system_name": "System",
+            "count_val": "Frequency"
+        },
+        category_orders=categories_sorted,
+        color_discrete_sequence=colour_sequence,
+        hover_data={"x_ray_system_name": True,
+                    df_name_col: True,
+                    "average_val": ":.2f",
+                    "count_val": ":.0d"},
+    )
 
-    except ValueError:
-        return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
+    return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
 
 
 def plotly_histogram(
@@ -293,13 +355,27 @@ def plotly_stacked_histogram(
         df_name_col,
         name_axis_title="",
         colourmap="RdYlBu",
-        filename="OpenREM_frequency_chart"
+        filename="OpenREM_frequency_chart",
+        sorting=None
 ):
+    if sorting is None:
+        sorting = [False, "frequency"]
+
     from plotly.offline import plot
     import plotly.express as px
 
     n_colours = len(df[df_name_col].unique())
     colour_sequence = calculate_colour_sequence(colourmap, n_colours)
+
+    category_sorting_df = df.groupby([df_name_col]).count().reset_index()
+    if sorting[1] == "name":
+        sort_by = df_name_col
+    else:
+        sort_by = "x_ray_system_name"
+
+    categories_sorted = {
+        df_name_col: list(category_sorting_df.sort_values(by=sort_by, ascending=sorting[0])[df_name_col])
+    }
 
     try:
         fig = px.histogram(
@@ -312,7 +388,8 @@ def plotly_stacked_histogram(
                 df_name_col:name_axis_title,
                 "x_ray_system_name": "System"
             },
-            color_discrete_sequence=colour_sequence
+            color_discrete_sequence=colour_sequence,
+            category_orders=categories_sorted
         )
 
         fig.update_xaxes(categoryorder="category ascending")
