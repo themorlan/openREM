@@ -547,7 +547,7 @@ class UserProfile(models.Model):
         max_length=13, choices=TIME_PERIOD, default=MONTHS
     )
     plotDXInitialSortingChoice = models.CharField(
-        max_length=4, choices=SORTING_CHOICES_DX, default=FREQ
+        max_length=9, choices=SORTING_CHOICES_DX, default=FREQ
     )
 
     plotCTAcquisitionMeanDLP = models.BooleanField(default=True)
@@ -580,7 +580,7 @@ class UserProfile(models.Model):
     plotRFRequestDAP = models.BooleanField(default=True)
     plotRFRequestFreq = models.BooleanField(default=True)
     plotRFInitialSortingChoice = models.CharField(
-        max_length=4, choices=SORTING_CHOICES_DX, default=FREQ
+        max_length=9, choices=SORTING_CHOICES_DX, default=FREQ
     )
 
     plotMGStudyPerDayAndHour = models.BooleanField(default=False)
