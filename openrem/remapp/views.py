@@ -1466,12 +1466,12 @@ def ct_summary_list_filter(request):
     }
 
     if user_profile.plotCharts:
-        return_structure["required_charts"] = generate_required_charts_list(user_profile)
+        return_structure["required_charts"] = generate_required_ct_charts_list(user_profile)
 
     return render(request, "remapp/ctfiltered.html", return_structure,)
 
 
-def generate_required_charts_list(profile):
+def generate_required_ct_charts_list(profile):
     """Obtain a list of dictionaries containing the title string and base
     variable name for each required chart"""
     required_charts = []
@@ -1720,18 +1720,13 @@ def ct_plot_calculations(
     """
     from .interface.chart_functions import (
         create_dataframe,
-        create_dataframe_time_series,
         create_dataframe_weekdays,
         create_dataframe_aggregates,
         create_sorted_category_list,
-        create_freq_sorted_category_list,
         plotly_boxplot,
         plotly_barchart,
         plotly_histogram,
-        plotly_frequency_barchart,
-        plotly_timeseries_linechart,
         plotly_barchart_weekdays,
-        plotly_scatter,
         plotly_set_default_theme,
         construct_freqency_chart,
         construct_scatter_chart,
@@ -2628,8 +2623,15 @@ def mg_summary_list_filter(request):
             user_profile.plotSeriesPerSystem = chart_options_form.cleaned_data[
                 "plotSeriesPerSystem"
             ]
-            # Uncomment the following line when there's at least one bar chart for mammo
-            # user_profile.plotHistograms = chart_options_form.cleaned_data['plotHistograms']
+            user_profile.plotGroupingChoice = chart_options_form.cleaned_data[
+                "plotGrouping"
+            ]
+            user_profile.plotMGInitialSortingChoice = chart_options_form.cleaned_data[
+                "plotMGInitialSortingChoice"
+            ]
+            user_profile.plotInitialSortingDirection = chart_options_form.cleaned_data[
+                "plotInitialSortingDirection"
+            ]
             user_profile.save()
 
         else:
@@ -2640,9 +2642,10 @@ def mg_summary_list_filter(request):
                 "plotMGkVpvsThickness": user_profile.plotMGkVpvsThickness,
                 "plotMGmAsvsThickness": user_profile.plotMGmAsvsThickness,
                 "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
+                "plotGrouping": user_profile.plotGroupingChoice,
+                "plotMGInitialSortingChoice": user_profile.plotMGInitialSortingChoice,
+                "plotInitialSortingDirection": user_profile.plotInitialSortingDirection
             }
-            # Uncomment the following line when there's at least one bar chart for mammo
-            #'plotHistograms': user_profile.plotHistograms}
             chart_options_form = MGChartOptionsForm(form_data)
 
     # Obtain the number of items per page from the request
@@ -2685,7 +2688,34 @@ def mg_summary_list_filter(request):
         "itemsPerPageForm": items_per_page_form,
     }
 
+    if user_profile.plotCharts:
+        return_structure["required_charts"] = generate_required_mg_charts_list(user_profile)
+
     return render(request, "remapp/mgfiltered.html", return_structure,)
+
+
+def generate_required_mg_charts_list(profile):
+    """Obtain a list of dictionaries containing the title string and base
+    variable name for each required chart"""
+    required_charts = []
+
+    if profile.plotMGAGDvsThickness:
+        required_charts.append({"title": "Chart of AGD vs compressed breast thickness for each acquisition protocol",
+                                "var_name": "acquisitionScatterAGDvsThick"})
+
+    if profile.plotMGkVpvsThickness:
+        required_charts.append({"title": "Chart of kVp vs compressed breast thickness for each acquisition protocol",
+                                "var_name": "acquisitionScatterkVpvsThick"})
+
+    if profile.plotMGmAsvsThickness:
+        required_charts.append({"title": "Chart of mAs vs compressed breast thickness for each acquisition protocol",
+                                "var_name": "acquisitionScattermAsvsThick"})
+
+    if profile.plotMGStudyPerDayAndHour:
+        required_charts.append({"title": "Chart of study description workload",
+                                "var_name": "studyWorkload"})
+
+    return required_charts
 
 
 @login_required
@@ -2719,20 +2749,6 @@ def mg_summary_chart_data(request):
         create_user_profile(sender=request.user, instance=request.user, created=True)
         user_profile = request.user.userprofile
 
-    if (
-        user_profile.median_available
-        and "postgresql" in settings.DATABASES["default"]["ENGINE"]
-    ):
-        median_available = True
-    elif "postgresql" in settings.DATABASES["default"]["ENGINE"]:
-        user_profile.median_available = True
-        user_profile.save()
-        median_available = True
-    else:
-        user_profile.median_available = False
-        user_profile.save()
-        median_available = False
-
     if settings.DEBUG:
         from datetime import datetime
 
@@ -2740,14 +2756,18 @@ def mg_summary_chart_data(request):
 
     return_structure = mg_plot_calculations(
         f,
-        median_available,
-        user_profile.plotAverageChoice,
-        user_profile.plotSeriesPerSystem,
-        user_profile.plotHistogramBins,
         user_profile.plotMGStudyPerDayAndHour,
         user_profile.plotMGAGDvsThickness,
         user_profile.plotMGkVpvsThickness,
         user_profile.plotMGmAsvsThickness,
+        user_profile.plotSeriesPerSystem,
+        user_profile.plotGroupingChoice,
+        user_profile.plotInitialSortingDirection,
+        user_profile.plotMGInitialSortingChoice,
+        user_profile.plotThemeChoice,
+        user_profile.plotColourMapChoice,
+        user_profile.plotFacetColWrapVal,
+        user_profile.plotCaseInsensitiveCategories
     )
 
     if settings.DEBUG:
@@ -2758,68 +2778,145 @@ def mg_summary_chart_data(request):
 
 def mg_plot_calculations(
     f,
-    median_available,
-    plot_average_choice,
-    plot_series_per_systems,
-    plot_histogram_bins,
     plot_study_per_day_and_hour,
     plot_agd_vs_thickness,
     plot_kvp_vs_thickness,
     plot_mas_vs_thickness,
+    plot_series_per_systems,
+    plot_grouping_choice,
+    plot_sorting_direction,
+    plot_sorting_field,
+    plot_theme_choice,
+    plot_colour_map_choice,
+    plot_facet_col_wrap_val,
+    plot_case_insensitive_categories
 ):
     """Calculations for mammography charts
     """
-    from .interface.chart_functions import workload_chart_data, scatter_plot_data
+    from .interface.chart_functions import (
+        create_dataframe,
+        create_dataframe_weekdays,
+        plotly_barchart_weekdays,
+        construct_scatter_chart,
+        plotly_set_default_theme
+    )
+
+    # Set the Plotly chart theme
+    plotly_set_default_theme(plot_theme_choice)
 
     return_structure = {}
 
+    #######################################################################
+    # Create a data frame to use for charts
+    name_fields = []
     if plot_study_per_day_and_hour:
-        # No acquisition-level filters, so can use f.qs for all charts at the moment.
-        # exp_include = f.qs.values_list('study_instance_uid')
-        # study_events = GeneralStudyModuleAttr.objects.filter(study_instance_uid__in=exp_include)
-        study_events = f.qs
+        name_fields.append("study_description")
+    if (
+            plot_agd_vs_thickness
+            or plot_kvp_vs_thickness
+            or plot_mas_vs_thickness
+    ):
+        name_fields.append("projectionxrayradiationdose__irradeventxraydata__acquisition_protocol")
 
-        result = workload_chart_data(study_events)
-        return_structure["studiesPerHourInWeekdays"] = result["workload"]
+    value_fields = []
+    if plot_agd_vs_thickness:
+        value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose")
+    if plot_kvp_vs_thickness:
+        value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp")
+    if plot_mas_vs_thickness:
+        value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure")
+    if (
+            plot_agd_vs_thickness
+            or plot_kvp_vs_thickness
+            or plot_mas_vs_thickness
+    ):
+        value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness")
+
+    date_fields = []
+    time_fields = []
+    if plot_study_per_day_and_hour:
+        date_fields.append("study_date")
+        time_fields.append("study_time")
+
+    system_field = None
+    if plot_series_per_systems:
+        system_field = "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
+
+    df = create_dataframe(
+        f.qs,
+        data_point_name_fields=name_fields,
+        data_point_value_fields=value_fields,
+        data_point_date_fields=date_fields,
+        data_point_time_fields=time_fields,
+        system_name_field=system_field,
+        data_point_name_lowercase=plot_case_insensitive_categories
+    )
+
+    if plot_study_per_day_and_hour:
+        df_time_series_per_weekday = create_dataframe_weekdays(
+            df,
+            "study_description",
+            df_date_col="study_date"
+        )
+
+        return_structure["studyWorkloadData"] = plotly_barchart_weekdays(
+            df_time_series_per_weekday,
+            "weekday",
+            "study_description",
+            name_axis_title="Weekday",
+            value_axis_title="Frequency",
+            colourmap=plot_colour_map_choice,
+            filename="OpenREM CT study description workload",
+            facet_col_wrap=plot_facet_col_wrap_val
+        )
 
     if plot_agd_vs_thickness:
-        result = scatter_plot_data(
-            f.qs,
-            "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
-            "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
-            1,
-            plot_series_per_systems,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
+        return_structure["AGDvsThickness"] = construct_scatter_chart(
+            df=df,
+            df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+            df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+            df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
+            x_axis_title="Compressed breast thickness (mm)",
+            y_axis_title="AGD (mGy)",
+            sorting=[plot_sorting_direction, plot_sorting_field],
+            grouping_choice=plot_grouping_choice,
+            legend_title="Acquisition protocol",
+            colour_map=plot_colour_map_choice,
+            facet_col_wrap=plot_facet_col_wrap_val,
+            file_name="OpenREM CT acquisition protocol AGD vs thickness"
         )
-        return_structure["AGDvsThickness"] = result["scatterData"]
-        return_structure["maxThicknessAndAGD"] = result["maxXandY"]
-        return_structure["AGDvsThicknessSystems"] = result["system_list"]
 
-    if plot_kvp_vs_thickness:
-        result = scatter_plot_data(
-            f.qs,
-            "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
-            "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
-            1,
-            plot_series_per_systems,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-        )
-        return_structure["kVpvsThickness"] = result["scatterData"]
-        return_structure["maxThicknessAndkVp"] = result["maxXandY"]
-        return_structure["kVpvsThicknessSystems"] = result["system_list"]
+        if plot_kvp_vs_thickness:
+            return_structure["kVpvsThickness"] = construct_scatter_chart(
+                df=df,
+                df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+                df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
+                x_axis_title="Compressed breast thickness (mm)",
+                y_axis_title="kVp",
+                sorting=[plot_sorting_direction, plot_sorting_field],
+                grouping_choice=plot_grouping_choice,
+                legend_title="Acquisition protocol",
+                colour_map=plot_colour_map_choice,
+                facet_col_wrap=plot_facet_col_wrap_val,
+                file_name="OpenREM CT acquisition protocol kVp vs thickness"
+            )
 
-    if plot_mas_vs_thickness:
-        result = scatter_plot_data(
-            f.qs,
-            "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
-            "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
-            0.001,
-            plot_series_per_systems,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-        )
-        return_structure["mAsvsThickness"] = result["scatterData"]
-        return_structure["maxThicknessAndmAs"] = result["maxXandY"]
-        return_structure["mAsvsThicknessSystems"] = result["system_list"]
+        if plot_mas_vs_thickness:
+            return_structure["mAsvsThickness"] = construct_scatter_chart(
+                df=df,
+                df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+                df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
+                x_axis_title="Compressed breast thickness (mm)",
+                y_axis_title="mAs",
+                sorting=[plot_sorting_direction, plot_sorting_field],
+                grouping_choice=plot_grouping_choice,
+                legend_title="Acquisition protocol",
+                colour_map=plot_colour_map_choice,
+                facet_col_wrap=plot_facet_col_wrap_val,
+                file_name="OpenREM CT acquisition protocol mAs vs thickness"
+            )
 
     return return_structure
 

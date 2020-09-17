@@ -80,17 +80,10 @@ AVERAGES = (
 NAME = "name"
 FREQ = "frequency"
 VALUE = "value"
-SORTING_CHOICES_CT = (
+SORTING_CHOICES = (
     (NAME, "Name"),
     (FREQ, "Frequency"),
     (VALUE, "Value"),
-)
-
-DAP = "dap"
-SORTING_CHOICES_DX = (
-    (DAP, "DAP or kVp or mAs"),
-    (FREQ, "Frequency"),
-    (NAME, "Name"),
 )
 
 ASCENDING = 1
@@ -309,7 +302,7 @@ class CTChartOptionsForm(forms.Form):
         label="Calculate histogram data", required=False
     )
     plotCTInitialSortingChoice = forms.ChoiceField(
-        label="Chart sorting", choices=SORTING_CHOICES_CT, required=False
+        label="Chart sorting", choices=SORTING_CHOICES, required=False
     )
     plotInitialSortingDirection = forms.ChoiceField(
         label="Sorting direction", choices=SORTING_DIRECTION, required=False
@@ -351,7 +344,7 @@ class RFChartOptionsDisplayForm(forms.Form):
     plotRFRequestFreq = forms.BooleanField(label="Request frequency", required=False)
     plotRFRequestDAP = forms.BooleanField(label="DAP per request", required=False)
     plotRFInitialSortingChoice = forms.ChoiceField(
-        label="Default chart sorting", choices=SORTING_CHOICES_DX, required=False
+        label="Default chart sorting", choices=SORTING_CHOICES, required=False
     )
 
 
@@ -372,12 +365,17 @@ class MGChartOptionsForm(forms.Form):
     plotMGmAsvsThickness = forms.BooleanField(
         label="mAs vs. compressed thickness", required=False
     )
-    # plotMeanMedianOrBoth = forms.ChoiceField(label='Average to use', choices=AVERAGES, required=False)
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
     )
-    plotHistograms = forms.BooleanField(
-        label="Calculate histogram data", required=False
+    plotGrouping = forms.ChoiceField(
+        label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
+    )
+    plotMGInitialSortingChoice = forms.ChoiceField(
+        label="Chart sorting", choices=SORTING_CHOICES, required=False
+    )
+    plotInitialSortingDirection = forms.ChoiceField(
+        label="Sorting direction", choices=SORTING_DIRECTION, required=False
     )
 
 
@@ -439,7 +437,7 @@ class DXChartOptionsDisplayForm(forms.Form):
         label="Time period", choices=TIME_PERIOD, required=False
     )
     plotDXInitialSortingChoice = forms.ChoiceField(
-        label="Default chart sorting", choices=SORTING_CHOICES_DX, required=False
+        label="Default chart sorting", choices=SORTING_CHOICES, required=False
     )
 
 
@@ -498,7 +496,7 @@ class CTChartOptionsDisplayForm(forms.Form):
         label="Time period", choices=TIME_PERIOD, required=False
     )
     plotCTInitialSortingChoice = forms.ChoiceField(
-        label="Chart sorting", choices=SORTING_CHOICES_CT, required=False
+        label="Chart sorting", choices=SORTING_CHOICES, required=False
     )
 
 
@@ -648,14 +646,14 @@ class DicomQueryForm(forms.Form):
     )
     date_from_field = forms.DateField(
         label="Date from",
-        widget=forms.DateInput(attrs={"class": "form-control datepicker",}),
+        widget=forms.DateInput(attrs={"class": "form-control datepicker"}),
         required=False,
         initial=date.today().isoformat(),
         help_text="Format yyyy-mm-dd, restrict as much as possible for best results",
     )
     date_until_field = forms.DateField(
         label="Date until",
-        widget=forms.DateInput(attrs={"class": "form-control datepicker",}),
+        widget=forms.DateInput(attrs={"class": "form-control datepicker"}),
         required=False,
         help_text="Format yyyy-mm-dd, restrict as much as possible for best results",
     )

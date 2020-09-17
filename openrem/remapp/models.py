@@ -442,17 +442,10 @@ class UserProfile(models.Model):
     NAME = "name"
     FREQ = "frequency"
     VALUE = "value"
-    SORTING_CHOICES_CT = (
+    SORTING_CHOICES = (
         (NAME, "Name"),
         (FREQ, "Frequency"),
         (VALUE, "Value"),
-    )
-
-    DAP = "dap"
-    SORTING_CHOICES_DX = (
-        (DAP, "DAP"),
-        (FREQ, "Frequency"),
-        (NAME, "Name"),
     )
 
     ASCENDING = 1
@@ -547,7 +540,7 @@ class UserProfile(models.Model):
         max_length=13, choices=TIME_PERIOD, default=MONTHS
     )
     plotDXInitialSortingChoice = models.CharField(
-        max_length=9, choices=SORTING_CHOICES_DX, default=FREQ
+        max_length=9, choices=SORTING_CHOICES, default=FREQ
     )
 
     plotCTAcquisitionMeanDLP = models.BooleanField(default=True)
@@ -571,7 +564,7 @@ class UserProfile(models.Model):
         max_length=13, choices=TIME_PERIOD, default=MONTHS
     )
     plotCTInitialSortingChoice = models.CharField(
-        max_length=9, choices=SORTING_CHOICES_CT, default=FREQ
+        max_length=9, choices=SORTING_CHOICES, default=FREQ
     )
 
     plotRFStudyPerDayAndHour = models.BooleanField(default=False)
@@ -580,13 +573,16 @@ class UserProfile(models.Model):
     plotRFRequestDAP = models.BooleanField(default=True)
     plotRFRequestFreq = models.BooleanField(default=True)
     plotRFInitialSortingChoice = models.CharField(
-        max_length=9, choices=SORTING_CHOICES_DX, default=FREQ
+        max_length=9, choices=SORTING_CHOICES, default=FREQ
     )
 
     plotMGStudyPerDayAndHour = models.BooleanField(default=False)
     plotMGAGDvsThickness = models.BooleanField(default=False)
     plotMGkVpvsThickness = models.BooleanField(default=False)
     plotMGmAsvsThickness = models.BooleanField(default=False)
+    plotMGInitialSortingChoice = models.CharField(
+        max_length=9, choices=SORTING_CHOICES, default=FREQ
+    )
 
     displayCT = models.BooleanField(default=True)
     displayRF = models.BooleanField(default=True)

@@ -208,189 +208,48 @@
     {% if request.user.userprofile.plotCharts %}
 
         <script src="{{ STATIC_URL }}js/django_reverse/reverse.js"></script>
-        <script src="{{ STATIC_URL }}js/charts/chartFullScreen.js"></script>
-        <script src="{{ STATIC_URL }}js/charts/chartSetExportSize.js"></script>
         <script src="{{ STATIC_URL }}js/chroma.min.js"></script>
-        <script src="{{ STATIC_URL }}js/charts/chartUpdateData.js"></script>
 
         <div class="ajax-progress"><img src="{{ STATIC_URL }}img/ajax-loader.gif"></div>
 
-        <!-- Include JavaScript to enable highcharts plots -->
-        <script src="{{ STATIC_URL }}js/charts/highcharts.js"></script>
-        <script src="{{ STATIC_URL }}js/charts/boost.js"></script>
-        <script src="{{ STATIC_URL }}js/charts/exporting.js"></script>
-        <script src="{{ STATIC_URL }}js/charts/offline-exporting.js"></script>
-        <script src="{{ STATIC_URL }}js/charts/export-csv.js"></script>
-        <script src="{{ STATIC_URL }}js/charts/drilldown.js"></script>
-        <script src="{{ STATIC_URL }}js/charts/chartSortingRoutines.js"></script>
-        <script src="{{ STATIC_URL }}js/charts/chartHistogramNormalise.js"></script>
-        <script src="{{ STATIC_URL }}js/charts/chartAverageAndHistogram.js"></script>
-        <script src="{{ STATIC_URL }}js/charts/chartAverageOverTime.js"></script>
-        <script src="{{ STATIC_URL }}js/charts/chartFrequency.js"></script>
-        <script src="{{ STATIC_URL }}js/charts/chartWorkload.js"></script>
-        <script src="{{ STATIC_URL }}js/charts/chartScatter.js"></script>
-        <!-- End of include JavaScript to enable highcharts plots -->
+        <!-- JavaScript to enable Altair charts -->
+        <script src="{{ STATIC_URL }}js/charts/vega@5.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/vega-lite@4.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/vega-embed@6.js"></script>
+        <!-- End of JavaScript to enable Altair charts -->
 
-        <script>var plotAverageChoice = '{{ request.user.userprofile.plotAverageChoice }}';</script>
+        <!-- JavaScript to enable Plotly charts -->
+        <script src="{{ STATIC_URL }}js/charts/plotly-latest.min.js"></script>
+        <!-- End of JavaScript to enable Plotly charts -->
 
-        <!-- JavaScript to enable bootstrap tooltips -->
-        <script>
-            $(document).ready(function(){
-                $('[data-toggle="tooltip"]').tooltip();
-            });
-        </script>
-        <!-- End of JavaScript to enable bootstrap tooltips -->
-
-        <!-- JavaScript function to sort a list of objects by the 'y' or 'name' object. -->
-        <script src="{{ STATIC_URL }}js/charts/sorting.js"></script>
-        <!-- End of JavaScript function to sort a list of objects by the 'y' or 'name' object -->
+        <!-- JavaScript Plotly chart resizing code. -->
+        <script src="{{ STATIC_URL }}js/charts/chartFullScreen.js"></script>
+        <!-- End of JavaScript Plotly chart resizing code. -->
 
         <!-- JavaScript chart AJAX code. -->
         <script src="{{ STATIC_URL }}js/charts/mgChartAjax.js"></script>
         <!-- End of JavaScript chart AJAX code. -->
 
-        {% if request.user.userprofile.plotMGAGDvsThickness %}
-            <!-- HTML to include div container for scatter plot -->
-            <div class="panel-group" id="accordionScatter1">
+        {% for chart in required_charts %}
+            <div class="panel-group" id="{{ chart.var_name }}accordion">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordionScatter1" href="#collapseScatter1" onclick="setTimeout(function() {fitChartToDiv('scatterDIV1');}, 0);">
-                                Scatter plot chart showing AGD vs. compressed breast thickness.
+                            <a data-toggle="collapse" data-parent="#{{ chart.var_name }}accordion" href="#collapse{{ chart.var_name }}" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
+                                {{ chart.title }}
                             </a>
                         </h4>
                     </div>
-                    <div id="collapseScatter1" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div id="scatterDIV1" style="height: auto; margin: 0 0"></div>
-                            <a onclick="$('#scatterDIV1').highcharts().viewData(false, false, true); enterFullScreen('collapseScatter1', 'scatterDIV1'); $('#toggle_scatteragd_data_btn').toggle();" class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
-                            <a onclick="$('#scatterDIV1').highcharts().viewData(true, true);" class="btn btn-default btn-sm" role="button" id="toggle_scatteragd_data_btn">Toggle data table</a>
-                            <a onclick="hideOrShowAllSeries('scatterDIV1', 'hide', 'agd_thick_series_')" class="btn btn-default btn-sm" role="button" id="agd_thick_series_hide">Hide all series</a>
-                            <a onclick="hideOrShowAllSeries('scatterDIV1', 'show', 'agd_thick_series_')" class="btn btn-default btn-sm" role="button" id="agd_thick_series_show">Show all series</a>
-                            <a onclick="toggleAllSeries('scatterDIV1')" class="btn btn-default btn-sm" role="button" id="agd_thick_series_toggle">Toggle all series</a>
+                    <div id="collapse{{ chart.var_name }}" class="panel-collapse collapse">
+                        <div id="{{ chart.var_name }}ChartParentDiv" class="panel-body">
+                            <div id="{{ chart.var_name }}ChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('{{ chart.var_name }}ChartDiv', '{{ chart.var_name }}ChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- End of HTML to include div container for scatter plot -->
-
-            <script>
-                $('#agd_thick_series_show').hide();
-
-                var plotMGAGDvsThickness = true;
-                $(window).resize(function() {
-                    chartSetExportSize('scatterDIV1');
-                    fitChartToDiv('scatterDIV1');
-                });
-                result = chartScatter('Average glandular dose vs. compressed thickness', 'scatterDIV1', 'Compressed thickness (mm)', 'Average glandular dose (mGy)');
-            </script>
-        {% endif %}
-
-        {% if request.user.userprofile.plotMGkVpvsThickness %}
-            <!-- HTML to include div container for scatter plot -->
-            <div class="panel-group" id="accordionScatter2">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordionScatter2" href="#collapseScatter2" onclick="setTimeout(function() {fitChartToDiv('scatterDIV2');}, 0);">
-                                Scatter plot chart showing kVp vs. compressed breast thickness.
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapseScatter2" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div id="scatterDIV2" style="height: auto; margin: 0 0"></div>
-                            <a onclick="$('#scatterDIV2').highcharts().viewData(false, false, true); enterFullScreen('collapseScatter2', 'scatterDIV2'); $('#toggle_scatterkvp_data_btn').toggle();" class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
-                            <a onclick="$('#scatterDIV2').highcharts().viewData(true, true);" class="btn btn-default btn-sm" role="button" id="toggle_scatterkvp_data_btn">Toggle data table</a>
-                            <a onclick="hideOrShowAllSeries('scatterDIV2', 'hide', 'kvp_thick_series_')" class="btn btn-default btn-sm" role="button" id="kvp_thick_series_hide">Hide all series</a>
-                            <a onclick="hideOrShowAllSeries('scatterDIV2', 'show', 'kvp_thick_series_')" class="btn btn-default btn-sm" role="button" id="kvp_thick_series_show">Show all series</a>
-                            <a onclick="toggleAllSeries('scatterDIV2')" class="btn btn-default btn-sm" role="button" id="kvp_thick_series_toggle">Toggle all series</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End of HTML to include div container for scatter plot -->
-
-            <script>
-                $('#kvp_thick_series_show').hide();
-
-                var plotMGkVpvsThickness = true;
-                $(window).resize(function() {
-                    chartSetExportSize('scatterDIV2');
-                    fitChartToDiv('scatterDIV2');
-                });
-                result = chartScatter('kVp vs. compressed thickness', 'scatterDIV2', 'Compressed thickness (mm)', 'kVp (kV)');
-            </script>
-        {% endif %}
-
-        {% if request.user.userprofile.plotMGmAsvsThickness %}
-            <!-- HTML to include div container for scatter plot -->
-            <div class="panel-group" id="accordionScatter3">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordionScatter3" href="#collapseScatter3" onclick="setTimeout(function() {fitChartToDiv('scatterDIV3');}, 0);">
-                                Scatter plot chart showing exposure vs. compressed breast thickness.
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapseScatter3" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div id="scatterDIV3" style="height: auto; margin: 0 0"></div>
-                            <a onclick="$('#scatterDIV3').highcharts().viewData(false, false, true); enterFullScreen('collapseScatter3', 'scatterDIV3'); $('#toggle_scattermas_data_btn').toggle();" class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
-                            <a onclick="$('#scatterDIV3').highcharts().viewData(true, true);" class="btn btn-default btn-sm" role="button" id="toggle_scattermas_data_btn">Toggle data table</a>
-                            <a onclick="hideOrShowAllSeries('scatterDIV3', 'hide', 'mas_thick_series_')" class="btn btn-default btn-sm" role="button" id="mas_thick_series_hide">Hide all series</a>
-                            <a onclick="hideOrShowAllSeries('scatterDIV3', 'show', 'mas_thick_series_')" class="btn btn-default btn-sm" role="button" id="mas_thick_series_show">Show all series</a>
-                            <a onclick="toggleAllSeries('scatterDIV3')" class="btn btn-default btn-sm" role="button" id="mas_thick_series_toggle">Toggle all series</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End of HTML to include div container for scatter plot -->
-
-            <script>
-                $('#mas_thick_series_show').hide();
-
-                var plotMGmAsvsThickness = true;
-                $(window).resize(function() {
-                    chartSetExportSize('scatterDIV3');
-                    fitChartToDiv('scatterDIV3');
-                });
-                result = chartScatter('Exposure vs. compressed thickness', 'scatterDIV3', 'Compressed thickness (mm)', 'Exposure (mAs)');
-            </script>
-        {% endif %}
-
-        {% if request.user.userprofile.plotMGStudyPerDayAndHour %}
-            <!-- HTML to include div container for study workload -->
-            <div class="panel-group" id="accordion5">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion5" href="#collapseStudyWorkloadPieChart" onclick="setTimeout(function() {fitChartToDiv('piechartStudyWorkloadDIV');}, 0);">
-                                Pie chart showing a breakdown of number of studies per weekday.
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapseStudyWorkloadPieChart" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div id="piechartStudyWorkloadDIV" style="height: auto; margin: 0 0"></div>
-                            <p>Click on a segment to be taken to a pie chart showing the breakdown per hour for that weekday.</p>
-                            <a onclick="$('#piechartStudyWorkloadDIV').highcharts().viewData(false, false, true); enterFullScreen('collapseStudyWorkloadPieChart', 'piechartStudyWorkloadDIV'); $('#toggle_studywl_data_btn').toggle();" class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
-                            <a onclick="$('#piechartStudyWorkloadDIV').highcharts().viewData(true, true);" class="btn btn-default btn-sm" role="button" id="toggle_studywl_data_btn">Toggle data table</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End of HTML to include div container for studies per week day pie chart -->
-            <script>
-                var plotMGStudyPerDayAndHour = true;
-                $(window).resize(function() {
-                    chartSetExportSize('piechartStudyWorkloadDIV');
-                    fitChartToDiv('piechartStudyWorkloadDIV');
-                });
-                result = chartWorkload('piechartStudyWorkloadDIV', 'Studies');
-            </script>
-        {% endif %}
-
+        {% endfor %}
     {% endif %}
+
 {% endblock %}

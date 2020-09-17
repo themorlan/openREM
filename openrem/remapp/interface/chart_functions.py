@@ -459,7 +459,8 @@ def plotly_scatter(
                 df_facet_col: facet_title
             },
             color_discrete_sequence=colour_sequence,
-            category_orders=sorted_category_list
+            category_orders=sorted_category_list,
+            opacity=0.6
         )
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))

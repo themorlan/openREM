@@ -14,31 +14,25 @@ $(document).ready(function() {
         data: requestData,
         dataType: "json",
         success: function( json ) {
-            // Initialise some colours to use for plotting
-            //var colourScale = chroma.scale("RdYlBu");
-            var colourScale = chroma.scale("Dark2");
 
             // Study workload chart data
-            if(typeof plotMGStudyPerDayAndHour !== "undefined") {
-                updateWorkloadChart(json.studiesPerHourInWeekdays, "piechartStudyWorkloadDIV", colourScale);
+            if(typeof json.studyWorkloadData !== "undefined") {
+                $("#studyWorkloadChartDiv").html(json.studyWorkloadData);
             }
 
             // AGD vs compressed thickness scatter plot
-            if(typeof plotMGAGDvsThickness !== "undefined") {
-                updateScatterChart(json.AGDvsThickness, json.maxThicknessAndAGD, "scatterDIV1", json.AGDvsThicknessSystems, "mm", "mGy", [0,2], colourScale);
-                hideButtonsIfOneSeries("scatterDIV1", "agd_thick_series_");
+            if(typeof json.AGDvsThickness !== "undefined") {
+                $("#acquisitionScatterAGDvsThickChartDiv").html(json.AGDvsThickness);
             }
 
             // kVp vs compressed thickness scatter plot
-            if(typeof plotMGkVpvsThickness !== "undefined") {
-                updateScatterChart(json.kVpvsThickness, json.maxThicknessAndkVp, "scatterDIV2", json.kVpvsThicknessSystems, "mm", "kV", [0,0], colourScale);
-                hideButtonsIfOneSeries("scatterDIV2", "kvp_thick_series_");
+            if(typeof json.kVpvsThickness !== "undefined") {
+                $("#acquisitionScatterkVpvsThickChartDiv").html(json.kVpvsThickness);
             }
 
             // mAs vs compressed thickness scatter plot
-            if(typeof plotMGmAsvsThickness !== "undefined") {
-                updateScatterChart(json.mAsvsThickness, json.maxThicknessAndmAs, "scatterDIV3", json.mAsvsThicknessSystems, "mm", "mAs", [0,1], colourScale);
-                hideButtonsIfOneSeries("scatterDIV3", "mas_thick_series_");
+            if(typeof json.mAsvsThickness !== "undefined") {
+                $("#acquisitionScattermAsvsThickChartDiv").html(json.mAsvsThickness);
             }
 
             $(".ajax-progress").hide();
