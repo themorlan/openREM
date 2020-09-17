@@ -314,9 +314,7 @@ class RFChartOptionsForm(forms.Form):
     """
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
-    plotRFStudyPerDayAndHour = forms.BooleanField(
-        label="Study workload", required=False
-    )
+    plotRFStudyPerDayAndHour = forms.BooleanField(label="Study workload", required=False)
     plotRFStudyFreq = forms.BooleanField(label="Study frequency", required=False)
     plotRFStudyDAP = forms.BooleanField(label="DAP per study", required=False)
     plotRFRequestFreq = forms.BooleanField(label="Request frequency", required=False)
@@ -324,11 +322,20 @@ class RFChartOptionsForm(forms.Form):
     plotMeanMedianOrBoth = forms.ChoiceField(
         label="Average to use", choices=AVERAGES, required=False
     )
+    plotGrouping = forms.ChoiceField(
+        label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
+    )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
     )
     plotHistograms = forms.BooleanField(
         label="Calculate histogram data", required=False
+    )
+    plotRFInitialSortingChoice = forms.ChoiceField(
+        label="Chart sorting", choices=SORTING_CHOICES, required=False
+    )
+    plotInitialSortingDirection = forms.ChoiceField(
+        label="Sorting direction", choices=SORTING_DIRECTION, required=False
     )
 
 
@@ -336,9 +343,7 @@ class RFChartOptionsDisplayForm(forms.Form):
     """Form for RF chart display options
     """
 
-    plotRFStudyPerDayAndHour = forms.BooleanField(
-        label="Study workload", required=False
-    )
+    plotRFStudyPerDayAndHour = forms.BooleanField(label="Study workload", required=False)
     plotRFStudyFreq = forms.BooleanField(label="Study frequency", required=False)
     plotRFStudyDAP = forms.BooleanField(label="DAP per study", required=False)
     plotRFRequestFreq = forms.BooleanField(label="Request frequency", required=False)
