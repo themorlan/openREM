@@ -1733,7 +1733,8 @@ def ct_plot_calculations(
         plotly_barchart_weekdays,
         plotly_scatter,
         plotly_set_default_theme,
-        construct_freqency_chart
+        construct_freqency_chart,
+        construct_scatter_chart
     )
 
     # Set the Plotly chart theme
@@ -2004,65 +2005,35 @@ def ct_plot_calculations(
             )
 
         if plot_acquisition_ctdi_vs_mass:
-            sorted_categories = create_sorted_category_list(
-                df,
-                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                [plot_sorting_direction, plot_sorting_field]
-            )
-
-            category_names_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
-            group_by_col = "x_ray_system_name"
-            legend_title = "Acquisition protocol"
-            if plot_grouping_choice == "series":
-                category_names_col = "x_ray_system_name"
-                group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
-                legend_title = "System"
-
-            return_structure["acquisitionScatterCTDIvsMass"] = plotly_scatter(
-                df,
-                "patientstudymoduleattr__patient_weight",
-                "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                category_names_col,
-                df_facet_col=group_by_col,
+            return_structure["acquisitionScatterCTDIvsMass"] = construct_scatter_chart(
+                df=df,
+                df_name_col="ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                df_x_col="patientstudymoduleattr__patient_weight",
+                df_y_col="ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                 x_axis_title="Patient mass (kg)",
                 y_axis_title="CTDI (mGy)",
-                legend_title=legend_title,
-                colourmap=plot_colour_map_choice,
-                filename="OpenREM CT acquisition protocol CTDI vs patient mass",
+                sorting=[plot_sorting_direction, plot_sorting_field],
+                grouping_choice=plot_grouping_choice,
+                legend_title="Acquisition protocol",
+                colour_map=plot_colour_map_choice,
                 facet_col_wrap=plot_facet_col_wrap_val,
-                sorted_category_list=sorted_categories
+                file_name="OpenREM CT acquisition protocol CTDI vs patient mass"
             )
 
         if plot_acquisition_dlp_vs_mass:
-            sorted_categories = create_sorted_category_list(
-                df,
-                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                "ctradiationdose__ctirradiationeventdata__dlp",
-                [plot_sorting_direction, plot_sorting_field]
-            )
-
-            category_names_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
-            group_by_col = "x_ray_system_name"
-            legend_title = "Acquisition protocol"
-            if plot_grouping_choice == "series":
-                category_names_col = "x_ray_system_name"
-                group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
-                legend_title = "System"
-
-            return_structure["acquisitionScatterDLPvsMass"] = plotly_scatter(
-                df,
-                "patientstudymoduleattr__patient_weight",
-                "ctradiationdose__ctirradiationeventdata__dlp",
-                category_names_col,
-                df_facet_col=group_by_col,
-                x_axis_title="Patient mass (kg)",
-                y_axis_title="DLP (mGy.cm)",
-                legend_title=legend_title,
-                colourmap=plot_colour_map_choice,
-                filename="OpenREM CT acquisition protocol DLP vs patient mass",
+            return_structure["acquisitionScatterDLPvsMass"] = construct_scatter_chart(
+                df=df,
+                df_name_col="ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                df_x_col="patientstudymoduleattr__patient_weight",
+                df_y_col="ctradiationdose__ctirradiationeventdata__dlp",
+                x_axis_title = "Patient mass (kg)",
+                y_axis_title = "DLP (mGy.cm)",
+                sorting=[plot_sorting_direction, plot_sorting_field],
+                grouping_choice=plot_grouping_choice,
+                legend_title="Acquisition protocol",
+                colour_map=plot_colour_map_choice,
                 facet_col_wrap=plot_facet_col_wrap_val,
-                sorted_category_list=sorted_categories
+                file_name="OpenREM CT acquisition protocol DLP vs patient mass"
             )
 
         if plot_acquisition_ctdi_over_time:

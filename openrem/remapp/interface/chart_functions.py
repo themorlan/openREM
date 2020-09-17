@@ -563,6 +563,50 @@ def construct_freqency_chart(
     )
 
 
+def construct_scatter_chart(
+        df=None,
+        df_name_col=None,
+        df_x_col=None,
+        df_y_col=None,
+        sorting=None,
+        grouping_choice=None,
+        legend_title=None,
+        colour_map=None,
+        facet_col_wrap=None,
+        x_axis_title=None,
+        y_axis_title=None,
+        file_name=None
+):
+    sorted_categories = create_sorted_category_list(
+        df,
+        df_name_col,
+        df_y_col,
+        sorting
+    )
+
+    df_legend_col = df_name_col
+    df_group_col = "x_ray_system_name"
+    if grouping_choice == "series":
+        df_legend_col = "x_ray_system_name"
+        legend_title = "System"
+        df_group_col = df_name_col
+
+    return plotly_scatter(
+        df,
+        df_x_col,
+        df_y_col,
+        df_legend_col,
+        df_facet_col=df_group_col,
+        x_axis_title=x_axis_title,
+        y_axis_title=y_axis_title,
+        legend_title=legend_title,
+        colourmap=colour_map,
+        filename=file_name,
+        facet_col_wrap=facet_col_wrap,
+        sorted_category_list=sorted_categories
+    )
+
+
 def altair_barchart_average(
     df,
     df_name_col,
