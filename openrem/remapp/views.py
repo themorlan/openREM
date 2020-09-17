@@ -1868,13 +1868,12 @@ def ct_plot_calculations(
         #######################################################################
         # Create the required acquisition-level charts
         if plot_acquisition_mean_dlp:
-            if plot_average_choice in ["mean", "both"] or plot_histograms:
-                sorted_categories = create_sorted_category_list(
-                    df,
-                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                    "ctradiationdose__ctirradiationeventdata__dlp",
-                    [plot_sorting_direction, plot_sorting_field]
-                )
+            sorted_categories = create_sorted_category_list(
+                df,
+                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                "ctradiationdose__ctirradiationeventdata__dlp",
+                [plot_sorting_direction, plot_sorting_field]
+            )
 
             if plot_average_choice in ["mean", "both"]:
                 df_aggregated = create_dataframe_aggregates(
@@ -1903,7 +1902,7 @@ def ct_plot_calculations(
                     name_axis_title="Acquisition protocol",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT acquisition protocol DLP boxplot",
-                    sorting=[plot_sorting_direction, plot_sorting_field]
+                    sorted_category_list=sorted_categories
                 )
 
             if plot_histograms:
@@ -1930,13 +1929,12 @@ def ct_plot_calculations(
                 )
 
         if plot_acquisition_mean_ctdi:
-            if plot_average_choice in ["mean", "both"] or plot_histograms:
-                sorted_categories = create_sorted_category_list(
-                    df,
-                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                    "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    [plot_sorting_direction, plot_sorting_field]
-                )
+            sorted_categories = create_sorted_category_list(
+                df,
+                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                [plot_sorting_direction, plot_sorting_field]
+            )
 
             if plot_average_choice in ["mean", "both"]:
                 df_aggregated = create_dataframe_aggregates(
@@ -1965,7 +1963,7 @@ def ct_plot_calculations(
                     name_axis_title="Acquisition protocol",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT acquisition protocol CTDI boxplot",
-                    sorting=[plot_sorting_direction, plot_sorting_field]
+                    sorted_category_list=sorted_categories
                 )
 
             if plot_histograms:
@@ -2201,13 +2199,12 @@ def ct_plot_calculations(
         #######################################################################
         # Create the required study- and request-level charts
         if plot_study_mean_dlp:
-            if plot_average_choice in ["mean", "both"] or plot_histograms:
-                sorted_categories = create_sorted_category_list(
-                    df,
-                    "study_description",
-                    "total_dlp",
-                    [plot_sorting_direction, plot_sorting_field]
-                )
+            sorted_categories = create_sorted_category_list(
+                df,
+                "study_description",
+                "total_dlp",
+                [plot_sorting_direction, plot_sorting_field]
+            )
 
             if plot_average_choice in ["mean", "both"]:
                 df_aggregated = create_dataframe_aggregates(
@@ -2236,7 +2233,7 @@ def ct_plot_calculations(
                     name_axis_title="Study description",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT study description DLP boxplot",
-                    sorting=[plot_sorting_direction, plot_sorting_field]
+                    sorted_category_list=sorted_categories
                 )
 
             if plot_histograms:
@@ -2263,13 +2260,12 @@ def ct_plot_calculations(
                 )
 
         if plot_study_mean_ctdi:
-            if plot_average_choice in ["mean", "both"] or plot_histograms:
-                sorted_categories = create_sorted_category_list(
-                    df,
-                    "study_description",
-                    "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    [plot_sorting_direction, plot_sorting_field]
-                )
+            sorted_categories = create_sorted_category_list(
+                df,
+                "study_description",
+                "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                [plot_sorting_direction, plot_sorting_field]
+            )
 
             if plot_average_choice in ["mean", "both"]:
                 df_aggregated = create_dataframe_aggregates(
@@ -2298,7 +2294,7 @@ def ct_plot_calculations(
                     name_axis_title="Study description",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT study description CTDI boxplot",
-                    sorting=[plot_sorting_direction, plot_sorting_field]
+                    sorted_category_list=sorted_categories
                 )
 
             if plot_histograms:
@@ -2325,13 +2321,12 @@ def ct_plot_calculations(
                 )
 
         if plot_study_num_events:
-            if plot_average_choice in ["mean", "both"] or plot_histograms:
-                sorted_categories = create_sorted_category_list(
-                    df,
-                    "study_description",
-                    "number_of_events",
-                    [plot_sorting_direction, plot_sorting_field]
-                )
+            sorted_categories = create_sorted_category_list(
+                df,
+                "study_description",
+                "number_of_events",
+                [plot_sorting_direction, plot_sorting_field]
+            )
 
             if plot_average_choice in ["mean", "both"]:
                 df_aggregated = create_dataframe_aggregates(
@@ -2360,7 +2355,7 @@ def ct_plot_calculations(
                     name_axis_title="Study description",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT study description events boxplot",
-                    sorting=[plot_sorting_direction, plot_sorting_field]
+                    sorted_category_list=sorted_categories
                 )
 
             if plot_histograms:
@@ -2387,13 +2382,12 @@ def ct_plot_calculations(
                 )
 
         if plot_request_mean_dlp:
-            if plot_average_choice in ["mean", "both"] or plot_histograms:
-                sorted_categories = create_sorted_category_list(
-                    df,
-                    "requested_procedure_code_meaning",
-                    "total_dlp",
-                    [plot_sorting_direction, plot_sorting_field]
-                )
+            sorted_categories = create_sorted_category_list(
+                df,
+                "requested_procedure_code_meaning",
+                "total_dlp",
+                [plot_sorting_direction, plot_sorting_field]
+            )
 
             if plot_average_choice in ["mean", "both"]:
                 df_aggregated = create_dataframe_aggregates(
@@ -2422,7 +2416,7 @@ def ct_plot_calculations(
                     name_axis_title="Requested procedure",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT requested procedure DLP boxplot",
-                    sorting=[plot_sorting_direction, plot_sorting_field]
+                    sorted_category_list=sorted_categories
                 )
 
             if plot_histograms:
@@ -2449,13 +2443,12 @@ def ct_plot_calculations(
                 )
 
         if plot_request_num_events:
-            if plot_average_choice in ["mean", "both"] or plot_histograms:
-                sorted_categories = create_sorted_category_list(
-                    df,
-                    "requested_procedure_code_meaning",
-                    "number_of_events",
-                    [plot_sorting_direction, plot_sorting_field]
-                )
+            sorted_categories = create_sorted_category_list(
+                df,
+                "requested_procedure_code_meaning",
+                "number_of_events",
+                [plot_sorting_direction, plot_sorting_field]
+            )
 
             if plot_average_choice in ["mean", "both"]:
                 df_aggregated = create_dataframe_aggregates(
@@ -2484,7 +2477,7 @@ def ct_plot_calculations(
                     name_axis_title="Requested procedure",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT requested procedure events boxplot",
-                    sorting=[plot_sorting_direction, plot_sorting_field]
+                    sorted_category_list=sorted_categories
                 )
 
             if plot_histograms:

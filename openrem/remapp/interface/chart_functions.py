@@ -188,13 +188,8 @@ def plotly_boxplot(
         name_axis_title="",
         colourmap="RdYlBu",
         filename="OpenREM_boxplot_chart",
-        sorting = None
+        sorted_category_list=None
 ):
-    if sorting is None:
-        sorting = [False, "frequency"]
-
-    categories_sorted = create_sorted_category_list(df, df_name_col, df_value_col, sorting)
-
     from plotly.offline import plot
     import plotly.express as px
 
@@ -213,7 +208,7 @@ def plotly_boxplot(
                 "x_ray_system_name": "System"
             },
             color_discrete_sequence=colour_sequence,
-            category_orders=categories_sorted
+            category_orders=sorted_category_list
         )
 
         fig.update_traces(quartilemethod="exclusive")
