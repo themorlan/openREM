@@ -1734,7 +1734,8 @@ def ct_plot_calculations(
         plotly_scatter,
         plotly_set_default_theme,
         construct_freqency_chart,
-        construct_scatter_chart
+        construct_scatter_chart,
+        construct_over_time_charts
     )
 
     # Set the Plotly chart theme
@@ -2035,114 +2036,50 @@ def ct_plot_calculations(
             )
 
         if plot_acquisition_ctdi_over_time:
-            sorted_categories = create_sorted_category_list(
-                df,
-                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                [plot_sorting_direction, plot_sorting_field]
-            )
-
-            df_time_series = create_dataframe_time_series(
-                df,
-                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+            result = construct_over_time_charts(
+                df=df,
+                df_name_col="ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                df_value_col="ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                 df_date_col="study_date",
+                name_title="Acquisition protocol",
+                value_title="CTDI (mGy)",
+                date_title="Study date",
+                sorting=[plot_sorting_direction, plot_sorting_field],
                 time_period=plot_over_time_period,
-                average=plot_average_choice
+                average_choice=plot_average_choice,
+                grouping_choice=plot_grouping_choice,
+                colour_map=plot_colour_map_choice,
+                facet_col_wrap=plot_facet_col_wrap_val,
+                file_name="OpenREM CT acquisition protocol CTDI over time"
             )
-
-            category_names_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
-            group_by_col = "x_ray_system_name"
-            if plot_grouping_choice == "series":
-                category_names_col = "x_ray_system_name"
-                group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
 
             if plot_average_choice in ["mean", "both"]:
-                return_structure["acquisitionMeanCTDIOverTime"] = plotly_timeseries_linechart(
-                    df_time_series,
-                    category_names_col,
-                    "meanctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    "study_date",
-                    facet_col=group_by_col,
-                    value_axis_title="Mean CTDI (mGy)",
-                    name_axis_title="Study date",
-                    legend_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT acquisition protocol CTDI mean over time",
-                    facet_col_wrap=plot_facet_col_wrap_val,
-                    sorted_category_list=sorted_categories
-                )
-
+                return_structure["acquisitionMeanCTDIOverTime"] = result["mean"]
             if plot_average_choice in ["median", "both"]:
-                return_structure["acquisitionMedianCTDIOverTime"] = plotly_timeseries_linechart(
-                    df_time_series,
-                    category_names_col,
-                    "medianctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    "study_date",
-                    facet_col=group_by_col,
-                    value_axis_title="Median CTDI (mGy)",
-                    name_axis_title="Study date",
-                    legend_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice,
-                    filename = "OpenREM CT acquisition protocol CTDI median over time",
-                    facet_col_wrap=plot_facet_col_wrap_val,
-                    sorted_category_list=sorted_categories
-                )
+                return_structure["acquisitionMedianCTDIOverTime"] = result["median"]
 
         if plot_acquisition_dlp_over_time:
-            sorted_categories = create_sorted_category_list(
-                df,
-                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                "ctradiationdose__ctirradiationeventdata__dlp",
-                [plot_sorting_direction, plot_sorting_field]
-            )
-
-            df_time_series = create_dataframe_time_series(
-                df,
-                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                "ctradiationdose__ctirradiationeventdata__dlp",
+            result = construct_over_time_charts(
+                df=df,
+                df_name_col="ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                df_value_col="ctradiationdose__ctirradiationeventdata__dlp",
                 df_date_col="study_date",
+                name_title="Acquisition protocol",
+                value_title="DLP (mGy.cm)",
+                date_title="Study date",
+                sorting=[plot_sorting_direction, plot_sorting_field],
                 time_period=plot_over_time_period,
-                average=plot_average_choice
+                average_choice=plot_average_choice,
+                grouping_choice=plot_grouping_choice,
+                colour_map=plot_colour_map_choice,
+                facet_col_wrap=plot_facet_col_wrap_val,
+                file_name="OpenREM CT acquisition protocol DLP over time"
             )
-
-            category_names_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
-            group_by_col = "x_ray_system_name"
-            if plot_grouping_choice == "series":
-                category_names_col = "x_ray_system_name"
-                group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
 
             if plot_average_choice in ["mean", "both"]:
-                return_structure["acquisitionMeanDLPOverTime"] = plotly_timeseries_linechart(
-                    df_time_series,
-                    category_names_col,
-                    "meanctradiationdose__ctirradiationeventdata__dlp",
-                    "study_date",
-                    facet_col=group_by_col,
-                    value_axis_title="Mean DLP (mGy.cm)",
-                    name_axis_title="Study date",
-                    legend_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT acquisition protocol DLP mean over time",
-                    facet_col_wrap=plot_facet_col_wrap_val,
-                    sorted_category_list=sorted_categories
-                )
-
+                return_structure["acquisitionMeanDLPOverTime"] = result["mean"]
             if plot_average_choice in ["median", "both"]:
-                return_structure["acquisitionMedianDLPOverTime"] = plotly_timeseries_linechart(
-                    df_time_series,
-                    category_names_col,
-                    "medianctradiationdose__ctirradiationeventdata__dlp",
-                    "study_date",
-                    facet_col=group_by_col,
-                    value_axis_title="Median DLP (mGy.cm)",
-                    name_axis_title="Study date",
-                    legend_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT acquisition protocol DLP median over time",
-                    facet_col_wrap=plot_facet_col_wrap_val,
-                    sorted_category_list=sorted_categories
-                )
+                return_structure["acquisitionMedianDLPOverTime"] = result["median"]
 
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts
@@ -2530,114 +2467,50 @@ def ct_plot_calculations(
             )
 
         if plot_study_mean_dlp_over_time:
-            sorted_categories = create_sorted_category_list(
-                df,
-                "study_description",
-                "total_dlp",
-                [plot_sorting_direction, plot_sorting_field]
-            )
-
-            df_time_series = create_dataframe_time_series(
-                df,
-                "study_description",
-                "total_dlp",
+            result = construct_over_time_charts(
+                df=df,
+                df_name_col="study_description",
+                df_value_col="total_dlp",
                 df_date_col="study_date",
+                name_title="Study description",
+                value_title="DLP (mGy.cm)",
+                date_title="Study date",
+                sorting=[plot_sorting_direction, plot_sorting_field],
                 time_period=plot_over_time_period,
-                average=plot_average_choice
+                average_choice=plot_average_choice,
+                grouping_choice=plot_grouping_choice,
+                colour_map=plot_colour_map_choice,
+                facet_col_wrap=plot_facet_col_wrap_val,
+                file_name="OpenREM CT study description DLP over time"
             )
-
-            category_names_col = "study_description"
-            group_by_col = "x_ray_system_name"
-            if plot_grouping_choice == "series":
-                category_names_col = "x_ray_system_name"
-                group_by_col = "study_description"
 
             if plot_average_choice in ["mean", "both"]:
-                return_structure["studyMeanDLPOverTime"] = plotly_timeseries_linechart(
-                    df_time_series,
-                    category_names_col,
-                    "meantotal_dlp",
-                    "study_date",
-                    facet_col=group_by_col,
-                    value_axis_title="Mean DLP (mGy.cm)",
-                    name_axis_title="Study date",
-                    legend_title="Study description",
-                    colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT study description DLP mean over time",
-                    facet_col_wrap=plot_facet_col_wrap_val,
-                    sorted_category_list=sorted_categories
-                )
-
+                return_structure["studyMeanDLPOverTime"] = result["mean"]
             if plot_average_choice in ["median", "both"]:
-                return_structure["studyMedianDLPOverTime"] = plotly_timeseries_linechart(
-                    df_time_series,
-                    category_names_col,
-                    "mediantotal_dlp",
-                    "study_date",
-                    facet_col=group_by_col,
-                    value_axis_title="Median DLP (mGy.cm)",
-                    name_axis_title="Study date",
-                    legend_title="Study description",
-                    colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT study description DLP median over time",
-                    facet_col_wrap=plot_facet_col_wrap_val,
-                    sorted_category_list=sorted_categories
-                )
+                return_structure["studyMedianDLPOverTime"] = result["median"]
 
         if plot_request_dlp_over_time:
-            sorted_categories = create_sorted_category_list(
-                df,
-                "requested_procedure_code_meaning",
-                "total_dlp",
-                [plot_sorting_direction, plot_sorting_field]
-            )
-
-            df_time_series = create_dataframe_time_series(
-                df,
-                "requested_procedure_code_meaning",
-                "total_dlp",
+            result = construct_over_time_charts(
+                df=df,
+                df_name_col="requested_procedure_code_meaning",
+                df_value_col="total_dlp",
                 df_date_col="study_date",
+                name_title="Requested procedure",
+                value_title="DLP (mGy.cm)",
+                date_title="Study date",
+                sorting=[plot_sorting_direction, plot_sorting_field],
                 time_period=plot_over_time_period,
-                average=plot_average_choice
+                average_choice=plot_average_choice,
+                grouping_choice=plot_grouping_choice,
+                colour_map=plot_colour_map_choice,
+                facet_col_wrap=plot_facet_col_wrap_val,
+                file_name="OpenREM CT requested procedure DLP over time"
             )
-
-            category_names_col = "requested_procedure_code_meaning"
-            group_by_col = "x_ray_system_name"
-            if plot_grouping_choice == "series":
-                category_names_col = "x_ray_system_name"
-                group_by_col = "requested_procedure_code_meaning"
 
             if plot_average_choice in ["mean", "both"]:
-                return_structure["requestMeanDLPOverTime"] = plotly_timeseries_linechart(
-                    df_time_series,
-                    category_names_col,
-                    "meantotal_dlp",
-                    "study_date",
-                    facet_col=group_by_col,
-                    value_axis_title="Mean DLP (mGy.cm)",
-                    name_axis_title="Study date",
-                    legend_title="Requested procedure",
-                    colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT requested procedure DLP mean over time",
-                    facet_col_wrap=plot_facet_col_wrap_val,
-                    sorted_category_list=sorted_categories
-                )
-
+                return_structure["requestMeanDLPOverTime"] = result["mean"]
             if plot_average_choice in ["median", "both"]:
-                return_structure["requestMedianDLPOverTime"] = plotly_timeseries_linechart(
-                    df_time_series,
-                    category_names_col,
-                    "mediantotal_dlp",
-                    "study_date",
-                    facet_col=group_by_col,
-                    value_axis_title="Median DLP (mGy.cm)",
-                    name_axis_title="Study date",
-                    legend_title="Requested procedure",
-                    colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT requested procedure DLP median over time",
-                    facet_col_wrap=plot_facet_col_wrap_val,
-                    sorted_category_list=sorted_categories
-                )
+                return_structure["requestMedianDLPOverTime"] = result["median"]
 
         if plot_study_per_day_and_hour:
             df_time_series_per_weekday = create_dataframe_weekdays(

@@ -602,6 +602,80 @@ def construct_scatter_chart(
     )
 
 
+def construct_over_time_charts(
+    df=None,
+    df_name_col=None,
+    df_value_col=None,
+    df_date_col=None,
+    name_title=None,
+    value_title=None,
+    date_title=None,
+    sorting=None,
+    time_period=None,
+    average_choice=None,
+    grouping_choice=None,
+    colour_map=None,
+    facet_col_wrap=None,
+    file_name=None
+):
+    sorted_categories = create_sorted_category_list(
+        df,
+        df_name_col,
+        df_value_col,
+        sorting
+    )
+
+    df_time_series = create_dataframe_time_series(
+        df,
+        df_name_col,
+        df_value_col,
+        df_date_col=df_date_col,
+        time_period=time_period,
+        average=average_choice
+    )
+
+    category_names_col = df_name_col
+    group_by_col = "x_ray_system_name"
+    if grouping_choice == "series":
+        category_names_col = "x_ray_system_name"
+        group_by_col = df_name_col
+
+    return_value = {}
+
+    if average_choice in ["mean", "both"]:
+        return_value["mean"] = plotly_timeseries_linechart(
+            df_time_series,
+            category_names_col,
+            "mean"+df_value_col,
+            df_date_col,
+            facet_col=group_by_col,
+            value_axis_title=value_title,
+            name_axis_title=date_title,
+            legend_title=name_title,
+            colourmap=colour_map,
+            filename=file_name,
+            facet_col_wrap=facet_col_wrap,
+            sorted_category_list=sorted_categories
+        )
+
+    if average_choice in ["median", "both"]:
+        return_value["median"] = plotly_timeseries_linechart(
+            df_time_series,
+            category_names_col,
+            "median"+df_value_col,
+            df_date_col,
+            facet_col=group_by_col,
+            value_axis_title=value_title,
+            name_axis_title=date_title,
+            legend_title=name_title,
+            colourmap=colour_map,
+            filename=file_name,
+            facet_col_wrap=facet_col_wrap,
+            sorted_category_list=sorted_categories
+        )
+
+    return return_value
+
 def altair_barchart_average(
     df,
     df_name_col,
