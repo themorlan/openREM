@@ -1732,7 +1732,8 @@ def ct_plot_calculations(
         plotly_timeseries_linechart,
         plotly_barchart_weekdays,
         plotly_scatter,
-        plotly_set_default_theme
+        plotly_set_default_theme,
+        construct_freqency_chart
     )
 
     # Set the Plotly chart theme
@@ -1990,37 +1991,16 @@ def ct_plot_calculations(
                 )
 
         if plot_acquisition_freq:
-            df_aggregated = create_dataframe_aggregates(
-                df,
-                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                ["count"]
-            )
-            sorted_categories = create_freq_sorted_category_list(
-                df,
-                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                plot_sorting_field
-            )
-
-            df_legend_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
-            legend_title = "Acquisition protocol"
-            df_x_axis_col = "x_ray_system_name"
-            x_axis_title = "System"
-            if plot_grouping_choice == "series":
-                df_legend_col = "x_ray_system_name"
-                legend_title = "System"
-                df_x_axis_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
-                x_axis_title = "Acquisition protocol"
-
-            return_structure["acquisitionFrequencyData"] = plotly_frequency_barchart(
-                df_aggregated,
-                df_legend_col,
-                legend_title=legend_title,
-                df_x_axis_col=df_x_axis_col,
-                x_axis_title=x_axis_title,
-                colourmap=plot_colour_map_choice,
-                filename="OpenREM CT acquisition protocol frequency",
-                sorted_category_list=sorted_categories
+            return_structure["acquisitionFrequencyData"] = construct_freqency_chart(
+                df=df,
+                df_name_col="ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                sorting_choice=plot_sorting_field,
+                legend_title="Acquisition protocol",
+                df_x_axis_col="x_ray_system_name",
+                x_axis_title="System",
+                grouping_choice=plot_grouping_choice,
+                colour_map=plot_colour_map_choice,
+                file_name="OpenREM CT acquisition protocol frequency"
             )
 
         if plot_acquisition_ctdi_vs_mass:
@@ -2560,71 +2540,29 @@ def ct_plot_calculations(
                 )
 
         if plot_study_freq:
-            df_aggregated = create_dataframe_aggregates(
-                df,
-                "study_description",
-                "study_description",
-                ["count"]
-            )
-            sorted_categories = create_freq_sorted_category_list(
-                df,
-                "study_description",
-                plot_sorting_field
-            )
-
-            df_legend_col = "study_description"
-            legend_title = "Study description"
-            df_x_axis_col = "x_ray_system_name"
-            x_axis_title = "System"
-            if plot_grouping_choice == "series":
-                df_legend_col = "x_ray_system_name"
-                legend_title = "System"
-                df_x_axis_col = "study_description"
-                x_axis_title = "Study description"
-
-            return_structure["studyFrequencyData"] = plotly_frequency_barchart(
-                df_aggregated,
-                df_legend_col,
-                legend_title=legend_title,
-                df_x_axis_col=df_x_axis_col,
-                x_axis_title=x_axis_title,
-                colourmap=plot_colour_map_choice,
-                filename="OpenREM CT study description frequency",
-                sorted_category_list=sorted_categories
+            return_structure["studyFrequencyData"] = construct_freqency_chart(
+                df=df,
+                df_name_col="study_description",
+                sorting_choice=plot_sorting_field,
+                legend_title="Study description",
+                df_x_axis_col="x_ray_system_name",
+                x_axis_title="System",
+                grouping_choice=plot_grouping_choice,
+                colour_map=plot_colour_map_choice,
+                file_name="OpenREM CT study description frequency"
             )
 
         if plot_request_freq:
-            df_aggregated = create_dataframe_aggregates(
-                df,
-                "requested_procedure_code_meaning",
-                "requested_procedure_code_meaning",
-                ["count"]
-            )
-            sorted_categories = create_freq_sorted_category_list(
-                df,
-                "requested_procedure_code_meaning",
-                plot_sorting_field
-            )
-
-            df_legend_col = "requested_procedure_code_meaning"
-            legend_title = "Requested procedure"
-            df_x_axis_col = "x_ray_system_name"
-            x_axis_title = "System"
-            if plot_grouping_choice == "series":
-                df_legend_col = "x_ray_system_name"
-                legend_title = "System"
-                df_x_axis_col = "requested_procedure_code_meaning"
-                x_axis_title = "Requested procedure"
-
-            return_structure["requestFrequencyData"] = plotly_frequency_barchart(
-                df_aggregated,
-                df_legend_col,
-                legend_title=legend_title,
-                df_x_axis_col=df_x_axis_col,
-                x_axis_title=x_axis_title,
-                colourmap=plot_colour_map_choice,
-                filename="OpenREM CT requested procedure frequency",
-                sorted_category_list=sorted_categories
+            return_structure["requestFrequencyData"] = construct_freqency_chart(
+                df=df,
+                df_name_col="requested_procedure_code_meaning",
+                sorting_choice=plot_sorting_field,
+                legend_title="Requested procedure",
+                df_x_axis_col="x_ray_system_name",
+                x_axis_title="System",
+                grouping_choice=plot_grouping_choice,
+                colour_map=plot_colour_map_choice,
+                file_name="OpenREM CT requested procedure frequency"
             )
 
         if plot_study_mean_dlp_over_time:

@@ -520,6 +520,49 @@ def plotly_barchart_weekdays(
         return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
 
 
+def construct_freqency_chart(
+        df=None,
+        df_name_col=None,
+        sorting_choice=None,
+        legend_title=None,
+        df_x_axis_col=None,
+        x_axis_title=None,
+        grouping_choice=None,
+        colour_map=None,
+        file_name=None
+):
+
+    df_aggregated = create_dataframe_aggregates(
+        df,
+        df_name_col,
+        df_name_col,
+        ["count"]
+    )
+    sorted_categories = create_freq_sorted_category_list(
+        df,
+        df_name_col,
+        sorting_choice
+    )
+
+    df_legend_col = df_name_col
+    if grouping_choice == "series":
+        df_legend_col = "x_ray_system_name"
+        x_axis_title = legend_title
+        legend_title = "System"
+        df_x_axis_col = df_name_col
+
+    return plotly_frequency_barchart(
+        df_aggregated,
+        df_legend_col,
+        legend_title=legend_title,
+        df_x_axis_col=df_x_axis_col,
+        x_axis_title=x_axis_title,
+        colourmap=colour_map,
+        filename=file_name,
+        sorted_category_list=sorted_categories
+    )
+
+
 def altair_barchart_average(
     df,
     df_name_col,
