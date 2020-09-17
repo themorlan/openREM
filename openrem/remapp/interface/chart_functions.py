@@ -101,10 +101,6 @@ def create_dataframe(
         for date_field in data_point_date_fields:
             df[date_field] = pd.to_datetime(df[date_field])
 
-#    if data_point_time_fields:
-#        for time_field in data_point_time_fields:
-#            df[time_field] = pd.to_timedelta(df[time_field])
-
     return df
 
 
@@ -135,36 +131,27 @@ def create_dataframe_weekdays(
     df["weekday"] = pd.DatetimeIndex(df[df_date_col]).day_name()
     df["hour"] = [x.hour for x in df["study_time"]]
 
-    df_time_series = df.groupby(["x_ray_system_name", "weekday", "hour"]).agg({df_name_col: "count"})
-    df_time_series = df_time_series.reset_index()
+    df_time_series = df.groupby(["x_ray_system_name", "weekday", "hour"]).agg({df_name_col: "count"}).reset_index()
     return df_time_series
 
 
 def create_dataframe_aggregates(
         df,
-        df_name_cols,
-        df_value_cols,
+        df_name_col,
+        df_agg_col,
         stats=None
 ):
     # Make it possible to have multiple value cols (DLP, CTDI, for example)
     if stats is None:
-        stats = ["mean"]
+        stats = ["count"]
 
-    groupby_cols = ["x_ray_system_name"]
-    groupby_cols.extend(df_name_cols)
+    groupby_cols = ["x_ray_system_name", df_name_col]
 
-    aggregates = {}
-    for value_col in df_value_cols:
-        aggregates[value_col] = stats
+    grouped_df = df.groupby(groupby_cols).agg({df_agg_col: stats})
+    grouped_df.columns = grouped_df.columns.droplevel(level=0)
+    grouped_df = grouped_df.reset_index()
 
-    test = df.groupby(groupby_cols).agg(aggregates)
-
-    # Append value name to agg fields in case there are multiple values to aggregate
-
-    #df_time_series = df.set_index(df_date_col).groupby(["x_ray_system_name", df_name_col, pd.Grouper(freq=time_period)]).agg({df_value_col: average})
-    #df_time_series.columns = [s + df_value_col for s in average]
-    #df_time_series = df_time_series.reset_index()
-    return test
+    return grouped_df
 
 
 def plotly_set_default_theme(theme_name):
@@ -206,7 +193,7 @@ def plotly_boxplot(
     if sorting is None:
         sorting = [False, "frequency"]
 
-    categories_sorted = sorted_category_list(df, df_name_col, df_value_col, sorting)
+    categories_sorted = create_sorted_category_list(df, df_name_col, df_value_col, sorting)
 
     from plotly.offline import plot
     import plotly.express as px
@@ -237,7 +224,21 @@ def plotly_boxplot(
         return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
 
 
-def sorted_category_list(df, df_name_col, df_value_col, sorting):
+def create_freq_sorted_category_list(df, df_name_col, sorting):
+    category_sorting_df = df.groupby([df_name_col]).count().reset_index()
+    if sorting == "name":
+        sort_by = df_name_col
+    else:
+        sort_by = "x_ray_system_name"
+
+    sorted_categories = {
+        df_name_col: list(category_sorting_df.sort_values(by=sort_by, ascending=sorting[0])[df_name_col])
+    }
+
+    return sorted_categories
+
+
+def create_sorted_category_list(df, df_name_col, df_value_col, sorting):
     # Calculate the required aggregates for creating a list of categories for sorting
     grouped_df = df.groupby([df_name_col]).agg({df_value_col: ["mean", "count"]})
     grouped_df.columns = grouped_df.columns.droplevel(level=0)
@@ -260,47 +261,36 @@ def sorted_category_list(df, df_name_col, df_value_col, sorting):
 def plotly_barchart(
         df,
         df_name_col,
-        df_value_col,
         value_axis_title="",
         name_axis_title="",
         colourmap="RdYlBu",
         filename="OpenREM_bar_chart",
-        sorting=None
+        sorted_category_list=None
 ):
-    if sorting is None:
-        sorting = [False, "frequency"]
-
     from plotly.offline import plot
     import plotly.express as px
 
     n_colours = len(df.x_ray_system_name.unique())
     colour_sequence = calculate_colour_sequence(colourmap, n_colours)
 
-    # Calculate the required aggregates for the chart
-    grouped_df = df.groupby(["x_ray_system_name", df_name_col]).agg({df_value_col: ["mean", "count"]})
-    grouped_df.columns = grouped_df.columns.droplevel(level=0)
-    grouped_df = grouped_df.rename(columns={"mean": "average_val", "count": "count_val"}).reset_index()
-
-    categories_sorted = sorted_category_list(df, df_name_col, df_value_col, sorting)
-
     fig = px.bar(
-        grouped_df,
+        df,
         x=df_name_col,
-        y="average_val",
+        y="mean",
         color="x_ray_system_name",
         barmode="group",
         labels={
-            "average_val": value_axis_title,
+            "mean": value_axis_title,
             df_name_col: name_axis_title,
             "x_ray_system_name": "System",
-            "count_val": "Frequency"
+            "count": "Frequency"
         },
-        category_orders=categories_sorted,
+        category_orders=sorted_category_list,
         color_discrete_sequence=colour_sequence,
         hover_data={"x_ray_system_name": True,
                     df_name_col: True,
-                    "average_val": ":.2f",
-                    "count_val": ":.0d"},
+                    "mean": ":.2f",
+                    "count": ":.0d"},
     )
 
     return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
@@ -316,7 +306,8 @@ def plotly_histogram(
         n_bins=10,
         colourmap="RdYlBu",
         filename="OpenREM_histogram_chart",
-        facet_col_wrap=3
+        facet_col_wrap=3,
+        sorted_category_list=None
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -333,13 +324,14 @@ def plotly_histogram(
             color=df_category_name_col,
             facet_col=df_facet_col,
             facet_col_wrap=facet_col_wrap,
-            facet_row_spacing=0.05,
+            facet_row_spacing=0.15,
             facet_col_spacing=0.05,
             labels={
                 df_value_col: value_axis_title,
                 df_category_name_col: legend_title
             },
-            color_discrete_sequence=colour_sequence
+            color_discrete_sequence=colour_sequence,
+            category_orders=sorted_category_list
         )
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
@@ -350,54 +342,37 @@ def plotly_histogram(
         return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
 
 
-def plotly_stacked_histogram(
+def plotly_frequency_barchart(
         df,
-        df_name_col,
-        name_axis_title="",
+        df_legend_col,
+        legend_title="",
+        df_x_axis_col="x_ray_system_name",
+        x_axis_title="System",
         colourmap="RdYlBu",
-        filename="OpenREM_frequency_chart",
-        sorting=None
+        filename="OpenREM_bar_chart",
+        sorted_category_list=None
 ):
-    if sorting is None:
-        sorting = [False, "frequency"]
-
     from plotly.offline import plot
     import plotly.express as px
 
-    n_colours = len(df[df_name_col].unique())
+    n_colours = len(df.x_ray_system_name.unique())
     colour_sequence = calculate_colour_sequence(colourmap, n_colours)
 
-    category_sorting_df = df.groupby([df_name_col]).count().reset_index()
-    if sorting[1] == "name":
-        sort_by = df_name_col
-    else:
-        sort_by = "x_ray_system_name"
+    fig = px.bar(
+        df,
+        x=df_x_axis_col,
+        y="count",
+        color=df_legend_col,
+        labels={
+            "count": "Frequency",
+            df_legend_col: legend_title,
+            df_x_axis_col: x_axis_title
+        },
+        category_orders=sorted_category_list,
+        color_discrete_sequence=colour_sequence
+    )
 
-    categories_sorted = {
-        df_name_col: list(category_sorting_df.sort_values(by=sort_by, ascending=sorting[0])[df_name_col])
-    }
-
-    try:
-        fig = px.histogram(
-            df,
-            x="x_ray_system_name",
-            color=df_name_col,
-            barmode="relative",
-            histfunc="count",
-            labels={
-                df_name_col:name_axis_title,
-                "x_ray_system_name": "System"
-            },
-            color_discrete_sequence=colour_sequence,
-            category_orders=categories_sorted
-        )
-
-        fig.update_xaxes(categoryorder="category ascending")
-
-        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
-
-    except ValueError:
-        return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
+    return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
 
 
 def plotly_timeseries_linechart(
@@ -411,7 +386,8 @@ def plotly_timeseries_linechart(
         legend_title="",
         colourmap="RdYlBu",
         filename="OpenREM_over_time_chart",
-        facet_col_wrap=3
+        facet_col_wrap=3,
+        sorted_category_list=None
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -427,7 +403,7 @@ def plotly_timeseries_linechart(
             color=df_name_col,
             facet_col=facet_col,
             facet_col_wrap=facet_col_wrap,
-            facet_row_spacing=0.05,
+            facet_row_spacing=0.15,
             facet_col_spacing=0.05,
             labels={
                 df_value_col: value_axis_title,
@@ -435,7 +411,8 @@ def plotly_timeseries_linechart(
                 df_date_col: name_axis_title,
                 "x_ray_system_name": "System"
             },
-            color_discrete_sequence=colour_sequence
+            color_discrete_sequence=colour_sequence,
+            category_orders=sorted_category_list
         )
 
         for data_set in fig.data:
@@ -461,7 +438,8 @@ def plotly_scatter(
         legend_title="",
         colourmap="RdYlBu",
         filename="OpenREM_scatter_chart",
-        facet_col_wrap=3
+        facet_col_wrap=3,
+        sorted_category_list=None
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -477,7 +455,7 @@ def plotly_scatter(
             color=df_category_name_col,
             facet_col=df_facet_col,
             facet_col_wrap=facet_col_wrap,
-            facet_row_spacing=0.05,
+            facet_row_spacing=0.15,
             facet_col_spacing=0.05,
             labels={
                 df_x_value_col: x_axis_title,
@@ -485,7 +463,8 @@ def plotly_scatter(
                 df_category_name_col: legend_title,
                 df_facet_col: facet_title
             },
-            color_discrete_sequence=colour_sequence
+            color_discrete_sequence=colour_sequence,
+            category_orders=sorted_category_list
         )
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
@@ -516,7 +495,7 @@ def plotly_barchart_weekdays(
             y=df_value_col,
             facet_col="x_ray_system_name",
             facet_col_wrap=facet_col_wrap,
-            facet_row_spacing=0.10,
+            facet_row_spacing=0.15,
             facet_col_spacing=0.05,
             color=df_value_col,
             labels={

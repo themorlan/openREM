@@ -1723,10 +1723,12 @@ def ct_plot_calculations(
         create_dataframe_time_series,
         create_dataframe_weekdays,
         create_dataframe_aggregates,
+        create_sorted_category_list,
+        create_freq_sorted_category_list,
         plotly_boxplot,
         plotly_barchart,
         plotly_histogram,
-        plotly_stacked_histogram,
+        plotly_frequency_barchart,
         plotly_timeseries_linechart,
         plotly_barchart_weekdays,
         plotly_scatter,
@@ -1737,6 +1739,8 @@ def ct_plot_calculations(
     plotly_set_default_theme(plot_theme_choice)
 
     return_structure = {}
+
+    sorted_categories = None
 
     if (
         plot_study_mean_dlp
@@ -1862,16 +1866,30 @@ def ct_plot_calculations(
         #######################################################################
         # Create the required acquisition-level charts
         if plot_acquisition_mean_dlp:
-            if plot_average_choice in ["mean", "both"]:
-                return_structure["acquisitionMeanDLPData"] = plotly_barchart(
+            if plot_average_choice in ["mean", "both"] or plot_histograms:
+                sorted_categories = create_sorted_category_list(
                     df,
                     "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                     "ctradiationdose__ctirradiationeventdata__dlp",
+                    [plot_sorting_direction, plot_sorting_field]
+                )
+
+            if plot_average_choice in ["mean", "both"]:
+                df_aggregated = create_dataframe_aggregates(
+                    df,
+                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                    "ctradiationdose__ctirradiationeventdata__dlp",
+                    stats=["mean", "count"]
+                )
+
+                return_structure["acquisitionMeanDLPData"] = plotly_barchart(
+                    df_aggregated,
+                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                     value_axis_title="DLP (mGy.cm)",
                     name_axis_title="Acquisition protocol",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT acquisition protocol DLP mean",
-                    sorting=[plot_sorting_direction, plot_sorting_field]
+                    sorted_category_list=sorted_categories
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -1905,20 +1923,35 @@ def ct_plot_calculations(
                     n_bins=plot_histogram_bins,
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT acquisition protocol DLP histogram",
-                    facet_col_wrap=plot_facet_col_wrap_val
+                    facet_col_wrap=plot_facet_col_wrap_val,
+                    sorted_category_list=sorted_categories
                 )
 
         if plot_acquisition_mean_ctdi:
-            if plot_average_choice in ["mean", "both"]:
-                return_structure["acquisitionMeanCTDIData"] = plotly_barchart(
+            if plot_average_choice in ["mean", "both"] or plot_histograms:
+                sorted_categories = create_sorted_category_list(
                     df,
                     "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    value_axis_title="CTDI (mGy.cm)",
+                    [plot_sorting_direction, plot_sorting_field]
+                )
+
+            if plot_average_choice in ["mean", "both"]:
+                df_aggregated = create_dataframe_aggregates(
+                    df,
+                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                    "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    stats=["mean", "count"]
+                )
+
+                return_structure["acquisitionMeanCTDIData"] = plotly_barchart(
+                    df_aggregated,
+                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                    value_axis_title="CTDI (mGy)",
                     name_axis_title="Acquisition protocol",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT acquisition protocol CTDI mean",
-                    sorting=[plot_sorting_direction, plot_sorting_field]
+                    sorted_category_list=sorted_categories
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -1926,7 +1959,7 @@ def ct_plot_calculations(
                     df,
                     "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    value_axis_title="CTDI (mGy.cm)",
+                    value_axis_title="CTDI (mGy)",
                     name_axis_title="Acquisition protocol",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT acquisition protocol CTDI boxplot",
@@ -1947,25 +1980,57 @@ def ct_plot_calculations(
                     group_by_col,
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                     df_category_name_col=category_names_col,
-                    value_axis_title="CTDI (mGy.cm)",
+                    value_axis_title="CTDI (mGy)",
                     legend_title=legend_title,
                     n_bins=plot_histogram_bins,
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT acquisition protocol CTDI histogram",
-                    facet_col_wrap=plot_facet_col_wrap_val
+                    facet_col_wrap=plot_facet_col_wrap_val,
+                    sorted_category_list=sorted_categories
                 )
 
         if plot_acquisition_freq:
-            return_structure["acquisitionFrequencyData"] = plotly_stacked_histogram(
+            df_aggregated = create_dataframe_aggregates(
                 df,
                 "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                name_axis_title="Acquisition protocol",
+                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                ["count"]
+            )
+            sorted_categories = create_freq_sorted_category_list(
+                df,
+                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                plot_sorting_field
+            )
+
+            df_legend_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+            legend_title = "Acquisition protocol"
+            df_x_axis_col = "x_ray_system_name"
+            x_axis_title = "System"
+            if plot_grouping_choice == "series":
+                df_legend_col = "x_ray_system_name"
+                legend_title = "System"
+                df_x_axis_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+                x_axis_title = "Acquisition protocol"
+
+            return_structure["acquisitionFrequencyData"] = plotly_frequency_barchart(
+                df_aggregated,
+                df_legend_col,
+                legend_title=legend_title,
+                df_x_axis_col=df_x_axis_col,
+                x_axis_title=x_axis_title,
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM CT acquisition protocol frequency",
-                sorting=[plot_sorting_direction, plot_sorting_field]
+                sorted_category_list=sorted_categories
             )
 
         if plot_acquisition_ctdi_vs_mass:
+            sorted_categories = create_sorted_category_list(
+                df,
+                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                [plot_sorting_direction, plot_sorting_field]
+            )
+
             category_names_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
             group_by_col = "x_ray_system_name"
             legend_title = "Acquisition protocol"
@@ -1985,10 +2050,18 @@ def ct_plot_calculations(
                 legend_title=legend_title,
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM CT acquisition protocol CTDI vs patient mass",
-                facet_col_wrap=plot_facet_col_wrap_val
+                facet_col_wrap=plot_facet_col_wrap_val,
+                sorted_category_list=sorted_categories
             )
 
         if plot_acquisition_dlp_vs_mass:
+            sorted_categories = create_sorted_category_list(
+                df,
+                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                "ctradiationdose__ctirradiationeventdata__dlp",
+                [plot_sorting_direction, plot_sorting_field]
+            )
+
             category_names_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
             group_by_col = "x_ray_system_name"
             legend_title = "Acquisition protocol"
@@ -2008,10 +2081,18 @@ def ct_plot_calculations(
                 legend_title=legend_title,
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM CT acquisition protocol DLP vs patient mass",
-                facet_col_wrap=plot_facet_col_wrap_val
+                facet_col_wrap=plot_facet_col_wrap_val,
+                sorted_category_list=sorted_categories
             )
 
         if plot_acquisition_ctdi_over_time:
+            sorted_categories = create_sorted_category_list(
+                df,
+                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                [plot_sorting_direction, plot_sorting_field]
+            )
+
             df_time_series = create_dataframe_time_series(
                 df,
                 "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
@@ -2039,7 +2120,8 @@ def ct_plot_calculations(
                     legend_title="Acquisition protocol",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT acquisition protocol CTDI mean over time",
-                    facet_col_wrap=plot_facet_col_wrap_val
+                    facet_col_wrap=plot_facet_col_wrap_val,
+                    sorted_category_list=sorted_categories
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2054,10 +2136,18 @@ def ct_plot_calculations(
                     legend_title="Acquisition protocol",
                     colourmap=plot_colour_map_choice,
                     filename = "OpenREM CT acquisition protocol CTDI median over time",
-                    facet_col_wrap=plot_facet_col_wrap_val
+                    facet_col_wrap=plot_facet_col_wrap_val,
+                    sorted_category_list=sorted_categories
                 )
 
         if plot_acquisition_dlp_over_time:
+            sorted_categories = create_sorted_category_list(
+                df,
+                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                "ctradiationdose__ctirradiationeventdata__dlp",
+                [plot_sorting_direction, plot_sorting_field]
+            )
+
             df_time_series = create_dataframe_time_series(
                 df,
                 "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
@@ -2085,7 +2175,8 @@ def ct_plot_calculations(
                     legend_title="Acquisition protocol",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT acquisition protocol DLP mean over time",
-                    facet_col_wrap=plot_facet_col_wrap_val
+                    facet_col_wrap=plot_facet_col_wrap_val,
+                    sorted_category_list=sorted_categories
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2100,7 +2191,8 @@ def ct_plot_calculations(
                     legend_title="Acquisition protocol",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT acquisition protocol DLP median over time",
-                    facet_col_wrap=plot_facet_col_wrap_val
+                    facet_col_wrap=plot_facet_col_wrap_val,
+                    sorted_category_list=sorted_categories
                 )
 
     #######################################################################
@@ -2158,16 +2250,30 @@ def ct_plot_calculations(
         #######################################################################
         # Create the required study- and request-level charts
         if plot_study_mean_dlp:
-            if plot_average_choice in ["mean", "both"]:
-                return_structure["studyMeanDLPData"] = plotly_barchart(
+            if plot_average_choice in ["mean", "both"] or plot_histograms:
+                sorted_categories = create_sorted_category_list(
                     df,
                     "study_description",
                     "total_dlp",
+                    [plot_sorting_direction, plot_sorting_field]
+                )
+
+            if plot_average_choice in ["mean", "both"]:
+                df_aggregated = create_dataframe_aggregates(
+                    df,
+                    "study_description",
+                    "total_dlp",
+                    stats=["mean", "count"]
+                )
+
+                return_structure["studyMeanDLPData"] = plotly_barchart(
+                    df_aggregated,
+                    "study_description",
                     value_axis_title="Mean DLP (mGy.cm)",
                     name_axis_title="Study description",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT study description DLP mean",
-                    sorting=[plot_sorting_direction, plot_sorting_field]
+                    sorted_category_list=sorted_categories
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2201,20 +2307,35 @@ def ct_plot_calculations(
                     n_bins=plot_histogram_bins,
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT study description DLP histogram",
-                    facet_col_wrap=plot_facet_col_wrap_val
+                    facet_col_wrap=plot_facet_col_wrap_val,
+                    sorted_category_list=sorted_categories
                 )
 
         if plot_study_mean_ctdi:
-            if plot_average_choice in ["mean", "both"]:
-                return_structure["studyMeanCTDIData"] = plotly_barchart(
+            if plot_average_choice in ["mean", "both"] or plot_histograms:
+                sorted_categories = create_sorted_category_list(
                     df,
                     "study_description",
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    value_axis_title="CTDI (mGy)",
+                    [plot_sorting_direction, plot_sorting_field]
+                )
+
+            if plot_average_choice in ["mean", "both"]:
+                df_aggregated = create_dataframe_aggregates(
+                    df,
+                    "study_description",
+                    "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    stats=["mean", "count"]
+                )
+
+                return_structure["studyMeanCTDIData"] = plotly_barchart(
+                    df_aggregated,
+                    "study_description",
+                    value_axis_title="Mean CTDI (mGy)",
                     name_axis_title="Study description",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT study description CTDI mean",
-                    sorting=[plot_sorting_direction, plot_sorting_field]
+                    sorted_category_list=sorted_categories
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2248,20 +2369,35 @@ def ct_plot_calculations(
                     n_bins=plot_histogram_bins,
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT study description CTDI histogram",
-                    facet_col_wrap=plot_facet_col_wrap_val
+                    facet_col_wrap=plot_facet_col_wrap_val,
+                    sorted_category_list=sorted_categories
                 )
 
         if plot_study_num_events:
-            if plot_average_choice in ["mean", "both"]:
-                return_structure["studyMeanNumEventsData"] = plotly_barchart(
+            if plot_average_choice in ["mean", "both"] or plot_histograms:
+                sorted_categories = create_sorted_category_list(
                     df,
                     "study_description",
                     "number_of_events",
+                    [plot_sorting_direction, plot_sorting_field]
+                )
+
+            if plot_average_choice in ["mean", "both"]:
+                df_aggregated = create_dataframe_aggregates(
+                    df,
+                    "study_description",
+                    "number_of_events",
+                    stats=["mean", "count"]
+                )
+
+                return_structure["studyMeanNumEventsData"] = plotly_barchart(
+                    df_aggregated,
+                    "study_description",
                     value_axis_title="Events",
                     name_axis_title="Study description",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT study description events mean",
-                    sorting=[plot_sorting_direction, plot_sorting_field]
+                    sorted_category_list=sorted_categories
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2295,20 +2431,35 @@ def ct_plot_calculations(
                     n_bins=plot_histogram_bins,
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT study description events histogram",
-                    facet_col_wrap=plot_facet_col_wrap_val
+                    facet_col_wrap=plot_facet_col_wrap_val,
+                    sorted_category_list=sorted_categories
                 )
 
         if plot_request_mean_dlp:
-            if plot_average_choice in ["mean", "both"]:
-                return_structure["requestMeanData"] = plotly_barchart(
+            if plot_average_choice in ["mean", "both"] or plot_histograms:
+                sorted_categories = create_sorted_category_list(
                     df,
                     "requested_procedure_code_meaning",
                     "total_dlp",
+                    [plot_sorting_direction, plot_sorting_field]
+                )
+
+            if plot_average_choice in ["mean", "both"]:
+                df_aggregated = create_dataframe_aggregates(
+                    df,
+                    "requested_procedure_code_meaning",
+                    "total_dlp",
+                    stats=["mean", "count"]
+                )
+
+                return_structure["requestMeanData"] = plotly_barchart(
+                    df_aggregated,
+                    "requested_procedure_code_meaning",
                     value_axis_title="Mean DLP (mGy.cm)",
                     name_axis_title="Requested procedure",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT requested procedure DLP mean",
-                    sorting=[plot_sorting_direction, plot_sorting_field]
+                    sorted_category_list=sorted_categories
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2342,20 +2493,35 @@ def ct_plot_calculations(
                     n_bins=plot_histogram_bins,
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT requested procedure DLP histogram",
-                    facet_col_wrap=plot_facet_col_wrap_val
+                    facet_col_wrap=plot_facet_col_wrap_val,
+                    sorted_category_list=sorted_categories
                 )
 
         if plot_request_num_events:
-            if plot_average_choice in ["mean", "both"]:
-                return_structure["requestMeanNumEventsData"] = plotly_barchart(
+            if plot_average_choice in ["mean", "both"] or plot_histograms:
+                sorted_categories = create_sorted_category_list(
                     df,
                     "requested_procedure_code_meaning",
                     "number_of_events",
+                    [plot_sorting_direction, plot_sorting_field]
+                )
+
+            if plot_average_choice in ["mean", "both"]:
+                df_aggregated = create_dataframe_aggregates(
+                    df,
+                    "requested_procedure_code_meaning",
+                    "number_of_events",
+                    stats=["mean", "count"]
+                )
+
+                return_structure["requestMeanNumEventsData"] = plotly_barchart(
+                    df_aggregated,
+                    "requested_procedure_code_meaning",
                     value_axis_title="Events",
                     name_axis_title="Requested procedure",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT requested procedure events mean",
-                    sorting=[plot_sorting_direction, plot_sorting_field]
+                    sorted_category_list=sorted_categories
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2389,30 +2555,86 @@ def ct_plot_calculations(
                     n_bins=plot_histogram_bins,
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT requested procedure events histogram",
-                    facet_col_wrap=plot_facet_col_wrap_val
+                    facet_col_wrap=plot_facet_col_wrap_val,
+                    sorted_category_list=sorted_categories
                 )
 
         if plot_study_freq:
-            return_structure["studyFrequencyData"] = plotly_stacked_histogram(
+            df_aggregated = create_dataframe_aggregates(
                 df,
                 "study_description",
-                name_axis_title="Study description",
+                "study_description",
+                ["count"]
+            )
+            sorted_categories = create_freq_sorted_category_list(
+                df,
+                "study_description",
+                plot_sorting_field
+            )
+
+            df_legend_col = "study_description"
+            legend_title = "Study description"
+            df_x_axis_col = "x_ray_system_name"
+            x_axis_title = "System"
+            if plot_grouping_choice == "series":
+                df_legend_col = "x_ray_system_name"
+                legend_title = "System"
+                df_x_axis_col = "study_description"
+                x_axis_title = "Study description"
+
+            return_structure["studyFrequencyData"] = plotly_frequency_barchart(
+                df_aggregated,
+                df_legend_col,
+                legend_title=legend_title,
+                df_x_axis_col=df_x_axis_col,
+                x_axis_title=x_axis_title,
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM CT study description frequency",
-                sorting=[plot_sorting_direction, plot_sorting_field]
+                sorted_category_list=sorted_categories
             )
 
         if plot_request_freq:
-            return_structure["requestFrequencyData"] = plotly_stacked_histogram(
+            df_aggregated = create_dataframe_aggregates(
                 df,
                 "requested_procedure_code_meaning",
-                name_axis_title="Requested procedure",
+                "requested_procedure_code_meaning",
+                ["count"]
+            )
+            sorted_categories = create_freq_sorted_category_list(
+                df,
+                "requested_procedure_code_meaning",
+                plot_sorting_field
+            )
+
+            df_legend_col = "requested_procedure_code_meaning"
+            legend_title = "Requested procedure"
+            df_x_axis_col = "x_ray_system_name"
+            x_axis_title = "System"
+            if plot_grouping_choice == "series":
+                df_legend_col = "x_ray_system_name"
+                legend_title = "System"
+                df_x_axis_col = "requested_procedure_code_meaning"
+                x_axis_title = "Requested procedure"
+
+            return_structure["requestFrequencyData"] = plotly_frequency_barchart(
+                df_aggregated,
+                df_legend_col,
+                legend_title=legend_title,
+                df_x_axis_col=df_x_axis_col,
+                x_axis_title=x_axis_title,
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM CT requested procedure frequency",
-                sorting=[plot_sorting_direction, plot_sorting_field]
+                sorted_category_list=sorted_categories
             )
 
         if plot_study_mean_dlp_over_time:
+            sorted_categories = create_sorted_category_list(
+                df,
+                "study_description",
+                "total_dlp",
+                [plot_sorting_direction, plot_sorting_field]
+            )
+
             df_time_series = create_dataframe_time_series(
                 df,
                 "study_description",
@@ -2440,7 +2662,8 @@ def ct_plot_calculations(
                     legend_title="Study description",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT study description DLP mean over time",
-                    facet_col_wrap=plot_facet_col_wrap_val
+                    facet_col_wrap=plot_facet_col_wrap_val,
+                    sorted_category_list=sorted_categories
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2455,10 +2678,18 @@ def ct_plot_calculations(
                     legend_title="Study description",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT study description DLP median over time",
-                    facet_col_wrap=plot_facet_col_wrap_val
+                    facet_col_wrap=plot_facet_col_wrap_val,
+                    sorted_category_list=sorted_categories
                 )
 
         if plot_request_dlp_over_time:
+            sorted_categories = create_sorted_category_list(
+                df,
+                "requested_procedure_code_meaning",
+                "total_dlp",
+                [plot_sorting_direction, plot_sorting_field]
+            )
+
             df_time_series = create_dataframe_time_series(
                 df,
                 "requested_procedure_code_meaning",
@@ -2486,7 +2717,8 @@ def ct_plot_calculations(
                     legend_title="Requested procedure",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT requested procedure DLP mean over time",
-                    facet_col_wrap=plot_facet_col_wrap_val
+                    facet_col_wrap=plot_facet_col_wrap_val,
+                    sorted_category_list=sorted_categories
                 )
 
             if plot_average_choice in ["median", "both"]:
@@ -2501,7 +2733,8 @@ def ct_plot_calculations(
                     legend_title="Requested procedure",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT requested procedure DLP median over time",
-                    facet_col_wrap=plot_facet_col_wrap_val
+                    facet_col_wrap=plot_facet_col_wrap_val,
+                    sorted_category_list=sorted_categories
                 )
 
         if plot_study_per_day_and_hour:
