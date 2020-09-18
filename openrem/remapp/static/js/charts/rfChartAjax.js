@@ -36,8 +36,14 @@ $(document).ready(function() {
             if(typeof json.requestMeanData !== "undefined") {
                 $("#requestMeanDAPChartDiv").html(json.requestMeanData);
             }
+            if(typeof json.requestMedianData !== "undefined") {
+                $("#requestMedianDAPChartDiv").html(json.requestMedianData);
+            }
+            if(typeof json.requestMeanMedianData !=="undefined") {
+                $("#requestMeanMedianDAPChartDiv").html(json.requestMeanMedianData);
+            }
             if(typeof json.requestBoxplotData !=="undefined") {
-                $("#requestMedianDAPChartDiv").html(json.requestBoxplotData);
+                $("#requestBoxplotDAPChartDiv").html(json.requestBoxplotData);
             }
             if(typeof json.requestHistogramData !=="undefined") {
                 $("#requestHistogramDAPChartDiv").html(json.requestHistogramData);
