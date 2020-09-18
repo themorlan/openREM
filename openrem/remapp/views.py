@@ -987,9 +987,9 @@ def rf_plot_calculations(
     if plot_request_freq or plot_request_dap:
         name_fields.append("requested_procedure_code_meaning")
 
-    value_fields = ["total_dap"]
-    #if plot_study_dap or plot_request_dap:
-    #    value_fields.append("total_dap")
+    value_fields = []
+    if plot_study_dap or plot_request_dap:
+        value_fields.append("total_dap")
 
     date_fields = []
     time_fields = []
@@ -1008,7 +1008,8 @@ def rf_plot_calculations(
         data_point_date_fields=date_fields,
         data_point_time_fields=time_fields,
         system_name_field=system_field,
-        data_point_name_lowercase=plot_case_insensitive_categories
+        data_point_name_lowercase=plot_case_insensitive_categories,
+        data_point_value_multiplier=1000000
     )
     #######################################################################
 
@@ -2025,9 +2026,9 @@ def ct_plot_calculations(
 
         name_fields = ["ctradiationdose__ctirradiationeventdata__acquisition_protocol"]
 
-        value_fields = ["ctradiationdose__ctirradiationeventdata__dlp"]
-        #if plot_acquisition_mean_dlp or plot_acquisition_dlp_vs_mass or plot_acquisition_dlp_over_time:
-        #    value_fields.append("ctradiationdose__ctirradiationeventdata__dlp")
+        value_fields = []
+        if plot_acquisition_mean_dlp or plot_acquisition_dlp_vs_mass or plot_acquisition_dlp_over_time:
+            value_fields.append("ctradiationdose__ctirradiationeventdata__dlp")
         if plot_acquisition_mean_ctdi or plot_acquisition_ctdi_vs_mass or plot_acquisition_ctdi_over_time:
             value_fields.append("ctradiationdose__ctirradiationeventdata__mean_ctdivol")
         if plot_acquisition_ctdi_vs_mass or plot_acquisition_dlp_vs_mass:
@@ -3008,19 +3009,19 @@ def mg_plot_calculations(
     ):
         name_fields.append("projectionxrayradiationdose__irradeventxraydata__acquisition_protocol")
 
-    value_fields = ["projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness"]
+    value_fields = []
     if plot_agd_vs_thickness:
         value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose")
     if plot_kvp_vs_thickness:
         value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp")
     if plot_mas_vs_thickness:
         value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure")
-    #if (
-    #        plot_agd_vs_thickness
-    #        or plot_kvp_vs_thickness
-    #        or plot_mas_vs_thickness
-    #):
-    #    value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness")
+    if (
+            plot_agd_vs_thickness
+            or plot_kvp_vs_thickness
+            or plot_mas_vs_thickness
+    ):
+        value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness")
 
     date_fields = []
     time_fields = []

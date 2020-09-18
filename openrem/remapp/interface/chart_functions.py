@@ -60,6 +60,7 @@ def create_dataframe(
 ):
 
     fields_to_include = set()
+    fields_to_include.add("study_instance_uid")
     if data_point_name_fields:
         for field in data_point_name_fields:
             fields_to_include.add(field)
