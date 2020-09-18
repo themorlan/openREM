@@ -581,7 +581,7 @@ def dx_plot_calculations(
             return_structure["acquisitionMeanDAPData"] = plotly_barchart(
                 df_aggregated,
                 "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                value_axis_title="Mean DAP (cGy.cm^2)",
+                value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
                 name_axis_title="Acquisition protocol",
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM DX acquisition protocol DAP mean",
@@ -593,7 +593,7 @@ def dx_plot_calculations(
                 df,
                 "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                 "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
-                value_axis_title="DAP (cGy.cm^2)",
+                value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 name_axis_title="Acquisition protocol",
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM DX acquisition protocol DAP boxplot",
@@ -614,7 +614,7 @@ def dx_plot_calculations(
                 group_by_col,
                 "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
                 df_category_name_col=category_names_col,
-                value_axis_title="DAP (cGy.cm^2)",
+                value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 legend_title=legend_title,
                 n_bins=plot_histogram_bins,
                 colourmap=plot_colour_map_choice,
@@ -777,7 +777,7 @@ def dx_plot_calculations(
             return_structure["studyMeanDAPData"] = plotly_barchart(
                 df_aggregated,
                 "study_description",
-                value_axis_title="Mean DAP (cGy.cm^2)",
+                value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
                 name_axis_title="Study description",
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM DX Study description DAP mean",
@@ -789,7 +789,7 @@ def dx_plot_calculations(
                 df,
                 "study_description",
                 "total_dap",
-                value_axis_title="DAP (cGy.cm^2)",
+                value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 name_axis_title="Study description",
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM DX study description DAP boxplot",
@@ -810,7 +810,7 @@ def dx_plot_calculations(
                 group_by_col,
                 "total_dap",
                 df_category_name_col=category_names_col,
-                value_axis_title="DAP (cGy.cm^2)",
+                value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 legend_title=legend_title,
                 n_bins=plot_histogram_bins,
                 colourmap=plot_colour_map_choice,
@@ -851,7 +851,7 @@ def dx_plot_calculations(
             return_structure["requestMeanDAPData"] = plotly_barchart(
                 df_aggregated,
                 "requested_procedure_code_meaning",
-                value_axis_title="Mean DAP (cGy.cm^2)",
+                value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
                 name_axis_title="Requested procedure",
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM DX requested procedure DAP mean",
@@ -863,7 +863,7 @@ def dx_plot_calculations(
                 df,
                 "requested_procedure_code_meaning",
                 "total_dap",
-                value_axis_title="DAP (cGy.cm^2)",
+                value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 name_axis_title="Requested procedure",
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM DX requested procedure DAP boxplot",
@@ -884,7 +884,7 @@ def dx_plot_calculations(
                 group_by_col,
                 "total_dap",
                 df_category_name_col=category_names_col,
-                value_axis_title="DAP (cGy.cm^2)",
+                value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 legend_title=legend_title,
                 n_bins=plot_histogram_bins,
                 colourmap=plot_colour_map_choice,
@@ -913,7 +913,7 @@ def dx_plot_calculations(
             df_value_col="projectionxrayradiationdose__irradeventxraydata__dose_area_product",
             df_date_col="study_date",
             name_title="Acquisition protocol",
-            value_title="DAP (cGy.cm^2)",
+            value_title="DAP (cGy.cm<sup>2</sup>)",
             date_title="Study date",
             sorting=[plot_sorting_direction, plot_sorting_field],
             time_period=plot_over_time_period,
@@ -1446,7 +1446,7 @@ def rf_plot_calculations(
             return_structure["studyMeanData"] = plotly_barchart(
                 df_aggregated,
                 "study_description",
-                value_axis_title="Mean DAP (cGy.cm^2)",
+                value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
                 name_axis_title="Study description",
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM RF study description DAP mean",
@@ -1458,7 +1458,7 @@ def rf_plot_calculations(
                 df,
                 "study_description",
                 "total_dap",
-                value_axis_title="DAP (cGy.cm^2)",
+                value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 name_axis_title="Study description",
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM RF study description DAP boxplot",
@@ -1479,7 +1479,7 @@ def rf_plot_calculations(
                 group_by_col,
                 "total_dap",
                 df_category_name_col=category_names_col,
-                value_axis_title="DAP (cGy.cm^2)",
+                value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 legend_title=legend_title,
                 n_bins=plot_histogram_bins,
                 colourmap=plot_colour_map_choice,
@@ -1507,7 +1507,7 @@ def rf_plot_calculations(
             return_structure["requestMeanData"] = plotly_barchart(
                 df_aggregated,
                 "requested_procedure_code_meaning",
-                value_axis_title="Mean DAP (cGy.cm^2)",
+                value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
                 name_axis_title="Requested procedure",
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM RF requested procedure DAP mean",
@@ -1519,7 +1519,7 @@ def rf_plot_calculations(
                 df,
                 "requested_procedure_code_meaning",
                 "total_dap",
-                value_axis_title="DAP (cGy.cm^2)",
+                value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 name_axis_title="Requested procedure",
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM RF requested procedure DAP boxplot",
@@ -1540,7 +1540,7 @@ def rf_plot_calculations(
                 group_by_col,
                 "total_dap",
                 df_category_name_col=category_names_col,
-                value_axis_title="DAP (cGy.cm^2)",
+                value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 legend_title=legend_title,
                 n_bins=plot_histogram_bins,
                 colourmap=plot_colour_map_choice,
@@ -2061,6 +2061,8 @@ def ct_summary_list_filter(request):
 def generate_required_ct_charts_list(profile):
     """Obtain a list of dictionaries containing the title string and base
     variable name for each required chart"""
+    from django.utils.safestring import mark_safe
+
     required_charts = []
 
     if profile.plotCTAcquisitionMeanDLP:
@@ -2076,13 +2078,13 @@ def generate_required_ct_charts_list(profile):
 
     if profile.plotCTAcquisitionMeanCTDI:
         if profile.plotAverageChoice in ["mean", "both"]:
-            required_charts.append({"title": "Chart of mean CTDI for each acquisition protocol",
+            required_charts.append({"title": mark_safe("Chart of mean CTDI<sub>vol</sub> for each acquisition protocol"),
                                     "var_name": "acquisitionMeanCTDI"})
         if profile.plotAverageChoice in ["median", "both"]:
-            required_charts.append({"title": "Chart of median CTDI for each acquisition protocol",
+            required_charts.append({"title": mark_safe("Chart of median CTDI<sub>vol</sub> for each acquisition protocol"),
                                     "var_name": "acquisitionMedianCTDI"})
         if profile.plotHistograms:
-            required_charts.append({"title": "Histogram of CTDI for each acquisition protocol",
+            required_charts.append({"title": mark_safe("Histogram of CTDI<sub>vol</sub> for each acquisition protocol"),
                                     "var_name": "acquisitionHistogramCTDI"})
 
     if profile.plotCTAcquisitionFreq:
@@ -2090,7 +2092,7 @@ def generate_required_ct_charts_list(profile):
                                 "var_name": "acquisitionFrequency"})
 
     if profile.plotCTAcquisitionCTDIvsMass:
-        required_charts.append({"title": "Chart of CTDI vs patient mass for each acquisition protocol",
+        required_charts.append({"title": mark_safe("Chart of CTDI<sub>vol</sub> vs patient mass for each acquisition protocol"),
                                 "var_name": "acquisitionScatterCTDIvsMass"})
 
     if profile.plotCTAcquisitionDLPvsMass:
@@ -2099,10 +2101,10 @@ def generate_required_ct_charts_list(profile):
 
     if profile.plotCTAcquisitionCTDIOverTime:
         if profile.plotAverageChoice in ["mean", "both"]:
-            required_charts.append({"title": "Chart of mean CTDI per acquisition protocol over time (" + profile.plotCTOverTimePeriod + ")",
+            required_charts.append({"title": mark_safe("Chart of mean CTDI<sub>vol</sub> per acquisition protocol over time (" + profile.plotCTOverTimePeriod + ")"),
                                     "var_name": "acquisitionMeanCTDIOverTime"})
         if profile.plotAverageChoice in ["median", "both"]:
-            required_charts.append({"title": "Chart of median CTDI per acquisition protocol over time (" + profile.plotCTOverTimePeriod + ")",
+            required_charts.append({"title": mark_safe("Chart of median CTDI<sub>vol</sub> per acquisition protocol over time (" + profile.plotCTOverTimePeriod + ")"),
                                     "var_name": "acquisitionMedianCTDIOverTime"})
 
     if profile.plotCTAcquisitionDLPOverTime:
@@ -2126,13 +2128,13 @@ def generate_required_ct_charts_list(profile):
 
     if profile.plotCTStudyMeanCTDI:
         if profile.plotAverageChoice in ["mean", "both"]:
-            required_charts.append({"title": "Chart of mean CTDI for each study description",
+            required_charts.append({"title": mark_safe("Chart of mean CTDI<sub>vol</sub> for each study description"),
                                     "var_name": "studyMeanCTDI"})
         if profile.plotAverageChoice in ["median", "both"]:
-            required_charts.append({"title": "Chart of median CTDI for each study description",
+            required_charts.append({"title": mark_safe("Chart of median CTDI<sub>vol</sub> for each study description"),
                                     "var_name": "studyMedianCTDI"})
         if profile.plotHistograms:
-            required_charts.append({"title": "Histogram of CTDI for each study description",
+            required_charts.append({"title": mark_safe("Histogram of CTDI<sub>vol</sub> for each study description"),
                                     "var_name": "studyHistogramCTDI"})
 
     if profile.plotCTStudyFreq:
@@ -2530,7 +2532,7 @@ def ct_plot_calculations(
                 return_structure["acquisitionMeanCTDIData"] = plotly_barchart(
                     df_aggregated,
                     "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                    value_axis_title="CTDI (mGy)",
+                    value_axis_title="CTDI<sub>vol</sub> (mGy)",
                     name_axis_title="Acquisition protocol",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT acquisition protocol CTDI mean",
@@ -2542,7 +2544,7 @@ def ct_plot_calculations(
                     df,
                     "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    value_axis_title="CTDI (mGy)",
+                    value_axis_title="CTDI<sub>vol</sub> (mGy)",
                     name_axis_title="Acquisition protocol",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT acquisition protocol CTDI boxplot",
@@ -2563,7 +2565,7 @@ def ct_plot_calculations(
                     group_by_col,
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                     df_category_name_col=category_names_col,
-                    value_axis_title="CTDI (mGy)",
+                    value_axis_title="CTDI<sub>vol</sub> (mGy)",
                     legend_title=legend_title,
                     n_bins=plot_histogram_bins,
                     colourmap=plot_colour_map_choice,
@@ -2592,7 +2594,7 @@ def ct_plot_calculations(
                 df_x_col="patientstudymoduleattr__patient_weight",
                 df_y_col="ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                 x_axis_title="Patient mass (kg)",
-                y_axis_title="CTDI (mGy)",
+                y_axis_title="CTDI<sub>vol</sub> (mGy)",
                 sorting=[plot_sorting_direction, plot_sorting_field],
                 grouping_choice=plot_grouping_choice,
                 legend_title="Acquisition protocol",
@@ -2624,7 +2626,7 @@ def ct_plot_calculations(
                 df_value_col="ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                 df_date_col="study_date",
                 name_title="Acquisition protocol",
-                value_title="CTDI (mGy)",
+                value_title="CTDI<sub>vol</sub> (mGy)",
                 date_title="Study date",
                 sorting=[plot_sorting_direction, plot_sorting_field],
                 time_period=plot_over_time_period,
@@ -2797,7 +2799,7 @@ def ct_plot_calculations(
                 return_structure["studyMeanCTDIData"] = plotly_barchart(
                     df_aggregated,
                     "study_description",
-                    value_axis_title="Mean CTDI (mGy)",
+                    value_axis_title="Mean CTDI<sub>vol</sub> (mGy)",
                     name_axis_title="Study description",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT study description CTDI mean",
@@ -2809,7 +2811,7 @@ def ct_plot_calculations(
                     df,
                     "study_description",
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    value_axis_title="CTDI (mGy)",
+                    value_axis_title="CTDI<sub>vol</sub> (mGy)",
                     name_axis_title="Study description",
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT study description CTDI boxplot",
@@ -2830,7 +2832,7 @@ def ct_plot_calculations(
                     group_by_col,
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                     df_category_name_col=category_names_col,
-                    value_axis_title="CTDI (mGy)",
+                    value_axis_title="CTDI<sub>vol</sub> (mGy)",
                     legend_title=legend_title,
                     n_bins=plot_histogram_bins,
                     colourmap=plot_colour_map_choice,
