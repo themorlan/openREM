@@ -1098,6 +1098,9 @@ def rf_summary_list_filter(request):
             user_profile.plotAverageChoice = chart_options_form.cleaned_data[
                 "plotMeanMedianOrBoth"
             ]
+            user_profile.plotBoxplots = chart_options_form.cleaned_data[
+                "plotBoxplots"
+            ]
             user_profile.plotGroupingChoice = chart_options_form.cleaned_data[
                 "plotGrouping"
             ]
@@ -1124,6 +1127,7 @@ def rf_summary_list_filter(request):
                 "plotRFRequestFreq": user_profile.plotRFRequestFreq,
                 "plotRFRequestDAP": user_profile.plotRFRequestDAP,
                 "plotMeanMedianOrBoth": user_profile.plotAverageChoice,
+                "plotBoxplots": user_profile.plotBoxplots,
                 "plotGrouping": user_profile.plotGroupingChoice,
                 "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
                 "plotHistograms": user_profile.plotHistograms,
@@ -1232,15 +1236,21 @@ def generate_required_rf_charts_list(profile):
     required_charts = []
 
     if profile.plotRFStudyDAP:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotAverageChoice in ["mean"]:
             required_charts.append({"title": "Chart of mean DAP for each study description",
                                     "var_name": "studyMeanDAP"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotAverageChoice in ["median"]:
             required_charts.append({"title": "Chart of median DAP for each study description",
                                     "var_name": "studyMedianDAP"})
+        if profile.plotAverageChoice in ["both"]:
+            required_charts.append({"title": "Charts of mean and median DAP for each study description",
+                                    "var_name": "studyMeanMedianDAP"})
         if profile.plotHistograms:
             required_charts.append({"title": "Histogram of DAP for each study description",
                                     "var_name": "studyHistogramDAP"})
+        if profile.plotBoxplots:
+            required_charts.append({"title": "Boxplot of DAP for each study description",
+                                    "var_name": "studyBoxplotDAP"})
 
     if profile.plotRFRequestDAP:
         if profile.plotAverageChoice in ["mean", "both"]:
@@ -1252,6 +1262,9 @@ def generate_required_rf_charts_list(profile):
         if profile.plotHistograms:
             required_charts.append({"title": "Histogram of DAP for each requested procedure",
                                     "var_name": "requestHistogramDAP"})
+        if profile.plotBoxplots:
+            required_charts.append({"title": "Boxplot of DAP for each study description",
+                                    "var_name": "requestBoxplotDAP"})
 
     if profile.plotRFStudyFreq:
         required_charts.append({"title": "Chart of study description frequency",
@@ -1321,7 +1334,8 @@ def rf_summary_chart_data(request):
         user_profile.plotColourMapChoice,
         user_profile.plotFacetColWrapVal,
         user_profile.plotInitialSortingDirection,
-        user_profile.plotRFInitialSortingChoice
+        user_profile.plotRFInitialSortingChoice,
+        user_profile.plotBoxplots
     )
 
     if settings.DEBUG:
@@ -1347,7 +1361,8 @@ def rf_plot_calculations(
     plot_colour_map_choice,
     plot_facet_col_wrap_val,
     plot_sorting_direction,
-    plot_sorting_field
+    plot_sorting_field,
+    plot_boxplots
 ):
     """Calculations for fluoroscopy charts
     """
@@ -1358,6 +1373,7 @@ def rf_plot_calculations(
         create_sorted_category_list,
         plotly_boxplot,
         plotly_barchart,
+        plotly_barchart_mean_median,
         plotly_histogram,
         plotly_barchart_weekdays,
         plotly_set_default_theme,
@@ -1435,25 +1451,37 @@ def rf_plot_calculations(
             [plot_sorting_direction, plot_sorting_field]
         )
 
-        if plot_average_choice in ["mean", "both"]:
-            df_aggregated = create_dataframe_aggregates(
-                df,
-                "study_description",
-                "total_dap",
-                stats=["mean", "count"]
-            )
+        df_aggregated = create_dataframe_aggregates(
+            df,
+            "study_description",
+            "total_dap",
+            stats=["mean", "median", "count"]
+        )
 
-            return_structure["studyMeanData"] = plotly_barchart(
+        if plot_average_choice == "both":
+            return_structure["studyMeanMedianData"] = plotly_barchart_mean_median(
                 df_aggregated,
                 "study_description",
-                value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
+                value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 name_axis_title="Study description",
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM RF study description DAP mean",
                 sorted_category_list=sorted_categories
             )
 
-        if plot_average_choice in ["median", "both"]:
+        else:
+            return_structure["study" + plot_average_choice.capitalize() + "Data"] = plotly_barchart(
+                df_aggregated,
+                "study_description",
+                value_axis_title=plot_average_choice.capitalize() + " DAP (cGy.cm<sup>2</sup>)",
+                name_axis_title="Study description",
+                colourmap=plot_colour_map_choice,
+                filename="OpenREM RF study description DAP " + plot_average_choice,
+                sorted_category_list=sorted_categories,
+                average_choice=plot_average_choice
+            )
+
+        if plot_boxplots:
             return_structure["studyBoxplotData"] = plotly_boxplot(
                 df,
                 "study_description",

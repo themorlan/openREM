@@ -264,7 +264,8 @@ def plotly_barchart(
         name_axis_title="",
         colourmap="RdYlBu",
         filename="OpenREM_bar_chart",
-        sorted_category_list=None
+        sorted_category_list=None,
+        average_choice="mean"
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -275,11 +276,11 @@ def plotly_barchart(
     fig = px.bar(
         df,
         x=df_name_col,
-        y="mean",
+        y=average_choice,
         color="x_ray_system_name",
         barmode="group",
         labels={
-            "mean": value_axis_title,
+            average_choice: value_axis_title,
             df_name_col: name_axis_title,
             "x_ray_system_name": "System",
             "count": "Frequency"
@@ -288,12 +289,89 @@ def plotly_barchart(
         color_discrete_sequence=colour_sequence,
         hover_data={"x_ray_system_name": True,
                     df_name_col: True,
-                    "mean": ":.2f",
+                    average_choice: ":.2f",
                     "count": ":.0d"},
         height=750
     )
 
     fig.update_xaxes(tickson="boundaries")
+
+    return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
+
+
+def plotly_barchart_mean_median(
+        df,
+        df_name_col,
+        value_axis_title="",
+        name_axis_title="",
+        colourmap="RdYlBu",
+        filename="OpenREM_bar_chart",
+        sorted_category_list=None
+):
+    from plotly.subplots import make_subplots
+    import plotly.graph_objects as go
+    from plotly.offline import plot
+
+    n_colours = len(df.x_ray_system_name.unique())
+    colour_sequence = calculate_colour_sequence(colourmap, n_colours)
+    system_names = df.x_ray_system_name.unique()
+
+    fig = make_subplots(rows=2, cols=1,
+                        shared_xaxes=True,
+                        shared_yaxes=True)
+
+    i = 0
+    for system, subset in df.groupby("x_ray_system_name"):
+
+        trace = go.Bar(x=subset[df_name_col],
+                       y=subset["mean"],
+                       name=system,
+                       xaxis="x1",
+                       yaxis="y1",
+                       marker_color=colour_sequence[i],
+                       showlegend=False,
+                       legendgroup=i,
+                       text=subset['count'],
+                       hovertemplate=
+                       f"<b>{system_names[i]}</b><br>" +
+                       "%{x}<br>" +
+                       "Mean: %{y:.2f}<br>" +
+                       "Count: %{text:.0d}<br>" +
+                       "<extra></extra>"
+                       )
+
+        fig.append_trace(trace, row=1, col=1)
+
+        trace = go.Bar(x=subset[df_name_col],
+                       y=subset["median"],
+                       name=system,
+                       xaxis="x2",
+                       yaxis="y2",
+                       marker_color=colour_sequence[i],
+                       legendgroup=i,
+                       text=subset['count'],
+                       hovertemplate=
+                       f"<b>{system_names[i]}</b><br>" +
+                       "%{x}<br>" +
+                       "Median: %{y:.2f}<br>" +
+                       "Count: %{text:.0d}<br>" +
+                       "<extra></extra>"
+                       )
+
+        fig.append_trace(trace, row=2, col=1)
+        i += 1
+
+    layout = go.Layout(
+        height=750,
+        xaxis={"categoryorder": "array", "categoryarray": sorted_category_list[df_name_col]},
+    )
+
+    fig.update_layout(layout)
+
+    fig.update_xaxes(title_text=name_axis_title, row=2, col=1)
+    fig.update_xaxes(showticklabels=True, row=1, col=1)
+    fig.update_yaxes(title_text="Mean " + value_axis_title, row=1, col=1)
+    fig.update_yaxes(title_text="Median " + value_axis_title, row=2, col=1)
 
     return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
 

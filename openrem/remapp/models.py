@@ -522,6 +522,8 @@ class UserProfile(models.Model):
         null=True, choices=SORTING_DIRECTION, default=DESCENDING
     )
 
+    plotBoxplots = models.BooleanField(default=False, editable=False)
+
     # Plotting controls
     plotCharts = models.BooleanField(default=False)
     plotDXAcquisitionMeanDAP = models.BooleanField(default=True)

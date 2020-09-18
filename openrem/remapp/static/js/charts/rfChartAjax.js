@@ -19,8 +19,14 @@ $(document).ready(function() {
             if(typeof json.studyMeanData !== "undefined") {
                 $("#studyMeanDAPChartDiv").html(json.studyMeanData);
             }
+            if(typeof json.studyMedianData !=="undefined") {
+                $("#studyMedianDAPChartDiv").html(json.studyMedianData);
+            }
+            if(typeof json.studyMeanMedianData !=="undefined") {
+                $("#studyMeanMedianDAPChartDiv").html(json.studyMeanMedianData);
+            }
             if(typeof json.studyBoxplotData !=="undefined") {
-                $("#studyMedianDAPChartDiv").html(json.studyBoxplotData);
+                $("#studyBoxplotDAPChartDiv").html(json.studyBoxplotData);
             }
             if(typeof json.studyHistogramData !=="undefined") {
                 $("#studyHistogramDAPChartDiv").html(json.studyHistogramData);

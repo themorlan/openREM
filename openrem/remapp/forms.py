@@ -226,6 +226,9 @@ class DXChartOptionsForm(forms.Form):
     plotMeanMedianOrBoth = forms.ChoiceField(
         label="Average to use", choices=AVERAGES, required=False
     )
+    plotBoxplots = forms.BooleanField(
+        label="Include boxplots", required=False
+    )
     plotGrouping = forms.ChoiceField(
         label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
     )
@@ -241,7 +244,6 @@ class DXChartOptionsForm(forms.Form):
     plotInitialSortingDirection = forms.ChoiceField(
         label="Sorting direction", choices=SORTING_DIRECTION, required=False
     )
-
 
 class CTChartOptionsForm(forms.Form):
     """Form for CT chart options
@@ -301,6 +303,9 @@ class CTChartOptionsForm(forms.Form):
     plotMeanMedianOrBoth = forms.ChoiceField(
         label="Average to use", choices=AVERAGES, required=False
     )
+    plotBoxplots = forms.BooleanField(
+        label="Include boxplots", required=False
+    )
     plotGrouping = forms.ChoiceField(
         label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
     )
@@ -330,6 +335,9 @@ class RFChartOptionsForm(forms.Form):
     plotRFRequestDAP = forms.BooleanField(label="DAP per request", required=False)
     plotMeanMedianOrBoth = forms.ChoiceField(
         label="Average to use", choices=AVERAGES, required=False
+    )
+    plotBoxplots = forms.BooleanField(
+        label="Include boxplots", required=False
     )
     plotGrouping = forms.ChoiceField(
         label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
@@ -530,6 +538,9 @@ class GeneralChartOptionsDisplayForm(forms.Form):
     )
     plotHistograms = forms.BooleanField(
         label="Calculate histogram data", required=False
+    )
+    plotBoxplots = forms.BooleanField(
+        label="Include boxplots", required=False
     )
     plotHistogramBins = forms.IntegerField(
         label="Number of histogram bins", min_value=2, max_value=40, required=False
