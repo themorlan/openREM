@@ -226,11 +226,20 @@ class DXChartOptionsForm(forms.Form):
     plotMeanMedianOrBoth = forms.ChoiceField(
         label="Average to use", choices=AVERAGES, required=False
     )
+    plotGrouping = forms.ChoiceField(
+        label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
+    )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
     )
     plotHistograms = forms.BooleanField(
         label="Calculate histogram data", required=False
+    )
+    plotDXInitialSortingChoice = forms.ChoiceField(
+        label="Chart sorting", choices=SORTING_CHOICES, required=False
+    )
+    plotInitialSortingDirection = forms.ChoiceField(
+        label="Sorting direction", choices=SORTING_DIRECTION, required=False
     )
 
 

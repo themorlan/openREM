@@ -385,3 +385,7 @@ canvas.marks {
   min-width: 200px;
   min-height: 100px;
 }
+
+div.plotly_parent {
+  min-width: 1000px;
+}
