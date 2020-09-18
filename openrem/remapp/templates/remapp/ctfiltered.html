@@ -974,6 +974,12 @@
                                     {{ filter.form.as_p }}
                                 </div>
                                 <div id="search_builder" class="search_builder_class">
+                                  <table id="search_builder_table" class="table table-bordered header-background small" style="width:100%">
+                                    <tr>
+                                      <th>Boolean operator</th><th>opening bracket(s)</th><th>Parameter</th>
+                                      <th>Operator</th><th>Value</th><th>closing bracket(s)</th><th></th>
+                                    </tr>
+                                  </table>
                                 </div>
                                 <div style="text-align: right;" >
                                     <input class="btn btn-default" name="submit" type="submit" />
@@ -1008,7 +1014,7 @@
                             <th>Delete?</th>
                         {% endif %}
                     </tr>
-                    {% for exam in filter_list %}
+                    {% for exam in filter.qs %}
                       {% with equipment=exam.generalequipmentmoduleattr_set.get %}
                       {% with ct_dose_set=exam.ctradiationdose_set.get %}
                       {% with ct_accumulated=ct_dose_set.ctaccumulateddosedata_set.get %}

@@ -20,27 +20,20 @@ function addSearchBuilderLine(pos, first) {
                         "<option value='NOT'>NOT</option>";
     }
 
-    $("#search_builder").append("<div id='line_" + strNewPos + "' class='builder_line'>" +
-      "    <label for='concatoperator_" + strNewPos + "' class='search_label'>Select operator</label>" +
-      "    <select id='concatoperator_" + strNewPos + "' class='concatoperator'>" +
-      concatOptions +
-      "    </select>" +
-      "    <input id='prebracket_" + strNewPos + "' class='prebrackets' size=1/>" +
-      "    <label for='parameter_" + strNewPos + "' class='search_label'>Select parameter</label>" +
-      "    <select id='parameter_" + strNewPos + "' class='parameter'>" +
-      "    </select>" +
-      "    <label for='operator_" + strNewPos + "' class='search_label'>Select operator</label>" +
-      "    <select id='operator_" + strNewPos + "' class='operator'>" +
-      "    </select>" +
-      "    <div id='search_term_" + strNewPos + "' class='search_inline_div'>" +
-      "        <label for='term_" + strNewPos + "' class='search_label'>parameter value</label>" +
+    $('#search_builder_table tr:last').after("<tr id='line_" + strNewPos + "' class='builder_line'>" +
+      "    <td><select id='concatoperator_" + strNewPos + "' class='concatoperator'>" + concatOptions +
+        "    </select></td>" +
+      "    <td><input id='prebracket_" + strNewPos + "' class='prebrackets' size=1/></td>" +
+      "    <td><select id='parameter_" + strNewPos + "' class='parameter'></select></td>" +
+      "    <td><select id='operator_" + strNewPos + "' class='operator'></select></td>" +
+      "    <td><div id='search_term_" + strNewPos + "' class='search_inline_div'>" +
       "        <input id='term_" + strNewPos + "' class='searchinput' size=40/>" +
-      "    </div>" +
-      "    <input id='postbracket_" + strNewPos + "' class='postbrackets' size=1/>" +
-      "    <a href='javascript:;' class='rem_line' style='visibility: " + (first ? "hidden" : "visible") + ";'>" +
+      "    </div></td>" +
+      "    <td><input id='postbracket_" + strNewPos + "' class='postbrackets' size=1/>" +
+      "    <td><a href='javascript:;' class='rem_line' style='visibility: " + (first ? "hidden" : "visible") + ";'>" +
       "        <img id='remline_" + strNewPos + "' src='" + staticUrl + "img/delete.png' alt='remove line'/></a>" +
-      "    <a href='javascript:;' class='add_line'><img id='addline_" + strNewPos + "' src='" + staticUrl + "img/add.png' alt='add line'/></a>" +
-      "</div>");
+      "    <a href='javascript:;' class='add_line'><img id='addline_" + strNewPos + "' src='" + staticUrl + "img/add.png' alt='add line'/></a></td>" +
+      "</tr>");
     if (first === false)
         $("#line_" + pos).find(".add_line")[0].style.visibility = "hidden";
     var cBox = document.getElementById("parameter_" + strNewPos);
