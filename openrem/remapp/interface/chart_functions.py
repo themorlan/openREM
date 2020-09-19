@@ -29,6 +29,7 @@
 
 """
 
+from openremproject import settings
 from builtins import filter  # pylint: disable=redefined-builtin
 from builtins import range  # pylint: disable=redefined-builtin
 import pandas as pd
@@ -219,8 +220,18 @@ def plotly_boxplot(
 
         return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
 
-    except ValueError:
-        return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
+    except ValueError as e:
+        msg = "<div class='alert alert-warning' role='alert'>"
+        if settings.DEBUG:
+            msg += "Could not resolve chart. Try filtering the data to reduce the number of systems."
+            msg += "<p>Error is:</p>"
+            msg += "<pre>" + e.args[0].replace("\n", "<br>") + "</pre>"
+        else:
+            msg += "Could not resolve chart. Try filtering the data to reduce the number of systems."
+
+        msg += "</div>"
+
+        return msg
 
 
 def create_freq_sorted_category_list(df, df_name_col, sorting):
@@ -410,6 +421,7 @@ def plotly_histogram(
             color=df_category_name_col,
             facet_col=df_facet_col,
             facet_col_wrap=facet_col_wrap,
+            facet_row_spacing=0.01,  # default is 0.07 when facet_col_wrap is used
             labels={
                 df_value_col: value_axis_title,
                 df_category_name_col: legend_title
@@ -426,8 +438,18 @@ def plotly_histogram(
 
         return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
 
-    except ValueError:
-        return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
+    except ValueError as e:
+        msg = "<div class='alert alert-warning' role='alert'>"
+        if settings.DEBUG:
+            msg += "Could not resolve chart. Try filtering the data to reduce the number of categories or systems."
+            msg += "<p>Error is:</p>"
+            msg += "<pre>" + e.args[0].replace("\n", "<br>") + "</pre>"
+        else:
+            msg += "Could not resolve chart. Try filtering the data to reduce the number of categories or systems."
+
+        msg += "</div>"
+
+        return msg
 
 
 def plotly_frequency_barchart(
@@ -500,6 +522,7 @@ def plotly_timeseries_linechart(
             color=df_name_col,
             facet_col=facet_col,
             facet_col_wrap=facet_col_wrap,
+            facet_row_spacing=0.01,  # default is 0.07 when facet_col_wrap is used
             labels={
                 df_value_col: value_axis_title,
                 df_name_col: legend_title,
@@ -518,8 +541,18 @@ def plotly_timeseries_linechart(
 
         return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
 
-    except ValueError:
-        return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
+    except ValueError as e:
+        msg = "<div class='alert alert-warning' role='alert'>"
+        if settings.DEBUG:
+            msg += "Could not resolve chart. Try filtering the data to reduce the number of categories or systems."
+            msg += "<p>Error is:</p>"
+            msg += "<pre>" + e.args[0].replace("\n", "<br>") + "</pre>"
+        else:
+            msg += "Could not resolve chart. Try filtering the data to reduce the number of categories or systems."
+
+        msg += "</div>"
+
+        return msg
 
 
 def plotly_scatter(
@@ -557,6 +590,7 @@ def plotly_scatter(
             color=df_category_name_col,
             facet_col=df_facet_col,
             facet_col_wrap=facet_col_wrap,
+            facet_row_spacing=0.01,  # default is 0.07 when facet_col_wrap is used
             labels={
                 df_x_value_col: x_axis_title,
                 df_y_value_col: y_axis_title,
@@ -573,8 +607,19 @@ def plotly_scatter(
 
         return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
 
-    except ValueError:
-        return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of categories or systems.</div>"
+    except ValueError as e:
+        msg = "<div class='alert alert-warning' role='alert'>"
+        if settings.DEBUG:
+            msg += "Could not resolve chart. Try filtering the data to reduce the number of categories or systems."
+            msg += "<p>Error is:</p>"
+            msg += "<pre>" + e.args[0].replace("\n", "<br>") + "</pre>"
+        else:
+            msg += "Could not resolve chart. Try filtering the data to reduce the number of categories or systems."
+
+        msg += "</div>"
+
+        return msg
+
 
 
 def plotly_barchart_weekdays(
@@ -603,6 +648,7 @@ def plotly_barchart_weekdays(
             y=df_value_col,
             facet_col="x_ray_system_name",
             facet_col_wrap=facet_col_wrap,
+            facet_row_spacing=0.01,  # default is 0.07 when facet_col_wrap is used
             color=df_value_col,
             labels={
                 df_name_col: name_axis_title,
@@ -627,8 +673,18 @@ def plotly_barchart_weekdays(
 
         return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
 
-    except ValueError:
-        return "<div class='alert alert-warning' role='alert'>Could not resolve chart. Try filtering the data to reduce the number of systems.</div>"
+    except ValueError as e:
+        msg = "<div class='alert alert-warning' role='alert'>"
+        if settings.DEBUG:
+            msg += "Could not resolve chart. Try filtering the data to reduce the number of systems."
+            msg += "<p>Error is:</p>"
+            msg += "<pre>" + e.args[0].replace("\n", "<br>") + "</pre>"
+        else:
+            msg += "Could not resolve chart. Try filtering the data to reduce the number of systems."
+
+        msg += "</div>"
+
+        return msg
 
 
 def construct_freqency_chart(
@@ -714,6 +770,7 @@ def construct_scatter_chart(
         colourmap=colour_map,
         filename=file_name,
         facet_col_wrap=facet_col_wrap,
+        facet_row_spacing=0.01,  # default is 0.07 when facet_col_wrap is used
         sorted_category_list=sorted_categories
     )
 
