@@ -1308,6 +1308,18 @@ def chart_options_view(request):
             user_profile.plotCTAcquisitionFreq = ct_form.cleaned_data[
                 "plotCTAcquisitionFreq"
             ]
+            user_profile.plotCTAcquisitionCTDIvsMass = ct_form.cleaned_data[
+                "plotCTAcquisitionCTDIvsMass"
+            ]
+            user_profile.plotCTAcquisitionDLPvsMass = ct_form.cleaned_data[
+                "plotCTAcquisitionDLPvsMass"
+            ]
+            user_profile.plotCTAcquisitionCTDIOverTime = ct_form.cleaned_data[
+                "plotCTAcquisitionCTDIOverTime"
+            ]
+            user_profile.plotCTAcquisitionDLPOverTime = ct_form.cleaned_data[
+                "plotCTAcquisitionDLPOverTime"
+            ]
             user_profile.plotCTStudyMeanDLP = ct_form.cleaned_data["plotCTStudyMeanDLP"]
             user_profile.plotCTStudyMeanCTDI = ct_form.cleaned_data[
                 "plotCTStudyMeanCTDI"
@@ -1342,12 +1354,18 @@ def chart_options_view(request):
             user_profile.plotDXAcquisitionFreq = dx_form.cleaned_data[
                 "plotDXAcquisitionFreq"
             ]
-            user_profile.plotDXStudyMeanDAP = dx_form.cleaned_data["plotDXStudyMeanDAP"]
-            user_profile.plotDXStudyFreq = dx_form.cleaned_data["plotDXStudyFreq"]
+            user_profile.plotDXStudyMeanDAP = dx_form.cleaned_data[
+                "plotDXStudyMeanDAP"
+            ]
+            user_profile.plotDXStudyFreq = dx_form.cleaned_data[
+                "plotDXStudyFreq"
+            ]
             user_profile.plotDXRequestMeanDAP = dx_form.cleaned_data[
                 "plotDXRequestMeanDAP"
             ]
-            user_profile.plotDXRequestFreq = dx_form.cleaned_data["plotDXRequestFreq"]
+            user_profile.plotDXRequestFreq = dx_form.cleaned_data[
+                "plotDXRequestFreq"
+            ]
             user_profile.plotDXAcquisitionMeankVp = dx_form.cleaned_data[
                 "plotDXAcquisitionMeankVp"
             ]
@@ -1368,6 +1386,15 @@ def chart_options_view(request):
             ]
             user_profile.plotDXAcquisitionMeanDAPOverTimePeriod = dx_form.cleaned_data[
                 "plotDXAcquisitionMeanDAPOverTimePeriod"
+            ]
+            user_profile.plotDXAcquisitionDAPvsMass = dx_form.cleaned_data[
+                "plotDXAcquisitionDAPvsMass"
+            ]
+            user_profile.plotDXStudyDAPvsMass = dx_form.cleaned_data[
+                "plotDXStudyDAPvsMass"
+            ]
+            user_profile.plotDXRequestDAPvsMass = dx_form.cleaned_data[
+                "plotDXRequestDAPvsMass"
             ]
             user_profile.plotDXInitialSortingChoice = dx_form.cleaned_data[
                 "plotDXInitialSortingChoice"
@@ -1434,6 +1461,10 @@ def chart_options_view(request):
         "plotCTAcquisitionMeanDLP": user_profile.plotCTAcquisitionMeanDLP,
         "plotCTAcquisitionMeanCTDI": user_profile.plotCTAcquisitionMeanCTDI,
         "plotCTAcquisitionFreq": user_profile.plotCTAcquisitionFreq,
+        "plotCTAcquisitionCTDIvsMass": user_profile.plotCTAcquisitionCTDIvsMass,
+        "plotCTAcquisitionDLPvsMass": user_profile.plotCTAcquisitionDLPvsMass,
+        "plotCTAcquisitionCTDIOverTime": user_profile.plotCTAcquisitionCTDIOverTime,
+        "plotCTAcquisitionDLPOverTime": user_profile.plotCTAcquisitionDLPOverTime,
         "plotCTStudyMeanDLP": user_profile.plotCTStudyMeanDLP,
         "plotCTStudyMeanCTDI": user_profile.plotCTStudyMeanCTDI,
         "plotCTStudyFreq": user_profile.plotCTStudyFreq,
@@ -1461,6 +1492,9 @@ def chart_options_view(request):
         "plotDXAcquisitionMeanmAsOverTime": user_profile.plotDXAcquisitionMeanmAsOverTime,
         "plotDXAcquisitionMeanDAPOverTime": user_profile.plotDXAcquisitionMeanDAPOverTime,
         "plotDXAcquisitionMeanDAPOverTimePeriod": user_profile.plotDXAcquisitionMeanDAPOverTimePeriod,
+        "plotDXAcquisitionDAPvsMass": user_profile.plotDXAcquisitionDAPvsMass,
+        "plotDXStudyDAPvsMass": user_profile.plotDXStudyDAPvsMass,
+        "plotDXRequestDAPvsMass": user_profile.plotDXRequestDAPvsMass,
         "plotDXInitialSortingChoice": user_profile.plotDXInitialSortingChoice,
     }
 

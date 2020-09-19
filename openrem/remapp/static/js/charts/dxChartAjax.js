@@ -118,6 +118,21 @@ $(document).ready(function() {
                 $("#studyWorkloadChartDiv").html(json.studyWorkloadData);
             }
 
+            // Acquisition DAP vs mass
+            if(typeof json.acquisitionDAPvsMass !== "undefined") {
+                $("#acquisitionDAPvsMassChartDiv").html(json.acquisitionDAPvsMass);
+            }
+
+            // Study DAP vs mass
+            if(typeof json.studyDAPvsMass !== "undefined") {
+                $("#studyDAPvsMassChartDiv").html(json.studyDAPvsMass);
+            }
+
+            // Request DAP vs mass
+            if(typeof json.requestDAPvsMass !== "undefined") {
+                $("#requestDAPvsMassChartDiv").html(json.requestDAPvsMass);
+            }
+
             $(".ajax-progress").hide();
         },
         error: function( xhr, status, errorThrown ) {

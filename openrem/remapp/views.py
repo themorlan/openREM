@@ -162,6 +162,15 @@ def dx_summary_list_filter(request):
             user_profile.plotDXAcquisitionMeanDAPOverTimePeriod = chart_options_form.cleaned_data[
                 "plotDXAcquisitionMeanDAPOverTimePeriod"
             ]
+            user_profile.plotDXAcquisitionDAPvsMass = chart_options_form.cleaned_data[
+                "plotDXAcquisitionDAPvsMass"
+            ]
+            user_profile.plotDXStudyDAPvsMass = chart_options_form.cleaned_data[
+                "plotDXStudyDAPvsMass"
+            ]
+            user_profile.plotDXRequestDAPvsMass = chart_options_form.cleaned_data[
+                "plotDXRequestDAPvsMass"
+            ]
             user_profile.plotAverageChoice = chart_options_form.cleaned_data[
                 "plotMeanMedianOrBoth"
             ]
@@ -199,6 +208,9 @@ def dx_summary_list_filter(request):
                 "plotDXAcquisitionMeanmAsOverTime": user_profile.plotDXAcquisitionMeanmAsOverTime,
                 "plotDXAcquisitionMeanDAPOverTime": user_profile.plotDXAcquisitionMeanDAPOverTime,
                 "plotDXAcquisitionMeanDAPOverTimePeriod": user_profile.plotDXAcquisitionMeanDAPOverTimePeriod,
+                "plotDXAcquisitionDAPvsMass": user_profile.plotDXAcquisitionDAPvsMass,
+                "plotDXStudyDAPvsMass": user_profile.plotDXStudyDAPvsMass,
+                "plotDXRequestDAPvsMass": user_profile.plotDXRequestDAPvsMass,
                 "plotMeanMedianOrBoth": user_profile.plotAverageChoice,
                 "plotGrouping": user_profile.plotGroupingChoice,
                 "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
@@ -354,6 +366,16 @@ def generate_required_dx_charts_list(profile):
             required_charts.append({"title": "Chart of median DAP per acquisition protocol over time (" + profile.plotDXAcquisitionMeanDAPOverTimePeriod + ")",
                                     "var_name": "acquisitionMedianDAPOverTime"})
 
+    if profile.plotDXAcquisitionDAPvsMass:
+        required_charts.append({"title": "Chart of acquisition protocol DAP vs patient mass",
+                                "var_name": "acquisitionDAPvsMass"})
+    if profile.plotDXStudyDAPvsMass:
+        required_charts.append({"title": "Chart of study description DAP vs patient mass",
+                                "var_name": "studyDAPvsMass"})
+    if profile.plotDXRequestDAPvsMass:
+        required_charts.append({"title": "Chart of requested procedure DAP vs patient mass",
+                                "var_name": "requestDAPvsMass"})
+
     return required_charts
 
 
@@ -419,7 +441,10 @@ def dx_summary_chart_data(request):
         user_profile.plotFacetColWrapVal,
         user_profile.plotInitialSortingDirection,
         user_profile.plotDXInitialSortingChoice,
-        user_profile.plotGroupingChoice
+        user_profile.plotGroupingChoice,
+        user_profile.plotDXAcquisitionDAPvsMass,
+        user_profile.plotDXStudyDAPvsMass,
+        user_profile.plotDXRequestDAPvsMass
     )
 
     if settings.DEBUG:
@@ -454,7 +479,10 @@ def dx_plot_calculations(
     plot_facet_col_wrap_val,
     plot_sorting_direction,
     plot_sorting_field,
-    plot_grouping_choice
+    plot_grouping_choice,
+    plot_acquisition_dap_vs_mass,
+    plot_study_dap_vs_mass,
+    plot_request_dap_vs_mass
 ):
     """Calculations for radiographic charts
     """
@@ -492,17 +520,20 @@ def dx_plot_calculations(
         or plot_acquisition_mean_dap_over_time
         or plot_acquisition_mean_kvp_over_time
         or plot_acquisition_mean_mas_over_time
+        or plot_acquisition_dap_vs_mass
     ):
         name_fields.append("projectionxrayradiationdose__irradeventxraydata__acquisition_protocol")
     if (
         plot_study_mean_dap
         or plot_study_freq
         or plot_study_per_day_and_hour
+        or plot_study_dap_vs_mass
     ):
         name_fields.append("study_description")
     if (
         plot_request_mean_dap
         or plot_request_freq
+        or plot_request_dap_vs_mass
     ):
         name_fields.append("requested_procedure_code_meaning")
 
@@ -511,12 +542,15 @@ def dx_plot_calculations(
     if (
         plot_acquisition_mean_dap
         or plot_acquisition_mean_dap_over_time
+        or plot_acquisition_dap_vs_mass
     ):
         value_fields.append("projectionxrayradiationdose__irradeventxraydata__dose_area_product")
         value_multipliers.append(1000000)
     if (
         plot_study_mean_dap
         or plot_request_mean_dap
+        or plot_study_dap_vs_mass
+        or plot_request_dap_vs_mass
     ):
         value_fields.append("total_dap")
         value_multipliers.append(1000000)
@@ -527,11 +561,18 @@ def dx_plot_calculations(
         value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp")
         value_multipliers.append(1)
     if (
-      plot_acquisition_mean_mas
-      or plot_acquisition_mean_mas_over_time
+        plot_acquisition_mean_mas
+        or plot_acquisition_mean_mas_over_time
     ):
         value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure")
         value_multipliers.append(0.001)
+    if (
+        plot_acquisition_dap_vs_mass
+        or plot_study_dap_vs_mass
+        or plot_request_dap_vs_mass
+    ):
+        value_fields.append("patientstudymoduleattr__patient_weight")
+        value_multipliers.append(1)
 
     date_fields = []
     if (
@@ -991,6 +1032,54 @@ def dx_plot_calculations(
             colourmap=plot_colour_map_choice,
             filename="OpenREM DX study description workload",
             facet_col_wrap=plot_facet_col_wrap_val
+        )
+
+    if plot_acquisition_dap_vs_mass:
+        return_structure["acquisitionDAPvsMass"] = construct_scatter_chart(
+            df=df,
+            df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+            df_x_col="patientstudymoduleattr__patient_weight",
+            df_y_col="projectionxrayradiationdose__irradeventxraydata__dose_area_product",
+            x_axis_title="Patient mass (kg)",
+            y_axis_title="DAP (mGy.cm<sup>2</sub>)",
+            sorting=[plot_sorting_direction, plot_sorting_field],
+            grouping_choice=plot_grouping_choice,
+            legend_title="Acquisition protocol",
+            colour_map=plot_colour_map_choice,
+            facet_col_wrap=plot_facet_col_wrap_val,
+            file_name="OpenREM DX acquisition protocol DAP vs patient mass"
+        )
+
+    if plot_study_dap_vs_mass:
+        return_structure["studyDAPvsMass"] = construct_scatter_chart(
+            df=df,
+            df_name_col="study_description",
+            df_x_col="patientstudymoduleattr__patient_weight",
+            df_y_col="total_dap",
+            x_axis_title="Patient mass (kg)",
+            y_axis_title="DAP (mGy.cm<sup>2</sub>)",
+            sorting=[plot_sorting_direction, plot_sorting_field],
+            grouping_choice=plot_grouping_choice,
+            legend_title="Study description",
+            colour_map=plot_colour_map_choice,
+            facet_col_wrap=plot_facet_col_wrap_val,
+            file_name="OpenREM DX study description DAP vs patient mass"
+        )
+
+    if plot_request_dap_vs_mass:
+        return_structure["requestDAPvsMass"] = construct_scatter_chart(
+            df=df,
+            df_name_col="requested_procedure_code_meaning",
+            df_x_col="patientstudymoduleattr__patient_weight",
+            df_y_col="total_dap",
+            x_axis_title="Patient mass (kg)",
+            y_axis_title="DAP (mGy.cm<sup>2</sub>)",
+            sorting=[plot_sorting_direction, plot_sorting_field],
+            grouping_choice=plot_grouping_choice,
+            legend_title="Requested procedure",
+            colour_map=plot_colour_map_choice,
+            facet_col_wrap=plot_facet_col_wrap_val,
+            file_name="OpenREM DX requested procedure DAP vs patient mass"
         )
 
     return return_structure
