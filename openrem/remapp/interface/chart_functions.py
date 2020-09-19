@@ -29,7 +29,7 @@
 
 """
 
-from openremproject import settings
+from django.conf import settings
 from builtins import filter  # pylint: disable=redefined-builtin
 from builtins import range  # pylint: disable=redefined-builtin
 import pandas as pd
@@ -770,7 +770,6 @@ def construct_scatter_chart(
         colourmap=colour_map,
         filename=file_name,
         facet_col_wrap=facet_col_wrap,
-        facet_row_spacing=0.01,  # default is 0.07 when facet_col_wrap is used
         sorted_category_list=sorted_categories
     )
 
