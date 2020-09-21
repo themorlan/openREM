@@ -421,7 +421,7 @@ def plotly_histogram(
             color=df_category_name_col,
             facet_col=df_facet_col,
             facet_col_wrap=facet_col_wrap,
-            facet_row_spacing=0.01,  # default is 0.07 when facet_col_wrap is used
+            facet_row_spacing=0.14 / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
             labels={
                 df_value_col: value_axis_title,
                 df_category_name_col: legend_title
@@ -522,7 +522,7 @@ def plotly_timeseries_linechart(
             color=df_name_col,
             facet_col=facet_col,
             facet_col_wrap=facet_col_wrap,
-            facet_row_spacing=0.01,  # default is 0.07 when facet_col_wrap is used
+            facet_row_spacing=0.14 / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
             labels={
                 df_value_col: value_axis_title,
                 df_name_col: legend_title,
@@ -590,7 +590,7 @@ def plotly_scatter(
             color=df_category_name_col,
             facet_col=df_facet_col,
             facet_col_wrap=facet_col_wrap,
-            facet_row_spacing=0.01,  # default is 0.07 when facet_col_wrap is used
+            facet_row_spacing=0.14 / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
             labels={
                 df_x_value_col: x_axis_title,
                 df_y_value_col: y_axis_title,
@@ -648,7 +648,7 @@ def plotly_barchart_weekdays(
             y=df_value_col,
             facet_col="x_ray_system_name",
             facet_col_wrap=facet_col_wrap,
-            facet_row_spacing=0.01,  # default is 0.07 when facet_col_wrap is used
+            facet_row_spacing=0.14 / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
             color=df_value_col,
             labels={
                 df_name_col: name_axis_title,
