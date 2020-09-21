@@ -22,6 +22,11 @@ table.row-clickable tbody tr th {
     background-color: #d9edf7;
 }
 
+table.header-background tbody tr th {
+    background-color: #d9edf7;
+
+}
+
 a.sorting-option {
     text-decoration: none;
     cursor: pointer;

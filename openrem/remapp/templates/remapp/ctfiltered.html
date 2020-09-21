@@ -974,10 +974,10 @@
                                     {{ filter.form.as_p }}
                                 </div>
                                 <div id="search_builder" class="search_builder_class">
-                                  <table id="search_builder_table" class="table table-bordered header-background small" style="width:100%">
+                                  <table id="search_builder_table" class="small header-background" style="width:100%">
                                     <tr>
-                                      <th>Boolean operator</th><th>opening bracket(s)</th><th>Parameter</th>
-                                      <th>Operator</th><th>Value</th><th>closing bracket(s)</th><th></th>
+                                      <th>Boolean operator</th><th>Opening bracket(s)</th><th>Parameter</th>
+                                      <th>Operator</th><th>Value</th><th>Closing bracket(s)</th><th></th>
                                     </tr>
                                   </table>
                                 </div>
@@ -1130,18 +1130,21 @@
                             </table>
                         </div>
                         <div class="panel-body" {% if advancedSearchAvailable %}hidden{% endif %}>
-                            <i>Date format yyyy-mm-dd</i>
-                            {% for field in filter.form.visible_fields %}
-                                <div class="form-group">
-                                    <div class="col-xs-4">
-                                        <label>{{ field.label_tag }}</label>
+                        <!-- if advanced_search, don't render filter fields, but do render hidden fields -->
+                            {% if not advancedSearchAvailable %}
+                                <i>Date format yyyy-mm-dd</i>
+                                {% for field in filter.form.visible_fields %}
+                                    <div class="form-group">
+                                        <div class="col-xs-4">
+                                            <label>{{ field.label_tag }}</label>
+                                        </div>
+                                        <div class="col-xs-8">
+                                            {{ field.errors }}
+                                            {{ field }}
+                                        </div>
                                     </div>
-                                    <div class="col-xs-8">
-                                        {{ field.errors }}
-                                        {{ field }}
-                                    </div>
-                                </div>
-                            {% endfor %}
+                                {% endfor %}
+                            {% endif %}
                             {% for field in filter.form.hidden_fields %}
                                 <div style="display:none">{{ field }}</div>
                             {% endfor %}
@@ -1189,9 +1192,9 @@
 {% block jsblock %}
     <script src="{{ STATIC_URL }}js/advancedSearch.js"></script>
     <script>
-        var staticurl = "{{ STATIC_URL|safe }}";
-        var filterOptionsJSON = {{ json_filter_options|safe }};
-        var searchString = "{{ advancedSearchString|safe }}";
+        let staticurl = "{{ STATIC_URL|safe }}";
+        let filterOptionsJSON = {{ json_filter_options|safe }};
+        let searchString = "{{ advancedSearchString|safe }}";
         $(document).ready(function() {
             initializeJSON(filterOptionsJSON, staticurl);
             document.getElementById("id_advanced_search_string").value = searchString;

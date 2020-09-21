@@ -1305,7 +1305,6 @@ def ct_summary_list_filter(request):
     advanced_search_available = False  # by default: default filtering
     advanced_search_options = '{}'
     advanced_search_str = ''
-    return_structure = {}
 
     pid = bool(request.user.groups.filter(name="pidgroup"))
     if 'advanced_search' in request.GET:
@@ -1464,10 +1463,8 @@ def ct_summary_list_filter(request):
         "itemsPerPageForm": items_per_page_form,
     }
 
-    # TODO: Is update needed?
     if advanced_search_available:
         return_structure["json_filter_options"] = advanced_search_options
-        # return_structure["advancedSearchForm"] = advanced_search_structure["advancedSearchForm"]
         return_structure["advancedSearchString"] = advanced_search_str
 
     return_structure.update({"filter": f, "admin": admin, "chartOptionsForm": chart_options_form,

@@ -54,6 +54,7 @@ def add_model2json_search(model, json_search, field_prefix='', pid=True):
     """
     from remapp.models import ContextID
 
+    # We need to access protected member, not so nice, but don't see another way.
     for field in model._meta.get_fields():
         if not field.is_relation:
             if not ((field.name == 'id') or ('hash' in field.name)):
