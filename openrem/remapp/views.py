@@ -2453,6 +2453,7 @@ def ct_plot_calculations(
         plotly_boxplot,
         plotly_barchart,
         plotly_histogram,
+        plotly_histogram_barchart,
         plotly_barchart_weekdays,
         plotly_set_default_theme,
         construct_freqency_chart,
@@ -3087,7 +3088,7 @@ def ct_plot_calculations(
                     group_by_col = "requested_procedure_code_meaning"
                     legend_title = "System"
 
-                return_structure["requestHistogramData"] = plotly_histogram(
+                return_structure["requestHistogramData"] = plotly_histogram_barchart(
                     df,
                     group_by_col,
                     "total_dlp",

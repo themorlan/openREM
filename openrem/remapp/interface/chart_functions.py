@@ -452,6 +452,133 @@ def plotly_histogram(
         return msg
 
 
+def plotly_histogram_barchart(
+        df,
+        df_facet_col,
+        df_value_col,
+        df_category_name_col="x_ray_system_name",
+        value_axis_title="",
+        legend_title="System",
+        n_bins=10,
+        colourmap="RdYlBu",
+        filename="OpenREM_histogram_chart",
+        facet_col_wrap=3,
+        sorted_category_list=None
+):
+    from plotly.subplots import make_subplots
+    import plotly.graph_objects as go
+    from plotly.offline import plot
+    import math
+    import numpy as np
+
+    n_facets = len(df[df_facet_col].unique())
+    n_facet_rows = math.ceil(n_facets / facet_col_wrap)
+    chart_height = n_facet_rows * 250
+    if chart_height < 750:
+        chart_height = 750
+
+    if n_facets < facet_col_wrap:
+        facet_col_wrap=n_facets
+
+    n_colours = len(df[df_category_name_col].unique())
+    colour_sequence = calculate_colour_sequence(colourmap, n_colours)
+    facet_names = df[df_facet_col].unique()
+
+    fig = make_subplots(
+        rows=n_facet_rows,
+        cols=facet_col_wrap
+    )
+
+    current_row = 1
+    current_col = 1
+    current_facet = 0
+    category_names = []
+    for facet_name, facet_subset in df.groupby(df_facet_col):
+
+        min_bin_value = facet_subset[df_value_col].min()
+        max_bin_value = facet_subset[df_value_col].max()
+        #bin_size_value = (max_bin_value - min_bin_value) / n_bins
+
+        for category_name, category_subset in facet_subset.groupby(df_category_name_col):
+
+            if category_name in category_names:
+                show_legend = False
+            else:
+                show_legend = True
+                category_names.append(category_name)
+
+            category_idx = category_names.index(category_name)
+            #
+            # trace = go.Histogram(
+            #     x=category_subset[df_value_col],
+            #     name=category_name,
+            #     marker_color=colour_sequence[category_idx],
+            #     xbins=dict(
+            #         start=min_bin_value,
+            #         end=max_bin_value,
+            #         size=bin_size_value
+            #     ),
+            #     legendgroup=category_idx,
+            #     showlegend=show_legend,
+            #     hovertemplate=
+            #     f"<b>{facet_name}</b><br>" +
+            #     f"{category_name}<br>" +
+            #     "Bin range: %{x}<br>" +
+            #     "Frequency: %{y:.0d}<br>" +
+            #     "<extra></extra>"
+            # )
+
+            counts, bins = np.histogram(category_subset[df_value_col], bins=n_bins, range=(min_bin_value, max_bin_value))
+            mid_bins = 0.5 * (bins[:-1] + bins[1:])
+            bin_labels = str(bins[:-1]) + " to " + str(bins[1:])
+
+            trace = go.Bar(
+                x=mid_bins,
+                y=counts,
+                name=category_name,
+                marker_color=colour_sequence[category_idx],
+                legendgroup=category_idx,
+                showlegend=show_legend,
+
+                #text=subset['count'],
+                #"Count: %{text:.0d}<br>" +
+
+                text=bin_labels,
+                hovertemplate=
+                f"<b>{facet_name}</b><br>" +
+                f"{category_name}<br>" +
+                "Bin range: %{x}<br>" +
+                "Bin range: %{text}<br>" +
+                "Frequency: %{y:.0d}<br>" +
+                "<extra></extra>"
+            )
+
+            fig.append_trace(trace, row=current_row, col=current_col)
+
+        fig.update_xaxes(
+            title_text=facet_name + " " + value_axis_title,
+            row=current_row,
+            col=current_col
+        )
+
+        current_facet += 1
+        current_col += 1
+        if current_col > facet_col_wrap:
+            current_row += 1
+            current_col = 1
+
+    fig.update_yaxes(title_text="Frequency")
+
+    layout = go.Layout(
+        height=chart_height
+    )
+
+    fig.update_layout(layout)
+    fig.update_layout(legend_title_text=legend_title)
+
+    return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
+
+
 def plotly_frequency_barchart(
         df,
         df_legend_col,
