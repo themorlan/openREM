@@ -80,7 +80,10 @@ def create_dataframe(
     # NOTE: I am not excluding zero-value events from the calculations (zero DLP or zero CTDI)
     df = pd.DataFrame.from_records(database_events.values(*fields_to_include))
 
+    dtype_conversion = {}
     for name_field in data_point_name_fields:
+        dtype_conversion[name_field] = "category"
+
         # Replace any empty values with "Blank" (Plotly doesn't like empty values)
         df[name_field].fillna(value="Blank", inplace=True)
         # Make lowercase if required
@@ -92,6 +95,7 @@ def create_dataframe(
         df.sort_values(by="x_ray_system_name", inplace=True)
     else:
         df.insert(0, "x_ray_system_name", "All systems")
+    dtype_conversion["x_ray_system_name"] = "category"
 
     if data_point_value_fields:
         for idx, value_field in enumerate(data_point_value_fields):
@@ -102,6 +106,8 @@ def create_dataframe(
     if data_point_date_fields:
         for date_field in data_point_date_fields:
             df[date_field] = pd.to_datetime(df[date_field])
+
+    df = df.astype(dtype_conversion)
 
     return df
 
