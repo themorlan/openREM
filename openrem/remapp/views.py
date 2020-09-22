@@ -1580,7 +1580,8 @@ def rf_plot_calculations(
         data_point_time_fields=time_fields,
         system_name_field=system_field,
         data_point_name_lowercase=plot_case_insensitive_categories,
-        data_point_value_multipliers=value_multipliers
+        data_point_value_multipliers=value_multipliers,
+        uid="pk"
     )
     #######################################################################
 
@@ -3629,7 +3630,8 @@ def mg_plot_calculations(
         data_point_date_fields=date_fields,
         data_point_time_fields=time_fields,
         system_name_field=system_field,
-        data_point_name_lowercase=plot_case_insensitive_categories
+        data_point_name_lowercase=plot_case_insensitive_categories,
+        uid="projectionxrayradiationdose__irradeventxraydata__pk"
     )
 
     if plot_study_per_day_and_hour:
