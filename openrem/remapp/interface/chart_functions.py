@@ -149,6 +149,8 @@ def create_dataframe_aggregates(
         df_agg_col,
         stats=None
 ):
+    import numpy as np
+
     # Make it possible to have multiple value cols (DLP, CTDI, for example)
     if stats is None:
         stats = ["count"]
@@ -241,7 +243,7 @@ def plotly_boxplot(
 
 
 def create_freq_sorted_category_list(df, df_name_col, sorting):
-    category_sorting_df = df.groupby([df_name_col]).count().reset_index()
+    category_sorting_df = df.groupby(df_name_col).count().reset_index()
     if sorting == "name":
         sort_by = df_name_col
     else:
@@ -256,7 +258,7 @@ def create_freq_sorted_category_list(df, df_name_col, sorting):
 
 def create_sorted_category_list(df, df_name_col, df_value_col, sorting):
     # Calculate the required aggregates for creating a list of categories for sorting
-    grouped_df = df.groupby([df_name_col]).agg({df_value_col: ["mean", "count"]})
+    grouped_df = df.groupby(df_name_col).agg({df_value_col: ["mean", "count"]})
     grouped_df.columns = grouped_df.columns.droplevel(level=0)
     grouped_df = grouped_df.reset_index()
 
