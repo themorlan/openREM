@@ -496,7 +496,8 @@ def plotly_histogram_barchart(
 
     fig = make_subplots(
         rows=n_facet_rows,
-        cols=facet_col_wrap
+        cols=facet_col_wrap,
+        vertical_spacing=0.14
     )
 
     current_row = 1
@@ -552,13 +553,14 @@ def plotly_histogram_barchart(
             col=current_col
         )
 
+        if current_col == 1:
+            fig.update_yaxes(title_text="Frequency", row=current_row, col=current_col)
+
         current_facet += 1
         current_col += 1
         if current_col > facet_col_wrap:
             current_row += 1
             current_col = 1
-
-    fig.update_yaxes(title_text="Frequency")
 
     layout = go.Layout(
         height=chart_height
@@ -640,7 +642,7 @@ def plotly_timeseries_linechart(
             color=df_name_col,
             facet_col=facet_col,
             facet_col_wrap=facet_col_wrap,
-            facet_row_spacing=0.14 / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
+            facet_row_spacing=0.21 / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
             labels={
                 df_value_col: value_axis_title,
                 df_name_col: legend_title,
@@ -656,6 +658,9 @@ def plotly_timeseries_linechart(
             data_set.update(mode="markers+lines")
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+
+        fig.update_xaxes(showticklabels=True)
+        fig.update_yaxes(showticklabels=True)
 
         return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
 
@@ -708,7 +713,7 @@ def plotly_scatter(
             color=df_category_name_col,
             facet_col=df_facet_col,
             facet_col_wrap=facet_col_wrap,
-            facet_row_spacing=0.14 / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
+            facet_row_spacing=0.21 / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
             labels={
                 df_x_value_col: x_axis_title,
                 df_y_value_col: y_axis_title,
@@ -722,6 +727,9 @@ def plotly_scatter(
         )
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+
+        fig.update_xaxes(showticklabels=True)
+        fig.update_yaxes(showticklabels=True)
 
         return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
 
