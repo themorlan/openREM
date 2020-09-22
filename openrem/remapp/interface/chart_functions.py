@@ -463,7 +463,6 @@ def plotly_histogram_barchart(
         df_facet_col,
         df_category_col,
         df_value_col,
-        df_category_name_col="x_ray_system_name",
         value_axis_title="",
         legend_title="System",
         n_bins=10,
@@ -508,7 +507,7 @@ def plotly_histogram_barchart(
         max_bin_value = facet_subset[df_value_col].max()
         bins = np.linspace(min_bin_value, max_bin_value, n_bins + 1) # Calculate histogram bins once and use for each category_name
         mid_bins = 0.5 * (bins[:-1] + bins[1:])
-        bin_labels = ["{:.2f} to {:.2f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])]
+        bin_labels = np.array(["{:.2f} to {:.2f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])])
 
         for category_name in df_category_name_list:
             category_subset = facet_subset[facet_subset[df_category_col] == category_name]

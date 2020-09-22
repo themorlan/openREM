@@ -493,7 +493,7 @@ def dx_plot_calculations(
         create_sorted_category_list,
         plotly_boxplot,
         plotly_barchart,
-        plotly_histogram,
+        plotly_histogram_barchart,
         plotly_barchart_weekdays,
         plotly_set_default_theme,
         construct_freqency_chart,
@@ -645,23 +645,29 @@ def dx_plot_calculations(
             category_names_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
             group_by_col = "x_ray_system_name"
             legend_title = "Acquisition protocol"
+            facet_names = list(df[group_by_col].unique())
+            category_names = list(sorted_categories.values())[0]
+
             if plot_grouping_choice == "series":
                 category_names_col = "x_ray_system_name"
                 group_by_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
                 legend_title = "System"
+                category_names = facet_names
+                facet_names = list(sorted_categories.values())[0]
 
-            return_structure["acquisitionHistogramDAPData"] = plotly_histogram(
+            return_structure["acquisitionHistogramDAPData"] = plotly_histogram_barchart(
                 df,
                 group_by_col,
+                category_names_col,
                 "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
-                df_category_name_col=category_names_col,
                 value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 legend_title=legend_title,
                 n_bins=plot_histogram_bins,
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM DX acquisition protocol DAP histogram",
                 facet_col_wrap=plot_facet_col_wrap_val,
-                sorted_category_list=sorted_categories
+                df_facet_category_list=facet_names,
+                df_category_name_list=category_names,
             )
 
     if plot_acquisition_freq:
@@ -719,23 +725,29 @@ def dx_plot_calculations(
             category_names_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
             group_by_col = "x_ray_system_name"
             legend_title = "Acquisition protocol"
+            facet_names = list(df[group_by_col].unique())
+            category_names = list(sorted_categories.values())[0]
+
             if plot_grouping_choice == "series":
                 category_names_col = "x_ray_system_name"
                 group_by_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
                 legend_title = "System"
+                category_names = facet_names
+                facet_names = list(sorted_categories.values())[0]
 
-            return_structure["acquisitionHistogramDAPData"] = plotly_histogram(
+            return_structure["acquisitionHistogramDAPData"] = plotly_histogram_barchart(
                 df,
                 group_by_col,
+                category_names_col,
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
-                df_category_name_col=category_names_col,
                 value_axis_title="kVp",
                 legend_title=legend_title,
                 n_bins=plot_histogram_bins,
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM DX acquisition protocol kVp histogram",
                 facet_col_wrap=plot_facet_col_wrap_val,
-                sorted_category_list=sorted_categories
+                df_facet_category_list=facet_names,
+                df_category_name_list=category_names,
             )
 
     if plot_acquisition_mean_mas:
@@ -780,23 +792,29 @@ def dx_plot_calculations(
             category_names_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
             group_by_col = "x_ray_system_name"
             legend_title = "Acquisition protocol"
+            facet_names = list(df[group_by_col].unique())
+            category_names = list(sorted_categories.values())[0]
+
             if plot_grouping_choice == "series":
                 category_names_col = "x_ray_system_name"
                 group_by_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
                 legend_title = "System"
+                category_names = facet_names
+                facet_names = list(sorted_categories.values())[0]
 
-            return_structure["acquisitionHistogramDAPData"] = plotly_histogram(
+            return_structure["acquisitionHistogramDAPData"] = plotly_histogram_barchart(
                 df,
                 group_by_col,
+                category_names_col,
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
-                df_category_name_col=category_names_col,
                 value_axis_title="mAs",
                 legend_title=legend_title,
                 n_bins=plot_histogram_bins,
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM DX acquisition protocol mAs histogram",
                 facet_col_wrap=plot_facet_col_wrap_val,
-                sorted_category_list=sorted_categories
+                df_facet_category_list=facet_names,
+                df_category_name_list=category_names,
             )
 
     if plot_study_mean_dap:
@@ -841,23 +859,29 @@ def dx_plot_calculations(
             category_names_col = "study_description"
             group_by_col = "x_ray_system_name"
             legend_title = "Study description"
+            facet_names = list(df[group_by_col].unique())
+            category_names = list(sorted_categories.values())[0]
+
             if plot_grouping_choice == "series":
                 category_names_col = "x_ray_system_name"
                 group_by_col = "study_description"
                 legend_title = "System"
+                category_names = facet_names
+                facet_names = list(sorted_categories.values())[0]
 
-            return_structure["studyHistogramDAPData"] = plotly_histogram(
+            return_structure["studyHistogramDAPData"] = plotly_histogram_barchart(
                 df,
                 group_by_col,
+                category_names_col,
                 "total_dap",
-                df_category_name_col=category_names_col,
                 value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 legend_title=legend_title,
                 n_bins=plot_histogram_bins,
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM DX study description DAP histogram",
                 facet_col_wrap=plot_facet_col_wrap_val,
-                sorted_category_list=sorted_categories
+                df_facet_category_list=facet_names,
+                df_category_name_list=category_names,
             )
 
     if plot_study_freq:
@@ -915,23 +939,29 @@ def dx_plot_calculations(
             category_names_col = "requested_procedure_code_meaning"
             group_by_col = "x_ray_system_name"
             legend_title = "Requested procedure"
+            facet_names = list(df[group_by_col].unique())
+            category_names = list(sorted_categories.values())[0]
+
             if plot_grouping_choice == "series":
                 category_names_col = "x_ray_system_name"
                 group_by_col = "requested_procedure_code_meaning"
                 legend_title = "System"
+                category_names = facet_names
+                facet_names = list(sorted_categories.values())[0]
 
-            return_structure["requestHistogramDAPData"] = plotly_histogram(
+            return_structure["requestHistogramDAPData"] = plotly_histogram_barchart(
                 df,
                 group_by_col,
+                category_names_col,
                 "total_dap",
-                df_category_name_col=category_names_col,
                 value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 legend_title=legend_title,
                 n_bins=plot_histogram_bins,
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM DX requested procedure DAP histogram",
                 facet_col_wrap=plot_facet_col_wrap_val,
-                sorted_category_list=sorted_categories
+                df_facet_category_list=facet_names,
+                df_category_name_list=category_names,
             )
 
     if plot_request_freq:
@@ -1466,7 +1496,7 @@ def rf_plot_calculations(
         plotly_boxplot,
         plotly_barchart,
         plotly_barchart_mean_median,
-        plotly_histogram,
+        plotly_histogram_barchart,
         plotly_barchart_weekdays,
         plotly_set_default_theme,
         construct_freqency_chart,
@@ -1595,23 +1625,28 @@ def rf_plot_calculations(
             category_names_col = "study_description"
             group_by_col = "x_ray_system_name"
             legend_title = "Study description"
+            facet_names = list(df[group_by_col].unique())
+            category_names = list(sorted_categories.values())[0]
             if plot_grouping_choice == "series":
                 category_names_col = "x_ray_system_name"
                 group_by_col = "study_description"
                 legend_title = "System"
+                category_names = facet_names
+                facet_names = list(sorted_categories.values())[0]
 
-            return_structure["studyHistogramData"] = plotly_histogram(
+            return_structure["studyHistogramData"] = plotly_histogram_barchart(
                 df,
                 group_by_col,
+                category_names_col,
                 "total_dap",
-                df_category_name_col=category_names_col,
                 value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 legend_title=legend_title,
                 n_bins=plot_histogram_bins,
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM RF study description DAP histogram",
                 facet_col_wrap=plot_facet_col_wrap_val,
-                sorted_category_list=sorted_categories
+                df_facet_category_list=facet_names,
+                df_category_name_list=category_names,
             )
 
     if plot_request_dap:
@@ -1668,23 +1703,29 @@ def rf_plot_calculations(
             category_names_col = "requested_procedure_code_meaning"
             group_by_col = "x_ray_system_name"
             legend_title = "Requested procedure"
+            facet_names = list(df[group_by_col].unique())
+            category_names = list(sorted_categories.values())[0]
+
             if plot_grouping_choice == "series":
                 category_names_col = "x_ray_system_name"
                 group_by_col = "requested_procedure_code_meaning"
                 legend_title = "System"
+                category_names = facet_names
+                facet_names = list(sorted_categories.values())[0]
 
-            return_structure["requestHistogramData"] = plotly_histogram(
+            return_structure["requestHistogramData"] = plotly_histogram_barchart(
                 df,
                 group_by_col,
+                category_names_col,
                 "total_dap",
-                df_category_name_col=category_names_col,
                 value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 legend_title=legend_title,
                 n_bins=plot_histogram_bins,
                 colourmap=plot_colour_map_choice,
                 filename="OpenREM RF requested procedure DAP histogram",
                 facet_col_wrap=plot_facet_col_wrap_val,
-                sorted_category_list=sorted_categories
+                df_facet_category_list=facet_names,
+                df_category_name_list=category_names,
             )
 
     if plot_study_freq:
@@ -2452,7 +2493,6 @@ def ct_plot_calculations(
         create_sorted_category_list,
         plotly_boxplot,
         plotly_barchart,
-        plotly_histogram,
         plotly_histogram_barchart,
         plotly_barchart_weekdays,
         plotly_set_default_theme,
@@ -2633,23 +2673,29 @@ def ct_plot_calculations(
                 category_names_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Acquisition protocol"
+                facet_names = list(df[group_by_col].unique())
+                category_names = list(sorted_categories.values())[0]
+
                 if plot_grouping_choice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
                     legend_title = "System"
+                    category_names = facet_names
+                    facet_names = list(sorted_categories.values())[0]
 
-                return_structure["acquisitionHistogramDLPData"] = plotly_histogram(
+                return_structure["acquisitionHistogramDLPData"] = plotly_histogram_barchart(
                     df,
                     group_by_col,
+                    category_names_col,
                     "ctradiationdose__ctirradiationeventdata__dlp",
-                    df_category_name_col=category_names_col,
                     value_axis_title="DLP (mGy.cm)",
                     legend_title=legend_title,
                     n_bins=plot_histogram_bins,
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT acquisition protocol DLP histogram",
                     facet_col_wrap=plot_facet_col_wrap_val,
-                    sorted_category_list=sorted_categories
+                    df_facet_category_list=facet_names,
+                    df_category_name_list=category_names,
                 )
 
         if plot_acquisition_mean_ctdi:
@@ -2694,23 +2740,29 @@ def ct_plot_calculations(
                 category_names_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Acquisition protocol"
+                facet_names = list(df[group_by_col].unique())
+                category_names = list(sorted_categories.values())[0]
+
                 if plot_grouping_choice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
                     legend_title = "System"
+                    category_names = facet_names
+                    facet_names = list(sorted_categories.values())[0]
 
-                return_structure["acquisitionHistogramCTDIData"] = plotly_histogram(
+                return_structure["acquisitionHistogramCTDIData"] = plotly_histogram_barchart(
                     df,
                     group_by_col,
+                    category_names_col,
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    df_category_name_col=category_names_col,
                     value_axis_title="CTDI<sub>vol</sub> (mGy)",
                     legend_title=legend_title,
                     n_bins=plot_histogram_bins,
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT acquisition protocol CTDI histogram",
                     facet_col_wrap=plot_facet_col_wrap_val,
-                    sorted_category_list=sorted_categories
+                    df_facet_category_list=facet_names,
+                    df_category_name_list=category_names,
                 )
 
         if plot_acquisition_freq:
@@ -2900,23 +2952,29 @@ def ct_plot_calculations(
                 category_names_col = "study_description"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Study description"
+                facet_names = list(df[group_by_col].unique())
+                category_names = list(sorted_categories.values())[0]
+
                 if plot_grouping_choice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = "study_description"
                     legend_title = "System"
+                    category_names = facet_names
+                    facet_names = list(sorted_categories.values())[0]
 
-                return_structure["studyHistogramDLPData"] = plotly_histogram(
+                return_structure["studyHistogramDLPData"] = plotly_histogram_barchart(
                     df,
                     group_by_col,
+                    category_names_col,
                     "total_dlp",
-                    df_category_name_col=category_names_col,
                     value_axis_title="DLP (mGy.cm)",
                     legend_title=legend_title,
                     n_bins=plot_histogram_bins,
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT study description DLP histogram",
                     facet_col_wrap=plot_facet_col_wrap_val,
-                    sorted_category_list=sorted_categories
+                    df_facet_category_list=facet_names,
+                    df_category_name_list=category_names,
                 )
 
         if plot_study_mean_ctdi:
@@ -2961,23 +3019,29 @@ def ct_plot_calculations(
                 category_names_col = "study_description"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Study description"
+                facet_names = list(df[group_by_col].unique())
+                category_names = list(sorted_categories.values())[0]
+
                 if plot_grouping_choice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = "study_description"
                     legend_title = "System"
+                    category_names = facet_names
+                    facet_names = list(sorted_categories.values())[0]
 
-                return_structure["studyHistogramCTDIData"] = plotly_histogram(
+                return_structure["studyHistogramCTDIData"] = plotly_histogram_barchart(
                     df,
                     group_by_col,
+                    category_names_col,
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    df_category_name_col=category_names_col,
                     value_axis_title="CTDI<sub>vol</sub> (mGy)",
                     legend_title=legend_title,
                     n_bins=plot_histogram_bins,
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT study description CTDI histogram",
                     facet_col_wrap=plot_facet_col_wrap_val,
-                    sorted_category_list=sorted_categories
+                    df_facet_category_list=facet_names,
+                    df_category_name_list=category_names,
                 )
 
         if plot_study_num_events:
@@ -3022,23 +3086,29 @@ def ct_plot_calculations(
                 category_names_col = "study_description"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Study description"
+                facet_names = list(df[group_by_col].unique())
+                category_names = list(sorted_categories.values())[0]
+
                 if plot_grouping_choice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = "study_description"
                     legend_title = "System"
+                    category_names = facet_names
+                    facet_names = list(sorted_categories.values())[0]
 
-                return_structure["studyHistogramNumEventsData"] = plotly_histogram(
+                return_structure["studyHistogramNumEventsData"] = plotly_histogram_barchart(
                     df,
                     group_by_col,
+                    category_names_col,
                     "number_of_events",
-                    df_category_name_col=category_names_col,
                     value_axis_title="Events",
                     legend_title=legend_title,
                     n_bins=plot_histogram_bins,
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT study description events histogram",
                     facet_col_wrap=plot_facet_col_wrap_val,
-                    sorted_category_list=sorted_categories
+                    df_facet_category_list=facet_names,
+                    df_category_name_list=category_names,
                 )
 
         if plot_request_mean_dlp:
@@ -3150,23 +3220,29 @@ def ct_plot_calculations(
                 category_names_col = "requested_procedure_code_meaning"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Requested procedure"
+                facet_names = list(df[group_by_col].unique())
+                category_names = list(sorted_categories.values())[0]
+
                 if plot_grouping_choice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = "requested_procedure_code_meaning"
                     legend_title = "System"
+                    category_names = facet_names
+                    facet_names = list(sorted_categories.values())[0]
 
-                return_structure["requestHistogramNumEventsData"] = plotly_histogram(
+                return_structure["requestHistogramNumEventsData"] = plotly_histogram_barchart(
                     df,
                     group_by_col,
+                    category_names_col,
                     "number_of_events",
-                    df_category_name_col=category_names_col,
                     value_axis_title="Events",
                     legend_title=legend_title,
                     n_bins=plot_histogram_bins,
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT requested procedure events histogram",
                     facet_col_wrap=plot_facet_col_wrap_val,
-                    sorted_category_list=sorted_categories
+                    df_facet_category_list=facet_names,
+                    df_category_name_list=category_names,
                 )
 
         if plot_study_freq:
