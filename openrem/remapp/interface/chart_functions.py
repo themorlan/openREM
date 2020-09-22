@@ -814,7 +814,8 @@ def construct_freqency_chart(
         x_axis_title=None,
         grouping_choice=None,
         colour_map=None,
-        file_name=None
+        file_name=None,
+        sorted_categories=None
 ):
 
     df_aggregated = create_dataframe_aggregates(
@@ -823,11 +824,13 @@ def construct_freqency_chart(
         df_name_col,
         ["count"]
     )
-    sorted_categories = create_freq_sorted_category_list(
-        df,
-        df_name_col,
-        sorting_choice
-    )
+
+    if not sorted_categories:
+        sorted_categories = create_freq_sorted_category_list(
+            df,
+            df_name_col,
+            sorting_choice
+        )
 
     df_legend_col = df_name_col
     if grouping_choice == "series":

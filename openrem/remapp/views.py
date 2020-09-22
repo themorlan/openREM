@@ -565,7 +565,7 @@ def dx_plot_calculations(
         )
         #######################################################################
 
-        if plot_acquisition_mean_dap:
+        if plot_acquisition_mean_dap or plot_acquisition_freq:
             sorted_categories = create_sorted_category_list(
                 df,
                 "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
@@ -573,6 +573,7 @@ def dx_plot_calculations(
                 [plot_sorting_direction, plot_sorting_field]
             )
 
+        if plot_acquisition_mean_dap:
             if plot_average_choice in ["mean", "both"]:
                 df_aggregated = create_dataframe_aggregates(
                     df,
@@ -642,7 +643,8 @@ def dx_plot_calculations(
                 x_axis_title="System",
                 grouping_choice=plot_grouping_choice,
                 colour_map=plot_colour_map_choice,
-                file_name="OpenREM DX acquisition protocol frequency"
+                file_name="OpenREM DX acquisition protocol frequency",
+                sorted_categories=sorted_categories
             )
 
         if plot_acquisition_mean_kvp:
@@ -933,7 +935,7 @@ def dx_plot_calculations(
         )
         #######################################################################
 
-        if plot_study_mean_dap:
+        if plot_study_mean_dap or plot_study_freq:
             sorted_categories = create_sorted_category_list(
                 df,
                 "study_description",
@@ -941,6 +943,7 @@ def dx_plot_calculations(
                 [plot_sorting_direction, plot_sorting_field]
             )
 
+        if plot_study_mean_dap:
             if plot_average_choice in ["mean", "both"]:
                 df_aggregated = create_dataframe_aggregates(
                     df,
@@ -1010,10 +1013,11 @@ def dx_plot_calculations(
                 x_axis_title="System",
                 grouping_choice=plot_grouping_choice,
                 colour_map=plot_colour_map_choice,
-                file_name="OpenREM DX study description frequency"
+                file_name="OpenREM DX study description frequency",
+                sorted_categories = sorted_categories
             )
 
-        if plot_request_mean_dap:
+        if plot_request_mean_dap or plot_request_freq:
             sorted_categories = create_sorted_category_list(
                 df,
                 "requested_procedure_code_meaning",
@@ -1021,6 +1025,7 @@ def dx_plot_calculations(
                 [plot_sorting_direction, plot_sorting_field]
             )
 
+        if plot_request_mean_dap:
             if plot_average_choice in ["mean", "both"]:
                 df_aggregated = create_dataframe_aggregates(
                     df,
@@ -1090,7 +1095,8 @@ def dx_plot_calculations(
                 x_axis_title="System",
                 grouping_choice=plot_grouping_choice,
                 colour_map=plot_colour_map_choice,
-                file_name="OpenREM DX requested procedure frequency"
+                file_name="OpenREM DX requested procedure frequency",
+                sorted_categories=sorted_categories
             )
 
         if plot_study_per_day_and_hour:
@@ -1602,7 +1608,7 @@ def rf_plot_calculations(
     if plot_average_choice in ["median", "both"]:
         stats_to_include.append("median")
 
-    if plot_study_dap:
+    if plot_study_dap or plot_study_freq:
         sorted_categories = create_sorted_category_list(
             df,
             "study_description",
@@ -1610,6 +1616,7 @@ def rf_plot_calculations(
             [plot_sorting_direction, plot_sorting_field]
         )
 
+    if plot_study_dap:
         df_aggregated = create_dataframe_aggregates(
             df,
             "study_description",
@@ -1680,7 +1687,21 @@ def rf_plot_calculations(
                 df_category_name_list=category_names,
             )
 
-    if plot_request_dap:
+    if plot_study_freq:
+        return_structure["studyFrequencyData"] = construct_freqency_chart(
+            df=df,
+            df_name_col="study_description",
+            sorting_choice=plot_sorting_field,
+            legend_title="Study description",
+            df_x_axis_col="x_ray_system_name",
+            x_axis_title="System",
+            grouping_choice=plot_grouping_choice,
+            colour_map=plot_colour_map_choice,
+            file_name="OpenREM RF study description frequency",
+            sorted_categories=sorted_categories
+        )
+
+    if plot_request_dap or plot_request_freq:
         sorted_categories = create_sorted_category_list(
             df,
             "requested_procedure_code_meaning",
@@ -1688,6 +1709,7 @@ def rf_plot_calculations(
             [plot_sorting_direction, plot_sorting_field]
         )
 
+    if plot_request_dap:
         df_aggregated = create_dataframe_aggregates(
             df,
             "requested_procedure_code_meaning",
@@ -1759,19 +1781,6 @@ def rf_plot_calculations(
                 df_category_name_list=category_names,
             )
 
-    if plot_study_freq:
-        return_structure["studyFrequencyData"] = construct_freqency_chart(
-            df=df,
-            df_name_col="study_description",
-            sorting_choice=plot_sorting_field,
-            legend_title="Study description",
-            df_x_axis_col="x_ray_system_name",
-            x_axis_title="System",
-            grouping_choice=plot_grouping_choice,
-            colour_map=plot_colour_map_choice,
-            file_name="OpenREM RF study description frequency"
-        )
-
     if plot_request_freq:
         return_structure["requestFrequencyData"] = construct_freqency_chart(
             df=df,
@@ -1782,7 +1791,8 @@ def rf_plot_calculations(
             x_axis_title="System",
             grouping_choice=plot_grouping_choice,
             colour_map=plot_colour_map_choice,
-            file_name="OpenREM RF requested procedure frequency"
+            file_name="OpenREM RF requested procedure frequency",
+            sorted_categories=sorted_categories
         )
 
     return return_structure
