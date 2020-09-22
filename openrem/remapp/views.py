@@ -2544,7 +2544,7 @@ def ct_plot_calculations(
             data_point_date_fields=date_fields,
             system_name_field=system_field,
             data_point_name_lowercase=plot_case_insensitive_categories,
-            uid="ctradiationdose__ctirradiationeventdata__irradiation_event_uid"
+            uid="ctradiationdose__ctirradiationeventdata__pk"
         )
         #######################################################################
 
@@ -2833,7 +2833,7 @@ def ct_plot_calculations(
             data_point_time_fields=time_fields,
             system_name_field=system_field,
             data_point_name_lowercase=plot_case_insensitive_categories,
-            uid = "study_instance_uid"
+            uid = "pk"
         )
         #######################################################################
 
