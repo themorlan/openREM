@@ -3083,23 +3083,29 @@ def ct_plot_calculations(
                 category_names_col = "requested_procedure_code_meaning"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Requested procedure"
+                facet_names = list(df[group_by_col].unique())
+                category_names = list(sorted_categories.values())[0]
+
                 if plot_grouping_choice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = "requested_procedure_code_meaning"
                     legend_title = "System"
+                    category_names = facet_names
+                    facet_names = list(sorted_categories.values())[0]
 
                 return_structure["requestHistogramData"] = plotly_histogram_barchart(
                     df,
                     group_by_col,
+                    category_names_col,
                     "total_dlp",
-                    df_category_name_col=category_names_col,
                     value_axis_title="DLP (mGy.cm)",
                     legend_title=legend_title,
                     n_bins=plot_histogram_bins,
                     colourmap=plot_colour_map_choice,
                     filename="OpenREM CT requested procedure DLP histogram",
                     facet_col_wrap=plot_facet_col_wrap_val,
-                    sorted_category_list=sorted_categories
+                    df_facet_category_list=facet_names,
+                    df_category_name_list=category_names,
                 )
 
         if plot_request_num_events:

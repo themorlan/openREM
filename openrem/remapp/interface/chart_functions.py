@@ -455,6 +455,7 @@ def plotly_histogram(
 def plotly_histogram_barchart(
         df,
         df_facet_col,
+        df_category_col,
         df_value_col,
         df_category_name_col="x_ray_system_name",
         value_axis_title="",
@@ -463,7 +464,8 @@ def plotly_histogram_barchart(
         colourmap="RdYlBu",
         filename="OpenREM_histogram_chart",
         facet_col_wrap=3,
-        sorted_category_list=None
+        df_facet_category_list=None,
+        df_category_name_list=None
 ):
     from plotly.subplots import make_subplots
     import plotly.graph_objects as go
@@ -471,7 +473,7 @@ def plotly_histogram_barchart(
     import math
     import numpy as np
 
-    n_facets = len(df[df_facet_col].unique())
+    n_facets = len(df_facet_category_list)
     n_facet_rows = math.ceil(n_facets / facet_col_wrap)
     chart_height = n_facet_rows * 250
     if chart_height < 750:
@@ -480,9 +482,8 @@ def plotly_histogram_barchart(
     if n_facets < facet_col_wrap:
         facet_col_wrap=n_facets
 
-    n_colours = len(df[df_category_name_col].unique())
+    n_colours = len(df[df_category_col].unique())
     colour_sequence = calculate_colour_sequence(colourmap, n_colours)
-    facet_names = df[df_facet_col].unique()
 
     fig = make_subplots(
         rows=n_facet_rows,
@@ -493,13 +494,18 @@ def plotly_histogram_barchart(
     current_col = 1
     current_facet = 0
     category_names = []
-    for facet_name, facet_subset in df.groupby(df_facet_col):
+
+    for facet_name in df_facet_category_list:
+        facet_subset = df[df[df_facet_col] == facet_name]
 
         min_bin_value = facet_subset[df_value_col].min()
         max_bin_value = facet_subset[df_value_col].max()
-        #bin_size_value = (max_bin_value - min_bin_value) / n_bins
+        bins = np.linspace(min_bin_value, max_bin_value, n_bins + 1) # Calculate histogram bins once and use for each category_name
+        mid_bins = 0.5 * (bins[:-1] + bins[1:])
+        bin_labels = ["{:.2f} to {:.2f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])]
 
-        for category_name, category_subset in facet_subset.groupby(df_category_name_col):
+        for category_name in df_category_name_list:
+            category_subset = facet_subset[facet_subset[df_category_col] == category_name]
 
             if category_name in category_names:
                 show_legend = False
@@ -508,29 +514,8 @@ def plotly_histogram_barchart(
                 category_names.append(category_name)
 
             category_idx = category_names.index(category_name)
-            #
-            # trace = go.Histogram(
-            #     x=category_subset[df_value_col],
-            #     name=category_name,
-            #     marker_color=colour_sequence[category_idx],
-            #     xbins=dict(
-            #         start=min_bin_value,
-            #         end=max_bin_value,
-            #         size=bin_size_value
-            #     ),
-            #     legendgroup=category_idx,
-            #     showlegend=show_legend,
-            #     hovertemplate=
-            #     f"<b>{facet_name}</b><br>" +
-            #     f"{category_name}<br>" +
-            #     "Bin range: %{x}<br>" +
-            #     "Frequency: %{y:.0d}<br>" +
-            #     "<extra></extra>"
-            # )
 
-            counts, bins = np.histogram(category_subset[df_value_col], bins=n_bins, range=(min_bin_value, max_bin_value))
-            mid_bins = 0.5 * (bins[:-1] + bins[1:])
-            bin_labels = str(bins[:-1]) + " to " + str(bins[1:])
+            counts, junk = np.histogram(category_subset[df_value_col], bins=bins)
 
             trace = go.Bar(
                 x=mid_bins,
@@ -539,17 +524,13 @@ def plotly_histogram_barchart(
                 marker_color=colour_sequence[category_idx],
                 legendgroup=category_idx,
                 showlegend=show_legend,
-
-                #text=subset['count'],
-                #"Count: %{text:.0d}<br>" +
-
                 text=bin_labels,
                 hovertemplate=
                 f"<b>{facet_name}</b><br>" +
                 f"{category_name}<br>" +
-                "Bin range: %{x}<br>" +
-                "Bin range: %{text}<br>" +
                 "Frequency: %{y:.0d}<br>" +
+                "Bin range: %{text}<br>" +
+                "Mid-bin: %{x:.2f}<br>" +
                 "<extra></extra>"
             )
 
@@ -557,6 +538,7 @@ def plotly_histogram_barchart(
 
         fig.update_xaxes(
             title_text=facet_name + " " + value_axis_title,
+            tickvals=np.linspace(min_bin_value, max_bin_value, n_bins+1),
             row=current_row,
             col=current_col
         )
