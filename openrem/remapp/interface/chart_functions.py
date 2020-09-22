@@ -57,11 +57,13 @@ def create_dataframe(
         data_point_time_fields=None,
         system_name_field=None,
         data_point_name_lowercase=None,
-        data_point_value_multipliers=None
+        data_point_value_multipliers=None,
+        uid=None
 ):
 
     fields_to_include = set()
-    fields_to_include.add("study_instance_uid")
+    if uid:
+        fields_to_include.add(uid)
     if data_point_name_fields:
         for field in data_point_name_fields:
             fields_to_include.add(field)

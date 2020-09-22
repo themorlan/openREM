@@ -2508,98 +2508,16 @@ def ct_plot_calculations(
 
     sorted_categories = None
 
-    if (
-        plot_study_mean_dlp
-        or plot_study_mean_ctdi
-        or plot_study_freq
-        or plot_study_num_events
-        or plot_study_mean_dlp_over_time
-        or plot_study_per_day_and_hour
-        or plot_request_mean_dlp
-        or plot_request_freq
-        or plot_request_num_events
-        or plot_request_dlp_over_time
-    ):
-        prefetch_list = [
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
-        ]
-        if plot_study_mean_ctdi:
-            prefetch_list.append(
-                "ctradiationdose__ctirradiationeventdata__mean_ctdivol"
-            )
-
-        if (
-            "acquisition_protocol" in f.form.data
-            and f.form.data["acquisition_protocol"]
-        ) or (
-            "ct_acquisition_type" in f.form.data and f.form.data["ct_acquisition_type"]
-        ):
-            # The user has filtered on acquisition_protocol, so need to use the slow method of querying the database
-            # to avoid studies being duplicated when there is more than one of a particular acquisition type in a
-            # study.
-            try:
-                exp_include = f.qs.values_list("study_instance_uid")
-                study_and_request_events = (
-                    GeneralStudyModuleAttr.objects.exclude(total_dlp__isnull=True)
-                    .filter(study_instance_uid__in=exp_include)
-                    .values(*prefetch_list)
-                )
-            except KeyError:
-                study_and_request_events = f.qs.values(*prefetch_list)
-        else:
-            # The user hasn't filtered on acquisition, so we can use the faster database querying.
-            study_and_request_events = f.qs.values(*prefetch_list)
-
-    if (
-        plot_acquisition_mean_dlp
-        or plot_acquisition_freq
-        or plot_acquisition_mean_ctdi
-        or plot_acquisition_ctdi_vs_mass
-        or plot_acquisition_dlp_vs_mass
-        or plot_acquisition_ctdi_over_time
-        or plot_acquisition_dlp_over_time
-    ):
-        prefetch_list = [
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-        ]
-        if plot_acquisition_mean_dlp or plot_acquisition_dlp_vs_mass or plot_acquisition_dlp_over_time:
-            prefetch_list.append("ctradiationdose__ctirradiationeventdata__dlp")
-        if plot_acquisition_mean_ctdi or plot_acquisition_ctdi_vs_mass or plot_acquisition_ctdi_over_time:
-            prefetch_list.append(
-                "ctradiationdose__ctirradiationeventdata__mean_ctdivol"
-            )
-        if plot_acquisition_ctdi_vs_mass or plot_acquisition_dlp_vs_mass:
-            prefetch_list.append("patientstudymoduleattr__patient_weight")
-
-        if (
-            plot_histograms
-            and "ct_acquisition_type" in f.form.data
-            and f.form.data["ct_acquisition_type"]
-        ):
-            # The user has filtered on acquisition_protocol, so need to use the slow method of querying the database
-            # to avoid studies being duplicated when there is more than one of a particular acquisition type in a
-            # study.
-            try:
-                exp_include = f.qs.values_list("study_instance_uid")
-                acquisition_events = (
-                    GeneralStudyModuleAttr.objects.exclude(total_dlp__isnull=True)
-                    .filter(
-                        study_instance_uid__in=exp_include,
-                        ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__iexact=f.form.data[
-                            "ct_acquisition_type"
-                        ],
-                    )
-                    .values(*prefetch_list)
-                )
-            except KeyError:
-                acquisition_events = f.qs.values(*prefetch_list)
-        else:
-            acquisition_events = f.qs.values(*prefetch_list)
-
     #######################################################################
     # Prepare acquisition-level Pandas DataFrame to use for charts
-    if "acquisition_events" in locals():
+    if (plot_acquisition_freq
+    or plot_acquisition_mean_ctdi
+    or plot_acquisition_mean_dlp
+    or plot_acquisition_ctdi_vs_mass
+    or plot_acquisition_dlp_vs_mass
+    or plot_acquisition_ctdi_over_time
+    or plot_acquisition_dlp_over_time
+    ):
 
         name_fields = ["ctradiationdose__ctirradiationeventdata__acquisition_protocol"]
 
@@ -2620,12 +2538,13 @@ def ct_plot_calculations(
             system_field = "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
 
         df = create_dataframe(
-            acquisition_events,
+            f.qs,
             data_point_name_fields=name_fields,
             data_point_value_fields=value_fields,
             data_point_date_fields=date_fields,
             system_name_field=system_field,
-            data_point_name_lowercase=plot_case_insensitive_categories
+            data_point_name_lowercase=plot_case_insensitive_categories,
+            uid="ctradiationdose__ctirradiationeventdata__irradiation_event_uid"
         )
         #######################################################################
 
@@ -2858,7 +2777,17 @@ def ct_plot_calculations(
 
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts
-    if "study_and_request_events" in locals():
+    if (plot_request_freq
+    or plot_request_mean_dlp
+    or plot_request_num_events
+    or plot_request_dlp_over_time
+    or plot_study_freq
+    or plot_study_mean_dlp
+    or plot_study_mean_ctdi
+    or plot_study_num_events
+    or plot_study_mean_dlp_over_time
+    or plot_study_per_day_and_hour
+    ):
 
         name_fields = []
         if (
@@ -2897,13 +2826,14 @@ def ct_plot_calculations(
             system_field = "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
 
         df = create_dataframe(
-            study_and_request_events,
+            f.qs,
             data_point_name_fields=name_fields,
             data_point_value_fields=value_fields,
             data_point_date_fields=date_fields,
             data_point_time_fields=time_fields,
             system_name_field=system_field,
-            data_point_name_lowercase=plot_case_insensitive_categories
+            data_point_name_lowercase=plot_case_insensitive_categories,
+            uid = "study_instance_uid"
         )
         #######################################################################
 
