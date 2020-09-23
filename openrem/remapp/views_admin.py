@@ -1285,9 +1285,6 @@ def chart_options_view(request):
             user_profile.plotFacetColWrapVal = general_form.cleaned_data[
                 "plotFacetColWrapVal"
             ]
-            user_profile.plotAverageChoice = general_form.cleaned_data[
-                "plotMeanMedianOrBoth"
-            ]
             user_profile.plotSeriesPerSystem = general_form.cleaned_data[
                 "plotSeriesPerSystem"
             ]
@@ -1298,6 +1295,21 @@ def chart_options_view(request):
             user_profile.plotCaseInsensitiveCategories = general_form.cleaned_data[
                 "plotCaseInsensitiveCategories"
             ]
+
+            if "mean" in general_form.cleaned_data["plotAverageChoice"]:
+                user_profile.plotMean = True
+            else:
+                user_profile.plotMean = False
+
+            if "median" in general_form.cleaned_data["plotAverageChoice"]:
+                user_profile.plotMedian = True
+            else:
+                user_profile.plotMedian = False
+
+            if "boxplot" in general_form.cleaned_data["plotAverageChoice"]:
+                user_profile.plotBoxplots = True
+            else:
+                user_profile.plotBoxplots = False
 
             user_profile.plotCTAcquisitionMeanDLP = ct_form.cleaned_data[
                 "plotCTAcquisitionMeanDLP"
@@ -1444,9 +1456,17 @@ def chart_options_view(request):
         create_user_profile(sender=request.user, instance=request.user, created=True)
         user_profile = request.user.userprofile
 
+    average_choices = []
+    if user_profile.plotMean:
+        average_choices.append("mean")
+    if user_profile.plotMedian:
+        average_choices.append("median")
+    if user_profile.plotBoxplots:
+        average_choices.append("boxplot")
+
     general_form_data = {
         "plotCharts": user_profile.plotCharts,
-        "plotMeanMedianOrBoth": user_profile.plotAverageChoice,
+        "plotAverageChoice": average_choices,
         "plotInitialSortingDirection": user_profile.plotInitialSortingDirection,
         "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
         "plotHistogramBins": user_profile.plotHistogramBins,

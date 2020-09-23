@@ -171,9 +171,6 @@ def dx_summary_list_filter(request):
             user_profile.plotDXRequestDAPvsMass = chart_options_form.cleaned_data[
                 "plotDXRequestDAPvsMass"
             ]
-            user_profile.plotAverageChoice = chart_options_form.cleaned_data[
-                "plotMeanMedianOrBoth"
-            ]
             user_profile.plotGroupingChoice = chart_options_form.cleaned_data[
                 "plotGrouping"
             ]
@@ -189,10 +186,34 @@ def dx_summary_list_filter(request):
             user_profile.plotInitialSortingDirection = chart_options_form.cleaned_data[
                 "plotInitialSortingDirection"
             ]
+
+            if "mean" in chart_options_form.cleaned_data["plotAverageChoice"]:
+                user_profile.plotMean = True
+            else:
+                user_profile.plotMean = False
+
+            if "median" in chart_options_form.cleaned_data["plotAverageChoice"]:
+                user_profile.plotMedian = True
+            else:
+                user_profile.plotMedian = False
+
+            if "boxplot" in chart_options_form.cleaned_data["plotAverageChoice"]:
+                user_profile.plotBoxplots = True
+            else:
+                user_profile.plotBoxplots = False
+
             user_profile.save()
 
         # If submit was not clicked then use the settings already stored in the user's profile
         else:
+            average_choices = []
+            if user_profile.plotMean:
+                average_choices.append("mean")
+            if user_profile.plotMedian:
+                average_choices.append("median")
+            if user_profile.plotBoxplots:
+                average_choices.append("boxplot")
+
             form_data = {
                 "plotCharts": user_profile.plotCharts,
                 "plotDXAcquisitionMeanDAP": user_profile.plotDXAcquisitionMeanDAP,
@@ -211,12 +232,12 @@ def dx_summary_list_filter(request):
                 "plotDXAcquisitionDAPvsMass": user_profile.plotDXAcquisitionDAPvsMass,
                 "plotDXStudyDAPvsMass": user_profile.plotDXStudyDAPvsMass,
                 "plotDXRequestDAPvsMass": user_profile.plotDXRequestDAPvsMass,
-                "plotMeanMedianOrBoth": user_profile.plotAverageChoice,
                 "plotGrouping": user_profile.plotGroupingChoice,
                 "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
                 "plotHistograms": user_profile.plotHistograms,
                 "plotDXInitialSortingChoice": user_profile.plotDXInitialSortingChoice,
-                "plotInitialSortingDirection": user_profile.plotInitialSortingDirection
+                "plotInitialSortingDirection": user_profile.plotInitialSortingDirection,
+                "plotAverageChoice": average_choices
             }
             chart_options_form = DXChartOptionsForm(form_data)
 
@@ -272,12 +293,15 @@ def generate_required_dx_charts_list(profile):
     required_charts = []
 
     if profile.plotDXAcquisitionMeanDAP:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotMean:
             required_charts.append({"title": "Chart of mean DAP for each acquisition protocol",
                                     "var_name": "acquisitionMeanDAP"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotMedian:
             required_charts.append({"title": "Chart of median DAP for each acquisition protocol",
                                     "var_name": "acquisitionMedianDAP"})
+        if profile.plotBoxplots:
+            required_charts.append({"title": "Boxplot of DAP for each acquisition protocol",
+                                    "var_name": "acquisitionBoxplotDAP"})
         if profile.plotHistograms:
             required_charts.append({"title": "Histogram of DAP for each acquisition protocol",
                                     "var_name": "acquisitionHistogramDAP"})
@@ -287,12 +311,15 @@ def generate_required_dx_charts_list(profile):
                                 "var_name": "acquisitionFrequency"})
 
     if profile.plotDXStudyMeanDAP:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotMean:
             required_charts.append({"title": "Chart of mean DAP for each study description",
                                     "var_name": "studyMeanDAP"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotMedian:
             required_charts.append({"title": "Chart of median DAP for each study description",
                                     "var_name": "studyMedianDAP"})
+        if profile.plotBoxplots:
+            required_charts.append({"title": "Boxplot of DAP for each study description",
+                                    "var_name": "studyBoxplotDAP"})
         if profile.plotHistograms:
             required_charts.append({"title": "Histogram of DAP for each study description",
                                     "var_name": "studyHistogramDAP"})
@@ -302,12 +329,15 @@ def generate_required_dx_charts_list(profile):
                                 "var_name": "studyFrequency"})
 
     if profile.plotDXRequestMeanDAP:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotMean:
             required_charts.append({"title": "Chart of mean DAP for each requested procedure",
                                     "var_name": "requestMeanDAP"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotMedian:
             required_charts.append({"title": "Chart of median DAP for each requested procedure",
                                     "var_name": "requestMedianDAP"})
+        if profile.plotBoxplots:
+            required_charts.append({"title": "Boxplot of DAP for each requested procedure",
+                                    "var_name": "requestBoxplotDAP"})
         if profile.plotHistograms:
             required_charts.append({"title": "Histogram of DAP for each requested procedure",
                                     "var_name": "requestHistogramDAP"})
@@ -317,23 +347,29 @@ def generate_required_dx_charts_list(profile):
                                 "var_name": "requestFrequency"})
 
     if profile.plotDXAcquisitionMeankVp:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotMean:
             required_charts.append({"title": "Chart of mean kVp for each acquisition protocol",
                                     "var_name": "acquisitionMeankVp"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotMedian:
             required_charts.append({"title": "Chart of median kVp for each acquisition protocol",
                                     "var_name": "acquisitionMediankVp"})
+        if profile.plotBoxplots:
+            required_charts.append({"title": "Boxplot of kVp for each acquisition protocol",
+                                    "var_name": "acquisitionBoxplotkVp"})
         if profile.plotHistograms:
             required_charts.append({"title": "Histogram of DAP for each acquisition protocol",
                                     "var_name": "acquisitionHistogramkVp"})
 
     if profile.plotDXAcquisitionMeanmAs:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotMean:
             required_charts.append({"title": "Chart of mean mAs for each acquisition protocol",
                                     "var_name": "acquisitionMeanmAs"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotMedian:
             required_charts.append({"title": "Chart of median mAs for each acquisition protocol",
                                     "var_name": "acquisitionMedianmAs"})
+        if profile.plotBoxplots:
+            required_charts.append({"title": "Boxplot of mAs for each acquisition protocol",
+                                    "var_name": "acquisitionBoxplotmAs"})
         if profile.plotHistograms:
             required_charts.append({"title": "Histogram of DAP for each acquisition protocol",
                                     "var_name": "acquisitionHistogrammAs"})
@@ -343,26 +379,26 @@ def generate_required_dx_charts_list(profile):
                                 "var_name": "studyWorkload"})
 
     if profile.plotDXAcquisitionMeankVpOverTime:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotMean:
             required_charts.append({"title": "Chart of mean kVp per acquisition protocol over time (" + profile.plotDXAcquisitionMeanDAPOverTimePeriod + ")",
                                     "var_name": "acquisitionMeankVpOverTime"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotMedian:
             required_charts.append({"title": "Chart of median kVp per acquisition protocol over time (" + profile.plotDXAcquisitionMeanDAPOverTimePeriod + ")",
                                     "var_name": "acquisitionMediankVpOverTime"})
 
     if profile.plotDXAcquisitionMeanmAsOverTime:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotMean:
             required_charts.append({"title": "Chart of mean mAs per acquisition protocol over time (" + profile.plotDXAcquisitionMeanDAPOverTimePeriod + ")",
                                     "var_name": "acquisitionMeanmAsOverTime"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotMedian:
             required_charts.append({"title": "Chart of median mAs per acquisition protocol over time (" + profile.plotDXAcquisitionMeanDAPOverTimePeriod + ")",
                                     "var_name": "acquisitionMedianmAsOverTime"})
 
     if profile.plotDXAcquisitionMeanDAPOverTime:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotMean:
             required_charts.append({"title": "Chart of mean DAP per acquisition protocol over time (" + profile.plotDXAcquisitionMeanDAPOverTimePeriod + ")",
                                     "var_name": "acquisitionMeanDAPOverTime"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotMedian:
             required_charts.append({"title": "Chart of median DAP per acquisition protocol over time (" + profile.plotDXAcquisitionMeanDAPOverTimePeriod + ")",
                                     "var_name": "acquisitionMedianDAPOverTime"})
 
@@ -403,41 +439,10 @@ def dx_summary_chart_data(request):
 
         start_time = datetime.now()
 
-    # Obtain the key name in the TIME_PERIOD tuple from the user time period choice (the key value)
-    keys = list(dict(user_profile.TIME_PERIOD).keys())
-    values = list(dict(user_profile.TIME_PERIOD).values())
-    plot_timeunit_period = keys[[tp.lower() for tp in values].index(user_profile.plotDXAcquisitionMeanDAPOverTimePeriod)]
 
     return_structure = dx_plot_calculations(
         f,
-        user_profile.plotDXAcquisitionMeanDAP,
-        user_profile.plotDXAcquisitionFreq,
-        user_profile.plotDXStudyMeanDAP,
-        user_profile.plotDXStudyFreq,
-        user_profile.plotDXRequestMeanDAP,
-        user_profile.plotDXRequestFreq,
-        user_profile.plotDXAcquisitionMeankVpOverTime,
-        user_profile.plotDXAcquisitionMeanmAsOverTime,
-        user_profile.plotDXAcquisitionMeanDAPOverTime,
-        user_profile.plotDXAcquisitionMeanDAPOverTimePeriod,
-        user_profile.plotDXAcquisitionMeankVp,
-        user_profile.plotDXAcquisitionMeanmAs,
-        user_profile.plotDXStudyPerDayAndHour,
-        user_profile.plotAverageChoice,
-        user_profile.plotSeriesPerSystem,
-        user_profile.plotHistogramBins,
-        user_profile.plotHistograms,
-        user_profile.plotCaseInsensitiveCategories,
-        plot_timeunit_period,
-        user_profile.plotThemeChoice,
-        user_profile.plotColourMapChoice,
-        user_profile.plotFacetColWrapVal,
-        user_profile.plotInitialSortingDirection,
-        user_profile.plotDXInitialSortingChoice,
-        user_profile.plotGroupingChoice,
-        user_profile.plotDXAcquisitionDAPvsMass,
-        user_profile.plotDXStudyDAPvsMass,
-        user_profile.plotDXRequestDAPvsMass
+        user_profile
     )
 
     if settings.DEBUG:
@@ -448,34 +453,7 @@ def dx_summary_chart_data(request):
 
 def dx_plot_calculations(
     f,
-    plot_acquisition_mean_dap,
-    plot_acquisition_freq,
-    plot_study_mean_dap,
-    plot_study_freq,
-    plot_request_mean_dap,
-    plot_request_freq,
-    plot_acquisition_mean_kvp_over_time,
-    plot_acquisition_mean_mas_over_time,
-    plot_acquisition_mean_dap_over_time,
-    plot_acquisition_mean_dap_over_time_period,
-    plot_acquisition_mean_kvp,
-    plot_acquisition_mean_mas,
-    plot_study_per_day_and_hour,
-    plot_average_choice,
-    plot_series_per_systems,
-    plot_histogram_bins,
-    plot_histograms,
-    plot_case_insensitive_categories,
-    plot_over_time_period,
-    plot_theme_choice,
-    plot_colour_map_choice,
-    plot_facet_col_wrap_val,
-    plot_sorting_direction,
-    plot_sorting_field,
-    plot_grouping_choice,
-    plot_acquisition_dap_vs_mass,
-    plot_study_dap_vs_mass,
-    plot_request_dap_vs_mass
+    user_profile
 ):
     """Calculations for radiographic charts
     """
@@ -489,27 +467,43 @@ def dx_plot_calculations(
         plotly_histogram_barchart,
         plotly_barchart_weekdays,
         plotly_set_default_theme,
-        construct_freqency_chart,
+        construct_frequency_chart,
         construct_scatter_chart,
         construct_over_time_charts
     )
 
+    if (
+        user_profile.plotDXAcquisitionMeanDAPOverTime
+        or user_profile.plotDXAcquisitionMeankVpOverTime
+        or user_profile.plotDXAcquisitionMeanmAsOverTime
+    ):
+        # Obtain the key name in the TIME_PERIOD tuple from the user time period choice (the key value)
+        keys = list(dict(user_profile.TIME_PERIOD).keys())
+        values = list(dict(user_profile.TIME_PERIOD).values())
+        plot_timeunit_period = keys[[tp.lower() for tp in values].index(user_profile.plotDXAcquisitionMeanDAPOverTimePeriod)]
+
     # Set the Plotly chart theme
-    plotly_set_default_theme(plot_theme_choice)
+    plotly_set_default_theme(user_profile.plotThemeChoice)
 
     return_structure = {}
+
+    average_choices = []
+    if user_profile.plotMean:
+        average_choices.append("mean")
+    if user_profile.plotMedian:
+        average_choices.append("median")
 
     #######################################################################
     # Prepare acquisition-level Pandas DataFrame to use for charts
     if (
-        plot_acquisition_mean_dap
-        or plot_acquisition_freq
-        or plot_acquisition_mean_kvp
-        or plot_acquisition_mean_mas
-        or plot_acquisition_mean_kvp_over_time
-        or plot_acquisition_mean_mas_over_time
-        or plot_acquisition_mean_dap_over_time
-        or plot_acquisition_dap_vs_mass
+        user_profile.plotDXAcquisitionMeanDAP
+        or user_profile.plotDXAcquisitionFreq
+        or user_profile.plotDXAcquisitionMeankVp
+        or user_profile.plotDXAcquisitionMeanmAs
+        or user_profile.plotDXAcquisitionMeankVpOverTime
+        or user_profile.plotDXAcquisitionMeanmAsOverTime
+        or user_profile.plotDXAcquisitionMeanDAPOverTime
+        or user_profile.plotDXAcquisitionDAPvsMass
     ):
 
         name_fields = ["projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"]
@@ -517,40 +511,40 @@ def dx_plot_calculations(
         value_fields = []
         value_multipliers = []
         if (
-            plot_acquisition_mean_dap
-            or plot_acquisition_mean_dap_over_time
-            or plot_acquisition_dap_vs_mass
+            user_profile.plotDXAcquisitionMeanDAP
+            or user_profile.plotDXAcquisitionMeanDAPOverTime
+            or user_profile.plotDXAcquisitionDAPvsMass
         ):
             value_fields.append("projectionxrayradiationdose__irradeventxraydata__dose_area_product")
             value_multipliers.append(1000000)
         if (
-            plot_acquisition_mean_kvp
-            or plot_acquisition_mean_kvp_over_time
+            user_profile.plotDXAcquisitionMeankVp
+            or user_profile.plotDXAcquisitionMeankVpOverTime
         ):
             value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp")
             value_multipliers.append(1)
         if (
-            plot_acquisition_mean_mas
-            or plot_acquisition_mean_mas_over_time
+            user_profile.plotDXAcquisitionMeanmAs
+            or user_profile.plotDXAcquisitionMeanmAsOverTime
         ):
             value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure")
             value_multipliers.append(0.001)
         if (
-            plot_acquisition_dap_vs_mass
+            user_profile.plotDXAcquisitionDAPvsMass
         ):
             value_fields.append("patientstudymoduleattr__patient_weight")
             value_multipliers.append(1)
 
         date_fields = []
         if (
-            plot_acquisition_mean_dap_over_time
-            or plot_acquisition_mean_kvp_over_time
-            or plot_acquisition_mean_mas_over_time
+            user_profile.plotDXAcquisitionMeanDAPOverTime
+            or user_profile.plotDXAcquisitionMeankVpOverTime
+            or user_profile.plotDXAcquisitionMeanmAsOverTime
         ):
             date_fields.append("study_date")
 
         system_field = None
-        if plot_series_per_systems:
+        if user_profile.plotSeriesPerSystem:
             system_field = "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
 
         df = create_dataframe(
@@ -559,64 +553,77 @@ def dx_plot_calculations(
             data_point_value_fields=value_fields,
             data_point_date_fields=date_fields,
             system_name_field=system_field,
-            data_point_name_lowercase=plot_case_insensitive_categories,
+            data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_value_multipliers=value_multipliers,
             uid="projectionxrayradiationdose__irradeventxraydata__pk"
         )
         #######################################################################
-
-        if plot_acquisition_mean_dap or plot_acquisition_freq:
-            sorted_categories = create_sorted_category_list(
+        sorted_acquisition_dap_categories = None
+        if user_profile.plotDXAcquisitionMeanDAP:
+            sorted_acquisition_dap_categories = create_sorted_category_list(
                 df,
                 "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                 "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
-                [plot_sorting_direction, plot_sorting_field]
+                [user_profile.plotInitialSortingDirection, user_profile.plotDXInitialSortingChoice]
             )
 
-        if plot_acquisition_mean_dap:
-            if plot_average_choice in ["mean", "both"]:
+            if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
                     "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                     "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
-                    stats=["mean", "count"]
+                    stats=average_choices + ["count"]
                 )
 
-                return_structure["acquisitionMeanDAPData"] = plotly_barchart(
-                    df_aggregated,
-                    "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                    value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
-                    name_axis_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice,
-                    filename="OpenREM DX acquisition protocol DAP mean",
-                    sorted_category_list=sorted_categories
-                )
+                if user_profile.plotMean:
+                    return_structure["acquisitionMeanDAPData"] = plotly_barchart(
+                        df_aggregated,
+                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                        value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
+                        name_axis_title="Acquisition protocol",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM DX acquisition protocol DAP mean",
+                        sorted_category_list=sorted_acquisition_dap_categories,
+                        average_choice="mean"
+                    )
 
-            if plot_average_choice in ["median", "both"]:
+                if user_profile.plotMedian:
+                    return_structure["acquisitionMedianDAPData"] = plotly_barchart(
+                        df_aggregated,
+                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                        value_axis_title="Median DAP (cGy.cm<sup>2</sup>)",
+                        name_axis_title="Acquisition protocol",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM DX acquisition protocol DAP median",
+                        sorted_category_list=sorted_acquisition_dap_categories,
+                        average_choice="median"
+                    )
+
+            if user_profile.plotBoxplots:
                 return_structure["acquisitionBoxplotDAPData"] = plotly_boxplot(
                     df,
                     "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                     "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
                     value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                     name_axis_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM DX acquisition protocol DAP boxplot",
-                    sorted_category_list=sorted_categories
+                    sorted_category_list=sorted_acquisition_dap_categories
                 )
 
-            if plot_histograms:
+            if user_profile.plotHistograms:
                 category_names_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Acquisition protocol"
                 facet_names = list(df[group_by_col].unique())
-                category_names = list(sorted_categories.values())[0]
+                category_names = list(sorted_acquisition_dap_categories.values())[0]
 
-                if plot_grouping_choice == "series":
+                if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
                     legend_title = "System"
                     category_names = facet_names
-                    facet_names = list(sorted_categories.values())[0]
+                    facet_names = list(sorted_acquisition_dap_categories.values())[0]
 
                 return_structure["acquisitionHistogramDAPData"] = plotly_histogram_barchart(
                     df,
@@ -625,79 +632,80 @@ def dx_plot_calculations(
                     "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
                     value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                     legend_title=legend_title,
-                    n_bins=plot_histogram_bins,
-                    colourmap=plot_colour_map_choice,
+                    n_bins=user_profile.plotHistogramBins,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM DX acquisition protocol DAP histogram",
-                    facet_col_wrap=plot_facet_col_wrap_val,
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
                 )
 
-        if plot_acquisition_freq:
-            return_structure["acquisitionFrequencyData"] = construct_freqency_chart(
-                df=df,
-                df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                sorting_choice=plot_sorting_field,
-                legend_title="Acquisition protocol",
-                df_x_axis_col="x_ray_system_name",
-                x_axis_title="System",
-                grouping_choice=plot_grouping_choice,
-                colour_map=plot_colour_map_choice,
-                file_name="OpenREM DX acquisition protocol frequency",
-                sorted_categories=sorted_categories
-            )
-
-        if plot_acquisition_mean_kvp:
-            sorted_categories = create_sorted_category_list(
+        sorted_acquisition_kvp_categories = None
+        if user_profile.plotDXAcquisitionMeankVp:
+            sorted_acquisition_kvp_categories = create_sorted_category_list(
                 df,
                 "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
-                [plot_sorting_direction, plot_sorting_field]
+                [user_profile.plotInitialSortingDirection, user_profile.plotDXInitialSortingChoice]
             )
 
-            if plot_average_choice in ["mean", "both"]:
+            if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
                     "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                     "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
-                    stats=["mean", "count"]
+                    stats=average_choices + ["count"]
                 )
 
-                return_structure["acquisitionMeankVpData"] = plotly_barchart(
-                    df_aggregated,
-                    "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                    value_axis_title="Mean kVp",
-                    name_axis_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice,
-                    filename="OpenREM DX acquisition protocol kVp mean",
-                    sorted_category_list=sorted_categories
-                )
+                if user_profile.plotMean:
+                    return_structure["acquisitionMeankVpData"] = plotly_barchart(
+                        df_aggregated,
+                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                        value_axis_title="Mean kVp",
+                        name_axis_title="Acquisition protocol",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM DX acquisition protocol kVp mean",
+                        sorted_category_list=sorted_acquisition_kvp_categories,
+                        average_choice="mean"
+                    )
 
-            if plot_average_choice in ["median", "both"]:
+                if user_profile.plotMedian:
+                    return_structure["acquisitionMediankVpData"] = plotly_barchart(
+                        df_aggregated,
+                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                        value_axis_title="Median kVp",
+                        name_axis_title="Acquisition protocol",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM DX acquisition protocol kVp median",
+                        sorted_category_list=sorted_acquisition_kvp_categories,
+                        average_choice="median"
+                    )
+
+            if user_profile.plotBoxplots:
                 return_structure["acquisitionBoxplotkVpData"] = plotly_boxplot(
                     df,
                     "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                     "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
                     value_axis_title="kVp",
                     name_axis_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM DX acquisition protocol kVp boxplot",
-                    sorted_category_list=sorted_categories
+                    sorted_category_list=sorted_acquisition_kvp_categories
                 )
 
-            if plot_histograms:
+            if user_profile.plotHistograms:
                 category_names_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Acquisition protocol"
                 facet_names = list(df[group_by_col].unique())
-                category_names = list(sorted_categories.values())[0]
+                category_names = list(sorted_acquisition_kvp_categories.values())[0]
 
-                if plot_grouping_choice == "series":
+                if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
                     legend_title = "System"
                     category_names = facet_names
-                    facet_names = list(sorted_categories.values())[0]
+                    facet_names = list(sorted_acquisition_kvp_categories.values())[0]
 
                 return_structure["acquisitionHistogramDAPData"] = plotly_histogram_barchart(
                     df,
@@ -706,65 +714,80 @@ def dx_plot_calculations(
                     "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
                     value_axis_title="kVp",
                     legend_title=legend_title,
-                    n_bins=plot_histogram_bins,
-                    colourmap=plot_colour_map_choice,
+                    n_bins=user_profile.plotHistogramBins,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM DX acquisition protocol kVp histogram",
-                    facet_col_wrap=plot_facet_col_wrap_val,
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
                 )
 
-        if plot_acquisition_mean_mas:
-            sorted_categories = create_sorted_category_list(
+        sorted_acquisition_mas_categories = None
+        if user_profile.plotDXAcquisitionMeanmAs:
+            sorted_acquisition_mas_categories = create_sorted_category_list(
                 df,
                 "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
-                [plot_sorting_direction, plot_sorting_field]
+                [user_profile.plotInitialSortingDirection, user_profile.plotDXInitialSortingChoice]
             )
 
-            if plot_average_choice in ["mean", "both"]:
+            if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
                     "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                     "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
-                    stats=["mean", "count"]
+                    stats=average_choices + ["count"]
                 )
 
-                return_structure["acquisitionMeanmAsData"] = plotly_barchart(
-                    df_aggregated,
-                    "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                    value_axis_title="Mean mAs",
-                    name_axis_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice,
-                    filename="OpenREM DX acquisition protocol mAs mean",
-                    sorted_category_list=sorted_categories
-                )
+                if user_profile.plotMean:
+                    return_structure["acquisitionMeanmAsData"] = plotly_barchart(
+                        df_aggregated,
+                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                        value_axis_title="Mean mAs",
+                        name_axis_title="Acquisition protocol",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM DX acquisition protocol mAs mean",
+                        sorted_category_list=sorted_acquisition_mas_categories,
+                        average_choice="mean"
+                    )
 
-            if plot_average_choice in ["median", "both"]:
+                if user_profile.plotMedian:
+                    return_structure["acquisitionMedianmAsData"] = plotly_barchart(
+                        df_aggregated,
+                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                        value_axis_title="Median mAs",
+                        name_axis_title="Acquisition protocol",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM DX acquisition protocol mAs median",
+                        sorted_category_list=sorted_acquisition_mas_categories,
+                        average_choice="median"
+                    )
+
+            if user_profile.plotBoxplots:
                 return_structure["acquisitionBoxplotmAsData"] = plotly_boxplot(
                     df,
                     "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                     "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
                     value_axis_title="mAs",
                     name_axis_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM DX acquisition protocol mAs boxplot",
-                    sorted_category_list=sorted_categories
+                    sorted_category_list=sorted_acquisition_mas_categories
                 )
 
-            if plot_histograms:
+            if user_profile.plotHistograms:
                 category_names_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Acquisition protocol"
                 facet_names = list(df[group_by_col].unique())
-                category_names = list(sorted_categories.values())[0]
+                category_names = list(sorted_acquisition_mas_categories.values())[0]
 
-                if plot_grouping_choice == "series":
+                if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
                     legend_title = "System"
                     category_names = facet_names
-                    facet_names = list(sorted_categories.values())[0]
+                    facet_names = list(sorted_acquisition_mas_categories.values())[0]
 
                 return_structure["acquisitionHistogramDAPData"] = plotly_histogram_barchart(
                     df,
@@ -773,15 +796,37 @@ def dx_plot_calculations(
                     "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
                     value_axis_title="mAs",
                     legend_title=legend_title,
-                    n_bins=plot_histogram_bins,
-                    colourmap=plot_colour_map_choice,
+                    n_bins=user_profile.plotHistogramBins,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM DX acquisition protocol mAs histogram",
-                    facet_col_wrap=plot_facet_col_wrap_val,
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
                 )
 
-        if plot_acquisition_mean_dap_over_time:
+        if user_profile.plotDXAcquisitionFreq:
+            sorted_categories = None
+            if user_profile.plotDXAcquisitionMeanDAP:
+                sorted_categories = sorted_acquisition_dap_categories
+            elif user_profile.plotDXAcquisitionMeankVp:
+                sorted_categories = sorted_acquisition_kvp_categories
+            elif user_profile.plotDXAcquisitionMeanmAs:
+                sorted_categories = sorted_acquisition_mas_categories
+
+            return_structure["acquisitionFrequencyData"] = construct_frequency_chart(
+                df=df,
+                df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                sorting_choice=user_profile.plotDXInitialSortingChoice,
+                legend_title="Acquisition protocol",
+                df_x_axis_col="x_ray_system_name",
+                x_axis_title="System",
+                grouping_choice=user_profile.plotGroupingChoice,
+                colour_map=user_profile.plotColourMapChoice,
+                file_name="OpenREM DX acquisition protocol frequency",
+                sorted_categories=sorted_categories
+            )
+
+        if user_profile.plotDXAcquisitionMeanDAPOverTime:
             result = construct_over_time_charts(
                 df=df,
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
@@ -790,21 +835,21 @@ def dx_plot_calculations(
                 name_title="Acquisition protocol",
                 value_title="DAP (cGy.cm<sup>2</sup>)",
                 date_title="Study date",
-                sorting=[plot_sorting_direction, plot_sorting_field],
-                time_period=plot_over_time_period,
-                average_choice=plot_average_choice,
-                grouping_choice=plot_grouping_choice,
-                colour_map=plot_colour_map_choice,
-                facet_col_wrap=plot_facet_col_wrap_val,
+                sorting=[user_profile.plotInitialSortingDirection, user_profile.plotDXInitialSortingChoice],
+                time_period=plot_timeunit_period,
+                average_choices=average_choices,
+                grouping_choice=user_profile.plotGroupingChoice,
+                colour_map=user_profile.plotColourMapChoice,
+                facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM DX acquisition protocol DAP over time"
             )
 
-            if plot_average_choice in ["mean", "both"]:
+            if user_profile.plotMean:
                 return_structure["acquisitionMeanDAPOverTime"] = result["mean"]
-            if plot_average_choice in ["median", "both"]:
+            if user_profile.plotMedian:
                 return_structure["acquisitionMedianDAPOverTime"] = result["median"]
 
-        if plot_acquisition_mean_kvp_over_time:
+        if user_profile.plotDXAcquisitionMeankVpOverTime:
             result = construct_over_time_charts(
                 df=df,
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
@@ -813,21 +858,21 @@ def dx_plot_calculations(
                 name_title="Acquisition protocol",
                 value_title="kVp",
                 date_title="Study date",
-                sorting=[plot_sorting_direction, plot_sorting_field],
-                time_period=plot_over_time_period,
-                average_choice=plot_average_choice,
-                grouping_choice=plot_grouping_choice,
-                colour_map=plot_colour_map_choice,
-                facet_col_wrap=plot_facet_col_wrap_val,
+                sorting=[user_profile.plotInitialSortingDirection, user_profile.plotDXInitialSortingChoice],
+                time_period=plot_timeunit_period,
+                average_choices=average_choices,
+                grouping_choice=user_profile.plotGroupingChoice,
+                colour_map=user_profile.plotColourMapChoice,
+                facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM DX acquisition protocol kVp over time"
             )
 
-            if plot_average_choice in ["mean", "both"]:
+            if user_profile.plotMean:
                 return_structure["acquisitionMeankVpOverTime"] = result["mean"]
-            if plot_average_choice in ["median", "both"]:
+            if user_profile.plotMedian:
                 return_structure["acquisitionMediankVpOverTime"] = result["median"]
 
-        if plot_acquisition_mean_mas_over_time:
+        if user_profile.plotDXAcquisitionMeanmAsOverTime:
             result = construct_over_time_charts(
                 df=df,
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
@@ -836,21 +881,21 @@ def dx_plot_calculations(
                 name_title="Acquisition protocol",
                 value_title="mAs",
                 date_title="Study date",
-                sorting=[plot_sorting_direction, plot_sorting_field],
-                time_period=plot_over_time_period,
-                average_choice=plot_average_choice,
-                grouping_choice=plot_grouping_choice,
-                colour_map=plot_colour_map_choice,
-                facet_col_wrap=plot_facet_col_wrap_val,
+                sorting=[user_profile.plotInitialSortingDirection, user_profile.plotDXInitialSortingChoice],
+                time_period=plot_timeunit_period,
+                average_choices=average_choices,
+                grouping_choice=user_profile.plotGroupingChoice,
+                colour_map=user_profile.plotColourMapChoice,
+                facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM DX acquisition protocol mAs over time"
             )
 
-            if plot_average_choice in ["mean", "both"]:
+            if user_profile.plotMean:
                 return_structure["acquisitionMeanmAsOverTime"] = result["mean"]
-            if plot_average_choice in ["median", "both"]:
+            if user_profile.plotMedian:
                 return_structure["acquisitionMedianmAsOverTime"] = result["median"]
 
-        if plot_acquisition_dap_vs_mass:
+        if user_profile.plotDXAcquisitionDAPvsMass:
             return_structure["acquisitionDAPvsMass"] = construct_scatter_chart(
                 df=df,
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
@@ -858,54 +903,54 @@ def dx_plot_calculations(
                 df_y_col="projectionxrayradiationdose__irradeventxraydata__dose_area_product",
                 x_axis_title="Patient mass (kg)",
                 y_axis_title="DAP (mGy.cm<sup>2</sub>)",
-                sorting=[plot_sorting_direction, plot_sorting_field],
-                grouping_choice=plot_grouping_choice,
+                sorting=[user_profile.plotInitialSortingDirection, user_profile.plotDXInitialSortingChoice],
+                grouping_choice=user_profile.plotGroupingChoice,
                 legend_title="Acquisition protocol",
-                colour_map=plot_colour_map_choice,
-                facet_col_wrap=plot_facet_col_wrap_val,
+                colour_map=user_profile.plotColourMapChoice,
+                facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM DX acquisition protocol DAP vs patient mass"
             )
 
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts
     if (
-        plot_study_mean_dap,
-        plot_study_freq,
-        plot_study_per_day_and_hour,
-        plot_study_dap_vs_mass,
-        plot_request_mean_dap,
-        plot_request_freq,
-        plot_request_dap_vs_mass
+        user_profile.plotDXStudyMeanDAP,
+        user_profile.plotDXStudyFreq,
+        user_profile.plotDXStudyPerDayAndHour,
+        user_profile.plotDXStudyDAPvsMass,
+        user_profile.plotDXRequestMeanDAP,
+        user_profile.plotDXRequestFreq,
+        user_profile.plotDXRequestDAPvsMass
     ):
 
         name_fields = []
         if (
-            plot_study_mean_dap
-            or plot_study_freq
-            or plot_study_per_day_and_hour
-            or plot_study_dap_vs_mass
+            user_profile.plotDXStudyMeanDAP
+            or user_profile.plotDXStudyFreq
+            or user_profile.plotDXStudyPerDayAndHour
+            or user_profile.plotDXStudyDAPvsMass
         ):
             name_fields.append("study_description")
         if (
-            plot_request_mean_dap
-            or plot_request_freq
-            or plot_request_dap_vs_mass
+            user_profile.plotDXRequestMeanDAP
+            or user_profile.plotDXRequestFreq
+            or user_profile.plotDXRequestDAPvsMass
         ):
             name_fields.append("requested_procedure_code_meaning")
 
         value_fields = []
         value_multipliers = []
         if (
-            plot_study_mean_dap
-            or plot_request_mean_dap
-            or plot_study_dap_vs_mass
-            or plot_request_dap_vs_mass
+            user_profile.plotDXStudyMeanDAP
+            or user_profile.plotDXRequestMeanDAP
+            or user_profile.plotDXStudyDAPvsMass
+            or user_profile.plotDXRequestDAPvsMass
         ):
             value_fields.append("total_dap")
             value_multipliers.append(1000000)
         if (
-            plot_study_dap_vs_mass
-            or plot_request_dap_vs_mass
+            user_profile.plotDXStudyDAPvsMass
+            or user_profile.plotDXRequestDAPvsMass
         ):
             value_fields.append("patientstudymoduleattr__patient_weight")
             value_multipliers.append(1)
@@ -913,13 +958,13 @@ def dx_plot_calculations(
         date_fields = []
         time_fields = []
         if (
-            plot_study_per_day_and_hour
+            user_profile.plotDXStudyPerDayAndHour
         ):
             date_fields.append("study_date")
             time_fields.append("study_time")
 
         system_field = None
-        if plot_series_per_systems:
+        if user_profile.plotSeriesPerSystem:
             system_field = "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
 
         df = create_dataframe(
@@ -929,64 +974,78 @@ def dx_plot_calculations(
             data_point_date_fields=date_fields,
             data_point_time_fields=time_fields,
             system_name_field=system_field,
-            data_point_name_lowercase=plot_case_insensitive_categories,
+            data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_value_multipliers=value_multipliers,
             uid="pk"
         )
         #######################################################################
 
-        if plot_study_mean_dap or plot_study_freq:
-            sorted_categories = create_sorted_category_list(
+        sorted_study_dap_categories = None
+        if user_profile.plotDXStudyMeanDAP:
+            sorted_study_dap_categories = create_sorted_category_list(
                 df,
                 "study_description",
                 "total_dap",
-                [plot_sorting_direction, plot_sorting_field]
+                [user_profile.plotInitialSortingDirection, user_profile.plotDXInitialSortingChoice]
             )
 
-        if plot_study_mean_dap:
-            if plot_average_choice in ["mean", "both"]:
+            if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
                     "study_description",
                     "total_dap",
-                    stats=["mean", "count"]
+                    stats=average_choices + ["count"]
                 )
 
-                return_structure["studyMeanDAPData"] = plotly_barchart(
-                    df_aggregated,
-                    "study_description",
-                    value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
-                    name_axis_title="Study description",
-                    colourmap=plot_colour_map_choice,
-                    filename="OpenREM DX Study description DAP mean",
-                    sorted_category_list=sorted_categories
-                )
+                if user_profile.plotMean:
+                    return_structure["studyMeanDAPData"] = plotly_barchart(
+                        df_aggregated,
+                        "study_description",
+                        value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
+                        name_axis_title="Study description",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM DX Study description DAP mean",
+                        sorted_category_list=sorted_study_dap_categories,
+                        average_choice="mean"
+                    )
+                    
+                if user_profile.plotMedian:
+                    return_structure["studyMedianDAPData"] = plotly_barchart(
+                        df_aggregated,
+                        "study_description",
+                        value_axis_title="Median DAP (cGy.cm<sup>2</sup>)",
+                        name_axis_title="Study description",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM DX Study description DAP median",
+                        sorted_category_list=sorted_study_dap_categories,
+                        average_choice="median"
+                    )
 
-            if plot_average_choice in ["median", "both"]:
+            if user_profile.plotBoxplots:
                 return_structure["studyBoxplotDAPData"] = plotly_boxplot(
                     df,
                     "study_description",
                     "total_dap",
                     value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                     name_axis_title="Study description",
-                    colourmap=plot_colour_map_choice,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM DX study description DAP boxplot",
-                    sorted_category_list=sorted_categories
+                    sorted_category_list=sorted_study_dap_categories
                 )
 
-            if plot_histograms:
+            if user_profile.plotHistograms:
                 category_names_col = "study_description"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Study description"
                 facet_names = list(df[group_by_col].unique())
-                category_names = list(sorted_categories.values())[0]
+                category_names = list(sorted_study_dap_categories.values())[0]
 
-                if plot_grouping_choice == "series":
+                if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = "study_description"
                     legend_title = "System"
                     category_names = facet_names
-                    facet_names = list(sorted_categories.values())[0]
+                    facet_names = list(sorted_study_dap_categories.values())[0]
 
                 return_structure["studyHistogramDAPData"] = plotly_histogram_barchart(
                     df,
@@ -995,80 +1054,94 @@ def dx_plot_calculations(
                     "total_dap",
                     value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                     legend_title=legend_title,
-                    n_bins=plot_histogram_bins,
-                    colourmap=plot_colour_map_choice,
+                    n_bins=user_profile.plotHistogramBins,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM DX study description DAP histogram",
-                    facet_col_wrap=plot_facet_col_wrap_val,
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
                 )
 
-        if plot_study_freq:
-            return_structure["studyFrequencyData"] = construct_freqency_chart(
+        if user_profile.plotDXStudyFreq:
+            return_structure["studyFrequencyData"] = construct_frequency_chart(
                 df=df,
                 df_name_col="study_description",
-                sorting_choice=plot_sorting_field,
+                sorting_choice=user_profile.plotDXInitialSortingChoice,
                 legend_title="Study description",
                 df_x_axis_col="x_ray_system_name",
                 x_axis_title="System",
-                grouping_choice=plot_grouping_choice,
-                colour_map=plot_colour_map_choice,
+                grouping_choice=user_profile.plotGroupingChoice,
+                colour_map=user_profile.plotColourMapChoice,
                 file_name="OpenREM DX study description frequency",
-                sorted_categories = sorted_categories
+                sorted_categories = sorted_study_dap_categories
             )
 
-        if plot_request_mean_dap or plot_request_freq:
-            sorted_categories = create_sorted_category_list(
+        sorted_request_dap_categories = None
+        if user_profile.plotDXRequestMeanDAP:
+            sorted_request_dap_categories = create_sorted_category_list(
                 df,
                 "requested_procedure_code_meaning",
                 "total_dap",
-                [plot_sorting_direction, plot_sorting_field]
+                [user_profile.plotInitialSortingDirection, user_profile.plotDXInitialSortingChoice]
             )
 
-        if plot_request_mean_dap:
-            if plot_average_choice in ["mean", "both"]:
+            if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
                     "requested_procedure_code_meaning",
                     "total_dap",
-                    stats=["mean", "count"]
+                    stats=average_choices + ["count"]
                 )
 
-                return_structure["requestMeanDAPData"] = plotly_barchart(
-                    df_aggregated,
-                    "requested_procedure_code_meaning",
-                    value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
-                    name_axis_title="Requested procedure",
-                    colourmap=plot_colour_map_choice,
-                    filename="OpenREM DX requested procedure DAP mean",
-                    sorted_category_list=sorted_categories
-                )
+                if user_profile.plotMean:
+                    return_structure["requestMeanDAPData"] = plotly_barchart(
+                        df_aggregated,
+                        "requested_procedure_code_meaning",
+                        value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
+                        name_axis_title="Requested procedure",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM DX requested procedure DAP mean",
+                        sorted_category_list=sorted_request_dap_categories,
+                        average_choice="mean"
+                    )
 
-            if plot_average_choice in ["median", "both"]:
+                if user_profile.plotMedian:
+                    return_structure["requestMedianDAPData"] = plotly_barchart(
+                        df_aggregated,
+                        "requested_procedure_code_meaning",
+                        value_axis_title="Median DAP (cGy.cm<sup>2</sup>)",
+                        name_axis_title="Requested procedure",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM DX requested procedure DAP median",
+                        sorted_category_list=sorted_request_dap_categories,
+                        average_choice="median"
+                    )
+
+            if user_profile.plotBoxplots:
                 return_structure["requestBoxplotDAPData"] = plotly_boxplot(
                     df,
                     "requested_procedure_code_meaning",
                     "total_dap",
                     value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                     name_axis_title="Requested procedure",
-                    colourmap=plot_colour_map_choice,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM DX requested procedure DAP boxplot",
-                    sorted_category_list=sorted_categories
+                    sorted_category_list=sorted_request_dap_categories
                 )
 
-            if plot_histograms:
+            if user_profile.plotHistograms:
                 category_names_col = "requested_procedure_code_meaning"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Requested procedure"
                 facet_names = list(df[group_by_col].unique())
-                category_names = list(sorted_categories.values())[0]
+                category_names = list(sorted_request_dap_categories.values())[0]
 
-                if plot_grouping_choice == "series":
+                if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = "requested_procedure_code_meaning"
                     legend_title = "System"
                     category_names = facet_names
-                    facet_names = list(sorted_categories.values())[0]
+                    facet_names = list(sorted_request_dap_categories.values())[0]
 
                 return_structure["requestHistogramDAPData"] = plotly_histogram_barchart(
                     df,
@@ -1077,29 +1150,29 @@ def dx_plot_calculations(
                     "total_dap",
                     value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                     legend_title=legend_title,
-                    n_bins=plot_histogram_bins,
-                    colourmap=plot_colour_map_choice,
+                    n_bins=user_profile.plotHistogramBins,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM DX requested procedure DAP histogram",
-                    facet_col_wrap=plot_facet_col_wrap_val,
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
                 )
 
-        if plot_request_freq:
-            return_structure["requestFrequencyData"] = construct_freqency_chart(
+        if user_profile.plotDXRequestFreq:
+            return_structure["requestFrequencyData"] = construct_frequency_chart(
                 df=df,
                 df_name_col="requested_procedure_code_meaning",
-                sorting_choice=plot_sorting_field,
+                sorting_choice=user_profile.plotDXInitialSortingChoice,
                 legend_title="Requested procedure",
                 df_x_axis_col="x_ray_system_name",
                 x_axis_title="System",
-                grouping_choice=plot_grouping_choice,
-                colour_map=plot_colour_map_choice,
+                grouping_choice=user_profile.plotGroupingChoice,
+                colour_map=user_profile.plotColourMapChoice,
                 file_name="OpenREM DX requested procedure frequency",
-                sorted_categories=sorted_categories
+                sorted_categories=sorted_request_dap_categories
             )
 
-        if plot_study_per_day_and_hour:
+        if user_profile.plotDXStudyPerDayAndHour:
             df_time_series_per_weekday = create_dataframe_weekdays(
                 df,
                 "study_description",
@@ -1112,12 +1185,12 @@ def dx_plot_calculations(
                 "study_description",
                 name_axis_title="Weekday",
                 value_axis_title="Frequency",
-                colourmap=plot_colour_map_choice,
+                colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM DX study description workload",
-                facet_col_wrap=plot_facet_col_wrap_val
+                facet_col_wrap=user_profile.plotFacetColWrapVal
             )
 
-        if plot_study_dap_vs_mass:
+        if user_profile.plotDXStudyDAPvsMass:
             return_structure["studyDAPvsMass"] = construct_scatter_chart(
                 df=df,
                 df_name_col="study_description",
@@ -1125,15 +1198,15 @@ def dx_plot_calculations(
                 df_y_col="total_dap",
                 x_axis_title="Patient mass (kg)",
                 y_axis_title="DAP (mGy.cm<sup>2</sub>)",
-                sorting=[plot_sorting_direction, plot_sorting_field],
-                grouping_choice=plot_grouping_choice,
+                sorting=[user_profile.plotInitialSortingDirection, user_profile.plotDXInitialSortingChoice],
+                grouping_choice=user_profile.plotGroupingChoice,
                 legend_title="Study description",
-                colour_map=plot_colour_map_choice,
-                facet_col_wrap=plot_facet_col_wrap_val,
+                colour_map=user_profile.plotColourMapChoice,
+                facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM DX study description DAP vs patient mass"
             )
 
-        if plot_request_dap_vs_mass:
+        if user_profile.plotDXRequestDAPvsMass:
             return_structure["requestDAPvsMass"] = construct_scatter_chart(
                 df=df,
                 df_name_col="requested_procedure_code_meaning",
@@ -1141,11 +1214,11 @@ def dx_plot_calculations(
                 df_y_col="total_dap",
                 x_axis_title="Patient mass (kg)",
                 y_axis_title="DAP (mGy.cm<sup>2</sub>)",
-                sorting=[plot_sorting_direction, plot_sorting_field],
-                grouping_choice=plot_grouping_choice,
+                sorting=[user_profile.plotInitialSortingDirection, user_profile.plotDXInitialSortingChoice],
+                grouping_choice=user_profile.plotGroupingChoice,
                 legend_title="Requested procedure",
-                colour_map=plot_colour_map_choice,
-                facet_col_wrap=plot_facet_col_wrap_val,
+                colour_map=user_profile.plotColourMapChoice,
+                facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM DX requested procedure DAP vs patient mass"
             )
 
@@ -1251,12 +1324,6 @@ def rf_summary_list_filter(request):
             user_profile.plotRFRequestDAP = chart_options_form.cleaned_data[
                 "plotRFRequestDAP"
             ]
-            user_profile.plotAverageChoice = chart_options_form.cleaned_data[
-                "plotMeanMedianOrBoth"
-            ]
-            user_profile.plotBoxplots = chart_options_form.cleaned_data[
-                "plotBoxplots"
-            ]
             user_profile.plotGroupingChoice = chart_options_form.cleaned_data[
                 "plotGrouping"
             ]
@@ -1272,9 +1339,33 @@ def rf_summary_list_filter(request):
             user_profile.plotInitialSortingDirection = chart_options_form.cleaned_data[
                 "plotInitialSortingDirection"
             ]
+
+            if "mean" in chart_options_form.cleaned_data["plotAverageChoice"]:
+                user_profile.plotMean = True
+            else:
+                user_profile.plotMean = False
+
+            if "median" in chart_options_form.cleaned_data["plotAverageChoice"]:
+                user_profile.plotMedian = True
+            else:
+                user_profile.plotMedian = False
+
+            if "boxplot" in chart_options_form.cleaned_data["plotAverageChoice"]:
+                user_profile.plotBoxplots = True
+            else:
+                user_profile.plotBoxplots = False
+
             user_profile.save()
 
         else:
+            average_choices = []
+            if user_profile.plotMean:
+                average_choices.append("mean")
+            if user_profile.plotMedian:
+                average_choices.append("median")
+            if user_profile.plotBoxplots:
+                average_choices.append("boxplot")
+
             form_data = {
                 "plotCharts": user_profile.plotCharts,
                 "plotRFStudyPerDayAndHour": user_profile.plotRFStudyPerDayAndHour,
@@ -1282,13 +1373,12 @@ def rf_summary_list_filter(request):
                 "plotRFStudyDAP": user_profile.plotRFStudyDAP,
                 "plotRFRequestFreq": user_profile.plotRFRequestFreq,
                 "plotRFRequestDAP": user_profile.plotRFRequestDAP,
-                "plotMeanMedianOrBoth": user_profile.plotAverageChoice,
-                "plotBoxplots": user_profile.plotBoxplots,
                 "plotGrouping": user_profile.plotGroupingChoice,
                 "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
                 "plotHistograms": user_profile.plotHistograms,
                 "plotRFInitialSortingChoice": user_profile.plotRFInitialSortingChoice,
-                "plotInitialSortingDirection": user_profile.plotInitialSortingDirection
+                "plotInitialSortingDirection": user_profile.plotInitialSortingDirection,
+                "plotAverageChoice": average_choices
             }
             chart_options_form = RFChartOptionsForm(form_data)
 
@@ -1392,38 +1482,32 @@ def generate_required_rf_charts_list(profile):
     required_charts = []
 
     if profile.plotRFStudyDAP:
-        if profile.plotAverageChoice in ["mean"]:
+        if profile.plotMean:
             required_charts.append({"title": "Chart of mean DAP for each study description",
                                     "var_name": "studyMeanDAP"})
-        if profile.plotAverageChoice in ["median"]:
+        if profile.plotMedian:
             required_charts.append({"title": "Chart of median DAP for each study description",
                                     "var_name": "studyMedianDAP"})
-        if profile.plotAverageChoice in ["both"]:
-            required_charts.append({"title": "Charts of mean and median DAP for each study description",
-                                    "var_name": "studyMeanMedianDAP"})
-        if profile.plotHistograms:
-            required_charts.append({"title": "Histogram of DAP for each study description",
-                                    "var_name": "studyHistogramDAP"})
         if profile.plotBoxplots:
             required_charts.append({"title": "Boxplot of DAP for each study description",
                                     "var_name": "studyBoxplotDAP"})
+        if profile.plotHistograms:
+            required_charts.append({"title": "Histogram of DAP for each study description",
+                                    "var_name": "studyHistogramDAP"})
 
     if profile.plotRFRequestDAP:
-        if profile.plotAverageChoice in ["mean"]:
+        if profile.plotMean:
             required_charts.append({"title": "Chart of mean DAP for each requested procedure",
                                     "var_name": "requestMeanDAP"})
-        if profile.plotAverageChoice in ["median"]:
+        if profile.plotMedian:
             required_charts.append({"title": "Chart of median DAP for each requested procedure",
                                     "var_name": "requestMedianDAP"})
-        if profile.plotAverageChoice in ["both"]:
-            required_charts.append({"title": "Charts of mean and median DAP for each requested procedure",
-                                    "var_name": "requestMeanMedianDAP"})
-        if profile.plotHistograms:
-            required_charts.append({"title": "Histogram of DAP for each requested procedure",
-                                    "var_name": "requestHistogramDAP"})
         if profile.plotBoxplots:
             required_charts.append({"title": "Boxplot of DAP for each requested procedure",
                                     "var_name": "requestBoxplotDAP"})
+        if profile.plotHistograms:
+            required_charts.append({"title": "Histogram of DAP for each requested procedure",
+                                    "var_name": "requestHistogramDAP"})
 
     if profile.plotRFStudyFreq:
         required_charts.append({"title": "Chart of study description frequency",
@@ -1478,23 +1562,7 @@ def rf_summary_chart_data(request):
 
     return_structure = rf_plot_calculations(
         f,
-        user_profile.plotAverageChoice,
-        user_profile.plotGroupingChoice,
-        user_profile.plotSeriesPerSystem,
-        user_profile.plotHistogramBins,
-        user_profile.plotRFStudyPerDayAndHour,
-        user_profile.plotRFStudyFreq,
-        user_profile.plotRFStudyDAP,
-        user_profile.plotRFRequestFreq,
-        user_profile.plotRFRequestDAP,
-        user_profile.plotHistograms,
-        user_profile.plotCaseInsensitiveCategories,
-        user_profile.plotThemeChoice,
-        user_profile.plotColourMapChoice,
-        user_profile.plotFacetColWrapVal,
-        user_profile.plotInitialSortingDirection,
-        user_profile.plotRFInitialSortingChoice,
-        user_profile.plotBoxplots
+        user_profile
     )
 
     if settings.DEBUG:
@@ -1505,23 +1573,7 @@ def rf_summary_chart_data(request):
 
 def rf_plot_calculations(
     f,
-    plot_average_choice,
-    plot_grouping_choice,
-    plot_series_per_systems,
-    plot_histogram_bins,
-    plot_study_per_day_and_hour,
-    plot_study_freq,
-    plot_study_dap,
-    plot_request_freq,
-    plot_request_dap,
-    plot_histograms,
-    plot_case_insensitive_categories,
-    plot_theme_choice,
-    plot_colour_map_choice,
-    plot_facet_col_wrap_val,
-    plot_sorting_direction,
-    plot_sorting_field,
-    plot_boxplots
+    user_profile
 ):
     """Calculations for fluoroscopy charts
     """
@@ -1536,40 +1588,46 @@ def rf_plot_calculations(
         plotly_histogram_barchart,
         plotly_barchart_weekdays,
         plotly_set_default_theme,
-        construct_freqency_chart,
+        construct_frequency_chart,
         construct_scatter_chart,
         construct_over_time_charts
     )
 
     # Set the Plotly chart theme
-    plotly_set_default_theme(plot_theme_choice)
+    plotly_set_default_theme(user_profile.plotThemeChoice)
 
     return_structure = {}
+
+    average_choices = []
+    if user_profile.plotMean:
+        average_choices.append("mean")
+    if user_profile.plotMedian:
+        average_choices.append("median")
 
     sorted_categories = None
 
     #######################################################################
     # Prepare Pandas DataFrame to use for charts
     name_fields = []
-    if plot_study_freq or plot_study_dap or plot_study_per_day_and_hour:
+    if user_profile.plotRFStudyFreq or user_profile.plotRFStudyDAP or user_profile.plotRFStudyPerDayAndHour:
         name_fields.append("study_description")
-    if plot_request_freq or plot_request_dap:
+    if user_profile.plotRFRequestFreq or user_profile.plotRFRequestDAP:
         name_fields.append("requested_procedure_code_meaning")
 
     value_fields = []
     value_multipliers = []
-    if plot_study_dap or plot_request_dap:
+    if user_profile.plotRFStudyDAP or user_profile.plotRFRequestDAP:
         value_fields.append("total_dap")
         value_multipliers.append(1000000)
 
     date_fields = []
     time_fields = []
-    if plot_study_per_day_and_hour:
+    if user_profile.plotRFStudyPerDayAndHour:
         date_fields.append("study_date")
         time_fields.append("study_time")
 
     system_field = None
-    if plot_series_per_systems:
+    if user_profile.plotSeriesPerSystem:
         system_field = "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
 
     df = create_dataframe(
@@ -1579,13 +1637,13 @@ def rf_plot_calculations(
         data_point_date_fields=date_fields,
         data_point_time_fields=time_fields,
         system_name_field=system_field,
-        data_point_name_lowercase=plot_case_insensitive_categories,
+        data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
         data_point_value_multipliers=value_multipliers,
         uid="pk"
     )
     #######################################################################
 
-    if plot_study_per_day_and_hour:
+    if user_profile.plotRFStudyPerDayAndHour:
         df_time_series_per_weekday = create_dataframe_weekdays(
             df,
             "study_description",
@@ -1598,80 +1656,83 @@ def rf_plot_calculations(
             "study_description",
             name_axis_title="Weekday",
             value_axis_title="Frequency",
-            colourmap=plot_colour_map_choice,
+            colourmap=user_profile.plotColourMapChoice,
             filename="OpenREM RF study description workload",
-            facet_col_wrap=plot_facet_col_wrap_val
+            facet_col_wrap=user_profile.plotFacetColWrapVal
         )
 
     stats_to_include = ["count"]
-    if plot_average_choice in ["mean", "both"]:
+    if user_profile.plotMean:
         stats_to_include.append("mean")
-    if plot_average_choice in ["median", "both"]:
+    if user_profile.plotMedian:
         stats_to_include.append("median")
 
-    if plot_study_dap or plot_study_freq:
-        sorted_categories = create_sorted_category_list(
+    sorted_study_categories = None
+    if user_profile.plotRFStudyDAP:
+        sorted_study_categories = create_sorted_category_list(
             df,
             "study_description",
             "total_dap",
-            [plot_sorting_direction, plot_sorting_field]
+            [user_profile.plotInitialSortingDirection, user_profile.plotRFInitialSortingChoice]
         )
 
-    if plot_study_dap:
-        df_aggregated = create_dataframe_aggregates(
-            df,
-            "study_description",
-            "total_dap",
-            stats=stats_to_include
-        )
-
-        if plot_average_choice == "both":
-            return_structure["studyMeanMedianData"] = plotly_barchart_mean_median(
-                df_aggregated,
+        if user_profile.plotMean or user_profile.plotMedian:
+            df_aggregated = create_dataframe_aggregates(
+                df,
                 "study_description",
-                value_axis_title="DAP (cGy.cm<sup>2</sup>)",
-                name_axis_title="Study description",
-                colourmap=plot_colour_map_choice,
-                filename="OpenREM RF study description DAP mean",
-                sorted_category_list=sorted_categories
+                "total_dap",
+                stats=stats_to_include
             )
 
-        else:
-            return_structure["study" + plot_average_choice.capitalize() + "Data"] = plotly_barchart(
-                df_aggregated,
-                "study_description",
-                value_axis_title=plot_average_choice.capitalize() + " DAP (cGy.cm<sup>2</sup>)",
-                name_axis_title="Study description",
-                colourmap=plot_colour_map_choice,
-                filename="OpenREM RF study description DAP " + plot_average_choice,
-                sorted_category_list=sorted_categories,
-                average_choice=plot_average_choice
-            )
+            if user_profile.plotMean:
+                return_structure["studyMeanData"] = plotly_barchart(
+                    df_aggregated,
+                    "study_description",
+                    value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
+                    name_axis_title="Study description",
+                    colourmap=user_profile.plotColourMapChoice,
+                    filename="OpenREM RF study description DAP mean",
+                    sorted_category_list=sorted_study_categories,
+                    average_choice="mean"
+                )
 
-        if plot_boxplots:
+            if user_profile.plotMedian:
+                return_structure["studyMedianData"] = plotly_barchart(
+                    df_aggregated,
+                    "study_description",
+                    value_axis_title="Median DAP (cGy.cm<sup>2</sup>)",
+                    name_axis_title="Study description",
+                    colourmap=user_profile.plotColourMapChoice,
+                    filename="OpenREM RF study description DAP median",
+                    sorted_category_list=sorted_study_categories,
+                    average_choice="median"
+                )
+
+        if user_profile.plotBoxplots:
             return_structure["studyBoxplotData"] = plotly_boxplot(
                 df,
                 "study_description",
                 "total_dap",
                 value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 name_axis_title="Study description",
-                colourmap=plot_colour_map_choice,
+                colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM RF study description DAP boxplot",
-                sorted_category_list=sorted_categories
+                sorted_category_list=sorted_study_categories
             )
 
-        if plot_histograms:
+        if user_profile.plotHistograms:
             category_names_col = "study_description"
             group_by_col = "x_ray_system_name"
             legend_title = "Study description"
             facet_names = list(df[group_by_col].unique())
-            category_names = list(sorted_categories.values())[0]
-            if plot_grouping_choice == "series":
+            category_names = list(sorted_study_categories.values())[0]
+
+            if user_profile.plotGroupingChoice == "series":
                 category_names_col = "x_ray_system_name"
                 group_by_col = "study_description"
                 legend_title = "System"
                 category_names = facet_names
-                facet_names = list(sorted_categories.values())[0]
+                facet_names = list(sorted_study_categories.values())[0]
 
             return_structure["studyHistogramData"] = plotly_histogram_barchart(
                 df,
@@ -1680,37 +1741,37 @@ def rf_plot_calculations(
                 "total_dap",
                 value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 legend_title=legend_title,
-                n_bins=plot_histogram_bins,
-                colourmap=plot_colour_map_choice,
+                n_bins=user_profile.plotHistogramBins,
+                colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM RF study description DAP histogram",
-                facet_col_wrap=plot_facet_col_wrap_val,
+                facet_col_wrap=user_profile.plotFacetColWrapVal,
                 df_facet_category_list=facet_names,
                 df_category_name_list=category_names,
             )
 
-    if plot_study_freq:
-        return_structure["studyFrequencyData"] = construct_freqency_chart(
+    if user_profile.plotRFStudyFreq:
+        return_structure["studyFrequencyData"] = construct_frequency_chart(
             df=df,
             df_name_col="study_description",
-            sorting_choice=plot_sorting_field,
+            sorting_choice=[user_profile.plotInitialSortingDirection, user_profile.plotRFInitialSortingChoice],
             legend_title="Study description",
             df_x_axis_col="x_ray_system_name",
             x_axis_title="System",
-            grouping_choice=plot_grouping_choice,
-            colour_map=plot_colour_map_choice,
+            grouping_choice=user_profile.plotGroupingChoice,
+            colour_map=user_profile.plotColourMapChoice,
             file_name="OpenREM RF study description frequency",
-            sorted_categories=sorted_categories
+            sorted_categories=sorted_study_categories
         )
 
-    if plot_request_dap or plot_request_freq:
-        sorted_categories = create_sorted_category_list(
+    sorted_request_categories = None
+    if user_profile.plotRFRequestDAP:
+        sorted_request_categories = create_sorted_category_list(
             df,
             "requested_procedure_code_meaning",
             "total_dap",
-            [plot_sorting_direction, plot_sorting_field]
+            [user_profile.plotInitialSortingDirection, user_profile.plotRFInitialSortingChoice]
         )
 
-    if plot_request_dap:
         df_aggregated = create_dataframe_aggregates(
             df,
             "requested_procedure_code_meaning",
@@ -1718,54 +1779,55 @@ def rf_plot_calculations(
             stats=stats_to_include
         )
 
-        if plot_average_choice == "both":
-            return_structure["requestMeanMedianData"] = plotly_barchart_mean_median(
+        if user_profile.plotMean:
+            return_structure["requestMeanData"] = plotly_barchart(
                 df_aggregated,
                 "requested_procedure_code_meaning",
-                value_axis_title="DAP (cGy.cm<sup>2</sup>)",
+                value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
                 name_axis_title="Requested procedure",
-                colourmap=plot_colour_map_choice,
+                colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM RF requested procedure DAP mean",
-                sorted_category_list=sorted_categories
+                sorted_category_list=sorted_request_categories,
+                average_choice="mean"
             )
 
-        else:
-            return_structure["request" + plot_average_choice.capitalize() + "Data"] = plotly_barchart(
+        if user_profile.plotMedian:
+            return_structure["requestMedianData"] = plotly_barchart(
                 df_aggregated,
                 "requested_procedure_code_meaning",
-                value_axis_title=plot_average_choice.capitalize() + " DAP (cGy.cm<sup>2</sup>)",
+                value_axis_title="Median DAP (cGy.cm<sup>2</sup>)",
                 name_axis_title="Requested procedure",
-                colourmap=plot_colour_map_choice,
-                filename="OpenREM RF requested procedure DAP mean",
-                sorted_category_list=sorted_categories,
-                average_choice=plot_average_choice
+                colourmap=user_profile.plotColourMapChoice,
+                filename="OpenREM RF requested procedure DAP median",
+                sorted_category_list=sorted_request_categories,
+                average_choice="median"
             )
 
-        if plot_boxplots:
+        if user_profile.plotBoxplots:
             return_structure["requestBoxplotData"] = plotly_boxplot(
                 df,
                 "requested_procedure_code_meaning",
                 "total_dap",
                 value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 name_axis_title="Requested procedure",
-                colourmap=plot_colour_map_choice,
+                colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM RF requested procedure DAP boxplot",
-                sorted_category_list=sorted_categories
+                sorted_category_list=sorted_request_categories
             )
 
-        if plot_histograms:
+        if user_profile.plotHistograms:
             category_names_col = "requested_procedure_code_meaning"
             group_by_col = "x_ray_system_name"
             legend_title = "Requested procedure"
             facet_names = list(df[group_by_col].unique())
-            category_names = list(sorted_categories.values())[0]
+            category_names = list(sorted_request_categories.values())[0]
 
-            if plot_grouping_choice == "series":
+            if user_profile.plotGroupingChoice == "series":
                 category_names_col = "x_ray_system_name"
                 group_by_col = "requested_procedure_code_meaning"
                 legend_title = "System"
                 category_names = facet_names
-                facet_names = list(sorted_categories.values())[0]
+                facet_names = list(sorted_request_categories.values())[0]
 
             return_structure["requestHistogramData"] = plotly_histogram_barchart(
                 df,
@@ -1774,26 +1836,26 @@ def rf_plot_calculations(
                 "total_dap",
                 value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 legend_title=legend_title,
-                n_bins=plot_histogram_bins,
-                colourmap=plot_colour_map_choice,
+                n_bins=user_profile.plotHistogramBins,
+                colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM RF requested procedure DAP histogram",
-                facet_col_wrap=plot_facet_col_wrap_val,
+                facet_col_wrap=user_profile.plotFacetColWrapVal,
                 df_facet_category_list=facet_names,
                 df_category_name_list=category_names,
             )
 
-    if plot_request_freq:
-        return_structure["requestFrequencyData"] = construct_freqency_chart(
+    if user_profile.plotRFRequestFreq:
+        return_structure["requestFrequencyData"] = construct_frequency_chart(
             df=df,
             df_name_col="requested_procedure_code_meaning",
-            sorting_choice=plot_sorting_field,
+            sorting_choice=[user_profile.plotInitialSortingDirection, user_profile.plotRFInitialSortingChoice],
             legend_title="Requested procedure",
             df_x_axis_col="x_ray_system_name",
             x_axis_title="System",
-            grouping_choice=plot_grouping_choice,
-            colour_map=plot_colour_map_choice,
+            grouping_choice=user_profile.plotGroupingChoice,
+            colour_map=user_profile.plotColourMapChoice,
             file_name="OpenREM RF requested procedure frequency",
-            sorted_categories=sorted_categories
+            sorted_categories=sorted_request_categories
         )
 
     return return_structure
@@ -2183,9 +2245,6 @@ def ct_summary_list_filter(request):
             user_profile.plotCTOverTimePeriod = chart_options_form.cleaned_data[
                 "plotCTOverTimePeriod"
             ]
-            user_profile.plotAverageChoice = chart_options_form.cleaned_data[
-                "plotMeanMedianOrBoth"
-            ]
             user_profile.plotGroupingChoice = chart_options_form.cleaned_data[
                 "plotGrouping"
             ]
@@ -2201,9 +2260,33 @@ def ct_summary_list_filter(request):
             user_profile.plotInitialSortingDirection = chart_options_form.cleaned_data[
                 "plotInitialSortingDirection"
             ]
+
+            if "mean" in chart_options_form.cleaned_data["plotAverageChoice"]:
+                user_profile.plotMean = True
+            else:
+                user_profile.plotMean = False
+
+            if "median" in chart_options_form.cleaned_data["plotAverageChoice"]:
+                user_profile.plotMedian = True
+            else:
+                user_profile.plotMedian = False
+
+            if "boxplot" in chart_options_form.cleaned_data["plotAverageChoice"]:
+                user_profile.plotBoxplots = True
+            else:
+                user_profile.plotBoxplots = False
+
             user_profile.save()
 
         else:
+            average_choices = []
+            if user_profile.plotMean:
+                average_choices.append("mean")
+            if user_profile.plotMedian:
+                average_choices.append("median")
+            if user_profile.plotBoxplots:
+                average_choices.append("boxplot")
+
             form_data = {
                 "plotCharts": user_profile.plotCharts,
                 "plotCTAcquisitionMeanDLP": user_profile.plotCTAcquisitionMeanDLP,
@@ -2224,12 +2307,12 @@ def ct_summary_list_filter(request):
                 "plotCTStudyPerDayAndHour": user_profile.plotCTStudyPerDayAndHour,
                 "plotCTStudyMeanDLPOverTime": user_profile.plotCTStudyMeanDLPOverTime,
                 "plotCTOverTimePeriod": user_profile.plotCTOverTimePeriod,
-                "plotMeanMedianOrBoth": user_profile.plotAverageChoice,
                 "plotGrouping": user_profile.plotGroupingChoice,
                 "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
                 "plotHistograms": user_profile.plotHistograms,
                 "plotCTInitialSortingChoice": user_profile.plotCTInitialSortingChoice,
-                "plotInitialSortingDirection": user_profile.plotInitialSortingDirection
+                "plotInitialSortingDirection": user_profile.plotInitialSortingDirection,
+                "plotAverageChoice": average_choices
             }
             chart_options_form = CTChartOptionsForm(form_data)
 
@@ -2287,23 +2370,29 @@ def generate_required_ct_charts_list(profile):
     required_charts = []
 
     if profile.plotCTAcquisitionMeanDLP:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotMean:
             required_charts.append({"title": "Chart of mean DLP for each acquisition protocol",
                                     "var_name": "acquisitionMeanDLP"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotMedian:
             required_charts.append({"title": "Chart of median DLP for each acquisition protocol",
                                     "var_name": "acquisitionMedianDLP"})
+        if profile.plotBoxplots:
+            required_charts.append({"title": "Boxplot of DLP for each acquisition protocol",
+                                    "var_name": "acquisitionBoxplotDLP"})
         if profile.plotHistograms:
             required_charts.append({"title": "Histogram of DLP for each acquisition protocol",
                                     "var_name": "acquisitionHistogramDLP"})
 
     if profile.plotCTAcquisitionMeanCTDI:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotMean:
             required_charts.append({"title": mark_safe("Chart of mean CTDI<sub>vol</sub> for each acquisition protocol"),
                                     "var_name": "acquisitionMeanCTDI"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotMedian:
             required_charts.append({"title": mark_safe("Chart of median CTDI<sub>vol</sub> for each acquisition protocol"),
                                     "var_name": "acquisitionMedianCTDI"})
+        if profile.plotBoxplots:
+            required_charts.append({"title": mark_safe("Boxplot of median CTDI<sub>vol</sub> for each acquisition protocol"),
+                                    "var_name": "acquisitionBoxplotCTDI"})
         if profile.plotHistograms:
             required_charts.append({"title": mark_safe("Histogram of CTDI<sub>vol</sub> for each acquisition protocol"),
                                     "var_name": "acquisitionHistogramCTDI"})
@@ -2321,39 +2410,45 @@ def generate_required_ct_charts_list(profile):
                                 "var_name": "acquisitionScatterDLPvsMass"})
 
     if profile.plotCTAcquisitionCTDIOverTime:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotMean:
             required_charts.append({"title": mark_safe("Chart of mean CTDI<sub>vol</sub> per acquisition protocol over time (" + profile.plotCTOverTimePeriod + ")"),
                                     "var_name": "acquisitionMeanCTDIOverTime"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotMedian:
             required_charts.append({"title": mark_safe("Chart of median CTDI<sub>vol</sub> per acquisition protocol over time (" + profile.plotCTOverTimePeriod + ")"),
                                     "var_name": "acquisitionMedianCTDIOverTime"})
 
     if profile.plotCTAcquisitionDLPOverTime:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotMean:
             required_charts.append({"title": "Chart of mean DLP per acquisition protocol over time (" + profile.plotCTOverTimePeriod + ")",
                                     "var_name": "acquisitionMeanDLPOverTime"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotMedian:
             required_charts.append({"title": "Chart of median DLP per acquisition protocol over time (" + profile.plotCTOverTimePeriod + ")",
                                     "var_name": "acquisitionMedianDLPOverTime"})
 
     if profile.plotCTStudyMeanDLP:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotMean:
             required_charts.append({"title": "Chart of mean DLP for each study description",
                                     "var_name": "studyMeanDLP"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotMedian:
             required_charts.append({"title": "Chart of median DLP for each study description",
                                     "var_name": "studyMedianDLP"})
+        if profile.plotBoxplots:
+            required_charts.append({"title": "Boxplot of median DLP for each study description",
+                                    "var_name": "studyBoxplotDLP"})
         if profile.plotHistograms:
             required_charts.append({"title": "Histogram of DLP for each study description",
                                     "var_name": "studyHistogramDLP"})
 
     if profile.plotCTStudyMeanCTDI:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotMean:
             required_charts.append({"title": mark_safe("Chart of mean CTDI<sub>vol</sub> for each study description"),
                                     "var_name": "studyMeanCTDI"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotMedian:
             required_charts.append({"title": mark_safe("Chart of median CTDI<sub>vol</sub> for each study description"),
                                     "var_name": "studyMedianCTDI"})
+        if profile.plotBoxplots:
+            required_charts.append({"title": mark_safe("Boxplot of median CTDI<sub>vol</sub> for each study description"),
+                                    "var_name": "studyBoxplotCTDI"})
         if profile.plotHistograms:
             required_charts.append({"title": mark_safe("Histogram of CTDI<sub>vol</sub> for each study description"),
                                     "var_name": "studyHistogramCTDI"})
@@ -2363,23 +2458,29 @@ def generate_required_ct_charts_list(profile):
                                 "var_name": "studyFrequency"})
 
     if profile.plotCTStudyNumEvents:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotMean:
             required_charts.append({"title": "Chart of mean number of events for each study description",
                                     "var_name": "studyMeanNumEvents"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotMedian:
             required_charts.append({"title": "Chart of median number of events for each study description",
                                     "var_name": "studyMedianNumEvents"})
+        if profile.plotBoxplots:
+            required_charts.append({"title": "Boxplot of median number of events for each study description",
+                                    "var_name": "studyBoxplotNumEvents"})
         if profile.plotHistograms:
             required_charts.append({"title": "Histogram of number of events for each study description",
                                     "var_name": "studyHistogramNumEvents"})
 
     if profile.plotCTRequestMeanDLP:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotMean:
             required_charts.append({"title": "Chart of mean DLP for each requested procedure",
                                     "var_name": "requestMeanDLP"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotMedian:
             required_charts.append({"title": "Chart of median DLP for each requested procedure",
                                     "var_name": "requestMedianDLP"})
+        if profile.plotBoxplots:
+            required_charts.append({"title": "Boxplot of median DLP for each requested procedure",
+                                    "var_name": "requestBoxplotDLP"})
         if profile.plotHistograms:
             required_charts.append({"title": "Histogram of DLP for each requested procedure",
                                     "var_name": "requestHistogramDLP"})
@@ -2389,22 +2490,25 @@ def generate_required_ct_charts_list(profile):
                                 "var_name": "requestFrequency"})
 
     if profile.plotCTRequestNumEvents:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotMean:
             required_charts.append({"title": "Chart of mean number of events for each requested procedure",
                                     "var_name": "requestMeanNumEvents"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotMedian:
             required_charts.append({"title": "Chart of median number of events for each requested procedure",
                                     "var_name": "requestMedianNumEvents"})
+        if profile.plotBoxplots:
+            required_charts.append({"title": "Boxplot of median number of events for each requested procedure",
+                                    "var_name": "requestBoxplotNumEvents"})
         if profile.plotHistograms:
             required_charts.append({"title": "Histogram of number of events for each requested procedure",
                                     "var_name": "requestHistogramNumEvents"})
 
     if profile.plotCTRequestDLPOverTime:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotMean:
             required_charts.append({
                                        "title": "Chart of mean DLP per requested procedure over time (" + profile.plotCTOverTimePeriod + ")",
                                        "var_name": "requestMeanDLPOverTime"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotMedian:
             required_charts.append({
                                        "title": "Chart of median DLP per requested procedure over time (" + profile.plotCTOverTimePeriod + ")",
                                        "var_name": "requestMedianDLPOverTime"})
@@ -2414,11 +2518,11 @@ def generate_required_ct_charts_list(profile):
                                 "var_name": "studyWorkload"})
 
     if profile.plotCTStudyMeanDLPOverTime:
-        if profile.plotAverageChoice in ["mean", "both"]:
+        if profile.plotMean:
             required_charts.append({
                                        "title": "Chart of mean DLP per study description over time (" + profile.plotCTOverTimePeriod + ")",
                                        "var_name": "studyMeanDLPOverTime"})
-        if profile.plotAverageChoice in ["median", "both"]:
+        if profile.plotMedian:
             required_charts.append({
                                        "title": "Chart of median DLP per study description over time (" + profile.plotCTOverTimePeriod + ")",
                                        "var_name": "studyMedianDLPOverTime"})
@@ -2450,42 +2554,9 @@ def ct_summary_chart_data(request):
 
         start_time = datetime.now()
 
-    # Obtain the key name in the TIME_PERIOD tuple from the user time period choice (the key value)
-    keys = list(dict(user_profile.TIME_PERIOD).keys())
-    values = list(dict(user_profile.TIME_PERIOD).values())
-    plot_timeunit_period = keys[[tp.lower() for tp in values].index(user_profile.plotCTOverTimePeriod)]
-
     return_structure = ct_plot_calculations(
         f,
-        user_profile.plotCTAcquisitionFreq,
-        user_profile.plotCTAcquisitionMeanCTDI,
-        user_profile.plotCTAcquisitionMeanDLP,
-        user_profile.plotCTAcquisitionCTDIvsMass,
-        user_profile.plotCTAcquisitionDLPvsMass,
-        user_profile.plotCTAcquisitionCTDIOverTime,
-        user_profile.plotCTAcquisitionDLPOverTime,
-        user_profile.plotCTRequestFreq,
-        user_profile.plotCTRequestMeanDLP,
-        user_profile.plotCTRequestNumEvents,
-        user_profile.plotCTRequestDLPOverTime,
-        user_profile.plotCTStudyFreq,
-        user_profile.plotCTStudyMeanDLP,
-        user_profile.plotCTStudyMeanCTDI,
-        user_profile.plotCTStudyNumEvents,
-        user_profile.plotCTStudyMeanDLPOverTime,
-        plot_timeunit_period,
-        user_profile.plotCTStudyPerDayAndHour,
-        user_profile.plotAverageChoice,
-        user_profile.plotGroupingChoice,
-        user_profile.plotSeriesPerSystem,
-        user_profile.plotHistogramBins,
-        user_profile.plotHistograms,
-        user_profile.plotCaseInsensitiveCategories,
-        user_profile.plotThemeChoice,
-        user_profile.plotColourMapChoice,
-        user_profile.plotFacetColWrapVal,
-        user_profile.plotInitialSortingDirection,
-        user_profile.plotCTInitialSortingChoice
+        user_profile
     )
 
     if settings.DEBUG:
@@ -2496,35 +2567,7 @@ def ct_summary_chart_data(request):
 
 def ct_plot_calculations(
     f,
-    plot_acquisition_freq,
-    plot_acquisition_mean_ctdi,
-    plot_acquisition_mean_dlp,
-    plot_acquisition_ctdi_vs_mass,
-    plot_acquisition_dlp_vs_mass,
-    plot_acquisition_ctdi_over_time,
-    plot_acquisition_dlp_over_time,
-    plot_request_freq,
-    plot_request_mean_dlp,
-    plot_request_num_events,
-    plot_request_dlp_over_time,
-    plot_study_freq,
-    plot_study_mean_dlp,
-    plot_study_mean_ctdi,
-    plot_study_num_events,
-    plot_study_mean_dlp_over_time,
-    plot_over_time_period,
-    plot_study_per_day_and_hour,
-    plot_average_choice,
-    plot_grouping_choice,
-    plot_series_per_systems,
-    plot_histogram_bins,
-    plot_histograms,
-    plot_case_insensitive_categories,
-    plot_theme_choice,
-    plot_colour_map_choice,
-    plot_facet_col_wrap_val,
-    plot_sorting_direction,
-    plot_sorting_field
+    user_profile
 ):
     """CT chart data calculations
     """
@@ -2538,44 +2581,61 @@ def ct_plot_calculations(
         plotly_histogram_barchart,
         plotly_barchart_weekdays,
         plotly_set_default_theme,
-        construct_freqency_chart,
+        construct_frequency_chart,
         construct_scatter_chart,
         construct_over_time_charts
     )
 
     # Set the Plotly chart theme
-    plotly_set_default_theme(plot_theme_choice)
+    plotly_set_default_theme(user_profile.plotThemeChoice)
 
     return_structure = {}
+
+    average_choices = []
+    if user_profile.plotMean:
+        average_choices.append("mean")
+    if user_profile.plotMedian:
+        average_choices.append("median")
+
+    if (
+        user_profile.plotCTAcquisitionDLPOverTime
+        or user_profile.plotCTAcquisitionCTDIOverTime
+        or user_profile.plotCTStudyMeanDLPOverTime
+        or user_profile.plotCTRequestDLPOverTime
+    ):
+        # Obtain the key name in the TIME_PERIOD tuple from the user time period choice (the key value)
+        keys = list(dict(user_profile.TIME_PERIOD).keys())
+        values = list(dict(user_profile.TIME_PERIOD).values())
+        plot_timeunit_period = keys[[tp.lower() for tp in values].index(user_profile.plotCTOverTimePeriod)]
 
     #######################################################################
     # Prepare acquisition-level Pandas DataFrame to use for charts
     if (
-        plot_acquisition_freq
-        or plot_acquisition_mean_ctdi
-        or plot_acquisition_mean_dlp
-        or plot_acquisition_ctdi_vs_mass
-        or plot_acquisition_dlp_vs_mass
-        or plot_acquisition_ctdi_over_time
-        or plot_acquisition_dlp_over_time
+        user_profile.plotCTAcquisitionFreq
+        or user_profile.plotCTAcquisitionMeanCTDI
+        or user_profile.plotCTAcquisitionMeanDLP
+        or user_profile.plotCTAcquisitionCTDIvsMass
+        or user_profile.plotCTAcquisitionDLPvsMass
+        or user_profile.plotCTAcquisitionCTDIOverTime
+        or user_profile.plotCTAcquisitionDLPOverTime
     ):
 
         name_fields = ["ctradiationdose__ctirradiationeventdata__acquisition_protocol"]
 
         value_fields = []
-        if plot_acquisition_mean_dlp or plot_acquisition_dlp_vs_mass or plot_acquisition_dlp_over_time:
+        if user_profile.plotCTAcquisitionMeanDLP or user_profile.plotCTAcquisitionDLPvsMass or user_profile.plotCTAcquisitionDLPOverTime:
             value_fields.append("ctradiationdose__ctirradiationeventdata__dlp")
-        if plot_acquisition_mean_ctdi or plot_acquisition_ctdi_vs_mass or plot_acquisition_ctdi_over_time:
+        if user_profile.plotCTAcquisitionMeanCTDI or user_profile.plotCTAcquisitionCTDIvsMass or user_profile.plotCTAcquisitionCTDIOverTime:
             value_fields.append("ctradiationdose__ctirradiationeventdata__mean_ctdivol")
-        if plot_acquisition_ctdi_vs_mass or plot_acquisition_dlp_vs_mass:
+        if user_profile.plotCTAcquisitionCTDIvsMass or user_profile.plotCTAcquisitionDLPvsMass:
             value_fields.append("patientstudymoduleattr__patient_weight")
 
         date_fields = []
-        if plot_acquisition_ctdi_over_time or plot_acquisition_dlp_over_time:
+        if user_profile.plotCTAcquisitionCTDIOverTime or user_profile.plotCTAcquisitionDLPOverTime:
             date_fields.append("study_date")
 
         system_field = None
-        if plot_series_per_systems:
+        if user_profile.plotSeriesPerSystem:
             system_field = "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
 
         df = create_dataframe(
@@ -2584,64 +2644,79 @@ def ct_plot_calculations(
             data_point_value_fields=value_fields,
             data_point_date_fields=date_fields,
             system_name_field=system_field,
-            data_point_name_lowercase=plot_case_insensitive_categories,
+            data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             uid="ctradiationdose__ctirradiationeventdata__pk"
         )
         #######################################################################
 
         #######################################################################
         # Create the required acquisition-level charts
-        if plot_acquisition_mean_dlp:
-            sorted_categories = create_sorted_category_list(
+        sorted_acquisition_dlp_categories = None
+        if user_profile.plotCTAcquisitionMeanDLP:
+            sorted_acquisition_dlp_categories = create_sorted_category_list(
                 df,
                 "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                 "ctradiationdose__ctirradiationeventdata__dlp",
-                [plot_sorting_direction, plot_sorting_field]
+                [user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice]
             )
 
-            if plot_average_choice in ["mean", "both"]:
+            if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
                     "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                     "ctradiationdose__ctirradiationeventdata__dlp",
-                    stats=["mean", "count"]
+                    stats=average_choices + ["count"]
                 )
 
-                return_structure["acquisitionMeanDLPData"] = plotly_barchart(
-                    df_aggregated,
-                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                    value_axis_title="DLP (mGy.cm)",
-                    name_axis_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT acquisition protocol DLP mean",
-                    sorted_category_list=sorted_categories
-                )
+                if user_profile.plotMean:
+                    return_structure["acquisitionMeanDLPData"] = plotly_barchart(
+                        df_aggregated,
+                        "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                        value_axis_title="Mean DLP (mGy.cm)",
+                        name_axis_title="Acquisition protocol",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM CT acquisition protocol DLP mean",
+                        sorted_category_list=sorted_acquisition_dlp_categories,
+                        average_choice="mean"
+                    )
 
-            if plot_average_choice in ["median", "both"]:
+                if user_profile.plotMedian:
+                    return_structure["acquisitionMedianDLPData"] = plotly_barchart(
+                        df_aggregated,
+                        "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                        value_axis_title="Median DLP (mGy.cm)",
+                        name_axis_title="Acquisition protocol",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM CT acquisition protocol DLP median",
+                        sorted_category_list=sorted_acquisition_dlp_categories,
+                        average_choice="median"
+                    )
+
+            if user_profile.plotBoxplots:
                 return_structure["acquisitionBoxplotDLPData"] = plotly_boxplot(
                     df,
                     "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                     "ctradiationdose__ctirradiationeventdata__dlp",
                     value_axis_title="DLP (mGy.cm)",
                     name_axis_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT acquisition protocol DLP boxplot",
-                    sorted_category_list=sorted_categories
+                    sorted_category_list=sorted_acquisition_dlp_categories
                 )
 
-            if plot_histograms:
+            if user_profile.plotHistograms:
                 category_names_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Acquisition protocol"
                 facet_names = list(df[group_by_col].unique())
-                category_names = list(sorted_categories.values())[0]
+                category_names = list(sorted_acquisition_dlp_categories.values())[0]
 
-                if plot_grouping_choice == "series":
+                if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
                     legend_title = "System"
                     category_names = facet_names
-                    facet_names = list(sorted_categories.values())[0]
+                    facet_names = list(sorted_acquisition_dlp_categories.values())[0]
 
                 return_structure["acquisitionHistogramDLPData"] = plotly_histogram_barchart(
                     df,
@@ -2650,65 +2725,80 @@ def ct_plot_calculations(
                     "ctradiationdose__ctirradiationeventdata__dlp",
                     value_axis_title="DLP (mGy.cm)",
                     legend_title=legend_title,
-                    n_bins=plot_histogram_bins,
-                    colourmap=plot_colour_map_choice,
+                    n_bins=user_profile.plotHistogramBins,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT acquisition protocol DLP histogram",
-                    facet_col_wrap=plot_facet_col_wrap_val,
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
                 )
 
-        if plot_acquisition_mean_ctdi:
-            sorted_categories = create_sorted_category_list(
+        sorted_acquisition_ctdi_categories = None
+        if user_profile.plotCTAcquisitionMeanCTDI:
+            sorted_acquisition_ctdi_categories = create_sorted_category_list(
                 df,
                 "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                 "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                [plot_sorting_direction, plot_sorting_field]
+                [user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice]
             )
 
-            if plot_average_choice in ["mean", "both"]:
+            if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
                     "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    stats=["mean", "count"]
+                    stats=average_choices + ["count"]
                 )
 
-                return_structure["acquisitionMeanCTDIData"] = plotly_barchart(
-                    df_aggregated,
-                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                    value_axis_title="CTDI<sub>vol</sub> (mGy)",
-                    name_axis_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT acquisition protocol CTDI mean",
-                    sorted_category_list=sorted_categories
-                )
+                if user_profile.plotMean:
+                    return_structure["acquisitionMeanCTDIData"] = plotly_barchart(
+                        df_aggregated,
+                        "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                        value_axis_title="Mean CTDI<sub>vol</sub> (mGy)",
+                        name_axis_title="Acquisition protocol",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM CT acquisition protocol CTDI mean",
+                        sorted_category_list=sorted_acquisition_ctdi_categories,
+                        average_choice="mean"
+                    )
 
-            if plot_average_choice in ["median", "both"]:
+                if user_profile.plotMedian:
+                    return_structure["acquisitionMedianCTDIData"] = plotly_barchart(
+                        df_aggregated,
+                        "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                        value_axis_title="Median CTDI<sub>vol</sub> (mGy)",
+                        name_axis_title="Acquisition protocol",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM CT acquisition protocol CTDI median",
+                        sorted_category_list=sorted_acquisition_ctdi_categories,
+                        average_choice="median"
+                    )
+
+            if user_profile.plotBoxplots:
                 return_structure["acquisitionBoxplotCTDIData"] = plotly_boxplot(
                     df,
                     "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                     value_axis_title="CTDI<sub>vol</sub> (mGy)",
                     name_axis_title="Acquisition protocol",
-                    colourmap=plot_colour_map_choice,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT acquisition protocol CTDI boxplot",
-                    sorted_category_list=sorted_categories
+                    sorted_category_list=sorted_acquisition_ctdi_categories
                 )
 
-            if plot_histograms:
+            if user_profile.plotHistograms:
                 category_names_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Acquisition protocol"
                 facet_names = list(df[group_by_col].unique())
-                category_names = list(sorted_categories.values())[0]
+                category_names = list(sorted_acquisition_ctdi_categories.values())[0]
 
-                if plot_grouping_choice == "series":
+                if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
                     legend_title = "System"
                     category_names = facet_names
-                    facet_names = list(sorted_categories.values())[0]
+                    facet_names = list(sorted_acquisition_ctdi_categories.values())[0]
 
                 return_structure["acquisitionHistogramCTDIData"] = plotly_histogram_barchart(
                     df,
@@ -2717,28 +2807,35 @@ def ct_plot_calculations(
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                     value_axis_title="CTDI<sub>vol</sub> (mGy)",
                     legend_title=legend_title,
-                    n_bins=plot_histogram_bins,
-                    colourmap=plot_colour_map_choice,
+                    n_bins=user_profile.plotHistogramBins,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT acquisition protocol CTDI histogram",
-                    facet_col_wrap=plot_facet_col_wrap_val,
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
                 )
 
-        if plot_acquisition_freq:
-            return_structure["acquisitionFrequencyData"] = construct_freqency_chart(
+        if user_profile.plotCTAcquisitionFreq:
+            sorted_categories = None
+            if sorted_acquisition_dlp_categories:
+                sorted_categories = sorted_acquisition_dlp_categories
+            elif sorted_acquisition_ctdi_categories:
+                sorted_categories = sorted_acquisition_ctdi_categories
+
+            return_structure["acquisitionFrequencyData"] = construct_frequency_chart(
                 df=df,
                 df_name_col="ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                sorting_choice=plot_sorting_field,
+                sorting_choice=[user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice],
                 legend_title="Acquisition protocol",
                 df_x_axis_col="x_ray_system_name",
                 x_axis_title="System",
-                grouping_choice=plot_grouping_choice,
-                colour_map=plot_colour_map_choice,
-                file_name="OpenREM CT acquisition protocol frequency"
+                grouping_choice=user_profile.plotGroupingChoice,
+                colour_map=user_profile.plotColourMapChoice,
+                file_name="OpenREM CT acquisition protocol frequency",
+                sorted_categories=sorted_categories
             )
 
-        if plot_acquisition_ctdi_vs_mass:
+        if user_profile.plotCTAcquisitionCTDIvsMass:
             return_structure["acquisitionScatterCTDIvsMass"] = construct_scatter_chart(
                 df=df,
                 df_name_col="ctradiationdose__ctirradiationeventdata__acquisition_protocol",
@@ -2746,15 +2843,15 @@ def ct_plot_calculations(
                 df_y_col="ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                 x_axis_title="Patient mass (kg)",
                 y_axis_title="CTDI<sub>vol</sub> (mGy)",
-                sorting=[plot_sorting_direction, plot_sorting_field],
-                grouping_choice=plot_grouping_choice,
+                sorting=[user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice],
+                grouping_choice=user_profile.plotGroupingChoice,
                 legend_title="Acquisition protocol",
-                colour_map=plot_colour_map_choice,
-                facet_col_wrap=plot_facet_col_wrap_val,
+                colour_map=user_profile.plotColourMapChoice,
+                facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM CT acquisition protocol CTDI vs patient mass"
             )
 
-        if plot_acquisition_dlp_vs_mass:
+        if user_profile.plotCTAcquisitionDLPvsMass:
             return_structure["acquisitionScatterDLPvsMass"] = construct_scatter_chart(
                 df=df,
                 df_name_col="ctradiationdose__ctirradiationeventdata__acquisition_protocol",
@@ -2762,15 +2859,15 @@ def ct_plot_calculations(
                 df_y_col="ctradiationdose__ctirradiationeventdata__dlp",
                 x_axis_title = "Patient mass (kg)",
                 y_axis_title = "DLP (mGy.cm)",
-                sorting=[plot_sorting_direction, plot_sorting_field],
-                grouping_choice=plot_grouping_choice,
+                sorting=[user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice],
+                grouping_choice=user_profile.plotGroupingChoice,
                 legend_title="Acquisition protocol",
-                colour_map=plot_colour_map_choice,
-                facet_col_wrap=plot_facet_col_wrap_val,
+                colour_map=user_profile.plotColourMapChoice,
+                facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM CT acquisition protocol DLP vs patient mass"
             )
 
-        if plot_acquisition_ctdi_over_time:
+        if user_profile.plotCTAcquisitionCTDIOverTime:
             result = construct_over_time_charts(
                 df=df,
                 df_name_col="ctradiationdose__ctirradiationeventdata__acquisition_protocol",
@@ -2779,21 +2876,21 @@ def ct_plot_calculations(
                 name_title="Acquisition protocol",
                 value_title="CTDI<sub>vol</sub> (mGy)",
                 date_title="Study date",
-                sorting=[plot_sorting_direction, plot_sorting_field],
-                time_period=plot_over_time_period,
-                average_choice=plot_average_choice,
-                grouping_choice=plot_grouping_choice,
-                colour_map=plot_colour_map_choice,
-                facet_col_wrap=plot_facet_col_wrap_val,
+                sorting=[user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice],
+                time_period=plot_timeunit_period,
+                average_choices=average_choices,
+                grouping_choice=user_profile.plotGroupingChoice,
+                colour_map=user_profile.plotColourMapChoice,
+                facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM CT acquisition protocol CTDI over time"
             )
 
-            if plot_average_choice in ["mean", "both"]:
+            if user_profile.plotMean:
                 return_structure["acquisitionMeanCTDIOverTime"] = result["mean"]
-            if plot_average_choice in ["median", "both"]:
+            if user_profile.plotMedian:
                 return_structure["acquisitionMedianCTDIOverTime"] = result["median"]
 
-        if plot_acquisition_dlp_over_time:
+        if user_profile.plotCTAcquisitionDLPOverTime:
             result = construct_over_time_charts(
                 df=df,
                 df_name_col="ctradiationdose__ctirradiationeventdata__acquisition_protocol",
@@ -2802,68 +2899,77 @@ def ct_plot_calculations(
                 name_title="Acquisition protocol",
                 value_title="DLP (mGy.cm)",
                 date_title="Study date",
-                sorting=[plot_sorting_direction, plot_sorting_field],
-                time_period=plot_over_time_period,
-                average_choice=plot_average_choice,
-                grouping_choice=plot_grouping_choice,
-                colour_map=plot_colour_map_choice,
-                facet_col_wrap=plot_facet_col_wrap_val,
+                sorting=[user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice],
+                time_period=plot_timeunit_period,
+                average_choices=average_choices,
+                grouping_choice=user_profile.plotGroupingChoice,
+                colour_map=user_profile.plotColourMapChoice,
+                facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM CT acquisition protocol DLP over time"
             )
 
-            if plot_average_choice in ["mean", "both"]:
+            if user_profile.plotMean:
                 return_structure["acquisitionMeanDLPOverTime"] = result["mean"]
-            if plot_average_choice in ["median", "both"]:
+            if user_profile.plotMedian:
                 return_structure["acquisitionMedianDLPOverTime"] = result["median"]
 
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts
-    if (plot_request_freq
-    or plot_request_mean_dlp
-    or plot_request_num_events
-    or plot_request_dlp_over_time
-    or plot_study_freq
-    or plot_study_mean_dlp
-    or plot_study_mean_ctdi
-    or plot_study_num_events
-    or plot_study_mean_dlp_over_time
-    or plot_study_per_day_and_hour
+    if (user_profile.plotCTRequestFreq
+        or user_profile.plotCTRequestMeanDLP
+        or user_profile.plotCTRequestNumEvents
+        or user_profile.plotCTRequestDLPOverTime
+        or user_profile.plotCTStudyFreq
+        or user_profile.plotCTStudyMeanDLP
+        or user_profile.plotCTStudyMeanCTDI
+        or user_profile.plotCTStudyNumEvents
+        or user_profile.plotCTStudyMeanDLPOverTime
+        or user_profile.plotCTStudyPerDayAndHour
     ):
 
         name_fields = []
         if (
-            plot_study_mean_dlp
-            or plot_study_freq
-            or plot_study_mean_dlp_over_time
-            or plot_study_per_day_and_hour
-            or plot_study_num_events
-            or plot_study_mean_ctdi
+            user_profile.plotCTStudyMeanDLP
+            or user_profile.plotCTStudyFreq
+            or user_profile.plotCTStudyMeanDLPOverTime
+            or user_profile.plotCTStudyPerDayAndHour
+            or user_profile.plotCTStudyNumEvents
+            or user_profile.plotCTStudyMeanCTDI
         ):
             name_fields.append("study_description")
         if (
-            plot_request_mean_dlp
-            or plot_request_freq
-            or plot_request_num_events
-            or plot_request_dlp_over_time
+            user_profile.plotCTRequestMeanDLP
+            or user_profile.plotCTRequestFreq
+            or user_profile.plotCTRequestNumEvents
+            or user_profile.plotCTRequestDLPOverTime
         ):
             name_fields.append("requested_procedure_code_meaning")
 
-        value_fields = ["total_dlp"]
-        #if plot_study_mean_dlp or plot_study_mean_dlp_over_time or plot_request_mean_dlp or plot_request_dlp_over_time:
-        #    value_fields.append("total_dlp")
-        if plot_study_mean_ctdi:
+        value_fields = []
+        if (
+            user_profile.plotCTStudyMeanDLP
+            or user_profile.plotCTStudyMeanDLPOverTime
+            or user_profile.plotCTRequestMeanDLP
+            or user_profile.plotCTRequestDLPOverTime
+        ):
+            value_fields.append("total_dlp")
+        if user_profile.plotCTStudyMeanCTDI:
             value_fields.append("ctradiationdose__ctirradiationeventdata__mean_ctdivol")
-        if plot_study_num_events or plot_request_num_events:
+        if user_profile.plotCTStudyNumEvents or user_profile.plotCTRequestNumEvents:
             value_fields.append("number_of_events")
 
         date_fields = []
         time_fields = []
-        if plot_study_mean_dlp_over_time or plot_study_per_day_and_hour or plot_request_dlp_over_time:
+        if (
+            user_profile.plotCTStudyMeanDLPOverTime
+            or user_profile.plotCTStudyPerDayAndHour
+            or user_profile.plotCTRequestDLPOverTime
+        ):
             date_fields.append("study_date")
             time_fields.append("study_time")
 
         system_field = None
-        if plot_series_per_systems:
+        if user_profile.plotSeriesPerSystem:
             system_field = "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
 
         df = create_dataframe(
@@ -2873,7 +2979,7 @@ def ct_plot_calculations(
             data_point_date_fields=date_fields,
             data_point_time_fields=time_fields,
             system_name_field=system_field,
-            data_point_name_lowercase=plot_case_insensitive_categories,
+            data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             uid="pk"
         )
         #######################################################################
@@ -2881,57 +2987,72 @@ def ct_plot_calculations(
 
         #######################################################################
         # Create the required study- and request-level charts
-        if plot_study_mean_dlp:
-            sorted_categories = create_sorted_category_list(
+        sorted_study_dlp_categories = None
+        if user_profile.plotCTStudyMeanDLP:
+            sorted_study_dlp_categories = create_sorted_category_list(
                 df,
                 "study_description",
                 "total_dlp",
-                [plot_sorting_direction, plot_sorting_field]
+                [user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice]
             )
 
-            if plot_average_choice in ["mean", "both"]:
+            if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
                     "study_description",
                     "total_dlp",
-                    stats=["mean", "count"]
+                    stats=average_choices + ["count"]
                 )
 
-                return_structure["studyMeanDLPData"] = plotly_barchart(
-                    df_aggregated,
-                    "study_description",
-                    value_axis_title="Mean DLP (mGy.cm)",
-                    name_axis_title="Study description",
-                    colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT study description DLP mean",
-                    sorted_category_list=sorted_categories
-                )
+                if user_profile.plotMean:
+                    return_structure["studyMeanDLPData"] = plotly_barchart(
+                        df_aggregated,
+                        "study_description",
+                        value_axis_title="Mean DLP (mGy.cm)",
+                        name_axis_title="Study description",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM CT study description DLP mean",
+                        sorted_category_list=sorted_study_dlp_categories,
+                        average_choice="mean"
+                    )
 
-            if plot_average_choice in ["median", "both"]:
+                if user_profile.plotMedian:
+                    return_structure["studyMedianDLPData"] = plotly_barchart(
+                        df_aggregated,
+                        "study_description",
+                        value_axis_title="Median DLP (mGy.cm)",
+                        name_axis_title="Study description",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM CT study description DLP median",
+                        sorted_category_list=sorted_study_dlp_categories,
+                        average_choice="median"
+                    )
+
+            if user_profile.plotBoxplots:
                 return_structure["studyBoxplotDLPData"] = plotly_boxplot(
                     df,
                     "study_description",
                     "total_dlp",
                     value_axis_title="DLP (mGy.cm)",
                     name_axis_title="Study description",
-                    colourmap=plot_colour_map_choice,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT study description DLP boxplot",
-                    sorted_category_list=sorted_categories
+                    sorted_category_list=sorted_study_dlp_categories
                 )
 
-            if plot_histograms:
+            if user_profile.plotHistograms:
                 category_names_col = "study_description"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Study description"
                 facet_names = list(df[group_by_col].unique())
-                category_names = list(sorted_categories.values())[0]
+                category_names = list(sorted_study_dlp_categories.values())[0]
 
-                if plot_grouping_choice == "series":
+                if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = "study_description"
                     legend_title = "System"
                     category_names = facet_names
-                    facet_names = list(sorted_categories.values())[0]
+                    facet_names = list(sorted_study_dlp_categories.values())[0]
 
                 return_structure["studyHistogramDLPData"] = plotly_histogram_barchart(
                     df,
@@ -2940,65 +3061,80 @@ def ct_plot_calculations(
                     "total_dlp",
                     value_axis_title="DLP (mGy.cm)",
                     legend_title=legend_title,
-                    n_bins=plot_histogram_bins,
-                    colourmap=plot_colour_map_choice,
+                    n_bins=user_profile.plotHistogramBins,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT study description DLP histogram",
-                    facet_col_wrap=plot_facet_col_wrap_val,
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
                 )
 
-        if plot_study_mean_ctdi:
-            sorted_categories = create_sorted_category_list(
+        sorted_study_ctdi_categories = None
+        if user_profile.plotCTStudyMeanCTDI:
+            sorted_study_ctdi_categories = create_sorted_category_list(
                 df,
                 "study_description",
                 "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                [plot_sorting_direction, plot_sorting_field]
+                [user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice]
             )
 
-            if plot_average_choice in ["mean", "both"]:
+            if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
                     "study_description",
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    stats=["mean", "count"]
+                    stats=average_choices + ["count"]
                 )
 
-                return_structure["studyMeanCTDIData"] = plotly_barchart(
-                    df_aggregated,
-                    "study_description",
-                    value_axis_title="Mean CTDI<sub>vol</sub> (mGy)",
-                    name_axis_title="Study description",
-                    colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT study description CTDI mean",
-                    sorted_category_list=sorted_categories
-                )
+                if user_profile.plotMean:
+                    return_structure["studyMeanCTDIData"] = plotly_barchart(
+                        df_aggregated,
+                        "study_description",
+                        value_axis_title="Mean CTDI<sub>vol</sub> (mGy)",
+                        name_axis_title="Study description",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM CT study description CTDI mean",
+                        sorted_category_list=sorted_study_ctdi_categories,
+                        average_choice="mean"
+                    )
 
-            if plot_average_choice in ["median", "both"]:
+                if user_profile.plotMedian:
+                    return_structure["studyMedianCTDIData"] = plotly_barchart(
+                        df_aggregated,
+                        "study_description",
+                        value_axis_title="Median CTDI<sub>vol</sub> (mGy)",
+                        name_axis_title="Study description",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM CT study description CTDI median",
+                        sorted_category_list=sorted_study_ctdi_categories,
+                        average_choice="median"
+                    )
+
+            if user_profile.plotBoxplots:
                 return_structure["studyBoxplotCTDIData"] = plotly_boxplot(
                     df,
                     "study_description",
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                     value_axis_title="CTDI<sub>vol</sub> (mGy)",
                     name_axis_title="Study description",
-                    colourmap=plot_colour_map_choice,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT study description CTDI boxplot",
-                    sorted_category_list=sorted_categories
+                    sorted_category_list=sorted_study_ctdi_categories
                 )
 
-            if plot_histograms:
+            if user_profile.plotHistograms:
                 category_names_col = "study_description"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Study description"
                 facet_names = list(df[group_by_col].unique())
-                category_names = list(sorted_categories.values())[0]
+                category_names = list(sorted_study_ctdi_categories.values())[0]
 
-                if plot_grouping_choice == "series":
+                if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = "study_description"
                     legend_title = "System"
                     category_names = facet_names
-                    facet_names = list(sorted_categories.values())[0]
+                    facet_names = list(sorted_study_ctdi_categories.values())[0]
 
                 return_structure["studyHistogramCTDIData"] = plotly_histogram_barchart(
                     df,
@@ -3007,65 +3143,80 @@ def ct_plot_calculations(
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                     value_axis_title="CTDI<sub>vol</sub> (mGy)",
                     legend_title=legend_title,
-                    n_bins=plot_histogram_bins,
-                    colourmap=plot_colour_map_choice,
+                    n_bins=user_profile.plotHistogramBins,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT study description CTDI histogram",
-                    facet_col_wrap=plot_facet_col_wrap_val,
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
                 )
 
-        if plot_study_num_events:
-            sorted_categories = create_sorted_category_list(
+        sorted_study_events_categories = None
+        if user_profile.plotCTStudyNumEvents:
+            sorted_study_events_categories = create_sorted_category_list(
                 df,
                 "study_description",
                 "number_of_events",
-                [plot_sorting_direction, plot_sorting_field]
+                [user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice]
             )
 
-            if plot_average_choice in ["mean", "both"]:
+            if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
                     "study_description",
                     "number_of_events",
-                    stats=["mean", "count"]
+                    stats=average_choices + ["count"]
                 )
 
-                return_structure["studyMeanNumEventsData"] = plotly_barchart(
-                    df_aggregated,
-                    "study_description",
-                    value_axis_title="Events",
-                    name_axis_title="Study description",
-                    colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT study description events mean",
-                    sorted_category_list=sorted_categories
-                )
+                if user_profile.plotMean:
+                    return_structure["studyMeanNumEventsData"] = plotly_barchart(
+                        df_aggregated,
+                        "study_description",
+                        value_axis_title="Mean events",
+                        name_axis_title="Study description",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM CT study description events mean",
+                        sorted_category_list=sorted_study_events_categories,
+                        average_choice="mean"
+                    )
 
-            if plot_average_choice in ["median", "both"]:
+                if user_profile.plotMedian:
+                    return_structure["studyMedianNumEventsData"] = plotly_barchart(
+                        df_aggregated,
+                        "study_description",
+                        value_axis_title="Median events",
+                        name_axis_title="Study description",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM CT study description events median",
+                        sorted_category_list=sorted_study_events_categories,
+                        average_choice="median"
+                    )
+
+            if user_profile.plotBoxplots:
                 return_structure["studyBoxplotNumEventsData"] = plotly_boxplot(
                     df,
                     "study_description",
                     "number_of_events",
                     value_axis_title="Events",
                     name_axis_title="Study description",
-                    colourmap=plot_colour_map_choice,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT study description events boxplot",
-                    sorted_category_list=sorted_categories
+                    sorted_category_list=sorted_study_events_categories
                 )
 
-            if plot_histograms:
+            if user_profile.plotHistograms:
                 category_names_col = "study_description"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Study description"
                 facet_names = list(df[group_by_col].unique())
-                category_names = list(sorted_categories.values())[0]
+                category_names = list(sorted_study_events_categories.values())[0]
 
-                if plot_grouping_choice == "series":
+                if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = "study_description"
                     legend_title = "System"
                     category_names = facet_names
-                    facet_names = list(sorted_categories.values())[0]
+                    facet_names = list(sorted_study_events_categories.values())[0]
 
                 return_structure["studyHistogramNumEventsData"] = plotly_histogram_barchart(
                     df,
@@ -3074,65 +3225,102 @@ def ct_plot_calculations(
                     "number_of_events",
                     value_axis_title="Events",
                     legend_title=legend_title,
-                    n_bins=plot_histogram_bins,
-                    colourmap=plot_colour_map_choice,
+                    n_bins=user_profile.plotHistogramBins,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT study description events histogram",
-                    facet_col_wrap=plot_facet_col_wrap_val,
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
                 )
 
-        if plot_request_mean_dlp:
-            sorted_categories = create_sorted_category_list(
+        if user_profile.plotCTStudyFreq:
+            sorted_categories = None
+            if sorted_study_dlp_categories:
+                sorted_categories = sorted_study_dlp_categories
+            elif sorted_study_ctdi_categories:
+                sorted_categories = sorted_study_ctdi_categories
+            elif sorted_study_events_categories:
+                sorted_categories = sorted_study_events_categories
+
+            return_structure["studyFrequencyData"] = construct_frequency_chart(
+                df=df,
+                df_name_col="study_description",
+                sorting_choice=[user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice],
+                legend_title="Study description",
+                df_x_axis_col="x_ray_system_name",
+                x_axis_title="System",
+                grouping_choice=user_profile.plotGroupingChoice,
+                colour_map=user_profile.plotColourMapChoice,
+                file_name="OpenREM CT study description frequency",
+                sorted_categories=sorted_categories
+            )
+
+        sorted_request_dlp_categories = None
+        if user_profile.plotCTRequestMeanDLP:
+            sorted_request_dlp_categories = create_sorted_category_list(
                 df,
                 "requested_procedure_code_meaning",
                 "total_dlp",
-                [plot_sorting_direction, plot_sorting_field]
+                [user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice]
             )
 
-            if plot_average_choice in ["mean", "both"]:
+            if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
                     "requested_procedure_code_meaning",
                     "total_dlp",
-                    stats=["mean", "count"]
+                    stats=average_choices + ["count"]
                 )
 
-                return_structure["requestMeanData"] = plotly_barchart(
-                    df_aggregated,
-                    "requested_procedure_code_meaning",
-                    value_axis_title="Mean DLP (mGy.cm)",
-                    name_axis_title="Requested procedure",
-                    colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT requested procedure DLP mean",
-                    sorted_category_list=sorted_categories
-                )
+                if user_profile.plotMean:
+                    return_structure["requestMeanData"] = plotly_barchart(
+                        df_aggregated,
+                        "requested_procedure_code_meaning",
+                        value_axis_title="Mean DLP (mGy.cm)",
+                        name_axis_title="Requested procedure",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM CT requested procedure DLP mean",
+                        sorted_category_list=sorted_request_dlp_categories,
+                        average_choice="mean"
+                    )
 
-            if plot_average_choice in ["median", "both"]:
+                if user_profile.plotMedian:
+                    return_structure["requestMedianData"] = plotly_barchart(
+                        df_aggregated,
+                        "requested_procedure_code_meaning",
+                        value_axis_title="Mean DLP (mGy.cm)",
+                        name_axis_title="Requested procedure",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM CT requested procedure DLP median",
+                        sorted_category_list=sorted_request_dlp_categories,
+                        average_choice="median"
+                    )
+
+            if user_profile.plotBoxplots:
                 return_structure["requestBoxplotData"] = plotly_boxplot(
                     df,
                     "requested_procedure_code_meaning",
                     "total_dlp",
                     value_axis_title="DLP (mGy.cm)",
                     name_axis_title="Requested procedure",
-                    colourmap=plot_colour_map_choice,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT requested procedure DLP boxplot",
-                    sorted_category_list=sorted_categories
+                    sorted_category_list=sorted_request_dlp_categories
                 )
 
-            if plot_histograms:
+            if user_profile.plotHistograms:
                 category_names_col = "requested_procedure_code_meaning"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Requested procedure"
                 facet_names = list(df[group_by_col].unique())
-                category_names = list(sorted_categories.values())[0]
+                category_names = list(sorted_request_dlp_categories.values())[0]
 
-                if plot_grouping_choice == "series":
+                if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = "requested_procedure_code_meaning"
                     legend_title = "System"
                     category_names = facet_names
-                    facet_names = list(sorted_categories.values())[0]
+                    facet_names = list(sorted_request_dlp_categories.values())[0]
 
                 return_structure["requestHistogramData"] = plotly_histogram_barchart(
                     df,
@@ -3141,65 +3329,80 @@ def ct_plot_calculations(
                     "total_dlp",
                     value_axis_title="DLP (mGy.cm)",
                     legend_title=legend_title,
-                    n_bins=plot_histogram_bins,
-                    colourmap=plot_colour_map_choice,
+                    n_bins=user_profile.plotHistogramBins,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT requested procedure DLP histogram",
-                    facet_col_wrap=plot_facet_col_wrap_val,
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
                 )
 
-        if plot_request_num_events:
-            sorted_categories = create_sorted_category_list(
+        sorted_request_events_categories = None
+        if user_profile.plotCTRequestNumEvents:
+            sorted_request_events_categories = create_sorted_category_list(
                 df,
                 "requested_procedure_code_meaning",
                 "number_of_events",
-                [plot_sorting_direction, plot_sorting_field]
+                [user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice]
             )
 
-            if plot_average_choice in ["mean", "both"]:
+            if user_profile.plotMean:
                 df_aggregated = create_dataframe_aggregates(
                     df,
                     "requested_procedure_code_meaning",
                     "number_of_events",
-                    stats=["mean", "count"]
+                    stats=average_choices + ["count"]
                 )
 
-                return_structure["requestMeanNumEventsData"] = plotly_barchart(
-                    df_aggregated,
-                    "requested_procedure_code_meaning",
-                    value_axis_title="Events",
-                    name_axis_title="Requested procedure",
-                    colourmap=plot_colour_map_choice,
-                    filename="OpenREM CT requested procedure events mean",
-                    sorted_category_list=sorted_categories
-                )
+                if user_profile.plotMean:
+                    return_structure["requestMeanNumEventsData"] = plotly_barchart(
+                        df_aggregated,
+                        "requested_procedure_code_meaning",
+                        value_axis_title="Mean events",
+                        name_axis_title="Requested procedure",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM CT requested procedure events mean",
+                        sorted_category_list=sorted_request_events_categories,
+                        average_choice="mean"
+                    )
 
-            if plot_average_choice in ["median", "both"]:
+                if user_profile.plotMedian:
+                    return_structure["requestMedianNumEventsData"] = plotly_barchart(
+                        df_aggregated,
+                        "requested_procedure_code_meaning",
+                        value_axis_title="Median events",
+                        name_axis_title="Requested procedure",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM CT requested procedure events median",
+                        sorted_category_list=sorted_request_events_categories,
+                        average_choice="median"
+                    )
+
+            if user_profile.plotMedian:
                 return_structure["requestBoxplotNumEventsData"] = plotly_boxplot(
                     df,
                     "requested_procedure_code_meaning",
                     "number_of_events",
                     value_axis_title="Events",
                     name_axis_title="Requested procedure",
-                    colourmap=plot_colour_map_choice,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT requested procedure events boxplot",
-                    sorted_category_list=sorted_categories
+                    sorted_category_list=sorted_request_events_categories
                 )
 
-            if plot_histograms:
+            if user_profile.plotHistograms:
                 category_names_col = "requested_procedure_code_meaning"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Requested procedure"
                 facet_names = list(df[group_by_col].unique())
-                category_names = list(sorted_categories.values())[0]
+                category_names = list(sorted_request_events_categories.values())[0]
 
-                if plot_grouping_choice == "series":
+                if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = "requested_procedure_code_meaning"
                     legend_title = "System"
                     category_names = facet_names
-                    facet_names = list(sorted_categories.values())[0]
+                    facet_names = list(sorted_request_events_categories.values())[0]
 
                 return_structure["requestHistogramNumEventsData"] = plotly_histogram_barchart(
                     df,
@@ -3208,41 +3411,35 @@ def ct_plot_calculations(
                     "number_of_events",
                     value_axis_title="Events",
                     legend_title=legend_title,
-                    n_bins=plot_histogram_bins,
-                    colourmap=plot_colour_map_choice,
+                    n_bins=user_profile.plotHistogramBins,
+                    colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT requested procedure events histogram",
-                    facet_col_wrap=plot_facet_col_wrap_val,
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
                 )
 
-        if plot_study_freq:
-            return_structure["studyFrequencyData"] = construct_freqency_chart(
-                df=df,
-                df_name_col="study_description",
-                sorting_choice=plot_sorting_field,
-                legend_title="Study description",
-                df_x_axis_col="x_ray_system_name",
-                x_axis_title="System",
-                grouping_choice=plot_grouping_choice,
-                colour_map=plot_colour_map_choice,
-                file_name="OpenREM CT study description frequency"
-            )
+        if user_profile.plotCTRequestFreq:
+            sorted_categories = None
+            if sorted_request_dlp_categories:
+                sorted_categories = sorted_request_dlp_categories
+            elif sorted_request_events_categories:
+                sorted_categories = sorted_request_events_categories
 
-        if plot_request_freq:
-            return_structure["requestFrequencyData"] = construct_freqency_chart(
+            return_structure["requestFrequencyData"] = construct_frequency_chart(
                 df=df,
                 df_name_col="requested_procedure_code_meaning",
-                sorting_choice=plot_sorting_field,
+                sorting_choice=[user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice],
                 legend_title="Requested procedure",
                 df_x_axis_col="x_ray_system_name",
                 x_axis_title="System",
-                grouping_choice=plot_grouping_choice,
-                colour_map=plot_colour_map_choice,
-                file_name="OpenREM CT requested procedure frequency"
+                grouping_choice=user_profile.plotGroupingChoice,
+                colour_map=user_profile.plotColourMapChoice,
+                file_name="OpenREM CT requested procedure frequency",
+                sorted_categories=sorted_categories
             )
 
-        if plot_study_mean_dlp_over_time:
+        if user_profile.plotCTStudyMeanDLPOverTime:
             result = construct_over_time_charts(
                 df=df,
                 df_name_col="study_description",
@@ -3251,21 +3448,21 @@ def ct_plot_calculations(
                 name_title="Study description",
                 value_title="DLP (mGy.cm)",
                 date_title="Study date",
-                sorting=[plot_sorting_direction, plot_sorting_field],
-                time_period=plot_over_time_period,
-                average_choice=plot_average_choice,
-                grouping_choice=plot_grouping_choice,
-                colour_map=plot_colour_map_choice,
-                facet_col_wrap=plot_facet_col_wrap_val,
+                sorting=[user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice],
+                time_period=plot_timeunit_period,
+                average_choices=average_choices,
+                grouping_choice=user_profile.plotGroupingChoice,
+                colour_map=user_profile.plotColourMapChoice,
+                facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM CT study description DLP over time"
             )
 
-            if plot_average_choice in ["mean", "both"]:
+            if user_profile.plotMean:
                 return_structure["studyMeanDLPOverTime"] = result["mean"]
-            if plot_average_choice in ["median", "both"]:
+            if user_profile.plotMedian:
                 return_structure["studyMedianDLPOverTime"] = result["median"]
 
-        if plot_request_dlp_over_time:
+        if user_profile.plotCTRequestDLPOverTime:
             result = construct_over_time_charts(
                 df=df,
                 df_name_col="requested_procedure_code_meaning",
@@ -3274,21 +3471,21 @@ def ct_plot_calculations(
                 name_title="Requested procedure",
                 value_title="DLP (mGy.cm)",
                 date_title="Study date",
-                sorting=[plot_sorting_direction, plot_sorting_field],
-                time_period=plot_over_time_period,
-                average_choice=plot_average_choice,
-                grouping_choice=plot_grouping_choice,
-                colour_map=plot_colour_map_choice,
-                facet_col_wrap=plot_facet_col_wrap_val,
+                sorting=[user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice],
+                time_period=plot_timeunit_period,
+                average_choices=average_choices,
+                grouping_choice=user_profile.plotGroupingChoice,
+                colour_map=user_profile.plotColourMapChoice,
+                facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM CT requested procedure DLP over time"
             )
 
-            if plot_average_choice in ["mean", "both"]:
+            if user_profile.plotMean:
                 return_structure["requestMeanDLPOverTime"] = result["mean"]
-            if plot_average_choice in ["median", "both"]:
+            if user_profile.plotMedian:
                 return_structure["requestMedianDLPOverTime"] = result["median"]
 
-        if plot_study_per_day_and_hour:
+        if user_profile.plotCTStudyPerDayAndHour:
             df_time_series_per_weekday = create_dataframe_weekdays(
                 df,
                 "study_description",
@@ -3301,9 +3498,9 @@ def ct_plot_calculations(
                 "study_description",
                 name_axis_title="Weekday",
                 value_axis_title="Frequency",
-                colourmap=plot_colour_map_choice,
+                colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM CT study description workload",
-                facet_col_wrap=plot_facet_col_wrap_val
+                facet_col_wrap=user_profile.plotFacetColWrapVal
             )
         #######################################################################
 
@@ -3537,18 +3734,7 @@ def mg_summary_chart_data(request):
 
     return_structure = mg_plot_calculations(
         f,
-        user_profile.plotMGStudyPerDayAndHour,
-        user_profile.plotMGAGDvsThickness,
-        user_profile.plotMGkVpvsThickness,
-        user_profile.plotMGmAsvsThickness,
-        user_profile.plotSeriesPerSystem,
-        user_profile.plotGroupingChoice,
-        user_profile.plotInitialSortingDirection,
-        user_profile.plotMGInitialSortingChoice,
-        user_profile.plotThemeChoice,
-        user_profile.plotColourMapChoice,
-        user_profile.plotFacetColWrapVal,
-        user_profile.plotCaseInsensitiveCategories
+        user_profile
     )
 
     if settings.DEBUG:
@@ -3559,18 +3745,7 @@ def mg_summary_chart_data(request):
 
 def mg_plot_calculations(
     f,
-    plot_study_per_day_and_hour,
-    plot_agd_vs_thickness,
-    plot_kvp_vs_thickness,
-    plot_mas_vs_thickness,
-    plot_series_per_systems,
-    plot_grouping_choice,
-    plot_sorting_direction,
-    plot_sorting_field,
-    plot_theme_choice,
-    plot_colour_map_choice,
-    plot_facet_col_wrap_val,
-    plot_case_insensitive_categories
+    user_profile
 ):
     """Calculations for mammography charts
     """
@@ -3583,44 +3758,44 @@ def mg_plot_calculations(
     )
 
     # Set the Plotly chart theme
-    plotly_set_default_theme(plot_theme_choice)
+    plotly_set_default_theme(user_profile.plotThemeChoice)
 
     return_structure = {}
 
     #######################################################################
     # Create a data frame to use for charts
     name_fields = []
-    if plot_study_per_day_and_hour:
+    if user_profile.plotMGStudyPerDayAndHour:
         name_fields.append("study_description")
     if (
-            plot_agd_vs_thickness
-            or plot_kvp_vs_thickness
-            or plot_mas_vs_thickness
+        user_profile.plotMGAGDvsThickness
+        or user_profile.plotMGkVpvsThickness
+        or user_profile.plotMGmAsvsThickness
     ):
         name_fields.append("projectionxrayradiationdose__irradeventxraydata__acquisition_protocol")
 
     value_fields = []
-    if plot_agd_vs_thickness:
+    if user_profile.plotMGAGDvsThickness:
         value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose")
-    if plot_kvp_vs_thickness:
+    if user_profile.plotMGkVpvsThickness:
         value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp")
-    if plot_mas_vs_thickness:
+    if user_profile.plotMGmAsvsThickness:
         value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure")
     if (
-            plot_agd_vs_thickness
-            or plot_kvp_vs_thickness
-            or plot_mas_vs_thickness
+        user_profile.plotMGAGDvsThickness
+        or user_profile.plotMGkVpvsThickness
+        or user_profile.plotMGmAsvsThickness
     ):
         value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness")
 
     date_fields = []
     time_fields = []
-    if plot_study_per_day_and_hour:
+    if user_profile.plotMGStudyPerDayAndHour:
         date_fields.append("study_date")
         time_fields.append("study_time")
 
     system_field = None
-    if plot_series_per_systems:
+    if user_profile.plotSeriesPerSystem:
         system_field = "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
 
     df = create_dataframe(
@@ -3630,11 +3805,11 @@ def mg_plot_calculations(
         data_point_date_fields=date_fields,
         data_point_time_fields=time_fields,
         system_name_field=system_field,
-        data_point_name_lowercase=plot_case_insensitive_categories,
+        data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
         uid="projectionxrayradiationdose__irradeventxraydata__pk"
     )
 
-    if plot_study_per_day_and_hour:
+    if user_profile.plotMGStudyPerDayAndHour:
         df_time_series_per_weekday = create_dataframe_weekdays(
             df,
             "study_description",
@@ -3647,12 +3822,12 @@ def mg_plot_calculations(
             "study_description",
             name_axis_title="Weekday",
             value_axis_title="Frequency",
-            colourmap=plot_colour_map_choice,
+            colourmap=user_profile.plotColourMapChoice,
             filename="OpenREM CT study description workload",
-            facet_col_wrap=plot_facet_col_wrap_val
+            facet_col_wrap=user_profile.plotFacetColWrapVal
         )
 
-    if plot_agd_vs_thickness:
+    if user_profile.plotMGAGDvsThickness:
         return_structure["AGDvsThickness"] = construct_scatter_chart(
             df=df,
             df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
@@ -3660,45 +3835,45 @@ def mg_plot_calculations(
             df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
             x_axis_title="Compressed breast thickness (mm)",
             y_axis_title="AGD (mGy)",
-            sorting=[plot_sorting_direction, plot_sorting_field],
-            grouping_choice=plot_grouping_choice,
+            sorting=[user_profile.plotInitialSortingDirection, user_profile.plotMGInitialSortingChoice],
+            grouping_choice=user_profile.plotGroupingChoice,
             legend_title="Acquisition protocol",
-            colour_map=plot_colour_map_choice,
-            facet_col_wrap=plot_facet_col_wrap_val,
+            colour_map=user_profile.plotColourMapChoice,
+            facet_col_wrap=user_profile.plotFacetColWrapVal,
             file_name="OpenREM CT acquisition protocol AGD vs thickness"
         )
 
-        if plot_kvp_vs_thickness:
-            return_structure["kVpvsThickness"] = construct_scatter_chart(
-                df=df,
-                df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
-                df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
-                x_axis_title="Compressed breast thickness (mm)",
-                y_axis_title="kVp",
-                sorting=[plot_sorting_direction, plot_sorting_field],
-                grouping_choice=plot_grouping_choice,
-                legend_title="Acquisition protocol",
-                colour_map=plot_colour_map_choice,
-                facet_col_wrap=plot_facet_col_wrap_val,
-                file_name="OpenREM CT acquisition protocol kVp vs thickness"
-            )
+    if user_profile.plotMGkVpvsThickness:
+        return_structure["kVpvsThickness"] = construct_scatter_chart(
+            df=df,
+            df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+            df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+            df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
+            x_axis_title="Compressed breast thickness (mm)",
+            y_axis_title="kVp",
+            sorting=[user_profile.plotInitialSortingDirection, user_profile.plotMGInitialSortingChoice],
+            grouping_choice=user_profile.plotGroupingChoice,
+            legend_title="Acquisition protocol",
+            colour_map=user_profile.plotColourMapChoice,
+            facet_col_wrap=user_profile.plotFacetColWrapVal,
+            file_name="OpenREM CT acquisition protocol kVp vs thickness"
+        )
 
-        if plot_mas_vs_thickness:
-            return_structure["mAsvsThickness"] = construct_scatter_chart(
-                df=df,
-                df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
-                df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
-                x_axis_title="Compressed breast thickness (mm)",
-                y_axis_title="mAs",
-                sorting=[plot_sorting_direction, plot_sorting_field],
-                grouping_choice=plot_grouping_choice,
-                legend_title="Acquisition protocol",
-                colour_map=plot_colour_map_choice,
-                facet_col_wrap=plot_facet_col_wrap_val,
-                file_name="OpenREM CT acquisition protocol mAs vs thickness"
-            )
+    if user_profile.plotMGmAsvsThickness:
+        return_structure["mAsvsThickness"] = construct_scatter_chart(
+            df=df,
+            df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+            df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+            df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
+            x_axis_title="Compressed breast thickness (mm)",
+            y_axis_title="mAs",
+            sorting=[user_profile.plotInitialSortingDirection, user_profile.plotMGInitialSortingChoice],
+            grouping_choice=user_profile.plotGroupingChoice,
+            legend_title="Acquisition protocol",
+            colour_map=user_profile.plotColourMapChoice,
+            facet_col_wrap=user_profile.plotFacetColWrapVal,
+            file_name="OpenREM CT acquisition protocol mAs vs thickness"
+        )
 
     return return_structure
 

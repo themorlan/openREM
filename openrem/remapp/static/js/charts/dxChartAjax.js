@@ -23,8 +23,11 @@ $(document).ready(function() {
             if(typeof json.acquisitionMeanDAPData !== "undefined") {
                 $("#acquisitionMeanDAPChartDiv").html(json.acquisitionMeanDAPData);
             }
+            if(typeof json.acquisitionMedianDAPData !== "undefined") {
+                $("#acquisitionMedianDAPChartDiv").html(json.acquisitionMedianDAPData);
+            }
             if(typeof json.acquisitionBoxplotDAPData !=="undefined") {
-                $("#acquisitionMedianDAPChartDiv").html(json.acquisitionBoxplotDAPData);
+                $("#acquisitionBoxplotDAPChartDiv").html(json.acquisitionBoxplotDAPData);
             }
             if(typeof json.acquisitionHistogramDAPData !=="undefined") {
                 $("#acquisitionHistogramDAPChartDiv").html(json.acquisitionHistogramDAPData);
@@ -39,8 +42,11 @@ $(document).ready(function() {
             if(typeof json.acquisitionMeankVpData !== "undefined") {
                 $("#acquisitionMeankVpChartDiv").html(json.acquisitionMeankVpData);
             }
+            if(typeof json.acquisitionMediankVpData !== "undefined") {
+                $("#acquisitionMediankVpChartDiv").html(json.acquisitionMediankVpData);
+            }
             if(typeof json.acquisitionBoxplotkVpData !=="undefined") {
-                $("#acquisitionMediankVpChartDiv").html(json.acquisitionBoxplotkVpData);
+                $("#acquisitionBoxplotkVpChartDiv").html(json.acquisitionBoxplotkVpData);
             }
             if(typeof json.acquisitionHistogramkVpData !=="undefined") {
                 $("#acquisitionHistogramkVpChartDiv").html(json.acquisitionHistogramkVpData);
@@ -50,8 +56,11 @@ $(document).ready(function() {
             if(typeof json.acquisitionMeanmAsData !== "undefined") {
                 $("#acquisitionMeanmAsChartDiv").html(json.acquisitionMeanmAsData);
             }
+            if(typeof json.acquisitionMedianmAsData !== "undefined") {
+                $("#acquisitionMedianmAsChartDiv").html(json.acquisitionMedianmAsData);
+            }
             if(typeof json.acquisitionBoxplotmAsData !=="undefined") {
-                $("#acquisitionMedianmAsChartDiv").html(json.acquisitionBoxplotmAsData);
+                $("#acquisitionBoxplotmAsChartDiv").html(json.acquisitionBoxplotmAsData);
             }
             if(typeof json.acquisitionHistogrammAsData !=="undefined") {
                 $("#acquisitionHistogrammAsChartDiv").html(json.acquisitionHistogrammAsData);
@@ -61,8 +70,11 @@ $(document).ready(function() {
             if(typeof json.studyMeanDAPData !== "undefined") {
                 $("#studyMeanDAPChartDiv").html(json.studyMeanDAPData);
             }
+            if(typeof json.studyMedianDAPData !== "undefined") {
+                $("#studyMedianDAPChartDiv").html(json.studyMedianDAPData);
+            }
             if(typeof json.studyBoxplotDAPData !=="undefined") {
-                $("#studyMedianDAPChartDiv").html(json.studyBoxplotDAPData);
+                $("#studyBoxplotDAPChartDiv").html(json.studyBoxplotDAPData);
             }
             if(typeof json.studyHistogramDAPData !=="undefined") {
                 $("#studyHistogramDAPChartDiv").html(json.studyHistogramDAPData);
@@ -77,8 +89,11 @@ $(document).ready(function() {
             if(typeof json.requestMeanDAPData !== "undefined") {
                 $("#requestMeanDAPChartDiv").html(json.requestMeanDAPData);
             }
+            if(typeof json.requestMedianDAPData !== "undefined") {
+                $("#requestMedianDAPChartDiv").html(json.requestMedianDAPData);
+            }
             if(typeof json.requestBoxplotDAPData !=="undefined") {
-                $("#requestMedianDAPChartDiv").html(json.requestBoxplotDAPData);
+                $("#requestBoxplotDAPChartDiv").html(json.requestBoxplotDAPData);
             }
             if(typeof json.requestHistogramDAPData !=="undefined") {
                 $("#requestHistogramDAPChartDiv").html(json.requestHistogramDAPData);

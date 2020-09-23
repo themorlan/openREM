@@ -441,7 +441,7 @@ class CTSummaryListFilter(django_filters.FilterSet):
         label="Acquisition type restriction",
         field_name="ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning",
         choices=CT_ACQ_TYPE_CHOICES,
-        widget=forms.CheckboxSelectMultiple,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     num_events = django_filters.ChoiceFilter(
         method=_specify_event_numbers,

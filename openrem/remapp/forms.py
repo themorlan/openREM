@@ -71,10 +71,11 @@ TIME_PERIOD = (
 MEAN = "mean"
 MEDIAN = "median"
 BOTH = "both"
+BOXPLOT = "boxplot"
 AVERAGES = (
     (MEAN, "Mean"),
     (MEDIAN, "Median"),
-    (BOTH, "Both"),
+    (BOXPLOT, "Boxplot"),
 )
 
 NAME = "name"
@@ -226,11 +227,9 @@ class DXChartOptionsForm(forms.Form):
     plotDXAcquisitionMeanDAPOverTimePeriod = forms.ChoiceField(
         label="Time period", choices=TIME_PERIOD, required=False
     )
-    plotMeanMedianOrBoth = forms.ChoiceField(
-        label="Average to use", choices=AVERAGES, required=False
-    )
-    plotBoxplots = forms.BooleanField(
-        label="Include boxplots", required=False
+    plotAverageChoice = forms.MultipleChoiceField(
+        label="Average plots", choices=AVERAGES, required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"})
     )
     plotGrouping = forms.ChoiceField(
         label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
@@ -247,6 +246,7 @@ class DXChartOptionsForm(forms.Form):
     plotInitialSortingDirection = forms.ChoiceField(
         label="Sorting direction", choices=SORTING_DIRECTION, required=False
     )
+
 
 class CTChartOptionsForm(forms.Form):
     """Form for CT chart options
@@ -303,11 +303,9 @@ class CTChartOptionsForm(forms.Form):
     plotCTOverTimePeriod = forms.ChoiceField(
         label="Time period", choices=TIME_PERIOD, required=False
     )
-    plotMeanMedianOrBoth = forms.ChoiceField(
-        label="Average to use", choices=AVERAGES, required=False
-    )
-    plotBoxplots = forms.BooleanField(
-        label="Include boxplots", required=False
+    plotAverageChoice = forms.MultipleChoiceField(
+        label="Average plots", choices=AVERAGES, required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"})
     )
     plotGrouping = forms.ChoiceField(
         label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
@@ -332,15 +330,13 @@ class RFChartOptionsForm(forms.Form):
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
     plotRFStudyPerDayAndHour = forms.BooleanField(label="Study workload", required=False)
+    plotRFStudyDAP = forms.BooleanField(label="Study DAP", required=False)
     plotRFStudyFreq = forms.BooleanField(label="Study frequency", required=False)
-    plotRFStudyDAP = forms.BooleanField(label="DAP per study", required=False)
-    plotRFRequestFreq = forms.BooleanField(label="Request frequency", required=False)
-    plotRFRequestDAP = forms.BooleanField(label="DAP per request", required=False)
-    plotMeanMedianOrBoth = forms.ChoiceField(
-        label="Average to use", choices=AVERAGES, required=False
-    )
-    plotBoxplots = forms.BooleanField(
-        label="Include boxplots", required=False
+    plotRFRequestDAP = forms.BooleanField(label="Requested procedure DAP", required=False)
+    plotRFRequestFreq = forms.BooleanField(label="Requested procedure frequency", required=False)
+    plotAverageChoice = forms.MultipleChoiceField(
+        label="Average plots", choices=AVERAGES, required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"})
     )
     plotGrouping = forms.ChoiceField(
         label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
@@ -533,8 +529,9 @@ class GeneralChartOptionsDisplayForm(forms.Form):
     """
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
-    plotMeanMedianOrBoth = forms.ChoiceField(
-        label="Average to use", choices=AVERAGES, required=False
+    plotAverageChoice = forms.MultipleChoiceField(
+        label="Average plots", choices=AVERAGES, required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"})
     )
     plotInitialSortingDirection = forms.ChoiceField(
         label="Sorting direction", choices=SORTING_DIRECTION, required=False
@@ -544,9 +541,6 @@ class GeneralChartOptionsDisplayForm(forms.Form):
     )
     plotHistograms = forms.BooleanField(
         label="Calculate histogram data", required=False
-    )
-    plotBoxplots = forms.BooleanField(
-        label="Include boxplots", required=False
     )
     plotHistogramBins = forms.IntegerField(
         label="Number of histogram bins", min_value=2, max_value=40, required=False

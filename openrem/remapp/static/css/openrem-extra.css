@@ -389,3 +389,9 @@ canvas.marks {
 div.plotly_parent {
   min-width: 1000px;
 }
+
+ul.CheckboxSelectMultiple {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}

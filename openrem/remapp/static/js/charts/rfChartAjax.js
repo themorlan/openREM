@@ -22,9 +22,6 @@ $(document).ready(function() {
             if(typeof json.studyMedianData !=="undefined") {
                 $("#studyMedianDAPChartDiv").html(json.studyMedianData);
             }
-            if(typeof json.studyMeanMedianData !=="undefined") {
-                $("#studyMeanMedianDAPChartDiv").html(json.studyMeanMedianData);
-            }
             if(typeof json.studyBoxplotData !=="undefined") {
                 $("#studyBoxplotDAPChartDiv").html(json.studyBoxplotData);
             }
@@ -38,9 +35,6 @@ $(document).ready(function() {
             }
             if(typeof json.requestMedianData !== "undefined") {
                 $("#requestMedianDAPChartDiv").html(json.requestMedianData);
-            }
-            if(typeof json.requestMeanMedianData !=="undefined") {
-                $("#requestMeanMedianDAPChartDiv").html(json.requestMeanMedianData);
             }
             if(typeof json.requestBoxplotData !=="undefined") {
                 $("#requestBoxplotDAPChartDiv").html(json.requestBoxplotData);

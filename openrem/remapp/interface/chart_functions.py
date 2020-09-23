@@ -120,15 +120,10 @@ def create_dataframe_time_series(
         df_value_col,
         df_date_col="study_date",
         time_period="M",
-        average="mean"
+        average_choices=["mean"]
 ):
-    if average == "both":
-        average = ["mean", "median"]
-    else:
-        average = [average]
-
-    df_time_series = df.set_index(df_date_col).groupby(["x_ray_system_name", df_name_col, pd.Grouper(freq=time_period)]).agg({df_value_col: average})
-    df_time_series.columns = [s + df_value_col for s in average]
+    df_time_series = df.set_index(df_date_col).groupby(["x_ray_system_name", df_name_col, pd.Grouper(freq=time_period)]).agg({df_value_col: average_choices})
+    df_time_series.columns = [s + df_value_col for s in average_choices]
     df_time_series = df_time_series.reset_index()
     return df_time_series
 
@@ -246,7 +241,7 @@ def plotly_boxplot(
 
 def create_freq_sorted_category_list(df, df_name_col, sorting):
     category_sorting_df = df.groupby(df_name_col).count().reset_index()
-    if sorting == "name":
+    if sorting[1] == "name":
         sort_by = df_name_col
     else:
         sort_by = "x_ray_system_name"
@@ -431,7 +426,7 @@ def plotly_histogram(
             color=df_category_name_col,
             facet_col=df_facet_col,
             facet_col_wrap=facet_col_wrap,
-            facet_row_spacing=0.14 / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
+            facet_row_spacing=0.40 / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
             labels={
                 df_value_col: value_axis_title,
                 df_category_name_col: legend_title
@@ -494,82 +489,96 @@ def plotly_histogram_barchart(
     n_colours = len(df[df_category_col].unique())
     colour_sequence = calculate_colour_sequence(colourmap, n_colours)
 
-    fig = make_subplots(
-        rows=n_facet_rows,
-        cols=facet_col_wrap,
-        vertical_spacing=0.14
-    )
-
-    current_row = 1
-    current_col = 1
-    current_facet = 0
-    category_names = []
-
-    for facet_name in df_facet_category_list:
-        facet_subset = df[df[df_facet_col] == facet_name]
-
-        min_bin_value = facet_subset[df_value_col].min()
-        max_bin_value = facet_subset[df_value_col].max()
-        bins = np.linspace(min_bin_value, max_bin_value, n_bins + 1) # Calculate histogram bins once and use for each category_name
-        mid_bins = 0.5 * (bins[:-1] + bins[1:])
-        bin_labels = np.array(["{:.2f} to {:.2f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])])
-
-        for category_name in df_category_name_list:
-            category_subset = facet_subset[facet_subset[df_category_col] == category_name]
-
-            if category_name in category_names:
-                show_legend = False
-            else:
-                show_legend = True
-                category_names.append(category_name)
-
-            category_idx = category_names.index(category_name)
-
-            counts, junk = np.histogram(category_subset[df_value_col], bins=bins)
-
-            trace = go.Bar(
-                x=mid_bins,
-                y=counts,
-                name=category_name,
-                marker_color=colour_sequence[category_idx],
-                legendgroup=category_idx,
-                showlegend=show_legend,
-                text=bin_labels,
-                hovertemplate=
-                f"<b>{facet_name}</b><br>" +
-                f"{category_name}<br>" +
-                "Frequency: %{y:.0d}<br>" +
-                "Bin range: %{text}<br>" +
-                "Mid-bin: %{x:.2f}<br>" +
-                "<extra></extra>"
-            )
-
-            fig.append_trace(trace, row=current_row, col=current_col)
-
-        fig.update_xaxes(
-            title_text=facet_name + " " + value_axis_title,
-            tickvals=np.linspace(min_bin_value, max_bin_value, n_bins+1),
-            row=current_row,
-            col=current_col
+    try:
+        fig = make_subplots(
+            rows=n_facet_rows,
+            cols=facet_col_wrap,
+            vertical_spacing=0.40 / n_facet_rows
         )
 
-        if current_col == 1:
-            fig.update_yaxes(title_text="Frequency", row=current_row, col=current_col)
+        current_row = 1
+        current_col = 1
+        current_facet = 0
+        category_names = []
 
-        current_facet += 1
-        current_col += 1
-        if current_col > facet_col_wrap:
-            current_row += 1
-            current_col = 1
+        for facet_name in df_facet_category_list:
+            facet_subset = df[df[df_facet_col] == facet_name]
 
-    layout = go.Layout(
-        height=chart_height
-    )
+            min_bin_value = facet_subset[df_value_col].min()
+            max_bin_value = facet_subset[df_value_col].max()
+            bins = np.linspace(min_bin_value, max_bin_value, n_bins + 1) # Calculate histogram bins once and use for each category_name
+            mid_bins = 0.5 * (bins[:-1] + bins[1:])
+            bin_labels = np.array(["{:.2f} to {:.2f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])])
 
-    fig.update_layout(layout)
-    fig.update_layout(legend_title_text=legend_title)
+            for category_name in df_category_name_list:
+                category_subset = facet_subset[facet_subset[df_category_col] == category_name]
 
-    return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
+                if category_name in category_names:
+                    show_legend = False
+                else:
+                    show_legend = True
+                    category_names.append(category_name)
+
+                category_idx = category_names.index(category_name)
+
+                counts, junk = np.histogram(category_subset[df_value_col], bins=bins)
+
+                trace = go.Bar(
+                    x=mid_bins,
+                    y=counts,
+                    name=category_name,
+                    marker_color=colour_sequence[category_idx],
+                    legendgroup=category_idx,
+                    showlegend=show_legend,
+                    text=bin_labels,
+                    hovertemplate=
+                    f"<b>{facet_name}</b><br>" +
+                    f"{category_name}<br>" +
+                    "Frequency: %{y:.0d}<br>" +
+                    "Bin range: %{text}<br>" +
+                    "Mid-bin: %{x:.2f}<br>" +
+                    "<extra></extra>"
+                )
+
+                fig.append_trace(trace, row=current_row, col=current_col)
+
+            fig.update_xaxes(
+                title_text=facet_name + " " + value_axis_title,
+                tickvals=np.linspace(min_bin_value, max_bin_value, n_bins+1),
+                row=current_row,
+                col=current_col
+            )
+
+            if current_col == 1:
+                fig.update_yaxes(title_text="Frequency", row=current_row, col=current_col)
+
+            current_facet += 1
+            current_col += 1
+            if current_col > facet_col_wrap:
+                current_row += 1
+                current_col = 1
+
+        layout = go.Layout(
+            height=chart_height
+        )
+
+        fig.update_layout(layout)
+        fig.update_layout(legend_title_text=legend_title)
+
+        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
+
+    except ValueError as e:
+        msg = "<div class='alert alert-warning' role='alert'>"
+        if settings.DEBUG:
+            msg += "Could not resolve chart. Try filtering the data to reduce the number of categories or systems."
+            msg += "<p>Error is:</p>"
+            msg += "<pre>" + e.args[0].replace("\n", "<br>") + "</pre>"
+        else:
+            msg += "Could not resolve chart. Try filtering the data to reduce the number of categories or systems."
+
+        msg += "</div>"
+
+        return msg
 
 
 def plotly_frequency_barchart(
@@ -642,7 +651,7 @@ def plotly_timeseries_linechart(
             color=df_name_col,
             facet_col=facet_col,
             facet_col_wrap=facet_col_wrap,
-            facet_row_spacing=0.21 / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
+            facet_row_spacing=0.40 / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
             labels={
                 df_value_col: value_axis_title,
                 df_name_col: legend_title,
@@ -713,7 +722,7 @@ def plotly_scatter(
             color=df_category_name_col,
             facet_col=df_facet_col,
             facet_col_wrap=facet_col_wrap,
-            facet_row_spacing=0.21 / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
+            facet_row_spacing=0.40 / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
             labels={
                 df_x_value_col: x_axis_title,
                 df_y_value_col: y_axis_title,
@@ -774,7 +783,7 @@ def plotly_barchart_weekdays(
             y=df_value_col,
             facet_col="x_ray_system_name",
             facet_col_wrap=facet_col_wrap,
-            facet_row_spacing=0.14 / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
+            facet_row_spacing=0.40 / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
             color=df_value_col,
             labels={
                 df_name_col: name_axis_title,
@@ -813,7 +822,7 @@ def plotly_barchart_weekdays(
         return msg
 
 
-def construct_freqency_chart(
+def construct_frequency_chart(
         df=None,
         df_name_col=None,
         sorting_choice=None,
@@ -913,7 +922,7 @@ def construct_over_time_charts(
     date_title=None,
     sorting=None,
     time_period=None,
-    average_choice=None,
+    average_choices=None,
     grouping_choice=None,
     colour_map=None,
     facet_col_wrap=None,
@@ -932,7 +941,7 @@ def construct_over_time_charts(
         df_value_col,
         df_date_col=df_date_col,
         time_period=time_period,
-        average=average_choice
+        average_choices=average_choices
     )
 
     category_names_col = df_name_col
@@ -943,7 +952,7 @@ def construct_over_time_charts(
 
     return_value = {}
 
-    if average_choice in ["mean", "both"]:
+    if "mean" in average_choices:
         return_value["mean"] = plotly_timeseries_linechart(
             df_time_series,
             category_names_col,
@@ -959,7 +968,7 @@ def construct_over_time_charts(
             sorted_category_list=sorted_categories
         )
 
-    if average_choice in ["median", "both"]:
+    if "median" in average_choices:
         return_value["median"] = plotly_timeseries_linechart(
             df_time_series,
             category_names_col,

@@ -523,6 +523,8 @@ class UserProfile(models.Model):
     )
 
     plotBoxplots = models.BooleanField(default=False, editable=False)
+    plotMean = models.BooleanField(default=True, editable=False)
+    plotMedian = models.BooleanField(default=False, editable=False)
 
     # Plotting controls
     plotCharts = models.BooleanField(default=False)
