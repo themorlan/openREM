@@ -70,7 +70,7 @@ It may be possible to configure the e-mail server to allow sending of messages t
 server without authentication, in which case the user and password settings should not be required.
 
 The ``EMAIL_USE_TLS`` and ``EMAIL_USE_TLS`` options should be configured to match the encryption requirements of
-the e-mail server.
+the e-mail server. Use ``0`` for False (default) and ``1`` for True.
 
 The ``EMAIL_DOSE_ALERT_SENDER`` should contain the e-mail address that you want to use as the sender address.
 
