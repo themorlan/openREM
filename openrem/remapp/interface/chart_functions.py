@@ -35,12 +35,12 @@ from builtins import range  # pylint: disable=redefined-builtin
 import pandas as pd
 
 
-def global_config(filename):
+def global_config(filename, height_multiplier=1.0):
     return {
         "toImageButtonOptions": {
             "format": "png",
             "filename": filename,
-            "height": 1080,
+            "height": 1080 * height_multiplier,
             "width": 1920,
             "scale": 1
         },
@@ -441,7 +441,7 @@ def plotly_histogram(
         fig.update_xaxes(rangemode="nonnegative")
         fig.update_yaxes(rangemode="nonnegative")
 
-        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
+        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename, height_multiplier=chart_height/750.0))
 
     except ValueError as e:
         msg = "<div class='alert alert-warning' role='alert'>"
@@ -565,7 +565,7 @@ def plotly_histogram_barchart(
         fig.update_layout(layout)
         fig.update_layout(legend_title_text=legend_title)
 
-        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
+        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename, height_multiplier=chart_height/750.0))
 
     except ValueError as e:
         msg = "<div class='alert alert-warning' role='alert'>"
@@ -740,7 +740,7 @@ def plotly_scatter(
         fig.update_xaxes(showticklabels=True)
         fig.update_yaxes(showticklabels=True)
 
-        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
+        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename, height_multiplier=chart_height/750.0))
 
     except ValueError as e:
         msg = "<div class='alert alert-warning' role='alert'>"
@@ -754,7 +754,6 @@ def plotly_scatter(
         msg += "</div>"
 
         return msg
-
 
 
 def plotly_barchart_weekdays(
