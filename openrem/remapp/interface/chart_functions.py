@@ -30,7 +30,6 @@
 """
 
 from django.conf import settings
-from builtins import filter  # pylint: disable=redefined-builtin
 from builtins import range  # pylint: disable=redefined-builtin
 import pandas as pd
 
@@ -120,8 +119,11 @@ def create_dataframe_time_series(
         df_value_col,
         df_date_col="study_date",
         time_period="M",
-        average_choices=["mean"]
+        average_choices=None
 ):
+    if average_choices is None:
+        average_choices = ["mean"]
+
     df_time_series = df.set_index(df_date_col).groupby(["x_ray_system_name", df_name_col, pd.Grouper(freq=time_period)]).agg({df_value_col: average_choices})
     df_time_series.columns = [s + df_value_col for s in average_choices]
     df_time_series = df_time_series.reset_index()
@@ -146,8 +148,6 @@ def create_dataframe_aggregates(
         df_agg_col,
         stats=None
 ):
-    import numpy as np
-
     # Make it possible to have multiple value cols (DLP, CTDI, for example)
     if stats is None:
         stats = ["count"]
@@ -223,7 +223,12 @@ def plotly_boxplot(
 
         fig.update_xaxes(tickson="boundaries")
 
-        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
+        return plot(
+            fig,
+            output_type="div",
+            include_plotlyjs=False,
+            config=global_config(filename)
+        )
 
     except ValueError as e:
         msg = "<div class='alert alert-warning' role='alert'>"
@@ -312,7 +317,12 @@ def plotly_barchart(
 
     fig.update_xaxes(tickson="boundaries")
 
-    return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
+    return plot(
+        fig,
+        output_type="div",
+        include_plotlyjs=False,
+        config=global_config(filename)
+    )
 
 
 def plotly_barchart_mean_median(
@@ -348,12 +358,11 @@ def plotly_barchart_mean_median(
                        showlegend=False,
                        legendgroup=i,
                        text=subset['count'],
-                       hovertemplate=
-                       f"<b>{system_names[i]}</b><br>" +
-                       "%{x}<br>" +
-                       "Mean: %{y:.2f}<br>" +
-                       "Count: %{text:.0d}<br>" +
-                       "<extra></extra>"
+                       hovertemplate=f"<b>{system_names[i]}</b><br>" +
+                                     "%{x}<br>" +
+                                     "Mean: %{y:.2f}<br>" +
+                                     "Count: %{text:.0d}<br>" +
+                                     "<extra></extra>"
                        )
 
         fig.append_trace(trace, row=1, col=1)
@@ -366,12 +375,11 @@ def plotly_barchart_mean_median(
                        marker_color=colour_sequence[i],
                        legendgroup=i,
                        text=subset['count'],
-                       hovertemplate=
-                       f"<b>{system_names[i]}</b><br>" +
-                       "%{x}<br>" +
-                       "Median: %{y:.2f}<br>" +
-                       "Count: %{text:.0d}<br>" +
-                       "<extra></extra>"
+                       hovertemplate=f"<b>{system_names[i]}</b><br>" +
+                                     "%{x}<br>" +
+                                     "Median: %{y:.2f}<br>" +
+                                     "Count: %{text:.0d}<br>" +
+                                     "<extra></extra>"
                        )
 
         fig.append_trace(trace, row=2, col=1)
@@ -389,7 +397,12 @@ def plotly_barchart_mean_median(
     fig.update_yaxes(title_text="Mean " + value_axis_title, row=1, col=1)
     fig.update_yaxes(title_text="Median " + value_axis_title, row=2, col=1)
 
-    return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
+    return plot(
+        fig,
+        output_type="div",
+        include_plotlyjs=False,
+        config=global_config(filename)
+    )
 
 
 def plotly_histogram(
@@ -441,7 +454,15 @@ def plotly_histogram(
         fig.update_xaxes(rangemode="nonnegative")
         fig.update_yaxes(rangemode="nonnegative")
 
-        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename, height_multiplier=chart_height/750.0))
+        return plot(
+            fig,
+            output_type="div",
+            include_plotlyjs=False,
+            config=global_config(
+                filename,
+                height_multiplier=chart_height/750.0
+            )
+        )
 
     except ValueError as e:
         msg = "<div class='alert alert-warning' role='alert'>"
@@ -484,7 +505,7 @@ def plotly_histogram_barchart(
         chart_height = 750
 
     if n_facets < facet_col_wrap:
-        facet_col_wrap=n_facets
+        facet_col_wrap = n_facets
 
     n_colours = len(df[df_category_col].unique())
     colour_sequence = calculate_colour_sequence(colourmap, n_colours)
@@ -506,7 +527,7 @@ def plotly_histogram_barchart(
 
             min_bin_value = facet_subset[df_value_col].min()
             max_bin_value = facet_subset[df_value_col].max()
-            bins = np.linspace(min_bin_value, max_bin_value, n_bins + 1) # Calculate histogram bins once and use for each category_name
+            bins = np.linspace(min_bin_value, max_bin_value, n_bins + 1)
             mid_bins = 0.5 * (bins[:-1] + bins[1:])
             bin_labels = np.array(["{:.2f} to {:.2f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])])
 
@@ -531,13 +552,12 @@ def plotly_histogram_barchart(
                     legendgroup=category_idx,
                     showlegend=show_legend,
                     text=bin_labels,
-                    hovertemplate=
-                    f"<b>{facet_name}</b><br>" +
-                    f"{category_name}<br>" +
-                    "Frequency: %{y:.0d}<br>" +
-                    "Bin range: %{text}<br>" +
-                    "Mid-bin: %{x:.2f}<br>" +
-                    "<extra></extra>"
+                    hovertemplate=f"<b>{facet_name}</b><br>" +
+                                  f"{category_name}<br>" +
+                                  "Frequency: %{y:.0d}<br>" +
+                                  "Bin range: %{text}<br>" +
+                                  "Mid-bin: %{x:.2f}<br>" +
+                                  "<extra></extra>"
                 )
 
                 fig.append_trace(trace, row=current_row, col=current_col)
@@ -565,7 +585,15 @@ def plotly_histogram_barchart(
         fig.update_layout(layout)
         fig.update_layout(legend_title_text=legend_title)
 
-        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename, height_multiplier=chart_height/750.0))
+        return plot(
+            fig,
+            output_type="div",
+            include_plotlyjs=False,
+            config=global_config(
+                filename,
+                height_multiplier=chart_height/750.0
+            )
+        )
 
     except ValueError as e:
         msg = "<div class='alert alert-warning' role='alert'>"
@@ -614,7 +642,12 @@ def plotly_frequency_barchart(
 
     fig.update_xaxes(tickson="boundaries")
 
-    return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
+    return plot(
+        fig,
+        output_type="div",
+        include_plotlyjs=False,
+        config=global_config(filename)
+    )
 
 
 def plotly_timeseries_linechart(
@@ -671,7 +704,12 @@ def plotly_timeseries_linechart(
         fig.update_xaxes(showticklabels=True)
         fig.update_yaxes(showticklabels=True)
 
-        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
+        return plot(
+            fig,
+            output_type="div",
+            include_plotlyjs=False,
+            config=global_config(filename)
+        )
 
     except ValueError as e:
         msg = "<div class='alert alert-warning' role='alert'>"
@@ -740,7 +778,15 @@ def plotly_scatter(
         fig.update_xaxes(showticklabels=True)
         fig.update_yaxes(showticklabels=True)
 
-        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename, height_multiplier=chart_height/750.0))
+        return plot(
+            fig,
+            output_type="div",
+            include_plotlyjs=False,
+            config=global_config(
+                filename,
+                height_multiplier=chart_height/750.0
+            )
+        )
 
     except ValueError as e:
         msg = "<div class='alert alert-warning' role='alert'>"
@@ -805,7 +851,15 @@ def plotly_barchart_weekdays(
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
-        return plot(fig, output_type="div", include_plotlyjs=False, config=global_config(filename))
+        return plot(
+            fig,
+            output_type="div",
+            include_plotlyjs=False,
+            config=global_config(
+                filename,
+                height_multiplier=chart_height/750.0
+            )
+        )
 
     except ValueError as e:
         msg = "<div class='alert alert-warning' role='alert'>"
