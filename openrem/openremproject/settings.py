@@ -39,19 +39,19 @@ JS_REVERSE_OUTPUT_PATH = os.path.join(STATIC_ROOT, "js", "django_reverse")
 VIRTUAL_DIRECTORY = os.environ.get("VIRTUAL_DIRECTORY", default="")
 
 # Celery settings
-BROKER_URL = os.environ.get("BROKER_URL", default="amqp://guest:guest@localhost:5672//")
+broker_url = os.environ.get("BROKER_URL", default="amqp://guest:guest@localhost:5672//")
 BROKER_MGMT_URL = os.environ.get("BROKER_MGMT_URL", default="http://localhost:15672/")
 
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
-CELERY_DEFAULT_QUEUE = "default"
-CELERYD_PREFETCH_MULTIPLIER = 1
+accept_content = ["json"]
+task_serializer = "json"
+result_serializer = "json"
+task_default_queue = "default"
+worker_prefetch_multiplier = 1
 
 FLOWER_PORT = int(os.environ.get("FLOWER_PORT", default=5555))
 FLOWER_URL = os.environ.get("FLOWER_URL", default="http://localhost")
 
-CELERYBEAT_SCHEDULE = {
+beat_schedule = {
     "trigger-dicom-keep-alive": {
         "task": "remapp.netdicom.keepalive.keep_alive",
         "schedule": crontab(minute="*/1"),
