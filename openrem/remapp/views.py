@@ -3803,11 +3803,12 @@ def mg_plot_calculations(
         user_profile.plotMGAGDvsThickness
         or user_profile.plotMGkVpvsThickness
         or user_profile.plotMGmAsvsThickness
+        or user_profile.plotMGaverageAGDvsThickness
     ):
         name_fields.append("projectionxrayradiationdose__irradeventxraydata__acquisition_protocol")
 
     value_fields = []
-    if user_profile.plotMGAGDvsThickness:
+    if user_profile.plotMGAGDvsThickness or user_profile.plotMGaverageAGDvsThickness:
         value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose")
     if user_profile.plotMGkVpvsThickness:
         value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp")
@@ -3817,6 +3818,7 @@ def mg_plot_calculations(
         user_profile.plotMGAGDvsThickness
         or user_profile.plotMGkVpvsThickness
         or user_profile.plotMGmAsvsThickness
+        or user_profile.plotMGaverageAGDvsThickness
     ):
         value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness")
 
@@ -3909,7 +3911,7 @@ def mg_plot_calculations(
                 df_category_col=category_names_col,
                 df_facet_col=group_by_col,
                 facet_title=legend_title,
-                user_bins=[10, 20, 30, 40, 50, 60, 70, 80],
+                user_bins=[0, 10, 20, 30, 40, 50, 60, 70, 80],
                 colour_map=user_profile.plotColourMapChoice,
                 file_name="OpenREM CT acquisition protocol AGD vs thickness",
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
