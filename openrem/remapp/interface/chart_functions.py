@@ -542,7 +542,7 @@ def plotly_histogram_barchart(
 
                 category_idx = category_names.index(category_name)
 
-                counts, junk = np.histogram(category_subset[df_value_col], bins=bins)
+                counts, junk = np.histogram(category_subset[df_value_col].values, bins=bins)
 
                 trace = go.Bar(
                     x=mid_bins,
@@ -678,39 +678,40 @@ def plotly_binned_statistic_barchart(
             for category_name in df_category_name_list:
                 category_subset = facet_subset[facet_subset[df_category_col] == category_name]
 
-                if category_name in category_names:
-                    show_legend = False
-                else:
-                    show_legend = True
-                    category_names.append(category_name)
+                if len(category_subset.index) > 0:
+                    if category_name in category_names:
+                        show_legend = False
+                    else:
+                        show_legend = True
+                        category_names.append(category_name)
 
-                category_idx = category_names.index(category_name)
+                    category_idx = category_names.index(category_name)
 
-                statistic, junk, bin_numbers = stats.binned_statistic(
-                    category_subset[df_x_value_col],
-                    category_subset[df_y_value_col],
-                    statistic=stat_name,
-                    bins=bins
-                )
-                bin_counts = np.bincount(bin_numbers)
-                trace_labels = np.array(["Frequency: {}<br>Bin range: {}".format(i, j) for i, j in zip(bin_counts, bin_labels)])
+                    statistic, junk, bin_numbers = stats.binned_statistic(
+                        category_subset[df_x_value_col].values,
+                        category_subset[df_y_value_col].values,
+                        statistic=stat_name,
+                        bins=bins
+                    )
+                    bin_counts = np.bincount(bin_numbers)
+                    trace_labels = np.array(["Frequency: {}<br>Bin range: {}".format(i, j) for i, j in zip(bin_counts, bin_labels)])
 
-                trace = go.Bar(
-                    x=bin_labels,
-                    y=statistic,
-                    name=category_name,
-                    marker_color=colour_sequence[category_idx],
-                    legendgroup=category_idx,
-                    showlegend=show_legend,
-                    text=trace_labels,
-                    hovertemplate=f"<b>{facet_name}</b><br>" +
-                                  f"{category_name}<br>" +
-                                  f"{stat_name.capitalize()}: " + "%{y:.2f}<br>" +
-                                  "%{text}<br>" +
-                                  "<extra></extra>"
-                )
+                    trace = go.Bar(
+                        x=bin_labels,
+                        y=statistic,
+                        name=category_name,
+                        marker_color=colour_sequence[category_idx],
+                        legendgroup=category_idx,
+                        showlegend=show_legend,
+                        text=trace_labels,
+                        hovertemplate=f"<b>{facet_name}</b><br>" +
+                                      f"{category_name}<br>" +
+                                      f"{stat_name.capitalize()}: " + "%{y:.2f}<br>" +
+                                      "%{text}<br>" +
+                                      "<extra></extra>"
+                    )
 
-                fig.append_trace(trace, row=current_row, col=current_col)
+                    fig.append_trace(trace, row=current_row, col=current_col)
 
             fig.update_xaxes(
                 title_text=facet_name + " " + x_axis_title,
