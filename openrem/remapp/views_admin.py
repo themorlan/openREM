@@ -1429,6 +1429,9 @@ def chart_options_view(request):
             user_profile.plotMGAGDvsThickness = mg_form.cleaned_data[
                 "plotMGAGDvsThickness"
             ]
+            user_profile.plotMGaverageAGDvsThickness = mg_form.cleaned_data[
+                "plotMGaverageAGDvsThickness"
+            ]
             user_profile.plotMGkVpvsThickness = mg_form.cleaned_data[
                 "plotMGkVpvsThickness"
             ]
@@ -1532,6 +1535,7 @@ def chart_options_view(request):
         "plotMGAGDvsThickness": user_profile.plotMGAGDvsThickness,
         "plotMGkVpvsThickness": user_profile.plotMGkVpvsThickness,
         "plotMGmAsvsThickness": user_profile.plotMGmAsvsThickness,
+        "plotMGaverageAGDvsThickness": user_profile.plotMGaverageAGDvsThickness,
     }
 
     general_chart_options_form = GeneralChartOptionsDisplayForm(general_form_data)

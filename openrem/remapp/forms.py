@@ -78,6 +78,11 @@ AVERAGES = (
     (BOXPLOT, "Boxplot"),
 )
 
+AVERAGES_MAMMO = (
+    (MEAN, "Mean"),
+    (MEDIAN, "Median"),
+)
+
 NAME = "name"
 FREQ = "frequency"
 VALUE = "value"
@@ -380,17 +385,24 @@ class MGChartOptionsForm(forms.Form):
     plotMGAGDvsThickness = forms.BooleanField(
         label="AGD vs. compressed thickness", required=False
     )
+    plotMGaverageAGDvsThickness = forms.BooleanField(
+        label="Average AGD vs. compressed thickness", required=False
+    )
     plotMGkVpvsThickness = forms.BooleanField(
         label="kVp vs. compressed thickness", required=False
     )
     plotMGmAsvsThickness = forms.BooleanField(
         label="mAs vs. compressed thickness", required=False
     )
-    plotSeriesPerSystem = forms.BooleanField(
-        label="Plot a series per system", required=False
+    plotAverageChoice = forms.MultipleChoiceField(
+        label="Average plots", choices=AVERAGES_MAMMO, required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"})
     )
     plotGrouping = forms.ChoiceField(
         label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
+    )
+    plotSeriesPerSystem = forms.BooleanField(
+        label="Plot a series per system", required=False
     )
     plotMGInitialSortingChoice = forms.ChoiceField(
         label="Chart sorting", choices=SORTING_CHOICES, required=False
@@ -406,6 +418,9 @@ class MGChartOptionsDisplayForm(forms.Form):
 
     plotMGStudyPerDayAndHour = forms.BooleanField(
         label="Study workload", required=False
+    )
+    plotMGaverageAGDvsThickness = forms.BooleanField(
+        label="Average AGD vs. compressed thickness", required=False
     )
     plotMGAGDvsThickness = forms.BooleanField(
         label="AGD vs. compressed thickness", required=False

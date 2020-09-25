@@ -15,6 +15,13 @@ $(document).ready(function() {
         dataType: "json",
         success: function( json ) {
 
+            if(typeof json.meanAGDvsThickness !== "undefined") {
+                $("#acquisitionMeanAGDvsThickChartDiv").html(json.meanAGDvsThickness);
+            }
+            if(typeof json.medianAGDvsThickness !== "undefined") {
+                $("#acquisitionMedianAGDvsThickChartDiv").html(json.medianAGDvsThickness);
+            }
+
             // Study workload chart data
             if(typeof json.studyWorkloadData !== "undefined") {
                 $("#studyWorkloadChartDiv").html(json.studyWorkloadData);

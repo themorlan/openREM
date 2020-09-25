@@ -564,7 +564,7 @@ def plotly_histogram_barchart(
 
             fig.update_xaxes(
                 title_text=facet_name + " " + value_axis_title,
-                tickvals=np.linspace(min_bin_value, max_bin_value, n_bins+1),
+                tickvals=bins,
                 row=current_row,
                 col=current_col
             )
@@ -591,6 +591,152 @@ def plotly_histogram_barchart(
             include_plotlyjs=False,
             config=global_config(
                 filename,
+                height_multiplier=chart_height/750.0
+            )
+        )
+
+    except ValueError as e:
+        msg = "<div class='alert alert-warning' role='alert'>"
+        if settings.DEBUG:
+            msg += "Could not resolve chart. Try filtering the data to reduce the number of categories or systems."
+            msg += "<p>Error is:</p>"
+            msg += "<pre>" + e.args[0].replace("\n", "<br>") + "</pre>"
+        else:
+            msg += "Could not resolve chart. Try filtering the data to reduce the number of categories or systems."
+
+        msg += "</div>"
+
+        return msg
+
+
+def plotly_binned_statistic_barchart(
+        df,
+        df_x_value_col,
+        df_y_value_col,
+        x_axis_title="",
+        y_axis_title="",
+        df_category_col=None,
+        df_facet_col="x_ray_system_name",
+        facet_title="System",
+        n_bins=None,
+        user_bins=None,
+        colour_map="RdYlBu",
+        file_name="OpenREM_binned_statistic_chart",
+        facet_col_wrap=3,
+        df_facet_category_list=None,
+        df_category_name_list=None,
+        stat_name="mean"
+):
+    from plotly.subplots import make_subplots
+    import plotly.graph_objects as go
+    from plotly.offline import plot
+    import math
+    import numpy as np
+    from scipy import stats
+
+    n_facets = len(df_facet_category_list)
+    n_facet_rows = math.ceil(n_facets / facet_col_wrap)
+    chart_height = n_facet_rows * 250
+    if chart_height < 750:
+        chart_height = 750
+
+    if n_facets < facet_col_wrap:
+        facet_col_wrap = n_facets
+
+    n_colours = len(df[df_category_col].unique())
+    colour_sequence = calculate_colour_sequence(colour_map, n_colours)
+
+    try:
+        fig = make_subplots(
+            rows=n_facet_rows,
+            cols=facet_col_wrap,
+            vertical_spacing=0.40 / n_facet_rows
+        )
+
+        current_row = 1
+        current_col = 1
+        current_facet = 0
+        category_names = []
+
+        for facet_name in df_facet_category_list:
+            facet_subset = df[df[df_facet_col] == facet_name]
+
+            if user_bins:
+                bins = np.array(user_bins)
+            else:
+                min_bin_value = facet_subset[df_x_value_col].min()
+                max_bin_value = facet_subset[df_x_value_col].max()
+                bins = np.linspace(min_bin_value, max_bin_value, n_bins + 1)
+
+            bin_labels = np.array(["{:.1f} to {:.1f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])])
+
+            for category_name in df_category_name_list:
+                category_subset = facet_subset[facet_subset[df_category_col] == category_name]
+
+                if category_name in category_names:
+                    show_legend = False
+                else:
+                    show_legend = True
+                    category_names.append(category_name)
+
+                category_idx = category_names.index(category_name)
+
+                statistic, junk, junk = stats.binned_statistic(
+                    category_subset[df_x_value_col].values,
+                    category_subset[df_y_value_col].values,
+                    statistic=stat_name,
+                    bins=bins
+                )
+
+                trace = go.Bar(
+                    x=bin_labels,
+                    y=statistic,
+                    name=category_name,
+                    marker_color=colour_sequence[category_idx],
+                    legendgroup=category_idx,
+                    showlegend=show_legend,
+                    text=bin_labels,
+                    hovertemplate=f"<b>{facet_name}</b><br>" +
+                                  f"{category_name}<br>" +
+                                  f"{stat_name.capitalize()}: " + "%{y:.2f}<br>" +
+                                  "Bin range: %{text}<br>" +
+                                  "<extra></extra>"
+                )
+
+                fig.append_trace(trace, row=current_row, col=current_col)
+
+            fig.update_xaxes(
+                title_text=facet_name + " " + x_axis_title,
+                row=current_row,
+                col=current_col
+            )
+
+            if current_col == 1:
+                fig.update_yaxes(
+                    title_text=stat_name.capitalize() + " " + y_axis_title,
+                    row=current_row,
+                    col=current_col
+                )
+
+            current_facet += 1
+            current_col += 1
+            if current_col > facet_col_wrap:
+                current_row += 1
+                current_col = 1
+
+        layout = go.Layout(
+            height=chart_height
+        )
+
+        fig.update_layout(layout)
+        fig.update_layout(legend_title_text=facet_title)
+
+        return plot(
+            fig,
+            output_type="div",
+            include_plotlyjs=False,
+            config=global_config(
+                file_name,
                 height_multiplier=chart_height/750.0
             )
         )
