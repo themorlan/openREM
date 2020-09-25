@@ -618,7 +618,6 @@ def plotly_binned_statistic_barchart(
         df_category_col=None,
         df_facet_col="x_ray_system_name",
         facet_title="System",
-        n_bins=None,
         user_bins=None,
         colour_map="RdYlBu",
         file_name="OpenREM_binned_statistic_chart",
@@ -658,15 +657,21 @@ def plotly_binned_statistic_barchart(
         current_facet = 0
         category_names = []
 
+        bins = np.sort(np.array(user_bins))
+
+        # Drop any rows with nan values in x or y
+        df = df.dropna(subset=[df_x_value_col, df_y_value_col])
+
         for facet_name in df_facet_category_list:
             facet_subset = df[df[df_facet_col] == facet_name]
 
-            if user_bins:
-                bins = np.array(user_bins)
-            else:
-                min_bin_value = facet_subset[df_x_value_col].min()
-                max_bin_value = facet_subset[df_x_value_col].max()
-                bins = np.linspace(min_bin_value, max_bin_value, n_bins + 1)
+            facet_x_min = facet_subset[df_x_value_col].min()
+            facet_x_max = facet_subset[df_x_value_col].max()
+
+            if facet_x_min < np.amin(bins):
+                bins = np.concatenate([[facet_x_min], bins])
+            if facet_x_max > np.amax(bins):
+                bins = np.concatenate([bins, [facet_x_max]])
 
             bin_labels = np.array(["{:.1f} to {:.1f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])])
 
@@ -682,8 +687,8 @@ def plotly_binned_statistic_barchart(
                 category_idx = category_names.index(category_name)
 
                 statistic, junk, bin_numbers = stats.binned_statistic(
-                    category_subset[df_x_value_col].values,
-                    category_subset[df_y_value_col].values,
+                    category_subset[df_x_value_col],
+                    category_subset[df_y_value_col],
                     statistic=stat_name,
                     bins=bins
                 )
@@ -902,6 +907,9 @@ def plotly_scatter(
     colour_sequence = calculate_colour_sequence(colourmap, n_colours)
 
     try:
+        # Drop any rows with nan values in x or y
+        df = df.dropna(subset=[df_x_value_col, df_y_value_col])
+
         fig = px.scatter(
             df,
             x=df_x_value_col,
