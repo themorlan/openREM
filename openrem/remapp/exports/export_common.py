@@ -747,7 +747,7 @@ def abort_if_zero_studies(num_studies, tsk):
 def create_export_task(
     celery_uuid, modality, export_type, date_stamp, pid, user, filters_dict
 ):
-    """ Create export task, add filter details and Celery UUID to export table to track later
+    """Create export task, add filter details and Celery UUID to export table to track later
 
     :param celery_uuid: UUID allocated by Celery for task
     :param modality: export modality

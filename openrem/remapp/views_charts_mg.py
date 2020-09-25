@@ -12,36 +12,59 @@ def generate_required_mg_charts_list(profile):
     required_charts = []
 
     if profile.plotMGAGDvsThickness:
-        required_charts.append({"title": "Chart of AGD vs compressed breast thickness for each acquisition protocol",
-                                "var_name": "acquisitionScatterAGDvsThick"})
+        required_charts.append(
+            {
+                "title": "Chart of AGD vs compressed breast thickness for each acquisition protocol",
+                "var_name": "acquisitionScatterAGDvsThick",
+            }
+        )
 
     if profile.plotMGaverageAGDvsThickness:
         if profile.plotMean:
-            required_charts.append({"title": "Chart of mean AGD vs compressed breast thickness for each acquisition protocol",
-                                    "var_name": "acquisitionMeanAGDvsThick"})
+            required_charts.append(
+                {
+                    "title": "Chart of mean AGD vs compressed breast thickness for each acquisition protocol",
+                    "var_name": "acquisitionMeanAGDvsThick",
+                }
+            )
         if profile.plotMedian:
-            required_charts.append({"title": "Chart of median AGD vs compressed breast thickness for each acquisition protocol",
-                                    "var_name": "acquisitionMedianAGDvsThick"})
+            required_charts.append(
+                {
+                    "title": "Chart of median AGD vs compressed breast thickness for each acquisition protocol",
+                    "var_name": "acquisitionMedianAGDvsThick",
+                }
+            )
 
     if profile.plotMGkVpvsThickness:
-        required_charts.append({"title": "Chart of kVp vs compressed breast thickness for each acquisition protocol",
-                                "var_name": "acquisitionScatterkVpvsThick"})
+        required_charts.append(
+            {
+                "title": "Chart of kVp vs compressed breast thickness for each acquisition protocol",
+                "var_name": "acquisitionScatterkVpvsThick",
+            }
+        )
 
     if profile.plotMGmAsvsThickness:
-        required_charts.append({"title": "Chart of mAs vs compressed breast thickness for each acquisition protocol",
-                                "var_name": "acquisitionScattermAsvsThick"})
+        required_charts.append(
+            {
+                "title": "Chart of mAs vs compressed breast thickness for each acquisition protocol",
+                "var_name": "acquisitionScattermAsvsThick",
+            }
+        )
 
     if profile.plotMGStudyPerDayAndHour:
-        required_charts.append({"title": "Chart of study description workload",
-                                "var_name": "studyWorkload"})
+        required_charts.append(
+            {
+                "title": "Chart of study description workload",
+                "var_name": "studyWorkload",
+            }
+        )
 
     return required_charts
 
 
 @login_required
 def mg_summary_chart_data(request):
-    """Obtain data for mammography chart data Ajax view
-    """
+    """Obtain data for mammography chart data Ajax view"""
     from remapp.interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
     from openremproject import settings
     from django.http import JsonResponse
@@ -74,10 +97,7 @@ def mg_summary_chart_data(request):
 
         start_time = datetime.now()
 
-    return_structure = mg_plot_calculations(
-        f,
-        user_profile
-    )
+    return_structure = mg_plot_calculations(f, user_profile)
 
     if settings.DEBUG:
         logger.debug(f"Elapsed time is {datetime.now() - start_time}")
@@ -85,12 +105,8 @@ def mg_summary_chart_data(request):
     return JsonResponse(return_structure, safe=False)
 
 
-def mg_plot_calculations(
-    f,
-    user_profile
-):
-    """Calculations for mammography charts
-    """
+def mg_plot_calculations(f, user_profile):
+    """Calculations for mammography charts"""
     from .interface.chart_functions import (
         create_dataframe,
         create_dataframe_weekdays,
@@ -98,7 +114,7 @@ def mg_plot_calculations(
         plotly_binned_statistic_barchart,
         construct_scatter_chart,
         plotly_set_default_theme,
-        create_sorted_category_list
+        create_sorted_category_list,
     )
 
     # Set the Plotly chart theme
@@ -117,22 +133,32 @@ def mg_plot_calculations(
         or user_profile.plotMGmAsvsThickness
         or user_profile.plotMGaverageAGDvsThickness
     ):
-        name_fields.append("projectionxrayradiationdose__irradeventxraydata__acquisition_protocol")
+        name_fields.append(
+            "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+        )
 
     value_fields = []
     if user_profile.plotMGAGDvsThickness or user_profile.plotMGaverageAGDvsThickness:
-        value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose")
+        value_fields.append(
+            "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose"
+        )
     if user_profile.plotMGkVpvsThickness:
-        value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp")
+        value_fields.append(
+            "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp"
+        )
     if user_profile.plotMGmAsvsThickness:
-        value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure")
+        value_fields.append(
+            "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"
+        )
     if (
         user_profile.plotMGAGDvsThickness
         or user_profile.plotMGkVpvsThickness
         or user_profile.plotMGmAsvsThickness
         or user_profile.plotMGaverageAGDvsThickness
     ):
-        value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness")
+        value_fields.append(
+            "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness"
+        )
 
     date_fields = []
     time_fields = []
@@ -142,7 +168,9 @@ def mg_plot_calculations(
 
     system_field = None
     if user_profile.plotSeriesPerSystem:
-        system_field = "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
+        system_field = (
+            "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
+        )
 
     df = create_dataframe(
         f.qs,
@@ -152,14 +180,12 @@ def mg_plot_calculations(
         data_point_time_fields=time_fields,
         system_name_field=system_field,
         data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
-        uid="projectionxrayradiationdose__irradeventxraydata__pk"
+        uid="projectionxrayradiationdose__irradeventxraydata__pk",
     )
 
     if user_profile.plotMGStudyPerDayAndHour:
         df_time_series_per_weekday = create_dataframe_weekdays(
-            df,
-            "study_description",
-            df_date_col="study_date"
+            df, "study_description", df_date_col="study_date"
         )
 
         return_structure["studyWorkloadData"] = plotly_barchart_weekdays(
@@ -170,7 +196,7 @@ def mg_plot_calculations(
             value_axis_title="Frequency",
             colourmap=user_profile.plotColourMapChoice,
             filename="OpenREM CT study description workload",
-            facet_col_wrap=user_profile.plotFacetColWrapVal
+            facet_col_wrap=user_profile.plotFacetColWrapVal,
         )
 
     if user_profile.plotMGaverageAGDvsThickness:
@@ -178,10 +204,15 @@ def mg_plot_calculations(
             df,
             "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
             "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
-            [user_profile.plotInitialSortingDirection, user_profile.plotMGInitialSortingChoice]
+            [
+                user_profile.plotInitialSortingDirection,
+                user_profile.plotMGInitialSortingChoice,
+            ],
         )
 
-        category_names_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+        category_names_col = (
+            "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+        )
         group_by_col = "x_ray_system_name"
         legend_title = "Acquisition protocol"
         facet_names = list(df[group_by_col].unique())
@@ -189,7 +220,9 @@ def mg_plot_calculations(
 
         if user_profile.plotGroupingChoice == "series":
             category_names_col = "x_ray_system_name"
-            group_by_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            group_by_col = (
+                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            )
             legend_title = "System"
             category_names = facet_names
             facet_names = list(sorted_acquisition_agd_categories.values())[0]
@@ -210,7 +243,7 @@ def mg_plot_calculations(
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 df_facet_category_list=facet_names,
                 df_category_name_list=category_names,
-                stat_name="mean"
+                stat_name="mean",
             )
 
         if user_profile.plotMedian:
@@ -229,7 +262,7 @@ def mg_plot_calculations(
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 df_facet_category_list=facet_names,
                 df_category_name_list=category_names,
-                stat_name="median"
+                stat_name="median",
             )
 
     if user_profile.plotMGAGDvsThickness:
@@ -240,12 +273,15 @@ def mg_plot_calculations(
             df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
             x_axis_title="Compressed breast thickness (mm)",
             y_axis_title="AGD (mGy)",
-            sorting=[user_profile.plotInitialSortingDirection, user_profile.plotMGInitialSortingChoice],
+            sorting=[
+                user_profile.plotInitialSortingDirection,
+                user_profile.plotMGInitialSortingChoice,
+            ],
             grouping_choice=user_profile.plotGroupingChoice,
             legend_title="Acquisition protocol",
             colour_map=user_profile.plotColourMapChoice,
             facet_col_wrap=user_profile.plotFacetColWrapVal,
-            file_name="OpenREM CT acquisition protocol AGD vs thickness"
+            file_name="OpenREM CT acquisition protocol AGD vs thickness",
         )
 
     if user_profile.plotMGkVpvsThickness:
@@ -256,12 +292,15 @@ def mg_plot_calculations(
             df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
             x_axis_title="Compressed breast thickness (mm)",
             y_axis_title="kVp",
-            sorting=[user_profile.plotInitialSortingDirection, user_profile.plotMGInitialSortingChoice],
+            sorting=[
+                user_profile.plotInitialSortingDirection,
+                user_profile.plotMGInitialSortingChoice,
+            ],
             grouping_choice=user_profile.plotGroupingChoice,
             legend_title="Acquisition protocol",
             colour_map=user_profile.plotColourMapChoice,
             facet_col_wrap=user_profile.plotFacetColWrapVal,
-            file_name="OpenREM CT acquisition protocol kVp vs thickness"
+            file_name="OpenREM CT acquisition protocol kVp vs thickness",
         )
 
     if user_profile.plotMGmAsvsThickness:
@@ -272,12 +311,15 @@ def mg_plot_calculations(
             df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
             x_axis_title="Compressed breast thickness (mm)",
             y_axis_title="mAs",
-            sorting=[user_profile.plotInitialSortingDirection, user_profile.plotMGInitialSortingChoice],
+            sorting=[
+                user_profile.plotInitialSortingDirection,
+                user_profile.plotMGInitialSortingChoice,
+            ],
             grouping_choice=user_profile.plotGroupingChoice,
             legend_title="Acquisition protocol",
             colour_map=user_profile.plotColourMapChoice,
             facet_col_wrap=user_profile.plotFacetColWrapVal,
-            file_name="OpenREM CT acquisition protocol mAs vs thickness"
+            file_name="OpenREM CT acquisition protocol mAs vs thickness",
         )
 
     return return_structure
@@ -352,7 +394,7 @@ def mg_chart_form_processing(request, user_profile):
                 "plotGrouping": user_profile.plotGroupingChoice,
                 "plotMGInitialSortingChoice": user_profile.plotMGInitialSortingChoice,
                 "plotInitialSortingDirection": user_profile.plotInitialSortingDirection,
-                "plotAverageChoice": average_choices
+                "plotAverageChoice": average_choices,
             }
             chart_options_form = MGChartOptionsForm(form_data)
     return chart_options_form

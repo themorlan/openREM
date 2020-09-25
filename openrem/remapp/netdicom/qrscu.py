@@ -1664,13 +1664,10 @@ def qrscu(
 
         time_took = (datetime.now() - debug_timer).total_seconds()
         study_numbers["current"] = query.dicomqrrspstudy_set.all().count()
-        query.stage = (
-            "Query complete. Query took {0} and we are left with {1} studies to move.<br>"
-            "Of the original {2} study responses, ".format(
-                naturalduration(time_took),
-                study_numbers["current"],
-                study_numbers["initial"],
-            )
+        query.stage = "Query complete. Query took {0} and we are left with {1} studies to move.<br>" "Of the original {2} study responses, ".format(
+            naturalduration(time_took),
+            study_numbers["current"],
+            study_numbers["initial"],
         )
         query.stage += series_pruning_log
         filter_pruning_logs = "Filtering for "
@@ -1696,8 +1693,10 @@ def qrscu(
             )
         query.stage += filter_pruning_logs
         if remove_duplicates:
-            query.stage += "Removing duplicates of previous objects removed {0} studies.".format(
-                study_numbers["duplicates_removed"]
+            query.stage += (
+                "Removing duplicates of previous objects removed {0} studies.".format(
+                    study_numbers["duplicates_removed"]
+                )
             )
         query.save()
         logger.info("{0} ".format(query_id) + query.stage)

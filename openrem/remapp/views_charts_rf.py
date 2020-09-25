@@ -13,51 +13,94 @@ def generate_required_rf_charts_list(profile):
 
     if profile.plotRFStudyDAP:
         if profile.plotMean:
-            required_charts.append({"title": "Chart of mean DAP for each study description",
-                                    "var_name": "studyMeanDAP"})
+            required_charts.append(
+                {
+                    "title": "Chart of mean DAP for each study description",
+                    "var_name": "studyMeanDAP",
+                }
+            )
         if profile.plotMedian:
-            required_charts.append({"title": "Chart of median DAP for each study description",
-                                    "var_name": "studyMedianDAP"})
+            required_charts.append(
+                {
+                    "title": "Chart of median DAP for each study description",
+                    "var_name": "studyMedianDAP",
+                }
+            )
         if profile.plotBoxplots:
-            required_charts.append({"title": "Boxplot of DAP for each study description",
-                                    "var_name": "studyBoxplotDAP"})
+            required_charts.append(
+                {
+                    "title": "Boxplot of DAP for each study description",
+                    "var_name": "studyBoxplotDAP",
+                }
+            )
         if profile.plotHistograms:
-            required_charts.append({"title": "Histogram of DAP for each study description",
-                                    "var_name": "studyHistogramDAP"})
+            required_charts.append(
+                {
+                    "title": "Histogram of DAP for each study description",
+                    "var_name": "studyHistogramDAP",
+                }
+            )
 
     if profile.plotRFRequestDAP:
         if profile.plotMean:
-            required_charts.append({"title": "Chart of mean DAP for each requested procedure",
-                                    "var_name": "requestMeanDAP"})
+            required_charts.append(
+                {
+                    "title": "Chart of mean DAP for each requested procedure",
+                    "var_name": "requestMeanDAP",
+                }
+            )
         if profile.plotMedian:
-            required_charts.append({"title": "Chart of median DAP for each requested procedure",
-                                    "var_name": "requestMedianDAP"})
+            required_charts.append(
+                {
+                    "title": "Chart of median DAP for each requested procedure",
+                    "var_name": "requestMedianDAP",
+                }
+            )
         if profile.plotBoxplots:
-            required_charts.append({"title": "Boxplot of DAP for each requested procedure",
-                                    "var_name": "requestBoxplotDAP"})
+            required_charts.append(
+                {
+                    "title": "Boxplot of DAP for each requested procedure",
+                    "var_name": "requestBoxplotDAP",
+                }
+            )
         if profile.plotHistograms:
-            required_charts.append({"title": "Histogram of DAP for each requested procedure",
-                                    "var_name": "requestHistogramDAP"})
+            required_charts.append(
+                {
+                    "title": "Histogram of DAP for each requested procedure",
+                    "var_name": "requestHistogramDAP",
+                }
+            )
 
     if profile.plotRFStudyFreq:
-        required_charts.append({"title": "Chart of study description frequency",
-                                "var_name": "studyFrequency"})
+        required_charts.append(
+            {
+                "title": "Chart of study description frequency",
+                "var_name": "studyFrequency",
+            }
+        )
 
     if profile.plotRFRequestFreq:
-        required_charts.append({"title": "Chart of requested procedure frequency",
-                                "var_name": "requestFrequency"})
+        required_charts.append(
+            {
+                "title": "Chart of requested procedure frequency",
+                "var_name": "requestFrequency",
+            }
+        )
 
     if profile.plotRFStudyPerDayAndHour:
-        required_charts.append({"title": "Chart of study description workload",
-                                "var_name": "studyWorkload"})
+        required_charts.append(
+            {
+                "title": "Chart of study description workload",
+                "var_name": "studyWorkload",
+            }
+        )
 
     return required_charts
 
 
 @login_required
 def rf_summary_chart_data(request):
-    """Obtain data for Ajax chart call
-    """
+    """Obtain data for Ajax chart call"""
     from remapp.interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
     from openremproject import settings
     from django.http import JsonResponse
@@ -90,10 +133,7 @@ def rf_summary_chart_data(request):
 
         start_time = datetime.now()
 
-    return_structure = rf_plot_calculations(
-        f,
-        user_profile
-    )
+    return_structure = rf_plot_calculations(f, user_profile)
 
     if settings.DEBUG:
         logger.debug(f"Elapsed time is {datetime.now() - start_time}")
@@ -101,12 +141,8 @@ def rf_summary_chart_data(request):
     return JsonResponse(return_structure, safe=False)
 
 
-def rf_plot_calculations(
-    f,
-    user_profile
-):
-    """Calculations for fluoroscopy charts
-    """
+def rf_plot_calculations(f, user_profile):
+    """Calculations for fluoroscopy charts"""
     from .interface.chart_functions import (
         create_dataframe,
         create_dataframe_weekdays,
@@ -117,7 +153,7 @@ def rf_plot_calculations(
         plotly_histogram_barchart,
         plotly_barchart_weekdays,
         plotly_set_default_theme,
-        construct_frequency_chart
+        construct_frequency_chart,
     )
 
     # Set the Plotly chart theme
@@ -136,7 +172,11 @@ def rf_plot_calculations(
     #######################################################################
     # Prepare Pandas DataFrame to use for charts
     name_fields = []
-    if user_profile.plotRFStudyFreq or user_profile.plotRFStudyDAP or user_profile.plotRFStudyPerDayAndHour:
+    if (
+        user_profile.plotRFStudyFreq
+        or user_profile.plotRFStudyDAP
+        or user_profile.plotRFStudyPerDayAndHour
+    ):
         name_fields.append("study_description")
     if user_profile.plotRFRequestFreq or user_profile.plotRFRequestDAP:
         name_fields.append("requested_procedure_code_meaning")
@@ -155,7 +195,9 @@ def rf_plot_calculations(
 
     system_field = None
     if user_profile.plotSeriesPerSystem:
-        system_field = "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
+        system_field = (
+            "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
+        )
 
     df = create_dataframe(
         f.qs,
@@ -166,15 +208,13 @@ def rf_plot_calculations(
         system_name_field=system_field,
         data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
         data_point_value_multipliers=value_multipliers,
-        uid="pk"
+        uid="pk",
     )
     #######################################################################
 
     if user_profile.plotRFStudyPerDayAndHour:
         df_time_series_per_weekday = create_dataframe_weekdays(
-            df,
-            "study_description",
-            df_date_col="study_date"
+            df, "study_description", df_date_col="study_date"
         )
 
         return_structure["studyWorkloadData"] = plotly_barchart_weekdays(
@@ -185,7 +225,7 @@ def rf_plot_calculations(
             value_axis_title="Frequency",
             colourmap=user_profile.plotColourMapChoice,
             filename="OpenREM RF study description workload",
-            facet_col_wrap=user_profile.plotFacetColWrapVal
+            facet_col_wrap=user_profile.plotFacetColWrapVal,
         )
 
     stats_to_include = ["count"]
@@ -200,15 +240,15 @@ def rf_plot_calculations(
             df,
             "study_description",
             "total_dap",
-            [user_profile.plotInitialSortingDirection, user_profile.plotRFInitialSortingChoice]
+            [
+                user_profile.plotInitialSortingDirection,
+                user_profile.plotRFInitialSortingChoice,
+            ],
         )
 
         if user_profile.plotMean or user_profile.plotMedian:
             df_aggregated = create_dataframe_aggregates(
-                df,
-                "study_description",
-                "total_dap",
-                stats=stats_to_include
+                df, "study_description", "total_dap", stats=stats_to_include
             )
 
             if user_profile.plotMean:
@@ -220,7 +260,7 @@ def rf_plot_calculations(
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM RF study description DAP mean",
                     sorted_category_list=sorted_study_categories,
-                    average_choice="mean"
+                    average_choice="mean",
                 )
 
             if user_profile.plotMedian:
@@ -232,7 +272,7 @@ def rf_plot_calculations(
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM RF study description DAP median",
                     sorted_category_list=sorted_study_categories,
-                    average_choice="median"
+                    average_choice="median",
                 )
 
         if user_profile.plotBoxplots:
@@ -244,7 +284,7 @@ def rf_plot_calculations(
                 name_axis_title="Study description",
                 colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM RF study description DAP boxplot",
-                sorted_category_list=sorted_study_categories
+                sorted_category_list=sorted_study_categories,
             )
 
         if user_profile.plotHistograms:
@@ -280,14 +320,17 @@ def rf_plot_calculations(
         return_structure["studyFrequencyData"] = construct_frequency_chart(
             df=df,
             df_name_col="study_description",
-            sorting_choice=[user_profile.plotInitialSortingDirection, user_profile.plotRFInitialSortingChoice],
+            sorting_choice=[
+                user_profile.plotInitialSortingDirection,
+                user_profile.plotRFInitialSortingChoice,
+            ],
             legend_title="Study description",
             df_x_axis_col="x_ray_system_name",
             x_axis_title="System",
             grouping_choice=user_profile.plotGroupingChoice,
             colour_map=user_profile.plotColourMapChoice,
             file_name="OpenREM RF study description frequency",
-            sorted_categories=sorted_study_categories
+            sorted_categories=sorted_study_categories,
         )
 
     sorted_request_categories = None
@@ -296,14 +339,14 @@ def rf_plot_calculations(
             df,
             "requested_procedure_code_meaning",
             "total_dap",
-            [user_profile.plotInitialSortingDirection, user_profile.plotRFInitialSortingChoice]
+            [
+                user_profile.plotInitialSortingDirection,
+                user_profile.plotRFInitialSortingChoice,
+            ],
         )
 
         df_aggregated = create_dataframe_aggregates(
-            df,
-            "requested_procedure_code_meaning",
-            "total_dap",
-            stats=stats_to_include
+            df, "requested_procedure_code_meaning", "total_dap", stats=stats_to_include
         )
 
         if user_profile.plotMean:
@@ -315,7 +358,7 @@ def rf_plot_calculations(
                 colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM RF requested procedure DAP mean",
                 sorted_category_list=sorted_request_categories,
-                average_choice="mean"
+                average_choice="mean",
             )
 
         if user_profile.plotMedian:
@@ -327,7 +370,7 @@ def rf_plot_calculations(
                 colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM RF requested procedure DAP median",
                 sorted_category_list=sorted_request_categories,
-                average_choice="median"
+                average_choice="median",
             )
 
         if user_profile.plotBoxplots:
@@ -339,7 +382,7 @@ def rf_plot_calculations(
                 name_axis_title="Requested procedure",
                 colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM RF requested procedure DAP boxplot",
-                sorted_category_list=sorted_request_categories
+                sorted_category_list=sorted_request_categories,
             )
 
         if user_profile.plotHistograms:
@@ -375,14 +418,17 @@ def rf_plot_calculations(
         return_structure["requestFrequencyData"] = construct_frequency_chart(
             df=df,
             df_name_col="requested_procedure_code_meaning",
-            sorting_choice=[user_profile.plotInitialSortingDirection, user_profile.plotRFInitialSortingChoice],
+            sorting_choice=[
+                user_profile.plotInitialSortingDirection,
+                user_profile.plotRFInitialSortingChoice,
+            ],
             legend_title="Requested procedure",
             df_x_axis_col="x_ray_system_name",
             x_axis_title="System",
             grouping_choice=user_profile.plotGroupingChoice,
             colour_map=user_profile.plotColourMapChoice,
             file_name="OpenREM RF requested procedure frequency",
-            sorted_categories=sorted_request_categories
+            sorted_categories=sorted_request_categories,
         )
 
     return return_structure
@@ -468,7 +514,7 @@ def rf_chart_form_processing(request, user_profile):
                 "plotHistograms": user_profile.plotHistograms,
                 "plotRFInitialSortingChoice": user_profile.plotRFInitialSortingChoice,
                 "plotInitialSortingDirection": user_profile.plotInitialSortingDirection,
-                "plotAverageChoice": average_choices
+                "plotAverageChoice": average_choices,
             }
             chart_options_form = RFChartOptionsForm(form_data)
     return chart_options_form

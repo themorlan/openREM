@@ -474,12 +474,12 @@ class UserProfile(models.Model):
     PLOTLY_THEME = "plotly"
     CHART_THEMES = (
         (PLOTLY_THEME, "Plotly (default)"),
-        ('plotly_white', "Plotly white"),
-        ('plotly_dark', "Plotly dark"),
-        ('presentation', "Presentation"),
-        ('ggplot2', "ggplot2"),
-        ('seaborn', "Seaborn"),
-        ('simple_white', "Simple white"),
+        ("plotly_white", "Plotly white"),
+        ("plotly_dark", "Plotly dark"),
+        ("presentation", "Presentation"),
+        ("ggplot2", "ggplot2"),
+        ("seaborn", "Seaborn"),
+        ("simple_white", "Simple white"),
     )
 
     DEFAULT_COLOUR_MAP = "RdYlBu"
@@ -510,11 +510,17 @@ class UserProfile(models.Model):
 
     plotAverageChoice = models.CharField(max_length=6, choices=AVERAGES, default=MEAN)
 
-    plotGroupingChoice = models.CharField(max_length=6, choices=CHART_GROUPING, default=MEAN)
+    plotGroupingChoice = models.CharField(
+        max_length=6, choices=CHART_GROUPING, default=MEAN
+    )
 
-    plotThemeChoice = models.CharField(max_length=12, choices=CHART_THEMES, default=PLOTLY_THEME)
+    plotThemeChoice = models.CharField(
+        max_length=12, choices=CHART_THEMES, default=PLOTLY_THEME
+    )
 
-    plotColourMapChoice = models.CharField(max_length=8, choices=CHART_COLOUR_MAPS, default=DEFAULT_COLOUR_MAP)
+    plotColourMapChoice = models.CharField(
+        max_length=8, choices=CHART_COLOUR_MAPS, default=DEFAULT_COLOUR_MAP
+    )
 
     plotFacetColWrapVal = models.PositiveSmallIntegerField(default=3)
 
@@ -700,8 +706,7 @@ class SizeUpload(models.Model):
 
 
 class Exports(models.Model):
-    """Table to hold the export status and filenames
-    """
+    """Table to hold the export status and filenames"""
 
     task_id = models.TextField()
     filename = models.FileField(upload_to="exports/%Y/%m/%d", null=True)
@@ -848,9 +853,7 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
 
 
 class SkinDoseMapResults(models.Model):
-    """Table to hold the results from OpenSkin
-
-    """
+    """Table to hold the results from OpenSkin"""
 
     general_study_module_attributes = models.ForeignKey(
         GeneralStudyModuleAttr, on_delete=models.CASCADE
@@ -1302,8 +1305,7 @@ class IrradEventXRaySourceData(models.Model):  # TID 10003b
     )
 
     def convert_gy_to_mgy(self):
-        """Converts Gy to mGy for display in web interface
-        """
+        """Converts Gy to mGy for display in web interface"""
         if self.dose_rp:
             return 1000 * self.dose_rp
 
@@ -1323,8 +1325,7 @@ class XrayGrid(models.Model):
 
 
 class PulseWidth(models.Model):  # EV 113793
-    """In TID 10003b. Code value 113793 (ms)
-    """
+    """In TID 10003b. Code value 113793 (ms)"""
 
     irradiation_event_xray_source_data = models.ForeignKey(
         IrradEventXRaySourceData, on_delete=models.CASCADE
@@ -1335,8 +1336,7 @@ class PulseWidth(models.Model):  # EV 113793
 
 
 class Kvp(models.Model):  # EV 113733
-    """In TID 10003b. Code value 113733 (kV)
-    """
+    """In TID 10003b. Code value 113733 (kV)"""
 
     irradiation_event_xray_source_data = models.ForeignKey(
         IrradEventXRaySourceData, on_delete=models.CASCADE
@@ -1345,8 +1345,7 @@ class Kvp(models.Model):  # EV 113733
 
 
 class XrayTubeCurrent(models.Model):  # EV 113734
-    """In TID 10003b. Code value 113734 (mA)
-    """
+    """In TID 10003b. Code value 113734 (mA)"""
 
     irradiation_event_xray_source_data = models.ForeignKey(
         IrradEventXRaySourceData, on_delete=models.CASCADE
@@ -1357,8 +1356,7 @@ class XrayTubeCurrent(models.Model):  # EV 113734
 
 
 class Exposure(models.Model):  # EV 113736
-    """In TID 10003b. Code value 113736 (uAs)
-    """
+    """In TID 10003b. Code value 113736 (uAs)"""
 
     irradiation_event_xray_source_data = models.ForeignKey(
         IrradEventXRaySourceData, on_delete=models.CASCADE
@@ -1368,8 +1366,7 @@ class Exposure(models.Model):  # EV 113736
     )
 
     def convert_uAs_to_mAs(self):
-        """Converts uAs to mAs for display in web interface
-        """
+        """Converts uAs to mAs for display in web interface"""
         from decimal import Decimal
         from numbers import Number
 
@@ -1380,8 +1377,7 @@ class Exposure(models.Model):  # EV 113736
 
 
 class XrayFilters(models.Model):  # EV 113771
-    """Container in TID 10003b. Code value 113771
-    """
+    """Container in TID 10003b. Code value 113771"""
 
     irradiation_event_xray_source_data = models.ForeignKey(
         IrradEventXRaySourceData, on_delete=models.CASCADE
@@ -1557,14 +1553,12 @@ class AccumProjXRayDose(models.Model):  # TID 10004
     )
 
     def fluoro_gym2_to_cgycm2(self):
-        """Converts fluoroscopy DAP total from Gy.m2 to cGy.cm2 for display in web interface
-        """
+        """Converts fluoroscopy DAP total from Gy.m2 to cGy.cm2 for display in web interface"""
         if self.fluoro_dose_area_product_total:
             return 1000000 * self.fluoro_dose_area_product_total
 
     def acq_gym2_to_cgycm2(self):
-        """Converts acquisition DAP total from Gy.m2 to cGy.cm2 for display in web interface
-        """
+        """Converts acquisition DAP total from Gy.m2 to cGy.cm2 for display in web interface"""
         if self.acquisition_dose_area_product_total:
             return 1000000 * self.acquisition_dose_area_product_total
 
@@ -1630,8 +1624,7 @@ class AccumIntegratedProjRadiogDose(models.Model):  # TID 10007
     reference_point_definition = models.TextField(blank=True, null=True)
 
     def convert_gym2_to_cgycm2(self):
-        """Converts Gy.m2 to cGy.cm2 for display in web interface
-        """
+        """Converts Gy.m2 to cGy.cm2 for display in web interface"""
         if self.dose_area_product_total:
             return 1000000 * self.dose_area_product_total
 
@@ -1643,8 +1636,7 @@ class AccumIntegratedProjRadiogDose(models.Model):  # TID 10007
     )
 
     def total_dap_delta_gym2_to_cgycm2(self):
-        """Converts total DAP over delta days from Gy.m2 to cGy.cm2 for display in web interface
-        """
+        """Converts total DAP over delta days from Gy.m2 to cGy.cm2 for display in web interface"""
         if self.dose_area_product_total_over_delta_weeks:
             return 1000000 * self.dose_area_product_total_over_delta_weeks
 
@@ -1801,8 +1793,7 @@ class CtRadiationDose(models.Model):  # TID 10011
 
 
 class SourceOfCTDoseInformation(models.Model):  # CID 10021
-    """Source of CT Dose Information
-    """
+    """Source of CT Dose Information"""
 
     # TODO: populate this table when extracting and move existing data. Task #164
     ct_radiation_dose = models.ForeignKey(CtRadiationDose, on_delete=models.CASCADE)
@@ -1948,8 +1939,7 @@ class CtIrradiationEventData(models.Model):  # TID 10013
 
 
 class CtReconstructionAlgorithm(models.Model):
-    """Container in TID 10013 to hold CT reconstruction methods
-    """
+    """Container in TID 10013 to hold CT reconstruction methods"""
 
     # TODO: Add this to the rdsr extraction routines. Issue #166
     ct_irradiation_event_data = models.ForeignKey(
@@ -1961,8 +1951,7 @@ class CtReconstructionAlgorithm(models.Model):
 
 
 class CtXRaySourceParameters(models.Model):
-    """Container in TID 10013 to hold CT x-ray source parameters
-    """
+    """Container in TID 10013 to hold CT x-ray source parameters"""
 
     ct_irradiation_event_data = models.ForeignKey(
         CtIrradiationEventData, on_delete=models.CASCADE
@@ -2018,8 +2007,7 @@ class ScanningLength(models.Model):  # TID 10014
 
 
 class SizeSpecificDoseEstimation(models.Model):
-    """Container in TID 10013 to hold size specific dose estimation details
-    """
+    """Container in TID 10013 to hold size specific dose estimation details"""
 
     # TODO: Add this to the rdsr extraction routines. Issue #168
     ct_irradiation_event_data = models.ForeignKey(
@@ -2057,8 +2045,7 @@ class SizeSpecificDoseEstimation(models.Model):
 
 
 class WEDSeriesOrInstances(models.Model):
-    """From TID 10013 Series or Instance used for Water Equivalent Diameter estimation
-    """
+    """From TID 10013 Series or Instance used for Water Equivalent Diameter estimation"""
 
     size_specific_dose_estimation = models.ForeignKey(
         SizeSpecificDoseEstimation, on_delete=models.CASCADE
@@ -2275,9 +2262,7 @@ class Median(models.Aggregate):
 
 
 class SummaryFields(models.Model):
-    """Status and progress of populating the summary fields in GeneralStudyModuleAttr
-
-    """
+    """Status and progress of populating the summary fields in GeneralStudyModuleAttr"""
 
     modality_type = models.CharField(max_length=2, null=True)
     complete = models.BooleanField(default=False)

@@ -34,10 +34,22 @@ from __future__ import absolute_import
 
 # Following two lines added so that sphinx autodocumentation works.
 from future import standard_library
-from remapp.views_charts_ct import generate_required_ct_charts_list, ct_chart_form_processing
-from remapp.views_charts_dx import generate_required_dx_charts_list, dx_chart_form_processing
-from remapp.views_charts_mg import generate_required_mg_charts_list, mg_chart_form_processing
-from remapp.views_charts_rf import generate_required_rf_charts_list, rf_chart_form_processing
+from remapp.views_charts_ct import (
+    generate_required_ct_charts_list,
+    ct_chart_form_processing,
+)
+from remapp.views_charts_dx import (
+    generate_required_dx_charts_list,
+    dx_chart_form_processing,
+)
+from remapp.views_charts_mg import (
+    generate_required_mg_charts_list,
+    mg_chart_form_processing,
+)
+from remapp.views_charts_rf import (
+    generate_required_rf_charts_list,
+    rf_chart_form_processing,
+)
 
 standard_library.install_aliases()
 import os
@@ -101,8 +113,7 @@ def logout_page(request):
 
 @login_required
 def dx_summary_list_filter(request):
-    """Obtain data for radiographic summary view
-    """
+    """Obtain data for radiographic summary view"""
     from remapp.interface.mod_filters import dx_acq_filter
     from remapp.forms import itemsPerPageForm
 
@@ -160,15 +171,20 @@ def dx_summary_list_filter(request):
     }
 
     if user_profile.plotCharts:
-        return_structure["required_charts"] = generate_required_dx_charts_list(user_profile)
+        return_structure["required_charts"] = generate_required_dx_charts_list(
+            user_profile
+        )
 
-    return render(request, "remapp/dxfiltered.html", return_structure,)
+    return render(
+        request,
+        "remapp/dxfiltered.html",
+        return_structure,
+    )
 
 
 @login_required
 def dx_detail_view(request, pk=None):
-    """Detail view for a DX study
-    """
+    """Detail view for a DX study"""
 
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
@@ -211,8 +227,7 @@ def dx_detail_view(request, pk=None):
 
 @login_required
 def rf_summary_list_filter(request):
-    """Obtain data for radiographic summary view
-    """
+    """Obtain data for radiographic summary view"""
     from remapp.interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
     from remapp.forms import itemsPerPageForm
     from remapp.models import HighDoseMetricAlertSettings
@@ -331,15 +346,16 @@ def rf_summary_list_filter(request):
     }
 
     if user_profile.plotCharts:
-        return_structure["required_charts"] = generate_required_rf_charts_list(user_profile)
+        return_structure["required_charts"] = generate_required_rf_charts_list(
+            user_profile
+        )
 
     return render(request, "remapp/rffiltered.html", return_structure)
 
 
 @login_required
 def rf_detail_view(request, pk=None):
-    """Detail view for an RF study
-    """
+    """Detail view for an RF study"""
     from decimal import Decimal
     from django.db.models import Sum
     import numpy as np
@@ -365,9 +381,11 @@ def rf_detail_view(request, pk=None):
     total_dose = 0
     # Iterate over the planes (for bi-plane systems, for single plane systems there is only one)
     projection_xray_dose_set = study.projectionxrayradiationdose_set.get()
-    accumxraydose_set_all_planes = projection_xray_dose_set.accumxraydose_set.select_related(
-        "acquisition_plane"
-    ).all()
+    accumxraydose_set_all_planes = (
+        projection_xray_dose_set.accumxraydose_set.select_related(
+            "acquisition_plane"
+        ).all()
+    )
     events_all = projection_xray_dose_set.irradeventxraydata_set.select_related(
         "irradiation_event_type",
         "patient_table_relationship_cid",
@@ -528,8 +546,7 @@ def rf_detail_view(request, pk=None):
 
 @login_required
 def rf_detail_view_skin_map(request, pk=None):
-    """View to calculate a skin dose map. Currently just a copy of rf_detail_view
-    """
+    """View to calculate a skin dose map. Currently just a copy of rf_detail_view"""
     from django.contrib import messages
     from remapp.models import GeneralStudyModuleAttr
     from django.http import JsonResponse
@@ -641,8 +658,7 @@ def rf_detail_view_skin_map(request, pk=None):
 
 @login_required
 def ct_summary_list_filter(request):
-    """Obtain data for CT summary view
-    """
+    """Obtain data for CT summary view"""
     from remapp.interface.mod_filters import ct_acq_filter
     from remapp.forms import itemsPerPageForm
 
@@ -700,15 +716,20 @@ def ct_summary_list_filter(request):
     }
 
     if user_profile.plotCharts:
-        return_structure["required_charts"] = generate_required_ct_charts_list(user_profile)
+        return_structure["required_charts"] = generate_required_ct_charts_list(
+            user_profile
+        )
 
-    return render(request, "remapp/ctfiltered.html", return_structure,)
+    return render(
+        request,
+        "remapp/ctfiltered.html",
+        return_structure,
+    )
 
 
 @login_required
 def ct_detail_view(request, pk=None):
-    """Detail view for a CT study
-    """
+    """Detail view for a CT study"""
     from django.contrib import messages
     from remapp.models import GeneralStudyModuleAttr
 
@@ -743,8 +764,7 @@ def ct_detail_view(request, pk=None):
 
 @login_required
 def mg_summary_list_filter(request):
-    """Mammography data for summary view
-    """
+    """Mammography data for summary view"""
     from remapp.interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
     from remapp.forms import itemsPerPageForm
 
@@ -818,15 +838,20 @@ def mg_summary_list_filter(request):
     }
 
     if user_profile.plotCharts:
-        return_structure["required_charts"] = generate_required_mg_charts_list(user_profile)
+        return_structure["required_charts"] = generate_required_mg_charts_list(
+            user_profile
+        )
 
-    return render(request, "remapp/mgfiltered.html", return_structure,)
+    return render(
+        request,
+        "remapp/mgfiltered.html",
+        return_structure,
+    )
 
 
 @login_required
 def mg_detail_view(request, pk=None):
-    """Detail view for a CT study
-    """
+    """Detail view for a CT study"""
     from django.contrib import messages
     from remapp.models import GeneralStudyModuleAttr
 

@@ -167,8 +167,7 @@ class StudyQueryLogic(TestCase):
 
 class QRPhilipsCT(TestCase):
     def setUp(self):
-        """
-        """
+        """"""
 
         query = DicomQuery.objects.create()
         query.query_id = uuid.uuid4()
@@ -461,8 +460,7 @@ class ResponseFiltering(TestCase):
     """
 
     def setUp(self):
-        """
-        """
+        """"""
 
         query = DicomQuery.objects.create()
         query.query_id = uuid.uuid4()
@@ -586,7 +584,15 @@ class ResponseFiltering(TestCase):
         from ..netdicom.qrscu import _filter
 
         query = DicomQuery.objects.get()
-        _filter(query, u"study", u"study_description", [u"test",], u"include")
+        _filter(
+            query,
+            u"study",
+            u"study_description",
+            [
+                u"test",
+            ],
+            u"include",
+        )
 
         self.assertEqual(query.dicomqrrspstudy_set.all().count(), 2)
         studies = query.dicomqrrspstudy_set.all()
@@ -605,8 +611,7 @@ class PruneSeriesResponses(TestCase):
     """
 
     def setUp(self):
-        """
-        """
+        """"""
 
         self.all_mods = {
             "CT": {"inc": True, "mods": ["CT"]},
@@ -1127,8 +1132,7 @@ class PruneSeriesResponsesCT(TestCase):
     """
 
     def setUp(self):
-        """
-        """
+        """"""
 
         self.all_mods = {
             "CT": {"inc": True, "mods": ["CT"]},
@@ -1530,9 +1534,7 @@ class RemoveDuplicates(TestCase):
     """
 
     def test_rdsr_new(self):
-        """Inital test that _remove_duplicates doesn't remove new RDSR
-
-        """
+        """Inital test that _remove_duplicates doesn't remove new RDSR"""
 
         from ..netdicom.qrscu import _remove_duplicates
 
@@ -1584,8 +1586,7 @@ class RemoveDuplicates(TestCase):
         self.assertEqual(study_responses_post[0].dicomqrrspseries_set.count(), 1)
 
     def test_rdsr_same(self):
-        """Now testing _remove_duplicates will remove an identical RDSR, but retain a new one.
-        """
+        """Now testing _remove_duplicates will remove an identical RDSR, but retain a new one."""
 
         from ..netdicom.qrscu import _remove_duplicates
 
@@ -1750,7 +1751,9 @@ class RemoveDuplicates(TestCase):
         )
         st1.study_description = u"DX study"
         st1.set_modalities_in_study(
-            ["DX",]
+            [
+                "DX",
+            ]
         )
         st1.save()
 
@@ -1814,14 +1817,10 @@ class RemoveDuplicates(TestCase):
 
 
 class InvalidMove(TestCase):
-    """Small test class to check passing an invalid query ID to movescu fails gracefully
-
-    """
+    """Small test class to check passing an invalid query ID to movescu fails gracefully"""
 
     def test_invalid_query_id(self):
-        """Pass invalid query_id to movescu, expect log update and return False/0
-
-        """
+        """Pass invalid query_id to movescu, expect log update and return False/0"""
         from ..netdicom.qrscu import movescu
 
         PatientIDSettings.objects.create()
@@ -1843,9 +1842,7 @@ class DuplicatesInStudyResponse(TestCase):
     """Test function that removes duplicates within the response at study level"""
 
     def test_remove_duplicates_in_study_response(self):
-        """Test to ensure duplicates are removed from the response query set
-
-        """
+        """Test to ensure duplicates are removed from the response query set"""
         from ..netdicom.qrscu import _remove_duplicates_in_study_response
 
         query = DicomQuery.objects.create()

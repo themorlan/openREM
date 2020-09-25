@@ -845,9 +845,7 @@ class ImportCarestreamDRXRevolution(TestCase):
 
 class ImportDuplicateDX(TestCase):
     def setUp(self):
-        """
-
-        """
+        """"""
         from remapp.models import PatientIDSettings
 
         pid = PatientIDSettings.objects.create()
@@ -895,9 +893,7 @@ class ImportDuplicateDX(TestCase):
         # Now we are ready to test import with duplicate study UIDs.
 
     def test_duplicate_study_dx(self):
-        """Imports second image, original two both have modality set.
-
-        """
+        """Imports second image, original two both have modality set."""
         from remapp.extractors import dx
 
         dx_ge_xr220_2 = os.path.join("test_files", "DX-Im-GE_XR220-2.dcm")
@@ -943,9 +939,7 @@ class ImportDuplicateDX(TestCase):
         self.assertEqual(number_of_events_study_2, 1)
 
     def test_duplicate_study_dx_second_mod(self):
-        """Imports second image, later existing has modality set.
-
-        """
+        """Imports second image, later existing has modality set."""
         from remapp.extractors import dx
 
         dx_ge_xr220_2 = os.path.join("test_files", "DX-Im-GE_XR220-2.dcm")
@@ -996,9 +990,7 @@ class ImportDuplicateDX(TestCase):
         self.assertEqual(number_of_events_study_2, 2)
 
     def test_duplicate_study_dx_no_mod(self):
-        """Imports second image, original two don't have modality set.
-
-        """
+        """Imports second image, original two don't have modality set."""
         from remapp.extractors import dx
 
         dx_ge_xr220_2 = os.path.join("test_files", "DX-Im-GE_XR220-2.dcm")

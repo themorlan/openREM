@@ -55,7 +55,7 @@ def get_value_kw(tag, dataset):
 
 def get_value_num(tag, dataset):
     """Get DICOM value by tag group and element number.
-    
+
     Always use get_value_kw by preference for readability. This module can
     be required when reading private elements.
 
@@ -124,7 +124,10 @@ def get_or_create_cid(codevalue, codemeaning):
 
     if codevalue:
         if not ContextID.objects.all().filter(code_value=codevalue).exists():
-            cid = ContextID(code_value=codevalue, code_meaning=codemeaning,)
+            cid = ContextID(
+                code_value=codevalue,
+                code_meaning=codemeaning,
+            )
             cid.save()
         code = ContextID.objects.filter(code_value__exact=codevalue)
         if code.count() > 1:

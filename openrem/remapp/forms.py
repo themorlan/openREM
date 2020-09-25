@@ -118,12 +118,12 @@ CHART_GROUPING = (
 PLOTLY_THEME = "plotly"
 CHART_THEMES = (
     (PLOTLY_THEME, "Plotly (default)"),
-    ('plotly_white', "Plotly white"),
-    ('plotly_dark', "Plotly dark"),
-    ('presentation', "Presentation"),
-    ('ggplot2', "ggplot2"),
-    ('seaborn', "Seaborn"),
-    ('simple_white', "Simple white"),
+    ("plotly_white", "Plotly white"),
+    ("plotly_dark", "Plotly dark"),
+    ("presentation", "Presentation"),
+    ("ggplot2", "ggplot2"),
+    ("seaborn", "Seaborn"),
+    ("simple_white", "Simple white"),
 )
 
 DEFAULT_COLOUR_MAP = "RdYlBu"
@@ -146,15 +146,13 @@ CHART_COLOUR_MAPS = (
 
 
 class SizeUploadForm(forms.Form):
-    """Form for patient size csv file upload
-    """
+    """Form for patient size csv file upload"""
 
     sizefile = forms.FileField(label="Select a file")
 
 
 class SizeHeadersForm(forms.Form):
-    """Form for csv column header patient size imports through the web interface
-    """
+    """Form for csv column header patient size imports through the web interface"""
 
     height_field = forms.ChoiceField(choices="")
     weight_field = forms.ChoiceField(choices="")
@@ -190,8 +188,7 @@ class itemsPerPageForm(forms.Form):
 
 
 class DXChartOptionsForm(forms.Form):
-    """Form for DX chart options
-    """
+    """Form for DX chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
     plotDXAcquisitionMeanDAP = forms.BooleanField(
@@ -212,7 +209,9 @@ class DXChartOptionsForm(forms.Form):
     plotDXAcquisitionMeanDAPOverTime = forms.BooleanField(
         label="Acquisition DAP over time", required=False
     )
-    plotDXAcquisitionDAPvsMass = forms.BooleanField(label="Acquisition DAP vs mass", required=False)
+    plotDXAcquisitionDAPvsMass = forms.BooleanField(
+        label="Acquisition DAP vs mass", required=False
+    )
     plotDXAcquisitionMeankVp = forms.BooleanField(
         label="Acquisition kVp", required=False
     )
@@ -228,13 +227,17 @@ class DXChartOptionsForm(forms.Form):
     plotDXRequestFreq = forms.BooleanField(
         label="Requested procedure frequency", required=False
     )
-    plotDXRequestDAPvsMass = forms.BooleanField(label="Requested procedure DAP vs mass", required=False)
+    plotDXRequestDAPvsMass = forms.BooleanField(
+        label="Requested procedure DAP vs mass", required=False
+    )
     plotDXAcquisitionMeanDAPOverTimePeriod = forms.ChoiceField(
         label="Time period", choices=TIME_PERIOD, required=False
     )
     plotAverageChoice = forms.MultipleChoiceField(
-        label="Average plots", choices=AVERAGES, required=False,
-        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"})
+        label="Average plots",
+        choices=AVERAGES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotGrouping = forms.ChoiceField(
         label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
@@ -254,8 +257,7 @@ class DXChartOptionsForm(forms.Form):
 
 
 class CTChartOptionsForm(forms.Form):
-    """Form for CT chart options
-    """
+    """Form for CT chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
     plotCTAcquisitionMeanDLP = forms.BooleanField(
@@ -284,9 +286,7 @@ class CTChartOptionsForm(forms.Form):
         label=mark_safe("Study CTDI<sub>vol</sub>"), required=False
     )  # nosec
     plotCTStudyFreq = forms.BooleanField(label="Study frequency", required=False)
-    plotCTStudyNumEvents = forms.BooleanField(
-        label="Study events", required=False
-    )
+    plotCTStudyNumEvents = forms.BooleanField(label="Study events", required=False)
     plotCTStudyPerDayAndHour = forms.BooleanField(
         label="Study workload", required=False
     )
@@ -309,8 +309,10 @@ class CTChartOptionsForm(forms.Form):
         label="Time period", choices=TIME_PERIOD, required=False
     )
     plotAverageChoice = forms.MultipleChoiceField(
-        label="Average plots", choices=AVERAGES, required=False,
-        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"})
+        label="Average plots",
+        choices=AVERAGES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotGrouping = forms.ChoiceField(
         label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
@@ -330,18 +332,25 @@ class CTChartOptionsForm(forms.Form):
 
 
 class RFChartOptionsForm(forms.Form):
-    """Form for RF chart options
-    """
+    """Form for RF chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
-    plotRFStudyPerDayAndHour = forms.BooleanField(label="Study workload", required=False)
+    plotRFStudyPerDayAndHour = forms.BooleanField(
+        label="Study workload", required=False
+    )
     plotRFStudyDAP = forms.BooleanField(label="Study DAP", required=False)
     plotRFStudyFreq = forms.BooleanField(label="Study frequency", required=False)
-    plotRFRequestDAP = forms.BooleanField(label="Requested procedure DAP", required=False)
-    plotRFRequestFreq = forms.BooleanField(label="Requested procedure frequency", required=False)
+    plotRFRequestDAP = forms.BooleanField(
+        label="Requested procedure DAP", required=False
+    )
+    plotRFRequestFreq = forms.BooleanField(
+        label="Requested procedure frequency", required=False
+    )
     plotAverageChoice = forms.MultipleChoiceField(
-        label="Average plots", choices=AVERAGES, required=False,
-        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"})
+        label="Average plots",
+        choices=AVERAGES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotGrouping = forms.ChoiceField(
         label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
@@ -361,10 +370,11 @@ class RFChartOptionsForm(forms.Form):
 
 
 class RFChartOptionsDisplayForm(forms.Form):
-    """Form for RF chart display options
-    """
+    """Form for RF chart display options"""
 
-    plotRFStudyPerDayAndHour = forms.BooleanField(label="Study workload", required=False)
+    plotRFStudyPerDayAndHour = forms.BooleanField(
+        label="Study workload", required=False
+    )
     plotRFStudyFreq = forms.BooleanField(label="Study frequency", required=False)
     plotRFStudyDAP = forms.BooleanField(label="DAP per study", required=False)
     plotRFRequestFreq = forms.BooleanField(label="Request frequency", required=False)
@@ -375,8 +385,7 @@ class RFChartOptionsDisplayForm(forms.Form):
 
 
 class MGChartOptionsForm(forms.Form):
-    """Form for MG chart options
-    """
+    """Form for MG chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
     plotMGStudyPerDayAndHour = forms.BooleanField(
@@ -395,8 +404,10 @@ class MGChartOptionsForm(forms.Form):
         label="mAs vs. compressed thickness", required=False
     )
     plotAverageChoice = forms.MultipleChoiceField(
-        label="Average plots", choices=AVERAGES_MAMMO, required=False,
-        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"})
+        label="Average plots",
+        choices=AVERAGES_MAMMO,
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotGrouping = forms.ChoiceField(
         label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
@@ -413,8 +424,7 @@ class MGChartOptionsForm(forms.Form):
 
 
 class MGChartOptionsDisplayForm(forms.Form):
-    """Form for MG chart display options
-    """
+    """Form for MG chart display options"""
 
     plotMGStudyPerDayAndHour = forms.BooleanField(
         label="Study workload", required=False
@@ -434,8 +444,7 @@ class MGChartOptionsDisplayForm(forms.Form):
 
 
 class DXChartOptionsDisplayForm(forms.Form):
-    """Form for DX chart display options
-    """
+    """Form for DX chart display options"""
 
     plotDXAcquisitionMeanDAP = forms.BooleanField(
         label="Acquisition DAP", required=False
@@ -455,7 +464,9 @@ class DXChartOptionsDisplayForm(forms.Form):
     plotDXAcquisitionMeanDAPOverTime = forms.BooleanField(
         label="Acquisition DAP over time", required=False
     )
-    plotDXAcquisitionDAPvsMass = forms.BooleanField(label="Acquisition DAP vs mass", required=False)
+    plotDXAcquisitionDAPvsMass = forms.BooleanField(
+        label="Acquisition DAP vs mass", required=False
+    )
     plotDXAcquisitionMeankVp = forms.BooleanField(
         label="Acquisition kVp", required=False
     )
@@ -471,7 +482,9 @@ class DXChartOptionsDisplayForm(forms.Form):
     plotDXRequestFreq = forms.BooleanField(
         label="Requested procedure frequency", required=False
     )
-    plotDXRequestDAPvsMass = forms.BooleanField(label="Requested procedure DAP vs mass", required=False)
+    plotDXRequestDAPvsMass = forms.BooleanField(
+        label="Requested procedure DAP vs mass", required=False
+    )
     plotDXAcquisitionMeanDAPOverTimePeriod = forms.ChoiceField(
         label="Time period", choices=TIME_PERIOD, required=False
     )
@@ -481,8 +494,7 @@ class DXChartOptionsDisplayForm(forms.Form):
 
 
 class CTChartOptionsDisplayForm(forms.Form):
-    """Form for CT chart display options
-    """
+    """Form for CT chart display options"""
 
     plotCTAcquisitionMeanDLP = forms.BooleanField(
         label="Acquisition DLP", required=False
@@ -510,9 +522,7 @@ class CTChartOptionsDisplayForm(forms.Form):
         label=mark_safe("Study CTDI<sub>vol</sub>"), required=False
     )  # nosec
     plotCTStudyFreq = forms.BooleanField(label="Study frequency", required=False)
-    plotCTStudyNumEvents = forms.BooleanField(
-        label="Study events", required=False
-    )
+    plotCTStudyNumEvents = forms.BooleanField(label="Study events", required=False)
     plotCTStudyPerDayAndHour = forms.BooleanField(
         label="Study workload", required=False
     )
@@ -540,13 +550,14 @@ class CTChartOptionsDisplayForm(forms.Form):
 
 
 class GeneralChartOptionsDisplayForm(forms.Form):
-    """Form for general chart display options
-    """
+    """Form for general chart display options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
     plotAverageChoice = forms.MultipleChoiceField(
-        label="Average plots", choices=AVERAGES, required=False,
-        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"})
+        label="Average plots",
+        choices=AVERAGES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotInitialSortingDirection = forms.ChoiceField(
         label="Sorting direction", choices=SORTING_DIRECTION, required=False
@@ -582,8 +593,7 @@ class UpdateDisplayNamesForm(forms.Form):
 
 
 class RFHighDoseFluoroAlertsForm(forms.ModelForm):
-    """Form for displaying and changing fluoroscopy high dose alert settings
-    """
+    """Form for displaying and changing fluoroscopy high dose alert settings"""
 
     def __init__(self, *args, **kwargs):
         from crispy_forms.layout import Button
@@ -640,8 +650,7 @@ class RFHighDoseFluoroAlertsForm(forms.ModelForm):
 
 
 class HomepageOptionsForm(forms.Form):
-    """Form for displaying and changing the home page options
-    """
+    """Form for displaying and changing the home page options"""
 
     dayDeltaA = forms.IntegerField(
         label="Primary time period to sum studies (days)", required=False
@@ -656,8 +665,7 @@ class HomepageOptionsForm(forms.Form):
 
 
 class MergeOnDeviceObserverUIDForm(forms.Form):
-    """Form for displaying and changing the option for merging on Device Observer UID
-    """
+    """Form for displaying and changing the option for merging on Device Observer UID"""
 
     match_on_device_observer_uid = forms.BooleanField(
         label="Set Display Name and Modality type if Device Observer UID is matching",
@@ -666,8 +674,7 @@ class MergeOnDeviceObserverUIDForm(forms.Form):
 
 
 class DicomQueryForm(forms.Form):
-    """Form for launching DICOM Query
-    """
+    """Form for launching DICOM Query"""
 
     from datetime import date
 
@@ -766,13 +773,25 @@ class DicomQueryForm(forms.Form):
         self.helper.layout = Layout(
             Div(
                 Div(
-                    Div("remote_host_field", css_class="col-md-6",),
-                    Div("store_scp_field", css_class="col-md-6",),
+                    Div(
+                        "remote_host_field",
+                        css_class="col-md-6",
+                    ),
+                    Div(
+                        "store_scp_field",
+                        css_class="col-md-6",
+                    ),
                 ),
                 InlineCheckboxes("modality_field"),
                 Div(
-                    Div("date_from_field", css_class="col-md-6",),
-                    Div("date_until_field", css_class="col-md-6",),
+                    Div(
+                        "date_from_field",
+                        css_class="col-md-6",
+                    ),
+                    Div(
+                        "date_until_field",
+                        css_class="col-md-6",
+                    ),
                 ),
                 "desc_exclude_field",
                 "desc_include_field",
@@ -813,8 +832,7 @@ class DicomQueryForm(forms.Form):
 
 
 class DicomDeleteSettingsForm(forms.ModelForm):
-    """Form for configuring whether DICOM objects are stored or deleted once processed
-    """
+    """Form for configuring whether DICOM objects are stored or deleted once processed"""
 
     def __init__(self, *args, **kwargs):
         super(DicomDeleteSettingsForm, self).__init__(*args, **kwargs)
@@ -863,8 +881,7 @@ class DicomDeleteSettingsForm(forms.ModelForm):
 
 
 class DicomQRForm(forms.ModelForm):
-    """Form for configuring remote Query Retrieve nodes
-    """
+    """Form for configuring remote Query Retrieve nodes"""
 
     def __init__(self, *args, **kwargs):
         super(DicomQRForm, self).__init__(*args, **kwargs)
@@ -929,8 +946,7 @@ class DicomQRForm(forms.ModelForm):
 
 
 class DicomStoreForm(forms.ModelForm):
-    """Form for configuring local Store nodes
-    """
+    """Form for configuring local Store nodes"""
 
     def __init__(self, *args, **kwargs):
         super(DicomStoreForm, self).__init__(*args, **kwargs)
@@ -940,7 +956,12 @@ class DicomStoreForm(forms.ModelForm):
         self.helper.field_class = "col-md-4"
         if not settings.DOCKER_INSTALL:
             self.helper.layout = Layout(
-                Div("name", "aetitle", "peer", "port",),
+                Div(
+                    "name",
+                    "aetitle",
+                    "peer",
+                    "port",
+                ),
                 Accordion(
                     AccordionGroup(
                         "Advanced - test/development use only",
@@ -981,7 +1002,12 @@ class DicomStoreForm(forms.ModelForm):
             )
         else:
             self.helper.layout = Layout(
-                Div("name", "aetitle", "peer", "port",),
+                Div(
+                    "name",
+                    "aetitle",
+                    "peer",
+                    "port",
+                ),
                 FormActions(Submit("submit", "Submit")),
                 Div(
                     HTML(
@@ -1015,8 +1041,7 @@ class DicomStoreForm(forms.ModelForm):
 
 
 class SkinDoseMapCalcSettingsForm(forms.ModelForm):
-    """Form for configuring whether skin dose maps are shown / calculated
-    """
+    """Form for configuring whether skin dose maps are shown / calculated"""
 
     def __init__(self, *args, **kwargs):
         super(SkinDoseMapCalcSettingsForm, self).__init__(*args, **kwargs)
@@ -1033,8 +1058,7 @@ class SkinDoseMapCalcSettingsForm(forms.ModelForm):
 
 
 class NotPatientNameForm(forms.ModelForm):
-    """Form for configuring not-patient name patterns
-    """
+    """Form for configuring not-patient name patterns"""
 
     def __init__(self, *args, **kwargs):
         super(NotPatientNameForm, self).__init__(*args, **kwargs)
@@ -1043,7 +1067,9 @@ class NotPatientNameForm(forms.ModelForm):
         self.helper.label_class = "col-md-8"
         self.helper.field_class = "col-md-4"
         self.helper.layout = Layout(
-            Div("not_patient_name",),
+            Div(
+                "not_patient_name",
+            ),
             FormActions(Submit("submit", "Submit")),
             Div(
                 HTML(
@@ -1071,8 +1097,7 @@ class NotPatientNameForm(forms.ModelForm):
 
 
 class NotPatientIDForm(forms.ModelForm):
-    """Form for configuring not-patient ID patterns
-    """
+    """Form for configuring not-patient ID patterns"""
 
     def __init__(self, *args, **kwargs):
         super(NotPatientIDForm, self).__init__(*args, **kwargs)
@@ -1081,7 +1106,9 @@ class NotPatientIDForm(forms.ModelForm):
         self.helper.label_class = "col-md-8"
         self.helper.field_class = "col-md-4"
         self.helper.layout = Layout(
-            Div("not_patient_id",),
+            Div(
+                "not_patient_id",
+            ),
             FormActions(Submit("submit", "Submit")),
             Div(
                 HTML(

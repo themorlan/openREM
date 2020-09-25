@@ -365,7 +365,9 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
                 wsalldata.write(study_index + 1, 0, error_message)
             else:
                 writer.writerow(
-                    [error_message,]
+                    [
+                        error_message,
+                    ]
                 )
 
     if xlsx:

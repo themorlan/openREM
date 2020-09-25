@@ -284,7 +284,9 @@ def mg_csv_nhsbsp(filterdict, user=None):
             )
             logger.error(error_message)
             writer.writerow(
-                [error_message,]
+                [
+                    error_message,
+                ]
             )
 
     tsk.progress = "All study data written."

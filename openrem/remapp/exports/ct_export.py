@@ -157,7 +157,11 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     for row, exams in enumerate(e):
         # Translators: CT xlsx export progress
-        tsk.progress = _("Writing study {row} of {numrows} to All data sheet and individual protocol sheets".format(row=row+1, numrows=numrows))
+        tsk.progress = _(
+            "Writing study {row} of {numrows} to All data sheet and individual protocol sheets".format(
+                row=row + 1, numrows=numrows
+            )
+        )
         # tsk.progress = f"Writing study {row + 1} of {numrows} to All data sheet and individual protocol sheets"
         tsk.save()
 
@@ -301,7 +305,9 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
             )
             logger.error(error_message)
             writer.writerow(
-                [error_message,]
+                [
+                    error_message,
+                ]
             )
 
     tsk.progress = "All study data written."

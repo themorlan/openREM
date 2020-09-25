@@ -5,6 +5,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def generate_required_ct_charts_list(profile):
     """Obtain a list of dictionaries containing the title string and base
     variable name for each required chart"""
@@ -14,169 +15,370 @@ def generate_required_ct_charts_list(profile):
 
     if profile.plotCTAcquisitionMeanDLP:
         if profile.plotMean:
-            required_charts.append({"title": "Chart of mean DLP for each acquisition protocol",
-                                    "var_name": "acquisitionMeanDLP"})
+            required_charts.append(
+                {
+                    "title": "Chart of mean DLP for each acquisition protocol",
+                    "var_name": "acquisitionMeanDLP",
+                }
+            )
         if profile.plotMedian:
-            required_charts.append({"title": "Chart of median DLP for each acquisition protocol",
-                                    "var_name": "acquisitionMedianDLP"})
+            required_charts.append(
+                {
+                    "title": "Chart of median DLP for each acquisition protocol",
+                    "var_name": "acquisitionMedianDLP",
+                }
+            )
         if profile.plotBoxplots:
-            required_charts.append({"title": "Boxplot of DLP for each acquisition protocol",
-                                    "var_name": "acquisitionBoxplotDLP"})
+            required_charts.append(
+                {
+                    "title": "Boxplot of DLP for each acquisition protocol",
+                    "var_name": "acquisitionBoxplotDLP",
+                }
+            )
         if profile.plotHistograms:
-            required_charts.append({"title": "Histogram of DLP for each acquisition protocol",
-                                    "var_name": "acquisitionHistogramDLP"})
+            required_charts.append(
+                {
+                    "title": "Histogram of DLP for each acquisition protocol",
+                    "var_name": "acquisitionHistogramDLP",
+                }
+            )
 
     if profile.plotCTAcquisitionMeanCTDI:
         if profile.plotMean:
-            required_charts.append({"title": mark_safe("Chart of mean CTDI<sub>vol</sub> for each acquisition protocol"),
-                                    "var_name": "acquisitionMeanCTDI"})
+            required_charts.append(
+                {
+                    "title": mark_safe(
+                        "Chart of mean CTDI<sub>vol</sub> for each acquisition protocol"
+                    ),
+                    "var_name": "acquisitionMeanCTDI",
+                }
+            )
         if profile.plotMedian:
-            required_charts.append({"title": mark_safe("Chart of median CTDI<sub>vol</sub> for each acquisition protocol"),
-                                    "var_name": "acquisitionMedianCTDI"})
+            required_charts.append(
+                {
+                    "title": mark_safe(
+                        "Chart of median CTDI<sub>vol</sub> for each acquisition protocol"
+                    ),
+                    "var_name": "acquisitionMedianCTDI",
+                }
+            )
         if profile.plotBoxplots:
-            required_charts.append({"title": mark_safe("Boxplot of CTDI<sub>vol</sub> for each acquisition protocol"),
-                                    "var_name": "acquisitionBoxplotCTDI"})
+            required_charts.append(
+                {
+                    "title": mark_safe(
+                        "Boxplot of CTDI<sub>vol</sub> for each acquisition protocol"
+                    ),
+                    "var_name": "acquisitionBoxplotCTDI",
+                }
+            )
         if profile.plotHistograms:
-            required_charts.append({"title": mark_safe("Histogram of CTDI<sub>vol</sub> for each acquisition protocol"),
-                                    "var_name": "acquisitionHistogramCTDI"})
+            required_charts.append(
+                {
+                    "title": mark_safe(
+                        "Histogram of CTDI<sub>vol</sub> for each acquisition protocol"
+                    ),
+                    "var_name": "acquisitionHistogramCTDI",
+                }
+            )
 
     if profile.plotCTAcquisitionFreq:
-        required_charts.append({"title": "Chart of acquisition protocol frequency",
-                                "var_name": "acquisitionFrequency"})
+        required_charts.append(
+            {
+                "title": "Chart of acquisition protocol frequency",
+                "var_name": "acquisitionFrequency",
+            }
+        )
 
     if profile.plotCTAcquisitionCTDIvsMass:
-        required_charts.append({"title": mark_safe("Chart of CTDI<sub>vol</sub> vs patient mass for each acquisition protocol"),
-                                "var_name": "acquisitionScatterCTDIvsMass"})
+        required_charts.append(
+            {
+                "title": mark_safe(
+                    "Chart of CTDI<sub>vol</sub> vs patient mass for each acquisition protocol"
+                ),
+                "var_name": "acquisitionScatterCTDIvsMass",
+            }
+        )
 
     if profile.plotCTAcquisitionDLPvsMass:
-        required_charts.append({"title": "Chart of DLP vs patient mass for each acquisition protocol",
-                                "var_name": "acquisitionScatterDLPvsMass"})
+        required_charts.append(
+            {
+                "title": "Chart of DLP vs patient mass for each acquisition protocol",
+                "var_name": "acquisitionScatterDLPvsMass",
+            }
+        )
 
     if profile.plotCTAcquisitionCTDIOverTime:
         if profile.plotMean:
-            required_charts.append({"title": mark_safe("Chart of mean CTDI<sub>vol</sub> per acquisition protocol over time (" + profile.plotCTOverTimePeriod + ")"),
-                                    "var_name": "acquisitionMeanCTDIOverTime"})
+            required_charts.append(
+                {
+                    "title": mark_safe(
+                        "Chart of mean CTDI<sub>vol</sub> per acquisition protocol over time ("
+                        + profile.plotCTOverTimePeriod
+                        + ")"
+                    ),
+                    "var_name": "acquisitionMeanCTDIOverTime",
+                }
+            )
         if profile.plotMedian:
-            required_charts.append({"title": mark_safe("Chart of median CTDI<sub>vol</sub> per acquisition protocol over time (" + profile.plotCTOverTimePeriod + ")"),
-                                    "var_name": "acquisitionMedianCTDIOverTime"})
+            required_charts.append(
+                {
+                    "title": mark_safe(
+                        "Chart of median CTDI<sub>vol</sub> per acquisition protocol over time ("
+                        + profile.plotCTOverTimePeriod
+                        + ")"
+                    ),
+                    "var_name": "acquisitionMedianCTDIOverTime",
+                }
+            )
 
     if profile.plotCTAcquisitionDLPOverTime:
         if profile.plotMean:
-            required_charts.append({"title": "Chart of mean DLP per acquisition protocol over time (" + profile.plotCTOverTimePeriod + ")",
-                                    "var_name": "acquisitionMeanDLPOverTime"})
+            required_charts.append(
+                {
+                    "title": "Chart of mean DLP per acquisition protocol over time ("
+                    + profile.plotCTOverTimePeriod
+                    + ")",
+                    "var_name": "acquisitionMeanDLPOverTime",
+                }
+            )
         if profile.plotMedian:
-            required_charts.append({"title": "Chart of median DLP per acquisition protocol over time (" + profile.plotCTOverTimePeriod + ")",
-                                    "var_name": "acquisitionMedianDLPOverTime"})
+            required_charts.append(
+                {
+                    "title": "Chart of median DLP per acquisition protocol over time ("
+                    + profile.plotCTOverTimePeriod
+                    + ")",
+                    "var_name": "acquisitionMedianDLPOverTime",
+                }
+            )
 
     if profile.plotCTStudyMeanDLP:
         if profile.plotMean:
-            required_charts.append({"title": "Chart of mean DLP for each study description",
-                                    "var_name": "studyMeanDLP"})
+            required_charts.append(
+                {
+                    "title": "Chart of mean DLP for each study description",
+                    "var_name": "studyMeanDLP",
+                }
+            )
         if profile.plotMedian:
-            required_charts.append({"title": "Chart of median DLP for each study description",
-                                    "var_name": "studyMedianDLP"})
+            required_charts.append(
+                {
+                    "title": "Chart of median DLP for each study description",
+                    "var_name": "studyMedianDLP",
+                }
+            )
         if profile.plotBoxplots:
-            required_charts.append({"title": "Boxplot of DLP for each study description",
-                                    "var_name": "studyBoxplotDLP"})
+            required_charts.append(
+                {
+                    "title": "Boxplot of DLP for each study description",
+                    "var_name": "studyBoxplotDLP",
+                }
+            )
         if profile.plotHistograms:
-            required_charts.append({"title": "Histogram of DLP for each study description",
-                                    "var_name": "studyHistogramDLP"})
+            required_charts.append(
+                {
+                    "title": "Histogram of DLP for each study description",
+                    "var_name": "studyHistogramDLP",
+                }
+            )
 
     if profile.plotCTStudyMeanCTDI:
         if profile.plotMean:
-            required_charts.append({"title": mark_safe("Chart of mean CTDI<sub>vol</sub> for each study description"),
-                                    "var_name": "studyMeanCTDI"})
+            required_charts.append(
+                {
+                    "title": mark_safe(
+                        "Chart of mean CTDI<sub>vol</sub> for each study description"
+                    ),
+                    "var_name": "studyMeanCTDI",
+                }
+            )
         if profile.plotMedian:
-            required_charts.append({"title": mark_safe("Chart of median CTDI<sub>vol</sub> for each study description"),
-                                    "var_name": "studyMedianCTDI"})
+            required_charts.append(
+                {
+                    "title": mark_safe(
+                        "Chart of median CTDI<sub>vol</sub> for each study description"
+                    ),
+                    "var_name": "studyMedianCTDI",
+                }
+            )
         if profile.plotBoxplots:
-            required_charts.append({"title": mark_safe("Boxplot of CTDI<sub>vol</sub> for each study description"),
-                                    "var_name": "studyBoxplotCTDI"})
+            required_charts.append(
+                {
+                    "title": mark_safe(
+                        "Boxplot of CTDI<sub>vol</sub> for each study description"
+                    ),
+                    "var_name": "studyBoxplotCTDI",
+                }
+            )
         if profile.plotHistograms:
-            required_charts.append({"title": mark_safe("Histogram of CTDI<sub>vol</sub> for each study description"),
-                                    "var_name": "studyHistogramCTDI"})
+            required_charts.append(
+                {
+                    "title": mark_safe(
+                        "Histogram of CTDI<sub>vol</sub> for each study description"
+                    ),
+                    "var_name": "studyHistogramCTDI",
+                }
+            )
 
     if profile.plotCTStudyFreq:
-        required_charts.append({"title": "Chart of study description frequency",
-                                "var_name": "studyFrequency"})
+        required_charts.append(
+            {
+                "title": "Chart of study description frequency",
+                "var_name": "studyFrequency",
+            }
+        )
 
     if profile.plotCTStudyNumEvents:
         if profile.plotMean:
-            required_charts.append({"title": "Chart of mean number of events for each study description",
-                                    "var_name": "studyMeanNumEvents"})
+            required_charts.append(
+                {
+                    "title": "Chart of mean number of events for each study description",
+                    "var_name": "studyMeanNumEvents",
+                }
+            )
         if profile.plotMedian:
-            required_charts.append({"title": "Chart of median number of events for each study description",
-                                    "var_name": "studyMedianNumEvents"})
+            required_charts.append(
+                {
+                    "title": "Chart of median number of events for each study description",
+                    "var_name": "studyMedianNumEvents",
+                }
+            )
         if profile.plotBoxplots:
-            required_charts.append({"title": "Boxplot of number of events for each study description",
-                                    "var_name": "studyBoxplotNumEvents"})
+            required_charts.append(
+                {
+                    "title": "Boxplot of number of events for each study description",
+                    "var_name": "studyBoxplotNumEvents",
+                }
+            )
         if profile.plotHistograms:
-            required_charts.append({"title": "Histogram of number of events for each study description",
-                                    "var_name": "studyHistogramNumEvents"})
+            required_charts.append(
+                {
+                    "title": "Histogram of number of events for each study description",
+                    "var_name": "studyHistogramNumEvents",
+                }
+            )
 
     if profile.plotCTRequestMeanDLP:
         if profile.plotMean:
-            required_charts.append({"title": "Chart of mean DLP for each requested procedure",
-                                    "var_name": "requestMeanDLP"})
+            required_charts.append(
+                {
+                    "title": "Chart of mean DLP for each requested procedure",
+                    "var_name": "requestMeanDLP",
+                }
+            )
         if profile.plotMedian:
-            required_charts.append({"title": "Chart of median DLP for each requested procedure",
-                                    "var_name": "requestMedianDLP"})
+            required_charts.append(
+                {
+                    "title": "Chart of median DLP for each requested procedure",
+                    "var_name": "requestMedianDLP",
+                }
+            )
         if profile.plotBoxplots:
-            required_charts.append({"title": "Boxplot of DLP for each requested procedure",
-                                    "var_name": "requestBoxplotDLP"})
+            required_charts.append(
+                {
+                    "title": "Boxplot of DLP for each requested procedure",
+                    "var_name": "requestBoxplotDLP",
+                }
+            )
         if profile.plotHistograms:
-            required_charts.append({"title": "Histogram of DLP for each requested procedure",
-                                    "var_name": "requestHistogramDLP"})
+            required_charts.append(
+                {
+                    "title": "Histogram of DLP for each requested procedure",
+                    "var_name": "requestHistogramDLP",
+                }
+            )
 
     if profile.plotCTRequestFreq:
-        required_charts.append({"title": "Chart of requested procedure frequency",
-                                "var_name": "requestFrequency"})
+        required_charts.append(
+            {
+                "title": "Chart of requested procedure frequency",
+                "var_name": "requestFrequency",
+            }
+        )
 
     if profile.plotCTRequestNumEvents:
         if profile.plotMean:
-            required_charts.append({"title": "Chart of mean number of events for each requested procedure",
-                                    "var_name": "requestMeanNumEvents"})
+            required_charts.append(
+                {
+                    "title": "Chart of mean number of events for each requested procedure",
+                    "var_name": "requestMeanNumEvents",
+                }
+            )
         if profile.plotMedian:
-            required_charts.append({"title": "Chart of median number of events for each requested procedure",
-                                    "var_name": "requestMedianNumEvents"})
+            required_charts.append(
+                {
+                    "title": "Chart of median number of events for each requested procedure",
+                    "var_name": "requestMedianNumEvents",
+                }
+            )
         if profile.plotBoxplots:
-            required_charts.append({"title": "Boxplot of number of events for each requested procedure",
-                                    "var_name": "requestBoxplotNumEvents"})
+            required_charts.append(
+                {
+                    "title": "Boxplot of number of events for each requested procedure",
+                    "var_name": "requestBoxplotNumEvents",
+                }
+            )
         if profile.plotHistograms:
-            required_charts.append({"title": "Histogram of number of events for each requested procedure",
-                                    "var_name": "requestHistogramNumEvents"})
+            required_charts.append(
+                {
+                    "title": "Histogram of number of events for each requested procedure",
+                    "var_name": "requestHistogramNumEvents",
+                }
+            )
 
     if profile.plotCTRequestDLPOverTime:
         if profile.plotMean:
-            required_charts.append({
-                                       "title": "Chart of mean DLP per requested procedure over time (" + profile.plotCTOverTimePeriod + ")",
-                                       "var_name": "requestMeanDLPOverTime"})
+            required_charts.append(
+                {
+                    "title": "Chart of mean DLP per requested procedure over time ("
+                    + profile.plotCTOverTimePeriod
+                    + ")",
+                    "var_name": "requestMeanDLPOverTime",
+                }
+            )
         if profile.plotMedian:
-            required_charts.append({
-                                       "title": "Chart of median DLP per requested procedure over time (" + profile.plotCTOverTimePeriod + ")",
-                                       "var_name": "requestMedianDLPOverTime"})
+            required_charts.append(
+                {
+                    "title": "Chart of median DLP per requested procedure over time ("
+                    + profile.plotCTOverTimePeriod
+                    + ")",
+                    "var_name": "requestMedianDLPOverTime",
+                }
+            )
 
     if profile.plotCTStudyPerDayAndHour:
-        required_charts.append({"title": "Chart of study description workload",
-                                "var_name": "studyWorkload"})
+        required_charts.append(
+            {
+                "title": "Chart of study description workload",
+                "var_name": "studyWorkload",
+            }
+        )
 
     if profile.plotCTStudyMeanDLPOverTime:
         if profile.plotMean:
-            required_charts.append({
-                                       "title": "Chart of mean DLP per study description over time (" + profile.plotCTOverTimePeriod + ")",
-                                       "var_name": "studyMeanDLPOverTime"})
+            required_charts.append(
+                {
+                    "title": "Chart of mean DLP per study description over time ("
+                    + profile.plotCTOverTimePeriod
+                    + ")",
+                    "var_name": "studyMeanDLPOverTime",
+                }
+            )
         if profile.plotMedian:
-            required_charts.append({
-                                       "title": "Chart of median DLP per study description over time (" + profile.plotCTOverTimePeriod + ")",
-                                       "var_name": "studyMedianDLPOverTime"})
+            required_charts.append(
+                {
+                    "title": "Chart of median DLP per study description over time ("
+                    + profile.plotCTOverTimePeriod
+                    + ")",
+                    "var_name": "studyMedianDLPOverTime",
+                }
+            )
 
     return required_charts
 
 
 @login_required
 def ct_summary_chart_data(request):
-    """Obtain data for CT charts Ajax call
-    """
+    """Obtain data for CT charts Ajax call"""
     from remapp.interface.mod_filters import ct_acq_filter
     from openremproject import settings
     from django.http import JsonResponse
@@ -197,10 +399,7 @@ def ct_summary_chart_data(request):
 
         start_time = datetime.now()
 
-    return_structure = ct_plot_calculations(
-        f,
-        user_profile
-    )
+    return_structure = ct_plot_calculations(f, user_profile)
 
     if settings.DEBUG:
         logger.debug(f"Elapsed time is {datetime.now() - start_time}")
@@ -208,12 +407,8 @@ def ct_summary_chart_data(request):
     return JsonResponse(return_structure, safe=False)
 
 
-def ct_plot_calculations(
-    f,
-    user_profile
-):
-    """CT chart data calculations
-    """
+def ct_plot_calculations(f, user_profile):
+    """CT chart data calculations"""
     from .interface.chart_functions import (
         create_dataframe,
         create_dataframe_weekdays,
@@ -226,7 +421,7 @@ def ct_plot_calculations(
         plotly_set_default_theme,
         construct_frequency_chart,
         construct_scatter_chart,
-        construct_over_time_charts
+        construct_over_time_charts,
     )
 
     # Set the Plotly chart theme
@@ -249,7 +444,9 @@ def ct_plot_calculations(
         # Obtain the key name in the TIME_PERIOD tuple from the user time period choice (the key value)
         keys = list(dict(user_profile.TIME_PERIOD).keys())
         values = list(dict(user_profile.TIME_PERIOD).values())
-        plot_timeunit_period = keys[[tp.lower() for tp in values].index(user_profile.plotCTOverTimePeriod)]
+        plot_timeunit_period = keys[
+            [tp.lower() for tp in values].index(user_profile.plotCTOverTimePeriod)
+        ]
 
     #######################################################################
     # Prepare acquisition-level Pandas DataFrame to use for charts
@@ -266,20 +463,36 @@ def ct_plot_calculations(
         name_fields = ["ctradiationdose__ctirradiationeventdata__acquisition_protocol"]
 
         value_fields = []
-        if user_profile.plotCTAcquisitionMeanDLP or user_profile.plotCTAcquisitionDLPvsMass or user_profile.plotCTAcquisitionDLPOverTime:
+        if (
+            user_profile.plotCTAcquisitionMeanDLP
+            or user_profile.plotCTAcquisitionDLPvsMass
+            or user_profile.plotCTAcquisitionDLPOverTime
+        ):
             value_fields.append("ctradiationdose__ctirradiationeventdata__dlp")
-        if user_profile.plotCTAcquisitionMeanCTDI or user_profile.plotCTAcquisitionCTDIvsMass or user_profile.plotCTAcquisitionCTDIOverTime:
+        if (
+            user_profile.plotCTAcquisitionMeanCTDI
+            or user_profile.plotCTAcquisitionCTDIvsMass
+            or user_profile.plotCTAcquisitionCTDIOverTime
+        ):
             value_fields.append("ctradiationdose__ctirradiationeventdata__mean_ctdivol")
-        if user_profile.plotCTAcquisitionCTDIvsMass or user_profile.plotCTAcquisitionDLPvsMass:
+        if (
+            user_profile.plotCTAcquisitionCTDIvsMass
+            or user_profile.plotCTAcquisitionDLPvsMass
+        ):
             value_fields.append("patientstudymoduleattr__patient_weight")
 
         date_fields = []
-        if user_profile.plotCTAcquisitionCTDIOverTime or user_profile.plotCTAcquisitionDLPOverTime:
+        if (
+            user_profile.plotCTAcquisitionCTDIOverTime
+            or user_profile.plotCTAcquisitionDLPOverTime
+        ):
             date_fields.append("study_date")
 
         system_field = None
         if user_profile.plotSeriesPerSystem:
-            system_field = "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
+            system_field = (
+                "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
+            )
 
         df = create_dataframe(
             f.qs,
@@ -288,7 +501,7 @@ def ct_plot_calculations(
             data_point_date_fields=date_fields,
             system_name_field=system_field,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
-            uid="ctradiationdose__ctirradiationeventdata__pk"
+            uid="ctradiationdose__ctirradiationeventdata__pk",
         )
         #######################################################################
 
@@ -300,7 +513,10 @@ def ct_plot_calculations(
                 df,
                 "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                 "ctradiationdose__ctirradiationeventdata__dlp",
-                [user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice]
+                [
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotCTInitialSortingChoice,
+                ],
             )
 
             if user_profile.plotMean or user_profile.plotMedian:
@@ -308,7 +524,7 @@ def ct_plot_calculations(
                     df,
                     "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                     "ctradiationdose__ctirradiationeventdata__dlp",
-                    stats=average_choices + ["count"]
+                    stats=average_choices + ["count"],
                 )
 
                 if user_profile.plotMean:
@@ -320,7 +536,7 @@ def ct_plot_calculations(
                         colourmap=user_profile.plotColourMapChoice,
                         filename="OpenREM CT acquisition protocol DLP mean",
                         sorted_category_list=sorted_acquisition_dlp_categories,
-                        average_choice="mean"
+                        average_choice="mean",
                     )
 
                 if user_profile.plotMedian:
@@ -332,7 +548,7 @@ def ct_plot_calculations(
                         colourmap=user_profile.plotColourMapChoice,
                         filename="OpenREM CT acquisition protocol DLP median",
                         sorted_category_list=sorted_acquisition_dlp_categories,
-                        average_choice="median"
+                        average_choice="median",
                     )
 
             if user_profile.plotBoxplots:
@@ -344,11 +560,13 @@ def ct_plot_calculations(
                     name_axis_title="Acquisition protocol",
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT acquisition protocol DLP boxplot",
-                    sorted_category_list=sorted_acquisition_dlp_categories
+                    sorted_category_list=sorted_acquisition_dlp_categories,
                 )
 
             if user_profile.plotHistograms:
-                category_names_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+                category_names_col = (
+                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+                )
                 group_by_col = "x_ray_system_name"
                 legend_title = "Acquisition protocol"
                 facet_names = list(df[group_by_col].unique())
@@ -356,12 +574,16 @@ def ct_plot_calculations(
 
                 if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
-                    group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+                    group_by_col = (
+                        "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+                    )
                     legend_title = "System"
                     category_names = facet_names
                     facet_names = list(sorted_acquisition_dlp_categories.values())[0]
 
-                return_structure["acquisitionHistogramDLPData"] = plotly_histogram_barchart(
+                return_structure[
+                    "acquisitionHistogramDLPData"
+                ] = plotly_histogram_barchart(
                     df,
                     group_by_col,
                     category_names_col,
@@ -382,7 +604,10 @@ def ct_plot_calculations(
                 df,
                 "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                 "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                [user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice]
+                [
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotCTInitialSortingChoice,
+                ],
             )
 
             if user_profile.plotMean or user_profile.plotMedian:
@@ -390,7 +615,7 @@ def ct_plot_calculations(
                     df,
                     "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    stats=average_choices + ["count"]
+                    stats=average_choices + ["count"],
                 )
 
                 if user_profile.plotMean:
@@ -402,7 +627,7 @@ def ct_plot_calculations(
                         colourmap=user_profile.plotColourMapChoice,
                         filename="OpenREM CT acquisition protocol CTDI mean",
                         sorted_category_list=sorted_acquisition_ctdi_categories,
-                        average_choice="mean"
+                        average_choice="mean",
                     )
 
                 if user_profile.plotMedian:
@@ -414,7 +639,7 @@ def ct_plot_calculations(
                         colourmap=user_profile.plotColourMapChoice,
                         filename="OpenREM CT acquisition protocol CTDI median",
                         sorted_category_list=sorted_acquisition_ctdi_categories,
-                        average_choice="median"
+                        average_choice="median",
                     )
 
             if user_profile.plotBoxplots:
@@ -426,11 +651,13 @@ def ct_plot_calculations(
                     name_axis_title="Acquisition protocol",
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT acquisition protocol CTDI boxplot",
-                    sorted_category_list=sorted_acquisition_ctdi_categories
+                    sorted_category_list=sorted_acquisition_ctdi_categories,
                 )
 
             if user_profile.plotHistograms:
-                category_names_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+                category_names_col = (
+                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+                )
                 group_by_col = "x_ray_system_name"
                 legend_title = "Acquisition protocol"
                 facet_names = list(df[group_by_col].unique())
@@ -438,12 +665,16 @@ def ct_plot_calculations(
 
                 if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
-                    group_by_col = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+                    group_by_col = (
+                        "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+                    )
                     legend_title = "System"
                     category_names = facet_names
                     facet_names = list(sorted_acquisition_ctdi_categories.values())[0]
 
-                return_structure["acquisitionHistogramCTDIData"] = plotly_histogram_barchart(
+                return_structure[
+                    "acquisitionHistogramCTDIData"
+                ] = plotly_histogram_barchart(
                     df,
                     group_by_col,
                     category_names_col,
@@ -468,14 +699,17 @@ def ct_plot_calculations(
             return_structure["acquisitionFrequencyData"] = construct_frequency_chart(
                 df=df,
                 df_name_col="ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                sorting_choice=[user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice],
+                sorting_choice=[
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotCTInitialSortingChoice,
+                ],
                 legend_title="Acquisition protocol",
                 df_x_axis_col="x_ray_system_name",
                 x_axis_title="System",
                 grouping_choice=user_profile.plotGroupingChoice,
                 colour_map=user_profile.plotColourMapChoice,
                 file_name="OpenREM CT acquisition protocol frequency",
-                sorted_categories=sorted_categories
+                sorted_categories=sorted_categories,
             )
 
         if user_profile.plotCTAcquisitionCTDIvsMass:
@@ -486,12 +720,15 @@ def ct_plot_calculations(
                 df_y_col="ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                 x_axis_title="Patient mass (kg)",
                 y_axis_title="CTDI<sub>vol</sub> (mGy)",
-                sorting=[user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice],
+                sorting=[
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotCTInitialSortingChoice,
+                ],
                 grouping_choice=user_profile.plotGroupingChoice,
                 legend_title="Acquisition protocol",
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
-                file_name="OpenREM CT acquisition protocol CTDI vs patient mass"
+                file_name="OpenREM CT acquisition protocol CTDI vs patient mass",
             )
 
         if user_profile.plotCTAcquisitionDLPvsMass:
@@ -500,14 +737,17 @@ def ct_plot_calculations(
                 df_name_col="ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                 df_x_col="patientstudymoduleattr__patient_weight",
                 df_y_col="ctradiationdose__ctirradiationeventdata__dlp",
-                x_axis_title = "Patient mass (kg)",
-                y_axis_title = "DLP (mGy.cm)",
-                sorting=[user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice],
+                x_axis_title="Patient mass (kg)",
+                y_axis_title="DLP (mGy.cm)",
+                sorting=[
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotCTInitialSortingChoice,
+                ],
                 grouping_choice=user_profile.plotGroupingChoice,
                 legend_title="Acquisition protocol",
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
-                file_name="OpenREM CT acquisition protocol DLP vs patient mass"
+                file_name="OpenREM CT acquisition protocol DLP vs patient mass",
             )
 
         if user_profile.plotCTAcquisitionCTDIOverTime:
@@ -519,13 +759,16 @@ def ct_plot_calculations(
                 name_title="Acquisition protocol",
                 value_title="CTDI<sub>vol</sub> (mGy)",
                 date_title="Study date",
-                sorting=[user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice],
+                sorting=[
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotCTInitialSortingChoice,
+                ],
                 time_period=plot_timeunit_period,
                 average_choices=average_choices,
                 grouping_choice=user_profile.plotGroupingChoice,
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
-                file_name="OpenREM CT acquisition protocol CTDI over time"
+                file_name="OpenREM CT acquisition protocol CTDI over time",
             )
 
             if user_profile.plotMean:
@@ -542,13 +785,16 @@ def ct_plot_calculations(
                 name_title="Acquisition protocol",
                 value_title="DLP (mGy.cm)",
                 date_title="Study date",
-                sorting=[user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice],
+                sorting=[
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotCTInitialSortingChoice,
+                ],
                 time_period=plot_timeunit_period,
                 average_choices=average_choices,
                 grouping_choice=user_profile.plotGroupingChoice,
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
-                file_name="OpenREM CT acquisition protocol DLP over time"
+                file_name="OpenREM CT acquisition protocol DLP over time",
             )
 
             if user_profile.plotMean:
@@ -558,7 +804,8 @@ def ct_plot_calculations(
 
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts
-    if (user_profile.plotCTRequestFreq
+    if (
+        user_profile.plotCTRequestFreq
         or user_profile.plotCTRequestMeanDLP
         or user_profile.plotCTRequestNumEvents
         or user_profile.plotCTRequestDLPOverTime
@@ -613,7 +860,9 @@ def ct_plot_calculations(
 
         system_field = None
         if user_profile.plotSeriesPerSystem:
-            system_field = "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
+            system_field = (
+                "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
+            )
 
         df = create_dataframe(
             f.qs,
@@ -623,10 +872,9 @@ def ct_plot_calculations(
             data_point_time_fields=time_fields,
             system_name_field=system_field,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
-            uid="pk"
+            uid="pk",
         )
         #######################################################################
-
 
         #######################################################################
         # Create the required study- and request-level charts
@@ -636,7 +884,10 @@ def ct_plot_calculations(
                 df,
                 "study_description",
                 "total_dlp",
-                [user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice]
+                [
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotCTInitialSortingChoice,
+                ],
             )
 
             if user_profile.plotMean or user_profile.plotMedian:
@@ -644,7 +895,7 @@ def ct_plot_calculations(
                     df,
                     "study_description",
                     "total_dlp",
-                    stats=average_choices + ["count"]
+                    stats=average_choices + ["count"],
                 )
 
                 if user_profile.plotMean:
@@ -656,7 +907,7 @@ def ct_plot_calculations(
                         colourmap=user_profile.plotColourMapChoice,
                         filename="OpenREM CT study description DLP mean",
                         sorted_category_list=sorted_study_dlp_categories,
-                        average_choice="mean"
+                        average_choice="mean",
                     )
 
                 if user_profile.plotMedian:
@@ -668,7 +919,7 @@ def ct_plot_calculations(
                         colourmap=user_profile.plotColourMapChoice,
                         filename="OpenREM CT study description DLP median",
                         sorted_category_list=sorted_study_dlp_categories,
-                        average_choice="median"
+                        average_choice="median",
                     )
 
             if user_profile.plotBoxplots:
@@ -680,7 +931,7 @@ def ct_plot_calculations(
                     name_axis_title="Study description",
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT study description DLP boxplot",
-                    sorted_category_list=sorted_study_dlp_categories
+                    sorted_category_list=sorted_study_dlp_categories,
                 )
 
             if user_profile.plotHistograms:
@@ -718,7 +969,10 @@ def ct_plot_calculations(
                 df,
                 "study_description",
                 "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                [user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice]
+                [
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotCTInitialSortingChoice,
+                ],
             )
 
             if user_profile.plotMean or user_profile.plotMedian:
@@ -726,7 +980,7 @@ def ct_plot_calculations(
                     df,
                     "study_description",
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    stats=average_choices + ["count"]
+                    stats=average_choices + ["count"],
                 )
 
                 if user_profile.plotMean:
@@ -738,7 +992,7 @@ def ct_plot_calculations(
                         colourmap=user_profile.plotColourMapChoice,
                         filename="OpenREM CT study description CTDI mean",
                         sorted_category_list=sorted_study_ctdi_categories,
-                        average_choice="mean"
+                        average_choice="mean",
                     )
 
                 if user_profile.plotMedian:
@@ -750,7 +1004,7 @@ def ct_plot_calculations(
                         colourmap=user_profile.plotColourMapChoice,
                         filename="OpenREM CT study description CTDI median",
                         sorted_category_list=sorted_study_ctdi_categories,
-                        average_choice="median"
+                        average_choice="median",
                     )
 
             if user_profile.plotBoxplots:
@@ -762,7 +1016,7 @@ def ct_plot_calculations(
                     name_axis_title="Study description",
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT study description CTDI boxplot",
-                    sorted_category_list=sorted_study_ctdi_categories
+                    sorted_category_list=sorted_study_ctdi_categories,
                 )
 
             if user_profile.plotHistograms:
@@ -800,7 +1054,10 @@ def ct_plot_calculations(
                 df,
                 "study_description",
                 "number_of_events",
-                [user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice]
+                [
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotCTInitialSortingChoice,
+                ],
             )
 
             if user_profile.plotMean or user_profile.plotMedian:
@@ -808,7 +1065,7 @@ def ct_plot_calculations(
                     df,
                     "study_description",
                     "number_of_events",
-                    stats=average_choices + ["count"]
+                    stats=average_choices + ["count"],
                 )
 
                 if user_profile.plotMean:
@@ -820,7 +1077,7 @@ def ct_plot_calculations(
                         colourmap=user_profile.plotColourMapChoice,
                         filename="OpenREM CT study description events mean",
                         sorted_category_list=sorted_study_events_categories,
-                        average_choice="mean"
+                        average_choice="mean",
                     )
 
                 if user_profile.plotMedian:
@@ -832,7 +1089,7 @@ def ct_plot_calculations(
                         colourmap=user_profile.plotColourMapChoice,
                         filename="OpenREM CT study description events median",
                         sorted_category_list=sorted_study_events_categories,
-                        average_choice="median"
+                        average_choice="median",
                     )
 
             if user_profile.plotBoxplots:
@@ -844,7 +1101,7 @@ def ct_plot_calculations(
                     name_axis_title="Study description",
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT study description events boxplot",
-                    sorted_category_list=sorted_study_events_categories
+                    sorted_category_list=sorted_study_events_categories,
                 )
 
             if user_profile.plotHistograms:
@@ -861,7 +1118,9 @@ def ct_plot_calculations(
                     category_names = facet_names
                     facet_names = list(sorted_study_events_categories.values())[0]
 
-                return_structure["studyHistogramNumEventsData"] = plotly_histogram_barchart(
+                return_structure[
+                    "studyHistogramNumEventsData"
+                ] = plotly_histogram_barchart(
                     df,
                     group_by_col,
                     category_names_col,
@@ -888,14 +1147,17 @@ def ct_plot_calculations(
             return_structure["studyFrequencyData"] = construct_frequency_chart(
                 df=df,
                 df_name_col="study_description",
-                sorting_choice=[user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice],
+                sorting_choice=[
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotCTInitialSortingChoice,
+                ],
                 legend_title="Study description",
                 df_x_axis_col="x_ray_system_name",
                 x_axis_title="System",
                 grouping_choice=user_profile.plotGroupingChoice,
                 colour_map=user_profile.plotColourMapChoice,
                 file_name="OpenREM CT study description frequency",
-                sorted_categories=sorted_categories
+                sorted_categories=sorted_categories,
             )
 
         sorted_request_dlp_categories = None
@@ -904,7 +1166,10 @@ def ct_plot_calculations(
                 df,
                 "requested_procedure_code_meaning",
                 "total_dlp",
-                [user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice]
+                [
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotCTInitialSortingChoice,
+                ],
             )
 
             if user_profile.plotMean or user_profile.plotMedian:
@@ -912,7 +1177,7 @@ def ct_plot_calculations(
                     df,
                     "requested_procedure_code_meaning",
                     "total_dlp",
-                    stats=average_choices + ["count"]
+                    stats=average_choices + ["count"],
                 )
 
                 if user_profile.plotMean:
@@ -924,7 +1189,7 @@ def ct_plot_calculations(
                         colourmap=user_profile.plotColourMapChoice,
                         filename="OpenREM CT requested procedure DLP mean",
                         sorted_category_list=sorted_request_dlp_categories,
-                        average_choice="mean"
+                        average_choice="mean",
                     )
 
                 if user_profile.plotMedian:
@@ -936,7 +1201,7 @@ def ct_plot_calculations(
                         colourmap=user_profile.plotColourMapChoice,
                         filename="OpenREM CT requested procedure DLP median",
                         sorted_category_list=sorted_request_dlp_categories,
-                        average_choice="median"
+                        average_choice="median",
                     )
 
             if user_profile.plotBoxplots:
@@ -948,7 +1213,7 @@ def ct_plot_calculations(
                     name_axis_title="Requested procedure",
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT requested procedure DLP boxplot",
-                    sorted_category_list=sorted_request_dlp_categories
+                    sorted_category_list=sorted_request_dlp_categories,
                 )
 
             if user_profile.plotHistograms:
@@ -986,7 +1251,10 @@ def ct_plot_calculations(
                 df,
                 "requested_procedure_code_meaning",
                 "number_of_events",
-                [user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice]
+                [
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotCTInitialSortingChoice,
+                ],
             )
 
             if user_profile.plotMean:
@@ -994,7 +1262,7 @@ def ct_plot_calculations(
                     df,
                     "requested_procedure_code_meaning",
                     "number_of_events",
-                    stats=average_choices + ["count"]
+                    stats=average_choices + ["count"],
                 )
 
                 if user_profile.plotMean:
@@ -1006,7 +1274,7 @@ def ct_plot_calculations(
                         colourmap=user_profile.plotColourMapChoice,
                         filename="OpenREM CT requested procedure events mean",
                         sorted_category_list=sorted_request_events_categories,
-                        average_choice="mean"
+                        average_choice="mean",
                     )
 
                 if user_profile.plotMedian:
@@ -1018,7 +1286,7 @@ def ct_plot_calculations(
                         colourmap=user_profile.plotColourMapChoice,
                         filename="OpenREM CT requested procedure events median",
                         sorted_category_list=sorted_request_events_categories,
-                        average_choice="median"
+                        average_choice="median",
                     )
 
             if user_profile.plotMedian:
@@ -1030,7 +1298,7 @@ def ct_plot_calculations(
                     name_axis_title="Requested procedure",
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT requested procedure events boxplot",
-                    sorted_category_list=sorted_request_events_categories
+                    sorted_category_list=sorted_request_events_categories,
                 )
 
             if user_profile.plotHistograms:
@@ -1047,7 +1315,9 @@ def ct_plot_calculations(
                     category_names = facet_names
                     facet_names = list(sorted_request_events_categories.values())[0]
 
-                return_structure["requestHistogramNumEventsData"] = plotly_histogram_barchart(
+                return_structure[
+                    "requestHistogramNumEventsData"
+                ] = plotly_histogram_barchart(
                     df,
                     group_by_col,
                     category_names_col,
@@ -1072,14 +1342,17 @@ def ct_plot_calculations(
             return_structure["requestFrequencyData"] = construct_frequency_chart(
                 df=df,
                 df_name_col="requested_procedure_code_meaning",
-                sorting_choice=[user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice],
+                sorting_choice=[
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotCTInitialSortingChoice,
+                ],
                 legend_title="Requested procedure",
                 df_x_axis_col="x_ray_system_name",
                 x_axis_title="System",
                 grouping_choice=user_profile.plotGroupingChoice,
                 colour_map=user_profile.plotColourMapChoice,
                 file_name="OpenREM CT requested procedure frequency",
-                sorted_categories=sorted_categories
+                sorted_categories=sorted_categories,
             )
 
         if user_profile.plotCTStudyMeanDLPOverTime:
@@ -1091,13 +1364,16 @@ def ct_plot_calculations(
                 name_title="Study description",
                 value_title="DLP (mGy.cm)",
                 date_title="Study date",
-                sorting=[user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice],
+                sorting=[
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotCTInitialSortingChoice,
+                ],
                 time_period=plot_timeunit_period,
                 average_choices=average_choices,
                 grouping_choice=user_profile.plotGroupingChoice,
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
-                file_name="OpenREM CT study description DLP over time"
+                file_name="OpenREM CT study description DLP over time",
             )
 
             if user_profile.plotMean:
@@ -1114,13 +1390,16 @@ def ct_plot_calculations(
                 name_title="Requested procedure",
                 value_title="DLP (mGy.cm)",
                 date_title="Study date",
-                sorting=[user_profile.plotInitialSortingDirection, user_profile.plotCTInitialSortingChoice],
+                sorting=[
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotCTInitialSortingChoice,
+                ],
                 time_period=plot_timeunit_period,
                 average_choices=average_choices,
                 grouping_choice=user_profile.plotGroupingChoice,
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
-                file_name="OpenREM CT requested procedure DLP over time"
+                file_name="OpenREM CT requested procedure DLP over time",
             )
 
             if user_profile.plotMean:
@@ -1130,9 +1409,7 @@ def ct_plot_calculations(
 
         if user_profile.plotCTStudyPerDayAndHour:
             df_time_series_per_weekday = create_dataframe_weekdays(
-                df,
-                "study_description",
-                df_date_col="study_date"
+                df, "study_description", df_date_col="study_date"
             )
 
             return_structure["studyWorkloadData"] = plotly_barchart_weekdays(
@@ -1143,7 +1420,7 @@ def ct_plot_calculations(
                 value_axis_title="Frequency",
                 colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM CT study description workload",
-                facet_col_wrap=user_profile.plotFacetColWrapVal
+                facet_col_wrap=user_profile.plotFacetColWrapVal,
             )
         #######################################################################
 
@@ -1176,9 +1453,9 @@ def ct_chart_form_processing(request, user_profile):
             user_profile.plotCTAcquisitionDLPvsMass = chart_options_form.cleaned_data[
                 "plotCTAcquisitionDLPvsMass"
             ]
-            user_profile.plotCTAcquisitionCTDIOverTime = chart_options_form.cleaned_data[
-                "plotCTAcquisitionCTDIOverTime"
-            ]
+            user_profile.plotCTAcquisitionCTDIOverTime = (
+                chart_options_form.cleaned_data["plotCTAcquisitionCTDIOverTime"]
+            )
             user_profile.plotCTAcquisitionDLPOverTime = chart_options_form.cleaned_data[
                 "plotCTAcquisitionDLPOverTime"
             ]
@@ -1282,7 +1559,7 @@ def ct_chart_form_processing(request, user_profile):
                 "plotHistograms": user_profile.plotHistograms,
                 "plotCTInitialSortingChoice": user_profile.plotCTInitialSortingChoice,
                 "plotInitialSortingDirection": user_profile.plotInitialSortingDirection,
-                "plotAverageChoice": average_choices
+                "plotAverageChoice": average_choices,
             }
             chart_options_form = CTChartOptionsForm(form_data)
     return chart_options_form

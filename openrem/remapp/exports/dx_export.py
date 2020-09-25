@@ -333,7 +333,9 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
             )
             logger.error(error_message)
             writer.writerow(
-                [error_message,]
+                [
+                    error_message,
+                ]
             )
 
     tsk.progress = "All study data written."

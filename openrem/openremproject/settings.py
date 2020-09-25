@@ -208,7 +208,10 @@ LOGGING = {
             "level": "ERROR",
             "propagate": True,
         },
-        "remapp": {"handlers": ["file"], "level": "INFO",},
+        "remapp": {
+            "handlers": ["file"],
+            "level": "INFO",
+        },
         "remapp.netdicom.qrscu": {
             "handlers": ["qr_file"],
             "level": "INFO",

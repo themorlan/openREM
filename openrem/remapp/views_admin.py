@@ -126,11 +126,11 @@ def display_names_view(request):
     from .forms import MergeOnDeviceObserverUIDForm
 
     try:
-        match_on_device_observer_uid = MergeOnDeviceObserverUIDSettings.objects.values_list(
-            "match_on_device_observer_uid", flat=True
-        )[
-            0
-        ]
+        match_on_device_observer_uid = (
+            MergeOnDeviceObserverUIDSettings.objects.values_list(
+                "match_on_device_observer_uid", flat=True
+            )[0]
+        )
     except IndexError:
         match_on_device_observer_uid = False
         m = MergeOnDeviceObserverUIDSettings(match_on_device_observer_uid=False)
@@ -146,9 +146,9 @@ def display_names_view(request):
                 merge_options_settings = MergeOnDeviceObserverUIDSettings.objects.all()[
                     0
                 ]
-                merge_options_settings.match_on_device_observer_uid = merge_options_form.cleaned_data[
-                    "match_on_device_observer_uid"
-                ]
+                merge_options_settings.match_on_device_observer_uid = (
+                    merge_options_form.cleaned_data["match_on_device_observer_uid"]
+                )
                 merge_options_settings.save()
                 if merge_options_form.cleaned_data["match_on_device_observer_uid"]:
                     messages.info(
@@ -244,7 +244,11 @@ def display_names_view(request):
         "modalities": ["CT", "RF", "MG", "DX", "OT"],
     }
 
-    return render(request, "remapp/displaynameview.html", return_structure,)
+    return render(
+        request,
+        "remapp/displaynameview.html",
+        return_structure,
+    )
 
 
 def display_name_gen_hash(eq):
@@ -435,7 +439,12 @@ def display_name_populate(request):
         return render(
             request,
             template,
-            {"name_set": name_set, "admin": admin, "modality": modality, "dual": dual,},
+            {
+                "name_set": name_set,
+                "admin": admin,
+                "modality": modality,
+                "dual": dual,
+            },
         )
 
 
@@ -507,10 +516,19 @@ def display_name_last_date_and_count(request):
         template_latest = "remapp/displayname-last-date.html"
         template_count = "remapp/displayname-count.html"
         count_html = render_to_string(
-            template_count, {"count": count, "count_all": count_all,}, request=request
+            template_count,
+            {
+                "count": count,
+                "count_all": count_all,
+            },
+            request=request,
         )
         latest_html = render_to_string(
-            template_latest, {"latest": latest,}, request=request
+            template_latest,
+            {
+                "latest": latest,
+            },
+            request=request,
         )
         return_html = {"count_html": count_html, "latest_html": latest_html}
         html_dict = json.dumps(return_html)
@@ -720,18 +738,15 @@ def reset_dual(pk=None):
         .exclude(modality_type__exact="RF")
         .exclude(modality_type__exact="CR")
     )
-    message_start = (
-        "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are "
-        "DX, {3} are CR, {4} are RF and {5} are something else before processing,".format(
-            studies[0]
-            .generalequipmentmoduleattr_set.get()
-            .unique_equipment_name.display_name,
-            studies.count(),
-            studies.filter(modality_type__exact="DX").count(),
-            studies.filter(modality_type__exact="CR").count(),
-            studies.filter(modality_type__exact="RF").count(),
-            not_dx_rf_cr.count(),
-        )
+    message_start = "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are " "DX, {3} are CR, {4} are RF and {5} are something else before processing,".format(
+        studies[0]
+        .generalequipmentmoduleattr_set.get()
+        .unique_equipment_name.display_name,
+        studies.count(),
+        studies.filter(modality_type__exact="DX").count(),
+        studies.filter(modality_type__exact="CR").count(),
+        studies.filter(modality_type__exact="RF").count(),
+        not_dx_rf_cr.count(),
     )
 
     logger.debug(message_start)
@@ -842,7 +857,7 @@ def _get_review_study_data(study):
 
     :param study: GeneralStudyModuleAttr object
     :return: Dict of study data
-        """
+    """
     study_data = {
         "study_date": study.study_date,
         "study_time": study.study_time,
@@ -877,8 +892,8 @@ def _get_review_study_data(study):
         except ObjectDoesNotExist:
             study_data["ctaccumulateddosedata"] = ""
         try:
-            ctirradiationeventdata_set = ctradiationdose.ctirradiationeventdata_set.order_by(
-                "pk"
+            ctirradiationeventdata_set = (
+                ctradiationdose.ctirradiationeventdata_set.order_by("pk")
             )
 
             study_data["cteventdata"] = "{0} events.<br>".format(
@@ -1276,9 +1291,7 @@ def chart_options_view(request):
             user_profile.plotInitialSortingDirection = general_form.cleaned_data[
                 "plotInitialSortingDirection"
             ]
-            user_profile.plotThemeChoice = general_form.cleaned_data[
-                "plotThemeChoice"
-            ]
+            user_profile.plotThemeChoice = general_form.cleaned_data["plotThemeChoice"]
             user_profile.plotColourMapChoice = general_form.cleaned_data[
                 "plotColourMapChoice"
             ]
@@ -1366,18 +1379,12 @@ def chart_options_view(request):
             user_profile.plotDXAcquisitionFreq = dx_form.cleaned_data[
                 "plotDXAcquisitionFreq"
             ]
-            user_profile.plotDXStudyMeanDAP = dx_form.cleaned_data[
-                "plotDXStudyMeanDAP"
-            ]
-            user_profile.plotDXStudyFreq = dx_form.cleaned_data[
-                "plotDXStudyFreq"
-            ]
+            user_profile.plotDXStudyMeanDAP = dx_form.cleaned_data["plotDXStudyMeanDAP"]
+            user_profile.plotDXStudyFreq = dx_form.cleaned_data["plotDXStudyFreq"]
             user_profile.plotDXRequestMeanDAP = dx_form.cleaned_data[
                 "plotDXRequestMeanDAP"
             ]
-            user_profile.plotDXRequestFreq = dx_form.cleaned_data[
-                "plotDXRequestFreq"
-            ]
+            user_profile.plotDXRequestFreq = dx_form.cleaned_data["plotDXRequestFreq"]
             user_profile.plotDXAcquisitionMeankVp = dx_form.cleaned_data[
                 "plotDXAcquisitionMeankVp"
             ]
@@ -1477,7 +1484,7 @@ def chart_options_view(request):
         "plotCaseInsensitiveCategories": user_profile.plotCaseInsensitiveCategories,
         "plotThemeChoice": user_profile.plotThemeChoice,
         "plotColourMapChoice": user_profile.plotColourMapChoice,
-        "plotFacetColWrapVal": user_profile.plotFacetColWrapVal
+        "plotFacetColWrapVal": user_profile.plotFacetColWrapVal,
     }
 
     ct_form_data = {
@@ -1553,7 +1560,11 @@ def chart_options_view(request):
         "MGChartOptionsForm": mg_chart_options_form,
     }
 
-    return render(request, "remapp/displaychartoptions.html", return_structure,)
+    return render(
+        request,
+        "remapp/displaychartoptions.html",
+        return_structure,
+    )
 
 
 @login_required
@@ -1612,9 +1623,9 @@ def homepage_options_view(request):
                     != display_workload_stats
                 ):
                     homepage_admin_settings = HomePageAdminSettings.objects.all()[0]
-                    homepage_admin_settings.enable_workload_stats = homepage_options_form.cleaned_data[
-                        "enable_workload_stats"
-                    ]
+                    homepage_admin_settings.enable_workload_stats = (
+                        homepage_options_form.cleaned_data["enable_workload_stats"]
+                    )
                     homepage_admin_settings.save()
                     if homepage_options_form.cleaned_data["enable_workload_stats"]:
                         messages.info(request, "Display of workload stats enabled")
@@ -1656,13 +1667,16 @@ def homepage_options_view(request):
         "home_config": home_config,
     }
 
-    return render(request, "remapp/displayhomepageoptions.html", return_structure,)
+    return render(
+        request,
+        "remapp/displayhomepageoptions.html",
+        return_structure,
+    )
 
 
 @login_required
 def not_patient_indicators(request):
-    """Displays current not-patient indicators
-    """
+    """Displays current not-patient indicators"""
     from remapp.models import NotPatientIndicatorsID, NotPatientIndicatorsName
 
     not_patient_ids = NotPatientIndicatorsID.objects.all()
@@ -2015,9 +2029,7 @@ def celery_abort(request, task_id=None, type=None):
 
 
 class PatientIDSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
-    """UpdateView to update the patient ID settings
-
-    """
+    """UpdateView to update the patient ID settings"""
 
     from remapp.models import PatientIDSettings
 
@@ -2044,9 +2056,7 @@ class PatientIDSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
 
 
 class DicomDeleteSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
-    """UpdateView tp update the settings relating to deleting DICOM after import
-
-    """
+    """UpdateView tp update the settings relating to deleting DICOM after import"""
 
     from remapp.models import DicomDeleteSettings
     from remapp.forms import DicomDeleteSettingsForm
@@ -2067,9 +2077,7 @@ class DicomDeleteSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
 
 
 class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
-    """UpdateView for configuring the fluoroscopy high dose alert settings
-
-    """
+    """UpdateView for configuring the fluoroscopy high dose alert settings"""
 
     from remapp.models import HighDoseMetricAlertSettings
     from remapp.forms import RFHighDoseFluoroAlertsForm
@@ -2150,9 +2158,7 @@ class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
 @login_required
 @csrf_exempt
 def rf_alert_notifications_view(request):
-    """View for display and modification of fluoroscopy high dose alert recipients
-
-    """
+    """View for display and modification of fluoroscopy high dose alert recipients"""
     from django.contrib.auth.models import User
     from remapp.models import HighDoseMetricAlertRecipients
     from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
@@ -2206,14 +2212,16 @@ def rf_alert_notifications_view(request):
 
     return_structure = {"user_list": f, "admin": admin}
 
-    return render(request, "remapp/rfalertnotificationsview.html", return_structure,)
+    return render(
+        request,
+        "remapp/rfalertnotificationsview.html",
+        return_structure,
+    )
 
 
 @login_required
 def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
-    """View to recalculate the summed total DAP and total dose at RP for all RF studies
-
-    """
+    """View to recalculate the summed total DAP and total dose at RP for all RF studies"""
     from django.http import JsonResponse
     from remapp.extractors.extract_common import populate_rf_delta_weeks_summary
 
@@ -2291,8 +2299,8 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
                         accumxraydose.accumintegratedprojradiogdose_set.get().pk
                     )
 
-                    accum_int_proj_to_update = AccumIntegratedProjRadiogDose.objects.get(
-                        pk=accum_int_proj_pk
+                    accum_int_proj_to_update = (
+                        AccumIntegratedProjRadiogDose.objects.get(pk=accum_int_proj_pk)
                     )
 
                     included_studies = all_rf_studies.filter(
@@ -2357,9 +2365,7 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
 
 
 class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
-    """UpdateView for configuring the skin dose map calculation choices
-
-    """
+    """UpdateView for configuring the skin dose map calculation choices"""
 
     from remapp.models import SkinDoseMapCalcSettings
     from remapp.forms import SkinDoseMapCalcSettingsForm
@@ -2395,9 +2401,7 @@ class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-varia
 
 
 class NotPatientNameCreate(CreateView):  # pylint: disable=unused-variable
-    """CreateView for configuration of indicators a study might not be a patient study
-
-    """
+    """CreateView for configuration of indicators a study might not be a patient study"""
 
     from remapp.forms import NotPatientNameForm
     from remapp.models import NotPatientIndicatorsName
@@ -2418,9 +2422,7 @@ class NotPatientNameCreate(CreateView):  # pylint: disable=unused-variable
 
 
 class NotPatientNameUpdate(UpdateView):  # pylint: disable=unused-variable
-    """UpdateView to update choices regarding not-patient indicators
-
-    """
+    """UpdateView to update choices regarding not-patient indicators"""
 
     from remapp.forms import NotPatientNameForm
     from remapp.models import NotPatientIndicatorsName
@@ -2441,9 +2443,7 @@ class NotPatientNameUpdate(UpdateView):  # pylint: disable=unused-variable
 
 
 class NotPatientNameDelete(DeleteView):  # pylint: disable=unused-variable
-    """DeleteView for the not-patient name indicator table
-
-    """
+    """DeleteView for the not-patient name indicator table"""
 
     from remapp.models import NotPatientIndicatorsName
 
@@ -2463,9 +2463,7 @@ class NotPatientNameDelete(DeleteView):  # pylint: disable=unused-variable
 
 
 class NotPatientIDCreate(CreateView):  # pylint: disable=unused-variable
-    """CreateView for not-patient ID indicators
-
-    """
+    """CreateView for not-patient ID indicators"""
 
     from remapp.forms import NotPatientIDForm
     from remapp.models import NotPatientIndicatorsID
@@ -2486,9 +2484,7 @@ class NotPatientIDCreate(CreateView):  # pylint: disable=unused-variable
 
 
 class NotPatientIDUpdate(UpdateView):  # pylint: disable=unused-variable
-    """UpdateView for non-patient ID indicators
-
-    """
+    """UpdateView for non-patient ID indicators"""
 
     from remapp.forms import NotPatientIDForm
     from remapp.models import NotPatientIndicatorsID
@@ -2509,9 +2505,7 @@ class NotPatientIDUpdate(UpdateView):  # pylint: disable=unused-variable
 
 
 class NotPatientIDDelete(DeleteView):  # pylint: disable=unused-variable
-    """DeleteView for non-patient ID indicators
-
-    """
+    """DeleteView for non-patient ID indicators"""
 
     from remapp.models import NotPatientIndicatorsID
 
