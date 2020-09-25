@@ -78,11 +78,6 @@ AVERAGES = (
     (BOXPLOT, "Boxplot"),
 )
 
-AVERAGES_MAMMO = (
-    (MEAN, "Mean"),
-    (MEDIAN, "Median"),
-)
-
 NAME = "name"
 FREQ = "frequency"
 VALUE = "value"
@@ -388,24 +383,27 @@ class MGChartOptionsForm(forms.Form):
     """Form for MG chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
+    plotMGaverageAGD = forms.BooleanField(
+        label="Acquisition average AGD", required=False
+    )
+    plotMGAGDvsThickness = forms.BooleanField(
+        label="Acquisition AGD vs. compressed thickness", required=False
+    )
+    plotMGaverageAGDvsThickness = forms.BooleanField(
+        label="Acquisition average AGD vs. compressed thickness", required=False
+    )
+    plotMGkVpvsThickness = forms.BooleanField(
+        label="Acquisition kVp vs. compressed thickness", required=False
+    )
+    plotMGmAsvsThickness = forms.BooleanField(
+        label="Acquisition mAs vs. compressed thickness", required=False
+    )
     plotMGStudyPerDayAndHour = forms.BooleanField(
         label="Study workload", required=False
     )
-    plotMGAGDvsThickness = forms.BooleanField(
-        label="AGD vs. compressed thickness", required=False
-    )
-    plotMGaverageAGDvsThickness = forms.BooleanField(
-        label="Average AGD vs. compressed thickness", required=False
-    )
-    plotMGkVpvsThickness = forms.BooleanField(
-        label="kVp vs. compressed thickness", required=False
-    )
-    plotMGmAsvsThickness = forms.BooleanField(
-        label="mAs vs. compressed thickness", required=False
-    )
     plotAverageChoice = forms.MultipleChoiceField(
         label="Average plots",
-        choices=AVERAGES_MAMMO,
+        choices=AVERAGES,
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
@@ -426,20 +424,23 @@ class MGChartOptionsForm(forms.Form):
 class MGChartOptionsDisplayForm(forms.Form):
     """Form for MG chart display options"""
 
-    plotMGStudyPerDayAndHour = forms.BooleanField(
-        label="Study workload", required=False
+    plotMGaverageAGD = forms.BooleanField(
+        label="Acquisition average AGD", required=False
     )
     plotMGaverageAGDvsThickness = forms.BooleanField(
-        label="Average AGD vs. compressed thickness", required=False
+        label="Acquisition average AGD vs. compressed thickness", required=False
     )
     plotMGAGDvsThickness = forms.BooleanField(
-        label="AGD vs. compressed thickness", required=False
+        label="Acquisition AGD vs. compressed thickness", required=False
     )
     plotMGkVpvsThickness = forms.BooleanField(
-        label="kVp vs. compressed thickness", required=False
+        label="Acquisition kVp vs. compressed thickness", required=False
     )
     plotMGmAsvsThickness = forms.BooleanField(
-        label="mAs vs. compressed thickness", required=False
+        label="Acquisition mAs vs. compressed thickness", required=False
+    )
+    plotMGStudyPerDayAndHour = forms.BooleanField(
+        label="Study workload", required=False
     )
 
 

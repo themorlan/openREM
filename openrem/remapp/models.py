@@ -594,6 +594,7 @@ class UserProfile(models.Model):
     plotMGkVpvsThickness = models.BooleanField(default=False)
     plotMGmAsvsThickness = models.BooleanField(default=False)
     plotMGaverageAGDvsThickness = models.BooleanField(default=False)
+    plotMGaverageAGD = models.BooleanField(default=False)
     plotMGInitialSortingChoice = models.CharField(
         max_length=9, choices=SORTING_CHOICES, default=FREQ
     )

@@ -314,9 +314,9 @@ def plotly_barchart(
         },
         category_orders=sorted_category_list,
         color_discrete_sequence=colour_sequence,
+        hover_name="x_ray_system_name",
         hover_data={
-            "x_ray_system_name": True,
-            df_name_col: True,
+            "x_ray_system_name": False,
             average_choice: ":.2f",
             "count": ":.0d",
         },

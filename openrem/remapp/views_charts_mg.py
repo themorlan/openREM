@@ -19,6 +19,29 @@ def generate_required_mg_charts_list(profile):
             }
         )
 
+    if profile.plotMGaverageAGD:
+        if profile.plotMean:
+            required_charts.append(
+                {
+                    "title": "Chart of mean AGD for each acquisition protocol",
+                    "var_name": "acquisitionMeanAGD",
+                }
+            )
+        if profile.plotMedian:
+            required_charts.append(
+                {
+                    "title": "Chart of median AGD for each acquisition protocol",
+                    "var_name": "acquisitionMedianAGD",
+                }
+            )
+        if profile.plotBoxplots:
+            required_charts.append(
+                {
+                    "title": "Boxplot of AGD for each acquisition protocol",
+                    "var_name": "acquisitionBoxplotAGD",
+                }
+            )
+
     if profile.plotMGaverageAGDvsThickness:
         if profile.plotMean:
             required_charts.append(
@@ -112,15 +135,25 @@ def mg_plot_calculations(f, user_profile):
         create_dataframe_weekdays,
         plotly_barchart_weekdays,
         plotly_binned_statistic_barchart,
+        plotly_boxplot,
+        plotly_barchart,
+        plotly_histogram_barchart,
         construct_scatter_chart,
         plotly_set_default_theme,
         create_sorted_category_list,
+        create_dataframe_aggregates
     )
 
     # Set the Plotly chart theme
     plotly_set_default_theme(user_profile.plotThemeChoice)
 
     return_structure = {}
+
+    average_choices = []
+    if user_profile.plotMean:
+        average_choices.append("mean")
+    if user_profile.plotMedian:
+        average_choices.append("median")
 
     #######################################################################
     # Create a data frame to use for charts
@@ -132,13 +165,18 @@ def mg_plot_calculations(f, user_profile):
         or user_profile.plotMGkVpvsThickness
         or user_profile.plotMGmAsvsThickness
         or user_profile.plotMGaverageAGDvsThickness
+        or user_profile.plotMGaverageAGD
     ):
         name_fields.append(
             "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
         )
 
     value_fields = []
-    if user_profile.plotMGAGDvsThickness or user_profile.plotMGaverageAGDvsThickness:
+    if (
+        user_profile.plotMGAGDvsThickness
+        or user_profile.plotMGaverageAGDvsThickness
+        or user_profile.plotMGaverageAGD
+    ):
         value_fields.append(
             "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose"
         )
@@ -199,7 +237,7 @@ def mg_plot_calculations(f, user_profile):
             facet_col_wrap=user_profile.plotFacetColWrapVal,
         )
 
-    if user_profile.plotMGaverageAGDvsThickness:
+    if user_profile.plotMGaverageAGDvsThickness or user_profile.plotMGaverageAGD:
         sorted_acquisition_agd_categories = create_sorted_category_list(
             df,
             "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
@@ -210,60 +248,141 @@ def mg_plot_calculations(f, user_profile):
             ],
         )
 
-        category_names_col = (
-            "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
-        )
-        group_by_col = "x_ray_system_name"
-        legend_title = "Acquisition protocol"
-        facet_names = list(df[group_by_col].unique())
-        category_names = list(sorted_acquisition_agd_categories.values())[0]
-
-        if user_profile.plotGroupingChoice == "series":
-            category_names_col = "x_ray_system_name"
-            group_by_col = (
+        if user_profile.plotMGaverageAGDvsThickness:
+            category_names_col = (
                 "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
             )
-            legend_title = "System"
-            category_names = facet_names
-            facet_names = list(sorted_acquisition_agd_categories.values())[0]
+            group_by_col = "x_ray_system_name"
+            legend_title = "Acquisition protocol"
+            facet_names = list(df[group_by_col].unique())
+            category_names = list(sorted_acquisition_agd_categories.values())[0]
 
-        if user_profile.plotMean:
-            return_structure["meanAGDvsThickness"] = plotly_binned_statistic_barchart(
-                df,
-                "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
-                "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
-                x_axis_title="Compressed breast thickness (mm)",
-                y_axis_title="AGD (mGy)",
-                df_category_col=category_names_col,
-                df_facet_col=group_by_col,
-                facet_title=legend_title,
-                user_bins=[20, 30, 40, 50, 60, 70, 80, 90],
-                colour_map=user_profile.plotColourMapChoice,
-                file_name="OpenREM CT acquisition protocol AGD vs thickness",
-                facet_col_wrap=user_profile.plotFacetColWrapVal,
-                df_facet_category_list=facet_names,
-                df_category_name_list=category_names,
-                stat_name="mean",
-            )
+            if user_profile.plotGroupingChoice == "series":
+                category_names_col = "x_ray_system_name"
+                group_by_col = (
+                    "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+                )
+                legend_title = "System"
+                category_names = facet_names
+                facet_names = list(sorted_acquisition_agd_categories.values())[0]
 
-        if user_profile.plotMedian:
-            return_structure["medianAGDvsThickness"] = plotly_binned_statistic_barchart(
-                df,
-                "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
-                "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
-                x_axis_title="Compressed breast thickness (mm)",
-                y_axis_title="AGD (mGy)",
-                df_category_col=category_names_col,
-                df_facet_col=group_by_col,
-                facet_title=legend_title,
-                user_bins=[20, 30, 40, 50, 60, 70, 80, 90],
-                colour_map=user_profile.plotColourMapChoice,
-                file_name="OpenREM CT acquisition protocol AGD vs thickness",
-                facet_col_wrap=user_profile.plotFacetColWrapVal,
-                df_facet_category_list=facet_names,
-                df_category_name_list=category_names,
-                stat_name="median",
-            )
+            if user_profile.plotMean:
+                return_structure["meanAGDvsThickness"] = plotly_binned_statistic_barchart(
+                    df,
+                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
+                    x_axis_title="Compressed breast thickness (mm)",
+                    y_axis_title="AGD (mGy)",
+                    df_category_col=category_names_col,
+                    df_facet_col=group_by_col,
+                    facet_title=legend_title,
+                    user_bins=[20, 30, 40, 50, 60, 70, 80, 90],
+                    colour_map=user_profile.plotColourMapChoice,
+                    file_name="OpenREM CT acquisition protocol AGD vs thickness",
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
+                    df_facet_category_list=facet_names,
+                    df_category_name_list=category_names,
+                    stat_name="mean",
+                )
+
+            if user_profile.plotMedian:
+                return_structure["medianAGDvsThickness"] = plotly_binned_statistic_barchart(
+                    df,
+                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
+                    x_axis_title="Compressed breast thickness (mm)",
+                    y_axis_title="AGD (mGy)",
+                    df_category_col=category_names_col,
+                    df_facet_col=group_by_col,
+                    facet_title=legend_title,
+                    user_bins=[20, 30, 40, 50, 60, 70, 80, 90],
+                    colour_map=user_profile.plotColourMapChoice,
+                    file_name="OpenREM CT acquisition protocol AGD vs thickness",
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
+                    df_facet_category_list=facet_names,
+                    df_category_name_list=category_names,
+                    stat_name="median",
+                )
+
+        if user_profile.plotMGaverageAGD:
+            if user_profile.plotMean or user_profile.plotMedian:
+                df_aggregated = create_dataframe_aggregates(
+                    df,
+                    "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
+                    stats=average_choices + ["count"],
+                )
+
+                if user_profile.plotMean:
+                    return_structure["acquisitionMeanAGDData"] = plotly_barchart(
+                        df_aggregated,
+                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                        value_axis_title="Mean AGD (mGy)",
+                        name_axis_title="Acquisition protocol",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM MG acquisition protocol AGD mean",
+                        sorted_category_list=sorted_acquisition_agd_categories,
+                        average_choice="mean",
+                    )
+
+                if user_profile.plotMedian:
+                    return_structure["acquisitionMedianAGDData"] = plotly_barchart(
+                        df_aggregated,
+                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                        value_axis_title="Median AGD (mGy)",
+                        name_axis_title="Acquisition protocol",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM MG acquisition protocol AGD median",
+                        sorted_category_list=sorted_acquisition_agd_categories,
+                        average_choice="median",
+                    )
+
+            if user_profile.plotBoxplots:
+                return_structure["acquisitionBoxplotAGDData"] = plotly_boxplot(
+                    df,
+                    "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
+                    value_axis_title="AGD (mGy)",
+                    name_axis_title="Acquisition protocol",
+                    colourmap=user_profile.plotColourMapChoice,
+                    filename="OpenREM MG acquisition protocol AGD boxplot",
+                    sorted_category_list=sorted_acquisition_agd_categories,
+                )
+
+            if user_profile.plotHistograms:
+                category_names_col = (
+                    "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+                )
+                group_by_col = "x_ray_system_name"
+                legend_title = "Acquisition protocol"
+                facet_names = list(df[group_by_col].unique())
+                category_names = list(sorted_acquisition_agd_categories.values())[0]
+
+                if user_profile.plotGroupingChoice == "series":
+                    category_names_col = "x_ray_system_name"
+                    group_by_col = (
+                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+                    )
+                    legend_title = "System"
+                    category_names = facet_names
+                    facet_names = list(sorted_acquisition_agd_categories.values())[0]
+
+                return_structure[
+                    "acquisitionHistogramAGDData"
+                ] = plotly_histogram_barchart(
+                    df,
+                    group_by_col,
+                    category_names_col,
+                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
+                    value_axis_title="AGD (mGy)",
+                    legend_title=legend_title,
+                    n_bins=user_profile.plotHistogramBins,
+                    colourmap=user_profile.plotColourMapChoice,
+                    filename="OpenREM MG acquisition protocol AGD histogram",
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
+                    df_facet_category_list=facet_names,
+                    df_category_name_list=category_names,
+                )
 
     if user_profile.plotMGAGDvsThickness:
         return_structure["AGDvsThickness"] = construct_scatter_chart(
@@ -339,6 +458,9 @@ def mg_chart_form_processing(request, user_profile):
             user_profile.plotMGStudyPerDayAndHour = chart_options_form.cleaned_data[
                 "plotMGStudyPerDayAndHour"
             ]
+            user_profile.plotMGaverageAGD = chart_options_form.cleaned_data[
+                "plotMGaverageAGD"
+            ]
             user_profile.plotMGAGDvsThickness = chart_options_form.cleaned_data[
                 "plotMGAGDvsThickness"
             ]
@@ -374,6 +496,11 @@ def mg_chart_form_processing(request, user_profile):
             else:
                 user_profile.plotMedian = False
 
+            if "boxplot" in chart_options_form.cleaned_data["plotAverageChoice"]:
+                user_profile.plotBoxplots = True
+            else:
+                user_profile.plotBoxplots = False
+
             user_profile.save()
 
         else:
@@ -382,10 +509,13 @@ def mg_chart_form_processing(request, user_profile):
                 average_choices.append("mean")
             if user_profile.plotMedian:
                 average_choices.append("median")
+            if user_profile.plotBoxplots:
+                average_choices.append("boxplot")
 
             form_data = {
                 "plotCharts": user_profile.plotCharts,
                 "plotMGStudyPerDayAndHour": user_profile.plotMGStudyPerDayAndHour,
+                "plotMGaverageAGD": user_profile.plotMGaverageAGD,
                 "plotMGAGDvsThickness": user_profile.plotMGAGDvsThickness,
                 "plotMGkVpvsThickness": user_profile.plotMGkVpvsThickness,
                 "plotMGmAsvsThickness": user_profile.plotMGmAsvsThickness,

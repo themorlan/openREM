@@ -15,6 +15,21 @@ $(document).ready(function() {
         dataType: "json",
         success: function( json ) {
 
+            // AGD per acquisition chart data
+            if(typeof json.acquisitionMeanAGDData !== "undefined") {
+                $("#acquisitionMeanAGDChartDiv").html(json.acquisitionMeanAGDData);
+            }
+            if(typeof json.acquisitionMedianAGDData !== "undefined") {
+                $("#acquisitionMedianAGDChartDiv").html(json.acquisitionMedianAGDData);
+            }
+            if(typeof json.acquisitionBoxplotAGDData !=="undefined") {
+                $("#acquisitionBoxplotAGDChartDiv").html(json.acquisitionBoxplotAGDData);
+            }
+            if(typeof json.acquisitionHistogramAGDData !=="undefined") {
+                $("#acquisitionHistogramAGDChartDiv").html(json.acquisitionHistogramAGDData);
+            }
+
+            // AGD per acquisition grouped into compressed breast thickness bands
             if(typeof json.meanAGDvsThickness !== "undefined") {
                 $("#acquisitionMeanAGDvsThickChartDiv").html(json.meanAGDvsThickness);
             }
