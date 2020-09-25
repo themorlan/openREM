@@ -27,11 +27,14 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-
+#import remapp.views_charts_ct
+#import remapp.views_charts_dx
+#import remapp.views_charts_mg
+#import remapp.views_charts_rf
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
 
-from . import views, views_admin
+from . import views, views_admin, views_charts_ct, views_charts_dx, views_charts_mg, views_charts_rf
 from .exports import exportviews
 from .netdicom import dicomviews
 from .extractors import import_views
@@ -44,20 +47,20 @@ main_patterns = [
     path("homestudies/", views.update_latest_studies, name="update_latest_studies"),
     path("homeworkload/", views.update_study_workload, name="update_study_workload"),
     path("rf/", views.rf_summary_list_filter, name="rf_summary_list_filter"),
-    path("rf/chart/", views.rf_summary_chart_data, name="rf_summary_chart_data"),
+    path("rf/chart/", views_charts_rf.rf_summary_chart_data, name="rf_summary_chart_data"),
     path(
         "rf/<int:pk>/skin_map/",
         views.rf_detail_view_skin_map,
         name="rf_detail_view_skin_map",
     ),
     path("ct/", views.ct_summary_list_filter, name="ct_summary_list_filter"),
-    path("ct/chart/", views.ct_summary_chart_data, name="ct_summary_chart_data"),
+    path("ct/chart/", views_charts_ct.ct_summary_chart_data, name="ct_summary_chart_data"),
     path("ct/<int:pk>/", views.ct_detail_view, name="ct_detail_view"),
     path("dx/", views.dx_summary_list_filter, name="dx_summary_list_filter"),
-    path("dx/chart/", views.dx_summary_chart_data, name="dx_summary_chart_data"),
+    path("dx/chart/", views_charts_dx.dx_summary_chart_data, name="dx_summary_chart_data"),
     path("dx/<int:pk>/", views.dx_detail_view, name="dx_detail_view"),
     path("mg/", views.mg_summary_list_filter, name="mg_summary_list_filter"),
-    path("mg/chart/", views.mg_summary_chart_data, name="mg_summary_chart_data"),
+    path("mg/chart/", views_charts_mg.mg_summary_chart_data, name="mg_summary_chart_data"),
     path("mg/<int:pk>/", views.mg_detail_view, name="mg_detail_view"),
     path(
         "viewdisplaynames/", views_admin.display_names_view, name="display_names_view"
