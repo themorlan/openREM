@@ -2391,7 +2391,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append({"title": mark_safe("Chart of median CTDI<sub>vol</sub> for each acquisition protocol"),
                                     "var_name": "acquisitionMedianCTDI"})
         if profile.plotBoxplots:
-            required_charts.append({"title": mark_safe("Boxplot of median CTDI<sub>vol</sub> for each acquisition protocol"),
+            required_charts.append({"title": mark_safe("Boxplot of CTDI<sub>vol</sub> for each acquisition protocol"),
                                     "var_name": "acquisitionBoxplotCTDI"})
         if profile.plotHistograms:
             required_charts.append({"title": mark_safe("Histogram of CTDI<sub>vol</sub> for each acquisition protocol"),
@@ -2433,7 +2433,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append({"title": "Chart of median DLP for each study description",
                                     "var_name": "studyMedianDLP"})
         if profile.plotBoxplots:
-            required_charts.append({"title": "Boxplot of median DLP for each study description",
+            required_charts.append({"title": "Boxplot of DLP for each study description",
                                     "var_name": "studyBoxplotDLP"})
         if profile.plotHistograms:
             required_charts.append({"title": "Histogram of DLP for each study description",
@@ -2447,7 +2447,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append({"title": mark_safe("Chart of median CTDI<sub>vol</sub> for each study description"),
                                     "var_name": "studyMedianCTDI"})
         if profile.plotBoxplots:
-            required_charts.append({"title": mark_safe("Boxplot of median CTDI<sub>vol</sub> for each study description"),
+            required_charts.append({"title": mark_safe("Boxplot of CTDI<sub>vol</sub> for each study description"),
                                     "var_name": "studyBoxplotCTDI"})
         if profile.plotHistograms:
             required_charts.append({"title": mark_safe("Histogram of CTDI<sub>vol</sub> for each study description"),
@@ -2465,7 +2465,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append({"title": "Chart of median number of events for each study description",
                                     "var_name": "studyMedianNumEvents"})
         if profile.plotBoxplots:
-            required_charts.append({"title": "Boxplot of median number of events for each study description",
+            required_charts.append({"title": "Boxplot of number of events for each study description",
                                     "var_name": "studyBoxplotNumEvents"})
         if profile.plotHistograms:
             required_charts.append({"title": "Histogram of number of events for each study description",
@@ -2479,7 +2479,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append({"title": "Chart of median DLP for each requested procedure",
                                     "var_name": "requestMedianDLP"})
         if profile.plotBoxplots:
-            required_charts.append({"title": "Boxplot of median DLP for each requested procedure",
+            required_charts.append({"title": "Boxplot of DLP for each requested procedure",
                                     "var_name": "requestBoxplotDLP"})
         if profile.plotHistograms:
             required_charts.append({"title": "Histogram of DLP for each requested procedure",
@@ -2497,7 +2497,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append({"title": "Chart of median number of events for each requested procedure",
                                     "var_name": "requestMedianNumEvents"})
         if profile.plotBoxplots:
-            required_charts.append({"title": "Boxplot of median number of events for each requested procedure",
+            required_charts.append({"title": "Boxplot of number of events for each requested procedure",
                                     "var_name": "requestBoxplotNumEvents"})
         if profile.plotHistograms:
             required_charts.append({"title": "Histogram of number of events for each requested procedure",
