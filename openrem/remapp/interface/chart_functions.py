@@ -681,12 +681,14 @@ def plotly_binned_statistic_barchart(
 
                 category_idx = category_names.index(category_name)
 
-                statistic, junk, junk = stats.binned_statistic(
+                statistic, junk, bin_numbers = stats.binned_statistic(
                     category_subset[df_x_value_col].values,
                     category_subset[df_y_value_col].values,
                     statistic=stat_name,
                     bins=bins
                 )
+                bin_counts = np.bincount(bin_numbers)
+                trace_labels = np.array(["Frequency: {}<br>Bin range: {}".format(i, j) for i, j in zip(bin_counts, bin_labels)])
 
                 trace = go.Bar(
                     x=bin_labels,
@@ -695,11 +697,11 @@ def plotly_binned_statistic_barchart(
                     marker_color=colour_sequence[category_idx],
                     legendgroup=category_idx,
                     showlegend=show_legend,
-                    text=bin_labels,
+                    text=trace_labels,
                     hovertemplate=f"<b>{facet_name}</b><br>" +
                                   f"{category_name}<br>" +
                                   f"{stat_name.capitalize()}: " + "%{y:.2f}<br>" +
-                                  "Bin range: %{text}<br>" +
+                                  "%{text}<br>" +
                                   "<extra></extra>"
                 )
 
@@ -707,6 +709,7 @@ def plotly_binned_statistic_barchart(
 
             fig.update_xaxes(
                 title_text=facet_name + " " + x_axis_title,
+                tickson="boundaries",
                 row=current_row,
                 col=current_col
             )
