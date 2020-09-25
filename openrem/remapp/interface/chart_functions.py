@@ -667,10 +667,12 @@ def plotly_binned_statistic_barchart(
             facet_x_min = facet_subset[df_x_value_col].min()
             facet_x_max = facet_subset[df_x_value_col].max()
 
-            if facet_x_min < np.amin(bins):
-                bins = np.concatenate([[facet_x_min], bins])
-            if facet_x_max > np.amax(bins):
-                bins = np.concatenate([bins, [facet_x_max]])
+            if np.isfinite(facet_x_min):
+                if facet_x_min < np.amin(bins):
+                    bins = np.concatenate([[facet_x_min], bins])
+            if np.isfinite(facet_x_max):
+                if facet_x_max > np.amax(bins):
+                    bins = np.concatenate([bins, [facet_x_max]])
 
             bin_labels = np.array(
                 ["{:.1f} to {:.1f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])]
