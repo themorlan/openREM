@@ -272,8 +272,8 @@ EMAIL_HOST = os.environ.get("EMAIL_HOST", default="localhost")
 EMAIL_PORT = os.environ.get("EMAIL_PORT", default="25")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", default="")  # nosec
-EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", default=False)
-EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL", default=False)
+EMAIL_USE_TLS = int(os.environ.get("EMAIL_USE_TLS", default=0))
+EMAIL_USE_SSL = int(os.environ.get("EMAIL_USE_SSL", default=0))
 EMAIL_DOSE_ALERT_SENDER = os.environ.get(
     "EMAIL_DOSE_ALERT_SENDER", default="your.alert@email.address"
 )
