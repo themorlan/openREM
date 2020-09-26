@@ -21,7 +21,7 @@ DATABASES = {
     }
 }
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY", default="shouldn'tbethisone")
 
 DEBUG = int(os.environ.get("DEBUG", default=0))
 
