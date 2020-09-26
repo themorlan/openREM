@@ -19,6 +19,14 @@ def generate_required_mg_charts_list(profile):
             }
         )
 
+    if profile.plotMGacquisitionFreq:
+        required_charts.append(
+            {
+                "title": "Chart of acquisition protocol frequency",
+                "var_name": "acquisitionFrequency",
+            }
+        )
+
     if profile.plotMGaverageAGD:
         if profile.plotMean:
             required_charts.append(
@@ -139,6 +147,7 @@ def mg_plot_calculations(f, user_profile):
         plotly_barchart,
         plotly_histogram_barchart,
         construct_scatter_chart,
+        construct_frequency_chart,
         plotly_set_default_theme,
         create_sorted_category_list,
         create_dataframe_aggregates
@@ -166,6 +175,7 @@ def mg_plot_calculations(f, user_profile):
         or user_profile.plotMGmAsvsThickness
         or user_profile.plotMGaverageAGDvsThickness
         or user_profile.plotMGaverageAGD
+        or user_profile.plotMGacquisitionFreq
     ):
         name_fields.append(
             "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
@@ -237,6 +247,7 @@ def mg_plot_calculations(f, user_profile):
             facet_col_wrap=user_profile.plotFacetColWrapVal,
         )
 
+    sorted_acquisition_agd_categories = None
     if user_profile.plotMGaverageAGDvsThickness or user_profile.plotMGaverageAGD:
         sorted_acquisition_agd_categories = create_sorted_category_list(
             df,
@@ -441,6 +452,27 @@ def mg_plot_calculations(f, user_profile):
             file_name="OpenREM CT acquisition protocol mAs vs thickness",
         )
 
+    if user_profile.plotMGacquisitionFreq:
+        sorted_categories = None
+        if user_profile.plotMGaverageAGD:
+            sorted_categories = sorted_acquisition_agd_categories
+
+        return_structure["acquisitionFrequencyData"] = construct_frequency_chart(
+            df=df,
+            df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+            sorting_choice=[
+                user_profile.plotInitialSortingDirection,
+                user_profile.plotMGInitialSortingChoice
+            ],
+            legend_title="Acquisition protocol",
+            df_x_axis_col="x_ray_system_name",
+            x_axis_title="System",
+            grouping_choice=user_profile.plotGroupingChoice,
+            colour_map=user_profile.plotColourMapChoice,
+            file_name="OpenREM MG acquisition protocol frequency",
+            sorted_categories=sorted_categories,
+        )
+
     return return_structure
 
 
@@ -460,6 +492,9 @@ def mg_chart_form_processing(request, user_profile):
             ]
             user_profile.plotMGaverageAGD = chart_options_form.cleaned_data[
                 "plotMGaverageAGD"
+            ]
+            user_profile.plotMGacquisitionFreq = chart_options_form.cleaned_data[
+                "plotMGacquisitionFreq"
             ]
             user_profile.plotMGAGDvsThickness = chart_options_form.cleaned_data[
                 "plotMGAGDvsThickness"
@@ -515,6 +550,7 @@ def mg_chart_form_processing(request, user_profile):
             form_data = {
                 "plotCharts": user_profile.plotCharts,
                 "plotMGStudyPerDayAndHour": user_profile.plotMGStudyPerDayAndHour,
+                "plotMGacquisitionFreq": user_profile.plotMGacquisitionFreq,
                 "plotMGaverageAGD": user_profile.plotMGaverageAGD,
                 "plotMGAGDvsThickness": user_profile.plotMGAGDvsThickness,
                 "plotMGkVpvsThickness": user_profile.plotMGkVpvsThickness,

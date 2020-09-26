@@ -383,6 +383,9 @@ class MGChartOptionsForm(forms.Form):
     """Form for MG chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
+    plotMGacquisitionFreq = forms.BooleanField(
+        label="Acquisition frequency", required=False
+    )
     plotMGaverageAGD = forms.BooleanField(
         label="Acquisition average AGD", required=False
     )
@@ -424,6 +427,9 @@ class MGChartOptionsForm(forms.Form):
 class MGChartOptionsDisplayForm(forms.Form):
     """Form for MG chart display options"""
 
+    plotMGacquisitionFreq = forms.BooleanField(
+        label="Acquisition frequency", required=False
+    )
     plotMGaverageAGD = forms.BooleanField(
         label="Acquisition average AGD", required=False
     )

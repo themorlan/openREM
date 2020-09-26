@@ -697,7 +697,10 @@ def dx_plot_calculations(f, user_profile):
             return_structure["acquisitionFrequencyData"] = construct_frequency_chart(
                 df=df,
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                sorting_choice=user_profile.plotDXInitialSortingChoice,
+                sorting_choice=[
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotDXInitialSortingChoice
+                ],
                 legend_title="Acquisition protocol",
                 df_x_axis_col="x_ray_system_name",
                 x_axis_title="System",
@@ -959,7 +962,10 @@ def dx_plot_calculations(f, user_profile):
             return_structure["studyFrequencyData"] = construct_frequency_chart(
                 df=df,
                 df_name_col="study_description",
-                sorting_choice=user_profile.plotDXInitialSortingChoice,
+                sorting_choice=[
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotDXInitialSortingChoice
+                ],
                 legend_title="Study description",
                 df_x_axis_col="x_ray_system_name",
                 x_axis_title="System",
@@ -1058,7 +1064,10 @@ def dx_plot_calculations(f, user_profile):
             return_structure["requestFrequencyData"] = construct_frequency_chart(
                 df=df,
                 df_name_col="requested_procedure_code_meaning",
-                sorting_choice=user_profile.plotDXInitialSortingChoice,
+                sorting_choice=[
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotDXInitialSortingChoice
+                ],
                 legend_title="Requested procedure",
                 df_x_axis_col="x_ray_system_name",
                 x_axis_title="System",

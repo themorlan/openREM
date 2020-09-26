@@ -15,6 +15,11 @@ $(document).ready(function() {
         dataType: "json",
         success: function( json ) {
 
+            // Acquisition frequency chart data
+            if(typeof json.acquisitionFrequencyData !== "undefined") {
+                $("#acquisitionFrequencyChartDiv").html(json.acquisitionFrequencyData);
+            }
+
             // AGD per acquisition chart data
             if(typeof json.acquisitionMeanAGDData !== "undefined") {
                 $("#acquisitionMeanAGDChartDiv").html(json.acquisitionMeanAGDData);
