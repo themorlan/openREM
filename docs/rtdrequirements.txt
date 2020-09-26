@@ -27,3 +27,4 @@ sphinxcontrib-programoutput
 sphinxcontrib-autoprogram
 sphinx-argparse
 sphinx-copybutton
+pyfunction
