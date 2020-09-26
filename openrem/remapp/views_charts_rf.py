@@ -15,28 +15,28 @@ def generate_required_rf_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean DAP for each study description",
+                    "title": "Chart of study description mean DAP",
                     "var_name": "studyMeanDAP",
                 }
             )
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median DAP for each study description",
+                    "title": "Chart of study description median DAP",
                     "var_name": "studyMedianDAP",
                 }
             )
         if profile.plotBoxplots:
             required_charts.append(
                 {
-                    "title": "Boxplot of DAP for each study description",
+                    "title": "Boxplot of study description DAP",
                     "var_name": "studyBoxplotDAP",
                 }
             )
         if profile.plotHistograms:
             required_charts.append(
                 {
-                    "title": "Histogram of DAP for each study description",
+                    "title": "Histogram of study description DAP",
                     "var_name": "studyHistogramDAP",
                 }
             )
@@ -45,28 +45,28 @@ def generate_required_rf_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean DAP for each requested procedure",
+                    "title": "Chart of requested procedure mean DAP",
                     "var_name": "requestMeanDAP",
                 }
             )
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median DAP for each requested procedure",
+                    "title": "Chart of requested procedure median DAP",
                     "var_name": "requestMedianDAP",
                 }
             )
         if profile.plotBoxplots:
             required_charts.append(
                 {
-                    "title": "Boxplot of DAP for each requested procedure",
+                    "title": "Boxplot of requested procedure DAP",
                     "var_name": "requestBoxplotDAP",
                 }
             )
         if profile.plotHistograms:
             required_charts.append(
                 {
-                    "title": "Histogram of DAP for each requested procedure",
+                    "title": "Histogram of requested procedure DAP",
                     "var_name": "requestHistogramDAP",
                 }
             )

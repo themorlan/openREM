@@ -17,28 +17,28 @@ def generate_required_ct_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean DLP for each acquisition protocol",
+                    "title": "Chart of acquisition protocol mean DLP",
                     "var_name": "acquisitionMeanDLP",
                 }
             )
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median DLP for each acquisition protocol",
+                    "title": "Chart of acquisition protocol median DLP",
                     "var_name": "acquisitionMedianDLP",
                 }
             )
         if profile.plotBoxplots:
             required_charts.append(
                 {
-                    "title": "Boxplot of DLP for each acquisition protocol",
+                    "title": "Boxplot of acquisition protocol DLP",
                     "var_name": "acquisitionBoxplotDLP",
                 }
             )
         if profile.plotHistograms:
             required_charts.append(
                 {
-                    "title": "Histogram of DLP for each acquisition protocol",
+                    "title": "Histogram of acquisition protocol DLP",
                     "var_name": "acquisitionHistogramDLP",
                 }
             )
@@ -48,7 +48,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append(
                 {
                     "title": mark_safe(
-                        "Chart of mean CTDI<sub>vol</sub> for each acquisition protocol"
+                        "Chart of acquisition protocol mean CTDI<sub>vol</sub>"
                     ),
                     "var_name": "acquisitionMeanCTDI",
                 }
@@ -57,7 +57,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append(
                 {
                     "title": mark_safe(
-                        "Chart of median CTDI<sub>vol</sub> for each acquisition protocol"
+                        "Chart of acquisition protocol median CTDI<sub>vol</sub>"
                     ),
                     "var_name": "acquisitionMedianCTDI",
                 }
@@ -66,7 +66,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append(
                 {
                     "title": mark_safe(
-                        "Boxplot of CTDI<sub>vol</sub> for each acquisition protocol"
+                        "Boxplot of acquisition protocol CTDI<sub>vol</sub>"
                     ),
                     "var_name": "acquisitionBoxplotCTDI",
                 }
@@ -75,7 +75,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append(
                 {
                     "title": mark_safe(
-                        "Histogram of CTDI<sub>vol</sub> for each acquisition protocol"
+                        "Histogram of acquisition protocol CTDI<sub>vol</sub>"
                     ),
                     "var_name": "acquisitionHistogramCTDI",
                 }
@@ -93,7 +93,7 @@ def generate_required_ct_charts_list(profile):
         required_charts.append(
             {
                 "title": mark_safe(
-                    "Chart of CTDI<sub>vol</sub> vs patient mass for each acquisition protocol"
+                    "Chart of acquisition protocol CTDI<sub>vol</sub> vs patient mass"
                 ),
                 "var_name": "acquisitionScatterCTDIvsMass",
             }
@@ -102,7 +102,7 @@ def generate_required_ct_charts_list(profile):
     if profile.plotCTAcquisitionDLPvsMass:
         required_charts.append(
             {
-                "title": "Chart of DLP vs patient mass for each acquisition protocol",
+                "title": "Chart of acquisition protocol DLP vs patient mass",
                 "var_name": "acquisitionScatterDLPvsMass",
             }
         )
@@ -112,7 +112,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append(
                 {
                     "title": mark_safe(
-                        "Chart of mean CTDI<sub>vol</sub> per acquisition protocol over time ("
+                        "Chart of acquisition protocol mean CTDI<sub>vol</sub> over time ("
                         + profile.plotCTOverTimePeriod
                         + ")"
                     ),
@@ -123,7 +123,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append(
                 {
                     "title": mark_safe(
-                        "Chart of median CTDI<sub>vol</sub> per acquisition protocol over time ("
+                        "Chart of acquisition protocol median CTDI<sub>vol</sub> over time ("
                         + profile.plotCTOverTimePeriod
                         + ")"
                     ),
@@ -135,7 +135,7 @@ def generate_required_ct_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean DLP per acquisition protocol over time ("
+                    "title": "Chart of acquisition protocol mean DLP over time ("
                     + profile.plotCTOverTimePeriod
                     + ")",
                     "var_name": "acquisitionMeanDLPOverTime",
@@ -144,7 +144,7 @@ def generate_required_ct_charts_list(profile):
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median DLP per acquisition protocol over time ("
+                    "title": "Chart of acquisition protocol median DLP over time ("
                     + profile.plotCTOverTimePeriod
                     + ")",
                     "var_name": "acquisitionMedianDLPOverTime",
@@ -155,28 +155,28 @@ def generate_required_ct_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean DLP for each study description",
+                    "title": "Chart of study description mean DLP",
                     "var_name": "studyMeanDLP",
                 }
             )
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median DLP for each study description",
+                    "title": "Chart of study description median DLP",
                     "var_name": "studyMedianDLP",
                 }
             )
         if profile.plotBoxplots:
             required_charts.append(
                 {
-                    "title": "Boxplot of DLP for each study description",
+                    "title": "Boxplot of study description DLP",
                     "var_name": "studyBoxplotDLP",
                 }
             )
         if profile.plotHistograms:
             required_charts.append(
                 {
-                    "title": "Histogram of DLP for each study description",
+                    "title": "Histogram of study description DLP",
                     "var_name": "studyHistogramDLP",
                 }
             )
@@ -186,7 +186,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append(
                 {
                     "title": mark_safe(
-                        "Chart of mean CTDI<sub>vol</sub> for each study description"
+                        "Chart of study description mean CTDI<sub>vol</sub>"
                     ),
                     "var_name": "studyMeanCTDI",
                 }
@@ -195,7 +195,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append(
                 {
                     "title": mark_safe(
-                        "Chart of median CTDI<sub>vol</sub> for each study description"
+                        "Chart of study description median CTDI<sub>vol</sub>"
                     ),
                     "var_name": "studyMedianCTDI",
                 }
@@ -204,7 +204,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append(
                 {
                     "title": mark_safe(
-                        "Boxplot of CTDI<sub>vol</sub> for each study description"
+                        "Boxplot of study description CTDI<sub>vol</sub>"
                     ),
                     "var_name": "studyBoxplotCTDI",
                 }
@@ -213,7 +213,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append(
                 {
                     "title": mark_safe(
-                        "Histogram of CTDI<sub>vol</sub> for each study description"
+                        "Histogram of study description CTDI<sub>vol</sub>"
                     ),
                     "var_name": "studyHistogramCTDI",
                 }
@@ -231,28 +231,28 @@ def generate_required_ct_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean number of events for each study description",
+                    "title": "Chart of study description mean number of events",
                     "var_name": "studyMeanNumEvents",
                 }
             )
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median number of events for each study description",
+                    "title": "Chart of study description median number of events",
                     "var_name": "studyMedianNumEvents",
                 }
             )
         if profile.plotBoxplots:
             required_charts.append(
                 {
-                    "title": "Boxplot of number of events for each study description",
+                    "title": "Boxplot of study description number of events",
                     "var_name": "studyBoxplotNumEvents",
                 }
             )
         if profile.plotHistograms:
             required_charts.append(
                 {
-                    "title": "Histogram of number of events for each study description",
+                    "title": "Histogram of study description number of events",
                     "var_name": "studyHistogramNumEvents",
                 }
             )
@@ -261,28 +261,28 @@ def generate_required_ct_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean DLP for each requested procedure",
+                    "title": "Chart of requested procedure mean DLP",
                     "var_name": "requestMeanDLP",
                 }
             )
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median DLP for each requested procedure",
+                    "title": "Chart of requested procedure median DLP",
                     "var_name": "requestMedianDLP",
                 }
             )
         if profile.plotBoxplots:
             required_charts.append(
                 {
-                    "title": "Boxplot of DLP for each requested procedure",
+                    "title": "Boxplot of requested procedure DLP",
                     "var_name": "requestBoxplotDLP",
                 }
             )
         if profile.plotHistograms:
             required_charts.append(
                 {
-                    "title": "Histogram of DLP for each requested procedure",
+                    "title": "Histogram of requested procedure DLP",
                     "var_name": "requestHistogramDLP",
                 }
             )
@@ -299,28 +299,28 @@ def generate_required_ct_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean number of events for each requested procedure",
+                    "title": "Chart of requested procedure mean number of events",
                     "var_name": "requestMeanNumEvents",
                 }
             )
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median number of events for each requested procedure",
+                    "title": "Chart of requested procedure median number of events",
                     "var_name": "requestMedianNumEvents",
                 }
             )
         if profile.plotBoxplots:
             required_charts.append(
                 {
-                    "title": "Boxplot of number of events for each requested procedure",
+                    "title": "Boxplot of requested procedure number of events",
                     "var_name": "requestBoxplotNumEvents",
                 }
             )
         if profile.plotHistograms:
             required_charts.append(
                 {
-                    "title": "Histogram of number of events for each requested procedure",
+                    "title": "Histogram of requested procedure number of events",
                     "var_name": "requestHistogramNumEvents",
                 }
             )
@@ -329,7 +329,7 @@ def generate_required_ct_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean DLP per requested procedure over time ("
+                    "title": "Chart of requested procedure mean DLP over time ("
                     + profile.plotCTOverTimePeriod
                     + ")",
                     "var_name": "requestMeanDLPOverTime",
@@ -338,7 +338,7 @@ def generate_required_ct_charts_list(profile):
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median DLP per requested procedure over time ("
+                    "title": "Chart of requested procedure median DLP over time ("
                     + profile.plotCTOverTimePeriod
                     + ")",
                     "var_name": "requestMedianDLPOverTime",
@@ -357,7 +357,7 @@ def generate_required_ct_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean DLP per study description over time ("
+                    "title": "Chart of study description mean DLP over time ("
                     + profile.plotCTOverTimePeriod
                     + ")",
                     "var_name": "studyMeanDLPOverTime",
@@ -366,7 +366,7 @@ def generate_required_ct_charts_list(profile):
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median DLP per study description over time ("
+                    "title": "Chart of study description median DLP over time ("
                     + profile.plotCTOverTimePeriod
                     + ")",
                     "var_name": "studyMedianDLPOverTime",

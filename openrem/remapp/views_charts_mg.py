@@ -14,7 +14,7 @@ def generate_required_mg_charts_list(profile):
     if profile.plotMGAGDvsThickness:
         required_charts.append(
             {
-                "title": "Chart of AGD vs compressed breast thickness for each acquisition protocol",
+                "title": "Chart of acquisition protocol AGD vs compressed breast thickness",
                 "var_name": "acquisitionScatterAGDvsThick",
             }
         )
@@ -31,22 +31,29 @@ def generate_required_mg_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean AGD for each acquisition protocol",
+                    "title": "Chart of acquisition protocol mean AGD",
                     "var_name": "acquisitionMeanAGD",
                 }
             )
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median AGD for each acquisition protocol",
+                    "title": "Chart of acquisition protocol median AGD",
                     "var_name": "acquisitionMedianAGD",
                 }
             )
         if profile.plotBoxplots:
             required_charts.append(
                 {
-                    "title": "Boxplot of AGD for each acquisition protocol",
+                    "title": "Boxplot of acquisition protocol AGD",
                     "var_name": "acquisitionBoxplotAGD",
+                }
+            )
+        if profile.plotHistograms:
+            required_charts.append(
+                {
+                    "title": "Histogram of acquisition protocol AGD",
+                    "var_name": "acquisitionHistogramAGD",
                 }
             )
 
@@ -54,14 +61,14 @@ def generate_required_mg_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean AGD vs compressed breast thickness for each acquisition protocol",
+                    "title": "Chart of acquisition protocol mean AGD vs compressed breast thickness",
                     "var_name": "acquisitionMeanAGDvsThick",
                 }
             )
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median AGD vs compressed breast thickness for each acquisition protocol",
+                    "title": "Chart of acquisition protocol median AGD vs compressed breast thickness",
                     "var_name": "acquisitionMedianAGDvsThick",
                 }
             )
@@ -69,7 +76,7 @@ def generate_required_mg_charts_list(profile):
     if profile.plotMGkVpvsThickness:
         required_charts.append(
             {
-                "title": "Chart of kVp vs compressed breast thickness for each acquisition protocol",
+                "title": "Chart of acquisition protocol kVp vs compressed breast thickness",
                 "var_name": "acquisitionScatterkVpvsThick",
             }
         )
@@ -77,7 +84,7 @@ def generate_required_mg_charts_list(profile):
     if profile.plotMGmAsvsThickness:
         required_charts.append(
             {
-                "title": "Chart of mAs vs compressed breast thickness for each acquisition protocol",
+                "title": "Chart of acquisition protocol mAs vs compressed breast thickness",
                 "var_name": "acquisitionScattermAsvsThick",
             }
         )
@@ -511,6 +518,9 @@ def mg_chart_form_processing(request, user_profile):
             user_profile.plotSeriesPerSystem = chart_options_form.cleaned_data[
                 "plotSeriesPerSystem"
             ]
+            user_profile.plotHistograms = chart_options_form.cleaned_data[
+                "plotHistograms"
+            ]
             user_profile.plotGroupingChoice = chart_options_form.cleaned_data[
                 "plotGrouping"
             ]
@@ -557,6 +567,7 @@ def mg_chart_form_processing(request, user_profile):
                 "plotMGmAsvsThickness": user_profile.plotMGmAsvsThickness,
                 "plotMGaverageAGDvsThickness": user_profile.plotMGaverageAGDvsThickness,
                 "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
+                "plotHistograms": user_profile.plotHistograms,
                 "plotGrouping": user_profile.plotGroupingChoice,
                 "plotMGInitialSortingChoice": user_profile.plotMGInitialSortingChoice,
                 "plotInitialSortingDirection": user_profile.plotInitialSortingDirection,

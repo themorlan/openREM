@@ -416,6 +416,9 @@ class MGChartOptionsForm(forms.Form):
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
     )
+    plotHistograms = forms.BooleanField(
+        label="Calculate histogram data", required=False
+    )
     plotMGInitialSortingChoice = forms.ChoiceField(
         label="Chart sorting", choices=SORTING_CHOICES, required=False
     )
