@@ -62,7 +62,7 @@
         {# Translators: Number of studies in DB losted above home-page table. No final full-stop in English due to a.m./p.m. #}
         {% now "DATETIME_FORMAT" as current_time %}
         {% blocktrans with total_studies=homedata.total trimmed%}
-            There are {{ total_studies }} studies in this database. Page last refreshed on {{ current_time }}
+            There are {{ total_studies }} studies in this database. Page last refreshed on {{ current_time }}.
         {% endblocktrans %}
         {% if user.is_authenticated %}
             {% if request.user.userprofile.plotCharts %}

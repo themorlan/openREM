@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 21:57+0100\n"
+"POT-Creation-Date: 2020-09-26 22:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -51,7 +51,7 @@ msgstr ""
 #, python-format
 msgid ""
 "There are %(total_studies)s studies in this database. Page last refreshed on "
-"%(current_time)s"
+"%(current_time)s."
 msgstr ""
 
 #: remapp/templates/remapp/home.html:69
