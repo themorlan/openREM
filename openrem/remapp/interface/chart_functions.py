@@ -998,8 +998,9 @@ def plotly_barchart_weekdays(
                 "hour": "Hour",
             },
             color_continuous_scale=colourmap,
+            hover_name="x_ray_system_name",
             hover_data={
-                "x_ray_system_name": True,
+                "x_ray_system_name": False,
                 "weekday": True,
                 "hour": ":.2f",
                 df_value_col: True,
