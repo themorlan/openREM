@@ -1,0 +1,162 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../i_not_patient_indicator.rst:3
+#: da50a3ea036847c98765272a24091ad2
+msgid "Not-patient indicator settings"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:5
+#: dcd4358f02b84006849e31e7e64661d7
+msgid "The standard configuration for OpenREM is to not store any patient identifiable information.  Therefore it can be difficult to distinguish between real patients and test or quality assurance exposures."
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:8
+#: d65a372b34b347b297c4850ba0d4ed65
+msgid "*Changed in 0.8.0*"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:10
+#: ce3e987a215d44ac94245eb895bee4d8
+msgid "To aid identification of non-patient exposures, the patient name and the patient ID are checked against a set of patterns, and if a match is found then the pattern is recorded in the database before the patient name and ID are deleted or converted to a hash (see :doc:`patientid` for details)."
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:16
+#: ac189e3a561d4a30816507c77104d83d
+msgid "Setting the patterns to identify non-patient studies"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:23
+#: 9a8ab92d8bfb44a583efdad936df88c4
+msgid "The ``Config`` menu"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:25
+#: 6b7375f07eb044b5ae1cfc7485ffcc88
+msgid "Use the ``Config`` menu and select ``Not-patient indicators``:"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:27
+#: c8061273887643c1a32a855f55bcef44
+msgid "The patient name and the ID are matched against the patterns you configure. The patterns make use of wildcards as per the following table, and are case insensitive:"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:31
+#: fd28d2673e4b4f33b6eb0c9a1400500e
+msgid "Pattern"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:31
+#: 9ccacd103e1f4d788703a74a8fd0d2c6
+msgid "Meaning"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:33
+#: 42ff4a4cfa0d4c73a10c5f6958d5dca6
+msgid "\\*"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:33
+#: aa027c78389945a0b0a9d29ec482dc21
+msgid "matches everything"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:34
+#: e9412d60a5ba4ba68f692635d9fbd53c
+msgid "?"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:34
+#: 9aaadee5c7a0435b8e088cbde48fda0f
+msgid "matches any single character"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:35
+#: dbb44e83149244e1bfb7e7df5203de59
+msgid "[seq]"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:35
+#: cde5308cb5ec449d851f399d6d85f676
+msgid "matches any character in seq"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:36
+#: 8a81a59b20b84fa7b26976f6f9a92236
+msgid "[!seq]"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:36
+#: ddd0e2967e5b446aabbceebef1e57ba2
+msgid "matches any character not in seq"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:39
+#: 20a8387021da489591a5c01857140189
+msgid "To match all studies where the patient name begins with  ``physics``, the pattern should be set to ``physics*``. This would match ``Physics^RoutIQ`` but not match ``Testing^Physics``. The patient name in DICOM is normally formatted ``Family name^Given name^Middle name^Prefix^Suffix``. Therefore to match any studies where the first name is ``Test``, you would set the pattern to be ``*^test*``."
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:44
+#: 4c8c7eac5cb3489d9a9651d9ec64e56a
+msgid "If your test patient name always starts with ``PHY`` and then a number, you might use this pattern: ``phy[0-9]*``. Here we have used a range for the sequence to match any number, but it will only match one character per sequence, so a ``*`` is required to match all the characters after the first number. This pattern will match ``Phy12345`` and ``PHY6test`` but not ``Phyliss``."
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:49
+#: dedbc0adddd34bdf9591e7a5e0c5d99c
+msgid "The pattern list for patient name and the list for patient ID are separate, so both need to be populated to meet your requirements."
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:53
+#: d54656b3841d4019bf11e0aed9a889fd
+msgid "Creating new patterns"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:55
+#: 0081d1907ebb42b2a28f91157415e106
+msgid "Click on ``Add ID patterns`` or ``Add name patterns`` in the panel title bar and follow the instructions."
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:58
+#: b43da9b858e04a658f878e8be2a45d28
+msgid "Modifying patterns"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:60
+#: 26cd1b1dd7e244d5b6bef6b591815ef4
+msgid "Click the ``Modify`` link in the row of the pattern you wish to modify."
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:63
+#: 2374f92a2bb643eda7796135cb38c348
+msgid "Deleting patterns"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:65
+#: c9381c884b92407aa54977386e6e093f
+msgid "Click the ``Delete`` link in the row of the pattern you wish to delete. You will be asked to confirm the deletion."
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:69
+#: 543ef974cd854cfda00d1b46a9e9a7b0
+msgid "Replicating behaviour of release 0.7.4 and earlier"
+msgstr ""
+
+#: ../../i_not_patient_indicator.rst:72
+#: f4209c5c43194461bb1a618d07f45de0
+msgid "OpenREM releases before 0.8 had the not-patient identification patterns hard-coded. From release 0.8.0 the patterns are (admin) user configurable, but will start with no patterns in place. To add the patterns that would maintain the behaviour of previous releases, use the link at the bottom of the config page, or the link in the add/modify pages."
+msgstr ""
