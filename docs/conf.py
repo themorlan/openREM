@@ -10,18 +10,22 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import django
 import os
 import sys
-# sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('..'))
 # sys.path.insert(0, os.path.abspath(os.path.join('..', 'openrem')))
-# from openrem.remapp.version import __version__, __short_version__, __repo_branch__
+from openrem.remapp.version import __version__, __short_version__, __repo_branch__
 
-basepath = os.path.dirname(__file__)
-projectpath = os.path.abspath(os.path.join(basepath, "..", "openrem", "remapp"))
-exec(open(os.path.join(projectpath, "version.py")).read())
-version = __short_version__
-# The full version, including alpha/beta/rc tags.
-release = __version__
+os.environ["DJANGO_SETTINGS_MODULE"] = "openrem.openremproject.settings"
+django.setup()
+
+# basepath = os.path.dirname(__file__)
+# projectpath = os.path.abspath(os.path.join(basepath, "..", "openrem", "remapp"))
+# exec(open(os.path.join(projectpath, "version.py")).read())
+# version = __short_version__
+# # The full version, including alpha/beta/rc tags.
+# release = __version__
 
 # -- Project information -----------------------------------------------------
 
