@@ -8,75 +8,89 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-25 21:31+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2020-09-27 14:30+0000\n"
+"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
+"Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/openrem/"
+"rtd-index/nb_NO/>\n"
 "Language: nb_NO\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 
 #: ../../index.rst:3
 #: 6ec3529dc3fc4010ace6702f6708e473
 msgid "Welcome to OpenREM's documentation!"
-msgstr ""
+msgstr "Velkommen til OpenREM-dokumentasjonen"
 
 #: ../../index.rst:11
 #: 865c69d560ef424081f5b591396cc8c2
 msgid "OpenREM is a free, open source application for patient radiation dose monitoring. The software is capable of importing and displaying data from a wide variety of x-ray dose related sources with filtering, charts and analysis. The software also enables easy export of the data in a form that is suitable for further analysis by suitably qualified medical physics personnel."
 msgstr ""
+"OpenREM er et gratis og fritt program for overvåking av pasientstråledoser. "
+"Programvaren kan importere og vise data fra en stor mengde røntgen-relaterte "
+"kilder med filtrering, diagrammer og analyse. Programvaren lar deg også "
+"eksportere data i et format som passer for videre analyse for kvalifisert "
+"medisinsk personell."
 
 #: ../../index.rst:16
 #: 039a8a3bc0e1405b9fdb903e7244e612
 msgid "Please see `openrem.org <https://openrem.org>`_ for more details."
-msgstr ""
+msgstr "Sjekk `openrem.org <https://openrem.org>`_ for flere detaljer."
 
 #: ../../index.rst:18
 #: bb8b0ec3384d469685013addcb380125
 msgid "These docs are for the version of OpenREM currently in development. For the current release version, see https://docs.openrem.org/"
 msgstr ""
+"Denne dokumentasjonen er for versjonen av OpenREM som er i utvikling. For "
+"nåværende utgitt versjon, henvend deg til https://docs.openrem.org/"
 
 #: ../../index.rst:21
 #: 87760f96c7bd4cd1aff89bdac62d911e
 msgid "These docs are in British English - if you want to help translate them into other languages please get in touch:"
 msgstr ""
+"Dokumentasjonen er innledningsvis kun på britisk engelsk - hvis du vil bistå "
+"oversettelsen til andre språk kan du ta kontakt:"
 
 #: ../../index.rst:24
 #: 8ce2f511573a4a6d9ec052bd561d2977
 msgid "`@_OpenREM <https://twitter.com/_OpenREM>`_"
-msgstr ""
+msgstr "`@_OpenREM <https://twitter.com/_OpenREM>`_"
 
 #: ../../index.rst:25
 #: 3d15c780c9924b028ad0627ba22b8a27
 msgid "`Bitbucket <https://bitbucket.org/openrem/openrem/issues/855/add-other-languages-as-people-volunteer>`_"
 msgstr ""
+"`Bitbucket <https://bitbucket.org/openrem/openrem/issues/855/add-other-"
+"languages-as-people-volunteer>`_"
 
 #: ../../index.rst:26
 #: 26ac0cbc557f4697be9f71bf3f9f47da
 msgid "`Google Groups <mailto:openrem@googlegroups.com>`_"
-msgstr ""
+msgstr "`Google-gruppe <mailto:openrem@googlegroups.com>`_"
 
 #: ../../index.rst:28
 #: 2ece7de519c24c6f9e34a57ee3fff4e3
 msgid "Contents:"
-msgstr ""
+msgstr "Innhold:"
 
 #: ../../index.rst:48
 #: 49acea10123f48d7873e358a44f4c563
 msgid "Indices and tables"
-msgstr ""
+msgstr "Innholdsfortegnelse og tabeller"
 
 #: ../../index.rst:50
 #: f7668c793c6c42e589429594c0ffadc6
 msgid ":ref:`genindex`"
-msgstr ""
+msgstr ":ref:`genindex`"
 
 #: ../../index.rst:51
 #: e0ab7393864140d9a03e4abd18d23252
 msgid ":ref:`modindex`"
-msgstr ""
+msgstr ":ref:`modindex`"
 
 #: ../../index.rst:52
 #: 880f09f1945a4860b8b34e967611fce8
 msgid ":ref:`search`"
-msgstr ""
+msgstr ":ref:`search`"
