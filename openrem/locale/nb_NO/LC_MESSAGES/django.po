@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 22:08+0100\n"
-"PO-Revision-Date: 2020-09-27 14:23+0000\n"
-"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
+"PO-Revision-Date: 2020-09-27 14:30+0000\n"
+"Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/openrem/"
 "web-interface/nb_NO/>\n"
 "Language: nb_NO\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #. Translators: CT xlsx export progress
 #: remapp/exports/ct_export.py:160
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid ""
 "Writing study {row} of {numrows} to All data sheet and individual protocol "
 "sheets"
