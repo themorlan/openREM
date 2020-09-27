@@ -172,10 +172,3 @@ msgstr ""
 msgid "Changing this will mean some OpenREM functions will fail"
 msgstr ""
 
-#~ msgid ""
-#~ "The ``EMAIL_USE_TLS`` and ``EMAIL_USE_TLS`` "
-#~ "options should be configured to match"
-#~ " the encryption requirements of the "
-#~ "e-mail server."
-#~ msgstr ""
-

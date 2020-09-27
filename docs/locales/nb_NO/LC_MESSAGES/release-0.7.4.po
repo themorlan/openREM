@@ -1,0 +1,151 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../release-0.7.4.rst:3 c14d5330180d46a6b0ba8c2994d0cb9d
+msgid "OpenREM Release Notes version 0.7.4"
+msgstr ""
+
+#: ../../release-0.7.4.rst:7 3d841a05425543c191d28c969047d922
+msgid "Headline changes"
+msgstr ""
+
+#: ../../release-0.7.4.rst:9 81a5dea3738b4d4585d2b4dd9534304f
+msgid ""
+"Imports: DX images now import with multiple filters that are MultiValue "
+"as well as comma separated"
+msgstr ""
+
+#: ../../release-0.7.4.rst:10 e6d2117e93ee4fc68b1c6a8c82f24b1d
+msgid ""
+"Exports: DX data now correctly exports to csv and xlsx if studies include"
+" multiple filters (eg Cu+Al)"
+msgstr ""
+
+#: ../../release-0.7.4.rst:11 c711cf72232843d5bfdab4db0845f919
+msgid ""
+"Install: New release of dependency django-filter breaks OpenREM. Pegged "
+"at previous version for now"
+msgstr ""
+
+#: ../../release-0.7.4.rst:15 8367b2e18dfe44ed9793659c474c8821
+msgid "Upgrading an OpenREM server with no internet access"
+msgstr ""
+
+#: ../../release-0.7.4.rst:17 ../../release-0.7.4.rst:27
+#: 939d4c6d0d064ffeb6fbda7cdd1426a4 cc8af422b29148a7a635aa8cba3f5b28
+msgid ""
+"Follow the instructions to :doc:`release-0.7.0` and to "
+":doc:`release-0.7.3` first."
+msgstr ""
+
+#: ../../release-0.7.4.rst:19 d78d1c0985f446d09cd9236d2695a475
+msgid ""
+"Then use the instructions found at :doc:`upgrade-offline` again, but this"
+" time change the pip commands from ``openrem==0.7.1`` to "
+"``openrem==0.7.4``."
+msgstr ""
+
+#: ../../release-0.7.4.rst:25 babb174adddd4ab4a1f69c90385f5e65
+msgid "Upgrading from 0.6 series"
+msgstr ""
+
+#: ../../release-0.7.4.rst:29 74c0283cb4254bf5be5e943a4097d817
+msgid "Finally, return to these instructions to upgrade to 0.7.4."
+msgstr ""
+
+#: ../../release-0.7.4.rst:34 c1dfaf6beb87410482e87254bf2f51ba
+msgid "Upgrading from version 0.7.1"
+msgstr ""
+
+#: ../../release-0.7.4.rst:36 d6bc03f8623c44a18735b355b2a81b0f
+msgid ""
+"Follow the instructions to :doc:`release-0.7.3` first, then return to "
+"these instructions to upgrade to 0.7.4."
+msgstr ""
+
+#: ../../release-0.7.4.rst:41 cc0bb94f8ecd4237a6c104bf09f9e5b6
+msgid "Upgrading from version 0.7.3"
+msgstr ""
+
+#: ../../release-0.7.4.rst:43 54aa8bc8d52d44fc873833e034682cb2
+msgid "Back up your database"
+msgstr ""
+
+#: ../../release-0.7.4.rst:45 52c59d7413384fa1947076b455f5abf3
+msgid "For PostgreSQL you can refer to :ref:`backup-psql-db`"
+msgstr ""
+
+#: ../../release-0.7.4.rst:46 2eed090774be4281afef1e104f8ae5b4
+msgid ""
+"For a non-production SQLite3 database, simply make a copy of the database"
+" file"
+msgstr ""
+
+#: ../../release-0.7.4.rst:48 f7eada33d64d4848b90159543b896bb2
+msgid "Stop any Celery workers"
+msgstr ""
+
+#: ../../release-0.7.4.rst:50 395bebd496da4924b547388cac1bead2
+msgid "If you are using a virtualenv, activate it"
+msgstr ""
+
+#: ../../release-0.7.4.rst:52 54ef1da23a1b43e1a21a909f4f88b2ff
+msgid "Install the new version of OpenREM:"
+msgstr ""
+
+#: ../../release-0.7.4.rst:58 6527614570334c5594f9901ecee6048e
+msgid "In a shell/command window, move into the openrem folder:"
+msgstr ""
+
+#: ../../release-0.7.4.rst:60 031542690d60451b9af9872e656ea49c
+msgid "Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``"
+msgstr ""
+
+#: ../../release-0.7.4.rst:61 6011a326e368479db01cdc740fb86754
+msgid "Other linux: ``/usr/lib/python2.7/site-packages/openrem/``"
+msgstr ""
+
+#: ../../release-0.7.4.rst:62 4d59490143914d3f8d6bd5406585bf7c
+msgid "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/``"
+msgstr ""
+
+#: ../../release-0.7.4.rst:63 4cb2de025b7845c6ad2c745deaf70654
+msgid "Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\``"
+msgstr ""
+
+#: ../../release-0.7.4.rst:64 3ee40a510aaf46bfbe87a59b8dea2ef0
+msgid "Windows virtualenv: ``virtualenvfolder\\Lib\\site-packages\\openrem\\``"
+msgstr ""
+
+#: ../../release-0.7.4.rst:67 3389b12884b44259b19ddc453ec5fabe
+msgid "Check for any migrations"
+msgstr ""
+
+#: ../../release-0.7.4.rst:73 788404591e984c1a9360a7f9a53d47bd
+msgid "The expected response should is: ``No changes detected in app 'remapp'``"
+msgstr ""
+
+#: ../../release-0.7.4.rst:76 9266b7c3c7fe4a4299ed30ab51d7c163
+msgid "Restart all the services"
+msgstr ""
+
+#: ../../release-0.7.4.rst:78 b4cf808593f247dd839cb0ad6d8143ef
+msgid "Follow the guide at :doc:`startservices`."
+msgstr ""
+

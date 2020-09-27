@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 00:23+0100\n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,10 +17,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: ../../configuration.rst:3 6bd6be2f356444998bc1085cb2b39efc
-msgid "Configuration and administration"
+#: ../../code.rst:2 1f700eab0d4e42d9bcf861e8d08dae33
+msgid "Developers"
 msgstr ""
 
-#~ msgid "See also: ``local_settings.py`` :ref:`localsettingsconfig`"
-#~ msgstr ""
+#: ../../code.rst:4 bcdae2ab293f48759724fcbef08b631d
+msgid "Contents:"
+msgstr ""
+
+#: ../../code.rst:27 8034851c4137492eb3251a468d4412e6
+msgid "Indices and tables"
+msgstr ""
+
+#: ../../code.rst:29 f353757d9e564d6584a3930262822cea
+msgid ":ref:`genindex`"
+msgstr ""
+
+#: ../../code.rst:30 4078ff9a843b40d2bd992fa52b275a8f
+msgid ":ref:`modindex`"
+msgstr ""
+
+#: ../../code.rst:31 f6a30af098874d889693bd2e33e5e45a
+msgid ":ref:`search`"
+msgstr ""
 

@@ -1,0 +1,440 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../startservices.rst:3 74ff8d9693f84fbba9fb6219179da700
+msgid "Start all the services"
+msgstr ""
+
+#: ../../startservices.rst:6 940b47c6c6b840b4a065026bcdced169
+msgid "Test web server"
+msgstr ""
+
+#: ../../startservices.rst:8 ca3f3f46e2594dca85eb998636322d09
+msgid "In a shell/command window, move into the openrem folder:"
+msgstr ""
+
+#: ../../startservices.rst:10 ../../startservices.rst:86
+#: ../../startservices.rst:143 ../../startservices.rst:188
+#: 6adf3181e82e4d12af444229de3bb236 96551eb44af940fb87313a19e845c379
+#: b8c84633127847a185d235c6c67814ac e54df91f8bc44e89915133dc5d6c6ef0
+msgid "Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``"
+msgstr ""
+
+#: ../../startservices.rst:11 ../../startservices.rst:87
+#: ../../startservices.rst:144 ../../startservices.rst:189
+#: 2b2cae32b67943df8ca013507a927492 2bbed5e94813480dbef6fe1a8562411d
+#: 2bddfedf7d1d4216946d3324c97ca18d 6f9505fe1cac4979a0939b60d0bedde1
+msgid "Other linux: ``/usr/lib/python2.7/site-packages/openrem/``"
+msgstr ""
+
+#: ../../startservices.rst:12 ../../startservices.rst:88
+#: ../../startservices.rst:145 ../../startservices.rst:190
+#: 0bcb1f402b5e4bcab8392a9fabfc925b 80012faa31f64c488e1335f998b35598
+#: 8ce4e4c346f84c7fb41665a6889c50e1 9630ae318afb4436b274c6c967918be3
+msgid ""
+"Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-"
+"packages/openrem/`` (remember to activate the virtualenv)"
+msgstr ""
+
+#: ../../startservices.rst:13 ../../startservices.rst:89
+#: ../../startservices.rst:146 ../../startservices.rst:191
+#: 40ada65b2ed34d1585e349ce266ad2ba 40d46bca4254440e863e850a63c4b4ee
+#: ae4b9fd54127467db39756c89faa45de b08a1a5726cc43c48a2635a2caa9edfa
+msgid "Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\``"
+msgstr ""
+
+#: ../../startservices.rst:14 ../../startservices.rst:90
+#: ../../startservices.rst:147 ../../startservices.rst:192
+#: 51c0cdb90db2466fa6b4fefaa3866b4b 67035129bfe34014b1c4320f2d715da9
+#: d2694997a7ce409f954d91c7612639de ffd532f6e7bb42d0922b7439b721b27f
+msgid ""
+"Windows virtualenv: ``virtualenvfolder\\Lib\\site-packages\\openrem\\`` "
+"(remember to activate the virtualenv)"
+msgstr ""
+
+#: ../../startservices.rst:17 27d307a69ff74d58800f01acefcbeedf
+msgid "Web access on OpenREM server only"
+msgstr ""
+
+#: ../../startservices.rst:19 d3e9b80f63c647b689696e1985f0bed7
+msgid "Run the built in web server:"
+msgstr ""
+
+#: ../../startservices.rst:25 c332367d1b00456fab0e7f988e86a21a
+msgid ""
+"In a web browser on the same computer, go to http://localhost:8000/ - you"
+" should now see the message about creating users. For full functionality "
+"start the `Celery task queue`_ before moving on to `Configure the "
+"settings`_."
+msgstr ""
+
+#: ../../startservices.rst:29 b0300961a29a469a87e9fc128855f553
+msgid "Web access on other computers"
+msgstr ""
+
+#: ../../startservices.rst:31 7186c286fee544f684aa4afcb73f2605
+msgid ""
+"The built-in webserver only provides a service on the computer OpenREM is"
+" installed on by default (it's only there really for testing). To view "
+"the OpenREM interface on another computer, you need to modify the "
+"``runserver`` command:"
+msgstr ""
+
+#: ../../startservices.rst:38 211b5976684a4742a79285987c5d2bfe
+msgid ""
+"This will enable the web service to be available from other computers on "
+"the network. If your server has several network cards and you want to "
+"restrict it to one, then you can use a real address rather than "
+"``0.0.0.0``. Likewise you can specify the port (here it is ``8000``)."
+msgstr ""
+
+#: ../../startservices.rst:42 5cfa4c8f579b4b7cbf8760b107c08544
+msgid ""
+"In a web browser on a different computer on the same network, go to "
+"http://192.168.1.10:8000/ (**changing the IP address** to the one you are"
+" running the server on) and you should see the OpenREM interface and the "
+"message about creating users. For full functionality start the `Celery "
+"task queue`_ before moving on to `Configure the settings`_."
+msgstr ""
+
+#: ../../startservices.rst:48 e68c9162eb66459ca0d91219bb167e81
+msgid ""
+"Why are we using the ``--insecure`` option? With ``DEBUG`` mode set to "
+"``True`` the test web server would serve up the static files. In this "
+"release, ``DEBUG`` mode is set to ``False``, which prevents the test web "
+"server serving those files. The ``--insecure`` option allows them to be "
+"served again."
+msgstr ""
+
+#: ../../startservices.rst:56 130d7c96623f497396f5941cc0d911d9
+msgid "Celery task queue"
+msgstr ""
+
+#: ../../startservices.rst:58 265b78ade192450597df8437cb4a657c
+msgid ""
+"Celery will have been automatically installed with OpenREM, and along "
+"with RabbitMQ allows for asynchronous task processing for imports, "
+"exports and DICOM networking tasks."
+msgstr ""
+
+#: ../../startservices.rst:63 3014b397db534f99867f2e8df06d954b
+msgid ""
+"Celery needs to be able to write to the place where the Celery logs and "
+"pid file are to be stored, so make sure:"
+msgstr ""
+
+#: ../../startservices.rst:65 e180b50e8b9140c4b4dbb09c5f446518
+msgid ""
+"the folder exists (the suggestion below is to create a folder in the "
+"``MEDIA_ROOT`` location)"
+msgstr ""
+
+#: ../../startservices.rst:66 75b351ce91c34d52b3657f81ee84aeeb
+msgid "the user that starts Celery can write to that folder"
+msgstr ""
+
+#: ../../startservices.rst:68 03db22bb552046a19ab646a15979e138
+msgid ""
+"You can put the folder wherever you like, for example you might like to "
+"create a ``/var/log/openrem/`` folder on a linux system."
+msgstr ""
+
+#: ../../startservices.rst:71 e15149c8bac74a4cb6fa4d2308cf6537
+msgid ""
+"If you are using the built-in `Test web server`_ then Celery and the "
+"webserver will be running as your user. If you are running a production "
+"webserver, such as Apache or nginx on linux, then the user that runs "
+"those daemons will need to be able to write to the ``MEDIA_ROOT`` and the"
+" Celery log files folder. In this case, you need to change the ownership "
+"of the folders and change to the right user before running Celery. On "
+"Ubuntu:"
+msgstr ""
+
+#: ../../startservices.rst:82 6cc77f87ecf84197bbf9289939f9938e
+msgid "Now start celery..."
+msgstr ""
+
+#: ../../startservices.rst:84 ../../startservices.rst:141
+#: 052c672bc9d5484a87f16d7d713b2855 f9a8b3466cf44c9ca892cc2ef293263e
+msgid "Move into the openrem folder:"
+msgstr ""
+
+#: ../../startservices.rst:92 ../../startservices.rst:155
+#: 371170be205a4c428800f75d08ff760d d6485d3d37264f11b9413fe2fd3848d4
+msgid "Linux - ``\\`` is the line continuation character:"
+msgstr ""
+
+#: ../../startservices.rst:99 9459516383e0484185608a4c7d070fc3
+msgid ""
+"Windows - ``celery multi`` doesn't work on Windows, and ``^`` is the "
+"continuation character:"
+msgstr ""
+
+#: ../../startservices.rst:109 7ac80678e10d49f19e68c8034ef281be
+msgid "Celery concurrency"
+msgstr ""
+
+#: ../../startservices.rst:111 44d36f541ff242af891ac0fc2a0f4b49
+msgid ""
+"Set the number of workers (concurrency, ``-c``) according to how many "
+"processor cores you have available. The more you have, the more processes"
+" (imports, exports, query-retrieve operations etc) can take place "
+"simultaneously. However, each extra worker uses extra memory and if you "
+"have too many they will be competing for CPU resources too."
+msgstr ""
+
+#: ../../startservices.rst:115 4340ebaacef44a9fac5e5130f5cc5993
+msgid "Problems with Celery 4 on Windows"
+msgstr ""
+
+#: ../../startservices.rst:117 b7e451336bff455c8071d44fef6f9390
+msgid ""
+"Full support for Celery on Windows was dropped with version 4 due to lack"
+" of Windows based developers. Therefore for Windows the instructions fix "
+"Celery at version ``3.1.25`` to retain full functionality."
+msgstr ""
+
+#: ../../startservices.rst:120 117cc13e6bbd4cd391fb91ade5ace75b
+msgid "To stop the celery queues in Linux:"
+msgstr ""
+
+#: ../../startservices.rst:126 cb20b3cde7f747b19085e6331e63c337
+msgid "For Windows, just press ``Ctrl+c``"
+msgstr ""
+
+#: ../../startservices.rst:128 fab8d03cfe704dac8bee7a6ce40ce6b2
+msgid ""
+"You will need to do this twice if there are running tasks you wish to "
+"kill."
+msgstr ""
+
+#: ../../startservices.rst:130 ../../startservices.rst:169
+#: bc4cb021c2c345f28b6793d4b3335222 f08d8a6f1422411b92c8fbcef80b9ec1
+msgid "For production use, see `Daemonising Celery`_ below."
+msgstr ""
+
+#: ../../startservices.rst:135 05dc4ff589934cef96893e304f969164
+msgid "Celery task management: Flower"
+msgstr ""
+
+#: ../../startservices.rst:137 f935fd7ec7b1470dbc638452957b1bba
+msgid ""
+"Flower will have been automatically installed with OpenREM and enables "
+"monitoring and management of Celery tasks."
+msgstr ""
+
+#: ../../startservices.rst:139 a28154528bac440ba2914b98fba61ed5
+msgid ""
+"You should start Flower with the same user that you started Celery with, "
+"and put the log file in the same place too."
+msgstr ""
+
+#: ../../startservices.rst:149 299e8e4803e44ca784e3fdb088a94f1d
+msgid ""
+"If you need to change the default port from 5555 then you need to make "
+"the same change in ``openremproject\\local_settings.py`` to add/modify "
+"the line ``FLOWER_PORT = 5555``"
+msgstr ""
+
+#: ../../startservices.rst:152 3085c0a7170e4d12862f589865fccee9
+msgid ""
+"If you wish to be able to use the Flower management interface "
+"independently of OpenREM, then omit the ``--address`` part of the "
+"command. Flower will then be available from any PC on the network at "
+"http://yourdoseservernameorIP:5555/"
+msgstr ""
+
+#: ../../startservices.rst:162 a7e91ecb71b442da992636afb9d3cc8d
+msgid "Windows - ``^`` is the line continuation character:"
+msgstr ""
+
+#: ../../startservices.rst:174 00fe2410adcd4defada2f234ba77ce81
+msgid "Celery periodic tasks: beat"
+msgstr ""
+
+#: ../../startservices.rst:178 fd0c8d290a9840c3b65fb83d829cd3da
+msgid ""
+"Celery beat is only required if you are using the :ref:`nativestore`. "
+"Please read the warnings there before deciding if you need to run Celery "
+"beat. At the current time, using a third party DICOM store service is "
+"recommended for most users. See the :ref:`configure_third_party_DICOM` "
+"documentation for more details"
+msgstr ""
+
+#: ../../startservices.rst:182 92399b80351844a885574662fd4c8aed
+msgid ""
+"Celery beat is a scheduler. If it is running, then every 60 seconds a "
+"task is run to check if any of the DICOM Store SCP nodes are set to "
+"``keep_alive``, and if they are, it tries to verify they are running with"
+" a DICOM echo. If this is not successful, then the Store SCP is started."
+msgstr ""
+
+#: ../../startservices.rst:186 7549dd03f4234f3bb05b6bc9747c4ef4
+msgid "To run celery beat, open a new shell and move into the openrem folder:"
+msgstr ""
+
+#: ../../startservices.rst:194 676f2c92e0104f4b8e84183e7a6ec1f7
+msgid "Linux::"
+msgstr ""
+
+#: ../../startservices.rst:200 f971c193621341c0b074163bf1ee1fa3
+msgid "Windows::"
+msgstr ""
+
+#: ../../startservices.rst:206 f8d74e9aa9394c81b1d0ce1711f3db02
+msgid "For production use, see `Daemonising Celery`_ below"
+msgstr ""
+
+#: ../../startservices.rst:208 891bd1b5f21a43c080c0e421f532ae4f
+msgid ""
+"As with starting the Celery workers, the folder that the pid, log and for"
+" beat, schedule files are to be written **must already exist** and the "
+"user starting Celery beat must be able write to that folder."
+msgstr ""
+
+#: ../../startservices.rst:211 27d149d046314c64859303015b6e5ac3
+msgid "To stop Celery beat, just press ``Ctrl+c``"
+msgstr ""
+
+#: ../../startservices.rst:216 49d0993924b94093a898b353472366f4
+msgid "Configure the settings"
+msgstr ""
+
+#: ../../startservices.rst:219 7571552871b643bcbe5d5530198d4b65
+msgid ""
+"Follow the link presented on the front page to get to the user and group "
+"administration."
+msgstr ""
+
+#: ../../startservices.rst:229 8992b93d1ebc4e59908a7fa9b46a4f3f
+msgid ""
+"After the first users are configured, this link will no longer be "
+"presented and instead you can go to ``Config -> Users``."
+msgstr ""
+
+#: ../../startservices.rst:231 a2e4a8f0b7234849bb97f0d5a78adf68
+msgid ""
+"You will need the superuser username and password you created just after "
+"creating the database. The groups are"
+msgstr ""
+
+#: ../../startservices.rst:233 68aa8d2b6dce43aea7b00c12e9b52f92
+msgid "``viewgroup`` can browse the data only"
+msgstr ""
+
+#: ../../startservices.rst:234 3dd7d8d3da49443a97a06bc7e92e0cc2
+msgid ""
+"``importsizegroup`` can use the csv import facility to add patient height"
+" and weight information"
+msgstr ""
+
+#: ../../startservices.rst:235 e461f67a0168413bbafd9019cceff66a
+msgid ""
+"``importqrgroup`` can use the DICOM query-retrieve facility to pull in "
+"studies, as long as they are pre-configured"
+msgstr ""
+
+#: ../../startservices.rst:236 6b92b9e40e21434789b678971bde3a89
+msgid "``exportgroup`` can view and export data to a spreadsheet"
+msgstr ""
+
+#: ../../startservices.rst:237 893593c0f5904573ae5a5429c5a12e7e
+msgid ""
+"``pidgroup`` can search using patient names and IDs depending on "
+"settings, and export with patient names and IDs if they are also a member"
+" of the ``exportgroup``"
+msgstr ""
+
+#: ../../startservices.rst:239 2599a74df2b74e2b9c63bee0bd0f4cb0
+msgid ""
+"``admingroup`` can delete studies, configure DICOM Store/QR settings, "
+"configure DICOM keep or delete settings, configure patient ID settings, "
+"and abort and delete patient size import jobs. *Members of the admingroup"
+" no longer inherit the other groups permissions.*"
+msgstr ""
+
+#: ../../startservices.rst:247 6d46553c1de4484fb53205e0fe4d5da9
+msgid ""
+"In addition to adding users to these groups, you may like to grant a "
+"second user ``superuser`` and ``staff`` status so that there are at least"
+" two people who can manage the users"
+msgstr ""
+
+#: ../../startservices.rst:249 5ce9a5ce7e654de3a590c69fd48e48e4
+msgid "Return to the OpenREM interface (click on ``View site`` at the top right)"
+msgstr ""
+
+#: ../../startservices.rst:255 d6cbe5f6be6f4620845ecff5a357853c
+msgid ""
+"Follow the link to see more information about how you want OpenREM to "
+"identify non-patient exposures, such as QA. See "
+":doc:`i_not_patient_indicator`."
+msgstr ""
+
+#: ../../startservices.rst:257 77157175004b4098abe0e979f6add15b
+msgid ""
+"Go to ``Config -> DICOM object delete settings`` and configure "
+"appropriately (see :doc:`i_deletesettings`)"
+msgstr ""
+
+#: ../../startservices.rst:258 913a21dfdfd546d892becdd288f4dccc
+msgid ""
+"Go to ``Config -> Patient ID settings`` and configure appropriately (see "
+":doc:`patientid`)"
+msgstr ""
+
+#: ../../startservices.rst:259 5f5a9ecf30b0407484a4b7737d2522e7
+msgid ""
+"If you want to use OpenREM as a DICOM store, or to use OpenREM to query "
+"remote systems, go to ``Config -> Dicom network configuration``. For more"
+" information go to :doc:`import`."
+msgstr ""
+
+#: ../../startservices.rst:261 3287e6f28f9f42a0829fa3ff291c0a13
+msgid ""
+"With data in the system, you will want to go to ``Config -> View and edit"
+" display names`` and customise the display names. An established system "
+"will have several entries for each device, from each time the software "
+"version, station name or other elements changes. See "
+":doc:`i_displaynames` for more information"
+msgstr ""
+
+#: ../../startservices.rst:268 63a5ca5d7b724424b28df21ca6d44818
+msgid "Start using it - add some data!"
+msgstr ""
+
+#: ../../startservices.rst:270 338a91f5ffa74feab79dc90b01279c76
+msgid "See :doc:`import`"
+msgstr ""
+
+#: ../../startservices.rst:274 704be51f8c7645a68541fa6b02aacd6b
+msgid "Further instructions"
+msgstr ""
+
+#: ../../startservices.rst:277 842497994f5d4c93a87cd27b01192fd5
+msgid "Daemonising Celery"
+msgstr ""
+
+#: ../../startservices.rst:279 de9907a9c28d4e60ba5c0e0c74ba887e
+msgid ""
+"In a production environment, Celery will need to start automatically and "
+"not depend on a particular user being logged in. Therefore, much like the"
+" webserver, it will need to be daemonised."
+msgstr ""
+

@@ -1,0 +1,53 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../conquest-scripts-windows.rst:2 5ef37c18f3494cd782486d97d77906c6
+msgid "Creating batch scripts on windows"
+msgstr ""
+
+#: ../../conquest-scripts-windows.rst:4 3cc4f68ce98e47828104d1e2e4a88c3d
+msgid ""
+"Create and save a bash script for each of RDSR, mammo, DX and Philips CT "
+"dose images, as required. They should have content something like the "
+"following."
+msgstr ""
+
+#: ../../conquest-scripts-windows.rst:7 c8cfd31d896b4f08abf83cfe2085c888
+msgid ""
+"These scripts assume there is no virtualenv in use. If you are using one,"
+" simply refer to the python executable and OpenREM script in your "
+"virtualenv rather than the system wide version."
+msgstr ""
+
+#: ../../conquest-scripts-windows.rst:10 e1b1abcbc1394d4ca76349864aaebc92
+msgid "Radiation Dose Structured Reports"
+msgstr ""
+
+#: ../../conquest-scripts-windows.rst:18 b6d919cb2d3043bda4b33707de8bc60e
+msgid "Mammography images"
+msgstr ""
+
+#: ../../conquest-scripts-windows.rst:26 257b65c99e7f41ae93b19201981dedeb
+msgid "Radiography images (DX, and CR that might be DX)"
+msgstr ""
+
+#: ../../conquest-scripts-windows.rst:34 f87be48dfefb45e2a8d36f247809e607
+msgid "Philips CT dose info images for Philips CT systems with no RDSR"
+msgstr ""
+
