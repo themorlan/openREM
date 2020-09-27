@@ -1,0 +1,96 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../i_deletesettings.rst:3 4edff4da6af64d54b9dc74ec8fdcf8c4
+msgid "Delete objects configuration"
+msgstr ""
+
+#: ../../i_deletesettings.rst:5 3ec34e27deff4caeaae3fbe4b1b86fb8
+msgid ""
+"OpenREM is able to automatically delete DICOM objects if they can't be "
+"used by OpenREM or if they have been processed. This has the following "
+"advantages:"
+msgstr ""
+
+#: ../../i_deletesettings.rst:8 84478597db3c4756bbacd309c4f25f57
+msgid "The server doesn't need to have much storage space"
+msgstr ""
+
+#: ../../i_deletesettings.rst:9 81b61864573b4831997cacb9bda3f602
+msgid ""
+"It can help with information governance if the database is set to not "
+"store patient identifiable data (see :doc:`patientid`)"
+msgstr ""
+
+#: ../../i_deletesettings.rst:13 199a151d0438435ea4511d8e0803361d
+msgid ""
+"If OpenREM is set to delete objects and you pass a local file to OpenREM "
+"using the command line, the source file will be deleted (as long as the "
+"filesystem permissions allow)."
+msgstr ""
+
+#: ../../i_deletesettings.rst:18 7f7d95a0878a45949b9bd56caecd8d02
+msgid "Configure what is deleted"
+msgstr ""
+
+#: ../../i_deletesettings.rst:25 b1bd691ab6af4e6eb9b91bd49a9ffd14
+msgid "The ``Config`` menu"
+msgstr ""
+
+#: ../../i_deletesettings.rst:27 f3713b7bfbc74cd2b2cf3c965ae7f0f4
+msgid "Use the ``Config`` menu and select ``DICOM object deletion``:"
+msgstr ""
+
+#: ../../i_deletesettings.rst:29 33b45bcaa3d64ac4a0c24f2683b99d44
+msgid "This will open the configuration page:"
+msgstr ""
+
+#: ../../i_deletesettings.rst:36 341bf556f4ea4bc7b88105f021e80fa2
+msgid "Modify DICOM object deletion policy"
+msgstr ""
+
+#: ../../i_deletesettings.rst:42 c94640adebf0424082c67ca05bb454d4
+msgid ""
+"The initial settings are to not delete anything. However, you are likely "
+"to want to delete objects that don't match any import filters, and also "
+"to delete images such as mammo, DX and Philips CT, as these will take up "
+"space much more quickly than the radiation dose structured reports."
+msgstr ""
+
+#: ../../i_deletesettings.rst:48 ab7624d5cd714f2d895aca9c2fb76415
+msgid "Reviewing the settings"
+msgstr ""
+
+#: ../../i_deletesettings.rst:50 43802d6f15bb40b9a72a8cbfcb555a8b
+msgid ""
+"When you have set your preferences, you will be redirected to the DICOM "
+"network configuration page, where at the bottom you can review the "
+"current settings:"
+msgstr ""
+
+#: ../../i_deletesettings.rst:57 4060e083c52745c48a8c273b491cec93
+msgid "Deletion policies can be reviewed on the DICOM network configuration page"
+msgstr ""
+
+#: ../../i_deletesettings.rst:59 9be42458185642e3ac958788b5494e32
+msgid ""
+"More information about the DICOM network configuration can be found on "
+"the :ref:`directfrommodalities` page."
+msgstr ""
+

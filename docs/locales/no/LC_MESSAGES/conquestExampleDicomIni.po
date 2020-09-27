@@ -1,0 +1,35 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../conquestExampleDicomIni.rst:2 ddb4ac99f5214e2ab1f30afd9825aab4
+msgid "Example Windows Conquest dicom.ini file"
+msgstr ""
+
+#: ../../conquestExampleDicomIni.rst:4 65ec3f3fac7d4d81b2331b1c2085fb68
+msgid ""
+"Below is an example ``dicom.ini`` file, including comments describing the"
+" function of some sections. The file calls various lua scripts - see the "
+"Conquest import configuration document for an example - "
+":doc:`conquestImportConfig`."
+msgstr ""
+
+#: ../../conquestExampleDicomIni.rst:7 92e1f691d88146a48955dbf4b9429c40
+msgid "The example ``dicom.ini`` file::"
+msgstr ""
+
