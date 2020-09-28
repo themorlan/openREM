@@ -395,3 +395,13 @@ ul.CheckboxSelectMultiple {
   margin: 0;
   padding: 0;
 }
+
+ul.RadioSelect {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+td.valign_top {
+  vertical-align: top;
+}
