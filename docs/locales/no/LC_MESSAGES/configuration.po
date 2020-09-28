@@ -21,6 +21,3 @@ msgstr ""
 msgid "Configuration and administration"
 msgstr ""
 
-#~ msgid "See also: ``local_settings.py`` :ref:`localsettingsconfig`"
-#~ msgstr ""
-

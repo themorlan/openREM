@@ -1,0 +1,73 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-26 22:08+0100\n"
+"PO-Revision-Date: 2020-09-27 14:30+0000\n"
+"Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
+"Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/openrem/"
+"web-interface/no/>\n"
+"Language: no\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
+
+#. Translators: CT xlsx export progress
+#: remapp/exports/ct_export.py:160
+#, python-brace-format
+msgid ""
+"Writing study {row} of {numrows} to All data sheet and individual protocol "
+"sheets"
+msgstr ""
+"Skriver studie av {row} av {numrows} til alle datablad og individuelle "
+"protokollblader"
+
+#: remapp/templates/remapp/home-list-modalities.html:7
+#: remapp/templates/remapp/home.html:202
+msgid "System name"
+msgstr "Systemnavn"
+
+#: remapp/templates/remapp/home-list-modalities.html:8
+#: remapp/templates/remapp/home.html:203
+msgid "Total number of studies"
+msgstr "Totalt antall studier"
+
+#: remapp/templates/remapp/home-list-modalities.html:9
+#: remapp/templates/remapp/home.html:204
+msgid "Latest study"
+msgstr "Seneste studie"
+
+#: remapp/templates/remapp/home-list-modalities.html:11
+#: remapp/templates/remapp/home-list-modalities.html:13
+#: remapp/templates/remapp/home.html:206 remapp/templates/remapp/home.html:208
+#, python-format
+msgid "Number in last %(day_delta)s days"
+msgstr "Antall de siste %(day_delta)s dagene"
+
+#: remapp/templates/remapp/home.html:64
+#, python-format
+msgid ""
+"There are %(total_studies)s studies in this database. Page last refreshed on "
+"%(current_time)s."
+msgstr ""
+"Det er %(total_studies)s studier i denne databasen. Side sist oppdatert "
+"%(current_time)s."
+
+#: remapp/templates/remapp/home.html:69
+msgid "Chart plotting on."
+msgstr "Diagramplotting påslått."
+
+#: remapp/templates/remapp/home.html:71
+msgid "Chart plotting off."
+msgstr "Diagramplotting avslått."
+
+#: remapp/templates/remapp/home.html:214
+msgid "Please wait - querying the database"
+msgstr "Vent - utfører spørring til database"

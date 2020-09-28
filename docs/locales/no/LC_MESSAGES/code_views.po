@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 00:23+0100\n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,10 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: ../../configuration.rst:3 6bd6be2f356444998bc1085cb2b39efc
-msgid "Configuration and administration"
+#: ../../code_views.rst:2 726e6453a1864c14bf488afd6fa23e32
+msgid "Views"
 msgstr ""
 
-#~ msgid "See also: ``local_settings.py`` :ref:`localsettingsconfig`"
-#~ msgstr ""
+#: ../../code_views.rst:4 c2735c2b0d0d4f89bf4e6bd76af1a3b5
+msgid "*Will be documented in future release*"
+msgstr ""
 

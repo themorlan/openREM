@@ -1,0 +1,313 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../code_adding_charts.rst:3 7f738ad385c34be78253983e5d0638bf
+msgid "Adding new charts"
+msgstr ""
+
+#: ../../code_adding_charts.rst:5 05b53069c0a846e3bde479656061ff4e
+msgid "To add a new chart several files need to be updated:"
+msgstr ""
+
+#: ../../code_adding_charts.rst:7 45ff64b1611f42c48b461a16b05465a8
+msgid "``models.py``"
+msgstr ""
+
+#: ../../code_adding_charts.rst:8 99a5500dab3d4164a7163430700f7cdb
+msgid "``forms.py``"
+msgstr ""
+
+#: ../../code_adding_charts.rst:9 e5a06604dcf84ee58c20a5f8654dccd0
+msgid "``views.py``"
+msgstr ""
+
+#: ../../code_adding_charts.rst:10 448e8251e99c45c09847cdd81b9bbc70
+msgid "``xxfiltered.html``"
+msgstr ""
+
+#: ../../code_adding_charts.rst:11 cf9d5c9e872044099aed0369c1558a7c
+msgid "``xxChartAjax.js``"
+msgstr ""
+
+#: ../../code_adding_charts.rst:12 431e360f62bf4c6ca5d58acb102a4aac
+msgid "``displaychartoptions.html``"
+msgstr ""
+
+#: ../../code_adding_charts.rst:14 77d95f6f28524debbbb5e7a62bdcd3ed
+msgid "Where xx is one of ``ct``, ``dx``, ``mg`` or ``rf``"
+msgstr ""
+
+#: ../../code_adding_charts.rst:16 af8a138b2c2d4bfba0d90df100c8b690
+msgid "The additions to the files add:"
+msgstr ""
+
+#: ../../code_adding_charts.rst:18 8a97a6c7239046678fe21163025a3055
+msgid ""
+"database fields in the user profile to control whether the new charts are"
+" plotted (``models.py``)"
+msgstr ""
+
+#: ../../code_adding_charts.rst:19 ca3be2279d2e4a1ba539c10d0d7f8241
+msgid ""
+"new options on the chart plotting forms (``forms.py``, "
+"``displaychartoptions.html``)"
+msgstr ""
+
+#: ../../code_adding_charts.rst:20 86f307d06e3a4f759922f21600fee5fb
+msgid ""
+"extra code to calculate the data for the new charts if they are switched "
+"on (``views.py``)"
+msgstr ""
+
+#: ../../code_adding_charts.rst:21 04f767c7ae644c8585104774c68fc261
+msgid ""
+"a section of html and JavaScript to contain the charts "
+"(``xxfiltered.html``)"
+msgstr ""
+
+#: ../../code_adding_charts.rst:22 7655b71ff8244291a67504e5068a5aa4
+msgid ""
+"a section of JavaScript to pass the data calculated by ``views.py`` to "
+"``xxfiltered.html``"
+msgstr ""
+
+#: ../../code_adding_charts.rst:24 ff736ac03a0048a2af06026a53335493
+msgid ""
+"The process is probably best illustrated with an example. What follows is"
+" a description of how to add a new chart that displays study workload for"
+" fluoroscopy, and a pie chart of study description frequency."
+msgstr ""
+
+#: ../../code_adding_charts.rst:30 89b1cd1dfc4045b5b15969eb15fc367c
+msgid "Additions to ``models.py``"
+msgstr ""
+
+#: ../../code_adding_charts.rst:32 0c9196817ea141d08ca64644b24c940e
+msgid ""
+"A field per chart needs to be added to the ``UserProfile`` section in "
+"``models.py`` to control whether the new charts should be plotted. There "
+"is a section of this file that looks like the following:"
+msgstr ""
+
+#: ../../code_adding_charts.rst:54 efa5402debc84b23b0550ac75186971e
+msgid ""
+"Two new lines needs to be added to this section, using appropriate names "
+"such as:"
+msgstr ""
+
+#: ../../code_adding_charts.rst:62 13d281af16eb4d4992da7719503d1e0e
+msgid ""
+"Adding new fields to ``models.py`` requires that a database migration is "
+"carried out to add the fields to the database. This is done via the "
+"command line::"
+msgstr ""
+
+#: ../../code_adding_charts.rst:68 8608eab7477b491dae1921cf5201ca1b
+msgid "The first command should result in a response similar to::"
+msgstr ""
+
+#: ../../code_adding_charts.rst:75 31b954b93ed34e6c8f1529b2efa07af1
+msgid "The second command should result in a response similar to::"
+msgstr ""
+
+#: ../../code_adding_charts.rst:83 97e336265c5840209fd203c59cbe24a8
+msgid "That's the end of the changes required in ``models.py``"
+msgstr ""
+
+#: ../../code_adding_charts.rst:87 647e81e0971d46b9b4345a73efe120e3
+msgid "Additions to ``forms.py``"
+msgstr ""
+
+#: ../../code_adding_charts.rst:89 4b16bac5ebe741e484a603e33ad83248
+msgid ""
+"Two additional lines need to be added to the ``XXChartOptionsForm`` and "
+"``XXChartOptionsDisplayForm`` methods in ``forms.py``, where ``XX`` is "
+"one of ``CT``, ``DX``, ``MG`` or ``RF``."
+msgstr ""
+
+#: ../../code_adding_charts.rst:93 bdc22b2fbff1483aadc5ff0809c7e8bb
+msgid ""
+"For our new charts the following lines needs to be added to both "
+"``RFChartOptionsForm`` and ``RFChartOptionsDisplayForm``:"
+msgstr ""
+
+#: ../../code_adding_charts.rst:101 2a8ec545b6204daf8bb72b3d4980d309
+msgid ""
+"In addition, a new method needs to be added so that the RF chart options "
+"are shown when the user goes to Config -> Chart options:"
+msgstr ""
+
+#: ../../code_adding_charts.rst:110 db7411f4de5c4123a210a995c9b8a1f2
+msgid "That's the end of the changes required in ``forms.py``"
+msgstr ""
+
+#: ../../code_adding_charts.rst:114 6adab3e31520432faa9947872f5cc673
+msgid "Additions to ``views.py``"
+msgstr ""
+
+#: ../../code_adding_charts.rst:116 0890609bd58246f1949cec3fd79df9fe
+msgid "Four methods in this file need to be updated."
+msgstr ""
+
+#: ../../code_adding_charts.rst:120 4323217c00fd464d8d6ec1003559bc65
+msgid "``xx_summary_list_filter`` additions"
+msgstr ""
+
+#: ../../code_adding_charts.rst:122 9c31df5c319d4d3d8e5e6ac85b5de5f5
+msgid ""
+"Some additions need to be made to the ``xx_summary_list_filter`` method "
+"in ``views.py``, where ``xx`` is one of ``ct``, ``dx``, ``mg`` or ``rf``."
+" As we're adding new RF charts, we need to edit "
+"``rf_summary_list_filter``."
+msgstr ""
+
+#: ../../code_adding_charts.rst:126 7c543499ad3642bea254d358b713bc58
+msgid ""
+"A section of this method examines the user's chart plotting preferences. "
+"Code must be added to include the new chart in these checks. An "
+"abbreviated version of the section is shown below."
+msgstr ""
+
+#: ../../code_adding_charts.rst:149 5a452d8dab6f4d03b0fd5bbe16910a73
+msgid ""
+"Two new lines needs to be inserted into the ``if`` and ``else`` sections "
+"for the new chart:"
+msgstr ""
+
+#: ../../code_adding_charts.rst:177 f50626f6765e4b978891754cd17966d7
+msgid "``xx_summary_chart_data`` additions"
+msgstr ""
+
+#: ../../code_adding_charts.rst:179 51b49f1fa1eb4f72b4b8562a560746d0
+msgid ""
+"The ``return_structure`` variable needs the new user_profile fields "
+"adding."
+msgstr ""
+
+#: ../../code_adding_charts.rst:181 ../../code_adding_charts.rst:206
+#: ../../code_adding_charts.rst:265 99a6606a4d524a249989c8cf02230397
+#: b503e1bca732492aba2fefb77edd15da e5cf7cbbd0c546b994c1d8ff7f8a344f
+msgid "Before:"
+msgstr ""
+
+#: ../../code_adding_charts.rst:190 ../../code_adding_charts.rst:213
+#: ../../code_adding_charts.rst:271 84ed952e5b7047c492d227c30fe5eae2
+#: 94c4533a7f444e388c14a18da36c19c1 da724d6975034bfc98dd1bd8a6ef66d4
+msgid "After:"
+msgstr ""
+
+#: ../../code_adding_charts.rst:202 231abba6eea844a289199b085704cf38
+msgid "``xx_plot_calculations`` additions"
+msgstr ""
+
+#: ../../code_adding_charts.rst:204 a828b6e163284672aade0d73154c6be4
+msgid "Two items needs to be added to this method's parameters."
+msgstr ""
+
+#: ../../code_adding_charts.rst:220 3b771825a3bb44ec8cd236797e3e01ec
+msgid ""
+"Our new charts makes use of ``study_events`` (rather than "
+"``acquisition_events`` or ``request_events``). We therefore need to "
+"ensure that ``study_events`` are available if the user has chosen to show"
+" the new chart."
+msgstr ""
+
+#: ../../code_adding_charts.rst:224 e711687071364526a49fce875f170787
+msgid "After additions:"
+msgstr ""
+
+#: ../../code_adding_charts.rst:231 9dc9ed7edf33448d801726190b928258
+msgid ""
+"We now need to add code that will calculate the data for the new charts. "
+"This uses one of the methods in the ``chart_functions.py`` file, located "
+"in the ``interface`` folder of the OpenREM project."
+msgstr ""
+
+#: ../../code_adding_charts.rst:256 a692aecbecab4211b797998f5edbe332
+msgid ""
+"The data in ``return_structure`` will now be available to the browser via"
+" JavaScript, and can be used to populate the charts themselves."
+msgstr ""
+
+#: ../../code_adding_charts.rst:261 c073216f315b4512ad01238e07a6604b
+msgid "``chart_options_view`` additions"
+msgstr ""
+
+#: ../../code_adding_charts.rst:263 b72d1ddef91244fba4fa39dbba8cf21f
+msgid "The RF options form need to be imported"
+msgstr ""
+
+#: ../../code_adding_charts.rst:278 ac1d43c05cca462d82e653ff088ad56d
+msgid "The RF form items need to be included"
+msgstr ""
+
+#: ../../code_adding_charts.rst:280 eb1ff296fc72408e826ef08d52bf38a8
+msgid "Before (abbreviated):"
+msgstr ""
+
+#: ../../code_adding_charts.rst:346 181fe7f14c6843e49b4d2497e7d34d90
+msgid "After (abbreviated):"
+msgstr ""
+
+#: ../../code_adding_charts.rst:422 86d2cab73ffb460696e88e43205d350d
+msgid "Additions to ``displaychartoptions.html``"
+msgstr ""
+
+#: ../../code_adding_charts.rst:424 57848cc0c14942878d448697c4bab90f
+msgid "A new div needs to be added for the fluoroscopy chart options:"
+msgstr ""
+
+#: ../../code_adding_charts.rst:441 fc6148a4a0524f749c866ae2337de0e4
+msgid "Additions to ``rffiltered.html``"
+msgstr ""
+
+#: ../../code_adding_charts.rst:443 edf447f301cc4a70aa1c81f243f9a881
+msgid ""
+"A section of this file sets a JavaScript variable per chart. Two new ones"
+" needs to be added."
+msgstr ""
+
+#: ../../code_adding_charts.rst:446 5a4034fb3c5341c1983ea26c679249c1
+msgid "Additions:"
+msgstr ""
+
+#: ../../code_adding_charts.rst:466 858af976f092498ba2b196af5caf989c
+msgid ""
+"A second section of code needs to be added to ``rffiltered.html`` to "
+"include a DIV for the new charts:"
+msgstr ""
+
+#: ../../code_adding_charts.rst:534 a710164ae0204386b6300c44e936c577
+msgid "Additions to ``rfChartAjax.js``"
+msgstr ""
+
+#: ../../code_adding_charts.rst:536 71d40347c1544375bcb45bd1f3f10294
+msgid ""
+"This file needs to update the skeleton chart with the data that has been "
+"provided by ``views.py``. It does this via the appropriate routines "
+"contained in the ``chartUpdateData.js`` file. In this case, "
+"``updateWorkloadChart`` and ``updateFrequencyChart``:"
+msgstr ""
+
+#: ../../code_adding_charts.rst:553 b27d7b7620364cb39d4ea1fcebc1215a
+msgid ""
+"That's it - you should now have two new charts visible in the fluoroscopy"
+" filtered page."
+msgstr ""
+

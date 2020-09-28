@@ -3879,6 +3879,3 @@ msgstr ""
 msgid "Initial version uploaded to bitbucket.org"
 msgstr ""
 
-#~ msgid ":issue:`841`  Code quality: format code with black"
-#~ msgstr ""
-

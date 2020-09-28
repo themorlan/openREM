@@ -153,21 +153,3 @@ msgid ""
 "backups."
 msgstr ""
 
-#~ msgid ""
-#~ "You will need ``python``, ``pip``, "
-#~ "``git`` and ``virtualenv`` installed - "
-#~ "see the links on the :doc:`install-"
-#~ "prep` docs for the latter, but you"
-#~ " might try ``pip install virtualenv``."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Rename and configure "
-#~ "``openremproject/local_settings.py.example`` and "
-#~ "``openremproject/wsgi.py.example`` as per the "
-#~ ":doc:`install` docs."
-#~ msgstr ""
-
-#~ msgid "Create a database following the same :doc:`install` instructions."
-#~ msgstr ""
-
