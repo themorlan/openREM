@@ -1,0 +1,45 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../release-0.4.1.rst:2 2a5b3deba52c41dc8014958a38ba66ae
+msgid "OpenREM Release Notes version 0.4.1"
+msgstr ""
+
+#: ../../release-0.4.1.rst:5 e129c357965147d5828ba863a103e6c4
+msgid "Headline changes"
+msgstr ""
+
+#: ../../release-0.4.1.rst:6 0d0ee21cfa9f4a189e7b0c93f0a96cae
+msgid ""
+"This release is exacly the same as 0.4.1 bar some documentation "
+"corrections"
+msgstr ""
+
+#: ../../release-0.4.1.rst:10 41b25621886f4e67ade51dfcdb747c29
+msgid "Specific upgrade instructions"
+msgstr ""
+
+#: ../../release-0.4.1.rst:12 d2b7848bb09d418cb5659dd8b545a26a
+msgid "**Please use the 0.4.0 release notes for upgrades from 0.3.9**"
+msgstr ""
+
+#: ../../release-0.4.1.rst:14 2c5a6e858fb940c8baa73c30e9e0235a
+msgid ":doc:`release-0.4.0`"
+msgstr ""
+
