@@ -414,7 +414,7 @@ First, create a Celery configuration file:
 
 .. code-block:: console
 
-    $ nano /var/dose/celery/celery.conf``
+    $ nano /var/dose/celery/celery.conf
 
 .. code-block:: bash
 
