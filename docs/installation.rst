@@ -14,7 +14,7 @@ Preparation
 
 Install
 -------
-* Extract the zip file and open a shell (command prompt) in the new folder
+* Extract the ZIP file and open a shell (command prompt) in the new folder
 * Customise any variables in ``.env.prod`` and in the ``orthanc_1`` section
   in ``docker-compose.yml`` as necessary. A full description of the options are found in:
 

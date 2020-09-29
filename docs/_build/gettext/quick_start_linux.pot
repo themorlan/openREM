@@ -1,0 +1,462 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../quick_start_linux.rst:2
+#: 87c27abeb0e94ab89db9f270a0c4a0d8
+msgid "One page complete Ubuntu install"
+msgstr ""
+
+#: ../../quick_start_linux.rst:4
+#: a611e21ea2ba4a89bc17fa3543a296c3
+msgid "This setup is no longer recommended - the Docker :doc:`installation` method is instead. If a non-Docker installation is required then this guide can be followed."
+msgstr ""
+
+#: ../../quick_start_linux.rst:7
+#: d19b3a3010c542f8bc495ae7d534d87c
+msgid "This install is based on Ubuntu 18.04 using:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:9
+#: 051b9f2cbfa847f29283a496f38bbed1
+msgid "Python 3.8 running in a virtualenv"
+msgstr ""
+
+#: ../../quick_start_linux.rst:10
+#: 5ee3854dad2a41a28681c8cbaadf8ede
+msgid "Database: PostgreSQL"
+msgstr ""
+
+#: ../../quick_start_linux.rst:11
+#: 0a1aaea5e68947f881fec4915b61a917
+msgid "DICOM Store SCP: Orthanc running on port 104"
+msgstr ""
+
+#: ../../quick_start_linux.rst:12
+#: a00f3c46aab84946bd68ba98eaff1f71
+msgid "Webserver: NGINX with Gunicorn"
+msgstr ""
+
+#: ../../quick_start_linux.rst:13
+#: 73cb69240887405cb36618b1fd7a1684
+msgid "Daemonisation: systemd scripts for Celery and Gunicorn"
+msgstr ""
+
+#: ../../quick_start_linux.rst:14
+#: f135fe63e79144ab81c5c020f81d415d
+msgid "All OpenREM files in ``/var/dose/`` with group owner of ``openrem``"
+msgstr ""
+
+#: ../../quick_start_linux.rst:15
+#: 8dbb57c999a1491b84ad9ae9cffb9576
+msgid "Collects any Physics (QA) images and zips them"
+msgstr ""
+
+#: ../../quick_start_linux.rst:17
+#: 92b6548ff9c44f238d3f82e2a17c68a4
+msgid "The instructions should work for Ubuntu 20.04 too, references to bionic will be focal instead."
+msgstr ""
+
+#: ../../quick_start_linux.rst:21
+#: 4eee74361d0f484cab01bb770f2e51cd
+msgid "Initial prep"
+msgstr ""
+
+#: ../../quick_start_linux.rst:23
+#: e345ab364a4a4377b364eebf28bbc82e
+msgid "**Host file**"
+msgstr ""
+
+#: ../../quick_start_linux.rst:25
+#: d2f6fd9c53ad4856bd6c8dd4b88d323c
+msgid "First edit ``/etc/hosts`` to add the local server name -- else ``rabbitmq-server`` will not start when installed:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:31
+#: 6e44a3f0c98d40978ea6cca8de39dd5d
+msgid "Modify the content to ensure the following two lines are present -- **substitute the correct server hostname on the second line**::"
+msgstr ""
+
+#: ../../quick_start_linux.rst:37
+#: 12eada4ebb264e2597b52ca7a621cb1c
+msgid "``Ctrl-o`` (write-[o]ut), ``Return`` to accept, then ``Ctrl-x`` to e[x]it"
+msgstr ""
+
+#: ../../quick_start_linux.rst:39
+#: e7a5785223c446c198ccd8f6a4029e9e
+msgid "**Apt sources**"
+msgstr ""
+
+#: ../../quick_start_linux.rst:41
+#: 2657b5e724f046d8ba257a2239ff9043
+msgid "We will need the ``universe`` repository enabled. Check first:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:47
+#: 5200947afa174825a83bf955d01007fe
+msgid "Look for::"
+msgstr ""
+
+#: ../../quick_start_linux.rst:52
+#: 3fc1a224c6ef4b80bc4ccb4902f0424b
+msgid "If these two lines are not there, add them in (``sudo nano /etc/apt/sources.list``)."
+msgstr ""
+
+#: ../../quick_start_linux.rst:54
+#: 7cad87a88f9e4cdab50e714dabf780fe
+msgid "**Groups**"
+msgstr ""
+
+#: ../../quick_start_linux.rst:56
+#: 1a395848f1ea49a8bdb610d52a4bb27f
+msgid "Now create new group ``openrem`` and add your user to it (``$USER`` will automatically substitute for the user you are running as) :"
+msgstr ""
+
+#: ../../quick_start_linux.rst:69
+#: 6fcc309e1c644f058e0c462268917f76
+msgid "At a later stage, to add a second administrator just add them to the ``openrem`` group in the same way."
+msgstr ""
+
+#: ../../quick_start_linux.rst:71
+#: 9820b0ff9bb748a8906bea07a8195cc4
+msgid "**Folders**"
+msgstr ""
+
+#: ../../quick_start_linux.rst:73
+#: af416f0e00a944d18d604d8fd558cc4a
+msgid "Create the folders we need, and set the permissions. In due course, the ``orthanc`` user and the ``www-data`` user will be added to the ``openrem`` group, and the 'sticky' group setting below will enable both users to write to the logs etc:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:102
+#: 5f0220f93297472597a35cbdf179368d
+msgid "Install apt packages and direct downloads"
+msgstr ""
+
+#: ../../quick_start_linux.rst:116
+#: 3064548ee0da444eaf4fa548ef143d49
+msgid "Create the virtualenv"
+msgstr ""
+
+#: ../../quick_start_linux.rst:118
+#: d7e5d09cea1a46369434214e9beceb22
+msgid "Create a virtualenv (Python local environment) in the folder we created:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:127
+#: a91ab2d8a7b249ccba32e4a8f353cc00
+msgid "Activate the virtualenv"
+msgstr ""
+
+#: ../../quick_start_linux.rst:129
+#: 3eff1196716340cb9519b6747aa927c5
+msgid "Activate the virtualenv (note the ``.`` -- you can also use the word ``source``):"
+msgstr ""
+
+#: ../../quick_start_linux.rst:136
+#: 1fd1b946c0374a9682ef01c0445e7659
+msgid "Install Python packages"
+msgstr ""
+
+#: ../../quick_start_linux.rst:147
+#: c1b7c322cd0b47849a4b5890e70fa11c
+msgid "Add orthanc and www-data users to openrem group"
+msgstr ""
+
+#: ../../quick_start_linux.rst:158
+#: b13e72bc8a6c44fca2e89a975d860e21
+msgid "Database and OpenREM config"
+msgstr ""
+
+#: ../../quick_start_linux.rst:161
+#: 5175e27dae944e678f970e073ec950cc
+msgid "Setup PostgreSQL database"
+msgstr ""
+
+#: ../../quick_start_linux.rst:163
+#: 0f8c6faa583a4e7b958443eeab0a6405
+msgid "Create a postgres user, and create the database. You will be asked to enter a new password (twice). This will be needed when configuring OpenREM:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:174
+#: 599bf81103884981b132a7049dfb2266
+msgid "If you are migrating from another server, you could at this point create a template0 database to restore into. See :ref:`restore-psql-linux` for details."
+msgstr ""
+
+#: ../../quick_start_linux.rst:177
+#: 22713eedf403446bade1cce2682741da
+msgid "Update the PostgreSQL client authentication configuration. Add the following line anywhere near the bottom of the file, for example in the gap before ``# DO NOT DISABLE`` or anywhere in the table that follows. The number of spaces between each word is not important (one or more)."
+msgstr ""
+
+#: ../../quick_start_linux.rst:189
+#: 46277d2ccee049edb68dd046ca1b45dc
+msgid "Reload postgres:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:196
+#: b72ace779c1c4f36af711081fa37d1c5
+msgid "Configure OpenREM"
+msgstr ""
+
+#: ../../quick_start_linux.rst:198
+#: 4c52c6a6c2ff4553b7d020679139cd19
+msgid "First navigate to the Python openrem folder and copy the example local_settings and wsgi files to remove the ``.example`` suffixes:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:207
+#: 4d7865e09b9c455091e5f9b823ee0076
+msgid "Edit the new local_settings file"
+msgstr ""
+
+#: ../../quick_start_linux.rst:272
+#: 3b98dbdc077f4e8189027fa6247f1760
+msgid "Now create the database. Make sure you are still in the openrem python folder and the virtualenv is active — prompt will look like"
+msgstr ""
+
+#: ../../quick_start_linux.rst:279
+#: 3cb49a9fd04f44328e47baa0c304e04b
+msgid "Otherwise see :ref:`activatevirtualenv` and navigate back to that folder:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:298
+#: 42eb483006974c768c3ae44d8188c1da
+msgid "Generate translation binary files"
+msgstr ""
+
+#: ../../quick_start_linux.rst:305
+#: 1f2ee7be782140b29f2ca0d7f1ebd47f
+msgid "Webserver"
+msgstr ""
+
+#: ../../quick_start_linux.rst:308
+#: 4ffb995ae045416a934286c0c8705267
+msgid "Configure NGINX and Gunicorn"
+msgstr ""
+
+#: ../../quick_start_linux.rst:310
+#: 86c7b87411ff430086a0c137d9c62060
+msgid "Create the OpenREM site config file"
+msgstr ""
+
+#: ../../quick_start_linux.rst:333
+#: 7f78efc2df3e460da7a830e3ac8cc737
+msgid "Remove the default config and make ours active:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:343
+#: 9825be0479c74fbfa654f7ef61fc2232
+msgid "Add the static files to the static folder for NGINX to serve. Again, you need to ensure the virtualenv is active in your console and you are in the ``site-packages/openrem/`` folder:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:350
+#: ac1a67a6b1cb4908a8081f47c650b26e
+msgid "Create the Gunicorn systemd service file:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:373
+#: 2595f1f656314cf9af9b2414e18ca4c7
+msgid "Load the new systemd configurations:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:379
+#: 5c90e06ea6c5496685e767a5a09c726c
+msgid "Set the new Gunicorn service to start on boot:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:385
+#: f8a248c87e1a445fbbf4222e5d08d86b
+msgid "Start the Gunicorn service, and restart the NGINX service:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:393
+#: cd36a1f9bf164c52a5264e232aa55eaf
+msgid "Test the webserver"
+msgstr ""
+
+#: ../../quick_start_linux.rst:395
+#: baff7d1f5f6d4613b1a062fe8b2acbe6
+msgid "You should now be able to browse to the OpenREM server from another PC."
+msgstr ""
+
+#: ../../quick_start_linux.rst:397
+#: 962c6c841b8f45e289eb2088684c9b40
+msgid "You can check that NGINX and Gunicorn are running with the following two commands:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:411
+#: e0c6b111b418442b90380812bb9f5bbf
+msgid "Celery and Flower"
+msgstr ""
+
+#: ../../quick_start_linux.rst:413
+#: 9a2cc1e8750a4264b65be9a9e5ecbda8
+msgid "First, create a Celery configuration file:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:449
+#: 1556796d4c23442d8af932c596c2a4ba
+msgid "Now create the systemd service files:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:503
+#: 623ce1d27fa6419fafe361432b1c057a
+msgid "Now register, set to start on boot, and start the services:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:515
+#: 332613ae5b28458b8de0d98409ea7228
+msgid "DICOM Store SCP"
+msgstr ""
+
+#: ../../quick_start_linux.rst:517
+#: f1ce096e8c32465691eea7846ca252f9
+msgid "Open the following link in a new tab and copy the content (select all then Ctrl-c): |openrem_orthanc_conf_link|"
+msgstr ""
+
+#: ../../quick_start_linux.rst:519
+#: ff2477275a8049fe8bc1427832ae44ee
+msgid "Create the lua file to control how we process the incoming DICOM objects and paste the content in (Shift-Ctrl-v if working directly in the Ubuntu terminal, something else if you are using PuTTY etc):"
+msgstr ""
+
+#: ../../quick_start_linux.rst:526
+#: c4ad92d4aeda4cbba938c8678038c771
+msgid "Then edit the top section as follows -- keeping Physics test images has been configured, set to false to change this. There are other settings too that you might like to change in the second section (not displayed here):"
+msgstr ""
+
+#: ../../quick_start_linux.rst:565
+#: 9fa6e85bcd12427d991c434c8fc8854a
+msgid "Add the Lua script to the Orthanc config:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:579
+#: 392ee2ed1aad48a8b1eca4bd03e97d23
+msgid "Optionally, you may also like to enable the HTTP server interface for Orthanc (although if the Lua script is removing all the objects as soon as they are processed, you won't see much!):"
+msgstr ""
+
+#: ../../quick_start_linux.rst:590
+#: 8266f5b79a594afc95b8316528a7fff3
+msgid "To see the Orthanc web interface, go to http://openremserver:8042/ -- of course change the server name to that of your server!"
+msgstr ""
+
+#: ../../quick_start_linux.rst:594
+#: 8c7752f0940e45c4aba1c2ddaf054bb2
+msgid "Allow Orthanc to use DICOM port"
+msgstr ""
+
+#: ../../quick_start_linux.rst:596
+#: 6e99e18ebb2149e3b5700710a1d560e4
+msgid "By default, Orthanc uses port 4242. If you wish to use a lower port, specifically the DICOM port of 104, you will need to give the Orthan binary special permission to do so:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:603
+#: c7d6eff75cd74ff080dc9ede3a09a2b6
+msgid "Then edit the Orthanc configuration again:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:618
+#: 85879c2c549749a592a8575dee18c598
+msgid "Finish off"
+msgstr ""
+
+#: ../../quick_start_linux.rst:620
+#: c446ea1e26084455b55c502b10de1813
+msgid "Restart Orthanc:"
+msgstr ""
+
+#: ../../quick_start_linux.rst:627
+#: 07e4dca0e183417184df6165acdedf4c
+msgid "New users, and quick access to physics folder"
+msgstr ""
+
+#: ../../quick_start_linux.rst:628
+#: 0cee50ef5b484302a93e70ee842c67cf
+msgid "This is for new Linux users; for new OpenREM users, refer to :ref:`user-settings`"
+msgstr ""
+
+#: ../../quick_start_linux.rst:630
+#: 4941d172b4cb4859a3bc9bea7c704858
+msgid "If you left ``local use_physics_filtering = true`` in the Orthanc configuration, you might like to give your colleagues a quick method of accessing the physics folder from their home folder. Then if they use a program like `WinSCP`_ it is easy to find and copy the QA images to another (Windows) computer on the network. WinSCP can also be run directly from a USB stick if you are unable to install software :-)"
+msgstr ""
+
+#: ../../quick_start_linux.rst:636
+#: 467b364e1b8d4f02896faf324806ee25
+msgid "Add the new user (replace  ``newusername`` as appropriate):"
+msgstr ""
+
+#: ../../quick_start_linux.rst:642
+#: dffd67298d54480cbe84dfdda174a059
+msgid "Then add the new user to the `openrem` group (again, replace the user name):"
+msgstr ""
+
+#: ../../quick_start_linux.rst:648
+#: 51de8e9d1c304b64b8afe039bc5015c4
+msgid "Now add a 'sym-link' to the new users home directory (again, replace the user name):"
+msgstr ""
+
+#: ../../quick_start_linux.rst:654
+#: 7520fba7d57d4af992332c62c064ff21
+msgid "The new user should now be able to get to the physics folder by clicking on the ``physicsimages`` link when they log in, and should be able to browse, copy and delete the zip files and folders."
+msgstr ""
+
+#: ../../quick_start_linux.rst:658
+#: 9feb8b503d354de9a4bfc42f765181b0
+msgid "Enable RadbbitMQ queue management interface"
+msgstr ""
+
+#: ../../quick_start_linux.rst:664
+#: 789678fe442e4546836e6fe86d235fc5
+msgid "**Optional -- RabbitMQ Administrator**"
+msgstr ""
+
+#: ../../quick_start_linux.rst:666
+#: 2050326e694d4604aac37683088c21a8
+msgid "This is not required unless you wish to interact with the RabbitMQ management interface directly. Most functions can be carried out in the OpenREM interface instead. If you do wish to create a user for this purpose, see the general instructions to :ref:`enableRabbitMQ`."
+msgstr ""
+
+#: ../../quick_start_linux.rst:671
+#: 773577a931bc48a2bb7f9949ddf5055b
+msgid "Log locations"
+msgstr ""
+
+#: ../../quick_start_linux.rst:673
+#: a158facfb147421ba4fd0b4f696c404e
+msgid "OpenREM: ``/var/dose/log/``"
+msgstr ""
+
+#: ../../quick_start_linux.rst:674
+#: 53cc8ab84e214e50937fd21bd5faaa30
+msgid "Celery: ``/var/dose/log/default.log``"
+msgstr ""
+
+#: ../../quick_start_linux.rst:675
+#: 813adeb9d747493a9c1526baaddb40ed
+msgid "Celery systemd: ``sudo journalctl -u openrem-celery``"
+msgstr ""
+
+#: ../../quick_start_linux.rst:676
+#: 61366f5e44ff49b0b158a718cfe0bf86
+msgid "NGINX: ``/var/log/nginx/``"
+msgstr ""
+
+#: ../../quick_start_linux.rst:677
+#: 7e5f4d07467c4bd3811425f842c85845
+msgid "Orthanc: ``/var/log/orthanc/Orthanc.log``"
+msgstr ""
+
+#: ../../quick_start_linux.rst:678
+#: 88df66b903fc4ce5b4de422a486e4464
+msgid "Gunicorn systemd: ``sudo journalctl -u openrem-gunicorn``"
+msgstr ""

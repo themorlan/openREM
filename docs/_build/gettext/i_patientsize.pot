@@ -1,0 +1,187 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../i_patientsize.rst:2
+#: 079d5909ed7d4c1bb3fbb47c938cde8f
+msgid "Adding patient size information from csv using the web interface"
+msgstr ""
+
+#: ../../i_patientsize.rst:4
+#: c28ef179beef4630ab60ed512f40dcdb
+msgid "Contents"
+msgstr ""
+
+#: ../../i_patientsize.rst:7
+#: 21769894bd9246af881caee609ac5202
+msgid "Uploading patient size data"
+msgstr ""
+
+#: ../../i_patientsize.rst:9
+#: 4574ba119b1e45eab41b62527872ee4e
+msgid "If you log in as a user that is in the ``admingroup``, then a menu is available at the right hand end of the navigation bar:"
+msgstr ""
+
+#: ../../i_patientsize.rst:18
+#: e6007a81998740b096042e55c09083d4
+msgid "The first option takes you to a page where you can upload a csv file containing details of the patient height and weight, plus either the accession number or the Study Instance UID."
+msgstr ""
+
+#: ../../i_patientsize.rst:34
+#: db6d3dcafb4348cb83d17958da25bb96
+msgid "The csv file needs to have at least the required columns. Additional columns will be ignored. If your source of patient size data does not have either the height or the weight column, simply add a new empty column with just the title in the first row."
+msgstr ""
+
+#: ../../i_patientsize.rst:39
+#: 5eed2a56f8794c889dd4d5c582768f4a
+msgid "When you have selected the csv file, press the button to upload it."
+msgstr ""
+
+#: ../../i_patientsize.rst:42
+#: 973adf707ccc43378376d4a4851d2a02
+msgid "Importing the size data to the database"
+msgstr ""
+
+#: ../../i_patientsize.rst:44
+#: f0b4b7961f7c47c7b8932028c89b401e
+msgid "On the next page select the column header that corresponds to each of the head, weight and ID fields. Also select whether the ID field is an Accession number or a Study UID:"
+msgstr ""
+
+#: ../../i_patientsize.rst:48
+#: fabb4972cf064d67a7c34c808c023663
+msgid "When the column headers are selected, click the 'Process the data' button."
+msgstr ""
+
+#: ../../i_patientsize.rst:56
+#: 8653d5cd29c04a63ae0cdbf2e549456f
+msgid "The progress of the import is then reported on the patient size imports page:"
+msgstr ""
+
+#: ../../i_patientsize.rst:64
+#: e98bc2d58c9d420c89bb06b5265618ef
+msgid "During the import, it is possible to abort the process by clicking the button seen in the image above. The log file is available from the completed table whether it completed or not - there is no indication that the import was aborted."
+msgstr ""
+
+#: ../../i_patientsize.rst:69
+#: acdccd12ad954e55ad2db53c1506274d
+msgid "As soon as the import is complete, the source csv file is deleted from the server."
+msgstr ""
+
+#: ../../i_patientsize.rst:73
+#: a0b5445a54a54840af86327daeb98ec7
+msgid "Reviewing previous imports"
+msgstr ""
+
+#: ../../i_patientsize.rst:75
+#: e13220473bec484494cfbab308c1fb08
+msgid "After an import is complete, it is listed in the completed import tasks table. You can also get to this page from the Admin menu:"
+msgstr ""
+
+#: ../../i_patientsize.rst:84
+#: 5b5d5c11c62944ba9958f8ae7000c95a
+msgid "For each import, there is a link to the logfile, which looks something like this. With this import accession numbers weren't available so the patient size information was matched to the study instance UID:"
+msgstr ""
+
+#: ../../i_patientsize.rst:95
+#: 23f1554b04c44e2cb52b3cfeb1919cc0
+msgid "Deleting import logs"
+msgstr ""
+
+#: ../../i_patientsize.rst:97
+#: 8adf8bce50174f208ae333e85bd8642d
+msgid "The completed import tasks table also has a delete check box against each record and a delete button at the bottom. The csv file originally imported has already been deleted - this delete function is to remove the record of the import and the log file associated with it from the database/disk."
+msgstr ""
+
+#: ../../i_patientsize.rst:104
+#: bb8e6bfe0aca4f2cb4dd3ce13638c56c
+msgid "Adding patient size information from csv using the command line"
+msgstr ""
+
+#: ../../i_patientsize.rst:106
+#: a3484720a0424bcaac5629c7dfb0c135
+msgid "Usage:"
+msgstr ""
+
+#: ../../i_patientsize.rst:113
+#: 3c9bfdd420674b5a9b4918964d688218
+msgid "``-h, --help``"
+msgstr ""
+
+#: ../../i_patientsize.rst:113
+#: 1a46779b812b4d4d92d0b53eda59ab49
+msgid "Print the help text."
+msgstr ""
+
+#: ../../i_patientsize.rst:116
+#: 61518832b78c43cc810dea298834154e
+msgid "``-u, --si-uid``"
+msgstr ""
+
+#: ../../i_patientsize.rst:116
+#: 209f3a3a33b84392b3b665559a9e5f7c
+msgid "Use Study Instance UID instead of Accession Number."
+msgstr ""
+
+#: ../../i_patientsize.rst:119
+#: 84bdf6a8f809490c8f48c31b98ea734a
+msgid "``-v, --verbose``"
+msgstr ""
+
+#: ../../i_patientsize.rst:119
+#: 5d4ba32102f5402b91e3d26cb90ad862
+msgid "*New in 0.3.7* Print to the standard output the success or otherwise of inserting each value."
+msgstr ""
+
+#: ../../i_patientsize.rst:123
+#: d7b873c7839b47eabfb33fc9a472d512
+msgid "``csvfile``"
+msgstr ""
+
+#: ../../i_patientsize.rst:122
+#: c6dc57f5ab934304a2967982f2cea50a
+msgid "csv file containing the height and/or weight information and study identifier. Other columns will be ignored. Use quotes if the filepath has spaces."
+msgstr ""
+
+#: ../../i_patientsize.rst:127
+#: b335c24c6bd64d2bb1b87abb20b63474
+msgid "``id``"
+msgstr ""
+
+#: ../../i_patientsize.rst:126
+#: f541bf957bde42299bac71db40daee34
+msgid "Column title for the accession number or study instance UID. Use quotes if the title has spaces."
+msgstr ""
+
+#: ../../i_patientsize.rst:132
+#: 1d81e1bf5dae40ae8ea28c7709ea0f60
+msgid "``height``"
+msgstr ""
+
+#: ../../i_patientsize.rst:130
+#: 8c3c6eae1012420d9116d86baa7407e1
+msgid "Column title for the patient height (DICOM size) - if this information is missing simply add a blank column with a suitable title. Use quotes if the title has spaces."
+msgstr ""
+
+#: ../../i_patientsize.rst:138
+#: 7d886b20b0f2494c922693fb3cb70e7e
+msgid "``weight``"
+msgstr ""
+
+#: ../../i_patientsize.rst:135
+#: f514f634fbdb49a0aa9edb0b1a77fe49
+msgid "Column title for the patient weight - if this information is missing simply add a blank column with a suitable title. Use quotes if the title has spaces."
+msgstr ""

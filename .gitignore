@@ -1,6 +1,5 @@
 *.pyc
-docs/_build/*
-docs/_static/*
+
 openrem/remapp/migrations/0*
 .idea
 openrem/openremproject/local_settings.py
@@ -24,3 +23,7 @@ imports/*
 
 # Translations related
 *.mo
+docs/_build/html/*
+docs/_build/gettext/.doctrees/*
+docs/_static/*
+#openrem/locale/en/*

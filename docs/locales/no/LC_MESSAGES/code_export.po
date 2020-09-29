@@ -1,0 +1,198 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../code_export.rst:2 940572e4798c4185ad5a86e6b6cc8b58
+msgid "Export from database"
+msgstr ""
+
+#: ../../code_export.rst:5 87c30987b7214a2f938f58e15cac2951
+msgid "Multi-sheet Microsoft Excel XLSX exports"
+msgstr ""
+
+#: ../../code_export.rst:6 9e2c772f4bc540a4a4ddae85f200f1ee
+msgid ""
+"This export has a summary sheet of all the requested and performed "
+"protocols and the series protocols. The next sheet has all studies on, "
+"one study per line, with the series stretching off to the right. The "
+"remaining sheets are specific to each series protocol, in alphabetical "
+"order, with one series per line. If one study has three series with the "
+"same protocol name, each one has a line of its own."
+msgstr ""
+
+#: 12bf5cc7f158413b9c240d0895b99702 of remapp.exports.rf_export.rfxlsx:1
+msgid "Export filtered RF database data to multi-sheet Microsoft XSLX files."
+msgstr ""
+
+#: 059071adc7444b749b284c9664f340c7 211693d6fe054eaea40957cb560a9a9c
+#: 31cc508c83e24ba8be6ff7a7804d68d7 4ce084426f88413ba1f57bd9aec29e3b
+#: 538294288d8a475faae200ea2b4e57ed 8c10591dba0d45b4bb6ed8e9ef2ac505
+#: b2c0a91318f8454385f4ec8811b0e816 e2c9b2c60d5e4461a424078b30997698
+#: fd8715e441d14f51a04f183fda911b02 of remapp.exports.ct_export.ct_csv
+#: remapp.exports.ct_export.ctxlsx remapp.exports.dx_export.dxxlsx
+#: remapp.exports.dx_export.exportDX2excel
+#: remapp.exports.mg_csv_nhsbsp.mg_csv_nhsbsp
+#: remapp.exports.mg_export.exportMG2excel
+#: remapp.exports.rf_export.exportFL2excel remapp.exports.rf_export.rfxlsx
+msgid "Parameters"
+msgstr ""
+
+#: 004bb43c783f4653bc981ee9c63c7c8e 20ac74d8810242c29c97497975751d29
+#: 331bfc7567384816a2b64b40cb8fa381 66f849da7f4145dca4de84e60838c95f
+#: 88c83173ba364675aeb025d5e624607a 97d250271ff54f0b99c3818a8fe0f6f8
+#: 9a0fb1a57451457baa0478ffdd83f6a5 ce517516a262482186dfab5f189472a2 of
+#: remapp.exports.ct_export.ct_csv:3 remapp.exports.ct_export.ctxlsx:3
+#: remapp.exports.dx_export.dxxlsx:3 remapp.exports.dx_export.exportDX2excel:3
+#: remapp.exports.mg_export.exportMG2excel:3
+#: remapp.exports.rf_export.exportFL2excel:3 remapp.exports.rf_export.rfxlsx:3
+msgid "Queryset of studies to export"
+msgstr ""
+
+#: 06a8ad4ce70845c8b604697d696d7926 0d386d93721a40fbb159e77f0ceb6320
+#: 5cc0422b4f744867884a4aa084d255b3 be8f05f03b97455cae3d9e0688487d7a
+#: c9b822f7a21e48319602eb207cee7fe4 ce10e48957f64fe1a2afc3777218429d
+#: d32fbef84de64f758129f24d725e0d21 f842fe1628c347e4a97718f316618e39 of
+#: remapp.exports.ct_export.ct_csv:4 remapp.exports.ct_export.ctxlsx:4
+#: remapp.exports.dx_export.dxxlsx:4 remapp.exports.dx_export.exportDX2excel:4
+#: remapp.exports.mg_export.exportMG2excel:4
+#: remapp.exports.rf_export.exportFL2excel:4 remapp.exports.rf_export.rfxlsx:4
+msgid "does the user have patient identifiable data permission"
+msgstr ""
+
+#: 112be1b4b4244ca191554353c17d10c1 16098a4c19d94f14a724a59b7910c2df
+#: 3b727dd4bc8d4f3abdc52f7958c60387 6ab003bf1b934eb285ed76446028bcf6
+#: 89f089b2352e43c8a96dcf9ab0aa006e 9b5c26a22ec3425fba4f56c173c2c83e
+#: a0bcd9799627458a97c660528d551e0b ccc37fd0a8af4554866e9dc580d7bc29 of
+#: remapp.exports.ct_export.ct_csv:5 remapp.exports.ct_export.ctxlsx:5
+#: remapp.exports.dx_export.dxxlsx:5 remapp.exports.dx_export.exportDX2excel:5
+#: remapp.exports.mg_export.exportMG2excel:5
+#: remapp.exports.rf_export.exportFL2excel:5 remapp.exports.rf_export.rfxlsx:5
+msgid "has patient name been selected for export"
+msgstr ""
+
+#: 306bc5b6e07c43a68ce3786f23ba6bcd 59d298fe8fa64889bbdeb71ca5310a52
+#: 685fa4fbd4f84744a65c334b008d2d25 8635d43ec1244e6aa294fd0ca6e99a67
+#: 95df7d34ce1d4bffbaf50055d0759997 9a6d4934270843baae72eca88e448d20
+#: c9af54c749534033a3f38a6ba3ede2b7 ddfe6316007d435aab706cee668b1daf of
+#: remapp.exports.ct_export.ct_csv:6 remapp.exports.ct_export.ctxlsx:6
+#: remapp.exports.dx_export.dxxlsx:6 remapp.exports.dx_export.exportDX2excel:6
+#: remapp.exports.mg_export.exportMG2excel:6
+#: remapp.exports.rf_export.exportFL2excel:6 remapp.exports.rf_export.rfxlsx:6
+msgid "has patient ID been selected for export"
+msgstr ""
+
+#: 3a374c08eab44f449ab084be2b5266d2 5304aebc95b249609f0ae2cff16ca259
+#: 876ea58a55434c09879d19d129ce09c3 b39834054fc6405dba6988fb831eb19d
+#: bdf36123c3c048788ab8dfa0963f3128 c395057cc15c49008f13e5612db76a2d
+#: cda615f421304ef7a338021ca791b3aa fdf8a5904b6b43ceb38f98fd4a98c65e of
+#: remapp.exports.ct_export.ct_csv:7 remapp.exports.ct_export.ctxlsx:7
+#: remapp.exports.dx_export.dxxlsx:7 remapp.exports.dx_export.exportDX2excel:7
+#: remapp.exports.mg_export.exportMG2excel:7
+#: remapp.exports.rf_export.exportFL2excel:7 remapp.exports.rf_export.rfxlsx:7
+msgid "User that has started the export"
+msgstr ""
+
+#: 06626e9115ee45129c5469d40d5e6c4e 20cb67cbeede4c8ca277a22d0f0db661
+#: 3a5f74b3b7114a328a79d617118817f9 606e91bb7b984f5480d3df174a2b0f72
+#: 9c3311360344466d80d5521246acb919 d09e9724426a4b5abf7989080361cfc1
+#: e0d4a3423d2345fd8aa3af9b6df403d9 f03ca644fb9446c7b4be4328790590cb
+#: f8651d37ce4c4525bbb2ba3755e912f8 of remapp.exports.ct_export.ct_csv
+#: remapp.exports.ct_export.ctxlsx remapp.exports.dx_export.dxxlsx
+#: remapp.exports.dx_export.exportDX2excel
+#: remapp.exports.mg_csv_nhsbsp.mg_csv_nhsbsp
+#: remapp.exports.mg_export.exportMG2excel
+#: remapp.exports.rf_export.exportFL2excel remapp.exports.rf_export.rfxlsx
+msgid "Returns"
+msgstr ""
+
+#: 3b19397ade3c44a9a5517623e2799cff 60c6d29083d6419fbfd2ecf70ea2b462
+#: 8c1b2421914a40c5ba0966c99a05ad78 of remapp.exports.ct_export.ctxlsx:8
+#: remapp.exports.dx_export.dxxlsx:8 remapp.exports.rf_export.rfxlsx:8
+msgid "Saves xlsx file into Media directory for user to download"
+msgstr ""
+
+#: fc882b42b3124b7b8624ec7b20786bb0 of remapp.exports.ct_export.ctxlsx:1
+msgid "Export filtered CT database data to multi-sheet Microsoft XSLX files"
+msgstr ""
+
+#: 2ca601343fe04e0ab71f2d09ced9836b of remapp.exports.dx_export.dxxlsx:1
+msgid ""
+"Export filtered DX and CR database data to multi-sheet Microsoft XSLX "
+"files."
+msgstr ""
+
+#: 340f6fbbf0914afea2e0daf3221b4c4b 99209a41719f4cd4a8a879ead79b028a of
+#: remapp.exports.mg_export.exportMG2excel:1
+msgid ""
+"Export filtered mammography database data to a single-sheet CSV file or a"
+" multi sheet xlsx file."
+msgstr ""
+
+#: 1a0cfb1c85254959a52583848a87eae4 4a89c703daf24b61aee32d831aaf16c6 of
+#: remapp.exports.mg_export.exportMG2excel:8
+msgid "Whether to export a single sheet csv or a multi sheet xlsx"
+msgstr ""
+
+#: 10a4ca9954f348a28aacf995df570104 14de37d3cedd463994845c6dd72d0500
+#: 1be11502daa643a78eb78bb204ad3b63 36a4ee1311494071af61a42ff556cdfd
+#: fdfa219444424802a40e65eee4f7b758 of remapp.exports.ct_export.ct_csv:8
+#: remapp.exports.dx_export.exportDX2excel:8
+#: remapp.exports.mg_export.exportMG2excel:9
+#: remapp.exports.rf_export.exportFL2excel:8
+msgid "Saves csv file into Media directory for user to download"
+msgstr ""
+
+#: ../../code_export.rst:19 28e5a300f277412698a7f278dca80baf
+msgid "Single sheet CSV exports"
+msgstr ""
+
+#: d497e23aece3413a84d9436354e6abf6 of
+#: remapp.exports.rf_export.exportFL2excel:1
+msgid "Export filtered fluoro database data to a single-sheet CSV file."
+msgstr ""
+
+#: a8f7c9898dc84c8b95d11931c3cdecfe of remapp.exports.ct_export.ct_csv:1
+msgid "Export filtered CT database data to a single-sheet CSV file."
+msgstr ""
+
+#: 6d1732e138d04d9298db1fbaf5c194af of
+#: remapp.exports.dx_export.exportDX2excel:1
+msgid "Export filtered DX database data to a single-sheet CSV file."
+msgstr ""
+
+#: ../../code_export.rst:27 f1160b1e290e41cdb97ede6f622e9cee
+msgid "Specialised csv exports - NHSBSP formatted mammography export"
+msgstr ""
+
+#: cd9a208ca2a14254b3ff6cba6979a606 of
+#: remapp.exports.mg_csv_nhsbsp.mg_csv_nhsbsp:1
+msgid ""
+"Export filtered mammography database data to a NHSBSP formatted single-"
+"sheet CSV file."
+msgstr ""
+
+#: f0bdbbc4dd9045b3a1a93a802abe0083 of
+#: remapp.exports.mg_csv_nhsbsp.mg_csv_nhsbsp:3
+msgid "Dictionary of query parameters from the mammo filtered page URL."
+msgstr ""
+
+#: f7bf385c59ad4847bbc0d054f2b714c8 of
+#: remapp.exports.mg_csv_nhsbsp.mg_csv_nhsbsp:5
+msgid "None - file is saved to disk and location is stored in database"
+msgstr ""
+

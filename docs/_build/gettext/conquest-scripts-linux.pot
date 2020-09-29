@@ -1,0 +1,72 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../conquest-scripts-linux.rst:2
+#: 828dff76b19b4bb38fa1b334aa9c4d15
+msgid "Creating bash scripts on linux"
+msgstr ""
+
+#: ../../conquest-scripts-linux.rst:4
+#: 90919827bd18424a8d3a2ce2d3612f8e
+msgid "Create a bash script for each of RDSR, mammo, DX and Philips CT dose images, as required. They should have content something like the following. The examples that follow assume the files have been saved in the folder ``/etc/conquest-dicom-server`` but you can save them where you like and change the ``dicom.ini`` commands accordingly."
+msgstr ""
+
+#: ../../conquest-scripts-linux.rst:8
+#: 7ee8180969d64d8bb5353ee2b731b335
+msgid "These scripts have a line in them to activate the virtual environment; this is done in the line ``. /var/dose/venv/bin/activate`` – you should change the path to your virtualenv or remove it if you have installed without using a virtualenv."
+msgstr ""
+
+#: ../../conquest-scripts-linux.rst:12
+#: 928a4d7e10864f75be9c5a26d23d7d04
+msgid "Eash script also has a line to delete the object after it has been imported – OpenREM can also do this by configuration, but the file will be written by the ``_conquest`` user, and OpenREM will not be running as that user. Therefore it is easier to have conquest delete the file. If you don't want them to be deleted, remove or comment out that line (add a ``#`` character to the start of the line)."
+msgstr ""
+
+#: ../../conquest-scripts-linux.rst:17
+#: 4dd2c131c22b4ed0a3d1241e5fd7e60c
+msgid "Radiation Dose Structured Reports"
+msgstr ""
+
+#: ../../conquest-scripts-linux.rst:18
+#: fbba249243504e36a7daf7e81cc0ba3f
+msgid "Use which ever editor you are comfortable with – a good choice might be nano. For example:"
+msgstr ""
+
+#: ../../conquest-scripts-linux.rst:44
+#: b672701e4a8543c4a8acbf763a131b35
+msgid "Save and exit, then set the script to be executable:"
+msgstr ""
+
+#: ../../conquest-scripts-linux.rst:50
+#: f805a816ea2f4e63a59673fb6ff41c9c
+msgid "And repeat for the other modality scripts below:"
+msgstr ""
+
+#: ../../conquest-scripts-linux.rst:52
+#: 8e90ff9ae5b84def8c442fe1aaac1ae0
+msgid "Mammography images"
+msgstr ""
+
+#: ../../conquest-scripts-linux.rst:77
+#: 472a3fb1f9e24d7fb31a1a4c5ed5cf56
+msgid "Radiography images (DX, and CR that might be DX)"
+msgstr ""
+
+#: ../../conquest-scripts-linux.rst:102
+#: b7b54fb59e2c47f6bd362dbe5990a442
+msgid "Philips CT dose info images for Philips CT systems with no RDSR"
+msgstr ""

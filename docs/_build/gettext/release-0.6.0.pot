@@ -1,0 +1,284 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../release-0.6.0.rst:3
+#: ee62d62b70a24abfa9122fcfc40fbb50
+msgid "OpenREM Release Notes version 0.6.0"
+msgstr ""
+
+#: ../../release-0.6.0.rst:7
+#: bd16aba3a3fb4feaa4c5142647c73588
+msgid "Headline changes"
+msgstr ""
+
+#: ../../release-0.6.0.rst:9
+#: ../../release-0.6.0.rst:130
+#: f81251724d194e5b846ea557471e0812
+#: 23d071bd814241a486b09f4e63313a79
+msgid "Charts"
+msgstr ""
+
+#: ../../release-0.6.0.rst:10
+#: aafc168c5dc64f46a96e0cddea701b9c
+msgid "Preview of DICOM Store SCP functionality"
+msgstr ""
+
+#: ../../release-0.6.0.rst:11
+#: 1aa7191520b1475db4fae944a1c16ca1
+msgid "Exports available to import into `openSkin`_"
+msgstr ""
+
+#: ../../release-0.6.0.rst:12
+#: 3c0c41e6c759454583330b62f1647ace
+msgid "Modalities with no data are hidden in the user interface"
+msgstr ""
+
+#: ../../release-0.6.0.rst:13
+#: 656fe1fbb1534d0a864fedd36079dcf7
+msgid "Mammography import compression force behaviour changed"
+msgstr ""
+
+#: ../../release-0.6.0.rst:14
+#: 36f94c9a69044fa08e472f6b72045840
+msgid "Import of Toshiba planar RDSRs fixed"
+msgstr ""
+
+#: ../../release-0.6.0.rst:17
+#: 1318fcc28c62413c80fa6c2e08f17556
+msgid "Changes for 0.6.2"
+msgstr ""
+
+#: ../../release-0.6.0.rst:19
+#: 05f28d0150bb4947b9053dded92a94cc
+msgid "Minor update due prevent new installs from installing a non-compatible version of ``django-filter``. The link to `openSkin`_ has also been updated in the fluoroscopy detail page."
+msgstr ""
+
+#: ../../release-0.6.0.rst:22
+#: 38891587906e41bd88749bfd981b736a
+msgid "**There is no advantage to updating to this version over 0.6.0**"
+msgstr ""
+
+#: ../../release-0.6.0.rst:24
+#: b91c7801f3324df8972ccbb7f02f458d
+msgid "Release 0.6.1 was just a documentation only change to update the link to `openSkin`_."
+msgstr ""
+
+#: ../../release-0.6.0.rst:29
+#: 4b9ea519f6164622afe5fd881f80375f
+msgid "Preparing for the upgrade"
+msgstr ""
+
+#: ../../release-0.6.0.rst:32
+#: fc3c41316d6844c6af4042c1ff4cf13a
+msgid "Convert to South"
+msgstr ""
+
+#: ../../release-0.6.0.rst:34
+#: e548e33783d14d9b976ea5723bd5b8a6
+msgid "**Make sure you have converted your database to South before attempting an upgrade**"
+msgstr ""
+
+#: ../../release-0.6.0.rst:36
+#: 35addadd51fd45508479b1eb50a35691
+msgid "Quick reminder of how, if you haven't done it already"
+msgstr ""
+
+#: ../../release-0.6.0.rst:49
+#: 180c2fc471ad4a29b1ee56bcf953aa3f
+msgid "Additional installs"
+msgstr ""
+
+#: ../../release-0.6.0.rst:51
+#: eb44d208717a46748ec8debe9190dbb9
+msgid "OpenREM requires two additional programs to be installed to enable the new features: *Numpy* for charts, and *pynetdicom* for the DICOM Store Service Class Provider. Note that the version of pynetdicom must be later than the current pypi release!"
+msgstr ""
+
+#: ../../release-0.6.0.rst:56
+#: 1e5661b981c349499487aac57aee61fb
+msgid "Install NumPy"
+msgstr ""
+
+#: ../../release-0.6.0.rst:58
+#: c563b97f06f54016aebe18622a5dd5d0
+msgid "For linux::"
+msgstr ""
+
+#: ../../release-0.6.0.rst:64
+#: b2b446a64b1b44168b628cb9071effcd
+msgid "For Windows, there are various options:"
+msgstr ""
+
+#: ../../release-0.6.0.rst:66
+#: 03499b285c8648e999179bc6a3d2ee0d
+msgid "Download executable install file from SourceForge:"
+msgstr ""
+
+#: ../../release-0.6.0.rst:68
+#: 256d707a10c245e5b69911253f1bb28c
+msgid "Download a pre-compiled Win32 .exe NumPy file from http://sourceforge.net/projects/numpy/files/NumPy/. You need to download the file that matches the Python version, which should be 2.7. At the time of writing the latest version was 1.9.2, and the filename to download was ``numpy-1.9.2-win32-superpack-python2.7.exe``. The filename is truncated on SourceForge, so you may need to click on the *i* icon to see which is which. It's usually the third *superpack*."
+msgstr ""
+
+#: ../../release-0.6.0.rst:72
+#: 962a2f7af31542869ee3658b5bcca0c1
+msgid "Run the downloaded binary file to install NumPy."
+msgstr ""
+
+#: ../../release-0.6.0.rst:74
+#: f1d298ce21624b2eb0691c3013725b90
+msgid "Or download a ``pip`` installable wheel file:"
+msgstr ""
+
+#: ../../release-0.6.0.rst:76
+#: cca92b8e0d084986ba2aea0b79f27bfc
+msgid "Download NumPy from http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy - ``numpy‑1.9.2+mkl‑cp27‑none‑win32.whl`` is likely to be the right version, unless you have 64bit Python installed, in which case use the ``numpy‑1.9.2+mkl‑cp27‑none‑win_amd64.whl`` version instead."
+msgstr ""
+
+#: ../../release-0.6.0.rst:79
+#: efb3bdac08b046bc993b5bc2adf8d08b
+msgid "Install using pip::"
+msgstr ""
+
+#: ../../release-0.6.0.rst:85
+#: 52099c59156843dca739402d03d95091
+msgid "Install pynetdicom"
+msgstr ""
+
+#: ../../release-0.6.0.rst:92
+#: 2cc95c5a48264b6db80ae957021bec16
+msgid "Upgrading from versions prior to 0.5.1"
+msgstr ""
+
+#: ../../release-0.6.0.rst:94
+#: 3c601889989c48f9a0b3cb3a76fbc52f
+msgid "You must upgrade to 0.5.1 first. Instructions for doing this can be found in the :doc:`release-0.5.1`."
+msgstr ""
+
+#: ../../release-0.6.0.rst:97
+#: 6f0c671778bb4391be877b513dd06b2e
+msgid "Upgrading from version 0.5.1"
+msgstr ""
+
+#: ../../release-0.6.0.rst:99
+#: e849ff5e4a194f98872c0c748b770b63
+msgid "Back up your database"
+msgstr ""
+
+#: ../../release-0.6.0.rst:101
+#: f8d17ca4243946ec911c13c87c135926
+msgid "For PostgreSQL you can refer to :doc:`backupRestorePostgreSQL`"
+msgstr ""
+
+#: ../../release-0.6.0.rst:102
+#: 0196f78c773b4f3e83cb26fb5b5be4bb
+msgid "For a non-production SQLite3 database, simply make a copy of the database file"
+msgstr ""
+
+#: ../../release-0.6.0.rst:104
+#: 0b8b76e855af4e40a43a5af8aff8fe10
+msgid "The 0.6.0 upgrade must be made from a 0.5.1 (or later) database, and a schema migration is required:"
+msgstr ""
+
+#: ../../release-0.6.0.rst:120
+#: 0db8163fee30486b8e27b9474f09834e
+msgid "Restart the services"
+msgstr ""
+
+#: ../../release-0.6.0.rst:122
+#: b61a0bbe51ac4ccca7e77c6209abea01
+msgid "Restart the webserver"
+msgstr ""
+
+#: ../../release-0.6.0.rst:123
+#: 8efb9c2ec7d748ca943868c2adaa9267
+msgid "Restart Celery"
+msgstr ""
+
+#: ../../release-0.6.0.rst:127
+#: 4bb9d472a33246b88f91eb4bc09859aa
+msgid "Summary of new features"
+msgstr ""
+
+#: ../../release-0.6.0.rst:132
+#: a549468c2cc9407197f9347d2cf8f8a3
+msgid "Release 0.6.0 has a range of charting options available for CT and radiographic data. These charts allow visualisation of trends and frequencies to inform surveys and monitor performance. For more information, please see :doc:`charts`."
+msgstr ""
+
+#: ../../release-0.6.0.rst:137
+#: cc61808e795a47ca9110af28eeb3709a
+msgid "DICOM Store Service Class Provider"
+msgstr ""
+
+#: ../../release-0.6.0.rst:139
+#: 8255cdea5f8c4f64a8669ab08df2486e
+msgid "OpenREM can now act as the DICOM Store service, allowing direct sending of DICOM objects from modalities to OpenREM without needing to use Conquest or any other DICOM Store SCP. This feature is a preview as it hasn't been extensively tested, but it is expected to work. For more information, please see :ref:`directfrommodalities`."
+msgstr ""
+
+#: ../../release-0.6.0.rst:145
+#: 59380be21a114f0a83e4d0ec41fcae44
+msgid "Exports for openSkin"
+msgstr ""
+
+#: ../../release-0.6.0.rst:147
+#: d09bac10161e428bb6a1f563eafab886
+msgid "Fluoroscopy studies can now be exported in a format suitable for importing into Jonathan Cole's openSkin software. The export link is on the fluoroscopy study detail page. The software for creating the exposure incidence map can be downloaded from https://bitbucket.org/openskin/openskin/downloads (choose the zip file), and information about the project can be found on the `openSkin wiki`_. The software allows the user to choose between a 2D phantom that would represent the dose to a film laying on the couch surface, or a simple 3D phantom made up of a cuboid and two semi-cylinders (these can be seen on the `Phantom design`_ section of the wiki). For both options the output is an image of the dose distribution in 2D, along with calculated peak skin dose information."
+msgstr ""
+
+#: ../../release-0.6.0.rst:156
+#: bb199697014841da9ab0f1c8341dd021
+msgid "Automatic hiding of unused modality types"
+msgstr ""
+
+#: ../../release-0.6.0.rst:158
+#: 063bb3a0fb654b06a4c29ee927ca1747
+msgid "A fresh install of OpenREM will no longer show any of the four modality types in the tables or in the navigation bar at the top. As DICOM objects are ingested, the appropriate tables and navigation links are created."
+msgstr ""
+
+#: ../../release-0.6.0.rst:161
+#: d15fb5e12ac84fb49d46027f84445113
+msgid "Therefore a site that has no mammography for example will no longer have that table or navigation link in their interface."
+msgstr ""
+
+#: ../../release-0.6.0.rst:165
+#: e5f3f6c595234621806076149db348f3
+msgid "Mammography import compression force change"
+msgstr ""
+
+#: ../../release-0.6.0.rst:167
+#: 68502aac5d5848828c77782ffb406c7a
+msgid "Prior to version 0.6, the compression force extracted from the mammography image header was divided by ten before being stored in the database. This was because the primary author only had access to GE Senograph DS units, which store the compression force in dN, despite claiming using Newtons in the DICOM conformance statement."
+msgstr ""
+
+#: ../../release-0.6.0.rst:171
+#: 9dee14b9fe9a4725b79693be0adbe631
+msgid "The code now checks for the term *senograph ds* contained in the model name. If it matches, then the value is divided by ten. Otherwise, the value is stored without any further change. We know that later GE units, the GE Senograph Essential for example, and other manufacturer's units store this value in N. If you have a case that acts like the Senograph DS, please let us know and we'll try and cater for that."
+msgstr ""
+
+#: ../../release-0.6.0.rst:176
+#: 336fe7e20d7a49e59d3388cc023f581b
+msgid "If you have existing non-GE Senograph mammography data in your database, the compression force field for those studies is likely to be incorrect by a factor of ten (it will be too small). Studies imported after the upgrade will be correct. If this is a problem for you, please let us know and we'll see about writing a script to correct the existing data."
+msgstr ""
+
+#: ../../release-0.6.0.rst:181
+#: ac8d54681b7d4f018602c9aba964c07f
+msgid "Import of Toshiba Planar RDSRs fixed"
+msgstr ""
+
+#: ../../release-0.6.0.rst:183
+#: 967254e062794aabb550ac4367fcf9b7
+msgid "Toshiba include Patient Orientation and Patient Orientation Modifier information in their cath lab RDSRs. The extractor code was deficient for this as the RDSRs previously used didn't have this information. This has now been fixed. There might however be an issue with Station Name not being provided - it is not yet clear if this is a configuration issue."
+msgstr ""

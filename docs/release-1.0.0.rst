@@ -19,6 +19,12 @@ Upgrade preparation
 * These instructions assume you are upgrading from 0.10.0.
 * **Upgrades from 0.9.1 or earlier should review** :doc:`upgrade_previous_0.10.0`. -- needs changing
 
+..  toctree::
+    :maxdepth: 1
+
+    upgrade_previous_0.10.0
+
+.. _post_upgrade0100:
 
 ******************************************
 Upgrade process from a PostgresQL database
@@ -60,6 +66,8 @@ Export the database
 
 Set up the new installation
 ===========================
+
+.. _update_configuration0100:
 
 * Install Docker
 * Download and extract https://bitbucket.org/openrem/docker/get/develop.zip and open a shell (command window) in the
@@ -211,8 +219,6 @@ Install the new version of OpenREM
 
     $ pip install openrem==1.0.0b1
 
-.. _update_configuration0100:
-
 Update the local_settings.py file
 =================================
 
@@ -350,4 +356,3 @@ Reload systemd and restart the services
     $ sudo systemctl start orthanc.service
 
 
-.. _post_upgrade0100:

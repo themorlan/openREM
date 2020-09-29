@@ -1,0 +1,152 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../celery-windows.rst:3
+#: 37a600ce6d6b4ce7b1072f900a9f7b26
+msgid "Daemonising Celery and Flower on Windows"
+msgstr ""
+
+#: ../../celery-windows.rst:5
+#: cc688e6681da465a8dba1592a38c1624
+msgid "To ensure that the Celery task queue and Flower are started at system start-up it is advisable to launch them using batch files and configure Windows Task Scheduler to run each of these at system start-up."
+msgstr ""
+
+#: ../../celery-windows.rst:9
+#: 10351b7cc55044b78590563e5d2d742d
+msgid "Celery will sometimes fall over during the execution of a long task. If Celery frequently falls over on your system then Windows Task Scheduler can be used to restart Celery on a regular basis. The Task Scheduler can also be used to ensure celery is running a few minutes prior to scheduled PACS queries."
+msgstr ""
+
+#: ../../celery-windows.rst:14
+#: 52c208710f7c415f8a8562d39c80f5dc
+msgid "An example batch file is shown below for running and restarting Celery. This calls separate batch files to start Celery and Flower, also shown below."
+msgstr ""
+
+#: ../../celery-windows.rst:18
+#: 6505cf8e813c4149a777eb226b3d91a2
+msgid "Celery control batch file"
+msgstr ""
+
+#: ../../celery-windows.rst:20
+#: f40f475f88c54a4ea14ea36970cdd505
+msgid "`celery_task.bat`, to be run as a scheduled task."
+msgstr ""
+
+#: ../../celery-windows.rst:47
+#: 971368a03db340baa2afe0d5c51b476b
+msgid "Celery start batch file"
+msgstr ""
+
+#: ../../celery-windows.rst:49
+#: 689f0618b5e74f28af83203f746d2b46
+msgid "`celery_start.bat`, called by `celery_task.bat`."
+msgstr ""
+
+#: ../../celery-windows.rst:70
+#: 69a885afe3e5420182a36f8e231b4c94
+msgid "Flower start batch file"
+msgstr ""
+
+#: ../../celery-windows.rst:72
+#: 5fd65fee46c04e01b088328e69ac6e8d
+msgid "`flower_start.bat`, called by `celery_task.bat` and also used to start Flower at system start-up."
+msgstr ""
+
+#: ../../celery-windows.rst:93
+#: a545cc1d2df04fa396d1a6554c47e283
+msgid "Setting up a scheduled task"
+msgstr ""
+
+#: ../../celery-windows.rst:96
+#: 1be9d2833b57408aaf66b8d9dae1dc5d
+msgid "For Celery"
+msgstr ""
+
+#: ../../celery-windows.rst:98
+#: be80def0f2e94d2fb13e640cb2b4c9d1
+msgid "Open ``Task Scheduler`` on the OpenREM server and then click on the ``Task Scheduler Library`` item in the left-hand pane. This should look something like figure 1 below, but without the OpenREM tasks present."
+msgstr ""
+
+#: ../../celery-windows.rst:108
+#: fbd119c617824ba7af158fe6adcdbd4a
+msgid "Figure 1: An overview of Windows Task Scheduler"
+msgstr ""
+
+#: ../../celery-windows.rst:110
+#: 55e3cec7a4dc48798d2977ce0de57aaa
+msgid "To create a new task for celery click on ``Create Task...`` in the ``Actions`` menu in the right-hand pane. Give the task a name and description. Next, click on the ``Change User or Group`` button and type ``system`` in to the box, then click ``Check Names``, then click ``OK``. This sets the server's ``SYSTEM`` user to run the task. Also check the ``Run with highest prilileges`` box. Your task should now look similar to figure 2."
+msgstr ""
+
+#: ../../celery-windows.rst:123
+#: 2ef625c3122445d4a76c11e3e30aab4c
+msgid "Figure 2: General properties"
+msgstr ""
+
+#: ../../celery-windows.rst:125
+#: 014a3147b4e746bcbf82818ce924aab1
+msgid "Next, click on the ``Triggers`` tab so that you can set when the task will be run. As a minimum you should add an ``At startup`` trigger. To do this, click ``New...``. In the dialogue box that appears select ``At startup`` from the ``Begin the task`` options and ensure that the ``Enabled`` checkbox is selected. Then click ``OK``. You may wish to add other triggers that take place at specific times during the day, as shown in figure 3."
+msgstr ""
+
+#: ../../celery-windows.rst:131
+#: 0aee9d5b63df46c1a08906459fe3487f
+msgid "In the example shown in figure 3 celery is started at system start up, and restarted multiple times each day to ensure that it is running before any PACS queries. Your requirements may be more straightforward than this example."
+msgstr ""
+
+#: ../../celery-windows.rst:141
+#: 57f9d6156513409991ed3d191ecaeca1
+msgid "Figure 3: Trigger properties"
+msgstr ""
+
+#: ../../celery-windows.rst:143
+#: 041b58e4f31446d39e5fdaba59f27b80
+msgid "Now click on the ``Actions`` tab so that you can add the action that is taken when the task is run. Click on ``New...``, and in the dialogue box that appears select ``Start a program`` as the ``Action``. Click on ``Browse`` and select the celery batch file that you created earlier. Click ``OK`` to close the ``New Action`` dialogue box. Figure 4 shows an example of the the ``Actions`` tab."
+msgstr ""
+
+#: ../../celery-windows.rst:155
+#: 1acdb1fff5f74777ab22b085cfd8116e
+msgid "Figure 4: Action properties"
+msgstr ""
+
+#: ../../celery-windows.rst:158
+#: 9c73f81e44fd46bcb18dc9dca5656d1b
+msgid "There are no particular conditions set for the task, as shown in figure 5."
+msgstr ""
+
+#: ../../celery-windows.rst:166
+#: 1fc3948ab33443e3b4cf36120d5db119
+msgid "Figure 5: Condition properties"
+msgstr ""
+
+#: ../../celery-windows.rst:169
+#: 096194b1ed744f1d933411d1eca05889
+msgid "Finally, click on the ``Settings`` tab (figure 6). Check the ``Allow task to be run on demand`` box, and also the ``If the running task does not end when requested, force it to stop`` box. Choose ``Stop the existing instance`` from the ``If the task is already running, then the following rule applies:`` list. Then click the ``OK`` button to add the task to the scheduler library."
+msgstr ""
+
+#: ../../celery-windows.rst:180
+#: 98c4559c7c3548d1b7d78503ab61d80c
+msgid "Figure 6: Task settings"
+msgstr ""
+
+#: ../../celery-windows.rst:184
+#: 57da08e0ea544ec3a2b5ac800f7a5f94
+msgid "For Flower"
+msgstr ""
+
+#: ../../celery-windows.rst:186
+#: cf17c6fb5da749cfb4c586368f54d5c1
+msgid "Repeat the above steps for the Flower batch file, but only configure the Flower task to trigger on system start-up: there should be no need to schedule re-starts of Flower."
+msgstr ""

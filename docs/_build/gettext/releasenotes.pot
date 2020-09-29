@@ -1,0 +1,157 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../releasenotes.rst:3
+#: ac9bc46eee294960b1651a01832f4aeb
+msgid "Release Notes and Change Log"
+msgstr ""
+
+#: ../../releasenotes.rst:7
+#: 57704c5530fb4b0b86ed3d4117a05218
+msgid "Version history change log"
+msgstr ""
+
+#: ../../releasenotes.rst:16
+#: c66e1fd4f1884b1bbfd9830029ac2895
+msgid "Release notes and upgrade instructions"
+msgstr ""
+
+#: ../../releasenotes.rst:18
+#: c23906761511487ca75cb04bc8d01a3a
+msgid "Each release comes with specific upgrade instructions, so please follow the links below for the appropriate version."
+msgstr ""
+
+#: ../../releasenotes.rst:22
+#: ce946f19809e4a8a98042dde5ea206cb
+msgid "Version specific information"
+msgstr ""
+
+#: ../../releasenotes.rst:25
+#: 4549daf874624c72acc631410f09a14c
+msgid ":doc:`release-1.0.0` (this release)"
+msgstr ""
+
+#: ../../releasenotes.rst:49
+#: a452428065fc47978235c98b858e68bd
+msgid "Contributing authors"
+msgstr ""
+
+#: ../../releasenotes.rst:51
+#: 77e229bbf4dd46edb91a10621d67b492
+msgid "Many people have contributed to OpenREM - either with code, documentation, bugs, examples or ideas, including:"
+msgstr ""
+
+#: ../../releasenotes.rst:53
+#: 34e9481d01dc42318adf5bd1a182a68e
+msgid "`BjörnAlbers <https://bitbucket.org/bjoernalbers/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:54
+#: 380727d96bf6470590036034e0398cad
+msgid "`Erlend Andersen <https://bitbuckeet.org/erlend_andersen/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:55
+#: 0aa63ca6073244e7a7e438a00ff7c056
+msgid "`Njål Brekke <https://bitbuckeet.org/elenhinan/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:56
+#: 2429c5f79bfe4ceb8f8535cf16cc2e91
+msgid "Elly Castellano"
+msgstr ""
+
+#: ../../releasenotes.rst:57
+#: a559ab92453247509c5150dbb1df3aa9
+msgid "`Jonathan Cole <https://bitbucket.org/jacole/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:58
+#: e086177bf7d04bd2a6dc2faf487bcb2d
+msgid "`Jamie Dormand <https://bitbucket.org/jamiedormand/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:59
+#: c7e9682d90f7440f9e5f6536d8336c57
+msgid "`Ben Earner <https://bitbucket.org/bearner/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:60
+#: 166c4995f2224d06853cdb479a9e0c09
+msgid "`Daniel Gordon <https://bitbucket.org/dan_gordon/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:61
+#: 6fb4bd18ed7b4f968ed0701dd80f4e3c
+msgid "`Hamid Khosravi <https://bitbucket.org/hrkhosravi/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:62
+#: fe941bbaaff64edda7191da4c0665815
+msgid "`Laurence King <https://bitbucket.org/LaurenceKing/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:63
+#: 788e9453f1a942609e5681d72308f5a6
+msgid "`Eivind Larsen <https://bitbucket.org/leivind/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:64
+#: 2dc63b27afc0424a826391818919a099
+msgid "`John Loveland <https://bitbucket.org/JLMPO/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:65
+#: 86b096e12bec4586848e8bd10ebb3198
+msgid "`Ed McDonagh <https://bitbucket.org/edmcdonagh/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:66
+#: 0c8c5bde95774834a6bc3d4f5a8edd97
+msgid "`Richard Miles <https://bitbucket.org/r89m/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:67
+#: bca55dec5b334ab1b3cfaa27d12d713d
+msgid "`Luuk Oostveen <https://bitbucket.org/LuukO/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:68
+#: 9ca736befc4a476abadd0f249ad9d283
+msgid "`David Platten <https://bitbucket.org/dplatten/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:69
+#: 9a70989b15764d9eaba6b248754581f9
+msgid "`Richard Raynor <https://bitbucket.org/RaynorR/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:70
+#: 1a6eeb0da5cf4df4a10b33bdf8253649
+msgid "`Erik-Jan Rijkhorst <https://bitbucket.org/rijkhorst/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:71
+#: 714c6aecef3140f395ad15d1c91abda7
+msgid "`Arnold Schilham <https://bitbucket.org/asch99/>`_"
+msgstr ""
+
+#: ../../releasenotes.rst:72
+#: 83d42e78a4b54fcf8c2bb6fd2476c980
+msgid "`Tim de Wit <https://bitbucket.org/tcdewit/>`_"
+msgstr ""
