@@ -121,22 +121,22 @@ CHART_THEMES = (
     ("simple_white", "Simple white"),
 )
 
+
 DEFAULT_COLOUR_MAP = "RdYlBu"
 CHART_COLOUR_MAPS = (
     (DEFAULT_COLOUR_MAP, "Red-yellow-blue (default)"),
+    ("Spectral", "Spectral"),
     ("RdYlGn", "Red-yellow-green"),
-    ("PiYG", "Pink-green"),
-    ("PRGn", "Purple-green"),
-    ("BrBG", "Brown-green"),
-    ("PuOr", "Orange-purple"),
-    ("RdGy", "Red-grey"),
-    ("RdBu", "Red-blue"),
-    ("viridis", "Viridis"),
-    ("plasma", "Plasma"),
+    ("coolwarm", "Cool-warm"),
+    ("rainbow", "Rainbow"),
+    ("turbo", "Turbo"),
+    ("brg", "Blue-red-green"),
+    ("gnuplot", "GNUplot"),
     ("inferno", "Inferno"),
     ("magma", "Magma"),
+    ("plasma", "Plasma"),
+    ("viridis", "Viridis"),
     ("cividis", "Cividis"),
-    ("Spectral", "Spectral"),
 )
 
 

@@ -405,3 +405,7 @@ ul.RadioSelect {
 td.valign_top {
   vertical-align: top;
 }
+
+li.no-wrap {
+  white-space: nowrap;
+}

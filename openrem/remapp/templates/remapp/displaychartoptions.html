@@ -33,14 +33,12 @@
 
             {{ GeneralChartOptionsForm.plotColourMapChoice.errors }}
                 <td rowspan="10" class="valign_top">{{ GeneralChartOptionsForm.plotColourMapChoice.label_tag }}&nbsp;</td>
-                <td rowspan="10">
+                <td rowspan="10" class="valign_top">
 
-                <ul class="RadioSelect" id="value">
+                <ul class="RadioSelect">
                     {% for x, y in GeneralChartOptionsForm.fields.plotColourMapChoice.choices %}
-                        <li>
-                            <label for="value_{{ forloop.counter0 }}">
-                                <input type="radio" name="plotColourMapChoice" value="{{ x }}" id="value_{{ forloop.counter0 }}" {% if GeneralChartOptionsForm.plotColourMapChoice.value == x %}checked{% endif %}>&nbsp<img src="{{ STATIC_URL }}img/{{ x }}.png" alt="{{ y }}" />
-                            </label>
+                        <li class="no-wrap">
+                            <label for="value_{{ forloop.counter0 }}"></label><input type="radio" name="plotColourMapChoice" value="{{ x }}" id="value_{{ forloop.counter0 }}" {% if GeneralChartOptionsForm.plotColourMapChoice.value == x %}checked{% endif %}>&nbsp<img src="{{ STATIC_URL }}img/{{ x }}.png" alt="{{ y }}">
                         </li>
                     {% endfor %}
                 </ul>
