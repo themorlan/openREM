@@ -1,0 +1,112 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../trouble500.rst:2
+#: 365e02b967bf4afc8a2219a101f100de
+msgid "Server 500 errors"
+msgstr ""
+
+#: ../../trouble500.rst:4
+#: 065b1d51d0f14a51b76faef8462278cc
+msgid "**Turn on debug mode**"
+msgstr ""
+
+#: ../../trouble500.rst:6
+#: 7b5f5c701a894674a8b3c06511956f7f
+msgid "This will render a debug report in the browser - usually revealing the problem."
+msgstr ""
+
+#: ../../trouble500.rst:9
+#: 6b26cc06ffdf4f6597bc67a56eb89557
+msgid "Docker installs"
+msgstr ""
+
+#: ../../trouble500.rst:11
+#: 7e6a79935f884fe6a5935890dca10a8f
+msgid "Edit the ``.env.prod`` file. Find the following line and change it from ``0`` to ``1``:"
+msgstr ""
+
+#: ../../trouble500.rst:17
+#: a87766a84cc940dca21fe5687ea69d9b
+msgid "Restart the containers using a command line in the folder containing your installation. This might be enough:"
+msgstr ""
+
+#: ../../trouble500.rst:23
+#: f27d33b6f3ab4cd1b7b5ff1cb6869c6b
+msgid "If the webserver fails, then restart all the containers:"
+msgstr ""
+
+#: ../../trouble500.rst:31
+#: 32c79049ba60416b8892b7d5d8cd23a8
+msgid "Non-Docker Linux installs"
+msgstr ""
+
+#: ../../trouble500.rst:33
+#: b7c23d72fe57408ebf733ba7b1c341dc
+msgid "Locate and edit your local_settings file"
+msgstr ""
+
+#: ../../trouble500.rst:39
+#: 0d62268e6d11469bb41d82e43ef6ba5f
+msgid "Find the following line and make it active:"
+msgstr ""
+
+#: ../../trouble500.rst:45
+#: efc9f0254ff6423ea2d8b6652d788edb
+msgid "Restart the web service:"
+msgstr ""
+
+#: ../../trouble500.rst:52
+#: ad392110f30648368f79f46f2d5dab8e
+msgid "Returning to normal mode"
+msgstr ""
+
+#: ../../trouble500.rst:54
+#: d317f695cffe4ec5909cd408e1a8c2e2
+msgid "You should always disable debug mode when you have fixed the error. If you leave debug mode in place, the system is likely to run out of memory as database queries are cached in this mode."
+msgstr ""
+
+#: ../../trouble500.rst:57
+#: 72ead1e8557148aba1482d2b2a477938
+msgid "Docker:"
+msgstr ""
+
+#: ../../trouble500.rst:59
+#: 2231814584b44151860ecbff23b88d0d
+msgid "Edit ``.env.prod`` to set ``DEBUG=0``"
+msgstr ""
+
+#: ../../trouble500.rst:60
+#: a2fb0a6ff88743cd8bbcd1f2454c9778
+msgid "Restart ``docker-compose``"
+msgstr ""
+
+#: ../../trouble500.rst:62
+#: f2290e30987b4cbbaf1213112c49a238
+msgid "Non-docker Linux:"
+msgstr ""
+
+#: ../../trouble500.rst:64
+#: 7b2d4bf7aea24078a3aaf8b536865c9e
+msgid "Edit ``local_settings.py`` again to comment out the ``DEBUG`` line (add a ``#`` to the start) or set it to ``False``"
+msgstr ""
+
+#: ../../trouble500.rst:65
+#: 86430477b1cc4fb88ceb1ac2093fbb9d
+msgid "Reload the web service"
+msgstr ""

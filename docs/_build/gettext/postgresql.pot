@@ -1,0 +1,247 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../postgresql.rst:3
+#: 049c17c8ee564033b937832788be7341
+msgid "PostgreSQL database (Linux)"
+msgstr ""
+
+#: ../../postgresql.rst:9
+#: 6085c7c7b12546ecbc878e7306b63a15
+msgid "Creating the database"
+msgstr ""
+
+#: ../../postgresql.rst:12
+#: ab5d2c989a1b46c290fde9466e30dfce
+msgid "Install PostgreSQL and the python connector"
+msgstr ""
+
+#: ../../postgresql.rst:18
+#: b19459d828c24e179e09a3938253a9d3
+msgid "If you are using a virtualenv, make sure you are in it and it is active (``source bin/activate``)"
+msgstr ""
+
+#: ../../postgresql.rst:25
+#: e16d1089b1e4433eac7bd52cd909667d
+msgid "Change the security configuration"
+msgstr ""
+
+#: ../../postgresql.rst:27
+#: abe316894068457bb1dad3213c1ebfad
+msgid "The default security settings are too restrictive to allow access to the database. Assumes version ``10``, change as appropriate."
+msgstr ""
+
+#: ../../postgresql.rst:35
+#: 19b23589038e4e108e10c2bf97446f70
+msgid "Scroll down to the bottom of the file and edit the following line from ``peer`` to ``md5``:"
+msgstr ""
+
+#: ../../postgresql.rst:41
+#: 8fd101d3366c4a56bab64b3b2b9f5691
+msgid "Don't worry about any lines that start with a ``#`` as they are ignored. If you can't access the database when everything else is configured, you might need to revisit this file and see if there are other lines with a method of ``peer`` that need to be ``md5``"
+msgstr ""
+
+#: ../../postgresql.rst:47
+#: b6c83d7ce4a34c0dbac51c8382fdd737
+msgid "If you need to have different settings for different databases on your server, you can use the database name instead of the first ``all``, and/or the the database user name instead of the second ``all``."
+msgstr ""
+
+#: ../../postgresql.rst:50
+#: a0f8617691fb45b0aa079da7fce5ba1a
+msgid "Restart PostgreSQL so the new settings take effect:"
+msgstr ""
+
+#: ../../postgresql.rst:57
+#: 1eed96ba01614144acd814c5d9ebfe67
+msgid "Optional: Specify the location for the database files"
+msgstr ""
+
+#: ../../postgresql.rst:59
+#: 0aa40a2470434826ac76951d75f14068
+msgid ":ref:`move_pg_files`"
+msgstr ""
+
+#: ../../postgresql.rst:62
+#: 866418cba284451bb819db2a0f9af091
+msgid "Create a user for the OpenREM database"
+msgstr ""
+
+#: ../../postgresql.rst:68
+#: de23ce0670604e20ba537a21cdd6d2d8
+msgid "Enter a new password for the ``openremuser``, twice"
+msgstr ""
+
+#: ../../postgresql.rst:71
+#: 36d3f76e172f483290e78853ba7903d6
+msgid "Create the OpenREM database"
+msgstr ""
+
+#: ../../postgresql.rst:77
+#: 5e142545115f4769b8e8350381f30fa3
+msgid "**If this is your initial install**, you are now ready to install OpenREM, so go to the :doc:`install` docs."
+msgstr ""
+
+#: ../../postgresql.rst:79
+#: 9d03b0f692f44e03b1227d3ebf68c31d
+msgid "If you are replacing a SQLite test install with PostgreSQL, continue here."
+msgstr ""
+
+#: ../../postgresql.rst:82
+#: 97b46171c9ca436894e8c2ae92f8f521
+msgid "Configure OpenREM to use the database"
+msgstr ""
+
+#: ../../postgresql.rst:84
+#: e59f5ed15c584b8ba7c986c82ba8f227
+msgid "Move to the OpenREM install directory:"
+msgstr ""
+
+#: ../../postgresql.rst:86
+#: 040bc49327774e39b5040c9353338680
+msgid "Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``"
+msgstr ""
+
+#: ../../postgresql.rst:87
+#: db76dbb31f404c7cba5fe99adbf28d33
+msgid "Other linux: ``/usr/lib/python2.7/site-packages/openrem/``"
+msgstr ""
+
+#: ../../postgresql.rst:88
+#: a2303385e9404804a3690b7d738fd938
+msgid "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/``"
+msgstr ""
+
+#: ../../postgresql.rst:89
+#: b767e6980918429b9732def23e05c904
+msgid "Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\``"
+msgstr ""
+
+#: ../../postgresql.rst:90
+#: 9a62fb264c5d49aeaabb4e25a7a86e1b
+msgid "Windows virtualenv: ``virtualenvfolder\\Lib\\site-packages\\openrem\\``"
+msgstr ""
+
+#: ../../postgresql.rst:93
+#: 8c41617ad20144588e526e1ca9b32461
+msgid "Edit the settings file, eg"
+msgstr ""
+
+#: ../../postgresql.rst:99
+#: 6024985dc5134efc8fd8c4d496235d99
+msgid "Set the following (changing database name, user and password as appropriate)"
+msgstr ""
+
+#: ../../postgresql.rst:112
+#: b840fbc33e9d4f90830df29f9a518fc1
+msgid "Backup the database"
+msgstr ""
+
+#: ../../postgresql.rst:115
+#: d0e296dfd8d04479a7f6e90f64aa0d55
+msgid "Ad-hoc backup from the command line"
+msgstr ""
+
+#: ../../postgresql.rst:121
+#: 4510c42fecec4217ae563ca2ce7f7805
+msgid "If you are moving a backup file between systems, or keeping a few backups, you may like to compress the backup; for example a 345 MB OpenREM database compresses to 40 MB:"
+msgstr ""
+
+#: ../../postgresql.rst:129
+#: 3f9c1a544e924c98b4e575524ee3183a
+msgid "Automated backup with a bash script"
+msgstr ""
+
+#: ../../postgresql.rst:137
+#: 77f3aa2071e84b98986524e9779fb79f
+msgid "This script could be called by a cron task, or by a backup system such as backuppc prior to running the system backup."
+msgstr ""
+
+#: ../../postgresql.rst:143
+#: 9ca21b3f5ed94f39817249f2bcc70cb6
+msgid "Restore the database"
+msgstr ""
+
+#: ../../postgresql.rst:145
+#: 08df51393b6e4a4fb6e31c89a909071d
+msgid "If the restore is taking place on a different system,"
+msgstr ""
+
+#: ../../postgresql.rst:147
+#: 7a4a141bdb6d4decbfc5d501b4dfb8bb
+msgid "ensure that PostgreSQL is installed and the same user has been added as was used to create the initial database (see :ref:`create-psql-db`) -- check ``local_settings.py`` if you can't remember the the user name used!"
+msgstr ""
+
+#: ../../postgresql.rst:149
+#: f9c02fddfa5943a4849397fecf027709
+msgid "Ensure that the new system has the same version of OpenREM installed as the system the database was backed up from."
+msgstr ""
+
+#: ../../postgresql.rst:150
+#: 80a8b1171e9a43b0a391d1f261cbb4bf
+msgid "Ensure the ``openrem/remapp/migrations/`` folder has no files in except __init__.py"
+msgstr ""
+
+#: ../../postgresql.rst:152
+#: 61a7ba80b1db4cd3a166a4a3cd7cdfc5
+msgid "Create a fresh database and restore from the backup:"
+msgstr ""
+
+#: ../../postgresql.rst:159
+#: 353c67d17df5435d9207ee19b6bd327e
+msgid "Reconfigure ``local_settings.py`` with the new database details and introduce OpenREM to the restored database:"
+msgstr ""
+
+#: ../../postgresql.rst:167
+#: a726a6adf41d45afb7672faf2335015f
+msgid "If you are creating a second system in order to test upgrading, you can do this now followed by the usual ``python manage.py makemigrations remapp`` then ``python manage.py migrate remapp`` as per the upgrade instructions."
+msgstr ""
+
+#: ../../postgresql.rst:173
+#: 1fa28e60f98243e88a8fb3540f559e2f
+msgid "Useful PostgreSQL commands"
+msgstr ""
+
+#: ../../postgresql.rst:194
+#: 50ee84cdaa314fc885ae8cc5b1f558c6
+msgid "Advanced: specify location for the database files"
+msgstr ""
+
+#: ../../postgresql.rst:196
+#: e4400a98cbec4704b1ff4c090c46eea5
+msgid "You might like to do this if you want to put the database on an encrypted location instead of ``/var/lib/postgresql``."
+msgstr ""
+
+#: ../../postgresql.rst:198
+#: e89d08e8d19d49e6968210fdc9ed41cb
+msgid "For this example, I'm going to assume all the OpenREM programs and data are in the folder ``/var/openrem/`` and PostgreSQL is at version ``10`` (change both as appropriate)"
+msgstr ""
+
+#: ../../postgresql.rst:208
+#: 9effaeb92ed04fb39fcf40f3738c8780
+msgid "Change the line"
+msgstr ""
+
+#: ../../postgresql.rst:214
+#: f517a733cd724e539c3d4b2b03ed62bc
+msgid "to"
+msgstr ""
+
+#: ../../postgresql.rst:220
+#: 08c3fe3a8c764bcaaa0c0526f442b8a1
+msgid "then restart PostgreSQL:"
+msgstr ""

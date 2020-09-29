@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"POT-Creation-Date: 2020-09-26 00:23+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,19 +17,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: ../../code_running_tests.rst:3 21ca73ea0ed44d48a076c436ea449c6f
+#: ../../code_running_tests.rst:3 065f3e9c786c4ce58258f6839887cfe2
 msgid "Running the test suite"
 msgstr ""
 
-#: ../../code_running_tests.rst:5 5bf0f84b7c3e4690a853ca26225e284d
+#: ../../code_running_tests.rst:5 0b12a64073be4c029912a458336faa7c
 msgid "**TODO: Update for Python 3, OpenREM 1.0**"
 msgstr ""
 
-#: ../../code_running_tests.rst:8 13891c7e82d44e39be1b32f1b500a41d
+#: ../../code_running_tests.rst:8 84ef59648042493ba3e4e586458892c9
 msgid "Code formatting and tests"
 msgstr ""
 
-#: ../../code_running_tests.rst:10 91a106bf5fb9472e928fb2e8b79ace1e
+#: ../../code_running_tests.rst:10 2ade4e81b5bd43698285aec42b5ab850
 msgid ""
 "Steps before pushing to Bitbucket. Commands assume you are in the root "
 "directory of the git repository, at the same level as README.rst and "
@@ -38,118 +38,136 @@ msgid ""
 "install black``)"
 msgstr ""
 
-#: ../../code_running_tests.rst:14 e6cf9a85ef3943f1999c3bff03f7387c
+#: ../../code_running_tests.rst:14 1f09a4717dc14784ac47aeec14992ec8
 msgid "Run black against the code:"
 msgstr ""
 
-#: ../../code_running_tests.rst:20 5cbddd68b43445b3a9a3749c326af8ef
+#: ../../code_running_tests.rst:20 238d1bb288044f598ae25c7fae74e982
 msgid ""
 "Check the changes made, edit where necessary. Black is an opinionated "
 "Python formatter and in general OpenREM code should be subjected to it. "
 "The flake8 tests are tuned to agree with Black."
 msgstr ""
 
-#: ../../code_running_tests.rst:23 c3ef8dcfba8b4f149ee00dce6452732c
+#: ../../code_running_tests.rst:23 cd67b18496e34d4a899f68af933a00fc
 msgid "Run the Django tests:"
 msgstr ""
 
-#: ../../code_running_tests.rst:31 17d14334c38d487f920cefa69a59f5b3
+#: ../../code_running_tests.rst:31 a548bee1be2644f5b89b1c8e92894eac
 msgid "**old stuff to be updated**"
 msgstr ""
 
-#: ../../code_running_tests.rst:34 3f8b4f063e324e1d8f39f8bacdff6857
+#: ../../code_running_tests.rst:34 32aa767f12064971814f509cee22ce36
 msgid "Preparation"
 msgstr ""
 
-#: ../../code_running_tests.rst:37 7e1ff476844a42239100d9520bbd44e2
+#: ../../code_running_tests.rst:37 4cadc4eae4864e5ea5156149e485bf20
 msgid "Install the dependencies and OpenREM"
 msgstr ""
 
-#: ../../code_running_tests.rst:39 6abac2913fdf45afbc9529677ea3ba11
+#: ../../code_running_tests.rst:39 4b73e734b46242b9977b442ab77964ad
 msgid ""
 "OpenREM is a Django application, and therefore we use Django's test-"
 "execution framework to test OpenREM."
 msgstr ""
 
-#: ../../code_running_tests.rst:41 a5d9b1422a264d7b8fdada1e1beae2b4
+#: ../../code_running_tests.rst:41 299a5116aed240798d851f9378443031
 msgid ""
 "The first thing to do is to create a local copy of the git repository, "
 "then install all of OpenREM's dependencies in a virtualenv."
 msgstr ""
 
-#: ../../code_running_tests.rst:44 11b005050ee8410c841c96444977ce2c
+#: ../../code_running_tests.rst:44 6a45749c4f6a4504a7593bc4b517d978
 msgid ""
 "You will need ``python``, ``pip``, ``git`` and ``virtualenv`` installed -"
-" see the links on the :doc:`install-prep` docs for the latter, but you "
-"might try ``pip install virtualenv``."
+" see the links on the : doc : `install-prep` docs for the latter, but you"
+" might try ``pip install virtualenv``."
 msgstr ""
 
-#: ../../code_running_tests.rst:52 f52fb5c44f4c4e8e98013eb37c7cb39c
+#: ../../code_running_tests.rst:52 ee7b501122fd4be8a110a9ceeb369d0d
 msgid "Now create the virtualenv:"
 msgstr ""
 
-#: ../../code_running_tests.rst:61 18073a674ec14919a7e752d8f3c93803
+#: ../../code_running_tests.rst:61 15ac2d05b2f246f1b8aac2598d01a8b6
 msgid ""
 "At this stage there should be a ``(veOpenREM)`` prefix to our prompt "
 "telling us the virtualenv is activated."
 msgstr ""
 
-#: ../../code_running_tests.rst:63 448469d47e1b4bf28c5f47c8618048af
+#: ../../code_running_tests.rst:63 a70085e9e028450a923511b642c85972
 msgid "Now install the dependencies:"
 msgstr ""
 
-#: ../../code_running_tests.rst:70 9b2930cec5b6435dbc3868ed78869cce
+#: ../../code_running_tests.rst:70 c71c05b711c04a0bbef453617e855abd
 msgid "In the future it might be necessary to install numpy too for testing."
 msgstr ""
 
-#: ../../code_running_tests.rst:73 3c24dce0121040a693b1ae5e936baca3
+#: ../../code_running_tests.rst:73 1a6478bbcdcd4149a2593fab91039319
 msgid "Configure OpenREM"
 msgstr ""
 
-#: ../../code_running_tests.rst:75 197312d6b3fa42f488e30a7b4baeb836
+#: ../../code_running_tests.rst:75 b5e84454939a4bcc9153e1ee0fc07af5
 msgid ""
 "Rename and configure ``openremproject/local_settings.py.example`` and "
-"``openremproject/wsgi.py.example`` as per the :doc:`install` docs."
+"``openremproject/wsgi.py.example`` as per the : doc :`install` docs."
 msgstr ""
 
-#: ../../code_running_tests.rst:78 becab0f60c8a41ff9469fe2a086e13b5
-msgid "Create a database following the same :doc:`install` instructions."
+#: ../../code_running_tests.rst:78 47b3fde885ef4ebcbde65ccf4ad9f676
+msgid "Create a database following the same : doc :`install` instructions."
 msgstr ""
 
-#: ../../code_running_tests.rst:81 082b1d9f991544b7a4e6a0cba022fef7
+#: ../../code_running_tests.rst:81 e05a9eb9d76849e59ad1f5e166b8669f
 msgid "Run the tests!"
 msgstr ""
 
-#: ../../code_running_tests.rst:83 8a279d9cdf8645cbba298c9b44460099
+#: ../../code_running_tests.rst:83 92815ee6b2254b1a8bcfc2cac6241a68
 msgid ""
 "Making sure the virtualenv is activated, move to ``openremrepo/openrem`` "
 "and run:"
 msgstr ""
 
-#: ../../code_running_tests.rst:89 62d143d89d72439e91ee559c53334955
+#: ../../code_running_tests.rst:89 a94aab33fde1443c8a763a0d514f944c
 msgid "All the tests that exit in ``openrem/remapp/tests/`` will now be run."
 msgstr ""
 
-#: ../../code_running_tests.rst:93 e88ae9e9bd1b41408495cb42146cb927
+#: ../../code_running_tests.rst:93 f64bb43f856a459cb54c5972d4c617f5
 msgid "Related tools"
 msgstr ""
 
-#: ../../code_running_tests.rst:96 80c5d5714e9148eb9f7767c4324777db
+#: ../../code_running_tests.rst:96 2ef4b2c6db2c48aeaec108de52a13a6f
 msgid "Enabling django-debug-toolbar"
 msgstr ""
 
-#: ../../code_running_tests.rst:98 8bdd251f96234465b0edeb53a396f6d6
+#: ../../code_running_tests.rst:98 9dc9711dfc41487a81bb709d2041dd42
 msgid "See :doc:`enabling_debug_toolbar`"
 msgstr ""
 
-#: ../../code_running_tests.rst:101 3a26c59fa10a4815a413d99a146d9285
+#: ../../code_running_tests.rst:101 8a0d5aae3756464f95d27e6aa393ffed
 msgid "Creating test versions of production systems"
 msgstr ""
 
-#: ../../code_running_tests.rst:103 ffc35d566706444fb2b15c9766020ddd
+#: ../../code_running_tests.rst:103 f3490ce12c574322ae9e0dc4fee70c4c
 msgid ""
 "If you wish to create a duplicate install to test upgrades etc, refer to "
 ":ref:`restore-psql-linux` and the preceding text regarding making "
 "backups."
 msgstr ""
+
+#~ msgid ""
+#~ "You will need ``python``, ``pip``, "
+#~ "``git`` and ``virtualenv`` installed - "
+#~ "see the links on the :doc:`install-"
+#~ "prep` docs for the latter, but you"
+#~ " might try ``pip install virtualenv``."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Rename and configure "
+#~ "``openremproject/local_settings.py.example`` and "
+#~ "``openremproject/wsgi.py.example`` as per the "
+#~ ":doc:`install` docs."
+#~ msgstr ""
+
+#~ msgid "Create a database following the same :doc:`install` instructions."
+#~ msgstr ""
 

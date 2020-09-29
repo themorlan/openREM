@@ -59,8 +59,6 @@ Upgrade
 
         pip install openrem==0.10.0
 
-.. _update_configuration0100:
-
 Migrate the database
 ====================
 
@@ -119,7 +117,6 @@ Follow the guide at :doc:`startservices`.
         sudo systemctl start orthanc
         sudo systemctl restart openrem-gunicorn
 
-.. _post_upgrade0100:
 
 ****************************************
 Post-upgrade migration of summary fields

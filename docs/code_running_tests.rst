@@ -41,7 +41,7 @@ OpenREM is a Django application, and therefore we use Django's test-execution fr
 The first thing to do is to create a local copy of the git repository, then install all of OpenREM's dependencies in a
 virtualenv.
 
-You will need ``python``, ``pip``, ``git`` and ``virtualenv`` installed - see the links on the :doc:`install-prep` docs
+You will need ``python``, ``pip``, ``git`` and ``virtualenv`` installed - see the links on the : doc : `install-prep` docs
 for the latter, but you might try ``pip install virtualenv``.
 
 .. sourcecode:: console
@@ -73,9 +73,9 @@ Configure OpenREM
 -----------------
 
 Rename and configure ``openremproject/local_settings.py.example`` and ``openremproject/wsgi.py.example`` as per the
-:doc:`install` docs.
+: doc :`install` docs.
 
-Create a database following the same :doc:`install` instructions.
+Create a database following the same : doc :`install` instructions.
 
 Run the tests!
 ==============

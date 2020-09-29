@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-15 17:58+0100\n"
+"POT-Creation-Date: 2020-09-25 22:47+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,195 +17,184 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: ../../code_tools.rst:3 b05b9651d83e438386232a88b0ab7212
+#: ../../code_tools.rst:3 21011dc6412441679f3433821dd4caec
 msgid "Tools and helper modules"
 msgstr ""
 
-#: ../../code_tools.rst:6 47583fddc80b45efb1caae0ce84a23d3
-msgid "OpenREM settings"
-msgstr ""
-
-#: ../../code_tools.rst:7 5e85d04225e3460a9f847eb498fcabf7
-msgid ""
-"Administrative module to define the name of the project and to add it to "
-"the Python path"
-msgstr ""
-
-#: ../../code_tools.rst:15 0c1fadd541454f23bb6d6e38016f7e83
+#: ../../code_tools.rst:6 df2e6ac83c294a1db246fa68e4093d11
 msgid "Get values"
 msgstr ""
 
-#: ../../code_tools.rst:16 4c06d597ddd5477e9a831b19a2974b6f
+#: ../../code_tools.rst:7 2d28005d732d4d17b554b4633c2deb51
 msgid ""
 "Tiny modules to reduce repetition in the main code when extracting "
 "information from DICOM headers using pydicom."
 msgstr ""
 
-#: c2b663993a7a4eeeae68ac42ecbcb397 of remapp.tools.get_values.get_value_kw:1
+#: f8a07233d3cc4e9baa47a9679285cfe2 of
+#: openrem.remapp.tools.get_values.get_value_kw:1
 msgid "Get DICOM value by keyword reference."
 msgstr ""
 
-#: 02aabcd9044b45df97b0c50342f8d196 08f4bc8733d74570bf32defa96adc699
-#: 23b8a1754e9d49948b61c668aca30fd4 42853c879283471b8770148d30cb50b8
-#: 552a09f72e714aa2b7c9a65af6110447 6a6a49b70d6046ea9c5dd35cfcaae85d
-#: 81e297e323b1487e976d7d4476be8f97 9ea8b1d6bde84622a7533141db99ef97
-#: b045d405340442b9b94356eb804de73b b4dae216458d4800ba8b1ac9f9e079da
-#: d66a51f969d747669cd5786c0d5e9333 e4b4e7000cc54c598a2b42423a729184
-#: ecb05ad50c3e46378820e1c43ca80f44 f1eb596a04ed4a7cb66024a292e42627
-#: f48903341d6747369fc12457d726cb17 f576fa2e057749dd8507532d2a7c80b9
-#: fbccd392fcb8441dafedb7a33fb2e92b of remapp.tools.check_uid.check_uid
-#: remapp.tools.check_uid.record_sop_instance_uid
-#: remapp.tools.dcmdatetime.get_date remapp.tools.dcmdatetime.get_date_time
-#: remapp.tools.dcmdatetime.get_time remapp.tools.dcmdatetime.make_date
-#: remapp.tools.dcmdatetime.make_date_time
-#: remapp.tools.dcmdatetime.make_dcm_date_range
-#: remapp.tools.dcmdatetime.make_dcm_time
-#: remapp.tools.dcmdatetime.make_dcm_time_range
-#: remapp.tools.dcmdatetime.make_time remapp.tools.get_values.get_or_create_cid
-#: remapp.tools.get_values.get_seq_code_meaning
-#: remapp.tools.get_values.get_seq_code_value
-#: remapp.tools.get_values.get_value_kw remapp.tools.get_values.get_value_num
-#: remapp.tools.not_patient_indicators.get_not_pt
+#: 437b885a90334bf3bdea24e2356a7ab8 of openrem.remapp.tools.check_uid.check_uid
+#: openrem.remapp.tools.check_uid.record_sop_instance_uid
+#: openrem.remapp.tools.dcmdatetime.get_date
+#: openrem.remapp.tools.dcmdatetime.get_date_time
+#: openrem.remapp.tools.dcmdatetime.get_time
+#: openrem.remapp.tools.dcmdatetime.make_date
+#: openrem.remapp.tools.dcmdatetime.make_date_time
+#: openrem.remapp.tools.dcmdatetime.make_dcm_date_range
+#: openrem.remapp.tools.dcmdatetime.make_dcm_time
+#: openrem.remapp.tools.dcmdatetime.make_dcm_time_range
+#: openrem.remapp.tools.dcmdatetime.make_time
+#: openrem.remapp.tools.get_values.get_or_create_cid
+#: openrem.remapp.tools.get_values.get_seq_code_meaning
+#: openrem.remapp.tools.get_values.get_seq_code_value
+#: openrem.remapp.tools.get_values.get_value_kw
+#: openrem.remapp.tools.get_values.get_value_num
+#: openrem.remapp.tools.not_patient_indicators.get_not_pt
 msgid "Parameters"
 msgstr ""
 
-#: 358797d9e9dd47b59bdd3bcca47f2b50 5b82a310d0834e13ac3f9f03f818b08e
-#: 5ead61042e3e4135921c0cfd9220121c 7d1359e93ea74f96967f8611d403df43 of
-#: remapp.tools.dcmdatetime.get_date:3 remapp.tools.dcmdatetime.get_date_time:3
-#: remapp.tools.dcmdatetime.get_time:3 remapp.tools.get_values.get_value_kw:3
+#: bc0a280b1c434523856d76834b227019 of
+#: openrem.remapp.tools.dcmdatetime.get_date:3
+#: openrem.remapp.tools.dcmdatetime.get_date_time:3
+#: openrem.remapp.tools.dcmdatetime.get_time:3
+#: openrem.remapp.tools.get_values.get_value_kw:3
 msgid "DICOM keyword, no spaces or plural as per dictionary."
 msgstr ""
 
-#: 39304f05a1ae4cb7b86e6e73b64edaef 742817a3562b4266b2e31eb5ccd18930
-#: 8b5657807c494d5c9ff4cdc11dbb721b b3ec730c2e6047e788287bcfdf5629b8
-#: dd0ab3af9e3648eb90d5bb2b46e3ab9e of remapp.tools.dcmdatetime.get_date:5
-#: remapp.tools.dcmdatetime.get_date_time:5 remapp.tools.dcmdatetime.get_time:5
-#: remapp.tools.get_values.get_value_kw:5
-#: remapp.tools.get_values.get_value_num:8
+#: 2b560c0a4c1b481d940f6b1b45520bbf of
+#: openrem.remapp.tools.dcmdatetime.get_date:5
+#: openrem.remapp.tools.dcmdatetime.get_date_time:5
+#: openrem.remapp.tools.dcmdatetime.get_time:5
+#: openrem.remapp.tools.get_values.get_value_kw:5
+#: openrem.remapp.tools.get_values.get_value_num:8
 msgid "The DICOM dataset containing the tag."
 msgstr ""
 
-#: 1460d68dd1b1429ea545fe19ed8b38a3 1ae317db0ffa4d82a94333f7b78e34b6
-#: 22032680a8aa4423889dbc2b1c4af37d 24dd797b14574687a6be0d04d1901613
-#: 27bb800f59364e4c86460d1a5b016b94 59e300749fb64c26a218df39ce8cb15a
-#: 7a99ce7ef97144faba6f51b6d7f50111 7aeb4156539d41cfa3b8ba54a0c450ff
-#: 7e2c438b17af419d8fde3b8d11b255a8 7fdb5fab4d544c1aadec3353f2032252
-#: 8c99072dca24425bb2870356c28b6a2c b79be44f625e48d1a9e1969ead38b08f
-#: be4ee02c43334a89bb5e7e8142ed62ca be5edef36bdf40a6a0c51880ce485581
-#: d2f1b29b53034867ae7e7102c9bd603a dfc0a4c9d92f4b25bd2069a9ce01080d
-#: e47ab79fae2c44a4a0f9253198ba5080 of remapp.tools.check_uid.check_uid
-#: remapp.tools.check_uid.record_sop_instance_uid
-#: remapp.tools.dcmdatetime.get_date remapp.tools.dcmdatetime.get_date_time
-#: remapp.tools.dcmdatetime.get_time remapp.tools.dcmdatetime.make_date
-#: remapp.tools.dcmdatetime.make_date_time
-#: remapp.tools.dcmdatetime.make_dcm_date_range
-#: remapp.tools.dcmdatetime.make_dcm_time
-#: remapp.tools.dcmdatetime.make_dcm_time_range
-#: remapp.tools.dcmdatetime.make_time remapp.tools.get_values.get_or_create_cid
-#: remapp.tools.get_values.get_seq_code_meaning
-#: remapp.tools.get_values.get_seq_code_value
-#: remapp.tools.get_values.get_value_kw remapp.tools.get_values.get_value_num
-#: remapp.tools.not_patient_indicators.get_not_pt
+#: c6125422b4af4347975fd4c70b630780 of openrem.remapp.tools.check_uid.check_uid
+#: openrem.remapp.tools.check_uid.record_sop_instance_uid
+#: openrem.remapp.tools.dcmdatetime.get_date
+#: openrem.remapp.tools.dcmdatetime.get_date_time
+#: openrem.remapp.tools.dcmdatetime.get_time
+#: openrem.remapp.tools.dcmdatetime.make_date
+#: openrem.remapp.tools.dcmdatetime.make_date_time
+#: openrem.remapp.tools.dcmdatetime.make_dcm_date_range
+#: openrem.remapp.tools.dcmdatetime.make_dcm_time
+#: openrem.remapp.tools.dcmdatetime.make_dcm_time_range
+#: openrem.remapp.tools.dcmdatetime.make_time
+#: openrem.remapp.tools.get_values.get_or_create_cid
+#: openrem.remapp.tools.get_values.get_seq_code_meaning
+#: openrem.remapp.tools.get_values.get_seq_code_value
+#: openrem.remapp.tools.get_values.get_value_kw
+#: openrem.remapp.tools.get_values.get_value_num
+#: openrem.remapp.tools.not_patient_indicators.get_not_pt
 msgid "Returns"
 msgstr ""
 
-#: 2f9dde3ce1994956b3ca020eac127dfe bca8aa18556444bab05c7b61940eb8ee of
-#: remapp.tools.get_values.get_value_kw:7
-#: remapp.tools.get_values.get_value_num:10
+#: bd8b9708560441e38795a75c39dafd34 of
+#: openrem.remapp.tools.get_values.get_value_kw:7
+#: openrem.remapp.tools.get_values.get_value_num:10
 msgid "str. -- value"
 msgstr ""
 
-#: a5febe8c4ba74919b779c8de92300f5c of remapp.tools.get_values.get_value_num:1
+#: d0c3bebbb89a46b5a0fc3b0dfd4b07b1 of
+#: openrem.remapp.tools.get_values.get_value_num:1
 msgid "Get DICOM value by tag group and element number."
 msgstr ""
 
-#: 055395c2ab714f2caea68fd5a91cf6e8 of remapp.tools.get_values.get_value_num:3
+#: 2773680999854effa6ea13e619714015 of
+#: openrem.remapp.tools.get_values.get_value_num:3
 msgid ""
 "Always use get_value_kw by preference for readability. This module can be"
 " required when reading private elements."
 msgstr ""
 
-#: ef4398ee226a4ecf9e504a93cab119f5 of remapp.tools.get_values.get_value_num:6
+#: a5138a7c71924c4d85549add407b6ea7 of
+#: openrem.remapp.tools.get_values.get_value_num:6
 msgid "DICOM group and element number as a single hexadecimal number (prefix 0x)."
 msgstr ""
 
-#: 16380d1081a648ca8c2120a35b3e5286 of
-#: remapp.tools.get_values.get_seq_code_value:1
+#: a5b9425b6fcc4c41a77f2262ea8be013 of
+#: openrem.remapp.tools.get_values.get_seq_code_value:1
 msgid "From a DICOM sequence, get the code value."
 msgstr ""
 
-#: 9908fdcb0e944722a637ec5097a14d4d f81a3b2649ad42b3ab838f0e5f13b0b2 of
-#: remapp.tools.get_values.get_seq_code_meaning:3
-#: remapp.tools.get_values.get_seq_code_value:3
+#: c44e82eab4104ccb84e55704fb1efc72 of
+#: openrem.remapp.tools.get_values.get_seq_code_meaning:3
+#: openrem.remapp.tools.get_values.get_seq_code_value:3
 msgid "DICOM sequence name."
 msgstr ""
 
-#: 14ef2eb4d25e4114a8e36654d3f280d0 d34a5eceffc2428792790edcbbee9e81 of
-#: remapp.tools.get_values.get_seq_code_meaning:5
-#: remapp.tools.get_values.get_seq_code_value:5
+#: 9d0e656396f840729a8299a17042edfb of
+#: openrem.remapp.tools.get_values.get_seq_code_meaning:5
+#: openrem.remapp.tools.get_values.get_seq_code_value:5
 msgid "The DICOM dataset containing the sequence."
 msgstr ""
 
-#: 8e98def3241848d3a957d67d9377b38e of
-#: remapp.tools.get_values.get_seq_code_value:7
+#: c44e82eab4104ccb84e55704fb1efc72 of
+#: openrem.remapp.tools.get_values.get_seq_code_value:7
 msgid "int. -- code value"
 msgstr ""
 
-#: 4bbc46a58c394d758166ad579adfaccc of
-#: remapp.tools.get_values.get_seq_code_meaning:1
+#: 367b1634207247e99bb8c2b5127cccaa of
+#: openrem.remapp.tools.get_values.get_seq_code_meaning:1
 msgid "From a DICOM sequence, get the code meaning."
 msgstr ""
 
-#: b51ff5d70599418cbe2d28d3e74cb86e of
-#: remapp.tools.get_values.get_seq_code_meaning:7
+#: cb6ff6f5976e4bc9a1dde915e4ca635f of
+#: openrem.remapp.tools.get_values.get_seq_code_meaning:7
 msgid "str. -- code meaning"
 msgstr ""
 
-#: 0fe596636bfb4adeb15b1c98c5ad31b3 of
-#: remapp.tools.get_values.get_or_create_cid:1
+#: 054bb2ac8a2b4fc3bf2f0b17306e67e3 of
+#: openrem.remapp.tools.get_values.get_or_create_cid:1
 msgid ""
 "Create a code_value code_meaning pair entry in the ContextID table if it "
 "doesn't already exist."
 msgstr ""
 
-#: b0baaac3cd76430bb18c9546790b121e of
-#: remapp.tools.get_values.get_or_create_cid:4
+#: a6c023eb6db043cf947446fda07487a1 of
+#: openrem.remapp.tools.get_values.get_or_create_cid:4
 msgid "Code value as defined in the DICOM standard part 16"
 msgstr ""
 
-#: ded9144d6d3e4acf85577f0f8b0beba1 of
-#: remapp.tools.get_values.get_or_create_cid:6
+#: 11d6173a0ac340ff8acc6f3519cce0e0 of
+#: openrem.remapp.tools.get_values.get_or_create_cid:6
 msgid "Code meaning as defined in the DICOM standard part 16"
 msgstr ""
 
-#: 3ad27e7fffcd45e7832bc1409f70eb7c of
-#: remapp.tools.get_values.get_or_create_cid:8
+#: 6988169c87804afc80d7254dcf0af6bb of
+#: openrem.remapp.tools.get_values.get_or_create_cid:8
 msgid "ContextID entry for code value passed"
 msgstr ""
 
-#: 17fa276493294d66b9ac7c0ddbba1141 of
-#: remapp.tools.get_values.return_for_export:1
+#: 7248fe32234a45f08ab96f2d2f09b87f of
+#: openrem.remapp.tools.get_values.return_for_export:1
 msgid ""
 "Prevent errors due to missing data in models :param model: database table"
 " :param field: database field :return: value or None"
 msgstr ""
 
-#: 3b948ffbcbf148bdb8f4b5a2db953d0a of
-#: remapp.tools.get_values.test_numeric_value:1
+#: b4d71b58ec0e4144b4e3e6fcc495a46e of
+#: openrem.remapp.tools.get_values.test_numeric_value:1
 msgid ""
 "Tests if string can be converted to a float. If it can, return it :param "
 "string_number: string to test if is a number :return: string if number, "
 "nothing otherwise"
 msgstr ""
 
-#: 1ca96a22429549d484b56e6b15e6c295 of remapp.tools.get_values.safe_strings:1
+#: dfbb8e00387a4f389da2d4ab1eb12703 of
+#: openrem.remapp.tools.get_values.safe_strings:1
 msgid ""
 "Function to encode non-ASCII characters correctly. Probably not required "
 "any longer, but leaving in for now. :param string: String to encode "
 ":param char_set: Character set used by DICOM file :return: Encoded string"
 msgstr ""
 
-#: 1b2c4230f94f4cde8b58513b12bbf569 of remapp.tools.get_values.list_to_string:1
+#: c30ad5cf8f89436ea08b5dd1e4491bf8 of
+#: openrem.remapp.tools.get_values.list_to_string:1
 msgid ""
 "Turn multivalue names into a single string for correct encoding and "
 "pretty reproduction :param dicom_value: returned DICOM value, usually a "
@@ -213,8 +202,8 @@ msgid ""
 " of name(s)"
 msgstr ""
 
-#: 861b013f85094c8484677fc38b807be6 of
-#: remapp.tools.get_values.get_keys_by_value:1
+#: bd45d1706dce425d9bf741827f0d40f9 of
+#: openrem.remapp.tools.get_values.get_keys_by_value:1
 msgid ""
 "Get a list of keys from a dictionary which have the given value :param "
 "dict_of_elements: a dictionary of elements :param value_to_find: the "
@@ -222,185 +211,202 @@ msgid ""
 "the given value"
 msgstr ""
 
-#: ../../code_tools.rst:23 9e8f52d6189344dfa38d48d45e2d8645
+#: ../../code_tools.rst:14 40cde7ce2cbb4654aa0c5bc4ace04c68
 msgid "Check if UID exists"
 msgstr ""
 
-#: ../../code_tools.rst:24 b6a79983e7424a1d9dda9550ac309640
+#: ../../code_tools.rst:15 a90d8eda8bb54d65820aa4eeb073fb50
 msgid "Small module to check if UID already exists in the database."
 msgstr ""
 
-#: 1374504ef674421a96c8d798b5f5d5c4 of remapp.tools.check_uid.check_uid:1
+#: a90d8eda8bb54d65820aa4eeb073fb50 of
+#: openrem.remapp.tools.check_uid.check_uid:1
 msgid "Check if UID already exists in database."
 msgstr ""
 
-#: 67764fbae3d644e4b8e27d0d8f162a2a of remapp.tools.check_uid.check_uid:3
+#: bac0fdd69b664f89877e3b823cc116fe of
+#: openrem.remapp.tools.check_uid.check_uid:3
 msgid "Study UID."
 msgstr ""
 
-#: 4a43f2535722499e9e869e976c7cf5ec of remapp.tools.check_uid.check_uid:5
+#: f1e46a6e771e40a3b934073207ca9e94 of
+#: openrem.remapp.tools.check_uid.check_uid:5
 msgid "1 if it does exist, 0 otherwise"
 msgstr ""
 
-#: cbe9cecc1b8e400599ac118032971bda of
-#: remapp.tools.check_uid.record_sop_instance_uid:1
+#: d9c47d4f5ac3475399d9b5d62dbab6bb of
+#: openrem.remapp.tools.check_uid.record_sop_instance_uid:1
 msgid ""
 "Record the object's SOP Instance UID so we can ignore it next time. If an"
 " object does need to be imported again, the original one needs to be "
 "deleted first."
 msgstr ""
 
-#: 464945e1a9444e96b31a0964a811592c of
-#: remapp.tools.check_uid.record_sop_instance_uid:4
+#: 53d8568932474026a536730a79189dd3 of
+#: openrem.remapp.tools.check_uid.record_sop_instance_uid:4
 msgid "GeneralStudyModuleAttr database object"
 msgstr ""
 
-#: 75fdf4f734ae4c1bbcd2dc785e82c580 of
-#: remapp.tools.check_uid.record_sop_instance_uid:5
+#: 7dd15f5d7838412fb1595097c779bb59 of
+#: openrem.remapp.tools.check_uid.record_sop_instance_uid:5
 msgid "SOP Instance UID of object being imported"
 msgstr ""
 
-#: ../../code_tools.rst:30 6254d239d0b147ba99a2636ea4c0de88
+#: ../../code_tools.rst:21 c44e82eab4104ccb84e55704fb1efc72
 msgid "DICOM time and date values"
 msgstr ""
 
-#: ../../code_tools.rst:31 bfcda9eaea8a42ab99a1f876282b542e
+#: ../../code_tools.rst:22 d6cd85a6d36347319103d117aab9f0cf
 msgid "Module to convert betweeen DICOM and Python dates and times."
 msgstr ""
 
-#: 1a4cba0dcadf4247b587d32e804fa09a of remapp.tools.dcmdatetime.get_date:1
+#: fad447cf0d604d51b54d856ed680b5e4 of
+#: openrem.remapp.tools.dcmdatetime.get_date:1
 msgid "Get DICOM date string and return Python date."
 msgstr ""
 
-#: 5938649cb0194900b20d7c9dd2beb609 9fa28097e5bf4f419914b3fb985d1473 of
-#: remapp.tools.dcmdatetime.get_date:7 remapp.tools.dcmdatetime.make_date:5
+#: c44e82eab4104ccb84e55704fb1efc72 of
+#: openrem.remapp.tools.dcmdatetime.get_date:7
+#: openrem.remapp.tools.dcmdatetime.make_date:5
 msgid "Python date value"
 msgstr ""
 
-#: 357af341bc414b49a27cf41b78491d09 of remapp.tools.dcmdatetime.get_time:1
+#: d6cd85a6d36347319103d117aab9f0cf of
+#: openrem.remapp.tools.dcmdatetime.get_time:1
 msgid "Get DICOM time string and return Python time."
 msgstr ""
 
-#: 6231faefa3dd4ec38fbfb13c8e0ecb8e of remapp.tools.dcmdatetime.get_time:7
+#: c44e82eab4104ccb84e55704fb1efc72 of
+#: openrem.remapp.tools.dcmdatetime.get_time:7
 msgid "python time value"
 msgstr ""
 
-#: c597160820034f5e89b2aa6d3d641f9f of remapp.tools.dcmdatetime.get_date_time:1
+#: d6cd85a6d36347319103d117aab9f0cf of
+#: openrem.remapp.tools.dcmdatetime.get_date_time:1
 msgid "Get DICOM date time string and return Python date time."
 msgstr ""
 
-#: 52a52de24fbe4216b22aaf2bda13cc28 be9cca8d54e04b578f5f728773ddf37d of
-#: remapp.tools.dcmdatetime.get_date_time:7
-#: remapp.tools.dcmdatetime.make_date_time:5
+#: c44e82eab4104ccb84e55704fb1efc72 of
+#: openrem.remapp.tools.dcmdatetime.get_date_time:7
+#: openrem.remapp.tools.dcmdatetime.make_date_time:5
 msgid "Python date time value"
 msgstr ""
 
-#: f4b7938c5d9b4f12a94efb919311b572 of remapp.tools.dcmdatetime.make_date:1
+#: 4425d2da13d843d7abc59bed6dc2ebc1 of
+#: openrem.remapp.tools.dcmdatetime.make_date:1
 msgid "Given a DICOM date, return a Python date."
 msgstr ""
 
-#: 99248b9944cb42aeb261b876d2ad9a80 of remapp.tools.dcmdatetime.make_date:3
+#: c44e82eab4104ccb84e55704fb1efc72 of
+#: openrem.remapp.tools.dcmdatetime.make_date:3
 msgid "DICOM style date."
 msgstr ""
 
-#: bd2b3875aefe43f8ab86febf768ba254 of remapp.tools.dcmdatetime.make_time:1
+#: 0d46593d13fb480f80ca0202c7829bca of
+#: openrem.remapp.tools.dcmdatetime.make_time:1
 msgid "Given a DICOM time, return a Python time."
 msgstr ""
 
-#: 44f3496dfb9745e6b212863049f58d94 of remapp.tools.dcmdatetime.make_time:3
+#: c44e82eab4104ccb84e55704fb1efc72 of
+#: openrem.remapp.tools.dcmdatetime.make_time:3
 msgid "DICOM style time."
 msgstr ""
 
-#: f413bf9b79884ec79feb1a8be08c9a97 of remapp.tools.dcmdatetime.make_time:5
+#: c44e82eab4104ccb84e55704fb1efc72 of
+#: openrem.remapp.tools.dcmdatetime.make_time:5
 msgid "Python time value"
 msgstr ""
 
-#: e130c628af964762883b37ab3feb2074 of
-#: remapp.tools.dcmdatetime.make_date_time:1
+#: d6cd85a6d36347319103d117aab9f0cf of
+#: openrem.remapp.tools.dcmdatetime.make_date_time:1
 msgid "Given a DICOM date time, return a Python date time."
 msgstr ""
 
-#: 83aefabb303c469cab82b650005d0d2b of
-#: remapp.tools.dcmdatetime.make_date_time:3
+#: c44e82eab4104ccb84e55704fb1efc72 of
+#: openrem.remapp.tools.dcmdatetime.make_date_time:3
 msgid "DICOM style date time."
 msgstr ""
 
-#: c6bbc4786b64423e8ed17bdf7d83c8ba of remapp.tools.dcmdatetime.make_dcm_date:1
+#: e2a0aeadb5c046a48f657a9fd532cd5b of
+#: openrem.remapp.tools.dcmdatetime.make_dcm_date:1
 msgid ""
 "Given a Python date, return a DICOM date :param pythondate:  Date :type "
 "pythondate:   Python date object :returns:           DICOM date as string"
 msgstr ""
 
-#: d811f7cd9dd24951b024872fc34dd1b8 of
-#: remapp.tools.dcmdatetime.make_dcm_date_range:1
+#: 1b1b646042a946a481302654d8d6b91c of
+#: openrem.remapp.tools.dcmdatetime.make_dcm_date_range:1
 msgid "Given one or two dates of the form yyyy-mm-dd, return a DICOM date range."
 msgstr ""
 
-#: f2be4c7838674b9b818a48ccb49e6183 of
-#: remapp.tools.dcmdatetime.make_dcm_date_range:3
+#: 80308d9a9b524053b398151dcbe9f3a2 of
+#: openrem.remapp.tools.dcmdatetime.make_dcm_date_range:3
 msgid "Date from, string, yyyy-mm-dd, 1900-01-01 if None or badly formatted"
 msgstr ""
 
-#: d8c238a9fc7b4e51856855b0be303539 of
-#: remapp.tools.dcmdatetime.make_dcm_date_range:4
+#: 50fd177101f44978a60b9c460b8198b2 of
+#: openrem.remapp.tools.dcmdatetime.make_dcm_date_range:4
 msgid "Date until, string, yyyy-mm-dd, today if None or badly formatted"
 msgstr ""
 
-#: dd95dbd31abf4e34a7733937ad804c8b of
-#: remapp.tools.dcmdatetime.make_dcm_date_range:5
+#: 53a89b4594b34c7485d2fa8718e291f0 of
+#: openrem.remapp.tools.dcmdatetime.make_dcm_date_range:5
 msgid "Single date range, bool, default False"
 msgstr ""
 
-#: d8b6331a35a34eb8b7de96cf6f9f4d4b of
-#: remapp.tools.dcmdatetime.make_dcm_date_range:6
+#: cf5934e3e9db41e48eaf8b1a46a1286b of
+#: openrem.remapp.tools.dcmdatetime.make_dcm_date_range:6
 msgid "DICOM formatted date range or single date"
 msgstr ""
 
-#: ac6994f243b94348b5d9a6dc1fd47b4e of remapp.tools.dcmdatetime.make_dcm_time:1
+#: c28f3ff9896740a8b845eff1cdf48f11 of
+#: openrem.remapp.tools.dcmdatetime.make_dcm_time:1
 msgid "Return DICOM formatted time without seconds from python time"
 msgstr ""
 
-#: 959a71239d8442e5a22fc9bd272399c5 of remapp.tools.dcmdatetime.make_dcm_time:3
+#: 21555a6d22cb4c919da36663ff181495 of
+#: openrem.remapp.tools.dcmdatetime.make_dcm_time:3
 msgid "Python datetime.time object"
 msgstr ""
 
-#: d14060891ee9470fa6177066f15e8694 of remapp.tools.dcmdatetime.make_dcm_time:4
+#: 0b204ebe617b4bc1a8f0abaf560fae61 of
+#: openrem.remapp.tools.dcmdatetime.make_dcm_time:4
 msgid "string, %H%M"
 msgstr ""
 
-#: a9c4f2fa523f40c692077f5b30837ecf of
-#: remapp.tools.dcmdatetime.make_dcm_time_range:1
+#: 59e0ff527dba433a9ffdf2ad5b7e25bd of
+#: openrem.remapp.tools.dcmdatetime.make_dcm_time_range:1
 msgid ""
 "Given one or two times of the format 0123, return DICOM formatted time "
 "range (without seconds)"
 msgstr ""
 
-#: 7bf4a2c222e44b4eac46adf1a2c46e33 of
-#: remapp.tools.dcmdatetime.make_dcm_time_range:3
+#: 50dbf548c165498d9a4b883a815ab506 of
+#: openrem.remapp.tools.dcmdatetime.make_dcm_time_range:3
 msgid "time, format 0123, 0000 if None"
 msgstr ""
 
-#: 88aa18ad4a6b42999b7fa83382dd3f76 of
-#: remapp.tools.dcmdatetime.make_dcm_time_range:4
+#: e0f2e9cb1eed4a2c871329e8f48c5b83 of
+#: openrem.remapp.tools.dcmdatetime.make_dcm_time_range:4
 msgid "time, format 0123, 2359 if None"
 msgstr ""
 
-#: 4ec9c1341c1b494fb9b73bc21c221234 of
-#: remapp.tools.dcmdatetime.make_dcm_time_range:5
+#: 5956277b936d43e8861bce3716e01bfb of
+#: openrem.remapp.tools.dcmdatetime.make_dcm_time_range:5
 msgid "time range, string, format 0123-1234"
 msgstr ""
 
-#: ../../code_tools.rst:37 a530782da6a4477c832c77fe8cb4e385
+#: ../../code_tools.rst:28 b8cb7eac2ba645eda7bb165770826ad2
 msgid "Test for QA or other non-patient related studies"
 msgstr ""
 
-#: f2cf5cc5224c483391ee8f8b1ca8f757 of
-#: remapp.tools.not_patient_indicators.get_not_pt:1
+#: e51ee0eb4eb5421690c0a6664160756f of
+#: openrem.remapp.tools.not_patient_indicators.get_not_pt:1
 msgid "Looks for indications that a study might be a test or QA study."
 msgstr ""
 
-#: 2583fa97d10144f7bd9229ab56916fee of
-#: remapp.tools.not_patient_indicators.get_not_pt:3
+#: da0316fd9e0842328d66850960868da0 of
+#: openrem.remapp.tools.not_patient_indicators.get_not_pt:3
 msgid ""
 "Some values that might indicate a study was for QA or similar purposes "
 "are not recorded in the database, for example patient name. Therefore "
@@ -408,13 +414,13 @@ msgid ""
 "string that can be recorded in the database on study import."
 msgstr ""
 
-#: 31262874b416446ea84d22d8f98873d3 of
-#: remapp.tools.not_patient_indicators.get_not_pt:8
+#: 575028aca25c434f81902f0cc1249ccf of
+#: openrem.remapp.tools.not_patient_indicators.get_not_pt:8
 msgid "The DICOM dataset."
 msgstr ""
 
-#: 303accb5881e4f6cb9975105787c8530 of
-#: remapp.tools.not_patient_indicators.get_not_pt:10
+#: 52de7426c67c46568b481d9221635793 of
+#: openrem.remapp.tools.not_patient_indicators.get_not_pt:10
 msgid "str. -- xml style string if any trigger values are found."
 msgstr ""
 
@@ -655,5 +661,14 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "str. -- xml style string if any trigger values are found."
+#~ msgstr ""
+
+#~ msgid "OpenREM settings"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Administrative module to define the name"
+#~ " of the project and to add it"
+#~ " to the Python path"
 #~ msgstr ""
 
