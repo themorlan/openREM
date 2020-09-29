@@ -22,85 +22,43 @@
         <h3 class="panel-title">General chart options</h3>
       </div>
       <div class="panel-body">
-        <table>
+
+        <div class="row">
             {% csrf_token %}
-            {{ GeneralChartOptionsForm.non_field_errors }}
 
-            {{ GeneralChartOptionsForm.plotCharts.errors }}
-            <tr>
-                <td>{{ GeneralChartOptionsForm.plotCharts.label_tag }}</td>
-                <td>{{ GeneralChartOptionsForm.plotCharts }}</td>
+            <!-- First column div with all fields except the colour map choice -->
+            <div class="col-md-2">
+                <table>
+                {% for field in GeneralChartOptionsForm %}
+                    {{ field.errors }}
+                    <tr>
+                        {% if field.name != "plotColourMapChoice" %}
+                            <td>{{ field.label_tag }}</td>
+                            <td>{{ field }}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </table>
+            </div>
 
-            {{ GeneralChartOptionsForm.plotColourMapChoice.errors }}
-                <td rowspan="10" class="valign_top">{{ GeneralChartOptionsForm.plotColourMapChoice.label_tag }}&nbsp;</td>
-                <td rowspan="10" class="valign_top">
+            <!-- Second column div with just the colour map choice field -->
+            <div class="col-md-1">
+            {% for field in GeneralChartOptionsForm %}
+                {{ field.errors }}
+                {% if field.name == "plotColourMapChoice" %}
+                    {{ GeneralChartOptionsForm.plotColourMapChoice.label_tag }}
+                    <ul class="RadioSelect">
+                        {% for x, y in GeneralChartOptionsForm.fields.plotColourMapChoice.choices %}
+                            <li class="no-wrap">
+                                <input type="radio" name="plotColourMapChoice" value="{{ x }}" id="value_{{ forloop.counter0 }}" {% if GeneralChartOptionsForm.plotColourMapChoice.value == x %}checked{% endif %}>&nbsp<img src="{{ STATIC_URL }}img/{{ x }}.png" alt="{{ y }}">
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endfor %}
+            </div>
 
-                <ul class="RadioSelect">
-                    {% for x, y in GeneralChartOptionsForm.fields.plotColourMapChoice.choices %}
-                        <li class="no-wrap">
-                            <label for="value_{{ forloop.counter0 }}"></label><input type="radio" name="plotColourMapChoice" value="{{ x }}" id="value_{{ forloop.counter0 }}" {% if GeneralChartOptionsForm.plotColourMapChoice.value == x %}checked{% endif %}>&nbsp<img src="{{ STATIC_URL }}img/{{ x }}.png" alt="{{ y }}">
-                        </li>
-                    {% endfor %}
-                </ul>
-
-                </td>
-           </tr>
-
-            {{ GeneralChartOptionsForm.plotAverageChoice.errors }}
-            <tr>
-                <td>{{ GeneralChartOptionsForm.plotAverageChoice.label_tag }}</td>
-                <td>{{ GeneralChartOptionsForm.plotAverageChoice }}</td>
-            </tr>
-
-            {{ GeneralChartOptionsForm.plotInitialSortingDirection.errors }}
-            <tr>
-                <td>{{ GeneralChartOptionsForm.plotInitialSortingDirection.label_tag }}</td>
-                <td>{{ GeneralChartOptionsForm.plotInitialSortingDirection }}</td>
-            </tr>
-
-            {{ GeneralChartOptionsForm.plotSeriesPerSystem.errors }}
-            <tr>
-                <td>{{ GeneralChartOptionsForm.plotSeriesPerSystem.label_tag }}</td>
-                <td>{{ GeneralChartOptionsForm.plotSeriesPerSystem }}</td>
-            </tr>
-
-            {{ GeneralChartOptionsForm.plotHistograms.errors }}
-            <tr>
-                <td>{{ GeneralChartOptionsForm.plotHistograms.label_tag }}</td>
-                <td>{{ GeneralChartOptionsForm.plotHistograms }}</td>
-            </tr>
-
-            {{ GeneralChartOptionsForm.plotHistogramBins.errors }}
-            <tr>
-                <td>{{ GeneralChartOptionsForm.plotHistogramBins.label_tag }}</td>
-                <td>{{ GeneralChartOptionsForm.plotHistogramBins }}</td>
-            </tr>
-
-            {{ GeneralChartOptionsForm.plotCaseInsensitiveCategories.errors }}
-            <tr>
-                <td>{{ GeneralChartOptionsForm.plotCaseInsensitiveCategories.label_tag }}</td>
-                <td>{{ GeneralChartOptionsForm.plotCaseInsensitiveCategories }}</td>
-            </tr>
-
-            {{ GeneralChartOptionsForm.plotGrouping.errors }}
-            <tr>
-                <td>{{ GeneralChartOptionsForm.plotGrouping.label_tag }}</td>
-                <td>{{ GeneralChartOptionsForm.plotGrouping }}</td>
-            </tr>
-
-            {{ GeneralChartOptionsForm.plotThemeChoice.errors }}
-            <tr>
-                <td>{{ GeneralChartOptionsForm.plotThemeChoice.label_tag }}</td>
-                <td>{{ GeneralChartOptionsForm.plotThemeChoice }}</td>
-            </tr>
-
-            {{ GeneralChartOptionsForm.plotFacetColWrapVal.errors }}
-            <tr>
-                <td>{{ GeneralChartOptionsForm.plotFacetColWrapVal.label_tag }}</td>
-                <td>{{ GeneralChartOptionsForm.plotFacetColWrapVal }}</td>
-            </tr>
-
-        </table>
+        </div>
         <input class="btn btn-default" name="submit" type="submit" />
       </div>
 
