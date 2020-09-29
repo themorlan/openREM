@@ -17,7 +17,59 @@ for translations to be provided, which can then be pulled into the main project.
 
 For strings in the OpenREM interface that are not yet marked as translatable, see below.
 
-All the strings in the documentation are available for translation.
+These documents will be added to Weblate for translations when they are reasonably stable. The first documents are
+available for translation now.
+
+Adding to existing translations
+-------------------------------
+
+Create an account on https://hosted.weblate.org. You can suggest translation strings anonymously, but we would very much
+prefer it if you created an account so we can attribute the work and build a relationship!
+
+The OpenREM project is at https://hosted.weblate.org/projects/openrem/
+
+Each page in the Read The Docs documentation (https://docs.openrem.org) is a separate 'component' in Weblate, and they
+have been named 'RTD document name'. The web interface strings are all in one 'component'.
+
+Choose a component, and on the next page you can select one of the existing translations which you can review, edit and
+propose new translation strings.
+
+Creating new language translations
+----------------------------------
+
+At the component level, you will see an option to create a new translation. You will need to do this for each component
+individually I think.
+
+Code syntax in strings
+----------------------
+
+Be careful not to edit code syntax within strings. For example, Python code might be::
+
+    Writing study {row} of {numrows} to All data sheet and individual protocol sheets
+
+This is translated into Norwegian Bokmål as::
+
+    Skriver studie av {row} av {numrows} til alle datablad og individuelle protokollblader
+
+Notice that the ``{}`` and their contents is unchanged - but may be moved around within the sentence to produce the
+correct grammar for the language being used.
+
+Similarly with Django HTML template strings::
+
+    Number in last %(day_delta)s days
+
+becomes::
+
+    Antall de siste %(day_delta)s dagene
+
+It is essential that the ``%()s`` as well as the string inside the brackets stay intact.
+
+For the RTD translations, there will be Sphinx codes that should be left untranslated, for example:
+
+.. code-block::
+
+    :ref:`genindex`
+
 
 Offline translations
 ====================
