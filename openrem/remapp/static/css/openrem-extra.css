@@ -409,3 +409,7 @@ td.valign_top {
 li.no-wrap {
   white-space: nowrap;
 }
+
+img.colour_swatch {
+  border: 1px solid #CCCCCC;
+}
