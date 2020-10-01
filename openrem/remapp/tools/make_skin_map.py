@@ -304,7 +304,7 @@ def make_skin_map(study_pk=None):
         # my_exp_map.my_dose.fliplr()
         my_exp_map.my_dose.total_dose = np.roll(
             my_exp_map.my_dose.total_dose,
-            int(my_exp_map.phantom.phantom_flat_dist//2),
+            int(my_exp_map.phantom.phantom_flat_dist // 2),
             axis=0,
         )
         try:

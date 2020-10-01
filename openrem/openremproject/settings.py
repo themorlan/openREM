@@ -155,7 +155,7 @@ INSTALLED_APPS = (
 
 CRISPY_TEMPLATE_PACK = "bootstrap3"
 
-on_rtd = os.environ.get('READTHEDOCS') == 'True'
+on_rtd = os.environ.get("READTHEDOCS") == "True"
 if not on_rtd:
     LOG_ROOT = os.environ.get("LOG_ROOT", default=MEDIA_ROOT)
 else:

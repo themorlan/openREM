@@ -200,9 +200,14 @@ def _filter(query, level, filter_name, filter_list, filter_type):
         return
 
     study_rsp = query.dicomqrrspstudy_set.all()
-    query.stage = _("Filter at {level} level on {filter_name} that {filter_type} {filter_list}".format(
-        level=level, filter_name=filter_name, filter_type=filter_type, filter_list=filter_list
-    ))
+    query.stage = _(
+        "Filter at {level} level on {filter_name} that {filter_type} {filter_list}".format(
+            level=level,
+            filter_name=filter_name,
+            filter_type=filter_type,
+            filter_list=filter_list,
+        )
+    )
     logger.info(
         "{4} Filter at {0} level on {1} that {2} {3}".format(
             level, filter_name, filter_type, filter_list, query_id
@@ -798,7 +803,9 @@ def _query_images(
                         query_id
                     )
                 )
-                query.stage = _("Image level matching for this study is complete (there many be more)")
+                query.stage = _(
+                    "Image level matching for this study is complete (there many be more)"
+                )
                 query.save()
                 return
             if status.Status in (0xFF00, 0xFF01):
@@ -895,7 +902,9 @@ def _query_series(assoc, d2, studyrsp, query, query_id):
                         query_id
                     )
                 )
-                query.stage = _("Series level matching for this study is complete (there may be more)")
+                query.stage = _(
+                    "Series level matching for this study is complete (there may be more)"
+                )
                 query.save()
                 return
             if status.Status in (0xFF00, 0xFF01):
@@ -995,9 +1004,11 @@ def _query_study(assoc, d, query, query_id):
         if status:
             if status.Status == 0x0000:
                 logger.info("{0} Matching is complete".format(query_id))
-                query.stage = _("Study level matching for {modalities} is complete".format(
-                    modalities=d.ModalitiesInStudy
-                ))
+                query.stage = _(
+                    "Study level matching for {modalities} is complete".format(
+                        modalities=d.ModalitiesInStudy
+                    )
+                )
                 query.save()
                 return
             if status.Status in (0xFF00, 0xFF01):
@@ -1006,9 +1017,11 @@ def _query_study(assoc, d, query, query_id):
                         query_id, status.Status
                     )
                 )
-                query.stage = _("Matches are continuing for {modalities} studies".format(
-                    modalities=d.ModalitiesInStudy
-                ))
+                query.stage = _(
+                    "Matches are continuing for {modalities} studies".format(
+                        modalities=d.ModalitiesInStudy
+                    )
+                )
                 query.save()
                 # Next line commented to avoid patient information being logged
                 # logger.debug(identifier)
@@ -1125,7 +1138,11 @@ def _query_for_each_modality(all_mods, query, d, assoc):
         if details["inc"]:
             for mod in details["mods"]:
                 if modality_matching:
-                    query.stage = _("Currently querying for {modality} studies...".format(modality=mod))
+                    query.stage = _(
+                        "Currently querying for {modality} studies...".format(
+                            modality=mod
+                        )
+                    )
                     query.save()
                     logger.info(
                         "{1} Currently querying for {0} studies...".format(
@@ -1676,30 +1693,40 @@ def qrscu(
         query.stage += series_pruning_log
         filter_pruning_logs = "Filtering for "
         if filters["study_desc_inc"]:
-            filter_pruning_logs += _("only studies with description that include '{text}' removed {num} studies, ".format(
-                text=", ".join(filters["study_desc_inc"]),
-                num=deleted_studies_filters["study_desc_inc"],
-            ))
+            filter_pruning_logs += _(
+                "only studies with description that include '{text}' removed {num} studies, ".format(
+                    text=", ".join(filters["study_desc_inc"]),
+                    num=deleted_studies_filters["study_desc_inc"],
+                )
+            )
         if filters["study_desc_exc"]:
-            filter_pruning_logs += _("studies with description that do not include '{text}' removed {num} studies, ".format(
-                text=", ".join(filters["study_desc_exc"]),
-                num=deleted_studies_filters["study_desc_exc"],
-            ))
+            filter_pruning_logs += _(
+                "studies with description that do not include '{text}' removed {num} studies, ".format(
+                    text=", ".join(filters["study_desc_exc"]),
+                    num=deleted_studies_filters["study_desc_exc"],
+                )
+            )
         if filters["stationname_inc"]:
-            filter_pruning_logs += _("only studies with station names that include '{text}' removed {num} studies, ".format(
-                text=", ".join(filters["stationname_inc"]),
-                num=deleted_studies_filters["stationname_inc"],
-            ))
+            filter_pruning_logs += _(
+                "only studies with station names that include '{text}' removed {num} studies, ".format(
+                    text=", ".join(filters["stationname_inc"]),
+                    num=deleted_studies_filters["stationname_inc"],
+                )
+            )
         if filters["stationname_exc"]:
-            filter_pruning_logs += _("studies with station names that do not include '{text}' removed {num} studies, ".format(
-                text=", ".join(filters["stationname_exc"]),
-                num=deleted_studies_filters["stationname_exc"],
-            ))
+            filter_pruning_logs += _(
+                "studies with station names that do not include '{text}' removed {num} studies, ".format(
+                    text=", ".join(filters["stationname_exc"]),
+                    num=deleted_studies_filters["stationname_exc"],
+                )
+            )
         query.stage += filter_pruning_logs
         if remove_duplicates:
-            query.stage += _("Removing duplicates of previous objects removed {duplicates_removed} studies.".format(
-                duplicates_removed=study_numbers["duplicates_removed"]
-            ))
+            query.stage += _(
+                "Removing duplicates of previous objects removed {duplicates_removed} studies.".format(
+                    duplicates_removed=study_numbers["duplicates_removed"]
+                )
+            )
         query.save()
         logger.info("{0} ".format(query_id) + query.stage)
 
