@@ -1,0 +1,410 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../release-0.5.1.rst:3 0485cf3dd1654576bb87b21fba7b30cd
+msgid "OpenREM Release Notes version 0.5.1"
+msgstr ""
+
+#: ../../release-0.5.1.rst:7 d6f1418b405f4e1182ec79eb0d0a4f4a
+msgid "Headline changes"
+msgstr ""
+
+#: ../../release-0.5.1.rst:9 3fce2a43561c45d3bb23ed3c69eaa96c
+msgid "Major database modification to remove table name length errors"
+msgstr ""
+
+#: ../../release-0.5.1.rst:10 d5d2f607f0ff49f29978a29ea380b596
+msgid ""
+"Extended the field value lengths to better incorporate all possible "
+"values and decimal places"
+msgstr ""
+
+#: ../../release-0.5.1.rst:11 3d8ad38684c54ef48797c16e43205835
+msgid "Improved import of grid and filter information from DX images"
+msgstr ""
+
+#: ../../release-0.5.1.rst:12 2cafbecd13d8418f839e36d6531c9e48
+msgid "Improved DX summary and detail web pages"
+msgstr ""
+
+#: ../../release-0.5.1.rst:13 dc747b5198e94beeaad29749849ebfb7
+msgid ""
+"Any item in a row can now be clicked to move between the home and "
+"filtered pages"
+msgstr ""
+
+#: ../../release-0.5.1.rst:17 656ffba637d3424dba66c5d77d606415
+msgid "Upgrades: Convert to South"
+msgstr ""
+
+#: ../../release-0.5.1.rst:19 df4acd053608423fb87329647b9b3eff
+msgid ""
+"**Always make sure you have converted your database to South before "
+"attempting an upgrade**"
+msgstr ""
+
+#: ../../release-0.5.1.rst:21 d8734b2dfd304796af0eb7cdcc76132a
+msgid "Quick reminder of how, if you haven't done it already"
+msgstr ""
+
+#: ../../release-0.5.1.rst:35 4346d0c710a54827950f3c58a443e28c
+msgid "Upgrading from before 0.5.0"
+msgstr ""
+
+#: ../../release-0.5.1.rst:38 633eb829f43f463da3ba4dfcc4bd46b4
+msgid "Upgrading from version 0.3.9 or earlier"
+msgstr ""
+
+#: ../../release-0.5.1.rst:40 ../../release-0.5.1.rst:119
+#: ../../release-0.5.1.rst:200 ../../release-0.5.1.rst:226
+#: 147e7e6c51454f91a0183fca74fe646b 520a1d6e6cfc4320a6b3a3e767adbb01
+#: 93e4cadf660d403ab183fb2709219196 ee0906a0001b4f408c3691bc564fbbaf
+msgid "Back up your database"
+msgstr ""
+
+#: ../../release-0.5.1.rst:42 ../../release-0.5.1.rst:121
+#: ../../release-0.5.1.rst:202 ../../release-0.5.1.rst:228
+#: 32df09b1dde84b89a75b0708382b3523 44a08e0108a642eb841d979aac97449b
+#: 59fd0607b4454ea988f56cb404db55a7 a44d85b9a5934d04ae910283b35c4220
+msgid "For PostgreSQL you can refer to :doc:`backupRestorePostgreSQL`"
+msgstr ""
+
+#: ../../release-0.5.1.rst:43 ../../release-0.5.1.rst:122
+#: ../../release-0.5.1.rst:203 ../../release-0.5.1.rst:229
+#: 53db9bdcaab94d3c8436812a71cd6df2 9c26753c939a41698f4da521eee9c242
+#: a489d9bc57bb4e59b5d391fb1c22b21b f4372cbc6d5b475d8637b702558f9605
+msgid ""
+"For a non-production SQLite3 database, simply make a copy of the database"
+" file"
+msgstr ""
+
+#: ../../release-0.5.1.rst:45 d8cb203b99f64c9caec59243bcfddc1d
+msgid "``pip install openrem==0.4.2``"
+msgstr ""
+
+#: ../../release-0.5.1.rst:46 ../../release-0.5.1.rst:177
+#: ec1162da47844afa8bffbd46fff7bb00 fe092645ec904255bbeb4996775bf259
+msgid "Migrate the schema"
+msgstr ""
+
+#: ../../release-0.5.1.rst:57 5f31b98466174f14839c85fef58a804a
+msgid ""
+"When South has considered the changes to the schema, you will see the "
+"following message::"
+msgstr ""
+
+#: ../../release-0.5.1.rst:67 64a1a94f9e314b0dbe4ccd965118aca8
+msgid ""
+"As per the final line above, please select option 3, and then execute the"
+" migration:"
+msgstr ""
+
+#: ../../release-0.5.1.rst:79 0aaa341757ca4dbd8625ab6f3090b845
+msgid ""
+"Create and populate the database settings in the new "
+"``local_settings.py`` file"
+msgstr ""
+
+#: ../../release-0.5.1.rst:81 e44c3dc1838941a7864ee9dac62deacf
+msgid "The ``openrem/openrem`` folder can be found at:"
+msgstr ""
+
+#: ../../release-0.5.1.rst:92 9e0c1ae044564451bd52c4eb07d8c8c4
+msgid ""
+"In the ``openrem/openrem`` folder, create a new file called "
+"``local_settings.py`` and copy the `contents of this link "
+"<https://bitbucket.org/openrem/openrem/raw/a37540ba88a5e9b383cf0ea03a3e77fb35638f43/openrem/openremproject/local_settings.py.example>`_"
+" into a the file and save it. Alternatively, rename "
+"``local_settings.py.example`` to ``local_settings.py`` - this is an older"
+" version of the file."
+msgstr ""
+
+#: ../../release-0.5.1.rst:97 3f8ca458ccaa44deb7acf43109c2f4b6
+msgid "Copy the database details from ``settings.py`` into ``local_settings.py``"
+msgstr ""
+
+#: ../../release-0.5.1.rst:99 2d37dc426c7a41a7863f31b78fff9681
+msgid ""
+"Change the secret key - you can use http://www.miniwebtool.com/django-"
+"secret-key-generator/ to generate a new one"
+msgstr ""
+
+#: ../../release-0.5.1.rst:100 3b99b511d84e4baa91d76bc37682a711
+msgid ""
+"Move the existing ``settings.py`` out of the python directories (delete "
+"or move somewhere as a backup)"
+msgstr ""
+
+#: ../../release-0.5.1.rst:101 ecf4eae5a9cc4902a989d99e96b5faf9
+msgid "Rename the ``settings.py.new`` to ``settings.py``"
+msgstr ""
+
+#: ../../release-0.5.1.rst:102 9dbae27cfee3474b91b6d674a44a94d9
+msgid "Restart your webserver to check everything looks ok"
+msgstr ""
+
+#: ../../release-0.5.1.rst:103 73be8777acb642d091f4dd8881867840
+msgid "Add some users"
+msgstr ""
+
+#: ../../release-0.5.1.rst:105 2b5ff61cd49c436abb7c090f84a49729
+msgid ""
+"Go to the admin interface (eg http://localhost:8000/admin) and log in "
+"with the user created when you originally created the database (the "
+"``manage.py syncdb`` command - *Do you want to create a superuser*)"
+msgstr ""
+
+#: ../../release-0.5.1.rst:108 041ca5d652764740be47ca7340cbc9b9
+msgid ""
+"Create some users and add them to the appropriate groups (if there are no"
+" groups, go to the OpenREM homepage and they should be there when you go "
+"back to admin)."
+msgstr ""
+
+#: ../../release-0.5.1.rst:111 6e6af8fae6524cd48a59039fbe24c695
+msgid "``viewgroup`` can browse the data only"
+msgstr ""
+
+#: ../../release-0.5.1.rst:112 4f4386bc1b684c28805dc70a6e6f3902
+msgid ""
+"``exportgroup`` can do as view group plus export data to a spreadsheet, "
+"and will be able to import height and weight data in due course (See "
+"`Issue #21 <https://bitbucket.org/openrem/openrem/issue/21/>`_)"
+msgstr ""
+
+#: ../../release-0.5.1.rst:113 c755fe54fd6f4461b15329756d7db981
+msgid ""
+"``admingroup`` can delete studies in addition to anything the export "
+"group can do"
+msgstr ""
+
+#: ../../release-0.5.1.rst:117 0b6e8982c85c47cb87cdf17b54b9efe7
+msgid "Upgrading from versions 0.4.0 - 0.4.2"
+msgstr ""
+
+#: ../../release-0.5.1.rst:124 39015e0a3ae64157841803df2bb4b1dc
+msgid "Install version 0.5.0"
+msgstr ""
+
+#: ../../release-0.5.1.rst:126 29ab826305aa4da498d7f140e7b8c6c7
+msgid "``pip install openrem==0.5.0``"
+msgstr ""
+
+#: ../../release-0.5.1.rst:128 24c14153af09452a9f1cca03e4103bf7
+msgid "Install RabbitMQ"
+msgstr ""
+
+#: ../../release-0.5.1.rst:130 32f3182db07d427e91f00dc3dfb62f25
+msgid "Linux - Follow the guide at http://www.rabbitmq.com/install-debian.html"
+msgstr ""
+
+#: ../../release-0.5.1.rst:131 d59aca7621764c89bc4edf5d65bea439
+msgid "Windows - Follow the guide at http://www.rabbitmq.com/install-windows.html"
+msgstr ""
+
+#: ../../release-0.5.1.rst:133 018d3d70de744a399d90473ffdf1d221
+msgid "Move ``local_settings.py`` details from ``openrem`` to ``openremproject``"
+msgstr ""
+
+#: ../../release-0.5.1.rst:135 cd35f27dc2784990a1a77eb698a92643
+msgid ""
+"The inner ``openrem`` Django project folder has now been renamed "
+"``openremproject`` The customised ``local_settings.py`` file and the "
+"``wsgi.py`` file have remain in the old ``openrem`` folder. The "
+"``openrem/openrem`` folder can be found as detailed in the upgrade from "
+"'0.3.9 or earlier' instructions above, and the new "
+"``openrem/openremproject`` folder is in the same place."
+msgstr ""
+
+#: ../../release-0.5.1.rst:140 a6c28b439dcf40309f1ca22341657572
+msgid ""
+"Move ``local_settings.py`` to ``openremproject``. If you have kept the "
+"older local_settings file, you may like to instead rename the "
+"``local_settings.py.example`` file instead, then transfer the database "
+"settings and change the secret key."
+msgstr ""
+
+#: ../../release-0.5.1.rst:144 1a0d7fab2d53402f9e9c329a61e34aa1
+msgid ""
+"Set the path for ``MEDIA_ROOT``. The webserver needs to be able to write "
+"to this location - it is where OpenREM will store export files etc so "
+"that they can be downloaded. For suggestions, see the main _install "
+"instructions."
+msgstr ""
+
+#: ../../release-0.5.1.rst:147 83e62474e29943a69830828d07a120c8
+msgid ""
+"Set ``ALLOWED_HOSTS``. For details see the `Django docs "
+"<https://docs.djangoproject.com/en/1.6/ref/settings/#allowed-hosts>`_ A "
+"``'*'`` allows any host - see the Django docs for the risk of this."
+msgstr ""
+
+#: ../../release-0.5.1.rst:150 12e69a9d14ac4db09af51a8002f62e18
+msgid ""
+"Move ``wsgi.py`` from ``openrem`` to ``openremproject`` or rename "
+"``wsgi.py.example`` in ``openremproject``"
+msgstr ""
+
+#: ../../release-0.5.1.rst:152 84da5b0b956549e2b121224eaaf43920
+msgid ""
+"If you haven't edited it, simply rename the new version in "
+"``openremproject``. Otherwise, move the old version and edit the "
+"following line as follows:"
+msgstr ""
+
+#: ../../release-0.5.1.rst:163 26806283c0034fc6806da6d75a4ecbb6
+msgid ""
+"Tidying up - you should delete the old ``openrem`` folder - you might "
+"like to take a backup first!"
+msgstr ""
+
+#: ../../release-0.5.1.rst:165 9308a2cd25db4d2aba71179a0d56f5bd
+msgid "Update web server configuration"
+msgstr ""
+
+#: ../../release-0.5.1.rst:167 b70d3494b9d542d29691781f031ef2bf
+msgid ""
+"The configuration of the webserver will need to be updated to reflect the"
+" new location for the ``settings.py`` file and the ``wsgi.py`` file."
+msgstr ""
+
+#: ../../release-0.5.1.rst:170 009c2cedc6274d1e88260f902ae23a18
+msgid ""
+"If you are using the built-in test webserver, static files will no-longer"
+" be served unless you use the ``insecure`` option:"
+msgstr ""
+
+#: ../../release-0.5.1.rst:191 c93aac01be1c4d8fbf3f7e61b71b11cc
+msgid ""
+"After restarting the webserver, you should now have OpenREM 0.5.0 up and "
+"running. If you wish to test export functionality at this stage, start "
+"the Celery task queue - instructions in the :doc:`install` docs or at the"
+" end of this guide."
+msgstr ""
+
+#: ../../release-0.5.1.rst:195 d2ab1a948fb148cc9bf6cc610aac80d7
+msgid "Now move to `Upgrading from version 0.5.0`_."
+msgstr ""
+
+#: ../../release-0.5.1.rst:198 21813fba368e45b0b982176ef2890dd0
+msgid "Upgrading from version 0.4.3"
+msgstr ""
+
+#: ../../release-0.5.1.rst:205 75d8731d01314f6a8b683cbc56ea0b2d
+msgid ""
+"The 0.5.1 upgrade `must` be made from a 0.5.0 database, so a schema "
+"migration is required:"
+msgstr ""
+
+#: ../../release-0.5.1.rst:224 5e7485bd1d5c45f091fdfe47e347e4fa
+msgid "Upgrading from version 0.5.0"
+msgstr ""
+
+#: ../../release-0.5.1.rst:231 c4c21e0c9b0a472e93d88979ce39fc2d
+msgid "Install 0.5.1:"
+msgstr ""
+
+#: ../../release-0.5.1.rst:237 34bcba1ce9c64c908b147e8731f32b7d
+msgid "Find out how many migration files you have"
+msgstr ""
+
+#: ../../release-0.5.1.rst:239 cd775ba1f5ec46abafc866644422c237
+msgid "Method 1:"
+msgstr ""
+
+#: ../../release-0.5.1.rst:241 751247f3a76b4e319d786e620d9ed603
+msgid ""
+"Use a file browser or terminal to list the contents of the ``migrations``"
+" folder, eg:"
+msgstr ""
+
+#: ../../release-0.5.1.rst:252 68fa00c9d6bd487b96b9424b87f4fd21
+msgid "Method 2:"
+msgstr ""
+
+#: ../../release-0.5.1.rst:254 5e5053c4e84148e69b44f2f58f734ea7
+msgid "Use the Django ``manage.py`` program to list the existing migrations:"
+msgstr ""
+
+#: ../../release-0.5.1.rst:265 5712c64a41e7476ab1b9fae59d32e0b6
+msgid ""
+"The output should look something like this - there can be any number of "
+"existing migrations (though 0001_initial will always be present)::"
+msgstr ""
+
+#: ../../release-0.5.1.rst:280 2644e45b076346a3becc3696eb463164
+msgid ""
+"Rename the two 051 migration files to follow on from the existing "
+"migrations, for example ``0008_051schemamigration.py`` and "
+"``0009_051datamigration.py`` for the existing migrations above, or "
+"``0002_051schemamigration.py`` and ``0003_051datamigration.py`` if the "
+"only migration is the initial migration. The ``051schemamigration`` "
+"**must** come before the ``051datamigration``."
+msgstr ""
+
+#: ../../release-0.5.1.rst:285 273b291d8e4a4bc285734cb132e1a20b
+msgid ""
+"If you are using linux, you might like to do it like this (from within "
+"the ``openrem`` folder):"
+msgstr ""
+
+#: ../../release-0.5.1.rst:292 c97c1334420f47b8923385f21bf12457
+msgid ""
+"If you now re-run ``migrate --list remapp`` you should get a listing with"
+" the ``051schemamigration`` and the ``051datamigration`` listed at the "
+"end::"
+msgstr ""
+
+#: ../../release-0.5.1.rst:306 78040ac60b95451e93df4f3a674a4361
+msgid ""
+"The star indicates that a migration has already been completed. If you "
+"have any that are not completed apart from the ``051schemamigration`` and"
+" the ``051datamigration`` then please resolve these first."
+msgstr ""
+
+#: ../../release-0.5.1.rst:309 d4529b2b8aee46db82e8cffb5a7defb5
+msgid "Now execute the migrations:"
+msgstr ""
+
+#: ../../release-0.5.1.rst:322 5ec82378547a45ce975dcc2952f6f78c
+msgid "Restart the web server"
+msgstr ""
+
+#: ../../release-0.5.1.rst:324 a6b0d86599a348e58faba6a68846afd1
+msgid "If you are using the built-in test web server (`not for production use`)::"
+msgstr ""
+
+#: ../../release-0.5.1.rst:328 aca83fa8ec864601997daee03d405b98
+msgid "Otherwise restart using the command for your web server"
+msgstr ""
+
+#: ../../release-0.5.1.rst:331 6e66a03a5aab429f851ce5964a00d887
+msgid "Restart the Celery task queue"
+msgstr ""
+
+#: ../../release-0.5.1.rst:333 7f560376b8bc4ae6b9cc2de6c2f2a016
+msgid "For testing, in a new shell:"
+msgstr ""
+
+#: ../../release-0.5.1.rst:347 30c92088e3e64b639f9f3431b7b91c19
+msgid ""
+"For production use, see "
+"http://celery.readthedocs.org/en/latest/tutorials/daemonizing.html"
+msgstr ""
+

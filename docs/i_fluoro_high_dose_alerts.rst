@@ -139,7 +139,7 @@ E-mail notifications of high dose alerts
 ========================================
 
 For this feature to function the e-mail section in ``local_settings.py`` must
-be correctly completed (see the :ref:`email_configuration` documentation) and
+be correctly completed (see the : ref :`email_configuration` documentation) and
 the e-mail server must allow sending of messages that originate from the
 OpenREM server, or from the authenticated user specified in the e-mail
 settings.

@@ -101,6 +101,7 @@ definitions:
           - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py collectstatic --noinput"
           - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py makemigrations remapp --noinput"
           - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py migrate --noinput"
+          - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py compilemessages"
           - ssh deploy@$server "sudo /usr/sbin/service gunicorn-$server restart"
     - step: &build-and-deploy-to-docker
         name: build and push to docker
