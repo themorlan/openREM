@@ -95,6 +95,7 @@ class ChartsDX(TestCase):
 
     def test_dap_per_acq(self):
         # Test of mean and median DAP, count, system and acquisition protocol names
+        # Also tests raw data going into the box plots
         self.client.login(username="jacob", password="top_secret")
 
         # I can add to the filter_set to control what type of chart data is calculated
