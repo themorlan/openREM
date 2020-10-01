@@ -42,22 +42,22 @@ individually I think.
 Code syntax in strings
 ----------------------
 
-Be careful not to edit code syntax within strings. For example, Python code might be::
+Be careful not to edit code syntax within strings. For example, Python code might be:
 
     Writing study {row} of {numrows} to All data sheet and individual protocol sheets
 
-This is translated into Norwegian Bokmål as::
+This is translated into Norwegian Bokmål as:
 
     Skriver studie av {row} av {numrows} til alle datablad og individuelle protokollblader
 
 Notice that the ``{}`` and their contents is unchanged - but may be moved around within the sentence to produce the
 correct grammar for the language being used.
 
-Similarly with Django HTML template strings::
+Similarly with Django HTML template strings:
 
     Number in last %(day_delta)s days
 
-becomes::
+becomes:
 
     Antall de siste %(day_delta)s dagene
 
@@ -207,6 +207,90 @@ The new locale folders/files should now be committed to the repository and pushe
 with a Pull Request made to incorporate the changes into the core code.
 
 Making strings translatable
----------------------------
+===========================
 
-For now, please refer to https://docs.djangoproject.com/en/2.2/topics/i18n/translation/ for instructions.
+Please refer to https://docs.djangoproject.com/en/2.2/topics/i18n/translation/ for instructions.
+
+In brief, the following will help get you started, but does not cover lazy translations, plurals and many other things!
+
+All the Sphinx/Read The Docs strings are translatable - if a page does not appear in Weblate that is because it has
+not been configured as a component there yet.
+
+Python code
+-----------
+
+First, import ``gettext`` from Django:
+
+.. code-block:: python
+
+    from django.utils.translation import gettext as _
+
+Then wrap strings to be translated with ``_()`` so
+
+.. code-block:: python
+
+    query.stage = "Checking to see if any response studies are already in the OpenREM database"
+
+becomes
+
+.. code-block:: python
+
+    query.stage = _(
+        "Checking to see if any response studies are already in the OpenREM database"
+    )
+
+The same is done for strings that contain variables. Unfortunately ``gettext`` cannot work with f-strings so we are
+stuck with ``.format()`` instead. It is easier to understand how to translate the text though if we use named variables
+rather than position based ones, like this:
+
+.. code-block:: python
+
+    query.stage = _("Filter at {level} level on {filter_name} that {filter_type} {filter_list}".format(
+        level=level, filter_name=filter_name, filter_type=filter_type, filter_list=filter_list
+    ))
+
+Remember we cannot assume the grammar of the translated string so try and pass the whole sentence or paragraph to be
+translated.
+
+Template code
+-------------
+
+Add the following at the top of the template file, just after any ``extends`` code:
+
+.. code-block:: html
+
+    {% load i18n %}
+
+This can be done with *inline* translations and *block* translations. For inline,
+
+.. code-block:: html
+
+    <th style="width:25%">System name</th>
+
+becomes
+
+.. code-block:: html
+
+    <th style="width:25%">{% trans "System name" %}</th>
+
+If there are variables, a block translation is required, for example:
+
+.. code-block:: html
+
+    {% if home_config.display_workload_stats %}
+        <th style="width:12.5%">{% blocktrans with home_config.day_delta_a as day_delta trimmed %}
+            Number in last {{ day_delta }} days{% endblocktrans %}</th>
+        <th style="width:12.5%">{% blocktrans with home_config.day_delta_b as day_delta trimmed %}
+            Number in last {{ day_delta }} days{% endblocktrans %}</th>
+    {% endif %}
+
+Comments can be added to aid translators, for example:
+
+.. code-block:: html
+
+    {# Translators: Number of studies in DB listed above home-page table. No final full-stop in English due to a.m./p.m. #}
+    {% now "DATETIME_FORMAT" as current_time %}
+    {% blocktrans with total_studies=homedata.total trimmed%}
+        There are {{ total_studies }} studies in this database. Page last refreshed on {{ current_time }}
+    {% endblocktrans %}
+
