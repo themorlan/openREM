@@ -16,7 +16,8 @@ class ChartsDX(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.user = User.objects.create_user(
-            username="jacob", email="jacob@…", password="top_secret")
+            username="jacob", email="jacob@…", password="top_secret"
+        )
         eg = Group(name="viewgroup")
         eg.save()
         eg.user_set.add(self.user)
@@ -33,8 +34,12 @@ class ChartsDX(TestCase):
         dx_ge_xr220_1 = os.path.join("test_files", "DX-Im-GE_XR220-1.dcm")
         dx_ge_xr220_2 = os.path.join("test_files", "DX-Im-GE_XR220-2.dcm")
         dx_ge_xr220_3 = os.path.join("test_files", "DX-Im-GE_XR220-3.dcm")
-        dx_carestream_dr7500_1 = os.path.join("test_files", "DX-Im-Carestream_DR7500-1.dcm")
-        dx_carestream_dr7500_2 = os.path.join("test_files", "DX-Im-Carestream_DR7500-2.dcm")
+        dx_carestream_dr7500_1 = os.path.join(
+            "test_files", "DX-Im-Carestream_DR7500-1.dcm"
+        )
+        dx_carestream_dr7500_2 = os.path.join(
+            "test_files", "DX-Im-Carestream_DR7500-2.dcm"
+        )
         root_tests = os.path.dirname(os.path.abspath(__file__))
 
         dx.dx(os.path.join(root_tests, dx_ge_xr220_1))
@@ -83,7 +88,10 @@ class ChartsDX(TestCase):
 
     def obtain_chart_data(self, f):
         from remapp.views_charts_dx import dx_plot_calculations
-        self.chart_data = dx_plot_calculations(f, self.user.userprofile, return_as_dict=True)
+
+        self.chart_data = dx_plot_calculations(
+            f, self.user.userprofile, return_as_dict=True
+        )
 
     def test_dap_per_acq(self):
         # Test of mean and median DAP, count, system and acquisition protocol names
@@ -92,9 +100,14 @@ class ChartsDX(TestCase):
         # I can add to the filter_set to control what type of chart data is calculated
         filter_set = ""
 
-        f = DXSummaryListFilter(filter_set, queryset=GeneralStudyModuleAttr.objects.filter(
-            Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
-        ).order_by().distinct())
+        f = DXSummaryListFilter(
+            filter_set,
+            queryset=GeneralStudyModuleAttr.objects.filter(
+                Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
+            )
+            .order_by()
+            .distinct(),
+        )
 
         # Set user profile options
         self.user_profile_reset()
@@ -109,37 +122,60 @@ class ChartsDX(TestCase):
         # Test the chart data
         # Acquisition name test
         acq_names = ["ABD_1_VIEW", "AEC"]
-        self.assertListEqual(list(self.chart_data["acquisitionMeanDAPData"]["data"][0]["x"]), acq_names)
+        self.assertListEqual(
+            list(self.chart_data["acquisitionMeanDAPData"]["data"][0]["x"]), acq_names
+        )
 
         # Acquisition system name test
         acq_system_names = "All systems"
-        self.assertEqual(self.chart_data["acquisitionMeanDAPData"]["data"][0]["name"], acq_system_names)
+        self.assertEqual(
+            self.chart_data["acquisitionMeanDAPData"]["data"][0]["name"],
+            acq_system_names,
+        )
 
         # Check on mean data
-        acq_data = [
-            [0., 10.93333333, 3.],
-            [0., 105.85, 2.]
-        ]
+        acq_data = [[0.0, 10.93333333, 3.0], [0.0, 105.85, 2.0]]
 
         # Check on mean DAP values
-        self.assertAlmostEqual(self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][0][1], acq_data[0][1])
-        self.assertAlmostEqual(self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][1][1], acq_data[1][1])
+        self.assertAlmostEqual(
+            self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][0][1],
+            acq_data[0][1],
+        )
+        self.assertAlmostEqual(
+            self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][1][1],
+            acq_data[1][1],
+        )
         # Check on counts in the mean data
-        self.assertEqual(self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][0][2], acq_data[0][2])
-        self.assertEqual(self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][1][2], acq_data[1][2])
+        self.assertEqual(
+            self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][0][2],
+            acq_data[0][2],
+        )
+        self.assertEqual(
+            self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][1][2],
+            acq_data[1][2],
+        )
 
         # Check on median values
-        acq_data = [
-            [0., 8.2, 3.],
-            [0., 105.85, 2.]
-        ]
+        acq_data = [[0.0, 8.2, 3.0], [0.0, 105.85, 2.0]]
 
         # Check on median DAP values
-        self.assertAlmostEqual(self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][0][1], acq_data[0][1])
-        self.assertAlmostEqual(self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][1][1], acq_data[1][1])
+        self.assertAlmostEqual(
+            self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][0][1],
+            acq_data[0][1],
+        )
+        self.assertAlmostEqual(
+            self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][1][1],
+            acq_data[1][1],
+        )
         # Check on counts in the median data
-        self.assertEqual(self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][0][2], acq_data[0][2])
-        self.assertEqual(self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][1][2], acq_data[1][2])
+        self.assertEqual(
+            self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][0][2],
+            acq_data[0][2],
+        )
+        self.assertEqual(
+            self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][1][2],
+            acq_data[1][2],
+        )
 
         # Repeat the above, but plot a series per system
         self.user.userprofile.plotSeriesPerSystem = True
@@ -150,57 +186,112 @@ class ChartsDX(TestCase):
 
         # Acquisition name test
         acq_names = ["ABD_1_VIEW", "AEC"]
-        self.assertListEqual(list(self.chart_data["acquisitionMeanDAPData"]["data"][0]["x"]), acq_names)
+        self.assertListEqual(
+            list(self.chart_data["acquisitionMeanDAPData"]["data"][0]["x"]), acq_names
+        )
 
         # Acquisition system name test
-        acq_system_names = ["Carestream Clinic KODAK7500", "Digital Mobile Hospital 01234MOB54"]
-        self.assertEqual(self.chart_data["acquisitionMeanDAPData"]["data"][0]["name"], acq_system_names[0])
-        self.assertEqual(self.chart_data["acquisitionMeanDAPData"]["data"][1]["name"], acq_system_names[1])
+        acq_system_names = [
+            "Carestream Clinic KODAK7500",
+            "Digital Mobile Hospital 01234MOB54",
+        ]
+        self.assertEqual(
+            self.chart_data["acquisitionMeanDAPData"]["data"][0]["name"],
+            acq_system_names[0],
+        )
+        self.assertEqual(
+            self.chart_data["acquisitionMeanDAPData"]["data"][1]["name"],
+            acq_system_names[1],
+        )
 
         # Check on mean data of series 0
-        acq_data = [
-            [0., np.nan, 0.],
-            [0., 105.85, 2.]
-        ]
+        acq_data = [[0.0, np.nan, 0.0], [0.0, 105.85, 2.0]]
         # Check on mean DAP values
-        self.assertTrue(math.isnan(self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][0][1]))
-        self.assertAlmostEqual(self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][1][1], acq_data[1][1])
+        self.assertTrue(
+            math.isnan(
+                self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][0][1]
+            )
+        )
+        self.assertAlmostEqual(
+            self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][1][1],
+            acq_data[1][1],
+        )
         # Check on counts in the mean data
-        self.assertEqual(self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][0][2], acq_data[0][2])
-        self.assertEqual(self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][1][2], acq_data[1][2])
+        self.assertEqual(
+            self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][0][2],
+            acq_data[0][2],
+        )
+        self.assertEqual(
+            self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][1][2],
+            acq_data[1][2],
+        )
 
         # Check on mean data of series 1
-        acq_data = [
-            [1., 10.93333333, 3.],
-            [1., np.nan, 0.]
-        ]
+        acq_data = [[1.0, 10.93333333, 3.0], [1.0, np.nan, 0.0]]
         # Check on mean DAP values
-        self.assertAlmostEqual(self.chart_data["acquisitionMeanDAPData"]["data"][1]["customdata"][0][1], acq_data[0][1])
-        self.assertTrue(math.isnan(self.chart_data["acquisitionMeanDAPData"]["data"][1]["customdata"][1][1]))
+        self.assertAlmostEqual(
+            self.chart_data["acquisitionMeanDAPData"]["data"][1]["customdata"][0][1],
+            acq_data[0][1],
+        )
+        self.assertTrue(
+            math.isnan(
+                self.chart_data["acquisitionMeanDAPData"]["data"][1]["customdata"][1][1]
+            )
+        )
         # Check on counts in the mean data
-        self.assertEqual(self.chart_data["acquisitionMeanDAPData"]["data"][1]["customdata"][0][2], acq_data[0][2])
-        self.assertEqual(self.chart_data["acquisitionMeanDAPData"]["data"][1]["customdata"][1][2], acq_data[1][2])
+        self.assertEqual(
+            self.chart_data["acquisitionMeanDAPData"]["data"][1]["customdata"][0][2],
+            acq_data[0][2],
+        )
+        self.assertEqual(
+            self.chart_data["acquisitionMeanDAPData"]["data"][1]["customdata"][1][2],
+            acq_data[1][2],
+        )
 
         # Check on median values of series 0
-        acq_data = [
-            [0., np.nan, 0.],
-            [0., 105.85, 2.]
-        ]
+        acq_data = [[0.0, np.nan, 0.0], [0.0, 105.85, 2.0]]
         # Check on mean DAP values
-        self.assertTrue(math.isnan(self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][0][1]))
-        self.assertAlmostEqual(self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][1][1], acq_data[1][1])
+        self.assertTrue(
+            math.isnan(
+                self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][0][
+                    1
+                ]
+            )
+        )
+        self.assertAlmostEqual(
+            self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][1][1],
+            acq_data[1][1],
+        )
         # Check on counts in the mean data
-        self.assertEqual(self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][0][2], acq_data[0][2])
-        self.assertEqual(self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][1][2], acq_data[1][2])
+        self.assertEqual(
+            self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][0][2],
+            acq_data[0][2],
+        )
+        self.assertEqual(
+            self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][1][2],
+            acq_data[1][2],
+        )
 
         # Check on median values of series 1
-        acq_data = [
-            [1., 8.2, 3.],
-            [1., np.nan, 0.]
-        ]
+        acq_data = [[1.0, 8.2, 3.0], [1.0, np.nan, 0.0]]
         # Check on mean DAP values
-        self.assertAlmostEqual(self.chart_data["acquisitionMedianDAPData"]["data"][1]["customdata"][0][1], acq_data[0][1])
-        self.assertTrue(math.isnan(self.chart_data["acquisitionMedianDAPData"]["data"][1]["customdata"][1][1]))
+        self.assertAlmostEqual(
+            self.chart_data["acquisitionMedianDAPData"]["data"][1]["customdata"][0][1],
+            acq_data[0][1],
+        )
+        self.assertTrue(
+            math.isnan(
+                self.chart_data["acquisitionMedianDAPData"]["data"][1]["customdata"][1][
+                    1
+                ]
+            )
+        )
         # Check on counts in the mean data
-        self.assertEqual(self.chart_data["acquisitionMedianDAPData"]["data"][1]["customdata"][0][2], acq_data[0][2])
-        self.assertEqual(self.chart_data["acquisitionMedianDAPData"]["data"][1]["customdata"][1][2], acq_data[1][2])
+        self.assertEqual(
+            self.chart_data["acquisitionMedianDAPData"]["data"][1]["customdata"][0][2],
+            acq_data[0][2],
+        )
+        self.assertEqual(
+            self.chart_data["acquisitionMedianDAPData"]["data"][1]["customdata"][1][2],
+            acq_data[1][2],
+        )

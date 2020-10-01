@@ -157,7 +157,7 @@ def mg_plot_calculations(f, user_profile):
         construct_frequency_chart,
         plotly_set_default_theme,
         create_sorted_category_list,
-        create_dataframe_aggregates
+        create_dataframe_aggregates,
     )
 
     # Set the Plotly chart theme
@@ -246,9 +246,7 @@ def mg_plot_calculations(f, user_profile):
             )
 
             if user_profile.plotMGaverageAGDvsThickness:
-                category_names_col = (
-                    "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
-                )
+                category_names_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
                 group_by_col = "x_ray_system_name"
                 legend_title = "Acquisition protocol"
                 facet_names = list(df[group_by_col].unique())
@@ -256,15 +254,15 @@ def mg_plot_calculations(f, user_profile):
 
                 if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
-                    group_by_col = (
-                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
-                    )
+                    group_by_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
                     legend_title = "System"
                     category_names = facet_names
                     facet_names = list(sorted_acquisition_agd_categories.values())[0]
 
                 if user_profile.plotMean:
-                    return_structure["meanAGDvsThickness"] = plotly_binned_statistic_barchart(
+                    return_structure[
+                        "meanAGDvsThickness"
+                    ] = plotly_binned_statistic_barchart(
                         df,
                         "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
                         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
@@ -283,7 +281,9 @@ def mg_plot_calculations(f, user_profile):
                     )
 
                 if user_profile.plotMedian:
-                    return_structure["medianAGDvsThickness"] = plotly_binned_statistic_barchart(
+                    return_structure[
+                        "medianAGDvsThickness"
+                    ] = plotly_binned_statistic_barchart(
                         df,
                         "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
                         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
@@ -347,9 +347,7 @@ def mg_plot_calculations(f, user_profile):
                     )
 
                 if user_profile.plotHistograms:
-                    category_names_col = (
-                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
-                    )
+                    category_names_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
                     group_by_col = "x_ray_system_name"
                     legend_title = "Acquisition protocol"
                     facet_names = list(df[group_by_col].unique())
@@ -357,12 +355,12 @@ def mg_plot_calculations(f, user_profile):
 
                     if user_profile.plotGroupingChoice == "series":
                         category_names_col = "x_ray_system_name"
-                        group_by_col = (
-                            "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
-                        )
+                        group_by_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
                         legend_title = "System"
                         category_names = facet_names
-                        facet_names = list(sorted_acquisition_agd_categories.values())[0]
+                        facet_names = list(sorted_acquisition_agd_categories.values())[
+                            0
+                        ]
 
                     return_structure[
                         "acquisitionHistogramAGDData"
@@ -448,7 +446,7 @@ def mg_plot_calculations(f, user_profile):
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                 sorting_choice=[
                     user_profile.plotInitialSortingDirection,
-                    user_profile.plotMGInitialSortingChoice
+                    user_profile.plotMGInitialSortingChoice,
                 ],
                 legend_title="Acquisition protocol",
                 df_x_axis_col="x_ray_system_name",

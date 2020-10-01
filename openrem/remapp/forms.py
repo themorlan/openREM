@@ -591,8 +591,10 @@ class GeneralChartOptionsDisplayForm(forms.Form):
         label="Chart theme", choices=CHART_THEMES, required=False
     )
     plotColourMapChoice = forms.ChoiceField(
-        label="Colour map choice", choices=CHART_COLOUR_MAPS, required=False,
-        widget=forms.RadioSelect(attrs={'id': 'value'})
+        label="Colour map choice",
+        choices=CHART_COLOUR_MAPS,
+        required=False,
+        widget=forms.RadioSelect(attrs={"id": "value"}),
     )
     plotFacetColWrapVal = forms.IntegerField(
         label="Number of sub-charts per row", min_value=1, max_value=10, required=False

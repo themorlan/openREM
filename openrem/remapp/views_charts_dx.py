@@ -454,7 +454,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         filename="OpenREM DX acquisition protocol DAP mean",
                         sorted_category_list=sorted_acquisition_dap_categories,
                         average_choice="mean",
-                        return_as_dict=return_as_dict
+                        return_as_dict=return_as_dict,
                     )
 
                 if user_profile.plotMedian:
@@ -467,7 +467,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         filename="OpenREM DX acquisition protocol DAP median",
                         sorted_category_list=sorted_acquisition_dap_categories,
                         average_choice="median",
-                        return_as_dict=return_as_dict
+                        return_as_dict=return_as_dict,
                     )
 
             if user_profile.plotBoxplots:
@@ -480,7 +480,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM DX acquisition protocol DAP boxplot",
                     sorted_category_list=sorted_acquisition_dap_categories,
-                    return_as_dict=return_as_dict
+                    return_as_dict=return_as_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -512,7 +512,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
-                    return_as_dict=return_as_dict
+                    return_as_dict=return_as_dict,
                 )
 
         sorted_acquisition_kvp_categories = None
@@ -545,7 +545,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         filename="OpenREM DX acquisition protocol kVp mean",
                         sorted_category_list=sorted_acquisition_kvp_categories,
                         average_choice="mean",
-                        return_as_dict=return_as_dict
+                        return_as_dict=return_as_dict,
                     )
 
                 if user_profile.plotMedian:
@@ -558,7 +558,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         filename="OpenREM DX acquisition protocol kVp median",
                         sorted_category_list=sorted_acquisition_kvp_categories,
                         average_choice="median",
-                        return_as_dict=return_as_dict
+                        return_as_dict=return_as_dict,
                     )
 
             if user_profile.plotBoxplots:
@@ -571,7 +571,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM DX acquisition protocol kVp boxplot",
                     sorted_category_list=sorted_acquisition_kvp_categories,
-                    return_as_dict=return_as_dict
+                    return_as_dict=return_as_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -603,7 +603,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
-                    return_as_dict=return_as_dict
+                    return_as_dict=return_as_dict,
                 )
 
         sorted_acquisition_mas_categories = None
@@ -636,7 +636,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         filename="OpenREM DX acquisition protocol mAs mean",
                         sorted_category_list=sorted_acquisition_mas_categories,
                         average_choice="mean",
-                        return_as_dict=return_as_dict
+                        return_as_dict=return_as_dict,
                     )
 
                 if user_profile.plotMedian:
@@ -649,7 +649,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         filename="OpenREM DX acquisition protocol mAs median",
                         sorted_category_list=sorted_acquisition_mas_categories,
                         average_choice="median",
-                        return_as_dict=return_as_dict
+                        return_as_dict=return_as_dict,
                     )
 
             if user_profile.plotBoxplots:
@@ -662,7 +662,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM DX acquisition protocol mAs boxplot",
                     sorted_category_list=sorted_acquisition_mas_categories,
-                    return_as_dict=return_as_dict
+                    return_as_dict=return_as_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -694,7 +694,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
-                    return_as_dict=return_as_dict
+                    return_as_dict=return_as_dict,
                 )
 
         if user_profile.plotDXAcquisitionFreq:
@@ -711,7 +711,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                 sorting_choice=[
                     user_profile.plotInitialSortingDirection,
-                    user_profile.plotDXInitialSortingChoice
+                    user_profile.plotDXInitialSortingChoice,
                 ],
                 legend_title="Acquisition protocol",
                 df_x_axis_col="x_ray_system_name",
@@ -720,7 +720,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 colour_map=user_profile.plotColourMapChoice,
                 file_name="OpenREM DX acquisition protocol frequency",
                 sorted_categories=sorted_categories,
-                return_as_dict=return_as_dict
+                return_as_dict=return_as_dict,
             )
 
         if user_profile.plotDXAcquisitionMeanDAPOverTime:
@@ -742,7 +742,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM DX acquisition protocol DAP over time",
-                return_as_dict=return_as_dict
+                return_as_dict=return_as_dict,
             )
 
             if user_profile.plotMean:
@@ -769,7 +769,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM DX acquisition protocol kVp over time",
-                return_as_dict=return_as_dict
+                return_as_dict=return_as_dict,
             )
 
             if user_profile.plotMean:
@@ -796,7 +796,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM DX acquisition protocol mAs over time",
-                return_as_dict=return_as_dict
+                return_as_dict=return_as_dict,
             )
 
             if user_profile.plotMean:
@@ -821,7 +821,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM DX acquisition protocol DAP vs patient mass",
-                return_as_dict=return_as_dict
+                return_as_dict=return_as_dict,
             )
 
     #######################################################################
@@ -920,7 +920,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         filename="OpenREM DX Study description DAP mean",
                         sorted_category_list=sorted_study_dap_categories,
                         average_choice="mean",
-                        return_as_dict=return_as_dict
+                        return_as_dict=return_as_dict,
                     )
 
                 if user_profile.plotMedian:
@@ -933,7 +933,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         filename="OpenREM DX Study description DAP median",
                         sorted_category_list=sorted_study_dap_categories,
                         average_choice="median",
-                        return_as_dict=return_as_dict
+                        return_as_dict=return_as_dict,
                     )
 
             if user_profile.plotBoxplots:
@@ -946,7 +946,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM DX study description DAP boxplot",
                     sorted_category_list=sorted_study_dap_categories,
-                    return_as_dict=return_as_dict
+                    return_as_dict=return_as_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -976,7 +976,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
-                    return_as_dict=return_as_dict
+                    return_as_dict=return_as_dict,
                 )
 
         if user_profile.plotDXStudyFreq:
@@ -985,7 +985,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 df_name_col="study_description",
                 sorting_choice=[
                     user_profile.plotInitialSortingDirection,
-                    user_profile.plotDXInitialSortingChoice
+                    user_profile.plotDXInitialSortingChoice,
                 ],
                 legend_title="Study description",
                 df_x_axis_col="x_ray_system_name",
@@ -994,7 +994,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 colour_map=user_profile.plotColourMapChoice,
                 file_name="OpenREM DX study description frequency",
                 sorted_categories=sorted_study_dap_categories,
-                return_as_dict=return_as_dict
+                return_as_dict=return_as_dict,
             )
 
         sorted_request_dap_categories = None
@@ -1027,7 +1027,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         filename="OpenREM DX requested procedure DAP mean",
                         sorted_category_list=sorted_request_dap_categories,
                         average_choice="mean",
-                        return_as_dict=return_as_dict
+                        return_as_dict=return_as_dict,
                     )
 
                 if user_profile.plotMedian:
@@ -1040,7 +1040,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         filename="OpenREM DX requested procedure DAP median",
                         sorted_category_list=sorted_request_dap_categories,
                         average_choice="median",
-                        return_as_dict=return_as_dict
+                        return_as_dict=return_as_dict,
                     )
 
             if user_profile.plotBoxplots:
@@ -1053,7 +1053,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM DX requested procedure DAP boxplot",
                     sorted_category_list=sorted_request_dap_categories,
-                    return_as_dict=return_as_dict
+                    return_as_dict=return_as_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -1083,7 +1083,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
-                    return_as_dict=return_as_dict
+                    return_as_dict=return_as_dict,
                 )
 
         if user_profile.plotDXRequestFreq:
@@ -1092,7 +1092,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 df_name_col="requested_procedure_code_meaning",
                 sorting_choice=[
                     user_profile.plotInitialSortingDirection,
-                    user_profile.plotDXInitialSortingChoice
+                    user_profile.plotDXInitialSortingChoice,
                 ],
                 legend_title="Requested procedure",
                 df_x_axis_col="x_ray_system_name",
@@ -1101,7 +1101,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 colour_map=user_profile.plotColourMapChoice,
                 file_name="OpenREM DX requested procedure frequency",
                 sorted_categories=sorted_request_dap_categories,
-                return_as_dict=return_as_dict
+                return_as_dict=return_as_dict,
             )
 
         if user_profile.plotDXStudyPerDayAndHour:
@@ -1118,7 +1118,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM DX study description workload",
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
-                return_as_dict=return_as_dict
+                return_as_dict=return_as_dict,
             )
 
         if user_profile.plotDXStudyDAPvsMass:
@@ -1138,7 +1138,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM DX study description DAP vs patient mass",
-                return_as_dict=return_as_dict
+                return_as_dict=return_as_dict,
             )
 
         if user_profile.plotDXRequestDAPvsMass:
@@ -1158,7 +1158,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM DX requested procedure DAP vs patient mass",
-                return_as_dict=return_as_dict
+                return_as_dict=return_as_dict,
             )
 
     return return_structure
