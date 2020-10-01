@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,61 +17,49 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../netdicom-qr-config.rst:3
-#: 13a9bdbd39924e7f809fc123785f65d3
 msgid "Configuration required for query-retrieve"
 msgstr ""
 
 #: ../../netdicom-qr-config.rst:5
-#: 43b283de45814113ad8d714c2df568da
 msgid "You need a DICOM store service set up - see :doc:`import` for details."
 msgstr ""
 
 #: ../../netdicom-qr-config.rst:7
-#: 9bcd470834974d0c8bddb642e16e238b
 msgid "If you are using a third party DICOM Store server, then you will need to add the details as per :doc:`netdicom-nodes` but do not use the 'advanced' section."
 msgstr ""
 
 #: ../../netdicom-qr-config.rst:10
-#: 380011de897940819308662f3c9939c5
 msgid "To configure a remote query retrieve SCP, on the ``Config`` menu select ``DICOM networking``, then click ``Add new QR Node`` and fill in the details:"
 msgstr ""
 
 #: ../../netdicom-qr-config.rst:13
-#: 8cdd77057fd04c2ab9ace92b93559283
 msgid "Name of QR node: This is the *friendly name*, such as ``PACS QR``"
 msgstr ""
 
 #: ../../netdicom-qr-config.rst:14
-#: 7456dde6148f4611bfffa8c6543d973b
 msgid "AE Title of the remote node: This is the DICOM name of the remote node, 16 or fewer letters and numbers, no spaces"
 msgstr ""
 
 #: ../../netdicom-qr-config.rst:15
-#: e18823e66b304707b6e462e8b1e3fc3d
 msgid "AE Title this server: This is the DICOM name that the query (DICOM C-Find) will come from. This may be important if the remote node filters access based on *calling aet*. Normal rules of 16 or fewer letters and numbers, no spaces"
 msgstr ""
 
 #: ../../netdicom-qr-config.rst:17
-#: 75a7730ef6d34b9fa639f6b65a6485d8
 msgid "Remote port: Enter the port the remote node is using (eg 104)"
 msgstr ""
 
 #: ../../netdicom-qr-config.rst:18
-#: e1d656dcfe134578b955cfe91b581c60
 msgid "Remote IP address: The IP address of the remote node, for example ``192.168.1.100``"
 msgstr ""
 
 #: ../../netdicom-qr-config.rst:19
-#: 0e807b7ac7fa4f3089c8ff83a5bf2320
 msgid "Remote hostname: Alternatively, if your network has a DNS server that can resolve the hostnames, you can enter the hostname instead. If the hostname is entered, it will be used in preference to the IP address, so only enter it if you know it will be resolved."
 msgstr ""
 
 #: ../../netdicom-qr-config.rst:22
-#: cd92216c1ea44b078deb3523eb3af887
 msgid "Use Modality in Study Query: Some PACS systems (like Impax 6.6) need modality at study level for correct filtering. if this option is checked, the modality tag is inserted in the study level request."
 msgstr ""
 
 #: ../../netdicom-qr-config.rst:27
-#: 8c1801395d4040d4bfb872b08527d195
 msgid "Modality is not a valid tag in a study level request (Modalities In Study is available instead). However, some PACS systems require it for proper function, others will ignore it, and some will return zero results if the tag is present."
 msgstr ""

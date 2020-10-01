@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,76 +17,61 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../webserver_config.rst:3
-#: 2b47b7d216134178872d5af4fe5dc43d
 msgid "Webserver configuration"
 msgstr ""
 
 #: ../../webserver_config.rst:6
-#: ccf5664570d04000a5b4ccc0e94ee5c8
 msgid "Webserver timeout"
 msgstr ""
 
 #: ../../webserver_config.rst:8
-#: 0e8ef7af2bff4fcdb949281c2b0218bd
 msgid "Some long running actions can cause webserver errors if they take longer than the timeout setting in the webserver, particularly generating fluoroscopy :doc:`skindosemap`. The default setting is 300 seconds, or five minutes. To modify this, change the following two settings:"
 msgstr ""
 
 #: ../../webserver_config.rst:12
-#: e99827eb6233476aa287b3e2bdbfde7f
 msgid "Edit ``docker-compose.yml`` in the Docker OpenREM installation folder and change the timeout setting on the following line:"
 msgstr ""
 
 #: ../../webserver_config.rst:22
-#: 97b1e27f195645fcbf0e611c90f27ea1
 msgid "Edit ``nginx-conf/conf.d/openrem.conf`` and set the same timeout:"
 msgstr ""
 
 #: ../../webserver_config.rst:34
-#: ab28838cd9854bbea3d238fc375c10b0
 msgid "Reload the containers:"
 msgstr ""
 
 #: ../../webserver_config.rst:42
-#: f5b806ed891a4d6b99ac7b4fdde1c10a
 msgid "Non-Docker Linux install"
 msgstr ""
 
 #: ../../webserver_config.rst:44
-#: 5f236da2dd7647e4bd6a8075a658b9b0
 msgid "Change the same settings as for the Docker install above:"
 msgstr ""
 
 #: ../../webserver_config.rst:50
-#: a5e1605231324c31b25a1823903e966c
 msgid "and"
 msgstr ""
 
 #: ../../webserver_config.rst:63
-#: 51de16addcaf43a79d213cc3edc34084
 msgid "Adding an SSL certificate"
 msgstr ""
 
 #: ../../webserver_config.rst:65
-#: 859e325dde1f40e894df32762bcc7e2c
 msgid "It is advisable to add an SSL certificate to the web server even though it might only be accessible within an institution. There are several reasons for this, but one main one is that over time web browsers will give more and more warnings about entering passwords into non-HTTPS websites."
 msgstr ""
 
 #: ../../webserver_config.rst:69
-#: 498cd80cadc14b5da66887dbdae0b566
 msgid "It is likely that within your institution there will be a corporate trusted root certificate and a mechanism of getting certificates you generate for your servers signed by that root certificate. How to generate a certificate signing request (CSR) and private key are beyond the scope of these documents, but this blog post was helpful when we were learning how to do this at our institution: https://www.endpoint.com/blog/2014/10/30/openssl-csr-with-alternative-names-one"
 msgstr ""
 
 #: ../../webserver_config.rst:75
-#: 117ccb0c6c114547948e40c36eb97212
 msgid "Once you have a signed certificate, place it and the key in ``nginx-conf/certs``, where it will be available in the Nginx container at ``/etc/ssl/private``."
 msgstr ""
 
 #: ../../webserver_config.rst:78
-#: ff1a6b61536b49a2b371a1a108f3279d
 msgid "There are two conf files in ``nginx-conf/conf.d`` - the default one is ``openrem.conf``. There is an alternative one named ``openrem-secure.conf.example``. Edit the second file as required, then rename them both so the secure version is the only one to have a ``.conf`` ending."
 msgstr ""
 
 #: ../../webserver_config.rst:82
-#: 3dc14dd2fb48476a8bccb5e1f7518705
 msgid "Ensure the the following lines are updated for the name of your server and the names of your signed certificate and key:"
 msgstr ""

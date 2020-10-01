@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,81 +17,65 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../import.rst:2
-#: a7d6d2c3eac6469b9887e8c9489211bd
 msgid "Importing data to OpenREM"
 msgstr ""
 
 #: ../../import.rst:5
-#: 8f6ddb8234e7440ea9d381d90eb6b71b
 msgid "From local DICOM files"
 msgstr ""
 
 #: ../../import.rst:7
-#: 16053aec98c34c8cbc33e1f70a8ea379
 msgid "If you have RDSRs, DX or MG images or Philips CT Dose Info images, you can import them directly into OpenREM:"
 msgstr ""
 
 #: ../../import.rst:14
-#: 714878d10d244069b1f5f99ab2ecccfe
 msgid "If you want some examples, you can find the DICOM files that we use for the automated testing in the ``openrem/remapp/tests/test_files`` folder in your OpenREM installation."
 msgstr ""
 
 #: ../../import.rst:20
-#: b860db90543543f798404f5d414a3173
 msgid "Direct from modalities"
 msgstr ""
 
 #: ../../import.rst:22
-#: cc2fdd201b9d4263b5f3b62839ec25e5
 msgid "For production use, you will either need the modalities to send the RDSR or images directly to your OpenREM server using DICOM, or you will need to use query-retrieve to fetch the DICOM objects from the PACS or the modalities. In either of these situations, you will need to run a DICOM Store service on your OpenREM server."
 msgstr ""
 
 #: ../../import.rst:26
-#: dff1d43240cd46ae853a45eeb1408197
 msgid "To get started, you can make use of the in-built DICOM store that can be configured from within OpenREM:"
 msgstr ""
 
 #: ../../import.rst:36
-#: 564ea88f6fe440198266eee20a1c8c39
 msgid "Third-party DICOM Stores"
 msgstr ""
 
 #: ../../import.rst:38
-#: 88d0b0bb394248a6a4e4a0c042646dee
 msgid "The DICOM store built in to OpenREM hasn't proved to be stable over the longer term with the current implementation and library that it depends on. This will be rectified in a future version, but for now we recommend you use a third-party DICOM store. Previous releases have recommended the Conquest DICOM server which is very good for this task. However, due to difficulties with installation on some platforms, we are now recommending the Orthanc DICOM server instead:"
 msgstr ""
 
 #: ../../import.rst:49
-#: d35ab72c8b5248cdbc1e0464a5630733
 msgid "You ony need one of these - if you already have one installed it is probably easiest to stick to it."
 msgstr ""
 
 #: ../../import.rst:52
-#: b9e1a0945f41482b8d84e49108585021
 msgid "Query-retrieve from a PACS or similar"
 msgstr ""
 
 #: ../../import.rst:54
-#: ccc086c0c5a74923a6aff9f50b715691
 msgid "Before you can query-retrieve objects from a remote PACS, you need to do the following:"
 msgstr ""
 
 #: ../../import.rst:56
-#: d37c566831984ea6aab4a09cac6d6c84
 msgid "Create a DICOM Store service to receive the DICOM objects - see :ref:`directfrommodalities` above."
 msgstr ""
 
 #: ../../import.rst:57
-#: 056a8b2e5c274a6da3962025b296b0f9
 msgid "Configure OpenREM with the settings for the remote query-retrieve server:"
 msgstr ""
 
 #: ../../import.rst:64
-#: c1da93875a8a4c08a534ce513b074480
 msgid "Configure the settings of your DICOM store service on the PACS"
 msgstr ""
 
 #: ../../import.rst:66
-#: e566f6376e234a12b7b2c2e8c02e27d8
 msgid "Learn how to use it:"
 msgstr ""

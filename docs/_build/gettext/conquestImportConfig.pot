@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,166 +17,133 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../conquestImportConfig.rst:2
-#: acfd9ee329794988b8aad5b87f7496d4
 msgid "Advanced Lua Conquest configuration (Windows)"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:4
-#: b0de003436f74fef80c5e1ea309c014b
 msgid "Configuring Conquest DICOM server to automatically forward data to OpenREM"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:7
-#: 5f59ffae76514d0fbc2641d5560cee19
 msgid "Simple rules using the Conquest dicom.ini file"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:9
-#: c19590279bbf4a50ba891715ca5d174c
 msgid "The Conquest DICOM server can be configured to automatically run tasks when it receives specific types of DICOM object. For example, a script can be run when a DX image is received that will extract dose information into OpenREM; Conquest will then delete the original image."
 msgstr ""
 
 #: ../../conquestImportConfig.rst:13
-#: 4783dba89b914ddd80612adc7a316f87
 msgid "These actions are set up in the ``dicom.ini`` file, located in the root of the Conquest installation folder (an example ``dicom.ini`` file is available here: :doc:`conquestExampleDicomIni`)."
 msgstr ""
 
 #: ../../conquestImportConfig.rst:16
-#: 9a1f3f4d5c874efb91392e6190aad6cf
 msgid "An example import converter::"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:21
-#: fc204044f0ab465596ff86e41e1d8fc6
 msgid "``ImportModality1 = MG`` tells Conquest that modality 1 is MG. The commands listed in the ``ImportConverter1`` line are then run on all incoming MG images."
 msgstr ""
 
 #: ../../conquestImportConfig.rst:24
-#: b85227421ca84d268ebc7fc4ee22de9a
 msgid "The ``ImportConverter`` instructions are separated by semicolons; the above example has three commands:"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:26
-#: f21090713c5648d8b8350245dd5537f7
 msgid "``save to C:\\conquest\\dosedata\\mammo\\%o.dcm`` saves the incoming MG image to the specified folder with a file name set to the SOP instance UID contained in the image"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:27
-#: edfe66d994654f8fa04ab8f6832d19a8
 msgid "``system C:\\conquest\\openrem-mam-launch.bat C:\\conquest\\dosedata\\mammo\\%o.dcm`` runs a DOS batch file, using the newly saved file as the argument. On my system this batch file runs the OpenREM ``openrem_mg.py`` import script"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:28
-#: 20730073a7f540d2990b03c5d9d292ca
 msgid "``destroy`` tells Conquest to delete the image that it has just received."
 msgstr ""
 
 #: ../../conquestImportConfig.rst:30
-#: 84d61cd5027845e1964141f1a03dbf5d
 msgid "My system had three further import sections for DX, CR, and structured dose report DICOM objects::"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:43
-#: 3098209f31344a149017ee2701918d6b
 msgid "However, I have since moved to calling lua scripts from Conquest, as described in the next section."
 msgstr ""
 
 #: ../../conquestImportConfig.rst:46
-#: 2be45895b69b465d803bab324b660578
 msgid "Advanced Conquest DICOM object handling using lua scripts"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:48
-#: 19e2a01f68ce4833b9aa061eaa4d86ed
 msgid "Conquest can be configured to use lua scripts to handle incoming DICOM objects. This enables more flexibility than the examples provided in the section above. For example, you may wish to keep all incoming images that contain the word ``physics`` in the patient name or id fields. You may also wish to direct images from different makes and models of CT scanner to different OpenREM import scripts. I use this technique to forward studies from some Toshiba Aquilion CX and CXL scanners to an importer that creates a DICOM RDSR object from the Toshiba dose summary images and information stored in the image tags. These particular scanners are not capable of producing their own RDSR objects directly. I use the same script to delete images from CT scanners that I cannot extract data from."
 msgstr ""
 
 #: ../../conquestImportConfig.rst:56
-#: f4a380531ae44a709e1a5d7cbfaed520
 msgid "A lua script designed to handle any objects with modality ``CT`` can be called from ``dicom.ini`` in the following way::"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:60
-#: e0f2925a820a48b0bb706f93f179d604
 msgid "The above line will run a script called ``openrem_import_ct.lua`` once the complete patient data has been received by Conquest and a delay of 10 minutes has elapsed (the default). The following information is passed on to the script:"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:63
-#: d25905f9e77044e1b183e5787b1ad2c5
 msgid "``%p``, the path to a folder of DICOM objects"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:65
-#: 6fd19332db11427fa5c54c64d3d18b39
 msgid "``%V0008,0070``, manufacturer"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:67
-#: 7c35968ed51843afbe9873e2fdf3b352
 msgid "``%V0008,1090``, model"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:69
-#: a366d8872d6f46f581b3f4216f48bdf3
 msgid "``%V0018,1020``, software version"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:71
-#: 4636b6f4f8544fa39640c0fc8d81f78e
 msgid "``%V0008,1010``, station name"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:73
-#: 927800a1b1df41ec85a298507b8bbf2a
 msgid "``%V0010,0010``, patient name"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:75
-#: fad89b6aa52b4b9c863050a81b3689b4
 msgid "``%V0010,0020``, patient id"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:77
-#: 962b92b5872d4dc3939215264888f1f5
 msgid "``%V0008,0020``, study date"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:79
-#: 9f1d378d56274449975cb6e173df3c78
 msgid "``%V0018,1000``, device serial number"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:81
-#: e5c533dc110b48beb240de3f07f51110
 msgid "An example ``openrem_import_ct.lua`` script is shown below. It receives the parameters passed to it as single string. The individual parameters are recovered by splitting up the string using the ``::`` substring as a delimiter. The script keeps any images that contain ``physics`` in the patient name or id fields; it looks for any Philips dose info objects and imports these with the appropriate routine; it deletes images from scanners that cannot be used; it runs the Toshiba RDSR creation importer on images from older Toshiba CT scanners:"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:223
-#: 279fb0fc77c34f8ca9be40fd3a3b7606
 msgid "The above script depends on ``openrem_string_split``:"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:247
-#: 429bd2ee517841dd8e7f073b1f579567
 msgid "Preventing Conquest from adding incoming DICOM objects to the Conquest database"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:249
-#: 42a5cd279de64b2da45309230fabbdab
 msgid "You may wish to prevent Conquest from adding patient data from incoming DICOM objects to the Conquest database, such as patient names and IDs. To do this set the SQLServer to a blank in the Conquest ``dicom.ini`` file::"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:258
-#: 512bcaae568e4b61a8493403f7c86ec9
 msgid "Setting the compression for Conquest incoming DICOM images and archives"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:260
-#: 1c5e5d12b75d49d5897b91a1e183e87b
 msgid "Setting the following options to ``ul`` within ``dicom.ini`` will make Conquest store DICOM objects using little endian explicit encoding::"
 msgstr ""
 
 #: ../../conquestImportConfig.rst:268
-#: f85d5043c68045768794cd1738415de9
 msgid "For my system the ``ul`` above matches the compression that is set for Conquest's known DICOM providers in the file ``acrnema.map``, such as the Trust PACS and imaging modalities that have been set up to send data directly to Conquest."
 msgstr ""

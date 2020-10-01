@@ -7,11 +7,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 22:08+0100\n"
-"PO-Revision-Date: 2020-09-27 14:30+0000\n"
-"Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/openrem/"
-"web-interface/de/>\n"
+"POT-Creation-Date: 2020-10-01 18:34+0100\n"
+"PO-Revision-Date: 2020-09-04 11:05+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,8 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 4.3-dev\n"
 
-#. Translators: CT xlsx export progress
-#: remapp/exports/ct_export.py:160
+#: remapp/exports/ct_export.py:161
 #, python-brace-format
 msgid ""
 "Writing study {row} of {numrows} to All data sheet and individual protocol "
@@ -28,6 +26,116 @@ msgid ""
 msgstr ""
 "Schreiben von Studien-{row} von {numrows} in All data blatt und einzelnen "
 "Protokollblätter"
+
+#: remapp/netdicom/qrscu.py:79
+msgid ""
+"Checking to see if any response studies are already in the OpenREM database"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:204
+#, python-brace-format
+msgid ""
+"Filter at {level} level on {filter_name} that {filter_type} {filter_list}"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:257
+msgid ""
+"Getting series and image level information and deleting series we can't use"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:807
+msgid "Image level matching for this study is complete (there many be more)"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:817
+msgid "Image level matches are continuing."
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:858 remapp/netdicom/qrscu.py:975
+#: remapp/netdicom/qrscu.py:1080
+msgid "Connection timed out, was aborted or received invalid response"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:906
+msgid "Series level matching for this study is complete (there may be more)"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:916
+msgid "Series level matches are continuing."
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1008
+#, python-brace-format
+msgid "Study level matching for {modalities} is complete"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1021
+#, python-brace-format
+msgid "Matches are continuing for {modalities} studies"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1142
+#, python-brace-format
+msgid "Currently querying for {modality} studies..."
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1501
+msgid "Pruning study responses based on inc/exc options"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1529
+msgid "Querying at series level to get more details about studies"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1557
+msgid "Deleting studies we didn't ask for"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1599
+msgid "Pruning series responses"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1658
+msgid "Removing any responses that match data we already have in the database"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1686
+#, python-brace-format
+msgid ""
+"Query complete. Query took {time} and we are left with {studies_left} "
+"studies to move.<br>Of the original {studies_initial} study responses, "
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1697
+#, python-brace-format
+msgid ""
+"only studies with description that include '{text}' removed {num} studies, "
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1704
+#, python-brace-format
+msgid ""
+"studies with description that do not include '{text}' removed {num} studies, "
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1711
+#, python-brace-format
+msgid ""
+"only studies with station names that include '{text}' removed {num} studies, "
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1718
+#, python-brace-format
+msgid ""
+"studies with station names that do not include '{text}' removed {num} "
+"studies, "
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1726
+#, python-brace-format
+msgid ""
+"Removing duplicates of previous objects removed {duplicates_removed} studies."
+msgstr ""
 
 #: remapp/templates/remapp/home-list-modalities.html:7
 #: remapp/templates/remapp/home.html:202
@@ -55,7 +163,7 @@ msgstr "Nummer in den letzten %(day_delta)s-Tagen"
 #, python-format
 msgid ""
 "There are %(total_studies)s studies in this database. Page last refreshed on "
-"%(current_time)s."
+"%(current_time)s"
 msgstr ""
 "In dieser Datenbank sind %(total_studies)s-Studien vorhanden. Die Seite "
 "wurde zuletzt auf %(current_time)s aktualisiert."
