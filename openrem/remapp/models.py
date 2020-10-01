@@ -510,7 +510,7 @@ class UserProfile(models.Model):
     plotAverageChoice = models.CharField(max_length=6, choices=AVERAGES, default=MEAN)
 
     plotGroupingChoice = models.CharField(
-        max_length=6, choices=CHART_GROUPING, default=MEAN
+        max_length=6, choices=CHART_GROUPING, default=SYSTEM
     )
 
     plotThemeChoice = models.CharField(
