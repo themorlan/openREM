@@ -192,26 +192,13 @@ class ChartsDX(TestCase):
 
         # Check the boxplot data y-axis values
         acq_data = [4.1, 8.2, 20.5, 101.57, 110.13]
-        self.assertAlmostEqual(
-            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["y"])[0],
-            acq_data[0],
-        )
-        self.assertAlmostEqual(
-            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["y"])[1],
-            acq_data[1],
-        )
-        self.assertAlmostEqual(
-            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["y"])[2],
-            acq_data[2],
-        )
-        self.assertAlmostEqual(
-            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["y"])[3],
-            acq_data[3],
-        )
-        self.assertAlmostEqual(
-            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["y"])[4],
-            acq_data[4],
-        )
+        for idx, value in enumerate(acq_data):
+            self.assertAlmostEqual(
+                np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["y"])[
+                    idx
+                ],
+                value,
+            )
 
         # Repeat the above, but plot a series per system
         self.user.userprofile.plotSeriesPerSystem = True
@@ -353,24 +340,19 @@ class ChartsDX(TestCase):
 
         # Check on the boxplot data y-axis values
         acq_data = [101.57, 110.13]
-        self.assertAlmostEqual(
-            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["y"])[0],
-            acq_data[0],
-        )
-        self.assertAlmostEqual(
-            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["y"])[1],
-            acq_data[1],
-        )
+        for idx, value in enumerate(acq_data):
+            self.assertAlmostEqual(
+                np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["y"])[
+                    idx
+                ],
+                value,
+            )
+
         acq_data = [4.1, 8.2, 20.5]
-        self.assertAlmostEqual(
-            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][1]["y"])[0],
-            acq_data[0],
-        )
-        self.assertAlmostEqual(
-            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][1]["y"])[1],
-            acq_data[1],
-        )
-        self.assertAlmostEqual(
-            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][1]["y"])[2],
-            acq_data[2],
-        )
+        for idx, value in enumerate(acq_data):
+            self.assertAlmostEqual(
+                np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][1]["y"])[
+                    idx
+                ],
+                value,
+            )
