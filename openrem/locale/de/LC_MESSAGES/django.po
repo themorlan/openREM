@@ -15,8 +15,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.4.1\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 
 #: remapp/exports/ct_export.py:161
 #, python-brace-format
@@ -160,10 +160,7 @@ msgid "Number in last %(day_delta)s days"
 msgstr "Nummer in den letzten %(day_delta)s-Tagen"
 
 #: remapp/templates/remapp/home.html:64
-#, fuzzy, python-format
-#| msgid ""
-#| "There are %(total_studies)s studies in this database. Page last refreshed "
-#| "on %(current_time)s"
+#, python-format
 msgid ""
 "There are %(total_studies)s studies in this database. Page last refreshed on "
 "%(current_time)s"
