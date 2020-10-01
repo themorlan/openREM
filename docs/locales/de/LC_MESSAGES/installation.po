@@ -7,93 +7,100 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
 "PO-Revision-Date: 2020-09-04 12:13+0100\n"
+"Last-Translator: \n"
+"Language: de\n"
+"Language-Team: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: de\n"
-"X-Generator: Poedit 2.4.1\n"
 
-#: ../../installation.rst:3 a5edd254946742a290c0840c92ff560e
+#: ../../installation.rst:3
 msgid "Installation"
 msgstr "Installation"
 
-#: ../../installation.rst:6 a00dc8af796848f49a9d9e3a8d1439e4
+#: ../../installation.rst:6
 msgid "Windows or Linux: Docker install"
 msgstr "Windows or Linux: Docker installieren"
 
-#: ../../installation.rst:9 62271b0a5427484e8465d9f0fc121b5e
+#: ../../installation.rst:9
 msgid "Preparation"
 msgstr "Vorbereitung"
 
-#: ../../installation.rst:10 54f7cebab2514a4288b9bee6727965e8
+#: ../../installation.rst:10
 msgid "Install Docker"
 msgstr "Installieren Sie Docker"
 
-#: ../../installation.rst:11 2b8d00a8d09c40c0b7064c0562ff49cd
+#: ../../installation.rst:11
 msgid "Download https://bitbucket.org/openrem/docker/get/develop.zip"
 msgstr "Herunterladen https://bitbucket.org/openrem/docker/get/develop.zip"
 
-#: ../../installation.rst:16 403da297072d4aa2a68eabfae489cadf
+#: ../../installation.rst:16
 msgid "Install"
 msgstr "Installieren"
 
-#: ../../installation.rst:17 fc5f54fc41724cd0b1ce365f6b12e44e
-msgid "Extract the zip file and open a shell (command prompt) in the new folder"
+#: ../../installation.rst:17
+msgid "Extract the ZIP file and open a shell (command prompt) in the new folder"
 msgstr ""
 
-#: ../../installation.rst:18 09c2d425b31b497eb2e9fb54e7fe90a4
+#: ../../installation.rst:18
 msgid ""
-"Customise any variables in ``.env.prod`` and in the ``orthanc_1`` section in "
-"``docker-compose.yml`` as necessary. A full description of the options are "
-"found in:"
+"Customise any variables in ``.env.prod`` and in the ``orthanc_1`` section"
+" in ``docker-compose.yml`` as necessary. A full description of the "
+"options are found in:"
 msgstr ""
 
-#: ../../installation.rst:27 bec034d1bf4d4fbeacd6dc32ba9426d8
+#: ../../installation.rst:27
 msgid "Start the containers with:"
 msgstr ""
 
-#: ../../installation.rst:33 02b4ff0083894a49b2051d374efcf943
+#: ../../installation.rst:33
 msgid "Get the database and translations ready:"
 msgstr ""
 
-#: ../../installation.rst:43 8d6c218d298741faba7e0c5586853d73
+#: ../../installation.rst:43
 msgid "Open a web browser and go to http://localhost/"
 msgstr ""
 
-#: ../../installation.rst:46 f4ffc1cee39e43a39cd56c0b07d06568
+#: ../../installation.rst:46
 msgid "Non-docker alternative - Linux only"
 msgstr ""
 
-#: ../../installation.rst:48 5b0cdbf6896346e29de7191786e977e1
+#: ../../installation.rst:48
 msgid ""
 "We recommend all installations to use the Docker method described above. "
-"However, it is possible to install without Docker, but only on Linux. The "
-"instructions are a prescriptive install on Ubuntu:"
+"However, it is possible to install without Docker, but only on Linux. The"
+" instructions are a prescriptive install on Ubuntu:"
 msgstr ""
 
-#: ../../installation.rst:58 99fcd332e74344fc8a5f744c66b636f9
+#: ../../installation.rst:58
 msgid "Offline Docker installations"
 msgstr ""
 
-#: ../../installation.rst:67 f6a9fe19155d447abcd0afb2713de061
+#: ../../installation.rst:67
 msgid "Upgrading an existing installation"
 msgstr ""
 
-#: ../../installation.rst:78 372b9e1aec44434a9d38581a7a84795f
+#: ../../installation.rst:78
 msgid "Databases"
 msgstr ""
 
-#: ../../installation.rst:80 d1e64373517c4ce595f9acf6351358b7
+#: ../../installation.rst:80
 msgid ""
 "To be removed here, but we need some of the content in other pages, so "
 "leaving for now"
 msgstr ""
 
-#: ../../installation.rst:93 a309e3bea4a34b89a0f3facbfd404b9e
+#: ../../installation.rst:93
 msgid "Web servers"
 msgstr ""
+
+#~ msgid ""
+#~ "Extract the zip file and open a"
+#~ " shell (command prompt) in the new"
+#~ " folder"
+#~ msgstr ""
+

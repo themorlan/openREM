@@ -1,111 +1,108 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
 # This file is distributed under the same license as the OpenREM package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
 "PO-Revision-Date: 2020-09-28 18:40+0000\n"
 "Last-Translator: Artem <KovalevArtem.ru@gmail.com>\n"
-"Language-Team: Russian <https://hosted.weblate.org/projects/openrem/"
-"rtd-installation/ru/>\n"
 "Language: ru\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/openrem/rtd-"
+"installation/ru/>\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"Generated-By: Babel 2.8.0\n"
 
 #: ../../installation.rst:3
-#: 6eaaeb1db61e4ac4aebc94918c5710f8
 msgid "Installation"
 msgstr "Установка"
 
 #: ../../installation.rst:6
-#: e82cca32f19d4b328dde52deb5504554
 msgid "Windows or Linux: Docker install"
 msgstr "Windows или Linux: Установка Docker"
 
 #: ../../installation.rst:9
-#: 2b1840b2f63e45658190351481c5cdbe
 msgid "Preparation"
 msgstr "Подготовка"
 
 #: ../../installation.rst:10
-#: d6d6b1b731e94085b8ae84a2b1a7d775
 msgid "Install Docker"
 msgstr "Установить Docker"
 
 #: ../../installation.rst:11
-#: b514cf3743074164befc9a25e2751370
 msgid "Download https://bitbucket.org/openrem/docker/get/develop.zip"
 msgstr "Скачать https://bitbucket.org/openrem/docker/get/develop.zip"
 
 #: ../../installation.rst:16
-#: 426f2220e6a5452dbf0143e66ad014c8
 msgid "Install"
 msgstr "Установить"
 
 #: ../../installation.rst:17
-#: e963b5faee514027b32d185d3ce72137
-msgid "Extract the zip file and open a shell (command prompt) in the new folder"
+msgid "Extract the ZIP file and open a shell (command prompt) in the new folder"
 msgstr ""
 
 #: ../../installation.rst:18
-#: f2344f059e8c413d95fbb67d0967b93d
-msgid "Customise any variables in ``.env.prod`` and in the ``orthanc_1`` section in ``docker-compose.yml`` as necessary. A full description of the options are found in:"
+msgid ""
+"Customise any variables in ``.env.prod`` and in the ``orthanc_1`` section"
+" in ``docker-compose.yml`` as necessary. A full description of the "
+"options are found in:"
 msgstr ""
 
 #: ../../installation.rst:27
-#: 8f73309b33c44fe9bc235802dbfb61f7
 msgid "Start the containers with:"
 msgstr ""
 
 #: ../../installation.rst:33
-#: a4cc56d1d2b345c8b87ff872bc0cf6c0
 msgid "Get the database and translations ready:"
 msgstr ""
 
 #: ../../installation.rst:43
-#: 62febdcbca2442f9888ab79f01ca6e87
 msgid "Open a web browser and go to http://localhost/"
 msgstr "Откройте веб-браузер и перейдите на http://localhost/"
 
 #: ../../installation.rst:46
-#: 6ace18891ccb48e4947be69168a6cc3f
 msgid "Non-docker alternative - Linux only"
 msgstr ""
 
 #: ../../installation.rst:48
-#: c043a9610c5748639ed173ab13b003c8
-msgid "We recommend all installations to use the Docker method described above. However, it is possible to install without Docker, but only on Linux. The instructions are a prescriptive install on Ubuntu:"
+msgid ""
+"We recommend all installations to use the Docker method described above. "
+"However, it is possible to install without Docker, but only on Linux. The"
+" instructions are a prescriptive install on Ubuntu:"
 msgstr ""
 
 #: ../../installation.rst:58
-#: f4b55b08112e478cbdb09b113c152464
 msgid "Offline Docker installations"
 msgstr ""
 
 #: ../../installation.rst:67
-#: c7b053d43205486db875ab80f2b959ac
 msgid "Upgrading an existing installation"
 msgstr ""
 
 #: ../../installation.rst:78
-#: a460da71d02d43abac4979ebc5044213
 msgid "Databases"
 msgstr "Базы данных"
 
 #: ../../installation.rst:80
-#: f4ddd82caf9b4153bd6221ceb0d5bdd6
-msgid "To be removed here, but we need some of the content in other pages, so leaving for now"
+msgid ""
+"To be removed here, but we need some of the content in other pages, so "
+"leaving for now"
 msgstr ""
 
 #: ../../installation.rst:93
-#: 96e09454faf5482cabad0a7d1a423dd6
 msgid "Web servers"
 msgstr "Веб-серверы"
+
+#~ msgid ""
+#~ "Extract the zip file and open a"
+#~ " shell (command prompt) in the new"
+#~ " folder"
+#~ msgstr ""
+

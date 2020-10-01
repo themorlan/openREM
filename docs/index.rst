@@ -1,6 +1,6 @@
-###################################
-Welcome to OpenREM's documentation!
-###################################
+##################################
+Welcome to OpenREM's documentation
+##################################
 
 .. image:: openrem0105.png
     :width: 105px
