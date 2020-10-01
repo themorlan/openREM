@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,146 +17,117 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../troubleshooting.rst:3
-#: 71fff538a79141679300be610a27acee
 msgid "Troubleshooting"
 msgstr ""
 
 #: ../../troubleshooting.rst:11
-#: f2a5b8aff54544d484f9456ae58a1b29
 msgid "If you have a modality where every study has one event (usually CT), review"
 msgstr ""
 
 #: ../../troubleshooting.rst:18
-#: f2e9aea7318c4f1494de163d498dd4f3
 msgid "If planar X-ray studies are appearing in fluoroscopy or vice-versa, review"
 msgstr ""
 
 #: ../../troubleshooting.rst:20
-#: 6d7da9882c8a40798b4b5ab9697c25a7
 msgid ":doc:`i_displaynames`"
 msgstr ""
 
 #: ../../troubleshooting.rst:22
-#: 561899efe23a47ab8291e01c24f9fc60
 msgid "For DICOM networking:"
 msgstr ""
 
 #: ../../troubleshooting.rst:24
-#: 26403db9540c4356971b73dc6f86f65e
 msgid ":ref:`qrtroubleshooting` for query retrieve"
 msgstr ""
 
 #: ../../troubleshooting.rst:25
-#: 6f759aec868446c585622a2e30c5de95
 msgid ":ref:`storetroubleshooting` for DICOM store"
 msgstr ""
 
 #: ../../troubleshooting.rst:27
-#: 03bf5bc4a520440f90364127e8b5cfef
 msgid "For RabbitMQ/task management:"
 msgstr ""
 
 #: ../../troubleshooting.rst:29
-#: f1fcaf2375ba4cc99cd741d0dbecd88e
 msgid ":doc:`rabbitmq_management`"
 msgstr ""
 
 #: ../../troubleshooting.rst:32
-#: e2824c1a76634e5980d5ae7e28648785
 msgid "Log files"
 msgstr ""
 
 #: ../../troubleshooting.rst:34
-#: 2a318f1ddf8344c1acd96b0168b5229b
 msgid "Log file location, naming and verbosity were configured in the ``local_settings.py`` configuration - see the :ref:`local_settings_logfile` configuration docs for details."
 msgstr ""
 
 #: ../../troubleshooting.rst:37
-#: 78a09d1fd3424c9d9d63e70f247f7088
 msgid "If the defaults have not been modified, then there will be three log files in your ``MEDIAROOT`` folder which you configured at installation. See the install config section on :ref:`mediarootsettings` for details."
 msgstr ""
 
 #: ../../troubleshooting.rst:40
-#: 117ff81a20c64d9dbadeb3fb862d6542
 msgid "The ``openrem.log`` has general logging information, the other two are specific to the DICOM store and DICOM query-retrieve functions if you are making use of them."
 msgstr ""
 
 #: ../../troubleshooting.rst:43
-#: 1d5322d531104c3b8439862aee1248b9
 msgid "You can increase the verbosity of the log files by changing the log 'level' to ``DEBUG``, or you can decrease the verbosity to ``WARNING``, ``ERROR``, or ``CRITICAL``. The default is ``INFO``."
 msgstr ""
 
 #: ../../troubleshooting.rst:47
-#: a25f8de5d01c4dd0a36279568bcd2d4c
 msgid "Starting again!"
 msgstr ""
 
 #: ../../troubleshooting.rst:49
-#: dffe2202de5f426992c0bd4f59db72ef
 msgid "If for any reason you want to start again with the database, then this is how you might do it:"
 msgstr ""
 
 #: ../../troubleshooting.rst:52
-#: 3768aab5cf694b76ba9f88f7e46198b0
 msgid "SLQite3 database"
 msgstr ""
 
 #: ../../troubleshooting.rst:54
-#: f1aebb66f1d94d81b9fd047918ce32b8
 msgid "Delete or rename your existing database file (location will be described in your ``local_settings.py`` file)"
 msgstr ""
 
 #: ../../troubleshooting.rst:55
-#: d438d7d67da44554b0c05760e634cc6d
 msgid ":ref:`database_creation`"
 msgstr ""
 
 #: ../../troubleshooting.rst:58
-#: 95ea3645f7ad49dcb17a1d51aa681d68
 msgid "Any database"
 msgstr ""
 
 #: ../../troubleshooting.rst:60
-#: 55234fac50d947e597aa0af64b627343
 msgid "These instructions will also allow you to keep any user settings if you use an SQLite3 database."
 msgstr ""
 
 #: ../../troubleshooting.rst:62
-#: 9901abfeb1e145f2aa9a10f9020b31ce
 msgid "In a shell/command window, move into the openrem folder:"
 msgstr ""
 
 #: ../../troubleshooting.rst:64
-#: 9a140f0455074d8cbf7dca32f1ca073e
 msgid "Ubuntu linux: ``cd /usr/local/lib/python2.7/dist-packages/openrem/``"
 msgstr ""
 
 #: ../../troubleshooting.rst:65
-#: 609f3019bc1d4dac85c73a9cc8959b82
 msgid "Other linux: ``cd /usr/lib/python2.7/site-packages/openrem/``"
 msgstr ""
 
 #: ../../troubleshooting.rst:66
-#: 714a1276f61c4f3fa7f4001194c5a964
 msgid "Linux virtualenv: ``cd virtualenvfolder/lib/python2.7/site-packages/openrem/``"
 msgstr ""
 
 #: ../../troubleshooting.rst:67
-#: 95e51d3d181d4ad29a34ff317c29b97a
 msgid "Windows: ``cd C:\\Python27\\Lib\\site-packages\\openrem\\``"
 msgstr ""
 
 #: ../../troubleshooting.rst:68
-#: 0a65f9325c5c4c178c24d1c4b2115fdb
 msgid "Windows virtualenv: ``cd virtualenvfolder\\Lib\\site-packages\\openrem\\``"
 msgstr ""
 
 #: ../../troubleshooting.rst:70
-#: 2f361995df8140a29bd5e88ded5ba302
 msgid "Run the django python shell:"
 msgstr ""
 
 #: ../../troubleshooting.rst:83
-#: 1bb71244187d4e7cabaa67fbcd26cf75
 msgid "And if you are sure you want to delete all the studies..."
 msgstr ""

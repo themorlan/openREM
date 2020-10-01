@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,129 +17,101 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../release-0.5.0.rst:2
-#: c0d40fb1ca1145efb945221c0273d2fa
 msgid "OpenREM Release Notes version 0.5.0"
 msgstr ""
 
 #: ../../release-0.5.0.rst:5
-#: 9d80374f56dd40ea966f57b2a80bac04
 msgid "Headline changes"
 msgstr ""
 
 #: ../../release-0.5.0.rst:8
-#: 1f1fca4e5df24a86ace7630d34a6ae9b
 msgid "Import, display and export of CR/DX data from image headers"
 msgstr ""
 
 #: ../../release-0.5.0.rst:9
-#: 45613f4b38a24873a3996ff85aa31d4e
 msgid "Export of study data from fluoroscopy to xlsx files"
 msgstr ""
 
 #: ../../release-0.5.0.rst:10
-#: cf2492206d664fee8b635a2a63ddfa8e
 msgid "Importing data from Windows using ``*.dcm`` style wildcards"
 msgstr ""
 
 #: ../../release-0.5.0.rst:11
-#: 9d1d222876b94cdeb32d676b44c53eaa
 msgid "Hologic tomography projection images are no longer excluded if part of a Combo exposure"
 msgstr ""
 
 #: ../../release-0.5.0.rst:14
-#: a1534b5fb3bc4633addbef44b93b0e03
 msgid "Specific upgrade instructions"
 msgstr ""
 
 #: ../../release-0.5.0.rst:16
-#: 5d57209285ca4a29ae00e925ff9b8a7f
 msgid "**Always make sure you have converted your database to South before attempting an upgrade**"
 msgstr ""
 
 #: ../../release-0.5.0.rst:18
-#: 795a931828ec4b86ad27d53e81127543
 msgid "Quick reminder of how, if you haven't done it already:"
 msgstr ""
 
 #: ../../release-0.5.0.rst:20
 #: ../../release-0.5.0.rst:53
 #: ../../release-0.5.0.rst:76
-#: fbc8f6e8562643b4bda2ff4b6c42af6c
-#: 43f7e6d4d21c4d7497d90ea1eb116700
-#: 0ac98be45a3544a6927ce8fc78f07b51
 msgid "Linux::"
 msgstr ""
 
 #: ../../release-0.5.0.rst:24
 #: ../../release-0.5.0.rst:58
 #: ../../release-0.5.0.rst:81
-#: 05ef1d393c5841838daf49b2206b823e
-#: c973ecdf0b984974aea5f54e4e499c44
-#: cd9236d736b642c896ac9123c20223d9
 msgid "Windows::"
 msgstr ""
 
 #: ../../release-0.5.0.rst:30
-#: c67f4e386e8d4d0bbf99b85a228596ba
 msgid "Upgrading from versions before 0.4.3"
 msgstr ""
 
 #: ../../release-0.5.0.rst:32
-#: 3887a7fd47b04eeba0738c85ae21f976
 msgid "If you are upgrading from 0.3.9 or earlier, you will need to upgrade to version 0.4.2 first. See the :doc:`release-0.4.3`."
 msgstr ""
 
 #: ../../release-0.5.0.rst:35
-#: 1ab3b9fcfa054621baa6ace77ba13769
 msgid "If you are upgrading from 0.4.0 or later, the instructions in :doc:`release-0.4.3` still need to be followed to install/setup RabbitMQ and Celery and to update the configuration files, but you can go straight to 0.5.0 rather than installing 0.4.3."
 msgstr ""
 
 #: ../../release-0.5.0.rst:41
-#: 92599ebae9e74de8a65664b807e97969
 msgid "Upgrading from version 0.4.3"
 msgstr ""
 
 #: ../../release-0.5.0.rst:46
-#: 547dc37c7bf740d68d31dc1596b6f960
 msgid "(Will need ``sudo`` or equivalent if using linux without a virtualenv)"
 msgstr ""
 
 #: ../../release-0.5.0.rst:50
-#: 7658094d1c7d45ad9749a0a2f052d89f
 msgid "Database migration"
 msgstr ""
 
 #: ../../release-0.5.0.rst:51
-#: c8a8e9c4791c4b95b0f51d4250a13116
 msgid "*Assuming no virtualenv*"
 msgstr ""
 
 #: ../../release-0.5.0.rst:64
-#: b86867a98577476e82edc619e559e839
 msgid "Restart the web server"
 msgstr ""
 
 #: ../../release-0.5.0.rst:65
-#: 8da81f7bba9e4c14bdfcf3580e7b71b9
 msgid "If you are using the built-in test web server (`not for production use`)::"
 msgstr ""
 
 #: ../../release-0.5.0.rst:69
-#: 442a40b6e79b4f1aa585509509d366a4
 msgid "Otherwise restart using the command for your web server"
 msgstr ""
 
 #: ../../release-0.5.0.rst:72
-#: 8b072d464f874985a8216c47790292e7
 msgid "Restart the Celery task queue"
 msgstr ""
 
 #: ../../release-0.5.0.rst:74
-#: cdcbb0cec12f4c3ca697a8da18079b30
 msgid "For testing, in a new shell: *(assuming no virtualenv)*"
 msgstr ""
 
 #: ../../release-0.5.0.rst:86
-#: 860f177dfc414696b1d699533a70e3e2
 msgid "For production use, see http://celery.readthedocs.org/en/latest/tutorials/daemonizing.html"
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,141 +17,113 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../env_variables.rst:2
-#: 4bf64612a87d426c9db2b9c75067b52b
 msgid "Docker env configuration"
 msgstr ""
 
 #: ../../env_variables.rst:4
-#: 278debdedbe24f88acc13b0e477899cf
 msgid "Edit the ``.env.prod`` file to customise your installation. There should be no space between the variable name, the ``=`` and the value. Everything after the ``=`` until the end of the line is transferred as the value. These settings take effect when docker-compose is started or restarted."
 msgstr ""
 
 #: ../../env_variables.rst:9
-#: b4247bcbb2204572b0635eee22aa4a69
 msgid "Variables that should always be changed"
 msgstr ""
 
 #: ../../env_variables.rst:11
-#: 6faf9ca919ae4e21a1a4cb1b3f786528
 msgid "Set a new secret key. Create your own, or generate one by using a tool like http://www.miniwebtool.com/django-secret-key-generator/ for this:"
 msgstr ""
 
 #: ../../env_variables.rst:18
-#: 93188fd0246346aaaeca7fdf33fc6739
 msgid "Should be a single string of hosts with a space between each. For example: ``DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1] myservername``"
 msgstr ""
 
 #: ../../env_variables.rst:27
-#: 9cfde7bd20b24a98a1219a4b9d837d51
 msgid "Variables to help with debugging problems"
 msgstr ""
 
 #: ../../env_variables.rst:29
-#: 2183b14e097e4893bb0dca5866a31835
 msgid "Set to 1 to enable Django debugging mode."
 msgstr ""
 
 #: ../../env_variables.rst:35
-#: 6cd91d6661a6490cb3139a7dde1bfe27
 msgid "Set the log level. Options are ``DEBUG``, ``INFO``, ``WARNING``, ``ERROR``, and ``CRITICAL``, with progressively less logging."
 msgstr ""
 
 #: ../../env_variables.rst:46
-#: ba26b65fa2134bdb8c11fad8f7bf4b52
 msgid "Variables to be changed for your environment"
 msgstr ""
 
 #: ../../env_variables.rst:49
-#: 7051d0b2029e4562a1efb7ce1ae01b9a
 msgid "E-mail server settings"
 msgstr ""
 
 #: ../../env_variables.rst:62
-#: 91e24d987994421f83fce1379ae4b5b7
 msgid "The host name and port of the e-mail server that you wish to use must be entered in the ``EMAIL_HOST`` and ``EMAIL_PORT`` fields. ``EMAIL_HOST`` might be your institution's Outlook/Exchange server."
 msgstr ""
 
 #: ../../env_variables.rst:65
-#: ac3a044e9ab84b4084b54779b5a71435
 msgid "If the e-mail server is set to only allow authenticated users to send messages then a suitable user and password must be entered in the ``EMAIL_HOST_USER`` and ``EMAIL_HOST_PASSWORD`` fields. If this approach is used then it may be useful to request that an e-mail account be created specifically for sending these OpenREM alert messages."
 msgstr ""
 
 #: ../../env_variables.rst:69
-#: b46562b2f2ba42e9bbc558f06857898f
 msgid "It may be possible to configure the e-mail server to allow sending of messages that originate from the OpenREM server without authentication, in which case the user and password settings should not be required."
 msgstr ""
 
 #: ../../env_variables.rst:72
-#: edf7a5ad08b643b4a69ac5182e5ac1be
 msgid "The ``EMAIL_USE_TLS`` and ``EMAIL_USE_TLS`` options should be configured to match the encryption requirements of the e-mail server. Use ``0`` for False (default) and ``1`` for True."
 msgstr ""
 
 #: ../../env_variables.rst:75
-#: 3374a1fd52834e6a8ee4ac1944b33e98
 msgid "The ``EMAIL_DOSE_ALERT_SENDER`` should contain the e-mail address that you want to use as the sender address."
 msgstr ""
 
 #: ../../env_variables.rst:77
-#: cbe5ab8fdc58421d8f9756567cf36143
 msgid "The ``EMAIL_OPENREM_URL`` must contain the URL of your OpenREM installation in order for hyperlinks in the e-mail alert messages to function correctly."
 msgstr ""
 
 #: ../../env_variables.rst:81
-#: 7c1766b4c4d4470a8abf66dcd73afb2a
 msgid "Regionalisation"
 msgstr ""
 
 #: ../../env_variables.rst:83
-#: 19b99093c705439dbb8838b261b336a7
 msgid "Local time zone for this installation. Choices can be found here: http://en.wikipedia.org/wiki/List_of_tz_zones_by_name although not all choices may be available on all operating systems:"
 msgstr ""
 
 #: ../../env_variables.rst:91
-#: d4c4934242334990a6fbec0a636ee962
 msgid "Language code for this installation. All choices can be found here: http://www.i18nguy.com/unicode/language-identifiers.html"
 msgstr ""
 
 #: ../../env_variables.rst:98
-#: f98a6fe016d74f7c9a09deee4508bf10
 msgid "If you set this to False, Django will make some optimizations so as not to load the internationalization machinery:"
 msgstr ""
 
 #: ../../env_variables.rst:104
-#: c21badb345954f15b5c46a13f777930a
 msgid "If you set this to False, Django will not format dates, numbers and calendars according to the current locale:"
 msgstr ""
 
 #: ../../env_variables.rst:110
-#: 030420f4676042b9afaab3d6afb9bf1f
 msgid "If you set this to False (default), Django will not use timezone-aware datetimes:"
 msgstr ""
 
 #: ../../env_variables.rst:116
-#: 5db5746046b6448c8c165ee46387df34
 msgid "XLSX date and time settings for exports:"
 msgstr ""
 
 #: ../../env_variables.rst:124
-#: 885747cb4dc64e30ab8b4e8ffcb63c0a
 msgid "Virtual directory settings"
 msgstr ""
 
 #: ../../env_variables.rst:126
-#: 5bc451303e1d4d04b68dbc1743f85d53
 msgid "See :doc:`virtual_directory` for details of these variables - normally these can be left commented out."
 msgstr ""
 
 #: ../../env_variables.rst:129
-#: 037498cbfa44499f9a7da7e18725c7c4
 msgid "Variables that should only be changed if you know what you are doing"
 msgstr ""
 
 #: ../../env_variables.rst:152
-#: 45579275706b42209bc0742cda037a19
 msgid "Variables that shouldn't be changed"
 msgstr ""
 
 #: ../../env_variables.rst:154
-#: 4b229eef9cb44285a517edecdc57a92c
 msgid "Changing this will mean some OpenREM functions will fail"
 msgstr ""

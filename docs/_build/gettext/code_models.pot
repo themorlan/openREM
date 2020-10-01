@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,634 +17,496 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../code_models.rst:2
-#: 2eaf2f2c7a7c42028ff6763f585ec070
 msgid "Models"
 msgstr ""
 
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.AdminTaskQuestions:1
-#: 788fec18b05947708dec4cc590c34e74
-msgid "Record if admin tasks have been dealt with"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.NotPatientIndicatorsID:1
-#: cf41897f34754b6da8aa31ea0d083acf
-msgid "Table to record strings that indicate a patient ID is really a test or QA ID"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.NotPatientIndicatorsName:1
-#: 40eb6572a8e948c08e41a64f380945a3
-msgid "Table to record strings that indicate a patient name is really a test or QA name"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.SkinDoseMapCalcSettings:1
-#: 0c6a556161294ad1ad962580b6908c46
-msgid "Table to store skin dose map calculation settings"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.HighDoseMetricAlertSettings:1
-#: 292d5664a3dc42558c77c8c8665dc289
-msgid "Table to store high dose fluoroscopy alert settings"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.HighDoseMetricAlertRecipients:1
-#: 6135bbda6b704468937271f85f1a3046
-msgid "Table to store whether users should receive high dose fluoroscopy alerts"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.create_or_save_high_dose_metric_alert_recipient_setting:1
-#: 494b01ebdd9a42ca9728876b5d0924cf
-msgid "Function to create or save fluoroscopy high dose alert recipient settings"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.HomePageAdminSettings:1
-#: e6f19c55ea8e47689d2b2a83bade02ab
-msgid "Table to store home page settings"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.MergeOnDeviceObserverUIDSettings:1
-#: d9aaed04d8544f78b7e6b8628e756c90
-msgid "Table to store setting(s) for autmoatic setting of Display Name and Modality type based on same Device observer UID"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.DicomDeleteSettings:1
-#: c45606a3badd4d989d19ad6e8fd6c1a6
-msgid "Table to store DICOM deletion settings"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.PatientIDSettings:1
-#: 2742e51ad26c4a4c826ceefd55965187
-msgid "Table to store patient ID settings"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.DicomStoreSCP:1
-#: 72da391462b94dc2927e56f816e1051b
-msgid "Table to store DICOM store settings"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.DicomRemoteQR:1
-#: afff10cf01694a2282dcc1239e87aaf5
-msgid "Table to store DICOM remote QR settings"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.DicomQuery:1
-#: 1f936482bd8741499c0ec475782cbd0b
-msgid "Table to store DICOM query settings"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.UserProfile:1
-#: 42721a58418541d1ae206c9af5320eca
-msgid "Table to store user profile settings"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.UniqueEquipmentNames:1
-#: ff07a0e6329146f695106728e3903720
-msgid "Table to unique equipment name information"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.SizeUpload:1
-#: e2ca50c6625b4ef1b090a995fe891675
-msgid "Table to store patient size information"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.Exports:1
-#: 2bfd0890fe66448a8d6333d8010d1b1a
-msgid "Table to hold the export status and filenames"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.ContextID:1
-#: 9bf0e653337d4ee8be3b6f6c239b8c0b
-msgid "Table to hold all the context ID code values and code meanings."
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.ContextID:3
-#: 01410ff63401428e9df71f42a5993456
-msgid "Could be prefilled from the tables in DICOM 3.16, but is actually populated as the codes occur.     This assumes they are used correctly."
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr:1
-#: 74faef533f5147438dc5e26dbbe0f404
-msgid "General Study Module C.7.2.1"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr:3
-#: b47d858d0af140e69db2937bdcb80791
-msgid "Specifies the Attributes that describe and identify the Study performed upon the Patient. From DICOM Part 3: Information Object Definitions Table C.7-3"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr:13
-#: ee85ece2b9544731870a404ae6bbdbd2
-msgid "Additional to the module definition:"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr:8
-#: 4881a435378e4c348e44a330f634238d
-msgid "performing_physician_name"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr:9
-#: 24b49165726f4bb29086f1410373257a
-msgid "operator_name"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr:10
-#: 9cf21a45cb99479682323966c7bfe094
-msgid "modality_type"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr:11
-#: 6d4b74a3d89442b3866d5f57d3f8a271
-msgid "procedure_code_value_and_meaning"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr:12
-#: 2b21f25447fd4f0a84e61ecb38d707ca
-msgid "requested_procedure_code_value_and_meaning"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr.dap_a_cgycm2:1
-#: 89ea95c38ece45128af1e45afff16268
-msgid "Converts DAP A to cGy.cm2 from Gy.m2 for display or export"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr.dap_b_cgycm2:1
-#: 248df9824881467f9d8748b062dfb979
-msgid "Converts DAP B to cGy.cm2 from Gy.m2 for display or export"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr.dap_total_cgycm2:1
-#: 32536fb648154b52b4426e9836620510
-msgid "Converts DAP A+B to cGy.cm2 from Gy.m2 for display or export"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr.dap_delta_weeks_cgycm2:1
-#: 0c6e14cc357946b78c331db32d2f34b6
-msgid "Converts DAP delta weeks to cGy.cm2 from Gy.m2 for display"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.SkinDoseMapResults:1
-#: 1f0c55440d7141c795d01d5b9a954f65
-msgid "Table to hold the results from OpenSkin"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.ObjectUIDsProcessed:1
-#: 00bc8360ed43409c93adc47fabaaed56
-msgid "Table to hold the SOP Instance UIDs of the objects that have been processed against this study to enable duplicate sorting."
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.ProjectionXRayRadiationDose:1
-#: c75bbd898c644669a5769c6e5e4b7f28
-msgid "Projection X-Ray Radiation Dose template TID 10001"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.ProjectionXRayRadiationDose:10
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumXRayDose:7
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumProjXRayDose:7
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumMammographyXRayDose:7
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtRadiationDose:9
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtAccumulatedDoseData:7
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtIrradiationEventData:4
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.ScanningLength:5
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtDoseCheckDetails:5
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.ObserverContext:5
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.DeviceParticipant:6
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.PersonParticipant:7
-#: 98b4d65dded64d2f8cddc677cbd16054
-#: 0d0aa4f3d4914be8b979885bb337e5de
-#: 1736b5ce3e9841a2a294ff4e3171a26d
-#: e87da0c0eb9844b98e02f2d3f53c83aa
-#: 224dd20a10094229940f19e8b0981983
-#: 39f7d9402c724ad1a28fc971819f6964
-#: 9d24be7ff89e4478a72a4ecd53e6dcd2
-#: eda1c552d53b4d9c92c2326bddda9180
-#: 2056aa5802c64b619e2ab6b50cd71a04
-#: 0ffe2469b0a5497292e4faf36aaf49a6
-#: c085dbf3e4cf45dbb6b3709771188c3c
-#: 3bbdb4705938408386bd2a06e2136e0e
-msgid "From DICOM Part 16:"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.ProjectionXRayRadiationDose:4
-#: bf8a8880b0ec43b28dd789d8a820f84b
-msgid "This template defines a container (the root) with subsidiary content items, each of which represents a single projection X-Ray irradiation event entry or plane-specific dose accumulations. There is a defined recording observer (the system or person responsible for recording the log, generally the system). A Biplane irradiation event will be recorded as two individual events, one for each plane. Accumulated values will be kept separate for each plane."
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumXRayDose:1
-#: f7182db02bef43b485aba2321dadea8d
-msgid "Accumulated X-Ray Dose TID 10002"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumXRayDose:4
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumProjXRayDose:4
-#: a251e573f4554ac0a844d9166da6f208
-#: cd3c8640bc50466d922b7c1ea9440d3d
-msgid "This general template provides detailed information on projection X-Ray dose value accumulations over several irradiation events from the same equipment (typically a study or a performed procedure step)."
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.Calibration:1
-#: c75b21ab06ea40879841a1579b5ef8f3
-msgid "Table to hold the calibration information"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.Calibration:3
-#: f9e53a56403140b3b06f8059d9734db7
-msgid "Container in TID 10002 Accumulated X-ray dose"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayData:1
-#: d0dd7e05a2f54bdab802099ae07e970c
-msgid "Irradiation Event X-Ray Data TID 10003"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayData:6
-#: cca71a1d1d114fd0b982c49b0380e407
-msgid "From DICOM part 16:"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayData:4
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtIrradiationEventData:4
-#: 263f5cea547642a5a252c2c565b1b3c0
-#: 18d931deea754220a557b9f1213b2d13
-msgid "This template conveys the dose and equipment parameters of a single irradiation event."
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.ImageViewModifier:1
-#: bf162a619b5a4d60adcb4162bdef2633
-msgid "Table to hold image view modifiers for the irradiation event x-ray data table"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.ImageViewModifier:7
-#: 5b0efedb03cd4e0ca9081c907be254fa
-msgid "From DICOM Part 16 Annex D DICOM controlled Terminology Definitions"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.ImageViewModifier:4
-#: 9f8c0f588e724622a600f34e20c19b65
-msgid "Code Value 111032"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.ImageViewModifier:5
-#: 5b0e065f0dac4a17a9003b60ce2b74de
-msgid "Code Meaning Image View Modifier"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.ImageViewModifier:6
-#: 3804cd0a802f4b84904b81eed189dccb
-msgid "Code Definition Modifier for image view"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayDetectorData:1
-#: 667e01f082ac4654bb53ee38a9a4a58e
-msgid "Irradiation Event X-Ray Detector Data TID 10003a"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayDetectorData:6
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRaySourceData:4
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayMechanicalData:5
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumCassetteBsdProjRadiogDose:7
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumIntegratedProjRadiogDose:7
-#: 2682290eefc2493680f7530791017d04
-#: 1147c6e8442a499e91e20c8b24719554
-#: 58ad427c44a64ef59bb10aca5abcf355
-#: 9c568a1e64b64dc7ad2bb2b88d982911
-#: ab37aff7ef114c1da189b3d6807510da
-msgid "From DICOM Part 16 Correction Proposal CP-1077:"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayDetectorData:4
-#: 69565945b8134cb8ae0a72dd5c582798
-msgid "This template contains data which is expected to be available to the X-ray detector or plate reader component of the equipment."
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRaySourceData:1
-#: 6173b0b35cfa404f933d953f2df20d7e
-msgid "Irradiation Event X-Ray Source Data TID 10003b"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRaySourceData:4
-#: 0a6fadb2a23b4c2bbe0bc234019de0ca
-msgid "This template contains data which is expected to be available to the X-ray source component of the equipment."
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRaySourceData:10
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayMechanicalData:10
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtIrradiationEventData:9
-#: 1c9c01f967274143b97ae25a65108c67
-#: 472a48291862453fa18d3d017b1e1945
-#: b2fa4a0f1a4045909696ad000f1d65b6
-msgid "Additional to the template:"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRaySourceData:7
-#: 3fe5e34fcf624efcbf5cdbb25920acca
-msgid "ii_field_size"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRaySourceData:8
-#: 322ed1e06eb346f6b11d206c7d39acb3
-msgid "exposure_control_mode"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRaySourceData:9
-#: 924a6647d8f44a249a558f3840aa6dda
-msgid "grid information over and above grid type"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRaySourceData.convert_gy_to_mgy:1
-#: befaba45c6284235923d7b2395055fe7
-msgid "Converts Gy to mGy for display in web interface"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.XrayGrid:1
-#: e97a6920aedc43348b1765a1db1dd91b
-msgid "Content ID 10017 X-Ray Grid"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.XrayGrid:3
-#: 5a90837c15854d72b57d3618be3aeb4d
-msgid "From DICOM Part 16"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.PulseWidth:1
-#: 8968be4e729e45c5ae79cd798551a871
-msgid "In TID 10003b. Code value 113793 (ms)"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.Kvp:1
-#: fb39074b59db434b840be755ac4e5a2e
-msgid "In TID 10003b. Code value 113733 (kV)"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.XrayTubeCurrent:1
-#: 9217552a58694c4da6dabd1c22f48d19
-msgid "In TID 10003b. Code value 113734 (mA)"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.Exposure:1
-#: b7f66937068441b79a177633d7d140ce
-msgid "In TID 10003b. Code value 113736 (uAs)"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.Exposure.convert_uAs_to_mAs:1
-#: 04545117149f47f1af167606995379b5
-msgid "Converts uAs to mAs for display in web interface"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.XrayFilters:1
-#: 9834025b51104cfe8eca7f9a2864c0ad
-msgid "Container in TID 10003b. Code value 113771"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayMechanicalData:1
-#: 9a10c742708341eda9681ac33662922f
-msgid "Irradiation Event X-Ray Mechanical Data TID 10003c"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayMechanicalData:4
-#: 8f9baff4ad70474bbe0dfeff965a3403
-msgid "This template contains data which is expected to be available to the gantry or mechanical component of the equipment."
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayMechanicalData:8
-#: 82458beb1814437f8d7155b8b518fc7c
-msgid "compression_force"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayMechanicalData:9
-#: 2be1c22a7fa74f17892bc60b3a774cb8
-msgid "magnification_factor"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.DoseRelatedDistanceMeasurements:1
-#: 8a4c6a1c653846edb042360d58f7edf1
-msgid "Dose Related Distance Measurements Context ID 10008"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.DoseRelatedDistanceMeasurements:3
-#: fd0f898f780d41139ee28727d3bc4c82
-msgid "Called from TID 10003c"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumProjXRayDose:1
-#: 0a842f9b0437445fb3f84f8332d290b8
-msgid "Accumulated Fluoroscopy and Acquisition Projection X-Ray Dose TID 10004"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumProjXRayDose.fluoro_gym2_to_cgycm2:1
-#: cfae585fc6e04795847158946efb6e59
-msgid "Converts fluoroscopy DAP total from Gy.m2 to cGy.cm2 for display in web interface"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumProjXRayDose.acq_gym2_to_cgycm2:1
-#: 29fa39d28d87411b8a33b8eca2cb57d4
-msgid "Converts acquisition DAP total from Gy.m2 to cGy.cm2 for display in web interface"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumMammographyXRayDose:1
-#: 6649cc41dc9e480fad79a7544d65b9ba
-msgid "Accumulated Mammography X-Ray Dose TID 10005"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumMammographyXRayDose:4
-#: 224dc25d3e074c778c6dd13ebd02758a
-msgid "This modality specific template provides detailed information on mammography X-Ray dose value accumulations over several irradiation events from the same equipment (typically a study or a performed procedure step)."
-msgstr ""
-
 #: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumCassetteBsdProjRadiogDose:1
-#: 87e963c22b654708a1cb7ea336f812ee
 msgid "Accumulated Cassette-based Projection Radiography Dose TID 10006"
 msgstr ""
 
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumCassetteBsdProjRadiogDose:7
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumIntegratedProjRadiogDose:7
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayDetectorData:6
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayMechanicalData:5
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRaySourceData:4
+msgid "From DICOM Part 16 Correction Proposal CP-1077:"
+msgstr ""
+
 #: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumCassetteBsdProjRadiogDose:4
-#: 27a6fefb50a24fc7829366a5759a01f7
 msgid "This template provides information on Projection Radiography dose values accumulated on Cassette- based systems over one or more irradiation events (typically a study or a performed procedure step) from the same equipment."
 msgstr ""
 
 #: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumIntegratedProjRadiogDose:1
-#: f7096c36c67f4cc790c2947f9bdf96d9
 msgid "Accumulated Integrated Projection Radiography Dose TID 10007"
 msgstr ""
 
 #: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumIntegratedProjRadiogDose:4
-#: 6d4023c17e8b4b7a8ceb444f93ae7fcd
 msgid "This template provides information on Projection Radiography dose values accumulated on Integrated systems over one or more irradiation events (typically a study or a performed procedure step) from the same equipment."
 msgstr ""
 
 #: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumIntegratedProjRadiogDose.convert_gym2_to_cgycm2:1
-#: c2ede930c494435d9e4342073baa9c00
 msgid "Converts Gy.m2 to cGy.cm2 for display in web interface"
 msgstr ""
 
 #: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumIntegratedProjRadiogDose.total_dap_delta_gym2_to_cgycm2:1
-#: 05d9911347af42318dafcec362562cc8
 msgid "Converts total DAP over delta days from Gy.m2 to cGy.cm2 for display in web interface"
 msgstr ""
 
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.PKsForSummedRFDoseStudiesInDeltaWeeks:1
-#: deccdd1fa2214824b7daf34f3eb4b7d0
-msgid "Table to hold foreign keys of all studies that fall within the delta weeks of each RF study."
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumMammographyXRayDose:1
+msgid "Accumulated Mammography X-Ray Dose TID 10005"
 msgstr ""
 
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.PatientModuleAttr:1
-#: c85302f1a13343c09f39c105dfaeb9d5
-msgid "Patient Module C.7.1.1"
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumMammographyXRayDose:7
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumProjXRayDose:7
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumXRayDose:7
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtAccumulatedDoseData:7
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtDoseCheckDetails:5
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtIrradiationEventData:4
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtRadiationDose:9
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.DeviceParticipant:6
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.ObserverContext:5
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.PersonParticipant:7
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.ProjectionXRayRadiationDose:10
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.ScanningLength:5
+msgid "From DICOM Part 16:"
 msgstr ""
 
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.PatientModuleAttr:8
-#: 7aa6a3a580ee4961b00fe0e748bc7df5
-msgid "From DICOM Part 3: Information Object Definitions Table C.7-1:"
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumMammographyXRayDose:4
+msgid "This modality specific template provides detailed information on mammography X-Ray dose value accumulations over several irradiation events from the same equipment (typically a study or a performed procedure step)."
 msgstr ""
 
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.PatientModuleAttr:4
-#: 65adffcc837f4f139be94a8f5a79ab83
-msgid "Specifies the Attributes of the Patient that describe and identify the Patient who is the subject of a diagnostic Study. This Module contains Attributes of the patient that are needed for diagnostic interpretation of the Image and are common for all studies performed on the patient. It contains Attributes that are also included in the Patient Modules in Section C.2."
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumProjXRayDose:1
+msgid "Accumulated Fluoroscopy and Acquisition Projection X-Ray Dose TID 10004"
 msgstr ""
 
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.PatientStudyModuleAttr:1
-#: 61e0192502ca4d919599f9402112c541
-msgid "Patient Study Module C.7.2.2"
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumProjXRayDose:4
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumXRayDose:4
+msgid "This general template provides detailed information on projection X-Ray dose value accumulations over several irradiation events from the same equipment (typically a study or a performed procedure step)."
 msgstr ""
 
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.PatientStudyModuleAttr:6
-#: b90290e55d664c3c920c251500c6353c
-msgid "From DICOM Part 3: Information Object Definitions Table C.7-4a:"
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumProjXRayDose.acq_gym2_to_cgycm2:1
+msgid "Converts acquisition DAP total from Gy.m2 to cGy.cm2 for display in web interface"
 msgstr ""
 
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.PatientStudyModuleAttr:4
-#: b8d0016634ce4b48b5e82a1a6dc148bc
-msgid "Defines Attributes that provide information about the Patient at the time the Study started."
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumProjXRayDose.fluoro_gym2_to_cgycm2:1
+msgid "Converts fluoroscopy DAP total from Gy.m2 to cGy.cm2 for display in web interface"
 msgstr ""
 
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralEquipmentModuleAttr:1
-#: e489c7a004aa4b67ab611a7cb7771085
-msgid "General Equipment Module C.7.5.1"
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.AccumXRayDose:1
+msgid "Accumulated X-Ray Dose TID 10002"
 msgstr ""
 
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralEquipmentModuleAttr:6
-#: 967b9d7ff69e4157965b0946cc2f5c55
-msgid "From DICOM Part 3: Information Object Definitions Table C.7-8:"
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.AdminTaskQuestions:1
+msgid "Record if admin tasks have been dealt with"
 msgstr ""
 
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralEquipmentModuleAttr:4
-#: 6e5eab452c734c04a9dc786ae01504e9
-msgid "Specifies the Attributes that identify and describe the piece of equipment that produced a Series of Composite Instances."
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.Calibration:1
+msgid "Table to hold the calibration information"
 msgstr ""
 
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtRadiationDose:1
-#: 448fec49dfc64546b5604b9fdf9b416f
-msgid "CT Radiation Dose TID 10011"
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.Calibration:3
+msgid "Container in TID 10002 Accumulated X-ray dose"
 msgstr ""
 
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtRadiationDose:4
-#: 7dbe8da8f7f0412d9541002865c471bf
-msgid "This template defines a container (the root) with subsidiary content items, each of which corresponds to a single CT X-Ray irradiation event entry. There is a defined recording observer (the system or person responsible for recording the log, generally the system). Accumulated values shall be kept for a whole Study or at least a part of a Study, if the Study is divided in the workflow of the examination, or a performed procedure step. Multiple CT Radiation Dose objects may be created for one Study."
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.ContextID:1
+msgid "Table to hold all the context ID code values and code meanings."
 msgstr ""
 
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.SourceOfCTDoseInformation:1
-#: a9a4fb36381b4c94bdace7e689757417
-msgid "Source of CT Dose Information"
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.ContextID:3
+msgid "Could be prefilled from the tables in DICOM 3.16, but is actually populated as the codes occur.     This assumes they are used correctly."
 msgstr ""
 
 #: ../../../openrem/remapp/models.py:docstring of remapp.models.CtAccumulatedDoseData:1
-#: 282a64fe904541d8891d7fca6dd466a6
 msgid "CT Accumulated Dose Data"
 msgstr ""
 
 #: ../../../openrem/remapp/models.py:docstring of remapp.models.CtAccumulatedDoseData:4
-#: dae75c1496c6403aab1d323b77f67e9c
 msgid "This general template provides detailed information on CT X-Ray dose value accumulations over several irradiation events from the same equipment and over the scope of accumulation specified for the report (typically a Study or a Performed Procedure Step)."
 msgstr ""
 
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtIrradiationEventData:1
-#: 5236e03c5e4846cf8da7f6afc721b345
-msgid "CT Irradiation Event Data TID 10013"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtIrradiationEventData:7
-#: d11a54f3b62d4adc9b805a7bc9da3beb
-msgid "date_time_started"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtIrradiationEventData:8
-#: cf0637bc0a8a45b99fd9f3cdd79c0ad4
-msgid "series_description"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtReconstructionAlgorithm:1
-#: 36b81dc4a1a147da8900671b916213c0
-msgid "Container in TID 10013 to hold CT reconstruction methods"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtXRaySourceParameters:1
-#: f70dd1a2d0b145b9a40a06ae2c788a66
-msgid "Container in TID 10013 to hold CT x-ray source parameters"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.ScanningLength:1
-#: f068541ce01940d4ba0fb0f397418bfb
-msgid "Scanning Length TID 10014"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.ScanningLength:4
-#: 3fd4d7baaac7498993b703347bf6f827
-msgid "No description"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.SizeSpecificDoseEstimation:1
-#: da787540d18e4122ba519ab1f16c5633
-msgid "Container in TID 10013 to hold size specific dose estimation details"
-msgstr ""
-
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.WEDSeriesOrInstances:1
-#: 3257cd39841447f0953347a25168e226
-msgid "From TID 10013 Series or Instance used for Water Equivalent Diameter estimation"
-msgstr ""
-
 #: ../../../openrem/remapp/models.py:docstring of remapp.models.CtDoseCheckDetails:1
-#: 3dacadd834dc493abf51ba3be859d7fb
 msgid "CT Dose Check Details TID 10015"
 msgstr ""
 
 #: ../../../openrem/remapp/models.py:docstring of remapp.models.CtDoseCheckDetails:4
-#: 608196fa9925452e9ff0d8a653ba8762
 msgid "This template records details related to the use of the NEMA Dose Check Standard (NEMA XR-25-2010)."
 msgstr ""
 
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.ObserverContext:1
-#: 337512cf36404677a0e23888606fa9ff
-msgid "Observer Context TID 1002"
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtIrradiationEventData:1
+msgid "CT Irradiation Event Data TID 10013"
 msgstr ""
 
-#: ../../../openrem/remapp/models.py:docstring of remapp.models.ObserverContext:4
-#: b6a820dbd62e478bac980b30f042e26d
-msgid "The observer (person or device) that created the Content Items to which this context applies."
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtIrradiationEventData:4
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayData:4
+msgid "This template conveys the dose and equipment parameters of a single irradiation event."
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtIrradiationEventData:9
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayMechanicalData:10
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRaySourceData:10
+msgid "Additional to the template:"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtIrradiationEventData:7
+msgid "date_time_started"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtIrradiationEventData:8
+msgid "series_description"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtRadiationDose:1
+msgid "CT Radiation Dose TID 10011"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtRadiationDose:4
+msgid "This template defines a container (the root) with subsidiary content items, each of which corresponds to a single CT X-Ray irradiation event entry. There is a defined recording observer (the system or person responsible for recording the log, generally the system). Accumulated values shall be kept for a whole Study or at least a part of a Study, if the Study is divided in the workflow of the examination, or a performed procedure step. Multiple CT Radiation Dose objects may be created for one Study."
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtReconstructionAlgorithm:1
+msgid "Container in TID 10013 to hold CT reconstruction methods"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.CtXRaySourceParameters:1
+msgid "Container in TID 10013 to hold CT x-ray source parameters"
 msgstr ""
 
 #: ../../../openrem/remapp/models.py:docstring of remapp.models.DeviceParticipant:1
-#: d8c3d8cae36d4720a4f030a9a1046442
 msgid "Device Participant TID 1021"
 msgstr ""
 
 #: ../../../openrem/remapp/models.py:docstring of remapp.models.DeviceParticipant:4
-#: 31bc7a63d8f6409b95fecf710fb00df1
 msgid "This template describes a device participating in an activity as other than an observer or subject. E.g. for a dose report documenting an irradiating procedure, participants include the irradiating device."
 msgstr ""
 
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.DicomDeleteSettings:1
+msgid "Table to store DICOM deletion settings"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.DicomQuery:1
+msgid "Table to store DICOM query settings"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.DicomRemoteQR:1
+msgid "Table to store DICOM remote QR settings"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.DicomStoreSCP:1
+msgid "Table to store DICOM store settings"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.DoseRelatedDistanceMeasurements:1
+msgid "Dose Related Distance Measurements Context ID 10008"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.DoseRelatedDistanceMeasurements:3
+msgid "Called from TID 10003c"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.Exports:1
+msgid "Table to hold the export status and filenames"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.Exposure:1
+msgid "In TID 10003b. Code value 113736 (uAs)"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.Exposure.convert_uAs_to_mAs:1
+msgid "Converts uAs to mAs for display in web interface"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralEquipmentModuleAttr:1
+msgid "General Equipment Module C.7.5.1"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralEquipmentModuleAttr:6
+msgid "From DICOM Part 3: Information Object Definitions Table C.7-8:"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralEquipmentModuleAttr:4
+msgid "Specifies the Attributes that identify and describe the piece of equipment that produced a Series of Composite Instances."
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr:1
+msgid "General Study Module C.7.2.1"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr:3
+msgid "Specifies the Attributes that describe and identify the Study performed upon the Patient. From DICOM Part 3: Information Object Definitions Table C.7-3"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr:13
+msgid "Additional to the module definition:"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr:8
+msgid "performing_physician_name"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr:9
+msgid "operator_name"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr:10
+msgid "modality_type"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr:11
+msgid "procedure_code_value_and_meaning"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr:12
+msgid "requested_procedure_code_value_and_meaning"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr.dap_a_cgycm2:1
+msgid "Converts DAP A to cGy.cm2 from Gy.m2 for display or export"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr.dap_b_cgycm2:1
+msgid "Converts DAP B to cGy.cm2 from Gy.m2 for display or export"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr.dap_delta_weeks_cgycm2:1
+msgid "Converts DAP delta weeks to cGy.cm2 from Gy.m2 for display"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.GeneralStudyModuleAttr.dap_total_cgycm2:1
+msgid "Converts DAP A+B to cGy.cm2 from Gy.m2 for display or export"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.HighDoseMetricAlertRecipients:1
+msgid "Table to store whether users should receive high dose fluoroscopy alerts"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.HighDoseMetricAlertSettings:1
+msgid "Table to store high dose fluoroscopy alert settings"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.HomePageAdminSettings:1
+msgid "Table to store home page settings"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.ImageViewModifier:1
+msgid "Table to hold image view modifiers for the irradiation event x-ray data table"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.ImageViewModifier:7
+msgid "From DICOM Part 16 Annex D DICOM controlled Terminology Definitions"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.ImageViewModifier:4
+msgid "Code Value 111032"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.ImageViewModifier:5
+msgid "Code Meaning Image View Modifier"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.ImageViewModifier:6
+msgid "Code Definition Modifier for image view"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayData:1
+msgid "Irradiation Event X-Ray Data TID 10003"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayData:6
+msgid "From DICOM part 16:"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayDetectorData:1
+msgid "Irradiation Event X-Ray Detector Data TID 10003a"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayDetectorData:4
+msgid "This template contains data which is expected to be available to the X-ray detector or plate reader component of the equipment."
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayMechanicalData:1
+msgid "Irradiation Event X-Ray Mechanical Data TID 10003c"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayMechanicalData:4
+msgid "This template contains data which is expected to be available to the gantry or mechanical component of the equipment."
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayMechanicalData:8
+msgid "compression_force"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRayMechanicalData:9
+msgid "magnification_factor"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRaySourceData:1
+msgid "Irradiation Event X-Ray Source Data TID 10003b"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRaySourceData:4
+msgid "This template contains data which is expected to be available to the X-ray source component of the equipment."
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRaySourceData:7
+msgid "ii_field_size"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRaySourceData:8
+msgid "exposure_control_mode"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRaySourceData:9
+msgid "grid information over and above grid type"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.IrradEventXRaySourceData.convert_gy_to_mgy:1
+msgid "Converts Gy to mGy for display in web interface"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.Kvp:1
+msgid "In TID 10003b. Code value 113733 (kV)"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.MergeOnDeviceObserverUIDSettings:1
+msgid "Table to store setting(s) for autmoatic setting of Display Name and Modality type based on same Device observer UID"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.NotPatientIndicatorsID:1
+msgid "Table to record strings that indicate a patient ID is really a test or QA ID"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.NotPatientIndicatorsName:1
+msgid "Table to record strings that indicate a patient name is really a test or QA name"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.ObjectUIDsProcessed:1
+msgid "Table to hold the SOP Instance UIDs of the objects that have been processed against this study to enable duplicate sorting."
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.ObserverContext:1
+msgid "Observer Context TID 1002"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.ObserverContext:4
+msgid "The observer (person or device) that created the Content Items to which this context applies."
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.PKsForSummedRFDoseStudiesInDeltaWeeks:1
+msgid "Table to hold foreign keys of all studies that fall within the delta weeks of each RF study."
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.PatientIDSettings:1
+msgid "Table to store patient ID settings"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.PatientModuleAttr:1
+msgid "Patient Module C.7.1.1"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.PatientModuleAttr:8
+msgid "From DICOM Part 3: Information Object Definitions Table C.7-1:"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.PatientModuleAttr:4
+msgid "Specifies the Attributes of the Patient that describe and identify the Patient who is the subject of a diagnostic Study. This Module contains Attributes of the patient that are needed for diagnostic interpretation of the Image and are common for all studies performed on the patient. It contains Attributes that are also included in the Patient Modules in Section C.2."
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.PatientStudyModuleAttr:1
+msgid "Patient Study Module C.7.2.2"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.PatientStudyModuleAttr:6
+msgid "From DICOM Part 3: Information Object Definitions Table C.7-4a:"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.PatientStudyModuleAttr:4
+msgid "Defines Attributes that provide information about the Patient at the time the Study started."
+msgstr ""
+
 #: ../../../openrem/remapp/models.py:docstring of remapp.models.PersonParticipant:1
-#: 5786cad7661747b783c3533f28b11fc8
 msgid "Person Participant TID 1020"
 msgstr ""
 
 #: ../../../openrem/remapp/models.py:docstring of remapp.models.PersonParticipant:4
-#: 72cd325f27b249fe917ffb55a66646e7
 msgid "This template describes a person participating in an activity as other than an observer or subject. E.g. for a dose report documenting an irradiating procedure, participants include the person administering the irradiation and the person authorizing the irradiation."
 msgstr ""
 
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.ProjectionXRayRadiationDose:1
+msgid "Projection X-Ray Radiation Dose template TID 10001"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.ProjectionXRayRadiationDose:4
+msgid "This template defines a container (the root) with subsidiary content items, each of which represents a single projection X-Ray irradiation event entry or plane-specific dose accumulations. There is a defined recording observer (the system or person responsible for recording the log, generally the system). A Biplane irradiation event will be recorded as two individual events, one for each plane. Accumulated values will be kept separate for each plane."
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.PulseWidth:1
+msgid "In TID 10003b. Code value 113793 (ms)"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.ScanningLength:1
+msgid "Scanning Length TID 10014"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.ScanningLength:4
+msgid "No description"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.SizeSpecificDoseEstimation:1
+msgid "Container in TID 10013 to hold size specific dose estimation details"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.SizeUpload:1
+msgid "Table to store patient size information"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.SkinDoseMapCalcSettings:1
+msgid "Table to store skin dose map calculation settings"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.SkinDoseMapResults:1
+msgid "Table to hold the results from OpenSkin"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.SourceOfCTDoseInformation:1
+msgid "Source of CT Dose Information"
+msgstr ""
+
 #: ../../../openrem/remapp/models.py:docstring of remapp.models.SummaryFields:1
-#: 490f070ca4644c2f8f8e85139294e430
 msgid "Status and progress of populating the summary fields in GeneralStudyModuleAttr"
 msgstr ""
 
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.UniqueEquipmentNames:1
+msgid "Table to unique equipment name information"
+msgstr ""
+
 #: ../../../openrem/remapp/models.py:docstring of remapp.models.UpgradeStatus:1
-#: 6ddd1eddfb364050aa89b4d165431d7f
 msgid "Record upgrade status activity"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.UserProfile:1
+msgid "Table to store user profile settings"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.WEDSeriesOrInstances:1
+msgid "From TID 10013 Series or Instance used for Water Equivalent Diameter estimation"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.XrayFilters:1
+msgid "Container in TID 10003b. Code value 113771"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.XrayGrid:1
+msgid "Content ID 10017 X-Ray Grid"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.XrayGrid:3
+msgid "From DICOM Part 16"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.XrayTubeCurrent:1
+msgid "In TID 10003b. Code value 113734 (mA)"
+msgstr ""
+
+#: ../../../openrem/remapp/models.py:docstring of remapp.models.create_or_save_high_dose_metric_alert_recipient_setting:1
+msgid "Function to create or save fluoroscopy high dose alert recipient settings"
 msgstr ""

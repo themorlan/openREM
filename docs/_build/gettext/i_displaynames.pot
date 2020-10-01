@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,186 +17,149 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../i_displaynames.rst:2
-#: d4c59a973f7f4f9ab0b2a78655749023
 msgid "Display names and user-defined modalities"
 msgstr ""
 
 #: ../../i_displaynames.rst:3
-#: cfd3ff266a6a4dbfae37f610fd9bd7e8
 msgid "*Functionality changed in 0.8.0*"
 msgstr ""
 
 #: ../../i_displaynames.rst:5
-#: 81b6dbb9ead84bc0b36b9744f9d7cc88
 msgid "Contents"
 msgstr ""
 
 #: ../../i_displaynames.rst:8
-#: d43a0cba3b5c4a6ead7b999addef9e34
 msgid "The display name field"
 msgstr ""
 
 #: ../../i_displaynames.rst:10
-#: ce6cb0b3d27d428c8eb0a9f4e34412f1
 msgid "Previous versions of OpenREM used each X-ray system's DICOM ``station name`` as the identifier for each X-ray system. The front page showed a summary of the number of studies for each unique ``station name`` stored in the system. This led to a problem if multiple X-ray systems used the same station name: the OpenREM home page would only show one station name entry for these systems, with the number of studies corresponding to the total from all the rooms. The name shown alongside the total was that of the system that had most recently sent data to the system."
 msgstr ""
 
 #: ../../i_displaynames.rst:19
-#: 9a05c214fd8c4b20a9beb01561c9e2be
 msgid "This issue has been resolved by introducing a new field called ``display name``. This is unique to each piece of X-ray equipment, based on the combination of the following eight fields:"
 msgstr ""
 
 #: ../../i_displaynames.rst:23
-#: cfa7f1e0bcff49049f155adbe17efb5b
 msgid "manufacturer"
 msgstr ""
 
 #: ../../i_displaynames.rst:24
-#: 7286f643148d468499aa697d567ac4a2
 msgid "institution name"
 msgstr ""
 
 #: ../../i_displaynames.rst:25
-#: 90f130bf5c824909b74d7fce08299a56
 msgid "station name"
 msgstr ""
 
 #: ../../i_displaynames.rst:26
-#: a944d4af242a4d8eb4d414018946a254
 msgid "department name"
 msgstr ""
 
 #: ../../i_displaynames.rst:27
-#: 1fc5289706fb454194d74db27e2f1af0
 msgid "model name"
 msgstr ""
 
 #: ../../i_displaynames.rst:28
-#: 0c4156c059e541bc873f58a24d184efa
 msgid "device serial number"
 msgstr ""
 
 #: ../../i_displaynames.rst:29
-#: 28c8e76f8d4a494a9de5bdc17a341d33
 msgid "software version"
 msgstr ""
 
 #: ../../i_displaynames.rst:30
-#: ba43de3c064041de826627a302525f9b
 msgid "gantry id"
 msgstr ""
 
 #: ../../i_displaynames.rst:32
-#: d4d45fa0f0614c598c724b1db4f4cc5d
 msgid "The default text for ``display name`` is set to a combination of ``institution name`` and ``station name``. The default display name text can be changed by a user in the ``admingroup`` — see :ref:`changing_display_names`"
 msgstr ""
 
 #: ../../i_displaynames.rst:37
-#: bb5d35643adc414daa85f08e8887e6d2
 msgid "User defined modality field"
 msgstr ""
 
 #: ../../i_displaynames.rst:39
-#: f0fa5449609746ed90284d1dc36cf317
 msgid "OpenREM determines the modality type of a system based on the information in the DICOM radiation dose structured report. However sometimes this mechanism fails because vendors use templates meant for RF also for DX systems. Therefore it is possible from version 0.8.0 to set a modality type for each system manually. A manually set modality type overrides the automatically determined value."
 msgstr ""
 
 #: ../../i_displaynames.rst:47
-#: c013700111964f1b8efc01c8c393c96a
 msgid "Viewing X-ray system display names and user defined modality"
 msgstr ""
 
 #: ../../i_displaynames.rst:54
-#: d8711a55b64a43fbad6b0a3c61b4ea52
 msgid "The ``Config`` menu (user)"
 msgstr ""
 
 #: ../../i_displaynames.rst:56
-#: a2080e5d6201413fad149355a61c5402
 msgid "If you log in as a normal user then the ``Config`` menu becomes available at the right-hand end of the navigation bar at the top of the screen."
 msgstr ""
 
 #: ../../i_displaynames.rst:59
-#: 42f3ab888dae4371a5c9e69bd26fdde1
 msgid "The third option, ``View display names & modality``, takes you to a page where you can view the list of X-ray systems with data in OpenREM together with their current display name and user defined modality. If the user defined modality is not set, the value contains ``None``. The X-ray systems are grouped into modalities and displayed in five tables: CT; mammography; DX and CR; fluoroscopy; and other."
 msgstr ""
 
 #: ../../i_displaynames.rst:71
-#: fb8cb37338374ec0b44d7bf09aaa9d23
 msgid "Example list of display names"
 msgstr ""
 
 #: ../../i_displaynames.rst:76
-#: 3a8e80ae0125481b9a38f517c2b06111
 msgid "Setting display name automatically for known devices"
 msgstr ""
 
 #: ../../i_displaynames.rst:78
-#: 1c0528e0ca574a958778bddc2d9b73c6
 msgid "If you are a member of the ``admingroup`` you can set an option to automatically set the display name of already known devices even if one of the above mentioned ``fields`` changed. A device can send its Device Observer UID (especially in rdsr-objects). This is a unique ID for the device. If this UID is received by OpenREM it can set the display name and modality type the same as an already known device with the same Device Observer UID. This option can be useful if other parameters that OpenREM looks at frequently change. If you want to see if one of the other parameters changed (like software version), don't tick this option."
 msgstr ""
 
 #: ../../i_displaynames.rst:89
-#: 64f3acdf5c3c427f8d7029f3294beaa7
 msgid "Changing X-ray system display names and user defined modality"
 msgstr ""
 
 #: ../../i_displaynames.rst:96
-#: 2a5f996a3b954b86b33cf126a0373cb3
 msgid "The ``Config`` menu (admin)"
 msgstr ""
 
 #: ../../i_displaynames.rst:98
-#: a229094064314ed884b576739c205cfe
 msgid "If you wish to make changes to a display name or to the user defined modality then you must log in as a user that is in the ``admingroup``. You will then be able to use the ``Display names & modality`` item under the ``Config`` menu:"
 msgstr ""
 
 #: ../../i_displaynames.rst:107
-#: d487112cd2e54ea98d9d738aae1f8261
 msgid "This will take you to a page where you can view the list of X-ray systems with data in OpenREM. If you wish to change a display name or the user defined modality then click on the corresponding row. The resulting page will allow you to edit these parameters. Click on the ``Update`` button to confirm your changes:"
 msgstr ""
 
 #: ../../i_displaynames.rst:117
-#: 6ecef08e21ec4364a063e6e52cead4ef
 msgid "Example of the page for updating a display name and user defined modality"
 msgstr ""
 
 #: ../../i_displaynames.rst:119
-#: 53e0e906f27a4a0ba1e4f2d751c3bb44
 msgid "You can change multiple rows at once. For display names you may wish to do this if a system has a software upgrade, for example, as this will generate a new default display name for studies carried out after the software upgrade has taken place. The studies from these will be grouped together as a single entry on the OpenREM homepage and individual modality pages."
 msgstr ""
 
 #: ../../i_displaynames.rst:125
-#: 4a7e055959664442960138810cf42637
 msgid "If you update the user defined modality, the modality type for already imported studies will also be set to the user defined modality type. Only changes from modality DX (planar X-ray) to RF (fluoroscopy) and vice versa are possible."
 msgstr ""
 
 #: ../../i_displaynames.rst:130
-#: 1536d64bd5c343fc90db267f153fec35
 msgid "Dual modality systems"
 msgstr ""
 
 #: ../../i_displaynames.rst:132
-#: 8e051679bc2f4fd58cf97f71f21829c1
 msgid "Some systems are dual purpose in that they can be used in both standard planar X-ray mode and in fluoroscopy mode. For these systems you can configure them as 'Dual' and OpenREM will attempt to reprocess all the studies related to the rows you have selected and assign them to DX or RF. The studies will then be displayed in the right sections in the web interface and will export correctly. New RDSRs relating to that X-ray system will be assigned a modality in the same way."
 msgstr ""
 
 #: ../../i_displaynames.rst:138
-#: bcafd17103b44a78b0fde779611da849
 msgid "After an X-ray system has been set to Dual you may wish to reprocess the studies to assign modality again. To do this you can use the 'reprocess' link in the 'User defined modality' cell:"
 msgstr ""
 
 #: ../../i_displaynames.rst:146
-#: 0e0e6b8e73af4ffb9455270760ee1db5
 msgid "Re-sort studies into planar X-ray and fluoroscopy"
 msgstr ""
 
 #: ../../i_displaynames.rst:149
-#: d7f9918a06564a0eb4fa056a47be1e2a
 msgid "Review of studies that failed to import"
 msgstr ""
 
 #: ../../i_displaynames.rst:151
-#: 270956176e31488b94ac17f5874b6dd1
 msgid "Studies that have failed early in the import process might not have an entry in the ``unique_equipment_name`` table, and therefore will not appear in any of the other tables on this page. The table at the end allows the user to review these studies and delete them. See :ref:`failed_import_studies` for more details."
 msgstr ""
