@@ -114,6 +114,7 @@ class ChartsDX(TestCase):
         self.user.userprofile.plotDXAcquisitionMeanDAP = True
         self.user.userprofile.plotMean = True
         self.user.userprofile.plotMedian = True
+        self.user.userprofile.plotBoxplots = True
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -175,6 +176,40 @@ class ChartsDX(TestCase):
         self.assertEqual(
             self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][1][2],
             acq_data[1][2],
+        )
+
+        # Check on the boxplot data x-axis values
+        acq_data = "All systems"
+        self.assertEqual(
+            self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["name"], acq_data
+        )
+
+        acq_data = ["ABD_1_VIEW", "ABD_1_VIEW", "ABD_1_VIEW", "AEC", "AEC"]
+        self.assertListEqual(
+            list(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["x"]), acq_data
+        )
+
+        # Check the boxplot data y-axis values
+        acq_data = [4.1, 8.2, 20.5, 101.57, 110.13]
+        self.assertAlmostEqual(
+            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["y"])[0],
+            acq_data[0],
+        )
+        self.assertAlmostEqual(
+            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["y"])[1],
+            acq_data[1],
+        )
+        self.assertAlmostEqual(
+            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["y"])[2],
+            acq_data[2],
+        )
+        self.assertAlmostEqual(
+            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["y"])[3],
+            acq_data[3],
+        )
+        self.assertAlmostEqual(
+            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["y"])[4],
+            acq_data[4],
         )
 
         # Repeat the above, but plot a series per system
@@ -294,4 +329,47 @@ class ChartsDX(TestCase):
         self.assertEqual(
             self.chart_data["acquisitionMedianDAPData"]["data"][1]["customdata"][1][2],
             acq_data[1][2],
+        )
+
+        # Check on the boxplot data system names
+        acq_data = ["Carestream Clinic KODAK7500", "Digital Mobile Hospital 01234MOB54"]
+        self.assertEqual(
+            self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["name"], acq_data[0]
+        )
+        self.assertEqual(
+            self.chart_data["acquisitionBoxplotDAPData"]["data"][1]["name"], acq_data[1]
+        )
+
+        # Check on the boxplot data x-axis values
+        acq_data = ["AEC", "AEC"]
+        self.assertListEqual(
+            list(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["x"]), acq_data
+        )
+        acq_data = ["ABD_1_VIEW", "ABD_1_VIEW", "ABD_1_VIEW"]
+        self.assertListEqual(
+            list(self.chart_data["acquisitionBoxplotDAPData"]["data"][1]["x"]), acq_data
+        )
+
+        # Check on the boxplot data y-axis values
+        acq_data = [101.57, 110.13]
+        self.assertAlmostEqual(
+            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["y"])[0],
+            acq_data[0],
+        )
+        self.assertAlmostEqual(
+            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["y"])[1],
+            acq_data[1],
+        )
+        acq_data = [4.1, 8.2, 20.5]
+        self.assertAlmostEqual(
+            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][1]["y"])[0],
+            acq_data[0],
+        )
+        self.assertAlmostEqual(
+            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][1]["y"])[1],
+            acq_data[1],
+        )
+        self.assertAlmostEqual(
+            np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][1]["y"])[2],
+            acq_data[2],
         )
