@@ -22,6 +22,7 @@ from pynetdicom.sop_class import (
     StudyRootQueryRetrieveInformationModelMove,
 )
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import gettext as _
 
 
 logger = logging.getLogger(
@@ -74,7 +75,7 @@ def _remove_duplicates(query, study_rsp, assoc, query_id):
             query_id
         )
     )
-    query.stage = (
+    query.stage = _(
         "Checking to see if any response studies are already in the OpenREM database"
     )
     try:
@@ -199,9 +200,9 @@ def _filter(query, level, filter_name, filter_list, filter_type):
         return
 
     study_rsp = query.dicomqrrspstudy_set.all()
-    query.stage = "Filter at {0} level on {1} that {2} {3}".format(
-        level, filter_name, filter_type, filter_list
-    )
+    query.stage = _("Filter at {level} level on {filter_name} that {filter_type} {filter_list}".format(
+        level=level, filter_name=filter_name, filter_type=filter_type, filter_list=filter_list
+    ))
     logger.info(
         "{4} Filter at {0} level on {1} that {2} {3}".format(
             level, filter_name, filter_type, filter_list, query_id
@@ -247,7 +248,7 @@ def _prune_series_responses(
     :param get_empty_sr: Bool, whether to get SR series that return nothing at image level query
     :return Series level response database rows are deleted if not useful
     """
-    query.stage = (
+    query.stage = _(
         "Getting series and image level information and deleting series we can't use"
     )
     query.save()
@@ -797,7 +798,7 @@ def _query_images(
                         query_id
                     )
                 )
-                query.stage = "Image level matching for this study is complete (there many be more)"
+                query.stage = _("Image level matching for this study is complete (there many be more)")
                 query.save()
                 return
             if status.Status in (0xFF00, 0xFF01):
@@ -806,7 +807,7 @@ def _query_images(
                         query_id, status.Status
                     )
                 )
-                query.stage = "Image level matches are continuing."
+                query.stage = _("Image level matches are continuing.")
                 query.save()
                 imRspNo += 1
                 logger.debug(
@@ -846,7 +847,7 @@ def _query_images(
                     query_id
                 )
             )
-            query.stage = (
+            query.stage = _(
                 "Connection timed out, was aborted or received invalid response"
             )
             query.save()
@@ -894,7 +895,7 @@ def _query_series(assoc, d2, studyrsp, query, query_id):
                         query_id
                     )
                 )
-                query.stage = "Series level matching for this study is complete (there may be more)"
+                query.stage = _("Series level matching for this study is complete (there may be more)")
                 query.save()
                 return
             if status.Status in (0xFF00, 0xFF01):
@@ -903,7 +904,7 @@ def _query_series(assoc, d2, studyrsp, query, query_id):
                         query_id, status.Status
                     )
                 )
-                query.stage = "Series level matches are continuing."
+                query.stage = _("Series level matches are continuing.")
                 query.save()
                 seRspNo += 1
                 seriesrsp = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=studyrsp)
@@ -961,7 +962,7 @@ def _query_series(assoc, d2, studyrsp, query, query_id):
                     query_id
                 )
             )
-            query.stage = (
+            query.stage = _(
                 "Connection timed out, was aborted or received invalid response"
             )
             query.save()
@@ -994,9 +995,9 @@ def _query_study(assoc, d, query, query_id):
         if status:
             if status.Status == 0x0000:
                 logger.info("{0} Matching is complete".format(query_id))
-                query.stage = "Study level matching for {0} is complete".format(
-                    d.ModalitiesInStudy
-                )
+                query.stage = _("Study level matching for {modalities} is complete".format(
+                    modalities=d.ModalitiesInStudy
+                ))
                 query.save()
                 return
             if status.Status in (0xFF00, 0xFF01):
@@ -1005,9 +1006,9 @@ def _query_study(assoc, d, query, query_id):
                         query_id, status.Status
                     )
                 )
-                query.stage = "Matches are continuing for {0} studies".format(
-                    d.ModalitiesInStudy
-                )
+                query.stage = _("Matches are continuing for {modalities} studies".format(
+                    modalities=d.ModalitiesInStudy
+                ))
                 query.save()
                 # Next line commented to avoid patient information being logged
                 # logger.debug(identifier)
@@ -1062,7 +1063,7 @@ def _query_study(assoc, d, query, query_id):
                     query_id
                 )
             )
-            query.stage = (
+            query.stage = _(
                 "Connection timed out, was aborted or received invalid response"
             )
             query.save()
@@ -1124,7 +1125,7 @@ def _query_for_each_modality(all_mods, query, d, assoc):
         if details["inc"]:
             for mod in details["mods"]:
                 if modality_matching:
-                    query.stage = "Currently querying for {0} studies...".format(mod)
+                    query.stage = _("Currently querying for {modality} studies...".format(modality=mod))
                     query.save()
                     logger.info(
                         "{1} Currently querying for {0} studies...".format(
@@ -1480,7 +1481,7 @@ def qrscu(
             ]
 
         if filter_logs:
-            query.stage = "Pruning study responses based on inc/exc options"
+            query.stage = _("Pruning study responses based on inc/exc options")
             query.save()
             logger.info(
                 "{1} Pruning study responses based on inc/exc options: {0}".format(
@@ -1508,7 +1509,7 @@ def qrscu(
             }
             logger.info("{0} No inc/exc options selected".format(query_id))
 
-        query.stage = "Querying at series level to get more details about studies"
+        query.stage = _("Querying at series level to get more details about studies")
         query.save()
         logger.info(
             "{0} Querying at series level to get more details about studies".format(
@@ -1536,7 +1537,7 @@ def qrscu(
                     study_rsp.values("modalities_in_study"), query_id
                 )
             )
-            query.stage = "Deleting studies we didn't ask for"
+            query.stage = _("Deleting studies we didn't ask for")
             query.save()
             logger.info("{0} Deleting studies we didn't ask for".format(query_id))
             logger.debug(
@@ -1578,7 +1579,7 @@ def qrscu(
                 )
             )
 
-        query.stage = "Pruning series responses"
+        query.stage = _("Pruning series responses")
         query.save()
         logger.debug("{0} Pruning series responses".format(query_id))
         before_series_pruning = study_numbers["current"]
@@ -1636,7 +1637,7 @@ def qrscu(
         if remove_duplicates:
             study_rsp = query.dicomqrrspstudy_set.all()
             before_remove_duplicates = study_rsp.count()
-            query.stage = (
+            query.stage = _(
                 "Removing any responses that match data we already have in the database"
             )
             logger.debug(
@@ -1664,41 +1665,41 @@ def qrscu(
 
         time_took = (datetime.now() - debug_timer).total_seconds()
         study_numbers["current"] = query.dicomqrrspstudy_set.all().count()
-        query.stage = (
-            "Query complete. Query took {0} and we are left with {1} studies to move.<br>"
-            "Of the original {2} study responses, ".format(
-                naturalduration(time_took),
-                study_numbers["current"],
-                study_numbers["initial"],
+        query.stage = _(
+            "Query complete. Query took {time} and we are left with {studies_left} studies to move.<br>"
+            "Of the original {studies_initial} study responses, ".format(
+                time=naturalduration(time_took),
+                studies_left=study_numbers["current"],
+                studies_initial=study_numbers["initial"],
             )
         )
         query.stage += series_pruning_log
         filter_pruning_logs = "Filtering for "
         if filters["study_desc_inc"]:
-            filter_pruning_logs += "only studies with description that include '{0}' removed {1} studies, ".format(
-                ", ".join(filters["study_desc_inc"]),
-                deleted_studies_filters["study_desc_inc"],
-            )
+            filter_pruning_logs += _("only studies with description that include '{text}' removed {num} studies, ".format(
+                text=", ".join(filters["study_desc_inc"]),
+                num=deleted_studies_filters["study_desc_inc"],
+            ))
         if filters["study_desc_exc"]:
-            filter_pruning_logs += "studies with description that do not include '{0}' removed {1} studies, ".format(
-                ", ".join(filters["study_desc_exc"]),
-                deleted_studies_filters["study_desc_exc"],
-            )
+            filter_pruning_logs += _("studies with description that do not include '{text}' removed {num} studies, ".format(
+                text=", ".join(filters["study_desc_exc"]),
+                num=deleted_studies_filters["study_desc_exc"],
+            ))
         if filters["stationname_inc"]:
-            filter_pruning_logs += "only studies with station names that include '{0}' removed {1} studies, ".format(
-                ", ".join(filters["stationname_inc"]),
-                deleted_studies_filters["stationname_inc"],
-            )
+            filter_pruning_logs += _("only studies with station names that include '{text}' removed {num} studies, ".format(
+                text=", ".join(filters["stationname_inc"]),
+                num=deleted_studies_filters["stationname_inc"],
+            ))
         if filters["stationname_exc"]:
-            filter_pruning_logs += "studies with station names that do not include '{0}' removed {1} studies, ".format(
-                ", ".join(filters["stationname_exc"]),
-                deleted_studies_filters["stationname_exc"],
-            )
+            filter_pruning_logs += _("studies with station names that do not include '{text}' removed {num} studies, ".format(
+                text=", ".join(filters["stationname_exc"]),
+                num=deleted_studies_filters["stationname_exc"],
+            ))
         query.stage += filter_pruning_logs
         if remove_duplicates:
-            query.stage += "Removing duplicates of previous objects removed {0} studies.".format(
-                study_numbers["duplicates_removed"]
-            )
+            query.stage += _("Removing duplicates of previous objects removed {duplicates_removed} studies.".format(
+                duplicates_removed=study_numbers["duplicates_removed"]
+            ))
         query.save()
         logger.info("{0} ".format(query_id) + query.stage)
 
