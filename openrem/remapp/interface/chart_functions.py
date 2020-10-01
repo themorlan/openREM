@@ -196,7 +196,7 @@ def plotly_boxplot(
     colourmap="RdYlBu",
     filename="OpenREM_boxplot_chart",
     sorted_category_list=None,
-    return_dict=False
+    return_as_dict=False
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -224,7 +224,7 @@ def plotly_boxplot(
 
         fig.update_xaxes(tickson="boundaries")
 
-        if return_dict:
+        if return_as_dict:
             return fig.to_dict()
         else:
             return plot(
@@ -297,7 +297,7 @@ def plotly_barchart(
     filename="OpenREM_bar_chart",
     sorted_category_list=None,
     average_choice="mean",
-    return_dict=False
+    return_as_dict=False
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -330,7 +330,7 @@ def plotly_barchart(
 
     fig.update_xaxes(tickson="boundaries")
 
-    if return_dict:
+    if return_as_dict:
         return fig.to_dict()
     else:
         return plot(
@@ -346,7 +346,7 @@ def plotly_barchart_mean_median(
     colourmap="RdYlBu",
     filename="OpenREM_bar_chart",
     sorted_category_list=None,
-    return_dict=False
+    return_as_dict=False
 ):
     from plotly.subplots import make_subplots
     import plotly.graph_objects as go
@@ -414,7 +414,7 @@ def plotly_barchart_mean_median(
     fig.update_yaxes(title_text="Mean " + value_axis_title, row=1, col=1)
     fig.update_yaxes(title_text="Median " + value_axis_title, row=2, col=1)
 
-    if return_dict:
+    if return_as_dict:
         return fig.to_dict()
     else:
         return plot(
@@ -434,7 +434,7 @@ def plotly_histogram(
     filename="OpenREM_histogram_chart",
     facet_col_wrap=3,
     sorted_category_list=None,
-    return_dict=False
+    return_as_dict=False
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -470,7 +470,7 @@ def plotly_histogram(
         fig.update_xaxes(rangemode="nonnegative")
         fig.update_yaxes(rangemode="nonnegative")
 
-        if return_dict:
+        if return_as_dict:
             return fig.to_dict()
         else:
             return plot(
@@ -507,7 +507,7 @@ def plotly_histogram_barchart(
     facet_col_wrap=3,
     df_facet_category_list=None,
     df_category_name_list=None,
-    return_dict=False
+    return_as_dict=False
 ):
     from plotly.subplots import make_subplots
     import plotly.graph_objects as go
@@ -606,7 +606,7 @@ def plotly_histogram_barchart(
         fig.update_layout(layout)
         fig.update_layout(legend_title_text=legend_title)
 
-        if return_dict:
+        if return_as_dict:
             return fig.to_dict()
         else:
             return plot(
@@ -646,7 +646,7 @@ def plotly_binned_statistic_barchart(
     df_facet_category_list=None,
     df_category_name_list=None,
     stat_name="mean",
-    return_dict=False
+    return_as_dict=False
 ):
     from plotly.subplots import make_subplots
     import plotly.graph_objects as go
@@ -770,7 +770,7 @@ def plotly_binned_statistic_barchart(
         fig.update_layout(layout)
         fig.update_layout(legend_title_text=facet_title)
 
-        if return_dict:
+        if return_as_dict:
             return fig.to_dict()
         else:
             return plot(
@@ -803,7 +803,7 @@ def plotly_frequency_barchart(
     colourmap="RdYlBu",
     filename="OpenREM_bar_chart",
     sorted_category_list=None,
-    return_dict=False
+    return_as_dict=False
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -828,7 +828,7 @@ def plotly_frequency_barchart(
 
     fig.update_xaxes(tickson="boundaries")
 
-    if return_dict:
+    if return_as_dict:
         return fig.to_dict()
     else:
         return plot(
@@ -849,7 +849,7 @@ def plotly_timeseries_linechart(
     filename="OpenREM_over_time_chart",
     facet_col_wrap=3,
     sorted_category_list=None,
-    return_dict=False
+    return_as_dict=False
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -892,7 +892,7 @@ def plotly_timeseries_linechart(
         fig.update_xaxes(showticklabels=True)
         fig.update_yaxes(showticklabels=True)
 
-        if return_dict:
+        if return_as_dict:
             return fig.to_dict()
         else:
             return plot(
@@ -930,7 +930,7 @@ def plotly_scatter(
     filename="OpenREM_scatter_chart",
     facet_col_wrap=3,
     sorted_category_list=None,
-    return_dict=False
+    return_as_dict=False
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -974,7 +974,7 @@ def plotly_scatter(
         fig.update_xaxes(showticklabels=True)
         fig.update_yaxes(showticklabels=True)
 
-        if return_dict:
+        if return_as_dict:
             return fig.to_dict()
         else:
             return plot(
@@ -1007,7 +1007,7 @@ def plotly_barchart_weekdays(
     colourmap="RdYlBu",
     filename="OpenREM_worload_chart",
     facet_col_wrap=3,
-    return_dict=False
+    return_as_dict=False
 ):
     from plotly.offline import plot
     import plotly.express as px
@@ -1060,7 +1060,7 @@ def plotly_barchart_weekdays(
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
-        if return_dict:
+        if return_as_dict:
             return fig.to_dict()
         else:
             return plot(
@@ -1095,7 +1095,7 @@ def construct_frequency_chart(
     colour_map=None,
     file_name=None,
     sorted_categories=None,
-    return_dict=False
+    return_as_dict=False
 ):
 
     df_aggregated = create_dataframe_aggregates(df, df_name_col, df_name_col, ["count"])
@@ -1121,7 +1121,7 @@ def construct_frequency_chart(
         colourmap=colour_map,
         filename=file_name,
         sorted_category_list=sorted_categories,
-        return_dict=return_dict
+        return_as_dict=return_as_dict
     )
 
 
@@ -1138,7 +1138,7 @@ def construct_scatter_chart(
     x_axis_title=None,
     y_axis_title=None,
     file_name=None,
-    return_dict=False
+    return_as_dict=False
 ):
     sorted_categories = create_sorted_category_list(df, df_name_col, df_y_col, sorting)
 
@@ -1162,7 +1162,7 @@ def construct_scatter_chart(
         filename=file_name,
         facet_col_wrap=facet_col_wrap,
         sorted_category_list=sorted_categories,
-        return_dict=return_dict
+        return_as_dict=return_as_dict
     )
 
 
@@ -1181,7 +1181,7 @@ def construct_over_time_charts(
     colour_map=None,
     facet_col_wrap=None,
     file_name=None,
-    return_dict=False
+    return_as_dict=False
 ):
     sorted_categories = create_sorted_category_list(
         df, df_name_col, df_value_col, sorting
@@ -1218,7 +1218,7 @@ def construct_over_time_charts(
             filename=file_name,
             facet_col_wrap=facet_col_wrap,
             sorted_category_list=sorted_categories,
-            return_dict=return_dict
+            return_as_dict=return_as_dict
         )
 
     if "median" in average_choices:
@@ -1235,7 +1235,7 @@ def construct_over_time_charts(
             filename=file_name,
             facet_col_wrap=facet_col_wrap,
             sorted_category_list=sorted_categories,
-            return_dict=return_dict
+            return_as_dict=return_as_dict
         )
 
     return return_value

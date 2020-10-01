@@ -1257,7 +1257,7 @@ def ct_plot_calculations(f, user_profile):
                 ],
             )
 
-            if user_profile.plotMean:
+            if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
                     "requested_procedure_code_meaning",
@@ -1289,7 +1289,7 @@ def ct_plot_calculations(f, user_profile):
                         average_choice="median",
                     )
 
-            if user_profile.plotMedian:
+            if user_profile.plotBoxplots:
                 return_structure["requestBoxplotNumEventsData"] = plotly_boxplot(
                     df,
                     "requested_procedure_code_meaning",
