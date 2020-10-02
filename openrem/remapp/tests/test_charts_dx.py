@@ -115,10 +115,7 @@ class ChartsDX(TestCase):
                 chart_data[idx]["name"],
                 series_name,
             )
-            self.assertListEqual(
-                list(chart_data[idx]["x"]),
-                category_names
-            )
+            self.assertListEqual(list(chart_data[idx]["x"]), category_names)
 
     def check_avg_and_counts(self, comparison_data, chart_data):
         for idx in range(0, 1):
@@ -138,9 +135,7 @@ class ChartsDX(TestCase):
 
     def check_frequencies(self, comparison_data, chart_data):
         for idx, values in enumerate(comparison_data):
-            self.assertListEqual(
-                list(chart_data[idx]["y"]), comparison_data[idx]
-            )
+            self.assertListEqual(list(chart_data[idx]["y"]), comparison_data[idx])
 
     def check_boxplot_xy(self, x_data, y_data, chart_data):
         for i in range(len(x_data)):
@@ -185,7 +180,9 @@ class ChartsDX(TestCase):
 
         # Check on median DAP values and counts
         acq_data = [[0.0, 8.2, 3.0], [0.0, 105.85, 2.0]]
-        chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"]
+        chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][0][
+            "customdata"
+        ]
         self.check_avg_and_counts(acq_data, chart_data)
 
         # Check on the boxplot data system nanes
@@ -228,12 +225,16 @@ class ChartsDX(TestCase):
 
         # Check on median values of series 0
         acq_data = [[0.0, np.nan, 0.0], [0.0, 105.85, 2.0]]
-        chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"]
+        chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][0][
+            "customdata"
+        ]
         self.check_avg_and_counts(acq_data, chart_data)
 
         # Check on median values of series 1
         acq_data = [[1.0, 8.2, 3.0], [1.0, np.nan, 0.0]]
-        chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][1]["customdata"]
+        chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][1][
+            "customdata"
+        ]
         self.check_avg_and_counts(acq_data, chart_data)
 
         # Check on the boxplot data system names
@@ -279,7 +280,9 @@ class ChartsDX(TestCase):
 
         # Check on median values
         acq_data = [[0.0, 2.04, 3.0], [0.0, 9.5, 2.0]]
-        chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"]
+        chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][0][
+            "customdata"
+        ]
         self.check_avg_and_counts(acq_data, chart_data)
 
         # Check on the boxplot system names
@@ -322,12 +325,16 @@ class ChartsDX(TestCase):
 
         # Check on median values of series 0
         acq_data = [[0.0, np.nan, 0.0], [0.0, 9.5, 2.0]]
-        chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"]
+        chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][0][
+            "customdata"
+        ]
         self.check_avg_and_counts(acq_data, chart_data)
 
         # Check on median values of series 1
         acq_data = [[1.0, 2.04, 3.0], [1.0, np.nan, 0.0]]
-        chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][1]["customdata"]
+        chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][1][
+            "customdata"
+        ]
         self.check_avg_and_counts(acq_data, chart_data)
 
         # Check on the boxplot data system names
