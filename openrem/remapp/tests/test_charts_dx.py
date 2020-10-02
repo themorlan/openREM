@@ -181,142 +181,49 @@ class ChartsDX(TestCase):
 
         required_charts_list = generate_required_dx_charts_list(self.user.userprofile)
 
-        reference_list = [
-            {
-                "title": "Chart of mean DAP for each acquisition protocol",
-                "var_name": "acquisitionMeanDAP",
-            },
-            {
-                "title": "Chart of median DAP for each acquisition protocol",
-                "var_name": "acquisitionMedianDAP",
-            },
-            {
-                "title": "Boxplot of DAP for each acquisition protocol",
-                "var_name": "acquisitionBoxplotDAP",
-            },
-            {
-                "title": "Histogram of DAP for each acquisition protocol",
-                "var_name": "acquisitionHistogramDAP",
-            },
-            {
-                "title": "Chart of acquisition protocol frequency",
-                "var_name": "acquisitionFrequency",
-            },
-            {
-                "title": "Chart of mean DAP for each study description",
-                "var_name": "studyMeanDAP",
-            },
-            {
-                "title": "Chart of median DAP for each study description",
-                "var_name": "studyMedianDAP",
-            },
-            {
-                "title": "Boxplot of DAP for each study description",
-                "var_name": "studyBoxplotDAP",
-            },
-            {
-                "title": "Histogram of DAP for each study description",
-                "var_name": "studyHistogramDAP",
-            },
-            {
-                "title": "Chart of study description frequency",
-                "var_name": "studyFrequency",
-            },
-            {
-                "title": "Chart of mean DAP for each requested procedure",
-                "var_name": "requestMeanDAP",
-            },
-            {
-                "title": "Chart of median DAP for each requested procedure",
-                "var_name": "requestMedianDAP",
-            },
-            {
-                "title": "Boxplot of DAP for each requested procedure",
-                "var_name": "requestBoxplotDAP",
-            },
-            {
-                "title": "Histogram of DAP for each requested procedure",
-                "var_name": "requestHistogramDAP",
-            },
-            {
-                "title": "Chart of requested procedure frequency",
-                "var_name": "requestFrequency",
-            },
-            {
-                "title": "Chart of mean kVp for each acquisition protocol",
-                "var_name": "acquisitionMeankVp",
-            },
-            {
-                "title": "Chart of median kVp for each acquisition protocol",
-                "var_name": "acquisitionMediankVp",
-            },
-            {
-                "title": "Boxplot of kVp for each acquisition protocol",
-                "var_name": "acquisitionBoxplotkVp",
-            },
-            {
-                "title": "Histogram of DAP for each acquisition protocol",
-                "var_name": "acquisitionHistogramkVp",
-            },
-            {
-                "title": "Chart of mean mAs for each acquisition protocol",
-                "var_name": "acquisitionMeanmAs",
-            },
-            {
-                "title": "Chart of median mAs for each acquisition protocol",
-                "var_name": "acquisitionMedianmAs",
-            },
-            {
-                "title": "Boxplot of mAs for each acquisition protocol",
-                "var_name": "acquisitionBoxplotmAs",
-            },
-            {
-                "title": "Histogram of DAP for each acquisition protocol",
-                "var_name": "acquisitionHistogrammAs",
-            },
-            {
-                "title": "Chart of study description workload",
-                "var_name": "studyWorkload",
-            },
-            {
-                "title": "Chart of mean kVp per acquisition protocol over time (M)",
-                "var_name": "acquisitionMeankVpOverTime",
-            },
-            {
-                "title": "Chart of median kVp per acquisition protocol over time (M)",
-                "var_name": "acquisitionMediankVpOverTime",
-            },
-            {
-                "title": "Chart of mean mAs per acquisition protocol over time (M)",
-                "var_name": "acquisitionMeanmAsOverTime",
-            },
-            {
-                "title": "Chart of median mAs per acquisition protocol over time (M)",
-                "var_name": "acquisitionMedianmAsOverTime",
-            },
-            {
-                "title": "Chart of mean DAP per acquisition protocol over time (M)",
-                "var_name": "acquisitionMeanDAPOverTime",
-            },
-            {
-                "title": "Chart of median DAP per acquisition protocol over time (M)",
-                "var_name": "acquisitionMedianDAPOverTime",
-            },
-            {
-                "title": "Chart of acquisition protocol DAP vs patient mass",
-                "var_name": "acquisitionDAPvsMass",
-            },
-            {
-                "title": "Chart of study description DAP vs patient mass",
-                "var_name": "studyDAPvsMass",
-            },
-            {
-                "title": "Chart of requested procedure DAP vs patient mass",
-                "var_name": "requestDAPvsMass",
-            },
+        chart_var_names = []
+        for item in required_charts_list:
+            chart_var_names.append(item["var_name"])
+
+        # Just check the variable names - I don't mind if the titles change
+        reference_var_names = [
+            "acquisitionMeanDAP",
+            "acquisitionMedianDAP",
+            "acquisitionBoxplotDAP",
+            "acquisitionHistogramDAP",
+            "acquisitionFrequency",
+            "studyMeanDAP",
+            "studyMedianDAP",
+            "studyBoxplotDAP",
+            "studyHistogramDAP",
+            "studyFrequency",
+            "requestMeanDAP",
+            "requestMedianDAP",
+            "requestBoxplotDAP",
+            "requestHistogramDAP",
+            "requestFrequency",
+            "acquisitionMeankVp",
+            "acquisitionMediankVp",
+            "acquisitionBoxplotkVp",
+            "acquisitionHistogramkVp",
+            "acquisitionMeanmAs",
+            "acquisitionMedianmAs",
+            "acquisitionBoxplotmAs",
+            "acquisitionHistogrammAs",
+            "studyWorkload",
+            "acquisitionMeankVpOverTime",
+            "acquisitionMediankVpOverTime",
+            "acquisitionMeanmAsOverTime",
+            "acquisitionMedianmAsOverTime",
+            "acquisitionMeanDAPOverTime",
+            "acquisitionMedianDAPOverTime",
+            "acquisitionDAPvsMass",
+            "studyDAPvsMass",
+            "requestDAPvsMass",
         ]
 
-        self.assertListEqual(required_charts_list, reference_list)
+        for ref_var_name in reference_var_names:
+            self.assertTrue(ref_var_name in chart_var_names)
 
     def test_acq_dap(self):
         # Test of mean and median DAP, count, system and acquisition protocol names
