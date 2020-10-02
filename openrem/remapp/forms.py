@@ -192,8 +192,14 @@ class DXChartOptionsForm(forms.Form):
     plotDXAcquisitionFreq = forms.BooleanField(
         label="Acquisition frequency", required=False
     )
+    plotDXAcquisitionMeankVp = forms.BooleanField(
+        label="Acquisition kVp", required=False
+    )
     plotDXAcquisitionMeanmAs = forms.BooleanField(
         label="Acquisition mAs", required=False
+    )
+    plotDXAcquisitionMeanDAPOverTime = forms.BooleanField(
+        label="Acquisition DAP over time", required=False
     )
     plotDXAcquisitionMeankVpOverTime = forms.BooleanField(
         label="Acquisition kVp over time", required=False
@@ -201,14 +207,8 @@ class DXChartOptionsForm(forms.Form):
     plotDXAcquisitionMeanmAsOverTime = forms.BooleanField(
         label="Acquisition mAs over time", required=False
     )
-    plotDXAcquisitionMeanDAPOverTime = forms.BooleanField(
-        label="Acquisition DAP over time", required=False
-    )
     plotDXAcquisitionDAPvsMass = forms.BooleanField(
         label="Acquisition DAP vs mass", required=False
-    )
-    plotDXAcquisitionMeankVp = forms.BooleanField(
-        label="Acquisition kVp", required=False
     )
     plotDXStudyMeanDAP = forms.BooleanField(label="Study DAP", required=False)
     plotDXStudyFreq = forms.BooleanField(label="Study frequency", required=False)

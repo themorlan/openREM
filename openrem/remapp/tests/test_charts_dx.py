@@ -109,6 +109,22 @@ class ChartsDX(TestCase):
             f, self.user.userprofile, return_as_dict=True
         )
 
+    def check_avg_and_counts(self, comparison_data, chart_data):
+        for idx in range(0, 1):
+            # If the comparison value is a nan then check that the chart value is too
+            if math.isnan(comparison_data[idx][1]):
+                self.assertTrue(math.isnan(chart_data[idx][1]))
+            # Otherwise compare the values
+            else:
+                self.assertAlmostEqual(
+                    chart_data[idx][1],
+                    comparison_data[idx][1],
+                )
+            self.assertEqual(
+                chart_data[idx][2],
+                comparison_data[idx][2],
+            )
+
     def test_acq_dap(self):
         # Test of mean and median DAP, count, system and acquisition protocol names
         # Also tests raw data going into the box plots
@@ -138,49 +154,15 @@ class ChartsDX(TestCase):
             acq_system_names,
         )
 
-        # Check on mean data
+        # Check on mean DAP values and counts
         acq_data = [[0.0, 10.93333333, 3.0], [0.0, 105.85, 2.0]]
+        chart_data = self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"]
+        self.check_avg_and_counts(acq_data, chart_data)
 
-        # Check on mean DAP values
-        self.assertAlmostEqual(
-            self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][0][1],
-            acq_data[0][1],
-        )
-        self.assertAlmostEqual(
-            self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][1][1],
-            acq_data[1][1],
-        )
-        # Check on counts in the mean data
-        self.assertEqual(
-            self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][0][2],
-            acq_data[0][2],
-        )
-        self.assertEqual(
-            self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][1][2],
-            acq_data[1][2],
-        )
-
-        # Check on median values
+        # Check on median DAP values and counts
         acq_data = [[0.0, 8.2, 3.0], [0.0, 105.85, 2.0]]
-
-        # Check on median DAP values
-        self.assertAlmostEqual(
-            self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][0][1],
-            acq_data[0][1],
-        )
-        self.assertAlmostEqual(
-            self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][1][1],
-            acq_data[1][1],
-        )
-        # Check on counts in the median data
-        self.assertEqual(
-            self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][0][2],
-            acq_data[0][2],
-        )
-        self.assertEqual(
-            self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][1][2],
-            acq_data[1][2],
-        )
+        chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"]
+        self.check_avg_and_counts(acq_data, chart_data)
 
         # Check on the boxplot data system nanes
         acq_data = "All systems"
@@ -236,95 +218,23 @@ class ChartsDX(TestCase):
 
         # Check on mean data of series 0
         acq_data = [[0.0, np.nan, 0.0], [0.0, 105.85, 2.0]]
-        # Check on mean DAP values
-        self.assertTrue(
-            math.isnan(
-                self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][0][1]
-            )
-        )
-        self.assertAlmostEqual(
-            self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][1][1],
-            acq_data[1][1],
-        )
-        # Check on counts in the mean data
-        self.assertEqual(
-            self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][0][2],
-            acq_data[0][2],
-        )
-        self.assertEqual(
-            self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"][1][2],
-            acq_data[1][2],
-        )
+        chart_data = self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"]
+        self.check_avg_and_counts(acq_data, chart_data)
 
         # Check on mean data of series 1
         acq_data = [[1.0, 10.93333333, 3.0], [1.0, np.nan, 0.0]]
-        # Check on mean DAP values
-        self.assertAlmostEqual(
-            self.chart_data["acquisitionMeanDAPData"]["data"][1]["customdata"][0][1],
-            acq_data[0][1],
-        )
-        self.assertTrue(
-            math.isnan(
-                self.chart_data["acquisitionMeanDAPData"]["data"][1]["customdata"][1][1]
-            )
-        )
-        # Check on counts in the mean data
-        self.assertEqual(
-            self.chart_data["acquisitionMeanDAPData"]["data"][1]["customdata"][0][2],
-            acq_data[0][2],
-        )
-        self.assertEqual(
-            self.chart_data["acquisitionMeanDAPData"]["data"][1]["customdata"][1][2],
-            acq_data[1][2],
-        )
+        chart_data = self.chart_data["acquisitionMeanDAPData"]["data"][1]["customdata"]
+        self.check_avg_and_counts(acq_data, chart_data)
 
         # Check on median values of series 0
         acq_data = [[0.0, np.nan, 0.0], [0.0, 105.85, 2.0]]
-        # Check on mean DAP values
-        self.assertTrue(
-            math.isnan(
-                self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][0][
-                    1
-                ]
-            )
-        )
-        self.assertAlmostEqual(
-            self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][1][1],
-            acq_data[1][1],
-        )
-        # Check on counts in the mean data
-        self.assertEqual(
-            self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][0][2],
-            acq_data[0][2],
-        )
-        self.assertEqual(
-            self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"][1][2],
-            acq_data[1][2],
-        )
+        chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][0]["customdata"]
+        self.check_avg_and_counts(acq_data, chart_data)
 
         # Check on median values of series 1
         acq_data = [[1.0, 8.2, 3.0], [1.0, np.nan, 0.0]]
-        # Check on mean DAP values
-        self.assertAlmostEqual(
-            self.chart_data["acquisitionMedianDAPData"]["data"][1]["customdata"][0][1],
-            acq_data[0][1],
-        )
-        self.assertTrue(
-            math.isnan(
-                self.chart_data["acquisitionMedianDAPData"]["data"][1]["customdata"][1][
-                    1
-                ]
-            )
-        )
-        # Check on counts in the mean data
-        self.assertEqual(
-            self.chart_data["acquisitionMedianDAPData"]["data"][1]["customdata"][0][2],
-            acq_data[0][2],
-        )
-        self.assertEqual(
-            self.chart_data["acquisitionMedianDAPData"]["data"][1]["customdata"][1][2],
-            acq_data[1][2],
-        )
+        chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][1]["customdata"]
+        self.check_avg_and_counts(acq_data, chart_data)
 
         # Check on the boxplot data system names
         acq_data = ["Carestream Clinic KODAK7500", "Digital Mobile Hospital 01234MOB54"]
@@ -395,47 +305,13 @@ class ChartsDX(TestCase):
 
         # Check on mean data
         acq_data = [[0.0, 2.70666667, 3.0], [0.0, 9.5, 2.0]]
-
-        # Check on mean mAs values
-        self.assertAlmostEqual(
-            self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"][0][1],
-            acq_data[0][1],
-        )
-        self.assertAlmostEqual(
-            self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"][1][1],
-            acq_data[1][1],
-        )
-        # Check on counts in the mean data
-        self.assertEqual(
-            self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"][0][2],
-            acq_data[0][2],
-        )
-        self.assertEqual(
-            self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"][1][2],
-            acq_data[1][2],
-        )
+        chart_data = self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"]
+        self.check_avg_and_counts(acq_data, chart_data)
 
         # Check on median values
         acq_data = [[0.0, 2.04, 3.0], [0.0, 9.5, 2.0]]
-
-        # Check on median mAs values
-        self.assertAlmostEqual(
-            self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"][0][1],
-            acq_data[0][1],
-        )
-        self.assertAlmostEqual(
-            self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"][1][1],
-            acq_data[1][1],
-        )
-        # Check on counts in the median data
-        self.assertEqual(
-            self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"][0][2],
-            acq_data[0][2],
-        )
-        self.assertEqual(
-            self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"][1][2],
-            acq_data[1][2],
-        )
+        chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"]
+        self.check_avg_and_counts(acq_data, chart_data)
 
         # Check on the boxplot system names
         acq_data = "All systems"
@@ -491,95 +367,23 @@ class ChartsDX(TestCase):
 
         # Check on mean data of series 0
         acq_data = [[0.0, np.nan, 0.0], [0.0, 9.5, 2.0]]
-        # Check on mean mAs values
-        self.assertTrue(
-            math.isnan(
-                self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"][0][1]
-            )
-        )
-        self.assertAlmostEqual(
-            self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"][1][1],
-            acq_data[1][1],
-        )
-        # Check on counts in the mean data
-        self.assertEqual(
-            self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"][0][2],
-            acq_data[0][2],
-        )
-        self.assertEqual(
-            self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"][1][2],
-            acq_data[1][2],
-        )
+        chart_data = self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"]
+        self.check_avg_and_counts(acq_data, chart_data)
 
         # Check on mean data of series 1
         acq_data = [[1.0, 2.70666667, 3.0], [1.0, np.nan, 0.0]]
-        # Check on mean mAs values
-        self.assertAlmostEqual(
-            self.chart_data["acquisitionMeanmAsData"]["data"][1]["customdata"][0][1],
-            acq_data[0][1],
-        )
-        self.assertTrue(
-            math.isnan(
-                self.chart_data["acquisitionMeanmAsData"]["data"][1]["customdata"][1][1]
-            )
-        )
-        # Check on counts in the mean data
-        self.assertEqual(
-            self.chart_data["acquisitionMeanmAsData"]["data"][1]["customdata"][0][2],
-            acq_data[0][2],
-        )
-        self.assertEqual(
-            self.chart_data["acquisitionMeanmAsData"]["data"][1]["customdata"][1][2],
-            acq_data[1][2],
-        )
+        chart_data = self.chart_data["acquisitionMeanmAsData"]["data"][1]["customdata"]
+        self.check_avg_and_counts(acq_data, chart_data)
 
         # Check on median values of series 0
         acq_data = [[0.0, np.nan, 0.0], [0.0, 9.5, 2.0]]
-        # Check on mean mAs values
-        self.assertTrue(
-            math.isnan(
-                self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"][0][
-                    1
-                ]
-            )
-        )
-        self.assertAlmostEqual(
-            self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"][1][1],
-            acq_data[1][1],
-        )
-        # Check on counts in the mean data
-        self.assertEqual(
-            self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"][0][2],
-            acq_data[0][2],
-        )
-        self.assertEqual(
-            self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"][1][2],
-            acq_data[1][2],
-        )
+        chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"]
+        self.check_avg_and_counts(acq_data, chart_data)
 
         # Check on median values of series 1
         acq_data = [[1.0, 2.04, 3.0], [1.0, np.nan, 0.0]]
-        # Check on mean mAs values
-        self.assertAlmostEqual(
-            self.chart_data["acquisitionMedianmAsData"]["data"][1]["customdata"][0][1],
-            acq_data[0][1],
-        )
-        self.assertTrue(
-            math.isnan(
-                self.chart_data["acquisitionMedianmAsData"]["data"][1]["customdata"][1][
-                    1
-                ]
-            )
-        )
-        # Check on counts in the mean data
-        self.assertEqual(
-            self.chart_data["acquisitionMedianmAsData"]["data"][1]["customdata"][0][2],
-            acq_data[0][2],
-        )
-        self.assertEqual(
-            self.chart_data["acquisitionMedianmAsData"]["data"][1]["customdata"][1][2],
-            acq_data[1][2],
-        )
+        chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][1]["customdata"]
+        self.check_avg_and_counts(acq_data, chart_data)
 
         # Check on the boxplot data system names
         acq_data = ["Carestream Clinic KODAK7500", "Digital Mobile Hospital 01234MOB54"]
