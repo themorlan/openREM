@@ -93,7 +93,7 @@ class ChartsDX(TestCase):
             f, self.user.userprofile, return_as_dict=True
         )
 
-    def test_dap_per_acq(self):
+    def test_acq_dap(self):
         # Test of mean and median DAP, count, system and acquisition protocol names
         # Also tests raw data going into the box plots
         self.client.login(username="jacob", password="top_secret")
@@ -116,7 +116,6 @@ class ChartsDX(TestCase):
         self.user.userprofile.plotMean = True
         self.user.userprofile.plotMedian = True
         self.user.userprofile.plotBoxplots = True
-        self.user.userprofile.plotDXAcquisitionFreq = True
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -200,33 +199,6 @@ class ChartsDX(TestCase):
                 ],
                 value,
             )
-
-        # The frequency chart - system names
-        acq_data = "All systems"
-        self.assertEqual(
-            self.chart_data["acquisitionFrequencyData"]["data"][0]["x"], acq_data
-        )
-        self.assertEqual(
-            self.chart_data["acquisitionFrequencyData"]["data"][1]["x"], acq_data
-        )
-
-        # The frequency chart - acquisition protocol names
-        acq_data = ["ABD_1_VIEW", "AEC"]
-        self.assertEqual(
-            self.chart_data["acquisitionFrequencyData"]["data"][0]["name"], acq_data[0]
-        )
-        self.assertEqual(
-            self.chart_data["acquisitionFrequencyData"]["data"][1]["name"], acq_data[1]
-        )
-
-        # The frequency chart - frequencies
-        acq_data = [3, 2]
-        self.assertEqual(
-            self.chart_data["acquisitionFrequencyData"]["data"][0]["y"], acq_data[0]
-        )
-        self.assertEqual(
-            self.chart_data["acquisitionFrequencyData"]["data"][1]["y"], acq_data[1]
-        )
 
         # Repeat the above, but plot a series per system
         self.user.userprofile.plotSeriesPerSystem = True
@@ -384,6 +356,65 @@ class ChartsDX(TestCase):
                 ],
                 value,
             )
+
+    def test_acq_freq(self):
+        # Test of mean and median DAP, count, system and acquisition protocol names
+        # Also tests raw data going into the box plots
+        self.client.login(username="jacob", password="top_secret")
+
+        # I can add to the filter_set to control what type of chart data is calculated
+        filter_set = ""
+
+        f = DXSummaryListFilter(
+            filter_set,
+            queryset=GeneralStudyModuleAttr.objects.filter(
+                Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
+            )
+            .order_by()
+            .distinct(),
+        )
+
+        # Set user profile options
+        self.user_profile_reset()
+        self.user.userprofile.plotDXAcquisitionFreq = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        # The frequency chart - system names
+        acq_data = "All systems"
+        self.assertEqual(
+            self.chart_data["acquisitionFrequencyData"]["data"][0]["x"], acq_data
+        )
+        self.assertEqual(
+            self.chart_data["acquisitionFrequencyData"]["data"][1]["x"], acq_data
+        )
+
+        # The frequency chart - acquisition protocol names
+        acq_data = ["ABD_1_VIEW", "AEC"]
+        self.assertEqual(
+            self.chart_data["acquisitionFrequencyData"]["data"][0]["name"], acq_data[0]
+        )
+        self.assertEqual(
+            self.chart_data["acquisitionFrequencyData"]["data"][1]["name"], acq_data[1]
+        )
+
+        # The frequency chart - frequencies
+        acq_data = [3, 2]
+        self.assertEqual(
+            self.chart_data["acquisitionFrequencyData"]["data"][0]["y"], acq_data[0]
+        )
+        self.assertEqual(
+            self.chart_data["acquisitionFrequencyData"]["data"][1]["y"], acq_data[1]
+        )
+
+        # Repeat the above, but plot a series per system
+        self.user.userprofile.plotSeriesPerSystem = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
 
         # The frequency chart - system names
         acq_data = ["Carestream Clinic KODAK7500", "Digital Mobile Hospital 01234MOB54"]
