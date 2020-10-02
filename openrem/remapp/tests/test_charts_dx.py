@@ -545,6 +545,107 @@ class ChartsDX(TestCase):
         chart_data = self.chart_data["requestFrequencyData"]["data"]
         self.check_frequencies(request_data, chart_data)
 
+    def test_study_dap(self):
+        # Test of mean and median DAP, count, system and study description protocol names
+        # Also tests raw data going into the box plots
+        f = self.login_get_filterset()
+
+        # Set user profile options
+        self.user.userprofile.plotDXStudyMeanDAP = True
+        self.user.userprofile.plotMean = True
+        self.user.userprofile.plotMedian = True
+        self.user.userprofile.plotBoxplots = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        # study description name and system name test
+        study_system_names = ["All systems"]
+        study_names = ["AEC", "Abdomen"]
+        chart_data = self.chart_data["studyMeanDAPData"]["data"]
+        self.check_series_and_category_names(
+            study_names, study_system_names, chart_data
+        )
+
+        # Check on mean DAP values and counts
+        study_data = [[0.0, 211.7, 1.0], [0.0, 32.8, 1.0]]
+        chart_data = self.chart_data["studyMeanDAPData"]["data"][0]["customdata"]
+        self.check_avg_and_counts(study_data, chart_data)
+
+        # Check on median DAP values and counts
+        study_data = [[0.0, 211.7, 1.0], [0.0, 32.8, 1.0]]
+        chart_data = self.chart_data["studyMedianDAPData"]["data"][0]["customdata"]
+        self.check_avg_and_counts(study_data, chart_data)
+
+        # Check on the boxplot data system names
+        study_data = "All systems"
+        self.assertEqual(
+            self.chart_data["studyBoxplotDAPData"]["data"][0]["name"], study_data
+        )
+
+        # Check the boxplot x and y data values
+        study_x_data = [["AEC", "Abdomen"]]
+        study_y_data = [[32.8, 211.7]]
+        chart_data = self.chart_data["studyBoxplotDAPData"]["data"]
+        self.check_boxplot_xy(study_x_data, study_y_data, chart_data)
+
+        # Repeat the above, but plot a series per system
+        self.user.userprofile.plotSeriesPerSystem = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        # study name and system name test
+        study_system_names = [
+            "Carestream Clinic KODAK7500",
+            "Digital Mobile Hospital 01234MOB54",
+        ]
+        study_names = ["AEC", "Abdomen"]
+        chart_data = self.chart_data["studyMeanDAPData"]["data"]
+        self.check_series_and_category_names(
+            study_names, study_system_names, chart_data
+        )
+
+        # Check on mean data of series 0
+        study_data = [[0.0, 211.7, 1.0]]
+        chart_data = self.chart_data["studyMeanDAPData"]["data"][0]["customdata"]
+        self.check_avg_and_counts(study_data, chart_data)
+
+        # Check on mean data of series 1
+        study_data = [[0.0, np.nan, 0.0]]
+        chart_data = self.chart_data["studyMeanDAPData"]["data"][1]["customdata"]
+        self.check_avg_and_counts(study_data, chart_data)
+
+        # Check on median values of series 0
+        study_data = [[0.0, 211.7, 1.0]]
+        chart_data = self.chart_data["studyMedianDAPData"]["data"][0]["customdata"]
+        self.check_avg_and_counts(study_data, chart_data)
+
+        # Check on median values of series 1
+        study_data = [[0.0, np.nan, 0.0]]
+        chart_data = self.chart_data["studyMedianDAPData"]["data"][1]["customdata"]
+        self.check_avg_and_counts(study_data, chart_data)
+
+        # Check on the boxplot data system names
+        study_data = [
+            "Carestream Clinic KODAK7500",
+            "Digital Mobile Hospital 01234MOB54",
+        ]
+        self.assertEqual(
+            self.chart_data["studyBoxplotDAPData"]["data"][0]["name"], study_data[0]
+        )
+        self.assertEqual(
+            self.chart_data["studyBoxplotDAPData"]["data"][1]["name"], study_data[1]
+        )
+
+        # Check the boxplot x and y data values
+        study_x_data = [["AEC"], ["Abdomen"]]
+        study_y_data = [[211.7], [32.8]]
+        chart_data = self.chart_data["studyBoxplotDAPData"]["data"]
+        self.check_boxplot_xy(study_x_data, study_y_data, chart_data)
+
     def test_study_freq(self):
         # Test of mean and median DAP, count, system and study description names
         # Also tests raw data going into the box plots
