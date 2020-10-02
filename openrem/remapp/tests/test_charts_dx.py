@@ -185,7 +185,7 @@ class ChartsDX(TestCase):
         ]
         self.check_avg_and_counts(acq_data, chart_data)
 
-        # Check on the boxplot data system nanes
+        # Check on the boxplot data system names
         acq_data = "All systems"
         self.assertEqual(
             self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["name"], acq_data
@@ -496,3 +496,51 @@ class ChartsDX(TestCase):
         request_y_data = [[211.7], [32.8]]
         chart_data = self.chart_data["requestBoxplotDAPData"]["data"]
         self.check_boxplot_xy(request_x_data, request_y_data, chart_data)
+
+    def test_request_freq(self):
+        # Test of mean and median DAP, count, system and requested procedure names
+        # Also tests raw data going into the box plots
+        f = self.login_get_filterset()
+
+        # Set user profile options
+        self.user.userprofile.plotDXRequestFreq = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        # Request name and system name test
+        request_system_names = ["All systems"]
+        request_names = ["Blank"]
+        chart_data = self.chart_data["requestFrequencyData"]["data"]
+        self.check_series_and_category_names(
+            request_system_names, request_names, chart_data
+        )
+
+        # The frequency chart - frequencies
+        request_data = [[2]]
+        chart_data = self.chart_data["requestFrequencyData"]["data"]
+        self.check_frequencies(request_data, chart_data)
+
+        # Repeat the above, but plot a series per system
+        self.user.userprofile.plotSeriesPerSystem = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        # request name and system name test
+        request_system_names = [
+            "Carestream Clinic KODAK7500",
+            "Digital Mobile Hospital 01234MOB54",
+        ]
+        request_names = ["Blank"]
+        chart_data = self.chart_data["requestFrequencyData"]["data"]
+        self.check_series_and_category_names(
+            request_system_names, request_names, chart_data
+        )
+
+        # The frequency chart - frequencies
+        request_data = [[1, 1]]
+        chart_data = self.chart_data["requestFrequencyData"]["data"]
+        self.check_frequencies(request_data, chart_data)
