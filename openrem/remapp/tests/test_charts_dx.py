@@ -86,6 +86,22 @@ class ChartsDX(TestCase):
 
         self.user.userprofile.save()
 
+    def login_get_filterset(self):
+        self.client.login(username="jacob", password="top_secret")
+        # I can add to the filter_set to control what type of chart data is calculated
+        filter_set = ""
+        f = DXSummaryListFilter(
+            filter_set,
+            queryset=GeneralStudyModuleAttr.objects.filter(
+                Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
+            )
+            .order_by()
+            .distinct(),
+        )
+        # Reset the user profile
+        self.user_profile_reset()
+        return f
+
     def obtain_chart_data(self, f):
         from remapp.views_charts_dx import dx_plot_calculations
 
@@ -96,22 +112,9 @@ class ChartsDX(TestCase):
     def test_acq_dap(self):
         # Test of mean and median DAP, count, system and acquisition protocol names
         # Also tests raw data going into the box plots
-        self.client.login(username="jacob", password="top_secret")
-
-        # I can add to the filter_set to control what type of chart data is calculated
-        filter_set = ""
-
-        f = DXSummaryListFilter(
-            filter_set,
-            queryset=GeneralStudyModuleAttr.objects.filter(
-                Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
-            )
-            .order_by()
-            .distinct(),
-        )
+        f = self.login_get_filterset()
 
         # Set user profile options
-        self.user_profile_reset()
         self.user.userprofile.plotDXAcquisitionMeanDAP = True
         self.user.userprofile.plotMean = True
         self.user.userprofile.plotMedian = True
@@ -179,25 +182,29 @@ class ChartsDX(TestCase):
             acq_data[1][2],
         )
 
-        # Check on the boxplot data x-axis values
+        # Check on the boxplot data system nanes
         acq_data = "All systems"
         self.assertEqual(
             self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["name"], acq_data
         )
 
-        acq_data = ["ABD_1_VIEW", "ABD_1_VIEW", "ABD_1_VIEW", "AEC", "AEC"]
-        self.assertListEqual(
-            list(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["x"]), acq_data
-        )
+        # Check the boxplot x and y data values
+        acq_x_data = ["ABD_1_VIEW", "ABD_1_VIEW", "ABD_1_VIEW", "AEC", "AEC"]
+        acq_y_data = [4.1, 8.2, 20.5, 101.57, 110.13]
 
-        # Check the boxplot data y-axis values
-        acq_data = [4.1, 8.2, 20.5, 101.57, 110.13]
-        for idx, value in enumerate(acq_data):
+        chart_y_data = self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["y"]
+        chart_x_data = self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["x"]
+
+        # Combine, sort and break apart the data. Without this sorting you cannot guarantee
+        # The order as it depends on the order in which the DICOM files were imported
+        chart_y_data, chart_x_data = np.sort(np.array([chart_y_data, chart_x_data]))
+
+        for idx in range(len(chart_x_data)):
+            self.assertEqual(chart_x_data[idx], acq_x_data[idx])
+
             self.assertAlmostEqual(
-                np.sort(self.chart_data["acquisitionBoxplotDAPData"]["data"][0]["y"])[
-                    idx
-                ],
-                value,
+                chart_y_data[idx],
+                acq_y_data[idx],
             )
 
         # Repeat the above, but plot a series per system
@@ -357,25 +364,267 @@ class ChartsDX(TestCase):
                 value,
             )
 
+    def test_acq_mas(self):
+        # Test of mean and median mas, count, system and acquisition protocol names
+        # Also tests raw data going into the box plots
+        f = self.login_get_filterset()
+
+        # Set user profile options
+        self.user.userprofile.plotDXAcquisitionMeanmAs = True
+        self.user.userprofile.plotMean = True
+        self.user.userprofile.plotMedian = True
+        self.user.userprofile.plotBoxplots = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        # Test the chart data
+        # Acquisition name test
+        acq_names = ["ABD_1_VIEW", "AEC"]
+        self.assertListEqual(
+            list(self.chart_data["acquisitionMeanmAsData"]["data"][0]["x"]), acq_names
+        )
+
+        # Acquisition system name test
+        acq_system_names = "All systems"
+        self.assertEqual(
+            self.chart_data["acquisitionMeanmAsData"]["data"][0]["name"],
+            acq_system_names,
+        )
+
+        # Check on mean data
+        acq_data = [[0.0, 2.70666667, 3.0], [0.0, 9.5, 2.0]]
+
+        # Check on mean mAs values
+        self.assertAlmostEqual(
+            self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"][0][1],
+            acq_data[0][1],
+        )
+        self.assertAlmostEqual(
+            self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"][1][1],
+            acq_data[1][1],
+        )
+        # Check on counts in the mean data
+        self.assertEqual(
+            self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"][0][2],
+            acq_data[0][2],
+        )
+        self.assertEqual(
+            self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"][1][2],
+            acq_data[1][2],
+        )
+
+        # Check on median values
+        acq_data = [[0.0, 2.04, 3.0], [0.0, 9.5, 2.0]]
+
+        # Check on median mAs values
+        self.assertAlmostEqual(
+            self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"][0][1],
+            acq_data[0][1],
+        )
+        self.assertAlmostEqual(
+            self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"][1][1],
+            acq_data[1][1],
+        )
+        # Check on counts in the median data
+        self.assertEqual(
+            self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"][0][2],
+            acq_data[0][2],
+        )
+        self.assertEqual(
+            self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"][1][2],
+            acq_data[1][2],
+        )
+
+        # Check on the boxplot system names
+        acq_data = "All systems"
+        self.assertEqual(
+            self.chart_data["acquisitionBoxplotmAsData"]["data"][0]["name"], acq_data
+        )
+
+        # Check the boxplot x and y data values
+        acq_x_data = ["ABD_1_VIEW", "ABD_1_VIEW", "ABD_1_VIEW", "AEC", "AEC"]
+        acq_y_data = [1.04, 2.04, 5.04, 9.0, 10.0]
+
+        chart_y_data = self.chart_data["acquisitionBoxplotmAsData"]["data"][0]["y"]
+        chart_x_data = self.chart_data["acquisitionBoxplotmAsData"]["data"][0]["x"]
+
+        # Combine, sort and break apart the data. Without this sorting you cannot guarantee
+        # The order as it depends on the order in which the DICOM files were imported
+        chart_y_data, chart_x_data = np.sort(np.array([chart_y_data, chart_x_data]))
+
+        for idx in range(len(chart_x_data)):
+            self.assertEqual(chart_x_data[idx], acq_x_data[idx])
+
+            self.assertAlmostEqual(
+                chart_y_data[idx],
+                acq_y_data[idx],
+            )
+
+        # Repeat the above, but plot a series per system
+        self.user.userprofile.plotSeriesPerSystem = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        # Acquisition name test
+        acq_names = ["ABD_1_VIEW", "AEC"]
+        self.assertListEqual(
+            list(self.chart_data["acquisitionMeanmAsData"]["data"][0]["x"]), acq_names
+        )
+
+        # Acquisition system name test
+        acq_system_names = [
+            "Carestream Clinic KODAK7500",
+            "Digital Mobile Hospital 01234MOB54",
+        ]
+        self.assertEqual(
+            self.chart_data["acquisitionMeanmAsData"]["data"][0]["name"],
+            acq_system_names[0],
+        )
+        self.assertEqual(
+            self.chart_data["acquisitionMeanmAsData"]["data"][1]["name"],
+            acq_system_names[1],
+        )
+
+        # Check on mean data of series 0
+        acq_data = [[0.0, np.nan, 0.0], [0.0, 9.5, 2.0]]
+        # Check on mean mAs values
+        self.assertTrue(
+            math.isnan(
+                self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"][0][1]
+            )
+        )
+        self.assertAlmostEqual(
+            self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"][1][1],
+            acq_data[1][1],
+        )
+        # Check on counts in the mean data
+        self.assertEqual(
+            self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"][0][2],
+            acq_data[0][2],
+        )
+        self.assertEqual(
+            self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"][1][2],
+            acq_data[1][2],
+        )
+
+        # Check on mean data of series 1
+        acq_data = [[1.0, 2.70666667, 3.0], [1.0, np.nan, 0.0]]
+        # Check on mean mAs values
+        self.assertAlmostEqual(
+            self.chart_data["acquisitionMeanmAsData"]["data"][1]["customdata"][0][1],
+            acq_data[0][1],
+        )
+        self.assertTrue(
+            math.isnan(
+                self.chart_data["acquisitionMeanmAsData"]["data"][1]["customdata"][1][1]
+            )
+        )
+        # Check on counts in the mean data
+        self.assertEqual(
+            self.chart_data["acquisitionMeanmAsData"]["data"][1]["customdata"][0][2],
+            acq_data[0][2],
+        )
+        self.assertEqual(
+            self.chart_data["acquisitionMeanmAsData"]["data"][1]["customdata"][1][2],
+            acq_data[1][2],
+        )
+
+        # Check on median values of series 0
+        acq_data = [[0.0, np.nan, 0.0], [0.0, 9.5, 2.0]]
+        # Check on mean mAs values
+        self.assertTrue(
+            math.isnan(
+                self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"][0][
+                    1
+                ]
+            )
+        )
+        self.assertAlmostEqual(
+            self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"][1][1],
+            acq_data[1][1],
+        )
+        # Check on counts in the mean data
+        self.assertEqual(
+            self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"][0][2],
+            acq_data[0][2],
+        )
+        self.assertEqual(
+            self.chart_data["acquisitionMedianmAsData"]["data"][0]["customdata"][1][2],
+            acq_data[1][2],
+        )
+
+        # Check on median values of series 1
+        acq_data = [[1.0, 2.04, 3.0], [1.0, np.nan, 0.0]]
+        # Check on mean mAs values
+        self.assertAlmostEqual(
+            self.chart_data["acquisitionMedianmAsData"]["data"][1]["customdata"][0][1],
+            acq_data[0][1],
+        )
+        self.assertTrue(
+            math.isnan(
+                self.chart_data["acquisitionMedianmAsData"]["data"][1]["customdata"][1][
+                    1
+                ]
+            )
+        )
+        # Check on counts in the mean data
+        self.assertEqual(
+            self.chart_data["acquisitionMedianmAsData"]["data"][1]["customdata"][0][2],
+            acq_data[0][2],
+        )
+        self.assertEqual(
+            self.chart_data["acquisitionMedianmAsData"]["data"][1]["customdata"][1][2],
+            acq_data[1][2],
+        )
+
+        # Check on the boxplot data system names
+        acq_data = ["Carestream Clinic KODAK7500", "Digital Mobile Hospital 01234MOB54"]
+        self.assertEqual(
+            self.chart_data["acquisitionBoxplotmAsData"]["data"][0]["name"], acq_data[0]
+        )
+        self.assertEqual(
+            self.chart_data["acquisitionBoxplotmAsData"]["data"][1]["name"], acq_data[1]
+        )
+
+        # Check on the boxplot data x-axis values
+        acq_data = ["AEC", "AEC"]
+        self.assertListEqual(
+            list(self.chart_data["acquisitionBoxplotmAsData"]["data"][0]["x"]), acq_data
+        )
+        acq_data = ["ABD_1_VIEW", "ABD_1_VIEW", "ABD_1_VIEW"]
+        self.assertListEqual(
+            list(self.chart_data["acquisitionBoxplotmAsData"]["data"][1]["x"]), acq_data
+        )
+
+        # Check on the boxplot data y-axis values
+        acq_data = [9.0, 10.0]
+        for idx, value in enumerate(acq_data):
+            self.assertAlmostEqual(
+                np.sort(self.chart_data["acquisitionBoxplotmAsData"]["data"][0]["y"])[
+                    idx
+                ],
+                value,
+            )
+
+        acq_data = [1.04, 2.04, 5.04]
+        for idx, value in enumerate(acq_data):
+            self.assertAlmostEqual(
+                np.sort(self.chart_data["acquisitionBoxplotmAsData"]["data"][1]["y"])[
+                    idx
+                ],
+                value,
+            )
+
     def test_acq_freq(self):
         # Test of mean and median DAP, count, system and acquisition protocol names
         # Also tests raw data going into the box plots
-        self.client.login(username="jacob", password="top_secret")
-
-        # I can add to the filter_set to control what type of chart data is calculated
-        filter_set = ""
-
-        f = DXSummaryListFilter(
-            filter_set,
-            queryset=GeneralStudyModuleAttr.objects.filter(
-                Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
-            )
-            .order_by()
-            .distinct(),
-        )
+        f = self.login_get_filterset()
 
         # Set user profile options
-        self.user_profile_reset()
         self.user.userprofile.plotDXAcquisitionFreq = True
         self.user.userprofile.save()
 
