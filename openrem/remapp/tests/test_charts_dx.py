@@ -152,6 +152,172 @@ class ChartsDX(TestCase):
                     y_data[i][j],
                 )
 
+    def test_required_charts(self):
+        from remapp.views_charts_dx import generate_required_dx_charts_list
+
+        f = self.login_get_filterset()
+
+        # Set user profile options to use all charts
+        self.user.userprofile.plotMean = True
+        self.user.userprofile.plotMedian = True
+        self.user.userprofile.plotBoxplots = True
+        self.user.userprofile.plotHistograms = True
+        self.user.userprofile.plotDXAcquisitionMeanDAP = True
+        self.user.userprofile.plotDXAcquisitionFreq = True
+        self.user.userprofile.plotDXAcquisitionDAPvsMass = True
+        self.user.userprofile.plotDXStudyMeanDAP = True
+        self.user.userprofile.plotDXStudyFreq = True
+        self.user.userprofile.plotDXStudyDAPvsMass = True
+        self.user.userprofile.plotDXRequestMeanDAP = True
+        self.user.userprofile.plotDXRequestFreq = True
+        self.user.userprofile.plotDXRequestDAPvsMass = True
+        self.user.userprofile.plotDXAcquisitionMeankVp = True
+        self.user.userprofile.plotDXAcquisitionMeanmAs = True
+        self.user.userprofile.plotDXStudyPerDayAndHour = True
+        self.user.userprofile.plotDXAcquisitionMeankVpOverTime = True
+        self.user.userprofile.plotDXAcquisitionMeanmAsOverTime = True
+        self.user.userprofile.plotDXAcquisitionMeanDAPOverTime = True
+        self.user.userprofile.save()
+
+        required_charts_list = generate_required_dx_charts_list(self.user.userprofile)
+
+        reference_list = [
+            {
+                "title": "Chart of mean DAP for each acquisition protocol",
+                "var_name": "acquisitionMeanDAP",
+            },
+            {
+                "title": "Chart of median DAP for each acquisition protocol",
+                "var_name": "acquisitionMedianDAP",
+            },
+            {
+                "title": "Boxplot of DAP for each acquisition protocol",
+                "var_name": "acquisitionBoxplotDAP",
+            },
+            {
+                "title": "Histogram of DAP for each acquisition protocol",
+                "var_name": "acquisitionHistogramDAP",
+            },
+            {
+                "title": "Chart of acquisition protocol frequency",
+                "var_name": "acquisitionFrequency",
+            },
+            {
+                "title": "Chart of mean DAP for each study description",
+                "var_name": "studyMeanDAP",
+            },
+            {
+                "title": "Chart of median DAP for each study description",
+                "var_name": "studyMedianDAP",
+            },
+            {
+                "title": "Boxplot of DAP for each study description",
+                "var_name": "studyBoxplotDAP",
+            },
+            {
+                "title": "Histogram of DAP for each study description",
+                "var_name": "studyHistogramDAP",
+            },
+            {
+                "title": "Chart of study description frequency",
+                "var_name": "studyFrequency",
+            },
+            {
+                "title": "Chart of mean DAP for each requested procedure",
+                "var_name": "requestMeanDAP",
+            },
+            {
+                "title": "Chart of median DAP for each requested procedure",
+                "var_name": "requestMedianDAP",
+            },
+            {
+                "title": "Boxplot of DAP for each requested procedure",
+                "var_name": "requestBoxplotDAP",
+            },
+            {
+                "title": "Histogram of DAP for each requested procedure",
+                "var_name": "requestHistogramDAP",
+            },
+            {
+                "title": "Chart of requested procedure frequency",
+                "var_name": "requestFrequency",
+            },
+            {
+                "title": "Chart of mean kVp for each acquisition protocol",
+                "var_name": "acquisitionMeankVp",
+            },
+            {
+                "title": "Chart of median kVp for each acquisition protocol",
+                "var_name": "acquisitionMediankVp",
+            },
+            {
+                "title": "Boxplot of kVp for each acquisition protocol",
+                "var_name": "acquisitionBoxplotkVp",
+            },
+            {
+                "title": "Histogram of DAP for each acquisition protocol",
+                "var_name": "acquisitionHistogramkVp",
+            },
+            {
+                "title": "Chart of mean mAs for each acquisition protocol",
+                "var_name": "acquisitionMeanmAs",
+            },
+            {
+                "title": "Chart of median mAs for each acquisition protocol",
+                "var_name": "acquisitionMedianmAs",
+            },
+            {
+                "title": "Boxplot of mAs for each acquisition protocol",
+                "var_name": "acquisitionBoxplotmAs",
+            },
+            {
+                "title": "Histogram of DAP for each acquisition protocol",
+                "var_name": "acquisitionHistogrammAs",
+            },
+            {
+                "title": "Chart of study description workload",
+                "var_name": "studyWorkload",
+            },
+            {
+                "title": "Chart of mean kVp per acquisition protocol over time (M)",
+                "var_name": "acquisitionMeankVpOverTime",
+            },
+            {
+                "title": "Chart of median kVp per acquisition protocol over time (M)",
+                "var_name": "acquisitionMediankVpOverTime",
+            },
+            {
+                "title": "Chart of mean mAs per acquisition protocol over time (M)",
+                "var_name": "acquisitionMeanmAsOverTime",
+            },
+            {
+                "title": "Chart of median mAs per acquisition protocol over time (M)",
+                "var_name": "acquisitionMedianmAsOverTime",
+            },
+            {
+                "title": "Chart of mean DAP per acquisition protocol over time (M)",
+                "var_name": "acquisitionMeanDAPOverTime",
+            },
+            {
+                "title": "Chart of median DAP per acquisition protocol over time (M)",
+                "var_name": "acquisitionMedianDAPOverTime",
+            },
+            {
+                "title": "Chart of acquisition protocol DAP vs patient mass",
+                "var_name": "acquisitionDAPvsMass",
+            },
+            {
+                "title": "Chart of study description DAP vs patient mass",
+                "var_name": "studyDAPvsMass",
+            },
+            {
+                "title": "Chart of requested procedure DAP vs patient mass",
+                "var_name": "requestDAPvsMass",
+            },
+        ]
+
+        self.assertListEqual(required_charts_list, reference_list)
+
     def test_acq_dap(self):
         # Test of mean and median DAP, count, system and acquisition protocol names
         # Also tests raw data going into the box plots
