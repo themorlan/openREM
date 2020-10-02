@@ -544,3 +544,51 @@ class ChartsDX(TestCase):
         request_data = [[1, 1]]
         chart_data = self.chart_data["requestFrequencyData"]["data"]
         self.check_frequencies(request_data, chart_data)
+
+    def test_study_freq(self):
+        # Test of mean and median DAP, count, system and study description names
+        # Also tests raw data going into the box plots
+        f = self.login_get_filterset()
+
+        # Set user profile options
+        self.user.userprofile.plotDXStudyFreq = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        # study name and system name test
+        study_system_names = ["All systems"]
+        study_names = ["AEC", "Abdomen"]
+        chart_data = self.chart_data["studyFrequencyData"]["data"]
+        self.check_series_and_category_names(
+            study_system_names, study_names, chart_data
+        )
+
+        # The frequency chart - frequencies
+        study_data = [[1], [1]]
+        chart_data = self.chart_data["studyFrequencyData"]["data"]
+        self.check_frequencies(study_data, chart_data)
+
+        # Repeat the above, but plot a series per system
+        self.user.userprofile.plotSeriesPerSystem = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        # study name and system name test
+        study_system_names = [
+            "Carestream Clinic KODAK7500",
+            "Digital Mobile Hospital 01234MOB54",
+        ]
+        study_names = ["AEC", "Abdomen"]
+        chart_data = self.chart_data["studyFrequencyData"]["data"]
+        self.check_series_and_category_names(
+            study_system_names, study_names, chart_data
+        )
+
+        # The frequency chart - frequencies
+        study_data = [[1, 0], [0, 1]]
+        chart_data = self.chart_data["studyFrequencyData"]["data"]
+        self.check_frequencies(study_data, chart_data)
