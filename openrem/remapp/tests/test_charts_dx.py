@@ -395,3 +395,104 @@ class ChartsDX(TestCase):
         acq_data = [[0, 3], [2, 0]]
         chart_data = self.chart_data["acquisitionFrequencyData"]["data"]
         self.check_frequencies(acq_data, chart_data)
+
+    def test_request_dap(self):
+        # Test of mean and median DAP, count, system and requested procedure protocol names
+        # Also tests raw data going into the box plots
+        f = self.login_get_filterset()
+
+        # Set user profile options
+        self.user.userprofile.plotDXRequestMeanDAP = True
+        self.user.userprofile.plotMean = True
+        self.user.userprofile.plotMedian = True
+        self.user.userprofile.plotBoxplots = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        # requested procedure name and system name test
+        request_system_names = ["All systems"]
+        request_names = ["Blank"]
+        chart_data = self.chart_data["requestMeanDAPData"]["data"]
+        self.check_series_and_category_names(
+            request_names, request_system_names, chart_data
+        )
+
+        # Check on mean DAP values and counts
+        request_data = [[0.0, 122.25, 2.0]]
+        chart_data = self.chart_data["requestMeanDAPData"]["data"][0]["customdata"]
+        self.check_avg_and_counts(request_data, chart_data)
+
+        # Check on median DAP values and counts
+        request_data = [[0.0, 122.25, 2.0]]
+        chart_data = self.chart_data["requestMedianDAPData"]["data"][0]["customdata"]
+        self.check_avg_and_counts(request_data, chart_data)
+
+        # Check on the boxplot data system names
+        request_data = "All systems"
+        self.assertEqual(
+            self.chart_data["requestBoxplotDAPData"]["data"][0]["name"], request_data
+        )
+
+        # Check the boxplot x and y data values
+        request_x_data = [["Blank", "Blank"]]
+        request_y_data = [[32.8, 211.7]]
+        chart_data = self.chart_data["requestBoxplotDAPData"]["data"]
+        self.check_boxplot_xy(request_x_data, request_y_data, chart_data)
+
+        # Repeat the above, but plot a series per system
+        self.user.userprofile.plotSeriesPerSystem = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        # request name and system name test
+        request_system_names = [
+            "Carestream Clinic KODAK7500",
+            "Digital Mobile Hospital 01234MOB54",
+        ]
+        request_names = ["Blank"]
+        chart_data = self.chart_data["requestMeanDAPData"]["data"]
+        self.check_series_and_category_names(
+            request_names, request_system_names, chart_data
+        )
+
+        # Check on mean data of series 0
+        request_data = [[0.0, 211.7, 1.0]]
+        chart_data = self.chart_data["requestMeanDAPData"]["data"][0]["customdata"]
+        self.check_avg_and_counts(request_data, chart_data)
+
+        # Check on mean data of series 1
+        request_data = [[1.0, 32.8, 1.0]]
+        chart_data = self.chart_data["requestMeanDAPData"]["data"][1]["customdata"]
+        self.check_avg_and_counts(request_data, chart_data)
+
+        # Check on median values of series 0
+        request_data = [[0.0, 211.7, 1.0]]
+        chart_data = self.chart_data["requestMedianDAPData"]["data"][0]["customdata"]
+        self.check_avg_and_counts(request_data, chart_data)
+
+        # Check on median values of series 1
+        request_data = [[1.0, 32.8, 1.0]]
+        chart_data = self.chart_data["requestMedianDAPData"]["data"][1]["customdata"]
+        self.check_avg_and_counts(request_data, chart_data)
+
+        # Check on the boxplot data system names
+        request_data = [
+            "Carestream Clinic KODAK7500",
+            "Digital Mobile Hospital 01234MOB54",
+        ]
+        self.assertEqual(
+            self.chart_data["requestBoxplotDAPData"]["data"][0]["name"], request_data[0]
+        )
+        self.assertEqual(
+            self.chart_data["requestBoxplotDAPData"]["data"][1]["name"], request_data[1]
+        )
+
+        # Check the boxplot x and y data values
+        request_x_data = [["Blank"], ["Blank"]]
+        request_y_data = [[211.7], [32.8]]
+        chart_data = self.chart_data["requestBoxplotDAPData"]["data"]
+        self.check_boxplot_xy(request_x_data, request_y_data, chart_data)
