@@ -33,9 +33,13 @@ Code syntax in strings
 
 Be careful not to edit code syntax within strings. For example, Python code might be:
 
+.. code-block:: none
+
     Writing study {row} of {numrows} to All data sheet and individual protocol sheets
 
 This is translated into Norwegian Bokmål as:
+
+.. code-block:: none
 
     Skriver studie av {row} av {numrows} til alle datablad og individuelle protokollblader
 
@@ -44,9 +48,13 @@ correct grammar for the language being used.
 
 Similarly with Django HTML template strings:
 
+.. code-block:: none
+
     Number in last %(day_delta)s days
 
 becomes:
+
+.. code-block:: none
 
     Antall de siste %(day_delta)s dagene
 
@@ -54,7 +62,7 @@ It is essential that the ``%()s`` as well as the string inside the brackets stay
 
 For the RTD translations, there will be Sphinx codes that should be left untranslated, for example:
 
-.. code-block::
+.. code-block:: none
 
     :ref:`genindex`
 
@@ -65,7 +73,7 @@ Developers
 Install pre-requisites
 ----------------------
 
-``gettext``
+**gettext**
 
 Linux:
 
@@ -78,7 +86,7 @@ or equivalent for your distribution.
 Windows: download
 `a precompiled binary installer <https://mlocati.github.io/articles/gettext-iconv-windows.html>`_
 
-``sphinx-intl``
+**sphinx-intl**
 
 Activate development environment - see :doc:`code_dev_env` for details - and add the sphinx packages:
 
