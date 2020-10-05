@@ -75,15 +75,7 @@ Install pre-requisites
 
 **gettext**
 
-Linux:
-
-.. code-block:: console
-
-    $ sudo apt install gettext
-
-or equivalent for your distribution.
-
-Windows: download
+Linux: ``sudo apt install gettext`` or equivalent for your distribution. For Windows: download
 `a precompiled binary installer <https://mlocati.github.io/articles/gettext-iconv-windows.html>`_
 
 **sphinx-intl**
