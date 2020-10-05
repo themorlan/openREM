@@ -17,9 +17,9 @@ Translators
 * Create an account at https://hosted.weblate.org
 * The OpenREM project is at https://hosted.weblate.org/projects/openrem/
 * Each page in the Read The Docs documentation (https://docs.openrem.org) is a separate 'component' in Weblate, and they
-have been named 'RTD document name'. The web interface strings are all in one 'component'.
+  have been named 'RTD document name'. The web interface strings are all in one 'component'.
 * Choose a component, and on the next page you can select one of the existing translations which you can review, edit
-and propose new translation strings.
+  and propose new translation strings.
 * Once approved, they will be merged in by developers
 
 Creating new language translations

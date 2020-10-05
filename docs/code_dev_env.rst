@@ -2,10 +2,10 @@
 Creating a development environment
 ##################################
 
-Install Python 3.6+, preferably Python 3.8 - check your Linux distribution docs to see how to install a particular
+Install Python 3.6+, preferably Python 3.8: check your Linux distribution docs to see how to install a particular
 version; for Windows go to https://www.python.org/downloads/
 
-Install git - ``sudo apt install git`` or equivalent on Linux; for Windows go to https://git-scm.com/download/win
+Install git: ``sudo apt install git`` or equivalent on Linux; for Windows go to https://git-scm.com/download/win
 
 *Recommended* - install an integrated development environment such as `PyCharm <https://www.jetbrains.com/pycharm/>`_
 or `Visual Studio Code <https://code.visualstudio.com/>`_ (many others are available).
@@ -43,6 +43,7 @@ Install the Python libraries
 ============================
 
 Assumes:
+
 * git repository is in a sub-folder called ``openrem`` - change as necessary
 * venv is activated
 
