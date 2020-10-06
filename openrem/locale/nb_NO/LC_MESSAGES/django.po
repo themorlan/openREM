@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 18:34+0100\n"
-"PO-Revision-Date: 2020-09-27 14:30+0000\n"
+"PO-Revision-Date: 2020-10-06 22:10+0000\n"
 "Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/openrem/"
 "web-interface/nb_NO/>\n"
@@ -161,16 +161,13 @@ msgid "Number in last %(day_delta)s days"
 msgstr "Antall de siste %(day_delta)s dagene"
 
 #: remapp/templates/remapp/home.html:64
-#, fuzzy, python-format
-#| msgid ""
-#| "There are %(total_studies)s studies in this database. Page last refreshed "
-#| "on %(current_time)s."
+#, python-format
 msgid ""
 "There are %(total_studies)s studies in this database. Page last refreshed on "
 "%(current_time)s"
 msgstr ""
 "Det er %(total_studies)s studier i denne databasen. Side sist oppdatert "
-"%(current_time)s."
+"%(current_time)s"
 
 #: remapp/templates/remapp/home.html:69
 msgid "Chart plotting on."
