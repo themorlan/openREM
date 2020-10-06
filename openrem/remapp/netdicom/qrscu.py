@@ -1139,7 +1139,7 @@ def _query_for_each_modality(all_mods, query, d, assoc):
             for mod in details["mods"]:
                 if modality_matching:
                     query.stage = _(
-                        "Currently querying for {modality} studies...".format(
+                        "Currently querying for {modality} studies…".format(
                             modality=mod
                         )
                     )
