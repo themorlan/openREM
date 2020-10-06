@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-04 21:08+0100\n"
+"POT-Creation-Date: 2020-10-06 22:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -132,6 +132,143 @@ msgstr ""
 #, python-brace-format
 msgid ""
 "Removing duplicates of previous objects removed {duplicates_removed} studies."
+msgstr ""
+
+#: openrem/remapp/templates/base.html:52
+msgid "CT"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:56
+msgid "Fluoroscopy"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:60
+msgid "Mammography"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:64
+msgid "Radiography"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:76
+msgid "Imports"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:80
+msgid "Import patient size info"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:83
+msgid "Previous patient size imports"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:86
+msgid "Query remote server"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:95
+msgid "Exports"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:102
+msgid "Config"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:105
+msgid "User level config"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:106
+msgid "Chart options"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:107
+msgid "Switch charts off"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:109
+msgid "View display names & modality"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:110
+msgid "View not-patient indicators"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:114
+msgid "Home page options"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:119
+msgid "System level settings"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:120
+msgid "Users"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:121
+msgid "Display names & modality"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:122
+msgid "DICOM object deletion"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:123
+msgid "DICOM networking"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:124
+msgid "Patient ID"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:125
+msgid "Not-patient indicators"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:126
+msgid "Skin dose map"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:127
+msgid "Fluoro alert levels"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:128
+msgid "Fluoro alert notification"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:129
+msgid "Tasks"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:144
+msgid "User"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:150
+msgid "Change password"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:151
+msgid "Logout"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:154
+msgid "Login"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:161
+msgid "Docs"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:168
+msgid "OpenREM documentation - opens in a new tab"
+msgstr ""
+
+#: openrem/remapp/templates/base.html:169
+#, python-format
+msgid "OpenREM Documentation (%(docsversion)s)"
 msgstr ""
 
 #: openrem/remapp/templates/remapp/home-list-modalities.html:7
