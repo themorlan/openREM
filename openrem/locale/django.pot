@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-06 22:48+0100\n"
+"POT-Creation-Date: 2020-10-07 06:42+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,7 +73,7 @@ msgstr ""
 
 #: openrem/remapp/netdicom/qrscu.py:1142
 #, python-brace-format
-msgid "Currently querying for {modality} studies..."
+msgid "Currently querying for {modality} studies…"
 msgstr ""
 
 #: openrem/remapp/netdicom/qrscu.py:1501
