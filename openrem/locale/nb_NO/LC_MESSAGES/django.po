@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-07 06:42+0100\n"
-"PO-Revision-Date: 2020-10-06 22:10+0000\n"
+"PO-Revision-Date: 2020-10-07 10:39+0000\n"
 "Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/openrem/"
 "web-interface/nb_NO/>\n"
@@ -183,10 +183,8 @@ msgid "User level config"
 msgstr ""
 
 #: openrem/remapp/templates/base.html:106
-#, fuzzy
-#| msgid "Chart plotting on."
 msgid "Chart options"
-msgstr "Diagramplotting påslått."
+msgstr ""
 
 #: openrem/remapp/templates/base.html:107
 msgid "Switch charts off"
