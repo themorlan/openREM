@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-07 06:42+0100\n"
-"PO-Revision-Date: 2020-10-06 22:10+0000\n"
+"PO-Revision-Date: 2020-10-07 10:39+0000\n"
 "Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/openrem/web-"
-"interface/de/>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/openrem/"
+"web-interface/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -183,10 +183,8 @@ msgid "User level config"
 msgstr ""
 
 #: openrem/remapp/templates/base.html:106
-#, fuzzy
-#| msgid "Chart plotting on."
 msgid "Chart options"
-msgstr "Diagramm-Plotten auf."
+msgstr ""
 
 #: openrem/remapp/templates/base.html:107
 msgid "Switch charts off"
