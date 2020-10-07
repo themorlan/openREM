@@ -97,7 +97,10 @@ Activate the development environment and move to the root of the OpenREM reposit
 
     $ sphinx-build -b gettext docs/ docs/_build/gettext
     $ sphinx-intl update -p docs/_build/gettext
-    $ django-admin makemessages --keep-pot
+    $ django-admin makemessages -a --keep-pot
+
+*Note* If this doesn't change the openrem/locale/*/LC_MESSAGES/django.po files, you need to repeat the last command
+but replace ``-a`` with each of the languages currently available, eg ``-l de -l nb_NO``
 
 Adding new interface strings for translation
 --------------------------------------------
