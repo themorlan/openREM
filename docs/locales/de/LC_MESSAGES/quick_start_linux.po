@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-04 12:05+0100\n"
-"PO-Revision-Date: 2020-10-08 21:31+0000\n"
+"PO-Revision-Date: 2020-10-08 21:43+0000\n"
 "Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/openrem/"
 "rtd-installation-linux-non-docker/de/>\n"
@@ -93,6 +93,7 @@ msgstr ""
 "ansonsten startet ``rabbitmq-server`` nach der Installation nicht:"
 
 #: ../../quick_start_linux.rst:31 335483e083134d0e98c3bcd192e7b701
+#, fuzzy
 msgid ""
 "Modify the content to ensure the following two lines are present -- "
 "**substitute the correct server hostname on the second line**::"
@@ -107,7 +108,6 @@ msgstr ""
 "``Ctrl-x`` für Ende = e[x]it"
 
 #: ../../quick_start_linux.rst:39 54b90c71b3c247b0bb90a7eb53760d93
-#, fuzzy
 msgid "**Apt sources**"
 msgstr "**Apt sources**"
 
@@ -128,7 +128,6 @@ msgstr ""
 "sources.list``) hinzufügen."
 
 #: ../../quick_start_linux.rst:54 62d7a7fd35d54eb5ad1ad1cddc56309b
-#, fuzzy
 msgid "**Groups**"
 msgstr "**Groups**"
 
