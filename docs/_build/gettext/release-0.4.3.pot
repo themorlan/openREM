@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,286 +17,226 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../release-0.4.3.rst:2
-#: 4e330e2a600b4ebdb9b40fe0e6292764
 msgid "OpenREM Release Notes version 0.4.3"
 msgstr ""
 
 #: ../../release-0.4.3.rst:5
-#: 755547ce36ab4c2d9e7d1406a810d93d
 msgid "Headline changes"
 msgstr ""
 
 #: ../../release-0.4.3.rst:8
-#: 8a9563ac4bde4e7c81d8eb7cfc84dbb5
 msgid "Export of study information is now handled by a task queue - no more export time-outs."
 msgstr ""
 
 #: ../../release-0.4.3.rst:9
-#: f43dbe3fa9e248818b65bd75b6958d58
 msgid "Patient size information in csv files can now be uploaded and imported via a web interface."
 msgstr ""
 
 #: ../../release-0.4.3.rst:10
-#: 5d225f9330b045c187151d0f8ad93253
 msgid "Proprietary projection image object created by Hologic tomography units can now be interrogated for details of the tomosynthesis exam."
 msgstr ""
 
 #: ../../release-0.4.3.rst:11
-#: 94a32b1b1cb541cc997df9c237c005db
 msgid "Settings.py now ships with its proper name, this will overwrite important local settings if upgrade is from 0.3.9 or earlier."
 msgstr ""
 
 #: ../../release-0.4.3.rst:12
-#: 1a76ec92669140118eeac9ab7c43f24b
 msgid "Time since last study is no longer wrong just because of daylight saving time!"
 msgstr ""
 
 #: ../../release-0.4.3.rst:13
-#: 510da0d0709a41c988e7630a5573c962
 msgid "Django release set to 1.6; OpenREM isn't ready for Django 1.7 yet"
 msgstr ""
 
 #: ../../release-0.4.3.rst:14
-#: 7ade36ceb64b4052bf4d92e5d50d5116
 msgid "The inner ``openrem`` Django project folder is now called ``openremproject`` to avoid import conflicts with Celery on Windows"
 msgstr ""
 
 #: ../../release-0.4.3.rst:15
-#: 99ae174c4f37458592bf109e9d2d16e2
 msgid "DEBUG mode now defaults to False"
 msgstr ""
 
 #: ../../release-0.4.3.rst:18
-#: e68b610c836243369f5b153e890ca645
 msgid "Specific upgrade instructions"
 msgstr ""
 
 #: ../../release-0.4.3.rst:20
-#: 21a4a39ccacd4a0eab77497411473ac5
 msgid "**Always make sure you have converted your database to South before attempting an upgrade**"
 msgstr ""
 
 #: ../../release-0.4.3.rst:22
-#: 9b0dad731a5d45d49a9a2d7cd0fd6684
 msgid "Quick reminder of how, if you haven't done it already:"
 msgstr ""
 
 #: ../../release-0.4.3.rst:24
 #: ../../release-0.4.3.rst:148
 #: ../../release-0.4.3.rst:186
-#: 0b8da268244a4c679752897b8924b646
-#: a83b10106b774ff9a33484df52aecf78
-#: b45b2ba06e1c462fbbb3eeae615af651
 msgid "Linux::"
 msgstr ""
 
 #: ../../release-0.4.3.rst:28
 #: ../../release-0.4.3.rst:153
 #: ../../release-0.4.3.rst:191
-#: 4ddca646472f4d3dbb3b02ed971531c6
-#: bad03940838340db8d9959910cc0def4
-#: 2be991d9ed704586aaa8da2e5dc529f3
 msgid "Windows::"
 msgstr ""
 
 #: ../../release-0.4.3.rst:33
-#: 361650d4fcdd4dc09e6f3be28c8f1e88
 msgid "Upgrading from 0.3.9 or earlier"
 msgstr ""
 
 #: ../../release-0.4.3.rst:35
-#: 3d7df531cd094c54b777ab5780ed49b7
 msgid "**It is essential that you upgrade to at least 0.4.0 first**, then upgrade to 0.4.3. Otherwise the settings file will be overwritten and you will lose your database settings. There is also a trickier than usual database migration and instructions for setting up users. *Fresh installs should start with the latest version.*"
 msgstr ""
 
 #: ../../release-0.4.3.rst:41
-#: e47d41f7af534ba5a136fb73a19ba7e9
 msgid "Upgrade to version 0.4.2"
 msgstr ""
 
 #: ../../release-0.4.3.rst:47
 #: ../../release-0.4.3.rst:62
-#: da549a8d46c14cdf89a0973028cc3aa9
-#: 01b95652555545cdaef6c65dbde4340a
 msgid "(Will need ``sudo`` or equivalent if using linux without a virtualenv)"
 msgstr ""
 
 #: ../../release-0.4.3.rst:49
-#: bb039d4f2ead4d508b9349e9d7d50240
 msgid "Then follow the instructions in :doc:`release-0.4.0` from migrating the database onwards, before coming back to these instructions."
 msgstr ""
 
 #: ../../release-0.4.3.rst:54
-#: 9fbdb36fce7a4f52a61182ea086a3101
 msgid "Upgrading from 0.4.0 or above"
 msgstr ""
 
 #: ../../release-0.4.3.rst:57
-#: 8562643b800049619e3c258d1ee9e636
 msgid "Install OpenREM version 0.4.3"
 msgstr ""
 
 #: ../../release-0.4.3.rst:65
-#: 53f6a551df274beda31ddb64809f2fca
 msgid "RabbitMQ"
 msgstr ""
 
 #: ../../release-0.4.3.rst:67
-#: 8847b060ffc84ee6b8245e0967ccf120
 msgid "The message broker RabbitMQ needs to be installed to enable the export and upload features"
 msgstr ""
 
 #: ../../release-0.4.3.rst:69
-#: da9ceeebad0e40b4b3087a313d7b73ef
 msgid "Linux - Follow the guide at http://www.rabbitmq.com/install-debian.html"
 msgstr ""
 
 #: ../../release-0.4.3.rst:70
-#: 03395968ee60431eb913bcdb6f94790b
 msgid "Windows - Follow the guide at http://www.rabbitmq.com/install-windows.html"
 msgstr ""
 
 #: ../../release-0.4.3.rst:73
-#: f0ff7231722d40a088cf52013b5b55a8
 msgid "Move and edit local_settings.py file and wsgi.py files"
 msgstr ""
 
 #: ../../release-0.4.3.rst:74
-#: b520f6abe55448faa5a50279078f4ce4
 msgid "The inner ``openrem`` Django project folder has now been renamed ``openremproject`` to avoid import confusion that prevented Celery working on Windows."
 msgstr ""
 
 #: ../../release-0.4.3.rst:77
-#: 24d3570ec4d64dd693546c4d3cf9c2ed
 msgid "When you upgrade, the ``local_settings.py`` file and the ``wsgi.py`` file will remain in the old ``openrem`` folder. Both need to be moved across to the ``openremproject`` folder, and edited as below."
 msgstr ""
 
 #: ../../release-0.4.3.rst:81
-#: ee14afad4ba34ac9a56abd3fdc74adf4
 msgid "The new and old folders will be found in:"
 msgstr ""
 
 #: ../../release-0.4.3.rst:83
-#: 6ded16e720a345aba8a1c32129cfd52d
 msgid "Linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``"
 msgstr ""
 
 #: ../../release-0.4.3.rst:84
-#: eafc7e7c106f444e85eb69ff50b26965
 msgid "Linux with virtualenv: ``/home/myname/openrem/lib/python2.7/site-packages/openrem/``"
 msgstr ""
 
 #: ../../release-0.4.3.rst:85
-#: c5c009b46537453092e715db09519070
 msgid "Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\``"
 msgstr ""
 
 #: ../../release-0.4.3.rst:89
-#: 3b06d8ed11544fe5ad65e00582364663
 msgid "Edit the local_settings.py file"
 msgstr ""
 
 #: ../../release-0.4.3.rst:91
-#: 4f2ae49bed3648a6839fb069bea26d27
 msgid "The ``MEDIA_ROOT`` path needs to be defined. This is the place where the study exports will be stored for download and where the patient size information csv files will be stored temporarily whilst they are bing processed."
 msgstr ""
 
 #: ../../release-0.4.3.rst:96
-#: 5904d777466948c9ab87a02c012947a3
 msgid "The path set for ``MEDIA_ROOT`` is up to you, but the user that runs the webserver must have read/write access to the location specified because it is the webserver than reads and writes the files. In a debian linux, this is likely to be ``www-data`` for a production install. Remember to use forward slashes in the config file, even for Windows."
 msgstr ""
 
 #: ../../release-0.4.3.rst:102
-#: a81e0318ef3942708679c95f42844f5b
 msgid "Linux example::"
 msgstr ""
 
 #: ../../release-0.4.3.rst:106
-#: 464b79755f074dc995d266ffb2fb49a6
 msgid "Windows example::"
 msgstr ""
 
 #: ../../release-0.4.3.rst:110
-#: 305bf82c4a594b4f819a8c05b77c2058
 msgid "The ``ALLOWED_HOSTS`` needs to be defined, as the ``DEBUG`` mode is now set to ``False``. This needs to contain the server name or IP address that will be used in the URL in the web browser. For example::"
 msgstr ""
 
 #: ../../release-0.4.3.rst:120
-#: 6e953e2cd1ba4a1a828384f5858b9407
 msgid "A dot before a hostname allows for subdomains (eg www.doseserver), a dot after a hostname allows for FQDNs (eg doseserver.ad.trust.nhs.uk). Alternatively, a single ``'*'`` allows any host, but removes the security the feature gives you."
 msgstr ""
 
 #: ../../release-0.4.3.rst:126
-#: 71fd6f594392416a93e00196dd781196
 msgid "Edit the wsgi.py file with the new project folder name"
 msgstr ""
 
 #: ../../release-0.4.3.rst:127
-#: 81cd57c601704e669e2ff131c38adbfa
 msgid "If you aren't using the wsgi.py file as part of your webserver setup, you might like to simply rename the ``wsgi.py.example`` file in the ``openremproject`` folder."
 msgstr ""
 
 #: ../../release-0.4.3.rst:131
-#: 7e490d7953f34bb49f02f9acc86491ef
 msgid "If you are using it, edit the line::"
 msgstr ""
 
 #: ../../release-0.4.3.rst:135
-#: 16a82d03d6ad4cef98ff6d29326f16ce
 msgid "to read::"
 msgstr ""
 
 #: ../../release-0.4.3.rst:140
-#: c49fe0b9dd31436999ba9adf08a8f8c7
 msgid "Tidying up"
 msgstr ""
 
 #: ../../release-0.4.3.rst:141
-#: ec981786ed3545dda9e821d6b831091f
 msgid "Finally, you should delete the old ``openrem`` folder - you might like to take a backup first!"
 msgstr ""
 
 #: ../../release-0.4.3.rst:145
-#: b8aad103d55349e79ea077d152c277b8
 msgid "Database migration"
 msgstr ""
 
 #: ../../release-0.4.3.rst:146
-#: 3678c2d88343404eaf2bd69a6aba2329
 msgid "*Assuming no virtualenv*"
 msgstr ""
 
 #: ../../release-0.4.3.rst:159
-#: df17c14145c8458f8e4ce2d1ce350c1f
 msgid "Web server"
 msgstr ""
 
 #: ../../release-0.4.3.rst:161
-#: 3486f84a306c4a99851a53df4709e481
 msgid "If you are using a production webserver, you will probably need to edit some of the configuration to reflect the change in location of ``settings.py``, for example ``DJANGO_SETTINGS_MODULE = openremproject.settings``, and then restart the web server. You may need to do something similar for the location of ``wsgi.py``."
 msgstr ""
 
 #: ../../release-0.4.3.rst:167
-#: 4e897be67c4a477ea4d047c7aa84a4cc
 msgid "If you are using the built-in test web server (`not for production use`), then the static files will not be served unless you add ``--insecure`` to the command. This is one of the consequences of setting ``DEBUG`` to ``False``::"
 msgstr ""
 
 #: ../../release-0.4.3.rst:176
-#: e288ec03afcb4aac94475cdc3bc47361
 msgid "Start the Celery task queue"
 msgstr ""
 
 #: ../../release-0.4.3.rst:179
-#: 4869dab2d04b4a0c9fbd006b4ef76130
 msgid "The webserver and Celery both need to be able to read and write to the ``MEDIA_ROOT`` location. Therefore you might wish to consider starting Celery using the same user or group as the webserver, and setting the file permissions accordingly."
 msgstr ""
 
 #: ../../release-0.4.3.rst:184
-#: 297fa33ec7714669834fca0af7a9043a
 msgid "For testing, in a new shell: *(assuming no virtualenv)*"
 msgstr ""
 
 #: ../../release-0.4.3.rst:196
-#: a201a7883fa14fc0bd93b7c7c6c656e0
 msgid "For production use, see http://celery.readthedocs.org/en/latest/tutorials/daemonizing.html"
 msgstr ""

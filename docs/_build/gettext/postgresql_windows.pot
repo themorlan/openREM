@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,141 +17,113 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../postgresql_windows.rst:3
-#: f49f6b9b36294e05a5ec7ec197c61e92
 msgid "PostgreSQL database (Windows)"
 msgstr ""
 
 #: ../../postgresql_windows.rst:5
-#: 811bcc3ebb744590a2aaad6612d039b0
 msgid "Original author JA Cole"
 msgstr ""
 
 #: ../../postgresql_windows.rst:8
-#: 8c91a381924d4d5280a34de16e6b8824
 msgid "Get PostgreSQL and the python connector"
 msgstr ""
 
 #: ../../postgresql_windows.rst:10
-#: 0ca381f4e3f44f4f81b278844c9c2168
 msgid "Download the installer from http://www.enterprisedb.com/products-services-training/pgdownload#windows"
 msgstr ""
 
 #: ../../postgresql_windows.rst:11
-#: 8b3f87d2c0404500a1dcdad409455f72
 msgid "Install the Python PostgreSQL connector (activate the virtualenv first if using)::"
 msgstr ""
 
 #: ../../postgresql_windows.rst:18
-#: c554f3a197eb4553b33a12ed3b7e5c15
 msgid "Install PostgreSQL"
 msgstr ""
 
 #: ../../postgresql_windows.rst:20
-#: 99eabc479a9e42ee9834a40ef8926c6b
 msgid "Run the the postgresql installer. It will ask for a location. Ensure the \"data\" directory is *not* under \"Program Files\" as this can cause permissions errors. Enter a superuser password when prompted. Make sure you keep this safe as you will need it."
 msgstr ""
 
 #: ../../postgresql_windows.rst:25
-#: ac6e44c9c9e14bfabf208d7bce93b4a2
 msgid "Create a user and database"
 msgstr ""
 
 #: ../../postgresql_windows.rst:27
-#: 09d8f04ae6284cf598ef3c955b378a89
 msgid "Open pgAdmin"
 msgstr ""
 
 #: ../../postgresql_windows.rst:29
-#: 30a3189c200a45c5bcef464c5b4ec0b0
 msgid "Click on servers to expand"
 msgstr ""
 
 #: ../../postgresql_windows.rst:30
-#: d04a7839f41d45f6a04bb46af98aafdf
 msgid "Double click on PostgreSQL 9.6 (or whichever version you have installed)"
 msgstr ""
 
 #: ../../postgresql_windows.rst:31
-#: a98f2667195a48068aaa7684c3bcee72
 msgid "Enter your superuser password"
 msgstr ""
 
 #: ../../postgresql_windows.rst:32
-#: 6d94a5d91287420896ee257ea493c7f9
 msgid "Right click on \"login roles\" and choose \"New login role\""
 msgstr ""
 
 #: ../../postgresql_windows.rst:33
-#: d67459128f784fa59f0688831dce0af6
 msgid "Create the openremuser (or whatever you want your user to be called) and under \"Definition\" add a password"
 msgstr ""
 
 #: ../../postgresql_windows.rst:34
-#: 003e00c7021b4c0cac55bbac6d75f711
 msgid "Under \"Privileges\" ensure that \"Can login\" and \"Create databases\" are set to \"Yes\""
 msgstr ""
 
 #: ../../postgresql_windows.rst:35
-#: 57191bf793624d13a2bbc51c75ee8bb8
 msgid "Click OK"
 msgstr ""
 
 #: ../../postgresql_windows.rst:36
-#: f04fa6e3f68041839f26bbcd684bae64
 msgid "Right click on databases and choose \"New database\""
 msgstr ""
 
 #: ../../postgresql_windows.rst:37
-#: 2a6f409bb798465eaa1a45acca37cb6b
 msgid "Name the database (openremdb is fine) and assign the the owner to the user you just created"
 msgstr ""
 
 #: ../../postgresql_windows.rst:40
-#: cb35969e93b74f4aaa751a75387c5ec7
 msgid "**If this is your initial install**, you are now ready to install OpenREM, so go to the :doc:`install` docs."
 msgstr ""
 
 #: ../../postgresql_windows.rst:42
-#: 79239943a5c64cde86ce4280dbec00b9
 msgid "If you are replacing a SQLite test install with PostgreSQL, continue here."
 msgstr ""
 
 #: ../../postgresql_windows.rst:45
-#: bf42e55b85694bab9c0733b94a00f2fa
 msgid "Configure OpenREM to use the database"
 msgstr ""
 
 #: ../../postgresql_windows.rst:48
-#: 4ca829bb68524191ad50f01fc5e81ffc
 msgid "Find and edit the settings file (notepad works fine). The path depends on your python install, but could be something like:"
 msgstr ""
 
 #: ../../postgresql_windows.rst:48
-#: 5ddab28d00a94b8db553d2dfe3997cfe
 msgid "``C:\\lib\\python2.7\\site-packages\\openrem\\openremproject\\local_settings.py``"
 msgstr ""
 
 #: ../../postgresql_windows.rst:54
-#: aab2a75dd4144eac87c12a70d92a4311
 msgid "Set the following (changing name, user and password as appropriate):"
 msgstr ""
 
 #: ../../postgresql_windows.rst:51
-#: 166f4b3c62674c3da0286e533d1a8d9c
 msgid "``'ENGINE': 'django.db.backends.postgresql_psycopg2',``"
 msgstr ""
 
 #: ../../postgresql_windows.rst:52
-#: ac06bb152c2b4775adfd70ebee692769
 msgid "``'NAME': 'openremdb',``"
 msgstr ""
 
 #: ../../postgresql_windows.rst:53
-#: dbd0944d9fe24413ae39551160a7dea1
 msgid "``'USER': 'openremuser',``"
 msgstr ""
 
 #: ../../postgresql_windows.rst:54
-#: 54baeeefca39467683b9ee9b505602b4
 msgid "``'PASSWORD': 'openrem_pw',``"
 msgstr ""

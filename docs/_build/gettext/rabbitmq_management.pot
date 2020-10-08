@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,166 +17,133 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../rabbitmq_management.rst:2
-#: 2f31c63c6e16449393f8f5be2932540f
 msgid "Task management"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:3
-#: 00c8d06df2004cdfaca4dfad97640302
 msgid "*New in 0.9*"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:5
-#: 305a88f17c8048428bb943e74031ef6d
 msgid "Contents"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:8
-#: f0644d66d90142e4b6a612618ac413fb
 msgid "Enabling RabbitMQ management"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:10
-#: 48d58ea7c57c45e8a0aa9c4f559e125e
 msgid "Installation instructions were added in 0.9.0. Users upgrading from previous versions should review :ref:`enableRabbitMQ`."
 msgstr ""
 
 #: ../../rabbitmq_management.rst:15
-#: 7b5f442cdf0c4a7a947326701629b8df
 msgid "Viewing task and service statuses"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:22
-#: 9acac86abb0f4c5eb47ef4dfd90ee315
 msgid "Figure 1: The ``Config`` menu (user and admin)"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:24
-#: ef43305af8a9404b822d457c27c98591
 msgid "Users who are logged in with admin rights can use the **Config** menu and choose **Tasks** to see the following:"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:26
-#: 8156cd192f194f54bad03415aea140d0
 msgid "The status of the task message broker, RabbitMQ"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:27
-#: eb0e2d9e064d41e1a6d443c38e610e58
 msgid "The status of the asynchronous task queue, Celery"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:28
-#: b213dbf2a0884c069d6666c6871d03cf
 msgid "The status of the Celery monitoring tool, Flower"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:29
-#: 0d32b29076224de880b3680cbf3024e6
 msgid "How many tasks are waiting in RabbitMQ for a Celery worker to be available"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:30
-#: 0ff905d92eb0403cb95e87fd7a32e6f2
 msgid "A list of the tasks currently being managed by Celery"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:31
-#: 83241cf70cd14cfca3253f5a7b4ee19c
 msgid "A list of previous tasks and their final status"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:38
-#: 7e022125b8004cf6aaf05d55ea605665
 msgid "Figure 2: The task administration page"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:41
-#: 05fe3869b30d4ab78315d946a294b815
 msgid "Service statuses"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:42
-#: e7c8554057704d43b51f70fff0c8c2d2
 msgid "The current status of the services necessary to execute and monitor tasks is displayed in the first section of the page."
 msgstr ""
 
 #: ../../rabbitmq_management.rst:45
-#: 02cf461e3a08467bb28922baa18509be
 msgid "RabbitMQ message broker"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:52
-#: ae454a0d9d754fa9b69c1f94f1e18333
 msgid "Figure 3: RabbitMQ statuses: failed; running, no tasks waiting; running, two tasks waiting"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:54
-#: da2629d2c15145b1939502314f654e53
 msgid "When tasks are created, they are sent to Celery to be processed via a message broker, RabbitMQ. Therefore this service must be running for any of the asynchronous tasks to execute - for example query-retrieve operations and exports. Normal function is indicated with a green status and a tick."
 msgstr ""
 
 #: ../../rabbitmq_management.rst:58
-#: f3beaeb5b8974171bfcfaa21cdfb8a7f
 msgid "When there are Celery workers available to take tasks, they will be passed through immediately and the service status be green as seen in the middle image of Figure 3. When all the Celery workers are busy any additional tasks will be held with the RabbitMQ broker, and an option to purge the queue is made available as in the bottom image in Figure 3."
 msgstr ""
 
 #: ../../rabbitmq_management.rst:63
-#: 0e0b955b77854441a6330734abf2700c
 msgid "Celery asynchronous task queue"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:70
-#: 0a104e7ce9064d9db99024f8fc8078fa
 msgid "Figure 4: Celery statuses: no RabbitMQ; not running; running"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:72
-#: 29aa62170d2f4fdab0b13886dd098ac4
 msgid "Celery is used to manage the tasks that need to be carried out asynchronously. In OpenREM, these tend to be long running tasks such as exports and query-retrieve."
 msgstr ""
 
 #: ../../rabbitmq_management.rst:75
-#: 75cfd13bede84e69914ffb378ceb54ed
 msgid "If RabbitMQ is not running, we can't tell if Celery is running; this is indicated by the first panel in Figure 4. If RabbitMQ is running but Celery isn't, this is indicated by the middle panel in Figure 4."
 msgstr ""
 
 #: ../../rabbitmq_management.rst:78
-#: e71b2de130ad4ab7b3f9595b5c6a2cb4
 msgid "Finally, when Celery is running a green panel with a tick is presented."
 msgstr ""
 
 #: ../../rabbitmq_management.rst:82
-#: bb649bdb2c5d4fa198381064f65d1200
 msgid "Flower - Celery monitoring tool"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:89
-#: 51b27375452b4c5ab5399b655d69047f
 msgid "Figure 5: Flower statuses: not running; running"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:91
-#: ce9ce956cd1e4cf19f20619cefd334f4
 msgid "Flower enables monitoring of the Celery queues so we can see what is currently running, terminate if necessary, and maintain a log of previous tasks and how they finished. Flower logs are reset on restart of the service."
 msgstr ""
 
 #: ../../rabbitmq_management.rst:94
-#: 444018a2e4a246d5b4b3f839b8905751
 msgid "If Flower is not running, the Flower status panel will look like the top half of Figure 5. If it is running, the panel will look like the bottom half of Figure 5."
 msgstr ""
 
 #: ../../rabbitmq_management.rst:99
-#: c99dd9cbafa04df693d7141c84d1a5c1
 msgid "Terminating running tasks"
 msgstr ""
 
 #: ../../rabbitmq_management.rst:101
-#: 0b2d47989edf4cd0ae233312b5dc94f1
 msgid "Active tasks are listed after the service status section, as seen in Figure 2. The number of active tasks is limited by the number of workers you have configured - see :ref:`celery_concurrency` for details."
 msgstr ""
 
 #: ../../rabbitmq_management.rst:104
-#: 9b1d801e76fa44bea01e5c96b5b81f2e
 msgid "It is possible to terminate any running tasks by clicking the red button. There is no confirmation step."
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,196 +17,278 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../translations.rst:3
-#: 160def01b6904c20ab5d977a7dda905d
 msgid "Translating OpenREM strings"
 msgstr ""
 
 #: ../../translations.rst:5
-#: 97941ef8d4904705b5f39aa53cb812ec
 msgid "OpenREM's primary language is British English (en_GB). Users and developers with knowledge of other languages can create translations of the interface strings, export file strings and the documentation. These will then be exposed when the web browser language is set to match the new translation language (OpenREM interface) or when the language is selected for the documentation."
 msgstr ""
 
 #: ../../translations.rst:12
-#: e09f9defd07b4d7da26ea7da2f4a9fbe
 msgid "Web based translations"
 msgstr ""
 
 #: ../../translations.rst:14
-#: 423ac908f17649dc96012522bcb6327a
-msgid "We have applied to https://hosted.weblate.org/ for gratis hosting of this project. If our application is successful, all the translatable strings will be available on that site for translations to be provided, which can then be pulled into the main project."
+msgid "https://hosted.weblate.org/ have granted us gratis hosting of this project. In time, all the translatable strings will be available on that site for translations to be provided, which can then be pulled into the main project."
 msgstr ""
 
-#: ../../translations.rst:18
-#: 3d181f79579141c29bef53406f438e17
+#: ../../translations.rst:17
 msgid "For strings in the OpenREM interface that are not yet marked as translatable, see below."
 msgstr ""
 
-#: ../../translations.rst:20
-#: a20abc3f3f9f475ea0f50255cca5922c
-msgid "All the strings in the documentation are available for translation."
+#: ../../translations.rst:19
+msgid "These documents will be added to Weblate for translations when they are reasonably stable. The first documents are available for translation now."
 msgstr ""
 
 #: ../../translations.rst:23
-#: de545de2b9b7481894659819959552ae
-msgid "Offline translations"
+msgid "Adding to existing translations"
 msgstr ""
 
 #: ../../translations.rst:25
-#: 65a40059a20946ddb39fc3c84bcf0566
-msgid "If you have write access to the OpenREM Bitbucket repository, create a new branch from develop. You can do this on your PC or online. If you don't, go to https://bitbucket.org/openrem/openrem/src/develop/ and click on the ``+`` in the far left bar and fork the repository and clone it to your PC and create a new branch from develop as before."
+msgid "Create an account on https://hosted.weblate.org. You can suggest translation strings anonymously, but we would very much prefer it if you created an account so we can attribute the work and build a relationship!"
 msgstr ""
 
-#: ../../translations.rst:32
-#: dfc3d801ace14f8f950ec88ca970e60f
-msgid "Documentation translations"
+#: ../../translations.rst:28
+msgid "The OpenREM project is at https://hosted.weblate.org/projects/openrem/"
 msgstr ""
 
-#: ../../translations.rst:34
-#: 9e1f7dec88774af0bc8d4ac3eb96e197
-msgid "First you need to install some packages. You will need Python 3.6+, preferably Python 3.8."
+#: ../../translations.rst:30
+msgid "Each page in the Read The Docs documentation (https://docs.openrem.org) is a separate 'component' in Weblate, and they have been named 'RTD document name'. The web interface strings are all in one 'component'."
 msgstr ""
 
-#: ../../translations.rst:36
-#: 1a6674ada4ce4454bc320574d78736db
-msgid "Open a shell/command line in the folder above the repository folder."
+#: ../../translations.rst:33
+msgid "Choose a component, and on the next page you can select one of the existing translations which you can review, edit and propose new translation strings."
 msgstr ""
 
-#: ../../translations.rst:38
-#: 2d4cf094f007411bb7cbcf7c3fd6ec58
-msgid "Linux:"
+#: ../../translations.rst:37
+msgid "Creating new language translations"
+msgstr ""
+
+#: ../../translations.rst:39
+msgid "At the component level, you will see an option to create a new translation. You will need to do this for each component individually I think."
+msgstr ""
+
+#: ../../translations.rst:43
+msgid "Code syntax in strings"
 msgstr ""
 
 #: ../../translations.rst:45
-#: 5a730743a1724d36afc5d8a36583978c
-msgid "Windows PowerShell (for ``cmd.exe`` substitute ``Activate.ps1`` for ``activate.bat``)"
+msgid "Be careful not to edit code syntax within strings. For example, Python code might be:"
 msgstr ""
 
-#: ../../translations.rst:52
-#: 356f45db854e45dfa1626255b12e9428
-msgid "Move into the repository docs folder:"
+#: ../../translations.rst:47
+msgid "Writing study {row} of {numrows} to All data sheet and individual protocol sheets"
+msgstr ""
+
+#: ../../translations.rst:49
+msgid "This is translated into Norwegian Bokmål as:"
+msgstr ""
+
+#: ../../translations.rst:51
+msgid "Skriver studie av {row} av {numrows} til alle datablad og individuelle protokollblader"
+msgstr ""
+
+#: ../../translations.rst:53
+msgid "Notice that the ``{}`` and their contents is unchanged - but may be moved around within the sentence to produce the correct grammar for the language being used."
+msgstr ""
+
+#: ../../translations.rst:56
+msgid "Similarly with Django HTML template strings:"
 msgstr ""
 
 #: ../../translations.rst:58
-#: b67e7184cec34220843b155ef35cb2d1
-msgid "Install the packages from pip:"
+msgid "Number in last %(day_delta)s days"
+msgstr ""
+
+#: ../../translations.rst:60
+msgid "becomes:"
+msgstr ""
+
+#: ../../translations.rst:62
+msgid "Antall de siste %(day_delta)s dagene"
+msgstr ""
+
+#: ../../translations.rst:64
+msgid "It is essential that the ``%()s`` as well as the string inside the brackets stay intact."
 msgstr ""
 
 #: ../../translations.rst:66
-#: fc724d557ab5424ca2c28d4b79f3731e
-msgid "Generate translatable file templates (``.pot`` files):"
+msgid "For the RTD translations, there will be Sphinx codes that should be left untranslated, for example:"
 msgstr ""
 
-#: ../../translations.rst:72
-#: 05a0a7e6cdb146b2ad93abfe61df0718
-msgid "This will leave the generated files in the folder ``_build/gettext``."
+#: ../../translations.rst:73
+msgid "Bringing translations back into Read The Docs and OpenREM"
 msgstr ""
 
-#: ../../translations.rst:74
-#: f4ab640cdd994d69ac404eacf6e2f77e
-msgid "Generate the translation files - for German and Portuguese/Brazil for example:"
+#: ../../translations.rst:75
+msgid "When new strings have been translated, the translation files can be downloaded in a ZIP file. A new branch should be created from ``develop`` - either in the openrem repository or in a fork, and the new files added/existing files replaced. This can be done by anyone, doesn't need to be the person who has done the translations."
 msgstr ""
 
-#: ../../translations.rst:80
-#: 6732661c68b14b8f9b258a9189f7e1e2
-msgid "This will create a ``locale`` folder with a translation file (``.po``) per ``.rst`` file in the documentation per language you requested, like this::"
+#: ../../translations.rst:79
+msgid "The Norwegian Read The Docs Sphinx translation files need to go in the ``no`` folder, not in ``nb_NO`` else Read The Docs doesn't pick them up."
 msgstr ""
 
-#: ../../translations.rst:91
-#: b4142c06d1ff4d83bfa9632d5698aae3
-msgid "These ``.po`` files can now be edited with a text editor or a Po editor such as https://poedit.net/, taking care to retain any reST notation."
+#: ../../translations.rst:83
+msgid "Generating po and pot files for translations"
+msgstr ""
+
+#: ../../translations.rst:85
+msgid "Weblate has the ``develop`` branch available to it currently, so changes to strings need to be in ``develop`` before they can be translated."
+msgstr ""
+
+#: ../../translations.rst:90
+msgid "Documentation strings"
+msgstr ""
+
+#: ../../translations.rst:92
+msgid "First you need to install some packages. You will need Python 3.6+, preferably Python 3.8."
 msgstr ""
 
 #: ../../translations.rst:94
-#: 6ba56d9625fd43eea004d85804990632
-msgid "The new or updated files can now be committed and pushed back to Bitbucket and a pull request created to merge them into develop."
+msgid "Open a shell/command line in the folder above the repository folder."
 msgstr ""
 
-#: ../../translations.rst:97
-#: 3f78241a7f654df584a5a7e8a00188d4
-msgid "To build the documentation in the translated language locally, use the following command (using German as the example):"
+#: ../../translations.rst:96
+msgid "Linux:"
 msgstr ""
 
-#: ../../translations.rst:104
-#: 332d99ecd89f422d8fcc6bdd8b825f20
-msgid "The German documentation will now be in the ``_build/html/de`` folder. Any strings that were not translated will still be in British English, so you don't need to do everything at once."
-msgstr ""
-
-#: ../../translations.rst:108
-#: 821b49263c084dccb7d4b6b052136a35
-msgid "OpenREM interface translations - existing translatable strings"
+#: ../../translations.rst:103
+msgid "Windows PowerShell (for ``cmd.exe`` substitute ``Activate.ps1`` for ``activate.bat``)"
 msgstr ""
 
 #: ../../translations.rst:110
-#: 152fd3900e6c45aeab3571ce44237fbf
-msgid "Using the virtual environment created above, move to the openrem folder within the repository clone, at the same level as ``manage.py``, eg:"
+msgid "Move into the repository docs folder:"
 msgstr ""
 
-#: ../../translations.rst:117
-#: f80c9f8a7532434c961796d3f05b3096
-msgid "Create or update message files, again using German for the example:"
+#: ../../translations.rst:116
+msgid "Install the packages from pip:"
 msgstr ""
 
-#: ../../translations.rst:123
-#: 26c77c3ed8f54b7886d488f8a4cc7e6d
-msgid "All the strings that have been marked for translation in either the python code or the templates will now have been extracted and added/updated a file called ``django.po`` that will be in ``openrem/locale/de/LC_MESSAGES/``"
-msgstr ""
-
-#: ../../translations.rst:127
-#: f30db5f7ca5344d4aa882e8186d097e0
-msgid "*Windows users* - ``makemessages`` requires ``gettext`` to be installed. To create or update the ``.po`` files on Windows, download `a precompiled binary installer <https://mlocati.github.io/articles/gettext-iconv-windows.html>`_"
+#: ../../translations.rst:124
+msgid "Generate translatable file templates (``.pot`` files):"
 msgstr ""
 
 #: ../../translations.rst:130
-#: 75a331652bc14ac6a0504f0f46b5d65a
-msgid "Alternatively, if none of the original strings have been updated or made translatable, you can copy the ``openrem/locale/en/LC_MESSAGES/django.po`` into an appropriately named folder and work on that - it is just an empty translation file."
+msgid "This will leave the translation template ``pot`` files in the folder ``_build/gettext``."
 msgstr ""
 
-#: ../../translations.rst:134
-#: 2367a4451c6f41cbac4aa4e9f4baf0ba
-msgid "As with the documentation ``.po`` files, these can be updated with a text editor or using dedicated software. You can see examples of translated strings in the existing German version. Some strings have translator comments with them, some will have options for plurals, some will have variables in them."
+#: ../../translations.rst:132
+msgid "To generate or update the translation files - for German and Portuguese/Brazil for example (this step probably isn't necessary, it can be done in Weblate):"
 msgstr ""
 
-#: ../../translations.rst:138
-#: e9ddee1fe2824a0c9dae670977c52b7a
-msgid "For Python code strings, the variables will be in brace format and easy to recognise:"
+#: ../../translations.rst:139
+msgid "This will create a ``locale`` folder with a translation file (``.po``) per ``.rst`` file in the documentation per language you requested, like this::"
 msgstr ""
 
-#: ../../translations.rst:152
-#: c77a6ac9d5ba4c1285ae361c0ccc1445
-msgid "This example also demonstrates that for multi-row strings, the first line is an empty pair of double quotes, and the text occurs on the following lines. The original string that will be matched is the ``msgid`` and the new translation is ``msgstr``."
+#: ../../translations.rst:150
+msgid "These ``.po`` files can now be edited with a text editor or a Po editor such as https://poedit.net/, taking care to retain any reST notation."
 msgstr ""
 
-#: ../../translations.rst:156
-#: 86059e8bee8946dea58f8753050efa61
-msgid "For template strings, the ``{{ }}`` braces become ``%( )s`` — it is important to keep the ``s`` at the end. For example:"
+#: ../../translations.rst:153
+msgid "The new or updated files can now be committed and pushed back to Bitbucket and a pull request created to merge them into develop. Or the files can be committed without any further translations to be merged into develop to be translated on Weblate."
+msgstr ""
+
+#: ../../translations.rst:157
+msgid "To build the documentation in the translated language locally, use the following command (using German as the example):"
+msgstr ""
+
+#: ../../translations.rst:164
+msgid "The German documentation will now be in the ``_build/html/de`` folder. Any strings that were not translated will still be in British English, so you don't need to do everything at once."
 msgstr ""
 
 #: ../../translations.rst:168
-#: 4979373279864e40b9fdd361c83552e1
-msgid "This example shows the original string and translation in the same line as ``msgid`` and ``msgstr``. It also shows that this one string is found four times in two templates, but the same string will be replaced in the same way in all four occurances."
+msgid "OpenREM interface translations - existing translatable strings"
 msgstr ""
 
-#: ../../translations.rst:172
-#: 2b82f1a0dabd471f9c162bcd92e3393c
-msgid "When the translations have been completed, they need to be compiled into a binary ``.mo`` file. For testing locally, this is done with the following command, again in the virtual environment in the ``openrem`` folder where ``manage.py`` is:"
+#: ../../translations.rst:170
+msgid "Using the virtual environment created above, move to the openrem folder within the repository clone, at the same level as ``manage.py``, eg:"
 msgstr ""
 
-#: ../../translations.rst:180
-#: 015ad337c3dd41da8c92866907f47c66
-msgid "If you now run your webserver (``runserver`` or using a real webserver), and set your browser language to the language you have created the translations for, the translations should appear."
+#: ../../translations.rst:177
+msgid "Create or update message files, again using German for the example:"
 msgstr ""
 
 #: ../../translations.rst:183
-#: 786be33f4ef34023b11d23d5e30f0285
-msgid "The new locale folders/files should now be committed to the repository and pushed as a new branch to Bitbucket with a Pull Request made to incorporate the changes into the core code."
+msgid "All the strings that have been marked for translation in either the python code or the templates will now have been extracted and added to or updated in a template file called ``django.pot`` and files called ``django.po`` that will be in ``openrem/locale/xx/LC_MESSAGES/`` where ``xx`` is the language code, such as ``de``."
 msgstr ""
 
 #: ../../translations.rst:187
-#: 15fa8e02cd1b486fb2ad473ff8f76fbe
+msgid "*Windows users* - ``makemessages`` requires ``gettext`` to be installed. To create or update the ``.pot`` and ``.po`` files on Windows, download `a precompiled binary installer <https://mlocati.github.io/articles/gettext-iconv-windows.html>`_"
+msgstr ""
+
+#: ../../translations.rst:191
+msgid "As with the documentation ``.po`` files, these can be updated with a text editor or using dedicated software. You can see examples of translated strings in the existing German version. Some strings have translator comments with them, some will have options for plurals, some will have variables in them. Or just create a pull request on Bitbucket and they will be available on Weblate once merged."
+msgstr ""
+
+#: ../../translations.rst:196
+msgid "For local use, when the translations have been completed, they need to be compiled into a binary ``.mo`` file. This is done with the following command, again in the virtual environment in the ``openrem`` folder where ``manage.py`` is:"
+msgstr ""
+
+#: ../../translations.rst:203
+msgid "If you now run your webserver (``runserver`` or using a real webserver), and set your browser language to the language you have created the translations for, the translations should appear."
+msgstr ""
+
+#: ../../translations.rst:206
+msgid "The new locale folders/files should now be committed to the repository and pushed as a new branch to Bitbucket with a Pull Request made to incorporate the changes into the core code."
+msgstr ""
+
+#: ../../translations.rst:210
 msgid "Making strings translatable"
 msgstr ""
 
-#: ../../translations.rst:189
-#: 037b6b149694414387aeac23ee4787e4
-msgid "For now, please refer to https://docs.djangoproject.com/en/2.2/topics/i18n/translation/ for instructions."
+#: ../../translations.rst:212
+msgid "Please refer to https://docs.djangoproject.com/en/2.2/topics/i18n/translation/ for instructions."
+msgstr ""
+
+#: ../../translations.rst:214
+msgid "In brief, the following will help get you started, but does not cover lazy translations, plurals and many other things!"
+msgstr ""
+
+#: ../../translations.rst:216
+msgid "All the Sphinx/Read The Docs strings are translatable - if a page does not appear in Weblate that is because it has not been configured as a component there yet."
+msgstr ""
+
+#: ../../translations.rst:220
+msgid "Python code"
+msgstr ""
+
+#: ../../translations.rst:222
+msgid "First, import ``gettext`` from Django:"
+msgstr ""
+
+#: ../../translations.rst:228
+msgid "Then wrap strings to be translated with ``_()`` so"
+msgstr ""
+
+#: ../../translations.rst:234
+#: ../../translations.rst:270
+msgid "becomes"
+msgstr ""
+
+#: ../../translations.rst:242
+msgid "The same is done for strings that contain variables. Unfortunately ``gettext`` cannot work with f-strings so we are stuck with ``.format()`` instead. It is easier to understand how to translate the text though if we use named variables rather than position based ones, like this:"
+msgstr ""
+
+#: ../../translations.rst:252
+msgid "Remember we cannot assume the grammar of the translated string so try and pass the whole sentence or paragraph to be translated."
+msgstr ""
+
+#: ../../translations.rst:256
+msgid "Template code"
+msgstr ""
+
+#: ../../translations.rst:258
+msgid "Add the following at the top of the template file, just after any ``extends`` code:"
+msgstr ""
+
+#: ../../translations.rst:264
+msgid "This can be done with *inline* translations and *block* translations. For inline,"
+msgstr ""
+
+#: ../../translations.rst:276
+msgid "If there are variables, a block translation is required, for example:"
+msgstr ""
+
+#: ../../translations.rst:287
+msgid "Comments can be added to aid translators, for example:"
 msgstr ""

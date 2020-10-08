@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,201 +17,161 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../code_forms.rst:2
-#: 692ffd10f0ca4b70af633af4033dc629
 msgid "Forms"
 msgstr ""
 
-#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.SizeUploadForm:1
-#: df85d22546fd42f88c1ca5fa29e343c1
-msgid "Form for patient size csv file upload"
-msgstr ""
-
-#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.SizeHeadersForm:1
-#: 3de4a7a240d24ee18c19ab2f6b814665
-msgid "Form for csv column header patient size imports through the web interface"
-msgstr ""
-
-#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.DXChartOptionsForm:1
-#: 6a26ec982e07413e834f79995cb558bc
-msgid "Form for DX chart options"
-msgstr ""
-
-#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.CTChartOptionsForm:1
-#: 70af2a2dd5ff4ee1bb24ea94a17cf141
-msgid "Form for CT chart options"
-msgstr ""
-
-#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.RFChartOptionsForm:1
-#: 09212b406e984fb195ed87dfc7c3826a
-msgid "Form for RF chart options"
-msgstr ""
-
-#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.RFChartOptionsDisplayForm:1
-#: c12799ee943a4663824e49ab123f9157
-msgid "Form for RF chart display options"
-msgstr ""
-
-#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.MGChartOptionsForm:1
-#: 47b5777fdd2f41d3a63b1cec50c8d98a
-msgid "Form for MG chart options"
-msgstr ""
-
-#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.MGChartOptionsDisplayForm:1
-#: 3fb6fd2beec2436596a7313a0dd38ee9
-msgid "Form for MG chart display options"
-msgstr ""
-
-#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.DXChartOptionsDisplayForm:1
-#: f9df46314a1b46cabeebccb400bbcd4b
-msgid "Form for DX chart display options"
-msgstr ""
-
 #: ../../../openrem/remapp/forms.py:docstring of remapp.forms.CTChartOptionsDisplayForm:1
-#: b1321da955a247cd81f887441db9b223
 msgid "Form for CT chart display options"
 msgstr ""
 
-#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.GeneralChartOptionsDisplayForm:1
-#: 9a7e1156b0c646e18e16c32153634d6c
-msgid "Form for general chart display options"
+#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.CTChartOptionsForm:1
+msgid "Form for CT chart options"
 msgstr ""
 
-#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.RFHighDoseFluoroAlertsForm:1
-#: 4c118a52c741493a90ca17182a5770cd
-msgid "Form for displaying and changing fluoroscopy high dose alert settings"
+#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.DXChartOptionsDisplayForm:1
+msgid "Form for DX chart display options"
 msgstr ""
 
-#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.HomepageOptionsForm:1
-#: 53e54b0b4b4841d59ab30409be51ceb8
-msgid "Form for displaying and changing the home page options"
-msgstr ""
-
-#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.MergeOnDeviceObserverUIDForm:1
-#: bc8c54ac81d845a3ac9c07cd065650eb
-msgid "Form for displaying and changing the option for merging on Device Observer UID"
-msgstr ""
-
-#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.DicomQueryForm:1
-#: ab69f1b12df14b20ad9e7a5b81c997c3
-msgid "Form for launching DICOM Query"
-msgstr ""
-
-#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date:1
-#: 4ed753f0732f42b8814d492b97531c14
-msgid "date(year, month, day) --> date object"
-msgstr ""
-
-#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.ctime:1
-#: 9ff4459b28764e2aaa0c5eb9c36441ee
-msgid "Return ctime() style string."
-msgstr ""
-
-#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.fromisocalendar:1
-#: 142d130b2ae943b5af95e80638ea205c
-msgid "int, int, int -> Construct a date from the ISO year, week number and weekday."
-msgstr ""
-
-#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.fromisocalendar:3
-#: 5d186f69e25942cfab79f4f2583a78bd
-msgid "This is the inverse of the date.isocalendar() function"
-msgstr ""
-
-#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.fromisoformat:1
-#: 8c938d2bd46d47419c93ac4d9d0ced70
-msgid "str -> Construct a date from the output of date.isoformat()"
-msgstr ""
-
-#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.fromordinal:1
-#: 874a25c1827e4bfd9ef82e5ebc2642f8
-msgid "int -> date corresponding to a proleptic Gregorian ordinal."
-msgstr ""
-
-#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.fromtimestamp:1
-#: e78f31232b68468f8989b1c31aa93ceb
-msgid "Create a date from a POSIX timestamp."
-msgstr ""
-
-#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.fromtimestamp:3
-#: afaf2a0aa8094f76b66e83cecc8171c2
-msgid "The timestamp is a number, e.g. created via time.time(), that is interpreted as local time."
-msgstr ""
-
-#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.isocalendar:1
-#: 589684601cb54c77b8ef8ff5672794de
-msgid "Return a 3-tuple containing ISO year, week number, and weekday."
-msgstr ""
-
-#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.isoformat:1
-#: 218df6d6d2034fbf903ef80d8e2ce53c
-msgid "Return string in ISO 8601 format, YYYY-MM-DD."
-msgstr ""
-
-#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.isoweekday:1
-#: db331b30d35a4c5d9c1702fbae31d88b
-msgid "Return the day of the week represented by the date. Monday == 1 ... Sunday == 7"
-msgstr ""
-
-#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.replace:1
-#: b65645a6680349e9b96461c49d0d2ed9
-msgid "Return date with new specified fields."
-msgstr ""
-
-#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.strftime:1
-#: b220ca4d041d4e998e2c3b7d6110dee1
-msgid "format -> strftime() style string."
-msgstr ""
-
-#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.timetuple:1
-#: 19801642d0c74eeab589807fe8fb6464
-msgid "Return time tuple, compatible with time.localtime()."
-msgstr ""
-
-#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.today:1
-#: e6954c61f762465e9c8057aca87153ce
-msgid "Current date or datetime:  same as self.__class__.fromtimestamp(time.time())."
-msgstr ""
-
-#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.toordinal:1
-#: 9c22e33137ca4de1a98e997f7a4bce2c
-msgid "Return proleptic Gregorian ordinal.  January 1 of year 1 is day 1."
-msgstr ""
-
-#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.weekday:1
-#: a1db21757c284ad7adde88e544155d25
-msgid "Return the day of the week represented by the date. Monday == 0 ... Sunday == 6"
-msgstr ""
-
-#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.DicomQueryForm.clean:1
-#: f572059ccf3a404ab029e03ec64a0fea
-msgid "Validate the form data to clear modality selections if sr_only is selected. :return: Form with modalities _or_ sr_only selected"
+#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.DXChartOptionsForm:1
+msgid "Form for DX chart options"
 msgstr ""
 
 #: ../../../openrem/remapp/forms.py:docstring of remapp.forms.DicomDeleteSettingsForm:1
-#: c49dea16aa624e8cb780013c7a0c7fec
 msgid "Form for configuring whether DICOM objects are stored or deleted once processed"
 msgstr ""
 
 #: ../../../openrem/remapp/forms.py:docstring of remapp.forms.DicomQRForm:1
-#: a60860dd562045e796c03dd3879728c2
 msgid "Form for configuring remote Query Retrieve nodes"
 msgstr ""
 
+#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.DicomQueryForm:1
+msgid "Form for launching DICOM Query"
+msgstr ""
+
+#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.DicomQueryForm.clean:1
+msgid "Validate the form data to clear modality selections if sr_only is selected. :return: Form with modalities _or_ sr_only selected"
+msgstr ""
+
+#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date:1
+msgid "date(year, month, day) --> date object"
+msgstr ""
+
+#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.ctime:1
+msgid "Return ctime() style string."
+msgstr ""
+
+#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.fromisocalendar:1
+msgid "int, int, int -> Construct a date from the ISO year, week number and weekday."
+msgstr ""
+
+#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.fromisocalendar:3
+msgid "This is the inverse of the date.isocalendar() function"
+msgstr ""
+
+#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.fromisoformat:1
+msgid "str -> Construct a date from the output of date.isoformat()"
+msgstr ""
+
+#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.fromordinal:1
+msgid "int -> date corresponding to a proleptic Gregorian ordinal."
+msgstr ""
+
+#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.fromtimestamp:1
+msgid "Create a date from a POSIX timestamp."
+msgstr ""
+
+#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.fromtimestamp:3
+msgid "The timestamp is a number, e.g. created via time.time(), that is interpreted as local time."
+msgstr ""
+
+#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.isocalendar:1
+msgid "Return a 3-tuple containing ISO year, week number, and weekday."
+msgstr ""
+
+#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.isoformat:1
+msgid "Return string in ISO 8601 format, YYYY-MM-DD."
+msgstr ""
+
+#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.isoweekday:1
+msgid "Return the day of the week represented by the date. Monday == 1 ... Sunday == 7"
+msgstr ""
+
+#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.replace:1
+msgid "Return date with new specified fields."
+msgstr ""
+
+#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.strftime:1
+msgid "format -> strftime() style string."
+msgstr ""
+
+#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.timetuple:1
+msgid "Return time tuple, compatible with time.localtime()."
+msgstr ""
+
+#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.today:1
+msgid "Current date or datetime:  same as self.__class__.fromtimestamp(time.time())."
+msgstr ""
+
+#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.toordinal:1
+msgid "Return proleptic Gregorian ordinal.  January 1 of year 1 is day 1."
+msgstr ""
+
+#: ../../../../../../../usr/lib/python3.8/datetime.py:docstring of remapp.forms.DicomQueryForm.date.weekday:1
+msgid "Return the day of the week represented by the date. Monday == 0 ... Sunday == 6"
+msgstr ""
+
 #: ../../../openrem/remapp/forms.py:docstring of remapp.forms.DicomStoreForm:1
-#: 6858b5e24d9a40d9bab36f90c276b135
 msgid "Form for configuring local Store nodes"
 msgstr ""
 
-#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.SkinDoseMapCalcSettingsForm:1
-#: 3e91a516665d4688b1475dd28fa00588
-msgid "Form for configuring whether skin dose maps are shown / calculated"
+#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.GeneralChartOptionsDisplayForm:1
+msgid "Form for general chart display options"
 msgstr ""
 
-#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.NotPatientNameForm:1
-#: 4ec20e03194a4148967b3583678976a6
-msgid "Form for configuring not-patient name patterns"
+#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.HomepageOptionsForm:1
+msgid "Form for displaying and changing the home page options"
+msgstr ""
+
+#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.MGChartOptionsDisplayForm:1
+msgid "Form for MG chart display options"
+msgstr ""
+
+#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.MGChartOptionsForm:1
+msgid "Form for MG chart options"
+msgstr ""
+
+#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.MergeOnDeviceObserverUIDForm:1
+msgid "Form for displaying and changing the option for merging on Device Observer UID"
 msgstr ""
 
 #: ../../../openrem/remapp/forms.py:docstring of remapp.forms.NotPatientIDForm:1
-#: abba85f68c5649248a675abcafd969b7
 msgid "Form for configuring not-patient ID patterns"
+msgstr ""
+
+#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.NotPatientNameForm:1
+msgid "Form for configuring not-patient name patterns"
+msgstr ""
+
+#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.RFChartOptionsDisplayForm:1
+msgid "Form for RF chart display options"
+msgstr ""
+
+#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.RFChartOptionsForm:1
+msgid "Form for RF chart options"
+msgstr ""
+
+#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.RFHighDoseFluoroAlertsForm:1
+msgid "Form for displaying and changing fluoroscopy high dose alert settings"
+msgstr ""
+
+#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.SizeHeadersForm:1
+msgid "Form for csv column header patient size imports through the web interface"
+msgstr ""
+
+#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.SizeUploadForm:1
+msgid "Form for patient size csv file upload"
+msgstr ""
+
+#: ../../../openrem/remapp/forms.py:docstring of remapp.forms.SkinDoseMapCalcSettingsForm:1
+msgid "Form for configuring whether skin dose maps are shown / calculated"
 msgstr ""

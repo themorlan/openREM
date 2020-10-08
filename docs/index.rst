@@ -1,6 +1,6 @@
-###################################
-Welcome to OpenREM's documentation!
-###################################
+##################################
+Welcome to OpenREM's documentation
+##################################
 
 .. image:: openrem0105.png
     :width: 105px
@@ -19,11 +19,10 @@ These docs are for the version of OpenREM currently in development. For the curr
 see https://docs.openrem.org/
 
 These docs are in British English - if you want to help translate them into other languages please
-get in touch:
-
-* `@_OpenREM <https://twitter.com/_OpenREM>`_
-* `Bitbucket <https://bitbucket.org/openrem/openrem/issues/855/add-other-languages-as-people-volunteer>`_
-* `Google Groups <mailto:openrem@googlegroups.com>`_
+get in touch: `@_OpenREM <https://twitter.com/_OpenREM>`_,
+`Bitbucket <https://bitbucket.org/openrem/openrem/issues/855/add-other-languages-as-people-volunteer>`_,
+`Google Groups <mailto:openrem@googlegroups.com>`_ or head over to
+`Weblate <https://hosted.weblate.org/projects/openrem/>`_ to get started. More details: :doc:`translations`.
 
 Contents:
 

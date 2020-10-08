@@ -8,182 +8,216 @@ and the documentation. These will then be exposed when the web browser language 
 match the new translation language (OpenREM interface) or when the language is selected
 for the documentation.
 
-Web based translations
-======================
+A web-based service for managing translations has kindly been provided to OpenREM by Weblate. Their hosting is free
+to OpenREM, and they `welcome donations <https://weblate.org/en-gb/donate/>`_.
 
-We have applied to https://hosted.weblate.org/ for gratis hosting of this project. If our
-application is successful, all the translatable strings will be available on that site
-for translations to be provided, which can then be pulled into the main project.
+Translators
+===========
 
-For strings in the OpenREM interface that are not yet marked as translatable, see below.
+* Create an account at https://hosted.weblate.org
+* The OpenREM project is at https://hosted.weblate.org/projects/openrem/
+* Each page in the Read The Docs documentation (https://docs.openrem.org) is a separate 'component' in Weblate, and they
+  have been named 'RTD document name'. The web interface strings are all in one 'component'.
+* Choose a component, and on the next page you can select one of the existing translations which you can review, edit
+  and propose new translation strings.
+* Once approved, they will be merged in by developers
 
-All the strings in the documentation are available for translation.
+Creating new language translations
+----------------------------------
 
-Offline translations
-====================
+At the component level, you will see an option to create a new translation. This might need to be done for each
+component individually.
 
-If you have write access to the OpenREM Bitbucket repository, create a new branch from
-develop. You can do this on your PC or online. If you don't, go to
-https://bitbucket.org/openrem/openrem/src/develop/ and
-click on the ``+`` in the far left bar and fork the repository and clone it to your PC
-and create a new branch from develop as before.
+Code syntax in strings
+----------------------
 
-Documentation translations
---------------------------
+Be careful not to edit code syntax within strings. For example, Python code might be:
 
-First you need to install some packages. You will need Python 3.6+, preferably Python 3.8.
+.. code-block:: none
 
-Open a shell/command line in the folder above the repository folder.
+    Writing study {row} of {numrows} to All data sheet and individual protocol sheets
 
-Linux:
+This is translated into Norwegian Bokmål as:
+
+.. code-block:: none
+
+    Skriver studie av {row} av {numrows} til alle datablad og individuelle protokollblader
+
+Notice that the ``{}`` and their contents is unchanged - but may be moved around within the sentence to produce the
+correct grammar for the language being used.
+
+Similarly with Django HTML template strings:
+
+.. code-block:: none
+
+    Number in last %(day_delta)s days
+
+becomes:
+
+.. code-block:: none
+
+    Antall de siste %(day_delta)s dagene
+
+It is essential that the ``%()s`` as well as the string inside the brackets stay intact.
+
+For the RTD translations, there will be Sphinx codes that should be left untranslated, for example:
+
+.. code-block:: none
+
+    :ref:`genindex`
+
+
+Developers
+==========
+
+Install pre-requisites
+----------------------
+
+**gettext**
+
+Linux: ``sudo apt install gettext`` or equivalent for your distribution. For Windows: download
+`a precompiled binary installer <https://mlocati.github.io/articles/gettext-iconv-windows.html>`_
+
+**sphinx-intl**
+
+Activate development environment - see :doc:`code_dev_env` for details - and add the sphinx packages:
 
 .. code-block:: console
 
-    $ python3.8 -m venv translate-venv
-    $ . translate-venv/bin/activate
-
-Windows PowerShell (for ``cmd.exe`` substitute ``Activate.ps1`` for ``activate.bat``)
-
-.. code-block:: powershell
-
-    PS C:\Path\To\Coding Folder> C:\Python38\python -m venv translate-venv
-    PS C:\Path\To\Coding Folder> .\translate-venv\Scripts\Activate.ps1
-
-Move into the repository docs folder:
-
-.. code-block:: console
-
-    $ cd openrem/docs
-
-Install the packages from pip:
-
-.. code-block:: console
-
-    $ pip install -r rtdrequirements.txt
     $ pip install sphinx
     $ pip install sphinx-intl
 
-Generate translatable file templates (``.pot`` files):
+Update .pot and .po files
+-------------------------
+
+Activate the development environment and move to the root of the OpenREM repository - with the ``docs`` folder and
+``openrem`` folder etc:
 
 .. code-block:: console
 
-    $ sphinx-build -b gettext . _build/gettext
+    $ sphinx-build -b gettext docs/ docs/_build/gettext
+    $ sphinx-intl update -p docs/_build/gettext
+    $ django-admin makemessages -a --keep-pot
 
-This will leave the generated files in the folder ``_build/gettext``.
+*Note* If this doesn't change the openrem/locale/*/LC_MESSAGES/django.po files, you need to repeat the last command
+but replace ``-a`` with each of the languages currently available, eg ``-l de -l nb_NO``
 
-Generate the translation files - for German and Portuguese/Brazil for example:
+Adding new interface strings for translation
+--------------------------------------------
 
-.. code-block:: console
+Please refer to https://docs.djangoproject.com/en/2.2/topics/i18n/translation/ for instructions.
 
-    $ sphinx-intl update -p _build/gettext -l de -l pt_BR
+In brief, the following will help get you started, but does not cover lazy translations, plurals and many other things!
 
-This will create a ``locale`` folder with a translation file (``.po``) per ``.rst`` file in the documentation per
-language you requested, like this::
+All the Sphinx/Read The Docs strings are translatable - if a page does not appear in Weblate that is because it has
+not been configured as a component there yet.
 
-    locale
-    ├── de
-    │   └── LC_MESSAGES
-    │       └── index.po
-    └── pt_BR
-      └── LC_MESSAGES
-          └── index.po
+Python code
+-----------
 
-These ``.po`` files can now be edited with a text editor or a Po editor such as https://poedit.net/, taking
-care to retain any reST notation.
+First, import ``gettext`` from Django:
 
-The new or updated files can now be committed and pushed back to Bitbucket and a pull request created to merge
-them into develop.
+.. code-block:: python
 
-To build the documentation in the translated language locally, use the following command (using German as
-the example):
+    from django.utils.translation import gettext as _
+
+Then wrap strings to be translated with ``_()`` so
+
+.. code-block:: python
+
+    query.stage = "Checking to see if any response studies are already in the OpenREM database"
+
+becomes
+
+.. code-block:: python
+
+    query.stage = _(
+        "Checking to see if any response studies are already in the OpenREM database"
+    )
+
+The same is done for strings that contain variables. Unfortunately ``gettext`` cannot work with f-strings so we are
+stuck with ``.format()`` instead. It is easier to understand how to translate the text though if we use named variables
+rather than position based ones, like this:
+
+.. code-block:: python
+
+    query.stage = _("Filter at {level} level on {filter_name} that {filter_type} {filter_list}".format(
+        level=level, filter_name=filter_name, filter_type=filter_type, filter_list=filter_list
+    ))
+
+Remember we cannot assume the grammar of the translated string so try and pass the whole sentence or paragraph to be
+translated.
+
+Template code
+-------------
+
+Add the following at the top of the template file, just after any ``extends`` code:
+
+.. code-block:: html
+
+    {% load i18n %}
+
+This can be done with *inline* translations and *block* translations. For inline,
+
+.. code-block:: html
+
+    <th style="width:25%">System name</th>
+
+becomes
+
+.. code-block:: html
+
+    <th style="width:25%">{% trans "System name" %}</th>
+
+If there are variables, a block translation is required, for example:
+
+.. code-block:: html
+
+    {% if home_config.display_workload_stats %}
+        <th style="width:12.5%">{% blocktrans with home_config.day_delta_a as day_delta trimmed %}
+            Number in last {{ day_delta }} days{% endblocktrans %}</th>
+        <th style="width:12.5%">{% blocktrans with home_config.day_delta_b as day_delta trimmed %}
+            Number in last {{ day_delta }} days{% endblocktrans %}</th>
+    {% endif %}
+
+Comments can be added to aid translators, for example:
+
+.. code-block:: html
+
+    {# Translators: Number of studies in DB listed above home-page table. No final full-stop in English due to a.m./p.m. #}
+    {% now "DATETIME_FORMAT" as current_time %}
+    {% blocktrans with total_studies=homedata.total trimmed%}
+        There are {{ total_studies }} studies in this database. Page last refreshed on {{ current_time }}
+    {% endblocktrans %}
+
+
+Making use of updated strings on local system
+---------------------------------------------
+
+Specify the language to build for Sphinx docs, eg for German:
 
 .. code-block:: console
 
     $ sphinx-build -b html -D language=de . _build/html/de
 
-The German documentation will now be in the ``_build/html/de`` folder. Any strings that were not translated
-will still be in British English, so you don't need to do everything at once.
-
-OpenREM interface translations - existing translatable strings
---------------------------------------------------------------
-
-Using the virtual environment created above, move to the openrem folder within the repository clone,
-at the same level as ``manage.py``, eg:
-
-.. code-block:: console
-
-    $ cd ../openrem
-
-Create or update message files, again using German for the example:
-
-.. code-block:: console
-
-    $ django-admin makemessages -l de
-
-All the strings that have been marked for translation in either the python code or the templates will now
-have been extracted and added/updated a file called ``django.po`` that will be in
-``openrem/locale/de/LC_MESSAGES/``
-
-*Windows users* - ``makemessages`` requires ``gettext`` to be installed. To create or update the ``.po`` files
-on Windows, download `a precompiled binary installer <https://mlocati.github.io/articles/gettext-iconv-windows.html>`_
-
-Alternatively, if none of the original strings have been updated or made translatable, you can copy the
-``openrem/locale/en/LC_MESSAGES/django.po`` into an appropriately named folder and work on that - it is just
-an empty translation file.
-
-As with the documentation ``.po`` files, these can be updated with a text editor or using dedicated software. You can
-see examples of translated strings in the existing German version. Some strings have translator comments with
-them, some will have options for plurals, some will have variables in them.
-
-For Python code strings, the variables will be in brace format and easy to recognise:
-
-.. code-block:: po
-
-    #. Translators: CT xlsx export progress
-    #: remapp/exports/ct_export.py:160
-    #, python-brace-format
-    msgid ""
-    "Writing study {row} of {numrows} to All data sheet and individual protocol "
-    "sheets"
-    msgstr ""
-    "Schreiben von Studien-{row} von {numrows} in All data blatt und einzelnen "
-    "Protokollblätter"
-
-This example also demonstrates that for multi-row strings, the first line is an empty pair of double quotes,
-and the text occurs on the following lines. The original string that will be matched is the ``msgid`` and the
-new translation is ``msgstr``.
-
-For template strings, the ``{{ }}`` braces become ``%( )s`` — it is important to keep the ``s`` at the end.
-For example:
-
-.. code-block:: po
-
-    #: remapp/templates/remapp/home-list-modalities.html:11
-    #: remapp/templates/remapp/home-list-modalities.html:13
-    #: remapp/templates/remapp/home.html:206 remapp/templates/remapp/home.html:208
-    #, python-format
-    msgid "Number in last %(day_delta)s days"
-    msgstr "Nummer in den letzten %(day_delta)s-Tagen"
-
-This example shows the original string and translation in the same line as ``msgid`` and ``msgstr``. It also
-shows that this one string is found four times in two templates, but the same string will be replaced in the
-same way in all four occurances.
-
-When the translations have been completed, they need to be compiled into a binary ``.mo`` file. For testing
-locally, this is done with the following command, again in the virtual environment in the ``openrem``
-folder where ``manage.py`` is:
+For Django strings:
 
 .. code-block:: console
 
     $ django-admin compilemessages
 
-If you now run your webserver (``runserver`` or using a real webserver), and set your browser language to the
-language you have created the translations for, the translations should appear.
 
-The new locale folders/files should now be committed to the repository and pushed as a new branch to Bitbucket
-with a Pull Request made to incorporate the changes into the core code.
+Incorporating translations into main repo
+=========================================
 
-Making strings translatable
----------------------------
+In the git repository:
 
-For now, please refer to https://docs.djangoproject.com/en/2.2/topics/i18n/translation/ for instructions.
+.. code-block::
+
+    $ git remote add weblate https://hosted.weblate.org/git/openrem/web-interface/
+
+* Checkout the ``weblate\develop`` branch as a new local branch
+* Push the branch to Bitbucket
+* Create a pull request to develop
+
+
