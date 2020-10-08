@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-04 12:05+0100\n"
-"PO-Revision-Date: 2020-10-08 21:18+0000\n"
+"PO-Revision-Date: 2020-10-08 21:31+0000\n"
 "Last-Translator: Georg Stamm <stamm.georg@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/openrem/"
 "rtd-installation-linux-non-docker/de/>\n"
@@ -221,6 +221,9 @@ msgid ""
 "a template0 database to restore into. See :ref:`restore-psql-linux` for "
 "details."
 msgstr ""
+"Bei Migration von einem anderen Server kann hier eine template0 Datenbank "
+"für die Wiederherstellung angelegt werden. Mehr dazu unter :ref:`restore-"
+"psql-linux`."
 
 #: ../../quick_start_linux.rst:177 bba0a4c595fb4b42b242b1e3ec26b07c
 msgid ""
@@ -229,30 +232,40 @@ msgid ""
 "gap before ``# DO NOT DISABLE`` or anywhere in the table that follows. "
 "The number of spaces between each word is not important (one or more)."
 msgstr ""
+"Update der Konfiguration für die PostgreSQL Client Authentifizierung. "
+"Folgende Zeile am Ende der Datei hinzufügen, z.B, in der Lücke vor ``# DO "
+"NOT DISABLE`` oder woanders in der folgenden Tabelle. Die Anzahl der "
+"Leerzeichen zwischen jdem Wort ist nicht relevant (eins oder mehrere)."
 
 #: ../../quick_start_linux.rst:189 fbf58ed9afa549e3adfbc815488e3fd4
 msgid "Reload postgres:"
-msgstr ""
+msgstr "postgres neu laden:"
 
 #: ../../quick_start_linux.rst:196 c593aea6a7264c9e93b0a078ea03b6b2
 msgid "Configure OpenREM"
-msgstr ""
+msgstr "OpenREM konfigurieren"
 
 #: ../../quick_start_linux.rst:198 a22726fcab3b4e7cba60fac18a70ab6a
 msgid ""
 "First navigate to the Python openrem folder and copy the example "
 "local_settings and wsgi files to remove the ``.example`` suffixes:"
 msgstr ""
+"Zunächst in den Python openrem Ordner wechseln und die example "
+"local_settings aund wsgi Dateien kopieren um den ``.example`` Suffix zu "
+"entfernen:"
 
 #: ../../quick_start_linux.rst:207 1ec98bbb8994493fafc13e5060643ae1
 msgid "Edit the new local_settings file"
-msgstr ""
+msgstr "Die neue local_settings Datei editieren"
 
 #: ../../quick_start_linux.rst:272 d214e81f1bfb4e39975ab97bfdeb7c8b
 msgid ""
 "Now create the database. Make sure you are still in the openrem python "
 "folder and the virtualenv is active — prompt will look like"
 msgstr ""
+"Jetzt die Datenbank erzeugen. Stellen Sie sicher, dass Sie sich noch im "
+"openrem python Ordner befinden und das virtualenv aktiv ist -- die "
+"Eingabeaufforderung sieht wie folgt aus"
 
 #: ../../quick_start_linux.rst:279 9e68e2a63ea442eba9b80f393eb4055a
 msgid "Otherwise see :ref:`activatevirtualenv` and navigate back to that folder:"
