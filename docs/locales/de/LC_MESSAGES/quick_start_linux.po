@@ -3,23 +3,26 @@
 # This file is distributed under the same license as the OpenREM package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-04 12:05+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-10-08 20:42+0000\n"
+"Last-Translator: Georg Stamm <stamm.georg@gmail.com>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/openrem/"
+"rtd-installation-linux-non-docker/de/>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../quick_start_linux.rst:2 9980b89c81ec480a8a3ad92f00bd3b62
 msgid "One page complete Ubuntu install"
-msgstr ""
+msgstr "Komplette Ubuntu Installation auf einer Seite"
 
 #: ../../quick_start_linux.rst:4 e2b888b8a0d044d8aeb585d4a0296b2c
 msgid ""
@@ -27,18 +30,21 @@ msgid ""
 "method is instead. If a non-Docker installation is required then this "
 "guide can be followed."
 msgstr ""
+"Diese Installationsart wird nicht mehr empfohlen - stattdessen sollte die "
+"Docker :doc:`installation` Methode gewählt werden. Für eine non-Docker "
+"Installation kann dieser Anleitung gefolgt werden."
 
 #: ../../quick_start_linux.rst:7 cfb64c448af04f8c857252fdb5c9392d
 msgid "This install is based on Ubuntu 18.04 using:"
-msgstr ""
+msgstr "Diese Installation basiert auf Ubuntu 18.04:"
 
 #: ../../quick_start_linux.rst:9 dd7701d612114cf5929dbf0220c73da9
 msgid "Python 3.8 running in a virtualenv"
-msgstr ""
+msgstr "Python 3.8 in einem virtualenv"
 
 #: ../../quick_start_linux.rst:10 4513555e843f4625aa5ff355d43b5707
 msgid "Database: PostgreSQL"
-msgstr ""
+msgstr "Datenbank: PostgreSQL"
 
 #: ../../quick_start_linux.rst:11 4c364820a762490c9f0b0a4db8399aa6
 msgid "DICOM Store SCP: Orthanc running on port 104"
@@ -448,4 +454,3 @@ msgstr ""
 #: ../../quick_start_linux.rst:678 bdf8cb9a9d4a43799d2e87efc9df47b7
 msgid "Gunicorn systemd: ``sudo journalctl -u openrem-gunicorn``"
 msgstr ""
-
