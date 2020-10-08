@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 22:50+0100\n"
-"PO-Revision-Date: 2020-10-08 13:54+0000\n"
-"Last-Translator: Georg Stamm <stamm.georg@gmail.com>\n"
+"PO-Revision-Date: 2020-10-08 17:05+0000\n"
+"Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/openrem/rtd-index/"
 "de/>\n"
 "Language: de\n"
@@ -67,9 +67,9 @@ msgstr ""
 "in andere Sprachen zu übersetzen, kontaktieren Sie uns bitte: `@_OpenREM "
 "<https://twitter.com/_OpenREM>`_, `Bitbucket <https://bitbucket.org/openrem/"
 "openrem/issues/855/add-other-languages-as-people-volunteer>`_, `Google "
-"Groups <mailto:openrem@googlegroups.com>`__ oder gehen Sie zu `Weblate "
+"Groups <mailto:openrem@googlegroups.com>`_ oder gehen Sie zu `Weblate "
 "<https://hosted.weblate.org/projects/openrem/>`_, um loszulegen. Weitere "
-"Einzelheiten: :doc:`übersetzungen`."
+"Einzelheiten: :doc:`translations`."
 
 #: ../../index.rst:27
 msgid "Contents:"
@@ -80,17 +80,14 @@ msgid "Indices and tables"
 msgstr "Indizes und Tabellen"
 
 #: ../../index.rst:49
-#, fuzzy
 msgid ":ref:`genindex`"
 msgstr ":ref:`genindex`"
 
 #: ../../index.rst:50
-#, fuzzy
 msgid ":ref:`modindex`"
 msgstr ":ref:`modindex`"
 
 #: ../../index.rst:51
-#, fuzzy
 msgid ":ref:`search`"
 msgstr ":ref:`search`"
 
