@@ -48,6 +48,7 @@ from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.urls import reverse_lazy
+from django.utils.translation import gettext as _
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -2229,19 +2230,19 @@ def openrem_home(request):
     allstudies = GeneralStudyModuleAttr.objects.all()
     modalities = OrderedDict()
     modalities["CT"] = {
-        "name": "CT",
+        "name": _("CT"),
         "count": allstudies.filter(modality_type__exact="CT").count(),
     }
     modalities["RF"] = {
-        "name": "Fluoroscopy",
+        "name": _("Fluoroscopy"),
         "count": allstudies.filter(modality_type__exact="RF").count(),
     }
     modalities["MG"] = {
-        "name": "Mammography",
+        "name": _("Mammography"),
         "count": allstudies.filter(modality_type__exact="MG").count(),
     }
     modalities["DX"] = {
-        "name": "Radiography",
+        "name": _("Radiography"),
         "count": allstudies.filter(
             Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
         ).count(),
