@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 22:50+0100\n"
-"PO-Revision-Date: 2020-10-08 17:05+0000\n"
+"PO-Revision-Date: 2020-10-08 21:16+0000\n"
 "Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/openrem/rtd-index/"
 "de/>\n"
@@ -42,7 +42,7 @@ msgstr ""
 
 #: ../../index.rst:16
 msgid "Please see `openrem.org <https://openrem.org>`_ for more details."
-msgstr "Details finden sich unter `openrem.org <https://openrem.org>`."
+msgstr "Details finden sich unter `openrem.org <https://openrem.org>`_."
 
 #: ../../index.rst:18
 msgid ""

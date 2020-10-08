@@ -3,23 +3,26 @@
 # This file is distributed under the same license as the OpenREM package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-04 12:05+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-10-08 21:43+0000\n"
+"Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/openrem/"
+"rtd-installation-linux-non-docker/de/>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../quick_start_linux.rst:2 9980b89c81ec480a8a3ad92f00bd3b62
 msgid "One page complete Ubuntu install"
-msgstr ""
+msgstr "Komplette Ubuntu Installation auf einer Seite"
 
 #: ../../quick_start_linux.rst:4 e2b888b8a0d044d8aeb585d4a0296b2c
 msgid ""
@@ -27,106 +30,128 @@ msgid ""
 "method is instead. If a non-Docker installation is required then this "
 "guide can be followed."
 msgstr ""
+"Diese Installationsart wird nicht mehr empfohlen - stattdessen sollte die "
+"Docker :doc:`installation` Methode gewählt werden. Für eine non-Docker "
+"Installation kann dieser Anleitung gefolgt werden."
 
 #: ../../quick_start_linux.rst:7 cfb64c448af04f8c857252fdb5c9392d
 msgid "This install is based on Ubuntu 18.04 using:"
-msgstr ""
+msgstr "Diese Installation basiert auf Ubuntu 18.04:"
 
 #: ../../quick_start_linux.rst:9 dd7701d612114cf5929dbf0220c73da9
 msgid "Python 3.8 running in a virtualenv"
-msgstr ""
+msgstr "Python 3.8 in einem virtualenv"
 
 #: ../../quick_start_linux.rst:10 4513555e843f4625aa5ff355d43b5707
 msgid "Database: PostgreSQL"
-msgstr ""
+msgstr "Datenbank: PostgreSQL"
 
 #: ../../quick_start_linux.rst:11 4c364820a762490c9f0b0a4db8399aa6
 msgid "DICOM Store SCP: Orthanc running on port 104"
-msgstr ""
+msgstr "DICOM Store SCP: Orthanc mit Port 104"
 
 #: ../../quick_start_linux.rst:12 f31dbd1bd98f46fa89ebaa3955ec7019
 msgid "Webserver: NGINX with Gunicorn"
-msgstr ""
+msgstr "Webserver: NGINX mit Gunicorn"
 
 #: ../../quick_start_linux.rst:13 2bcb1e06f07a41d59edb0fce9d54db5e
 msgid "Daemonisation: systemd scripts for Celery and Gunicorn"
-msgstr ""
+msgstr "Dämonisierung: systemd Skripte für Celery und Gunicorn"
 
 #: ../../quick_start_linux.rst:14 177a095d33d9481ea5743b7b8b7c1983
 msgid "All OpenREM files in ``/var/dose/`` with group owner of ``openrem``"
-msgstr ""
+msgstr "Alle OpenREM Dateien in ``/var/dose/`` mit Gruppe ``openrem``"
 
 #: ../../quick_start_linux.rst:15 c739abb826fe4999a727664d20c03312
 msgid "Collects any Physics (QA) images and zips them"
-msgstr ""
+msgstr "Sammelt alle QA (physikalische) Bilder und packt sie als ZIP"
 
 #: ../../quick_start_linux.rst:17 974cdedf5aeb4fd6977670780e9590db
+#, fuzzy
 msgid ""
 "The instructions should work for Ubuntu 20.04 too, references to bionic "
 "will be focal instead."
 msgstr ""
+"Diese Anleitung sollte auch unter Ubuntu 20.04 funktionieren, Bezug zu "
+"bionic steht stattdessen im focal."
 
 #: ../../quick_start_linux.rst:21 e8db32692f994c22814a99d94f2dd7ca
 msgid "Initial prep"
-msgstr ""
+msgstr "Initiale Vorbereitung"
 
 #: ../../quick_start_linux.rst:23 06f8c873ad614772a2b74a2810aad688
+#, fuzzy
 msgid "**Host file**"
-msgstr ""
+msgstr "**Host file**"
 
 #: ../../quick_start_linux.rst:25 a85af3a5e4b541c391f9d31a8211f77b
 msgid ""
 "First edit ``/etc/hosts`` to add the local server name -- else "
 "``rabbitmq-server`` will not start when installed:"
 msgstr ""
+"In der ``/etc/hosts`` Datei zuerst den lokalen Servernamen eintragen - "
+"ansonsten startet ``rabbitmq-server`` nach der Installation nicht:"
 
 #: ../../quick_start_linux.rst:31 335483e083134d0e98c3bcd192e7b701
+#, fuzzy
 msgid ""
 "Modify the content to ensure the following two lines are present -- "
 "**substitute the correct server hostname on the second line**::"
 msgstr ""
+"Den Inhalt so modifizieren, so dass die folgenden zwei Zeilen vorhanden sind "
+"-- **substitute the correct server hostname on the second line**::"
 
 #: ../../quick_start_linux.rst:37 9c5d60eff4b74213a556115267866a8f
 msgid "``Ctrl-o`` (write-[o]ut), ``Return`` to accept, then ``Ctrl-x`` to e[x]it"
 msgstr ""
+"``Ctrl-o`` (speichern = write [o]ut), ``Return`` zum Bestätigen, dann "
+"``Ctrl-x`` für Ende = e[x]it"
 
 #: ../../quick_start_linux.rst:39 54b90c71b3c247b0bb90a7eb53760d93
 msgid "**Apt sources**"
-msgstr ""
+msgstr "**Apt sources**"
 
 #: ../../quick_start_linux.rst:41 4cb57fe9d4374e8982807c468c6651e2
 msgid "We will need the ``universe`` repository enabled. Check first:"
-msgstr ""
+msgstr "Das ``universe`` Repository muss freigegeben sein. Zuerst überprüfen:"
 
 #: ../../quick_start_linux.rst:47 ee20d12192e64947b2019d1167aebe99
 msgid "Look for::"
-msgstr ""
+msgstr "Suchen nach::"
 
 #: ../../quick_start_linux.rst:52 d1e672faa42444eb9bf24b08be5cb946
 msgid ""
 "If these two lines are not there, add them in (``sudo nano "
 "/etc/apt/sources.list``)."
 msgstr ""
+"Wenn die beiden Zeilen nicht vorhanden sind, dann über (``sudo nano /etc/apt/"
+"sources.list``) hinzufügen."
 
 #: ../../quick_start_linux.rst:54 62d7a7fd35d54eb5ad1ad1cddc56309b
 msgid "**Groups**"
-msgstr ""
+msgstr "**Groups**"
 
 #: ../../quick_start_linux.rst:56 2450ce07271d4f43b29990cb329d8623
 msgid ""
 "Now create new group ``openrem`` and add your user to it (``$USER`` will "
 "automatically substitute for the user you are running as) :"
 msgstr ""
+"Eine neue Gruppe ``openrem`` erstellen und den eigenen Nutzer dieser Gruppe "
+"hinzufügen (``$USER`` wird automatisch für den aktuellen Nutzer hinzugefügt) "
+":"
 
 #: ../../quick_start_linux.rst:69 c35ac53e13124e2688b9c1c2d6b4ab76
 msgid ""
 "At a later stage, to add a second administrator just add them to the "
 "``openrem`` group in the same way."
 msgstr ""
+"Zu einem späteren Zeitpunkt kann ein zweiter Administrator der ``openrem`` "
+"Gruppe auf die gleiche Weise hinzugefügt werden."
 
 #: ../../quick_start_linux.rst:71 40980414ee23446e9ee2f3b51c4ad0b7
+#, fuzzy
 msgid "**Folders**"
-msgstr ""
+msgstr "**Folders**"
 
 #: ../../quick_start_linux.rst:73 5925c3fe20564313a1295fa5f2d60e95
 msgid ""
@@ -135,44 +160,51 @@ msgid ""
 "``openrem`` group, and the 'sticky' group setting below will enable both "
 "users to write to the logs etc:"
 msgstr ""
+"Die benötigten Ordner erzeugen und die Zugriffrechte setzen. Zu gegebener "
+"Zeit wird der ``orthanc`` Nutzer und der ``www-data`` Nutzer der ``openrem`` "
+"Gruppe hinzugefügt und die 'sticky' Gruppeneinstellungen werden für beide "
+"Nutzer freigegeben, damit diese Log-Dateien etc. schreiben dürfen:"
 
 #: ../../quick_start_linux.rst:102 02c5fdf9d78d435a94e9427b66a4cda0
 msgid "Install apt packages and direct downloads"
-msgstr ""
+msgstr "APT-Pakete und direkte Downloads installieren"
 
 #: ../../quick_start_linux.rst:116 e27706d5960f4fccb0bb4bccb266ab9f
 msgid "Create the virtualenv"
-msgstr ""
+msgstr "Die virtualenv erzeugen"
 
 #: ../../quick_start_linux.rst:118 24f6171c67024bfb937115d314dc538b
 msgid "Create a virtualenv (Python local environment) in the folder we created:"
 msgstr ""
+"Eine virtualenv in dem erstellten Ordner erzeugen (lokale Python Umgebung):"
 
 #: ../../quick_start_linux.rst:127 3ea9a24e98104eb49c9a204f6b6739fd
 msgid "Activate the virtualenv"
-msgstr ""
+msgstr "Die virtualenv aktivieren"
 
 #: ../../quick_start_linux.rst:129 781caa1f08d644819d72505cbef54956
 msgid ""
 "Activate the virtualenv (note the ``.`` -- you can also use the word "
 "``source``):"
 msgstr ""
+"Die virtualenv aktivieren (den ``.`` beachten -- oder das Wort "
+"``source``verwenden):"
 
 #: ../../quick_start_linux.rst:136 ca9449d37bba4f2f937d88c2ef31f6b4
 msgid "Install Python packages"
-msgstr ""
+msgstr "Installation der Python Pakete"
 
 #: ../../quick_start_linux.rst:147 a222035e1d2941bebd1277924162e088
 msgid "Add orthanc and www-data users to openrem group"
-msgstr ""
+msgstr "orthanc und www-data Nutzer der Gruppe openrem hinzufügen"
 
 #: ../../quick_start_linux.rst:158 693bf714d1e9476ba3b150ca77d9d8a9
 msgid "Database and OpenREM config"
-msgstr ""
+msgstr "Konfiguration von Datenbank und OpenREM"
 
 #: ../../quick_start_linux.rst:161 a6004355a6a24c9d85bbd6d6e85f52b8
 msgid "Setup PostgreSQL database"
-msgstr ""
+msgstr "PostgreSQL Datenbank einrichten"
 
 #: ../../quick_start_linux.rst:163 62cec06a5ea34c089d65133c810038c5
 msgid ""
@@ -180,6 +212,8 @@ msgid ""
 "enter a new password (twice). This will be needed when configuring "
 "OpenREM:"
 msgstr ""
+"Einen postgres Nutzer anlegen, die Datenbank anlegen. Die Passwort-Abfrage "
+"erfolgt zweimal. Für die Konfiguration von OpenREM wird folgendes benötigt:"
 
 #: ../../quick_start_linux.rst:174 f06f84b26ec74ca28dbfd8c2475539b3
 msgid ""
@@ -187,6 +221,9 @@ msgid ""
 "a template0 database to restore into. See :ref:`restore-psql-linux` for "
 "details."
 msgstr ""
+"Bei Migration von einem anderen Server kann hier eine template0 Datenbank "
+"für die Wiederherstellung angelegt werden. Mehr dazu unter :ref:`restore-"
+"psql-linux`."
 
 #: ../../quick_start_linux.rst:177 bba0a4c595fb4b42b242b1e3ec26b07c
 msgid ""
@@ -195,30 +232,40 @@ msgid ""
 "gap before ``# DO NOT DISABLE`` or anywhere in the table that follows. "
 "The number of spaces between each word is not important (one or more)."
 msgstr ""
+"Update der Konfiguration für die PostgreSQL Client Authentifizierung. "
+"Folgende Zeile am Ende der Datei hinzufügen, z.B, in der Lücke vor ``# DO "
+"NOT DISABLE`` oder woanders in der folgenden Tabelle. Die Anzahl der "
+"Leerzeichen zwischen jdem Wort ist nicht relevant (eins oder mehrere)."
 
 #: ../../quick_start_linux.rst:189 fbf58ed9afa549e3adfbc815488e3fd4
 msgid "Reload postgres:"
-msgstr ""
+msgstr "postgres neu laden:"
 
 #: ../../quick_start_linux.rst:196 c593aea6a7264c9e93b0a078ea03b6b2
 msgid "Configure OpenREM"
-msgstr ""
+msgstr "OpenREM konfigurieren"
 
 #: ../../quick_start_linux.rst:198 a22726fcab3b4e7cba60fac18a70ab6a
 msgid ""
 "First navigate to the Python openrem folder and copy the example "
 "local_settings and wsgi files to remove the ``.example`` suffixes:"
 msgstr ""
+"Zunächst in den Python openrem Ordner wechseln und die example "
+"local_settings aund wsgi Dateien kopieren um den ``.example`` Suffix zu "
+"entfernen:"
 
 #: ../../quick_start_linux.rst:207 1ec98bbb8994493fafc13e5060643ae1
 msgid "Edit the new local_settings file"
-msgstr ""
+msgstr "Die neue local_settings Datei editieren"
 
 #: ../../quick_start_linux.rst:272 d214e81f1bfb4e39975ab97bfdeb7c8b
 msgid ""
 "Now create the database. Make sure you are still in the openrem python "
 "folder and the virtualenv is active — prompt will look like"
 msgstr ""
+"Jetzt die Datenbank erzeugen. Stellen Sie sicher, dass Sie sich noch im "
+"openrem python Ordner befinden und das virtualenv aktiv ist -- die "
+"Eingabeaufforderung sieht wie folgt aus"
 
 #: ../../quick_start_linux.rst:279 9e68e2a63ea442eba9b80f393eb4055a
 msgid "Otherwise see :ref:`activatevirtualenv` and navigate back to that folder:"
@@ -448,4 +495,3 @@ msgstr ""
 #: ../../quick_start_linux.rst:678 bdf8cb9a9d4a43799d2e87efc9df47b7
 msgid "Gunicorn systemd: ``sudo journalctl -u openrem-gunicorn``"
 msgstr ""
-
