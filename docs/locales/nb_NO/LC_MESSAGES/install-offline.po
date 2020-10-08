@@ -8,13 +8,16 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-25 21:31+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2020-10-08 17:05+0000\n"
+"Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
+"Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/openrem/"
+"rtd-install-offline/nb_NO/>\n"
 "Language: nb_NO\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 
 #: ../../install-offline.rst:3
 #: 5a6484bff33d4a61893ef3740642925a
@@ -49,7 +52,7 @@ msgstr ""
 #: ../../install-offline.rst:16
 #: ff24831f8bf341f9b207533317b8692b
 msgid "Download https://bitbucket.org/openrem/docker/get/develop.zip"
-msgstr ""
+msgstr "Last ned https://bitbucket.org/openrem/docker/get/develop.zip"
 
 #: ../../install-offline.rst:17
 #: aac83242b06247448f15cd885991bf9f
