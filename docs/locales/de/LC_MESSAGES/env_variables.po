@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-25 21:31+0100\n"
-"PO-Revision-Date: 2020-10-08 16:18+0000\n"
-"Last-Translator: Georg Stamm <stamm.georg@gmail.com>\n"
+"PO-Revision-Date: 2020-10-08 17:05+0000\n"
+"Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/openrem/"
 "rtd-installation-docker-env-config/de/>\n"
 "Language: de\n"
@@ -194,7 +194,7 @@ msgstr ""
 
 #: ../../env_variables.rst:116 5db5746046b6448c8c165ee46387df34
 msgid "XLSX date and time settings for exports:"
-msgstr "XLSY Datum und Zeiteinstellungen für den Export:"
+msgstr "XLSX Datum und Zeiteinstellungen für den Export:"
 
 #: ../../env_variables.rst:124 885747cb4dc64e30ab8b4e8ffcb63c0a
 msgid "Virtual directory settings"
