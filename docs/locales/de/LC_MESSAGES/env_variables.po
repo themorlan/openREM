@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "Die Datei ``.env.prod`` bearbeiten um die Installation anzupassen. "
 "Leerzeichen zwischen Variablenname, dem Zeichen ``=`` und dem Wert sind "
-"nicht erlaubt. Alles nach``=`` bis zum Ende der Zeile wird als Wert "
+"nicht erlaubt. Alles nach ``=`` bis zum Ende der Zeile wird als Wert "
 "betrachted. Die Einstellung werden wirksam, wenn docker-compose (neu-) "
 "gestartet wird."
 

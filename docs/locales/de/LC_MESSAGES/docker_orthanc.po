@@ -62,7 +62,7 @@ msgstr ""
 
 #: ../../docker_orthanc.rst:16 7a75977e01a7417a86bebceeaea4e8c2
 msgid "Find the ``orthanc_1`` definition near the end of the file."
-msgstr "Der Definitionen für ``orthanc_1``finden sich am Ende der Datei."
+msgstr "Der Definitionen für ``orthanc_1`` finden sich am Ende der Datei."
 
 #: ../../docker_orthanc.rst:19 b87361a415e84920a3ca44822f25fc23
 msgid "Port"
@@ -172,7 +172,7 @@ msgid ""
 msgstr ""
 "Normalerweise werden die Studien nicht in der Othanc Datenbank gespeichert "
 "sobald sie verarbeitet wurden. Wenn aber der Orthanc Web-Viewer verwendet "
-"werden soll, muss der Wert `ORTHANC__REMOTE_ACCESS_ALLOWED`` auf ``\"true\"``"
+"werden soll, muss der Wert ``ORTHANC__REMOTE_ACCESS_ALLOWED`` auf ``\"true\"``"
 " gestellt werden. Die Port-Angabe darf nicht auskommentiert sein, die erste "
 "Zahl kann bei Bedarf geändert werden:"
 
