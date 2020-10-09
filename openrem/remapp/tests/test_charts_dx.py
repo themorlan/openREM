@@ -1519,3 +1519,168 @@ class ChartsDX(TestCase):
         study_data = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
         chart_data = self.chart_data["studyFrequencyData"]["data"]
         self.check_frequencies(study_data, chart_data)
+
+    def test_study_workload(self):
+        # Test of study workload
+        f = self.login_get_filterset()
+
+        # Set user profile options
+        self.user.userprofile.plotDXStudyPerDayAndHour = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        standard_data = [
+            {
+                "customdata": np.array(
+                    [
+                        [0, "Friday", 10, 1],
+                        [0, "Friday", 11, 0],
+                        [0, "Friday", 14, 0],
+                        [0, "Monday", 10, 0],
+                        [0, "Monday", 11, 1],
+                        [0, "Monday", 14, 0],
+                        [0, "Tuesday", 10, 0],
+                        [0, "Tuesday", 11, 0],
+                        [0, "Tuesday", 14, 1],
+                    ],
+                    dtype=object,
+                ),
+                "x": np.array(
+                    [
+                        "Friday",
+                        "Friday",
+                        "Friday",
+                        "Monday",
+                        "Monday",
+                        "Monday",
+                        "Tuesday",
+                        "Tuesday",
+                        "Tuesday",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array([1, 0, 0, 0, 1, 0, 0, 0, 1]),
+            }
+        ]
+
+        chart_data = self.chart_data["studyWorkloadData"]["data"]
+
+        for idx, dataset in enumerate(standard_data):
+            np.testing.assert_equal(
+                dataset["customdata"], chart_data[idx]["customdata"]
+            )
+            np.testing.assert_equal(dataset["x"], chart_data[idx]["x"])
+            np.testing.assert_equal(dataset["y"], chart_data[idx]["y"])
+
+        # Repeat with series per system enabled
+        self.user.userprofile.plotSeriesPerSystem = True
+        self.user.userprofile.save()
+
+        self.obtain_chart_data(f)
+
+        standard_data = [
+            {
+                "customdata": np.array(
+                    [
+                        [0, "Friday", 10, 1],
+                        [0, "Friday", 11, 0],
+                        [0, "Friday", 14, 0],
+                        [0, "Monday", 10, 0],
+                        [0, "Monday", 11, 0],
+                        [0, "Monday", 14, 0],
+                        [0, "Tuesday", 10, 0],
+                        [0, "Tuesday", 11, 0],
+                        [0, "Tuesday", 14, 0],
+                    ],
+                    dtype=object,
+                ),
+                "x": np.array(
+                    [
+                        "Friday",
+                        "Friday",
+                        "Friday",
+                        "Monday",
+                        "Monday",
+                        "Monday",
+                        "Tuesday",
+                        "Tuesday",
+                        "Tuesday",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array([1, 0, 0, 0, 0, 0, 0, 0, 0]),
+            },
+            {
+                "customdata": np.array(
+                    [
+                        [1, "Friday", 10, 0],
+                        [1, "Friday", 11, 0],
+                        [1, "Friday", 14, 0],
+                        [1, "Monday", 10, 0],
+                        [1, "Monday", 11, 0],
+                        [1, "Monday", 14, 0],
+                        [1, "Tuesday", 10, 0],
+                        [1, "Tuesday", 11, 0],
+                        [1, "Tuesday", 14, 1],
+                    ],
+                    dtype=object,
+                ),
+                "x": np.array(
+                    [
+                        "Friday",
+                        "Friday",
+                        "Friday",
+                        "Monday",
+                        "Monday",
+                        "Monday",
+                        "Tuesday",
+                        "Tuesday",
+                        "Tuesday",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array([0, 0, 0, 0, 0, 0, 0, 0, 1]),
+            },
+            {
+                "customdata": np.array(
+                    [
+                        [2, "Friday", 10, 0],
+                        [2, "Friday", 11, 0],
+                        [2, "Friday", 14, 0],
+                        [2, "Monday", 10, 0],
+                        [2, "Monday", 11, 1],
+                        [2, "Monday", 14, 0],
+                        [2, "Tuesday", 10, 0],
+                        [2, "Tuesday", 11, 0],
+                        [2, "Tuesday", 14, 0],
+                    ],
+                    dtype=object,
+                ),
+                "x": np.array(
+                    [
+                        "Friday",
+                        "Friday",
+                        "Friday",
+                        "Monday",
+                        "Monday",
+                        "Monday",
+                        "Tuesday",
+                        "Tuesday",
+                        "Tuesday",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array([0, 0, 0, 0, 1, 0, 0, 0, 0]),
+            },
+        ]
+
+        chart_data = self.chart_data["studyWorkloadData"]["data"]
+
+        for idx, dataset in enumerate(standard_data):
+            np.testing.assert_equal(
+                dataset["customdata"], chart_data[idx]["customdata"]
+            )
+            np.testing.assert_equal(dataset["x"], chart_data[idx]["x"])
+            np.testing.assert_equal(dataset["y"], chart_data[idx]["y"])
