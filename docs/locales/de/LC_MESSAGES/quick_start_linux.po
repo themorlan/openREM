@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-04 12:05+0100\n"
-"PO-Revision-Date: 2020-10-08 21:43+0000\n"
-"Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
+"PO-Revision-Date: 2020-10-09 06:00+0000\n"
+"Last-Translator: Georg Stamm <stamm.georg@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/openrem/"
 "rtd-installation-linux-non-docker/de/>\n"
 "Language: de\n"
@@ -67,22 +67,20 @@ msgid "Collects any Physics (QA) images and zips them"
 msgstr "Sammelt alle QA (physikalische) Bilder und packt sie als ZIP"
 
 #: ../../quick_start_linux.rst:17 974cdedf5aeb4fd6977670780e9590db
-#, fuzzy
 msgid ""
 "The instructions should work for Ubuntu 20.04 too, references to bionic "
 "will be focal instead."
 msgstr ""
-"Diese Anleitung sollte auch unter Ubuntu 20.04 funktionieren, Bezug zu "
-"bionic steht stattdessen im focal."
+"Diese Anleitung sollte auch unter Ubuntu 20.04 funktionieren, Verweise auf "
+"bionic werden stattdessen focal sein."
 
 #: ../../quick_start_linux.rst:21 e8db32692f994c22814a99d94f2dd7ca
 msgid "Initial prep"
 msgstr "Initiale Vorbereitung"
 
 #: ../../quick_start_linux.rst:23 06f8c873ad614772a2b74a2810aad688
-#, fuzzy
 msgid "**Host file**"
-msgstr "**Host file**"
+msgstr "**Host Datei**"
 
 #: ../../quick_start_linux.rst:25 a85af3a5e4b541c391f9d31a8211f77b
 msgid ""
@@ -93,13 +91,12 @@ msgstr ""
 "ansonsten startet ``rabbitmq-server`` nach der Installation nicht:"
 
 #: ../../quick_start_linux.rst:31 335483e083134d0e98c3bcd192e7b701
-#, fuzzy
 msgid ""
 "Modify the content to ensure the following two lines are present -- "
 "**substitute the correct server hostname on the second line**::"
 msgstr ""
 "Den Inhalt so modifizieren, so dass die folgenden zwei Zeilen vorhanden sind "
-"-- **substitute the correct server hostname on the second line**::"
+"-- **ersetzen Sie den korrekten Server Hostnamen in der zweiten Zeile**::"
 
 #: ../../quick_start_linux.rst:37 9c5d60eff4b74213a556115267866a8f
 msgid "``Ctrl-o`` (write-[o]ut), ``Return`` to accept, then ``Ctrl-x`` to e[x]it"
@@ -149,9 +146,8 @@ msgstr ""
 "Gruppe auf die gleiche Weise hinzugefügt werden."
 
 #: ../../quick_start_linux.rst:71 40980414ee23446e9ee2f3b51c4ad0b7
-#, fuzzy
 msgid "**Folders**"
-msgstr "**Folders**"
+msgstr "**Ordner**"
 
 #: ../../quick_start_linux.rst:73 5925c3fe20564313a1295fa5f2d60e95
 msgid ""
