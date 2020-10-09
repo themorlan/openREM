@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-08 21:36+0100\n"
-"PO-Revision-Date: 2020-10-08 17:00+0000\n"
+"PO-Revision-Date: 2020-10-09 12:43+0000\n"
 "Last-Translator: Georg Stamm <stamm.georg@gmail.com>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/openrem/web-"
-"interface/de/>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/openrem/"
+"web-interface/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,8 +25,8 @@ msgid ""
 "Writing study {row} of {numrows} to All data sheet and individual protocol "
 "sheets"
 msgstr ""
-"Schreiben von Studien-{row} von {numrows} in All data blatt und einzelnen "
-"Protokollblätter"
+"Schreiben von Studien-{row} von {numrows} in das Tabellenblatt All data und "
+"in die einzelnen Protokollblätter"
 
 #: remapp/netdicom/qrscu.py:79
 msgid ""
@@ -76,7 +76,7 @@ msgstr "Abgleich auf Serienebene wird fortgeführt."
 #: remapp/netdicom/qrscu.py:1008
 #, python-brace-format
 msgid "Study level matching for {modalities} is complete"
-msgstr "Abgleich auf Studieneben für {modalities} ist abgeschlossen"
+msgstr "Abgleich auf Studienebene für {modalities} ist abgeschlossen"
 
 #: remapp/netdicom/qrscu.py:1021
 #, python-brace-format
