@@ -352,6 +352,128 @@ class ChartsDX(TestCase):
         chart_data = self.chart_data["acquisitionBoxplotDAPData"]["data"]
         self.check_boxplot_xy(acq_x_data, acq_y_data, chart_data)
 
+    def test_acq_dap_histogram(self):
+        # Test of DAP histogram
+        f = self.login_get_filterset()
+
+        # Set user profile options
+        self.user.userprofile.plotDXAcquisitionMeanDAP = True
+        self.user.userprofile.plotMean = True
+        self.user.userprofile.plotHistograms = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        chart_data = self.chart_data["acquisitionHistogramDAPData"]["data"]
+
+        standard_data = [
+            {
+                "name": "ABD_1_VIEW",
+                "text": np.array(
+                    [
+                        "4.10 to 14.70",
+                        "14.70 to 25.31",
+                        "25.31 to 35.91",
+                        "35.91 to 46.51",
+                        "46.51 to 57.12",
+                        "57.12 to 67.72",
+                        "67.72 to 78.32",
+                        "78.32 to 88.92",
+                        "88.92 to 99.53",
+                        "99.53 to 110.13",
+                    ],
+                    dtype="<U15",
+                ),
+                "x": np.array(
+                    [
+                        9.4015,
+                        20.0045,
+                        30.6075,
+                        41.2105,
+                        51.8135,
+                        62.4165,
+                        73.0195,
+                        83.6225,
+                        94.2255,
+                        104.8285,
+                    ]
+                ),
+                "y": np.array([2, 1, 0, 0, 0, 0, 0, 0, 0, 0]),
+            },
+            {
+                "name": "AEC",
+                "text": np.array(
+                    [
+                        "4.10 to 14.70",
+                        "14.70 to 25.31",
+                        "25.31 to 35.91",
+                        "35.91 to 46.51",
+                        "46.51 to 57.12",
+                        "57.12 to 67.72",
+                        "67.72 to 78.32",
+                        "78.32 to 88.92",
+                        "88.92 to 99.53",
+                        "99.53 to 110.13",
+                    ],
+                    dtype="<U15",
+                ),
+                "x": np.array(
+                    [
+                        9.4015,
+                        20.0045,
+                        30.6075,
+                        41.2105,
+                        51.8135,
+                        62.4165,
+                        73.0195,
+                        83.6225,
+                        94.2255,
+                        104.8285,
+                    ]
+                ),
+                "y": np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 2]),
+            },
+            {
+                "name": "AP",
+                "text": np.array(
+                    [
+                        "4.10 to 14.70",
+                        "14.70 to 25.31",
+                        "25.31 to 35.91",
+                        "35.91 to 46.51",
+                        "46.51 to 57.12",
+                        "57.12 to 67.72",
+                        "67.72 to 78.32",
+                        "78.32 to 88.92",
+                        "88.92 to 99.53",
+                        "99.53 to 110.13",
+                    ],
+                    dtype="<U15",
+                ),
+                "x": np.array(
+                    [
+                        9.4015,
+                        20.0045,
+                        30.6075,
+                        41.2105,
+                        51.8135,
+                        62.4165,
+                        73.0195,
+                        83.6225,
+                        94.2255,
+                        104.8285,
+                    ]
+                ),
+                "y": np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+            },
+        ]
+
+        for idx, dataset in enumerate(standard_data):
+            self.assertEqual(chart_data[idx]["name"], dataset["name"])
+            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"])
+            np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
+
     def test_acq_mas(self):
         # Test of mean and median mas, count, system and acquisition protocol names
         # Also tests raw data going into the box plots
@@ -475,6 +597,95 @@ class ChartsDX(TestCase):
         acq_y_data = [[9.0, 10.0], [1.04, 2.04, 5.04], [1.0]]
         chart_data = self.chart_data["acquisitionBoxplotmAsData"]["data"]
         self.check_boxplot_xy(acq_x_data, acq_y_data, chart_data)
+
+    def test_acq_mas_histogram(self):
+        # Test of mAs histogram
+        f = self.login_get_filterset()
+
+        # Set user profile options
+        self.user.userprofile.plotDXAcquisitionMeanmAs = True
+        self.user.userprofile.plotMean = True
+        self.user.userprofile.plotHistograms = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        chart_data = self.chart_data["acquisitionHistogrammAsData"]["data"]
+
+        standard_data = [
+            {
+                "name": "ABD_1_VIEW",
+                "text": np.array(
+                    [
+                        "1.00 to 1.90",
+                        "1.90 to 2.80",
+                        "2.80 to 3.70",
+                        "3.70 to 4.60",
+                        "4.60 to 5.50",
+                        "5.50 to 6.40",
+                        "6.40 to 7.30",
+                        "7.30 to 8.20",
+                        "8.20 to 9.10",
+                        "9.10 to 10.00",
+                    ],
+                    dtype="<U13",
+                ),
+                "x": np.array(
+                    [1.45, 2.35, 3.25, 4.15, 5.05, 5.95, 6.85, 7.75, 8.65, 9.55]
+                ),
+                "y": np.array([1, 1, 0, 0, 1, 0, 0, 0, 0, 0]),
+            },
+            {
+                "name": "AEC",
+                "text": np.array(
+                    [
+                        "1.00 to 1.90",
+                        "1.90 to 2.80",
+                        "2.80 to 3.70",
+                        "3.70 to 4.60",
+                        "4.60 to 5.50",
+                        "5.50 to 6.40",
+                        "6.40 to 7.30",
+                        "7.30 to 8.20",
+                        "8.20 to 9.10",
+                        "9.10 to 10.00",
+                    ],
+                    dtype="<U13",
+                ),
+                "x": np.array(
+                    [1.45, 2.35, 3.25, 4.15, 5.05, 5.95, 6.85, 7.75, 8.65, 9.55]
+                ),
+                "y": np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 1]),
+            },
+            {
+                "name": "AP",
+                "text": np.array(
+                    [
+                        "1.00 to 1.90",
+                        "1.90 to 2.80",
+                        "2.80 to 3.70",
+                        "3.70 to 4.60",
+                        "4.60 to 5.50",
+                        "5.50 to 6.40",
+                        "6.40 to 7.30",
+                        "7.30 to 8.20",
+                        "8.20 to 9.10",
+                        "9.10 to 10.00",
+                    ],
+                    dtype="<U13",
+                ),
+                "x": np.array(
+                    [1.45, 2.35, 3.25, 4.15, 5.05, 5.95, 6.85, 7.75, 8.65, 9.55]
+                ),
+                "y": np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+            },
+        ]
+
+        for idx, dataset in enumerate(standard_data):
+            self.assertEqual(chart_data[idx]["name"], dataset["name"])
+            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"])
+            np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
 
     def test_acq_freq(self):
         # Test of mean and median DAP, count, system and acquisition protocol names
@@ -637,6 +848,95 @@ class ChartsDX(TestCase):
         chart_data = self.chart_data["requestBoxplotDAPData"]["data"]
         self.check_boxplot_xy(request_x_data, request_y_data, chart_data)
 
+    def test_request_dap_histogram(self):
+        # Test of DAP histogram
+        f = self.login_get_filterset()
+
+        # Set user profile options
+        self.user.userprofile.plotDXRequestMeanDAP = True
+        self.user.userprofile.plotMean = True
+        self.user.userprofile.plotHistograms = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        chart_data = self.chart_data["requestHistogramDAPData"]["data"]
+
+        standard_data = [
+            {
+                "name": "Blank",
+                "text": np.array(
+                    [
+                        "6.33 to 26.87",
+                        "26.87 to 47.40",
+                        "47.40 to 67.94",
+                        "67.94 to 88.48",
+                        "88.48 to 109.02",
+                        "109.02 to 129.55",
+                        "129.55 to 150.09",
+                        "150.09 to 170.63",
+                        "170.63 to 191.16",
+                        "191.16 to 211.70",
+                    ],
+                    dtype="<U16",
+                ),
+                "x": np.array(
+                    [
+                        16.5985,
+                        37.1355,
+                        57.6725,
+                        78.2095,
+                        98.7465,
+                        119.2835,
+                        139.8205,
+                        160.3575,
+                        180.8945,
+                        201.4315,
+                    ]
+                ),
+                "y": np.array([0, 1, 0, 0, 0, 0, 0, 0, 0, 1]),
+            },
+            {
+                "name": "XR CHEST",
+                "text": np.array(
+                    [
+                        "6.33 to 26.87",
+                        "26.87 to 47.40",
+                        "47.40 to 67.94",
+                        "67.94 to 88.48",
+                        "88.48 to 109.02",
+                        "109.02 to 129.55",
+                        "129.55 to 150.09",
+                        "150.09 to 170.63",
+                        "170.63 to 191.16",
+                        "191.16 to 211.70",
+                    ],
+                    dtype="<U16",
+                ),
+                "x": np.array(
+                    [
+                        16.5985,
+                        37.1355,
+                        57.6725,
+                        78.2095,
+                        98.7465,
+                        119.2835,
+                        139.8205,
+                        160.3575,
+                        180.8945,
+                        201.4315,
+                    ]
+                ),
+                "y": np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+            },
+        ]
+
+        for idx, dataset in enumerate(standard_data):
+            self.assertEqual(chart_data[idx]["name"], dataset["name"])
+            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"])
+            np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
+
     def test_request_freq(self):
         # Test of mean and median DAP, count, system and requested procedure names
         # Also tests raw data going into the box plots
@@ -797,6 +1097,128 @@ class ChartsDX(TestCase):
         study_y_data = [[211.7], [32.8]]
         chart_data = self.chart_data["studyBoxplotDAPData"]["data"]
         self.check_boxplot_xy(study_x_data, study_y_data, chart_data)
+
+    def test_study_dap_histogram(self):
+        # Test of DAP histogram
+        f = self.login_get_filterset()
+
+        # Set user profile options
+        self.user.userprofile.plotDXStudyMeanDAP = True
+        self.user.userprofile.plotMean = True
+        self.user.userprofile.plotHistograms = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        chart_data = self.chart_data["studyHistogramDAPData"]["data"]
+
+        standard_data = [
+            {
+                "name": "AEC",
+                "text": np.array(
+                    [
+                        "6.33 to 26.87",
+                        "26.87 to 47.40",
+                        "47.40 to 67.94",
+                        "67.94 to 88.48",
+                        "88.48 to 109.02",
+                        "109.02 to 129.55",
+                        "129.55 to 150.09",
+                        "150.09 to 170.63",
+                        "170.63 to 191.16",
+                        "191.16 to 211.70",
+                    ],
+                    dtype="<U16",
+                ),
+                "x": np.array(
+                    [
+                        16.5985,
+                        37.1355,
+                        57.6725,
+                        78.2095,
+                        98.7465,
+                        119.2835,
+                        139.8205,
+                        160.3575,
+                        180.8945,
+                        201.4315,
+                    ]
+                ),
+                "y": np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 1]),
+            },
+            {
+                "name": "Abdomen",
+                "text": np.array(
+                    [
+                        "6.33 to 26.87",
+                        "26.87 to 47.40",
+                        "47.40 to 67.94",
+                        "67.94 to 88.48",
+                        "88.48 to 109.02",
+                        "109.02 to 129.55",
+                        "129.55 to 150.09",
+                        "150.09 to 170.63",
+                        "170.63 to 191.16",
+                        "191.16 to 211.70",
+                    ],
+                    dtype="<U16",
+                ),
+                "x": np.array(
+                    [
+                        16.5985,
+                        37.1355,
+                        57.6725,
+                        78.2095,
+                        98.7465,
+                        119.2835,
+                        139.8205,
+                        160.3575,
+                        180.8945,
+                        201.4315,
+                    ]
+                ),
+                "y": np.array([0, 1, 0, 0, 0, 0, 0, 0, 0, 0]),
+            },
+            {
+                "name": "XR CHEST",
+                "text": np.array(
+                    [
+                        "6.33 to 26.87",
+                        "26.87 to 47.40",
+                        "47.40 to 67.94",
+                        "67.94 to 88.48",
+                        "88.48 to 109.02",
+                        "109.02 to 129.55",
+                        "129.55 to 150.09",
+                        "150.09 to 170.63",
+                        "170.63 to 191.16",
+                        "191.16 to 211.70",
+                    ],
+                    dtype="<U16",
+                ),
+                "x": np.array(
+                    [
+                        16.5985,
+                        37.1355,
+                        57.6725,
+                        78.2095,
+                        98.7465,
+                        119.2835,
+                        139.8205,
+                        160.3575,
+                        180.8945,
+                        201.4315,
+                    ]
+                ),
+                "y": np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+            },
+        ]
+
+        for idx, dataset in enumerate(standard_data):
+            self.assertEqual(chart_data[idx]["name"], dataset["name"])
+            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"])
+            np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
 
     def test_study_freq(self):
         # Test of mean and median DAP, count, system and study description names

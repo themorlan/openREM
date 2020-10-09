@@ -150,7 +150,7 @@ def generate_required_dx_charts_list(profile):
         if profile.plotHistograms:
             required_charts.append(
                 {
-                    "title": "Histogram of DAP for each acquisition protocol",
+                    "title": "Histogram of kVp for each acquisition protocol",
                     "var_name": "acquisitionHistogramkVp",
                 }
             )
@@ -180,7 +180,7 @@ def generate_required_dx_charts_list(profile):
         if profile.plotHistograms:
             required_charts.append(
                 {
-                    "title": "Histogram of DAP for each acquisition protocol",
+                    "title": "Histogram of mAs for each acquisition protocol",
                     "var_name": "acquisitionHistogrammAs",
                 }
             )
@@ -589,7 +589,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     facet_names = list(sorted_acquisition_kvp_categories.values())[0]
 
                 return_structure[
-                    "acquisitionHistogramDAPData"
+                    "acquisitionHistogramkVpData"
                 ] = plotly_histogram_barchart(
                     df,
                     group_by_col,
@@ -680,7 +680,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     facet_names = list(sorted_acquisition_mas_categories.values())[0]
 
                 return_structure[
-                    "acquisitionHistogramDAPData"
+                    "acquisitionHistogrammAsData"
                 ] = plotly_histogram_barchart(
                     df,
                     group_by_col,
