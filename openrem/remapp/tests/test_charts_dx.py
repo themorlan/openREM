@@ -144,6 +144,9 @@ class ChartsDX(TestCase):
             chart_y_data = chart_data[i]["y"]
             chart_x_data = chart_data[i]["x"]
 
+            chart_y_data = [y for y, _ in sorted(zip(chart_y_data, chart_x_data))]
+            chart_x_data = sorted(chart_x_data)
+
             chart_x_data = [x for _, x in sorted(zip(chart_y_data, chart_x_data))]
             chart_y_data = sorted(chart_y_data)
 
@@ -679,6 +682,254 @@ class ChartsDX(TestCase):
                     [1.45, 2.35, 3.25, 4.15, 5.05, 5.95, 6.85, 7.75, 8.65, 9.55]
                 ),
                 "y": np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+            },
+        ]
+
+        for idx, dataset in enumerate(standard_data):
+            self.assertEqual(chart_data[idx]["name"], dataset["name"])
+            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"])
+            np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
+
+    def test_acq_kvp(self):
+        # Test of mean and median mas, count, system and acquisition protocol names
+        # Also tests raw data going into the box plots
+        f = self.login_get_filterset()
+
+        # Set user profile options
+        self.user.userprofile.plotDXAcquisitionMeankVp = True
+        self.user.userprofile.plotMean = True
+        self.user.userprofile.plotMedian = True
+        self.user.userprofile.plotBoxplots = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        # Acquisition average data tests
+        chart_data = self.chart_data["acquisitionMeankVpData"]["data"]
+
+        standard_data = [
+            {
+                "customdata": np.array(
+                    [[0.0, 69.81999967, 3.0], [0.0, 80.0, 2.0], [0.0, 100.0, 1.0]]
+                ),
+                "name": "All systems",
+                "x": np.array(["ABD_1_VIEW", "AEC", "AP"], dtype=object),
+                "y": np.array([69.81999967, 80.0, 100.0]),
+            }
+        ]
+
+        np.testing.assert_almost_equal(
+            chart_data[0]["customdata"], standard_data[0]["customdata"]
+        )
+        np.testing.assert_equal(chart_data[0]["name"], standard_data[0]["name"])
+        np.testing.assert_equal(chart_data[0]["x"], standard_data[0]["x"])
+        np.testing.assert_almost_equal(chart_data[0]["y"], standard_data[0]["y"])
+
+        # Check on the boxplot data
+        chart_data = self.chart_data["acquisitionBoxplotkVpData"]["data"]
+
+        standard_data = [
+            {
+                "name": "All systems",
+                "x": np.array(
+                    ["ABD_1_VIEW", "ABD_1_VIEW", "ABD_1_VIEW", "AEC", "AEC", "AP"],
+                    dtype=object,
+                ),
+                "y": np.array([69.639999, 69.860001, 69.959999, 80.0, 80.0, 100.0]),
+            }
+        ]
+
+        np.testing.assert_equal(chart_data[0]["name"], standard_data[0]["name"])
+        self.check_boxplot_xy(
+            [standard_data[0]["x"]], [standard_data[0]["y"]], chart_data
+        )
+
+        # Repeat the above, but plot a series per system
+        self.user.userprofile.plotSeriesPerSystem = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        chart_data = self.chart_data["acquisitionMeankVpData"]["data"]
+
+        standard_data = [
+            {
+                "customdata": np.array(
+                    [[0.0, np.nan, 0.0], [0.0, 80.0, 2.0], [0.0, np.nan, 0.0]]
+                ),
+                "name": "Carestream Clinic KODAK7500",
+                "x": np.array(["ABD_1_VIEW", "AEC", "AP"], dtype=object),
+                "y": np.array([np.nan, 80.0, np.nan]),
+            },
+            {
+                "customdata": np.array(
+                    [[1.0, 69.81999967, 3.0], [1.0, np.nan, 0.0], [1.0, np.nan, 0.0]]
+                ),
+                "name": "Digital Mobile Hospital 01234MOB54",
+                "x": np.array(["ABD_1_VIEW", "AEC", "AP"], dtype=object),
+                "y": np.array([69.81999967, np.nan, np.nan]),
+            },
+            {
+                "customdata": np.array(
+                    [[2.0, np.nan, 0.0], [2.0, np.nan, 0.0], [2.0, 100.0, 1.0]]
+                ),
+                "name": "LICARDR0004",
+                "x": np.array(["ABD_1_VIEW", "AEC", "AP"], dtype=object),
+                "y": np.array([np.nan, np.nan, 100.0]),
+            },
+        ]
+
+        for idx, dataset in enumerate(standard_data):
+            np.testing.assert_almost_equal(
+                chart_data[idx]["customdata"], dataset["customdata"]
+            )
+            np.testing.assert_equal(chart_data[idx]["name"], dataset["name"])
+            np.testing.assert_equal(chart_data[idx]["x"], dataset["x"])
+            np.testing.assert_almost_equal(chart_data[idx]["y"], dataset["y"])
+
+        # Check on the boxplot data
+        chart_data = self.chart_data["acquisitionBoxplotkVpData"]["data"]
+
+        standard_data = [
+            {
+                "name": "Carestream Clinic KODAK7500",
+                "x": np.array(["AEC", "AEC"], dtype=object),
+                "y": np.array([80.0, 80.0]),
+            },
+            {
+                "name": "Digital Mobile Hospital 01234MOB54",
+                "x": np.array(["ABD_1_VIEW", "ABD_1_VIEW", "ABD_1_VIEW"], dtype=object),
+                "y": np.array([69.639999, 69.860001, 69.959999]),
+            },
+            {
+                "name": "LICARDR0004",
+                "x": np.array(["AP"], dtype=object),
+                "y": np.array([100.0]),
+            },
+        ]
+
+        for idx, dataset in enumerate(standard_data):
+            np.testing.assert_equal(chart_data[idx]["name"], dataset["name"])
+            self.check_boxplot_xy(
+                [list(dataset["x"])], [list(dataset["y"])], [chart_data[idx]]
+            )
+
+    def test_acq_kvp_histogram(self):
+        # Test of kVp histogram
+        f = self.login_get_filterset()
+
+        # Set user profile options
+        self.user.userprofile.plotDXAcquisitionMeankVp = True
+        self.user.userprofile.plotMean = True
+        self.user.userprofile.plotHistograms = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        chart_data = self.chart_data["acquisitionHistogramkVpData"]["data"]
+
+        standard_data = [
+            {
+                "name": "ABD_1_VIEW",
+                "text": np.array(
+                    [
+                        "69.64 to 72.68",
+                        "72.68 to 75.71",
+                        "75.71 to 78.75",
+                        "78.75 to 81.78",
+                        "81.78 to 84.82",
+                        "84.82 to 87.86",
+                        "87.86 to 90.89",
+                        "90.89 to 93.93",
+                        "93.93 to 96.96",
+                        "96.96 to 100.00",
+                    ],
+                    dtype="<U15",
+                ),
+                "x": np.array(
+                    [
+                        71.15799905,
+                        74.19399915,
+                        77.22999925,
+                        80.26599935,
+                        83.30199945,
+                        86.33799955,
+                        89.37399965,
+                        92.40999975,
+                        95.44599985,
+                        98.48199995,
+                    ]
+                ),
+                "y": np.array([3, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+            },
+            {
+                "name": "AEC",
+                "text": np.array(
+                    [
+                        "69.64 to 72.68",
+                        "72.68 to 75.71",
+                        "75.71 to 78.75",
+                        "78.75 to 81.78",
+                        "81.78 to 84.82",
+                        "84.82 to 87.86",
+                        "87.86 to 90.89",
+                        "90.89 to 93.93",
+                        "93.93 to 96.96",
+                        "96.96 to 100.00",
+                    ],
+                    dtype="<U15",
+                ),
+                "x": np.array(
+                    [
+                        71.15799905,
+                        74.19399915,
+                        77.22999925,
+                        80.26599935,
+                        83.30199945,
+                        86.33799955,
+                        89.37399965,
+                        92.40999975,
+                        95.44599985,
+                        98.48199995,
+                    ]
+                ),
+                "y": np.array([0, 0, 0, 2, 0, 0, 0, 0, 0, 0]),
+            },
+            {
+                "name": "AP",
+                "text": np.array(
+                    [
+                        "69.64 to 72.68",
+                        "72.68 to 75.71",
+                        "75.71 to 78.75",
+                        "78.75 to 81.78",
+                        "81.78 to 84.82",
+                        "84.82 to 87.86",
+                        "87.86 to 90.89",
+                        "90.89 to 93.93",
+                        "93.93 to 96.96",
+                        "96.96 to 100.00",
+                    ],
+                    dtype="<U15",
+                ),
+                "x": np.array(
+                    [
+                        71.15799905,
+                        74.19399915,
+                        77.22999925,
+                        80.26599935,
+                        83.30199945,
+                        86.33799955,
+                        89.37399965,
+                        92.40999975,
+                        95.44599985,
+                        98.48199995,
+                    ]
+                ),
+                "y": np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 1]),
             },
         ]
 
