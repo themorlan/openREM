@@ -141,22 +141,22 @@ class ChartsDX(TestCase):
 
     def check_boxplot_xy(self, x_data, y_data, chart_data):
         for i in range(len(x_data)):
+            std_x_data = x_data[i]
+            std_y_data = y_data[i]
+            std_y_data = [y for y, _ in sorted(zip(std_y_data, std_x_data))]
+            std_x_data = sorted(std_x_data)
+            std_x_data = [x for _, x in sorted(zip(std_y_data, std_x_data))]
+            std_y_data = sorted(std_y_data)
+
             chart_y_data = chart_data[i]["y"]
             chart_x_data = chart_data[i]["x"]
-
             chart_y_data = [y for y, _ in sorted(zip(chart_y_data, chart_x_data))]
             chart_x_data = sorted(chart_x_data)
-
             chart_x_data = [x for _, x in sorted(zip(chart_y_data, chart_x_data))]
             chart_y_data = sorted(chart_y_data)
 
-            for j in range(len(chart_x_data)):
-                self.assertEqual(chart_x_data[j], x_data[i][j])
-
-                self.assertAlmostEqual(
-                    chart_y_data[j],
-                    y_data[i][j],
-                )
+            np.testing.assert_equal(chart_x_data, std_x_data)
+            np.testing.assert_almost_equal(chart_y_data, std_y_data)
 
     def test_required_charts(self):
         from remapp.views_charts_dx import generate_required_dx_charts_list
