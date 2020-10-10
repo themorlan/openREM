@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-04 12:05+0100\n"
-"PO-Revision-Date: 2020-10-09 06:00+0000\n"
+"PO-Revision-Date: 2020-10-10 22:38+0000\n"
 "Last-Translator: Georg Stamm <stamm.georg@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/openrem/"
 "rtd-installation-linux-non-docker/de/>\n"
@@ -266,26 +266,29 @@ msgstr ""
 #: ../../quick_start_linux.rst:279 9e68e2a63ea442eba9b80f393eb4055a
 msgid "Otherwise see :ref:`activatevirtualenv` and navigate back to that folder:"
 msgstr ""
+"Ansonsten unter ﻿:ref:`activatevirtualenv` nachschauen und in folgenden "
+"Ordner zurückwechseln:"
 
 #: ../../quick_start_linux.rst:298 4849800c0b114ef997e2b7100f249a5f
 msgid "Generate translation binary files"
-msgstr ""
+msgstr "Die Binärdateien der Übersetzung erzeugen"
 
 #: ../../quick_start_linux.rst:305 e6527b65f0f94abab8ef284774860842
+#, fuzzy
 msgid "Webserver"
-msgstr ""
+msgstr "Webserver"
 
 #: ../../quick_start_linux.rst:308 30c4587f9f7b47c6ac4aeb5f2d73ccfc
 msgid "Configure NGINX and Gunicorn"
-msgstr ""
+msgstr "NGINX und Gunicorn konfigurieren"
 
 #: ../../quick_start_linux.rst:310 78745233f12745d5bcb44fa9dff59774
 msgid "Create the OpenREM site config file"
-msgstr ""
+msgstr "Die Konfigurationsdatei für die OpenREM Seite erzeugen"
 
 #: ../../quick_start_linux.rst:333 6a587da92cf24b9c84637cb30e84b58e
 msgid "Remove the default config and make ours active:"
-msgstr ""
+msgstr "Die Defaulteinstellungen löschen und die eigenen aktivieren:"
 
 #: ../../quick_start_linux.rst:343 b1c2424f191c465cbb9eed0b2f06af9a
 msgid ""
@@ -293,62 +296,73 @@ msgid ""
 "need to ensure the virtualenv is active in your console and you are in "
 "the ``site-packages/openrem/`` folder:"
 msgstr ""
+"Die statischen Dateien in den statischen Ordner für NGINX hinzufügen. In der "
+"Konsole überprüfen ob virtualenv aktiv ist und ob Sie sich im ``site-"
+"packages/openrem/`` Ordner befinden:"
 
 #: ../../quick_start_linux.rst:350 846706c5750742ef9a07f23363d54fba
 msgid "Create the Gunicorn systemd service file:"
-msgstr ""
+msgstr "Die systemd Service Datei für Gunicorn erzeugen:"
 
 #: ../../quick_start_linux.rst:373 a8edbb5c1be043e0a504104556ff3395
 msgid "Load the new systemd configurations:"
-msgstr ""
+msgstr "Die neue systemd Konfiguration laden:"
 
 #: ../../quick_start_linux.rst:379 339f7ee1afd74fd49d55ac83b2dff404
 msgid "Set the new Gunicorn service to start on boot:"
-msgstr ""
+msgstr "Den neuen Gunicorn Dienst bei Booten starten:"
 
 #: ../../quick_start_linux.rst:385 bbab0d794f414052b35c60f545cf48f0
 msgid "Start the Gunicorn service, and restart the NGINX service:"
-msgstr ""
+msgstr "Den Gunicorn Dienst starten und den NGINX Dienst neu starten:"
 
 #: ../../quick_start_linux.rst:393 9c32c18f64264ce1a58ee1d42fde5504
 msgid "Test the webserver"
-msgstr ""
+msgstr "Den Webserver testen"
 
 #: ../../quick_start_linux.rst:395 5dcf4b56fe3c48fbb9cd356b5e156468
 msgid "You should now be able to browse to the OpenREM server from another PC."
 msgstr ""
+"Jetzt sollte der Zugriff auf den OpenREM Server von anderen Rechner möglich "
+"sein."
 
 #: ../../quick_start_linux.rst:397 ba7f492b702a49238eb895f1fad2845d
 msgid ""
 "You can check that NGINX and Gunicorn are running with the following two "
 "commands:"
 msgstr ""
+"Ob NGINX und Gunicorn bereit sind kann mit den folgenden zwei Befehlen "
+"überprüft werden:"
 
 #: ../../quick_start_linux.rst:411 b06349e6f1e4451c820e66e832e1810d
 msgid "Celery and Flower"
-msgstr ""
+msgstr "Celery und Flower"
 
 #: ../../quick_start_linux.rst:413 a27d9c87b1cd457c812eb9df224cbc1b
 msgid "First, create a Celery configuration file:"
-msgstr ""
+msgstr "Zuerst eine Celery Konfigurationsdatei anlegen:"
 
 #: ../../quick_start_linux.rst:449 03f32a7432ed47509b3105e6a7df3d35
 msgid "Now create the systemd service files:"
-msgstr ""
+msgstr "Jetzt die systemd-Dienst Datei anlegen:"
 
 #: ../../quick_start_linux.rst:503 c9ae471523874305b13d7be07de79f04
 msgid "Now register, set to start on boot, and start the services:"
 msgstr ""
+"Jetzt die Dienste registrieren, beim Booten als automatisch startend "
+"festlegen und alle Dienste starten:"
 
 #: ../../quick_start_linux.rst:515 8b0849e4c5e54e688475e9d19f4f4a5b
 msgid "DICOM Store SCP"
-msgstr ""
+msgstr "DICOM Store SCP"
 
 #: ../../quick_start_linux.rst:517 a74a71776a3542a3b13ec0834593a82e
 msgid ""
 "Open the following link in a new tab and copy the content (select all "
 "then Ctrl-c): |openrem_orthanc_conf_link|"
 msgstr ""
+"Den nachfolgenden Link in einem neuen Tab öffnen und den Inhalt kopieren ("
+"alles auswählen dann Ctrl-C): |openrem_orthanc_conf_link|"
 
 #: ../../quick_start_linux.rst:519 6e4f05a38a834addbf48726f0b36ea32
 msgid ""
@@ -356,6 +370,10 @@ msgid ""
 "and paste the content in (Shift-Ctrl-v if working directly in the Ubuntu "
 "terminal, something else if you are using PuTTY etc):"
 msgstr ""
+"Die lua Datei erstellen mit der die Verarbeitung für eintreffende DICOM "
+"Objekte festgelegt wird und den Inhalt einfügen (Shift-Ctrl-v wenn Sie sich "
+"direkt in einem Ubuntu Terminalfenster befinden, bzw. auf andere Art und "
+"Weise, wenn Sie PuTTY etc verwenden):"
 
 #: ../../quick_start_linux.rst:526 2241277503e24ea0b4f7be7f9068c911
 msgid ""
@@ -364,10 +382,14 @@ msgid ""
 "too that you might like to change in the second section (not displayed "
 "here):"
 msgstr ""
+"Den oberste Abschnitt wie folgt ändern -- die physikalischen Testbilder "
+"werden standardmäßig gespeichert, auf false setzen um dies zu ändern. Im "
+"zweiten Abschnitt können weitere Einstellungen geändert werden (hier nicht "
+"dargestellt):"
 
 #: ../../quick_start_linux.rst:565 29b5b9ed27794892adafc26e9d9fd746
 msgid "Add the Lua script to the Orthanc config:"
-msgstr ""
+msgstr "Dieses Lua Skript zur Othanc Konfiguration hinzufügen:"
 
 #: ../../quick_start_linux.rst:579 1e4db80227af40e49e9f71f1f2604a8c
 msgid ""
