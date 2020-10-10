@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-04 12:05+0100\n"
 "PO-Revision-Date: 2020-10-12 00:47+0000\n"
-"Last-Translator: Georg Stamm <stamm.georg@gmail.com>\n"
+"Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/openrem/"
 "rtd-installation-linux-non-docker/de/>\n"
 "Language: de\n"
@@ -274,7 +274,6 @@ msgid "Generate translation binary files"
 msgstr "Die Binärdateien der Übersetzung erzeugen"
 
 #: ../../quick_start_linux.rst:305 e6527b65f0f94abab8ef284774860842
-#, fuzzy
 msgid "Webserver"
 msgstr "Webserver"
 
