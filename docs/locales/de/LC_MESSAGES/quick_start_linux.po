@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-04 12:05+0100\n"
-"PO-Revision-Date: 2020-10-10 22:38+0000\n"
+"PO-Revision-Date: 2020-10-12 00:47+0000\n"
 "Last-Translator: Georg Stamm <stamm.georg@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/openrem/"
 "rtd-installation-linux-non-docker/de/>\n"
@@ -397,16 +397,21 @@ msgid ""
 "Orthanc (although if the Lua script is removing all the objects as soon "
 "as they are processed, you won't see much!):"
 msgstr ""
+"Optional kann die HTTP Server Schnittstelle für Orthanc aktiviert werden ("
+"sollte das Lua Skriot alle Objekte nach der Verarbeiten löschen, werden Sie "
+"davon allerdings nicht viel sehen!):"
 
 #: ../../quick_start_linux.rst:590 a2016cb660d046f2979609f32abddbae
 msgid ""
 "To see the Orthanc web interface, go to http://openremserver:8042/ -- of "
 "course change the server name to that of your server!"
 msgstr ""
+"Der Aufruf der Orthanc Web Schnittstelle erfolgt über http://openremserver:"
+"8042/ -- der Servername muss dafür an den eigenen Server angepasst werden!"
 
 #: ../../quick_start_linux.rst:594 3aa408cfc08e4e0383bb3131db62b8ae
 msgid "Allow Orthanc to use DICOM port"
-msgstr ""
+msgstr "Orthanc erlauben den DICOM Port zu verwenden"
 
 #: ../../quick_start_linux.rst:596 0800f5ee55764dc59f5924c9ab7be25a
 msgid ""
@@ -414,28 +419,33 @@ msgid ""
 "specifically the DICOM port of 104, you will need to give the Orthan "
 "binary special permission to do so:"
 msgstr ""
+"Als Standard verwendet Orthanc Orit 4242. Für eine niedrigere Portnummer, "
+"speziell für DICOM Port 104, braucht die Orthanc Binärdatei spezielle "
+"Freigaben:"
 
 #: ../../quick_start_linux.rst:603 64ffe44f42e4431b85e5f5e7231258ec
 msgid "Then edit the Orthanc configuration again:"
-msgstr ""
+msgstr "Die Orthanc Konfiguration erneut bearbeiten:"
 
 #: ../../quick_start_linux.rst:618 9a1fb0c6c4334cc78055843e576e5f82
 msgid "Finish off"
-msgstr ""
+msgstr "Fertigstellen"
 
 #: ../../quick_start_linux.rst:620 51322863bd6046109888f3b1f25173c6
 msgid "Restart Orthanc:"
-msgstr ""
+msgstr "Orthanc neu starten:"
 
 #: ../../quick_start_linux.rst:627 b5031eec018747c09ca985f9c0145a11
 msgid "New users, and quick access to physics folder"
-msgstr ""
+msgstr "Neue Nutzer, und schneller Zugriff auf den Physik-Ordner"
 
 #: ../../quick_start_linux.rst:628 2c61c91f74564c8fbb78ebd8743372b5
 msgid ""
 "This is for new Linux users; for new OpenREM users, refer to :ref:`user-"
 "settings`"
 msgstr ""
+"Das ist für Linux Nutzer neu; neue OpenREM Nutzer bitte unter :ref:`user-"
+"settings` nachsehen"
 
 #: ../../quick_start_linux.rst:630 e1a048d7eea148e088d93bc9ef7bd2af
 msgid ""
@@ -446,22 +456,32 @@ msgid ""
 "another (Windows) computer on the network. WinSCP can also be run "
 "directly from a USB stick if you are unable to install software :-)"
 msgstr ""
+"War in der Orthanc Konfiguration ``local use_physics_filtering = true`` "
+"gesetzt, kann den Kollegen eine schnelle Methode für den Zugriff auf den "
+"Physik-Ordner eingerichtet werden. Wird ein Programm wie `WinSCP`_ verwendet "
+"ist es einfach die QA Bilder zu finden und auf einen anderen (Windwos) "
+"Rechner im Netzwerk zu kopieren. WinSCP kann auch direkt von einem USB-Stick "
+"aufgerufen werden, wenn die Software nicht installiert werden kann :-)"
 
 #: ../../quick_start_linux.rst:636 4796bf3619ad495ca37bf7f7ba2b3d58
 msgid "Add the new user (replace  ``newusername`` as appropriate):"
-msgstr ""
+msgstr "Neuen Nutzer hinzufügen (``newusername`` entsprechend ersetzen):"
 
 #: ../../quick_start_linux.rst:642 e87695a7112c48dd821b99553e5b65a3
 msgid ""
 "Then add the new user to the `openrem` group (again, replace the user "
 "name):"
 msgstr ""
+"Den neuen Nutzer der `openrem` Gruppe hinzufügen (den Nutzernamen wieder "
+"entsprechend anpassen):"
 
 #: ../../quick_start_linux.rst:648 f921d385da554cc6b4adc84e1ca82799
 msgid ""
 "Now add a 'sym-link' to the new users home directory (again, replace the "
 "user name):"
 msgstr ""
+"Jetzt einen 'sym-link' auf das Home-Verzeichnis des neuen Nutzers hinzufügen "
+"(den Nutzernamen wieder entsprechend ersetzen):"
 
 #: ../../quick_start_linux.rst:654 4fbec40560e74b2ca77245c5c5d6acda
 msgid ""
@@ -469,14 +489,17 @@ msgid ""
 "on the ``physicsimages`` link when they log in, and should be able to "
 "browse, copy and delete the zip files and folders."
 msgstr ""
+"Der neue Nutzer sollte, sobald er eingeloggt ist,  jetzt durch Klicken auf "
+"``physicsimages`` Link auf den Physik-Ordner zugreifen können, die ZIP "
+"Dateien und Ordner anzeigen, kopieren und löschen können."
 
 #: ../../quick_start_linux.rst:658 d23ff2438a254b11b3dfab03a0be764d
 msgid "Enable RadbbitMQ queue management interface"
-msgstr ""
+msgstr "Die RabbittMQ Management Queue aktivieren"
 
 #: ../../quick_start_linux.rst:664 19b0bd6dda24403c881c9e952a6328f7
 msgid "**Optional -- RabbitMQ Administrator**"
-msgstr ""
+msgstr "**Optional -- RabbitMQ Administrator**"
 
 #: ../../quick_start_linux.rst:666 b1bd1404f7784c9bb666690f728c1d35
 msgid ""
@@ -485,31 +508,36 @@ msgid ""
 "OpenREM interface instead. If you do wish to create a user for this "
 "purpose, see the general instructions to :ref:`enableRabbitMQ`."
 msgstr ""
+"Dies wird nicht benötigt, es sei denn Sie wollen direkt mit der RabbitMQ "
+"Management Schnittstelle interagieren. Die meisten Funktionen können "
+"stattdessen direkt über die OpenREM Schnittstelle ausgeführt werden. Soll "
+"ein eigener Nutzer für diesen Zweck angelegt werden, lesen Sie die "
+"allgemeinen Hinweise unter ref:`enableRabbitMQ`."
 
 #: ../../quick_start_linux.rst:671 04ec89514e3d4be7933069d47368a595
 msgid "Log locations"
-msgstr ""
+msgstr "Ort der Log-Dateien"
 
 #: ../../quick_start_linux.rst:673 e19cbb1a8cf64086978156f4d1c78816
 msgid "OpenREM: ``/var/dose/log/``"
-msgstr ""
+msgstr "OpenREM: ``/var/dose/log/``"
 
 #: ../../quick_start_linux.rst:674 ef293d8253ab4d5cbfb4264190c37023
 msgid "Celery: ``/var/dose/log/default.log``"
-msgstr ""
+msgstr "Celery: ``/var/dose/log/default.log``"
 
 #: ../../quick_start_linux.rst:675 8aae8159ac10409ab50eb98351aa592d
 msgid "Celery systemd: ``sudo journalctl -u openrem-celery``"
-msgstr ""
+msgstr "Celery systemd: ``sudo journalctl -u openrem-celery``"
 
 #: ../../quick_start_linux.rst:676 f811032eeaf640ad9df7f1b355014820
 msgid "NGINX: ``/var/log/nginx/``"
-msgstr ""
+msgstr "NGINX: ``/var/log/nginx/``"
 
 #: ../../quick_start_linux.rst:677 c442fb1df95d44c6b821dd6130f93e4c
 msgid "Orthanc: ``/var/log/orthanc/Orthanc.log``"
-msgstr ""
+msgstr "Orthanc: ``/var/log/orthanc/Orthanc.log``"
 
 #: ../../quick_start_linux.rst:678 bdf8cb9a9d4a43799d2e87efc9df47b7
 msgid "Gunicorn systemd: ``sudo journalctl -u openrem-gunicorn``"
-msgstr ""
+msgstr "Gunicorn systemd: ``sudo journalctl -u openrem-gunicorn``"
