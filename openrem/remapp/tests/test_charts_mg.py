@@ -146,13 +146,13 @@ class ChartsMG(TestCase):
         self.user.userprofile.plotMedian = True
         self.user.userprofile.plotBoxplots = True
         self.user.userprofile.plotHistograms = True
-        self.user.plotMGStudyPerDayAndHour = True
-        self.user.plotMGAGDvsThickness = True
-        self.user.plotMGkVpvsThickness = True
-        self.user.plotMGmAsvsThickness = True
-        self.user.plotMGaverageAGDvsThickness = True
-        self.user.plotMGaverageAGD = True
-        self.user.plotMGacquisitionFreq = True
+        self.user.userprofile.plotMGStudyPerDayAndHour = True
+        self.user.userprofile.plotMGAGDvsThickness = True
+        self.user.userprofile.plotMGkVpvsThickness = True
+        self.user.userprofile.plotMGmAsvsThickness = True
+        self.user.userprofile.plotMGaverageAGDvsThickness = True
+        self.user.userprofile.plotMGaverageAGD = True
+        self.user.userprofile.plotMGacquisitionFreq = True
         self.user.userprofile.save()
 
         required_charts_list = generate_required_mg_charts_list(self.user.userprofile)
