@@ -143,7 +143,7 @@ def mg_summary_chart_data(request):
     return JsonResponse(return_structure, safe=False)
 
 
-def mg_plot_calculations(f, user_profile):
+def mg_plot_calculations(f, user_profile, return_as_dict=False):
     """Calculations for mammography charts"""
     from .interface.chart_functions import (
         create_dataframe,
@@ -278,6 +278,7 @@ def mg_plot_calculations(f, user_profile):
                         df_facet_category_list=facet_names,
                         df_category_name_list=category_names,
                         stat_name="mean",
+                        return_as_dict=return_as_dict,
                     )
 
                 if user_profile.plotMedian:
@@ -299,6 +300,7 @@ def mg_plot_calculations(f, user_profile):
                         df_facet_category_list=facet_names,
                         df_category_name_list=category_names,
                         stat_name="median",
+                        return_as_dict=return_as_dict,
                     )
 
             if user_profile.plotMGaverageAGD:
@@ -320,6 +322,7 @@ def mg_plot_calculations(f, user_profile):
                             filename="OpenREM MG acquisition protocol AGD mean",
                             sorted_category_list=sorted_acquisition_agd_categories,
                             average_choice="mean",
+                            return_as_dict=return_as_dict,
                         )
 
                     if user_profile.plotMedian:
@@ -332,6 +335,7 @@ def mg_plot_calculations(f, user_profile):
                             filename="OpenREM MG acquisition protocol AGD median",
                             sorted_category_list=sorted_acquisition_agd_categories,
                             average_choice="median",
+                            return_as_dict=return_as_dict,
                         )
 
                 if user_profile.plotBoxplots:
@@ -344,6 +348,7 @@ def mg_plot_calculations(f, user_profile):
                         colourmap=user_profile.plotColourMapChoice,
                         filename="OpenREM MG acquisition protocol AGD boxplot",
                         sorted_category_list=sorted_acquisition_agd_categories,
+                        return_as_dict=return_as_dict,
                     )
 
                 if user_profile.plotHistograms:
@@ -377,6 +382,7 @@ def mg_plot_calculations(f, user_profile):
                         facet_col_wrap=user_profile.plotFacetColWrapVal,
                         df_facet_category_list=facet_names,
                         df_category_name_list=category_names,
+                        return_as_dict=return_as_dict,
                     )
 
         if user_profile.plotMGAGDvsThickness:
@@ -396,6 +402,7 @@ def mg_plot_calculations(f, user_profile):
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM CT acquisition protocol AGD vs thickness",
+                return_as_dict=return_as_dict,
             )
 
         if user_profile.plotMGkVpvsThickness:
@@ -415,6 +422,7 @@ def mg_plot_calculations(f, user_profile):
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM CT acquisition protocol kVp vs thickness",
+                return_as_dict=return_as_dict,
             )
 
         if user_profile.plotMGmAsvsThickness:
@@ -434,6 +442,7 @@ def mg_plot_calculations(f, user_profile):
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM CT acquisition protocol mAs vs thickness",
+                return_as_dict=return_as_dict,
             )
 
         if user_profile.plotMGacquisitionFreq:
@@ -455,6 +464,7 @@ def mg_plot_calculations(f, user_profile):
                 colour_map=user_profile.plotColourMapChoice,
                 file_name="OpenREM MG acquisition protocol frequency",
                 sorted_categories=sorted_categories,
+                return_as_dict=return_as_dict,
             )
 
     #######################################################################
@@ -502,6 +512,7 @@ def mg_plot_calculations(f, user_profile):
                 colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM CT study description workload",
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
+                return_as_dict=return_as_dict,
             )
 
     return return_structure
