@@ -74,9 +74,7 @@ class ChartsMG(TestCase):
         filter_set = ""
         f = MGSummaryListFilter(
             filter_set,
-            queryset=GeneralStudyModuleAttr.objects.filter(
-                modality_type__exact="MG"
-            )
+            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
             .order_by()
             .distinct(),
         )
@@ -199,50 +197,59 @@ class ChartsMG(TestCase):
         # Test the mean data
         standard_data = [
             {
-                'customdata': np.array([[0., 1.29, 2.],
-                                        [0., 0.26, 1.],
-                                        [0., 1.373, 1.]]),
-                'name': 'All systems',
-                'x': np.array(['Blank', 'Flat Field Tomo', 'ROUTINE'], dtype=object),
-                'y': np.array([1.29, 0.26, 1.373]), }]
+                "customdata": np.array(
+                    [[0.0, 1.29, 2.0], [0.0, 0.26, 1.0], [0.0, 1.373, 1.0]]
+                ),
+                "name": "All systems",
+                "x": np.array(["Blank", "Flat Field Tomo", "ROUTINE"], dtype=object),
+                "y": np.array([1.29, 0.26, 1.373]),
+            }
+        ]
 
         chart_data = self.chart_data["acquisitionMeanAGDData"]["data"]
 
         self.assertEqual(standard_data[0]["name"], chart_data[0]["name"])
         np.testing.assert_array_equal(standard_data[0]["x"], chart_data[0]["x"])
-        np.testing.assert_array_almost_equal(standard_data[0]["customdata"], chart_data[0]["customdata"])
+        np.testing.assert_array_almost_equal(
+            standard_data[0]["customdata"], chart_data[0]["customdata"]
+        )
 
         # Test the median data
         standard_data = [
             {
-                'customdata': np.array([[0., 1.29, 2.],
-                                        [0., 0.26, 1.],
-                                        [0., 1.373, 1.]]),
-                'name': 'All systems',
-                'x': np.array(['Blank', 'Flat Field Tomo', 'ROUTINE'], dtype=object),
-                'y': np.array([1.29, 0.26, 1.373]), }]
+                "customdata": np.array(
+                    [[0.0, 1.29, 2.0], [0.0, 0.26, 1.0], [0.0, 1.373, 1.0]]
+                ),
+                "name": "All systems",
+                "x": np.array(["Blank", "Flat Field Tomo", "ROUTINE"], dtype=object),
+                "y": np.array([1.29, 0.26, 1.373]),
+            }
+        ]
 
         chart_data = self.chart_data["acquisitionMedianAGDData"]["data"]
 
         self.assertEqual(standard_data[0]["name"], chart_data[0]["name"])
         np.testing.assert_array_equal(standard_data[0]["x"], chart_data[0]["x"])
-        np.testing.assert_array_almost_equal(standard_data[0]["customdata"], chart_data[0]["customdata"])
+        np.testing.assert_array_almost_equal(
+            standard_data[0]["customdata"], chart_data[0]["customdata"]
+        )
 
         # Check the boxplot data
         standard_data = [
             {
-                'name': 'All systems',
-                'x': np.array(['Flat Field Tomo', 'Blank', 'Blank', 'ROUTINE'], dtype=object),
-                'y': np.array([0.26, 1.28, 1.3, 1.373]),
+                "name": "All systems",
+                "x": np.array(
+                    ["Flat Field Tomo", "Blank", "Blank", "ROUTINE"], dtype=object
+                ),
+                "y": np.array([0.26, 1.28, 1.3, 1.373]),
             }
         ]
 
         chart_data = self.chart_data["acquisitionBoxplotAGDData"]["data"]
 
-        self.assertEqual(standard_data[0]["name"], chart_data[0]["name"])
-        np.testing.assert_array_equal(standard_data[0]["x"], chart_data[0]["x"])
-        np.testing.assert_array_almost_equal(standard_data[0]["y"], chart_data[0]["y"])
-
+        self.check_boxplot_xy(
+            [standard_data[0]["x"]], [standard_data[0]["y"]], chart_data
+        )
 
         # Repeat the above, but plot a series per system
         self.user.userprofile.plotSeriesPerSystem = True
