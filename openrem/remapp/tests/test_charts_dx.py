@@ -1688,7 +1688,6 @@ class ChartsDX(TestCase):
     def test_acquisition_dap_over_time(self):
         from datetime import datetime
 
-        # Test of study workload
         f = self.login_get_filterset()
 
         # Set user profile options
@@ -1960,3 +1959,19 @@ class ChartsDX(TestCase):
             np.testing.assert_array_equal(dataset["name"], chart_data[idx]["name"])
             np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
             np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"])
+
+    def test_empty_acquisition_dap_vs_mass(self):
+        f = self.login_get_filterset()
+
+        # Set user profile options
+        self.user.userprofile.plotDXAcquisitionDAPvsMass = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        standard_data = "<div class='alert alert-warning' role='alert'>No data left after excluding missing values.</div>"
+
+        chart_data = self.chart_data["acquisitionDAPvsMass"]
+
+        self.assertEqual(standard_data, chart_data)

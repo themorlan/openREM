@@ -187,6 +187,13 @@ def calculate_colour_sequence(scale_name="jet", n_colours=10):
     return colour_seq
 
 
+def empty_dataframe_msg():
+    msg = "<div class='alert alert-warning' role='alert'>"
+    msg += "No data left after excluding missing values.</div>"
+
+    return msg
+
+
 def plotly_boxplot(
     df,
     df_name_col,
@@ -528,6 +535,8 @@ def plotly_binned_statistic_barchart(
 
         # Drop any rows with nan values in x or y
         df = df.dropna(subset=[df_x_value_col, df_y_value_col])
+        if df.empty:
+            return empty_dataframe_msg()
 
         for facet_name in df_facet_category_list:
             facet_subset = df[df[df_facet_col] == facet_name]
@@ -797,6 +806,8 @@ def plotly_scatter(
     try:
         # Drop any rows with nan values in x or y
         df = df.dropna(subset=[df_x_value_col, df_y_value_col])
+        if df.empty:
+            return empty_dataframe_msg()
 
         fig = px.scatter(
             df,
