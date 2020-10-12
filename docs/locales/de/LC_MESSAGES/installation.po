@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 18:30+0100\n"
-"PO-Revision-Date: 2020-10-08 16:15+0000\n"
+"PO-Revision-Date: 2020-10-12 08:51+0000\n"
 "Last-Translator: Georg Stamm <stamm.georg@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/openrem/"
 "rtd-installation/de/>\n"
@@ -26,7 +26,7 @@ msgstr "Installation"
 
 #: ../../installation.rst:6
 msgid "Windows or Linux: Docker install"
-msgstr "Windows or Linux: Docker installieren"
+msgstr "Windows oder Linux: Docker Installation"
 
 #: ../../installation.rst:9
 msgid "Preparation"
@@ -34,7 +34,7 @@ msgstr "Vorbereitung"
 
 #: ../../installation.rst:10
 msgid "Install Docker"
-msgstr "Installieren Sie Docker"
+msgstr "Docker installieren"
 
 #: ../../installation.rst:11
 msgid "Download https://bitbucket.org/openrem/docker/get/develop.zip"
@@ -57,13 +57,13 @@ msgid ""
 " in ``docker-compose.yml`` as necessary. A full description of the "
 "options are found in:"
 msgstr ""
-"Variablen in ``.env.prod`` und im ``orthanc_1`` Bereich von ``docker-compose."
-"yml`` entsprechend anpassen. Eine komplette Beschreibung der Optionen findet "
-"sich unter:"
+"Variablen in ``.env.prod`` und im ``orthanc_1`` Abschnitt von ``docker-"
+"compose.yml`` entsprechend anpassen. Eine komplette Beschreibung der "
+"Optionen findet sich unter:"
 
 #: ../../installation.rst:27
 msgid "Start the containers with:"
-msgstr "Den Containter starten mit:"
+msgstr "Die Container starten mit:"
 
 #: ../../installation.rst:33
 msgid "Get the database and translations ready:"
@@ -83,8 +83,8 @@ msgid ""
 "However, it is possible to install without Docker, but only on Linux. The"
 " instructions are a prescriptive install on Ubuntu:"
 msgstr ""
-"Wir empfehlen die Installation über Docker, wie oben beschrieben. Es ist "
-"jedoch eine Installation ohne Docker möglich, jedoch nur für Linux. Die "
+"Wir empfehlen, wie oben beschrieben, die Installation über Docker. Es ist "
+"zwar eine Installation ohne Docker möglich, jedoch nur für Linux. Die "
 "Anleitungen beziehen sich auf eine Installation unter Ubuntu:"
 
 #: ../../installation.rst:58
