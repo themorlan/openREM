@@ -3,23 +3,26 @@
 # This file is distributed under the same license as the OpenREM package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-04 12:05+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-10-08 16:15+0000\n"
+"Last-Translator: Georg Stamm <stamm.georg@gmail.com>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/openrem/"
+"rtd-install-offline/de/>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../install-offline.rst:3 28bcb41c80934219b0fdb1982ac20389
 msgid "Offline Docker installation"
-msgstr ""
+msgstr "Docker Installation ohne Internetzugriff"
 
 #: ../../install-offline.rst:5 2db1f0d53354416d9e54ce5ceb95b853
 msgid ""
@@ -27,68 +30,82 @@ msgid ""
 "required, though access to https://hub.docker.com would make installation"
 " and upgrades much easier."
 msgstr ""
+"OpenREM ist auf einem Server lauffähig, der nicht mit dem Internet verbunden "
+"ist. Jedoch ist die Installation und die späteren Upgrades durch den Zugriff "
+"auf https://hub.docker.com sehr viel einfacher."
 
 #: ../../install-offline.rst:8 d044d15acc06480da3935f63061fe74b
 msgid "The server will need to have Docker installed."
-msgstr ""
+msgstr "Auf den Server muss Docker installiert sein."
 
 #: ../../install-offline.rst:11 9c011e365ac249e48ad935c1269104e3
 msgid "Collect installation files"
-msgstr ""
+msgstr "Zusammenstellung der Installationsdateien"
 
 #: ../../install-offline.rst:13 d1fe9d2588134b9a84e5cff61f41df6e
 msgid "On a computer with internet access:"
-msgstr ""
+msgstr "Auf einem Computer mit Internetzugriff:"
 
 #: ../../install-offline.rst:15 820bb78f6266455d87aa24b38c0354fe
 msgid "Install Docker - this is required to download the images"
 msgstr ""
+"Docker installieren - dies ist notwendig um die Software Images herunter "
+"zuladen"
 
 #: ../../install-offline.rst:16 2679779d92754fc598648ef347184d6f
 msgid "Download https://bitbucket.org/openrem/docker/get/develop.zip"
 msgstr ""
+"Die Datei https://bitbucket.org/openrem/docker/get/develop.zip herunterladen"
 
 #: ../../install-offline.rst:17 ab739596075b42f5bc4ce8b3532fdb49
 msgid "Download the Docker images:"
-msgstr ""
+msgstr "Folgende Docker Images herunterladen:"
 
 #: ../../install-offline.rst:39 89a3f5a44e404fcfa5ff3c07e1bc9658
 msgid "Now save them as tar files:"
-msgstr ""
+msgstr "Als tar-Dateien speichern:"
 
 #: ../../install-offline.rst:61 68685c6b114540deaae6a03ebf5f6aa4
 msgid ""
 "If both the computer with internet access and the target server are Linux"
 " or MacOS the images can be made smaller using gzip, for example:"
 msgstr ""
+"Wenn sowohl der Computer mit Internetzugriff als auch der Ziel-Server mit "
+"Linux oder MacOS laufen, können die Images mittels gzip verkleinert werden, z"
+".B.:"
 
 #: ../../install-offline.rst:68 53ce90d92a8d45c3855b51b96cd65434
 msgid ""
 "Copy all the tar files and the zip file to the server where OpenREM is to"
 " be installed."
 msgstr ""
+"Alle tar Dateien und die zip Dateo auf den Server kopieren auf dem OpenREM "
+"installiert werden soll."
 
 #: ../../install-offline.rst:71 d3d09a275b15462e8745f5b50364da08
 msgid "Load the docker images"
-msgstr ""
+msgstr "Die Docker Images laden"
 
 #: ../../install-offline.rst:73 d42543a50beb44f09b6f176bb9a08c76
 msgid ""
 "On the server where OpenREM is to be installed, in the folder containing "
 "the Docker images:"
 msgstr ""
+"Auf dem Server, auf dem OpenREM installiert werden soll, den Ordner mit den "
+"Docker Images:"
 
 #: ../../install-offline.rst:95 375afec6f5d0407ba84fe262492abd6c
 msgid ""
 "If you have compressed the images with gzip the command is the same but "
 "with the ``.gz`` suffix, for example:"
 msgstr ""
+"Wenn die Images mit gzip komprimiert wurden, ist der Befehl identisch, "
+"lediglich mit einem ``.gz`` Suffix, z.B.:"
 
 #: ../../install-offline.rst:101 13bff0a86a78421c8c31d81a8a1eef9b
 msgid "Check that the images have been loaded:"
-msgstr ""
+msgstr "Überprüfen ob die folgenden Images geladen sind:"
 
 #: ../../install-offline.rst:107 9dbf8e0dd9774bdbb2e230d4ab64a605
 msgid "Continue to :ref:`dockerinstall`"
-msgstr ""
-
+msgstr "Weiter mit :ref:`dockerinstall`"

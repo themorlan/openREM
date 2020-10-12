@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2020-10-12 09:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -289,7 +289,7 @@ msgid "Allow Orthanc to use DICOM port"
 msgstr ""
 
 #: ../../quick_start_linux.rst:596
-msgid "By default, Orthanc uses port 4242. If you wish to use a lower port, specifically the DICOM port of 104, you will need to give the Orthan binary special permission to do so:"
+msgid "By default, Orthanc uses port 4242. If you wish to use a lower port, specifically the DICOM port of 104, you will need to give the Orthanc binary special permission to do so:"
 msgstr ""
 
 #: ../../quick_start_linux.rst:603
@@ -317,7 +317,7 @@ msgid "If you left ``local use_physics_filtering = true`` in the Orthanc configu
 msgstr ""
 
 #: ../../quick_start_linux.rst:636
-msgid "Add the new user (replace  ``newusername`` as appropriate):"
+msgid "Add the new user (replace ``newusername`` as appropriate):"
 msgstr ""
 
 #: ../../quick_start_linux.rst:642

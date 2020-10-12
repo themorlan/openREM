@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 22:50+0100\n"
-"PO-Revision-Date: 2020-10-03 11:37+0000\n"
+"PO-Revision-Date: 2020-10-08 21:16+0000\n"
 "Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/openrem/rtd-index/"
 "de/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #: ../../index.rst:3
 msgid "Welcome to OpenREM's documentation"
-msgstr ""
+msgstr "Willkommen zur Dokumentation zu OpenREM"
 
 #: ../../index.rst:11
 msgid ""
@@ -33,10 +33,16 @@ msgid ""
 "that is suitable for further analysis by suitably qualified medical "
 "physics personnel."
 msgstr ""
+"OpenREM ist eine freie, Opensource-Anwendung zur Überwachung der "
+"Patientenexposition. Die Software können die Daten einer großen Anzahl von "
+"Röntgengeräten importiert und gefiltert über entsprechende graphische "
+"Darstellungen analysiert werden. Die Software ermöglicht auch den Export der "
+"Daten für eine spätere Analsyse durch qualifiziertes Personal aus der "
+"Medizinphysik."
 
 #: ../../index.rst:16
 msgid "Please see `openrem.org <https://openrem.org>`_ for more details."
-msgstr ""
+msgstr "Details finden sich unter `openrem.org <https://openrem.org>`_."
 
 #: ../../index.rst:18
 msgid ""
@@ -61,29 +67,29 @@ msgstr ""
 "in andere Sprachen zu übersetzen, kontaktieren Sie uns bitte: `@_OpenREM "
 "<https://twitter.com/_OpenREM>`_, `Bitbucket <https://bitbucket.org/openrem/"
 "openrem/issues/855/add-other-languages-as-people-volunteer>`_, `Google "
-"Groups <mailto:openrem@googlegroups.com>`__ oder gehen Sie zu `Weblate "
+"Groups <mailto:openrem@googlegroups.com>`_ oder gehen Sie zu `Weblate "
 "<https://hosted.weblate.org/projects/openrem/>`_, um loszulegen. Weitere "
-"Einzelheiten: :doc:`übersetzungen`."
+"Einzelheiten: :doc:`translations`."
 
 #: ../../index.rst:27
 msgid "Contents:"
-msgstr ""
+msgstr "Inhalt:"
 
 #: ../../index.rst:47
 msgid "Indices and tables"
-msgstr ""
+msgstr "Indizes und Tabellen"
 
 #: ../../index.rst:49
 msgid ":ref:`genindex`"
-msgstr ""
+msgstr ":ref:`genindex`"
 
 #: ../../index.rst:50
 msgid ":ref:`modindex`"
-msgstr ""
+msgstr ":ref:`modindex`"
 
 #: ../../index.rst:51
 msgid ":ref:`search`"
-msgstr ""
+msgstr ":ref:`search`"
 
 #~ msgid ""
 #~ "These docs are in British English "

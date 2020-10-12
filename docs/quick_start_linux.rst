@@ -594,7 +594,7 @@ Allow Orthanc to use DICOM port
 -------------------------------
 
 By default, Orthanc uses port 4242. If you wish to use a lower port, specifically the DICOM port of 104, you will need
-to give the Orthan binary special permission to do so:
+to give the Orthanc binary special permission to do so:
 
 .. code-block:: console
 
@@ -633,7 +633,7 @@ the physics folder from their home folder. Then if they use a program like `WinS
 images to another (Windows) computer on the network. WinSCP can also be run directly from a USB stick if you are unable
 to install software :-)
 
-Add the new user (replace  ``newusername`` as appropriate):
+Add the new user (replace ``newusername`` as appropriate):
 
 .. code-block:: console
 
