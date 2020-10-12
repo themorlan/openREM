@@ -13,6 +13,16 @@ def generate_required_ct_charts_list(profile):
 
     required_charts = []
 
+    if (
+        profile.plotCTAcquisitionDLPOverTime
+        or profile.plotCTAcquisitionCTDIOverTime
+        or profile.plotCTStudyMeanDLPOverTime
+        or profile.plotCTRequestDLPOverTime
+    ):
+        keys = list(dict(profile.TIME_PERIOD).keys())
+        values = list(dict(profile.TIME_PERIOD).values())
+        time_period = (values[keys.index(profile.plotDXAcquisitionMeanDAPOverTimePeriod)]).lower()
+
     if profile.plotCTAcquisitionMeanDLP:
         if profile.plotMean:
             required_charts.append(
@@ -113,7 +123,7 @@ def generate_required_ct_charts_list(profile):
                 {
                     "title": mark_safe(
                         "Chart of acquisition protocol mean CTDI<sub>vol</sub> over time ("
-                        + profile.plotCTOverTimePeriod
+                        + time_period
                         + ")"
                     ),
                     "var_name": "acquisitionMeanCTDIOverTime",
@@ -124,7 +134,7 @@ def generate_required_ct_charts_list(profile):
                 {
                     "title": mark_safe(
                         "Chart of acquisition protocol median CTDI<sub>vol</sub> over time ("
-                        + profile.plotCTOverTimePeriod
+                        + time_period
                         + ")"
                     ),
                     "var_name": "acquisitionMedianCTDIOverTime",
@@ -136,7 +146,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append(
                 {
                     "title": "Chart of acquisition protocol mean DLP over time ("
-                    + profile.plotCTOverTimePeriod
+                    + time_period
                     + ")",
                     "var_name": "acquisitionMeanDLPOverTime",
                 }
@@ -145,7 +155,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append(
                 {
                     "title": "Chart of acquisition protocol median DLP over time ("
-                    + profile.plotCTOverTimePeriod
+                    + time_period
                     + ")",
                     "var_name": "acquisitionMedianDLPOverTime",
                 }
@@ -330,7 +340,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append(
                 {
                     "title": "Chart of requested procedure mean DLP over time ("
-                    + profile.plotCTOverTimePeriod
+                    + time_period
                     + ")",
                     "var_name": "requestMeanDLPOverTime",
                 }
@@ -339,7 +349,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append(
                 {
                     "title": "Chart of requested procedure median DLP over time ("
-                    + profile.plotCTOverTimePeriod
+                    + time_period
                     + ")",
                     "var_name": "requestMedianDLPOverTime",
                 }
@@ -358,7 +368,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append(
                 {
                     "title": "Chart of study description mean DLP over time ("
-                    + profile.plotCTOverTimePeriod
+                    + time_period
                     + ")",
                     "var_name": "studyMeanDLPOverTime",
                 }
@@ -367,7 +377,7 @@ def generate_required_ct_charts_list(profile):
             required_charts.append(
                 {
                     "title": "Chart of study description median DLP over time ("
-                    + profile.plotCTOverTimePeriod
+                    + time_period
                     + ")",
                     "var_name": "studyMedianDLPOverTime",
                 }
@@ -441,12 +451,7 @@ def ct_plot_calculations(f, user_profile):
         or user_profile.plotCTStudyMeanDLPOverTime
         or user_profile.plotCTRequestDLPOverTime
     ):
-        # Obtain the key name in the TIME_PERIOD tuple from the user time period choice (the key value)
-        keys = list(dict(user_profile.TIME_PERIOD).keys())
-        values = list(dict(user_profile.TIME_PERIOD).values())
-        plot_timeunit_period = keys[
-            [tp.lower() for tp in values].index(user_profile.plotCTOverTimePeriod)
-        ]
+        plot_timeunit_period = user_profile.plotCTOverTimePeriod
 
     #######################################################################
     # Prepare acquisition-level Pandas DataFrame to use for charts

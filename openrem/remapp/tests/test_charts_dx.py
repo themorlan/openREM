@@ -1684,3 +1684,15 @@ class ChartsDX(TestCase):
             )
             np.testing.assert_equal(dataset["x"], chart_data[idx]["x"])
             np.testing.assert_equal(dataset["y"], chart_data[idx]["y"])
+
+    def test_acquisition_dap_over_time(self):
+        # Test of study workload
+        f = self.login_get_filterset()
+
+        # Set user profile options
+        self.user.userprofile.plotDXAcquisitionMeanDAPOverTime = True
+        self.user.userprofile.plotMean = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)

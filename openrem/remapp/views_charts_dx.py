@@ -11,6 +11,16 @@ def generate_required_dx_charts_list(profile):
     variable name for each required chart"""
     required_charts = []
 
+    if (
+        profile.plotDXAcquisitionMeanDAPOverTime
+        or profile.plotDXAcquisitionMeanmAsOverTime
+        or profile.plotDXAcquisitionMeankVpOverTime
+        or profile.plotDXAcquisitionMeankVpOverTime
+    ):
+        keys = list(dict(profile.TIME_PERIOD).keys())
+        values = list(dict(profile.TIME_PERIOD).values())
+        time_period = (values[keys.index(profile.plotDXAcquisitionMeanDAPOverTimePeriod)]).lower()
+
     if profile.plotDXAcquisitionMeanDAP:
         if profile.plotMean:
             required_charts.append(
@@ -198,7 +208,7 @@ def generate_required_dx_charts_list(profile):
             required_charts.append(
                 {
                     "title": "Chart of mean kVp per acquisition protocol over time ("
-                    + profile.plotDXAcquisitionMeanDAPOverTimePeriod
+                    + time_period
                     + ")",
                     "var_name": "acquisitionMeankVpOverTime",
                 }
@@ -207,7 +217,7 @@ def generate_required_dx_charts_list(profile):
             required_charts.append(
                 {
                     "title": "Chart of median kVp per acquisition protocol over time ("
-                    + profile.plotDXAcquisitionMeanDAPOverTimePeriod
+                    + time_period
                     + ")",
                     "var_name": "acquisitionMediankVpOverTime",
                 }
@@ -218,7 +228,7 @@ def generate_required_dx_charts_list(profile):
             required_charts.append(
                 {
                     "title": "Chart of mean mAs per acquisition protocol over time ("
-                    + profile.plotDXAcquisitionMeanDAPOverTimePeriod
+                    + time_period
                     + ")",
                     "var_name": "acquisitionMeanmAsOverTime",
                 }
@@ -227,7 +237,7 @@ def generate_required_dx_charts_list(profile):
             required_charts.append(
                 {
                     "title": "Chart of median mAs per acquisition protocol over time ("
-                    + profile.plotDXAcquisitionMeanDAPOverTimePeriod
+                    + time_period
                     + ")",
                     "var_name": "acquisitionMedianmAsOverTime",
                 }
@@ -238,7 +248,7 @@ def generate_required_dx_charts_list(profile):
             required_charts.append(
                 {
                     "title": "Chart of mean DAP per acquisition protocol over time ("
-                    + profile.plotDXAcquisitionMeanDAPOverTimePeriod
+                    + time_period
                     + ")",
                     "var_name": "acquisitionMeanDAPOverTime",
                 }
@@ -247,7 +257,7 @@ def generate_required_dx_charts_list(profile):
             required_charts.append(
                 {
                     "title": "Chart of median DAP per acquisition protocol over time ("
-                    + profile.plotDXAcquisitionMeanDAPOverTimePeriod
+                    + time_period
                     + ")",
                     "var_name": "acquisitionMedianDAPOverTime",
                 }
@@ -331,14 +341,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
         or user_profile.plotDXAcquisitionMeankVpOverTime
         or user_profile.plotDXAcquisitionMeanmAsOverTime
     ):
-        # Obtain the key name in the TIME_PERIOD tuple from the user time period choice (the key value)
-        keys = list(dict(user_profile.TIME_PERIOD).keys())
-        values = list(dict(user_profile.TIME_PERIOD).values())
-        plot_timeunit_period = keys[
-            [tp.lower() for tp in values].index(
-                user_profile.plotDXAcquisitionMeanDAPOverTimePeriod
-            )
-        ]
+        plot_timeunit_period = user_profile.plotDXAcquisitionMeanDAPOverTimePeriod
 
     # Set the Plotly chart theme
     plotly_set_default_theme(user_profile.plotThemeChoice)
