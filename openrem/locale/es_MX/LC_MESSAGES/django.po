@@ -8,13 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-12 09:52+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2020-10-13 15:23+0000\n"
+"Last-Translator: Marcelo Sosa <msosa79@outlook.com>\n"
+"Language-Team: Spanish (Mexico) <https://hosted.weblate.org/projects/openrem/"
+"web-interface/es_MX/>\n"
 "Language: es_MX\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 
 #: remapp/exports/ct_export.py:161
 #, python-brace-format
@@ -22,11 +25,15 @@ msgid ""
 "Writing study {row} of {numrows} to All data sheet and individual protocol "
 "sheets"
 msgstr ""
+"Escritura del estudio {row} de {numrows} en Todas las hojas de datos y en "
+"las de protocolos individuales"
 
 #: remapp/netdicom/qrscu.py:79
 msgid ""
 "Checking to see if any response studies are already in the OpenREM database"
 msgstr ""
+"Comprobando si ya hay alguna respuesta de estudios en la base de datos de "
+"OpenREM"
 
 #: remapp/netdicom/qrscu.py:204
 #, python-brace-format
