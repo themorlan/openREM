@@ -1,0 +1,312 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-12 09:52+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: es_MX\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: remapp/exports/ct_export.py:161
+#, python-brace-format
+msgid ""
+"Writing study {row} of {numrows} to All data sheet and individual protocol "
+"sheets"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:79
+msgid ""
+"Checking to see if any response studies are already in the OpenREM database"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:204
+#, python-brace-format
+msgid ""
+"Filter at {level} level on {filter_name} that {filter_type} {filter_list}"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:257
+msgid ""
+"Getting series and image level information and deleting series we can't use"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:807
+msgid "Image level matching for this study is complete (there many be more)"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:817
+msgid "Image level matches are continuing."
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:858 remapp/netdicom/qrscu.py:975
+#: remapp/netdicom/qrscu.py:1080
+msgid "Connection timed out, was aborted or received invalid response"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:906
+msgid "Series level matching for this study is complete (there may be more)"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:916
+msgid "Series level matches are continuing."
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1008
+#, python-brace-format
+msgid "Study level matching for {modalities} is complete"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1021
+#, python-brace-format
+msgid "Matches are continuing for {modalities} studies"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1142
+#, python-brace-format
+msgid "Currently querying for {modality} studies…"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1501
+msgid "Pruning study responses based on inc/exc options"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1529
+msgid "Querying at series level to get more details about studies"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1557
+msgid "Deleting studies we didn't ask for"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1599
+msgid "Pruning series responses"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1658
+msgid "Removing any responses that match data we already have in the database"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1686
+#, python-brace-format
+msgid ""
+"Query complete. Query took {time} and we are left with {studies_left} "
+"studies to move.<br>Of the original {studies_initial} study responses, "
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1697
+#, python-brace-format
+msgid ""
+"only studies with description that include '{text}' removed {num} studies, "
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1704
+#, python-brace-format
+msgid ""
+"studies with description that do not include '{text}' removed {num} studies, "
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1711
+#, python-brace-format
+msgid ""
+"only studies with station names that include '{text}' removed {num} studies, "
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1718
+#, python-brace-format
+msgid ""
+"studies with station names that do not include '{text}' removed {num} "
+"studies, "
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1726
+#, python-brace-format
+msgid ""
+"Removing duplicates of previous objects removed {duplicates_removed} studies."
+msgstr ""
+
+#: remapp/templates/base.html:52 remapp/views.py:2233
+msgid "CT"
+msgstr ""
+
+#: remapp/templates/base.html:56 remapp/views.py:2237
+msgid "Fluoroscopy"
+msgstr ""
+
+#: remapp/templates/base.html:60 remapp/views.py:2241
+msgid "Mammography"
+msgstr ""
+
+#: remapp/templates/base.html:64 remapp/views.py:2245
+msgid "Radiography"
+msgstr ""
+
+#: remapp/templates/base.html:76
+msgid "Imports"
+msgstr ""
+
+#: remapp/templates/base.html:80
+msgid "Import patient size info"
+msgstr ""
+
+#: remapp/templates/base.html:83
+msgid "Previous patient size imports"
+msgstr ""
+
+#: remapp/templates/base.html:86
+msgid "Query remote server"
+msgstr ""
+
+#: remapp/templates/base.html:95
+msgid "Exports"
+msgstr ""
+
+#: remapp/templates/base.html:102
+msgid "Config"
+msgstr ""
+
+#: remapp/templates/base.html:105
+msgid "User level config"
+msgstr ""
+
+#: remapp/templates/base.html:106
+msgid "Chart options"
+msgstr ""
+
+#: remapp/templates/base.html:107
+msgid "Switch charts off"
+msgstr ""
+
+#: remapp/templates/base.html:109
+msgid "View display names & modality"
+msgstr ""
+
+#: remapp/templates/base.html:110
+msgid "View not-patient indicators"
+msgstr ""
+
+#: remapp/templates/base.html:114
+msgid "Home page options"
+msgstr ""
+
+#: remapp/templates/base.html:119
+msgid "System level settings"
+msgstr ""
+
+#: remapp/templates/base.html:120
+msgid "Users"
+msgstr ""
+
+#: remapp/templates/base.html:121
+msgid "Display names & modality"
+msgstr ""
+
+#: remapp/templates/base.html:122
+msgid "DICOM object deletion"
+msgstr ""
+
+#: remapp/templates/base.html:123
+msgid "DICOM networking"
+msgstr ""
+
+#: remapp/templates/base.html:124
+msgid "Patient ID"
+msgstr ""
+
+#: remapp/templates/base.html:125
+msgid "Not-patient indicators"
+msgstr ""
+
+#: remapp/templates/base.html:126
+msgid "Skin dose map"
+msgstr ""
+
+#: remapp/templates/base.html:127
+msgid "Fluoro alert levels"
+msgstr ""
+
+#: remapp/templates/base.html:128
+msgid "Fluoro alert notification"
+msgstr ""
+
+#: remapp/templates/base.html:129
+msgid "Tasks"
+msgstr ""
+
+#: remapp/templates/base.html:144
+msgid "User"
+msgstr ""
+
+#: remapp/templates/base.html:150
+msgid "Change password"
+msgstr ""
+
+#: remapp/templates/base.html:151
+msgid "Logout"
+msgstr ""
+
+#: remapp/templates/base.html:154
+msgid "Login"
+msgstr ""
+
+#: remapp/templates/base.html:161
+msgid "Docs"
+msgstr ""
+
+#: remapp/templates/base.html:168
+msgid "OpenREM documentation - opens in a new tab"
+msgstr ""
+
+#: remapp/templates/base.html:169
+#, python-format
+msgid "OpenREM Documentation (%(docsversion)s)"
+msgstr ""
+
+#: remapp/templates/remapp/home-list-modalities.html:7
+#: remapp/templates/remapp/home.html:202
+msgid "System name"
+msgstr ""
+
+#: remapp/templates/remapp/home-list-modalities.html:8
+#: remapp/templates/remapp/home.html:203
+msgid "Total number of studies"
+msgstr ""
+
+#: remapp/templates/remapp/home-list-modalities.html:9
+#: remapp/templates/remapp/home.html:204
+msgid "Latest study"
+msgstr ""
+
+#: remapp/templates/remapp/home-list-modalities.html:11
+#: remapp/templates/remapp/home-list-modalities.html:13
+#: remapp/templates/remapp/home.html:206 remapp/templates/remapp/home.html:208
+#, python-format
+msgid "Number in last %(day_delta)s days"
+msgstr ""
+
+#: remapp/templates/remapp/home.html:64
+#, python-format
+msgid ""
+"There are %(total_studies)s studies in this database. Page last refreshed on "
+"%(current_time)s"
+msgstr ""
+
+#: remapp/templates/remapp/home.html:69
+msgid "Chart plotting on."
+msgstr ""
+
+#: remapp/templates/remapp/home.html:71
+msgid "Chart plotting off."
+msgstr ""
+
+#: remapp/templates/remapp/home.html:214
+msgid "Please wait - querying the database"
+msgstr ""
