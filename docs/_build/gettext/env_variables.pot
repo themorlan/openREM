@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2020-10-13 20:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -69,7 +69,7 @@ msgid "It may be possible to configure the e-mail server to allow sending of mes
 msgstr ""
 
 #: ../../env_variables.rst:72
-msgid "The ``EMAIL_USE_TLS`` and ``EMAIL_USE_TLS`` options should be configured to match the encryption requirements of the e-mail server. Use ``0`` for False (default) and ``1`` for True."
+msgid "The ``EMAIL_USE_TLS`` and ``EMAIL_USE_SSL`` options should be configured to match the encryption requirements of the e-mail server. Use ``0`` for False (default) and ``1`` for True. Only one of these options should be set to ``1``."
 msgstr ""
 
 #: ../../env_variables.rst:75
