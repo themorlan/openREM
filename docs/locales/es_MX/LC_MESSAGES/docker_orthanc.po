@@ -8,82 +8,95 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 18:30+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2020-10-13 13:40+0000\n"
+"Last-Translator: Marcelo Sosa <msosa79@outlook.com>\n"
+"Language-Team: Spanish (Mexico) <https://hosted.weblate.org/projects/openrem/"
+"rtd-installation-docker-orthanc-config/es_MX/>\n"
 "Language: es_MX\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 
 #: ../../installation.rst:3
 msgid "Installation"
-msgstr ""
+msgstr "Instalación"
 
 #: ../../installation.rst:6
 msgid "Windows or Linux: Docker install"
-msgstr ""
+msgstr "Windows o Linux: Instalación de Docker"
 
 #: ../../installation.rst:9
 msgid "Preparation"
-msgstr ""
+msgstr "Preparación"
 
 #: ../../installation.rst:10
 msgid "Install Docker"
-msgstr ""
+msgstr "Instalación de Docker"
 
 #: ../../installation.rst:11
 msgid "Download https://bitbucket.org/openrem/docker/get/develop.zip"
-msgstr ""
+msgstr "Descargar https://bitbucket.org/openrem/docker/get/develop.zip"
 
 #: ../../installation.rst:16
 msgid "Install"
-msgstr ""
+msgstr "Instalar"
 
 #: ../../installation.rst:17
 msgid "Extract the ZIP file and open a shell (command prompt) in the new folder"
 msgstr ""
+"Extraer el archivo ZIP y abrir shell (símbolo de sistema) en la nueva carpeta"
 
 #: ../../installation.rst:18
 msgid "Customise any variables in ``.env.prod`` and in the ``orthanc_1`` section in ``docker-compose.yml`` as necessary. A full description of the options are found in:"
 msgstr ""
+"Personalizar cualquier variable en ``.env.prod`` and in the ``orthanc_1`` "
+"section in ``docker-compose.yml`` como sea necesario. Una descripción "
+"completa de las opciones puede ser encontrada en:"
 
 #: ../../installation.rst:27
 msgid "Start the containers with:"
-msgstr ""
+msgstr "Iniciar los contenedores con:"
 
 #: ../../installation.rst:33
 msgid "Get the database and translations ready:"
-msgstr ""
+msgstr "Tener las bases de datos y las traducciones listas:"
 
 #: ../../installation.rst:43
 msgid "Open a web browser and go to http://localhost/"
-msgstr ""
+msgstr "Abrir un navegador web e ir a http://localhost/"
 
 #: ../../installation.rst:46
 msgid "Non-docker alternative - Linux only"
-msgstr ""
+msgstr "Alternativa sin docker - Solo Linux"
 
 #: ../../installation.rst:48
 msgid "We recommend all installations to use the Docker method described above. However, it is possible to install without Docker, but only on Linux. The instructions are a prescriptive install on Ubuntu:"
 msgstr ""
+"Se recomienda que todas las instalaciones utilicen el método Docker como se "
+"describe mas arriba. Sin embargo, es posible realizar una instalación sin "
+"Docker, solo en Linux. Las instrucciones son una instalación prescriptiva en "
+"Ubuntu:"
 
 #: ../../installation.rst:58
 msgid "Offline Docker installations"
-msgstr ""
+msgstr "Instalación de Docker sin conexión"
 
 #: ../../installation.rst:67
 msgid "Upgrading an existing installation"
-msgstr ""
+msgstr "Actualizando una instalación existente"
 
 #: ../../installation.rst:78
 msgid "Databases"
-msgstr ""
+msgstr "Bases de dato"
 
 #: ../../installation.rst:80
 msgid "To be removed here, but we need some of the content in other pages, so leaving for now"
 msgstr ""
+"A ser removido aquí, pero necesitamos parte del contenido en otras paginas, "
+"entonces lo dejamos por ahora"
 
 #: ../../installation.rst:93
 msgid "Web servers"
-msgstr ""
+msgstr "Servidores Web"
