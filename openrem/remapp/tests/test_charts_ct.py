@@ -117,7 +117,7 @@ class ChartsCT(TestCase):
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(dataset["name"], chart_data[idx]["name"])
             np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_equal(dataset["y"], chart_data[idx]["y"])
+            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"])
             np.testing.assert_array_almost_equal(
                 dataset["customdata"], chart_data[idx]["customdata"]
             )
@@ -282,3 +282,1033 @@ class ChartsCT(TestCase):
 
         for ref_var_name in reference_var_names:
             self.assertTrue(ref_var_name in chart_var_names)
+
+    def test_acq_dlp(self):
+        # Test of mean and median acquisition DLP, count, system and acquisition protocol names
+        # Also tests raw data going into the box plots
+        f = self.login_get_filterset()
+
+        # Set user profile options
+        self.user.userprofile.plotCTAcquisitionMeanDLP = True
+        self.user.userprofile.plotMean = True
+        self.user.userprofile.plotMedian = True
+        self.user.userprofile.plotBoxplots = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        # Test the mean data
+        standard_data = [
+            {
+                "customdata": np.array(
+                    [
+                        [0.0, 111.3, 1.0],
+                        [0.0, 202.684375, 16.0],
+                        [0.0, 29.67, 1.0],
+                        [0.0, 50.58, 1.0],
+                        [0.0, 129.89, 1.0],
+                        [0.0, 21.18, 1.0],
+                        [0.0, 24.05, 1.0],
+                        [0.0, 74.98, 2.0],
+                        [0.0, 369.34, 1.0],
+                        [0.0, 815.33, 1.0],
+                        [0.0, 3.61, 1.0],
+                        [0.0, 1.2, 1.0],
+                        [0.0, 708.2, 1.0],
+                        [0.0, 11.51, 1.0],
+                    ]
+                ),
+                "name": "All systems",
+                "x": np.array(
+                    [
+                        "10.13 RADIOTHERAPY QA",
+                        "Blank",
+                        "DE_laser align",
+                        "DS 100kV",
+                        "DS 140kV",
+                        "DS 50mAs",
+                        "DS 80kV",
+                        "DS axial std",
+                        "DS_hel p 0.23",
+                        "DS_helical",
+                        "Monitoring",
+                        "PreMonitoring",
+                        "TAP",
+                        "testÃ¦Ã¸Ã¥",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        111.3,
+                        202.684375,
+                        29.67,
+                        50.58,
+                        129.89,
+                        21.18,
+                        24.05,
+                        74.98,
+                        369.34,
+                        815.33,
+                        3.61,
+                        1.2,
+                        708.2,
+                        11.51,
+                    ]
+                ),
+            }
+        ]
+
+        chart_data = self.chart_data["acquisitionMeanDLPData"]["data"]
+
+        self.check_average_data(chart_data, standard_data)
+
+        # Test the median data
+        standard_data = [
+            {
+                "customdata": np.array(
+                    [
+                        [0.0, 111.3, 1.0],
+                        [0.0, 148.585, 16.0],
+                        [0.0, 29.67, 1.0],
+                        [0.0, 50.58, 1.0],
+                        [0.0, 129.89, 1.0],
+                        [0.0, 21.18, 1.0],
+                        [0.0, 24.05, 1.0],
+                        [0.0, 74.98, 2.0],
+                        [0.0, 369.34, 1.0],
+                        [0.0, 815.33, 1.0],
+                        [0.0, 3.61, 1.0],
+                        [0.0, 1.2, 1.0],
+                        [0.0, 708.2, 1.0],
+                        [0.0, 11.51, 1.0],
+                    ]
+                ),
+                "name": "All systems",
+                "x": np.array(
+                    [
+                        "10.13 RADIOTHERAPY QA",
+                        "Blank",
+                        "DE_laser align",
+                        "DS 100kV",
+                        "DS 140kV",
+                        "DS 50mAs",
+                        "DS 80kV",
+                        "DS axial std",
+                        "DS_hel p 0.23",
+                        "DS_helical",
+                        "Monitoring",
+                        "PreMonitoring",
+                        "TAP",
+                        "testÃ¦Ã¸Ã¥",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        111.3,
+                        148.585,
+                        29.67,
+                        50.58,
+                        129.89,
+                        21.18,
+                        24.05,
+                        74.98,
+                        369.34,
+                        815.33,
+                        3.61,
+                        1.2,
+                        708.2,
+                        11.51,
+                    ]
+                ),
+            }
+        ]
+
+        chart_data = self.chart_data["acquisitionMedianDLPData"]["data"]
+
+        self.check_average_data(chart_data, standard_data)
+
+        # Check the boxplot data
+        standard_data = [
+            {
+                "name": "All systems",
+                "x": np.array(
+                    [
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "10.13 RADIOTHERAPY QA",
+                        "DE_laser align",
+                        "DS axial std",
+                        "DS 50mAs",
+                        "DS 140kV",
+                        "DS 100kV",
+                        "DS 80kV",
+                        "DS axial std",
+                        "DS_helical",
+                        "DS_hel p 0.23",
+                        "testÃ¦Ã¸Ã¥",
+                        "PreMonitoring",
+                        "Monitoring",
+                        "TAP",
+                        "Blank",
+                        "Blank",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        155.97,
+                        259.85,
+                        16.41,
+                        429.19,
+                        246.69,
+                        3.12,
+                        890.26,
+                        2.92,
+                        352.24,
+                        14.66,
+                        14.66,
+                        15.83,
+                        16.41,
+                        475.04,
+                        111.3,
+                        29.67,
+                        84.28,
+                        21.18,
+                        129.89,
+                        50.58,
+                        24.05,
+                        65.68,
+                        815.33,
+                        369.34,
+                        11.51,
+                        1.2,
+                        3.61,
+                        708.2,
+                        208.5,
+                        141.2,
+                    ]
+                ),
+            }
+        ]
+
+        chart_data = self.chart_data["acquisitionBoxplotDLPData"]["data"]
+
+        self.check_boxplot_data(chart_data, standard_data)
+
+        # Repeat the above, but plot a series per system
+        self.user.userprofile.plotSeriesPerSystem = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        # Test the mean data
+        standard_data = [
+            {
+                "customdata": np.array(
+                    [
+                        [0.0, np.nan, 0.0],
+                        [0.0, 182.03545455, 11.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                    ]
+                ),
+                "name": "A VCT Hospital VCTScanner",
+                "x": np.array(
+                    [
+                        "10.13 RADIOTHERAPY QA",
+                        "Blank",
+                        "DE_laser align",
+                        "DS 100kV",
+                        "DS 140kV",
+                        "DS 50mAs",
+                        "DS 80kV",
+                        "DS axial std",
+                        "DS_hel p 0.23",
+                        "DS_helical",
+                        "Monitoring",
+                        "PreMonitoring",
+                        "TAP",
+                        "testÃ¦Ã¸Ã¥",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        np.nan,
+                        182.03545455,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                    ]
+                ),
+            },
+            {
+                "customdata": np.array(
+                    [
+                        [1.0, np.nan, 0.0],
+                        [1.0, 207.91, 2.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                    ]
+                ),
+                "name": "An Optima Hospital geoptima",
+                "x": np.array(
+                    [
+                        "10.13 RADIOTHERAPY QA",
+                        "Blank",
+                        "DE_laser align",
+                        "DS 100kV",
+                        "DS 140kV",
+                        "DS 50mAs",
+                        "DS 80kV",
+                        "DS axial std",
+                        "DS_hel p 0.23",
+                        "DS_helical",
+                        "Monitoring",
+                        "PreMonitoring",
+                        "TAP",
+                        "testÃ¦Ã¸Ã¥",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        np.nan,
+                        207.91,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                    ]
+                ),
+            },
+            {
+                "customdata": np.array(
+                    [
+                        [2.0, np.nan, 0.0],
+                        [2.0, np.nan, 0.0],
+                        [2.0, 29.67, 1.0],
+                        [2.0, 50.58, 1.0],
+                        [2.0, 129.89, 1.0],
+                        [2.0, 21.18, 1.0],
+                        [2.0, 24.05, 1.0],
+                        [2.0, 74.98, 2.0],
+                        [2.0, 369.34, 1.0],
+                        [2.0, 815.33, 1.0],
+                        [2.0, np.nan, 0.0],
+                        [2.0, np.nan, 0.0],
+                        [2.0, np.nan, 0.0],
+                        [2.0, np.nan, 0.0],
+                    ]
+                ),
+                "name": "Gnats Bottom Hospital CTAWP91919",
+                "x": np.array(
+                    [
+                        "10.13 RADIOTHERAPY QA",
+                        "Blank",
+                        "DE_laser align",
+                        "DS 100kV",
+                        "DS 140kV",
+                        "DS 50mAs",
+                        "DS 80kV",
+                        "DS axial std",
+                        "DS_hel p 0.23",
+                        "DS_helical",
+                        "Monitoring",
+                        "PreMonitoring",
+                        "TAP",
+                        "testÃ¦Ã¸Ã¥",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        np.nan,
+                        np.nan,
+                        29.67,
+                        50.58,
+                        129.89,
+                        21.18,
+                        24.05,
+                        74.98,
+                        369.34,
+                        815.33,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                    ]
+                ),
+            },
+            {
+                "customdata": np.array(
+                    [
+                        [3.0, np.nan, 0.0],
+                        [3.0, np.nan, 0.0],
+                        [3.0, np.nan, 0.0],
+                        [3.0, np.nan, 0.0],
+                        [3.0, np.nan, 0.0],
+                        [3.0, np.nan, 0.0],
+                        [3.0, np.nan, 0.0],
+                        [3.0, np.nan, 0.0],
+                        [3.0, np.nan, 0.0],
+                        [3.0, np.nan, 0.0],
+                        [3.0, 3.61, 1.0],
+                        [3.0, 1.2, 1.0],
+                        [3.0, 708.2, 1.0],
+                        [3.0, 11.51, 1.0],
+                    ]
+                ),
+                "name": "Hospital Number One Trust CTAWP00001",
+                "x": np.array(
+                    [
+                        "10.13 RADIOTHERAPY QA",
+                        "Blank",
+                        "DE_laser align",
+                        "DS 100kV",
+                        "DS 140kV",
+                        "DS 50mAs",
+                        "DS 80kV",
+                        "DS axial std",
+                        "DS_hel p 0.23",
+                        "DS_helical",
+                        "Monitoring",
+                        "PreMonitoring",
+                        "TAP",
+                        "testÃ¦Ã¸Ã¥",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        3.61,
+                        1.2,
+                        708.2,
+                        11.51,
+                    ]
+                ),
+            },
+            {
+                "customdata": np.array(
+                    [
+                        [4.0, 111.3, 1.0],
+                        [4.0, 475.04, 1.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                    ]
+                ),
+                "name": "OpenREM centre médical rt16",
+                "x": np.array(
+                    [
+                        "10.13 RADIOTHERAPY QA",
+                        "Blank",
+                        "DE_laser align",
+                        "DS 100kV",
+                        "DS 140kV",
+                        "DS 50mAs",
+                        "DS 80kV",
+                        "DS axial std",
+                        "DS_hel p 0.23",
+                        "DS_helical",
+                        "Monitoring",
+                        "PreMonitoring",
+                        "TAP",
+                        "testÃ¦Ã¸Ã¥",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        111.3,
+                        475.04,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                    ]
+                ),
+            },
+            {
+                "customdata": np.array(
+                    [
+                        [5.0, np.nan, 0.0],
+                        [5.0, 174.85, 2.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                    ]
+                ),
+                "name": "Oxbridge County Hospital CTTOSHIBA1",
+                "x": np.array(
+                    [
+                        "10.13 RADIOTHERAPY QA",
+                        "Blank",
+                        "DE_laser align",
+                        "DS 100kV",
+                        "DS 140kV",
+                        "DS 50mAs",
+                        "DS 80kV",
+                        "DS axial std",
+                        "DS_hel p 0.23",
+                        "DS_helical",
+                        "Monitoring",
+                        "PreMonitoring",
+                        "TAP",
+                        "testÃ¦Ã¸Ã¥",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        np.nan,
+                        174.85,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                    ]
+                ),
+            },
+        ]
+
+        chart_data = self.chart_data["acquisitionMeanDLPData"]["data"]
+
+        self.check_average_data(chart_data, standard_data)
+
+        # Test the median data
+        standard_data = [
+            {
+                "customdata": np.array(
+                    [
+                        [0.0, np.nan, 0.0],
+                        [0.0, 16.41, 11.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                        [0.0, np.nan, 0.0],
+                    ]
+                ),
+                "name": "A VCT Hospital VCTScanner",
+                "x": np.array(
+                    [
+                        "10.13 RADIOTHERAPY QA",
+                        "Blank",
+                        "DE_laser align",
+                        "DS 100kV",
+                        "DS 140kV",
+                        "DS 50mAs",
+                        "DS 80kV",
+                        "DS axial std",
+                        "DS_hel p 0.23",
+                        "DS_helical",
+                        "Monitoring",
+                        "PreMonitoring",
+                        "TAP",
+                        "testÃ¦Ã¸Ã¥",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        np.nan,
+                        16.41,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                    ]
+                ),
+            },
+            {
+                "customdata": np.array(
+                    [
+                        [1.0, np.nan, 0.0],
+                        [1.0, 207.91, 2.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                        [1.0, np.nan, 0.0],
+                    ]
+                ),
+                "name": "An Optima Hospital geoptima",
+                "x": np.array(
+                    [
+                        "10.13 RADIOTHERAPY QA",
+                        "Blank",
+                        "DE_laser align",
+                        "DS 100kV",
+                        "DS 140kV",
+                        "DS 50mAs",
+                        "DS 80kV",
+                        "DS axial std",
+                        "DS_hel p 0.23",
+                        "DS_helical",
+                        "Monitoring",
+                        "PreMonitoring",
+                        "TAP",
+                        "testÃ¦Ã¸Ã¥",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        np.nan,
+                        207.91,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                    ]
+                ),
+            },
+            {
+                "customdata": np.array(
+                    [
+                        [2.0, np.nan, 0.0],
+                        [2.0, np.nan, 0.0],
+                        [2.0, 29.67, 1.0],
+                        [2.0, 50.58, 1.0],
+                        [2.0, 129.89, 1.0],
+                        [2.0, 21.18, 1.0],
+                        [2.0, 24.05, 1.0],
+                        [2.0, 74.98, 2.0],
+                        [2.0, 369.34, 1.0],
+                        [2.0, 815.33, 1.0],
+                        [2.0, np.nan, 0.0],
+                        [2.0, np.nan, 0.0],
+                        [2.0, np.nan, 0.0],
+                        [2.0, np.nan, 0.0],
+                    ]
+                ),
+                "name": "Gnats Bottom Hospital CTAWP91919",
+                "x": np.array(
+                    [
+                        "10.13 RADIOTHERAPY QA",
+                        "Blank",
+                        "DE_laser align",
+                        "DS 100kV",
+                        "DS 140kV",
+                        "DS 50mAs",
+                        "DS 80kV",
+                        "DS axial std",
+                        "DS_hel p 0.23",
+                        "DS_helical",
+                        "Monitoring",
+                        "PreMonitoring",
+                        "TAP",
+                        "testÃ¦Ã¸Ã¥",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        np.nan,
+                        np.nan,
+                        29.67,
+                        50.58,
+                        129.89,
+                        21.18,
+                        24.05,
+                        74.98,
+                        369.34,
+                        815.33,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                    ]
+                ),
+            },
+            {
+                "customdata": np.array(
+                    [
+                        [3.0, np.nan, 0.0],
+                        [3.0, np.nan, 0.0],
+                        [3.0, np.nan, 0.0],
+                        [3.0, np.nan, 0.0],
+                        [3.0, np.nan, 0.0],
+                        [3.0, np.nan, 0.0],
+                        [3.0, np.nan, 0.0],
+                        [3.0, np.nan, 0.0],
+                        [3.0, np.nan, 0.0],
+                        [3.0, np.nan, 0.0],
+                        [3.0, 3.61, 1.0],
+                        [3.0, 1.2, 1.0],
+                        [3.0, 708.2, 1.0],
+                        [3.0, 11.51, 1.0],
+                    ]
+                ),
+                "name": "Hospital Number One Trust CTAWP00001",
+                "x": np.array(
+                    [
+                        "10.13 RADIOTHERAPY QA",
+                        "Blank",
+                        "DE_laser align",
+                        "DS 100kV",
+                        "DS 140kV",
+                        "DS 50mAs",
+                        "DS 80kV",
+                        "DS axial std",
+                        "DS_hel p 0.23",
+                        "DS_helical",
+                        "Monitoring",
+                        "PreMonitoring",
+                        "TAP",
+                        "testÃ¦Ã¸Ã¥",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        3.61,
+                        1.2,
+                        708.2,
+                        11.51,
+                    ]
+                ),
+            },
+            {
+                "customdata": np.array(
+                    [
+                        [4.0, 111.3, 1.0],
+                        [4.0, 475.04, 1.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                        [4.0, np.nan, 0.0],
+                    ]
+                ),
+                "name": "OpenREM centre médical rt16",
+                "x": np.array(
+                    [
+                        "10.13 RADIOTHERAPY QA",
+                        "Blank",
+                        "DE_laser align",
+                        "DS 100kV",
+                        "DS 140kV",
+                        "DS 50mAs",
+                        "DS 80kV",
+                        "DS axial std",
+                        "DS_hel p 0.23",
+                        "DS_helical",
+                        "Monitoring",
+                        "PreMonitoring",
+                        "TAP",
+                        "testÃ¦Ã¸Ã¥",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        111.3,
+                        475.04,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                    ]
+                ),
+            },
+            {
+                "customdata": np.array(
+                    [
+                        [5.0, np.nan, 0.0],
+                        [5.0, 174.85, 2.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                        [5.0, np.nan, 0.0],
+                    ]
+                ),
+                "name": "Oxbridge County Hospital CTTOSHIBA1",
+                "x": np.array(
+                    [
+                        "10.13 RADIOTHERAPY QA",
+                        "Blank",
+                        "DE_laser align",
+                        "DS 100kV",
+                        "DS 140kV",
+                        "DS 50mAs",
+                        "DS 80kV",
+                        "DS axial std",
+                        "DS_hel p 0.23",
+                        "DS_helical",
+                        "Monitoring",
+                        "PreMonitoring",
+                        "TAP",
+                        "testÃ¦Ã¸Ã¥",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        np.nan,
+                        174.85,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                    ]
+                ),
+            },
+        ]
+
+        chart_data = self.chart_data["acquisitionMedianDLPData"]["data"]
+
+        self.check_average_data(chart_data, standard_data)
+
+        # Check the boxplot data
+        standard_data = [
+            {
+                "name": "A VCT Hospital VCTScanner",
+                "x": np.array(
+                    [
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        890.26,
+                        3.12,
+                        2.92,
+                        429.19,
+                        16.41,
+                        352.24,
+                        14.66,
+                        14.66,
+                        15.83,
+                        16.41,
+                        246.69,
+                    ]
+                ),
+            },
+            {
+                "name": "An Optima Hospital geoptima",
+                "x": np.array(["Blank", "Blank"], dtype=object),
+                "y": np.array([259.85, 155.97]),
+            },
+            {
+                "name": "Gnats Bottom Hospital CTAWP91919",
+                "x": np.array(
+                    [
+                        "DS_hel p 0.23",
+                        "DS_helical",
+                        "DS axial std",
+                        "DS 80kV",
+                        "DS 140kV",
+                        "DS 100kV",
+                        "DS axial std",
+                        "DE_laser align",
+                        "DS 50mAs",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [369.34, 815.33, 65.68, 24.05, 129.89, 50.58, 84.28, 29.67, 21.18]
+                ),
+            },
+            {
+                "name": "Hospital Number One Trust CTAWP00001",
+                "x": np.array(
+                    ["testÃ¦Ã¸Ã¥", "PreMonitoring", "Monitoring", "TAP"], dtype=object
+                ),
+                "y": np.array([11.51, 1.2, 3.61, 708.2]),
+            },
+            {
+                "name": "OpenREM centre médical rt16",
+                "x": np.array(["10.13 RADIOTHERAPY QA", "Blank"], dtype=object),
+                "y": np.array([111.3, 475.04]),
+            },
+            {
+                "name": "Oxbridge County Hospital CTTOSHIBA1",
+                "x": np.array(["Blank", "Blank"], dtype=object),
+                "y": np.array([208.5, 141.2]),
+            },
+        ]
+
+        chart_data = self.chart_data["acquisitionBoxplotDLPData"]["data"]
+
+        self.check_boxplot_data(chart_data, standard_data)

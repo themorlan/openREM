@@ -208,6 +208,11 @@ def plotly_boxplot(
     colour_sequence = calculate_colour_sequence(colourmap, n_colours)
 
     try:
+        # Drop any rows with nan values in x or y
+        df = df.dropna(subset=[df_value_col])
+        if df.empty:
+            return empty_dataframe_msg()
+
         fig = px.box(
             df,
             x=df_name_col,

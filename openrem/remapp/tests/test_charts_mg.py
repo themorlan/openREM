@@ -98,7 +98,7 @@ class ChartsMG(TestCase):
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(dataset["name"], chart_data[idx]["name"])
             np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_equal(dataset["y"], chart_data[idx]["y"])
+            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"])
             np.testing.assert_array_almost_equal(
                 dataset["customdata"], chart_data[idx]["customdata"]
             )
