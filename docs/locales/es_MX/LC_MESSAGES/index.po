@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 22:50+0100\n"
-"PO-Revision-Date: 2020-10-13 11:23+0000\n"
+"PO-Revision-Date: 2020-10-13 11:25+0000\n"
 "Last-Translator: Marcelo Sosa <msosa79@outlook.com>\n"
 "Language-Team: Spanish (Mexico) <https://hosted.weblate.org/projects/openrem/"
 "rtd-index/es_MX/>\n"
@@ -68,7 +68,7 @@ msgstr ":ref:`genindex`"
 
 #: ../../index.rst:50
 msgid ":ref:`modindex`"
-msgstr ""
+msgstr ":ref:`modindex`"
 
 #: ../../index.rst:51
 msgid ":ref:`search`"
