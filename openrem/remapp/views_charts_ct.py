@@ -419,7 +419,7 @@ def ct_summary_chart_data(request):
     return JsonResponse(return_structure, safe=False)
 
 
-def ct_plot_calculations(f, user_profile):
+def ct_plot_calculations(f, user_profile, return_as_dict=False):
     """CT chart data calculations"""
     from .interface.chart_functions import (
         create_dataframe,
@@ -544,6 +544,7 @@ def ct_plot_calculations(f, user_profile):
                         filename="OpenREM CT acquisition protocol DLP mean",
                         sorted_category_list=sorted_acquisition_dlp_categories,
                         average_choice="mean",
+                        return_as_dict=return_as_dict,
                     )
 
                 if user_profile.plotMedian:
@@ -556,6 +557,7 @@ def ct_plot_calculations(f, user_profile):
                         filename="OpenREM CT acquisition protocol DLP median",
                         sorted_category_list=sorted_acquisition_dlp_categories,
                         average_choice="median",
+                        return_as_dict=return_as_dict,
                     )
 
             if user_profile.plotBoxplots:
@@ -568,6 +570,7 @@ def ct_plot_calculations(f, user_profile):
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT acquisition protocol DLP boxplot",
                     sorted_category_list=sorted_acquisition_dlp_categories,
+                    return_as_dict=return_as_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -603,6 +606,7 @@ def ct_plot_calculations(f, user_profile):
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
+                    return_as_dict=return_as_dict,
                 )
 
         sorted_acquisition_ctdi_categories = None
@@ -635,6 +639,7 @@ def ct_plot_calculations(f, user_profile):
                         filename="OpenREM CT acquisition protocol CTDI mean",
                         sorted_category_list=sorted_acquisition_ctdi_categories,
                         average_choice="mean",
+                        return_as_dict=return_as_dict,
                     )
 
                 if user_profile.plotMedian:
@@ -647,6 +652,7 @@ def ct_plot_calculations(f, user_profile):
                         filename="OpenREM CT acquisition protocol CTDI median",
                         sorted_category_list=sorted_acquisition_ctdi_categories,
                         average_choice="median",
+                        return_as_dict=return_as_dict,
                     )
 
             if user_profile.plotBoxplots:
@@ -659,6 +665,7 @@ def ct_plot_calculations(f, user_profile):
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT acquisition protocol CTDI boxplot",
                     sorted_category_list=sorted_acquisition_ctdi_categories,
+                    return_as_dict=return_as_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -694,6 +701,7 @@ def ct_plot_calculations(f, user_profile):
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
+                    return_as_dict=return_as_dict,
                 )
 
         if user_profile.plotCTAcquisitionFreq:
@@ -717,6 +725,7 @@ def ct_plot_calculations(f, user_profile):
                 colour_map=user_profile.plotColourMapChoice,
                 file_name="OpenREM CT acquisition protocol frequency",
                 sorted_categories=sorted_categories,
+                return_as_dict=return_as_dict,
             )
 
         if user_profile.plotCTAcquisitionCTDIvsMass:
@@ -736,6 +745,7 @@ def ct_plot_calculations(f, user_profile):
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM CT acquisition protocol CTDI vs patient mass",
+                return_as_dict=return_as_dict,
             )
 
         if user_profile.plotCTAcquisitionDLPvsMass:
@@ -755,6 +765,7 @@ def ct_plot_calculations(f, user_profile):
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM CT acquisition protocol DLP vs patient mass",
+                return_as_dict=return_as_dict,
             )
 
         if user_profile.plotCTAcquisitionCTDIOverTime:
@@ -776,6 +787,7 @@ def ct_plot_calculations(f, user_profile):
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM CT acquisition protocol CTDI over time",
+                return_as_dict=return_as_dict,
             )
 
             if user_profile.plotMean:
@@ -802,6 +814,7 @@ def ct_plot_calculations(f, user_profile):
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM CT acquisition protocol DLP over time",
+                return_as_dict=return_as_dict,
             )
 
             if user_profile.plotMean:
@@ -915,6 +928,7 @@ def ct_plot_calculations(f, user_profile):
                         filename="OpenREM CT study description DLP mean",
                         sorted_category_list=sorted_study_dlp_categories,
                         average_choice="mean",
+                        return_as_dict=return_as_dict,
                     )
 
                 if user_profile.plotMedian:
@@ -927,6 +941,7 @@ def ct_plot_calculations(f, user_profile):
                         filename="OpenREM CT study description DLP median",
                         sorted_category_list=sorted_study_dlp_categories,
                         average_choice="median",
+                        return_as_dict=return_as_dict,
                     )
 
             if user_profile.plotBoxplots:
@@ -939,6 +954,7 @@ def ct_plot_calculations(f, user_profile):
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT study description DLP boxplot",
                     sorted_category_list=sorted_study_dlp_categories,
+                    return_as_dict=return_as_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -968,6 +984,7 @@ def ct_plot_calculations(f, user_profile):
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
+                    return_as_dict=return_as_dict,
                 )
 
         sorted_study_ctdi_categories = None
@@ -1000,6 +1017,7 @@ def ct_plot_calculations(f, user_profile):
                         filename="OpenREM CT study description CTDI mean",
                         sorted_category_list=sorted_study_ctdi_categories,
                         average_choice="mean",
+                        return_as_dict=return_as_dict,
                     )
 
                 if user_profile.plotMedian:
@@ -1012,6 +1030,7 @@ def ct_plot_calculations(f, user_profile):
                         filename="OpenREM CT study description CTDI median",
                         sorted_category_list=sorted_study_ctdi_categories,
                         average_choice="median",
+                        return_as_dict=return_as_dict,
                     )
 
             if user_profile.plotBoxplots:
@@ -1024,6 +1043,7 @@ def ct_plot_calculations(f, user_profile):
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT study description CTDI boxplot",
                     sorted_category_list=sorted_study_ctdi_categories,
+                    return_as_dict=return_as_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -1053,6 +1073,7 @@ def ct_plot_calculations(f, user_profile):
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
+                    return_as_dict=return_as_dict,
                 )
 
         sorted_study_events_categories = None
@@ -1085,6 +1106,7 @@ def ct_plot_calculations(f, user_profile):
                         filename="OpenREM CT study description events mean",
                         sorted_category_list=sorted_study_events_categories,
                         average_choice="mean",
+                        return_as_dict=return_as_dict,
                     )
 
                 if user_profile.plotMedian:
@@ -1097,6 +1119,7 @@ def ct_plot_calculations(f, user_profile):
                         filename="OpenREM CT study description events median",
                         sorted_category_list=sorted_study_events_categories,
                         average_choice="median",
+                        return_as_dict=return_as_dict,
                     )
 
             if user_profile.plotBoxplots:
@@ -1109,6 +1132,7 @@ def ct_plot_calculations(f, user_profile):
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT study description events boxplot",
                     sorted_category_list=sorted_study_events_categories,
+                    return_as_dict=return_as_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -1140,6 +1164,7 @@ def ct_plot_calculations(f, user_profile):
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
+                    return_as_dict=return_as_dict,
                 )
 
         if user_profile.plotCTStudyFreq:
@@ -1165,6 +1190,7 @@ def ct_plot_calculations(f, user_profile):
                 colour_map=user_profile.plotColourMapChoice,
                 file_name="OpenREM CT study description frequency",
                 sorted_categories=sorted_categories,
+                return_as_dict=return_as_dict,
             )
 
         sorted_request_dlp_categories = None
@@ -1197,6 +1223,7 @@ def ct_plot_calculations(f, user_profile):
                         filename="OpenREM CT requested procedure DLP mean",
                         sorted_category_list=sorted_request_dlp_categories,
                         average_choice="mean",
+                        return_as_dict=return_as_dict,
                     )
 
                 if user_profile.plotMedian:
@@ -1209,6 +1236,7 @@ def ct_plot_calculations(f, user_profile):
                         filename="OpenREM CT requested procedure DLP median",
                         sorted_category_list=sorted_request_dlp_categories,
                         average_choice="median",
+                        return_as_dict=return_as_dict,
                     )
 
             if user_profile.plotBoxplots:
@@ -1221,6 +1249,7 @@ def ct_plot_calculations(f, user_profile):
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT requested procedure DLP boxplot",
                     sorted_category_list=sorted_request_dlp_categories,
+                    return_as_dict=return_as_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -1250,6 +1279,7 @@ def ct_plot_calculations(f, user_profile):
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
+                    return_as_dict=return_as_dict,
                 )
 
         sorted_request_events_categories = None
@@ -1282,6 +1312,7 @@ def ct_plot_calculations(f, user_profile):
                         filename="OpenREM CT requested procedure events mean",
                         sorted_category_list=sorted_request_events_categories,
                         average_choice="mean",
+                        return_as_dict=return_as_dict,
                     )
 
                 if user_profile.plotMedian:
@@ -1294,6 +1325,7 @@ def ct_plot_calculations(f, user_profile):
                         filename="OpenREM CT requested procedure events median",
                         sorted_category_list=sorted_request_events_categories,
                         average_choice="median",
+                        return_as_dict=return_as_dict,
                     )
 
             if user_profile.plotBoxplots:
@@ -1306,6 +1338,7 @@ def ct_plot_calculations(f, user_profile):
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM CT requested procedure events boxplot",
                     sorted_category_list=sorted_request_events_categories,
+                    return_as_dict=return_as_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -1337,6 +1370,7 @@ def ct_plot_calculations(f, user_profile):
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
+                    return_as_dict=return_as_dict,
                 )
 
         if user_profile.plotCTRequestFreq:
@@ -1360,6 +1394,7 @@ def ct_plot_calculations(f, user_profile):
                 colour_map=user_profile.plotColourMapChoice,
                 file_name="OpenREM CT requested procedure frequency",
                 sorted_categories=sorted_categories,
+                return_as_dict=return_as_dict,
             )
 
         if user_profile.plotCTStudyMeanDLPOverTime:
@@ -1381,6 +1416,7 @@ def ct_plot_calculations(f, user_profile):
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM CT study description DLP over time",
+                return_as_dict=return_as_dict,
             )
 
             if user_profile.plotMean:
@@ -1407,6 +1443,7 @@ def ct_plot_calculations(f, user_profile):
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 file_name="OpenREM CT requested procedure DLP over time",
+                return_as_dict=return_as_dict,
             )
 
             if user_profile.plotMean:
@@ -1428,6 +1465,7 @@ def ct_plot_calculations(f, user_profile):
                 colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM CT study description workload",
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
+                return_as_dict=return_as_dict,
             )
         #######################################################################
 

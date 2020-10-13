@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-# test_charts_dx.py
+# test_charts_mg.py
 
 import os
 from django.contrib.auth.models import User, Group
