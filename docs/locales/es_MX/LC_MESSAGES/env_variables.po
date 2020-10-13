@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 18:30+0100\n"
-"PO-Revision-Date: 2020-10-13 13:44+0000\n"
+"PO-Revision-Date: 2020-10-13 15:17+0000\n"
 "Last-Translator: Marcelo Sosa <msosa79@outlook.com>\n"
 "Language-Team: Spanish (Mexico) <https://hosted.weblate.org/projects/openrem/"
 "rtd-installation-docker-env-config/es_MX/>\n"
@@ -81,67 +81,98 @@ msgstr ""
 #: ../../env_variables.rst:65
 msgid "If the e-mail server is set to only allow authenticated users to send messages then a suitable user and password must be entered in the ``EMAIL_HOST_USER`` and ``EMAIL_HOST_PASSWORD`` fields. If this approach is used then it may be useful to request that an e-mail account be created specifically for sending these OpenREM alert messages."
 msgstr ""
+"Si en los ajustes de servidor de e-mail solo se le permite usuarios "
+"autenticados a enviar mensajes se debe utilizar un usuario y contraseña "
+"adecuado que sera ingresado en los campos ``EMAIL_HOST_USER`` y "
+"``EMAIL_HOST_PASSWORD``. Si este enfoque se utiliza entonces debería ser "
+"util el solicitar que la cuenta de e-mail sea creada específicamente para "
+"enviar estos mensajes de alerta de OpenREM."
 
 #: ../../env_variables.rst:69
 msgid "It may be possible to configure the e-mail server to allow sending of messages that originate from the OpenREM server without authentication, in which case the user and password settings should not be required."
 msgstr ""
+"Debería ser posible configurar el servidor de e-mail para permitir el envió "
+"de mensajes que se originen desde el servidor de OpenREM sin autenticación, "
+"en estos casos el usuario y la contraseña no serán requeridos."
 
 #: ../../env_variables.rst:72
 msgid "The ``EMAIL_USE_TLS`` and ``EMAIL_USE_TLS`` options should be configured to match the encryption requirements of the e-mail server. Use ``0`` for False (default) and ``1`` for True."
 msgstr ""
+"Las opciones ``EMAIL_USE_TLS`` y ``EMAIL_USE_TLS`` deben ser configuradas "
+"para coincidir con los requerimientos de cifrado del servidor de e-mail. "
+"Utilizando ``0`` para falso (por defecto) y ``1`` para Verdadero."
 
 #: ../../env_variables.rst:75
 msgid "The ``EMAIL_DOSE_ALERT_SENDER`` should contain the e-mail address that you want to use as the sender address."
 msgstr ""
+"El ``EMAIL_DOSE_ALERT_SENDER`` debería contener la dirección del e-mail que "
+"se quiere utilizar como dirección remitente."
 
 #: ../../env_variables.rst:77
 msgid "The ``EMAIL_OPENREM_URL`` must contain the URL of your OpenREM installation in order for hyperlinks in the e-mail alert messages to function correctly."
 msgstr ""
+"El ``EMAIL_OPENREM_URL`` debe contener la URL de su instalación de OpenREM "
+"para que los hipervínculos en los mensajes de alerta del e-mail funcionen "
+"correctamente."
 
 #: ../../env_variables.rst:81
 msgid "Regionalisation"
-msgstr ""
+msgstr "Regionalización"
 
 #: ../../env_variables.rst:83
 msgid "Local time zone for this installation. Choices can be found here: http://en.wikipedia.org/wiki/List_of_tz_zones_by_name although not all choices may be available on all operating systems:"
 msgstr ""
+"Zona horaria local para esta instalación. Las opciones pueden ser "
+"encontradas aquí: http://en.wikipedia.org/wiki/List_of_tz_zones_by_name "
+"aunque no todas las opciones pueden estar disponibles en todos los sistemas "
+"operativos:"
 
 #: ../../env_variables.rst:91
 msgid "Language code for this installation. All choices can be found here: http://www.i18nguy.com/unicode/language-identifiers.html"
 msgstr ""
+"Código de lenguaje para esta instalación. Todas las opciones pueden ser "
+"encontradas aquí: http://www.i18nguy.com/unicode/language-identifiers.html"
 
 #: ../../env_variables.rst:98
 msgid "If you set this to False, Django will make some optimizations so as not to load the internationalization machinery:"
 msgstr ""
+"Si esto se ajusta a Falso, Django realizara algunas optimizaciones para no "
+"cargar la maquinaria de internacionalización:"
 
 #: ../../env_variables.rst:104
 msgid "If you set this to False, Django will not format dates, numbers and calendars according to the current locale:"
 msgstr ""
+"Si se establece este valor a Falso, Django no formateará fechas, números y "
+"calendarios de acuerdo con la configuración regional actual:"
 
 #: ../../env_variables.rst:110
 msgid "If you set this to False (default), Django will not use timezone-aware datetimes:"
 msgstr ""
+"Si establece esto en Falso (predeterminado), Django no usará fechas y horas "
+"con reconocimiento de zona horaria:"
 
 #: ../../env_variables.rst:116
 msgid "XLSX date and time settings for exports:"
-msgstr ""
+msgstr "Configuración de fecha y hora XLSX para exportaciones:"
 
 #: ../../env_variables.rst:124
 msgid "Virtual directory settings"
-msgstr ""
+msgstr "Configuración del directorio virtual"
 
 #: ../../env_variables.rst:126
 msgid "See :doc:`virtual_directory` for details of these variables - normally these can be left commented out."
 msgstr ""
+"Ver :doc: `virtual_directory` por detalles de estas variables - normalmente "
+"estas se pueden dejarse comentados."
 
 #: ../../env_variables.rst:129
 msgid "Variables that should only be changed if you know what you are doing"
-msgstr ""
+msgstr "Variables que solo deberían ser cambiadas si sabe lo que está haciendo"
 
 #: ../../env_variables.rst:152
 msgid "Variables that shouldn't be changed"
-msgstr ""
+msgstr "Variables que no deben cambiarse"
 
 #: ../../env_variables.rst:154
 msgid "Changing this will mean some OpenREM functions will fail"
-msgstr ""
+msgstr "Cambiar esto significará que algunas funciones de OpenREM fallarán"
