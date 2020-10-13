@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
 # This file is distributed under the same license as the OpenREM package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
 msgid ""
 msgstr ""
@@ -10,93 +10,262 @@ msgstr ""
 "POT-Creation-Date: 2020-10-01 18:30+0100\n"
 "PO-Revision-Date: 2020-10-13 15:17+0000\n"
 "Last-Translator: Marcelo Sosa <msosa79@outlook.com>\n"
-"Language-Team: Spanish (Mexico) <https://hosted.weblate.org/projects/openrem/"
-"rtd-installation-docker-orthanc-config/es_MX/>\n"
 "Language: es_MX\n"
+"Language-Team: Spanish (Mexico) "
+"<https://hosted.weblate.org/projects/openrem/rtd-installation-docker-"
+"orthanc-config/es_MX/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"Generated-By: Babel 2.8.0\n"
 
-#: ../../installation.rst:3
-msgid "Installation"
-msgstr "Instalación"
-
-#: ../../installation.rst:6
-msgid "Windows or Linux: Docker install"
-msgstr "Windows o Linux: Instalación de Docker"
-
-#: ../../installation.rst:9
-msgid "Preparation"
-msgstr "Preparación"
-
-#: ../../installation.rst:10
-msgid "Install Docker"
-msgstr "Instalación de Docker"
-
-#: ../../installation.rst:11
-msgid "Download https://bitbucket.org/openrem/docker/get/develop.zip"
-msgstr "Descargar https://bitbucket.org/openrem/docker/get/develop.zip"
-
-#: ../../installation.rst:16
-msgid "Install"
-msgstr "Instalar"
-
-#: ../../installation.rst:17
-msgid "Extract the ZIP file and open a shell (command prompt) in the new folder"
+#: ../../docker_orthanc.rst:2
+msgid "Orthanc configuration - docker-compose.yml"
 msgstr ""
-"Extraer el archivo ZIP y abrir shell (símbolo de sistema) en la nueva carpeta"
 
-#: ../../installation.rst:18
-msgid "Customise any variables in ``.env.prod`` and in the ``orthanc_1`` section in ``docker-compose.yml`` as necessary. A full description of the options are found in:"
+#: ../../docker_orthanc.rst:4
+msgid ""
+"The ``docker-compose.yml`` file defines all the containers that are "
+"needed for OpenREM, including the Orthanc container(s) that provide the "
+"DICOM Store functionality to enable scanners to send directly to OpenREM,"
+" and for query-retrieve to function."
 msgstr ""
-"Personalizar cualquier variable en ``.env.prod`` y en la ``orthanc_1`` "
-"sección en ``docker-compose.yml`` como sea necesario. Una descripción "
-"completa de las opciones puede ser encontrada en:"
 
-#: ../../installation.rst:27
-msgid "Start the containers with:"
-msgstr "Iniciar los contenedores con:"
-
-#: ../../installation.rst:33
-msgid "Get the database and translations ready:"
-msgstr "Tener las bases de datos y las traducciones listas:"
-
-#: ../../installation.rst:43
-msgid "Open a web browser and go to http://localhost/"
-msgstr "Abrir un navegador web e ir a http://localhost/"
-
-#: ../../installation.rst:46
-msgid "Non-docker alternative - Linux only"
-msgstr "Alternativa sin docker - Solo Linux"
-
-#: ../../installation.rst:48
-msgid "We recommend all installations to use the Docker method described above. However, it is possible to install without Docker, but only on Linux. The instructions are a prescriptive install on Ubuntu:"
+#: ../../docker_orthanc.rst:8
+msgid ""
+"Unlike the ``.env.prod`` file, this file is formatted as YAML. Strings "
+"need to quoted, a ``:`` and a space separate the variable name and the "
+"value, and spaces are used at the start of the line to create a "
+"hierarchy."
 msgstr ""
-"Se recomienda que todas las instalaciones utilicen el método Docker como se "
-"describe mas arriba. Sin embargo, es posible realizar una instalación sin "
-"Docker, solo en Linux. Las instrucciones son una instalación prescriptiva en "
-"Ubuntu:"
 
-#: ../../installation.rst:58
-msgid "Offline Docker installations"
-msgstr "Instalación de Docker sin conexión"
-
-#: ../../installation.rst:67
-msgid "Upgrading an existing installation"
-msgstr "Actualizando una instalación existente"
-
-#: ../../installation.rst:78
-msgid "Databases"
-msgstr "Bases de dato"
-
-#: ../../installation.rst:80
-msgid "To be removed here, but we need some of the content in other pages, so leaving for now"
+#: ../../docker_orthanc.rst:12
+msgid "Orthanc configuration"
 msgstr ""
-"A ser removido aquí, pero necesitamos parte del contenido en otras paginas, "
-"entonces lo dejamos por ahora"
 
-#: ../../installation.rst:93
-msgid "Web servers"
-msgstr "Servidores Web"
+#: ../../docker_orthanc.rst:14
+msgid ""
+"Edit the ``docker-compose.yml`` file to make the changes. They will take "
+"effect next time ``docker-compose`` is started."
+msgstr ""
+
+#: ../../docker_orthanc.rst:16
+msgid "Find the ``orthanc_1`` definition near the end of the file."
+msgstr ""
+
+#: ../../docker_orthanc.rst:19
+msgid "Port"
+msgstr ""
+
+#: ../../docker_orthanc.rst:21
+msgid "The default port for DICOM store is set to ``104``."
+msgstr ""
+
+#: ../../docker_orthanc.rst:23
+msgid ""
+"To use a different port, change both the ``ports`` section and the "
+"``environment`` section as required. In the ports section the first "
+"number is the port exposed outside of Docker, the second number is used "
+"internally. Set them to be the same and set the environment port "
+"accordingly to enable the same port to be used within the OpenREM "
+"interface: For example, to use port 8104:"
+msgstr ""
+
+#: ../../docker_orthanc.rst:36
+msgid "DICOM Application Entity Title"
+msgstr ""
+
+#: ../../docker_orthanc.rst:38
+msgid ""
+"Application Entity Title of the Store Server. Should be up to 16 "
+"characters, no spaces. This server isn't fussy by default, so if remote "
+"nodes connect using a different AETitle that is ok."
+msgstr ""
+
+#: ../../docker_orthanc.rst:47
+msgid "Objects to be ignored"
+msgstr ""
+
+#: ../../docker_orthanc.rst:49
+msgid ""
+"Lists of things to ignore. Orthanc will ignore anything matching the "
+"content of these comma separated lists: they will not be imported into "
+"OpenREM. Some examples have been added below - note the formatting "
+"syntax:"
+msgstr ""
+
+#: ../../docker_orthanc.rst:62
+msgid "Extractor for older Toshiba CT dose summary files"
+msgstr ""
+
+#: ../../docker_orthanc.rst:64
+msgid ""
+"Enable or disable additional functionality to extract dose information "
+"from older Toshiba and GE scanners, and specify which CT scanners should "
+"use this method. Each system should be listed as ``{'Manufacturer', "
+"'Model name'}``, with systems in a comma separated list within curly "
+"brackets, as per the example below:"
+msgstr ""
+
+#: ../../docker_orthanc.rst:76
+msgid "Physics Filtering"
+msgstr ""
+
+#: ../../docker_orthanc.rst:78
+msgid ""
+"Set this to true if you want Orthanc to keep physics test studies, and "
+"have it put them in the ``physics_to_keep_folder``. Set it to "
+"``\"false\"`` to disable this feature"
+msgstr ""
+
+#: ../../docker_orthanc.rst:86
+msgid ""
+"A list to check against patient name and ID to see if the images should "
+"be kept. Orthanc will put anything that matches this in the "
+"``physics_to_keep_folder``."
+msgstr ""
+
+#: ../../docker_orthanc.rst:95
+msgid "Orthanc web interface"
+msgstr ""
+
+#: ../../docker_orthanc.rst:97
+msgid ""
+"There will normally not be any studies in the Orthanc database once they "
+"have been processed, but if you want to enable the Orthanc web viewer, "
+"change ``ORTHANC__REMOTE_ACCESS_ALLOWED`` to ``\"true\"`` and uncomment "
+"the port declaration, changing the first number if required:"
+msgstr ""
+
+#: ../../docker_orthanc.rst:112
+msgid "Lua script path"
+msgstr ""
+
+#: ../../docker_orthanc.rst:114
+msgid ""
+"The path within the Orthanc container for the OpenREM Lua script is "
+"specified here - this should not be changed."
+msgstr ""
+
+#: ../../docker_orthanc.rst:117
+msgid "Multiple Orthanc Store nodes"
+msgstr ""
+
+#: ../../docker_orthanc.rst:119
+msgid ""
+"If you need more than one DICOM Store server, to listen on a different "
+"port for example, copy the whole ``orthanc_1`` section and paste it just "
+"after and before the ``volumes`` section. Rename to ``orthanc_2`` and "
+"make the port and any other changes as necessary."
+msgstr ""
+
+#: ../../docker_orthanc.rst:123
+msgid ""
+"Next time ``docker-compose`` is started the additional Orthanc container "
+"will be started. ``docker-compose.yml`` is also used to stop the "
+"containers, so if you are removing the additional Orthanc container stop "
+"the containers first."
+msgstr ""
+
+#: ../../docker_orthanc.rst:127
+msgid "Additional Orthanc configuration options"
+msgstr ""
+
+#: ../../docker_orthanc.rst:129
+msgid ""
+"More configuration options can be found on the `osimis/orthanc Docker "
+"Images page "
+"<https://osimis.atlassian.net/wiki/spaces/OKB/pages/26738689/How+to+use+osimis+orthanc+Docker+images#Howtouseosimis/orthancDockerimages?-DICOM>`_"
+msgstr ""
+
+#~ msgid "Installation"
+#~ msgstr "Instalación"
+
+#~ msgid "Windows or Linux: Docker install"
+#~ msgstr "Windows o Linux: Instalación de Docker"
+
+#~ msgid "Preparation"
+#~ msgstr "Preparación"
+
+#~ msgid "Install Docker"
+#~ msgstr "Instalación de Docker"
+
+#~ msgid "Download https://bitbucket.org/openrem/docker/get/develop.zip"
+#~ msgstr "Descargar https://bitbucket.org/openrem/docker/get/develop.zip"
+
+#~ msgid "Install"
+#~ msgstr "Instalar"
+
+#~ msgid ""
+#~ "Extract the ZIP file and open a"
+#~ " shell (command prompt) in the new"
+#~ " folder"
+#~ msgstr ""
+#~ "Extraer el archivo ZIP y abrir "
+#~ "shell (símbolo de sistema) en la "
+#~ "nueva carpeta"
+
+#~ msgid ""
+#~ "Customise any variables in ``.env.prod`` "
+#~ "and in the ``orthanc_1`` section in "
+#~ "``docker-compose.yml`` as necessary. A "
+#~ "full description of the options are "
+#~ "found in:"
+#~ msgstr ""
+#~ "Personalizar cualquier variable en "
+#~ "``.env.prod`` y en la ``orthanc_1`` "
+#~ "sección en ``docker-compose.yml`` como "
+#~ "sea necesario. Una descripción completa "
+#~ "de las opciones puede ser encontrada "
+#~ "en:"
+
+#~ msgid "Start the containers with:"
+#~ msgstr "Iniciar los contenedores con:"
+
+#~ msgid "Get the database and translations ready:"
+#~ msgstr "Tener las bases de datos y las traducciones listas:"
+
+#~ msgid "Open a web browser and go to http://localhost/"
+#~ msgstr "Abrir un navegador web e ir a http://localhost/"
+
+#~ msgid "Non-docker alternative - Linux only"
+#~ msgstr "Alternativa sin docker - Solo Linux"
+
+#~ msgid ""
+#~ "We recommend all installations to use"
+#~ " the Docker method described above. "
+#~ "However, it is possible to install "
+#~ "without Docker, but only on Linux. "
+#~ "The instructions are a prescriptive "
+#~ "install on Ubuntu:"
+#~ msgstr ""
+#~ "Se recomienda que todas las "
+#~ "instalaciones utilicen el método Docker "
+#~ "como se describe mas arriba. Sin "
+#~ "embargo, es posible realizar una "
+#~ "instalación sin Docker, solo en Linux."
+#~ " Las instrucciones son una instalación "
+#~ "prescriptiva en Ubuntu:"
+
+#~ msgid "Offline Docker installations"
+#~ msgstr "Instalación de Docker sin conexión"
+
+#~ msgid "Upgrading an existing installation"
+#~ msgstr "Actualizando una instalación existente"
+
+#~ msgid "Databases"
+#~ msgstr "Bases de dato"
+
+#~ msgid ""
+#~ "To be removed here, but we need"
+#~ " some of the content in other "
+#~ "pages, so leaving for now"
+#~ msgstr ""
+#~ "A ser removido aquí, pero necesitamos"
+#~ " parte del contenido en otras "
+#~ "paginas, entonces lo dejamos por ahora"
+
+#~ msgid "Web servers"
+#~ msgstr "Servidores Web"
+
