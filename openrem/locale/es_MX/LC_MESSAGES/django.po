@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-12 09:52+0100\n"
-"PO-Revision-Date: 2020-10-13 15:23+0000\n"
+"PO-Revision-Date: 2020-10-13 15:38+0000\n"
 "Last-Translator: Marcelo Sosa <msosa79@outlook.com>\n"
 "Language-Team: Spanish (Mexico) <https://hosted.weblate.org/projects/openrem/"
 "web-interface/es_MX/>\n"
@@ -40,24 +40,31 @@ msgstr ""
 msgid ""
 "Filter at {level} level on {filter_name} that {filter_type} {filter_list}"
 msgstr ""
+"Filtrar en {level} nivel en {filter_name} ese {filter_type} {filter_list}"
 
 #: remapp/netdicom/qrscu.py:257
 msgid ""
 "Getting series and image level information and deleting series we can't use"
 msgstr ""
+"Obtener información a nivel de series e imágenes y eliminar las series que "
+"no podemos usar"
 
 #: remapp/netdicom/qrscu.py:807
 msgid "Image level matching for this study is complete (there many be more)"
 msgstr ""
+"La coincidencia a nivel de imagen para este estudio esta completa (hay "
+"muchas más)"
 
 #: remapp/netdicom/qrscu.py:817
 msgid "Image level matches are continuing."
-msgstr ""
+msgstr "Continúan las coincidencias de nivel de imagen."
 
 #: remapp/netdicom/qrscu.py:858 remapp/netdicom/qrscu.py:975
 #: remapp/netdicom/qrscu.py:1080
 msgid "Connection timed out, was aborted or received invalid response"
 msgstr ""
+"Se agoto el tiempo de espera para la conexión, se cancelo o recibió una "
+"respuesta no válida"
 
 #: remapp/netdicom/qrscu.py:906
 msgid "Series level matching for this study is complete (there may be more)"
