@@ -176,9 +176,7 @@ class ImportContinuedRDSRs(TestCase):
                 study.objectuidsprocessed_set.values_list("sop_instance_uid", flat=True)
             )
             uid_list1 = Counter(
-                [
-                    u"1.3.6.1.4.1.5962.99.1.64928122.996247427.1524778350970.8.0",
-                ]
+                [u"1.3.6.1.4.1.5962.99.1.64928122.996247427.1524778350970.8.0"]
             )
 
             # Test that there is one study, and it has one event
@@ -210,11 +208,7 @@ class ImportContinuedRDSRs(TestCase):
                 )
             )
             uid_2 = u"1.3.6.1.4.1.5962.99.1.64928122.996247427.1524778350970.13.0"
-            uid_list2 = Counter(
-                [
-                    uid_2,
-                ]
-            )
+            uid_list2 = Counter([uid_2])
             self.assertEqual(sop_instance_uid_list1, uid_list1)
             self.assertEqual(sop_instance_uid_list2, uid_list2)
 

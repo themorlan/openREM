@@ -126,11 +126,7 @@ def size_upload(request):
         admin[group.name] = True
 
     # Render list page with the documents and the form
-    return render(
-        request,
-        "remapp/sizeupload.html",
-        {"form": form, "admin": admin},
-    )
+    return render(request, "remapp/sizeupload.html", {"form": form, "admin": admin})
 
 
 @login_required

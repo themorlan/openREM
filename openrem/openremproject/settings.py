@@ -58,7 +58,7 @@ beat_schedule = {
         "options": {
             "expires": 10
         },  # expire if not run ten seconds after being scheduled
-    },
+    }
 }
 
 
@@ -116,9 +116,9 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "django.template.context_processors.request",  # Added by ETM
                 "django.contrib.messages.context_processors.messages",
-            ],
+            ]
         },
-    },
+    }
 ]
 
 MIDDLEWARE = [
@@ -212,10 +212,7 @@ LOGGING = {
             "level": "ERROR",
             "propagate": True,
         },
-        "remapp": {
-            "handlers": ["file"],
-            "level": "INFO",
-        },
+        "remapp": {"handlers": ["file"], "level": "INFO"},
         "remapp.netdicom.qrscu": {
             "handlers": ["qr_file"],
             "level": "INFO",

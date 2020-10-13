@@ -40,10 +40,7 @@ from ..tools.hash_id import hash_id
 
 logger = logging.getLogger(__name__)
 
-TEST_CHOICES = (
-    ("", "Yes (default)"),
-    (2, "No (caution)"),
-)
+TEST_CHOICES = (("", "Yes (default)"), (2, "No (caution)"))
 
 
 def custom_name_filter(queryset, name, value):
@@ -868,12 +865,10 @@ class DXSummaryListFilter(django_filters.FilterSet):
         method=_dap_filter, label="Max study DAP (cGy·cm²)"
     )
     event_dap_min = django_filters.NumberFilter(
-        method=_dap_filter,
-        label="Min acquisition DAP (cGy·cm²)",
+        method=_dap_filter, label="Min acquisition DAP (cGy·cm²)"
     )
     event_dap_max = django_filters.NumberFilter(
-        method=_dap_filter,
-        label="Max acquisition DAP (cGy·cm²)",
+        method=_dap_filter, label="Max acquisition DAP (cGy·cm²)"
     )
     generalequipmentmoduleattr__unique_equipment_name__display_name = (
         django_filters.CharFilter(lookup_expr="icontains", label="Display name")

@@ -113,10 +113,7 @@ class ChartsDX(TestCase):
 
     def check_series_and_category_names(self, category_names, series_names, chart_data):
         for idx, series_name in enumerate(series_names):
-            self.assertEqual(
-                chart_data[idx]["name"],
-                series_name,
-            )
+            self.assertEqual(chart_data[idx]["name"], series_name)
             self.assertListEqual(list(chart_data[idx]["x"]), category_names)
 
     def check_avg_and_counts(self, comparison_data, chart_data):
@@ -126,14 +123,8 @@ class ChartsDX(TestCase):
                 self.assertTrue(math.isnan(chart_data[idx][1]))
             # Otherwise compare the values
             else:
-                self.assertAlmostEqual(
-                    chart_data[idx][1],
-                    comparison_data[idx][1],
-                )
-            self.assertEqual(
-                chart_data[idx][2],
-                comparison_data[idx][2],
-            )
+                self.assertAlmostEqual(chart_data[idx][1], comparison_data[idx][1])
+            self.assertEqual(chart_data[idx][2], comparison_data[idx][2])
 
     def check_frequencies(self, comparison_data, chart_data):
         for idx, values in enumerate(comparison_data):

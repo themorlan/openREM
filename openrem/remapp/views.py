@@ -176,11 +176,7 @@ def dx_summary_list_filter(request):
             user_profile
         )
 
-    return render(
-        request,
-        "remapp/dxfiltered.html",
-        return_structure,
-    )
+    return render(request, "remapp/dxfiltered.html", return_structure)
 
 
 @login_required
@@ -721,11 +717,7 @@ def ct_summary_list_filter(request):
             user_profile
         )
 
-    return render(
-        request,
-        "remapp/ctfiltered.html",
-        return_structure,
-    )
+    return render(request, "remapp/ctfiltered.html", return_structure)
 
 
 @login_required
@@ -843,11 +835,7 @@ def mg_summary_list_filter(request):
             user_profile
         )
 
-    return render(
-        request,
-        "remapp/mgfiltered.html",
-        return_structure,
-    )
+    return render(request, "remapp/mgfiltered.html", return_structure)
 
 
 @login_required
@@ -979,9 +967,7 @@ def openrem_home(request):
     mods_to_delete = []
     for modality in modalities:
         if not modalities[modality]["count"]:
-            mods_to_delete += [
-                modality,
-            ]
+            mods_to_delete += [modality]
             if request.user.is_authenticated:
                 setattr(user_profile, "display{0}".format(modality), False)
         else:
@@ -993,9 +979,7 @@ def openrem_home(request):
     for modality in mods_to_delete:
         del modalities[modality]
 
-    homedata = {
-        "total": allstudies.count(),
-    }
+    homedata = {"total": allstudies.count()}
 
     # Determine whether to calculate workload settings
     display_workload_stats = HomePageAdminSettings.objects.values_list(

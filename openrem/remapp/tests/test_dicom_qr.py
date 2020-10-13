@@ -584,15 +584,7 @@ class ResponseFiltering(TestCase):
         from ..netdicom.qrscu import _filter
 
         query = DicomQuery.objects.get()
-        _filter(
-            query,
-            u"study",
-            u"study_description",
-            [
-                u"test",
-            ],
-            u"include",
-        )
+        _filter(query, u"study", u"study_description", [u"test"], u"include")
 
         self.assertEqual(query.dicomqrrspstudy_set.all().count(), 2)
         studies = query.dicomqrrspstudy_set.all()
@@ -1750,11 +1742,7 @@ class RemoveDuplicates(TestCase):
             "1.3.6.1.4.1.5962.99.1.2282339064.1266597797.1479751121656.24.0"
         )
         st1.study_description = u"DX study"
-        st1.set_modalities_in_study(
-            [
-                "DX",
-            ]
-        )
+        st1.set_modalities_in_study(["DX"])
         st1.save()
 
         st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)

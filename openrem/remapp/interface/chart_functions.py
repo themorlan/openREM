@@ -134,11 +134,7 @@ def create_dataframe_time_series(
     return df_time_series
 
 
-def create_dataframe_weekdays(
-    df,
-    df_name_col,
-    df_date_col="study_date",
-):
+def create_dataframe_weekdays(df, df_name_col, df_date_col="study_date"):
     df["weekday"] = pd.DatetimeIndex(df[df_date_col]).day_name()
     df["hour"] = [x.hour for x in df["study_time"]]
 
@@ -866,7 +862,7 @@ def plotly_barchart_weekdays(
     name_axis_title="",
     value_axis_title="",
     colourmap="RdYlBu",
-    filename="OpenREM_worload_chart",
+    filename="OpenREM_workload_chart",
     facet_col_wrap=3,
     return_as_dict=False,
 ):

@@ -364,11 +364,7 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
             if xlsx:
                 wsalldata.write(study_index + 1, 0, error_message)
             else:
-                writer.writerow(
-                    [
-                        error_message,
-                    ]
-                )
+                writer.writerow([error_message])
 
     if xlsx:
         all_data_headings += _series_headers(max_events)

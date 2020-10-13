@@ -72,27 +72,16 @@ MEAN = "mean"
 MEDIAN = "median"
 BOTH = "both"
 BOXPLOT = "boxplot"
-AVERAGES = (
-    (MEAN, "Mean"),
-    (MEDIAN, "Median"),
-    (BOXPLOT, "Boxplot"),
-)
+AVERAGES = ((MEAN, "Mean"), (MEDIAN, "Median"), (BOXPLOT, "Boxplot"))
 
 NAME = "name"
 FREQ = "frequency"
 VALUE = "value"
-SORTING_CHOICES = (
-    (NAME, "Name"),
-    (FREQ, "Frequency"),
-    (VALUE, "Value"),
-)
+SORTING_CHOICES = ((NAME, "Name"), (FREQ, "Frequency"), (VALUE, "Value"))
 
 ASCENDING = 1
 DESCENDING = 0
-SORTING_DIRECTION = (
-    (ASCENDING, "Ascending"),
-    (DESCENDING, "Descending"),
-)
+SORTING_DIRECTION = ((ASCENDING, "Ascending"), (DESCENDING, "Descending"))
 
 ITEMS_PER_PAGE = (
     (10, "10"),
@@ -105,10 +94,7 @@ ITEMS_PER_PAGE = (
 
 SYSTEM = "system"
 SERIES = "series"
-CHART_GROUPING = (
-    (SYSTEM, "System names"),
-    (SERIES, "Series item names"),
-)
+CHART_GROUPING = ((SYSTEM, "System names"), (SERIES, "Series item names"))
 
 PLOTLY_THEME = "plotly"
 CHART_THEMES = (
@@ -786,25 +772,13 @@ class DicomQueryForm(forms.Form):
         self.helper.layout = Layout(
             Div(
                 Div(
-                    Div(
-                        "remote_host_field",
-                        css_class="col-md-6",
-                    ),
-                    Div(
-                        "store_scp_field",
-                        css_class="col-md-6",
-                    ),
+                    Div("remote_host_field", css_class="col-md-6"),
+                    Div("store_scp_field", css_class="col-md-6"),
                 ),
                 InlineCheckboxes("modality_field"),
                 Div(
-                    Div(
-                        "date_from_field",
-                        css_class="col-md-6",
-                    ),
-                    Div(
-                        "date_until_field",
-                        css_class="col-md-6",
-                    ),
+                    Div("date_from_field", css_class="col-md-6"),
+                    Div("date_until_field", css_class="col-md-6"),
                 ),
                 "desc_exclude_field",
                 "desc_include_field",
@@ -820,7 +794,7 @@ class DicomQueryForm(forms.Form):
                         active=False,
                     )
                 ),
-            ),
+            )
         )
 
     def clean(self):
@@ -969,12 +943,7 @@ class DicomStoreForm(forms.ModelForm):
         self.helper.field_class = "col-md-4"
         if not settings.DOCKER_INSTALL:
             self.helper.layout = Layout(
-                Div(
-                    "name",
-                    "aetitle",
-                    "peer",
-                    "port",
-                ),
+                Div("name", "aetitle", "peer", "port"),
                 Accordion(
                     AccordionGroup(
                         "Advanced - test/development use only",
@@ -1015,12 +984,7 @@ class DicomStoreForm(forms.ModelForm):
             )
         else:
             self.helper.layout = Layout(
-                Div(
-                    "name",
-                    "aetitle",
-                    "peer",
-                    "port",
-                ),
+                Div("name", "aetitle", "peer", "port"),
                 FormActions(Submit("submit", "Submit")),
                 Div(
                     HTML(
@@ -1080,9 +1044,7 @@ class NotPatientNameForm(forms.ModelForm):
         self.helper.label_class = "col-md-8"
         self.helper.field_class = "col-md-4"
         self.helper.layout = Layout(
-            Div(
-                "not_patient_name",
-            ),
+            Div("not_patient_name"),
             FormActions(Submit("submit", "Submit")),
             Div(
                 HTML(
@@ -1101,12 +1063,8 @@ class NotPatientNameForm(forms.ModelForm):
 
     class Meta(object):
         model = NotPatientIndicatorsName
-        fields = [
-            "not_patient_name",
-        ]
-        labels = {
-            "not_patient_name": "pattern for name matching",
-        }
+        fields = ["not_patient_name"]
+        labels = {"not_patient_name": "pattern for name matching"}
 
 
 class NotPatientIDForm(forms.ModelForm):
@@ -1119,9 +1077,7 @@ class NotPatientIDForm(forms.ModelForm):
         self.helper.label_class = "col-md-8"
         self.helper.field_class = "col-md-4"
         self.helper.layout = Layout(
-            Div(
-                "not_patient_id",
-            ),
+            Div("not_patient_id"),
             FormActions(Submit("submit", "Submit")),
             Div(
                 HTML(
@@ -1140,9 +1096,5 @@ class NotPatientIDForm(forms.ModelForm):
 
     class Meta(object):
         model = NotPatientIndicatorsID
-        fields = [
-            "not_patient_id",
-        ]
-        labels = {
-            "not_patient_id": "pattern for ID matching",
-        }
+        fields = ["not_patient_id"]
+        labels = {"not_patient_id": "pattern for ID matching"}

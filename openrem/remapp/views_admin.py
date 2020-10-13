@@ -244,11 +244,7 @@ def display_names_view(request):
         "modalities": ["CT", "RF", "MG", "DX", "OT"],
     }
 
-    return render(
-        request,
-        "remapp/displaynameview.html",
-        return_structure,
-    )
+    return render(request, "remapp/displaynameview.html", return_structure)
 
 
 def display_name_gen_hash(eq):
@@ -439,12 +435,7 @@ def display_name_populate(request):
         return render(
             request,
             template,
-            {
-                "name_set": name_set,
-                "admin": admin,
-                "modality": modality,
-                "dual": dual,
-            },
+            {"name_set": name_set, "admin": admin, "modality": modality, "dual": dual},
         )
 
 
@@ -516,19 +507,10 @@ def display_name_last_date_and_count(request):
         template_latest = "remapp/displayname-last-date.html"
         template_count = "remapp/displayname-count.html"
         count_html = render_to_string(
-            template_count,
-            {
-                "count": count,
-                "count_all": count_all,
-            },
-            request=request,
+            template_count, {"count": count, "count_all": count_all}, request=request
         )
         latest_html = render_to_string(
-            template_latest,
-            {
-                "latest": latest,
-            },
-            request=request,
+            template_latest, {"latest": latest}, request=request
         )
         return_html = {"count_html": count_html, "latest_html": latest_html}
         html_dict = json.dumps(return_html)
@@ -1560,11 +1542,7 @@ def chart_options_view(request):
         "MGChartOptionsForm": mg_chart_options_form,
     }
 
-    return render(
-        request,
-        "remapp/displaychartoptions.html",
-        return_structure,
-    )
+    return render(request, "remapp/displaychartoptions.html", return_structure)
 
 
 @login_required
@@ -1667,11 +1645,7 @@ def homepage_options_view(request):
         "home_config": home_config,
     }
 
-    return render(
-        request,
-        "remapp/displayhomepageoptions.html",
-        return_structure,
-    )
+    return render(request, "remapp/displayhomepageoptions.html", return_structure)
 
 
 @login_required
@@ -1912,26 +1886,18 @@ def celery_tasks(request, stage=None):
                             this_task["type"] = None
                     except AttributeError:
                         this_task["type"] = None
-                    tasks += [
-                        this_task,
-                    ]
+                    tasks += [this_task]
                     recent_time_delta = 60 * 60 * 6  # six hours
                     if "STARTED" in this_task["state"]:
-                        active_tasks += [
-                            this_task,
-                        ]
+                        active_tasks += [this_task]
                     elif (
                         this_task["started"]
                         and (datetime_now - this_task["started"]).total_seconds()
                         < recent_time_delta
                     ):
-                        recent_tasks += [
-                            this_task,
-                        ]
+                        recent_tasks += [this_task]
                     else:
-                        older_tasks += [
-                            this_task,
-                        ]
+                        older_tasks += [this_task]
                 dicom_tasks = DicomQuery.objects.order_by("pk")
                 if "active" in stage:
                     return render(
@@ -2212,11 +2178,7 @@ def rf_alert_notifications_view(request):
 
     return_structure = {"user_list": f, "admin": admin}
 
-    return render(
-        request,
-        "remapp/rfalertnotificationsview.html",
-        return_structure,
-    )
+    return render(request, "remapp/rfalertnotificationsview.html", return_structure)
 
 
 @login_required

@@ -124,10 +124,7 @@ def get_or_create_cid(codevalue, codemeaning):
 
     if codevalue:
         if not ContextID.objects.all().filter(code_value=codevalue).exists():
-            cid = ContextID(
-                code_value=codevalue,
-                code_meaning=codemeaning,
-            )
+            cid = ContextID(code_value=codevalue, code_meaning=codemeaning)
             cid.save()
         code = ContextID.objects.filter(code_value__exact=codevalue)
         if code.count() > 1:

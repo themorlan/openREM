@@ -26,9 +26,7 @@ if settings.DEBUG:
         import debug_toolbar
 
         urlpatterns = [
-            path(
-                "{0}__debug__/".format(VIRTUAL_DIRECTORY), include(debug_toolbar.urls)
-            ),
+            path("{0}__debug__/".format(VIRTUAL_DIRECTORY), include(debug_toolbar.urls))
         ] + urlpatterns
     except ImportError:
         pass

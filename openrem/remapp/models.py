@@ -433,27 +433,16 @@ class UserProfile(models.Model):
     MEAN = "mean"
     MEDIAN = "median"
     BOTH = "both"
-    AVERAGES = (
-        (MEAN, "mean"),
-        (MEDIAN, "median"),
-        (BOTH, "both"),
-    )
+    AVERAGES = ((MEAN, "mean"), (MEDIAN, "median"), (BOTH, "both"))
 
     NAME = "name"
     FREQ = "frequency"
     VALUE = "value"
-    SORTING_CHOICES = (
-        (NAME, "Name"),
-        (FREQ, "Frequency"),
-        (VALUE, "Value"),
-    )
+    SORTING_CHOICES = ((NAME, "Name"), (FREQ, "Frequency"), (VALUE, "Value"))
 
     ASCENDING = 1
     DESCENDING = 0
-    SORTING_DIRECTION = (
-        (ASCENDING, "Ascending"),
-        (DESCENDING, "Descending"),
-    )
+    SORTING_DIRECTION = ((ASCENDING, "Ascending"), (DESCENDING, "Descending"))
 
     ITEMS_PER_PAGE = (
         (10, "10"),
@@ -466,10 +455,7 @@ class UserProfile(models.Model):
 
     SYSTEM = "system"
     SERIES = "series"
-    CHART_GROUPING = (
-        (SYSTEM, "System names"),
-        (SERIES, "Series item names"),
-    )
+    CHART_GROUPING = ((SYSTEM, "System names"), (SERIES, "Series item names"))
 
     PLOTLY_THEME = "plotly"
     CHART_THEMES = (

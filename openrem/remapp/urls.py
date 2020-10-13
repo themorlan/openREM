@@ -339,7 +339,7 @@ dicom_patterns = [
 ]
 
 import_patterns = [  # pylint: disable=invalid-name
-    path("from_docker/", import_views.import_from_docker, name="import_docker"),
+    path("from_docker/", import_views.import_from_docker, name="import_docker")
 ]
 
 urlpatterns = [
