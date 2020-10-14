@@ -59,6 +59,10 @@ def create_dataframe(
     data_point_value_multipliers=None,
     uid=None,
 ):
+    from datetime import datetime
+
+    if settings.DEBUG:
+        start = datetime.now()
 
     fields_to_include = set()
     if uid:
@@ -106,9 +110,12 @@ def create_dataframe(
 
     if data_point_date_fields:
         for date_field in data_point_date_fields:
-            df[date_field] = pd.to_datetime(df[date_field])
+            df[date_field] = pd.to_datetime(df[date_field], format="%Y-%m-%d")
 
     df = df.astype(dtype_conversion)
+
+    if settings.DEBUG:
+        print(f"Elapsed time is {datetime.now() - start}")
 
     return df
 

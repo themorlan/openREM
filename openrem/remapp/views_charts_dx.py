@@ -296,6 +296,7 @@ def dx_summary_chart_data(request):
     from remapp.interface.mod_filters import dx_acq_filter
     from openremproject import settings
     from django.http import JsonResponse
+    from datetime import datetime
 
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = dx_acq_filter(request.GET, pid=pid)
@@ -309,8 +310,6 @@ def dx_summary_chart_data(request):
         user_profile = request.user.userprofile
 
     if settings.DEBUG:
-        from datetime import datetime
-
         start_time = datetime.now()
 
     return_structure = dx_plot_calculations(f, user_profile)
@@ -832,13 +831,13 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts
     if (
-        user_profile.plotDXStudyMeanDAP,
-        user_profile.plotDXStudyFreq,
-        user_profile.plotDXStudyPerDayAndHour,
-        user_profile.plotDXStudyDAPvsMass,
-        user_profile.plotDXRequestMeanDAP,
-        user_profile.plotDXRequestFreq,
-        user_profile.plotDXRequestDAPvsMass,
+        user_profile.plotDXStudyMeanDAP
+        or user_profile.plotDXStudyFreq
+        or user_profile.plotDXStudyPerDayAndHour
+        or user_profile.plotDXStudyDAPvsMass
+        or user_profile.plotDXRequestMeanDAP
+        or user_profile.plotDXRequestFreq
+        or user_profile.plotDXRequestDAPvsMass
     ):
 
         name_fields = []
