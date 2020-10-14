@@ -146,7 +146,7 @@ def create_dataframe_weekdays(df, df_name_col, df_date_col="study_date"):
         from datetime import datetime
         start = datetime.now()
 
-    df["weekday"] = pd.DatetimeIndex(df[df_date_col]).day_name().astype("category")
+    df["weekday"] = pd.DatetimeIndex(df[df_date_col]).day_name()
     df["hour"] = df["study_time"].apply(lambda row: row.hour).astype("int8")
 
     df_time_series = (
@@ -915,7 +915,7 @@ def plotly_barchart_weekdays(
             hover_name="x_ray_system_name",
             hover_data={
                 "x_ray_system_name": False,
-                "weekday": False,
+                "weekday": True,
                 "hour": ":.2f",
                 df_value_col: True,
             },
