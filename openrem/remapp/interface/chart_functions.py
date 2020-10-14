@@ -59,9 +59,8 @@ def create_dataframe(
     data_point_value_multipliers=None,
     uid=None,
 ):
-    from datetime import datetime
-
     if settings.DEBUG:
+        from datetime import datetime
         start = datetime.now()
 
     fields_to_include = set()
@@ -115,7 +114,7 @@ def create_dataframe(
     df = df.astype(dtype_conversion)
 
     if settings.DEBUG:
-        print(f"Elapsed time is {datetime.now() - start}")
+        print(f"Dataframe created in {datetime.now() - start}")
 
     return df
 
@@ -142,14 +141,23 @@ def create_dataframe_time_series(
 
 
 def create_dataframe_weekdays(df, df_name_col, df_date_col="study_date"):
-    df["weekday"] = pd.DatetimeIndex(df[df_date_col]).day_name()
-    df["hour"] = [x.hour for x in df["study_time"]]
+
+    if settings.DEBUG:
+        from datetime import datetime
+        start = datetime.now()
+
+    df["weekday"] = pd.DatetimeIndex(df[df_date_col]).day_name().astype("category")
+    df["hour"] = df["study_time"].apply(lambda row: row.hour).astype("int8")
 
     df_time_series = (
         df.groupby(["x_ray_system_name", "weekday", "hour"])
         .agg({df_name_col: "count"})
         .reset_index()
     )
+
+    if settings.DEBUG:
+        print(f"Weekday and hour dataframe created in {datetime.now() - start}")
+
     return df_time_series
 
 
@@ -907,7 +915,7 @@ def plotly_barchart_weekdays(
             hover_name="x_ray_system_name",
             hover_data={
                 "x_ray_system_name": False,
-                "weekday": True,
+                "weekday": False,
                 "hour": ":.2f",
                 df_value_col: True,
             },
