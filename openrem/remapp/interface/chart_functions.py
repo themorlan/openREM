@@ -929,6 +929,8 @@ def plotly_barchart_weekdays(
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
+        fig.update_xaxes(showticklabels=True)
+
         if return_as_dict:
             return fig.to_dict()
         else:
