@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-13 20:53+0100\n"
-"PO-Revision-Date: 2020-10-13 15:38+0000\n"
+"PO-Revision-Date: 2020-10-14 20:26+0000\n"
 "Last-Translator: Marcelo Sosa <msosa79@outlook.com>\n"
 "Language-Team: Spanish (Mexico) <https://hosted.weblate.org/projects/openrem/"
 "web-interface/es_MX/>\n"
@@ -69,15 +69,17 @@ msgstr ""
 #: remapp/netdicom/qrscu.py:906
 msgid "Series level matching for this study is complete (there may be more)"
 msgstr ""
+"El emparejamiento a nivel de series para este estudio esta completo (puede "
+"haber más)"
 
 #: remapp/netdicom/qrscu.py:916
 msgid "Series level matches are continuing."
-msgstr ""
+msgstr "Los emparejamientos a nivel de series continúan."
 
 #: remapp/netdicom/qrscu.py:1008
 #, python-brace-format
 msgid "Study level matching for {modalities} is complete"
-msgstr ""
+msgstr "El emparejamiento a nivel de estudios para {modalities} esta completo"
 
 #: remapp/netdicom/qrscu.py:1021
 #, python-brace-format
