@@ -423,7 +423,7 @@ def plotly_histogram_barchart(
             bins = np.linspace(min_bin_value, max_bin_value, n_bins + 1)
             mid_bins = 0.5 * (bins[:-1] + bins[1:])
             bin_labels = np.array(
-                ["{:.2f} to {:.2f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])]
+                ["{:.2f}≤x<{:.2f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])]
             )
 
             for category_name in df_category_name_list:
@@ -581,7 +581,7 @@ def plotly_binned_statistic_barchart(
                     bins = np.concatenate([bins, [facet_x_max]])
 
             bin_labels = np.array(
-                ["{:.1f} to {:.1f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])]
+                ["{:.0f}≤x<{:.0f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])]
             )
 
             for category_name in df_category_name_list:
