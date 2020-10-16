@@ -562,7 +562,9 @@ def plotly_binned_statistic_barchart(
         bins = np.sort(np.array(user_bins))
 
         for facet_name in df_facet_category_list:
-            facet_subset = df[df[df_facet_col] == facet_name].dropna(subset=[df_x_value_col, df_y_value_col])
+            facet_subset = df[df[df_facet_col] == facet_name].dropna(
+                subset=[df_x_value_col, df_y_value_col]
+            )
 
             # Skip to the next facet if the subset is empty
             if facet_subset.empty:

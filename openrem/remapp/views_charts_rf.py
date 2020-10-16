@@ -171,8 +171,6 @@ def rf_plot_calculations(f, user_profile):
     if user_profile.plotMedian:
         average_choices.append("median")
 
-    sorted_categories = None
-
     #######################################################################
     # Prepare Pandas DataFrame to use for charts
     name_fields = []
