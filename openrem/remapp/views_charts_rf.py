@@ -156,6 +156,10 @@ def rf_plot_calculations(f, user_profile):
         construct_frequency_chart,
     )
 
+    # Return an empty structure if the queryset is empty
+    if not f.qs:
+        return {}
+
     # Set the Plotly chart theme
     plotly_set_default_theme(user_profile.plotThemeChoice)
 

@@ -436,6 +436,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         construct_over_time_charts,
     )
 
+    # Return an empty structure if the queryset is empty
+    if not f.qs:
+        return {}
+
     # Set the Plotly chart theme
     plotly_set_default_theme(user_profile.plotThemeChoice)
 

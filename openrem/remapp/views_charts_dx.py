@@ -337,6 +337,10 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
         construct_over_time_charts,
     )
 
+    # Return an empty structure if the queryset is empty
+    if not f.qs:
+        return {}
+
     if (
         user_profile.plotDXAcquisitionMeanDAPOverTime
         or user_profile.plotDXAcquisitionMeankVpOverTime
