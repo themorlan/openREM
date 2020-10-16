@@ -551,7 +551,7 @@ def plotly_binned_statistic_barchart(
 
     try:
         fig = make_subplots(
-            rows=n_facet_rows, cols=facet_col_wrap, vertical_spacing=0.40 / n_facet_rows
+            rows=n_facet_rows, cols=facet_col_wrap, vertical_spacing=0.50 / n_facet_rows
         )
 
         current_row = 1
@@ -561,13 +561,12 @@ def plotly_binned_statistic_barchart(
 
         bins = np.sort(np.array(user_bins))
 
-        # Drop any rows with nan values in x or y
-        df = df.dropna(subset=[df_x_value_col, df_y_value_col])
-        if df.empty:
-            return empty_dataframe_msg()
-
         for facet_name in df_facet_category_list:
-            facet_subset = df[df[df_facet_col] == facet_name]
+            facet_subset = df[df[df_facet_col] == facet_name].dropna(subset=[df_x_value_col, df_y_value_col])
+
+            # Skip to the next facet if the subset is empty
+            if facet_subset.empty:
+                continue
 
             facet_x_min = facet_subset[df_x_value_col].min()
             facet_x_max = facet_subset[df_x_value_col].max()
@@ -586,7 +585,11 @@ def plotly_binned_statistic_barchart(
             for category_name in df_category_name_list:
                 category_subset = facet_subset[
                     facet_subset[df_category_col] == category_name
-                ]
+                ].dropna(subset=[df_x_value_col, df_y_value_col])
+
+                # Skip to the next category name if the subset is empty
+                if category_subset.empty:
+                    continue
 
                 if len(category_subset.index) > 0:
                     if category_name in category_names:
@@ -607,7 +610,7 @@ def plotly_binned_statistic_barchart(
                     trace_labels = np.array(
                         [
                             "Frequency: {}<br>Bin range: {}".format(i, j)
-                            for i, j in zip(bin_counts, bin_labels)
+                            for i, j in zip(bin_counts[1:], bin_labels)
                         ]
                     )
 
