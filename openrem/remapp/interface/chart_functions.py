@@ -61,6 +61,7 @@ def create_dataframe(
 ):
     if settings.DEBUG:
         from datetime import datetime
+
         start = datetime.now()
 
     fields_to_include = set()
@@ -144,6 +145,7 @@ def create_dataframe_weekdays(df, df_name_col, df_date_col="study_date"):
 
     if settings.DEBUG:
         from datetime import datetime
+
         start = datetime.now()
 
     df["weekday"] = pd.DatetimeIndex(df[df_date_col]).day_name()
@@ -408,7 +410,13 @@ def plotly_histogram_barchart(
         category_names = []
 
         for facet_name in df_facet_category_list:
-            facet_subset = df[df[df_facet_col] == facet_name]
+            facet_subset = df[df[df_facet_col] == facet_name].dropna(
+                subset=[df_value_col]
+            )
+
+            # If the subset is empty then skip to the next facet
+            if facet_subset.empty:
+                continue
 
             min_bin_value = facet_subset[df_value_col].min()
             max_bin_value = facet_subset[df_value_col].max()
@@ -421,7 +429,11 @@ def plotly_histogram_barchart(
             for category_name in df_category_name_list:
                 category_subset = facet_subset[
                     facet_subset[df_category_col] == category_name
-                ]
+                ].dropna(subset=[df_value_col])
+
+                # If the subset is empty then skip to the next category
+                if category_subset.empty:
+                    continue
 
                 if category_name in category_names:
                     show_legend = False
