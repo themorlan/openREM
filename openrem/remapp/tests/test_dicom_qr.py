@@ -29,8 +29,8 @@ def _fake_check_sr_type_in_study_with_rdsr(assoc, study, query, query_id, get_em
 
 
 fake_responses = [
-    [[u"MG", u"SR"], [u"MG"], [u"OT", u"MG"], [u"PR", u"MG"]],
-    [[u"CT"], [u"OT", u"CT", u"SR"], [u"SR", u"CT"]],
+    [["MG", "SR"], ["MG"], ["OT", "MG"], ["PR", "MG"]],
+    [["CT"], ["OT", "CT", "SR"], ["SR", "CT"]],
 ]
 
 
@@ -74,7 +74,7 @@ def _fake_all_modalities(assoc, d, query, query_id, *args, **kwargs):
     :param kwargs:      Not used in mock
     :return:            Two DicomQRRspStudy objects in the database
     """
-    mods = [[u"MG", u"SR"], [u"US", u"SR"]]
+    mods = [["MG", "SR"], ["US", "SR"]]
     for mod_list in mods:
         rsp = DicomQRRspStudy.objects.create(dicom_query=query)
         rsp.query_id = query_id
@@ -177,34 +177,34 @@ class QRPhilipsCT(TestCase):
         rst1 = DicomQRRspStudy.objects.create(dicom_query=query)
         rst1.query_id = query.query_id
         rst1.study_instance_uid = uuid.uuid4()
-        rst1.study_description = u"test response 1"
-        rst1.station_name = u""
+        rst1.study_description = "test response 1"
+        rst1.station_name = ""
         rst1.save()
 
         rst1s1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rst1)
         rst1s1.query_id = query.query_id
         rst1s1.series_instance_uid = uuid.uuid4()
-        rst1s1.modality = u"CT"
+        rst1s1.modality = "CT"
         rst1s1.series_number = 1
-        rst1s1.series_description = u"scan projection radiograph"
+        rst1s1.series_description = "scan projection radiograph"
         rst1s1.number_of_series_related_instances = 1
         rst1s1.save()
 
         rst1s2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rst1)
         rst1s2.query_id = query.query_id
         rst1s2.series_instance_uid = uuid.uuid4()
-        rst1s2.modality = u"CT"
+        rst1s2.modality = "CT"
         rst1s2.series_number = 3
-        rst1s2.series_description = u"thorax and abdomen"
+        rst1s2.series_description = "thorax and abdomen"
         rst1s2.number_of_series_related_instances = 300
         rst1s2.save()
 
         rst1s3 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rst1)
         rst1s3.query_id = query.query_id
         rst1s3.series_instance_uid = uuid.uuid4()
-        rst1s3.modality = u"SC"
+        rst1s3.modality = "SC"
         rst1s3.series_number = 2394
-        rst1s3.series_description = u"dose info"
+        rst1s3.series_description = "dose info"
         rst1s3.number_of_series_related_instances = 1
         rst1s3.save()
 
@@ -256,7 +256,7 @@ class QRPhilipsCT(TestCase):
         self.assertEqual(query.dicomqrrspstudy_set.all().count(), 1)
         self.assertEqual(rst1.dicomqrrspseries_set.all().count(), 1)
         self.assertEqual(
-            rst1.dicomqrrspseries_set.all()[0].series_description, u"dose info"
+            rst1.dicomqrrspseries_set.all()[0].series_description, "dose info"
         )
 
     def test_response_sorting_ct_philips_no_desc(self):
@@ -379,9 +379,9 @@ class QRPhilipsCT(TestCase):
         rst1s4 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rst1)
         rst1s4.query_id = query.query_id
         rst1s4.series_instance_uid = uuid.uuid4()
-        rst1s4.modality = u"SR"
+        rst1s4.modality = "SR"
         rst1s4.series_number = 999
-        rst1s4.series_description = u"radiation dose report"
+        rst1s4.series_description = "radiation dose report"
         rst1s4.number_of_series_related_instances = 1
         rst1s4.save()
 
@@ -416,7 +416,7 @@ class QRPhilipsCT(TestCase):
         self.assertEqual(rst1.dicomqrrspseries_set.all().count(), 1)
         self.assertEqual(
             rst1.dicomqrrspseries_set.all()[0].series_description,
-            u"radiation dose report",
+            "radiation dose report",
         )
 
     def test_modalities_in_study_generation(self):
@@ -433,9 +433,9 @@ class QRPhilipsCT(TestCase):
         rst1s4 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rst1)
         rst1s4.query_id = query.query_id
         rst1s4.series_instance_uid = uuid.uuid4()
-        rst1s4.modality = u"SR"
+        rst1s4.modality = "SR"
         rst1s4.series_number = 999
-        rst1s4.series_description = u"radiation dose report"
+        rst1s4.series_description = "radiation dose report"
         rst1s4.number_of_series_related_instances = 1
         rst1s4.save()
 
@@ -450,7 +450,7 @@ class QRPhilipsCT(TestCase):
 
         # Modalities in study should now be available again
         self.assertEqual(
-            Counter(rst2.get_modalities_in_study()), Counter([u"CT", u"SC", u"SR"])
+            Counter(rst2.get_modalities_in_study()), Counter(["CT", "SC", "SR"])
         )
 
 
@@ -471,34 +471,34 @@ class ResponseFiltering(TestCase):
         rst1 = DicomQRRspStudy.objects.create(dicom_query=query)
         rst1.query_id = query.query_id
         rst1.study_instance_uid = uuid.uuid4()
-        rst1.study_description = u"Imported  CT studies"
-        rst1.station_name = u"badstation"
+        rst1.study_description = "Imported  CT studies"
+        rst1.station_name = "badstation"
         rst1.save()
 
         rst1s1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rst1)
         rst1s1.query_id = query.query_id
         rst1s1.series_instance_uid = uuid.uuid4()
-        rst1s1.modality = u"CT"
+        rst1s1.modality = "CT"
         rst1s1.series_number = 1
-        rst1s1.series_description = u"scan projection radiograph"
+        rst1s1.series_description = "scan projection radiograph"
         rst1s1.number_of_series_related_instances = 1
         rst1s1.save()
 
         rst1s2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rst1)
         rst1s2.query_id = query.query_id
         rst1s2.series_instance_uid = uuid.uuid4()
-        rst1s2.modality = u"CT"
+        rst1s2.modality = "CT"
         rst1s2.series_number = 3
-        rst1s2.series_description = u"thorax and abdomen"
+        rst1s2.series_description = "thorax and abdomen"
         rst1s2.number_of_series_related_instances = 300
         rst1s2.save()
 
         rst1s3 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rst1)
         rst1s3.query_id = query.query_id
         rst1s3.series_instance_uid = uuid.uuid4()
-        rst1s3.modality = u"SC"
+        rst1s3.modality = "SC"
         rst1s3.series_number = 2394
-        rst1s3.series_description = u"dose info"
+        rst1s3.series_description = "dose info"
         rst1s3.number_of_series_related_instances = 1
         rst1s3.save()
 
@@ -517,15 +517,15 @@ class ResponseFiltering(TestCase):
         rst2 = DicomQRRspStudy.objects.create(dicom_query=query)
         rst2.query_id = query.query_id
         rst2.study_instance_uid = uuid.uuid4()
-        rst2.study_description = u"Test Response 2"
-        rst2.station_name = u"goodstation"
+        rst2.study_description = "Test Response 2"
+        rst2.station_name = "goodstation"
         rst2.save()
 
         rst3 = DicomQRRspStudy.objects.create(dicom_query=query)
         rst3.query_id = query.query_id
         rst3.study_instance_uid = uuid.uuid4()
-        rst3.study_description = u"test response 3"
-        rst3.station_name = u"goodstation2"
+        rst3.study_description = "test response 3"
+        rst3.station_name = "goodstation2"
         rst3.save()
 
     def test_filter_include_station_name(self):
@@ -536,12 +536,12 @@ class ResponseFiltering(TestCase):
         from ..netdicom.qrscu import _filter
 
         query = DicomQuery.objects.get()
-        _filter(query, u"study", u"station_name", [u"goodstation"], u"include")
+        _filter(query, "study", "station_name", ["goodstation"], "include")
 
         self.assertEqual(query.dicomqrrspstudy_set.all().count(), 2)
         studies = query.dicomqrrspstudy_set.all()
         for study in studies:
-            self.assertTrue(u"goodstation" in study.station_name)
+            self.assertTrue("goodstation" in study.station_name)
 
     def test_filter_exclude_station_name(self):
         """
@@ -551,7 +551,7 @@ class ResponseFiltering(TestCase):
         from ..netdicom.qrscu import _filter
 
         query = DicomQuery.objects.get()
-        _filter(query, u"study", u"station_name", [u"badstation"], u"exclude")
+        _filter(query, "study", "station_name", ["badstation"], "exclude")
 
         self.assertEqual(query.dicomqrrspstudy_set.all().count(), 2)
         studies = query.dicomqrrspstudy_set.all()
@@ -568,10 +568,10 @@ class ResponseFiltering(TestCase):
         query = DicomQuery.objects.get()
         _filter(
             query,
-            u"study",
-            u"study_description",
-            [u"import", u"test response 3"],
-            u"exclude",
+            "study",
+            "study_description",
+            ["import", "test response 3"],
+            "exclude",
         )
 
         self.assertEqual(query.dicomqrrspstudy_set.all().count(), 1)
@@ -586,12 +586,12 @@ class ResponseFiltering(TestCase):
         from ..netdicom.qrscu import _filter
 
         query = DicomQuery.objects.get()
-        _filter(query, u"study", u"study_description", [u"test",], u"include")
+        _filter(query, "study", "study_description", ["test", ], "include")
 
         self.assertEqual(query.dicomqrrspstudy_set.all().count(), 2)
         studies = query.dicomqrrspstudy_set.all()
         for study in studies:
-            self.assertTrue(u"goodstation" in study.station_name)
+            self.assertTrue("goodstation" in study.station_name)
 
 
 def _fake_image_query(assoc, sr, query, query_id):
@@ -635,14 +635,14 @@ class PruneSeriesResponses(TestCase):
         st1 = DicomQRRspStudy.objects.create(dicom_query=query)
         st1.query_id = query.query_id
         st1.study_instance_uid = uuid.uuid4()
-        st1.study_description = u"MG study no SR"
+        st1.study_description = "MG study no SR"
         st1.set_modalities_in_study(["MG"])
         st1.save()
 
         st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se1.query_id = query.query_id
         st1_se1.series_instance_uid = uuid.uuid4()
-        st1_se1.modality = u"MG"
+        st1_se1.modality = "MG"
         st1_se1.series_number = 1
         st1_se1.number_of_series_related_instances = 1
         st1_se1.save()
@@ -679,14 +679,14 @@ class PruneSeriesResponses(TestCase):
         st2 = DicomQRRspStudy.objects.create(dicom_query=query)
         st2.query_id = query.query_id
         st2.study_instance_uid = uuid.uuid4()
-        st2.study_description = u"MG study with SR"
+        st2.study_description = "MG study with SR"
         st2.set_modalities_in_study(["MG", "SR"])
         st2.save()
 
         st2_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st2)
         st2_se1.query_id = query.query_id
         st2_se1.series_instance_uid = uuid.uuid4()
-        st2_se1.modality = u"MG"
+        st2_se1.modality = "MG"
         st2_se1.series_number = 1
         st2_se1.number_of_series_related_instances = 1
         st2_se1.save()
@@ -694,7 +694,7 @@ class PruneSeriesResponses(TestCase):
         st2_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st2)
         st2_se2.query_id = query.query_id
         st2_se2.series_instance_uid = uuid.uuid4()
-        st2_se2.modality = u"SR"
+        st2_se2.modality = "SR"
         st2_se2.series_number = 2
         st2_se2.number_of_series_related_instances = 1
         st2_se2.save()
@@ -702,13 +702,13 @@ class PruneSeriesResponses(TestCase):
         st2_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st2_se2)
         st2_se2_im1.query_id = query.query_id
         st2_se2_im1.sop_instance_uid = uuid.uuid4()
-        st2_se2_im1.sop_class_uid = u"1.2.840.10008.5.1.4.1.1.88.67"
+        st2_se2_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.67"
         st2_se2_im1.save()
 
         st2_se3 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st2)
         st2_se3.query_id = query.query_id
         st2_se3.series_instance_uid = uuid.uuid4()
-        st2_se3.modality = u"SR"
+        st2_se3.modality = "SR"
         st2_se3.series_number = 3
         st2_se3.number_of_series_related_instances = 1
         st2_se3.save()
@@ -716,7 +716,7 @@ class PruneSeriesResponses(TestCase):
         st2_se3_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st2_se3)
         st2_se3_im1.query_id = query.query_id
         st2_se3_im1.sop_instance_uid = uuid.uuid4()
-        st2_se3_im1.sop_class_uid = u"1.2.840.10008.5.1.4.1.1.88.11"
+        st2_se3_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.11"
         st2_se3_im1.save()
 
         query = DicomQuery.objects.get(query_id__exact="MammoWithSR")
@@ -736,7 +736,7 @@ class PruneSeriesResponses(TestCase):
         series = studies[0].dicomqrrspseries_set.all()
         self.assertEqual(series.count(), 1)
         sr_instance = series[0].dicomqrrspimage_set.get()
-        self.assertEqual(sr_instance.sop_class_uid, u"1.2.840.10008.5.1.4.1.1.88.67")
+        self.assertEqual(sr_instance.sop_class_uid, "1.2.840.10008.5.1.4.1.1.88.67")
 
     @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
     def test_prune_ser_resp_cr_no_rdsr(self):
@@ -753,14 +753,14 @@ class PruneSeriesResponses(TestCase):
         st1 = DicomQRRspStudy.objects.create(dicom_query=query)
         st1.query_id = query.query_id
         st1.study_instance_uid = uuid.uuid4()
-        st1.study_description = u"CR study no SR"
+        st1.study_description = "CR study no SR"
         st1.set_modalities_in_study(["CR", "SR"])
         st1.save()
 
         st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se1.query_id = query.query_id
         st1_se1.series_instance_uid = uuid.uuid4()
-        st1_se1.modality = u"CR"
+        st1_se1.modality = "CR"
         st1_se1.series_number = 1
         st1_se1.number_of_series_related_instances = 1
         st1_se1.save()
@@ -768,7 +768,7 @@ class PruneSeriesResponses(TestCase):
         st1_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se2.query_id = query.query_id
         st1_se2.series_instance_uid = uuid.uuid4()
-        st1_se2.modality = u"SR"
+        st1_se2.modality = "SR"
         st1_se2.series_number = 2
         st1_se2.number_of_series_related_instances = 1
         st1_se2.save()
@@ -776,7 +776,7 @@ class PruneSeriesResponses(TestCase):
         st1_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se2)
         st1_se2_im1.query_id = query.query_id
         st1_se2_im1.sop_instance_uid = uuid.uuid4()
-        st1_se2_im1.sop_class_uid = u"1.2.840.10008.5.1.4.1.1.88.11"
+        st1_se2_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.11"
         st1_se2_im1.save()
 
         query = DicomQuery.objects.get(query_id__exact="CRNoRDSR")
@@ -795,8 +795,8 @@ class PruneSeriesResponses(TestCase):
         self.assertEqual(studies.count(), 1)
         series = studies[0].dicomqrrspseries_set.all()
         self.assertEqual(series.count(), 1)
-        self.assertEqual(series[0].modality, u"CR")
-        self.assertEqual(studies[0].modality, u"DX")
+        self.assertEqual(series[0].modality, "CR")
+        self.assertEqual(studies[0].modality, "DX")
 
     @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
     def test_prune_ser_resp_dx_with_sr(self):
@@ -813,14 +813,14 @@ class PruneSeriesResponses(TestCase):
         st1 = DicomQRRspStudy.objects.create(dicom_query=query)
         st1.query_id = query.query_id
         st1.study_instance_uid = uuid.uuid4()
-        st1.study_description = u"DX study with RDSR"
+        st1.study_description = "DX study with RDSR"
         st1.set_modalities_in_study(["DX", "SR"])
         st1.save()
 
         st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se1.query_id = query.query_id
         st1_se1.series_instance_uid = uuid.uuid4()
-        st1_se1.modality = u"DX"
+        st1_se1.modality = "DX"
         st1_se1.series_number = 1
         st1_se1.number_of_series_related_instances = 1
         st1_se1.save()
@@ -828,7 +828,7 @@ class PruneSeriesResponses(TestCase):
         st1_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se2.query_id = query.query_id
         st1_se2.series_instance_uid = uuid.uuid4()
-        st1_se2.modality = u"SR"
+        st1_se2.modality = "SR"
         st1_se2.series_number = 2
         st1_se2.number_of_series_related_instances = 1
         st1_se2.save()
@@ -836,13 +836,13 @@ class PruneSeriesResponses(TestCase):
         st1_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se2)
         st1_se2_im1.query_id = query.query_id
         st1_se2_im1.sop_instance_uid = uuid.uuid4()
-        st1_se2_im1.sop_class_uid = u"1.2.840.10008.5.1.4.1.1.88.67"
+        st1_se2_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.67"
         st1_se2_im1.save()
 
         st1_se3 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se3.query_id = query.query_id
         st1_se3.series_instance_uid = uuid.uuid4()
-        st1_se3.modality = u"SR"
+        st1_se3.modality = "SR"
         st1_se3.series_number = 3
         st1_se3.number_of_series_related_instances = 1
         st1_se3.save()
@@ -850,13 +850,13 @@ class PruneSeriesResponses(TestCase):
         st1_se3_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se3)
         st1_se3_im1.query_id = query.query_id
         st1_se3_im1.sop_instance_uid = uuid.uuid4()
-        st1_se3_im1.sop_class_uid = u"1.2.840.10008.5.1.4.1.1.88.11"
+        st1_se3_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.11"
         st1_se3_im1.save()
 
         st1_se4 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se4.query_id = query.query_id
         st1_se4.series_instance_uid = uuid.uuid4()
-        st1_se4.modality = u"SR"
+        st1_se4.modality = "SR"
         st1_se4.series_number = 4
         st1_se4.number_of_series_related_instances = 1
         st1_se4.save()
@@ -864,7 +864,7 @@ class PruneSeriesResponses(TestCase):
         st1_se4_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se4)
         st1_se4_im1.query_id = query.query_id
         st1_se4_im1.sop_instance_uid = uuid.uuid4()
-        st1_se4_im1.sop_class_uid = u"1.2.840.10008.5.1.4.1.1.88.22"
+        st1_se4_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.22"
         st1_se4_im1.save()
 
         query = DicomQuery.objects.get(query_id__exact="DXWithSR")
@@ -884,7 +884,7 @@ class PruneSeriesResponses(TestCase):
         series = studies[0].dicomqrrspseries_set.all()
         self.assertEqual(series.count(), 1)
         sr_instance = series[0].dicomqrrspimage_set.get()
-        self.assertEqual(sr_instance.sop_class_uid, u"1.2.840.10008.5.1.4.1.1.88.67")
+        self.assertEqual(sr_instance.sop_class_uid, "1.2.840.10008.5.1.4.1.1.88.67")
 
     @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
     def test_prune_ser_resp_rf_no_sr(self):
@@ -901,14 +901,14 @@ class PruneSeriesResponses(TestCase):
         st1 = DicomQRRspStudy.objects.create(dicom_query=query)
         st1.query_id = query.query_id
         st1.study_instance_uid = uuid.uuid4()
-        st1.study_description = u"RF study no SR"
+        st1.study_description = "RF study no SR"
         st1.set_modalities_in_study(["RF", "SR"])
         st1.save()
 
         st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se1.query_id = query.query_id
         st1_se1.series_instance_uid = uuid.uuid4()
-        st1_se1.modality = u"RF"
+        st1_se1.modality = "RF"
         st1_se1.series_number = 1
         st1_se1.number_of_series_related_instances = 1
         st1_se1.save()
@@ -916,7 +916,7 @@ class PruneSeriesResponses(TestCase):
         st1_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se2.query_id = query.query_id
         st1_se2.series_instance_uid = uuid.uuid4()
-        st1_se2.modality = u"SR"
+        st1_se2.modality = "SR"
         st1_se2.series_number = 2
         st1_se2.number_of_series_related_instances = 1
         st1_se2.save()
@@ -924,7 +924,7 @@ class PruneSeriesResponses(TestCase):
         st1_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se2)
         st1_se2_im1.query_id = query.query_id
         st1_se2_im1.sop_instance_uid = uuid.uuid4()
-        st1_se2_im1.sop_class_uid = u"1.2.840.10008.5.1.4.1.1.88.11"
+        st1_se2_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.11"
         st1_se2_im1.save()
 
         query = DicomQuery.objects.get(query_id__exact="RFNoSR")
@@ -957,14 +957,14 @@ class PruneSeriesResponses(TestCase):
         st1 = DicomQRRspStudy.objects.create(dicom_query=query)
         st1.query_id = query.query_id
         st1.study_instance_uid = uuid.uuid4()
-        st1.study_description = u"XA study with ESR and Basic SR"
+        st1.study_description = "XA study with ESR and Basic SR"
         st1.set_modalities_in_study(["XA", "SR"])
         st1.save()
 
         st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se1.query_id = query.query_id
         st1_se1.series_instance_uid = uuid.uuid4()
-        st1_se1.modality = u"XA"
+        st1_se1.modality = "XA"
         st1_se1.series_number = 1
         st1_se1.number_of_series_related_instances = 1
         st1_se1.save()
@@ -972,7 +972,7 @@ class PruneSeriesResponses(TestCase):
         st1_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se2.query_id = query.query_id
         st1_se2.series_instance_uid = uuid.uuid4()
-        st1_se2.modality = u"SR"
+        st1_se2.modality = "SR"
         st1_se2.series_number = 2
         st1_se2.number_of_series_related_instances = 1
         st1_se2.save()
@@ -980,13 +980,13 @@ class PruneSeriesResponses(TestCase):
         st1_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se2)
         st1_se2_im1.query_id = query.query_id
         st1_se2_im1.sop_instance_uid = uuid.uuid4()
-        st1_se2_im1.sop_class_uid = u"1.2.840.10008.5.1.4.1.1.88.22"
+        st1_se2_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.22"
         st1_se2_im1.save()
 
         st1_se3 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se3.query_id = query.query_id
         st1_se3.series_instance_uid = uuid.uuid4()
-        st1_se3.modality = u"SR"
+        st1_se3.modality = "SR"
         st1_se3.series_number = 3
         st1_se3.number_of_series_related_instances = 1
         st1_se3.save()
@@ -994,7 +994,7 @@ class PruneSeriesResponses(TestCase):
         st1_se3_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se3)
         st1_se3_im1.query_id = query.query_id
         st1_se3_im1.sop_instance_uid = uuid.uuid4()
-        st1_se3_im1.sop_class_uid = u"1.2.840.10008.5.1.4.1.1.88.11"
+        st1_se3_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.11"
         st1_se3_im1.save()
 
         query = DicomQuery.objects.get(query_id__exact="XAWithESRBSR")
@@ -1014,7 +1014,7 @@ class PruneSeriesResponses(TestCase):
         series = studies[0].dicomqrrspseries_set.all()
         self.assertEqual(series.count(), 1)
         sr_instance = series[0].dicomqrrspimage_set.get()
-        self.assertEqual(sr_instance.sop_class_uid, u"1.2.840.10008.5.1.4.1.1.88.22")
+        self.assertEqual(sr_instance.sop_class_uid, "1.2.840.10008.5.1.4.1.1.88.22")
 
     @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
     def test_prune_ser_resp_empty_sr_no_flag(self):
@@ -1032,14 +1032,14 @@ class PruneSeriesResponses(TestCase):
         st2 = DicomQRRspStudy.objects.create(dicom_query=query)
         st2.query_id = query.query_id
         st2.study_instance_uid = uuid.uuid4()
-        st2.study_description = u"MG study with SR"
+        st2.study_description = "MG study with SR"
         st2.set_modalities_in_study(["MG", "SR"])
         st2.save()
 
         st2_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st2)
         st2_se1.query_id = query.query_id
         st2_se1.series_instance_uid = uuid.uuid4()
-        st2_se1.modality = u"MG"
+        st2_se1.modality = "MG"
         st2_se1.series_number = 1
         st2_se1.number_of_series_related_instances = 1
         st2_se1.save()
@@ -1047,7 +1047,7 @@ class PruneSeriesResponses(TestCase):
         st2_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st2)
         st2_se2.query_id = query.query_id
         st2_se2.series_instance_uid = uuid.uuid4()
-        st2_se2.modality = u"SR"
+        st2_se2.modality = "SR"
         st2_se2.series_number = 2
         st2_se2.number_of_series_related_instances = 1
         st2_se2.save()
@@ -1068,7 +1068,7 @@ class PruneSeriesResponses(TestCase):
         self.assertEqual(studies.count(), 1)
         series = studies[0].dicomqrrspseries_set.all()
         self.assertEqual(series.count(), 1)
-        self.assertEqual(series[0].modality, u"MG")
+        self.assertEqual(series[0].modality, "MG")
 
     @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
     def test_prune_ser_resp_empty_sr_with_flag(self):
@@ -1086,14 +1086,14 @@ class PruneSeriesResponses(TestCase):
         st2 = DicomQRRspStudy.objects.create(dicom_query=query)
         st2.query_id = query.query_id
         st2.study_instance_uid = uuid.uuid4()
-        st2.study_description = u"MG study with SR"
+        st2.study_description = "MG study with SR"
         st2.set_modalities_in_study(["MG", "SR"])
         st2.save()
 
         st2_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st2)
         st2_se1.query_id = query.query_id
         st2_se1.series_instance_uid = uuid.uuid4()
-        st2_se1.modality = u"MG"
+        st2_se1.modality = "MG"
         st2_se1.series_number = 1
         st2_se1.number_of_series_related_instances = 1
         st2_se1.save()
@@ -1101,7 +1101,7 @@ class PruneSeriesResponses(TestCase):
         st2_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st2)
         st2_se2.query_id = query.query_id
         st2_se2.series_instance_uid = uuid.uuid4()
-        st2_se2.modality = u"SR"
+        st2_se2.modality = "SR"
         st2_se2.series_number = 2
         st2_se2.number_of_series_related_instances = 1
         st2_se2.save()
@@ -1117,7 +1117,7 @@ class PruneSeriesResponses(TestCase):
         self.assertEqual(studies.count(), 1)
         series = studies[0].dicomqrrspseries_set.all()
         self.assertEqual(series.count(), 1)
-        self.assertEqual(series[0].modality, u"SR")
+        self.assertEqual(series[0].modality, "SR")
 
 
 class PruneSeriesResponsesCT(TestCase):
@@ -1150,23 +1150,23 @@ class PruneSeriesResponsesCT(TestCase):
         st1 = DicomQRRspStudy.objects.create(dicom_query=query)
         st1.query_id = query.query_id
         st1.study_instance_uid = uuid.uuid4()
-        st1.study_description = u"CT study"
+        st1.study_description = "CT study"
         st1.set_modalities_in_study(["CT", "SR"])
         st1.save()
 
         st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se1.query_id = query.query_id
         st1_se1.series_instance_uid = uuid.uuid4()
-        st1_se1.modality = u"CT"
+        st1_se1.modality = "CT"
         st1_se1.series_number = 1
         st1_se1.number_of_series_related_instances = 15
-        st1_se1.series_description = u"TAP"
+        st1_se1.series_description = "TAP"
         st1_se1.save()
 
         st1_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se2.query_id = query.query_id
         st1_se2.series_instance_uid = uuid.uuid4()
-        st1_se2.modality = u"SR"
+        st1_se2.modality = "SR"
         st1_se2.series_number = 2
         st1_se2.number_of_series_related_instances = 1
         st1_se2.save()
@@ -1174,13 +1174,13 @@ class PruneSeriesResponsesCT(TestCase):
         st1_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se2)
         st1_se2_im1.query_id = query.query_id
         st1_se2_im1.sop_instance_uid = uuid.uuid4()
-        st1_se2_im1.sop_class_uid = u"1.2.840.10008.5.1.4.1.1.88.22"
+        st1_se2_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.22"
         st1_se2_im1.save()
 
         st1_se3 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se3.query_id = query.query_id
         st1_se3.series_instance_uid = uuid.uuid4()
-        st1_se3.modality = u"SR"
+        st1_se3.modality = "SR"
         st1_se3.series_number = 3
         st1_se3.number_of_series_related_instances = 1
         st1_se3.save()
@@ -1188,22 +1188,22 @@ class PruneSeriesResponsesCT(TestCase):
         st1_se3_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se3)
         st1_se3_im1.query_id = query.query_id
         st1_se3_im1.sop_instance_uid = uuid.uuid4()
-        st1_se3_im1.sop_class_uid = u"1.2.840.10008.5.1.4.1.1.88.11"
+        st1_se3_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.11"
         st1_se3_im1.save()
 
         st1_se4 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se4.query_id = query.query_id
         st1_se4.series_instance_uid = uuid.uuid4()
-        st1_se4.modality = u"CT"
+        st1_se4.modality = "CT"
         st1_se4.series_number = 4
         st1_se4.number_of_series_related_instances = 1
-        st1_se4.series_description = u"Dose Info"
+        st1_se4.series_description = "Dose Info"
         st1_se4.save()
 
         st1_se5 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
         st1_se5.query_id = query.query_id
         st1_se5.series_instance_uid = uuid.uuid4()
-        st1_se5.modality = u"SR"
+        st1_se5.modality = "SR"
         st1_se5.series_number = 5
         st1_se5.number_of_series_related_instances = 1
         st1_se5.save()
@@ -1211,7 +1211,7 @@ class PruneSeriesResponsesCT(TestCase):
         st1_se5_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se5)
         st1_se5_im1.query_id = query.query_id
         st1_se5_im1.sop_instance_uid = uuid.uuid4()
-        st1_se5_im1.sop_class_uid = u"1.2.840.10008.5.1.4.1.1.88.67"
+        st1_se5_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.67"
         st1_se5_im1.save()
 
     @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
@@ -1239,7 +1239,7 @@ class PruneSeriesResponsesCT(TestCase):
         series = studies[0].dicomqrrspseries_set.all()
         self.assertEqual(series.count(), 1)
         sr_instance = series[0].dicomqrrspimage_set.get()
-        self.assertEqual(sr_instance.sop_class_uid, u"1.2.840.10008.5.1.4.1.1.88.67")
+        self.assertEqual(sr_instance.sop_class_uid, "1.2.840.10008.5.1.4.1.1.88.67")
 
     @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
     def test_prune_ser_resp_ct_with_esr(self):
@@ -1271,7 +1271,7 @@ class PruneSeriesResponsesCT(TestCase):
         series = studies[0].dicomqrrspseries_set.all()
         self.assertEqual(series.count(), 1)
         sr_instance = series[0].dicomqrrspimage_set.get()
-        self.assertEqual(sr_instance.sop_class_uid, u"1.2.840.10008.5.1.4.1.1.88.22")
+        self.assertEqual(sr_instance.sop_class_uid, "1.2.840.10008.5.1.4.1.1.88.22")
 
     @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
     def test_prune_ser_resp_ct_with_dose_info(self):
@@ -1488,7 +1488,7 @@ class QRSCUScriptArgParsing(TestCase):
         self.assertEqual(parsed_args["store_id"], 2)
         self.assertEqual(parsed_args["modalities"].sort(), ["MG", "CT"].sort())
         filters = {
-            "study_desc_exc": [u"thorax", u"neck"],
+            "study_desc_exc": ["thorax", "neck"],
             "study_desc_inc": None,
             "stationname_exc": None,
             "stationname_inc": None,
@@ -1516,10 +1516,10 @@ class QRSCUScriptArgParsing(TestCase):
         self.assertEqual(parsed_args["store_id"], 2)
         self.assertEqual(parsed_args["modalities"].sort(), ["MG", "CT"].sort())
         filters = {
-            "study_desc_exc": [u"thorax", u"neck"],
+            "study_desc_exc": ["thorax", "neck"],
             "study_desc_inc": None,
             "stationname_exc": None,
-            "stationname_inc": [u"mystn"],
+            "stationname_inc": ["mystn"],
         }
         self.assertEqual(parsed_args["filters"], filters)
 
@@ -1549,7 +1549,7 @@ class RemoveDuplicates(TestCase):
         st1.study_instance_uid = (
             "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.3.0"
         )
-        st1.study_description = u"CT study"
+        st1.study_description = "CT study"
         st1.set_modalities_in_study(["CT", "SR"])
         st1.save()
 
@@ -1558,7 +1558,7 @@ class RemoveDuplicates(TestCase):
         st1_se1.series_instance_uid = (
             "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.12.0"
         )
-        st1_se1.modality = u"SR"
+        st1_se1.modality = "SR"
         st1_se1.series_number = 502
         st1_se1.number_of_series_related_instances = 1
         st1_se1.save()
@@ -1566,7 +1566,7 @@ class RemoveDuplicates(TestCase):
         st1_se1_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se1)
         st1_se1_im1.query_id = query.query_id
         st1_se1_im1.sop_instance_uid = (
-            u"1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.11.0"
+            "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.11.0"
         )
         st1_se1_im1.save()
 
@@ -1606,7 +1606,7 @@ class RemoveDuplicates(TestCase):
         st1.study_instance_uid = (
             "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.3.0"
         )
-        st1.study_description = u"CT study"
+        st1.study_description = "CT study"
         st1.set_modalities_in_study(["CT", "SR"])
         st1.save()
 
@@ -1615,7 +1615,7 @@ class RemoveDuplicates(TestCase):
         st1_se1.series_instance_uid = (
             "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.12.0"
         )
-        st1_se1.modality = u"SR"
+        st1_se1.modality = "SR"
         st1_se1.series_number = 501
         st1_se1.number_of_series_related_instances = 1
         st1_se1.save()
@@ -1623,7 +1623,7 @@ class RemoveDuplicates(TestCase):
         st1_se1_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se1)
         st1_se1_im1.query_id = query.query_id
         st1_se1_im1.sop_instance_uid = (
-            u"1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.11.0"
+            "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.11.0"
         )
         st1_se1_im1.save()
 
@@ -1632,7 +1632,7 @@ class RemoveDuplicates(TestCase):
         st1_se2.series_instance_uid = (
             "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.7.0"
         )
-        st1_se2.modality = u"SR"
+        st1_se2.modality = "SR"
         st1_se2.series_number = 501
         st1_se2.number_of_series_related_instances = 1
         st1_se2.save()
@@ -1640,7 +1640,7 @@ class RemoveDuplicates(TestCase):
         st1_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se2)
         st1_se2_im1.query_id = query.query_id
         st1_se2_im1.sop_instance_uid = (
-            u"1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.6.0"
+            "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.6.0"
         )
         st1_se2_im1.save()
 
@@ -1658,7 +1658,7 @@ class RemoveDuplicates(TestCase):
         self.assertEqual(study_responses_post[0].dicomqrrspseries_set.count(), 1)
         self.assertEqual(
             study_responses_post[0].dicomqrrspseries_set.all()[0].series_instance_uid,
-            u"1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.7.0",
+            "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.7.0",
         )
 
     def test_rdsr_no_objectuids(self):
@@ -1689,7 +1689,7 @@ class RemoveDuplicates(TestCase):
         st1.study_instance_uid = (
             "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.3.0"
         )
-        st1.study_description = u"CT study"
+        st1.study_description = "CT study"
         st1.set_modalities_in_study(["CT", "SR"])
         st1.save()
 
@@ -1698,7 +1698,7 @@ class RemoveDuplicates(TestCase):
         st1_se1.series_instance_uid = (
             "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.7.0"
         )
-        st1_se1.modality = u"SR"
+        st1_se1.modality = "SR"
         st1_se1.series_number = 501
         st1_se1.number_of_series_related_instances = 1
         st1_se1.save()
@@ -1706,7 +1706,7 @@ class RemoveDuplicates(TestCase):
         st1_se1_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se1)
         st1_se1_im1.query_id = query.query_id
         st1_se1_im1.sop_instance_uid = (
-            u"1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.6.0"
+            "1.3.6.1.4.1.5962.99.1.792239193.1702185591.1516915727449.6.0"
         )
         st1_se1_im1.save()
 
@@ -1748,7 +1748,7 @@ class RemoveDuplicates(TestCase):
         st1.study_instance_uid = (
             "1.3.6.1.4.1.5962.99.1.2282339064.1266597797.1479751121656.24.0"
         )
-        st1.study_description = u"DX study"
+        st1.study_description = "DX study"
         st1.set_modalities_in_study(
             ["DX",]
         )
@@ -1759,7 +1759,7 @@ class RemoveDuplicates(TestCase):
         st1_se1.series_instance_uid = (
             "1.3.6.1.4.1.5962.99.1.2282339064.1266597797.1479751121656.25.0"
         )
-        st1_se1.modality = u"DX"
+        st1_se1.modality = "DX"
         st1_se1.series_number = 1
         st1_se1.number_of_series_related_instances = 1
         st1_se1.save()
@@ -1834,7 +1834,7 @@ class InvalidMove(TestCase):
                 (
                     "remapp.netdicom.qrscu",
                     "WARNING",
-                    u"Move called with invalid query_id not_a_query_ID. Move abandoned.",
+                    "Move called with invalid query_id not_a_query_ID. Move abandoned.",
                 )
             )
 
