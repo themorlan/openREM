@@ -165,7 +165,7 @@ def test_numeric_value(string_number):
     try:
         float(string_number)
         return string_number
-    except ValueError:
+    except (ValueError, TypeError):
         return None
 
 
