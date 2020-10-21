@@ -215,9 +215,9 @@ def _filter(query, level, filter_name, filter_list, filter_type):
     )
     for study in study_rsp:
         if level == "study":
-            if (
+            if getattr(study, filter_name) is not None and getattr(study, filter_name) != "" and (
                 any(
-                    term in (getattr(study, filter_name) or "").lower()
+                    term in getattr(study, filter_name).lower()
                     for term in filter_list
                 )
                 is filtertype
@@ -226,9 +226,9 @@ def _filter(query, level, filter_name, filter_list, filter_type):
         elif level == "series":
             series = study.dicomqrrspseries_set.all()
             for s in series:
-                if (
+                if getattr(s, filter_name) is not None and getattr(study, filter_name) != "" and (
                     any(
-                        term in (getattr(s, filter_name) or "").lower()
+                        term in getattr(s, filter_name).lower()
                         for term in filter_list
                     )
                     is filtertype

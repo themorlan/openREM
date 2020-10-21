@@ -553,9 +553,9 @@ class ResponseFiltering(TestCase):
 
         self.assertEqual(query.dicomqrrspstudy_set.all().count(), 4)
         studies = query.dicomqrrspstudy_set.all()
-        # this needs modifying:
         for study in studies:
-            self.assertTrue("goodstation" in study.station_name)
+            if study.station_name is not None:
+                self.assertTrue("goodstation" in study.station_name)
 
     def test_filter_exclude_station_name(self):
         """
@@ -570,9 +570,9 @@ class ResponseFiltering(TestCase):
 
         self.assertEqual(query.dicomqrrspstudy_set.all().count(), 4)
         studies = query.dicomqrrspstudy_set.all()
-        # This will need to be modified
-            # for study in studies:
-            #     self.assertFalse("badstation" in study.station_name)
+        for study in studies:
+            if study.station_name is not None and study.station_name != "":
+                self.assertFalse("badstation" in study.station_name)
 
     def test_filter_exclude_study_description(self):
         """
@@ -593,7 +593,6 @@ class ResponseFiltering(TestCase):
 
         self.assertEqual(query.dicomqrrspstudy_set.all().count(), 3)
         study = query.dicomqrrspstudy_set.order_by("pk")
-        # This will need to be modified
         self.assertTrue(study[0].station_name == "goodstation")
 
     def test_filter_include_study_description(self):
@@ -609,9 +608,9 @@ class ResponseFiltering(TestCase):
 
         self.assertEqual(query.dicomqrrspstudy_set.all().count(), 4)
         studies = query.dicomqrrspstudy_set.all()
-        # This will need to be modified
         for study in studies:
-            self.assertTrue("goodstation" in study.station_name)
+            if study.station_name is not None and study.station_name != "":
+                self.assertTrue("goodstation" in study.station_name)
 
 
 def _fake_image_query(assoc, sr, query, query_id):
