@@ -1145,7 +1145,7 @@ def _query_for_each_modality(all_mods, query, d, assoc):
                     )
                     query.save()
                     logger.info(
-                        "{1} Currently querying for {0} studies...".format(
+                        "{1} Currently querying for {0} studies…".format(
                             mod, query_id
                         )
                     )
@@ -1798,9 +1798,11 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
     warning_sub_ops = 0
     for (status, identifier) in responses:
         if status:
-            completed_sub_ops = status.NumberOfCompletedSuboperations
-            failed_sub_ops = status.NumberOfFailedSuboperations
-            warning_sub_ops = status.NumberOfWarningSuboperations
+            # LO: Changed from status.NumberOfCompletedSubOperations to getattr
+            #     status is actually the move-response and may not contain these items (e.g. in case of error)
+            completed_sub_ops = getattr(status, "NumberOfCompletedSuboperations", None)
+            failed_sub_ops = getattr(status, "NumberOfFailedSuboperations", None)
+            warning_sub_ops = getattr(status, "NumberOfWarningSuboperations", None)
             status_msg = "Status undefined."
             # If the status is 'Pending' then the identifier is the C-MOVE response
             if status.Status in (0xFF00, 0xFF01):
@@ -1861,7 +1863,11 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
                 f"Sub-ops completed: {completed_sub_ops}, failed: {failed_sub_ops}, "
                 f"warning: {warning_sub_ops}."
             )
-            logger.info(msg)
+            # LO : #LO: make move a less chatty in info-logging
+            if not status.Status in (0xFF00, 0xFF01, 0x0000):
+                logger.warning(msg)
+            else:
+                logger.debug(msg)
             query.move_summary = msg
             query.save()
         else:
@@ -1883,6 +1889,26 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
     query.move_warning_sub_ops += warning_sub_ops
     query.save()
     return True
+
+
+def _move_if_established(ae, assoc, d, study_no, series_no, query, remote):
+    if assoc.is_established:
+        move = _move_req(ae, assoc, d, study_no, series_no, query)
+        return move, None
+    elif assoc.is_aborted:
+        logger.info(f"Query_id {query.query_id}: Association aborted during move requests, trying again")
+        assoc = ae.associate(remote["host"], remote["port"], ae_title=remote["aet"])
+        if assoc.is_established:
+            move = _move_req(ae, assoc, d, study_no, series_no, query)
+            return move, None
+        elif assoc.is_aborted:
+            msg = "Move aborted twice in succession. Aborting move request."
+            logger.warning(f"Query_id {query.query_id}: {msg}")
+            return False, msg
+        elif assoc.is_rejected:
+            msg = "Association rejected after being aborted. Aborting move request."
+            logger.warning(f"Query_id {query.query_id}: {msg}")
+            return False, msg
 
 
 @shared_task(
@@ -1923,18 +1949,14 @@ def movescu(query_id):
     logger.debug("Move AE my_ae {0} started".format(ae))
 
     # remote application entity
+    remote = {"port": qr_scp.port, "aet": qr_scp.aetitle}
     if qr_scp.hostname:
-        remote_host = qr_scp.hostname
+        remote["host"] = qr_scp.hostname
     else:
-        remote_host = qr_scp.ip
-    remote_port = qr_scp.port
-    remote_aet = qr_scp.aetitle
-
-    # remote_ae = dict(Address=remote_host, Port=qr_scp.port, AET=qr_scp.aetitle.encode('ascii', 'ignore'))
+        remote["host"] = qr_scp.ip
 
     logger.debug("Query_id {0}: Requesting move association".format(query_id))
-    # assoc = my_ae.RequestAssociation(remote_ae)
-    assoc = ae.associate(remote_host, remote_port, ae_title=remote_aet)
+    assoc = ae.associate(remote["host"], remote["port"], ae_title=remote["aet"])
     logger.info("Query_id {0}: Move association requested".format(query_id))
 
     query.move_summary = "Preparing to start move request"
@@ -1950,7 +1972,7 @@ def movescu(query_id):
 
     if assoc.is_established:
         logger.debug(
-            f"Mv {query.move_uuid} Association with {remote_aet} is established."
+            f"Mv {query.move_uuid} Association with {remote['aet']} is established."
         )
         study_no = 0
         move = True
@@ -2002,12 +2024,12 @@ def movescu(query_id):
                     for image in series.dicomqrrspimage_set.all():
                         d.SOPInstanceUID = image.sop_instance_uid
                         logger.debug("Image-level move - d is: {0}".format(d))
-                        move = _move_req(ae, assoc, d, study_no, series_no, query)
+                        move, msg = _move_if_established(ae, assoc, d, study_no, series_no, query, remote)
                         if not move:
                             break
                 else:
                     logger.debug("Series-level move - d is: {0}".format(d))
-                    move = _move_req(ae, assoc, d, study_no, series_no, query)
+                    move, msg = _move_if_established(ae, assoc, d, study_no, series_no, query, remote)
                     if not move:
                         break
         try:
@@ -2038,18 +2060,18 @@ def movescu(query_id):
         )
         logger.warning(
             "Association rejected from {0} {1} {2}. {3}".format(
-                remote_host, remote_port, remote_aet, msg
+                remote["host"], remote["port"], remote["aet"], msg
             )
         )
     elif assoc.is_aborted:
         msg = "Association aborted or never connected"
         logger.warning(
-            "{3} to {0} {1} {2}".format(remote_host, remote_port, remote_aet, msg)
+            "{3} to {0} {1} {2}".format(remote["host"], remote["port"], remote["aet"], msg)
         )
     else:
         msg = "Association Failed"
         logger.warning(
-            "{3} with {0} {1} {2}".format(remote_host, remote_port, remote_aet, msg)
+            "{3} with {0} {1} {2}".format(remote["host"], remote["port"], remote["aet"], msg)
         )
     query.move_summary = msg
     query.save()
