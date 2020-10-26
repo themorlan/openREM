@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-13 20:53+0100\n"
-"PO-Revision-Date: 2020-10-12 08:49+0000\n"
+"PO-Revision-Date: 2020-10-26 23:19+0000\n"
 "Last-Translator: Georg Stamm <stamm.georg@gmail.com>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/openrem/web-"
-"interface/de/>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/openrem/"
+"web-interface/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.3.2-dev\n"
 
 #: remapp/exports/ct_export.py:161
 #, python-brace-format
@@ -192,7 +192,7 @@ msgstr "Vorherige Importe der Patientengröße"
 
 #: remapp/templates/base.html:86
 msgid "Query remote server"
-msgstr "Abfrage des Servers"
+msgstr "Serverabfrage"
 
 #: remapp/templates/base.html:95
 msgid "Exports"
@@ -340,7 +340,7 @@ msgstr "Diagrammanzeige aus."
 
 #: remapp/templates/remapp/home.html:214
 msgid "Please wait - querying the database"
-msgstr "Bitte warten - es wird die Datenbank abgefragt"
+msgstr "Bitte warten - die Datenbank wird abgefragt"
 
 #~ msgid "German"
 #~ msgstr "Deutsch"
