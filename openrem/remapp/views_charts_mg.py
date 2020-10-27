@@ -11,6 +11,15 @@ def generate_required_mg_charts_list(profile):
     variable name for each required chart"""
     required_charts = []
 
+    if (
+        profile.plotMGAcquisitionAGDOverTime
+    ):
+        keys = list(dict(profile.TIME_PERIOD).keys())
+        values = list(dict(profile.TIME_PERIOD).values())
+        time_period = (
+            values[keys.index(profile.plotMGOverTimePeriod)]
+        ).lower()
+
     if profile.plotMGAGDvsThickness:
         required_charts.append(
             {
@@ -97,6 +106,28 @@ def generate_required_mg_charts_list(profile):
             }
         )
 
+    if profile.plotMGAcquisitionAGDOverTime:
+        if profile.plotMean:
+            required_charts.append(
+                {
+                    "title":
+                        "Chart of acquisition protocol mean AGD over time ("
+                        + time_period
+                        + ")",
+                    "var_name": "acquisitionMeanAGDOverTime",
+                }
+            )
+        if profile.plotMedian:
+            required_charts.append(
+                {
+                    "title":
+                        "Chart of acquisition protocol median AGD over time ("
+                        + time_period
+                        + ")",
+                    "var_name": "acquisitionMedianAGDOverTime",
+                }
+            )
+
     return required_charts
 
 
@@ -155,6 +186,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
         plotly_histogram_barchart,
         construct_scatter_chart,
         construct_frequency_chart,
+        construct_over_time_charts,
         plotly_set_default_theme,
         create_sorted_category_list,
         create_dataframe_aggregates,
@@ -175,6 +207,11 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
     if user_profile.plotMedian:
         average_choices.append("median")
 
+    if (
+        user_profile.plotMGAcquisitionAGDOverTime
+    ):
+        plot_timeunit_period = user_profile.plotMGOverTimePeriod
+
     #######################################################################
     # Prepare acquisition-level Pandas DataFrame to use for charts
     if (
@@ -184,6 +221,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
         or user_profile.plotMGaverageAGDvsThickness
         or user_profile.plotMGaverageAGD
         or user_profile.plotMGacquisitionFreq
+        or user_profile.plotMGAcquisitionAGDOverTime
     ):
 
         name_fields = [
@@ -195,6 +233,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             user_profile.plotMGAGDvsThickness
             or user_profile.plotMGaverageAGDvsThickness
             or user_profile.plotMGaverageAGD
+            or user_profile.plotMGAcquisitionAGDOverTime
         ):
             value_fields.append(
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose"
@@ -218,6 +257,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
         date_fields = []
+        if user_profile.plotMGAcquisitionAGDOverTime:
+            date_fields.append("study_date")
+
         time_fields = []
 
         system_field = None
@@ -471,6 +513,33 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 return_as_dict=return_as_dict,
             )
 
+        if user_profile.plotMGAcquisitionAGDOverTime:
+            result = construct_over_time_charts(
+                df=df,
+                df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                df_value_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
+                df_date_col="study_date",
+                name_title="Acquisition protocol",
+                value_title="AGD (mGy)",
+                date_title="Study date",
+                sorting=[
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotMGInitialSortingChoice,
+                ],
+                time_period=plot_timeunit_period,
+                average_choices=average_choices,
+                grouping_choice=user_profile.plotGroupingChoice,
+                colour_map=user_profile.plotColourMapChoice,
+                facet_col_wrap=user_profile.plotFacetColWrapVal,
+                file_name="OpenREM MG acquisition protocol AGD over time",
+                return_as_dict=return_as_dict,
+            )
+
+            if user_profile.plotMean:
+                return_structure["acquisitionMeanAGDOverTime"] = result["mean"]
+            if user_profile.plotMedian:
+                return_structure["acquisitionMedianAGDOverTime"] = result["median"]
+
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts
     if user_profile.plotMGStudyPerDayAndHour:
@@ -554,6 +623,12 @@ def mg_chart_form_processing(request, user_profile):
             user_profile.plotMGmAsvsThickness = chart_options_form.cleaned_data[
                 "plotMGmAsvsThickness"
             ]
+            user_profile.plotMGAcquisitionAGDOverTime = chart_options_form.cleaned_data[
+                "plotMGAcquisitionAGDOverTime"
+            ]
+            user_profile.plotMGOverTimePeriod = chart_options_form.cleaned_data[
+                "plotMGOverTimePeriod"
+            ]
             user_profile.plotSeriesPerSystem = chart_options_form.cleaned_data[
                 "plotSeriesPerSystem"
             ]
@@ -605,6 +680,8 @@ def mg_chart_form_processing(request, user_profile):
                 "plotMGkVpvsThickness": user_profile.plotMGkVpvsThickness,
                 "plotMGmAsvsThickness": user_profile.plotMGmAsvsThickness,
                 "plotMGaverageAGDvsThickness": user_profile.plotMGaverageAGDvsThickness,
+                "plotMGAcquisitionAGDOverTime": user_profile.plotMGAcquisitionAGDOverTime,
+                "plotMGOverTimePeriod": user_profile.plotMGOverTimePeriod,
                 "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
                 "plotHistograms": user_profile.plotHistograms,
                 "plotGrouping": user_profile.plotGroupingChoice,

@@ -62,6 +62,14 @@ $(document).ready(function() {
                 $("#acquisitionScattermAsvsThickChartDiv").html(json.mAsvsThickness);
             }
 
+            // AGD over time chart data
+            if(typeof json.acquisitionMeanAGDOverTime !== "undefined") {
+                $("#acquisitionMeanAGDOverTimeChartDiv").html(json.acquisitionMeanAGDOverTime);
+            }
+            if(typeof json.acquisitionMedianAGDOverTime !== "undefined") {
+                $("#acquisitionMedianAGDOverTimeChartDiv").html(json.acquisitionMedianAGDOverTime);
+            }
+
             $(".ajax-progress").hide();
         },
         error: function( xhr, status, errorThrown ) {

@@ -587,6 +587,10 @@ class UserProfile(models.Model):
     plotMGaverageAGDvsThickness = models.BooleanField(default=False)
     plotMGaverageAGD = models.BooleanField(default=False)
     plotMGacquisitionFreq = models.BooleanField(default=False)
+    plotMGAcquisitionAGDOverTime = models.BooleanField(default=False)
+    plotMGOverTimePeriod = models.CharField(
+        max_length=13, choices=TIME_PERIOD, default=MONTHS
+    )
     plotMGInitialSortingChoice = models.CharField(
         max_length=9, choices=SORTING_CHOICES, default=FREQ
     )

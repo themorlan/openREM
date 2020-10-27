@@ -1427,6 +1427,15 @@ def chart_options_view(request):
             user_profile.plotMGmAsvsThickness = mg_form.cleaned_data[
                 "plotMGmAsvsThickness"
             ]
+            user_profile.plotMGAcquisitionAGDOverTime = mg_form.cleaned_data[
+                "plotMGAcquisitionAGDOverTime"
+            ]
+            user_profile.plotMGOverTimePeriod = mg_form.cleaned_data[
+                "plotMGOverTimePeriod"
+            ]
+            user_profile.plotMGInitialSortingChoice = mg_form.cleaned_data[
+                "plotMGInitialSortingChoice"
+            ]
 
             user_profile.save()
 
@@ -1525,6 +1534,9 @@ def chart_options_view(request):
         "plotMGkVpvsThickness": user_profile.plotMGkVpvsThickness,
         "plotMGmAsvsThickness": user_profile.plotMGmAsvsThickness,
         "plotMGaverageAGDvsThickness": user_profile.plotMGaverageAGDvsThickness,
+        "plotMGAcquisitionAGDOverTime": user_profile.plotMGAcquisitionAGDOverTime,
+        "plotMGOverTimePeriod": user_profile.plotMGOverTimePeriod,
+        "plotMGInitialSortingChoice": user_profile.plotMGInitialSortingChoice,
     }
 
     general_chart_options_form = GeneralChartOptionsDisplayForm(general_form_data)

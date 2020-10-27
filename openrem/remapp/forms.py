@@ -386,6 +386,9 @@ class MGChartOptionsForm(forms.Form):
     plotMGaverageAGDvsThickness = forms.BooleanField(
         label="Acquisition average AGD vs. compressed thickness", required=False
     )
+    plotMGAcquisitionAGDOverTime = forms.BooleanField(
+        label="Acquisition AGD over time", required=False
+    )
     plotMGkVpvsThickness = forms.BooleanField(
         label="Acquisition kVp vs. compressed thickness", required=False
     )
@@ -394,6 +397,9 @@ class MGChartOptionsForm(forms.Form):
     )
     plotMGStudyPerDayAndHour = forms.BooleanField(
         label="Study workload", required=False
+    )
+    plotMGOverTimePeriod = forms.ChoiceField(
+        label="Time period", choices=TIME_PERIOD, required=False
     )
     plotAverageChoice = forms.MultipleChoiceField(
         label="Average plots",
@@ -430,6 +436,9 @@ class MGChartOptionsDisplayForm(forms.Form):
     plotMGaverageAGDvsThickness = forms.BooleanField(
         label="Acquisition average AGD vs. compressed thickness", required=False
     )
+    plotMGAcquisitionAGDOverTime = forms.BooleanField(
+        label="Acquisition AGD over time", required=False
+    )
     plotMGAGDvsThickness = forms.BooleanField(
         label="Acquisition AGD vs. compressed thickness", required=False
     )
@@ -441,6 +450,12 @@ class MGChartOptionsDisplayForm(forms.Form):
     )
     plotMGStudyPerDayAndHour = forms.BooleanField(
         label="Study workload", required=False
+    )
+    plotMGOverTimePeriod = forms.ChoiceField(
+        label="Time period", choices=TIME_PERIOD, required=False
+    )
+    plotMGInitialSortingChoice = forms.ChoiceField(
+        label="Chart sorting", choices=SORTING_CHOICES, required=False
     )
 
 
