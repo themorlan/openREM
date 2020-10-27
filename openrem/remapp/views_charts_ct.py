@@ -22,7 +22,7 @@ def generate_required_ct_charts_list(profile):
         keys = list(dict(profile.TIME_PERIOD).keys())
         values = list(dict(profile.TIME_PERIOD).values())
         time_period = (
-            values[keys.index(profile.plotDXAcquisitionMeanDAPOverTimePeriod)]
+            values[keys.index(profile.plotCTOverTimePeriod)]
         ).lower()
 
     if profile.plotCTAcquisitionMeanDLP:
