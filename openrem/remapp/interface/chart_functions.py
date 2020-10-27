@@ -784,6 +784,7 @@ def plotly_timeseries_linechart(
             color_discrete_sequence=colour_sequence,
             category_orders=sorted_category_list,
             height=chart_height,
+            render_mode="webgl",
         )
 
         for data_set in fig.data:
@@ -871,12 +872,15 @@ def plotly_scatter(
             category_orders=sorted_category_list,
             opacity=0.6,
             height=chart_height,
+            render_mode="webgl",
         )
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
         fig.update_xaxes(showticklabels=True)
         fig.update_yaxes(showticklabels=True)
+
+        fig.update_traces(marker_line=dict(width=1, color='LightSlateGray'))
 
         if return_as_dict:
             return fig.to_dict()
