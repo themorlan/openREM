@@ -732,8 +732,10 @@ def plotly_timeseries_linechart(
     df,
     df_name_col,
     df_value_col,
+    df_count_col,
     df_date_col,
     facet_col="x_ray_system_name",
+    facet_title="System",
     value_axis_title="",
     name_axis_title="",
     legend_title="",
@@ -766,10 +768,18 @@ def plotly_timeseries_linechart(
             facet_row_spacing=0.40
             / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
             labels={
+                facet_col: facet_title,
                 df_value_col: value_axis_title,
+                df_count_col: "Frequency",
                 df_name_col: legend_title,
                 df_date_col: name_axis_title,
                 "x_ray_system_name": "System",
+            },
+            hover_name="x_ray_system_name",
+            hover_data={
+                "x_ray_system_name": False,
+                df_value_col: ":.2f",
+                df_count_col: ":.0f",
             },
             color_discrete_sequence=colour_sequence,
             category_orders=sorted_category_list,
@@ -1070,6 +1080,7 @@ def construct_over_time_charts(
     name_title=None,
     value_title=None,
     date_title=None,
+    facet_title=None,
     sorting=None,
     time_period=None,
     average_choices=None,
@@ -1082,6 +1093,15 @@ def construct_over_time_charts(
     sorted_categories = create_sorted_category_list(
         df, df_name_col, df_value_col, sorting
     )
+
+    df = df.dropna(subset=[df_value_col])
+    if df.empty:
+        return_value = {}
+        if "mean" in average_choices:
+            return_value["mean"] = empty_dataframe_msg()
+        if "median" in average_choices:
+            return_value["median"] = empty_dataframe_msg()
+        return return_value
 
     df_time_series = create_dataframe_time_series(
         df,
@@ -1105,11 +1125,13 @@ def construct_over_time_charts(
             df_time_series,
             category_names_col,
             "mean" + df_value_col,
+            "count" + df_value_col,
             df_date_col,
             facet_col=group_by_col,
             value_axis_title=value_title,
             name_axis_title=date_title,
             legend_title=name_title,
+            facet_title=facet_title,
             colourmap=colour_map,
             filename=file_name,
             facet_col_wrap=facet_col_wrap,
@@ -1122,6 +1144,7 @@ def construct_over_time_charts(
             df_time_series,
             category_names_col,
             "median" + df_value_col,
+            "count" + df_value_col,
             df_date_col,
             facet_col=group_by_col,
             value_axis_title=value_title,

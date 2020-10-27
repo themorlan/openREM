@@ -773,6 +773,11 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
         if user_profile.plotCTAcquisitionCTDIOverTime:
+            facet_title = "System"
+
+            if user_profile.plotGroupingChoice == "series":
+                facet_title = "Acquisition protocol"
+
             result = construct_over_time_charts(
                 df=df,
                 df_name_col="ctradiationdose__ctirradiationeventdata__acquisition_protocol",
@@ -781,12 +786,13 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 name_title="Acquisition protocol",
                 value_title="CTDI<sub>vol</sub> (mGy)",
                 date_title="Study date",
+                facet_title=facet_title,
                 sorting=[
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotCTInitialSortingChoice,
                 ],
                 time_period=plot_timeunit_period,
-                average_choices=average_choices,
+                average_choices=average_choices + ["count"],
                 grouping_choice=user_profile.plotGroupingChoice,
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
@@ -800,6 +806,11 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 return_structure["acquisitionMedianCTDIOverTime"] = result["median"]
 
         if user_profile.plotCTAcquisitionDLPOverTime:
+            facet_title = "System"
+
+            if user_profile.plotGroupingChoice == "series":
+                facet_title = "Acquisition protocol"
+
             result = construct_over_time_charts(
                 df=df,
                 df_name_col="ctradiationdose__ctirradiationeventdata__acquisition_protocol",
@@ -808,12 +819,13 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 name_title="Acquisition protocol",
                 value_title="DLP (mGy.cm)",
                 date_title="Study date",
+                facet_title=facet_title,
                 sorting=[
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotCTInitialSortingChoice,
                 ],
                 time_period=plot_timeunit_period,
-                average_choices=average_choices,
+                average_choices=average_choices + ["count"],
                 grouping_choice=user_profile.plotGroupingChoice,
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
@@ -1402,6 +1414,11 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
         if user_profile.plotCTStudyMeanDLPOverTime:
+            facet_title = "System"
+
+            if user_profile.plotGroupingChoice == "series":
+                facet_title = "Study description"
+
             result = construct_over_time_charts(
                 df=df,
                 df_name_col="study_description",
@@ -1410,12 +1427,13 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 name_title="Study description",
                 value_title="DLP (mGy.cm)",
                 date_title="Study date",
+                facet_title=facet_title,
                 sorting=[
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotCTInitialSortingChoice,
                 ],
                 time_period=plot_timeunit_period,
-                average_choices=average_choices,
+                average_choices=average_choices + ["count"],
                 grouping_choice=user_profile.plotGroupingChoice,
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
@@ -1429,6 +1447,11 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 return_structure["studyMedianDLPOverTime"] = result["median"]
 
         if user_profile.plotCTRequestDLPOverTime:
+            facet_title = "System"
+
+            if user_profile.plotGroupingChoice == "series":
+                facet_title = "Requested procedure"
+
             result = construct_over_time_charts(
                 df=df,
                 df_name_col="requested_procedure_code_meaning",
@@ -1437,12 +1460,13 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 name_title="Requested procedure",
                 value_title="DLP (mGy.cm)",
                 date_title="Study date",
+                facet_title=facet_title,
                 sorting=[
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotCTInitialSortingChoice,
                 ],
                 time_period=plot_timeunit_period,
-                average_choices=average_choices,
+                average_choices=average_choices + ["count"],
                 grouping_choice=user_profile.plotGroupingChoice,
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,

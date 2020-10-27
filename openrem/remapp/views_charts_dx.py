@@ -732,6 +732,11 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
         if user_profile.plotDXAcquisitionMeanDAPOverTime:
+            facet_title = "System"
+
+            if user_profile.plotGroupingChoice == "series":
+                facet_title = "Acquisition protocol"
+
             result = construct_over_time_charts(
                 df=df,
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
@@ -740,12 +745,13 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 name_title="Acquisition protocol",
                 value_title="DAP (cGy.cm<sup>2</sup>)",
                 date_title="Study date",
+                facet_title=facet_title,
                 sorting=[
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotDXInitialSortingChoice,
                 ],
                 time_period=plot_timeunit_period,
-                average_choices=average_choices,
+                average_choices=average_choices + ["count"],
                 grouping_choice=user_profile.plotGroupingChoice,
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
@@ -759,6 +765,11 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 return_structure["acquisitionMedianDAPOverTime"] = result["median"]
 
         if user_profile.plotDXAcquisitionMeankVpOverTime:
+            facet_title = "System"
+
+            if user_profile.plotGroupingChoice == "series":
+                facet_title = "Acquisition protocol"
+
             result = construct_over_time_charts(
                 df=df,
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
@@ -767,12 +778,13 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 name_title="Acquisition protocol",
                 value_title="kVp",
                 date_title="Study date",
+                facet_title=facet_title,
                 sorting=[
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotDXInitialSortingChoice,
                 ],
                 time_period=plot_timeunit_period,
-                average_choices=average_choices,
+                average_choices=average_choices + ["count"],
                 grouping_choice=user_profile.plotGroupingChoice,
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
@@ -786,6 +798,11 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 return_structure["acquisitionMediankVpOverTime"] = result["median"]
 
         if user_profile.plotDXAcquisitionMeanmAsOverTime:
+            facet_title = "System"
+
+            if user_profile.plotGroupingChoice == "series":
+                facet_title = "Acquisition protocol"
+
             result = construct_over_time_charts(
                 df=df,
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
@@ -794,12 +811,13 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 name_title="Acquisition protocol",
                 value_title="mAs",
                 date_title="Study date",
+                facet_title=facet_title,
                 sorting=[
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotDXInitialSortingChoice,
                 ],
                 time_period=plot_timeunit_period,
-                average_choices=average_choices,
+                average_choices=average_choices + ["count"],
                 grouping_choice=user_profile.plotGroupingChoice,
                 colour_map=user_profile.plotColourMapChoice,
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
