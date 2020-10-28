@@ -11,14 +11,10 @@ def generate_required_mg_charts_list(profile):
     variable name for each required chart"""
     required_charts = []
 
-    if (
-        profile.plotMGAcquisitionAGDOverTime
-    ):
+    if profile.plotMGAcquisitionAGDOverTime:
         keys = list(dict(profile.TIME_PERIOD).keys())
         values = list(dict(profile.TIME_PERIOD).values())
-        time_period = (
-            values[keys.index(profile.plotMGOverTimePeriod)]
-        ).lower()
+        time_period = (values[keys.index(profile.plotMGOverTimePeriod)]).lower()
 
     if profile.plotMGAGDvsThickness:
         required_charts.append(
@@ -110,20 +106,18 @@ def generate_required_mg_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title":
-                        "Chart of acquisition protocol mean AGD over time ("
-                        + time_period
-                        + ")",
+                    "title": "Chart of acquisition protocol mean AGD over time ("
+                    + time_period
+                    + ")",
                     "var_name": "acquisitionMeanAGDOverTime",
                 }
             )
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title":
-                        "Chart of acquisition protocol median AGD over time ("
-                        + time_period
-                        + ")",
+                    "title": "Chart of acquisition protocol median AGD over time ("
+                    + time_period
+                    + ")",
                     "var_name": "acquisitionMedianAGDOverTime",
                 }
             )
@@ -207,9 +201,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
     if user_profile.plotMedian:
         average_choices.append("median")
 
-    if (
-        user_profile.plotMGAcquisitionAGDOverTime
-    ):
+    if user_profile.plotMGAcquisitionAGDOverTime:
         plot_timeunit_period = user_profile.plotMGOverTimePeriod
 
     #######################################################################

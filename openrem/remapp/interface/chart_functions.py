@@ -880,7 +880,7 @@ def plotly_scatter(
         fig.update_xaxes(showticklabels=True)
         fig.update_yaxes(showticklabels=True)
 
-        fig.update_traces(marker_line=dict(width=1, color='LightSlateGray'))
+        fig.update_traces(marker_line=dict(width=1, color="LightSlateGray"))
 
         if return_as_dict:
             return fig.to_dict()

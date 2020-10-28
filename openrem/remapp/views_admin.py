@@ -94,7 +94,7 @@ def study_delete(request, pk, template_name="remapp/study_confirm_delete.html"):
         return redirect(reverse_lazy("home"))
 
 
-def charts_off(request):
+def charts_toggle(request):
     try:
         # See if the user has plot settings in userprofile
         user_profile = request.user.userprofile
@@ -106,17 +106,25 @@ def charts_off(request):
             )
             user_profile = request.user.userprofile
 
-    # Switch chart plotting off
-    user_profile.plotCharts = False
+    # Toggle chart plotting
+    user_profile.plotCharts = not user_profile.plotCharts
     user_profile.save()
     if request.user.get_full_name():
         name = request.user.get_full_name()
     else:
         name = request.user.get_username()
-    messages.success(request, "Chart plotting has been turned off for {0}".format(name))
-
-    # Redirect to the calling page, removing '&plotCharts=on' from the url
-    return redirect((request.META["HTTP_REFERER"]).replace("&plotCharts=on", ""))
+    if user_profile.plotCharts:
+        messages.success(
+            request, "Chart plotting has been turned on for {0}".format(name)
+        )
+        # Redirect to the calling page, adding '&plotCharts=on' to the url
+        return redirect(request.META["HTTP_REFERER"] + "&plotCharts=on")
+    else:
+        messages.warning(
+            request, "Chart plotting has been turned off for {0}".format(name)
+        )
+        # Redirect to the calling page, removing '&plotCharts=on' from the url
+        return redirect((request.META["HTTP_REFERER"]).replace("&plotCharts=on", ""))
 
 
 @login_required

@@ -233,7 +233,7 @@ settings_not_patient_indicators_patterns = [
 ]
 
 settings_patterns = [
-    path("charts_off/", views_admin.charts_off, name="charts_off"),
+    path("charts_toggle/", views_admin.charts_toggle, name="charts_toggle"),
     path("chartoptions/", views_admin.chart_options_view, name="chart_options_view"),
     path(
         "homepageoptions/",
