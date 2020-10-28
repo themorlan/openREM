@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-12 09:38+0100\n"
-"PO-Revision-Date: 2020-10-12 08:35+0000\n"
+"PO-Revision-Date: 2020-10-12 08:55+0000\n"
 "Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/openrem/"
+"rtd-installation-linux-non-docker/de/>\n"
 "Language: de\n"
-"Language-Team: German <https://hosted.weblate.org/projects/openrem/rtd-"
-"installation-linux-non-docker/de/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../quick_start_linux.rst:2
@@ -417,14 +418,13 @@ msgid "Allow Orthanc to use DICOM port"
 msgstr "Orthanc erlauben den DICOM Port zu verwenden"
 
 #: ../../quick_start_linux.rst:596
-#, fuzzy
 msgid ""
 "By default, Orthanc uses port 4242. If you wish to use a lower port, "
 "specifically the DICOM port of 104, you will need to give the Orthanc "
 "binary special permission to do so:"
 msgstr ""
-"Als Standard verwendet Orthanc Orit 4242. Für eine niedrigere Portnummer,"
-" speziell für DICOM Port 104, braucht die Orthanc Binärdatei spezielle "
+"Als Standard verwendet Orthanc Orit 4242. Für eine niedrigere Portnummer, "
+"speziell für DICOM Port 104, braucht die Orthanc Binärdatei spezielle "
 "Freigaben:"
 
 #: ../../quick_start_linux.rst:603
@@ -469,7 +469,6 @@ msgstr ""
 "werden kann :-)"
 
 #: ../../quick_start_linux.rst:636
-#, fuzzy
 msgid "Add the new user (replace ``newusername`` as appropriate):"
 msgstr "Neuen Nutzer hinzufügen (``newusername`` entsprechend ersetzen):"
 
@@ -547,4 +546,3 @@ msgstr "Orthanc: ``/var/log/orthanc/Orthanc.log``"
 #: ../../quick_start_linux.rst:678
 msgid "Gunicorn systemd: ``sudo journalctl -u openrem-gunicorn``"
 msgstr "Gunicorn systemd: ``sudo journalctl -u openrem-gunicorn``"
-

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2020-10-13 20:31+0100\n"
 "PO-Revision-Date: 2020-09-28 18:40+0000\n"
 "Last-Translator: Artem <KovalevArtem.ru@gmail.com>\n"
 "Language: ru\n"
@@ -68,7 +68,7 @@ msgid "Open a web browser and go to http://localhost/"
 msgstr "Откройте веб-браузер и перейдите на http://localhost/"
 
 #: ../../installation.rst:46
-msgid "Non-docker alternative - Linux only"
+msgid "Non-Docker alternative - Linux only"
 msgstr ""
 
 #: ../../installation.rst:48
@@ -104,5 +104,8 @@ msgstr "Веб-серверы"
 #~ "Extract the zip file and open a"
 #~ " shell (command prompt) in the new"
 #~ " folder"
+#~ msgstr ""
+
+#~ msgid "Non-docker alternative - Linux only"
 #~ msgstr ""
 

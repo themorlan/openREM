@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2020-10-13 20:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -61,7 +61,7 @@ msgid "Open a web browser and go to http://localhost/"
 msgstr ""
 
 #: ../../installation.rst:46
-msgid "Non-docker alternative - Linux only"
+msgid "Non-Docker alternative - Linux only"
 msgstr ""
 
 #: ../../installation.rst:48

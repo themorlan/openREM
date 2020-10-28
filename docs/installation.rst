@@ -42,7 +42,7 @@ Get the database and translations ready:
 
 Open a web browser and go to http://localhost/
 
-Non-docker alternative - Linux only
+Non-Docker alternative - Linux only
 ===================================
 
 We recommend all installations to use the Docker method described above. However, it is possible to install without
