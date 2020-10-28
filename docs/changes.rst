@@ -57,6 +57,7 @@ OpenREM version history
 * :issue:`457`  Updated OpenREM to use Django 2.2
 * :issue:`437`  Updated OpenREM to use django-filters v2
 * :issue:`404`  Ported OpenREM to Python 3
+* :issue:`233`  Charts: added charts of average CTDI and DLP over time
 
 0.10.0 (2019-11-08)
 -------------------
