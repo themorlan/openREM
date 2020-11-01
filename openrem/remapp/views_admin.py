@@ -1686,7 +1686,9 @@ def task_service_status(request):
 
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
         try:
-            flower = requests.get(f"{settings.FLOWER_URL}:{settings.FLOWER_PORT}/api/tasks")
+            flower = requests.get(
+                f"{settings.FLOWER_URL}:{settings.FLOWER_PORT}/api/tasks"
+            )
             if flower.status_code == 200:
                 flower_status = 200
             else:
@@ -1754,7 +1756,9 @@ def celery_tasks(request, stage=None):
 
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
         try:
-            flower = requests.get(f"{settings.FLOWER_URL}:{settings.FLOWER_PORT}/api/tasks")
+            flower = requests.get(
+                f"{settings.FLOWER_URL}:{settings.FLOWER_PORT}/api/tasks"
+            )
             if flower.status_code == 200:
                 tasks = []
                 recent_tasks = []
@@ -1878,7 +1882,9 @@ def celery_abort(request, task_id=None, type=None):
     from .models import Exports, DicomQuery
 
     if task_id and request.user.groups.filter(name="admingroup"):
-        queue_url = f"{settings.FLOWER_URL}:{settings.FLOWER_PORT}/api/task/revoke/{task_id}"
+        queue_url = (
+            f"{settings.FLOWER_URL}:{settings.FLOWER_PORT}/api/task/revoke/{task_id}"
+        )
         payload = {"terminate": "true"}
         abort = requests.post(queue_url, data=payload)
         if abort.status_code == 200:
