@@ -1704,7 +1704,7 @@ def task_service_status(request):
             else:
                 rabbitmq_status = queues.status_code
             for queue in queues.json():
-                if queue["name"] == settings.CELERY_DEFAULT_QUEUE:
+                if queue["name"] == settings.CELERY_TASK_DEFAULT_QUEUE:
                     default_queue = queue
                 elif "celery.pidbox" in queue["name"]:
                     celery_queue = queue
