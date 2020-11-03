@@ -316,6 +316,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
         if user_profile.plotMean or user_profile.plotMedian:
             df_aggregated = create_dataframe_aggregates(
                 df, "study_description", "total_dap", stats=stats_to_include
+                #df, ["study_description", "performing_physician_name"], "total_dap", stats = stats_to_include
             )
 
             if user_profile.plotMean:

@@ -82,6 +82,8 @@ def create_dataframe(
     if system_name_field:
         fields_to_include.add(system_name_field)
 
+#    fields_to_include.add("performing_physician_name")
+
     # NOTE: I am not excluding zero-value events from the calculations (zero DLP or zero CTDI)
     df = pd.DataFrame.from_records(database_events.values(*fields_to_include))
 
@@ -168,6 +170,7 @@ def create_dataframe_aggregates(df, df_name_col, df_agg_col, stats=None):
     if stats is None:
         stats = ["count"]
 
+    #groupby_cols = ["x_ray_system_name"] + df_name_cols
     groupby_cols = ["x_ray_system_name", df_name_col]
 
     grouped_df = df.groupby(groupby_cols).agg({df_agg_col: stats})
@@ -336,6 +339,7 @@ def plotly_barchart(
         y=average_choice,
         color="x_ray_system_name",
         barmode="group",
+        #facet_col="performing_physician_name",
         labels={
             average_choice: value_axis_title,
             df_name_col: name_axis_title,
