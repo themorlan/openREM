@@ -43,6 +43,22 @@ $(document).ready(function() {
                 $("#requestHistogramDAPChartDiv").html(json.requestHistogramData);
             }
 
+            // Requested procedure DAP over time chart data
+            if(typeof json.requestMeanDAPOverTime !== "undefined") {
+                $("#requestMeanDAPOverTimeChartDiv").html(json.requestMeanDAPOverTime);
+            }
+            if(typeof json.requestMedianDAPOverTime !== "undefined") {
+                $("#requestMedianDAPOverTimeChartDiv").html(json.requestMedianDAPOverTime);
+            }
+
+            // Study DAP over time chart data
+            if(typeof json.studyMeanDAPOverTime !== "undefined") {
+                $("#studyMeanDAPOverTimeChartDiv").html(json.studyMeanDAPOverTime);
+            }
+            if(typeof json.studyMedianDAPOverTime !== "undefined") {
+                $("#studyMedianDAPOverTimeChartDiv").html(json.studyMedianDAPOverTime);
+            }
+
             // Study frequency chart data start
             if(typeof json.studyFrequencyData !== "undefined") {
                 $("#studyFrequencyChartDiv").html(json.studyFrequencyData);

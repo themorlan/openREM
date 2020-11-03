@@ -1414,8 +1414,17 @@ def chart_options_view(request):
             ]
             user_profile.plotRFStudyFreq = rf_form.cleaned_data["plotRFStudyFreq"]
             user_profile.plotRFStudyDAP = rf_form.cleaned_data["plotRFStudyDAP"]
+            user_profile.plotRFStudyDAPOverTime = rf_form.cleaned_data[
+                "plotRFStudyDAPOverTime"
+            ]
             user_profile.plotRFRequestFreq = rf_form.cleaned_data["plotRFRequestFreq"]
             user_profile.plotRFRequestDAP = rf_form.cleaned_data["plotRFRequestDAP"]
+            user_profile.plotRFRequestDAPOverTime = rf_form.cleaned_data[
+                "plotRFRequestDAPOverTime"
+            ]
+            user_profile.plotRFOverTimePeriod = rf_form.cleaned_data[
+                "plotRFOverTimePeriod"
+            ]
             user_profile.plotRFInitialSortingChoice = rf_form.cleaned_data[
                 "plotRFInitialSortingChoice"
             ]
@@ -1531,8 +1540,11 @@ def chart_options_view(request):
         "plotRFStudyPerDayAndHour": user_profile.plotRFStudyPerDayAndHour,
         "plotRFStudyFreq": user_profile.plotRFStudyFreq,
         "plotRFStudyDAP": user_profile.plotRFStudyDAP,
+        "plotRFStudyDAPOverTime": user_profile.plotRFStudyDAPOverTime,
         "plotRFRequestFreq": user_profile.plotRFRequestFreq,
         "plotRFRequestDAP": user_profile.plotRFRequestDAP,
+        "plotRFRequestDAPOverTime": user_profile.plotRFRequestDAPOverTime,
+        "plotRFOverTimePeriod": user_profile.plotRFOverTimePeriod,
         "plotRFInitialSortingChoice": user_profile.plotRFInitialSortingChoice,
     }
 

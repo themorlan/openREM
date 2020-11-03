@@ -321,16 +321,25 @@ class RFChartOptionsForm(forms.Form):
     """Form for RF chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
+    plotRFStudyDAP = forms.BooleanField(label="Study DAP", required=False)
+    plotRFStudyFreq = forms.BooleanField(label="Study frequency", required=False)
     plotRFStudyPerDayAndHour = forms.BooleanField(
         label="Study workload", required=False
     )
-    plotRFStudyDAP = forms.BooleanField(label="Study DAP", required=False)
-    plotRFStudyFreq = forms.BooleanField(label="Study frequency", required=False)
+    plotRFStudyDAPOverTime = forms.BooleanField(
+        label="Study DAP over time", required=False
+    )
     plotRFRequestDAP = forms.BooleanField(
         label="Requested procedure DAP", required=False
     )
     plotRFRequestFreq = forms.BooleanField(
         label="Requested procedure frequency", required=False
+    )
+    plotRFRequestDAPOverTime = forms.BooleanField(
+        label="Requested procedure DAP over time", required=False
+    )
+    plotRFOverTimePeriod = forms.ChoiceField(
+        label="Time period", choices=TIME_PERIOD, required=False
     )
     plotAverageChoice = forms.MultipleChoiceField(
         label="Average plots",
@@ -358,13 +367,27 @@ class RFChartOptionsForm(forms.Form):
 class RFChartOptionsDisplayForm(forms.Form):
     """Form for RF chart display options"""
 
+    plotRFStudyDAP = forms.BooleanField(label="Study DAP", required=False)
+    plotRFStudyFreq = forms.BooleanField(label="Study frequency", required=False)
     plotRFStudyPerDayAndHour = forms.BooleanField(
         label="Study workload", required=False
     )
-    plotRFStudyFreq = forms.BooleanField(label="Study frequency", required=False)
-    plotRFStudyDAP = forms.BooleanField(label="DAP per study", required=False)
-    plotRFRequestFreq = forms.BooleanField(label="Request frequency", required=False)
-    plotRFRequestDAP = forms.BooleanField(label="DAP per request", required=False)
+    plotRFStudyDAPOverTime = forms.BooleanField(
+        label="Study DAP over time", required=False
+    )
+
+    plotRFRequestDAP = forms.BooleanField(
+        label="Requested procedure DAP", required=False
+    )
+    plotRFRequestFreq = forms.BooleanField(
+        label="Requested procedure frequency", required=False
+    )
+    plotRFRequestDAPOverTime = forms.BooleanField(
+        label="Requested procedure DAP over time", required=False
+    )
+    plotRFOverTimePeriod = forms.ChoiceField(
+        label="Time period", choices=TIME_PERIOD, required=False
+    )
     plotRFInitialSortingChoice = forms.ChoiceField(
         label="Default chart sorting", choices=SORTING_CHOICES, required=False
     )

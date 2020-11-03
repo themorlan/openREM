@@ -11,6 +11,11 @@ def generate_required_rf_charts_list(profile):
     variable name for each required chart"""
     required_charts = []
 
+    if profile.plotRFStudyDAPOverTime or profile.plotRFRequestDAPOverTime:
+        keys = list(dict(profile.TIME_PERIOD).keys())
+        values = list(dict(profile.TIME_PERIOD).values())
+        time_period = (values[keys.index(profile.plotRFOverTimePeriod)]).lower()
+
     if profile.plotRFStudyDAP:
         if profile.plotMean:
             required_charts.append(
@@ -95,6 +100,46 @@ def generate_required_rf_charts_list(profile):
             }
         )
 
+    if profile.plotRFStudyDAPOverTime:
+        if profile.plotMean:
+            required_charts.append(
+                {
+                    "title": "Chart of study description mean DAP over time ("
+                    + time_period
+                    + ")",
+                    "var_name": "studyMeanDAPOverTime",
+                }
+            )
+        if profile.plotMedian:
+            required_charts.append(
+                {
+                    "title": "Chart of study description median DAP over time ("
+                    + time_period
+                    + ")",
+                    "var_name": "studyMedianDAPOverTime",
+                }
+            )
+
+    if profile.plotRFRequestDAPOverTime:
+        if profile.plotMean:
+            required_charts.append(
+                {
+                    "title": "Chart of requested procedure mean DAP over time ("
+                    + time_period
+                    + ")",
+                    "var_name": "requestMeanDAPOverTime",
+                }
+            )
+        if profile.plotMedian:
+            required_charts.append(
+                {
+                    "title": "Chart of requested procedure median DAP over time ("
+                    + time_period
+                    + ")",
+                    "var_name": "requestMedianDAPOverTime",
+                }
+            )
+
     return required_charts
 
 
@@ -141,7 +186,7 @@ def rf_summary_chart_data(request):
     return JsonResponse(return_structure, safe=False)
 
 
-def rf_plot_calculations(f, user_profile):
+def rf_plot_calculations(f, user_profile, return_as_dict=False):
     """Calculations for fluoroscopy charts"""
     from .interface.chart_functions import (
         create_dataframe,
@@ -154,6 +199,7 @@ def rf_plot_calculations(f, user_profile):
         plotly_barchart_weekdays,
         plotly_set_default_theme,
         construct_frequency_chart,
+        construct_over_time_charts,
     )
 
     # Return an empty structure if the queryset is empty
@@ -171,6 +217,9 @@ def rf_plot_calculations(f, user_profile):
     if user_profile.plotMedian:
         average_choices.append("median")
 
+    if user_profile.plotRFStudyDAPOverTime or user_profile.plotRFRequestDAPOverTime:
+        plot_timeunit_period = user_profile.plotRFOverTimePeriod
+
     #######################################################################
     # Prepare Pandas DataFrame to use for charts
     name_fields = []
@@ -178,21 +227,37 @@ def rf_plot_calculations(f, user_profile):
         user_profile.plotRFStudyFreq
         or user_profile.plotRFStudyDAP
         or user_profile.plotRFStudyPerDayAndHour
+        or user_profile.plotRFStudyDAPOverTime
     ):
         name_fields.append("study_description")
-    if user_profile.plotRFRequestFreq or user_profile.plotRFRequestDAP:
+    if (
+        user_profile.plotRFRequestFreq
+        or user_profile.plotRFRequestDAP
+        or user_profile.plotRFRequestDAPOverTime
+    ):
         name_fields.append("requested_procedure_code_meaning")
 
     value_fields = []
     value_multipliers = []
-    if user_profile.plotRFStudyDAP or user_profile.plotRFRequestDAP:
+    if (
+        user_profile.plotRFStudyDAP
+        or user_profile.plotRFRequestDAP
+        or user_profile.plotRFStudyDAPOverTime
+        or user_profile.plotRFRequestDAPOverTime
+    ):
         value_fields.append("total_dap")
         value_multipliers.append(1000000)
 
     date_fields = []
+    if (
+        user_profile.plotRFStudyPerDayAndHour
+        or user_profile.plotRFStudyDAPOverTime
+        or user_profile.plotRFRequestDAPOverTime
+    ):
+        date_fields.append("study_date")
+
     time_fields = []
     if user_profile.plotRFStudyPerDayAndHour:
-        date_fields.append("study_date")
         time_fields.append("study_time")
 
     system_field = None
@@ -433,6 +498,72 @@ def rf_plot_calculations(f, user_profile):
             sorted_categories=sorted_request_categories,
         )
 
+    if user_profile.plotRFStudyDAPOverTime:
+        facet_title = "System"
+
+        if user_profile.plotGroupingChoice == "series":
+            facet_title = "Study description"
+
+        result = construct_over_time_charts(
+            df=df,
+            df_name_col="study_description",
+            df_value_col="total_dap",
+            df_date_col="study_date",
+            name_title="Study description",
+            value_title="DAP (cGy.cm<sup>2</sup>)",
+            date_title="Study date",
+            facet_title=facet_title,
+            sorting=[
+                user_profile.plotInitialSortingDirection,
+                user_profile.plotCTInitialSortingChoice,
+            ],
+            time_period=plot_timeunit_period,
+            average_choices=average_choices + ["count"],
+            grouping_choice=user_profile.plotGroupingChoice,
+            colour_map=user_profile.plotColourMapChoice,
+            facet_col_wrap=user_profile.plotFacetColWrapVal,
+            file_name="OpenREM RF study DAP over time",
+            return_as_dict=return_as_dict,
+        )
+
+        if user_profile.plotMean:
+            return_structure["studyMeanDAPOverTime"] = result["mean"]
+        if user_profile.plotMedian:
+            return_structure["studyMedianDAPOverTime"] = result["median"]
+
+    if user_profile.plotRFRequestDAPOverTime:
+        facet_title = "System"
+
+        if user_profile.plotGroupingChoice == "series":
+            facet_title = "Requested procedure"
+
+        result = construct_over_time_charts(
+            df=df,
+            df_name_col="requested_procedure_code_meaning",
+            df_value_col="total_dap",
+            df_date_col="study_date",
+            name_title="Requested procedure",
+            value_title="DAP (cGy.cm<sup>2</sup>)",
+            date_title="Study date",
+            facet_title=facet_title,
+            sorting=[
+                user_profile.plotInitialSortingDirection,
+                user_profile.plotCTInitialSortingChoice,
+            ],
+            time_period=plot_timeunit_period,
+            average_choices=average_choices + ["count"],
+            grouping_choice=user_profile.plotGroupingChoice,
+            colour_map=user_profile.plotColourMapChoice,
+            facet_col_wrap=user_profile.plotFacetColWrapVal,
+            file_name="OpenREM RF requested procedure DAP over time",
+            return_as_dict=return_as_dict,
+        )
+
+        if user_profile.plotMean:
+            return_structure["requestMeanDAPOverTime"] = result["mean"]
+        if user_profile.plotMedian:
+            return_structure["requestMedianDAPOverTime"] = result["median"]
+
     return return_structure
 
 
@@ -456,11 +587,20 @@ def rf_chart_form_processing(request, user_profile):
             user_profile.plotRFStudyDAP = chart_options_form.cleaned_data[
                 "plotRFStudyDAP"
             ]
+            user_profile.plotRFStudyDAPOverTime = chart_options_form.cleaned_data[
+                "plotRFStudyDAPOverTime"
+            ]
             user_profile.plotRFRequestFreq = chart_options_form.cleaned_data[
                 "plotRFRequestFreq"
             ]
             user_profile.plotRFRequestDAP = chart_options_form.cleaned_data[
                 "plotRFRequestDAP"
+            ]
+            user_profile.plotRFRequestDAPOverTime = chart_options_form.cleaned_data[
+                "plotRFRequestDAPOverTime"
+            ]
+            user_profile.plotRFOverTimePeriod = chart_options_form.cleaned_data[
+                "plotRFOverTimePeriod"
             ]
             user_profile.plotGroupingChoice = chart_options_form.cleaned_data[
                 "plotGrouping"
@@ -509,8 +649,11 @@ def rf_chart_form_processing(request, user_profile):
                 "plotRFStudyPerDayAndHour": user_profile.plotRFStudyPerDayAndHour,
                 "plotRFStudyFreq": user_profile.plotRFStudyFreq,
                 "plotRFStudyDAP": user_profile.plotRFStudyDAP,
+                "plotRFStudyDAPOverTime": user_profile.plotRFStudyDAPOverTime,
                 "plotRFRequestFreq": user_profile.plotRFRequestFreq,
                 "plotRFRequestDAP": user_profile.plotRFRequestDAP,
+                "plotRFRequestDAPOverTime": user_profile.plotRFRequestDAPOverTime,
+                "plotRFOverTimePeriod": user_profile.plotRFOverTimePeriod,
                 "plotGrouping": user_profile.plotGroupingChoice,
                 "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
                 "plotHistograms": user_profile.plotHistograms,

@@ -574,8 +574,13 @@ class UserProfile(models.Model):
     plotRFStudyPerDayAndHour = models.BooleanField(default=False)
     plotRFStudyFreq = models.BooleanField(default=False)
     plotRFStudyDAP = models.BooleanField(default=True)
+    plotRFStudyDAPOverTime = models.BooleanField(default=False)
     plotRFRequestDAP = models.BooleanField(default=True)
     plotRFRequestFreq = models.BooleanField(default=True)
+    plotRFRequestDAPOverTime = models.BooleanField(default=False)
+    plotRFOverTimePeriod = models.CharField(
+        max_length=13, choices=TIME_PERIOD, default=MONTHS
+    )
     plotRFInitialSortingChoice = models.CharField(
         max_length=9, choices=SORTING_CHOICES, default=FREQ
     )
