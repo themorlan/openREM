@@ -516,7 +516,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             facet_title=facet_title,
             sorting=[
                 user_profile.plotInitialSortingDirection,
-                user_profile.plotCTInitialSortingChoice,
+                user_profile.plotRFInitialSortingChoice,
             ],
             time_period=plot_timeunit_period,
             average_choices=average_choices + ["count"],
@@ -549,7 +549,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             facet_title=facet_title,
             sorting=[
                 user_profile.plotInitialSortingDirection,
-                user_profile.plotCTInitialSortingChoice,
+                user_profile.plotRFInitialSortingChoice,
             ],
             time_period=plot_timeunit_period,
             average_choices=average_choices + ["count"],
