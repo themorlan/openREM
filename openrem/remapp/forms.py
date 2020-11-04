@@ -348,7 +348,7 @@ class RFChartOptionsForm(forms.Form):
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotRFSplitByPhysician = forms.BooleanField(
-        label="Split avg plots by physician", required=False
+        label="Split plots by physician", required=False
     )
     plotGrouping = forms.ChoiceField(
         label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
@@ -392,7 +392,7 @@ class RFChartOptionsDisplayForm(forms.Form):
         label="Time period", choices=TIME_PERIOD, required=False
     )
     plotRFSplitByPhysician = forms.BooleanField(
-        label="Split avg charts by physician", required=False
+        label="Split plots by physician", required=False
     )
     plotRFInitialSortingChoice = forms.ChoiceField(
         label="Default chart sorting", choices=SORTING_CHOICES, required=False

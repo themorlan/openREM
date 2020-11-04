@@ -730,10 +730,22 @@ def plotly_frequency_barchart(
     colourmap="RdYlBu",
     filename="OpenREM_bar_chart",
     sorted_category_list=None,
+    facet_col=None,
+    facet_col_wrap=3,
     return_as_dict=False,
 ):
     from plotly.offline import plot
     import plotly.express as px
+    import math
+
+    chart_height = 750
+    n_facet_rows = 1
+
+    if facet_col:
+        n_facet_rows = math.ceil(len(df[facet_col].unique()) / facet_col_wrap)
+        chart_height = n_facet_rows * 250
+        if chart_height < 750:
+            chart_height = 750
 
     n_colours = len(df[df_legend_col].unique())
     colour_sequence = calculate_colour_sequence(colourmap, n_colours)
@@ -743,6 +755,9 @@ def plotly_frequency_barchart(
         x=df_x_axis_col,
         y="count",
         color=df_legend_col,
+        facet_col=facet_col,
+        facet_col_wrap=facet_col_wrap,
+        facet_row_spacing=0.40 / n_facet_rows,
         labels={
             "count": "Frequency",
             df_legend_col: legend_title,
@@ -750,10 +765,13 @@ def plotly_frequency_barchart(
         },
         category_orders=sorted_category_list,
         color_discrete_sequence=colour_sequence,
-        height=750,
+        height=chart_height,
     )
 
-    fig.update_xaxes(tickson="boundaries")
+    fig.update_xaxes(tickson="boundaries", showticklabels=True)
+    fig.update_yaxes(showticklabels=True, matches=None)
+
+    fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
     if return_as_dict:
         return fig.to_dict()
@@ -1043,10 +1061,16 @@ def construct_frequency_chart(
     colour_map=None,
     file_name=None,
     sorted_categories=None,
+    groupby_cols=None,
+    facet_col=None,
+    facet_col_wrap=3,
     return_as_dict=False,
 ):
 
-    df_aggregated = create_dataframe_aggregates(df, [df_name_col], df_name_col, ["count"])
+    if groupby_cols is None:
+        groupby_cols = [df_name_col]
+
+    df_aggregated = create_dataframe_aggregates(df, groupby_cols, df_name_col, ["count"])
 
     if not sorted_categories:
         sorted_categories = create_freq_sorted_category_list(
@@ -1068,6 +1092,8 @@ def construct_frequency_chart(
         x_axis_title=x_axis_title,
         colourmap=colour_map,
         filename=file_name,
+        facet_col=facet_col,
+        facet_col_wrap=facet_col_wrap,
         sorted_category_list=sorted_categories,
         return_as_dict=return_as_dict,
     )

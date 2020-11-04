@@ -295,6 +295,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             colourmap=user_profile.plotColourMapChoice,
             filename="OpenREM RF study description workload",
             facet_col_wrap=user_profile.plotFacetColWrapVal,
+            return_as_dict=return_as_dict,
         )
 
     stats_to_include = ["count"]
@@ -342,6 +343,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                     average_choice="mean",
                     facet_col=facet_col,
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
+                    return_as_dict=return_as_dict,
                 )
 
             if user_profile.plotMedian:
@@ -356,6 +358,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                     average_choice="median",
                     facet_col=facet_col,
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
+                    return_as_dict=return_as_dict,
                 )
 
         if user_profile.plotBoxplots:
@@ -377,6 +380,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM RF study description DAP boxplot",
                 sorted_category_list=sorted_study_categories,
+                return_as_dict=return_as_dict,
             )
 
         if user_profile.plotHistograms:
@@ -406,12 +410,25 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 df_facet_category_list=facet_names,
                 df_category_name_list=category_names,
+                return_as_dict=return_as_dict,
             )
 
     if user_profile.plotRFStudyFreq:
+        x_col = "study_description"
+        groupby_cols = ["study_description"]
+        facet_col = None
+
+        if user_profile.plotRFSplitByPhysician:
+            groupby_cols = groupby_cols + ["performing_physician_name"]
+            x_col = "performing_physician_name"
+            facet_col = "study_description"
+
         return_structure["studyFrequencyData"] = construct_frequency_chart(
             df=df,
-            df_name_col="study_description",
+            df_name_col=x_col,
+            groupby_cols=groupby_cols,
+            facet_col=facet_col,
+            facet_col_wrap=user_profile.plotFacetColWrapVal,
             sorting_choice=[
                 user_profile.plotInitialSortingDirection,
                 user_profile.plotRFInitialSortingChoice,
@@ -423,6 +440,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             colour_map=user_profile.plotColourMapChoice,
             file_name="OpenREM RF study description frequency",
             sorted_categories=sorted_study_categories,
+            return_as_dict=return_as_dict,
         )
 
     sorted_request_categories = None
@@ -464,6 +482,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                     average_choice="mean",
                     facet_col=facet_col,
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
+                    return_as_dict=return_as_dict,
                 )
 
             if user_profile.plotMedian:
@@ -478,6 +497,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                     average_choice="median",
                     facet_col=facet_col,
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
+                    return_as_dict=return_as_dict,
                 )
 
         if user_profile.plotBoxplots:
@@ -490,6 +510,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM RF requested procedure DAP boxplot",
                 sorted_category_list=sorted_request_categories,
+                return_as_dict=return_as_dict,
             )
 
         if user_profile.plotHistograms:
@@ -519,12 +540,25 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 df_facet_category_list=facet_names,
                 df_category_name_list=category_names,
+                return_as_dict=return_as_dict,
             )
 
     if user_profile.plotRFRequestFreq:
+        x_col = "requested_procedure_code_meaning"
+        groupby_cols = ["requested_procedure_code_meaning"]
+        facet_col = None
+
+        if user_profile.plotRFSplitByPhysician:
+            groupby_cols = groupby_cols + ["performing_physician_name"]
+            x_col = "performing_physician_name"
+            facet_col = "requested_procedure_code_meaning"
+
         return_structure["requestFrequencyData"] = construct_frequency_chart(
             df=df,
-            df_name_col="requested_procedure_code_meaning",
+            df_name_col=x_col,
+            groupby_cols=groupby_cols,
+            facet_col=facet_col,
+            facet_col_wrap=user_profile.plotFacetColWrapVal,
             sorting_choice=[
                 user_profile.plotInitialSortingDirection,
                 user_profile.plotRFInitialSortingChoice,
@@ -536,6 +570,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             colour_map=user_profile.plotColourMapChoice,
             file_name="OpenREM RF requested procedure frequency",
             sorted_categories=sorted_request_categories,
+            return_as_dict=return_as_dict,
         )
 
     if user_profile.plotRFStudyDAPOverTime:

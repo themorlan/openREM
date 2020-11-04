@@ -1396,7 +1396,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
             return_structure["requestFrequencyData"] = construct_frequency_chart(
                 df=df,
-                df_name_cols="requested_procedure_code_meaning",
+                df_name_col="requested_procedure_code_meaning",
                 sorting_choice=[
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotCTInitialSortingChoice,
