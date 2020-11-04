@@ -230,6 +230,8 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
         or user_profile.plotRFStudyDAPOverTime
     ):
         name_fields.append("study_description")
+    if user_profile.plotRFSplitByPhysician:
+        name_fields.append("performing_physician_name")
     if (
         user_profile.plotRFRequestFreq
         or user_profile.plotRFRequestDAP
@@ -314,40 +316,62 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
         )
 
         if user_profile.plotMean or user_profile.plotMedian:
+
+            x_col = "study_description"
+            groupby_cols = ["study_description"]
+            facet_col = None
+
+            if user_profile.plotRFSplitByPhysician:
+                groupby_cols = groupby_cols + ["performing_physician_name"]
+                x_col = "performing_physician_name"
+                facet_col = "study_description"
+
             df_aggregated = create_dataframe_aggregates(
-                df, "study_description", "total_dap", stats=stats_to_include
-                #df, ["study_description", "performing_physician_name"], "total_dap", stats = stats_to_include
+                df, groupby_cols, "total_dap", stats=stats_to_include
             )
 
             if user_profile.plotMean:
                 return_structure["studyMeanData"] = plotly_barchart(
                     df_aggregated,
-                    "study_description",
+                    x_col,
                     value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
                     name_axis_title="Study description",
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM RF study description DAP mean",
                     sorted_category_list=sorted_study_categories,
                     average_choice="mean",
+                    facet_col=facet_col,
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
                 )
 
             if user_profile.plotMedian:
                 return_structure["studyMedianData"] = plotly_barchart(
                     df_aggregated,
-                    "study_description",
+                    x_col,
                     value_axis_title="Median DAP (cGy.cm<sup>2</sup>)",
                     name_axis_title="Study description",
                     colourmap=user_profile.plotColourMapChoice,
                     filename="OpenREM RF study description DAP median",
                     sorted_category_list=sorted_study_categories,
                     average_choice="median",
+                    facet_col=facet_col,
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
                 )
 
         if user_profile.plotBoxplots:
+            x_col = "study_description"
+            facet_col = None
+
+            if user_profile.plotRFSplitByPhysician:
+                x_col = "performing_physician_name"
+                facet_col = "study_description"
+
             return_structure["studyBoxplotData"] = plotly_boxplot(
                 df,
-                "study_description",
+                x_col,
                 "total_dap",
+                facet_col=facet_col,
+                facet_col_wrap=user_profile.plotFacetColWrapVal,
                 value_axis_title="DAP (cGy.cm<sup>2</sup>)",
                 name_axis_title="Study description",
                 colourmap=user_profile.plotColourMapChoice,
@@ -413,33 +437,48 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             ],
         )
 
-        df_aggregated = create_dataframe_aggregates(
-            df, "requested_procedure_code_meaning", "total_dap", stats=stats_to_include
-        )
+        if user_profile.plotMean or user_profile.plotMedian:
 
-        if user_profile.plotMean:
-            return_structure["requestMeanData"] = plotly_barchart(
-                df_aggregated,
-                "requested_procedure_code_meaning",
-                value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
-                name_axis_title="Requested procedure",
-                colourmap=user_profile.plotColourMapChoice,
-                filename="OpenREM RF requested procedure DAP mean",
-                sorted_category_list=sorted_request_categories,
-                average_choice="mean",
+            x_col = "requested_procedure_code_meaning"
+            groupby_cols = ["requested_procedure_code_meaning"]
+            facet_col = None
+
+            if user_profile.plotRFSplitByPhysician:
+                groupby_cols = groupby_cols + ["performing_physician_name"]
+                x_col = "performing_physician_name"
+                facet_col = "requested_procedure_code_meaning"
+
+            df_aggregated = create_dataframe_aggregates(
+                df, groupby_cols, "total_dap", stats=stats_to_include
             )
 
-        if user_profile.plotMedian:
-            return_structure["requestMedianData"] = plotly_barchart(
-                df_aggregated,
-                "requested_procedure_code_meaning",
-                value_axis_title="Median DAP (cGy.cm<sup>2</sup>)",
-                name_axis_title="Requested procedure",
-                colourmap=user_profile.plotColourMapChoice,
-                filename="OpenREM RF requested procedure DAP median",
-                sorted_category_list=sorted_request_categories,
-                average_choice="median",
-            )
+            if user_profile.plotMean:
+                return_structure["requestMeanData"] = plotly_barchart(
+                    df_aggregated,
+                    x_col,
+                    value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
+                    name_axis_title="Requested procedure",
+                    colourmap=user_profile.plotColourMapChoice,
+                    filename="OpenREM RF requested procedure DAP mean",
+                    sorted_category_list=sorted_request_categories,
+                    average_choice="mean",
+                    facet_col=facet_col,
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
+                )
+
+            if user_profile.plotMedian:
+                return_structure["requestMedianData"] = plotly_barchart(
+                    df_aggregated,
+                    x_col,
+                    value_axis_title="Median DAP (cGy.cm<sup>2</sup>)",
+                    name_axis_title="Requested procedure",
+                    colourmap=user_profile.plotColourMapChoice,
+                    filename="OpenREM RF requested procedure DAP median",
+                    sorted_category_list=sorted_request_categories,
+                    average_choice="median",
+                    facet_col=facet_col,
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
+                )
 
         if user_profile.plotBoxplots:
             return_structure["requestBoxplotData"] = plotly_boxplot(
@@ -603,6 +642,9 @@ def rf_chart_form_processing(request, user_profile):
             user_profile.plotRFOverTimePeriod = chart_options_form.cleaned_data[
                 "plotRFOverTimePeriod"
             ]
+            user_profile.plotRFSplitByPhysician = chart_options_form.cleaned_data[
+                "plotRFSplitByPhysician"
+            ]
             user_profile.plotGroupingChoice = chart_options_form.cleaned_data[
                 "plotGrouping"
             ]
@@ -655,6 +697,7 @@ def rf_chart_form_processing(request, user_profile):
                 "plotRFRequestDAP": user_profile.plotRFRequestDAP,
                 "plotRFRequestDAPOverTime": user_profile.plotRFRequestDAPOverTime,
                 "plotRFOverTimePeriod": user_profile.plotRFOverTimePeriod,
+                "plotRFSplitByPhysician": user_profile.plotRFSplitByPhysician,
                 "plotGrouping": user_profile.plotGroupingChoice,
                 "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
                 "plotHistograms": user_profile.plotHistograms,

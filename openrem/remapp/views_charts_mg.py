@@ -345,7 +345,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 if user_profile.plotMean or user_profile.plotMedian:
                     df_aggregated = create_dataframe_aggregates(
                         df,
-                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                        ["projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"],
                         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
                         stats=average_choices + ["count"],
                     )

@@ -584,6 +584,7 @@ class UserProfile(models.Model):
     plotRFInitialSortingChoice = models.CharField(
         max_length=9, choices=SORTING_CHOICES, default=FREQ
     )
+    plotRFSplitByPhysician = models.BooleanField(default=False)
 
     plotMGStudyPerDayAndHour = models.BooleanField(default=False)
     plotMGAGDvsThickness = models.BooleanField(default=False)

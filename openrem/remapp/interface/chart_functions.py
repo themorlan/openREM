@@ -165,13 +165,12 @@ def create_dataframe_weekdays(df, df_name_col, df_date_col="study_date"):
     return df_time_series
 
 
-def create_dataframe_aggregates(df, df_name_col, df_agg_col, stats=None):
+def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats=None):
     # Make it possible to have multiple value cols (DLP, CTDI, for example)
     if stats is None:
         stats = ["count"]
 
-    #groupby_cols = ["x_ray_system_name"] + df_name_cols
-    groupby_cols = ["x_ray_system_name", df_name_col]
+    groupby_cols = ["x_ray_system_name"] + df_name_cols
 
     grouped_df = df.groupby(groupby_cols).agg({df_agg_col: stats})
     grouped_df.columns = grouped_df.columns.droplevel(level=0)
@@ -219,10 +218,22 @@ def plotly_boxplot(
     colourmap="RdYlBu",
     filename="OpenREM_boxplot_chart",
     sorted_category_list=None,
+    facet_col=None,
+    facet_col_wrap=3,
     return_as_dict=False,
 ):
     from plotly.offline import plot
     import plotly.express as px
+    import math
+
+    chart_height = 750
+    n_facet_rows = 1
+
+    if facet_col:
+        n_facet_rows = math.ceil(len(df[facet_col].unique()) / facet_col_wrap)
+        chart_height = n_facet_rows * 250
+        if chart_height < 750:
+            chart_height = 750
 
     n_colours = len(df.x_ray_system_name.unique())
     colour_sequence = calculate_colour_sequence(colourmap, n_colours)
@@ -237,6 +248,9 @@ def plotly_boxplot(
             df,
             x=df_name_col,
             y=df_value_col,
+            facet_col=facet_col,
+            facet_col_wrap=facet_col_wrap,
+            facet_row_spacing=0.40 / n_facet_rows,
             color="x_ray_system_name",
             labels={
                 df_value_col: value_axis_title,
@@ -245,12 +259,15 @@ def plotly_boxplot(
             },
             color_discrete_sequence=colour_sequence,
             category_orders=sorted_category_list,
-            height=750,
+            height=chart_height,
         )
 
         fig.update_traces(quartilemethod="exclusive")
 
-        fig.update_xaxes(tickson="boundaries")
+        fig.update_xaxes(tickson="boundaries", showticklabels=True)
+        fig.update_yaxes(showticklabels=True, matches=None)
+
+        fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
         if return_as_dict:
             return fig.to_dict()
@@ -325,10 +342,22 @@ def plotly_barchart(
     filename="OpenREM_bar_chart",
     sorted_category_list=None,
     average_choice="mean",
+    facet_col=None,
+    facet_col_wrap=3,
     return_as_dict=False,
 ):
     from plotly.offline import plot
     import plotly.express as px
+    import math
+
+    chart_height = 750
+    n_facet_rows = 1
+
+    if facet_col:
+        n_facet_rows = math.ceil(len(df[facet_col].unique()) / facet_col_wrap)
+        chart_height = n_facet_rows * 250
+        if chart_height < 750:
+            chart_height = 750
 
     n_colours = len(df.x_ray_system_name.unique())
     colour_sequence = calculate_colour_sequence(colourmap, n_colours)
@@ -339,7 +368,9 @@ def plotly_barchart(
         y=average_choice,
         color="x_ray_system_name",
         barmode="group",
-        #facet_col="performing_physician_name",
+        facet_col=facet_col,
+        facet_col_wrap=facet_col_wrap,
+        facet_row_spacing=0.40 / n_facet_rows,
         labels={
             average_choice: value_axis_title,
             df_name_col: name_axis_title,
@@ -354,10 +385,13 @@ def plotly_barchart(
             average_choice: ":.2f",
             "count": ":.0d",
         },
-        height=750,
+        height=chart_height,
     )
 
-    fig.update_xaxes(tickson="boundaries")
+    fig.update_xaxes(tickson="boundaries", showticklabels=True)
+    fig.update_yaxes(showticklabels=True, matches=None)
+
+    fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
     if return_as_dict:
         return fig.to_dict()
@@ -1012,7 +1046,7 @@ def construct_frequency_chart(
     return_as_dict=False,
 ):
 
-    df_aggregated = create_dataframe_aggregates(df, df_name_col, df_name_col, ["count"])
+    df_aggregated = create_dataframe_aggregates(df, [df_name_col], df_name_col, ["count"])
 
     if not sorted_categories:
         sorted_categories = create_freq_sorted_category_list(

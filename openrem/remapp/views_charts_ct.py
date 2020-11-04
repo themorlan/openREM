@@ -531,7 +531,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
-                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                    ["ctradiationdose__ctirradiationeventdata__acquisition_protocol"],
                     "ctradiationdose__ctirradiationeventdata__dlp",
                     stats=average_choices + ["count"],
                 )
@@ -626,7 +626,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
-                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                    ["ctradiationdose__ctirradiationeventdata__acquisition_protocol"],
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                     stats=average_choices + ["count"],
                 )
@@ -927,7 +927,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
-                    "study_description",
+                    ["study_description"],
                     "total_dlp",
                     stats=average_choices + ["count"],
                 )
@@ -1016,7 +1016,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
-                    "study_description",
+                    ["study_description"],
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                     stats=average_choices + ["count"],
                 )
@@ -1105,7 +1105,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
-                    "study_description",
+                    ["study_description"],
                     "number_of_events",
                     stats=average_choices + ["count"],
                 )
@@ -1222,7 +1222,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
-                    "requested_procedure_code_meaning",
+                    ["requested_procedure_code_meaning"],
                     "total_dlp",
                     stats=average_choices + ["count"],
                 )
@@ -1311,7 +1311,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
-                    "requested_procedure_code_meaning",
+                    ["requested_procedure_code_meaning"],
                     "number_of_events",
                     stats=average_choices + ["count"],
                 )
@@ -1396,7 +1396,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
             return_structure["requestFrequencyData"] = construct_frequency_chart(
                 df=df,
-                df_name_col="requested_procedure_code_meaning",
+                df_name_cols="requested_procedure_code_meaning",
                 sorting_choice=[
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotCTInitialSortingChoice,

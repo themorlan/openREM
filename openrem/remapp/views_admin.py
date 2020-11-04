@@ -1425,6 +1425,9 @@ def chart_options_view(request):
             user_profile.plotRFOverTimePeriod = rf_form.cleaned_data[
                 "plotRFOverTimePeriod"
             ]
+            user_profile.plotRFSplitByPhysician = rf_form.cleaned_data[
+                "plotRFSplitByPhysician"
+            ]
             user_profile.plotRFInitialSortingChoice = rf_form.cleaned_data[
                 "plotRFInitialSortingChoice"
             ]
@@ -1545,6 +1548,7 @@ def chart_options_view(request):
         "plotRFRequestDAP": user_profile.plotRFRequestDAP,
         "plotRFRequestDAPOverTime": user_profile.plotRFRequestDAPOverTime,
         "plotRFOverTimePeriod": user_profile.plotRFOverTimePeriod,
+        "plotRFSplitByPhysician": user_profile.plotRFSplitByPhysician,
         "plotRFInitialSortingChoice": user_profile.plotRFInitialSortingChoice,
     }
 

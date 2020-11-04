@@ -447,7 +447,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
-                    "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                    ["projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"],
                     "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
                     stats=average_choices + ["count"],
                 )
@@ -538,7 +538,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
-                    "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                    ["projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"],
                     "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
                     stats=average_choices + ["count"],
                 )
@@ -629,7 +629,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
-                    "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                    ["projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"],
                     "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
                     stats=average_choices + ["count"],
                 )
@@ -931,7 +931,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
-                    "study_description",
+                    ["study_description"],
                     "total_dap",
                     stats=average_choices + ["count"],
                 )
@@ -1038,7 +1038,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
-                    "requested_procedure_code_meaning",
+                    ["requested_procedure_code_meaning"],
                     "total_dap",
                     stats=average_choices + ["count"],
                 )
