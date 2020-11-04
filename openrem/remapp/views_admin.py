@@ -117,8 +117,8 @@ def charts_toggle(request):
         messages.success(
             request, "Chart plotting has been turned on for {0}".format(name)
         )
-        # Redirect to the calling page, adding '&plotCharts=on' to the url
-        return redirect(request.META["HTTP_REFERER"] + "&plotCharts=on")
+        # Redirect to the calling page
+        return redirect(request.META["HTTP_REFERER"])
     else:
         messages.warning(
             request, "Chart plotting has been turned off for {0}".format(name)
