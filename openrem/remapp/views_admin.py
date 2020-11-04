@@ -43,6 +43,7 @@ import logging
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -53,9 +54,8 @@ from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-import remapp
-from openrem.openremproject.settings import FLOWER_PORT, FLOWER_URL, BROKER_MGMT_URL
 from .models import GeneralStudyModuleAttr, create_user_profile, SizeUpload
+from .version import __version__, __docs_version__
 
 try:
     from numpy import *
@@ -130,8 +130,8 @@ def charts_toggle(request):
 @login_required
 def display_names_view(request):
     from django.db.models import Q
-    from remapp.models import UniqueEquipmentNames, MergeOnDeviceObserverUIDSettings
     from .forms import MergeOnDeviceObserverUIDForm
+    from .models import UniqueEquipmentNames, MergeOnDeviceObserverUIDSettings
 
     try:
         match_on_device_observer_uid = (
@@ -229,8 +229,8 @@ def display_names_view(request):
     ).distinct()
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     merge_options_form = MergeOnDeviceObserverUIDForm(
@@ -256,7 +256,7 @@ def display_names_view(request):
 
 
 def display_name_gen_hash(eq):
-    from remapp.tools.hash_id import hash_id
+    from .tools.hash_id import hash_id
 
     eq.manufacturer_hash = hash_id(eq.manufacturer)
     eq.institution_name_hash = hash_id(eq.institution_name)
@@ -272,8 +272,8 @@ def display_name_gen_hash(eq):
 
 @login_required
 def display_name_update(request):
-    from remapp.models import UniqueEquipmentNames
-    from remapp.forms import UpdateDisplayNamesForm
+    from .models import UniqueEquipmentNames
+    from .forms import UpdateDisplayNamesForm
 
     if request.method == "POST":
         error_message = ""
@@ -352,8 +352,8 @@ def display_name_update(request):
         )
 
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
 
         for group in request.user.groups.all():
@@ -371,15 +371,15 @@ def display_name_populate(request):
     :return: HTML table
     """
     from django.db.models import Q
-    from remapp.models import UniqueEquipmentNames
+    from .models import UniqueEquipmentNames
 
     if request.is_ajax():
         data = request.POST
         modality = data.get("modality")
         f = UniqueEquipmentNames.objects.order_by("display_name")
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in request.user.groups.all():
             admin[group.name] = True
@@ -535,7 +535,7 @@ def review_summary_list(request, equip_name_pk=None, modality=None, delete_equip
     :return:
     """
     from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-    from remapp.models import UniqueEquipmentNames
+    from .models import UniqueEquipmentNames
 
     if not equip_name_pk:
         logger.error("Attempt to load review_summary_list without equip_name_pk")
@@ -568,8 +568,8 @@ def review_summary_list(request, equip_name_pk=None, modality=None, delete_equip
             studies = paginator.page(paginator.num_pages)
 
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
 
         for group in request.user.groups.all():
@@ -1206,8 +1206,8 @@ def review_failed_imports(request, modality=None):
             studies = paginator.page(paginator.num_pages)
 
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
 
         for group in request.user.groups.all():
@@ -1245,14 +1245,13 @@ def review_failed_imports(request, modality=None):
 
 @login_required
 def chart_options_view(request):
-    from remapp.forms import (
+    from .forms import (
         GeneralChartOptionsDisplayForm,
         DXChartOptionsDisplayForm,
         CTChartOptionsDisplayForm,
         RFChartOptionsDisplayForm,
         MGChartOptionsDisplayForm,
     )
-    from openremproject import settings
 
     if request.method == "POST":
         general_form = GeneralChartOptionsDisplayForm(request.POST)
@@ -1462,8 +1461,8 @@ def chart_options_view(request):
         messages.success(request, "Chart options have been updated")
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -1588,8 +1587,8 @@ def homepage_options_view(request):
     :param request: request object
     :return: dictionary of home page settings, html template location and request object
     """
-    from remapp.forms import HomepageOptionsForm
-    from remapp.models import HomePageAdminSettings
+    from .forms import HomepageOptionsForm
+    from .models import HomePageAdminSettings
     from django.utils.safestring import mark_safe
 
     try:
@@ -1650,8 +1649,8 @@ def homepage_options_view(request):
         return HttpResponseRedirect(reverse_lazy("homepage_options_view"))
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -1686,15 +1685,16 @@ def homepage_options_view(request):
 
 @login_required
 def not_patient_indicators(request):
-    """Displays current not-patient indicators"""
-    from remapp.models import NotPatientIndicatorsID, NotPatientIndicatorsName
+    """Displays current not-patient indicators
+    """
+    from .models import NotPatientIndicatorsID, NotPatientIndicatorsName
 
     not_patient_ids = NotPatientIndicatorsID.objects.all()
     not_patient_names = NotPatientIndicatorsName.objects.all()
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -1711,7 +1711,7 @@ def not_patient_indicators(request):
 @login_required
 def not_patient_indicators_as_074(request):
     """Add patterns to no-patient indicators to replicate 0.7.4 behaviour"""
-    from remapp.models import NotPatientIndicatorsID, NotPatientIndicatorsName
+    from .models import NotPatientIndicatorsID, NotPatientIndicatorsName
 
     if request.user.groups.filter(name="admingroup"):
         not_patient_ids = NotPatientIndicatorsID.objects.all()
@@ -1742,7 +1742,7 @@ def not_patient_indicators_as_074(request):
 @login_required
 def admin_questions_hide_not_patient(request):
     """Hides the not-patient revert to 0.7.4 question"""
-    from remapp.models import AdminTaskQuestions
+    from .models import AdminTaskQuestions
 
     if request.user.groups.filter(name="admingroup"):
         admin_question = AdminTaskQuestions.objects.all()[0]
@@ -1765,8 +1765,8 @@ def _create_admin_dict(request):
     :return: dict containing version numbers and admin group membership
     """
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
     for group in request.user.groups.all():
         admin[group.name] = True
@@ -1777,11 +1777,12 @@ def _create_admin_dict(request):
 def task_service_status(request):
     """AJAX function to get task services statuses and RabbitMQ queued tasks"""
     import requests
-    from openremproject import settings
 
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
         try:
-            flower = requests.get(f"{FLOWER_URL}:{FLOWER_PORT}/api/tasks")
+            flower = requests.get(
+                f"{settings.FLOWER_URL}:{settings.FLOWER_PORT}/api/tasks"
+            )
             if flower.status_code == 200:
                 flower_status = 200
             else:
@@ -1792,14 +1793,14 @@ def task_service_status(request):
         celery_queue = {}
         try:
             queues = requests.get(
-                f"{BROKER_MGMT_URL}api/queues", auth=("guest", "guest")
+                f"{settings.BROKER_MGMT_URL}api/queues", auth=("guest", "guest")
             )
             if queues.status_code == 200:
                 rabbitmq_status = 200
             else:
                 rabbitmq_status = queues.status_code
             for queue in queues.json():
-                if queue["name"] == settings.CELERY_DEFAULT_QUEUE:
+                if queue["name"] == settings.CELERY_TASK_DEFAULT_QUEUE:
                     default_queue = queue
                 elif "celery.pidbox" in queue["name"]:
                     celery_queue = queue
@@ -1826,7 +1827,7 @@ def rabbitmq_purge(request, queue=None):
     import requests
 
     if queue and request.user.groups.filter(name="admingroup"):
-        queue_url = f"{BROKER_MGMT_URL}/api/queues/%2f/{queue}/contents"
+        queue_url = f"{settings.BROKER_MGMT_URL}/api/queues/%2f/{queue}/contents"
         requests.delete(queue_url, auth=("guest", "guest"))
         return redirect(reverse_lazy("celery_admin"))
 
@@ -1849,7 +1850,9 @@ def celery_tasks(request, stage=None):
 
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
         try:
-            flower = requests.get(f"{FLOWER_URL}:{FLOWER_PORT}/api/tasks")
+            flower = requests.get(
+                f"{settings.FLOWER_URL}:{settings.FLOWER_PORT}/api/tasks"
+            )
             if flower.status_code == 200:
                 tasks = []
                 recent_tasks = []
@@ -1962,10 +1965,12 @@ def celery_tasks(request, stage=None):
 def celery_abort(request, task_id=None, type=None):
     """Function to abort one of the Celery tasks"""
     import requests
-    from remapp.models import Exports, DicomQuery
+    from .models import Exports, DicomQuery
 
     if task_id and request.user.groups.filter(name="admingroup"):
-        queue_url = f"{FLOWER_URL}:{FLOWER_PORT}/api/task/revoke/{task_id}"
+        queue_url = (
+            f"{settings.FLOWER_URL}:{settings.FLOWER_PORT}/api/task/revoke/{task_id}"
+        )
         payload = {"terminate": "true"}
         abort = requests.post(queue_url, data=payload)
         if abort.status_code == 200:
@@ -2033,7 +2038,7 @@ def celery_abort(request, task_id=None, type=None):
 class PatientIDSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
     """UpdateView to update the patient ID settings"""
 
-    from remapp.models import PatientIDSettings
+    from .models import PatientIDSettings
 
     model = PatientIDSettings
     fields = [
@@ -2048,8 +2053,8 @@ class PatientIDSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
     def get_context_data(self, **context):
         context = super(PatientIDSettingsUpdate, self).get_context_data(**context)
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -2060,8 +2065,8 @@ class PatientIDSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
 class DicomDeleteSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
     """UpdateView tp update the settings relating to deleting DICOM after import"""
 
-    from remapp.models import DicomDeleteSettings
-    from remapp.forms import DicomDeleteSettingsForm
+    from .models import DicomDeleteSettings
+    from .forms import DicomDeleteSettingsForm
 
     model = DicomDeleteSettings
     form_class = DicomDeleteSettingsForm
@@ -2069,8 +2074,8 @@ class DicomDeleteSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
     def get_context_data(self, **context):
         context = super(DicomDeleteSettingsUpdate, self).get_context_data(**context)
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -2081,8 +2086,8 @@ class DicomDeleteSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
 class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
     """UpdateView for configuring the fluoroscopy high dose alert settings"""
 
-    from remapp.models import HighDoseMetricAlertSettings
-    from remapp.forms import RFHighDoseFluoroAlertsForm
+    from .models import HighDoseMetricAlertSettings
+    from .forms import RFHighDoseFluoroAlertsForm
     from django.db.utils import ProgrammingError as AvoidDataMigrationErrorPostgres
     from django.db.utils import OperationalError as AvoidDataMigrationErrorSQLite
 
@@ -2099,8 +2104,8 @@ class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
     def get_context_data(self, **context):
         context = super(RFHighDoseAlertSettings, self).get_context_data(**context)
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -2162,8 +2167,8 @@ class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
 def rf_alert_notifications_view(request):
     """View for display and modification of fluoroscopy high dose alert recipients"""
     from django.contrib.auth.models import User
-    from remapp.models import HighDoseMetricAlertRecipients
-    from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
+    from .models import HighDoseMetricAlertRecipients
+    from .tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
     from .tools.get_values import get_keys_by_value
 
     if request.method == "POST" and request.user.groups.filter(name="admingroup"):
@@ -2205,8 +2210,8 @@ def rf_alert_notifications_view(request):
     f = User.objects.order_by("username")
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -2221,19 +2226,19 @@ def rf_alert_notifications_view(request):
 def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
     """View to recalculate the summed total DAP and total dose at RP for all RF studies"""
     from django.http import JsonResponse
-    from remapp.extractors.extract_common import populate_rf_delta_weeks_summary
+    from .extractors.extract_common import populate_rf_delta_weeks_summary
 
     if not request.user.groups.filter(name="admingroup"):
         # Send the user to the home page
         return HttpResponseRedirect(reverse_lazy("home"))
     else:
         # Empty the PKsForSummedRFDoseStudiesInDeltaWeeks table
-        from remapp.models import PKsForSummedRFDoseStudiesInDeltaWeeks
+        from .models import PKsForSummedRFDoseStudiesInDeltaWeeks
 
         PKsForSummedRFDoseStudiesInDeltaWeeks.objects.all().delete()
 
         # In the AccumIntegratedProjRadiogDose table delete all dose_area_product_total_over_delta_weeks and dose_rp_total_over_delta_weeks entries
-        from remapp.models import AccumIntegratedProjRadiogDose
+        from .models import AccumIntegratedProjRadiogDose
 
         AccumIntegratedProjRadiogDose.objects.all().update(
             dose_area_product_total_over_delta_weeks=None,
@@ -2243,7 +2248,7 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
         # For each RF study recalculate dose_area_product_total_over_delta_weeks and dose_rp_total_over_delta_weeks
         from datetime import timedelta
         from django.db.models import Sum
-        from remapp.models import HighDoseMetricAlertSettings
+        from .models import HighDoseMetricAlertSettings
 
         try:
             HighDoseMetricAlertSettings.objects.get()
@@ -2365,9 +2370,8 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
 class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
     """UpdateView for configuring the skin dose map calculation choices"""
 
-    from remapp.models import SkinDoseMapCalcSettings
-    from remapp.forms import SkinDoseMapCalcSettingsForm
-    from django.core.exceptions import ObjectDoesNotExist
+    from .models import SkinDoseMapCalcSettings
+    from .forms import SkinDoseMapCalcSettingsForm
     from django.db.utils import ProgrammingError as AvoidDataMigrationErrorPostgres
     from django.db.utils import OperationalError as AvoidDataMigrationErrorSQLite
 
@@ -2382,8 +2386,8 @@ class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-varia
     def get_context_data(self, **context):
         context = super(SkinDoseMapCalcSettingsUpdate, self).get_context_data(**context)
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -2401,8 +2405,8 @@ class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-varia
 class NotPatientNameCreate(CreateView):  # pylint: disable=unused-variable
     """CreateView for configuration of indicators a study might not be a patient study"""
 
-    from remapp.forms import NotPatientNameForm
-    from remapp.models import NotPatientIndicatorsName
+    from .forms import NotPatientNameForm
+    from .models import NotPatientIndicatorsName
 
     model = NotPatientIndicatorsName
     form_class = NotPatientNameForm
@@ -2410,8 +2414,8 @@ class NotPatientNameCreate(CreateView):  # pylint: disable=unused-variable
     def get_context_data(self, **context):
         context = super(NotPatientNameCreate, self).get_context_data(**context)
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -2422,8 +2426,8 @@ class NotPatientNameCreate(CreateView):  # pylint: disable=unused-variable
 class NotPatientNameUpdate(UpdateView):  # pylint: disable=unused-variable
     """UpdateView to update choices regarding not-patient indicators"""
 
-    from remapp.forms import NotPatientNameForm
-    from remapp.models import NotPatientIndicatorsName
+    from .forms import NotPatientNameForm
+    from .models import NotPatientIndicatorsName
 
     model = NotPatientIndicatorsName
     form_class = NotPatientNameForm
@@ -2431,8 +2435,8 @@ class NotPatientNameUpdate(UpdateView):  # pylint: disable=unused-variable
     def get_context_data(self, **context):
         context = super(NotPatientNameUpdate, self).get_context_data(**context)
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -2443,7 +2447,7 @@ class NotPatientNameUpdate(UpdateView):  # pylint: disable=unused-variable
 class NotPatientNameDelete(DeleteView):  # pylint: disable=unused-variable
     """DeleteView for the not-patient name indicator table"""
 
-    from remapp.models import NotPatientIndicatorsName
+    from .models import NotPatientIndicatorsName
 
     model = NotPatientIndicatorsName
     success_url = reverse_lazy("not_patient_indicators")
@@ -2451,8 +2455,8 @@ class NotPatientNameDelete(DeleteView):  # pylint: disable=unused-variable
     def get_context_data(self, **context):
         context[self.context_object_name] = self.object
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -2463,8 +2467,8 @@ class NotPatientNameDelete(DeleteView):  # pylint: disable=unused-variable
 class NotPatientIDCreate(CreateView):  # pylint: disable=unused-variable
     """CreateView for not-patient ID indicators"""
 
-    from remapp.forms import NotPatientIDForm
-    from remapp.models import NotPatientIndicatorsID
+    from .forms import NotPatientIDForm
+    from .models import NotPatientIndicatorsID
 
     model = NotPatientIndicatorsID
     form_class = NotPatientIDForm
@@ -2472,8 +2476,8 @@ class NotPatientIDCreate(CreateView):  # pylint: disable=unused-variable
     def get_context_data(self, **context):
         context = super(NotPatientIDCreate, self).get_context_data(**context)
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -2484,8 +2488,8 @@ class NotPatientIDCreate(CreateView):  # pylint: disable=unused-variable
 class NotPatientIDUpdate(UpdateView):  # pylint: disable=unused-variable
     """UpdateView for non-patient ID indicators"""
 
-    from remapp.forms import NotPatientIDForm
-    from remapp.models import NotPatientIndicatorsID
+    from .forms import NotPatientIDForm
+    from .models import NotPatientIndicatorsID
 
     model = NotPatientIndicatorsID
     form_class = NotPatientIDForm
@@ -2493,8 +2497,8 @@ class NotPatientIDUpdate(UpdateView):  # pylint: disable=unused-variable
     def get_context_data(self, **context):
         context = super(NotPatientIDUpdate, self).get_context_data(**context)
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -2505,7 +2509,7 @@ class NotPatientIDUpdate(UpdateView):  # pylint: disable=unused-variable
 class NotPatientIDDelete(DeleteView):  # pylint: disable=unused-variable
     """DeleteView for non-patient ID indicators"""
 
-    from remapp.models import NotPatientIndicatorsID
+    from .models import NotPatientIndicatorsID
 
     model = NotPatientIndicatorsID
     success_url = reverse_lazy("not_patient_indicators")
@@ -2513,8 +2517,8 @@ class NotPatientIDDelete(DeleteView):  # pylint: disable=unused-variable
     def get_context_data(self, **context):
         context[self.context_object_name] = self.object
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -2528,13 +2532,13 @@ def populate_summary(request):
     :param request:
     :return:
     """
-    from remapp.tools.populate_summary import (
+    from .tools.populate_summary import (
         populate_summary_ct,
         populate_summary_mg,
         populate_summary_dx,
         populate_summary_rf,
     )
-    from remapp.models import SummaryFields
+    from .models import SummaryFields
 
     if request.user.groups.filter(name="admingroup"):
         try:
@@ -2576,7 +2580,7 @@ def populate_summary(request):
 def populate_summary_progress(request):
     """AJAX function to get populate summary fields progress"""
     from django.db.models import Q
-    from remapp.models import SummaryFields, UpgradeStatus
+    from .models import SummaryFields, UpgradeStatus
 
     if request.is_ajax():
         if request.user.groups.filter(name="admingroup"):
