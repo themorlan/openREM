@@ -447,7 +447,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
-                    ["projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"],
+                    [
+                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+                    ],
                     "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
                     stats=average_choices + ["count"],
                 )
@@ -520,6 +522,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
+                    global_max_min=user_profile.plotHistogramGlobalBins,
                     return_as_dict=return_as_dict,
                 )
 
@@ -538,7 +541,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
-                    ["projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"],
+                    [
+                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+                    ],
                     "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
                     stats=average_choices + ["count"],
                 )
@@ -611,6 +616,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
+                    global_max_min=user_profile.plotHistogramGlobalBins,
                     return_as_dict=return_as_dict,
                 )
 
@@ -629,7 +635,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
-                    ["projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"],
+                    [
+                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+                    ],
                     "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
                     stats=average_choices + ["count"],
                 )
@@ -702,6 +710,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
+                    global_max_min=user_profile.plotHistogramGlobalBins,
                     return_as_dict=return_as_dict,
                 )
 
@@ -1002,6 +1011,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
+                    global_max_min=user_profile.plotHistogramGlobalBins,
                     return_as_dict=return_as_dict,
                 )
 
@@ -1109,6 +1119,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     facet_col_wrap=user_profile.plotFacetColWrapVal,
                     df_facet_category_list=facet_names,
                     df_category_name_list=category_names,
+                    global_max_min=user_profile.plotHistogramGlobalBins,
                     return_as_dict=return_as_dict,
                 )
 

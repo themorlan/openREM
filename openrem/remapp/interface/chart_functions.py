@@ -82,8 +82,6 @@ def create_dataframe(
     if system_name_field:
         fields_to_include.add(system_name_field)
 
-#    fields_to_include.add("performing_physician_name")
-
     # NOTE: I am not excluding zero-value events from the calculations (zero DLP or zero CTDI)
     df = pd.DataFrame.from_records(database_events.values(*fields_to_include))
 
@@ -166,6 +164,11 @@ def create_dataframe_weekdays(df, df_name_col, df_date_col="study_date"):
 
 
 def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats=None):
+    if settings.DEBUG:
+        from datetime import datetime
+
+        start = datetime.now()
+
     # Make it possible to have multiple value cols (DLP, CTDI, for example)
     if stats is None:
         stats = ["count"]
@@ -175,6 +178,9 @@ def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats=None):
     grouped_df = df.groupby(groupby_cols).agg({df_agg_col: stats})
     grouped_df.columns = grouped_df.columns.droplevel(level=0)
     grouped_df = grouped_df.reset_index()
+
+    if settings.DEBUG:
+        print(f"Aggregated dataframe created in {datetime.now() - start}")
 
     return grouped_df
 
@@ -417,6 +423,7 @@ def plotly_histogram_barchart(
     facet_col_wrap=3,
     df_facet_category_list=None,
     df_category_name_list=None,
+    global_max_min=False,
     return_as_dict=False,
 ):
     from plotly.subplots import make_subplots
@@ -437,6 +444,15 @@ def plotly_histogram_barchart(
     n_colours = len(df[df_category_col].unique())
     colour_sequence = calculate_colour_sequence(colourmap, n_colours)
 
+    if global_max_min:
+        min_bin_value = df[df_value_col].min()
+        max_bin_value = df[df_value_col].max()
+        bins = np.linspace(min_bin_value, max_bin_value, n_bins + 1)
+        mid_bins = 0.5 * (bins[:-1] + bins[1:])
+        bin_labels = np.array(
+            ["{:.2f}≤x<{:.2f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])]
+        )
+
     try:
         fig = make_subplots(
             rows=n_facet_rows, cols=facet_col_wrap, vertical_spacing=0.40 / n_facet_rows
@@ -456,13 +472,17 @@ def plotly_histogram_barchart(
             if facet_subset.empty:
                 continue
 
-            min_bin_value = facet_subset[df_value_col].min()
-            max_bin_value = facet_subset[df_value_col].max()
-            bins = np.linspace(min_bin_value, max_bin_value, n_bins + 1)
-            mid_bins = 0.5 * (bins[:-1] + bins[1:])
-            bin_labels = np.array(
-                ["{:.2f}≤x<{:.2f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])]
-            )
+            if not global_max_min:
+                min_bin_value = facet_subset[df_value_col].min()
+                max_bin_value = facet_subset[df_value_col].max()
+                bins = np.linspace(min_bin_value, max_bin_value, n_bins + 1)
+                mid_bins = 0.5 * (bins[:-1] + bins[1:])
+                bin_labels = np.array(
+                    [
+                        "{:.2f}≤x<{:.2f}".format(i, j)
+                        for i, j in zip(bins[:-1], bins[1:])
+                    ]
+                )
 
             for category_name in df_category_name_list:
                 category_subset = facet_subset[
@@ -1070,7 +1090,9 @@ def construct_frequency_chart(
     if groupby_cols is None:
         groupby_cols = [df_name_col]
 
-    df_aggregated = create_dataframe_aggregates(df, groupby_cols, df_name_col, ["count"])
+    df_aggregated = create_dataframe_aggregates(
+        df, groupby_cols, df_name_col, ["count"]
+    )
 
     if not sorted_categories:
         sorted_categories = create_freq_sorted_category_list(

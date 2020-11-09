@@ -612,6 +612,8 @@ class UserProfile(models.Model):
 
     plotHistograms = models.BooleanField(default=False)
 
+    plotHistogramGlobalBins = models.BooleanField(default=False)
+
     plotCaseInsensitiveCategories = models.BooleanField(default=False)
 
     summaryWorkloadDaysA = models.IntegerField(

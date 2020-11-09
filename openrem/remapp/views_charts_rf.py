@@ -410,6 +410,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 df_facet_category_list=facet_names,
                 df_category_name_list=category_names,
+                global_max_min=user_profile.plotHistogramGlobalBins,
                 return_as_dict=return_as_dict,
             )
 
@@ -540,6 +541,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
                 df_facet_category_list=facet_names,
                 df_category_name_list=category_names,
+                global_max_min=user_profile.plotHistogramGlobalBins,
                 return_as_dict=return_as_dict,
             )
 

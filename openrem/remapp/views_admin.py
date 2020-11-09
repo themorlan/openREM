@@ -1293,6 +1293,9 @@ def chart_options_view(request):
             user_profile.plotHistogramBins = general_form.cleaned_data[
                 "plotHistogramBins"
             ]
+            user_profile.plotHistogramGlobalBins = general_form.cleaned_data[
+                "plotHistogramGlobalBins"
+            ]
             user_profile.plotHistograms = general_form.cleaned_data["plotHistograms"]
             user_profile.plotCaseInsensitiveCategories = general_form.cleaned_data[
                 "plotCaseInsensitiveCategories"
@@ -1491,6 +1494,7 @@ def chart_options_view(request):
         "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
         "plotHistogramBins": user_profile.plotHistogramBins,
         "plotHistograms": user_profile.plotHistograms,
+        "plotHistogramGlobalBins": user_profile.plotHistogramGlobalBins,
         "plotCaseInsensitiveCategories": user_profile.plotCaseInsensitiveCategories,
         "plotThemeChoice": user_profile.plotThemeChoice,
         "plotColourMapChoice": user_profile.plotColourMapChoice,
@@ -1685,8 +1689,7 @@ def homepage_options_view(request):
 
 @login_required
 def not_patient_indicators(request):
-    """Displays current not-patient indicators
-    """
+    """Displays current not-patient indicators"""
     from .models import NotPatientIndicatorsID, NotPatientIndicatorsName
 
     not_patient_ids = NotPatientIndicatorsID.objects.all()

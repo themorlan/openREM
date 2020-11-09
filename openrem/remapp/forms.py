@@ -616,6 +616,9 @@ class GeneralChartOptionsDisplayForm(forms.Form):
     plotHistogramBins = forms.IntegerField(
         label="Number of histogram bins", min_value=2, max_value=40, required=False
     )
+    plotHistogramGlobalBins = forms.BooleanField(
+        label="Fixed histogram bins across subplots", required=False
+    )
     plotCaseInsensitiveCategories = forms.BooleanField(
         label="Case-insensitive categories", required=False
     )
