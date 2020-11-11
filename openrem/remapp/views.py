@@ -36,13 +36,13 @@ import os
 import gzip
 import json
 import logging
-import remapp
 import numpy as np
 from datetime import datetime, timedelta
 from decimal import Decimal
 import pickle as pickle
-
 from collections import OrderedDict
+import remapp
+
 from django.db.models import Sum, Q, Min
 from django.contrib import messages
 from django.contrib.auth import logout
@@ -60,18 +60,17 @@ from django.views.decorators.csrf import csrf_exempt
 # Following two lines added so that sphinx autodocumentation works.
 from future import standard_library
 
-from .models import (
-    GeneralStudyModuleAttr,
-    create_user_profile,
-    HighDoseMetricAlertSettings,
-    SkinDoseMapCalcSettings,
-    PatientIDSettings,
-    DicomDeleteSettings,
-    AdminTaskQuestions,
-    HomePageAdminSettings,
-    UpgradeStatus,
-)
 from remapp.forms import itemsPerPageForm
+from remapp.interface.mod_filters import (
+    RFSummaryListFilter,
+    RFFilterPlusPid,
+    dx_acq_filter,
+    ct_acq_filter,
+    MGSummaryListFilter,
+    MGFilterPlusPid,
+)
+from remapp.tools.make_skin_map import make_skin_map
+from remapp.version import __skin_map_version__
 from remapp.views_charts_ct import (
     generate_required_ct_charts_list,
     ct_chart_form_processing,
@@ -88,17 +87,19 @@ from remapp.views_charts_rf import (
     generate_required_rf_charts_list,
     rf_chart_form_processing,
 )
-from remapp.interface.mod_filters import (
-    RFSummaryListFilter,
-    RFFilterPlusPid,
-    dx_acq_filter,
-    ct_acq_filter,
-    MGSummaryListFilter,
-    MGFilterPlusPid,
-)
-from remapp.version import __skin_map_version__
-
 from openrem.openremproject.settings import MEDIA_ROOT
+from .models import (
+    GeneralStudyModuleAttr,
+    create_user_profile,
+    HighDoseMetricAlertSettings,
+    SkinDoseMapCalcSettings,
+    PatientIDSettings,
+    DicomDeleteSettings,
+    AdminTaskQuestions,
+    HomePageAdminSettings,
+    UpgradeStatus,
+)
+
 
 standard_library.install_aliases()
 
@@ -640,8 +641,6 @@ def rf_detail_view_skin_map(request, pk=None):
             pass
 
     if not loaded_existing_data:
-        from remapp.tools.make_skin_map import make_skin_map
-
         make_skin_map(pk)
         with gzip.open(skin_map_path, "rb") as f:
             return_structure = pickle.load(f)
