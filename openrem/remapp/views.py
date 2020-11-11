@@ -32,6 +32,26 @@
 """
 from __future__ import absolute_import
 
+import os
+import json
+import logging
+import remapp
+
+from django.contrib import messages
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import render, redirect
+from django.template.defaultfilters import register
+from django.urls import reverse_lazy
+from django.utils.translation import gettext as _
+from django.views.decorators.csrf import csrf_exempt
+from openrem.openremproject.settings import MEDIA_ROOT
+from .models import GeneralStudyModuleAttr, create_user_profile
+
 # Following two lines added so that sphinx autodocumentation works.
 from future import standard_library
 from remapp.views_charts_ct import (
@@ -52,36 +72,8 @@ from remapp.views_charts_rf import (
 )
 
 standard_library.install_aliases()
-import os
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
-
-from django.contrib import messages
-from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import Group
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.urls import reverse_lazy
-from django.utils.translation import gettext as _
-from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render, redirect
-from django.views.decorators.csrf import csrf_exempt
-import json
-import logging
-import remapp
-from openrem.openremproject.settings import MEDIA_ROOT
-from .models import GeneralStudyModuleAttr, create_user_profile
-
-try:
-    from numpy import *
-
-    plotting = 1
-except ImportError:
-    plotting = 0
-
-
-from django.template.defaultfilters import register
 
 
 logger = logging.getLogger(__name__)

@@ -57,12 +57,6 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import GeneralStudyModuleAttr, create_user_profile, SizeUpload
 from .version import __version__, __docs_version__
 
-try:
-    from numpy import *
-
-    plotting = 1
-except ImportError:
-    plotting = 0
 
 logger = logging.getLogger(__name__)
 
