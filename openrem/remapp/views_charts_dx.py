@@ -1,7 +1,26 @@
+import logging
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from remapp.models import create_user_profile
-import logging
+from remapp.interface.mod_filters import dx_acq_filter
+from openremproject import settings
+from django.http import JsonResponse
+from datetime import datetime
+from remapp.forms import DXChartOptionsForm
+from .interface.chart_functions import (
+    create_dataframe,
+    create_dataframe_weekdays,
+    create_dataframe_aggregates,
+    create_sorted_category_list,
+    plotly_boxplot,
+    plotly_barchart,
+    plotly_histogram_barchart,
+    plotly_barchart_weekdays,
+    plotly_set_default_theme,
+    construct_frequency_chart,
+    construct_scatter_chart,
+    construct_over_time_charts,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -293,11 +312,6 @@ def generate_required_dx_charts_list(profile):
 @login_required
 def dx_summary_chart_data(request):
     """Obtain data for Ajax chart call"""
-    from remapp.interface.mod_filters import dx_acq_filter
-    from openremproject import settings
-    from django.http import JsonResponse
-    from datetime import datetime
-
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = dx_acq_filter(request.GET, pid=pid)
 
@@ -322,21 +336,6 @@ def dx_summary_chart_data(request):
 
 def dx_plot_calculations(f, user_profile, return_as_dict=False):
     """Calculations for radiographic charts"""
-    from .interface.chart_functions import (
-        create_dataframe,
-        create_dataframe_weekdays,
-        create_dataframe_aggregates,
-        create_sorted_category_list,
-        plotly_boxplot,
-        plotly_barchart,
-        plotly_histogram_barchart,
-        plotly_barchart_weekdays,
-        plotly_set_default_theme,
-        construct_frequency_chart,
-        construct_scatter_chart,
-        construct_over_time_charts,
-    )
-
     # Return an empty structure if the queryset is empty
     if not f.qs:
         return {}
@@ -1202,8 +1201,6 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
 
 def dx_chart_form_processing(request, user_profile):
-    from remapp.forms import DXChartOptionsForm
-
     # Obtain the chart options from the request
     chart_options_form = DXChartOptionsForm(request.GET)
     # check whether the form data is valid

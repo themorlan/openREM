@@ -1,7 +1,28 @@
+import logging
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from remapp.models import create_user_profile
-import logging
+from django.utils.safestring import mark_safe
+from remapp.interface.mod_filters import ct_acq_filter
+from openremproject import settings
+from django.http import JsonResponse
+from remapp.forms import CTChartOptionsForm
+from .interface.chart_functions import (
+    create_dataframe,
+    create_dataframe_weekdays,
+    create_dataframe_aggregates,
+    create_sorted_category_list,
+    plotly_boxplot,
+    plotly_barchart,
+    plotly_histogram_barchart,
+    plotly_barchart_weekdays,
+    plotly_set_default_theme,
+    construct_frequency_chart,
+    construct_scatter_chart,
+    construct_over_time_charts,
+)
+if settings.DEBUG:
+    from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -9,8 +30,6 @@ logger = logging.getLogger(__name__)
 def generate_required_ct_charts_list(profile):
     """Obtain a list of dictionaries containing the title string and base
     variable name for each required chart"""
-    from django.utils.safestring import mark_safe
-
     required_charts = []
 
     if (
@@ -55,7 +74,7 @@ def generate_required_ct_charts_list(profile):
 
     if profile.plotCTAcquisitionMeanCTDI:
         if profile.plotMean:
-            required_charts.append(
+            required_charts.append(  # nosec
                 {
                     "title": mark_safe(
                         "Chart of acquisition protocol mean CTDI<sub>vol</sub>"
@@ -64,7 +83,7 @@ def generate_required_ct_charts_list(profile):
                 }
             )
         if profile.plotMedian:
-            required_charts.append(
+            required_charts.append(  # nosec
                 {
                     "title": mark_safe(
                         "Chart of acquisition protocol median CTDI<sub>vol</sub>"
@@ -73,7 +92,7 @@ def generate_required_ct_charts_list(profile):
                 }
             )
         if profile.plotBoxplots:
-            required_charts.append(
+            required_charts.append(  # nosec
                 {
                     "title": mark_safe(
                         "Boxplot of acquisition protocol CTDI<sub>vol</sub>"
@@ -82,7 +101,7 @@ def generate_required_ct_charts_list(profile):
                 }
             )
         if profile.plotHistograms:
-            required_charts.append(
+            required_charts.append(  # nosec
                 {
                     "title": mark_safe(
                         "Histogram of acquisition protocol CTDI<sub>vol</sub>"
@@ -100,7 +119,7 @@ def generate_required_ct_charts_list(profile):
         )
 
     if profile.plotCTAcquisitionCTDIvsMass:
-        required_charts.append(
+        required_charts.append(  # nosec
             {
                 "title": mark_safe(
                     "Chart of acquisition protocol CTDI<sub>vol</sub> vs patient mass"
@@ -119,7 +138,7 @@ def generate_required_ct_charts_list(profile):
 
     if profile.plotCTAcquisitionCTDIOverTime:
         if profile.plotMean:
-            required_charts.append(
+            required_charts.append(  # nosec
                 {
                     "title": mark_safe(
                         "Chart of acquisition protocol mean CTDI<sub>vol</sub> over time ("
@@ -130,7 +149,7 @@ def generate_required_ct_charts_list(profile):
                 }
             )
         if profile.plotMedian:
-            required_charts.append(
+            required_charts.append(  # nosec
                 {
                     "title": mark_safe(
                         "Chart of acquisition protocol median CTDI<sub>vol</sub> over time ("
@@ -193,7 +212,7 @@ def generate_required_ct_charts_list(profile):
 
     if profile.plotCTStudyMeanCTDI:
         if profile.plotMean:
-            required_charts.append(
+            required_charts.append(  # nosec
                 {
                     "title": mark_safe(
                         "Chart of study description mean CTDI<sub>vol</sub>"
@@ -202,7 +221,7 @@ def generate_required_ct_charts_list(profile):
                 }
             )
         if profile.plotMedian:
-            required_charts.append(
+            required_charts.append(  # nosec
                 {
                     "title": mark_safe(
                         "Chart of study description median CTDI<sub>vol</sub>"
@@ -211,7 +230,7 @@ def generate_required_ct_charts_list(profile):
                 }
             )
         if profile.plotBoxplots:
-            required_charts.append(
+            required_charts.append(  # nosec
                 {
                     "title": mark_safe(
                         "Boxplot of study description CTDI<sub>vol</sub>"
@@ -220,7 +239,7 @@ def generate_required_ct_charts_list(profile):
                 }
             )
         if profile.plotHistograms:
-            required_charts.append(
+            required_charts.append(  # nosec
                 {
                     "title": mark_safe(
                         "Histogram of study description CTDI<sub>vol</sub>"
@@ -389,10 +408,6 @@ def generate_required_ct_charts_list(profile):
 @login_required
 def ct_summary_chart_data(request):
     """Obtain data for CT charts Ajax call"""
-    from remapp.interface.mod_filters import ct_acq_filter
-    from openremproject import settings
-    from django.http import JsonResponse
-
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = ct_acq_filter(request.GET, pid=pid)
 
@@ -405,8 +420,6 @@ def ct_summary_chart_data(request):
         user_profile = request.user.userprofile
 
     if settings.DEBUG:
-        from datetime import datetime
-
         start_time = datetime.now()
 
     return_structure = ct_plot_calculations(f, user_profile)
@@ -419,20 +432,6 @@ def ct_summary_chart_data(request):
 
 def ct_plot_calculations(f, user_profile, return_as_dict=False):
     """CT chart data calculations"""
-    from .interface.chart_functions import (
-        create_dataframe,
-        create_dataframe_weekdays,
-        create_dataframe_aggregates,
-        create_sorted_category_list,
-        plotly_boxplot,
-        plotly_barchart,
-        plotly_histogram_barchart,
-        plotly_barchart_weekdays,
-        plotly_set_default_theme,
-        construct_frequency_chart,
-        construct_scatter_chart,
-        construct_over_time_charts,
-    )
 
     # Return an empty structure if the queryset is empty
     if not f.qs:
@@ -1506,8 +1505,6 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
 
 def ct_chart_form_processing(request, user_profile):
-    from remapp.forms import CTChartOptionsForm
-
     # Obtain the chart options from the request
     chart_options_form = CTChartOptionsForm(request.GET)
     # Check whether the form data is valid

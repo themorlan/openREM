@@ -1,7 +1,28 @@
+import logging
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from remapp.models import GeneralStudyModuleAttr, create_user_profile
-import logging
+from remapp.interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
+from openremproject import settings
+from django.http import JsonResponse
+from remapp.forms import MGChartOptionsForm
+if settings.DEBUG:
+    from datetime import datetime
+from .interface.chart_functions import (
+    create_dataframe,
+    create_dataframe_weekdays,
+    plotly_barchart_weekdays,
+    plotly_binned_statistic_barchart,
+    plotly_boxplot,
+    plotly_barchart,
+    plotly_histogram_barchart,
+    construct_scatter_chart,
+    construct_frequency_chart,
+    construct_over_time_charts,
+    plotly_set_default_theme,
+    create_sorted_category_list,
+    create_dataframe_aggregates,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -128,10 +149,6 @@ def generate_required_mg_charts_list(profile):
 @login_required
 def mg_summary_chart_data(request):
     """Obtain data for mammography chart data Ajax view"""
-    from remapp.interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
-    from openremproject import settings
-    from django.http import JsonResponse
-
     if request.user.groups.filter(name="pidgroup"):
         f = MGFilterPlusPid(
             request.GET,
@@ -156,8 +173,6 @@ def mg_summary_chart_data(request):
         user_profile = request.user.userprofile
 
     if settings.DEBUG:
-        from datetime import datetime
-
         start_time = datetime.now()
 
     return_structure = mg_plot_calculations(f, user_profile)
@@ -170,22 +185,6 @@ def mg_summary_chart_data(request):
 
 def mg_plot_calculations(f, user_profile, return_as_dict=False):
     """Calculations for mammography charts"""
-    from .interface.chart_functions import (
-        create_dataframe,
-        create_dataframe_weekdays,
-        plotly_barchart_weekdays,
-        plotly_binned_statistic_barchart,
-        plotly_boxplot,
-        plotly_barchart,
-        plotly_histogram_barchart,
-        construct_scatter_chart,
-        construct_frequency_chart,
-        construct_over_time_charts,
-        plotly_set_default_theme,
-        create_sorted_category_list,
-        create_dataframe_aggregates,
-    )
-
     # Return an empty structure if the queryset is empty
     if not f.qs:
         return {}
@@ -593,8 +592,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
 
 
 def mg_chart_form_processing(request, user_profile):
-    from remapp.forms import MGChartOptionsForm
-
     # Obtain the chart options from the request
     chart_options_form = MGChartOptionsForm(request.GET)
     # Check whether the form data is valid
