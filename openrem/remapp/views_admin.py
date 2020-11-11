@@ -32,31 +32,83 @@
 """
 from __future__ import absolute_import
 
-# Following two lines added so that sphinx autodocumentation works.
-from future import standard_library
-
-standard_library.install_aliases()
-from builtins import map  # pylint: disable=redefined-builtin
 import os
 import json
 import logging
+import requests
+from builtins import map  # pylint: disable=redefined-builtin
+from datetime import datetime, timedelta
 
-os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
-
+# Following two lines added so that sphinx autodocumentation works.
+from future import standard_library
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.urls import reverse_lazy
-from django.http import HttpResponseRedirect, HttpResponse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q, Sum
+from django.db.utils import OperationalError as AvoidDataMigrationErrorSQLite
+from django.db.utils import ProgrammingError as AvoidDataMigrationErrorPostgres
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
+from django.urls import reverse_lazy
+from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-
-from .models import GeneralStudyModuleAttr, create_user_profile, SizeUpload
+from .extractors.extract_common import populate_rf_delta_weeks_summary
+from .forms import (
+    CTChartOptionsDisplayForm,
+    DXChartOptionsDisplayForm,
+    DicomDeleteSettingsForm,
+    GeneralChartOptionsDisplayForm,
+    HomepageOptionsForm,
+    MGChartOptionsDisplayForm,
+    MergeOnDeviceObserverUIDForm,
+    NotPatientIDForm,
+    NotPatientNameForm,
+    RFChartOptionsDisplayForm,
+    RFHighDoseFluoroAlertsForm,
+    SkinDoseMapCalcSettingsForm,
+    UpdateDisplayNamesForm,
+)
+from .models import (
+    AccumIntegratedProjRadiogDose,
+    AdminTaskQuestions,
+    DicomDeleteSettings,
+    DicomQuery,
+    Exports,
+    GeneralStudyModuleAttr,
+    HighDoseMetricAlertRecipients,
+    HighDoseMetricAlertSettings,
+    HomePageAdminSettings,
+    MergeOnDeviceObserverUIDSettings,
+    NotPatientIndicatorsID,
+    NotPatientIndicatorsName,
+    PKsForSummedRFDoseStudiesInDeltaWeeks,
+    PatientIDSettings,
+    SizeUpload,
+    SkinDoseMapCalcSettings,
+    SummaryFields,
+    UniqueEquipmentNames,
+    UpgradeStatus,
+    create_user_profile,
+)
+from .tools.get_values import get_keys_by_value
+from .tools.hash_id import hash_id
+from .tools.populate_summary import (
+    populate_summary_ct,
+    populate_summary_mg,
+    populate_summary_dx,
+    populate_summary_rf,
+)
+from .tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 from .version import __version__, __docs_version__
 
+standard_library.install_aliases()
+
+os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 
 logger = logging.getLogger(__name__)
 
@@ -123,10 +175,6 @@ def charts_toggle(request):
 
 @login_required
 def display_names_view(request):
-    from django.db.models import Q
-    from .forms import MergeOnDeviceObserverUIDForm
-    from .models import UniqueEquipmentNames, MergeOnDeviceObserverUIDSettings
-
     try:
         match_on_device_observer_uid = (
             MergeOnDeviceObserverUIDSettings.objects.values_list(
@@ -250,8 +298,6 @@ def display_names_view(request):
 
 
 def display_name_gen_hash(eq):
-    from .tools.hash_id import hash_id
-
     eq.manufacturer_hash = hash_id(eq.manufacturer)
     eq.institution_name_hash = hash_id(eq.institution_name)
     eq.station_name_hash = hash_id(eq.station_name)
@@ -266,9 +312,6 @@ def display_name_gen_hash(eq):
 
 @login_required
 def display_name_update(request):
-    from .models import UniqueEquipmentNames
-    from .forms import UpdateDisplayNamesForm
-
     if request.method == "POST":
         error_message = ""
         new_display_name = request.POST.get("new_display_name")
@@ -364,9 +407,6 @@ def display_name_populate(request):
     :param request: Request object containing modality
     :return: HTML table
     """
-    from django.db.models import Q
-    from .models import UniqueEquipmentNames
-
     if request.is_ajax():
         data = request.POST
         modality = data.get("modality")
@@ -448,8 +488,6 @@ def display_name_modality_filter(equip_name_pk=None, modality=None):
     :param modality: Modality to filter on
     :return: Reduced queryset of studies, plus count of pre-modality filtered studies for modality OT
     """
-    from django.db.models import Q
-
     if not equip_name_pk:
         logger.error(
             "Display name modality filter function called without a primary key ID for the unique names table"
@@ -528,9 +566,6 @@ def review_summary_list(request, equip_name_pk=None, modality=None, delete_equip
     :param modality: modality to filter by
     :return:
     """
-    from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-    from .models import UniqueEquipmentNames
-
     if not equip_name_pk:
         logger.error("Attempt to load review_summary_list without equip_name_pk")
         messages.error(
@@ -1133,8 +1168,6 @@ def _get_broken_studies(modality=None):
     :param modality: modality to filter by
     :return: Query filter of studies
     """
-    from django.db.models import Q
-
     if modality == "DX":
         all_mod = GeneralStudyModuleAttr.objects.filter(
             Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
@@ -1169,8 +1202,6 @@ def review_failed_imports(request, modality=None):
     :param modality: modality to filter by
     :return:
     """
-    from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
     if not modality in ["CT", "RF", "MG", "DX"]:
         logger.error("Attempt to load review_failed_imports without suitable modality")
         messages.error(
@@ -1239,14 +1270,6 @@ def review_failed_imports(request, modality=None):
 
 @login_required
 def chart_options_view(request):
-    from .forms import (
-        GeneralChartOptionsDisplayForm,
-        DXChartOptionsDisplayForm,
-        CTChartOptionsDisplayForm,
-        RFChartOptionsDisplayForm,
-        MGChartOptionsDisplayForm,
-    )
-
     if request.method == "POST":
         general_form = GeneralChartOptionsDisplayForm(request.POST)
         ct_form = CTChartOptionsDisplayForm(request.POST)
@@ -1585,10 +1608,6 @@ def homepage_options_view(request):
     :param request: request object
     :return: dictionary of home page settings, html template location and request object
     """
-    from .forms import HomepageOptionsForm
-    from .models import HomePageAdminSettings
-    from django.utils.safestring import mark_safe
-
     try:
         HomePageAdminSettings.objects.get()
     except ObjectDoesNotExist:
@@ -1684,8 +1703,6 @@ def homepage_options_view(request):
 @login_required
 def not_patient_indicators(request):
     """Displays current not-patient indicators"""
-    from .models import NotPatientIndicatorsID, NotPatientIndicatorsName
-
     not_patient_ids = NotPatientIndicatorsID.objects.all()
     not_patient_names = NotPatientIndicatorsName.objects.all()
 
@@ -1708,8 +1725,6 @@ def not_patient_indicators(request):
 @login_required
 def not_patient_indicators_as_074(request):
     """Add patterns to no-patient indicators to replicate 0.7.4 behaviour"""
-    from .models import NotPatientIndicatorsID, NotPatientIndicatorsName
-
     if request.user.groups.filter(name="admingroup"):
         not_patient_ids = NotPatientIndicatorsID.objects.all()
         not_patient_names = NotPatientIndicatorsName.objects.all()
@@ -1739,8 +1754,6 @@ def not_patient_indicators_as_074(request):
 @login_required
 def admin_questions_hide_not_patient(request):
     """Hides the not-patient revert to 0.7.4 question"""
-    from .models import AdminTaskQuestions
-
     if request.user.groups.filter(name="admingroup"):
         admin_question = AdminTaskQuestions.objects.all()[0]
         admin_question.ask_revert_to_074_question = False
@@ -1773,8 +1786,6 @@ def _create_admin_dict(request):
 @login_required
 def task_service_status(request):
     """AJAX function to get task services statuses and RabbitMQ queued tasks"""
-    import requests
-
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
         try:
             flower = requests.get(
@@ -1821,8 +1832,6 @@ def task_service_status(request):
 @login_required
 def rabbitmq_purge(request, queue=None):
     """Function to purge one of the RabbitMQ queues"""
-    import requests
-
     if queue and request.user.groups.filter(name="admingroup"):
         queue_url = f"{settings.BROKER_MGMT_URL}/api/queues/%2f/{queue}/contents"
         requests.delete(queue_url, auth=("guest", "guest"))
@@ -1841,10 +1850,6 @@ def celery_admin(request):
 
 def celery_tasks(request, stage=None):
     """AJAX function to get current task details"""
-    import requests
-    from datetime import datetime
-    from .models import DicomQuery, Exports
-
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
         try:
             flower = requests.get(
@@ -1961,9 +1966,6 @@ def celery_tasks(request, stage=None):
 
 def celery_abort(request, task_id=None, type=None):
     """Function to abort one of the Celery tasks"""
-    import requests
-    from .models import Exports, DicomQuery
-
     if task_id and request.user.groups.filter(name="admingroup"):
         queue_url = (
             f"{settings.FLOWER_URL}:{settings.FLOWER_PORT}/api/task/revoke/{task_id}"
@@ -2034,9 +2036,6 @@ def celery_abort(request, task_id=None, type=None):
 
 class PatientIDSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
     """UpdateView to update the patient ID settings"""
-
-    from .models import PatientIDSettings
-
     model = PatientIDSettings
     fields = [
         "name_stored",
@@ -2061,10 +2060,6 @@ class PatientIDSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
 
 class DicomDeleteSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
     """UpdateView tp update the settings relating to deleting DICOM after import"""
-
-    from .models import DicomDeleteSettings
-    from .forms import DicomDeleteSettingsForm
-
     model = DicomDeleteSettings
     form_class = DicomDeleteSettingsForm
 
@@ -2082,14 +2077,6 @@ class DicomDeleteSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
 
 class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
     """UpdateView for configuring the fluoroscopy high dose alert settings"""
-
-    from .models import HighDoseMetricAlertSettings
-    from .forms import RFHighDoseFluoroAlertsForm
-    from django.db.utils import ProgrammingError as AvoidDataMigrationErrorPostgres
-    from django.db.utils import OperationalError as AvoidDataMigrationErrorSQLite
-
-    # from django.core.exceptions import ObjectDoesNotExist
-
     try:
         HighDoseMetricAlertSettings.get_solo()  # will create item if it doesn't exist
     except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
@@ -2163,11 +2150,6 @@ class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
 @csrf_exempt
 def rf_alert_notifications_view(request):
     """View for display and modification of fluoroscopy high dose alert recipients"""
-    from django.contrib.auth.models import User
-    from .models import HighDoseMetricAlertRecipients
-    from .tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
-    from .tools.get_values import get_keys_by_value
-
     if request.method == "POST" and request.user.groups.filter(name="admingroup"):
         # Check to see if we need to send a test message
         if "Send test" in list(request.POST.values()):
@@ -2222,31 +2204,20 @@ def rf_alert_notifications_view(request):
 @login_required
 def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
     """View to recalculate the summed total DAP and total dose at RP for all RF studies"""
-    from django.http import JsonResponse
-    from .extractors.extract_common import populate_rf_delta_weeks_summary
-
     if not request.user.groups.filter(name="admingroup"):
         # Send the user to the home page
         return HttpResponseRedirect(reverse_lazy("home"))
     else:
         # Empty the PKsForSummedRFDoseStudiesInDeltaWeeks table
-        from .models import PKsForSummedRFDoseStudiesInDeltaWeeks
-
         PKsForSummedRFDoseStudiesInDeltaWeeks.objects.all().delete()
 
         # In the AccumIntegratedProjRadiogDose table delete all dose_area_product_total_over_delta_weeks and dose_rp_total_over_delta_weeks entries
-        from .models import AccumIntegratedProjRadiogDose
-
         AccumIntegratedProjRadiogDose.objects.all().update(
             dose_area_product_total_over_delta_weeks=None,
             dose_rp_total_over_delta_weeks=None,
         )
 
         # For each RF study recalculate dose_area_product_total_over_delta_weeks and dose_rp_total_over_delta_weeks
-        from datetime import timedelta
-        from django.db.models import Sum
-        from .models import HighDoseMetricAlertSettings
-
         try:
             HighDoseMetricAlertSettings.objects.get()
         except ObjectDoesNotExist:
@@ -2366,12 +2337,6 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
 
 class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
     """UpdateView for configuring the skin dose map calculation choices"""
-
-    from .models import SkinDoseMapCalcSettings
-    from .forms import SkinDoseMapCalcSettingsForm
-    from django.db.utils import ProgrammingError as AvoidDataMigrationErrorPostgres
-    from django.db.utils import OperationalError as AvoidDataMigrationErrorSQLite
-
     try:
         SkinDoseMapCalcSettings.get_solo()  # will create item if it doesn't exist
     except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
@@ -2401,10 +2366,6 @@ class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-varia
 
 class NotPatientNameCreate(CreateView):  # pylint: disable=unused-variable
     """CreateView for configuration of indicators a study might not be a patient study"""
-
-    from .forms import NotPatientNameForm
-    from .models import NotPatientIndicatorsName
-
     model = NotPatientIndicatorsName
     form_class = NotPatientNameForm
 
@@ -2422,10 +2383,6 @@ class NotPatientNameCreate(CreateView):  # pylint: disable=unused-variable
 
 class NotPatientNameUpdate(UpdateView):  # pylint: disable=unused-variable
     """UpdateView to update choices regarding not-patient indicators"""
-
-    from .forms import NotPatientNameForm
-    from .models import NotPatientIndicatorsName
-
     model = NotPatientIndicatorsName
     form_class = NotPatientNameForm
 
@@ -2443,9 +2400,6 @@ class NotPatientNameUpdate(UpdateView):  # pylint: disable=unused-variable
 
 class NotPatientNameDelete(DeleteView):  # pylint: disable=unused-variable
     """DeleteView for the not-patient name indicator table"""
-
-    from .models import NotPatientIndicatorsName
-
     model = NotPatientIndicatorsName
     success_url = reverse_lazy("not_patient_indicators")
 
@@ -2463,10 +2417,6 @@ class NotPatientNameDelete(DeleteView):  # pylint: disable=unused-variable
 
 class NotPatientIDCreate(CreateView):  # pylint: disable=unused-variable
     """CreateView for not-patient ID indicators"""
-
-    from .forms import NotPatientIDForm
-    from .models import NotPatientIndicatorsID
-
     model = NotPatientIndicatorsID
     form_class = NotPatientIDForm
 
@@ -2484,10 +2434,6 @@ class NotPatientIDCreate(CreateView):  # pylint: disable=unused-variable
 
 class NotPatientIDUpdate(UpdateView):  # pylint: disable=unused-variable
     """UpdateView for non-patient ID indicators"""
-
-    from .forms import NotPatientIDForm
-    from .models import NotPatientIndicatorsID
-
     model = NotPatientIndicatorsID
     form_class = NotPatientIDForm
 
@@ -2505,9 +2451,6 @@ class NotPatientIDUpdate(UpdateView):  # pylint: disable=unused-variable
 
 class NotPatientIDDelete(DeleteView):  # pylint: disable=unused-variable
     """DeleteView for non-patient ID indicators"""
-
-    from .models import NotPatientIndicatorsID
-
     model = NotPatientIndicatorsID
     success_url = reverse_lazy("not_patient_indicators")
 
@@ -2529,14 +2472,6 @@ def populate_summary(request):
     :param request:
     :return:
     """
-    from .tools.populate_summary import (
-        populate_summary_ct,
-        populate_summary_mg,
-        populate_summary_dx,
-        populate_summary_rf,
-    )
-    from .models import SummaryFields
-
     if request.user.groups.filter(name="admingroup"):
         try:
             task_ct = SummaryFields.objects.get(modality_type__exact="CT")
@@ -2576,9 +2511,6 @@ def populate_summary(request):
 
 def populate_summary_progress(request):
     """AJAX function to get populate summary fields progress"""
-    from django.db.models import Q
-    from .models import SummaryFields, UpgradeStatus
-
     if request.is_ajax():
         if request.user.groups.filter(name="admingroup"):
             try:
