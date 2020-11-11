@@ -35,9 +35,9 @@ from __future__ import absolute_import
 import os
 import json
 import logging
+from datetime import datetime, timedelta
 import requests
 from builtins import map  # pylint: disable=redefined-builtin
-from datetime import datetime, timedelta
 
 # Following two lines added so that sphinx autodocumentation works.
 from future import standard_library
@@ -1621,7 +1621,7 @@ def homepage_options_view(request):
             messages.info(
                 request,
                 mark_safe(
-                    "The display of homepage workload stats is disabled; only a member of the admin group can change this setting"
+                    "The display of homepage workload stats is disabled; only a member of the admin group can change this setting"  # pylint: disable=line-too-long
                 ),
             )  # nosec
 
@@ -2138,7 +2138,7 @@ class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
             if "accum_dose_delta_weeks" in form.changed_data:
                 messages.warning(
                     self.request,
-                    'The time period used to sum total DAP and total dose at RP has changed. The summed data must be recalculated: click on the "Recalculate all summed data" button below. The recalculation can take several minutes',
+                    'The time period used to sum total DAP and total dose at RP has changed. The summed data must be recalculated: click on the "Recalculate all summed data" button below. The recalculation can take several minutes',  # pylint: disable=line-too-long
                 )
             return super(RFHighDoseAlertSettings, self).form_valid(form)
         else:
@@ -2157,7 +2157,7 @@ def rf_alert_notifications_view(request):
             email_response = send_rf_high_dose_alert_email(
                 study_pk=None, test_message=True, test_user=recipient
             )
-            if email_response == None:
+            if email_response is None:
                 messages.success(request, "Test e-mail sent to {0}".format(recipient))
             else:
                 messages.error(
@@ -2211,7 +2211,7 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
         # Empty the PKsForSummedRFDoseStudiesInDeltaWeeks table
         PKsForSummedRFDoseStudiesInDeltaWeeks.objects.all().delete()
 
-        # In the AccumIntegratedProjRadiogDose table delete all dose_area_product_total_over_delta_weeks and dose_rp_total_over_delta_weeks entries
+        # In the AccumIntegratedProjRadiogDose table delete all dose_area_product_total_over_delta_weeks and dose_rp_total_over_delta_weeks entries  # pylint: disable=line-too-long
         AccumIntegratedProjRadiogDose.objects.all().update(
             dose_area_product_total_over_delta_weeks=None,
             dose_rp_total_over_delta_weeks=None,
@@ -2243,9 +2243,9 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
                 study_date = study.study_date
                 oldest_date = study_date - timedelta(weeks=week_delta)
 
-                # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                # The try and except parts of this code are here because some of the studies in my database didn't have the
-                # expected data in the related fields - not sure why. Perhaps an issue with the extractor routine?
+                # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                # The try and except parts of this code are here because some of the studies in my database didn't have
+                # the expected data in the related fields - not sure why. Perhaps an issue with the extractor routine?
                 try:
                     study.projectionxrayradiationdose_set.get().accumxraydose_set.all()
                 except ObjectDoesNotExist:

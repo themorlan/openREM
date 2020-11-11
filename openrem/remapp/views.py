@@ -41,8 +41,8 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 import pickle as pickle
 from collections import OrderedDict
-import remapp
 
+import remapp
 from django.db.models import Sum, Q, Min
 from django.contrib import messages
 from django.contrib.auth import logout

@@ -60,11 +60,7 @@ def global_config(filename, height_multiplier=1.0):
 
 def create_dataframe(
     database_events,
-    data_point_name_fields=None,
-    data_point_value_fields=None,
-    data_point_date_fields=None,
-    data_point_time_fields=None,
-    system_name_field=None,
+    field_dict,
     data_point_name_lowercase=None,
     data_point_value_multipliers=None,
     uid=None,
@@ -75,26 +71,26 @@ def create_dataframe(
     fields_to_include = set()
     if uid:
         fields_to_include.add(uid)
-    if data_point_name_fields:
-        for field in data_point_name_fields:
+    if field_dict["names"]:
+        for field in field_dict["names"]:
             fields_to_include.add(field)
-    if data_point_value_fields:
-        for field in data_point_value_fields:
+    if field_dict["values"]:
+        for field in field_dict["values"]:
             fields_to_include.add(field)
-    if data_point_date_fields:
-        for field in data_point_date_fields:
+    if field_dict["dates"]:
+        for field in field_dict["dates"]:
             fields_to_include.add(field)
-    if data_point_time_fields:
-        for field in data_point_time_fields:
+    if field_dict["times"]:
+        for field in field_dict["times"]:
             fields_to_include.add(field)
-    if system_name_field:
-        fields_to_include.add(system_name_field)
+    if field_dict["system"]:
+        fields_to_include.add(field_dict["system"])
 
     # NOTE: I am not excluding zero-value events from the calculations (zero DLP or zero CTDI)
     df = pd.DataFrame.from_records(database_events.values(*fields_to_include))
 
     dtype_conversion = {}
-    for name_field in data_point_name_fields:
+    for name_field in field_dict["names"]:
         dtype_conversion[name_field] = "category"
 
         # Replace any empty values with "Blank" (Plotly doesn't like empty values)
@@ -103,21 +99,21 @@ def create_dataframe(
         if data_point_name_lowercase:
             df[name_field] = df[name_field].str.lower()
 
-    if system_name_field:
-        df.rename(columns={system_name_field: "x_ray_system_name"}, inplace=True)
+    if field_dict["system"]:
+        df.rename(columns={field_dict["system"]: "x_ray_system_name"}, inplace=True)
         df.sort_values(by="x_ray_system_name", inplace=True)
     else:
         df.insert(0, "x_ray_system_name", "All systems")
     dtype_conversion["x_ray_system_name"] = "category"
 
-    if data_point_value_fields:
-        for idx, value_field in enumerate(data_point_value_fields):
+    if field_dict["values"]:
+        for idx, value_field in enumerate(field_dict["values"]):
             df[value_field] = df[value_field].astype(float)
             if data_point_value_multipliers:
                 df[value_field] *= data_point_value_multipliers[idx]
 
-    if data_point_date_fields:
-        for date_field in data_point_date_fields:
+    if field_dict["dates"]:
+        for date_field in field_dict["dates"]:
             df[date_field] = pd.to_datetime(df[date_field], format="%Y-%m-%d")
 
     df = df.astype(dtype_conversion)

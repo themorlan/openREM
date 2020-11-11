@@ -497,12 +497,16 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
             )
 
+        fields = {
+            "names": name_fields,
+            "values": value_fields,
+            "dates": date_fields,
+            "times": None,
+            "system": system_field,
+        }
         df = create_dataframe(
             f.qs,
-            data_point_name_fields=name_fields,
-            data_point_value_fields=value_fields,
-            data_point_date_fields=date_fields,
-            system_name_field=system_field,
+            fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             uid="ctradiationdose__ctirradiationeventdata__pk",
         )
@@ -887,13 +891,16 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
             )
 
+        fields = {
+            "names": name_fields,
+            "values": value_fields,
+            "dates": date_fields,
+            "times": time_fields,
+            "system": system_field,
+        }
         df = create_dataframe(
             f.qs,
-            data_point_name_fields=name_fields,
-            data_point_value_fields=value_fields,
-            data_point_date_fields=date_fields,
-            data_point_time_fields=time_fields,
-            system_name_field=system_field,
+            fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             uid="pk",
         )
