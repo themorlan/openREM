@@ -1,4 +1,13 @@
 import logging
+from datetime import datetime
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
+from django.utils.safestring import mark_safe
+from openremproject import settings
+from remapp.forms import CTChartOptionsForm
+from remapp.interface.mod_filters import ct_acq_filter
+from remapp.models import create_user_profile
 from .interface.chart_functions import (
     create_dataframe,
     create_dataframe_weekdays,
@@ -13,15 +22,6 @@ from .interface.chart_functions import (
     construct_scatter_chart,
     construct_over_time_charts,
 )
-from datetime import datetime
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import JsonResponse
-from django.utils.safestring import mark_safe
-from openremproject import settings
-from remapp.forms import CTChartOptionsForm
-from remapp.interface.mod_filters import ct_acq_filter
-from remapp.models import create_user_profile
 
 logger = logging.getLogger(__name__)
 

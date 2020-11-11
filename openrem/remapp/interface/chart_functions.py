@@ -30,8 +30,9 @@
 """
 
 import math
-from django.conf import settings
 from builtins import range  # pylint: disable=redefined-builtin
+from datetime import datetime
+from django.conf import settings
 import numpy as np
 import pandas as pd
 import matplotlib.cm
@@ -42,8 +43,6 @@ import plotly.graph_objects as go
 from plotly.offline import plot
 from plotly.subplots import make_subplots
 from scipy import stats
-if settings.DEBUG:
-    from datetime import datetime
 
 def global_config(filename, height_multiplier=1.0):
     return {

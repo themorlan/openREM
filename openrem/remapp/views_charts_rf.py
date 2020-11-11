@@ -1,4 +1,12 @@
 import logging
+from datetime import datetime
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
+from openremproject import settings
+from remapp.forms import RFChartOptionsForm
+from remapp.interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
+from remapp.models import GeneralStudyModuleAttr, create_user_profile
 from .interface.chart_functions import (
     create_dataframe,
     create_dataframe_weekdays,
@@ -12,14 +20,6 @@ from .interface.chart_functions import (
     construct_frequency_chart,
     construct_over_time_charts,
 )
-from datetime import datetime
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import JsonResponse
-from openremproject import settings
-from remapp.forms import RFChartOptionsForm
-from remapp.interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
-from remapp.models import GeneralStudyModuleAttr, create_user_profile
 
 logger = logging.getLogger(__name__)
 
