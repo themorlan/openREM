@@ -1,13 +1,4 @@
 import logging
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from remapp.models import GeneralStudyModuleAttr, create_user_profile
-from remapp.interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
-from openremproject import settings
-from django.http import JsonResponse
-from remapp.forms import MGChartOptionsForm
-if settings.DEBUG:
-    from datetime import datetime
 from .interface.chart_functions import (
     create_dataframe,
     create_dataframe_weekdays,
@@ -23,6 +14,14 @@ from .interface.chart_functions import (
     create_sorted_category_list,
     create_dataframe_aggregates,
 )
+from datetime import datetime
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
+from openremproject import settings
+from remapp.forms import MGChartOptionsForm
+from remapp.interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
+from remapp.models import GeneralStudyModuleAttr, create_user_profile
 
 logger = logging.getLogger(__name__)
 
@@ -205,27 +204,24 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
 
     #######################################################################
     # Prepare acquisition-level Pandas DataFrame to use for charts
-    if (
-        user_profile.plotMGAGDvsThickness
-        or user_profile.plotMGkVpvsThickness
-        or user_profile.plotMGmAsvsThickness
-        or user_profile.plotMGaverageAGDvsThickness
-        or user_profile.plotMGaverageAGD
-        or user_profile.plotMGacquisitionFreq
-        or user_profile.plotMGAcquisitionAGDOverTime
-    ):
+    charts_of_interest = [
+        user_profile.plotMGAGDvsThickness, user_profile.plotMGkVpvsThickness,
+        user_profile.plotMGmAsvsThickness, user_profile.plotMGaverageAGDvsThickness,
+        user_profile.plotMGaverageAGD, user_profile.plotMGacquisitionFreq,
+        user_profile.plotMGAcquisitionAGDOverTime,
+    ]
+    if any(charts_of_interest):
 
         name_fields = [
             "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
         ]
 
         value_fields = []
-        if (
-            user_profile.plotMGAGDvsThickness
-            or user_profile.plotMGaverageAGDvsThickness
-            or user_profile.plotMGaverageAGD
-            or user_profile.plotMGAcquisitionAGDOverTime
-        ):
+        charts_of_interest = [
+            user_profile.plotMGAGDvsThickness, user_profile.plotMGaverageAGDvsThickness,
+            user_profile.plotMGaverageAGD, user_profile.plotMGAcquisitionAGDOverTime,
+        ]
+        if any(charts_of_interest):
             value_fields.append(
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose"
             )
@@ -237,12 +233,11 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             value_fields.append(
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"
             )
-        if (
-            user_profile.plotMGAGDvsThickness
-            or user_profile.plotMGkVpvsThickness
-            or user_profile.plotMGmAsvsThickness
-            or user_profile.plotMGaverageAGDvsThickness
-        ):
+        charts_of_interest = [
+            user_profile.plotMGAGDvsThickness, user_profile.plotMGkVpvsThickness,
+            user_profile.plotMGmAsvsThickness, user_profile.plotMGaverageAGDvsThickness,
+        ]
+        if any(charts_of_interest):
             value_fields.append(
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness"
             )
@@ -348,7 +343,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                             "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
                         ],
                         "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
-                        stats=average_choices + ["count"],
+                        stats_to_use=average_choices + ["count"],
                     )
 
                     if user_profile.plotMean:

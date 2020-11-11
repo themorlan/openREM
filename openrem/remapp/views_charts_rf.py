@@ -1,13 +1,4 @@
 import logging
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from remapp.models import GeneralStudyModuleAttr, create_user_profile
-from remapp.interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
-from openremproject import settings
-from django.http import JsonResponse
-from remapp.forms import RFChartOptionsForm
-if settings.DEBUG:
-    from datetime import datetime
 from .interface.chart_functions import (
     create_dataframe,
     create_dataframe_weekdays,
@@ -21,6 +12,14 @@ from .interface.chart_functions import (
     construct_frequency_chart,
     construct_over_time_charts,
 )
+from datetime import datetime
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
+from openremproject import settings
+from remapp.forms import RFChartOptionsForm
+from remapp.interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
+from remapp.models import GeneralStudyModuleAttr, create_user_profile
 
 logger = logging.getLogger(__name__)
 
@@ -222,39 +221,37 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
     #######################################################################
     # Prepare Pandas DataFrame to use for charts
     name_fields = []
-    if (
-        user_profile.plotRFStudyFreq
-        or user_profile.plotRFStudyDAP
-        or user_profile.plotRFStudyPerDayAndHour
-        or user_profile.plotRFStudyDAPOverTime
-    ):
+    charts_of_interest = [
+        user_profile.plotRFStudyFreq, user_profile.plotRFStudyDAP,
+        user_profile.plotRFStudyPerDayAndHour, user_profile.plotRFStudyDAPOverTime,
+    ]
+    if any(charts_of_interest):
         name_fields.append("study_description")
     if user_profile.plotRFSplitByPhysician:
         name_fields.append("performing_physician_name")
-    if (
-        user_profile.plotRFRequestFreq
-        or user_profile.plotRFRequestDAP
-        or user_profile.plotRFRequestDAPOverTime
-    ):
+    charts_of_interest = [
+        user_profile.plotRFRequestFreq, user_profile.plotRFRequestDAP,
+        user_profile.plotRFRequestDAPOverTime,
+    ]
+    if any(charts_of_interest):
         name_fields.append("requested_procedure_code_meaning")
 
     value_fields = []
     value_multipliers = []
-    if (
-        user_profile.plotRFStudyDAP
-        or user_profile.plotRFRequestDAP
-        or user_profile.plotRFStudyDAPOverTime
-        or user_profile.plotRFRequestDAPOverTime
-    ):
+    charts_of_interest = [
+        user_profile.plotRFStudyDAP, user_profile.plotRFRequestDAP,
+        user_profile.plotRFStudyDAPOverTime, user_profile.plotRFRequestDAPOverTime,
+    ]
+    if any(charts_of_interest):
         value_fields.append("total_dap")
         value_multipliers.append(1000000)
 
     date_fields = []
-    if (
-        user_profile.plotRFStudyPerDayAndHour
-        or user_profile.plotRFStudyDAPOverTime
-        or user_profile.plotRFRequestDAPOverTime
-    ):
+    charts_of_interest = [
+        user_profile.plotRFStudyPerDayAndHour, user_profile.plotRFStudyDAPOverTime,
+        user_profile.plotRFRequestDAPOverTime,
+    ]
+    if any(charts_of_interest):
         date_fields.append("study_date")
 
     time_fields = []
@@ -327,7 +324,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 facet_col = "study_description"
 
             df_aggregated = create_dataframe_aggregates(
-                df, groupby_cols, "total_dap", stats=stats_to_include
+                df, groupby_cols, "total_dap", stats_to_use=stats_to_include
             )
 
             if user_profile.plotMean:
@@ -467,7 +464,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 facet_col = "requested_procedure_code_meaning"
 
             df_aggregated = create_dataframe_aggregates(
-                df, groupby_cols, "total_dap", stats=stats_to_include
+                df, groupby_cols, "total_dap", stats_to_use=stats_to_include
             )
 
             if user_profile.plotMean:

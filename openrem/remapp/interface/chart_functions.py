@@ -29,10 +29,10 @@
 
 """
 
+import math
 from django.conf import settings
 from builtins import range  # pylint: disable=redefined-builtin
 import numpy as np
-import math
 import pandas as pd
 import matplotlib.cm
 import matplotlib.colors
@@ -170,17 +170,17 @@ def create_dataframe_weekdays(df, df_name_col, df_date_col="study_date"):
     return df_time_series
 
 
-def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats=None):
+def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None):
     if settings.DEBUG:
         start = datetime.now()
 
     # Make it possible to have multiple value cols (DLP, CTDI, for example)
-    if stats is None:
-        stats = ["count"]
+    if stats_to_use is None:
+        stats_to_use = ["count"]
 
     groupby_cols = ["x_ray_system_name"] + df_name_cols
 
-    grouped_df = df.groupby(groupby_cols).agg({df_agg_col: stats})
+    grouped_df = df.groupby(groupby_cols).agg({df_agg_col: stats_to_use})
     grouped_df.columns = grouped_df.columns.droplevel(level=0)
     grouped_df = grouped_df.reset_index()
 

@@ -1,12 +1,4 @@
 import logging
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from remapp.models import create_user_profile
-from django.utils.safestring import mark_safe
-from remapp.interface.mod_filters import ct_acq_filter
-from openremproject import settings
-from django.http import JsonResponse
-from remapp.forms import CTChartOptionsForm
 from .interface.chart_functions import (
     create_dataframe,
     create_dataframe_weekdays,
@@ -21,8 +13,15 @@ from .interface.chart_functions import (
     construct_scatter_chart,
     construct_over_time_charts,
 )
-if settings.DEBUG:
-    from datetime import datetime
+from datetime import datetime
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
+from django.utils.safestring import mark_safe
+from openremproject import settings
+from remapp.forms import CTChartOptionsForm
+from remapp.interface.mod_filters import ct_acq_filter
+from remapp.models import create_user_profile
 
 logger = logging.getLogger(__name__)
 
@@ -32,12 +31,11 @@ def generate_required_ct_charts_list(profile):
     variable name for each required chart"""
     required_charts = []
 
-    if (
-        profile.plotCTAcquisitionDLPOverTime
-        or profile.plotCTAcquisitionCTDIOverTime
-        or profile.plotCTStudyMeanDLPOverTime
-        or profile.plotCTRequestDLPOverTime
-    ):
+    charts_of_interest = [
+        profile.plotCTAcquisitionDLPOverTime, profile.plotCTAcquisitionCTDIOverTime,
+        profile.plotCTStudyMeanDLPOverTime, profile.plotCTRequestDLPOverTime,
+    ]
+    if any(charts_of_interest):
         keys = list(dict(profile.TIME_PERIOD).keys())
         values = list(dict(profile.TIME_PERIOD).values())
         time_period = (values[keys.index(profile.plotCTOverTimePeriod)]).lower()
@@ -448,25 +446,22 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
     if user_profile.plotMedian:
         average_choices.append("median")
 
-    if (
-        user_profile.plotCTAcquisitionDLPOverTime
-        or user_profile.plotCTAcquisitionCTDIOverTime
-        or user_profile.plotCTStudyMeanDLPOverTime
-        or user_profile.plotCTRequestDLPOverTime
-    ):
+    charts_of_interest = [
+        user_profile.plotCTAcquisitionDLPOverTime, user_profile.plotCTAcquisitionCTDIOverTime,
+        user_profile.plotCTStudyMeanDLPOverTime, user_profile.plotCTRequestDLPOverTime,
+    ]
+    if any(charts_of_interest):
         plot_timeunit_period = user_profile.plotCTOverTimePeriod
 
     #######################################################################
     # Prepare acquisition-level Pandas DataFrame to use for charts
-    if (
-        user_profile.plotCTAcquisitionFreq
-        or user_profile.plotCTAcquisitionMeanCTDI
-        or user_profile.plotCTAcquisitionMeanDLP
-        or user_profile.plotCTAcquisitionCTDIvsMass
-        or user_profile.plotCTAcquisitionDLPvsMass
-        or user_profile.plotCTAcquisitionCTDIOverTime
-        or user_profile.plotCTAcquisitionDLPOverTime
-    ):
+    charts_of_interest = [
+        user_profile.plotCTAcquisitionFreq, user_profile.plotCTAcquisitionMeanCTDI,
+        user_profile.plotCTAcquisitionMeanDLP, user_profile.plotCTAcquisitionCTDIvsMass,
+        user_profile.plotCTAcquisitionDLPvsMass, user_profile.plotCTAcquisitionCTDIOverTime,
+        user_profile.plotCTAcquisitionDLPOverTime,
+    ]
+    if any(charts_of_interest):
 
         name_fields = ["ctradiationdose__ctirradiationeventdata__acquisition_protocol"]
 
@@ -532,7 +527,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     df,
                     ["ctradiationdose__ctirradiationeventdata__acquisition_protocol"],
                     "ctradiationdose__ctirradiationeventdata__dlp",
-                    stats=average_choices + ["count"],
+                    stats_to_use=average_choices + ["count"],
                 )
 
                 if user_profile.plotMean:
@@ -628,7 +623,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     df,
                     ["ctradiationdose__ctirradiationeventdata__acquisition_protocol"],
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    stats=average_choices + ["count"],
+                    stats_to_use=average_choices + ["count"],
                 )
 
                 if user_profile.plotMean:
@@ -839,44 +834,37 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts
-    if (
-        user_profile.plotCTRequestFreq
-        or user_profile.plotCTRequestMeanDLP
-        or user_profile.plotCTRequestNumEvents
-        or user_profile.plotCTRequestDLPOverTime
-        or user_profile.plotCTStudyFreq
-        or user_profile.plotCTStudyMeanDLP
-        or user_profile.plotCTStudyMeanCTDI
-        or user_profile.plotCTStudyNumEvents
-        or user_profile.plotCTStudyMeanDLPOverTime
-        or user_profile.plotCTStudyPerDayAndHour
-    ):
+    charts_of_interest = [
+        user_profile.plotCTRequestFreq, user_profile.plotCTRequestMeanDLP,
+        user_profile.plotCTRequestNumEvents, user_profile.plotCTRequestDLPOverTime,
+        user_profile.plotCTStudyFreq, user_profile.plotCTStudyMeanDLP,
+        user_profile.plotCTStudyMeanCTDI, user_profile.plotCTStudyNumEvents,
+        user_profile.plotCTStudyMeanDLPOverTime, user_profile.plotCTStudyPerDayAndHour,
+    ]
+    if any(charts_of_interest):
 
         name_fields = []
-        if (
-            user_profile.plotCTStudyMeanDLP
-            or user_profile.plotCTStudyFreq
-            or user_profile.plotCTStudyMeanDLPOverTime
-            or user_profile.plotCTStudyPerDayAndHour
-            or user_profile.plotCTStudyNumEvents
-            or user_profile.plotCTStudyMeanCTDI
-        ):
+        charts_of_interest = [
+            user_profile.plotCTStudyMeanDLP, user_profile.plotCTStudyFreq,
+            user_profile.plotCTStudyMeanDLPOverTime, user_profile.plotCTStudyPerDayAndHour,
+            user_profile.plotCTStudyNumEvents, user_profile.plotCTStudyMeanCTDI,
+        ]
+        if any(charts_of_interest):
             name_fields.append("study_description")
-        if (
-            user_profile.plotCTRequestMeanDLP
-            or user_profile.plotCTRequestFreq
-            or user_profile.plotCTRequestNumEvents
-            or user_profile.plotCTRequestDLPOverTime
-        ):
+
+        charts_of_interest = [
+            user_profile.plotCTRequestMeanDLP, user_profile.plotCTRequestFreq,
+            user_profile.plotCTRequestNumEvents, user_profile.plotCTRequestDLPOverTime,
+        ]
+        if any(charts_of_interest):
             name_fields.append("requested_procedure_code_meaning")
 
         value_fields = []
-        if (
-            user_profile.plotCTStudyMeanDLP
-            or user_profile.plotCTStudyMeanDLPOverTime
-            or user_profile.plotCTRequestMeanDLP
-            or user_profile.plotCTRequestDLPOverTime
-        ):
+        charts_of_interest = [
+            user_profile.plotCTStudyMeanDLP, user_profile.plotCTStudyMeanDLPOverTime,
+            user_profile.plotCTRequestMeanDLP, user_profile.plotCTRequestDLPOverTime,
+        ]
+        if any(charts_of_interest):
             value_fields.append("total_dlp")
         if user_profile.plotCTStudyMeanCTDI:
             value_fields.append("ctradiationdose__ctirradiationeventdata__mean_ctdivol")
@@ -885,11 +873,11 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
         date_fields = []
         time_fields = []
-        if (
-            user_profile.plotCTStudyMeanDLPOverTime
-            or user_profile.plotCTStudyPerDayAndHour
-            or user_profile.plotCTRequestDLPOverTime
-        ):
+        charts_of_interest = [
+            user_profile.plotCTStudyMeanDLPOverTime, user_profile.plotCTStudyPerDayAndHour,
+            user_profile.plotCTRequestDLPOverTime,
+        ]
+        if any(charts_of_interest):
             date_fields.append("study_date")
             time_fields.append("study_time")
 
@@ -930,7 +918,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     df,
                     ["study_description"],
                     "total_dlp",
-                    stats=average_choices + ["count"],
+                    stats_to_use=average_choices + ["count"],
                 )
 
                 if user_profile.plotMean:
@@ -1020,7 +1008,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     df,
                     ["study_description"],
                     "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    stats=average_choices + ["count"],
+                    stats_to_use=average_choices + ["count"],
                 )
 
                 if user_profile.plotMean:
@@ -1110,7 +1098,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     df,
                     ["study_description"],
                     "number_of_events",
-                    stats=average_choices + ["count"],
+                    stats_to_use=average_choices + ["count"],
                 )
 
                 if user_profile.plotMean:
@@ -1228,7 +1216,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     df,
                     ["requested_procedure_code_meaning"],
                     "total_dlp",
-                    stats=average_choices + ["count"],
+                    stats_to_use=average_choices + ["count"],
                 )
 
                 if user_profile.plotMean:
@@ -1318,7 +1306,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     df,
                     ["requested_procedure_code_meaning"],
                     "number_of_events",
-                    stats=average_choices + ["count"],
+                    stats_to_use=average_choices + ["count"],
                 )
 
                 if user_profile.plotMean:

@@ -1,12 +1,4 @@
 import logging
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from remapp.models import create_user_profile
-from remapp.interface.mod_filters import dx_acq_filter
-from openremproject import settings
-from django.http import JsonResponse
-from datetime import datetime
-from remapp.forms import DXChartOptionsForm
 from .interface.chart_functions import (
     create_dataframe,
     create_dataframe_weekdays,
@@ -21,6 +13,14 @@ from .interface.chart_functions import (
     construct_scatter_chart,
     construct_over_time_charts,
 )
+from datetime import datetime
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
+from openremproject import settings
+from remapp.forms import DXChartOptionsForm
+from remapp.interface.mod_filters import dx_acq_filter
+from remapp.models import create_user_profile
 
 logger = logging.getLogger(__name__)
 
@@ -30,12 +30,11 @@ def generate_required_dx_charts_list(profile):
     variable name for each required chart"""
     required_charts = []
 
-    if (
-        profile.plotDXAcquisitionMeanDAPOverTime
-        or profile.plotDXAcquisitionMeanmAsOverTime
-        or profile.plotDXAcquisitionMeankVpOverTime
-        or profile.plotDXAcquisitionMeankVpOverTime
-    ):
+    charts_of_interest = [
+        profile.plotDXAcquisitionMeanDAPOverTime, profile.plotDXAcquisitionMeanmAsOverTime,
+        profile.plotDXAcquisitionMeankVpOverTime, profile.plotDXAcquisitionMeankVpOverTime,
+    ]
+    if any(charts_of_interest):
         keys = list(dict(profile.TIME_PERIOD).keys())
         values = list(dict(profile.TIME_PERIOD).values())
         time_period = (
@@ -340,11 +339,11 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
     if not f.qs:
         return {}
 
-    if (
-        user_profile.plotDXAcquisitionMeanDAPOverTime
-        or user_profile.plotDXAcquisitionMeankVpOverTime
-        or user_profile.plotDXAcquisitionMeanmAsOverTime
-    ):
+    charts_of_interest = [
+        user_profile.plotDXAcquisitionMeanDAPOverTime, user_profile.plotDXAcquisitionMeankVpOverTime,
+        user_profile.plotDXAcquisitionMeanmAsOverTime,
+    ]
+    if any(charts_of_interest):
         plot_timeunit_period = user_profile.plotDXAcquisitionMeanDAPOverTimePeriod
 
     # Set the Plotly chart theme
@@ -360,16 +359,13 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
     #######################################################################
     # Prepare acquisition-level Pandas DataFrame to use for charts
-    if (
-        user_profile.plotDXAcquisitionMeanDAP
-        or user_profile.plotDXAcquisitionFreq
-        or user_profile.plotDXAcquisitionMeankVp
-        or user_profile.plotDXAcquisitionMeanmAs
-        or user_profile.plotDXAcquisitionMeankVpOverTime
-        or user_profile.plotDXAcquisitionMeanmAsOverTime
-        or user_profile.plotDXAcquisitionMeanDAPOverTime
-        or user_profile.plotDXAcquisitionDAPvsMass
-    ):
+    charts_of_interest = [
+        user_profile.plotDXAcquisitionMeanDAP, user_profile.plotDXAcquisitionFreq,
+        user_profile.plotDXAcquisitionMeankVp, user_profile.plotDXAcquisitionMeanmAs,
+        user_profile.plotDXAcquisitionMeankVpOverTime, user_profile.plotDXAcquisitionMeanmAsOverTime,
+        user_profile.plotDXAcquisitionMeanDAPOverTime, user_profile.plotDXAcquisitionDAPvsMass,
+    ]
+    if any(charts_of_interest):
 
         name_fields = [
             "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
@@ -377,11 +373,11 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
         value_fields = []
         value_multipliers = []
-        if (
-            user_profile.plotDXAcquisitionMeanDAP
-            or user_profile.plotDXAcquisitionMeanDAPOverTime
-            or user_profile.plotDXAcquisitionDAPvsMass
-        ):
+        charts_of_interest = [
+            user_profile.plotDXAcquisitionMeanDAP, user_profile.plotDXAcquisitionMeanDAPOverTime,
+            user_profile.plotDXAcquisitionDAPvsMass,
+        ]
+        if any(charts_of_interest):
             value_fields.append(
                 "projectionxrayradiationdose__irradeventxraydata__dose_area_product"
             )
@@ -407,11 +403,11 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             value_multipliers.append(1)
 
         date_fields = []
-        if (
-            user_profile.plotDXAcquisitionMeanDAPOverTime
-            or user_profile.plotDXAcquisitionMeankVpOverTime
-            or user_profile.plotDXAcquisitionMeanmAsOverTime
-        ):
+        charts_of_interest = [
+            user_profile.plotDXAcquisitionMeanDAPOverTime, user_profile.plotDXAcquisitionMeankVpOverTime,
+            user_profile.plotDXAcquisitionMeanmAsOverTime,
+        ]
+        if any(charts_of_interest):
             date_fields.append("study_date")
 
         system_field = None
@@ -450,7 +446,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
                     ],
                     "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
-                    stats=average_choices + ["count"],
+                    stats_to_use=average_choices + ["count"],
                 )
 
                 if user_profile.plotMean:
@@ -544,7 +540,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
                     ],
                     "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
-                    stats=average_choices + ["count"],
+                    stats_to_use=average_choices + ["count"],
                 )
 
                 if user_profile.plotMean:
@@ -638,7 +634,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
                     ],
                     "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
-                    stats=average_choices + ["count"],
+                    stats_to_use=average_choices + ["count"],
                 )
 
                 if user_profile.plotMean:
@@ -860,39 +856,36 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts
-    if (
-        user_profile.plotDXStudyMeanDAP
-        or user_profile.plotDXStudyFreq
-        or user_profile.plotDXStudyPerDayAndHour
-        or user_profile.plotDXStudyDAPvsMass
-        or user_profile.plotDXRequestMeanDAP
-        or user_profile.plotDXRequestFreq
-        or user_profile.plotDXRequestDAPvsMass
-    ):
+    charts_of_interest = [
+        user_profile.plotDXStudyMeanDAP, user_profile.plotDXStudyFreq,
+        user_profile.plotDXStudyPerDayAndHour,  user_profile.plotDXStudyDAPvsMass,
+        user_profile.plotDXRequestMeanDAP,  user_profile.plotDXRequestFreq,
+        user_profile.plotDXRequestDAPvsMass,
+    ]
+    if any(charts_of_interest):
 
         name_fields = []
-        if (
-            user_profile.plotDXStudyMeanDAP
-            or user_profile.plotDXStudyFreq
-            or user_profile.plotDXStudyPerDayAndHour
-            or user_profile.plotDXStudyDAPvsMass
-        ):
+        charts_of_interest = [
+            user_profile.plotDXStudyMeanDAP, user_profile.plotDXStudyFreq,
+            user_profile.plotDXStudyPerDayAndHour, user_profile.plotDXStudyDAPvsMass,
+        ]
+        if any(charts_of_interest):
             name_fields.append("study_description")
-        if (
-            user_profile.plotDXRequestMeanDAP
-            or user_profile.plotDXRequestFreq
-            or user_profile.plotDXRequestDAPvsMass
-        ):
+
+        charts_of_interest = [
+            user_profile.plotDXRequestMeanDAP, user_profile.plotDXRequestFreq,
+            user_profile.plotDXRequestDAPvsMass,
+        ]
+        if any(charts_of_interest):
             name_fields.append("requested_procedure_code_meaning")
 
         value_fields = []
         value_multipliers = []
-        if (
-            user_profile.plotDXStudyMeanDAP
-            or user_profile.plotDXRequestMeanDAP
-            or user_profile.plotDXStudyDAPvsMass
-            or user_profile.plotDXRequestDAPvsMass
-        ):
+        charts_of_interest = [
+            user_profile.plotDXStudyMeanDAP, user_profile.plotDXRequestMeanDAP,
+            user_profile.plotDXStudyDAPvsMass, user_profile.plotDXRequestDAPvsMass,
+        ]
+        if any(charts_of_interest):
             value_fields.append("total_dap")
             value_multipliers.append(1000000)
         if user_profile.plotDXStudyDAPvsMass or user_profile.plotDXRequestDAPvsMass:
@@ -941,7 +934,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     df,
                     ["study_description"],
                     "total_dap",
-                    stats=average_choices + ["count"],
+                    stats_to_use=average_choices + ["count"],
                 )
 
                 if user_profile.plotMean:
@@ -1049,7 +1042,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     df,
                     ["requested_procedure_code_meaning"],
                     "total_dap",
-                    stats=average_choices + ["count"],
+                    stats_to_use=average_choices + ["count"],
                 )
 
                 if user_profile.plotMean:
