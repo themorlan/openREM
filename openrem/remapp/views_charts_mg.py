@@ -295,12 +295,12 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     facet_names = list(sorted_acquisition_agd_categories.values())[0]
 
                 if user_profile.plotMean:
-                    return_structure[  # pylint: disable=line-too-long
+                    return_structure[
                         "meanAGDvsThickness"
                     ] = plotly_binned_statistic_barchart(
                         df,
-                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
-                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
+                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
+                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
                         x_axis_title="Compressed breast thickness (mm)",
                         y_axis_title="AGD (mGy)",
                         df_category_col=category_names_col,
@@ -424,11 +424,11 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
         if user_profile.plotMGAGDvsThickness:
-            return_structure["AGDvsThickness"] = construct_scatter_chart(  # pylint: disable=line-too-long
+            return_structure["AGDvsThickness"] = construct_scatter_chart(
                 df=df,
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
-                df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
+                df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
+                df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
                 x_axis_title="Compressed breast thickness (mm)",
                 y_axis_title="AGD (mGy)",
                 sorting=[
@@ -444,10 +444,10 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
         if user_profile.plotMGkVpvsThickness:
-            return_structure["kVpvsThickness"] = construct_scatter_chart(  # pylint: disable=line-too-long
+            return_structure["kVpvsThickness"] = construct_scatter_chart(
                 df=df,
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+                df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
                 df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
                 x_axis_title="Compressed breast thickness (mm)",
                 y_axis_title="kVp",
@@ -464,11 +464,11 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
         if user_profile.plotMGmAsvsThickness:
-            return_structure["mAsvsThickness"] = construct_scatter_chart(  # pylint: disable=line-too-long
+            return_structure["mAsvsThickness"] = construct_scatter_chart(
                 df=df,
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
-                df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
+                df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
+                df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",  # pylint: disable=line-too-long
                 x_axis_title="Compressed breast thickness (mm)",
                 y_axis_title="mAs",
                 sorting=[
@@ -511,10 +511,10 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotGroupingChoice == "series":
                 facet_title = "Acquisition protocol"
 
-            result = construct_over_time_charts(  # pylint: disable=line-too-long
+            result = construct_over_time_charts(
                 df=df,
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                df_value_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
+                df_value_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
                 df_date_col="study_date",
                 name_title="Acquisition protocol",
                 value_title="AGD (mGy)",
@@ -558,13 +558,16 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
             )
 
+        fields = {
+            "names": name_fields,
+            "values": value_fields,
+            "dates": date_fields,
+            "times": time_fields,
+            "system": system_field,
+        }
         df = create_dataframe(
             f.qs,
-            data_point_name_fields=name_fields,
-            data_point_value_fields=value_fields,
-            data_point_date_fields=date_fields,
-            data_point_time_fields=time_fields,
-            system_name_field=system_field,
+            fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             uid="pk",
         )

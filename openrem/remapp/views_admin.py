@@ -1618,10 +1618,10 @@ def homepage_options_view(request):
     )[0]
     if not display_workload_stats:
         if not request.user.groups.filter(name="admingroup"):
-            messages.info(  # pylint: disable=line-too-long
+            messages.info(
                 request,
                 mark_safe(
-                    "The display of homepage workload stats is disabled; only a member of the admin group can change this setting"
+                    "The display of homepage workload stats is disabled; only a member of the admin group can change this setting"  # pylint: disable=line-too-long
                 ),
             )  # nosec
 
@@ -2136,9 +2136,9 @@ class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
                     ),
                 )
             if "accum_dose_delta_weeks" in form.changed_data:
-                messages.warning(  # pylint: disable=line-too-long
+                messages.warning(
                     self.request,
-                    'The time period used to sum total DAP and total dose at RP has changed. The summed data must be recalculated: click on the "Recalculate all summed data" button below. The recalculation can take several minutes',
+                    'The time period used to sum total DAP and total dose at RP has changed. The summed data must be recalculated: click on the "Recalculate all summed data" button below. The recalculation can take several minutes',  # pylint: disable=line-too-long
                 )
             return super(RFHighDoseAlertSettings, self).form_valid(form)
         else:

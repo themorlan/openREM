@@ -811,10 +811,10 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotGroupingChoice == "series":
                 facet_title = "Acquisition protocol"
 
-            result = construct_over_time_charts(  # pylint: disable=line-too-long
+            result = construct_over_time_charts(
                 df=df,
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                df_value_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
+                df_value_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",  # pylint: disable=line-too-long
                 df_date_col="study_date",
                 name_title="Acquisition protocol",
                 value_title="mAs",
