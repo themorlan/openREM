@@ -295,12 +295,12 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     facet_names = list(sorted_acquisition_agd_categories.values())[0]
 
                 if user_profile.plotMean:
-                    return_structure[
+                    return_structure[  # pylint: disable=line-too-long
                         "meanAGDvsThickness"
                     ] = plotly_binned_statistic_barchart(
                         df,
-                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
-                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
+                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
                         x_axis_title="Compressed breast thickness (mm)",
                         y_axis_title="AGD (mGy)",
                         df_category_col=category_names_col,
@@ -317,12 +317,12 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotMedian:
-                    return_structure[
+                    return_structure[  # pylint: disable=line-too-long
                         "medianAGDvsThickness"
                     ] = plotly_binned_statistic_barchart(
                         df,
-                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
-                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
+                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
                         x_axis_title="Compressed breast thickness (mm)",
                         y_axis_title="AGD (mGy)",
                         df_category_col=category_names_col,
@@ -340,12 +340,12 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotMGaverageAGD:
                 if user_profile.plotMean or user_profile.plotMedian:
-                    df_aggregated = create_dataframe_aggregates(
+                    df_aggregated = create_dataframe_aggregates(  # pylint: disable=line-too-long
                         df,
                         [
                             "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
                         ],
-                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
+                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
                         stats_to_use=average_choices + ["count"],
                     )
 
@@ -376,10 +376,10 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         )
 
                 if user_profile.plotBoxplots:
-                    return_structure["acquisitionBoxplotAGDData"] = plotly_boxplot(
+                    return_structure["acquisitionBoxplotAGDData"] = plotly_boxplot(  # pylint: disable=line-too-long
                         df,
                         "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
+                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
                         value_axis_title="AGD (mGy)",
                         name_axis_title="Acquisition protocol",
                         colourmap=user_profile.plotColourMapChoice,
@@ -404,13 +404,13 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                             0
                         ]
 
-                    return_structure[
+                    return_structure[  # pylint: disable=line-too-long
                         "acquisitionHistogramAGDData"
                     ] = plotly_histogram_barchart(
                         df,
                         group_by_col,
                         category_names_col,
-                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
+                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
                         value_axis_title="AGD (mGy)",
                         legend_title=legend_title,
                         n_bins=user_profile.plotHistogramBins,
@@ -424,11 +424,11 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
         if user_profile.plotMGAGDvsThickness:
-            return_structure["AGDvsThickness"] = construct_scatter_chart(
+            return_structure["AGDvsThickness"] = construct_scatter_chart(  # pylint: disable=line-too-long
                 df=df,
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
-                df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
+                df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+                df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
                 x_axis_title="Compressed breast thickness (mm)",
                 y_axis_title="AGD (mGy)",
                 sorting=[
@@ -444,10 +444,10 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
         if user_profile.plotMGkVpvsThickness:
-            return_structure["kVpvsThickness"] = construct_scatter_chart(
+            return_structure["kVpvsThickness"] = construct_scatter_chart(  # pylint: disable=line-too-long
                 df=df,
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
+                df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
                 df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
                 x_axis_title="Compressed breast thickness (mm)",
                 y_axis_title="kVp",
@@ -464,11 +464,11 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
         if user_profile.plotMGmAsvsThickness:
-            return_structure["mAsvsThickness"] = construct_scatter_chart(
+            return_structure["mAsvsThickness"] = construct_scatter_chart(  # pylint: disable=line-too-long
                 df=df,
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
-                df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",  # pylint: disable=line-too-long
+                df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+                df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
                 x_axis_title="Compressed breast thickness (mm)",
                 y_axis_title="mAs",
                 sorting=[
@@ -511,10 +511,10 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotGroupingChoice == "series":
                 facet_title = "Acquisition protocol"
 
-            result = construct_over_time_charts(
+            result = construct_over_time_charts(  # pylint: disable=line-too-long
                 df=df,
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                df_value_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
+                df_value_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
                 df_date_col="study_date",
                 name_title="Acquisition protocol",
                 value_title="AGD (mGy)",

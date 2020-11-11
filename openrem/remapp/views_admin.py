@@ -1618,10 +1618,10 @@ def homepage_options_view(request):
     )[0]
     if not display_workload_stats:
         if not request.user.groups.filter(name="admingroup"):
-            messages.info(
+            messages.info(  # pylint: disable=line-too-long
                 request,
                 mark_safe(
-                    "The display of homepage workload stats is disabled; only a member of the admin group can change this setting"  # pylint: disable=line-too-long
+                    "The display of homepage workload stats is disabled; only a member of the admin group can change this setting"
                 ),
             )  # nosec
 
@@ -2136,9 +2136,9 @@ class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
                     ),
                 )
             if "accum_dose_delta_weeks" in form.changed_data:
-                messages.warning(
+                messages.warning(  # pylint: disable=line-too-long
                     self.request,
-                    'The time period used to sum total DAP and total dose at RP has changed. The summed data must be recalculated: click on the "Recalculate all summed data" button below. The recalculation can take several minutes',  # pylint: disable=line-too-long
+                    'The time period used to sum total DAP and total dose at RP has changed. The summed data must be recalculated: click on the "Recalculate all summed data" button below. The recalculation can take several minutes',
                 )
             return super(RFHighDoseAlertSettings, self).form_valid(form)
         else:
@@ -2211,7 +2211,8 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
         # Empty the PKsForSummedRFDoseStudiesInDeltaWeeks table
         PKsForSummedRFDoseStudiesInDeltaWeeks.objects.all().delete()
 
-        # In the AccumIntegratedProjRadiogDose table delete all dose_area_product_total_over_delta_weeks and dose_rp_total_over_delta_weeks entries  # pylint: disable=line-too-long
+        # In the AccumIntegratedProjRadiogDose table delete all dose_area_product_total_over_delta_weeks
+        # and dose_rp_total_over_delta_weeks entries
         AccumIntegratedProjRadiogDose.objects.all().update(
             dose_area_product_total_over_delta_weeks=None,
             dose_rp_total_over_delta_weeks=None,

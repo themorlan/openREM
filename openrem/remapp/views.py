@@ -424,7 +424,7 @@ def rf_detail_view(request, pk=None):
         total_dose = total_dose + accum_dose_ds.dose_rp_total
 
     # get info for different Acquisition Types
-    stu_inc_totals = (
+    stu_inc_totals = (  # pylint: disable=line-too-long
         GeneralStudyModuleAttr.objects.filter(
             pk=pk,
             projectionxrayradiationdose__irradeventxraydata__irradiation_event_type__code_meaning__contains="Acquisition",
@@ -458,7 +458,7 @@ def rf_detail_view(request, pk=None):
     )
     # stu_time_totals = [None] * len(stu_irr_types)
     for _, irr_type in enumerate(acq_irr_types):
-        stu_time_totals.append(
+        stu_time_totals.append(  # pylint: disable=line-too-long
             list(
                 GeneralStudyModuleAttr.objects.filter(
                     pk=pk,
@@ -1008,9 +1008,13 @@ def openrem_home(request):
     # except ObjectDoesNotExist:
     #     HighDoseMetricAlertSettings.objects.create()
     #
-    # send_alert_emails = HighDoseMetricAlertSettings.objects.values_list('send_high_dose_metric_alert_emails', flat=True)[0]
+    # send_alert_emails = HighDoseMetricAlertSettings.objects.values_list(
+    #     'send_high_dose_metric_alert_emails', flat=True
+    # )[0]
     # if send_alert_emails:
-    #     recipients = User.objects.filter(highdosemetricalertrecipients__receive_high_dose_metric_alerts__exact=True).values_list('email', flat=True)
+    #     recipients = User.objects.filter(
+    #         highdosemetricalertrecipients__receive_high_dose_metric_alerts__exact=True
+    #     ).values_list('email', flat=True)
     #     send_mail('OpenREM high dose alert test',
     #               'This is a test for high dose alert e-mails from OpenREM',
     #               settings.EMAIL_DOSE_ALERT_SENDER,
