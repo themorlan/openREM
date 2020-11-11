@@ -722,7 +722,7 @@ def reset_dual(pk=None):
         .exclude(modality_type__exact="RF")
         .exclude(modality_type__exact="CR")
     )
-    message_start = "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are " "DX, {3} are CR, {4} are RF and {5} are something else before processing,".format(
+    message_start = "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are " "DX, {3} are CR, {4} are RF and {5} are something else before processing,".format(  # pylint: disable=line-too-long
         studies[0]
         .generalequipmentmoduleattr_set.get()
         .unique_equipment_name.display_name,

@@ -33,27 +33,45 @@
 from __future__ import absolute_import
 
 import os
+import gzip
 import json
 import logging
 import remapp
+import numpy as np
+from datetime import datetime, timedelta
+from decimal import Decimal
+import pickle as pickle
 
+from collections import OrderedDict
+from django.db.models import Sum, Q, Min
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.template.defaultfilters import register
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
-from openrem.openremproject.settings import MEDIA_ROOT
-from .models import GeneralStudyModuleAttr, create_user_profile
 
 # Following two lines added so that sphinx autodocumentation works.
 from future import standard_library
+
+from .models import (
+    GeneralStudyModuleAttr,
+    create_user_profile,
+    HighDoseMetricAlertSettings,
+    SkinDoseMapCalcSettings,
+    PatientIDSettings,
+    DicomDeleteSettings,
+    AdminTaskQuestions,
+    HomePageAdminSettings,
+    UpgradeStatus,
+)
+from remapp.forms import itemsPerPageForm
 from remapp.views_charts_ct import (
     generate_required_ct_charts_list,
     ct_chart_form_processing,
@@ -70,6 +88,17 @@ from remapp.views_charts_rf import (
     generate_required_rf_charts_list,
     rf_chart_form_processing,
 )
+from remapp.interface.mod_filters import (
+    RFSummaryListFilter,
+    RFFilterPlusPid,
+    dx_acq_filter,
+    ct_acq_filter,
+    MGSummaryListFilter,
+    MGFilterPlusPid,
+)
+from remapp.version import __skin_map_version__
+
+from openrem.openremproject.settings import MEDIA_ROOT
 
 standard_library.install_aliases()
 
@@ -107,9 +136,6 @@ def logout_page(request):
 @login_required
 def dx_summary_list_filter(request):
     """Obtain data for radiographic summary view"""
-    from remapp.interface.mod_filters import dx_acq_filter
-    from remapp.forms import itemsPerPageForm
-
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = dx_acq_filter(request.GET, pid=pid)
 
@@ -217,10 +243,6 @@ def dx_detail_view(request, pk=None):
 @login_required
 def rf_summary_list_filter(request):
     """Obtain data for radiographic summary view"""
-    from remapp.interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
-    from remapp.forms import itemsPerPageForm
-    from remapp.models import HighDoseMetricAlertSettings
-
     if request.user.groups.filter(name="pidgroup"):
         f = RFFilterPlusPid(
             request.GET,
@@ -345,13 +367,6 @@ def rf_summary_list_filter(request):
 @login_required
 def rf_detail_view(request, pk=None):
     """Detail view for an RF study"""
-    from decimal import Decimal
-    from django.db.models import Sum
-    import numpy as np
-    from remapp.models import HighDoseMetricAlertSettings, SkinDoseMapCalcSettings
-    from django.core.exceptions import ObjectDoesNotExist
-    from datetime import timedelta
-
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
@@ -536,14 +551,6 @@ def rf_detail_view(request, pk=None):
 @login_required
 def rf_detail_view_skin_map(request, pk=None):
     """View to calculate a skin dose map. Currently just a copy of rf_detail_view"""
-    from django.contrib import messages
-    from remapp.models import GeneralStudyModuleAttr
-    from django.http import JsonResponse
-    import pickle as pickle
-    import gzip
-
-    from django.core.exceptions import ObjectDoesNotExist
-
     try:
         GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
@@ -578,8 +585,6 @@ def rf_detail_view_skin_map(request, pk=None):
         skin_map_path = os.path.join(
             MEDIA_ROOT, "skin_maps", "skin_map_" + str(pk) + ".p"
         )
-
-    from remapp.version import __skin_map_version__
 
     # If patient weight is missing from the database then db_pat_mass will be undefined
     try:
@@ -648,9 +653,6 @@ def rf_detail_view_skin_map(request, pk=None):
 @login_required
 def ct_summary_list_filter(request):
     """Obtain data for CT summary view"""
-    from remapp.interface.mod_filters import ct_acq_filter
-    from remapp.forms import itemsPerPageForm
-
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = ct_acq_filter(request.GET, pid=pid)
 
@@ -715,9 +717,6 @@ def ct_summary_list_filter(request):
 @login_required
 def ct_detail_view(request, pk=None):
     """Detail view for a CT study"""
-    from django.contrib import messages
-    from remapp.models import GeneralStudyModuleAttr
-
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
@@ -750,9 +749,6 @@ def ct_detail_view(request, pk=None):
 @login_required
 def mg_summary_list_filter(request):
     """Mammography data for summary view"""
-    from remapp.interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
-    from remapp.forms import itemsPerPageForm
-
     filter_data = request.GET.copy()
     if "page" in filter_data:
         del filter_data["page"]
@@ -833,9 +829,6 @@ def mg_summary_list_filter(request):
 @login_required
 def mg_detail_view(request, pk=None):
     """Detail view for a CT study"""
-    from django.contrib import messages
-    from remapp.models import GeneralStudyModuleAttr
-
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except:
@@ -874,16 +867,6 @@ def mg_detail_view(request, pk=None):
 
 
 def openrem_home(request):
-    from remapp.models import (
-        PatientIDSettings,
-        DicomDeleteSettings,
-        AdminTaskQuestions,
-        HomePageAdminSettings,
-        UpgradeStatus,
-    )
-    from django.db.models import Q  # For the Q "OR" query used for DX and CR
-    from collections import OrderedDict
-
     try:
         HomePageAdminSettings.objects.get()
     except ObjectDoesNotExist:
@@ -1059,8 +1042,6 @@ def update_modality_totals(request):
     :param request: request object
     :return: dictionary of totals
     """
-    from django.db.models import Q
-
     if request.is_ajax():
         allstudies = GeneralStudyModuleAttr.objects.all()
         resp = {
@@ -1083,11 +1064,6 @@ def update_latest_studies(request):
     :param request: Request object
     :return: HTML table of modalities
     """
-    from django.db.models import Q, Min
-    from datetime import datetime, timedelta
-    from collections import OrderedDict
-    from remapp.models import HomePageAdminSettings
-
     if request.is_ajax():
         data = request.POST
         modality = data.get("modality")
@@ -1185,10 +1161,6 @@ def update_study_workload(request):
     :param request: Request object
     :return: HTML table of modalities
     """
-    from django.db.models import Q, Min
-    from datetime import datetime, timedelta
-    from collections import OrderedDict
-
     if request.is_ajax():
         data = request.POST
         modality = data.get("modality")
