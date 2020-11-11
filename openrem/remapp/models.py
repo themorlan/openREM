@@ -412,62 +412,7 @@ class DicomQRRspImage(models.Model):
     sop_class_uid = models.TextField(blank=True, null=True)
 
 
-class UserProfile(models.Model):
-    """
-    Table to store user profile settings
-    """
-
-    DAYS = "D"
-    WEEKS = "W"
-    MONTHS = "M"
-    QUARTERS = "Q"
-    YEARS = "A"
-    TIME_PERIOD = (
-        (DAYS, "Days"),
-        (WEEKS, "Weeks"),
-        (MONTHS, "Months"),
-        (QUARTERS, "Quarters"),
-        (YEARS, "Years"),
-    )
-
-    MEAN = "mean"
-    MEDIAN = "median"
-    BOTH = "both"
-    AVERAGES = ((MEAN, "mean"), (MEDIAN, "median"), (BOTH, "both"))
-
-    NAME = "name"
-    FREQ = "frequency"
-    VALUE = "value"
-    SORTING_CHOICES = ((NAME, "Name"), (FREQ, "Frequency"), (VALUE, "Value"))
-
-    ASCENDING = 1
-    DESCENDING = 0
-    SORTING_DIRECTION = ((ASCENDING, "Ascending"), (DESCENDING, "Descending"))
-
-    ITEMS_PER_PAGE = (
-        (10, "10"),
-        (25, "25"),
-        (50, "50"),
-        (100, "100"),
-        (200, "200"),
-        (400, "400"),
-    )
-
-    SYSTEM = "system"
-    SERIES = "series"
-    CHART_GROUPING = ((SYSTEM, "System names"), (SERIES, "Series item names"))
-
-    PLOTLY_THEME = "plotly"
-    CHART_THEMES = (
-        (PLOTLY_THEME, "Plotly (default)"),
-        ("plotly_white", "Plotly white"),
-        ("plotly_dark", "Plotly dark"),
-        ("presentation", "Presentation"),
-        ("ggplot2", "ggplot2"),
-        ("seaborn", "Seaborn"),
-        ("simple_white", "Simple white"),
-    )
-
+class CommonVariables:
     DEFAULT_COLOUR_MAP = "RdYlBu"
     CHART_COLOUR_MAPS = (
         (DEFAULT_COLOUR_MAP, "Red-yellow-blue (default)"),
@@ -490,33 +435,78 @@ class UserProfile(models.Model):
         ("viridis", "Viridis"),
         ("cividis", "Cividis"),
     )
+    PLOTLY_THEME = "plotly"
+    CHART_THEMES = (
+        (PLOTLY_THEME, "Plotly (default)"),
+        ("plotly_white", "Plotly white"),
+        ("plotly_dark", "Plotly dark"),
+        ("presentation", "Presentation"),
+        ("ggplot2", "ggplot2"),
+        ("seaborn", "Seaborn"),
+        ("simple_white", "Simple white"),
+    )
+    SERIES = "series"
+    SYSTEM = "system"
+    CHART_GROUPING = ((SYSTEM, "System names"), (SERIES, "Series item names"))
+    ITEMS_PER_PAGE = (
+        (10, "10"),
+        (25, "25"),
+        (50, "50"),
+        (100, "100"),
+        (200, "200"),
+        (400, "400"),
+    )
+    DESCENDING = 0
+    ASCENDING = 1
+    SORTING_DIRECTION = ((ASCENDING, "Ascending"), (DESCENDING, "Descending"))
+    VALUE = "value"
+    FREQ = "frequency"
+    NAME = "name"
+    SORTING_CHOICES = ((NAME, "Name"), (FREQ, "Frequency"), (VALUE, "Value"))
+    YEARS = "A"
+    QUARTERS = "Q"
+    MONTHS = "M"
+    WEEKS = "W"
+    DAYS = "D"
+    TIME_PERIOD = (
+        (DAYS, "Days"),
+        (WEEKS, "Weeks"),
+        (MONTHS, "Months"),
+        (QUARTERS, "Quarters"),
+        (YEARS, "Years"),
+    )
 
-    itemsPerPage = models.IntegerField(null=True, choices=ITEMS_PER_PAGE, default=25)
+    MEAN = "mean"
+    MEDIAN = "median"
+    BOXPLOT = "boxplot"
+    AVERAGES = ((MEAN, "Mean"), (MEDIAN, "Median"), (BOXPLOT, "Boxplot"))
+
+
+class UserProfile(models.Model, CommonVariables):
+    """
+    Table to store user profile settings
+    """
+    itemsPerPage = models.IntegerField(null=True, choices=CommonVariables.ITEMS_PER_PAGE, default=25)
 
     # This field is required.
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    # Flag to set whether median calculations can be carried out
-    median_available = models.BooleanField(default=False, editable=False)
-
-    plotAverageChoice = models.CharField(max_length=6, choices=AVERAGES, default=MEAN)
-
     plotGroupingChoice = models.CharField(
-        max_length=6, choices=CHART_GROUPING, default=SYSTEM
+        max_length=6, choices=CommonVariables.CHART_GROUPING, default=CommonVariables.SYSTEM
     )
 
     plotThemeChoice = models.CharField(
-        max_length=12, choices=CHART_THEMES, default=PLOTLY_THEME
+        max_length=12, choices=CommonVariables.CHART_THEMES, default=CommonVariables.PLOTLY_THEME
     )
 
     plotColourMapChoice = models.CharField(
-        max_length=8, choices=CHART_COLOUR_MAPS, default=DEFAULT_COLOUR_MAP
+        max_length=8, choices=CommonVariables.CHART_COLOUR_MAPS, default=CommonVariables.DEFAULT_COLOUR_MAP
     )
 
     plotFacetColWrapVal = models.PositiveSmallIntegerField(default=3)
 
     plotInitialSortingDirection = models.IntegerField(
-        null=True, choices=SORTING_DIRECTION, default=DESCENDING
+        null=True, choices=CommonVariables.SORTING_DIRECTION, default=CommonVariables.DESCENDING
     )
 
     plotBoxplots = models.BooleanField(default=False, editable=False)
@@ -541,10 +531,10 @@ class UserProfile(models.Model):
     plotDXAcquisitionMeanmAsOverTime = models.BooleanField(default=False)
     plotDXAcquisitionMeanDAPOverTime = models.BooleanField(default=False)
     plotDXAcquisitionMeanDAPOverTimePeriod = models.CharField(
-        max_length=13, choices=TIME_PERIOD, default=MONTHS
+        max_length=13, choices=CommonVariables.TIME_PERIOD, default=CommonVariables.MONTHS
     )
     plotDXInitialSortingChoice = models.CharField(
-        max_length=9, choices=SORTING_CHOICES, default=FREQ
+        max_length=9, choices=CommonVariables.SORTING_CHOICES, default=CommonVariables.FREQ
     )
 
     plotCTAcquisitionMeanDLP = models.BooleanField(default=True)
@@ -565,10 +555,10 @@ class UserProfile(models.Model):
     plotCTStudyPerDayAndHour = models.BooleanField(default=False)
     plotCTStudyMeanDLPOverTime = models.BooleanField(default=False)
     plotCTOverTimePeriod = models.CharField(
-        max_length=13, choices=TIME_PERIOD, default=MONTHS
+        max_length=13, choices=CommonVariables.TIME_PERIOD, default=CommonVariables.MONTHS
     )
     plotCTInitialSortingChoice = models.CharField(
-        max_length=9, choices=SORTING_CHOICES, default=FREQ
+        max_length=9, choices=CommonVariables.SORTING_CHOICES, default=CommonVariables.FREQ
     )
 
     plotRFStudyPerDayAndHour = models.BooleanField(default=False)
@@ -579,10 +569,10 @@ class UserProfile(models.Model):
     plotRFRequestFreq = models.BooleanField(default=True)
     plotRFRequestDAPOverTime = models.BooleanField(default=False)
     plotRFOverTimePeriod = models.CharField(
-        max_length=13, choices=TIME_PERIOD, default=MONTHS
+        max_length=13, choices=CommonVariables.TIME_PERIOD, default=CommonVariables.MONTHS
     )
     plotRFInitialSortingChoice = models.CharField(
-        max_length=9, choices=SORTING_CHOICES, default=FREQ
+        max_length=9, choices=CommonVariables.SORTING_CHOICES, default=CommonVariables.FREQ
     )
     plotRFSplitByPhysician = models.BooleanField(default=False)
 
@@ -595,10 +585,10 @@ class UserProfile(models.Model):
     plotMGacquisitionFreq = models.BooleanField(default=False)
     plotMGAcquisitionAGDOverTime = models.BooleanField(default=False)
     plotMGOverTimePeriod = models.CharField(
-        max_length=13, choices=TIME_PERIOD, default=MONTHS
+        max_length=13, choices=CommonVariables.TIME_PERIOD, default=CommonVariables.MONTHS
     )
     plotMGInitialSortingChoice = models.CharField(
-        max_length=9, choices=SORTING_CHOICES, default=FREQ
+        max_length=9, choices=CommonVariables.SORTING_CHOICES, default=CommonVariables.FREQ
     )
 
     displayCT = models.BooleanField(default=True)
@@ -2257,13 +2247,6 @@ class PersonParticipant(models.Model):  # TID 1020
 
     def __unicode__(self):
         return self.person_name
-
-
-class Median(models.Aggregate):
-    function = "PERCENTILE_CONT"
-    name = "median"
-    output_field = models.FloatField()
-    template = "%(function)s(0.5) WITHIN GROUP (ORDER BY %(expressions)s)"
 
 
 class SummaryFields(models.Model):

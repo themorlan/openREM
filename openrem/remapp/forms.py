@@ -51,84 +51,10 @@ from .models import (
     NotPatientIndicatorsName,
     NotPatientIndicatorsID,
     HighDoseMetricAlertSettings,
+    CommonVariables,
 )
 
 logger = logging.getLogger()
-
-DAYS = "D"
-WEEKS = "W"
-MONTHS = "M"
-QUARTERS = "Q"
-YEARS = "A"
-TIME_PERIOD = (
-    (DAYS, "Days"),
-    (WEEKS, "Weeks"),
-    (MONTHS, "Months"),
-    (QUARTERS, "Quarters"),
-    (YEARS, "Years"),
-)
-
-MEAN = "mean"
-MEDIAN = "median"
-BOTH = "both"
-BOXPLOT = "boxplot"
-AVERAGES = ((MEAN, "Mean"), (MEDIAN, "Median"), (BOXPLOT, "Boxplot"))
-
-NAME = "name"
-FREQ = "frequency"
-VALUE = "value"
-SORTING_CHOICES = ((NAME, "Name"), (FREQ, "Frequency"), (VALUE, "Value"))
-
-ASCENDING = 1
-DESCENDING = 0
-SORTING_DIRECTION = ((ASCENDING, "Ascending"), (DESCENDING, "Descending"))
-
-ITEMS_PER_PAGE = (
-    (10, "10"),
-    (25, "25"),
-    (50, "50"),
-    (100, "100"),
-    (200, "200"),
-    (400, "400"),
-)
-
-SYSTEM = "system"
-SERIES = "series"
-CHART_GROUPING = ((SYSTEM, "System names"), (SERIES, "Series item names"))
-
-PLOTLY_THEME = "plotly"
-CHART_THEMES = (
-    (PLOTLY_THEME, "Plotly (default)"),
-    ("plotly_white", "Plotly white"),
-    ("plotly_dark", "Plotly dark"),
-    ("presentation", "Presentation"),
-    ("ggplot2", "ggplot2"),
-    ("seaborn", "Seaborn"),
-    ("simple_white", "Simple white"),
-)
-
-DEFAULT_COLOUR_MAP = "RdYlBu"
-CHART_COLOUR_MAPS = (
-    (DEFAULT_COLOUR_MAP, "Red-yellow-blue (default)"),
-    ("Spectral", "Spectral"),
-    ("RdYlGn", "Red-yellow-green"),
-    ("rainbow", "Rainbow"),
-    ("jet", "Jet"),
-    ("PiYG", "Pink-green"),
-    ("PRGn", "Purple-green"),
-    ("BrBG", "Brown-blue-green"),
-    ("PuOr", "Purple-orange"),
-    ("RdBu", "Red-blue"),
-    ("RdGy", "Red-grey"),
-    ("YlGnBu", "Yellow-green-blue"),
-    ("YlOrBr", "Yellow-orange-brown"),
-    ("hot", "Hot"),
-    ("inferno", "Inferno"),
-    ("magma", "Magma"),
-    ("plasma", "Plasma"),
-    ("viridis", "Viridis"),
-    ("cividis", "Cividis"),
-)
 
 
 class SizeUploadForm(forms.Form):
@@ -169,7 +95,7 @@ class SizeHeadersForm(forms.Form):
 
 class itemsPerPageForm(forms.Form):
     itemsPerPage = forms.ChoiceField(
-        label="Items per page", choices=ITEMS_PER_PAGE, required=False
+        label="Items per page", choices=CommonVariables.ITEMS_PER_PAGE, required=False
     )
 
 
@@ -217,16 +143,16 @@ class DXChartOptionsForm(forms.Form):
         label="Requested procedure DAP vs mass", required=False
     )
     plotDXAcquisitionMeanDAPOverTimePeriod = forms.ChoiceField(
-        label="Time period", choices=TIME_PERIOD, required=False
+        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
     )
     plotAverageChoice = forms.MultipleChoiceField(
         label="Average plots",
-        choices=AVERAGES,
+        choices=CommonVariables.AVERAGES,
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
+        label=mark_safe("Grouping choice"), choices=CommonVariables.CHART_GROUPING, required=False
     )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
@@ -235,10 +161,10 @@ class DXChartOptionsForm(forms.Form):
         label="Calculate histogram data", required=False
     )
     plotDXInitialSortingChoice = forms.ChoiceField(
-        label="Chart sorting", choices=SORTING_CHOICES, required=False
+        label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction", choices=SORTING_DIRECTION, required=False
+        label="Sorting direction", choices=CommonVariables.SORTING_DIRECTION, required=False
     )
 
 
@@ -292,16 +218,16 @@ class CTChartOptionsForm(forms.Form):
         label="Requested procedure DLP over time", required=False
     )
     plotCTOverTimePeriod = forms.ChoiceField(
-        label="Time period", choices=TIME_PERIOD, required=False
+        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
     )
     plotAverageChoice = forms.MultipleChoiceField(
         label="Average plots",
-        choices=AVERAGES,
+        choices=CommonVariables.AVERAGES,
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
+        label=mark_safe("Grouping choice"), choices=CommonVariables.CHART_GROUPING, required=False
     )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
@@ -310,10 +236,10 @@ class CTChartOptionsForm(forms.Form):
         label="Calculate histogram data", required=False
     )
     plotCTInitialSortingChoice = forms.ChoiceField(
-        label="Chart sorting", choices=SORTING_CHOICES, required=False
+        label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction", choices=SORTING_DIRECTION, required=False
+        label="Sorting direction", choices=CommonVariables.SORTING_DIRECTION, required=False
     )
 
 
@@ -339,11 +265,11 @@ class RFChartOptionsForm(forms.Form):
         label="Requested procedure DAP over time", required=False
     )
     plotRFOverTimePeriod = forms.ChoiceField(
-        label="Time period", choices=TIME_PERIOD, required=False
+        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
     )
     plotAverageChoice = forms.MultipleChoiceField(
         label="Average plots",
-        choices=AVERAGES,
+        choices=CommonVariables.AVERAGES,
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
@@ -351,7 +277,7 @@ class RFChartOptionsForm(forms.Form):
         label="Split plots by physician", required=False
     )
     plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
+        label=mark_safe("Grouping choice"), choices=CommonVariables.CHART_GROUPING, required=False
     )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
@@ -360,10 +286,10 @@ class RFChartOptionsForm(forms.Form):
         label="Calculate histogram data", required=False
     )
     plotRFInitialSortingChoice = forms.ChoiceField(
-        label="Chart sorting", choices=SORTING_CHOICES, required=False
+        label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction", choices=SORTING_DIRECTION, required=False
+        label="Sorting direction", choices=CommonVariables.SORTING_DIRECTION, required=False
     )
 
 
@@ -389,13 +315,13 @@ class RFChartOptionsDisplayForm(forms.Form):
         label="Requested procedure DAP over time", required=False
     )
     plotRFOverTimePeriod = forms.ChoiceField(
-        label="Time period", choices=TIME_PERIOD, required=False
+        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
     )
     plotRFSplitByPhysician = forms.BooleanField(
         label="Split plots by physician", required=False
     )
     plotRFInitialSortingChoice = forms.ChoiceField(
-        label="Default chart sorting", choices=SORTING_CHOICES, required=False
+        label="Default chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
 
 
@@ -428,16 +354,16 @@ class MGChartOptionsForm(forms.Form):
         label="Study workload", required=False
     )
     plotMGOverTimePeriod = forms.ChoiceField(
-        label="Time period", choices=TIME_PERIOD, required=False
+        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
     )
     plotAverageChoice = forms.MultipleChoiceField(
         label="Average plots",
-        choices=AVERAGES,
+        choices=CommonVariables.AVERAGES,
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
+        label=mark_safe("Grouping choice"), choices=CommonVariables.CHART_GROUPING, required=False
     )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
@@ -446,10 +372,10 @@ class MGChartOptionsForm(forms.Form):
         label="Calculate histogram data", required=False
     )
     plotMGInitialSortingChoice = forms.ChoiceField(
-        label="Chart sorting", choices=SORTING_CHOICES, required=False
+        label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction", choices=SORTING_DIRECTION, required=False
+        label="Sorting direction", choices=CommonVariables.SORTING_DIRECTION, required=False
     )
 
 
@@ -481,10 +407,10 @@ class MGChartOptionsDisplayForm(forms.Form):
         label="Study workload", required=False
     )
     plotMGOverTimePeriod = forms.ChoiceField(
-        label="Time period", choices=TIME_PERIOD, required=False
+        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
     )
     plotMGInitialSortingChoice = forms.ChoiceField(
-        label="Chart sorting", choices=SORTING_CHOICES, required=False
+        label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
 
 
@@ -531,10 +457,10 @@ class DXChartOptionsDisplayForm(forms.Form):
         label="Requested procedure DAP vs mass", required=False
     )
     plotDXAcquisitionMeanDAPOverTimePeriod = forms.ChoiceField(
-        label="Time period", choices=TIME_PERIOD, required=False
+        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
     )
     plotDXInitialSortingChoice = forms.ChoiceField(
-        label="Default chart sorting", choices=SORTING_CHOICES, required=False
+        label="Default chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
 
 
@@ -587,10 +513,10 @@ class CTChartOptionsDisplayForm(forms.Form):
         label="Requested procedure DLP over time", required=False
     )
     plotCTOverTimePeriod = forms.ChoiceField(
-        label="Time period", choices=TIME_PERIOD, required=False
+        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
     )
     plotCTInitialSortingChoice = forms.ChoiceField(
-        label="Chart sorting", choices=SORTING_CHOICES, required=False
+        label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
 
 
@@ -600,12 +526,12 @@ class GeneralChartOptionsDisplayForm(forms.Form):
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
     plotAverageChoice = forms.MultipleChoiceField(
         label="Average plots",
-        choices=AVERAGES,
+        choices=CommonVariables.AVERAGES,
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction", choices=SORTING_DIRECTION, required=False
+        label="Sorting direction", choices=CommonVariables.SORTING_DIRECTION, required=False
     )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
@@ -623,14 +549,14 @@ class GeneralChartOptionsDisplayForm(forms.Form):
         label="Case-insensitive categories", required=False
     )
     plotGrouping = forms.ChoiceField(
-        label="Chart grouping", choices=CHART_GROUPING, required=False
+        label="Chart grouping", choices=CommonVariables.CHART_GROUPING, required=False
     )
     plotThemeChoice = forms.ChoiceField(
-        label="Chart theme", choices=CHART_THEMES, required=False
+        label="Chart theme", choices=CommonVariables.CHART_THEMES, required=False
     )
     plotColourMapChoice = forms.ChoiceField(
         label="Colour map choice",
-        choices=CHART_COLOUR_MAPS,
+        choices=CommonVariables.CHART_COLOUR_MAPS,
         required=False,
         widget=forms.RadioSelect(attrs={"id": "value"}),
     )
