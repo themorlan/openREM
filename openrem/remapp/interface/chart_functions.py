@@ -31,8 +31,19 @@
 
 from django.conf import settings
 from builtins import range  # pylint: disable=redefined-builtin
+import numpy as np
+import math
 import pandas as pd
-
+import matplotlib.cm
+import matplotlib.colors
+import plotly.express as px
+import plotly.io as pio
+import plotly.graph_objects as go
+from plotly.offline import plot
+from plotly.subplots import make_subplots
+from scipy import stats
+if settings.DEBUG:
+    from datetime import datetime
 
 def global_config(filename, height_multiplier=1.0):
     return {
@@ -60,8 +71,6 @@ def create_dataframe(
     uid=None,
 ):
     if settings.DEBUG:
-        from datetime import datetime
-
         start = datetime.now()
 
     fields_to_include = set()
@@ -144,8 +153,6 @@ def create_dataframe_time_series(
 def create_dataframe_weekdays(df, df_name_col, df_date_col="study_date"):
 
     if settings.DEBUG:
-        from datetime import datetime
-
         start = datetime.now()
 
     df["weekday"] = pd.DatetimeIndex(df[df_date_col]).day_name()
@@ -165,8 +172,6 @@ def create_dataframe_weekdays(df, df_name_col, df_date_col="study_date"):
 
 def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats=None):
     if settings.DEBUG:
-        from datetime import datetime
-
         start = datetime.now()
 
     # Make it possible to have multiple value cols (DLP, CTDI, for example)
@@ -186,15 +191,10 @@ def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats=None):
 
 
 def plotly_set_default_theme(theme_name):
-    import plotly.io as pio
-
     pio.templates.default = theme_name
 
 
 def calculate_colour_sequence(scale_name="jet", n_colours=10):
-    import matplotlib.cm
-    import matplotlib.colors
-
     colour_seq = []
     cmap = matplotlib.cm.get_cmap(scale_name)
     if n_colours > 1:
@@ -215,6 +215,18 @@ def empty_dataframe_msg():
     return msg
 
 
+def failed_chart_message_div(custom_msg_line, e):
+    msg = "<div class='alert alert-warning' role='alert'>"
+    if settings.DEBUG:
+        msg += custom_msg_line
+        msg += "<p>Error is:</p>"
+        msg += "<pre>" + e.args[0].replace("\n", "<br>") + "</pre>"
+    else:
+        msg += custom_msg_line
+    msg += "</div>"
+    return msg
+
+
 def plotly_boxplot(
     df,
     df_name_col,
@@ -228,9 +240,6 @@ def plotly_boxplot(
     facet_col_wrap=3,
     return_as_dict=False,
 ):
-    from plotly.offline import plot
-    import plotly.express as px
-    import math
 
     chart_height = 750
     n_facet_rows = 1
@@ -286,17 +295,10 @@ def plotly_boxplot(
             )
 
     except ValueError as e:
-        msg = "<div class='alert alert-warning' role='alert'>"
-        if settings.DEBUG:
-            msg += "Could not resolve chart. Try filtering the data to reduce the number of systems."
-            msg += "<p>Error is:</p>"
-            msg += "<pre>" + e.args[0].replace("\n", "<br>") + "</pre>"
-        else:
-            msg += "Could not resolve chart. Try filtering the data to reduce the number of systems."
-
-        msg += "</div>"
-
-        return msg
+        return failed_chart_message_div(
+            "Could not resolve chart. Try filtering the data to reduce the number of systems.",
+            e
+        )
 
 
 def create_freq_sorted_category_list(df, df_name_col, sorting):
@@ -352,10 +354,6 @@ def plotly_barchart(
     facet_col_wrap=3,
     return_as_dict=False,
 ):
-    from plotly.offline import plot
-    import plotly.express as px
-    import math
-
     chart_height = 750
     n_facet_rows = 1
 
@@ -426,12 +424,6 @@ def plotly_histogram_barchart(
     global_max_min=False,
     return_as_dict=False,
 ):
-    from plotly.subplots import make_subplots
-    import plotly.graph_objects as go
-    from plotly.offline import plot
-    import math
-    import numpy as np
-
     n_facets = len(df_facet_category_list)
     n_facet_rows = math.ceil(n_facets / facet_col_wrap)
     chart_height = n_facet_rows * 250
@@ -557,17 +549,10 @@ def plotly_histogram_barchart(
             )
 
     except ValueError as e:
-        msg = "<div class='alert alert-warning' role='alert'>"
-        if settings.DEBUG:
-            msg += "Could not resolve chart. Try filtering the data to reduce the number of categories or systems."
-            msg += "<p>Error is:</p>"
-            msg += "<pre>" + e.args[0].replace("\n", "<br>") + "</pre>"
-        else:
-            msg += "Could not resolve chart. Try filtering the data to reduce the number of categories or systems."
-
-        msg += "</div>"
-
-        return msg
+        return failed_chart_message_div(
+            "Could not resolve chart. Try filtering the data to reduce the number of categories or systems.",
+            e
+        )
 
 
 def plotly_binned_statistic_barchart(
@@ -588,13 +573,6 @@ def plotly_binned_statistic_barchart(
     stat_name="mean",
     return_as_dict=False,
 ):
-    from plotly.subplots import make_subplots
-    import plotly.graph_objects as go
-    from plotly.offline import plot
-    import math
-    import numpy as np
-    from scipy import stats
-
     n_facets = len(df_facet_category_list)
     n_facet_rows = math.ceil(n_facets / facet_col_wrap)
     chart_height = n_facet_rows * 250
@@ -728,17 +706,10 @@ def plotly_binned_statistic_barchart(
             )
 
     except ValueError as e:
-        msg = "<div class='alert alert-warning' role='alert'>"
-        if settings.DEBUG:
-            msg += "Could not resolve chart. Try filtering the data to reduce the number of categories or systems."
-            msg += "<p>Error is:</p>"
-            msg += "<pre>" + e.args[0].replace("\n", "<br>") + "</pre>"
-        else:
-            msg += "Could not resolve chart. Try filtering the data to reduce the number of categories or systems."
-
-        msg += "</div>"
-
-        return msg
+        return failed_chart_message_div(
+            "Could not resolve chart. Try filtering the data to reduce the number of categories or systems.",
+            e
+        )
 
 
 def plotly_frequency_barchart(
@@ -754,10 +725,6 @@ def plotly_frequency_barchart(
     facet_col_wrap=3,
     return_as_dict=False,
 ):
-    from plotly.offline import plot
-    import plotly.express as px
-    import math
-
     chart_height = 750
     n_facet_rows = 1
 
@@ -821,10 +788,6 @@ def plotly_timeseries_linechart(
     sorted_category_list=None,
     return_as_dict=False,
 ):
-    from plotly.offline import plot
-    import plotly.express as px
-    import math
-
     n_facet_rows = math.ceil(len(df[facet_col].unique()) / facet_col_wrap)
     chart_height = n_facet_rows * 250
     if chart_height < 750:
@@ -882,17 +845,10 @@ def plotly_timeseries_linechart(
             )
 
     except ValueError as e:
-        msg = "<div class='alert alert-warning' role='alert'>"
-        if settings.DEBUG:
-            msg += "Could not resolve chart. Try filtering the data to reduce the number of categories or systems."
-            msg += "<p>Error is:</p>"
-            msg += "<pre>" + e.args[0].replace("\n", "<br>") + "</pre>"
-        else:
-            msg += "Could not resolve chart. Try filtering the data to reduce the number of categories or systems."
-
-        msg += "</div>"
-
-        return msg
+        return failed_chart_message_div(
+            "Could not resolve chart. Try filtering the data to reduce the number of categories or systems.",
+            e
+        )
 
 
 def plotly_scatter(
@@ -911,10 +867,6 @@ def plotly_scatter(
     sorted_category_list=None,
     return_as_dict=False,
 ):
-    from plotly.offline import plot
-    import plotly.express as px
-    import math
-
     n_facet_rows = math.ceil(len(df[df_facet_col].unique()) / facet_col_wrap)
     chart_height = n_facet_rows * 250
     if chart_height < 750:
@@ -969,17 +921,10 @@ def plotly_scatter(
             )
 
     except ValueError as e:
-        msg = "<div class='alert alert-warning' role='alert'>"
-        if settings.DEBUG:
-            msg += "Could not resolve chart. Try filtering the data to reduce the number of categories or systems."
-            msg += "<p>Error is:</p>"
-            msg += "<pre>" + e.args[0].replace("\n", "<br>") + "</pre>"
-        else:
-            msg += "Could not resolve chart. Try filtering the data to reduce the number of categories or systems."
-
-        msg += "</div>"
-
-        return msg
+        return failed_chart_message_div(
+            "Could not resolve chart. Try filtering the data to reduce the number of categories or systems.",
+            e
+        )
 
 
 def plotly_barchart_weekdays(
@@ -993,10 +938,6 @@ def plotly_barchart_weekdays(
     facet_col_wrap=3,
     return_as_dict=False,
 ):
-    from plotly.offline import plot
-    import plotly.express as px
-    import math
-
     n_facet_rows = math.ceil(len(df.x_ray_system_name.unique()) / facet_col_wrap)
     chart_height = n_facet_rows * 250
     if chart_height < 750:
@@ -1057,17 +998,10 @@ def plotly_barchart_weekdays(
             )
 
     except ValueError as e:
-        msg = "<div class='alert alert-warning' role='alert'>"
-        if settings.DEBUG:
-            msg += "Could not resolve chart. Try filtering the data to reduce the number of systems."
-            msg += "<p>Error is:</p>"
-            msg += "<pre>" + e.args[0].replace("\n", "<br>") + "</pre>"
-        else:
-            msg += "Could not resolve chart. Try filtering the data to reduce the number of systems."
-
-        msg += "</div>"
-
-        return msg
+        return failed_chart_message_div(
+            "Could not resolve chart. Try filtering the data to reduce the number of systems.",
+            e
+        )
 
 
 def construct_frequency_chart(

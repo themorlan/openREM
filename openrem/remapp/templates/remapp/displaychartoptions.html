@@ -51,7 +51,7 @@
                         {% for x, y in GeneralChartOptionsForm.fields.plotColourMapChoice.choices %}
                             <label for="value_{{ forloop.counter0 }}">
                                 <li class="no-wrap">
-                                    <input type="radio" name="plotColourMapChoice" value="{{ x }}" id="value_{{ forloop.counter0 }}" {% if GeneralChartOptionsForm.plotColourMapChoice.value == x %}checked{% endif %}>&nbsp<img src="{{ STATIC_URL }}img/{{ x }}.png" alt="{{ y }}" width="150" height="15" class="colour_swatch">
+                                    <input type="radio" name="plotColourMapChoice" value="{{ x }}" id="value_{{ forloop.counter0 }}" {% if GeneralChartOptionsForm.plotColourMapChoice.value == x %}checked{% endif %}>&nbsp<img src="{{ STATIC_URL }}img/{{ x }}.png" alt="{{ y }}" width="150" height="15" class="colour_swatch"> {{ x }}
                                 </li>
                             </label>
                         {% endfor %}
