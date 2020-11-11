@@ -225,7 +225,7 @@ class DXChartOptionsForm(forms.Form):
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
-    plotGrouping = forms.ChoiceField(
+    plotGrouping = forms.ChoiceField(  # nosec
         label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
     )
     plotSeriesPerSystem = forms.BooleanField(
@@ -249,28 +249,28 @@ class CTChartOptionsForm(forms.Form):
     plotCTAcquisitionMeanDLP = forms.BooleanField(
         label="Acquisition DLP", required=False
     )
-    plotCTAcquisitionMeanCTDI = forms.BooleanField(
+    plotCTAcquisitionMeanCTDI = forms.BooleanField(  # nosec
         label=mark_safe("Acquisition CTDI<sub>vol</sub>"), required=False
-    )  # nosec
+    )
     plotCTAcquisitionFreq = forms.BooleanField(
         label="Acquisition frequency", required=False
     )
-    plotCTAcquisitionCTDIvsMass = forms.BooleanField(
+    plotCTAcquisitionCTDIvsMass = forms.BooleanField(  # nosec
         label=mark_safe("Acquisition CTDI<sub>vol</sub> vs mass"), required=False
     )
     plotCTAcquisitionDLPvsMass = forms.BooleanField(
         label="Acquisition DLP vs mass", required=False
     )
-    plotCTAcquisitionCTDIOverTime = forms.BooleanField(
+    plotCTAcquisitionCTDIOverTime = forms.BooleanField(  # nosec
         label=mark_safe("Acquisition CTDI<sub>vol</sub> over time"), required=False
     )
     plotCTAcquisitionDLPOverTime = forms.BooleanField(
         label="Acquisition DLP over time", required=False
     )
     plotCTStudyMeanDLP = forms.BooleanField(label="Study DLP", required=False)
-    plotCTStudyMeanCTDI = forms.BooleanField(
+    plotCTStudyMeanCTDI = forms.BooleanField(  # nosec
         label=mark_safe("Study CTDI<sub>vol</sub>"), required=False
-    )  # nosec
+    )
     plotCTStudyFreq = forms.BooleanField(label="Study frequency", required=False)
     plotCTStudyNumEvents = forms.BooleanField(label="Study events", required=False)
     plotCTStudyPerDayAndHour = forms.BooleanField(
@@ -300,7 +300,7 @@ class CTChartOptionsForm(forms.Form):
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
-    plotGrouping = forms.ChoiceField(
+    plotGrouping = forms.ChoiceField(  # nosec
         label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
     )
     plotSeriesPerSystem = forms.BooleanField(
@@ -350,7 +350,7 @@ class RFChartOptionsForm(forms.Form):
     plotRFSplitByPhysician = forms.BooleanField(
         label="Split plots by physician", required=False
     )
-    plotGrouping = forms.ChoiceField(
+    plotGrouping = forms.ChoiceField(  # nosec
         label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
     )
     plotSeriesPerSystem = forms.BooleanField(
@@ -436,7 +436,7 @@ class MGChartOptionsForm(forms.Form):
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
-    plotGrouping = forms.ChoiceField(
+    plotGrouping = forms.ChoiceField(  # nosec
         label=mark_safe("Grouping choice"), choices=CHART_GROUPING, required=False
     )
     plotSeriesPerSystem = forms.BooleanField(
@@ -544,9 +544,9 @@ class CTChartOptionsDisplayForm(forms.Form):
     plotCTAcquisitionMeanDLP = forms.BooleanField(
         label="Acquisition DLP", required=False
     )
-    plotCTAcquisitionMeanCTDI = forms.BooleanField(
+    plotCTAcquisitionMeanCTDI = forms.BooleanField(  # nosec
         label=mark_safe("Acquisition CTDI<sub>vol</sub>"), required=False
-    )  # nosec
+    )
     plotCTAcquisitionFreq = forms.BooleanField(
         label="Acquisition frequency", required=False
     )
@@ -556,16 +556,16 @@ class CTChartOptionsDisplayForm(forms.Form):
     plotCTAcquisitionDLPvsMass = forms.BooleanField(
         label="Acquisition DLP vs mass", required=False
     )
-    plotCTAcquisitionCTDIOverTime = forms.BooleanField(
+    plotCTAcquisitionCTDIOverTime = forms.BooleanField(  # nosec
         label=mark_safe("Acquisition CTDI<sub>vol</sub> over time"), required=False
     )
     plotCTAcquisitionDLPOverTime = forms.BooleanField(
         label="Acquisition DLP over time", required=False
     )
     plotCTStudyMeanDLP = forms.BooleanField(label="Study DLP", required=False)
-    plotCTStudyMeanCTDI = forms.BooleanField(
+    plotCTStudyMeanCTDI = forms.BooleanField(  # nosec
         label=mark_safe("Study CTDI<sub>vol</sub>"), required=False
-    )  # nosec
+    )
     plotCTStudyFreq = forms.BooleanField(label="Study frequency", required=False)
     plotCTStudyNumEvents = forms.BooleanField(label="Study events", required=False)
     plotCTStudyPerDayAndHour = forms.BooleanField(
