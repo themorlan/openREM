@@ -484,6 +484,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         ):
             value_fields.append("patientstudymoduleattr__patient_weight")
 
+        time_fields = []
         date_fields = []
         if (
             user_profile.plotCTAcquisitionCTDIOverTime
@@ -501,7 +502,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             "names": name_fields,
             "values": value_fields,
             "dates": date_fields,
-            "times": None,
+            "times": time_fields,
             "system": system_field,
         }
         df = create_dataframe(

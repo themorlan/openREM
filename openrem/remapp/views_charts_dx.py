@@ -404,6 +404,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             value_fields.append("patientstudymoduleattr__patient_weight")
             value_multipliers.append(1)
 
+        time_fields = []
         date_fields = []
         charts_of_interest = [
             user_profile.plotDXAcquisitionMeanDAPOverTime, user_profile.plotDXAcquisitionMeankVpOverTime,
@@ -422,7 +423,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             "names": name_fields,
             "values": value_fields,
             "dates": date_fields,
-            "times": None,
+            "times": time_fields,
             "system": system_field,
         }
         df = create_dataframe(
