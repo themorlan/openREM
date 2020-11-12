@@ -30,19 +30,16 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-from __future__ import absolute_import
 
 import os
 import gzip
 import json
 import logging
-import numpy as np
 from datetime import datetime, timedelta
 from decimal import Decimal
 import pickle as pickle
 from collections import OrderedDict
 
-import remapp
 from django.db.models import Sum, Q, Min
 from django.contrib import messages
 from django.contrib.auth import logout
@@ -56,12 +53,11 @@ from django.template.defaultfilters import register
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+import numpy as np
 
-# Following two lines added so that sphinx autodocumentation works.
-from future import standard_library
-
-from remapp.forms import itemsPerPageForm
-from remapp.interface.mod_filters import (
+from .forms import itemsPerPageForm
+from .interface.mod_filters import (
     RFSummaryListFilter,
     RFFilterPlusPid,
     dx_acq_filter,
@@ -69,25 +65,24 @@ from remapp.interface.mod_filters import (
     MGSummaryListFilter,
     MGFilterPlusPid,
 )
-from remapp.tools.make_skin_map import make_skin_map
-from remapp.version import __skin_map_version__
-from remapp.views_charts_ct import (
+from .tools.make_skin_map import make_skin_map
+from .version import __skin_map_version__
+from .views_charts_ct import (
     generate_required_ct_charts_list,
     ct_chart_form_processing,
 )
-from remapp.views_charts_dx import (
+from .views_charts_dx import (
     generate_required_dx_charts_list,
     dx_chart_form_processing,
 )
-from remapp.views_charts_mg import (
+from .views_charts_mg import (
     generate_required_mg_charts_list,
     mg_chart_form_processing,
 )
-from remapp.views_charts_rf import (
+from .views_charts_rf import (
     generate_required_rf_charts_list,
     rf_chart_form_processing,
 )
-from openrem.openremproject.settings import MEDIA_ROOT
 from .models import (
     GeneralStudyModuleAttr,
     create_user_profile,
@@ -99,9 +94,7 @@ from .models import (
     HomePageAdminSettings,
     UpgradeStatus,
 )
-
-
-standard_library.install_aliases()
+from .version import __version__, __docs_version__
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 
@@ -166,8 +159,8 @@ def dx_summary_list_filter(request):
             items_per_page_form = itemsPerPageForm(form_data)
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -209,8 +202,8 @@ def dx_detail_view(request, pk=None):
         return redirect(reverse_lazy("dx_summary_list_filter"))
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -297,8 +290,8 @@ def rf_summary_list_filter(request):
     )[0]
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     # # Calculate skin dose map for all objects in the database
@@ -523,8 +516,8 @@ def rf_detail_view(request, pk=None):
         included_studies = None
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
         "enable_skin_dose_maps": SkinDoseMapCalcSettings.objects.values_list(
             "enable_skin_dose_maps", flat=True
         )[0],
@@ -559,8 +552,8 @@ def rf_detail_view_skin_map(request, pk=None):
         return redirect(reverse_lazy("rf_summary_list_filter"))
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -571,7 +564,7 @@ def rf_detail_view_skin_map(request, pk=None):
         study_date = GeneralStudyModuleAttr.objects.get(pk=pk).study_date
         if study_date:
             skin_map_path = os.path.join(
-                MEDIA_ROOT,
+                settings.MEDIA_ROOT,
                 "skin_maps",
                 "{0:0>4}".format(study_date.year),
                 "{0:0>2}".format(study_date.month),
@@ -580,11 +573,11 @@ def rf_detail_view_skin_map(request, pk=None):
             )
         else:
             skin_map_path = os.path.join(
-                MEDIA_ROOT, "skin_maps", "skin_map_" + str(pk) + ".p"
+                settings.MEDIA_ROOT, "skin_maps", "skin_map_" + str(pk) + ".p"
             )
     except:
         skin_map_path = os.path.join(
-            MEDIA_ROOT, "skin_maps", "skin_map_" + str(pk) + ".p"
+            settings.MEDIA_ROOT, "skin_maps", "skin_map_" + str(pk) + ".p"
         )
 
     # If patient weight is missing from the database then db_pat_mass will be undefined
@@ -681,8 +674,8 @@ def ct_summary_list_filter(request):
             items_per_page_form = itemsPerPageForm(form_data)
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -731,8 +724,8 @@ def ct_detail_view(request, pk=None):
     )
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -793,8 +786,8 @@ def mg_summary_list_filter(request):
             items_per_page_form = itemsPerPageForm(form_data)
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -835,8 +828,8 @@ def mg_detail_view(request, pk=None):
         return redirect(reverse_lazy("mg_summary_list_filter"))
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -968,7 +961,7 @@ def openrem_home(request):
             home_config["day_delta_a"] = 7
             home_config["day_delta_b"] = 28
 
-    admin = dict(openremversion=remapp.__version__, docsversion=remapp.__docs_version__)
+    admin = dict(openremversion=__version__, docsversion=__docs_version__)
 
     for group in request.user.groups.all():
         admin[group.name] = True
