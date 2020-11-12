@@ -36,14 +36,6 @@ def generate_required_mg_charts_list(profile):
         values = list(dict(profile.TIME_PERIOD).values())
         time_period = (values[keys.index(profile.plotMGOverTimePeriod)]).lower()
 
-    if profile.plotMGAGDvsThickness:
-        required_charts.append(
-            {
-                "title": "Chart of acquisition protocol AGD vs compressed breast thickness",
-                "var_name": "acquisitionScatterAGDvsThick",
-            }
-        )
-
     if profile.plotMGacquisitionFreq:
         required_charts.append(
             {
@@ -82,6 +74,14 @@ def generate_required_mg_charts_list(profile):
                 }
             )
 
+    if profile.plotMGAGDvsThickness:
+        required_charts.append(
+            {
+                "title": "Chart of acquisition protocol AGD vs compressed breast thickness",
+                "var_name": "acquisitionScatterAGDvsThick",
+            }
+        )
+
     if profile.plotMGaverageAGDvsThickness:
         if profile.plotMean:
             required_charts.append(
@@ -95,6 +95,26 @@ def generate_required_mg_charts_list(profile):
                 {
                     "title": "Chart of acquisition protocol median AGD vs compressed breast thickness",
                     "var_name": "acquisitionMedianAGDvsThick",
+                }
+            )
+
+    if profile.plotMGAcquisitionAGDOverTime:
+        if profile.plotMean:
+            required_charts.append(
+                {
+                    "title": "Chart of acquisition protocol mean AGD over time ("
+                    + time_period
+                    + ")",
+                    "var_name": "acquisitionMeanAGDOverTime",
+                }
+            )
+        if profile.plotMedian:
+            required_charts.append(
+                {
+                    "title": "Chart of acquisition protocol median AGD over time ("
+                    + time_period
+                    + ")",
+                    "var_name": "acquisitionMedianAGDOverTime",
                 }
             )
 
@@ -121,26 +141,6 @@ def generate_required_mg_charts_list(profile):
                 "var_name": "studyWorkload",
             }
         )
-
-    if profile.plotMGAcquisitionAGDOverTime:
-        if profile.plotMean:
-            required_charts.append(
-                {
-                    "title": "Chart of acquisition protocol mean AGD over time ("
-                    + time_period
-                    + ")",
-                    "var_name": "acquisitionMeanAGDOverTime",
-                }
-            )
-        if profile.plotMedian:
-            required_charts.append(
-                {
-                    "title": "Chart of acquisition protocol median AGD over time ("
-                    + time_period
-                    + ")",
-                    "var_name": "acquisitionMedianAGDOverTime",
-                }
-            )
 
     return required_charts
 
@@ -376,16 +376,21 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         )
 
                 if user_profile.plotBoxplots:
-                    return_structure["acquisitionBoxplotAGDData"] = plotly_boxplot(  # pylint: disable=line-too-long
+                    parameter_dict = {
+                        "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                        "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
+                        "value_axis_title": "AGD (mGy)",
+                        "name_axis_title": "Acquisition protocol",
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "filename": "OpenREM MG acquisition protocol AGD boxplot",
+                        "sorted_category_list": sorted_acquisition_agd_categories,
+                        "facet_col": None,
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "return_as_dict": return_as_dict,
+                    }
+                    return_structure["acquisitionBoxplotAGDData"] = plotly_boxplot(
                         df,
-                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
-                        value_axis_title="AGD (mGy)",
-                        name_axis_title="Acquisition protocol",
-                        colourmap=user_profile.plotColourMapChoice,
-                        filename="OpenREM MG acquisition protocol AGD boxplot",
-                        sorted_category_list=sorted_acquisition_agd_categories,
-                        return_as_dict=return_as_dict,
+                        parameter_dict,
                     )
 
                 if user_profile.plotHistograms:

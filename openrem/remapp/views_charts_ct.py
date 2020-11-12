@@ -284,6 +284,34 @@ def generate_required_ct_charts_list(profile):
                 }
             )
 
+    if profile.plotCTStudyPerDayAndHour:
+        required_charts.append(
+            {
+                "title": "Chart of study description workload",
+                "var_name": "studyWorkload",
+            }
+        )
+
+    if profile.plotCTStudyMeanDLPOverTime:
+        if profile.plotMean:
+            required_charts.append(
+                {
+                    "title": "Chart of study description mean DLP over time ("
+                    + time_period
+                    + ")",
+                    "var_name": "studyMeanDLPOverTime",
+                }
+            )
+        if profile.plotMedian:
+            required_charts.append(
+                {
+                    "title": "Chart of study description median DLP over time ("
+                    + time_period
+                    + ")",
+                    "var_name": "studyMedianDLPOverTime",
+                }
+            )
+
     if profile.plotCTRequestMeanDLP:
         if profile.plotMean:
             required_charts.append(
@@ -369,34 +397,6 @@ def generate_required_ct_charts_list(profile):
                     + time_period
                     + ")",
                     "var_name": "requestMedianDLPOverTime",
-                }
-            )
-
-    if profile.plotCTStudyPerDayAndHour:
-        required_charts.append(
-            {
-                "title": "Chart of study description workload",
-                "var_name": "studyWorkload",
-            }
-        )
-
-    if profile.plotCTStudyMeanDLPOverTime:
-        if profile.plotMean:
-            required_charts.append(
-                {
-                    "title": "Chart of study description mean DLP over time ("
-                    + time_period
-                    + ")",
-                    "var_name": "studyMeanDLPOverTime",
-                }
-            )
-        if profile.plotMedian:
-            required_charts.append(
-                {
-                    "title": "Chart of study description median DLP over time ("
-                    + time_period
-                    + ")",
-                    "var_name": "studyMedianDLPOverTime",
                 }
             )
 
@@ -561,16 +561,21 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
             if user_profile.plotBoxplots:
+                parameter_dict = {
+                    "df_name_col": "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                    "df_value_col": "ctradiationdose__ctirradiationeventdata__dlp",
+                    "value_axis_title": "DLP (mGy.cm)",
+                    "name_axis_title": "Acquisition protocol",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM CT acquisition protocol DLP boxplot",
+                    "sorted_category_list": sorted_acquisition_dlp_categories,
+                    "facet_col": None,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                }
                 return_structure["acquisitionBoxplotDLPData"] = plotly_boxplot(
                     df,
-                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                    "ctradiationdose__ctirradiationeventdata__dlp",
-                    value_axis_title="DLP (mGy.cm)",
-                    name_axis_title="Acquisition protocol",
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM CT acquisition protocol DLP boxplot",
-                    sorted_category_list=sorted_acquisition_dlp_categories,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -657,16 +662,21 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
             if user_profile.plotBoxplots:
+                parameter_dict = {
+                    "df_name_col": "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                    "df_value_col": "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    "value_axis_title": "CTDI<sub>vol</sub> (mGy)",
+                    "name_axis_title": "Acquisition protocol",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM CT acquisition protocol CTDI boxplot",
+                    "sorted_category_list": sorted_acquisition_ctdi_categories,
+                    "facet_col": None,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                }
                 return_structure["acquisitionBoxplotCTDIData"] = plotly_boxplot(
                     df,
-                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                    "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    value_axis_title="CTDI<sub>vol</sub> (mGy)",
-                    name_axis_title="Acquisition protocol",
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM CT acquisition protocol CTDI boxplot",
-                    sorted_category_list=sorted_acquisition_ctdi_categories,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -955,16 +965,21 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
             if user_profile.plotBoxplots:
+                parameter_dict = {
+                    "df_name_col": "study_description",
+                    "df_value_col": "total_dlp",
+                    "value_axis_title": "DLP (mGy.cm)",
+                    "name_axis_title": "Study description",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM CT study description DLP boxplot",
+                    "sorted_category_list": sorted_study_dlp_categories,
+                    "facet_col": None,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                }
                 return_structure["studyBoxplotDLPData"] = plotly_boxplot(
                     df,
-                    "study_description",
-                    "total_dlp",
-                    value_axis_title="DLP (mGy.cm)",
-                    name_axis_title="Study description",
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM CT study description DLP boxplot",
-                    sorted_category_list=sorted_study_dlp_categories,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -1045,16 +1060,21 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
             if user_profile.plotBoxplots:
+                parameter_dict = {
+                    "df_name_col": "study_description",
+                    "df_value_col": "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    "value_axis_title": "CTDI<sub>vol</sub> (mGy)",
+                    "name_axis_title": "Study description",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM CT study description DLP boxplot",
+                    "sorted_category_list": sorted_study_ctdi_categories,
+                    "facet_col": None,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                }
                 return_structure["studyBoxplotCTDIData"] = plotly_boxplot(
                     df,
-                    "study_description",
-                    "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    value_axis_title="CTDI<sub>vol</sub> (mGy)",
-                    name_axis_title="Study description",
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM CT study description CTDI boxplot",
-                    sorted_category_list=sorted_study_ctdi_categories,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -1135,16 +1155,21 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
             if user_profile.plotBoxplots:
+                parameter_dict = {
+                    "df_name_col": "study_description",
+                    "df_value_col": "number_of_events",
+                    "value_axis_title": "Events",
+                    "name_axis_title": "Study description",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM CT study description events boxplot",
+                    "sorted_category_list": sorted_study_events_categories,
+                    "facet_col": None,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                }
                 return_structure["studyBoxplotNumEventsData"] = plotly_boxplot(
                     df,
-                    "study_description",
-                    "number_of_events",
-                    value_axis_title="Events",
-                    name_axis_title="Study description",
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM CT study description events boxplot",
-                    sorted_category_list=sorted_study_events_categories,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -1253,16 +1278,21 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
             if user_profile.plotBoxplots:
+                parameter_dict = {
+                    "df_name_col": "requested_procedure_code_meaning",
+                    "df_value_col": "total_dlp",
+                    "value_axis_title": "DLP (mGy.cm)",
+                    "name_axis_title": "Requested procedure",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM CT requested procedure DLP boxplot",
+                    "sorted_category_list": sorted_request_dlp_categories,
+                    "facet_col": None,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                }
                 return_structure["requestBoxplotData"] = plotly_boxplot(
                     df,
-                    "requested_procedure_code_meaning",
-                    "total_dlp",
-                    value_axis_title="DLP (mGy.cm)",
-                    name_axis_title="Requested procedure",
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM CT requested procedure DLP boxplot",
-                    sorted_category_list=sorted_request_dlp_categories,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -1343,16 +1373,21 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
             if user_profile.plotBoxplots:
+                parameter_dict = {
+                    "df_name_col": "requested_procedure_code_meaning",
+                    "df_value_col": "number_of_events",
+                    "value_axis_title": "Events",
+                    "name_axis_title": "Requested procedure",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM CT requested procedure events boxplot",
+                    "sorted_category_list": sorted_request_events_categories,
+                    "facet_col": None,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                }
                 return_structure["requestBoxplotNumEventsData"] = plotly_boxplot(
                     df,
-                    "requested_procedure_code_meaning",
-                    "number_of_events",
-                    value_axis_title="Events",
-                    name_axis_title="Requested procedure",
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM CT requested procedure events boxplot",
-                    sorted_category_list=sorted_request_events_categories,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
             if user_profile.plotHistograms:

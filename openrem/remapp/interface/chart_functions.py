@@ -224,51 +224,42 @@ def failed_chart_message_div(custom_msg_line, e):
 
 def plotly_boxplot(
     df,
-    df_name_col,
-    df_value_col,
-    value_axis_title="",
-    name_axis_title="",
-    colourmap="RdYlBu",
-    filename="OpenREM_boxplot_chart",
-    sorted_category_list=None,
-    facet_col=None,
-    facet_col_wrap=3,
-    return_as_dict=False,
+    params,
 ):
 
     chart_height = 750
     n_facet_rows = 1
 
-    if facet_col:
-        n_facet_rows = math.ceil(len(df[facet_col].unique()) / facet_col_wrap)
+    if params["facet_col"]:
+        n_facet_rows = math.ceil(len(df[params["facet_col"]].unique()) / params["facet_col_wrap"])
         chart_height = n_facet_rows * 250
         if chart_height < 750:
             chart_height = 750
 
     n_colours = len(df.x_ray_system_name.unique())
-    colour_sequence = calculate_colour_sequence(colourmap, n_colours)
+    colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
 
     try:
         # Drop any rows with nan values in x or y
-        df = df.dropna(subset=[df_value_col])
+        df = df.dropna(subset=[params["df_value_col"]])
         if df.empty:
             return empty_dataframe_msg()
 
         fig = px.box(
             df,
-            x=df_name_col,
-            y=df_value_col,
-            facet_col=facet_col,
-            facet_col_wrap=facet_col_wrap,
+            x=params["df_name_col"],
+            y=params["df_value_col"],
+            facet_col=params["facet_col"],
+            facet_col_wrap=params["facet_col_wrap"],
             facet_row_spacing=0.40 / n_facet_rows,
             color="x_ray_system_name",
             labels={
-                df_value_col: value_axis_title,
-                df_name_col: name_axis_title,
+                params["df_value_col"]: params["value_axis_title"],
+                params["df_name_col"]: params["name_axis_title"],
                 "x_ray_system_name": "System",
             },
             color_discrete_sequence=colour_sequence,
-            category_orders=sorted_category_list,
+            category_orders=params["sorted_category_list"],
             height=chart_height,
         )
 
@@ -279,14 +270,14 @@ def plotly_boxplot(
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
-        if return_as_dict:
+        if params["return_as_dict"]:
             return fig.to_dict()
         else:
             return plot(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(filename),
+                config=global_config(params["filename"]),
             )
 
     except ValueError as e:

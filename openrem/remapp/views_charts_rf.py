@@ -64,49 +64,11 @@ def generate_required_rf_charts_list(profile):
                 }
             )
 
-    if profile.plotRFRequestDAP:
-        if profile.plotMean:
-            required_charts.append(
-                {
-                    "title": "Chart of requested procedure mean DAP",
-                    "var_name": "requestMeanDAP",
-                }
-            )
-        if profile.plotMedian:
-            required_charts.append(
-                {
-                    "title": "Chart of requested procedure median DAP",
-                    "var_name": "requestMedianDAP",
-                }
-            )
-        if profile.plotBoxplots:
-            required_charts.append(
-                {
-                    "title": "Boxplot of requested procedure DAP",
-                    "var_name": "requestBoxplotDAP",
-                }
-            )
-        if profile.plotHistograms:
-            required_charts.append(
-                {
-                    "title": "Histogram of requested procedure DAP",
-                    "var_name": "requestHistogramDAP",
-                }
-            )
-
     if profile.plotRFStudyFreq:
         required_charts.append(
             {
                 "title": "Chart of study description frequency",
                 "var_name": "studyFrequency",
-            }
-        )
-
-    if profile.plotRFRequestFreq:
-        required_charts.append(
-            {
-                "title": "Chart of requested procedure frequency",
-                "var_name": "requestFrequency",
             }
         )
 
@@ -137,6 +99,44 @@ def generate_required_rf_charts_list(profile):
                     "var_name": "studyMedianDAPOverTime",
                 }
             )
+
+    if profile.plotRFRequestDAP:
+        if profile.plotMean:
+            required_charts.append(
+                {
+                    "title": "Chart of requested procedure mean DAP",
+                    "var_name": "requestMeanDAP",
+                }
+            )
+        if profile.plotMedian:
+            required_charts.append(
+                {
+                    "title": "Chart of requested procedure median DAP",
+                    "var_name": "requestMedianDAP",
+                }
+            )
+        if profile.plotBoxplots:
+            required_charts.append(
+                {
+                    "title": "Boxplot of requested procedure DAP",
+                    "var_name": "requestBoxplotDAP",
+                }
+            )
+        if profile.plotHistograms:
+            required_charts.append(
+                {
+                    "title": "Histogram of requested procedure DAP",
+                    "var_name": "requestHistogramDAP",
+                }
+            )
+
+    if profile.plotRFRequestFreq:
+        required_charts.append(
+            {
+                "title": "Chart of requested procedure frequency",
+                "var_name": "requestFrequency",
+            }
+        )
 
     if profile.plotRFRequestDAPOverTime:
         if profile.plotMean:
@@ -368,18 +368,21 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 x_col = "performing_physician_name"
                 facet_col = "study_description"
 
+            parameter_dict = {
+                "df_name_col": x_col,
+                "df_value_col": "total_dap",
+                "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
+                "name_axis_title": "Study description",
+                "colourmap": user_profile.plotColourMapChoice,
+                "filename": "OpenREM RF study description DAP boxplot",
+                "sorted_category_list": sorted_study_categories,
+                "facet_col": facet_col,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "return_as_dict": return_as_dict,
+            }
             return_structure["studyBoxplotData"] = plotly_boxplot(
                 df,
-                x_col,
-                "total_dap",
-                facet_col=facet_col,
-                facet_col_wrap=user_profile.plotFacetColWrapVal,
-                value_axis_title="DAP (cGy.cm<sup>2</sup>)",
-                name_axis_title="Study description",
-                colourmap=user_profile.plotColourMapChoice,
-                filename="OpenREM RF study description DAP boxplot",
-                sorted_category_list=sorted_study_categories,
-                return_as_dict=return_as_dict,
+                parameter_dict,
             )
 
         if user_profile.plotHistograms:
@@ -501,16 +504,28 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 )
 
         if user_profile.plotBoxplots:
+            x_col = "requested_procedure_code_meaning"
+            facet_col = None
+
+            if user_profile.plotRFSplitByPhysician:
+                x_col = "performing_physician_name"
+                facet_col = "requested_procedure_code_meaning"
+
+            parameter_dict = {
+                "df_name_col": x_col,
+                "df_value_col": "total_dap",
+                "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
+                "name_axis_title": "Requested procedure",
+                "colourmap": user_profile.plotColourMapChoice,
+                "filename": "OpenREM RF requested procedure DAP boxplot",
+                "sorted_category_list": sorted_request_categories,
+                "facet_col": facet_col,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "return_as_dict": return_as_dict,
+            }
             return_structure["requestBoxplotData"] = plotly_boxplot(
                 df,
-                "requested_procedure_code_meaning",
-                "total_dap",
-                value_axis_title="DAP (cGy.cm<sup>2</sup>)",
-                name_axis_title="Requested procedure",
-                colourmap=user_profile.plotColourMapChoice,
-                filename="OpenREM RF requested procedure DAP boxplot",
-                sorted_category_list=sorted_request_categories,
-                return_as_dict=return_as_dict,
+                parameter_dict,
             )
 
         if user_profile.plotHistograms:

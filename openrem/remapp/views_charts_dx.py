@@ -79,82 +79,6 @@ def generate_required_dx_charts_list(profile):
             }
         )
 
-    if profile.plotDXStudyMeanDAP:
-        if profile.plotMean:
-            required_charts.append(
-                {
-                    "title": "Chart of mean DAP for each study description",
-                    "var_name": "studyMeanDAP",
-                }
-            )
-        if profile.plotMedian:
-            required_charts.append(
-                {
-                    "title": "Chart of median DAP for each study description",
-                    "var_name": "studyMedianDAP",
-                }
-            )
-        if profile.plotBoxplots:
-            required_charts.append(
-                {
-                    "title": "Boxplot of DAP for each study description",
-                    "var_name": "studyBoxplotDAP",
-                }
-            )
-        if profile.plotHistograms:
-            required_charts.append(
-                {
-                    "title": "Histogram of DAP for each study description",
-                    "var_name": "studyHistogramDAP",
-                }
-            )
-
-    if profile.plotDXStudyFreq:
-        required_charts.append(
-            {
-                "title": "Chart of study description frequency",
-                "var_name": "studyFrequency",
-            }
-        )
-
-    if profile.plotDXRequestMeanDAP:
-        if profile.plotMean:
-            required_charts.append(
-                {
-                    "title": "Chart of mean DAP for each requested procedure",
-                    "var_name": "requestMeanDAP",
-                }
-            )
-        if profile.plotMedian:
-            required_charts.append(
-                {
-                    "title": "Chart of median DAP for each requested procedure",
-                    "var_name": "requestMedianDAP",
-                }
-            )
-        if profile.plotBoxplots:
-            required_charts.append(
-                {
-                    "title": "Boxplot of DAP for each requested procedure",
-                    "var_name": "requestBoxplotDAP",
-                }
-            )
-        if profile.plotHistograms:
-            required_charts.append(
-                {
-                    "title": "Histogram of DAP for each requested procedure",
-                    "var_name": "requestHistogramDAP",
-                }
-            )
-
-    if profile.plotDXRequestFreq:
-        required_charts.append(
-            {
-                "title": "Chart of requested procedure frequency",
-                "var_name": "requestFrequency",
-            }
-        )
-
     if profile.plotDXAcquisitionMeankVp:
         if profile.plotMean:
             required_charts.append(
@@ -215,54 +139,6 @@ def generate_required_dx_charts_list(profile):
                 }
             )
 
-    if profile.plotDXStudyPerDayAndHour:
-        required_charts.append(
-            {
-                "title": "Chart of study description workload",
-                "var_name": "studyWorkload",
-            }
-        )
-
-    if profile.plotDXAcquisitionMeankVpOverTime:
-        if profile.plotMean:
-            required_charts.append(
-                {
-                    "title": "Chart of mean kVp per acquisition protocol over time ("
-                    + time_period
-                    + ")",
-                    "var_name": "acquisitionMeankVpOverTime",
-                }
-            )
-        if profile.plotMedian:
-            required_charts.append(
-                {
-                    "title": "Chart of median kVp per acquisition protocol over time ("
-                    + time_period
-                    + ")",
-                    "var_name": "acquisitionMediankVpOverTime",
-                }
-            )
-
-    if profile.plotDXAcquisitionMeanmAsOverTime:
-        if profile.plotMean:
-            required_charts.append(
-                {
-                    "title": "Chart of mean mAs per acquisition protocol over time ("
-                    + time_period
-                    + ")",
-                    "var_name": "acquisitionMeanmAsOverTime",
-                }
-            )
-        if profile.plotMedian:
-            required_charts.append(
-                {
-                    "title": "Chart of median mAs per acquisition protocol over time ("
-                    + time_period
-                    + ")",
-                    "var_name": "acquisitionMedianmAsOverTime",
-                }
-            )
-
     if profile.plotDXAcquisitionMeanDAPOverTime:
         if profile.plotMean:
             required_charts.append(
@@ -283,6 +159,46 @@ def generate_required_dx_charts_list(profile):
                 }
             )
 
+    if profile.plotDXAcquisitionMeankVpOverTime:
+        if profile.plotMean:
+            required_charts.append(
+                {
+                    "title": "Chart of mean kVp per acquisition protocol over time ("
+                             + time_period
+                             + ")",
+                    "var_name": "acquisitionMeankVpOverTime",
+                }
+            )
+        if profile.plotMedian:
+            required_charts.append(
+                {
+                    "title": "Chart of median kVp per acquisition protocol over time ("
+                             + time_period
+                             + ")",
+                    "var_name": "acquisitionMediankVpOverTime",
+                }
+            )
+
+    if profile.plotDXAcquisitionMeanmAsOverTime:
+        if profile.plotMean:
+            required_charts.append(
+                {
+                    "title": "Chart of mean mAs per acquisition protocol over time ("
+                             + time_period
+                             + ")",
+                    "var_name": "acquisitionMeanmAsOverTime",
+                }
+            )
+        if profile.plotMedian:
+            required_charts.append(
+                {
+                    "title": "Chart of median mAs per acquisition protocol over time ("
+                             + time_period
+                             + ")",
+                    "var_name": "acquisitionMedianmAsOverTime",
+                }
+            )
+
     if profile.plotDXAcquisitionDAPvsMass:
         required_charts.append(
             {
@@ -290,6 +206,53 @@ def generate_required_dx_charts_list(profile):
                 "var_name": "acquisitionDAPvsMass",
             }
         )
+
+    if profile.plotDXStudyMeanDAP:
+        if profile.plotMean:
+            required_charts.append(
+                {
+                    "title": "Chart of mean DAP for each study description",
+                    "var_name": "studyMeanDAP",
+                }
+            )
+        if profile.plotMedian:
+            required_charts.append(
+                {
+                    "title": "Chart of median DAP for each study description",
+                    "var_name": "studyMedianDAP",
+                }
+            )
+        if profile.plotBoxplots:
+            required_charts.append(
+                {
+                    "title": "Boxplot of DAP for each study description",
+                    "var_name": "studyBoxplotDAP",
+                }
+            )
+        if profile.plotHistograms:
+            required_charts.append(
+                {
+                    "title": "Histogram of DAP for each study description",
+                    "var_name": "studyHistogramDAP",
+                }
+            )
+
+    if profile.plotDXStudyFreq:
+        required_charts.append(
+            {
+                "title": "Chart of study description frequency",
+                "var_name": "studyFrequency",
+            }
+        )
+
+    if profile.plotDXStudyPerDayAndHour:
+        required_charts.append(
+            {
+                "title": "Chart of study description workload",
+                "var_name": "studyWorkload",
+            }
+        )
+
     if profile.plotDXStudyDAPvsMass:
         required_charts.append(
             {
@@ -297,6 +260,45 @@ def generate_required_dx_charts_list(profile):
                 "var_name": "studyDAPvsMass",
             }
         )
+
+    if profile.plotDXRequestMeanDAP:
+        if profile.plotMean:
+            required_charts.append(
+                {
+                    "title": "Chart of mean DAP for each requested procedure",
+                    "var_name": "requestMeanDAP",
+                }
+            )
+        if profile.plotMedian:
+            required_charts.append(
+                {
+                    "title": "Chart of median DAP for each requested procedure",
+                    "var_name": "requestMedianDAP",
+                }
+            )
+        if profile.plotBoxplots:
+            required_charts.append(
+                {
+                    "title": "Boxplot of DAP for each requested procedure",
+                    "var_name": "requestBoxplotDAP",
+                }
+            )
+        if profile.plotHistograms:
+            required_charts.append(
+                {
+                    "title": "Histogram of DAP for each requested procedure",
+                    "var_name": "requestHistogramDAP",
+                }
+            )
+
+    if profile.plotDXRequestFreq:
+        required_charts.append(
+            {
+                "title": "Chart of requested procedure frequency",
+                "var_name": "requestFrequency",
+            }
+        )
+
     if profile.plotDXRequestDAPvsMass:
         required_charts.append(
             {
@@ -480,16 +482,21 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
             if user_profile.plotBoxplots:
+                parameter_dict = {
+                    "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
+                    "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
+                    "name_axis_title": "Acquisition protocol",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM DX acquisition protocol DAP boxplot",
+                    "sorted_category_list": sorted_acquisition_dap_categories,
+                    "facet_col": None,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                }
                 return_structure["acquisitionBoxplotDAPData"] = plotly_boxplot(
                     df,
-                    "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                    "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
-                    value_axis_title="DAP (cGy.cm<sup>2</sup>)",
-                    name_axis_title="Acquisition protocol",
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM DX acquisition protocol DAP boxplot",
-                    sorted_category_list=sorted_acquisition_dap_categories,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -574,16 +581,21 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
             if user_profile.plotBoxplots:
+                parameter_dict = {
+                    "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
+                    "value_axis_title": "kVp",
+                    "name_axis_title": "Acquisition protocol",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM DX acquisition protocol kVp boxplot",
+                    "sorted_category_list": sorted_acquisition_kvp_categories,
+                    "facet_col": None,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                }
                 return_structure["acquisitionBoxplotkVpData"] = plotly_boxplot(
                     df,
-                    "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
-                    value_axis_title="kVp",
-                    name_axis_title="Acquisition protocol",
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM DX acquisition protocol kVp boxplot",
-                    sorted_category_list=sorted_acquisition_kvp_categories,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -668,16 +680,21 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
             if user_profile.plotBoxplots:
+                parameter_dict = {
+                    "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
+                    "value_axis_title": "mAs",
+                    "name_axis_title": "Acquisition protocol",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM DX acquisition protocol mAs boxplot",
+                    "sorted_category_list": sorted_acquisition_mas_categories,
+                    "facet_col": None,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                }
                 return_structure["acquisitionBoxplotmAsData"] = plotly_boxplot(
                     df,
-                    "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
-                    value_axis_title="mAs",
-                    name_axis_title="Acquisition protocol",
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM DX acquisition protocol mAs boxplot",
-                    sorted_category_list=sorted_acquisition_mas_categories,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -971,16 +988,21 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
             if user_profile.plotBoxplots:
+                parameter_dict = {
+                    "df_name_col": "study_description",
+                    "df_value_col": "total_dap",
+                    "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
+                    "name_axis_title": "Study description",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM DX study description DAP boxplot",
+                    "sorted_category_list": sorted_study_dap_categories,
+                    "facet_col": None,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                }
                 return_structure["studyBoxplotDAPData"] = plotly_boxplot(
                     df,
-                    "study_description",
-                    "total_dap",
-                    value_axis_title="DAP (cGy.cm<sup>2</sup>)",
-                    name_axis_title="Study description",
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM DX study description DAP boxplot",
-                    sorted_category_list=sorted_study_dap_categories,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
             if user_profile.plotHistograms:
@@ -1079,16 +1101,21 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
             if user_profile.plotBoxplots:
+                parameter_dict = {
+                    "df_name_col": "requested_procedure_code_meaning",
+                    "df_value_col": "total_dap",
+                    "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
+                    "name_axis_title": "Requested procedure",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM DX requested procedure DAP boxplot",
+                    "sorted_category_list": sorted_request_dap_categories,
+                    "facet_col": None,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                }
                 return_structure["requestBoxplotDAPData"] = plotly_boxplot(
                     df,
-                    "requested_procedure_code_meaning",
-                    "total_dap",
-                    value_axis_title="DAP (cGy.cm<sup>2</sup>)",
-                    name_axis_title="Requested procedure",
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM DX requested procedure DAP boxplot",
-                    sorted_category_list=sorted_request_dap_categories,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
             if user_profile.plotHistograms:
