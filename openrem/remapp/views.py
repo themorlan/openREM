@@ -53,6 +53,7 @@ from django.template.defaultfilters import register
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 import numpy as np
 
 from .forms import itemsPerPageForm
@@ -82,7 +83,6 @@ from .views_charts_rf import (
     generate_required_rf_charts_list,
     rf_chart_form_processing,
 )
-from openrem.openremproject.settings import MEDIA_ROOT
 from .models import (
     GeneralStudyModuleAttr,
     create_user_profile,
@@ -564,7 +564,7 @@ def rf_detail_view_skin_map(request, pk=None):
         study_date = GeneralStudyModuleAttr.objects.get(pk=pk).study_date
         if study_date:
             skin_map_path = os.path.join(
-                MEDIA_ROOT,
+                settings.MEDIA_ROOT,
                 "skin_maps",
                 "{0:0>4}".format(study_date.year),
                 "{0:0>2}".format(study_date.month),
@@ -573,11 +573,11 @@ def rf_detail_view_skin_map(request, pk=None):
             )
         else:
             skin_map_path = os.path.join(
-                MEDIA_ROOT, "skin_maps", "skin_map_" + str(pk) + ".p"
+                settings.MEDIA_ROOT, "skin_maps", "skin_map_" + str(pk) + ".p"
             )
     except:
         skin_map_path = os.path.join(
-            MEDIA_ROOT, "skin_maps", "skin_map_" + str(pk) + ".p"
+            settings.MEDIA_ROOT, "skin_maps", "skin_map_" + str(pk) + ".p"
         )
 
     # If patient weight is missing from the database then db_pat_mass will be undefined
