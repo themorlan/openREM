@@ -68,7 +68,7 @@ def _remove_duplicates(query, study_rsp, assoc, query_id):
     :param query_id: current query ID for logging
     :return: Study, series and image level responses deleted if not useful
     """
-    from remapp.models import GeneralStudyModuleAttr
+    from ..models import GeneralStudyModuleAttr
 
     logger.debug(
         "{0} About to remove any studies we already have in the database".format(
@@ -86,7 +86,7 @@ def _remove_duplicates(query, study_rsp, assoc, query_id):
                 e, query_id
             )
         )
-    logger.info(
+    logger.debug(
         "{0} Checking to see if any of the {1} studies are already in the OpenREM database".format(
             query_id, study_rsp.count()
         )
@@ -208,7 +208,7 @@ def _filter(query, level, filter_name, filter_list, filter_type):
             filter_list=filter_list,
         )
     )
-    logger.info(
+    logger.debug(
         "{4} Filter at {0} level on {1} that {2} {3}".format(
             level, filter_name, filter_type, filter_list, query_id
         )
@@ -706,7 +706,7 @@ def _check_sr_type_in_study(assoc, study, query, query_id, get_empty_sr):
                     )
                 )
                 sopclasses.add("null_response")
-            logger.info(
+            logger.warning(
                 "{2} Check SR type: Oops, series {0} of study instance UID {1} returned null at image level"
                 "query. Try '-emptysr' option?".format(
                     sr.series_number, study.study_instance_uid, query_id
@@ -798,7 +798,7 @@ def _query_images(
     for (status, identifier) in responses:
         if status:
             if status.Status == 0x0000:
-                logger.info(
+                logger.debug(
                     "{0} Image level matching is complete for this study".format(
                         query_id
                     )
@@ -809,7 +809,7 @@ def _query_images(
                 query.save()
                 return
             if status.Status in (0xFF00, 0xFF01):
-                logger.info(
+                logger.debug(
                     "{0} Image level matches are continuing (0x{1:04x})".format(
                         query_id, status.Status
                     )
@@ -897,7 +897,7 @@ def _query_series(assoc, d2, studyrsp, query, query_id):
     for (status, identifier) in responses:
         if status:
             if status.Status == 0x0000:
-                logger.info(
+                logger.debug(
                     "{0} Series level matching is complete for this study".format(
                         query_id
                     )
@@ -908,7 +908,7 @@ def _query_series(assoc, d2, studyrsp, query, query_id):
                 query.save()
                 return
             if status.Status in (0xFF00, 0xFF01):
-                logger.info(
+                logger.debug(
                     "{0} Series level matches are continuing (0x{1:04x})".format(
                         query_id, status.Status
                     )
@@ -1012,7 +1012,7 @@ def _query_study(assoc, d, query, query_id):
                 query.save()
                 return
             if status.Status in (0xFF00, 0xFF01):
-                logger.info(
+                logger.debug(
                     "{0} Matches are continuing (0x{1:04x})".format(
                         query_id, status.Status
                     )
@@ -1144,7 +1144,7 @@ def _query_for_each_modality(all_mods, query, d, assoc):
                         )
                     )
                     query.save()
-                    logger.info(
+                    logger.debug(
                         "{1} Currently querying for {0} studies…".format(
                             mod, query_id
                         )
@@ -1216,7 +1216,7 @@ def _remove_duplicates_in_study_response(query, initial_count):
     :return: response count after removing duplicates
     """
 
-    logger.info(
+    logger.debug(
         "{0} {1} study responses returned, removing duplicates.".format(
             query.query_id, initial_count
         )
@@ -1415,7 +1415,7 @@ def qrscu(
 
     if assoc.is_established:
 
-        logger.info("{0} DICOM FindSCU ... ".format(query_id))
+        logger.info(f"{query_id} DICOM FindSCU: {query.query_summary}")
         d = Dataset()
         d.StudyDate = study_date
         d.StudyTime = study_time
@@ -1452,7 +1452,7 @@ def qrscu(
         # if remote doesn't match on modality it won't return a populated ModalitiesInStudy.
         study_rsp = query.dicomqrrspstudy_set.all()
         if modalities_returned and inc_sr:
-            logger.info(
+            logger.debug(
                 "{0} Modalities_returned is true and we only want studies with only SR in; removing everything "
                 "else.".format(query_id)
             )
@@ -1500,7 +1500,7 @@ def qrscu(
         if filter_logs:
             query.stage = _("Pruning study responses based on inc/exc options")
             query.save()
-            logger.info(
+            logger.debug(
                 "{1} Pruning study responses based on inc/exc options: {0}".format(
                     "".join(filter_logs), query_id
                 )
@@ -1524,11 +1524,11 @@ def qrscu(
                 "stationname_inc": 0,
                 "stationname_exc": 0,
             }
-            logger.info("{0} No inc/exc options selected".format(query_id))
+            logger.debug("{0} No inc/exc options selected".format(query_id))
 
         query.stage = _("Querying at series level to get more details about studies")
         query.save()
-        logger.info(
+        logger.debug(
             "{0} Querying at series level to get more details about studies".format(
                 query_id
             )
@@ -1561,17 +1561,17 @@ def qrscu(
                 "{1} mods_in_study_set is {0}".format(mods_in_study_set, query_id)
             )
             for mod_set in mods_in_study_set:
-                logger.info("{1} mod_set is {0}".format(mod_set, query_id))
+                logger.debug("{1} mod_set is {0}".format(mod_set, query_id))
                 delete = True
                 for mod_choice, details in list(all_mods.items()):
                     if details["inc"]:
-                        logger.info(
+                        logger.debug(
                             "{2} mod_choice {0}, details {1}".format(
                                 mod_choice, details, query_id
                             )
                         )
                         for mod in details["mods"]:
-                            logger.info(
+                            logger.debug(
                                 "{2} mod is {0}, mod_set is {1}".format(
                                     mod, mod_set, query_id
                                 )
@@ -1957,11 +1957,11 @@ def movescu(query_id):
 
     logger.debug("Query_id {0}: Requesting move association".format(query_id))
     assoc = ae.associate(remote["host"], remote["port"], ae_title=remote["aet"])
-    logger.info("Query_id {0}: Move association requested".format(query_id))
+    logger.debug("Query_id {0}: Move association requested".format(query_id))
 
     query.move_summary = "Preparing to start move request"
     query.save()
-    logger.info("Query_id {0}: Preparing to start move request".format(query_id))
+    logger.debug("Query_id {0}: Preparing to start move request".format(query_id))
 
     studies = query.dicomqrrspstudy_set.all()
     query.move_summary = "Requesting move of {0} studies".format(studies.count())
@@ -2048,7 +2048,7 @@ def movescu(query_id):
                 f"failed: {query.move_failed_sub_ops}, warning: {query.move_warning_sub_ops}."
             )
             query.save()
-            logger.info(msg)
+            logger.debug(msg)
 
             logger.debug("Query_id {0}: Releasing move association".format(query_id))
         else:
