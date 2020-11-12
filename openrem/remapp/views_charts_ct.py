@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 
 
 def generate_required_ct_charts_list(profile):
+    # pylint: disable=too-many-branches
     """Obtain a list of dictionaries containing the title string and base
     variable name for each required chart"""
     required_charts = []
