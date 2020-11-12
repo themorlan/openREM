@@ -471,13 +471,13 @@ def plotly_histogram_barchart(
 
                 category_idx = category_names.index(category_name)
 
-                counts, junk = np.histogram(
+                histogram_data = np.histogram(
                     category_subset[df_value_col].values, bins=bins
                 )
 
                 trace = go.Bar(
                     x=mid_bins,
-                    y=counts,
+                    y=histogram_data[0],
                     name=category_name,
                     marker_color=colour_sequence[category_idx],
                     legendgroup=category_idx,
@@ -618,13 +618,13 @@ def plotly_binned_statistic_barchart(
 
                     category_idx = category_names.index(category_name)
 
-                    statistic, junk, bin_numbers = stats.binned_statistic(
+                    binned_stats = stats.binned_statistic(
                         category_subset[df_x_value_col].values,
                         category_subset[df_y_value_col].values,
                         statistic=stat_name,
                         bins=bins,
                     )
-                    bin_counts = np.bincount(bin_numbers)
+                    bin_counts = np.bincount(binned_stats[2])
                     trace_labels = np.array(
                         [
                             "Frequency: {}<br>Bin range: {}".format(i, j)
@@ -634,7 +634,7 @@ def plotly_binned_statistic_barchart(
 
                     trace = go.Bar(
                         x=bin_labels,
-                        y=statistic,
+                        y=binned_stats[0],
                         name=category_name,
                         marker_color=colour_sequence[category_idx],
                         legendgroup=category_idx,
