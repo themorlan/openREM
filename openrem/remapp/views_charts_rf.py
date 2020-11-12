@@ -595,26 +595,29 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
         if user_profile.plotGroupingChoice == "series":
             facet_title = "Study description"
 
-        result = construct_over_time_charts(
-            df=df,
-            df_name_col="study_description",
-            df_value_col="total_dap",
-            df_date_col="study_date",
-            name_title="Study description",
-            value_title="DAP (cGy.cm<sup>2</sup>)",
-            date_title="Study date",
-            facet_title=facet_title,
-            sorting=[
+        parameter_dict = {  # pylint: disable=line-too-long
+            "df_name_col": "study_description",
+            "df_value_col": "total_dap",
+            "df_date_col": "study_date",
+            "name_title": "Study description",
+            "value_title": "DAP (cGy.cm<sup>2</sup>)",
+            "date_title": "Study date",
+            "facet_title": facet_title,
+            "sorting": [
                 user_profile.plotInitialSortingDirection,
                 user_profile.plotRFInitialSortingChoice,
             ],
-            time_period=plot_timeunit_period,
-            average_choices=average_choices + ["count"],
-            grouping_choice=user_profile.plotGroupingChoice,
-            colour_map=user_profile.plotColourMapChoice,
-            facet_col_wrap=user_profile.plotFacetColWrapVal,
-            file_name="OpenREM RF study DAP over time",
-            return_as_dict=return_as_dict,
+            "time_period": plot_timeunit_period,
+            "average_choices": average_choices + ["count"],
+            "grouping_choice": user_profile.plotGroupingChoice,
+            "colour_map": user_profile.plotColourMapChoice,
+            "facet_col_wrap": user_profile.plotFacetColWrapVal,
+            "file_name": "OpenREM RF study DAP over time",
+            "return_as_dict": return_as_dict,
+        }
+        result = construct_over_time_charts(
+            df,
+            parameter_dict,
         )
 
         if user_profile.plotMean:
@@ -628,26 +631,29 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
         if user_profile.plotGroupingChoice == "series":
             facet_title = "Requested procedure"
 
-        result = construct_over_time_charts(
-            df=df,
-            df_name_col="requested_procedure_code_meaning",
-            df_value_col="total_dap",
-            df_date_col="study_date",
-            name_title="Requested procedure",
-            value_title="DAP (cGy.cm<sup>2</sup>)",
-            date_title="Study date",
-            facet_title=facet_title,
-            sorting=[
+        parameter_dict = {
+            "df_name_col": "requested_procedure_code_meaning",
+            "df_value_col": "total_dap",
+            "df_date_col": "study_date",
+            "name_title": "Requested procedure",
+            "value_title": "DAP (cGy.cm<sup>2</sup>)",
+            "date_title": "Study date",
+            "facet_title": facet_title,
+            "sorting": [
                 user_profile.plotInitialSortingDirection,
                 user_profile.plotRFInitialSortingChoice,
             ],
-            time_period=plot_timeunit_period,
-            average_choices=average_choices + ["count"],
-            grouping_choice=user_profile.plotGroupingChoice,
-            colour_map=user_profile.plotColourMapChoice,
-            facet_col_wrap=user_profile.plotFacetColWrapVal,
-            file_name="OpenREM RF requested procedure DAP over time",
-            return_as_dict=return_as_dict,
+            "time_period": plot_timeunit_period,
+            "average_choices": average_choices + ["count"],
+            "grouping_choice": user_profile.plotGroupingChoice,
+            "colour_map": user_profile.plotColourMapChoice,
+            "facet_col_wrap": user_profile.plotFacetColWrapVal,
+            "file_name": "OpenREM RF requested procedure DAP over time",
+            "return_as_dict": return_as_dict,
+        }
+        result = construct_over_time_charts(
+            df,
+            parameter_dict,
         )
 
         if user_profile.plotMean:

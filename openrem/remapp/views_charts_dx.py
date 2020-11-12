@@ -762,26 +762,29 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotGroupingChoice == "series":
                 facet_title = "Acquisition protocol"
 
-            result = construct_over_time_charts(
-                df=df,
-                df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                df_value_col="projectionxrayradiationdose__irradeventxraydata__dose_area_product",
-                df_date_col="study_date",
-                name_title="Acquisition protocol",
-                value_title="DAP (cGy.cm<sup>2</sup>)",
-                date_title="Study date",
-                facet_title=facet_title,
-                sorting=[
+            parameter_dict = {
+                "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                "df_value_col": "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
+                "df_date_col": "study_date",
+                "name_title": "Acquisition protocol",
+                "value_title": "DAP (cGy.cm<sup>2</sup>)",
+                "date_title": "Study date",
+                "facet_title": facet_title,
+                "sorting": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotDXInitialSortingChoice,
                 ],
-                time_period=plot_timeunit_period,
-                average_choices=average_choices + ["count"],
-                grouping_choice=user_profile.plotGroupingChoice,
-                colour_map=user_profile.plotColourMapChoice,
-                facet_col_wrap=user_profile.plotFacetColWrapVal,
-                file_name="OpenREM DX acquisition protocol DAP over time",
-                return_as_dict=return_as_dict,
+                "time_period": plot_timeunit_period,
+                "average_choices": average_choices + ["count"],
+                "grouping_choice": user_profile.plotGroupingChoice,
+                "colour_map": user_profile.plotColourMapChoice,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "file_name": "OpenREM DX acquisition protocol DAP over time",
+                "return_as_dict": return_as_dict,
+            }
+            result = construct_over_time_charts(
+                df,
+                parameter_dict,
             )
 
             if user_profile.plotMean:
@@ -795,26 +798,29 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotGroupingChoice == "series":
                 facet_title = "Acquisition protocol"
 
-            result = construct_over_time_charts(
-                df=df,
-                df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                df_value_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
-                df_date_col="study_date",
-                name_title="Acquisition protocol",
-                value_title="kVp",
-                date_title="Study date",
-                facet_title=facet_title,
-                sorting=[
+            parameter_dict = {
+                "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
+                "df_date_col": "study_date",
+                "name_title": "Acquisition protocol",
+                "value_title": "kVp",
+                "date_title": "Study date",
+                "facet_title": facet_title,
+                "sorting": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotDXInitialSortingChoice,
                 ],
-                time_period=plot_timeunit_period,
-                average_choices=average_choices + ["count"],
-                grouping_choice=user_profile.plotGroupingChoice,
-                colour_map=user_profile.plotColourMapChoice,
-                facet_col_wrap=user_profile.plotFacetColWrapVal,
-                file_name="OpenREM DX acquisition protocol kVp over time",
-                return_as_dict=return_as_dict,
+                "time_period": plot_timeunit_period,
+                "average_choices": average_choices + ["count"],
+                "grouping_choice": user_profile.plotGroupingChoice,
+                "colour_map": user_profile.plotColourMapChoice,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "file_name": "OpenREM DX acquisition protocol kVp over time",
+                "return_as_dict": return_as_dict,
+            }
+            result = construct_over_time_charts(
+                df,
+                parameter_dict,
             )
 
             if user_profile.plotMean:
@@ -828,26 +834,29 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotGroupingChoice == "series":
                 facet_title = "Acquisition protocol"
 
-            result = construct_over_time_charts(  # pylint: disable=line-too-long
-                df=df,
-                df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                df_value_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",  # pylint: disable=line-too-long
-                df_date_col="study_date",
-                name_title="Acquisition protocol",
-                value_title="mAs",
-                date_title="Study date",
-                facet_title=facet_title,
-                sorting=[
+            parameter_dict = {  # pylint: disable=line-too-long
+                "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",  # pylint: disable=line-too-long
+                "df_date_col": "study_date",
+                "name_title": "Acquisition protocol",
+                "value_title": "mAs",
+                "date_title": "Study date",
+                "facet_title": facet_title,
+                "sorting": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotDXInitialSortingChoice,
                 ],
-                time_period=plot_timeunit_period,
-                average_choices=average_choices + ["count"],
-                grouping_choice=user_profile.plotGroupingChoice,
-                colour_map=user_profile.plotColourMapChoice,
-                facet_col_wrap=user_profile.plotFacetColWrapVal,
-                file_name="OpenREM DX acquisition protocol mAs over time",
-                return_as_dict=return_as_dict,
+                "time_period": plot_timeunit_period,
+                "average_choices": average_choices + ["count"],
+                "grouping_choice": user_profile.plotGroupingChoice,
+                "colour_map": user_profile.plotColourMapChoice,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "file_name": "OpenREM DX acquisition protocol mAs over time",
+                "return_as_dict": return_as_dict,
+            }
+            result = construct_over_time_charts(
+                df,
+                parameter_dict,
             )
 
             if user_profile.plotMean:

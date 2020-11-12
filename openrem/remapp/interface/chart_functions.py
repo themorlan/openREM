@@ -759,55 +759,42 @@ def plotly_frequency_barchart(
 
 def plotly_timeseries_linechart(
     df,
-    df_name_col,
-    df_value_col,
-    df_count_col,
-    df_date_col,
-    facet_col="x_ray_system_name",
-    facet_title="System",
-    value_axis_title="",
-    name_axis_title="",
-    legend_title="",
-    colourmap="RdYlBu",
-    filename="OpenREM_over_time_chart",
-    facet_col_wrap=3,
-    sorted_category_list=None,
-    return_as_dict=False,
+    params,
 ):
-    n_facet_rows = math.ceil(len(df[facet_col].unique()) / facet_col_wrap)
+    n_facet_rows = math.ceil(len(df[params["facet_col"]].unique()) / params["facet_col_wrap"])
     chart_height = n_facet_rows * 250
     if chart_height < 750:
         chart_height = 750
 
-    n_colours = len(df[df_name_col].unique())
-    colour_sequence = calculate_colour_sequence(colourmap, n_colours)
+    n_colours = len(df[params["df_name_col"]].unique())
+    colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
 
     try:
         fig = px.scatter(
             df,
-            x=df_date_col,
-            y=df_value_col,
-            color=df_name_col,
-            facet_col=facet_col,
-            facet_col_wrap=facet_col_wrap,
+            x=params["df_date_col"],
+            y=params["df_value_col"],
+            color=params["df_name_col"],
+            facet_col=params["facet_col"],
+            facet_col_wrap=params["facet_col_wrap"],
             facet_row_spacing=0.40
             / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
             labels={
-                facet_col: facet_title,
-                df_value_col: value_axis_title,
-                df_count_col: "Frequency",
-                df_name_col: legend_title,
-                df_date_col: name_axis_title,
+                params["facet_col"]: params["facet_title"],
+                params["df_value_col"]: params["value_axis_title"],
+                params["df_count_col"]: "Frequency",
+                params["df_name_col"]: params["legend_title"],
+                params["df_date_col"]: params["name_axis_title"],
                 "x_ray_system_name": "System",
             },
             hover_name="x_ray_system_name",
             hover_data={
                 "x_ray_system_name": False,
-                df_value_col: ":.2f",
-                df_count_col: ":.0f",
+                params["df_value_col"]: ":.2f",
+                params["df_count_col"]: ":.0f",
             },
             color_discrete_sequence=colour_sequence,
-            category_orders=sorted_category_list,
+            category_orders=params["sorted_category_list"],
             height=chart_height,
             render_mode="webgl",
         )
@@ -820,14 +807,14 @@ def plotly_timeseries_linechart(
         fig.update_xaxes(showticklabels=True)
         fig.update_yaxes(showticklabels=True, matches=None)
 
-        if return_as_dict:
+        if params["return_as_dict"]:
             return fig.to_dict()
         else:
             return plot(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(filename),
+                config=global_config(params["filename"]),
             )
 
     except ValueError as e:
@@ -1083,88 +1070,66 @@ def construct_scatter_chart(
 
 
 def construct_over_time_charts(
-    df=None,
-    df_name_col=None,
-    df_value_col=None,
-    df_date_col=None,
-    name_title=None,
-    value_title=None,
-    date_title=None,
-    facet_title=None,
-    sorting=None,
-    time_period=None,
-    average_choices=None,
-    grouping_choice=None,
-    colour_map=None,
-    facet_col_wrap=None,
-    file_name=None,
-    return_as_dict=False,
+    df,
+    params,
 ):
     sorted_categories = create_sorted_category_list(
-        df, df_name_col, df_value_col, sorting
+        df, params["df_name_col"], params["df_value_col"], params["sorting"]
     )
 
-    df = df.dropna(subset=[df_value_col])
+    df = df.dropna(subset=[params["df_value_col"]])
     if df.empty:
         return_value = {}
-        if "mean" in average_choices:
+        if "mean" in params["average_choices"]:
             return_value["mean"] = empty_dataframe_msg()
-        if "median" in average_choices:
+        if "median" in params["average_choices"]:
             return_value["median"] = empty_dataframe_msg()
         return return_value
 
     df_time_series = create_dataframe_time_series(
         df,
-        df_name_col,
-        df_value_col,
-        df_date_col=df_date_col,
-        time_period=time_period,
-        average_choices=average_choices,
+        params["df_name_col"],
+        params["df_value_col"],
+        df_date_col=params["df_date_col"],
+        time_period=params["time_period"],
+        average_choices=params["average_choices"],
     )
 
-    category_names_col = df_name_col
+    category_names_col = params["df_name_col"]
     group_by_col = "x_ray_system_name"
-    if grouping_choice == "series":
+    if params["grouping_choice"] == "series":
         category_names_col = "x_ray_system_name"
-        group_by_col = df_name_col
+        group_by_col = params["df_name_col"]
 
     return_value = {}
 
-    if "mean" in average_choices:
+    parameter_dict = {
+        "df_count_col": "count" + params["df_value_col"],
+        "df_name_col": category_names_col,
+        "df_date_col": params["df_date_col"],
+        "facet_col": group_by_col,
+        "facet_title": params["facet_title"],
+        "value_axis_title": params["value_title"],
+        "name_axis_title": params["date_title"],
+        "legend_title": params["name_title"],
+        "colourmap": params["colour_map"] ,
+        "filename": params["file_name"],
+        "facet_col_wrap": params["facet_col_wrap"],
+        "sorted_category_list": sorted_categories,
+        "return_as_dict": params["return_as_dict"],
+    }
+    if "mean" in params["average_choices"]:
+        parameter_dict["df_value_col"] = "mean" + params["df_value_col"]
         return_value["mean"] = plotly_timeseries_linechart(
             df_time_series,
-            category_names_col,
-            "mean" + df_value_col,
-            "count" + df_value_col,
-            df_date_col,
-            facet_col=group_by_col,
-            value_axis_title=value_title,
-            name_axis_title=date_title,
-            legend_title=name_title,
-            facet_title=facet_title,
-            colourmap=colour_map,
-            filename=file_name,
-            facet_col_wrap=facet_col_wrap,
-            sorted_category_list=sorted_categories,
-            return_as_dict=return_as_dict,
+            parameter_dict,
         )
 
-    if "median" in average_choices:
+    if "median" in params["average_choices"]:
+        parameter_dict["df_value_col"] = "median" + params["df_value_col"]
         return_value["median"] = plotly_timeseries_linechart(
             df_time_series,
-            category_names_col,
-            "median" + df_value_col,
-            "count" + df_value_col,
-            df_date_col,
-            facet_col=group_by_col,
-            value_axis_title=value_title,
-            name_axis_title=date_title,
-            legend_title=name_title,
-            colourmap=colour_map,
-            filename=file_name,
-            facet_col_wrap=facet_col_wrap,
-            sorted_category_list=sorted_categories,
-            return_as_dict=return_as_dict,
+            parameter_dict,
         )
 
     return return_value
