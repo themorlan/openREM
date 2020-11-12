@@ -1,4 +1,4 @@
-# pylint: disable=too-many-lines-in-module
+# pylint: disable=too-many-lines
 import logging
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
@@ -186,7 +186,7 @@ def mg_summary_chart_data(request):
 
 
 def mg_plot_calculations(f, user_profile, return_as_dict=False):
-    # pylint: disable=too-many-local-variables
+    # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
     """Calculations for mammography charts"""
@@ -435,10 +435,10 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
         if user_profile.plotMGAGDvsThickness:
-            parameter_dict = {
+            parameter_dict = {  # pylint: disable=line-too-long
                 "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                "df_x_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
-                "df_y_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
+                "df_x_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
+                "df_y_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
                 "sorting": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotMGInitialSortingChoice,
@@ -458,10 +458,10 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
         if user_profile.plotMGkVpvsThickness:
-            parameter_dict = {
+            parameter_dict = {  # pylint: disable=line-too-long
                 "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                "df_x_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
-                "df_y_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
+                "df_x_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
+                "df_y_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",  # pylint: disable=line-too-long
                 "sorting": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotMGInitialSortingChoice,
@@ -481,10 +481,10 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
         if user_profile.plotMGmAsvsThickness:
-            parameter_dict = {
+            parameter_dict = {  # pylint: disable=line-too-long
                 "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                "df_x_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
-                "df_y_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
+                "df_x_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
+                "df_y_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",  # pylint: disable=line-too-long
                 "sorting": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotMGInitialSortingChoice,

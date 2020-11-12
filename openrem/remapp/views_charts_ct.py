@@ -1,4 +1,4 @@
-# pylint: disable=too-many-lines-in-module
+# pylint: disable=too-many-lines
 import logging
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
@@ -432,7 +432,7 @@ def ct_summary_chart_data(request):
 
 
 def ct_plot_calculations(f, user_profile, return_as_dict=False):
-    # pylint: disable=too-many-local-variables
+    # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
     """CT chart data calculations"""
