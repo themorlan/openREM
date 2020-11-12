@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 
 def generate_required_mg_charts_list(profile):
     # pylint: disable=too-many-branches
+    # pylint: disable=too-many-statements
     """Obtain a list of dictionaries containing the title string and base
     variable name for each required chart"""
     required_charts = []
@@ -184,6 +185,8 @@ def mg_summary_chart_data(request):
 
 
 def mg_plot_calculations(f, user_profile, return_as_dict=False):
+    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-statements
     """Calculations for mammography charts"""
     # Return an empty structure if the queryset is empty
     if not f.qs:
@@ -602,6 +605,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
 
 
 def mg_chart_form_processing(request, user_profile):
+    # pylint: disable=too-many-statements
     # Obtain the chart options from the request
     chart_options_form = MGChartOptionsForm(request.GET)
     # Check whether the form data is valid

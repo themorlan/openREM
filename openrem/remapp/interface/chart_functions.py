@@ -400,6 +400,8 @@ def plotly_histogram_barchart(
     global_max_min=False,
     return_as_dict=False,
 ):
+    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-statements
     n_facets = len(df_facet_category_list)
     n_facet_rows = math.ceil(n_facets / facet_col_wrap)
     chart_height = n_facet_rows * 250
@@ -549,6 +551,8 @@ def plotly_binned_statistic_barchart(
     stat_name="mean",
     return_as_dict=False,
 ):
+    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-statements
     n_facets = len(df_facet_category_list)
     n_facet_rows = math.ceil(n_facets / facet_col_wrap)
     chart_height = n_facet_rows * 250
