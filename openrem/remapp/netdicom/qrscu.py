@@ -16,7 +16,7 @@ import os
 import sys
 import uuid
 import collections
-from pynetdicom import AE, debug_logger
+from pynetdicom import AE, debug_logger, _config
 from pynetdicom.sop_class import (
     StudyRootQueryRetrieveInformationModelFind,
     StudyRootQueryRetrieveInformationModelMove,
@@ -35,7 +35,9 @@ if projectpath not in sys.path:
     sys.path.insert(1, projectpath)
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
-
+_config.LOG_RESPONSE_IDENTIFIERS = False
+_config.LOG_HANDLER_LEVEL = 'none'
+_config.LOG_REQUEST_IDENTIFIERS = False
 
 def _generate_modalities_in_study(study_rsp, query_id):
     """Generates modalities in study from series level Modality information
