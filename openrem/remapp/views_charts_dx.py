@@ -872,23 +872,26 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 return_structure["acquisitionMedianmAsOverTime"] = result["median"]
 
         if user_profile.plotDXAcquisitionDAPvsMass:
-            return_structure["acquisitionDAPvsMass"] = construct_scatter_chart(
-                df=df,
-                df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                df_x_col="patientstudymoduleattr__patient_weight",
-                df_y_col="projectionxrayradiationdose__irradeventxraydata__dose_area_product",
-                x_axis_title="Patient mass (kg)",
-                y_axis_title="DAP (mGy.cm<sup>2</sub>)",
-                sorting=[
+            parameter_dict = {
+                "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                "df_x_col": "patientstudymoduleattr__patient_weight",
+                "df_y_col": "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
+                "sorting": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotDXInitialSortingChoice,
                 ],
-                grouping_choice=user_profile.plotGroupingChoice,
-                legend_title="Acquisition protocol",
-                colour_map=user_profile.plotColourMapChoice,
-                facet_col_wrap=user_profile.plotFacetColWrapVal,
-                file_name="OpenREM DX acquisition protocol DAP vs patient mass",
-                return_as_dict=return_as_dict,
+                "grouping_choice": user_profile.plotGroupingChoice,
+                "legend_title": "Acquisition protocol",
+                "colour_map": user_profile.plotColourMapChoice,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "x_axis_title": "Patient mass (kg)",
+                "y_axis_title": "DAP (mGy.cm<sup>2</sub>)",
+                "file_name": "OpenREM DX acquisition protocol DAP vs patient mass",
+                "return_as_dict": return_as_dict,
+            }
+            return_structure["acquisitionDAPvsMass"] = construct_scatter_chart(
+                df,
+                parameter_dict,
             )
 
     #######################################################################
@@ -1201,43 +1204,49 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
         if user_profile.plotDXStudyDAPvsMass:
-            return_structure["studyDAPvsMass"] = construct_scatter_chart(
-                df=df,
-                df_name_col="study_description",
-                df_x_col="patientstudymoduleattr__patient_weight",
-                df_y_col="total_dap",
-                x_axis_title="Patient mass (kg)",
-                y_axis_title="DAP (mGy.cm<sup>2</sub>)",
-                sorting=[
+            parameter_dict = {
+                "df_name_col": "study_description",
+                "df_x_col": "patientstudymoduleattr__patient_weight",
+                "df_y_col": "total_dap",
+                "sorting": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotDXInitialSortingChoice,
                 ],
-                grouping_choice=user_profile.plotGroupingChoice,
-                legend_title="Study description",
-                colour_map=user_profile.plotColourMapChoice,
-                facet_col_wrap=user_profile.plotFacetColWrapVal,
-                file_name="OpenREM DX study description DAP vs patient mass",
-                return_as_dict=return_as_dict,
+                "grouping_choice": user_profile.plotGroupingChoice,
+                "legend_title": "Study description",
+                "colour_map": user_profile.plotColourMapChoice,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "x_axis_title": "Patient mass (kg)",
+                "y_axis_title": "DAP (mGy.cm<sup>2</sub>)",
+                "file_name": "OpenREM DX study description DAP vs patient mass",
+                "return_as_dict": return_as_dict,
+            }
+            return_structure["studyDAPvsMass"] = construct_scatter_chart(
+                df,
+                parameter_dict,
             )
 
         if user_profile.plotDXRequestDAPvsMass:
-            return_structure["requestDAPvsMass"] = construct_scatter_chart(
-                df=df,
-                df_name_col="requested_procedure_code_meaning",
-                df_x_col="patientstudymoduleattr__patient_weight",
-                df_y_col="total_dap",
-                x_axis_title="Patient mass (kg)",
-                y_axis_title="DAP (mGy.cm<sup>2</sub>)",
-                sorting=[
+            parameter_dict = {
+                "df_name_col": "requested_procedure_code_meaning",
+                "df_x_col": "patientstudymoduleattr__patient_weight",
+                "df_y_col": "total_dap",
+                "sorting": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotDXInitialSortingChoice,
                 ],
-                grouping_choice=user_profile.plotGroupingChoice,
-                legend_title="Requested procedure",
-                colour_map=user_profile.plotColourMapChoice,
-                facet_col_wrap=user_profile.plotFacetColWrapVal,
-                file_name="OpenREM DX requested procedure DAP vs patient mass",
-                return_as_dict=return_as_dict,
+                "grouping_choice": user_profile.plotGroupingChoice,
+                "legend_title": "Requested procedure",
+                "colour_map": user_profile.plotColourMapChoice,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "x_axis_title": "Patient mass (kg)",
+                "y_axis_title": "DAP (mGy.cm<sup>2</sub>)",
+                "file_name": "OpenREM DX requested procedure DAP vs patient mass",
+                "return_as_dict": return_as_dict,
+            }
+            return_structure["requestDAPvsMass"] = construct_scatter_chart(
+                df,
+                parameter_dict,
             )
 
     return return_structure

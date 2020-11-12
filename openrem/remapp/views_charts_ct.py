@@ -748,43 +748,49 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
         if user_profile.plotCTAcquisitionCTDIvsMass:
-            return_structure["acquisitionScatterCTDIvsMass"] = construct_scatter_chart(
-                df=df,
-                df_name_col="ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                df_x_col="patientstudymoduleattr__patient_weight",
-                df_y_col="ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                x_axis_title="Patient mass (kg)",
-                y_axis_title="CTDI<sub>vol</sub> (mGy)",
-                sorting=[
+            parameter_dict = {
+                "df_name_col": "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                "df_x_col": "patientstudymoduleattr__patient_weight",
+                "df_y_col": "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                "sorting": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotCTInitialSortingChoice,
                 ],
-                grouping_choice=user_profile.plotGroupingChoice,
-                legend_title="Acquisition protocol",
-                colour_map=user_profile.plotColourMapChoice,
-                facet_col_wrap=user_profile.plotFacetColWrapVal,
-                file_name="OpenREM CT acquisition protocol CTDI vs patient mass",
-                return_as_dict=return_as_dict,
+                "grouping_choice": user_profile.plotGroupingChoice,
+                "legend_title": "Acquisition protocol",
+                "colour_map": user_profile.plotColourMapChoice,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "x_axis_title": "Patient mass (kg)",
+                "y_axis_title": "CTDI<sub>vol</sub> (mGy)",
+                "file_name": "OpenREM CT acquisition protocol CTDI vs patient mass",
+                "return_as_dict": return_as_dict,
+            }
+            return_structure["acquisitionScatterCTDIvsMass"] = construct_scatter_chart(
+                df,
+                parameter_dict,
             )
 
         if user_profile.plotCTAcquisitionDLPvsMass:
-            return_structure["acquisitionScatterDLPvsMass"] = construct_scatter_chart(
-                df=df,
-                df_name_col="ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                df_x_col="patientstudymoduleattr__patient_weight",
-                df_y_col="ctradiationdose__ctirradiationeventdata__dlp",
-                x_axis_title="Patient mass (kg)",
-                y_axis_title="DLP (mGy.cm)",
-                sorting=[
+            parameter_dict = {
+                "df_name_col": "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                "df_x_col": "patientstudymoduleattr__patient_weight",
+                "df_y_col": "ctradiationdose__ctirradiationeventdata__dlp",
+                "sorting": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotCTInitialSortingChoice,
                 ],
-                grouping_choice=user_profile.plotGroupingChoice,
-                legend_title="Acquisition protocol",
-                colour_map=user_profile.plotColourMapChoice,
-                facet_col_wrap=user_profile.plotFacetColWrapVal,
-                file_name="OpenREM CT acquisition protocol DLP vs patient mass",
-                return_as_dict=return_as_dict,
+                "grouping_choice": user_profile.plotGroupingChoice,
+                "legend_title": "Acquisition protocol",
+                "colour_map": user_profile.plotColourMapChoice,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "x_axis_title": "Patient mass (kg)",
+                "y_axis_title": "DLP (mGy.cm)",
+                "file_name": "OpenREM CT acquisition protocol DLP vs patient mass",
+                "return_as_dict": return_as_dict,
+            }
+            return_structure["acquisitionScatterDLPvsMass"] = construct_scatter_chart(
+                df,
+                parameter_dict,
             )
 
         if user_profile.plotCTAcquisitionCTDIOverTime:

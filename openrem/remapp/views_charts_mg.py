@@ -435,63 +435,72 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
         if user_profile.plotMGAGDvsThickness:
-            return_structure["AGDvsThickness"] = construct_scatter_chart(  # pylint: disable=line-too-long
-                df=df,
-                df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
-                df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
-                x_axis_title="Compressed breast thickness (mm)",
-                y_axis_title="AGD (mGy)",
-                sorting=[
+            parameter_dict = {
+                "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                "df_x_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+                "df_y_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
+                "sorting": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotMGInitialSortingChoice,
                 ],
-                grouping_choice=user_profile.plotGroupingChoice,
-                legend_title="Acquisition protocol",
-                colour_map=user_profile.plotColourMapChoice,
-                facet_col_wrap=user_profile.plotFacetColWrapVal,
-                file_name="OpenREM CT acquisition protocol AGD vs thickness",
-                return_as_dict=return_as_dict,
+                "grouping_choice": user_profile.plotGroupingChoice,
+                "legend_title": "Acquisition protocol",
+                "colour_map": user_profile.plotColourMapChoice,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "x_axis_title": "Compressed breast thickness (mm)",
+                "y_axis_title": "AGD (mGy)",
+                "file_name": "OpenREM CT acquisition protocol AGD vs thickness",
+                "return_as_dict": return_as_dict,
+            }
+            return_structure["AGDvsThickness"] = construct_scatter_chart(  # pylint: disable=line-too-long
+                df,
+                parameter_dict,
             )
 
         if user_profile.plotMGkVpvsThickness:
-            return_structure["kVpvsThickness"] = construct_scatter_chart(  # pylint: disable=line-too-long
-                df=df,
-                df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
-                df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
-                x_axis_title="Compressed breast thickness (mm)",
-                y_axis_title="kVp",
-                sorting=[
+            parameter_dict = {
+                "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                "df_x_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+                "df_y_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
+                "sorting": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotMGInitialSortingChoice,
                 ],
-                grouping_choice=user_profile.plotGroupingChoice,
-                legend_title="Acquisition protocol",
-                colour_map=user_profile.plotColourMapChoice,
-                facet_col_wrap=user_profile.plotFacetColWrapVal,
-                file_name="OpenREM CT acquisition protocol kVp vs thickness",
-                return_as_dict=return_as_dict,
+                "grouping_choice": user_profile.plotGroupingChoice,
+                "legend_title": "Acquisition protocol",
+                "colour_map": user_profile.plotColourMapChoice,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "x_axis_title": "Compressed breast thickness (mm)",
+                "y_axis_title": "kVp",
+                "file_name": "OpenREM CT acquisition protocol kVp vs thickness",
+                "return_as_dict": return_as_dict,
+            }
+            return_structure["kVpvsThickness"] = construct_scatter_chart(  # pylint: disable=line-too-long
+                df,
+                parameter_dict,
             )
 
         if user_profile.plotMGmAsvsThickness:
-            return_structure["mAsvsThickness"] = construct_scatter_chart(  # pylint: disable=line-too-long
-                df=df,
-                df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                df_x_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
-                df_y_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",  # pylint: disable=line-too-long
-                x_axis_title="Compressed breast thickness (mm)",
-                y_axis_title="mAs",
-                sorting=[
+            parameter_dict = {
+                "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                "df_x_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+                "df_y_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
+                "sorting": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotMGInitialSortingChoice,
                 ],
-                grouping_choice=user_profile.plotGroupingChoice,
-                legend_title="Acquisition protocol",
-                colour_map=user_profile.plotColourMapChoice,
-                facet_col_wrap=user_profile.plotFacetColWrapVal,
-                file_name="OpenREM CT acquisition protocol mAs vs thickness",
-                return_as_dict=return_as_dict,
+                "grouping_choice": user_profile.plotGroupingChoice,
+                "legend_title": "Acquisition protocol",
+                "colour_map": user_profile.plotColourMapChoice,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "x_axis_title": "Compressed breast thickness (mm)",
+                "y_axis_title": "mAs",
+                "file_name": "OpenREM CT acquisition protocol mAs vs thickness",
+                "return_as_dict": return_as_dict,
+            }
+            return_structure["mAsvsThickness"] = construct_scatter_chart(  # pylint: disable=line-too-long
+                df,
+                parameter_dict,
             )
 
         if user_profile.plotMGacquisitionFreq:

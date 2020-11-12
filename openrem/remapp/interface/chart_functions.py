@@ -1023,43 +1023,33 @@ def construct_frequency_chart(
 
 
 def construct_scatter_chart(
-    df=None,
-    df_name_col=None,
-    df_x_col=None,
-    df_y_col=None,
-    sorting=None,
-    grouping_choice=None,
-    legend_title=None,
-    colour_map=None,
-    facet_col_wrap=None,
-    x_axis_title=None,
-    y_axis_title=None,
-    file_name=None,
-    return_as_dict=False,
+    df,
+    params,
 ):
-    sorted_categories = create_sorted_category_list(df, df_name_col, df_y_col, sorting)
+    sorted_categories = create_sorted_category_list(df, params["df_name_col"], params["df_y_col"], params["sorting"])
 
-    df_legend_col = df_name_col
+    df_legend_col = params["df_name_col"]
+    legend_title = params["legend_title"]
     df_group_col = "x_ray_system_name"
-    if grouping_choice == "series":
+    if params["grouping_choice"] == "series":
         df_legend_col = "x_ray_system_name"
         legend_title = "System"
-        df_group_col = df_name_col
+        df_group_col = params["df_name_col"]
 
     return plotly_scatter(
         df,
-        df_x_col,
-        df_y_col,
+        params["df_x_col"],
+        params["df_y_col"],
         df_legend_col,
         df_facet_col=df_group_col,
-        x_axis_title=x_axis_title,
-        y_axis_title=y_axis_title,
+        x_axis_title=params["x_axis_title"],
+        y_axis_title=params["y_axis_title"],
         legend_title=legend_title,
-        colourmap=colour_map,
-        filename=file_name,
-        facet_col_wrap=facet_col_wrap,
+        colourmap=params["colour_map"],
+        filename=params["file_name"],
+        facet_col_wrap=params["facet_col_wrap"],
         sorted_category_list=sorted_categories,
-        return_as_dict=return_as_dict,
+        return_as_dict=params["return_as_dict"],
     )
 
 
