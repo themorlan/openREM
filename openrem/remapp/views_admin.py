@@ -1451,14 +1451,20 @@ def chart_options_view(request):
                 "plotRFInitialSortingChoice"
             ]
 
-            user_profile.plotMGStudyPerDayAndHour = mg_form.cleaned_data[
-                "plotMGStudyPerDayAndHour"
+            user_profile.plotMGacquisitionFreq =  mg_form.cleaned_data[
+                "plotMGacquisitionFreq"
             ]
-            user_profile.plotMGAGDvsThickness = mg_form.cleaned_data[
-                "plotMGAGDvsThickness"
+            user_profile.plotMGaverageAGD =  mg_form.cleaned_data[
+                "plotMGaverageAGD"
             ]
             user_profile.plotMGaverageAGDvsThickness = mg_form.cleaned_data[
                 "plotMGaverageAGDvsThickness"
+            ]
+            user_profile.plotMGAcquisitionAGDOverTime = mg_form.cleaned_data[
+                "plotMGAcquisitionAGDOverTime"
+            ]
+            user_profile.plotMGAGDvsThickness = mg_form.cleaned_data[
+                "plotMGAGDvsThickness"
             ]
             user_profile.plotMGkVpvsThickness = mg_form.cleaned_data[
                 "plotMGkVpvsThickness"
@@ -1466,8 +1472,8 @@ def chart_options_view(request):
             user_profile.plotMGmAsvsThickness = mg_form.cleaned_data[
                 "plotMGmAsvsThickness"
             ]
-            user_profile.plotMGAcquisitionAGDOverTime = mg_form.cleaned_data[
-                "plotMGAcquisitionAGDOverTime"
+            user_profile.plotMGStudyPerDayAndHour = mg_form.cleaned_data[
+                "plotMGStudyPerDayAndHour"
             ]
             user_profile.plotMGOverTimePeriod = mg_form.cleaned_data[
                 "plotMGOverTimePeriod"
@@ -1573,12 +1579,14 @@ def chart_options_view(request):
     }
 
     mg_form_data = {
-        "plotMGStudyPerDayAndHour": user_profile.plotMGStudyPerDayAndHour,
+        "plotMGacquisitionFreq": user_profile.plotMGacquisitionFreq,
+        "plotMGaverageAGD": user_profile.plotMGaverageAGD,
+        "plotMGaverageAGDvsThickness": user_profile.plotMGaverageAGDvsThickness,
+        "plotMGAcquisitionAGDOverTime": user_profile.plotMGAcquisitionAGDOverTime,
         "plotMGAGDvsThickness": user_profile.plotMGAGDvsThickness,
         "plotMGkVpvsThickness": user_profile.plotMGkVpvsThickness,
         "plotMGmAsvsThickness": user_profile.plotMGmAsvsThickness,
-        "plotMGaverageAGDvsThickness": user_profile.plotMGaverageAGDvsThickness,
-        "plotMGAcquisitionAGDOverTime": user_profile.plotMGAcquisitionAGDOverTime,
+        "plotMGStudyPerDayAndHour": user_profile.plotMGStudyPerDayAndHour,
         "plotMGOverTimePeriod": user_profile.plotMGOverTimePeriod,
         "plotMGInitialSortingChoice": user_profile.plotMGInitialSortingChoice,
     }

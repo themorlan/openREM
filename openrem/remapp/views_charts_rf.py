@@ -258,9 +258,9 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
     if user_profile.plotRFStudyPerDayAndHour:
         time_fields.append("study_time")
 
-    system_field = None
+    system_field = []
     if user_profile.plotSeriesPerSystem:
-        system_field = (
+        system_field.append(
             "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
         )
 

@@ -71,20 +71,12 @@ def create_dataframe(
     fields_to_include = set()
     if uid:
         fields_to_include.add(uid)
-    if field_dict["names"]:
-        for field in field_dict["names"]:
-            fields_to_include.add(field)
-    if field_dict["values"]:
-        for field in field_dict["values"]:
-            fields_to_include.add(field)
-    if field_dict["dates"]:
-        for field in field_dict["dates"]:
-            fields_to_include.add(field)
-    if field_dict["times"]:
-        for field in field_dict["times"]:
-            fields_to_include.add(field)
-    if field_dict["system"]:
-        fields_to_include.add(field_dict["system"])
+
+    fields_to_include.update(field_dict["names"])
+    fields_to_include.update(field_dict["values"])
+    fields_to_include.update(field_dict["dates"])
+    fields_to_include.update(field_dict["times"])
+    fields_to_include.update(field_dict["system"])
 
     # NOTE: I am not excluding zero-value events from the calculations (zero DLP or zero CTDI)
     df = pd.DataFrame.from_records(database_events.values(*fields_to_include))
@@ -100,21 +92,19 @@ def create_dataframe(
             df[name_field] = df[name_field].str.lower()
 
     if field_dict["system"]:
-        df.rename(columns={field_dict["system"]: "x_ray_system_name"}, inplace=True)
+        df.rename(columns={field_dict["system"][0]: "x_ray_system_name"}, inplace=True)
         df.sort_values(by="x_ray_system_name", inplace=True)
     else:
         df.insert(0, "x_ray_system_name", "All systems")
     dtype_conversion["x_ray_system_name"] = "category"
 
-    if field_dict["values"]:
-        for idx, value_field in enumerate(field_dict["values"]):
-            df[value_field] = df[value_field].astype(float)
-            if data_point_value_multipliers:
-                df[value_field] *= data_point_value_multipliers[idx]
+    for idx, value_field in enumerate(field_dict["values"]):
+        df[value_field] = df[value_field].astype(float)
+        if data_point_value_multipliers:
+            df[value_field] *= data_point_value_multipliers[idx]
 
-    if field_dict["dates"]:
-        for date_field in field_dict["dates"]:
-            df[date_field] = pd.to_datetime(df[date_field], format="%Y-%m-%d")
+    for date_field in field_dict["dates"]:
+        df[date_field] = pd.to_datetime(df[date_field], format="%Y-%m-%d")
 
     df = df.astype(dtype_conversion)
 

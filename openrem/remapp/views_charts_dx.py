@@ -412,9 +412,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
         if any(charts_of_interest):
             date_fields.append("study_date")
 
-        system_field = None
+        system_field = []
         if user_profile.plotSeriesPerSystem:
-            system_field = (
+            system_field.append(
                 "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
             )
 
@@ -928,9 +928,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             date_fields.append("study_date")
             time_fields.append("study_time")
 
-        system_field = None
+        system_field = []
         if user_profile.plotSeriesPerSystem:
-            system_field = (
+            system_field.append(
                 "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
             )
 
