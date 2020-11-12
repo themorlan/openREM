@@ -581,9 +581,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
             if user_profile.plotBoxplots:
-                parameter_dict = {
+                parameter_dict = {  # pylint: disable=line-too-long
                     "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
+                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",  # pylint: disable=line-too-long
                     "value_axis_title": "kVp",
                     "name_axis_title": "Acquisition protocol",
                     "colourmap": user_profile.plotColourMapChoice,
@@ -680,9 +680,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
             if user_profile.plotBoxplots:
-                parameter_dict = {
+                parameter_dict = {  # pylint: disable=line-too-long
                     "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
+                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",  # pylint: disable=line-too-long
                     "value_axis_title": "mAs",
                     "name_axis_title": "Acquisition protocol",
                     "colourmap": user_profile.plotColourMapChoice,
@@ -828,7 +828,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotGroupingChoice == "series":
                 facet_title = "Acquisition protocol"
 
-            result = construct_over_time_charts(
+            result = construct_over_time_charts(  # pylint: disable=line-too-long
                 df=df,
                 df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                 df_value_col="projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",  # pylint: disable=line-too-long
