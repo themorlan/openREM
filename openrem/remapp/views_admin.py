@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
 #    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
 #
