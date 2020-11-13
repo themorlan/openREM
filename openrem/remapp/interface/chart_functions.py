@@ -659,65 +659,6 @@ def plotly_binned_statistic_barchart(
         )
 
 
-def plotly_frequency_barchart(
-    df,
-    df_legend_col,
-    legend_title="",
-    df_x_axis_col="x_ray_system_name",
-    x_axis_title="System",
-    colourmap="RdYlBu",
-    filename="OpenREM_bar_chart",
-    sorted_category_list=None,
-    facet_col=None,
-    facet_col_wrap=3,
-    return_as_dict=False,
-):
-    chart_height = 750
-    n_facet_rows = 1
-
-    if facet_col:
-        n_facet_rows = math.ceil(len(df[facet_col].unique()) / facet_col_wrap)
-        chart_height = n_facet_rows * 250
-        if chart_height < 750:
-            chart_height = 750
-
-    n_colours = len(df[df_legend_col].unique())
-    colour_sequence = calculate_colour_sequence(colourmap, n_colours)
-
-    fig = px.bar(
-        df,
-        x=df_x_axis_col,
-        y="count",
-        color=df_legend_col,
-        facet_col=facet_col,
-        facet_col_wrap=facet_col_wrap,
-        facet_row_spacing=0.40 / n_facet_rows,
-        labels={
-            "count": "Frequency",
-            df_legend_col: legend_title,
-            df_x_axis_col: x_axis_title,
-        },
-        category_orders=sorted_category_list,
-        color_discrete_sequence=colour_sequence,
-        height=chart_height,
-    )
-
-    fig.update_xaxes(tickson="boundaries", showticklabels=True)
-    fig.update_yaxes(showticklabels=True, matches=None)
-
-    fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
-
-    if return_as_dict:
-        return fig.to_dict()
-    else:
-        return plot(
-            fig,
-            output_type="div",
-            include_plotlyjs=False,
-            config=global_config(filename),
-        )
-
-
 def plotly_timeseries_linechart(
     df,
     params,
@@ -934,55 +875,74 @@ def plotly_barchart_weekdays(
         )
 
 
-def construct_frequency_chart(
-    df=None,
-    df_name_col=None,
-    sorting_choice=None,
-    legend_title=None,
-    df_x_axis_col=None,
-    x_axis_title=None,
-    grouping_choice=None,
-    colourmap=None,
-    file_name=None,
-    sorted_categories=None,
-    groupby_cols=None,
-    facet_col=None,
-    facet_col_wrap=3,
-    return_as_dict=False,
+def plotly_frequency_barchart(
+    df,
+    params,
 ):
-
-    if groupby_cols is None:
-        groupby_cols = [df_name_col]
+    if params["groupby_cols"] is None:
+        params["groupby_cols"] = [params["df_name_col"]]
 
     df_aggregated = create_dataframe_aggregates(
-        df, groupby_cols, df_name_col, ["count"]
+        df, params["groupby_cols"], params["df_name_col"], ["count"]
     )
 
-    if not sorted_categories:
-        sorted_categories = create_freq_sorted_category_list(
-            df, df_name_col, sorting_choice
+    if not params["sorted_categories"]:
+        params["sorted_categories"] = create_freq_sorted_category_list(
+            df, params["df_name_col"], params["sorting_choice"]
         )
 
-    df_legend_col = df_name_col
-    if grouping_choice == "series":
+    df_legend_col = params["df_name_col"]
+    if params["grouping_choice"] == "series":
         df_legend_col = "x_ray_system_name"
-        x_axis_title = legend_title
-        legend_title = "System"
-        df_x_axis_col = df_name_col
+        params["x_axis_title"] = params["legend_title"]
+        params["legend_title"] = "System"
+        params["df_x_axis_col"] = params["df_name_col"]
 
-    return plotly_frequency_barchart(
+    chart_height = 750
+    n_facet_rows = 1
+
+    if params["facet_col"]:
+        n_facet_rows = math.ceil(len(df_aggregated[params["facet_col"]].unique()) / params["facet_col_wrap"])
+        chart_height = n_facet_rows * 250
+        if chart_height < 750:
+            chart_height = 750
+
+    n_colours = len(df_aggregated[df_legend_col].unique())
+    colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
+
+    fig = px.bar(
         df_aggregated,
-        df_legend_col,
-        legend_title=legend_title,
-        df_x_axis_col=df_x_axis_col,
-        x_axis_title=x_axis_title,
-        colourmap=colourmap,
-        filename=file_name,
-        facet_col=facet_col,
-        facet_col_wrap=facet_col_wrap,
-        sorted_category_list=sorted_categories,
-        return_as_dict=return_as_dict,
+        x=params["df_x_axis_col"],
+        y="count",
+        color=df_legend_col,
+        facet_col=params["facet_col"],
+        facet_col_wrap=params["facet_col_wrap"],
+        facet_row_spacing=0.40 / n_facet_rows,
+        labels={
+            "count": "Frequency",
+            df_legend_col: params["legend_title"],
+            params["df_x_axis_col"]: params["x_axis_title"],
+        },
+        category_orders=params["sorted_categories"],
+        color_discrete_sequence=colour_sequence,
+        height=chart_height,
     )
+
+    fig.update_xaxes(tickson="boundaries", showticklabels=True)
+    fig.update_yaxes(showticklabels=True, matches=None)
+
+    fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+
+    if params["return_as_dict"]:
+        return fig.to_dict()
+    else:
+        return plot(
+            fig,
+            output_type="div",
+            include_plotlyjs=False,
+            config=global_config(params["file_name"]),
+        )
+
 
 
 def construct_over_time_charts(

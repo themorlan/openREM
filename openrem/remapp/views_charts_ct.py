@@ -19,7 +19,7 @@ from .interface.chart_functions import (
     plotly_histogram_barchart,
     plotly_barchart_weekdays,
     plotly_set_default_theme,
-    construct_frequency_chart,
+    plotly_frequency_barchart,
     plotly_scatter,
     construct_over_time_charts,
 )
@@ -734,21 +734,27 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             elif sorted_acquisition_ctdi_categories:
                 sorted_categories = sorted_acquisition_ctdi_categories
 
-            return_structure["acquisitionFrequencyData"] = construct_frequency_chart(
-                df=df,
-                df_name_col="ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                sorting_choice=[
+            parameter_dict = {
+                "df_name_col": "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                "sorting_choice": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotCTInitialSortingChoice,
                 ],
-                legend_title="Acquisition protocol",
-                df_x_axis_col="x_ray_system_name",
-                x_axis_title="System",
-                grouping_choice=user_profile.plotGroupingChoice,
-                colourmap=user_profile.plotColourMapChoice,
-                file_name="OpenREM CT acquisition protocol frequency",
-                sorted_categories=sorted_categories,
-                return_as_dict=return_as_dict,
+                "legend_title": "Acquisition protocol",
+                "df_x_axis_col": "x_ray_system_name",
+                "x_axis_title": "System",
+                "grouping_choice": user_profile.plotGroupingChoice,
+                "colourmap": user_profile.plotColourMapChoice,
+                "file_name": "OpenREM CT acquisition protocol frequency",
+                "sorted_categories": sorted_categories,
+                "groupby_cols": None,
+                "facet_col": None,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "return_as_dict": return_as_dict,
+            }
+            return_structure["acquisitionFrequencyData"] = plotly_frequency_barchart(
+                df,
+                parameter_dict,
             )
 
         if user_profile.plotCTAcquisitionCTDIvsMass:
@@ -1247,21 +1253,27 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             elif sorted_study_events_categories:
                 sorted_categories = sorted_study_events_categories
 
-            return_structure["studyFrequencyData"] = construct_frequency_chart(
-                df=df,
-                df_name_col="study_description",
-                sorting_choice=[
+            parameter_dict = {
+                "df_name_col": "study_description",
+                "sorting_choice": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotCTInitialSortingChoice,
                 ],
-                legend_title="Study description",
-                df_x_axis_col="x_ray_system_name",
-                x_axis_title="System",
-                grouping_choice=user_profile.plotGroupingChoice,
-                colourmap=user_profile.plotColourMapChoice,
-                file_name="OpenREM CT study description frequency",
-                sorted_categories=sorted_categories,
-                return_as_dict=return_as_dict,
+                "legend_title": "Study description",
+                "df_x_axis_col": "x_ray_system_name",
+                "x_axis_title": "System",
+                "grouping_choice": user_profile.plotGroupingChoice,
+                "colourmap": user_profile.plotColourMapChoice,
+                "file_name": "OpenREM CT study description frequency",
+                "sorted_categories": sorted_categories,
+                "groupby_cols": None,
+                "facet_col": None,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "return_as_dict": return_as_dict,
+            }
+            return_structure["studyFrequencyData"] = plotly_frequency_barchart(
+                df,
+                parameter_dict,
             )
 
         sorted_request_dlp_categories = None
@@ -1469,21 +1481,27 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             elif sorted_request_events_categories:
                 sorted_categories = sorted_request_events_categories
 
-            return_structure["requestFrequencyData"] = construct_frequency_chart(
-                df=df,
-                df_name_col="requested_procedure_code_meaning",
-                sorting_choice=[
+            parameter_dict = {
+                "df_name_col": "requested_procedure_code_meaning",
+                "sorting_choice": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotCTInitialSortingChoice,
                 ],
-                legend_title="Requested procedure",
-                df_x_axis_col="x_ray_system_name",
-                x_axis_title="System",
-                grouping_choice=user_profile.plotGroupingChoice,
-                colourmap=user_profile.plotColourMapChoice,
-                file_name="OpenREM CT requested procedure frequency",
-                sorted_categories=sorted_categories,
-                return_as_dict=return_as_dict,
+                "legend_title": "Requested procedure",
+                "df_x_axis_col": "x_ray_system_name",
+                "x_axis_title": "System",
+                "grouping_choice": user_profile.plotGroupingChoice,
+                "colourmap": user_profile.plotColourMapChoice,
+                "file_name": "OpenREM CT requested procedure frequency",
+                "sorted_categories": sorted_categories,
+                "groupby_cols": None,
+                "facet_col": None,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "return_as_dict": return_as_dict,
+            }
+            return_structure["requestFrequencyData"] = plotly_frequency_barchart(
+                df,
+                parameter_dict,
             )
 
         if user_profile.plotCTStudyMeanDLPOverTime:

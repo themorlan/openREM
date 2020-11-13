@@ -18,7 +18,7 @@ from .interface.chart_functions import (
     plotly_histogram_barchart,
     plotly_barchart_weekdays,
     plotly_set_default_theme,
-    construct_frequency_chart,
+    plotly_frequency_barchart,
     construct_over_time_charts,
 )
 
@@ -432,24 +432,27 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             x_col = "performing_physician_name"
             facet_col = "study_description"
 
-        return_structure["studyFrequencyData"] = construct_frequency_chart(
-            df=df,
-            df_name_col=x_col,
-            groupby_cols=groupby_cols,
-            facet_col=facet_col,
-            facet_col_wrap=user_profile.plotFacetColWrapVal,
-            sorting_choice=[
+        parameter_dict = {
+            "df_name_col": x_col,
+            "sorting_choice": [
                 user_profile.plotInitialSortingDirection,
                 user_profile.plotRFInitialSortingChoice,
             ],
-            legend_title="Study description",
-            df_x_axis_col="x_ray_system_name",
-            x_axis_title="System",
-            grouping_choice=user_profile.plotGroupingChoice,
-            colourmap=user_profile.plotColourMapChoice,
-            file_name="OpenREM RF study description frequency",
-            sorted_categories=sorted_study_categories,
-            return_as_dict=return_as_dict,
+            "legend_title": "Study description",
+            "df_x_axis_col": "x_ray_system_name",
+            "x_axis_title": "System",
+            "grouping_choice": user_profile.plotGroupingChoice,
+            "colourmap": user_profile.plotColourMapChoice,
+            "file_name": "OpenREM RF study description frequency",
+            "sorted_categories": sorted_study_categories,
+            "groupby_cols": groupby_cols,
+            "facet_col": facet_col,
+            "facet_col_wrap": user_profile.plotFacetColWrapVal,
+            "return_as_dict": return_as_dict,
+        }
+        return_structure["studyFrequencyData"] = plotly_frequency_barchart(
+            df,
+            parameter_dict,
         )
 
     sorted_request_categories = None
@@ -575,24 +578,27 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             x_col = "performing_physician_name"
             facet_col = "requested_procedure_code_meaning"
 
-        return_structure["requestFrequencyData"] = construct_frequency_chart(
-            df=df,
-            df_name_col=x_col,
-            groupby_cols=groupby_cols,
-            facet_col=facet_col,
-            facet_col_wrap=user_profile.plotFacetColWrapVal,
-            sorting_choice=[
+        parameter_dict = {
+            "df_name_col": x_col,
+            "sorting_choice": [
                 user_profile.plotInitialSortingDirection,
                 user_profile.plotRFInitialSortingChoice,
             ],
-            legend_title="Requested procedure",
-            df_x_axis_col="x_ray_system_name",
-            x_axis_title="System",
-            grouping_choice=user_profile.plotGroupingChoice,
-            colourmap=user_profile.plotColourMapChoice,
-            file_name="OpenREM RF requested procedure frequency",
-            sorted_categories=sorted_request_categories,
-            return_as_dict=return_as_dict,
+            "legend_title": "Requested procedure",
+            "df_x_axis_col": "x_ray_system_name",
+            "x_axis_title": "System",
+            "grouping_choice": user_profile.plotGroupingChoice,
+            "colourmap": user_profile.plotColourMapChoice,
+            "file_name": "OpenREM RF requested procedure frequency",
+            "sorted_categories": sorted_request_categories,
+            "groupby_cols": groupby_cols,
+            "facet_col": facet_col,
+            "facet_col_wrap": user_profile.plotFacetColWrapVal,
+            "return_as_dict": return_as_dict,
+        }
+        return_structure["requestFrequencyData"] = plotly_frequency_barchart(
+            df,
+            parameter_dict,
         )
 
     if user_profile.plotRFStudyDAPOverTime:

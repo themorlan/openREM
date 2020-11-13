@@ -17,7 +17,7 @@ from .interface.chart_functions import (
     plotly_barchart,
     plotly_histogram_barchart,
     plotly_scatter,
-    construct_frequency_chart,
+    plotly_frequency_barchart,
     construct_over_time_charts,
     plotly_set_default_theme,
     create_sorted_category_list,
@@ -496,21 +496,27 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotMGaverageAGD:
                 sorted_categories = sorted_acquisition_agd_categories
 
-            return_structure["acquisitionFrequencyData"] = construct_frequency_chart(
-                df=df,
-                df_name_col="projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                sorting_choice=[
+            parameter_dict = {
+                "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                "sorting_choice": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotMGInitialSortingChoice,
                 ],
-                legend_title="Acquisition protocol",
-                df_x_axis_col="x_ray_system_name",
-                x_axis_title="System",
-                grouping_choice=user_profile.plotGroupingChoice,
-                colourmap=user_profile.plotColourMapChoice,
-                file_name="OpenREM MG acquisition protocol frequency",
-                sorted_categories=sorted_categories,
-                return_as_dict=return_as_dict,
+                "legend_title": "Acquisition",
+                "df_x_axis_col": "x_ray_system_name",
+                "x_axis_title": "System",
+                "grouping_choice": user_profile.plotGroupingChoice,
+                "colourmap": user_profile.plotColourMapChoice,
+                "file_name": "OpenREM MG acquisition protocol frequency",
+                "sorted_categories": sorted_categories,
+                "groupby_cols": None,
+                "facet_col": None,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "return_as_dict": return_as_dict,
+            }
+            return_structure["acquisitionFrequencyData"] = plotly_frequency_barchart(
+                df,
+                parameter_dict,
             )
 
         if user_profile.plotMGAcquisitionAGDOverTime:
