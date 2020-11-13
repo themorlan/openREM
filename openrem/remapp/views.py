@@ -38,7 +38,7 @@ import json
 import logging
 from datetime import datetime, timedelta
 from decimal import Decimal
-import pickle
+import pickle  # nosec
 from collections import OrderedDict
 
 from django.db.models import Sum, Q, Min
