@@ -526,35 +526,22 @@ def plotly_histogram_barchart(
 
 def plotly_binned_statistic_barchart(
     df,
-    df_x_value_col,
-    df_y_value_col,
-    x_axis_title="",
-    y_axis_title="",
-    df_category_col=None,
-    df_facet_col="x_ray_system_name",
-    facet_title="System",
-    user_bins=None,
-    colour_map="RdYlBu",
-    file_name="OpenREM_binned_statistic_chart",
-    facet_col_wrap=3,
-    df_facet_category_list=None,
-    df_category_name_list=None,
-    stat_name="mean",
-    return_as_dict=False,
+    params,
 ):
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
-    n_facets = len(df_facet_category_list)
-    n_facet_rows = math.ceil(n_facets / facet_col_wrap)
+    n_facets = len(params["df_facet_category_list"])
+    n_facet_rows = math.ceil(n_facets / params["facet_col_wrap"])
     chart_height = n_facet_rows * 250
     if chart_height < 750:
         chart_height = 750
 
-    if n_facets < facet_col_wrap:
+    facet_col_wrap = params["facet_col_wrap"]
+    if n_facets < params["facet_col_wrap"]:
         facet_col_wrap = n_facets
 
-    n_colours = len(df[df_category_col].unique())
-    colour_sequence = calculate_colour_sequence(colour_map, n_colours)
+    n_colours = len(df[params["df_category_col"]].unique())
+    colour_sequence = calculate_colour_sequence(params["colour_map"], n_colours)
 
     try:
         fig = make_subplots(
@@ -566,19 +553,19 @@ def plotly_binned_statistic_barchart(
         current_facet = 0
         category_names = []
 
-        bins = np.sort(np.array(user_bins))
+        bins = np.sort(np.array(params["user_bins"]))
 
-        for facet_name in df_facet_category_list:
-            facet_subset = df[df[df_facet_col] == facet_name].dropna(
-                subset=[df_x_value_col, df_y_value_col]
+        for facet_name in params["df_facet_category_list"]:
+            facet_subset = df[df[params["df_facet_col"]] == facet_name].dropna(
+                subset=[params["df_x_value_col"], params["df_y_value_col"]]
             )
 
             # Skip to the next facet if the subset is empty
             if facet_subset.empty:
                 continue
 
-            facet_x_min = facet_subset[df_x_value_col].min()
-            facet_x_max = facet_subset[df_x_value_col].max()
+            facet_x_min = facet_subset[params["df_x_value_col"]].min()
+            facet_x_max = facet_subset[params["df_x_value_col"]].max()
 
             if np.isfinite(facet_x_min):
                 if facet_x_min < np.amin(bins):
@@ -591,10 +578,10 @@ def plotly_binned_statistic_barchart(
                 ["{:.0f}≤x<{:.0f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])]
             )
 
-            for category_name in df_category_name_list:
+            for category_name in params["df_category_name_list"]:
                 category_subset = facet_subset[
-                    facet_subset[df_category_col] == category_name
-                ].dropna(subset=[df_x_value_col, df_y_value_col])
+                    facet_subset[params["df_category_col"]] == category_name
+                ].dropna(subset=[params["df_x_value_col"], params["df_y_value_col"]])
 
                 # Skip to the next category name if the subset is empty
                 if category_subset.empty:
@@ -610,9 +597,9 @@ def plotly_binned_statistic_barchart(
                     category_idx = category_names.index(category_name)
 
                     binned_stats = stats.binned_statistic(
-                        category_subset[df_x_value_col].values,
-                        category_subset[df_y_value_col].values,
-                        statistic=stat_name,
+                        category_subset[params["df_x_value_col"]].values,
+                        category_subset[params["df_y_value_col"]].values,
+                        statistic=params["stat_name"],
                         bins=bins,
                     )
                     bin_counts = np.bincount(binned_stats[2])
@@ -633,7 +620,7 @@ def plotly_binned_statistic_barchart(
                         text=trace_labels,
                         hovertemplate=f"<b>{facet_name}</b><br>"
                         + f"{category_name}<br>"
-                        + f"{stat_name.capitalize()}: "
+                        + f"{params['stat_name'].capitalize()}: "
                         + "%{y:.2f}<br>"
                         + "%{text}<br>"
                         + "<extra></extra>",
@@ -642,7 +629,7 @@ def plotly_binned_statistic_barchart(
                     fig.append_trace(trace, row=current_row, col=current_col)
 
             fig.update_xaxes(
-                title_text=facet_name + " " + x_axis_title,
+                title_text=facet_name + " " + params["x_axis_title"],
                 tickson="boundaries",
                 row=current_row,
                 col=current_col,
@@ -650,7 +637,7 @@ def plotly_binned_statistic_barchart(
 
             if current_col == 1:
                 fig.update_yaxes(
-                    title_text=stat_name.capitalize() + " " + y_axis_title,
+                    title_text=params["stat_name"].capitalize() + " " + params["y_axis_title"],
                     row=current_row,
                     col=current_col,
                 )
@@ -664,16 +651,16 @@ def plotly_binned_statistic_barchart(
         layout = go.Layout(height=chart_height)
 
         fig.update_layout(layout)
-        fig.update_layout(legend_title_text=facet_title)
+        fig.update_layout(legend_title_text=params["facet_title"])
 
-        if return_as_dict:
+        if params["return_as_dict"]:
             return fig.to_dict()
         else:
             return plot(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(file_name, height_multiplier=chart_height / 750.0),
+                config=global_config(params["file_name"], height_multiplier=chart_height / 750.0),
             )
 
     except ValueError as e:

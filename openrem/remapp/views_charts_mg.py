@@ -300,48 +300,34 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     category_names = facet_names
                     facet_names = list(sorted_acquisition_agd_categories.values())[0]
 
+                parameter_dict = {  # pylint: disable=line-too-long
+                    "df_x_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
+                    "df_y_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
+                    "x_axis_title": "Compressed breast thickness (mm)",
+                    "y_axis_title": "AGD (mGy)",
+                    "df_category_col": category_names_col,
+                    "df_facet_col": group_by_col,
+                    "facet_title": legend_title,
+                    "user_bins": [20, 30, 40, 50, 60, 70, 80, 90],
+                    "colour_map": user_profile.plotColourMapChoice,
+                    "file_name": "OpenREM CT acquisition protocol AGD vs thickness",
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "df_facet_category_list": facet_names,
+                    "df_category_name_list": category_names,
+                    "return_as_dict": return_as_dict,
+                }
                 if user_profile.plotMean:
-                    return_structure[  # pylint: disable=line-too-long
-                        "meanAGDvsThickness"
-                    ] = plotly_binned_statistic_barchart(
+                    parameter_dict["stat_name"] = "mean"
+                    return_structure["meanAGDvsThickness"] = plotly_binned_statistic_barchart(
                         df,
-                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
-                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
-                        x_axis_title="Compressed breast thickness (mm)",
-                        y_axis_title="AGD (mGy)",
-                        df_category_col=category_names_col,
-                        df_facet_col=group_by_col,
-                        facet_title=legend_title,
-                        user_bins=[20, 30, 40, 50, 60, 70, 80, 90],
-                        colour_map=user_profile.plotColourMapChoice,
-                        file_name="OpenREM CT acquisition protocol AGD vs thickness",
-                        facet_col_wrap=user_profile.plotFacetColWrapVal,
-                        df_facet_category_list=facet_names,
-                        df_category_name_list=category_names,
-                        stat_name="mean",
-                        return_as_dict=return_as_dict,
+                        parameter_dict,
                     )
 
                 if user_profile.plotMedian:
-                    return_structure[  # pylint: disable=line-too-long
-                        "medianAGDvsThickness"
-                    ] = plotly_binned_statistic_barchart(
+                    parameter_dict["stat_name"] = "median"
+                    return_structure["medianAGDvsThickness"] = plotly_binned_statistic_barchart(
                         df,
-                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
-                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
-                        x_axis_title="Compressed breast thickness (mm)",
-                        y_axis_title="AGD (mGy)",
-                        df_category_col=category_names_col,
-                        df_facet_col=group_by_col,
-                        facet_title=legend_title,
-                        user_bins=[20, 30, 40, 50, 60, 70, 80, 90],
-                        colour_map=user_profile.plotColourMapChoice,
-                        file_name="OpenREM CT acquisition protocol AGD vs thickness",
-                        facet_col_wrap=user_profile.plotFacetColWrapVal,
-                        df_facet_category_list=facet_names,
-                        df_category_name_list=category_names,
-                        stat_name="median",
-                        return_as_dict=return_as_dict,
+                        parameter_dict,
                     )
 
             if user_profile.plotMGaverageAGD:
