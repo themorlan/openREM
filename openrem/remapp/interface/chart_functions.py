@@ -377,38 +377,26 @@ def plotly_barchart(
 
 def plotly_histogram_barchart(
     df,
-    df_facet_col,
-    df_category_col,
-    df_value_col,
-    value_axis_title="",
-    legend_title="System",
-    n_bins=10,
-    colourmap="RdYlBu",
-    filename="OpenREM_histogram_chart",
-    facet_col_wrap=3,
-    df_facet_category_list=None,
-    df_category_name_list=None,
-    global_max_min=False,
-    return_as_dict=False,
+    params,
 ):
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
-    n_facets = len(df_facet_category_list)
-    n_facet_rows = math.ceil(n_facets / facet_col_wrap)
+    n_facets = len(params["df_facet_category_list"])
+    n_facet_rows = math.ceil(n_facets / params["facet_col_wrap"])
     chart_height = n_facet_rows * 250
     if chart_height < 750:
         chart_height = 750
 
+    facet_col_wrap = params["facet_col_wrap"]
     if n_facets < facet_col_wrap:
         facet_col_wrap = n_facets
 
-    n_colours = len(df[df_category_col].unique())
-    colour_sequence = calculate_colour_sequence(colourmap, n_colours)
+    n_colours = len(df[params["df_category_col"]].unique())
+    colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
 
-    if global_max_min:
-        min_bin_value = df[df_value_col].min()
-        max_bin_value = df[df_value_col].max()
-        bins = np.linspace(min_bin_value, max_bin_value, n_bins + 1)
+    if params["global_max_min"]:
+        min_bin_value, max_bin_value = df[params["df_value_col"]].agg([min, max])
+        bins = np.linspace(min_bin_value, max_bin_value, params["n_bins"] + 1)
         mid_bins = 0.5 * (bins[:-1] + bins[1:])
         bin_labels = np.array(
             ["{:.2f}≤x<{:.2f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])]
@@ -424,19 +412,18 @@ def plotly_histogram_barchart(
         current_facet = 0
         category_names = []
 
-        for facet_name in df_facet_category_list:
-            facet_subset = df[df[df_facet_col] == facet_name].dropna(
-                subset=[df_value_col]
+        for facet_name in params["df_facet_category_list"]:
+            facet_subset = df[df[params["df_facet_col"]] == facet_name].dropna(
+                subset=[params["df_value_col"]]
             )
 
             # If the subset is empty then skip to the next facet
             if facet_subset.empty:
                 continue
 
-            if not global_max_min:
-                min_bin_value = facet_subset[df_value_col].min()
-                max_bin_value = facet_subset[df_value_col].max()
-                bins = np.linspace(min_bin_value, max_bin_value, n_bins + 1)
+            if not params["global_max_min"]:
+                min_bin_value, max_bin_value = facet_subset[params["df_value_col"]].agg([min, max])
+                bins = np.linspace(min_bin_value, max_bin_value, params["n_bins"] + 1)
                 mid_bins = 0.5 * (bins[:-1] + bins[1:])
                 bin_labels = np.array(
                     [
@@ -445,10 +432,10 @@ def plotly_histogram_barchart(
                     ]
                 )
 
-            for category_name in df_category_name_list:
+            for category_name in params["df_category_name_list"]:
                 category_subset = facet_subset[
-                    facet_subset[df_category_col] == category_name
-                ].dropna(subset=[df_value_col])
+                    facet_subset[params["df_category_col"]] == category_name
+                ].dropna(subset=[params["df_value_col"]])
 
                 # If the subset is empty then skip to the next category
                 if category_subset.empty:
@@ -463,7 +450,7 @@ def plotly_histogram_barchart(
                 category_idx = category_names.index(category_name)
 
                 histogram_data = np.histogram(
-                    category_subset[df_value_col].values, bins=bins
+                    category_subset[params["df_value_col"]].values, bins=bins
                 )
 
                 trace = go.Bar(
@@ -485,7 +472,7 @@ def plotly_histogram_barchart(
                 fig.append_trace(trace, row=current_row, col=current_col)
 
             fig.update_xaxes(
-                title_text=facet_name + " " + value_axis_title,
+                title_text=facet_name + " " + params["value_axis_title"],
                 tickvals=bins,
                 row=current_row,
                 col=current_col,
@@ -505,16 +492,16 @@ def plotly_histogram_barchart(
         layout = go.Layout(height=chart_height)
 
         fig.update_layout(layout)
-        fig.update_layout(legend_title_text=legend_title)
+        fig.update_layout(legend_title_text=params["legend_title"])
 
-        if return_as_dict:
+        if params["return_as_dict"]:
             return fig.to_dict()
         else:
             return plot(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(filename, height_multiplier=chart_height / 750.0),
+                config=global_config(params["filename"], height_multiplier=chart_height / 750.0),
             )
 
     except ValueError as e:
@@ -538,11 +525,11 @@ def plotly_binned_statistic_barchart(
         chart_height = 750
 
     facet_col_wrap = params["facet_col_wrap"]
-    if n_facets < params["facet_col_wrap"]:
+    if n_facets < facet_col_wrap:
         facet_col_wrap = n_facets
 
     n_colours = len(df[params["df_category_col"]].unique())
-    colour_sequence = calculate_colour_sequence(params["colour_map"], n_colours)
+    colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
 
     try:
         fig = make_subplots(
@@ -816,7 +803,7 @@ def plotly_scatter(
         chart_height = 750
 
     n_colours = len(df[params["df_category_name_col"]].unique())
-    colour_sequence = calculate_colour_sequence(params["colour_map"], n_colours)
+    colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
 
     try:
         # Drop any rows with nan values in x or y
@@ -954,7 +941,7 @@ def construct_frequency_chart(
     df_x_axis_col=None,
     x_axis_title=None,
     grouping_choice=None,
-    colour_map=None,
+    colourmap=None,
     file_name=None,
     sorted_categories=None,
     groupby_cols=None,
@@ -988,7 +975,7 @@ def construct_frequency_chart(
         legend_title=legend_title,
         df_x_axis_col=df_x_axis_col,
         x_axis_title=x_axis_title,
-        colourmap=colour_map,
+        colourmap=colourmap,
         filename=file_name,
         facet_col=facet_col,
         facet_col_wrap=facet_col_wrap,
@@ -1040,7 +1027,7 @@ def construct_over_time_charts(
         "value_axis_title": params["value_title"],
         "name_axis_title": params["date_title"],
         "legend_title": params["name_title"],
-        "colourmap": params["colour_map"] ,
+        "colourmap": params["colourmap"] ,
         "filename": params["file_name"],
         "facet_col_wrap": params["facet_col_wrap"],
         "sorted_category_list": sorted_categories,

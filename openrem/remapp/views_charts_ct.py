@@ -604,23 +604,24 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     category_names = facet_names
                     facet_names = list(sorted_acquisition_dlp_categories.values())[0]
 
-                return_structure[
-                    "acquisitionHistogramDLPData"
-                ] = plotly_histogram_barchart(
+                parameter_dict = {
+                    "df_facet_col": group_by_col,
+                    "df_category_col": category_names_col,
+                    "df_value_col": "ctradiationdose__ctirradiationeventdata__dlp",
+                    "value_axis_title": "DLP (mGy.cm)",
+                    "legend_title": legend_title,
+                    "n_bins": user_profile.plotHistogramBins,
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM CT acquisition protocol DLP histogram",
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "df_facet_category_list": facet_names,
+                    "df_category_name_list": category_names,
+                    "global_max_min": user_profile.plotHistogramGlobalBins,
+                    "return_as_dict": return_as_dict,
+                }
+                return_structure["acquisitionHistogramDLPData"] = plotly_histogram_barchart(
                     df,
-                    group_by_col,
-                    category_names_col,
-                    "ctradiationdose__ctirradiationeventdata__dlp",
-                    value_axis_title="DLP (mGy.cm)",
-                    legend_title=legend_title,
-                    n_bins=user_profile.plotHistogramBins,
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM CT acquisition protocol DLP histogram",
-                    facet_col_wrap=user_profile.plotFacetColWrapVal,
-                    df_facet_category_list=facet_names,
-                    df_category_name_list=category_names,
-                    global_max_min=user_profile.plotHistogramGlobalBins,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
         sorted_acquisition_ctdi_categories = None
@@ -706,23 +707,24 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     category_names = facet_names
                     facet_names = list(sorted_acquisition_ctdi_categories.values())[0]
 
-                return_structure[
-                    "acquisitionHistogramCTDIData"
-                ] = plotly_histogram_barchart(
+                parameter_dict = {
+                    "df_facet_col": group_by_col,
+                    "df_category_col": category_names_col,
+                    "df_value_col": "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    "value_axis_title": "CTDI<sub>vol</sub> (mGy)",
+                    "legend_title": legend_title,
+                    "n_bins": user_profile.plotHistogramBins,
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM CT acquisition protocol CTDI histogram",
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "df_facet_category_list": facet_names,
+                    "df_category_name_list": category_names,
+                    "global_max_min": user_profile.plotHistogramGlobalBins,
+                    "return_as_dict": return_as_dict,
+                }
+                return_structure["acquisitionHistogramCTDIData"] = plotly_histogram_barchart(
                     df,
-                    group_by_col,
-                    category_names_col,
-                    "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    value_axis_title="CTDI<sub>vol</sub> (mGy)",
-                    legend_title=legend_title,
-                    n_bins=user_profile.plotHistogramBins,
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM CT acquisition protocol CTDI histogram",
-                    facet_col_wrap=user_profile.plotFacetColWrapVal,
-                    df_facet_category_list=facet_names,
-                    df_category_name_list=category_names,
-                    global_max_min=user_profile.plotHistogramGlobalBins,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
         if user_profile.plotCTAcquisitionFreq:
@@ -743,7 +745,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 df_x_axis_col="x_ray_system_name",
                 x_axis_title="System",
                 grouping_choice=user_profile.plotGroupingChoice,
-                colour_map=user_profile.plotColourMapChoice,
+                colourmap=user_profile.plotColourMapChoice,
                 file_name="OpenREM CT acquisition protocol frequency",
                 sorted_categories=sorted_categories,
                 return_as_dict=return_as_dict,
@@ -760,7 +762,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 ],
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "legend_title": "Acquisition protocol",
-                "colour_map": user_profile.plotColourMapChoice,
+                "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "x_axis_title": "Patient mass (kg)",
                 "y_axis_title": "CTDI<sub>vol</sub> (mGy)",
@@ -783,7 +785,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 ],
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "legend_title": "Acquisition protocol",
-                "colour_map": user_profile.plotColourMapChoice,
+                "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "x_axis_title": "Patient mass (kg)",
                 "y_axis_title": "DLP (mGy.cm)",
@@ -816,7 +818,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "time_period": plot_timeunit_period,
                 "average_choices": average_choices + ["count"],
                 "grouping_choice": user_profile.plotGroupingChoice,
-                "colour_map": user_profile.plotColourMapChoice,
+                "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "file_name": "OpenREM CT acquisition protocol CTDI over time",
                 "return_as_dict": return_as_dict,
@@ -852,7 +854,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "time_period": plot_timeunit_period,
                 "average_choices": average_choices + ["count"],
                 "grouping_choice": user_profile.plotGroupingChoice,
-                "colour_map": user_profile.plotColourMapChoice,
+                "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "file_name": "OpenREM CT acquisition protocol DLP over time",
                 "return_as_dict": return_as_dict,
@@ -1018,21 +1020,24 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     category_names = facet_names
                     facet_names = list(sorted_study_dlp_categories.values())[0]
 
+                parameter_dict = {
+                    "df_facet_col": group_by_col,
+                    "df_category_col": category_names_col,
+                    "df_value_col": "total_dlp",
+                    "value_axis_title": "DLP (mGy.cm)",
+                    "legend_title": legend_title,
+                    "n_bins": user_profile.plotHistogramBins,
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM CT study description DLP histogram",
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "df_facet_category_list": facet_names,
+                    "df_category_name_list": category_names,
+                    "global_max_min": user_profile.plotHistogramGlobalBins,
+                    "return_as_dict": return_as_dict,
+                }
                 return_structure["studyHistogramDLPData"] = plotly_histogram_barchart(
                     df,
-                    group_by_col,
-                    category_names_col,
-                    "total_dlp",
-                    value_axis_title="DLP (mGy.cm)",
-                    legend_title=legend_title,
-                    n_bins=user_profile.plotHistogramBins,
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM CT study description DLP histogram",
-                    facet_col_wrap=user_profile.plotFacetColWrapVal,
-                    df_facet_category_list=facet_names,
-                    df_category_name_list=category_names,
-                    global_max_min=user_profile.plotHistogramGlobalBins,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
         sorted_study_ctdi_categories = None
@@ -1114,21 +1119,24 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     category_names = facet_names
                     facet_names = list(sorted_study_ctdi_categories.values())[0]
 
+                parameter_dict = {
+                    "df_facet_col": group_by_col,
+                    "df_category_col": category_names_col,
+                    "df_value_col": "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    "value_axis_title": "CTDI<sub>vol</sub> (mGy)",
+                    "legend_title": legend_title,
+                    "n_bins": user_profile.plotHistogramBins,
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM CT study description CTDI histogram",
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "df_facet_category_list": facet_names,
+                    "df_category_name_list": category_names,
+                    "global_max_min": user_profile.plotHistogramGlobalBins,
+                    "return_as_dict": return_as_dict,
+                }
                 return_structure["studyHistogramCTDIData"] = plotly_histogram_barchart(
                     df,
-                    group_by_col,
-                    category_names_col,
-                    "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    value_axis_title="CTDI<sub>vol</sub> (mGy)",
-                    legend_title=legend_title,
-                    n_bins=user_profile.plotHistogramBins,
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM CT study description CTDI histogram",
-                    facet_col_wrap=user_profile.plotFacetColWrapVal,
-                    df_facet_category_list=facet_names,
-                    df_category_name_list=category_names,
-                    global_max_min=user_profile.plotHistogramGlobalBins,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
         sorted_study_events_categories = None
@@ -1210,23 +1218,24 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     category_names = facet_names
                     facet_names = list(sorted_study_events_categories.values())[0]
 
-                return_structure[
-                    "studyHistogramNumEventsData"
-                ] = plotly_histogram_barchart(
+                parameter_dict = {
+                    "df_facet_col": group_by_col,
+                    "df_category_col": category_names_col,
+                    "df_value_col": "number_of_events",
+                    "value_axis_title": "Events",
+                    "legend_title": legend_title,
+                    "n_bins": user_profile.plotHistogramBins,
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM CT acquisition protocol events histogram",
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "df_facet_category_list": facet_names,
+                    "df_category_name_list": category_names,
+                    "global_max_min": user_profile.plotHistogramGlobalBins,
+                    "return_as_dict": return_as_dict,
+                }
+                return_structure["studyHistogramNumEventsData"] = plotly_histogram_barchart(
                     df,
-                    group_by_col,
-                    category_names_col,
-                    "number_of_events",
-                    value_axis_title="Events",
-                    legend_title=legend_title,
-                    n_bins=user_profile.plotHistogramBins,
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM CT study description events histogram",
-                    facet_col_wrap=user_profile.plotFacetColWrapVal,
-                    df_facet_category_list=facet_names,
-                    df_category_name_list=category_names,
-                    global_max_min=user_profile.plotHistogramGlobalBins,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
         if user_profile.plotCTStudyFreq:
@@ -1249,7 +1258,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 df_x_axis_col="x_ray_system_name",
                 x_axis_title="System",
                 grouping_choice=user_profile.plotGroupingChoice,
-                colour_map=user_profile.plotColourMapChoice,
+                colourmap=user_profile.plotColourMapChoice,
                 file_name="OpenREM CT study description frequency",
                 sorted_categories=sorted_categories,
                 return_as_dict=return_as_dict,
@@ -1334,21 +1343,24 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     category_names = facet_names
                     facet_names = list(sorted_request_dlp_categories.values())[0]
 
+                parameter_dict = {
+                    "df_facet_col": group_by_col,
+                    "df_category_col": category_names_col,
+                    "df_value_col": "total_dlp",
+                    "value_axis_title": "DLP (mGy.cm)",
+                    "legend_title": legend_title,
+                    "n_bins": user_profile.plotHistogramBins,
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM CT requested procedure DLP histogram",
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "df_facet_category_list": facet_names,
+                    "df_category_name_list": category_names,
+                    "global_max_min": user_profile.plotHistogramGlobalBins,
+                    "return_as_dict": return_as_dict,
+                }
                 return_structure["requestHistogramData"] = plotly_histogram_barchart(
                     df,
-                    group_by_col,
-                    category_names_col,
-                    "total_dlp",
-                    value_axis_title="DLP (mGy.cm)",
-                    legend_title=legend_title,
-                    n_bins=user_profile.plotHistogramBins,
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM CT requested procedure DLP histogram",
-                    facet_col_wrap=user_profile.plotFacetColWrapVal,
-                    df_facet_category_list=facet_names,
-                    df_category_name_list=category_names,
-                    global_max_min=user_profile.plotHistogramGlobalBins,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
         sorted_request_events_categories = None
@@ -1430,23 +1442,24 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     category_names = facet_names
                     facet_names = list(sorted_request_events_categories.values())[0]
 
-                return_structure[
-                    "requestHistogramNumEventsData"
-                ] = plotly_histogram_barchart(
+                parameter_dict = {
+                    "df_facet_col": group_by_col,
+                    "df_category_col": category_names_col,
+                    "df_value_col": "number_of_events",
+                    "value_axis_title": "Events",
+                    "legend_title": legend_title,
+                    "n_bins": user_profile.plotHistogramBins,
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM CT requested procedure events histogram",
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "df_facet_category_list": facet_names,
+                    "df_category_name_list": category_names,
+                    "global_max_min": user_profile.plotHistogramGlobalBins,
+                    "return_as_dict": return_as_dict,
+                }
+                return_structure["requestHistogramNumEventsData"] = plotly_histogram_barchart(
                     df,
-                    group_by_col,
-                    category_names_col,
-                    "number_of_events",
-                    value_axis_title="Events",
-                    legend_title=legend_title,
-                    n_bins=user_profile.plotHistogramBins,
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM CT requested procedure events histogram",
-                    facet_col_wrap=user_profile.plotFacetColWrapVal,
-                    df_facet_category_list=facet_names,
-                    df_category_name_list=category_names,
-                    global_max_min=user_profile.plotHistogramGlobalBins,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
         if user_profile.plotCTRequestFreq:
@@ -1467,7 +1480,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 df_x_axis_col="x_ray_system_name",
                 x_axis_title="System",
                 grouping_choice=user_profile.plotGroupingChoice,
-                colour_map=user_profile.plotColourMapChoice,
+                colourmap=user_profile.plotColourMapChoice,
                 file_name="OpenREM CT requested procedure frequency",
                 sorted_categories=sorted_categories,
                 return_as_dict=return_as_dict,
@@ -1494,7 +1507,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "time_period": plot_timeunit_period,
                 "average_choices": average_choices + ["count"],
                 "grouping_choice": user_profile.plotGroupingChoice,
-                "colour_map": user_profile.plotColourMapChoice,
+                "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "file_name": "OpenREM CT study description DLP over time",
                 "return_as_dict": return_as_dict,
@@ -1530,7 +1543,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "time_period": plot_timeunit_period,
                 "average_choices": average_choices + ["count"],
                 "grouping_choice": user_profile.plotGroupingChoice,
-                "colour_map": user_profile.plotColourMapChoice,
+                "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "file_name": "OpenREM CT requested procedure DLP over time",
                 "return_as_dict": return_as_dict,

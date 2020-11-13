@@ -309,7 +309,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     "df_facet_col": group_by_col,
                     "facet_title": legend_title,
                     "user_bins": [20, 30, 40, 50, 60, 70, 80, 90],
-                    "colour_map": user_profile.plotColourMapChoice,
+                    "colourmap": user_profile.plotColourMapChoice,
                     "file_name": "OpenREM CT acquisition protocol AGD vs thickness",
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "df_facet_category_list": facet_names,
@@ -402,23 +402,24 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                             0
                         ]
 
-                    return_structure[  # pylint: disable=line-too-long
-                        "acquisitionHistogramAGDData"
-                    ] = plotly_histogram_barchart(
+                    parameter_dict = {  # pylint: disable=line-too-long
+                        "df_facet_col": group_by_col,
+                        "df_category_col": category_names_col,
+                        "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
+                        "value_axis_title": "AGD (mGy)",
+                        "legend_title": legend_title,
+                        "n_bins": user_profile.plotHistogramBins,
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "filename": "OpenREM MG acquisition protocol AGD histogram",
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "df_facet_category_list": facet_names,
+                        "df_category_name_list": category_names,
+                        "global_max_min": user_profile.plotHistogramGlobalBins,
+                        "return_as_dict": return_as_dict,
+                    }
+                    return_structure["acquisitionHistogramAGDData"] = plotly_histogram_barchart(
                         df,
-                        group_by_col,
-                        category_names_col,
-                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
-                        value_axis_title="AGD (mGy)",
-                        legend_title=legend_title,
-                        n_bins=user_profile.plotHistogramBins,
-                        colourmap=user_profile.plotColourMapChoice,
-                        filename="OpenREM MG acquisition protocol AGD histogram",
-                        facet_col_wrap=user_profile.plotFacetColWrapVal,
-                        df_facet_category_list=facet_names,
-                        df_category_name_list=category_names,
-                        global_max_min=user_profile.plotHistogramGlobalBins,
-                        return_as_dict=return_as_dict,
+                        parameter_dict,
                     )
 
         if user_profile.plotMGAGDvsThickness:
@@ -432,7 +433,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 ],
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "legend_title": "Acquisition protocol",
-                "colour_map": user_profile.plotColourMapChoice,
+                "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "x_axis_title": "Compressed breast thickness (mm)",
                 "y_axis_title": "AGD (mGy)",
@@ -455,7 +456,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 ],
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "legend_title": "Acquisition protocol",
-                "colour_map": user_profile.plotColourMapChoice,
+                "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "x_axis_title": "Compressed breast thickness (mm)",
                 "y_axis_title": "kVp",
@@ -478,7 +479,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 ],
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "legend_title": "Acquisition protocol",
-                "colour_map": user_profile.plotColourMapChoice,
+                "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "x_axis_title": "Compressed breast thickness (mm)",
                 "y_axis_title": "mAs",
@@ -506,7 +507,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 df_x_axis_col="x_ray_system_name",
                 x_axis_title="System",
                 grouping_choice=user_profile.plotGroupingChoice,
-                colour_map=user_profile.plotColourMapChoice,
+                colourmap=user_profile.plotColourMapChoice,
                 file_name="OpenREM MG acquisition protocol frequency",
                 sorted_categories=sorted_categories,
                 return_as_dict=return_as_dict,
@@ -533,7 +534,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "time_period": plot_timeunit_period,
                 "average_choices": average_choices + ["count"],
                 "grouping_choice": user_profile.plotGroupingChoice,
-                "colour_map": user_profile.plotColourMapChoice,
+                "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "file_name": "OpenREM MG acquisition protocol AGD over time",
                 "return_as_dict": return_as_dict,

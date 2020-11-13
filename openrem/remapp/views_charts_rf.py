@@ -402,21 +402,24 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 category_names = facet_names
                 facet_names = list(sorted_study_categories.values())[0]
 
+            parameter_dict = {
+                "df_facet_col": group_by_col,
+                "df_category_col": category_names_col,
+                "df_value_col": "total_dap",
+                "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
+                "legend_title": legend_title,
+                "n_bins": user_profile.plotHistogramBins,
+                "colourmap": user_profile.plotColourMapChoice,
+                "filename": "OpenREM RF study description DAP histogram",
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "df_facet_category_list": facet_names,
+                "df_category_name_list": category_names,
+                "global_max_min": user_profile.plotHistogramGlobalBins,
+                "return_as_dict": return_as_dict,
+            }
             return_structure["studyHistogramData"] = plotly_histogram_barchart(
                 df,
-                group_by_col,
-                category_names_col,
-                "total_dap",
-                value_axis_title="DAP (cGy.cm<sup>2</sup>)",
-                legend_title=legend_title,
-                n_bins=user_profile.plotHistogramBins,
-                colourmap=user_profile.plotColourMapChoice,
-                filename="OpenREM RF study description DAP histogram",
-                facet_col_wrap=user_profile.plotFacetColWrapVal,
-                df_facet_category_list=facet_names,
-                df_category_name_list=category_names,
-                global_max_min=user_profile.plotHistogramGlobalBins,
-                return_as_dict=return_as_dict,
+                parameter_dict,
             )
 
     if user_profile.plotRFStudyFreq:
@@ -443,7 +446,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             df_x_axis_col="x_ray_system_name",
             x_axis_title="System",
             grouping_choice=user_profile.plotGroupingChoice,
-            colour_map=user_profile.plotColourMapChoice,
+            colourmap=user_profile.plotColourMapChoice,
             file_name="OpenREM RF study description frequency",
             sorted_categories=sorted_study_categories,
             return_as_dict=return_as_dict,
@@ -542,21 +545,24 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 category_names = facet_names
                 facet_names = list(sorted_request_categories.values())[0]
 
+            parameter_dict = {
+                "df_facet_col": group_by_col,
+                "df_category_col": category_names_col,
+                "df_value_col": "total_dap",
+                "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
+                "legend_title": legend_title,
+                "n_bins": user_profile.plotHistogramBins,
+                "colourmap": user_profile.plotColourMapChoice,
+                "filename": "OpenREM RF requested procedure DAP histogram",
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "df_facet_category_list": facet_names,
+                "df_category_name_list": category_names,
+                "global_max_min": user_profile.plotHistogramGlobalBins,
+                "return_as_dict": return_as_dict,
+            }
             return_structure["requestHistogramData"] = plotly_histogram_barchart(
                 df,
-                group_by_col,
-                category_names_col,
-                "total_dap",
-                value_axis_title="DAP (cGy.cm<sup>2</sup>)",
-                legend_title=legend_title,
-                n_bins=user_profile.plotHistogramBins,
-                colourmap=user_profile.plotColourMapChoice,
-                filename="OpenREM RF requested procedure DAP histogram",
-                facet_col_wrap=user_profile.plotFacetColWrapVal,
-                df_facet_category_list=facet_names,
-                df_category_name_list=category_names,
-                global_max_min=user_profile.plotHistogramGlobalBins,
-                return_as_dict=return_as_dict,
+                parameter_dict,
             )
 
     if user_profile.plotRFRequestFreq:
@@ -583,7 +589,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             df_x_axis_col="x_ray_system_name",
             x_axis_title="System",
             grouping_choice=user_profile.plotGroupingChoice,
-            colour_map=user_profile.plotColourMapChoice,
+            colourmap=user_profile.plotColourMapChoice,
             file_name="OpenREM RF requested procedure frequency",
             sorted_categories=sorted_request_categories,
             return_as_dict=return_as_dict,
@@ -610,7 +616,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "time_period": plot_timeunit_period,
             "average_choices": average_choices + ["count"],
             "grouping_choice": user_profile.plotGroupingChoice,
-            "colour_map": user_profile.plotColourMapChoice,
+            "colourmap": user_profile.plotColourMapChoice,
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
             "file_name": "OpenREM RF study DAP over time",
             "return_as_dict": return_as_dict,
@@ -646,7 +652,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "time_period": plot_timeunit_period,
             "average_choices": average_choices + ["count"],
             "grouping_choice": user_profile.plotGroupingChoice,
-            "colour_map": user_profile.plotColourMapChoice,
+            "colourmap": user_profile.plotColourMapChoice,
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
             "file_name": "OpenREM RF requested procedure DAP over time",
             "return_as_dict": return_as_dict,

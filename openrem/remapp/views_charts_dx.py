@@ -521,23 +521,24 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     category_names = facet_names
                     facet_names = list(sorted_acquisition_dap_categories.values())[0]
 
-                return_structure[
-                    "acquisitionHistogramDAPData"
-                ] = plotly_histogram_barchart(
+                parameter_dict = {
+                    "df_facet_col": group_by_col,
+                    "df_category_col": category_names_col,
+                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
+                    "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
+                    "legend_title": legend_title,
+                    "n_bins": user_profile.plotHistogramBins,
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM DX acquisition protocol DAP histogram",
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "df_facet_category_list": facet_names,
+                    "df_category_name_list": category_names,
+                    "global_max_min": user_profile.plotHistogramGlobalBins,
+                    "return_as_dict": return_as_dict,
+                }
+                return_structure["acquisitionHistogramDAPData"] = plotly_histogram_barchart(
                     df,
-                    group_by_col,
-                    category_names_col,
-                    "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
-                    value_axis_title="DAP (cGy.cm<sup>2</sup>)",
-                    legend_title=legend_title,
-                    n_bins=user_profile.plotHistogramBins,
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM DX acquisition protocol DAP histogram",
-                    facet_col_wrap=user_profile.plotFacetColWrapVal,
-                    df_facet_category_list=facet_names,
-                    df_category_name_list=category_names,
-                    global_max_min=user_profile.plotHistogramGlobalBins,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
         sorted_acquisition_kvp_categories = None
@@ -621,23 +622,24 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     category_names = facet_names
                     facet_names = list(sorted_acquisition_kvp_categories.values())[0]
 
-                return_structure[
-                    "acquisitionHistogramkVpData"
-                ] = plotly_histogram_barchart(
+                parameter_dict = {
+                    "df_facet_col": group_by_col,
+                    "df_category_col": category_names_col,
+                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
+                    "value_axis_title": "kVp",
+                    "legend_title": legend_title,
+                    "n_bins": user_profile.plotHistogramBins,
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM DX acquisition protocol kVp histogram",
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "df_facet_category_list": facet_names,
+                    "df_category_name_list": category_names,
+                    "global_max_min": user_profile.plotHistogramGlobalBins,
+                    "return_as_dict": return_as_dict,
+                }
+                return_structure["acquisitionHistogramkVpData"] = plotly_histogram_barchart(
                     df,
-                    group_by_col,
-                    category_names_col,
-                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
-                    value_axis_title="kVp",
-                    legend_title=legend_title,
-                    n_bins=user_profile.plotHistogramBins,
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM DX acquisition protocol kVp histogram",
-                    facet_col_wrap=user_profile.plotFacetColWrapVal,
-                    df_facet_category_list=facet_names,
-                    df_category_name_list=category_names,
-                    global_max_min=user_profile.plotHistogramGlobalBins,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
         sorted_acquisition_mas_categories = None
@@ -721,23 +723,24 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     category_names = facet_names
                     facet_names = list(sorted_acquisition_mas_categories.values())[0]
 
-                return_structure[
-                    "acquisitionHistogrammAsData"
-                ] = plotly_histogram_barchart(
+                parameter_dict = {
+                    "df_facet_col": group_by_col,
+                    "df_category_col": category_names_col,
+                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
+                    "value_axis_title": "mAs",
+                    "legend_title": legend_title,
+                    "n_bins": user_profile.plotHistogramBins,
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM DX acquisition protocol mAs histogram",
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "df_facet_category_list": facet_names,
+                    "df_category_name_list": category_names,
+                    "global_max_min": user_profile.plotHistogramGlobalBins,
+                    "return_as_dict": return_as_dict,
+                }
+                return_structure["acquisitionHistogrammAsData"] = plotly_histogram_barchart(
                     df,
-                    group_by_col,
-                    category_names_col,
-                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
-                    value_axis_title="mAs",
-                    legend_title=legend_title,
-                    n_bins=user_profile.plotHistogramBins,
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM DX acquisition protocol mAs histogram",
-                    facet_col_wrap=user_profile.plotFacetColWrapVal,
-                    df_facet_category_list=facet_names,
-                    df_category_name_list=category_names,
-                    global_max_min=user_profile.plotHistogramGlobalBins,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
         if user_profile.plotDXAcquisitionFreq:
@@ -760,7 +763,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 df_x_axis_col="x_ray_system_name",
                 x_axis_title="System",
                 grouping_choice=user_profile.plotGroupingChoice,
-                colour_map=user_profile.plotColourMapChoice,
+                colourmap=user_profile.plotColourMapChoice,
                 file_name="OpenREM DX acquisition protocol frequency",
                 sorted_categories=sorted_categories,
                 return_as_dict=return_as_dict,
@@ -787,7 +790,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "time_period": plot_timeunit_period,
                 "average_choices": average_choices + ["count"],
                 "grouping_choice": user_profile.plotGroupingChoice,
-                "colour_map": user_profile.plotColourMapChoice,
+                "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "file_name": "OpenREM DX acquisition protocol DAP over time",
                 "return_as_dict": return_as_dict,
@@ -823,7 +826,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "time_period": plot_timeunit_period,
                 "average_choices": average_choices + ["count"],
                 "grouping_choice": user_profile.plotGroupingChoice,
-                "colour_map": user_profile.plotColourMapChoice,
+                "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "file_name": "OpenREM DX acquisition protocol kVp over time",
                 "return_as_dict": return_as_dict,
@@ -859,7 +862,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "time_period": plot_timeunit_period,
                 "average_choices": average_choices + ["count"],
                 "grouping_choice": user_profile.plotGroupingChoice,
-                "colour_map": user_profile.plotColourMapChoice,
+                "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "file_name": "OpenREM DX acquisition protocol mAs over time",
                 "return_as_dict": return_as_dict,
@@ -885,7 +888,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 ],
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "legend_title": "Acquisition protocol",
-                "colour_map": user_profile.plotColourMapChoice,
+                "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "x_axis_title": "Patient mass (kg)",
                 "y_axis_title": "DAP (mGy.cm<sup>2</sub>)",
@@ -1042,21 +1045,24 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     category_names = facet_names
                     facet_names = list(sorted_study_dap_categories.values())[0]
 
+                parameter_dict = {
+                    "df_facet_col": group_by_col,
+                    "df_category_col": category_names_col,
+                    "df_value_col": "total_dap",
+                    "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
+                    "legend_title": legend_title,
+                    "n_bins": user_profile.plotHistogramBins,
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM DX study description DAP histogram",
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "df_facet_category_list": facet_names,
+                    "df_category_name_list": category_names,
+                    "global_max_min": user_profile.plotHistogramGlobalBins,
+                    "return_as_dict": return_as_dict,
+                }
                 return_structure["studyHistogramDAPData"] = plotly_histogram_barchart(
                     df,
-                    group_by_col,
-                    category_names_col,
-                    "total_dap",
-                    value_axis_title="DAP (cGy.cm<sup>2</sup>)",
-                    legend_title=legend_title,
-                    n_bins=user_profile.plotHistogramBins,
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM DX study description DAP histogram",
-                    facet_col_wrap=user_profile.plotFacetColWrapVal,
-                    df_facet_category_list=facet_names,
-                    df_category_name_list=category_names,
-                    global_max_min=user_profile.plotHistogramGlobalBins,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
         if user_profile.plotDXStudyFreq:
@@ -1071,7 +1077,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 df_x_axis_col="x_ray_system_name",
                 x_axis_title="System",
                 grouping_choice=user_profile.plotGroupingChoice,
-                colour_map=user_profile.plotColourMapChoice,
+                colourmap=user_profile.plotColourMapChoice,
                 file_name="OpenREM DX study description frequency",
                 sorted_categories=sorted_study_dap_categories,
                 return_as_dict=return_as_dict,
@@ -1156,21 +1162,24 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     category_names = facet_names
                     facet_names = list(sorted_request_dap_categories.values())[0]
 
+                parameter_dict = {
+                    "df_facet_col": group_by_col,
+                    "df_category_col": category_names_col,
+                    "df_value_col": "total_dap",
+                    "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
+                    "legend_title": legend_title,
+                    "n_bins": user_profile.plotHistogramBins,
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM DX requested procedure DAP histogram",
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "df_facet_category_list": facet_names,
+                    "df_category_name_list": category_names,
+                    "global_max_min": user_profile.plotHistogramGlobalBins,
+                    "return_as_dict": return_as_dict,
+                }
                 return_structure["requestHistogramDAPData"] = plotly_histogram_barchart(
                     df,
-                    group_by_col,
-                    category_names_col,
-                    "total_dap",
-                    value_axis_title="DAP (cGy.cm<sup>2</sup>)",
-                    legend_title=legend_title,
-                    n_bins=user_profile.plotHistogramBins,
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM DX requested procedure DAP histogram",
-                    facet_col_wrap=user_profile.plotFacetColWrapVal,
-                    df_facet_category_list=facet_names,
-                    df_category_name_list=category_names,
-                    global_max_min=user_profile.plotHistogramGlobalBins,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
         if user_profile.plotDXRequestFreq:
@@ -1185,7 +1194,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 df_x_axis_col="x_ray_system_name",
                 x_axis_title="System",
                 grouping_choice=user_profile.plotGroupingChoice,
-                colour_map=user_profile.plotColourMapChoice,
+                colourmap=user_profile.plotColourMapChoice,
                 file_name="OpenREM DX requested procedure frequency",
                 sorted_categories=sorted_request_dap_categories,
                 return_as_dict=return_as_dict,
@@ -1219,7 +1228,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 ],
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "legend_title": "Study description",
-                "colour_map": user_profile.plotColourMapChoice,
+                "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "x_axis_title": "Patient mass (kg)",
                 "y_axis_title": "DAP (mGy.cm<sup>2</sub>)",
@@ -1242,7 +1251,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 ],
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "legend_title": "Requested procedure",
-                "colour_map": user_profile.plotColourMapChoice,
+                "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "x_axis_title": "Patient mass (kg)",
                 "y_axis_title": "DAP (mGy.cm<sup>2</sub>)",
