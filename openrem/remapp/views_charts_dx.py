@@ -19,7 +19,7 @@ from .interface.chart_functions import (
     plotly_barchart_weekdays,
     plotly_set_default_theme,
     construct_frequency_chart,
-    construct_scatter_chart,
+    plotly_scatter,
     construct_over_time_charts,
 )
 
@@ -892,7 +892,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "file_name": "OpenREM DX acquisition protocol DAP vs patient mass",
                 "return_as_dict": return_as_dict,
             }
-            return_structure["acquisitionDAPvsMass"] = construct_scatter_chart(
+            return_structure["acquisitionDAPvsMass"] = plotly_scatter(
                 df,
                 parameter_dict,
             )
@@ -1226,7 +1226,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "file_name": "OpenREM DX study description DAP vs patient mass",
                 "return_as_dict": return_as_dict,
             }
-            return_structure["studyDAPvsMass"] = construct_scatter_chart(
+            return_structure["studyDAPvsMass"] = plotly_scatter(
                 df,
                 parameter_dict,
             )
@@ -1249,7 +1249,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "file_name": "OpenREM DX requested procedure DAP vs patient mass",
                 "return_as_dict": return_as_dict,
             }
-            return_structure["requestDAPvsMass"] = construct_scatter_chart(
+            return_structure["requestDAPvsMass"] = plotly_scatter(
                 df,
                 parameter_dict,
             )

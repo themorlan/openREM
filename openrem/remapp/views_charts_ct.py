@@ -20,7 +20,7 @@ from .interface.chart_functions import (
     plotly_barchart_weekdays,
     plotly_set_default_theme,
     construct_frequency_chart,
-    construct_scatter_chart,
+    plotly_scatter,
     construct_over_time_charts,
 )
 
@@ -767,7 +767,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "file_name": "OpenREM CT acquisition protocol CTDI vs patient mass",
                 "return_as_dict": return_as_dict,
             }
-            return_structure["acquisitionScatterCTDIvsMass"] = construct_scatter_chart(
+            return_structure["acquisitionScatterCTDIvsMass"] = plotly_scatter(
                 df,
                 parameter_dict,
             )
@@ -790,7 +790,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "file_name": "OpenREM CT acquisition protocol DLP vs patient mass",
                 "return_as_dict": return_as_dict,
             }
-            return_structure["acquisitionScatterDLPvsMass"] = construct_scatter_chart(
+            return_structure["acquisitionScatterDLPvsMass"] = plotly_scatter(
                 df,
                 parameter_dict,
             )

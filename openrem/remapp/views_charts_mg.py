@@ -16,7 +16,7 @@ from .interface.chart_functions import (
     plotly_boxplot,
     plotly_barchart,
     plotly_histogram_barchart,
-    construct_scatter_chart,
+    plotly_scatter,
     construct_frequency_chart,
     construct_over_time_charts,
     plotly_set_default_theme,
@@ -439,7 +439,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "file_name": "OpenREM CT acquisition protocol AGD vs thickness",
                 "return_as_dict": return_as_dict,
             }
-            return_structure["AGDvsThickness"] = construct_scatter_chart(  # pylint: disable=line-too-long
+            return_structure["AGDvsThickness"] = plotly_scatter(  # pylint: disable=line-too-long
                 df,
                 parameter_dict,
             )
@@ -462,7 +462,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "file_name": "OpenREM CT acquisition protocol kVp vs thickness",
                 "return_as_dict": return_as_dict,
             }
-            return_structure["kVpvsThickness"] = construct_scatter_chart(  # pylint: disable=line-too-long
+            return_structure["kVpvsThickness"] = plotly_scatter(  # pylint: disable=line-too-long
                 df,
                 parameter_dict,
             )
@@ -485,7 +485,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "file_name": "OpenREM CT acquisition protocol mAs vs thickness",
                 "return_as_dict": return_as_dict,
             }
-            return_structure["mAsvsThickness"] = construct_scatter_chart(  # pylint: disable=line-too-long
+            return_structure["mAsvsThickness"] = plotly_scatter(  # pylint: disable=line-too-long
                 df,
                 parameter_dict,
             )

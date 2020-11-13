@@ -801,36 +801,45 @@ def plotly_scatter(
     df,
     params,
 ):
-    n_facet_rows = math.ceil(len(df[params["df_facet_col"]].unique()) / params["facet_col_wrap"])
+    sorted_category_list = create_sorted_category_list(df, params["df_name_col"], params["df_y_col"], params["sorting"])
+
+    params["df_category_name_col"] = params["df_name_col"]
+    params["df_group_col"] = "x_ray_system_name"
+    if params["grouping_choice"] == "series":
+        params["df_category_name_col"] = "x_ray_system_name"
+        params["df_group_col"] = params["df_name_col"]
+        params["legend_title"] = "System"
+
+    n_facet_rows = math.ceil(len(df[params["df_group_col"]].unique()) / params["facet_col_wrap"])
     chart_height = n_facet_rows * 250
     if chart_height < 750:
         chart_height = 750
 
     n_colours = len(df[params["df_category_name_col"]].unique())
-    colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
+    colour_sequence = calculate_colour_sequence(params["colour_map"], n_colours)
 
     try:
         # Drop any rows with nan values in x or y
-        df = df.dropna(subset=[params["df_x_value_col"], params["df_y_value_col"]])
+        df = df.dropna(subset=[params["df_x_col"], params["df_y_col"]])
         if df.empty:
             return empty_dataframe_msg()
 
         fig = px.scatter(
             df,
-            x=params["df_x_value_col"],
-            y=params["df_y_value_col"],
+            x=params["df_x_col"],
+            y=params["df_y_col"],
             color=params["df_category_name_col"],
-            facet_col=params["df_facet_col"],
+            facet_col=params["df_group_col"],
             facet_col_wrap=params["facet_col_wrap"],
             facet_row_spacing=0.40
             / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
             labels={
-                params["df_x_value_col"]: params["x_axis_title"],
-                params["df_y_value_col"]: params["y_axis_title"],
+                params["df_x_col"]: params["x_axis_title"],
+                params["df_y_col"]: params["y_axis_title"],
                 params["df_category_name_col"]: params["legend_title"],
             },
             color_discrete_sequence=colour_sequence,
-            category_orders=params["sorted_category_list"],
+            category_orders=sorted_category_list,
             opacity=0.6,
             height=chart_height,
             render_mode="webgl",
@@ -850,7 +859,7 @@ def plotly_scatter(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(params["filename"], height_multiplier=chart_height / 750.0),
+                config=global_config(params["file_name"], height_multiplier=chart_height / 750.0),
             )
 
     except ValueError as e:
@@ -985,40 +994,6 @@ def construct_frequency_chart(
         facet_col_wrap=facet_col_wrap,
         sorted_category_list=sorted_categories,
         return_as_dict=return_as_dict,
-    )
-
-
-def construct_scatter_chart(
-    df,
-    params,
-):
-    sorted_categories = create_sorted_category_list(df, params["df_name_col"], params["df_y_col"], params["sorting"])
-
-    df_legend_col = params["df_name_col"]
-    legend_title = params["legend_title"]
-    df_group_col = "x_ray_system_name"
-    if params["grouping_choice"] == "series":
-        df_legend_col = "x_ray_system_name"
-        legend_title = "System"
-        df_group_col = params["df_name_col"]
-
-    parameter_dict = {
-        "df_x_value_col": params["df_x_col"],
-        "df_y_value_col": params["df_y_col"],
-        "df_category_name_col": df_legend_col,
-        "df_facet_col": df_group_col,
-        "x_axis_title": params["x_axis_title"],
-        "y_axis_title": params["y_axis_title"],
-        "legend_title": legend_title,
-        "colourmap": params["colour_map"],
-        "filename": params["file_name"],
-        "facet_col_wrap": params["facet_col_wrap"],
-        "sorted_category_list": sorted_categories,
-        "return_as_dict": params["return_as_dict"],
-    }
-    return plotly_scatter(
-        df,
-        parameter_dict,
     )
 
 
