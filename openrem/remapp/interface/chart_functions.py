@@ -379,6 +379,7 @@ def plotly_histogram_barchart(
     df,
     params,
 ):
+    # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
     n_facets = len(params["df_facet_category_list"])

@@ -622,10 +622,10 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     category_names = facet_names
                     facet_names = list(sorted_acquisition_kvp_categories.values())[0]
 
-                parameter_dict = {
+                parameter_dict = {  # pylint: disable=line-too-long
                     "df_facet_col": group_by_col,
                     "df_category_col": category_names_col,
-                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
+                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",  # pylint: disable=line-too-long
                     "value_axis_title": "kVp",
                     "legend_title": legend_title,
                     "n_bins": user_profile.plotHistogramBins,
@@ -723,10 +723,10 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     category_names = facet_names
                     facet_names = list(sorted_acquisition_mas_categories.values())[0]
 
-                parameter_dict = {
+                parameter_dict = {  # pylint: disable=line-too-long
                     "df_facet_col": group_by_col,
                     "df_category_col": category_names_col,
-                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
+                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",  # pylint: disable=line-too-long
                     "value_axis_title": "mAs",
                     "legend_title": legend_title,
                     "n_bins": user_profile.plotHistogramBins,
