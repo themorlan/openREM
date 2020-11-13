@@ -1,3 +1,4 @@
+# pylint: disable=B403
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
 #    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
 #
@@ -37,7 +38,7 @@ import json
 import logging
 from datetime import datetime, timedelta
 from decimal import Decimal
-import pickle  # pylint: disable=import-pickle
+import pickle
 from collections import OrderedDict
 
 from django.db.models import Sum, Q, Min
