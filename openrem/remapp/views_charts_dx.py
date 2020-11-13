@@ -462,30 +462,31 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     stats_to_use=average_choices + ["count"],
                 )
 
+                parameter_dict = {
+                    "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                    "name_axis_title": "Acquisition protocol",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "sorted_category_list": sorted_acquisition_dap_categories,
+                    "facet_col": None,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                }
                 if user_profile.plotMean:
+                    parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
+                    parameter_dict["filename"] = "OpenREM DX acquisition protocol DAP mean"
+                    parameter_dict["average_choice"] = "mean"
                     return_structure["acquisitionMeanDAPData"] = plotly_barchart(
                         df_aggregated,
-                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                        value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
-                        name_axis_title="Acquisition protocol",
-                        colourmap=user_profile.plotColourMapChoice,
-                        filename="OpenREM DX acquisition protocol DAP mean",
-                        sorted_category_list=sorted_acquisition_dap_categories,
-                        average_choice="mean",
-                        return_as_dict=return_as_dict,
+                        parameter_dict,
                     )
 
                 if user_profile.plotMedian:
+                    parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
+                    parameter_dict["filename"] = "OpenREM DX acquisition protocol DAP median"
+                    parameter_dict["average_choice"] = "median"
                     return_structure["acquisitionMedianDAPData"] = plotly_barchart(
                         df_aggregated,
-                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                        value_axis_title="Median DAP (cGy.cm<sup>2</sup>)",
-                        name_axis_title="Acquisition protocol",
-                        colourmap=user_profile.plotColourMapChoice,
-                        filename="OpenREM DX acquisition protocol DAP median",
-                        sorted_category_list=sorted_acquisition_dap_categories,
-                        average_choice="median",
-                        return_as_dict=return_as_dict,
+                        parameter_dict,
                     )
 
             if user_profile.plotBoxplots:
@@ -561,30 +562,31 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     stats_to_use=average_choices + ["count"],
                 )
 
+                parameter_dict = {
+                    "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                    "name_axis_title": "Acquisition protocol",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "sorted_category_list": sorted_acquisition_kvp_categories,
+                    "facet_col": None,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                }
                 if user_profile.plotMean:
+                    parameter_dict["value_axis_title"] = "Mean kVp"
+                    parameter_dict["filename"] = "OpenREM DX acquisition protocol kVp mean"
+                    parameter_dict["average_choice"] = "mean"
                     return_structure["acquisitionMeankVpData"] = plotly_barchart(
                         df_aggregated,
-                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                        value_axis_title="Mean kVp",
-                        name_axis_title="Acquisition protocol",
-                        colourmap=user_profile.plotColourMapChoice,
-                        filename="OpenREM DX acquisition protocol kVp mean",
-                        sorted_category_list=sorted_acquisition_kvp_categories,
-                        average_choice="mean",
-                        return_as_dict=return_as_dict,
+                        parameter_dict,
                     )
 
                 if user_profile.plotMedian:
+                    parameter_dict["value_axis_title"] = "Median kVp"
+                    parameter_dict["filename"] = "OpenREM DX acquisition protocol kVp median"
+                    parameter_dict["average_choice"] = "median"
                     return_structure["acquisitionMediankVpData"] = plotly_barchart(
                         df_aggregated,
-                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                        value_axis_title="Median kVp",
-                        name_axis_title="Acquisition protocol",
-                        colourmap=user_profile.plotColourMapChoice,
-                        filename="OpenREM DX acquisition protocol kVp median",
-                        sorted_category_list=sorted_acquisition_kvp_categories,
-                        average_choice="median",
-                        return_as_dict=return_as_dict,
+                        parameter_dict,
                     )
 
             if user_profile.plotBoxplots:
@@ -660,30 +662,31 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     stats_to_use=average_choices + ["count"],
                 )
 
+                parameter_dict = {
+                    "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                    "name_axis_title": "Acquisition protocol",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "sorted_category_list": sorted_acquisition_mas_categories,
+                    "facet_col": None,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                }
                 if user_profile.plotMean:
+                    parameter_dict["value_axis_title"] = "Mean mAs"
+                    parameter_dict["filename"] = "OpenREM DX acquisition protocol mAs mean"
+                    parameter_dict["average_choice"] = "mean"
                     return_structure["acquisitionMeanmAsData"] = plotly_barchart(
                         df_aggregated,
-                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                        value_axis_title="Mean mAs",
-                        name_axis_title="Acquisition protocol",
-                        colourmap=user_profile.plotColourMapChoice,
-                        filename="OpenREM DX acquisition protocol mAs mean",
-                        sorted_category_list=sorted_acquisition_mas_categories,
-                        average_choice="mean",
-                        return_as_dict=return_as_dict,
+                        parameter_dict,
                     )
 
                 if user_profile.plotMedian:
+                    parameter_dict["value_axis_title"] = "Median mAs"
+                    parameter_dict["filename"] = "OpenREM DX acquisition protocol mAs median"
+                    parameter_dict["average_choice"] = "median"
                     return_structure["acquisitionMedianmAsData"] = plotly_barchart(
                         df_aggregated,
-                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                        value_axis_title="Median mAs",
-                        name_axis_title="Acquisition protocol",
-                        colourmap=user_profile.plotColourMapChoice,
-                        filename="OpenREM DX acquisition protocol mAs median",
-                        sorted_category_list=sorted_acquisition_mas_categories,
-                        average_choice="median",
-                        return_as_dict=return_as_dict,
+                        parameter_dict,
                     )
 
             if user_profile.plotBoxplots:
@@ -980,30 +983,31 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     stats_to_use=average_choices + ["count"],
                 )
 
+                parameter_dict = {
+                    "df_name_col": "study_description",
+                    "name_axis_title": "Study description",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "sorted_category_list": sorted_study_dap_categories,
+                    "facet_col": None,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                }
                 if user_profile.plotMean:
+                    parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
+                    parameter_dict["filename"] = "OpenREM DX study description DAP mean"
+                    parameter_dict["average_choice"] = "mean"
                     return_structure["studyMeanDAPData"] = plotly_barchart(
                         df_aggregated,
-                        "study_description",
-                        value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
-                        name_axis_title="Study description",
-                        colourmap=user_profile.plotColourMapChoice,
-                        filename="OpenREM DX Study description DAP mean",
-                        sorted_category_list=sorted_study_dap_categories,
-                        average_choice="mean",
-                        return_as_dict=return_as_dict,
+                        parameter_dict,
                     )
 
                 if user_profile.plotMedian:
+                    parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
+                    parameter_dict["filename"] = "OpenREM DX study description DAP median"
+                    parameter_dict["average_choice"] = "median"
                     return_structure["studyMedianDAPData"] = plotly_barchart(
                         df_aggregated,
-                        "study_description",
-                        value_axis_title="Median DAP (cGy.cm<sup>2</sup>)",
-                        name_axis_title="Study description",
-                        colourmap=user_profile.plotColourMapChoice,
-                        filename="OpenREM DX Study description DAP median",
-                        sorted_category_list=sorted_study_dap_categories,
-                        average_choice="median",
-                        return_as_dict=return_as_dict,
+                        parameter_dict,
                     )
 
             if user_profile.plotBoxplots:
@@ -1093,30 +1097,31 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     stats_to_use=average_choices + ["count"],
                 )
 
+                parameter_dict = {
+                    "df_name_col": "requested_procedure_code_meaning",
+                    "name_axis_title": "Requested procedure",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "sorted_category_list": sorted_request_dap_categories,
+                    "facet_col": None,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                }
                 if user_profile.plotMean:
+                    parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
+                    parameter_dict["filename"] = "OpenREM DX requested procedure DAP mean"
+                    parameter_dict["average_choice"] = "mean"
                     return_structure["requestMeanDAPData"] = plotly_barchart(
                         df_aggregated,
-                        "requested_procedure_code_meaning",
-                        value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
-                        name_axis_title="Requested procedure",
-                        colourmap=user_profile.plotColourMapChoice,
-                        filename="OpenREM DX requested procedure DAP mean",
-                        sorted_category_list=sorted_request_dap_categories,
-                        average_choice="mean",
-                        return_as_dict=return_as_dict,
+                        parameter_dict,
                     )
 
                 if user_profile.plotMedian:
+                    parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
+                    parameter_dict["filename"] = "OpenREM DX requested procedure DAP median"
+                    parameter_dict["average_choice"] = "median"
                     return_structure["requestMedianDAPData"] = plotly_barchart(
                         df_aggregated,
-                        "requested_procedure_code_meaning",
-                        value_axis_title="Median DAP (cGy.cm<sup>2</sup>)",
-                        name_axis_title="Requested procedure",
-                        colourmap=user_profile.plotColourMapChoice,
-                        filename="OpenREM DX requested procedure DAP median",
-                        sorted_category_list=sorted_request_dap_categories,
-                        average_choice="median",
-                        return_as_dict=return_as_dict,
+                        parameter_dict,
                     )
 
             if user_profile.plotBoxplots:

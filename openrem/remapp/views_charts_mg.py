@@ -355,30 +355,31 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         stats_to_use=average_choices + ["count"],
                     )
 
+                    parameter_dict = {
+                        "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                        "name_axis_title": "Acquisition protocol",
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "sorted_category_list": sorted_acquisition_agd_categories,
+                        "facet_col": None,
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "return_as_dict": return_as_dict,
+                    }
                     if user_profile.plotMean:
+                        parameter_dict["value_axis_title"] = "Mean AGD (mGy)"
+                        parameter_dict["filename"] = "OpenREM MG acquisition protocol AGD mean"
+                        parameter_dict["average_choice"] = "mean"
                         return_structure["acquisitionMeanAGDData"] = plotly_barchart(
                             df_aggregated,
-                            "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                            value_axis_title="Mean AGD (mGy)",
-                            name_axis_title="Acquisition protocol",
-                            colourmap=user_profile.plotColourMapChoice,
-                            filename="OpenREM MG acquisition protocol AGD mean",
-                            sorted_category_list=sorted_acquisition_agd_categories,
-                            average_choice="mean",
-                            return_as_dict=return_as_dict,
+                            parameter_dict,
                         )
 
                     if user_profile.plotMedian:
+                        parameter_dict["value_axis_title"] = "Median AGD (mGy)"
+                        parameter_dict["filename"] = "OpenREM MG acquisition protocol AGD median"
+                        parameter_dict["average_choice"] = "median"
                         return_structure["acquisitionMedianAGDData"] = plotly_barchart(
                             df_aggregated,
-                            "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                            value_axis_title="Median AGD (mGy)",
-                            name_axis_title="Acquisition protocol",
-                            colourmap=user_profile.plotColourMapChoice,
-                            filename="OpenREM MG acquisition protocol AGD median",
-                            sorted_category_list=sorted_acquisition_agd_categories,
-                            average_choice="median",
-                            return_as_dict=return_as_dict,
+                            parameter_dict,
                         )
 
                 if user_profile.plotBoxplots:

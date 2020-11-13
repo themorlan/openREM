@@ -336,34 +336,31 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 df, groupby_cols, "total_dap", stats_to_use=stats_to_include
             )
 
+            parameter_dict = {
+                "df_name_col": x_col,
+                "name_axis_title": "Study description",
+                "colourmap": user_profile.plotColourMapChoice,
+                "sorted_category_list": sorted_study_categories,
+                "facet_col": facet_col,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "return_as_dict": return_as_dict,
+            }
             if user_profile.plotMean:
+                parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
+                parameter_dict["filename"] ="OpenREM RF study description DAP mean"
+                parameter_dict["average_choice"] = "mean"
                 return_structure["studyMeanData"] = plotly_barchart(
                     df_aggregated,
-                    x_col,
-                    value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
-                    name_axis_title="Study description",
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM RF study description DAP mean",
-                    sorted_category_list=sorted_study_categories,
-                    average_choice="mean",
-                    facet_col=facet_col,
-                    facet_col_wrap=user_profile.plotFacetColWrapVal,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
             if user_profile.plotMedian:
+                parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
+                parameter_dict["filename"] ="OpenREM RF study description DAP median"
+                parameter_dict["average_choice"] = "median"
                 return_structure["studyMedianData"] = plotly_barchart(
                     df_aggregated,
-                    x_col,
-                    value_axis_title="Median DAP (cGy.cm<sup>2</sup>)",
-                    name_axis_title="Study description",
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM RF study description DAP median",
-                    sorted_category_list=sorted_study_categories,
-                    average_choice="median",
-                    facet_col=facet_col,
-                    facet_col_wrap=user_profile.plotFacetColWrapVal,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
         if user_profile.plotBoxplots:
@@ -479,34 +476,31 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 df, groupby_cols, "total_dap", stats_to_use=stats_to_include
             )
 
+            parameter_dict = {
+                "df_name_col": x_col,
+                "name_axis_title": "Requested procedure",
+                "colourmap": user_profile.plotColourMapChoice,
+                "sorted_category_list": sorted_study_categories,
+                "facet_col": facet_col,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "return_as_dict": return_as_dict,
+            }
             if user_profile.plotMean:
+                parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
+                parameter_dict["filename"] ="OpenREM RF requested procedure DAP mean"
+                parameter_dict["average_choice"] = "mean"
                 return_structure["requestMeanData"] = plotly_barchart(
                     df_aggregated,
-                    x_col,
-                    value_axis_title="Mean DAP (cGy.cm<sup>2</sup>)",
-                    name_axis_title="Requested procedure",
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM RF requested procedure DAP mean",
-                    sorted_category_list=sorted_request_categories,
-                    average_choice="mean",
-                    facet_col=facet_col,
-                    facet_col_wrap=user_profile.plotFacetColWrapVal,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
             if user_profile.plotMedian:
+                parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
+                parameter_dict["filename"] ="OpenREM RF requested procedure DAP median"
+                parameter_dict["average_choice"] = "median"
                 return_structure["requestMedianData"] = plotly_barchart(
                     df_aggregated,
-                    x_col,
-                    value_axis_title="Median DAP (cGy.cm<sup>2</sup>)",
-                    name_axis_title="Requested procedure",
-                    colourmap=user_profile.plotColourMapChoice,
-                    filename="OpenREM RF requested procedure DAP median",
-                    sorted_category_list=sorted_request_categories,
-                    average_choice="median",
-                    facet_col=facet_col,
-                    facet_col_wrap=user_profile.plotFacetColWrapVal,
-                    return_as_dict=return_as_dict,
+                    parameter_dict,
                 )
 
         if user_profile.plotBoxplots:
