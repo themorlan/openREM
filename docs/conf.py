@@ -31,7 +31,7 @@ django.setup()
 # -- Project information -----------------------------------------------------
 
 project = "OpenREM"
-copyright = "2013-2020, The Royal Marsden NHS Foundation Trust"
+copyright = "2013-2020, The Royal Marsden NHS Foundation Trust"  # pylint: disable=redefined-builtin
 author = "OpenREM Contributers"
 
 # The version info for the project you're documenting, acts as replacement for
