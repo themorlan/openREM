@@ -255,7 +255,12 @@ def plotly_boxplot(
 
         fig.update_traces(quartilemethod="exclusive")
 
-        fig.update_xaxes(tickson="boundaries", showticklabels=True)
+        fig.update_xaxes(
+            tickson="boundaries",
+            ticks="outside",
+            ticklen=5,
+            showticklabels=True
+        )
         fig.update_yaxes(showticklabels=True, matches=None)
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
@@ -359,7 +364,12 @@ def plotly_barchart(
         height=chart_height,
     )
 
-    fig.update_xaxes(tickson="boundaries", showticklabels=True)
+    fig.update_xaxes(
+        tickson="boundaries",
+        ticks="outside",
+        ticklen=5,
+        showticklabels=True
+    )
     fig.update_yaxes(showticklabels=True, matches=None)
 
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
@@ -475,6 +485,8 @@ def plotly_histogram_barchart(
             fig.update_xaxes(
                 title_text=facet_name + " " + params["value_axis_title"],
                 tickvals=bins,
+                ticks="outside",
+                ticklen=5,
                 row=current_row,
                 col=current_col,
             )
@@ -620,6 +632,8 @@ def plotly_binned_statistic_barchart(
             fig.update_xaxes(
                 title_text=facet_name + " " + params["x_axis_title"],
                 tickson="boundaries",
+                ticks="outside",
+                ticklen=5,
                 row=current_row,
                 col=current_col,
             )
@@ -706,7 +720,11 @@ def plotly_timeseries_linechart(
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
-        fig.update_xaxes(showticklabels=True)
+        fig.update_xaxes(
+            showticklabels=True,
+            ticks="outside",
+            ticklen=5,
+        )
         fig.update_yaxes(showticklabels=True, matches=None)
 
         if params["return_as_dict"]:
@@ -928,7 +946,12 @@ def plotly_frequency_barchart(
         height=chart_height,
     )
 
-    fig.update_xaxes(tickson="boundaries", showticklabels=True)
+    fig.update_xaxes(
+        tickson="boundaries",
+        ticks="outside",
+        ticklen=5,
+        showticklabels=True,
+    )
     fig.update_yaxes(showticklabels=True, matches=None)
 
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
