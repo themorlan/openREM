@@ -72,7 +72,7 @@ function skinDoseMap3dObject(skinDoseMap3dCanvasName, colourScaleName) {
         if (scaledDose < 0) {scaledDose = 0;}
         if (scaledDose > _this.windowWidth) {scaledDose = _this.windowWidth;}
         return _this.colourScale(scaledDose / _this.windowWidth).rgb();
-    }
+    };
 
 
     /**
