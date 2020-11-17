@@ -272,7 +272,7 @@ def plotly_boxplot(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(params["filename"]),
+                config=global_config(params["filename"], height_multiplier=chart_height / 750.0),
             )
 
     except ValueError as e:
@@ -381,7 +381,7 @@ def plotly_barchart(
             fig,
             output_type="div",
             include_plotlyjs=False,
-            config=global_config(params["filename"]),
+            config=global_config(params["filename"], height_multiplier=chart_height / 750.0),
         )
 
 
@@ -734,7 +734,7 @@ def plotly_timeseries_linechart(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(params["filename"]),
+                config=global_config(params["filename"], height_multiplier=chart_height / 750.0),
             )
 
     except ValueError as e:
@@ -963,7 +963,7 @@ def plotly_frequency_barchart(
             fig,
             output_type="div",
             include_plotlyjs=False,
-            config=global_config(params["file_name"]),
+            config=global_config(params["file_name"], height_multiplier=chart_height / 750.0),
         )
 
 
