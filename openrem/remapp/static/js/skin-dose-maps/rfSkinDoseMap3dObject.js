@@ -67,7 +67,7 @@ function skinDoseMap3dObject(skinDoseMap3dCanvasName, colourScaleName) {
      */
     this.getNewColour = function(i, j) {
         var _this = this;
-                currentDose = _this.skinDoseMap[j * (_this.phantomHeight +_this.phantomHeadHeight) + i];
+        var currentDose = _this.skinDoseMap[j * (_this.phantomHeight +_this.phantomHeadHeight) + i];
         var scaledDose = currentDose - (_this.windowLevel - (_this.windowWidth / 2.0));
         if (scaledDose < 0) {scaledDose = 0;}
         if (scaledDose > _this.windowWidth) {scaledDose = _this.windowWidth;}
