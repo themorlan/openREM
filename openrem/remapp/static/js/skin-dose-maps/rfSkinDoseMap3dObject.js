@@ -62,94 +62,74 @@ function skinDoseMap3dObject(skinDoseMap3dCanvasName, colourScaleName) {
 
 
     /**
+     * Internal function to return a colour for a skin dose map patch given
+     * the i, j location in the skin dose map array
+     */
+    this.getNewColour = function(i, j) {
+        var _this = this;
+                currentDose = _this.skinDoseMap[j * (_this.phantomHeight +_this.phantomHeadHeight) + i];
+        var scaledDose = currentDose - (_this.windowLevel - (_this.windowWidth / 2.0));
+        if (scaledDose < 0) {scaledDose = 0;}
+        if (scaledDose > _this.windowWidth) {scaledDose = _this.windowWidth;}
+        return _this.colourScale(scaledDose / _this.windowWidth).rgb();
+    }
+
+
+    /**
      * Internal function to draw the 3d skin dose map
      */
      this.draw = function () {
         var _this = this;
-        var currentDose, scaledDose, newColour, i, j, k;
+        var newColour, i, j, k, l, m, n, o;
         var torsoStart = _this.phantomHeadHeight;
         var torsoEnd = _this.phantomHeadHeight + _this.phantomHeight;
         var phantomHeadCircumference = 2 * Math.PI * _this.phantomHeadRadius;
-        k = 0;
+        k = l = m = n = o = 0;
         for (i = torsoStart; i < torsoEnd; i++) {
             for (j = 0; j < _this.phantomFlatWidth; j++) {
-                currentDose = _this.skinDoseMap[j * (_this.phantomHeight +_this.phantomHeadHeight) + i];
-                scaledDose = currentDose - (_this.windowLevel - (_this.windowWidth / 2.0));
-                if (scaledDose < 0) {scaledDose = 0;}
-                if (scaledDose > _this.windowWidth) {scaledDose = _this.windowWidth;}
-                newColour = _this.colourScale(scaledDose / _this.windowWidth).rgb();
-
+                newColour = this.getNewColour(i, j);
                 dataTextureFront.image.data[k] = newColour[0];
                 dataTextureFront.image.data[k+1] = newColour[1];
                 dataTextureFront.image.data[k+2] = newColour[2];
                 dataTextureFront.image.data[k+3] = 0;
                 k += 4;
             }
-        }
-        k = 0;
-        for (i = torsoStart; i < torsoEnd; i++) {
+
             for (j = _this.phantomFlatWidth; j < _this.phantomFlatWidth+_this.phantomCurvedEdgeWidth; j++) {
-                currentDose = _this.skinDoseMap[j * (_this.phantomHeight + _this.phantomHeadHeight)  + i];
-                scaledDose = currentDose - (_this.windowLevel - (_this.windowWidth / 2.0));
-                if (scaledDose < 0) {scaledDose = 0;}
-                if (scaledDose > _this.windowWidth) {scaledDose = _this.windowWidth;}
-                newColour = _this.colourScale(scaledDose / _this.windowWidth).rgb();
-
-                dataTextureLeft.image.data[k] = newColour[0];
-                dataTextureLeft.image.data[k+1] = newColour[1];
-                dataTextureLeft.image.data[k+2] = newColour[2];
-                dataTextureLeft.image.data[k+3] = 0;
-                k += 4;
+                newColour = this.getNewColour(i, j);
+                dataTextureLeft.image.data[l] = newColour[0];
+                dataTextureLeft.image.data[l+1] = newColour[1];
+                dataTextureLeft.image.data[l+2] = newColour[2];
+                dataTextureLeft.image.data[l+3] = 0;
+                l += 4;
             }
-        }
-        k = 0;
-        for (i = torsoStart; i < torsoEnd; i++) {
+
             for (j = _this.phantomFlatWidth+_this.phantomCurvedEdgeWidth; j < _this.phantomFlatWidth*2+_this.phantomCurvedEdgeWidth; j++) {
-                currentDose = _this.skinDoseMap[j * (_this.phantomHeight + _this.phantomHeadHeight)  + i];
-                scaledDose = currentDose - (_this.windowLevel - (_this.windowWidth / 2.0));
-                if (scaledDose < 0) {scaledDose = 0;}
-                if (scaledDose > _this.windowWidth) {scaledDose = _this.windowWidth;}
-                newColour = _this.colourScale(scaledDose / _this.windowWidth).rgb();
-
-                dataTextureBack.image.data[k] = newColour[0];
-                dataTextureBack.image.data[k+1] = newColour[1];
-                dataTextureBack.image.data[k+1] = newColour[1];
-                dataTextureBack.image.data[k+2] = newColour[2];
-                dataTextureBack.image.data[k+3] = 0;
-                k += 4;
+                newColour = this.getNewColour(i, j);
+                dataTextureBack.image.data[m] = newColour[0];
+                dataTextureBack.image.data[m+1] = newColour[1];
+                dataTextureBack.image.data[m+1] = newColour[1];
+                dataTextureBack.image.data[m+2] = newColour[2];
+                dataTextureBack.image.data[m+3] = 0;
+                m += 4;
             }
-        }
-        k = 0;
-        for (i = torsoStart; i < torsoEnd; i++) {
+
             for (j = _this.phantomFlatWidth*2+_this.phantomCurvedEdgeWidth; j < _this.phantomFlatWidth*2+_this.phantomCurvedEdgeWidth*2; j++) {
-                currentDose = _this.skinDoseMap[j * (_this.phantomHeight + _this.phantomHeadHeight)  + i];
-                scaledDose = currentDose - (_this.windowLevel - (_this.windowWidth / 2.0));
-                if (scaledDose < 0) {scaledDose = 0;}
-                if (scaledDose > _this.windowWidth) {scaledDose = _this.windowWidth;}
-                newColour = _this.colourScale(scaledDose / _this.windowWidth).rgb();
-
-                dataTextureRight.image.data[k] = newColour[0];
-                dataTextureRight.image.data[k+1] = newColour[1];
-                dataTextureRight.image.data[k+2] = newColour[2];
-                dataTextureRight.image.data[k+3] = 0;
-                k += 4;
+                newColour = this.getNewColour(i, j);
+                dataTextureRight.image.data[n] = newColour[0];
+                dataTextureRight.image.data[n+1] = newColour[1];
+                dataTextureRight.image.data[n+2] = newColour[2];
+                dataTextureRight.image.data[n+3] = 0;
+                n += 4;
             }
-        }
 
-        k = 0;
-        for (i = 0; i < torsoStart; i++) {
             for (j = 0; j < phantomHeadCircumference; j++) {
-                currentDose = _this.skinDoseMap[j *(_this.phantomHeight + _this.phantomHeadHeight) + i];
-                scaledDose = currentDose - (_this.windowLevel - (_this.windowWidth / 2.0));
-                if (scaledDose < 0) {scaledDose = 0;}
-                if (scaledDose > _this.windowWidth) {scaledDose = _this.windowWidth;}
-                newColour = _this.colourScale(scaledDose / _this.windowWidth).rgb();
-
-                dataTextureHead.image.data[k] = newColour[0];
-                dataTextureHead.image.data[k+1] = newColour[1];
-                dataTextureHead.image.data[k+2] = newColour[2];
-                dataTextureHead.image.data[k+3] = 0;
-                k += 4;
+                newColour = this.getNewColour(i, j);
+                dataTextureHead.image.data[o] = newColour[0];
+                dataTextureHead.image.data[o+1] = newColour[1];
+                dataTextureHead.image.data[o+2] = newColour[2];
+                dataTextureHead.image.data[o+3] = 0;
+                o += 4;
             }
         }
 
