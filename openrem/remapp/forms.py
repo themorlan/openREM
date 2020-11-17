@@ -58,12 +58,14 @@ logger = logging.getLogger()
 
 
 class SizeUploadForm(forms.Form):
+
     """Form for patient size csv file upload"""
 
     sizefile = forms.FileField(label="Select a file")
 
 
 class SizeHeadersForm(forms.Form):
+
     """Form for csv column header patient size imports through the web interface"""
 
     height_field = forms.ChoiceField(choices="")
@@ -100,6 +102,7 @@ class itemsPerPageForm(forms.Form):
 
 
 class DXChartOptionsForm(forms.Form):
+
     """Form for DX chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
@@ -169,6 +172,7 @@ class DXChartOptionsForm(forms.Form):
 
 
 class CTChartOptionsForm(forms.Form):
+
     """Form for CT chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
@@ -244,6 +248,7 @@ class CTChartOptionsForm(forms.Form):
 
 
 class RFChartOptionsForm(forms.Form):
+
     """Form for RF chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
@@ -294,6 +299,7 @@ class RFChartOptionsForm(forms.Form):
 
 
 class RFChartOptionsDisplayForm(forms.Form):
+
     """Form for RF chart display options"""
 
     plotRFStudyDAP = forms.BooleanField(label="Study DAP", required=False)
@@ -326,6 +332,7 @@ class RFChartOptionsDisplayForm(forms.Form):
 
 
 class MGChartOptionsForm(forms.Form):
+
     """Form for MG chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
@@ -380,6 +387,7 @@ class MGChartOptionsForm(forms.Form):
 
 
 class MGChartOptionsDisplayForm(forms.Form):
+
     """Form for MG chart display options"""
 
     plotMGacquisitionFreq = forms.BooleanField(
@@ -415,6 +423,7 @@ class MGChartOptionsDisplayForm(forms.Form):
 
 
 class DXChartOptionsDisplayForm(forms.Form):
+
     """Form for DX chart display options"""
 
     plotDXAcquisitionMeanDAP = forms.BooleanField(
@@ -465,6 +474,7 @@ class DXChartOptionsDisplayForm(forms.Form):
 
 
 class CTChartOptionsDisplayForm(forms.Form):
+
     """Form for CT chart display options"""
 
     plotCTAcquisitionMeanDLP = forms.BooleanField(
@@ -521,6 +531,7 @@ class CTChartOptionsDisplayForm(forms.Form):
 
 
 class GeneralChartOptionsDisplayForm(forms.Form):
+
     """Form for general chart display options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
@@ -570,6 +581,7 @@ class UpdateDisplayNamesForm(forms.Form):
 
 
 class RFHighDoseFluoroAlertsForm(forms.ModelForm):
+
     """Form for displaying and changing fluoroscopy high dose alert settings"""
 
     def __init__(self, *args, **kwargs):
@@ -627,6 +639,7 @@ class RFHighDoseFluoroAlertsForm(forms.ModelForm):
 
 
 class HomepageOptionsForm(forms.Form):
+
     """Form for displaying and changing the home page options"""
 
     dayDeltaA = forms.IntegerField(
@@ -642,6 +655,7 @@ class HomepageOptionsForm(forms.Form):
 
 
 class MergeOnDeviceObserverUIDForm(forms.Form):
+
     """Form for displaying and changing the option for merging on Device Observer UID"""
 
     match_on_device_observer_uid = forms.BooleanField(
@@ -651,6 +665,7 @@ class MergeOnDeviceObserverUIDForm(forms.Form):
 
 
 class DicomQueryForm(forms.Form):
+
     """Form for launching DICOM Query"""
 
     from datetime import date
@@ -797,6 +812,7 @@ class DicomQueryForm(forms.Form):
 
 
 class DicomDeleteSettingsForm(forms.ModelForm):
+
     """Form for configuring whether DICOM objects are stored or deleted once processed"""
 
     def __init__(self, *args, **kwargs):
@@ -846,6 +862,7 @@ class DicomDeleteSettingsForm(forms.ModelForm):
 
 
 class DicomQRForm(forms.ModelForm):
+
     """Form for configuring remote Query Retrieve nodes"""
 
     def __init__(self, *args, **kwargs):
@@ -911,6 +928,7 @@ class DicomQRForm(forms.ModelForm):
 
 
 class DicomStoreForm(forms.ModelForm):
+
     """Form for configuring local Store nodes"""
 
     def __init__(self, *args, **kwargs):
@@ -996,6 +1014,7 @@ class DicomStoreForm(forms.ModelForm):
 
 
 class SkinDoseMapCalcSettingsForm(forms.ModelForm):
+
     """Form for configuring whether skin dose maps are shown / calculated"""
 
     def __init__(self, *args, **kwargs):
@@ -1013,6 +1032,7 @@ class SkinDoseMapCalcSettingsForm(forms.ModelForm):
 
 
 class NotPatientNameForm(forms.ModelForm):
+
     """Form for configuring not-patient name patterns"""
 
     def __init__(self, *args, **kwargs):
@@ -1046,6 +1066,7 @@ class NotPatientNameForm(forms.ModelForm):
 
 
 class NotPatientIDForm(forms.ModelForm):
+
     """Form for configuring not-patient ID patterns"""
 
     def __init__(self, *args, **kwargs):
