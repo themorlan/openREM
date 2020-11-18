@@ -44,13 +44,19 @@ from plotly.offline import plot
 from plotly.subplots import make_subplots
 from scipy import stats
 
-def global_config(filename, height_multiplier=1.0):
+
+def global_config(
+        filename,
+        height_multiplier=1.0,
+        height=1080,
+        width=1920,
+):
     return {
         "toImageButtonOptions": {
             "format": "png",
             "filename": filename,
-            "height": 1080 * height_multiplier,
-            "width": 1920,
+            "height": height * height_multiplier,
+            "width": width,
             "scale": 1,
         },
         "displaylogo": False,
@@ -65,6 +71,7 @@ def create_dataframe(
     data_point_value_multipliers=None,
     uid=None,
 ):
+    start = None
     if settings.DEBUG:
         start = datetime.now()
 
@@ -137,6 +144,7 @@ def create_dataframe_time_series(
 
 def create_dataframe_weekdays(df, df_name_col, df_date_col="study_date"):
 
+    start = None
     if settings.DEBUG:
         start = datetime.now()
 
@@ -156,6 +164,7 @@ def create_dataframe_weekdays(df, df_name_col, df_date_col="study_date"):
 
 
 def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None):
+    start = None
     if settings.DEBUG:
         start = datetime.now()
 
@@ -212,19 +221,23 @@ def failed_chart_message_div(custom_msg_line, e):
     return msg
 
 
+def calc_facet_rows_and_height(df, facet_col_name, facet_col_wrap):
+    n_facet_rows = math.ceil(len(df[facet_col_name].unique()) / facet_col_wrap)
+    chart_height = n_facet_rows * 500
+    if chart_height < 500:
+        chart_height = 500
+    return chart_height, n_facet_rows
+
+
 def plotly_boxplot(
     df,
     params,
 ):
-
-    chart_height = 750
+    chart_height = 500
     n_facet_rows = 1
 
     if params["facet_col"]:
-        n_facet_rows = math.ceil(len(df[params["facet_col"]].unique()) / params["facet_col_wrap"])
-        chart_height = n_facet_rows * 250
-        if chart_height < 750:
-            chart_height = 750
+        chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["facet_col"], params["facet_col_wrap"])
 
     n_colours = len(df.x_ray_system_name.unique())
     colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
@@ -241,7 +254,7 @@ def plotly_boxplot(
             y=params["df_value_col"],
             facet_col=params["facet_col"],
             facet_col_wrap=params["facet_col_wrap"],
-            facet_row_spacing=0.40 / n_facet_rows,
+            facet_row_spacing=0.50 / n_facet_rows,
             color="x_ray_system_name",
             labels={
                 params["df_value_col"]: params["value_axis_title"],
@@ -272,7 +285,7 @@ def plotly_boxplot(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(params["filename"], height_multiplier=chart_height / 750.0),
+                config=global_config(params["filename"], height_multiplier=chart_height / 500.0),
             )
 
     except ValueError as e:
@@ -326,14 +339,11 @@ def plotly_barchart(
     df,
     params,
 ):
-    chart_height = 750
+    chart_height = 500
     n_facet_rows = 1
 
     if params["facet_col"]:
-        n_facet_rows = math.ceil(len(df[params["facet_col"]].unique()) / params["facet_col_wrap"])
-        chart_height = n_facet_rows * 250
-        if chart_height < 750:
-            chart_height = 750
+        chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["facet_col"], params["facet_col_wrap"])
 
     n_colours = len(df.x_ray_system_name.unique())
     colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
@@ -346,7 +356,7 @@ def plotly_barchart(
         barmode="group",
         facet_col=params["facet_col"],
         facet_col_wrap=params["facet_col_wrap"],
-        facet_row_spacing=0.40 / n_facet_rows,
+        facet_row_spacing=0.50 / n_facet_rows,
         labels={
             params["average_choice"]: params["value_axis_title"],
             params["df_name_col"]: params["name_axis_title"],
@@ -381,7 +391,7 @@ def plotly_barchart(
             fig,
             output_type="div",
             include_plotlyjs=False,
-            config=global_config(params["filename"], height_multiplier=chart_height / 750.0),
+            config=global_config(params["filename"], height_multiplier=chart_height / 500.0),
         )
 
 
@@ -392,30 +402,20 @@ def plotly_histogram_barchart(
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
-    n_facets = len(params["df_facet_category_list"])
-    n_facet_rows = math.ceil(n_facets / params["facet_col_wrap"])
-    chart_height = n_facet_rows * 250
-    if chart_height < 750:
-        chart_height = 750
-
-    facet_col_wrap = params["facet_col_wrap"]
-    if n_facets < facet_col_wrap:
-        facet_col_wrap = n_facets
+    chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["df_facet_col"], params["facet_col_wrap"])
 
     n_colours = len(df[params["df_category_col"]].unique())
     colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
 
+    bins = None
+    mid_bins = None
+    bin_labels = None
     if params["global_max_min"]:
-        min_bin_value, max_bin_value = df[params["df_value_col"]].agg([min, max])
-        bins = np.linspace(min_bin_value, max_bin_value, params["n_bins"] + 1)
-        mid_bins = 0.5 * (bins[:-1] + bins[1:])
-        bin_labels = np.array(
-            ["{:.2f}≤x<{:.2f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])]
-        )
+        bin_labels, bins, mid_bins = calc_histogram_bin_data(df, params["df_value_col"], n_bins=params["n_bins"])
 
     try:
         fig = make_subplots(
-            rows=n_facet_rows, cols=facet_col_wrap, vertical_spacing=0.40 / n_facet_rows
+            rows=n_facet_rows, cols=params["facet_col_wrap"], vertical_spacing=0.50 / n_facet_rows
         )
 
         current_row = 1
@@ -433,14 +433,8 @@ def plotly_histogram_barchart(
                 continue
 
             if not params["global_max_min"]:
-                min_bin_value, max_bin_value = facet_subset[params["df_value_col"]].agg([min, max])
-                bins = np.linspace(min_bin_value, max_bin_value, params["n_bins"] + 1)
-                mid_bins = 0.5 * (bins[:-1] + bins[1:])
-                bin_labels = np.array(
-                    [
-                        "{:.2f}≤x<{:.2f}".format(i, j)
-                        for i, j in zip(bins[:-1], bins[1:])
-                    ]
+                bin_labels, bins, mid_bins = calc_histogram_bin_data(
+                    facet_subset, params["df_value_col"], n_bins=params["n_bins"]
                 )
 
             for category_name in params["df_category_name_list"]:
@@ -498,7 +492,7 @@ def plotly_histogram_barchart(
 
             current_facet += 1
             current_col += 1
-            if current_col > facet_col_wrap:
+            if current_col > params["facet_col_wrap"]:
                 current_row += 1
                 current_col = 1
 
@@ -514,7 +508,7 @@ def plotly_histogram_barchart(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(params["filename"], height_multiplier=chart_height / 750.0),
+                config=global_config(params["filename"], height_multiplier=chart_height / 500.0),
             )
 
     except ValueError as e:
@@ -524,6 +518,16 @@ def plotly_histogram_barchart(
         )
 
 
+def calc_histogram_bin_data(df, value_col_name, n_bins=10):
+    min_bin_value, max_bin_value = df[value_col_name].agg([min, max])
+    bins = np.linspace(min_bin_value, max_bin_value, n_bins + 1)
+    mid_bins = 0.5 * (bins[:-1] + bins[1:])
+    bin_labels = np.array(
+        ["{:.2f}≤x<{:.2f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])]
+    )
+    return bin_labels, bins, mid_bins
+
+
 def plotly_binned_statistic_barchart(
     df,
     params,
@@ -531,22 +535,14 @@ def plotly_binned_statistic_barchart(
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
-    n_facets = len(params["df_facet_category_list"])
-    n_facet_rows = math.ceil(n_facets / params["facet_col_wrap"])
-    chart_height = n_facet_rows * 250
-    if chart_height < 750:
-        chart_height = 750
-
-    facet_col_wrap = params["facet_col_wrap"]
-    if n_facets < facet_col_wrap:
-        facet_col_wrap = n_facets
+    chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["df_facet_col"], params["facet_col_wrap"])
 
     n_colours = len(df[params["df_category_col"]].unique())
     colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
 
     try:
         fig = make_subplots(
-            rows=n_facet_rows, cols=facet_col_wrap, vertical_spacing=0.50 / n_facet_rows
+            rows=n_facet_rows, cols=params["facet_col_wrap"], vertical_spacing=0.50 / n_facet_rows
         )
 
         current_row = 1
@@ -647,7 +643,7 @@ def plotly_binned_statistic_barchart(
 
             current_facet += 1
             current_col += 1
-            if current_col > facet_col_wrap:
+            if current_col > params["facet_col_wrap"]:
                 current_row += 1
                 current_col = 1
 
@@ -663,7 +659,7 @@ def plotly_binned_statistic_barchart(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(params["file_name"], height_multiplier=chart_height / 750.0),
+                config=global_config(params["file_name"], height_multiplier=chart_height / 500.0),
             )
 
     except ValueError as e:
@@ -677,10 +673,7 @@ def plotly_timeseries_linechart(
     df,
     params,
 ):
-    n_facet_rows = math.ceil(len(df[params["facet_col"]].unique()) / params["facet_col_wrap"])
-    chart_height = n_facet_rows * 250
-    if chart_height < 750:
-        chart_height = 750
+    chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["facet_col"], params["facet_col_wrap"])
 
     n_colours = len(df[params["df_name_col"]].unique())
     colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
@@ -693,8 +686,7 @@ def plotly_timeseries_linechart(
             color=params["df_name_col"],
             facet_col=params["facet_col"],
             facet_col_wrap=params["facet_col_wrap"],
-            facet_row_spacing=0.40
-            / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
+            facet_row_spacing=0.50 / n_facet_rows,
             labels={
                 params["facet_col"]: params["facet_title"],
                 params["df_value_col"]: params["value_axis_title"],
@@ -734,7 +726,7 @@ def plotly_timeseries_linechart(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(params["filename"], height_multiplier=chart_height / 750.0),
+                config=global_config(params["filename"], height_multiplier=chart_height / 500.0),
             )
 
     except ValueError as e:
@@ -757,10 +749,7 @@ def plotly_scatter(
         params["df_group_col"] = params["df_name_col"]
         params["legend_title"] = "System"
 
-    n_facet_rows = math.ceil(len(df[params["df_group_col"]].unique()) / params["facet_col_wrap"])
-    chart_height = n_facet_rows * 250
-    if chart_height < 750:
-        chart_height = 750
+    chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["df_group_col"], params["facet_col_wrap"])
 
     n_colours = len(df[params["df_category_name_col"]].unique())
     colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
@@ -778,8 +767,7 @@ def plotly_scatter(
             color=params["df_category_name_col"],
             facet_col=params["df_group_col"],
             facet_col_wrap=params["facet_col_wrap"],
-            facet_row_spacing=0.40
-            / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
+            facet_row_spacing=0.50 / n_facet_rows,
             labels={
                 params["df_x_col"]: params["x_axis_title"],
                 params["df_y_col"]: params["y_axis_title"],
@@ -806,7 +794,7 @@ def plotly_scatter(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(params["file_name"], height_multiplier=chart_height / 750.0),
+                config=global_config(params["file_name"], height_multiplier=chart_height / 500.0),
             )
 
     except ValueError as e:
@@ -827,10 +815,7 @@ def plotly_barchart_weekdays(
     facet_col_wrap=3,
     return_as_dict=False,
 ):
-    n_facet_rows = math.ceil(len(df.x_ray_system_name.unique()) / facet_col_wrap)
-    chart_height = n_facet_rows * 250
-    if chart_height < 750:
-        chart_height = 750
+    chart_height, n_facet_rows = calc_facet_rows_and_height(df, "x_ray_system_name", facet_col_wrap)
 
     try:
         fig = px.bar(
@@ -839,8 +824,7 @@ def plotly_barchart_weekdays(
             y=df_value_col,
             facet_col="x_ray_system_name",
             facet_col_wrap=facet_col_wrap,
-            facet_row_spacing=0.40
-            / n_facet_rows,  # default is 0.07 when facet_col_wrap is used
+            facet_row_spacing=0.50 / n_facet_rows,
             color=df_value_col,
             labels={
                 df_name_col: name_axis_title,
@@ -883,7 +867,7 @@ def plotly_barchart_weekdays(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(filename, height_multiplier=chart_height / 750.0),
+                config=global_config(filename, height_multiplier=chart_height / 500.0),
             )
 
     except ValueError as e:
@@ -916,14 +900,11 @@ def plotly_frequency_barchart(
         params["legend_title"] = "System"
         params["df_x_axis_col"] = params["df_name_col"]
 
-    chart_height = 750
+    chart_height = 500
     n_facet_rows = 1
 
     if params["facet_col"]:
-        n_facet_rows = math.ceil(len(df_aggregated[params["facet_col"]].unique()) / params["facet_col_wrap"])
-        chart_height = n_facet_rows * 250
-        if chart_height < 750:
-            chart_height = 750
+        chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["facet_col"], params["facet_col_wrap"])
 
     n_colours = len(df_aggregated[df_legend_col].unique())
     colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
@@ -935,7 +916,7 @@ def plotly_frequency_barchart(
         color=df_legend_col,
         facet_col=params["facet_col"],
         facet_col_wrap=params["facet_col_wrap"],
-        facet_row_spacing=0.40 / n_facet_rows,
+        facet_row_spacing=0.50 / n_facet_rows,
         labels={
             "count": "Frequency",
             df_legend_col: params["legend_title"],
@@ -963,9 +944,8 @@ def plotly_frequency_barchart(
             fig,
             output_type="div",
             include_plotlyjs=False,
-            config=global_config(params["file_name"], height_multiplier=chart_height / 750.0),
+            config=global_config(params["file_name"], height_multiplier=chart_height / 500.0),
         )
-
 
 
 def construct_over_time_charts(
@@ -1011,7 +991,7 @@ def construct_over_time_charts(
         "value_axis_title": params["value_title"],
         "name_axis_title": params["date_title"],
         "legend_title": params["name_title"],
-        "colourmap": params["colourmap"] ,
+        "colourmap": params["colourmap"],
         "filename": params["file_name"],
         "facet_col_wrap": params["facet_col_wrap"],
         "sorted_category_list": sorted_categories,
