@@ -22,6 +22,7 @@ from .interface.chart_functions import (
     plotly_set_default_theme,
     create_sorted_category_list,
     create_dataframe_aggregates,
+    download_link,
 )
 
 logger = logging.getLogger(__name__)
@@ -358,6 +359,13 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                             df_aggregated,
                             parameter_dict,
                         )
+                        return_structure["acquisitionMeanAGDDataCSV"] = download_link(
+                            df_aggregated[["x_ray_system_name",
+                                           "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                                           "count",
+                                           "mean"]],
+                            "acquisitionMeanAGDData.csv",
+                        )
 
                     if user_profile.plotMedian:
                         parameter_dict["value_axis_title"] = "Median AGD (mGy)"
@@ -366,6 +374,13 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         return_structure["acquisitionMedianAGDData"] = plotly_barchart(
                             df_aggregated,
                             parameter_dict,
+                        )
+                        return_structure["acquisitionMedianAGDDataCSV"] = download_link(
+                            df_aggregated[["x_ray_system_name",
+                                           "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                                           "count",
+                                           "median"]],
+                            "acquisitionMedianAGDData.csv",
                         )
 
                 if user_profile.plotBoxplots:

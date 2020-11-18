@@ -23,9 +23,11 @@ $(document).ready(function() {
             // AGD per acquisition chart data
             if(typeof json.acquisitionMeanAGDData !== "undefined") {
                 $("#acquisitionMeanAGDChartDiv").html(json.acquisitionMeanAGDData);
+                $("#acquisitionMeanAGDChartParentDiv").append(json.acquisitionMeanAGDDataCSV);
             }
             if(typeof json.acquisitionMedianAGDData !== "undefined") {
                 $("#acquisitionMedianAGDChartDiv").html(json.acquisitionMedianAGDData);
+                $("#acquisitionMedianAGDChartParentDiv").append(json.acquisitionMedianAGDDataCSV);
             }
             if(typeof json.acquisitionBoxplotAGDData !=="undefined") {
                 $("#acquisitionBoxplotAGDChartDiv").html(json.acquisitionBoxplotAGDData);

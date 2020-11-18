@@ -359,7 +359,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                     fields_for_download.insert(2, "performing_physician_name")
                 return_structure["studyMeanDataCSV"] = download_link(
                     df_aggregated[fields_for_download],
-                    "studyMeanData.csv",
+                    "studyMeanDAPData.csv",
                 )
 
             if user_profile.plotMedian:
@@ -375,7 +375,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                     fields_for_download.insert(2, "performing_physician_name")
                 return_structure["studyMedianDataCSV"] = download_link(
                     df_aggregated[fields_for_download],
-                    "studyMedianData.csv",
+                    "studyMedianDAPData.csv",
                 )
 
         if user_profile.plotBoxplots:
@@ -519,7 +519,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                     fields_for_download.insert(2, "performing_physician_name")
                 return_structure["requestMeanDataCSV"] = download_link(
                     df_aggregated[fields_for_download],
-                    "requestMeanData.csv",
+                    "requestMeanDAPData.csv",
                 )
 
             if user_profile.plotMedian:
@@ -535,7 +535,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                     fields_for_download.insert(2, "performing_physician_name")
                 return_structure["requestMedianDataCSV"] = download_link(
                     df_aggregated[fields_for_download],
-                    "requestMedianData.csv",
+                    "requestMedianDAPData.csv",
                 )
 
         if user_profile.plotBoxplots:
