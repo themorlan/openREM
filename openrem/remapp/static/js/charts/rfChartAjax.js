@@ -18,9 +18,11 @@ $(document).ready(function() {
             // DLP per study chart data
             if(typeof json.studyMeanData !== "undefined") {
                 $("#studyMeanDAPChartDiv").html(json.studyMeanData);
+                $("#studyMeanDAPChartParentDiv").append(json.studyMeanDataCSV);
             }
             if(typeof json.studyMedianData !=="undefined") {
                 $("#studyMedianDAPChartDiv").html(json.studyMedianData);
+                $("#studyMedianDAPChartParentDiv").append(json.studyMedianDataCSV);
             }
             if(typeof json.studyBoxplotData !=="undefined") {
                 $("#studyBoxplotDAPChartDiv").html(json.studyBoxplotData);
@@ -32,9 +34,11 @@ $(document).ready(function() {
             // DLP per request chart data
             if(typeof json.requestMeanData !== "undefined") {
                 $("#requestMeanDAPChartDiv").html(json.requestMeanData);
+                $("#requestMeanDAPChartParentDiv").append(json.requestMeanDataCSV);
             }
             if(typeof json.requestMedianData !== "undefined") {
                 $("#requestMedianDAPChartDiv").html(json.requestMedianData);
+                $("#requestMedianDAPChartParentDiv").append(json.requestMedianDataCSV);
             }
             if(typeof json.requestBoxplotData !=="undefined") {
                 $("#requestBoxplotDAPChartDiv").html(json.requestBoxplotData);

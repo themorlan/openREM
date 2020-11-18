@@ -20,6 +20,7 @@ from .interface.chart_functions import (
     plotly_set_default_theme,
     plotly_frequency_barchart,
     construct_over_time_charts,
+    download_link,
 )
 
 logger = logging.getLogger(__name__)
@@ -347,20 +348,34 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             }
             if user_profile.plotMean:
                 parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
-                parameter_dict["filename"] ="OpenREM RF study description DAP mean"
+                parameter_dict["filename"] = "OpenREM RF study description DAP mean"
                 parameter_dict["average_choice"] = "mean"
                 return_structure["studyMeanData"] = plotly_barchart(
                     df_aggregated,
                     parameter_dict,
                 )
+                fields_for_download = ["x_ray_system_name", "study_description", "count", "mean"]
+                if user_profile.plotRFSplitByPhysician:
+                    fields_for_download.insert(2, "performing_physician_name")
+                return_structure["studyMeanDataCSV"] = download_link(
+                    df_aggregated[fields_for_download],
+                    "studyMeanData.csv",
+                )
 
             if user_profile.plotMedian:
                 parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
-                parameter_dict["filename"] ="OpenREM RF study description DAP median"
+                parameter_dict["filename"] = "OpenREM RF study description DAP median"
                 parameter_dict["average_choice"] = "median"
                 return_structure["studyMedianData"] = plotly_barchart(
                     df_aggregated,
                     parameter_dict,
+                )
+                fields_for_download = ["x_ray_system_name", "study_description", "count", "median"]
+                if user_profile.plotRFSplitByPhysician:
+                    fields_for_download.insert(2, "performing_physician_name")
+                return_structure["studyMedianDataCSV"] = download_link(
+                    df_aggregated[fields_for_download],
+                    "studyMedianData.csv",
                 )
 
         if user_profile.plotBoxplots:
@@ -499,6 +514,13 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                     df_aggregated,
                     parameter_dict,
                 )
+                fields_for_download = ["x_ray_system_name", "requested_procedure_code_meaning", "count", "mean"]
+                if user_profile.plotRFSplitByPhysician:
+                    fields_for_download.insert(2, "performing_physician_name")
+                return_structure["requestMeanDataCSV"] = download_link(
+                    df_aggregated[fields_for_download],
+                    "requestMeanData.csv",
+                )
 
             if user_profile.plotMedian:
                 parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
@@ -507,6 +529,13 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 return_structure["requestMedianData"] = plotly_barchart(
                     df_aggregated,
                     parameter_dict,
+                )
+                fields_for_download = ["x_ray_system_name", "requested_procedure_code_meaning", "count", "median"]
+                if user_profile.plotRFSplitByPhysician:
+                    fields_for_download.insert(2, "performing_physician_name")
+                return_structure["requestMedianDataCSV"] = download_link(
+                    df_aggregated[fields_for_download],
+                    "requestMedianData.csv",
                 )
 
         if user_profile.plotBoxplots:
