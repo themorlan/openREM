@@ -22,9 +22,11 @@ $(document).ready(function() {
             // DAP per acquisition chart data
             if(typeof json.acquisitionMeanDAPData !== "undefined") {
                 $("#acquisitionMeanDAPChartDiv").html(json.acquisitionMeanDAPData);
+                $("#acquisitionMeanDAPChartParentDiv").append(json.acquisitionMeanDAPDataCSV);
             }
             if(typeof json.acquisitionMedianDAPData !== "undefined") {
                 $("#acquisitionMedianDAPChartDiv").html(json.acquisitionMedianDAPData);
+                $("#acquisitionMedianDAPChartParentDiv").append(json.acquisitionMedianDAPDataCSV);
             }
             if(typeof json.acquisitionBoxplotDAPData !=="undefined") {
                 $("#acquisitionBoxplotDAPChartDiv").html(json.acquisitionBoxplotDAPData);
@@ -41,9 +43,11 @@ $(document).ready(function() {
             // kVp per acquisition chart data
             if(typeof json.acquisitionMeankVpData !== "undefined") {
                 $("#acquisitionMeankVpChartDiv").html(json.acquisitionMeankVpData);
+                $("#acquisitionMeankVpChartParentDiv").append(json.acquisitionMeankVpDataCSV);
             }
             if(typeof json.acquisitionMediankVpData !== "undefined") {
                 $("#acquisitionMediankVpChartDiv").html(json.acquisitionMediankVpData);
+                $("#acquisitionMediankVpChartParentDiv").append(json.acquisitionMediankVpDataCSV);
             }
             if(typeof json.acquisitionBoxplotkVpData !=="undefined") {
                 $("#acquisitionBoxplotkVpChartDiv").html(json.acquisitionBoxplotkVpData);
@@ -55,9 +59,11 @@ $(document).ready(function() {
             // mAs per acquisition chart data
             if(typeof json.acquisitionMeanmAsData !== "undefined") {
                 $("#acquisitionMeanmAsChartDiv").html(json.acquisitionMeanmAsData);
+                $("#acquisitionMeanmAsChartParentDiv").append(json.acquisitionMeanmAsDataCSV);
             }
             if(typeof json.acquisitionMedianmAsData !== "undefined") {
                 $("#acquisitionMedianmAsChartDiv").html(json.acquisitionMedianmAsData);
+                $("#acquisitionMedianmAsChartParentDiv").append(json.acquisitionMedianmAsDataCSV);
             }
             if(typeof json.acquisitionBoxplotmAsData !=="undefined") {
                 $("#acquisitionBoxplotmAsChartDiv").html(json.acquisitionBoxplotmAsData);
@@ -69,9 +75,11 @@ $(document).ready(function() {
             // DAP per study chart data
             if(typeof json.studyMeanDAPData !== "undefined") {
                 $("#studyMeanDAPChartDiv").html(json.studyMeanDAPData);
+                $("#studyMeanDAPChartParentDiv").append(json.studyMeanDAPDataCSV);
             }
             if(typeof json.studyMedianDAPData !== "undefined") {
                 $("#studyMedianDAPChartDiv").html(json.studyMedianDAPData);
+                $("#studyMedianDAPChartParentDiv").append(json.studyMedianDAPDataCSV);
             }
             if(typeof json.studyBoxplotDAPData !=="undefined") {
                 $("#studyBoxplotDAPChartDiv").html(json.studyBoxplotDAPData);
@@ -88,9 +96,11 @@ $(document).ready(function() {
             // DAP per request chart data
             if(typeof json.requestMeanDAPData !== "undefined") {
                 $("#requestMeanDAPChartDiv").html(json.requestMeanDAPData);
+                $("#requestMeanDAPChartParentDiv").append(json.requestMeanDAPDataCSV);
             }
             if(typeof json.requestMedianDAPData !== "undefined") {
                 $("#requestMedianDAPChartDiv").html(json.requestMedianDAPData);
+                $("#requestMedianDAPChartParentDiv").append(json.requestMedianDAPDataCSV);
             }
             if(typeof json.requestBoxplotDAPData !=="undefined") {
                 $("#requestBoxplotDAPChartDiv").html(json.requestBoxplotDAPData);

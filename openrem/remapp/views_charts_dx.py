@@ -21,6 +21,7 @@ from .interface.chart_functions import (
     plotly_frequency_barchart,
     plotly_scatter,
     construct_over_time_charts,
+    download_link,
 )
 
 logger = logging.getLogger(__name__)
@@ -479,6 +480,13 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         df_aggregated,
                         parameter_dict,
                     )
+                    return_structure["acquisitionMeanDAPDataCSV"] = download_link(
+                        df_aggregated[["x_ray_system_name",
+                                       "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                                       "count",
+                                       "mean"]],
+                        "acquisitionMeanDAPData.csv",
+                    )
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
@@ -487,6 +495,13 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     return_structure["acquisitionMedianDAPData"] = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
+                    )
+                    return_structure["acquisitionMedianDAPDataCSV"] = download_link(
+                        df_aggregated[["x_ray_system_name",
+                                       "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                                       "count",
+                                       "median"]],
+                        "acquisitionMedianDAPData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -580,6 +595,13 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         df_aggregated,
                         parameter_dict,
                     )
+                    return_structure["acquisitionMeankVpDataCSV"] = download_link(
+                        df_aggregated[["x_ray_system_name",
+                                       "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                                       "count",
+                                       "mean"]],
+                        "acquisitionMeankVpData.csv",
+                    )
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median kVp"
@@ -588,6 +610,13 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     return_structure["acquisitionMediankVpData"] = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
+                    )
+                    return_structure["acquisitionMediankVpDataCSV"] = download_link(
+                        df_aggregated[["x_ray_system_name",
+                                       "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                                       "count",
+                                       "median"]],
+                        "acquisitionMediankVpData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -681,6 +710,13 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         df_aggregated,
                         parameter_dict,
                     )
+                    return_structure["acquisitionMeanmAsDataCSV"] = download_link(
+                        df_aggregated[["x_ray_system_name",
+                                       "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                                       "count",
+                                       "mean"]],
+                        "acquisitionMeanmAsData.csv",
+                    )
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median mAs"
@@ -689,6 +725,13 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     return_structure["acquisitionMedianmAsData"] = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
+                    )
+                    return_structure["acquisitionMedianmAsDataCSV"] = download_link(
+                        df_aggregated[["x_ray_system_name",
+                                       "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                                       "count",
+                                       "median"]],
+                        "acquisitionMedianmAsData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -1009,6 +1052,13 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         df_aggregated,
                         parameter_dict,
                     )
+                    return_structure["studyMeanDAPDataCSV"] = download_link(
+                        df_aggregated[["x_ray_system_name",
+                                       "study_description",
+                                       "count",
+                                       "mean"]],
+                        "studyMeanDAPData.csv",
+                    )
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
@@ -1017,6 +1067,13 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     return_structure["studyMedianDAPData"] = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
+                    )
+                    return_structure["studyMedianDAPDataCSV"] = download_link(
+                        df_aggregated[["x_ray_system_name",
+                                       "study_description",
+                                       "count",
+                                       "median"]],
+                        "studyMedianDAPData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -1132,6 +1189,13 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                         df_aggregated,
                         parameter_dict,
                     )
+                    return_structure["requestMeanDAPDataCSV"] = download_link(
+                        df_aggregated[["x_ray_system_name",
+                                       "requested_procedure_code_meaning",
+                                       "count",
+                                       "mean"]],
+                        "requestMeanDAPData.csv",
+                    )
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
@@ -1140,6 +1204,13 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     return_structure["requestMedianDAPData"] = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
+                    )
+                    return_structure["requestMedianDAPDataCSV"] = download_link(
+                        df_aggregated[["x_ray_system_name",
+                                       "requested_procedure_code_meaning",
+                                       "count",
+                                       "median"]],
+                        "requestMedianDAPData.csv",
                     )
 
             if user_profile.plotBoxplots:
