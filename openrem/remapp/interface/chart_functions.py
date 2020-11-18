@@ -710,14 +710,14 @@ def plotly_timeseries_linechart(
         for data_set in fig.data:
             data_set.update(mode="markers+lines")
 
-        fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
-
         fig.update_xaxes(
             showticklabels=True,
             ticks="outside",
             ticklen=5,
         )
         fig.update_yaxes(showticklabels=True, matches=None)
+
+        fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
         if params["return_as_dict"]:
             return fig.to_dict()
@@ -780,12 +780,12 @@ def plotly_scatter(
             render_mode="webgl",
         )
 
-        fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+        fig.update_traces(marker_line=dict(width=1, color="LightSlateGray"))
 
         fig.update_xaxes(showticklabels=True)
         fig.update_yaxes(showticklabels=True)
 
-        fig.update_traces(marker_line=dict(width=1, color="LightSlateGray"))
+        fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
         if params["return_as_dict"]:
             return fig.to_dict()
@@ -854,11 +854,10 @@ def plotly_barchart_weekdays(
                 "Sunday",
             ],
             tickson="boundaries",
+            showticklabels=True,
         )
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
-
-        fig.update_xaxes(showticklabels=True)
 
         if return_as_dict:
             return fig.to_dict()
