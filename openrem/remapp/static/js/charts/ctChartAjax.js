@@ -21,9 +21,11 @@ $(document).ready(function() {
             // DLP per acquisition chart data
             if(typeof json.acquisitionMeanDLPData !== "undefined") {
                 $("#acquisitionMeanDLPChartDiv").html(json.acquisitionMeanDLPData);
+                $("#acquisitionMeanDLPChartParentDiv").append(json.acquisitionMeanDLPDataCSV);
             }
             if(typeof json.acquisitionMedianDLPData !== "undefined") {
                 $("#acquisitionMedianDLPChartDiv").html(json.acquisitionMedianDLPData);
+                $("#acquisitionMedianDLPChartParentDiv").append(json.acquisitionMedianDLPDataCSV);
             }
             if(typeof json.acquisitionBoxplotDLPData !=="undefined") {
                 $("#acquisitionBoxplotDLPChartDiv").html(json.acquisitionBoxplotDLPData);
@@ -35,9 +37,11 @@ $(document).ready(function() {
             // CTDI per acquisition chart data
             if(typeof json.acquisitionMeanCTDIData !== "undefined") {
                 $("#acquisitionMeanCTDIChartDiv").html(json.acquisitionMeanCTDIData);
+                $("#acquisitionMeanCTDIChartParentDiv").append(json.acquisitionMeanCTDIDataCSV);
             }
             if(typeof json.acquisitionMedianCTDIData !== "undefined") {
                 $("#acquisitionMedianCTDIChartDiv").html(json.acquisitionMedianCTDIData);
+                $("#acquisitionMedianCTDIChartParentDiv").append(json.acquisitionMedianCTDIDataCSV);
             }
             if(typeof json.acquisitionBoxplotCTDIData !=="undefined") {
                 $("#acquisitionBoxplotCTDIChartDiv").html(json.acquisitionBoxplotCTDIData);
@@ -66,9 +70,11 @@ $(document).ready(function() {
             // DLP per study chart data
             if(typeof json.studyMeanDLPData !== "undefined") {
                 $("#studyMeanDLPChartDiv").html(json.studyMeanDLPData);
+                $("#studyMeanDLPChartParentDiv").append(json.studyMeanDLPDataCSV);
             }
             if(typeof json.studyMedianDLPData !== "undefined") {
                 $("#studyMedianDLPChartDiv").html(json.studyMedianDLPData);
+                $("#studyMedianDLPChartParentDiv").append(json.studyMedianDLPDataCSV);
             }
             if(typeof json.studyBoxplotDLPData !=="undefined") {
                 $("#studyBoxplotDLPChartDiv").html(json.studyBoxplotDLPData);
@@ -80,9 +86,11 @@ $(document).ready(function() {
             // CTDI per study chart data
             if(typeof json.studyMeanCTDIData !== "undefined") {
                 $("#studyMeanCTDIChartDiv").html(json.studyMeanCTDIData);
+                $("#studyMeanCTDIChartParentDiv").append(json.studyMeanCTDIDataCSV);
             }
             if(typeof json.studyMedianCTDIData !== "undefined") {
                 $("#studyMedianCTDIChartDiv").html(json.studyMedianCTDIData);
+                $("#studyMedianCTDIChartParentDiv").append(json.studyMedianCTDIDataCSV);
             }
             if(typeof json.studyBoxplotCTDIData !=="undefined") {
                 $("#studyBoxplotCTDIChartDiv").html(json.studyBoxplotCTDIData);
@@ -92,25 +100,29 @@ $(document).ready(function() {
             }
 
             // DLP per request chart data start
-            if(typeof json.requestMeanData !== "undefined") {
-                $("#requestMeanDLPChartDiv").html(json.requestMeanData);
+            if(typeof json.requestMeanDLPData !== "undefined") {
+                $("#requestMeanDLPChartDiv").html(json.requestMeanDLPData);
+                $("#requestMeanDLPChartParentDiv").append(json.requestMeanDLPDataCSV);
             }
-            if(typeof json.requestMedianData !== "undefined") {
-                $("#requestMedianDLPChartDiv").html(json.requestMedianData);
+            if(typeof json.requestMedianDLPData !== "undefined") {
+                $("#requestMedianDLPChartDiv").html(json.requestMedianDLPData);
+                $("#requestMedianDLPChartParentDiv").append(json.requestMedianDLPDataCSV);
             }
-            if(typeof json.requestBoxplotData !=="undefined") {
-                $("#requestBoxplotDLPChartDiv").html(json.requestBoxplotData);
+            if(typeof json.requestBoxplotDLPData !=="undefined") {
+                $("#requestBoxplotDLPChartDiv").html(json.requestBoxplotDLPData);
             }
-            if(typeof json.requestHistogramData !=="undefined") {
-                $("#requestHistogramDLPChartDiv").html(json.requestHistogramData);
+            if(typeof json.requestHistogramDLPData !=="undefined") {
+                $("#requestHistogramDLPChartDiv").html(json.requestHistogramDLPData);
             }
 
             // Number of events per study chart data
             if(typeof json.studyMeanNumEventsData !== "undefined") {
                 $("#studyMeanNumEventsChartDiv").html(json.studyMeanNumEventsData);
+                $("#studyMeanNumEventsChartParentDiv").append(json.studyMeanNumEventsDataCSV);
             }
             if(typeof json.studyMedianNumEventsData !== "undefined") {
                 $("#studyMedianNumEventsChartDiv").html(json.studyMedianNumEventsData);
+                $("#studyMedianNumEventsChartParentDiv").append(json.studyMedianNumEventsDataCSV);
             }
             if(typeof json.studyBoxplotNumEventsData !=="undefined") {
                 $("#studyBoxplotNumEventsChartDiv").html(json.studyBoxplotNumEventsData);
@@ -122,9 +134,11 @@ $(document).ready(function() {
             // Number of events per request chart data
             if(typeof json.requestMeanNumEventsData !== "undefined") {
                 $("#requestMeanNumEventsChartDiv").html(json.requestMeanNumEventsData);
+                $("#requestMeanNumEventsChartParentDiv").append(json.requestMeanNumEventsDataCSV);
             }
             if(typeof json.requestMedianNumEventsData !== "undefined") {
                 $("#requestMedianNumEventsChartDiv").html(json.requestMedianNumEventsData);
+                $("#requestMedianNumEventsChartParentDiv").append(json.requestMedianNumEventsDataCSV);
             }
             if(typeof json.requestBoxplotNumEventsData !=="undefined") {
                 $("#requestBoxplotNumEventsChartDiv").html(json.requestBoxplotNumEventsData);
