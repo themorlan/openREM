@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 # This Python file uses the following encoding: utf-8
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
 #    Copyright (C) 2019  The Royal Marsden NHS Foundation Trust
