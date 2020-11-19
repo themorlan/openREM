@@ -38,6 +38,7 @@ $(document).ready(function() {
             // Acquisition frequency chart data start
             if(typeof json.acquisitionFrequencyData !== "undefined") {
                 $("#acquisitionFrequencyChartDiv").html(json.acquisitionFrequencyData);
+                $("#acquisitionFrequencyChartParentDiv").append(json.acquisitionFrequencyDataCSV);
             }
 
             // kVp per acquisition chart data
@@ -91,6 +92,7 @@ $(document).ready(function() {
             // Study frequency chart data start
             if(typeof json.studyFrequencyData !== "undefined") {
                 $("#studyFrequencyChartDiv").html(json.studyFrequencyData);
+                $("#studyFrequencyChartParentDiv").append(json.studyFrequencyDataCSV);
             }
 
             // DAP per request chart data
@@ -112,6 +114,7 @@ $(document).ready(function() {
             // Request frequency chart data start
             if(typeof json.requestFrequencyData !== "undefined") {
                 $("#requestFrequencyChartDiv").html(json.requestFrequencyData);
+                $("#requestFrequencyChartParentDiv").append(json.requestFrequencyDataCSV);
             }
 
             // Acquisition DAP over time chart data

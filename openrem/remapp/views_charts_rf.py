@@ -20,7 +20,6 @@ from .interface.chart_functions import (
     plotly_set_default_theme,
     plotly_frequency_barchart,
     construct_over_time_charts,
-    download_link,
 )
 
 logger = logging.getLogger(__name__)
@@ -350,15 +349,9 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] = "OpenREM RF study description DAP mean"
                 parameter_dict["average_choice"] = "mean"
-                return_structure["studyMeanData"] = plotly_barchart(
+                return_structure["studyMeanData"], return_structure["studyMeanDataCSV"] = plotly_barchart(
                     df_aggregated,
                     parameter_dict,
-                )
-                fields_for_download = ["x_ray_system_name", "study_description", "count", "mean"]
-                if user_profile.plotRFSplitByPhysician:
-                    fields_for_download.insert(2, "performing_physician_name")
-                return_structure["studyMeanDataCSV"] = download_link(
-                    df_aggregated[fields_for_download],
                     "studyMeanDAPData.csv",
                 )
 
@@ -366,15 +359,9 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] = "OpenREM RF study description DAP median"
                 parameter_dict["average_choice"] = "median"
-                return_structure["studyMedianData"] = plotly_barchart(
+                return_structure["studyMedianData"], return_structure["studyMedianDataCSV"] = plotly_barchart(
                     df_aggregated,
                     parameter_dict,
-                )
-                fields_for_download = ["x_ray_system_name", "study_description", "count", "median"]
-                if user_profile.plotRFSplitByPhysician:
-                    fields_for_download.insert(2, "performing_physician_name")
-                return_structure["studyMedianDataCSV"] = download_link(
-                    df_aggregated[fields_for_download],
                     "studyMedianDAPData.csv",
                 )
 
@@ -465,9 +452,10 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
             "return_as_dict": return_as_dict,
         }
-        return_structure["studyFrequencyData"] = plotly_frequency_barchart(
+        return_structure["studyFrequencyData"], return_structure["studyFrequencyDataCSV"] = plotly_frequency_barchart(
             df,
             parameter_dict,
+            csv_name="studyFrequencyData.csv",
         )
 
     sorted_request_categories = None
@@ -510,15 +498,9 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] ="OpenREM RF requested procedure DAP mean"
                 parameter_dict["average_choice"] = "mean"
-                return_structure["requestMeanData"] = plotly_barchart(
+                return_structure["requestMeanData"], return_structure["requestMeanDataCSV"] = plotly_barchart(
                     df_aggregated,
                     parameter_dict,
-                )
-                fields_for_download = ["x_ray_system_name", "requested_procedure_code_meaning", "count", "mean"]
-                if user_profile.plotRFSplitByPhysician:
-                    fields_for_download.insert(2, "performing_physician_name")
-                return_structure["requestMeanDataCSV"] = download_link(
-                    df_aggregated[fields_for_download],
                     "requestMeanDAPData.csv",
                 )
 
@@ -526,15 +508,9 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] ="OpenREM RF requested procedure DAP median"
                 parameter_dict["average_choice"] = "median"
-                return_structure["requestMedianData"] = plotly_barchart(
+                return_structure["requestMedianData"], return_structure["requestMedianDataCSV"] = plotly_barchart(
                     df_aggregated,
                     parameter_dict,
-                )
-                fields_for_download = ["x_ray_system_name", "requested_procedure_code_meaning", "count", "median"]
-                if user_profile.plotRFSplitByPhysician:
-                    fields_for_download.insert(2, "performing_physician_name")
-                return_structure["requestMedianDataCSV"] = download_link(
-                    df_aggregated[fields_for_download],
                     "requestMedianDAPData.csv",
                 )
 
@@ -625,9 +601,10 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
             "return_as_dict": return_as_dict,
         }
-        return_structure["requestFrequencyData"] = plotly_frequency_barchart(
+        return_structure["requestFrequencyData"], return_structure["requestFrequencyDataCSV"] = plotly_frequency_barchart(  # pylint: disable=line-too-long
             df,
             parameter_dict,
+            csv_name="requestFrequencyData.csv",
         )
 
     if user_profile.plotRFStudyDAPOverTime:

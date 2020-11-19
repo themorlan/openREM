@@ -22,7 +22,6 @@ from .interface.chart_functions import (
     plotly_set_default_theme,
     create_sorted_category_list,
     create_dataframe_aggregates,
-    download_link,
 )
 
 logger = logging.getLogger(__name__)
@@ -355,15 +354,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         parameter_dict["value_axis_title"] = "Mean AGD (mGy)"
                         parameter_dict["filename"] = "OpenREM MG acquisition protocol AGD mean"
                         parameter_dict["average_choice"] = "mean"
-                        return_structure["acquisitionMeanAGDData"] = plotly_barchart(
+                        return_structure["acquisitionMeanAGDData"], return_structure["acquisitionMeanAGDDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
                             df_aggregated,
                             parameter_dict,
-                        )
-                        return_structure["acquisitionMeanAGDDataCSV"] = download_link(
-                            df_aggregated[["x_ray_system_name",
-                                           "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                                           "count",
-                                           "mean"]],
                             "acquisitionMeanAGDData.csv",
                         )
 
@@ -371,15 +364,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         parameter_dict["value_axis_title"] = "Median AGD (mGy)"
                         parameter_dict["filename"] = "OpenREM MG acquisition protocol AGD median"
                         parameter_dict["average_choice"] = "median"
-                        return_structure["acquisitionMedianAGDData"] = plotly_barchart(
+                        return_structure["acquisitionMedianAGDData"], return_structure["acquisitionMedianAGDDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
                             df_aggregated,
                             parameter_dict,
-                        )
-                        return_structure["acquisitionMedianAGDDataCSV"] = download_link(
-                            df_aggregated[["x_ray_system_name",
-                                           "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                                           "count",
-                                           "median"]],
                             "acquisitionMedianAGDData.csv",
                         )
 
@@ -529,9 +516,10 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "return_as_dict": return_as_dict,
             }
-            return_structure["acquisitionFrequencyData"] = plotly_frequency_barchart(
+            return_structure["acquisitionFrequencyData"], return_structure["acquisitionFrequencyDataCSV"] = plotly_frequency_barchart(  # pylint: disable=line-too-long
                 df,
                 parameter_dict,
+                csv_name="acquisitionFrequencyData.csv"
             )
 
         if user_profile.plotMGAcquisitionAGDOverTime:

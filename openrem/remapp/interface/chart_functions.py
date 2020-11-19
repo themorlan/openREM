@@ -223,6 +223,41 @@ def failed_chart_message_div(custom_msg_line, e):
     return msg
 
 
+def csv_data_barchart(fig, params):
+    fig_data_dict = fig.to_dict()["data"]
+
+    if params["df_name_col"] is not "performing_physician_name":
+        df = pd.DataFrame(data=fig_data_dict[0]["x"], columns=[params["name_axis_title"]])
+        for data_set in fig_data_dict:
+            new_col_df = pd.DataFrame(
+                data=data_set["customdata"][:, 1:],
+                columns=[data_set["name"] + " " + params["value_axis_title"], "Frequency"]
+            )
+            df = pd.concat([df, new_col_df], axis=1)
+
+        return df
+
+    else:
+        df = pd.DataFrame(data=fig_data_dict[0]["x"], columns=[params["name_axis_title"]])
+        for data_set in fig_data_dict:
+            series_name = data_set["hovertemplate"].split(params["facet_col"] + "=")[1].split("<br>")[0]
+            new_col_df = pd.DataFrame(data=data_set["customdata"][:, 1:],  # pylint: disable=line-too-long
+                                      columns=[data_set["name"] + " " + series_name + " " + params["value_axis_title"], "Frequency"]  # pylint: disable=line-too-long
+                                      )
+            df = pd.concat([df, new_col_df], axis=1)
+        return df
+
+
+def csv_data_frequency(fig, params):
+    fig_data_dict = fig.to_dict()["data"]
+
+    df = pd.DataFrame(data=fig_data_dict[0]["x"], columns=[params["x_axis_title"]])
+    for data_set in fig_data_dict:
+        df = pd.concat([df, pd.DataFrame(data=data_set["y"], columns=[data_set["name"]])], axis=1)
+
+    return df
+
+
 def calc_facet_rows_and_height(df, facet_col_name, facet_col_wrap):
     n_facet_rows = math.ceil(len(df[facet_col_name].unique()) / facet_col_wrap)
     chart_height = n_facet_rows * 500
@@ -340,6 +375,7 @@ def create_sorted_category_list(df, df_name_col, df_value_col, sorting):
 def plotly_barchart(
     df,
     params,
+    csv_name="OpenREM chart data.csv",
 ):
     chart_height = 500
     n_facet_rows = 1
@@ -389,12 +425,17 @@ def plotly_barchart(
     if params["return_as_dict"]:
         return fig.to_dict()
     else:
+        csv_data = download_link(
+            csv_data_barchart(fig, params),
+            csv_name,
+        )
+
         return plot(
             fig,
             output_type="div",
             include_plotlyjs=False,
             config=global_config(params["filename"], height_multiplier=chart_height / 500.0),
-        )
+        ), csv_data
 
 
 def plotly_histogram_barchart(
@@ -881,6 +922,7 @@ def plotly_barchart_weekdays(
 def plotly_frequency_barchart(
     df,
     params,
+    csv_name="OpenREM chart data.csv",
 ):
     if params["groupby_cols"] is None:
         params["groupby_cols"] = [params["df_name_col"]]
@@ -938,15 +980,22 @@ def plotly_frequency_barchart(
 
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
+    csv_data_frequency(fig, params)
+
     if params["return_as_dict"]:
         return fig.to_dict()
     else:
+        csv_data = download_link(
+            csv_data_frequency(fig, params),
+            csv_name,
+        )
+
         return plot(
             fig,
             output_type="div",
             include_plotlyjs=False,
             config=global_config(params["file_name"], height_multiplier=chart_height / 500.0),
-        )
+        ), csv_data
 
 
 def construct_over_time_charts(

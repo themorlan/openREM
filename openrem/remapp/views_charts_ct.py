@@ -22,7 +22,6 @@ from .interface.chart_functions import (
     plotly_frequency_barchart,
     plotly_scatter,
     construct_over_time_charts,
-    download_link,
 )
 
 logger = logging.getLogger(__name__)
@@ -555,32 +554,20 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["value_axis_title"] = "Mean DLP (mGy.cm)"
                     parameter_dict["filename"] = "OpenREM CT acquisition protocol DLP mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["acquisitionMeanDLPData"] = plotly_barchart(
+                    return_structure["acquisitionMeanDLPData"], return_structure["acquisitionMeanDLPDataCSV"] = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["acquisitionMeanDLPDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                                       "count",
-                                       "mean"]],
-                        "acquisitionMeanDLPData.csv",
+                        csv_name="acquisitionMeanDLPData.csv",
                     )
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median DLP (mGy.cm)"
                     parameter_dict["filename"] = "OpenREM CT acquisition protocol DLP median"
                     parameter_dict["average_choice"] = "median"
-                    return_structure["acquisitionMedianDLPData"] = plotly_barchart(
+                    return_structure["acquisitionMedianDLPData"], return_structure["acquisitionMedianDLPDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["acquisitionMedianDLPDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                                       "count",
-                                       "median"]],
-                        "acquisitionMedianDLPData.csv",
+                        csv_name="acquisitionMedianDLPData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -672,32 +659,20 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["value_axis_title"] = "Mean CTDI<sub>vol</sub> (mGy)"
                     parameter_dict["filename"] = "OpenREM CT acquisition protocol CTDI mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["acquisitionMeanCTDIData"] = plotly_barchart(
+                    return_structure["acquisitionMeanCTDIData"], return_structure["acquisitionMeanCTDIDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["acquisitionMeanCTDIDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                                       "count",
-                                       "mean"]],
-                        "acquisitionMeanCTDIData.csv",
+                        csv_name="acquisitionMeanCTDIData.csv",
                     )
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median CTDI<sub>vol</sub> (mGy)"
                     parameter_dict["filename"] = "OpenREM CT acquisition protocol CTDI median"
                     parameter_dict["average_choice"] = "median"
-                    return_structure["acquisitionMedianCTDIData"] = plotly_barchart(
+                    return_structure["acquisitionMedianCTDIData"], return_structure["acquisitionMedianCTDIDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["acquisitionMedianCTDIDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                                       "count",
-                                       "median"]],
-                        "acquisitionMedianCTDIData.csv",
+                        csv_name="acquisitionMedianCTDIData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -781,9 +756,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "return_as_dict": return_as_dict,
             }
-            return_structure["acquisitionFrequencyData"] = plotly_frequency_barchart(
+            return_structure["acquisitionFrequencyData"], return_structure["acquisitionFrequencyDataCSV"] = plotly_frequency_barchart(  # pylint: disable=line-too-long
                 df,
                 parameter_dict,
+                csv_name="acquisitionFrequencyData.csv",
             )
 
         if user_profile.plotCTAcquisitionCTDIvsMass:
@@ -1009,32 +985,20 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["value_axis_title"] = "Mean DLP (mGy.cm)"
                     parameter_dict["filename"] = "OpenREM CT study description DLP mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["studyMeanDLPData"] = plotly_barchart(
+                    return_structure["studyMeanDLPData"], return_structure["studyMeanDLPDataCSV"] = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["studyMeanDLPDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "study_description",
-                                       "count",
-                                       "mean"]],
-                        "studyMeanDLPData.csv",
+                        csv_name="studyMeanDLPData.csv",
                     )
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median DLP (mGy.cm)"
                     parameter_dict["filename"] = "OpenREM CT study description DLP median"
                     parameter_dict["average_choice"] = "median"
-                    return_structure["studyMedianDLPData"] = plotly_barchart(
+                    return_structure["studyMedianDLPData"], return_structure["studyMedianDLPDataCSV"] = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["studyMedianDLPDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "study_description",
-                                       "count",
-                                       "median"]],
-                        "studyMedianDLPData.csv",
+                        csv_name="studyMedianDLPData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -1122,32 +1086,20 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["value_axis_title"] = "Mean CTDI<sub>vol</sub> (mGy)"
                     parameter_dict["filename"] = "OpenREM CT study description CTDI mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["studyMeanCTDIData"] = plotly_barchart(
+                    return_structure["studyMeanCTDIData"], return_structure["studyMeanCTDIDataCSV"] = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["studyMeanCTDIDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "study_description",
-                                       "count",
-                                       "mean"]],
-                        "studyMeanCTDIData.csv",
+                        csv_name="studyMeanCTDIData.csv",
                     )
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median CTDI<sub>vol</sub> (mGy)"
                     parameter_dict["filename"] = "OpenREM CT study description CTDI median"
                     parameter_dict["average_choice"] = "median"
-                    return_structure["studyMedianCTDIData"] = plotly_barchart(
+                    return_structure["studyMedianCTDIData"], return_structure["studyMedianCTDIDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
-                        parameter_dict
-                    )
-                    return_structure["studyMedianCTDIDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "study_description",
-                                       "count",
-                                       "median"]],
-                        "studyMedianCTDIData.csv",
+                        parameter_dict,
+                        csv_name="studyMedianCTDIData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -1235,32 +1187,20 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["value_axis_title"] = "Mean events"
                     parameter_dict["filename"] = "OpenREM CT study description events mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["studyMeanNumEventsData"] = plotly_barchart(
+                    return_structure["studyMeanNumEventsData"], return_structure["studyMeanNumEventsDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["studyMeanNumEventsDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "study_description",
-                                       "count",
-                                       "mean"]],
-                        "studyMeanNumEventsData.csv",
+                        csv_name="studyMeanNumEventsData.csv",
                     )
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median events"
                     parameter_dict["filename"] = "OpenREM CT study description events median"
                     parameter_dict["average_choice"] = "median"
-                    return_structure["studyMedianNumEventsData"] = plotly_barchart(
+                    return_structure["studyMedianNumEventsData"], return_structure["studyMedianNumEventsDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["studyMedianNumEventsDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "study_description",
-                                       "count",
-                                       "median"]],
-                        "studyMedianNumEventsData.csv",
+                        csv_name="studyMedianNumEventsData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -1342,9 +1282,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "return_as_dict": return_as_dict,
             }
-            return_structure["studyFrequencyData"] = plotly_frequency_barchart(
+            return_structure["studyFrequencyData"], return_structure["studyFrequencyDataCSV"] = plotly_frequency_barchart(  # pylint: disable=line-too-long
                 df,
                 parameter_dict,
+                csv_name="studyFrequencyData.csv",
             )
 
         sorted_request_dlp_categories = None
@@ -1380,32 +1321,20 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["value_axis_title"] = "Mean DLP (mGy.cm)"
                     parameter_dict["filename"] = "OpenREM CT requested procedure DLP mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["requestMeanDLPData"] = plotly_barchart(
+                    return_structure["requestMeanDLPData"], return_structure["requestMeanDLPDataCSV"] = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["requestMeanDLPDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "requested_procedure_code_meaning",
-                                       "count",
-                                       "mean"]],
-                        "requestMeanDLPData.csv",
+                        csv_name="requestMeanDLPData.csv",
                     )
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median DLP (mGy.cm)"
                     parameter_dict["filename"] = "OpenREM CT requested procedure DLP median"
                     parameter_dict["average_choice"] = "median"
-                    return_structure["requestMedianDLPData"] = plotly_barchart(
+                    return_structure["requestMedianDLPData"], return_structure["requestMedianDLPDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["requestMedianDLPDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "requested_procedure_code_meaning",
-                                       "count",
-                                       "median"]],
-                        "requestMedianDLPData.csv",
+                        csv_name="requestMedianDLPData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -1493,32 +1422,20 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["value_axis_title"] = "Mean events"
                     parameter_dict["filename"] = "OpenREM CT requested procedure events mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["requestMeanNumEventsData"] = plotly_barchart(
+                    return_structure["requestMeanNumEventsData"], return_structure["requestMeanNumEventsDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["requestMeanNumEventsDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "requested_procedure_code_meaning",
-                                       "count",
-                                       "mean"]],
-                        "requestMeanNumEventsData.csv",
+                        csv_name="requestMeanNumEventsData.csv",
                     )
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median events"
                     parameter_dict["filename"] = "OpenREM CT requested procedure events median"
                     parameter_dict["average_choice"] = "median"
-                    return_structure["requestMedianNumEventsData"] = plotly_barchart(
+                    return_structure["requestMedianNumEventsData"], return_structure["requestMedianNumEventsDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["requestMedianNumEventsDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "requested_procedure_code_meaning",
-                                       "count",
-                                       "median"]],
-                        "requestMedianNumEventsData.csv",
+                        csv_name="requestMedianNumEventsData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -1598,9 +1515,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "return_as_dict": return_as_dict,
             }
-            return_structure["requestFrequencyData"] = plotly_frequency_barchart(
+            return_structure["requestFrequencyData"], return_structure["requestFrequencyDataCSV"] = plotly_frequency_barchart(  # pylint: disable=line-too-long
                 df,
                 parameter_dict,
+                csv_name="requestFrequencyData.csv"
             )
 
         if user_profile.plotCTStudyMeanDLPOverTime:

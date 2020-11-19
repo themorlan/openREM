@@ -21,7 +21,6 @@ from .interface.chart_functions import (
     plotly_frequency_barchart,
     plotly_scatter,
     construct_over_time_charts,
-    download_link,
 )
 
 logger = logging.getLogger(__name__)
@@ -476,15 +475,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
                     parameter_dict["filename"] = "OpenREM DX acquisition protocol DAP mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["acquisitionMeanDAPData"] = plotly_barchart(
+                    return_structure["acquisitionMeanDAPData"], return_structure["acquisitionMeanDAPDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["acquisitionMeanDAPDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                                       "count",
-                                       "mean"]],
                         "acquisitionMeanDAPData.csv",
                     )
 
@@ -492,15 +485,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
                     parameter_dict["filename"] = "OpenREM DX acquisition protocol DAP median"
                     parameter_dict["average_choice"] = "median"
-                    return_structure["acquisitionMedianDAPData"] = plotly_barchart(
+                    return_structure["acquisitionMedianDAPData"], return_structure["acquisitionMedianDAPDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["acquisitionMedianDAPDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                                       "count",
-                                       "median"]],
                         "acquisitionMedianDAPData.csv",
                     )
 
@@ -591,15 +578,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["value_axis_title"] = "Mean kVp"
                     parameter_dict["filename"] = "OpenREM DX acquisition protocol kVp mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["acquisitionMeankVpData"] = plotly_barchart(
+                    return_structure["acquisitionMeankVpData"], return_structure["acquisitionMeankVpDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["acquisitionMeankVpDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                                       "count",
-                                       "mean"]],
                         "acquisitionMeankVpData.csv",
                     )
 
@@ -607,15 +588,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["value_axis_title"] = "Median kVp"
                     parameter_dict["filename"] = "OpenREM DX acquisition protocol kVp median"
                     parameter_dict["average_choice"] = "median"
-                    return_structure["acquisitionMediankVpData"] = plotly_barchart(
+                    return_structure["acquisitionMediankVpData"], return_structure["acquisitionMediankVpDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["acquisitionMediankVpDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                                       "count",
-                                       "median"]],
                         "acquisitionMediankVpData.csv",
                     )
 
@@ -706,15 +681,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["value_axis_title"] = "Mean mAs"
                     parameter_dict["filename"] = "OpenREM DX acquisition protocol mAs mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["acquisitionMeanmAsData"] = plotly_barchart(
+                    return_structure["acquisitionMeanmAsData"], return_structure["acquisitionMeanmAsDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["acquisitionMeanmAsDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                                       "count",
-                                       "mean"]],
                         "acquisitionMeanmAsData.csv",
                     )
 
@@ -722,15 +691,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["value_axis_title"] = "Median mAs"
                     parameter_dict["filename"] = "OpenREM DX acquisition protocol mAs median"
                     parameter_dict["average_choice"] = "median"
-                    return_structure["acquisitionMedianmAsData"] = plotly_barchart(
+                    return_structure["acquisitionMedianmAsData"], return_structure["acquisitionMedianmAsDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["acquisitionMedianmAsDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                                       "count",
-                                       "median"]],
                         "acquisitionMedianmAsData.csv",
                     )
 
@@ -813,9 +776,10 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "return_as_dict": return_as_dict,
             }
-            return_structure["acquisitionFrequencyData"] = plotly_frequency_barchart(
+            return_structure["acquisitionFrequencyData"], return_structure["acquisitionFrequencyDataCSV"] = plotly_frequency_barchart(  # pylint: disable=line-too-long
                 df,
-                parameter_dict
+                parameter_dict,
+                csv_name="acquisitionFrequencyData.csv",
             )
 
         if user_profile.plotDXAcquisitionMeanDAPOverTime:
@@ -1048,15 +1012,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
                     parameter_dict["filename"] = "OpenREM DX study description DAP mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["studyMeanDAPData"] = plotly_barchart(
+                    return_structure["studyMeanDAPData"], return_structure["studyMeanDAPDataCSV"] = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["studyMeanDAPDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "study_description",
-                                       "count",
-                                       "mean"]],
                         "studyMeanDAPData.csv",
                     )
 
@@ -1064,15 +1022,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
                     parameter_dict["filename"] = "OpenREM DX study description DAP median"
                     parameter_dict["average_choice"] = "median"
-                    return_structure["studyMedianDAPData"] = plotly_barchart(
+                    return_structure["studyMedianDAPData"], return_structure["studyMedianDAPDataCSV"] = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["studyMedianDAPDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "study_description",
-                                       "count",
-                                       "median"]],
                         "studyMedianDAPData.csv",
                     )
 
@@ -1147,9 +1099,10 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "return_as_dict": return_as_dict,
             }
-            return_structure["studyFrequencyData"] = plotly_frequency_barchart(
+            return_structure["studyFrequencyData"], return_structure["studyFrequencyDataCSV"] = plotly_frequency_barchart(  # pylint: disable=line-too-long
                 df,
                 parameter_dict,
+                csv_name="studyFrequencyData.csv",
             )
 
         sorted_request_dap_categories = None
@@ -1185,15 +1138,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
                     parameter_dict["filename"] = "OpenREM DX requested procedure DAP mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["requestMeanDAPData"] = plotly_barchart(
+                    return_structure["requestMeanDAPData"], return_structure["requestMeanDAPDataCSV"] = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["requestMeanDAPDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "requested_procedure_code_meaning",
-                                       "count",
-                                       "mean"]],
                         "requestMeanDAPData.csv",
                     )
 
@@ -1201,15 +1148,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
                     parameter_dict["filename"] = "OpenREM DX requested procedure DAP median"
                     parameter_dict["average_choice"] = "median"
-                    return_structure["requestMedianDAPData"] = plotly_barchart(
+                    return_structure["requestMedianDAPData"], return_structure["requestMedianDAPDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                    )
-                    return_structure["requestMedianDAPDataCSV"] = download_link(
-                        df_aggregated[["x_ray_system_name",
-                                       "requested_procedure_code_meaning",
-                                       "count",
-                                       "median"]],
                         "requestMedianDAPData.csv",
                     )
 
@@ -1284,9 +1225,10 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "return_as_dict": return_as_dict,
             }
-            return_structure["requestFrequencyData"] = plotly_frequency_barchart(
+            return_structure["requestFrequencyData"], return_structure["requestFrequencyDataCSV"] = plotly_frequency_barchart(  # pylint: disable=line-too-long
                 df,
                 parameter_dict,
+                csv_name="requestFrequencyData.csv",
             )
 
         if user_profile.plotDXStudyPerDayAndHour:

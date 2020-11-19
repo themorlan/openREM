@@ -66,11 +66,13 @@ $(document).ready(function() {
             // Study frequency chart data start
             if(typeof json.studyFrequencyData !== "undefined") {
                 $("#studyFrequencyChartDiv").html(json.studyFrequencyData);
+                $("#studyFrequencyChartParentDiv").append(json.studyFrequencyDataCSV);
             }
 
             // Request frequency chart data start
             if(typeof json.requestFrequencyData !== "undefined") {
                 $("#requestFrequencyChartDiv").html(json.requestFrequencyData);
+                $("#requestFrequencyChartParentDiv").append(json.requestFrequencyDataCSV);
             }
 
             // Study workload chart data

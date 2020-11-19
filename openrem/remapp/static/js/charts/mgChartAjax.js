@@ -18,6 +18,7 @@ $(document).ready(function() {
             // Acquisition frequency chart data
             if(typeof json.acquisitionFrequencyData !== "undefined") {
                 $("#acquisitionFrequencyChartDiv").html(json.acquisitionFrequencyData);
+                $("#acquisitionFrequencyChartParentDiv").append(json.acquisitionFrequencyDataCSV);
             }
 
             // AGD per acquisition chart data
