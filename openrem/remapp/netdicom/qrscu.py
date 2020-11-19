@@ -36,8 +36,9 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 _config.LOG_RESPONSE_IDENTIFIERS = False
-_config.LOG_HANDLER_LEVEL = 'none'
+_config.LOG_HANDLER_LEVEL = "none"
 _config.LOG_REQUEST_IDENTIFIERS = False
+
 
 def _generate_modalities_in_study(study_rsp, query_id):
     """Generates modalities in study from series level Modality information
@@ -217,23 +218,31 @@ def _filter(query, level, filter_name, filter_list, filter_type):
     )
     for study in study_rsp:
         if level == "study":
-            if getattr(study, filter_name) is not None and getattr(study, filter_name) != "" and (
-                any(
-                    term in getattr(study, filter_name).lower()
-                    for term in filter_list
+            if (
+                getattr(study, filter_name) is not None
+                and getattr(study, filter_name) != ""
+                and (
+                    any(
+                        term in getattr(study, filter_name).lower()
+                        for term in filter_list
+                    )
+                    is filtertype
                 )
-                is filtertype
             ):
                 study.delete()
         elif level == "series":
             series = study.dicomqrrspseries_set.all()
             for s in series:
-                if getattr(s, filter_name) is not None and getattr(study, filter_name) != "" and (
-                    any(
-                        term in getattr(s, filter_name).lower()
-                        for term in filter_list
+                if (
+                    getattr(s, filter_name) is not None
+                    and getattr(study, filter_name) != ""
+                    and (
+                        any(
+                            term in getattr(s, filter_name).lower()
+                            for term in filter_list
+                        )
+                        is filtertype
                     )
-                    is filtertype
                 ):
                     s.delete()
             nr_series_remaining = study.dicomqrrspseries_set.all().count()
@@ -1147,9 +1156,7 @@ def _query_for_each_modality(all_mods, query, d, assoc):
                     )
                     query.save()
                     logger.debug(
-                        "{1} Currently querying for {0} studies…".format(
-                            mod, query_id
-                        )
+                        "{1} Currently querying for {0} studies…".format(mod, query_id)
                     )
                     d.ModalitiesInStudy = mod
                     if query.qr_scp_fk.use_modality_tag:
@@ -1898,7 +1905,9 @@ def _move_if_established(ae, assoc, d, study_no, series_no, query, remote):
         move = _move_req(ae, assoc, d, study_no, series_no, query)
         return move, None
     elif assoc.is_aborted:
-        logger.info(f"Query_id {query.query_id}: Association aborted during move requests, trying again")
+        logger.info(
+            f"Query_id {query.query_id}: Association aborted during move requests, trying again"
+        )
         assoc = ae.associate(remote["host"], remote["port"], ae_title=remote["aet"])
         if assoc.is_established:
             move = _move_req(ae, assoc, d, study_no, series_no, query)
@@ -2026,12 +2035,16 @@ def movescu(query_id):
                     for image in series.dicomqrrspimage_set.all():
                         d.SOPInstanceUID = image.sop_instance_uid
                         logger.debug("Image-level move - d is: {0}".format(d))
-                        move, msg = _move_if_established(ae, assoc, d, study_no, series_no, query, remote)
+                        move, msg = _move_if_established(
+                            ae, assoc, d, study_no, series_no, query, remote
+                        )
                         if not move:
                             break
                 else:
                     logger.debug("Series-level move - d is: {0}".format(d))
-                    move, msg = _move_if_established(ae, assoc, d, study_no, series_no, query, remote)
+                    move, msg = _move_if_established(
+                        ae, assoc, d, study_no, series_no, query, remote
+                    )
                     if not move:
                         break
         try:
@@ -2068,12 +2081,16 @@ def movescu(query_id):
     elif assoc.is_aborted:
         msg = "Association aborted or never connected"
         logger.warning(
-            "{3} to {0} {1} {2}".format(remote["host"], remote["port"], remote["aet"], msg)
+            "{3} to {0} {1} {2}".format(
+                remote["host"], remote["port"], remote["aet"], msg
+            )
         )
     else:
         msg = "Association Failed"
         logger.warning(
-            "{3} with {0} {1} {2}".format(remote["host"], remote["port"], remote["aet"], msg)
+            "{3} with {0} {1} {2}".format(
+                remote["host"], remote["port"], remote["aet"], msg
+            )
         )
     query.move_summary = msg
     query.save()
