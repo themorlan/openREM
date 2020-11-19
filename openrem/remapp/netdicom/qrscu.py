@@ -1920,6 +1920,11 @@ def _move_if_established(ae, assoc, d, study_no, series_no, query, remote):
             msg = "Association rejected after being aborted. Aborting move request."
             logger.warning(f"Query_id {query.query_id}: {msg}")
             return False, msg
+        msg = "Re-association attempt not established, aborted or rejected!"
+    else:
+        msg = "Move association not established, and not aborted!"
+    logger.error(f"Query_id {query.query_id}: {msg}")
+    return False, msg
 
 
 @shared_task(
