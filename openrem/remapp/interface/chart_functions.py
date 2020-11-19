@@ -423,7 +423,7 @@ def plotly_barchart(
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
     if params["return_as_dict"]:
-        return fig.to_dict()
+        return fig.to_dict(), None
     else:
         csv_data = download_link(
             csv_data_barchart(fig, params),
@@ -983,7 +983,7 @@ def plotly_frequency_barchart(
     csv_data_frequency(fig, params)
 
     if params["return_as_dict"]:
-        return fig.to_dict()
+        return fig.to_dict(), None
     else:
         csv_data = download_link(
             csv_data_frequency(fig, params),

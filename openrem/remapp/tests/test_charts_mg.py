@@ -47,7 +47,7 @@ class ChartsMG(TestCase):
         self.user.userprofile.plotCaseInsensitiveCategories = False
 
         self.user.userprofile.plotInitialSortingDirection = 0
-        self.user.userprofile.plotDXInitialSortingChoice = "frequency"
+        self.user.userprofile.plotMGInitialSortingChoice = "frequency"
 
         self.user.userprofile.plotAverageChoice = "mean"
         self.user.userprofile.plotMean = False
