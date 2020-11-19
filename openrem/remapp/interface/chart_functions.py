@@ -226,7 +226,7 @@ def failed_chart_message_div(custom_msg_line, e):
 def csv_data_barchart(fig, params):
     fig_data_dict = fig.to_dict()["data"]
 
-    if params["df_name_col"] is not "performing_physician_name":
+    if params["df_name_col"] != "performing_physician_name":
         df = pd.DataFrame(data=fig_data_dict[0]["x"], columns=[params["name_axis_title"]])
         for data_set in fig_data_dict:
             new_col_df = pd.DataFrame(

@@ -554,7 +554,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["value_axis_title"] = "Mean DLP (mGy.cm)"
                     parameter_dict["filename"] = "OpenREM CT acquisition protocol DLP mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["acquisitionMeanDLPData"], return_structure["acquisitionMeanDLPDataCSV"] = plotly_barchart(
+                    return_structure["acquisitionMeanDLPData"], return_structure["acquisitionMeanDLPDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
                         csv_name="acquisitionMeanDLPData.csv",
