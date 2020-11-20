@@ -142,9 +142,7 @@ class ExportRFxlsx(
         task.delete()  # not necessary, by hey, why not?
 
     def test_pulse_level_data(self):
-        """Tests that RDSR with pulse level kVp, mA, pulse width data imports and exports with mean values
-
-        """
+        """Tests that RDSR with pulse level kVp, mA, pulse width data imports and exports with mean values"""
         filter_set = {"o": "-study_date"}
         pid = True
         name = False

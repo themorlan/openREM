@@ -21,7 +21,7 @@ from .geomclass import Triangle3, Segment3
 
 
 def intersect(a_ray, a_triangle):
-    """ Derived from example code at http://geomalgorithms.com/a06-_intersect-2.html
+    """Derived from example code at http://geomalgorithms.com/a06-_intersect-2.html
     provided under the following license:
 
     Copyright 2001 softSurfer, 2012 Dan Sunday
@@ -89,7 +89,7 @@ def intersect(a_ray, a_triangle):
 
 
 def collimate(a_ray, area, d_ref):
-    """ This function produces a pair of triangles representing a square field
+    """This function produces a pair of triangles representing a square field
     of a collimated x-ray beam. These are then used for intersection checks to
     see if the phantom cell sees radiation.
 
@@ -131,7 +131,7 @@ def collimate(a_ray, area, d_ref):
 def build_ray(
     table_longitudinal, table_lateral, table_height, lr_angle, cc_angle, d_ref
 ):
-    """ This function takes RDSR geometry information and uses it to build
+    """This function takes RDSR geometry information and uses it to build
     an x-ray (Segment_3) taking into account translation and rotation.
 
     Args:
@@ -184,7 +184,7 @@ def build_ray(
 
 
 def check_orthogonal(segment1, segment2):
-    """ This function checks whether two segments are within 90 degrees
+    """This function checks whether two segments are within 90 degrees
 
     Args:
         segment1: A Segment_3 line segment
@@ -198,7 +198,7 @@ def check_orthogonal(segment1, segment2):
 
 
 def check_miss(source, centre, target1, target2):
-    """ This function compares two angles between a source and two targets.
+    """This function compares two angles between a source and two targets.
     If the second target is at a steeper angle than the first, it misses.
 
     Args:
@@ -235,7 +235,7 @@ def check_miss(source, centre, target1, target2):
 
 
 def find_nearest(array, value):
-    """ This function finds the closest match to a value from an array.
+    """This function finds the closest match to a value from an array.
 
     Args:
         The array to search and the value to compare.
@@ -247,7 +247,7 @@ def find_nearest(array, value):
 
 
 def get_bsf(tube_voltage, cu_thickness, size):
-    """ This function gives a BSF and f-factor combined. Data from:
+    """This function gives a BSF and f-factor combined. Data from:
     Backscatter factors and mass energy-absorption coefficient ratios for diagnostic radiology dosimetry
     Hamza Benmakhlouf et al 2011 Phys. Med. Biol. 56 7179 doi:10.1088/0031-9155/56/22/012
 
@@ -308,7 +308,7 @@ def get_bsf(tube_voltage, cu_thickness, size):
 
 
 def rotate_ray_y(segment1, angle):
-    """ This function rotates a ray around the end point of the ray by angle degrees.
+    """This function rotates a ray around the end point of the ray by angle degrees.
 
     Args:
         segment1: the ray to rotate_ray_y
@@ -332,7 +332,7 @@ def rotate_ray_y(segment1, angle):
 
 
 def get_table_trans(tube_voltage, cu_thickness):
-    """ This function gives just the table transmission factor based
+    """This function gives just the table transmission factor based
     on measurements made at the Royal Free Hospital on a Siemens Artis Zeego
     in early 2016.
 
@@ -364,7 +364,7 @@ def get_table_trans(tube_voltage, cu_thickness):
 
 
 def get_table_mattress_trans(tube_voltage, cu_thickness):
-    """ This function gives a table and mattress transmission factor based
+    """This function gives a table and mattress transmission factor based
     on measurements made at the Royal Free Hospital on a Siemens Artis Zeego
     in early 2016.
 

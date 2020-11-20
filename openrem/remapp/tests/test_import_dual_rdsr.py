@@ -12,9 +12,7 @@ from remapp.models import (
 
 
 class ImportDualRDSRs(TestCase):
-    """Tests for importing DX and RF RDSR for a system set as 'Dual'
-
-    """
+    """Tests for importing DX and RF RDSR for a system set as 'Dual'"""
 
     def test_dual_imports_after_dual_setting(self):
         """Test for following scenario:

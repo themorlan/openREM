@@ -393,7 +393,7 @@ class ImportDuplicatesMG(TestCase):
                     "DEBUG",
                     u"A previous MG object with this study UID (1.3.6.1.4.1.5962.99.1.1270844358.1571783457"
                     u".1525984267206.3.0) and time (2013-04-12T13:22:23) has been imported. Stopping",
-                ),
+                )
             )
 
         # Import third object, different event
@@ -436,5 +436,5 @@ class ImportDuplicatesMG(TestCase):
                     "DEBUG",
                     u"MG instance UID 1.3.6.1.4.1.5962.99.1.1270844358.1571783457.1525984267206.2.0 of study UID "
                     u"1.3.6.1.4.1.5962.99.1.1270844358.1571783457.1525984267206.3.0 previously processed, stopping.",
-                ),
+                )
             )

@@ -21,6 +21,7 @@ OpenREM version history
 * :issue:`838`  Imports: fixed issues with changed PersonName behaviour in pydicom 2.0
 * :issue:`836`  Installation: updated requirements, Docker and docs for pynetdicom 1.5, pydicom 2.0
 * :issue:`835`  Docker: fixed timeout issue with slow pagination
+* :issue:`830`  Charts: fixed incorrect histogram data in charts
 * :issue:`829`  Installation: added docs for Docker install on computer without internet access
 * :issue:`828`  Docker: enabled email configuration to work
 * :issue:`827`  SkinDose: Made SkinDose results available in OpenREM and made alert triggering possible
@@ -56,8 +57,10 @@ OpenREM version history
 * :issue:`513`  Internationalization: first translation strings added to documentation
 * :issue:`512`  Internationalization: first translation strings added to interface
 * :issue:`457`  Updated OpenREM to use Django 2.2
+* :issue:`477`  Charts: replaced HighCharts with open source Plotly library
 * :issue:`437`  Updated OpenREM to use django-filters v2
 * :issue:`404`  Ported OpenREM to Python 3
+* :issue:`233`  Charts: added charts of average CTDI and DLP over time
 
 0.10.0 (2019-11-08)
 -------------------
