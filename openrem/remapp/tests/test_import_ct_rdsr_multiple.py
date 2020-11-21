@@ -16,9 +16,7 @@ settings.LOGGING["loggers"]["remapp"]["level"] = "DEBUG"
 
 
 class ImportMultipleRDSRs(TestCase):  # pylint: disable=unused-variable
-    """Tests for multiple RDSR imports of the same study at different stages
-
-    """
+    """Tests for multiple RDSR imports of the same study at different stages"""
 
     def test_import_ct_rdsr_mulitple(self):
         """Imports three RDSRs in turn, each for the same study, one generated after each exposure, each cumulative
@@ -152,9 +150,7 @@ class ImportMultipleRDSRs(TestCase):  # pylint: disable=unused-variable
 
 
 class ImportContinuedRDSRs(TestCase):
-    """Tests for multiple RDSRs of the same study that are a continuation of each other
-
-    """
+    """Tests for multiple RDSRs of the same study that are a continuation of each other"""
 
     def test_import_ct_rdsr_continued(self):
         """Imports two RDSRs, the second is a continuation of the first with different events in.
@@ -180,7 +176,7 @@ class ImportContinuedRDSRs(TestCase):
                 study.objectuidsprocessed_set.values_list("sop_instance_uid", flat=True)
             )
             uid_list1 = Counter(
-                [u"1.3.6.1.4.1.5962.99.1.64928122.996247427.1524778350970.8.0",]
+                [u"1.3.6.1.4.1.5962.99.1.64928122.996247427.1524778350970.8.0"]
             )
 
             # Test that there is one study, and it has one event
@@ -212,7 +208,7 @@ class ImportContinuedRDSRs(TestCase):
                 )
             )
             uid_2 = u"1.3.6.1.4.1.5962.99.1.64928122.996247427.1524778350970.13.0"
-            uid_list2 = Counter([uid_2,])
+            uid_list2 = Counter([uid_2])
             self.assertEqual(sop_instance_uid_list1, uid_list1)
             self.assertEqual(sop_instance_uid_list2, uid_list2)
 
@@ -238,9 +234,7 @@ class ImportContinuedRDSRs(TestCase):
 
 
 class ImportDuplicateNonCTRDSRs(TestCase):
-    """Tests for non-CT RDSRs
-
-    """
+    """Tests for non-CT RDSRs"""
 
     def test_import_duplicate_dx(self):
         """

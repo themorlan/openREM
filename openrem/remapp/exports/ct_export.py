@@ -94,9 +94,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     # Some prep
     commonheaders = common_headers(pid=pid, name=name, patid=patid)
-    commonheaders += [
-        "DLP total (mGy.cm)",
-    ]
+    commonheaders += ["DLP total (mGy.cm)"]
     protocolheaders = commonheaders + [
         "Protocol",
         "Type",
@@ -253,9 +251,7 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.save()
 
     headings = common_headers(pid=pid, name=name, patid=patid)
-    headings += [
-        "DLP total (mGy.cm)",
-    ]
+    headings += ["DLP total (mGy.cm)"]
 
     max_events_dict = e.aggregate(
         Max(
@@ -304,9 +300,7 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
                 )
             )
             logger.error(error_message)
-            writer.writerow(
-                [error_message,]
-            )
+            writer.writerow([error_message])
 
     tsk.progress = "All study data written."
     tsk.save()
@@ -523,11 +517,7 @@ def _ct_get_series_data(s):
         dose_check_string = "".join(dose_check_string)
     except ObjectDoesNotExist:
         dose_check_string = ""
-    seriesdata += [
-        s.xray_modulation_type,
-        dose_check_string,
-        s.comment,
-    ]
+    seriesdata += [s.xray_modulation_type, dose_check_string, s.comment]
     return seriesdata
 
 
@@ -570,12 +560,7 @@ def ct_phe_2019(filterdict, user=None):
     tsk.progress = "{0} studies in query.".format(tsk.num_records)
     tsk.save()
 
-    headings = [
-        "Patient No",
-        "Age (yrs)",
-        "Weight (kg)",
-        "Height (cm)",
-    ]
+    headings = ["Patient No", "Age (yrs)", "Weight (kg)", "Height (cm)"]
     for x in range(4):  # pylint: disable=unused-variable
         headings += [
             "Imaged length",
@@ -587,10 +572,7 @@ def ct_phe_2019(filterdict, user=None):
             "CTDIvol (mGy)*",
             "DLP (mGy.cm)*",
         ]
-    headings += [
-        "Total DLP* (whole scan) mGy.cm",
-        "Patient comments",
-    ]
+    headings += ["Total DLP* (whole scan) mGy.cm", "Patient comments"]
     sheet = book.add_worksheet("PHE CT 2019")
     sheet.write_row(0, 0, headings)
 
@@ -618,12 +600,7 @@ def ct_phe_2019(filterdict, user=None):
                 "PHE CT 2019 export: patientstudymoduleattr_set object does not exist."
                 " AccNum {0}, Date {1}".format(exam.accession_number, exam.study_date)
             )
-        exam_data += [
-            row + 1,
-            patient_age_decimal,
-            patient_weight,
-            patient_size,
-        ]
+        exam_data += [row + 1, patient_age_decimal, patient_weight, patient_size]
         series_index = 0
         for event in exam.ctradiationdose_set.get().ctirradiationeventdata_set.order_by(
             "id"
@@ -632,18 +609,11 @@ def ct_phe_2019(filterdict, user=None):
                 ct_acquisition_type = event.ct_acquisition_type.code_meaning
                 if ct_acquisition_type in "Constant Angle Acquisition":
                     continue
-                comments += [
-                    ct_acquisition_type,
-                ]
+                comments += [ct_acquisition_type]
             except (ObjectDoesNotExist, AttributeError):
-                comments += [
-                    "unknown type",
-                ]
+                comments += ["unknown type"]
             if series_index == 4:
-                exam_data += [
-                    "",
-                    "",
-                ]
+                exam_data += ["", ""]
             series_index += 1
             scanning_length = None
             start_position = None

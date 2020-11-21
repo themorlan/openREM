@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
 #    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
 #
@@ -32,37 +33,83 @@
 """
 from __future__ import absolute_import
 
-# Following two lines added so that sphinx autodocumentation works.
-from future import standard_library
-
-standard_library.install_aliases()
-from builtins import map  # pylint: disable=redefined-builtin
 import os
 import json
 import logging
+from datetime import datetime, timedelta
+import requests
+from builtins import map  # pylint: disable=redefined-builtin
 
-os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
-
+# Following two lines added so that sphinx autodocumentation works.
+from future import standard_library
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User  # pylint: disable=all
 from django.core.exceptions import ObjectDoesNotExist
-from django.urls import reverse_lazy
-from django.http import HttpResponseRedirect, HttpResponse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q, Sum
+from django.db.utils import OperationalError as AvoidDataMigrationErrorSQLite
+from django.db.utils import ProgrammingError as AvoidDataMigrationErrorPostgres
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
+from django.urls import reverse_lazy
+from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from .extractors.extract_common import populate_rf_delta_weeks_summary
+from .forms import (
+    CTChartOptionsDisplayForm,
+    DXChartOptionsDisplayForm,
+    DicomDeleteSettingsForm,
+    GeneralChartOptionsDisplayForm,
+    HomepageOptionsForm,
+    MGChartOptionsDisplayForm,
+    MergeOnDeviceObserverUIDForm,
+    NotPatientIDForm,
+    NotPatientNameForm,
+    RFChartOptionsDisplayForm,
+    RFHighDoseFluoroAlertsForm,
+    SkinDoseMapCalcSettingsForm,
+    UpdateDisplayNamesForm,
+)
+from .models import (
+    AccumIntegratedProjRadiogDose,
+    AdminTaskQuestions,
+    DicomDeleteSettings,
+    DicomQuery,
+    Exports,
+    GeneralStudyModuleAttr,
+    HighDoseMetricAlertRecipients,
+    HighDoseMetricAlertSettings,
+    HomePageAdminSettings,
+    MergeOnDeviceObserverUIDSettings,
+    NotPatientIndicatorsID,
+    NotPatientIndicatorsName,
+    PKsForSummedRFDoseStudiesInDeltaWeeks,
+    PatientIDSettings,
+    SizeUpload,
+    SkinDoseMapCalcSettings,
+    SummaryFields,
+    UniqueEquipmentNames,
+    UpgradeStatus,
+    create_user_profile,
+)
+from .tools.get_values import get_keys_by_value
+from .tools.hash_id import hash_id
+from .tools.populate_summary import (
+    populate_summary_ct,
+    populate_summary_mg,
+    populate_summary_dx,
+    populate_summary_rf,
+)
+from .tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
+from .version import __version__, __docs_version__
 
-import remapp
-from openrem.openremproject.settings import FLOWER_PORT, FLOWER_URL, BROKER_MGMT_URL
-from .models import GeneralStudyModuleAttr, create_user_profile, SizeUpload
+standard_library.install_aliases()
 
-try:
-    from numpy import *
-
-    plotting = 1
-except ImportError:
-    plotting = 0
+os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +141,7 @@ def study_delete(request, pk, template_name="remapp/study_confirm_delete.html"):
         return redirect(reverse_lazy("home"))
 
 
-def charts_off(request):
+def charts_toggle(request):
     try:
         # See if the user has plot settings in userprofile
         user_profile = request.user.userprofile
@@ -106,31 +153,35 @@ def charts_off(request):
             )
             user_profile = request.user.userprofile
 
-    # Switch chart plotting off
-    user_profile.plotCharts = False
+    # Toggle chart plotting
+    user_profile.plotCharts = not user_profile.plotCharts
     user_profile.save()
     if request.user.get_full_name():
         name = request.user.get_full_name()
     else:
         name = request.user.get_username()
-    messages.success(request, "Chart plotting has been turned off for {0}".format(name))
-
-    # Redirect to the calling page, removing '&plotCharts=on' from the url
-    return redirect((request.META["HTTP_REFERER"]).replace("&plotCharts=on", ""))
+    if user_profile.plotCharts:
+        messages.success(
+            request, "Chart plotting has been turned on for {0}".format(name)
+        )
+        # Redirect to the calling page
+        return redirect(request.META["HTTP_REFERER"])
+    else:
+        messages.warning(
+            request, "Chart plotting has been turned off for {0}".format(name)
+        )
+        # Redirect to the calling page, removing '&plotCharts=on' from the url
+        return redirect((request.META["HTTP_REFERER"]).replace("&plotCharts=on", ""))
 
 
 @login_required
 def display_names_view(request):
-    from django.db.models import Q
-    from remapp.models import UniqueEquipmentNames, MergeOnDeviceObserverUIDSettings
-    from .forms import MergeOnDeviceObserverUIDForm
-
     try:
-        match_on_device_observer_uid = MergeOnDeviceObserverUIDSettings.objects.values_list(
-            "match_on_device_observer_uid", flat=True
-        )[
-            0
-        ]
+        match_on_device_observer_uid = (
+            MergeOnDeviceObserverUIDSettings.objects.values_list(
+                "match_on_device_observer_uid", flat=True
+            )[0]
+        )
     except IndexError:
         match_on_device_observer_uid = False
         m = MergeOnDeviceObserverUIDSettings(match_on_device_observer_uid=False)
@@ -146,9 +197,9 @@ def display_names_view(request):
                 merge_options_settings = MergeOnDeviceObserverUIDSettings.objects.all()[
                     0
                 ]
-                merge_options_settings.match_on_device_observer_uid = merge_options_form.cleaned_data[
-                    "match_on_device_observer_uid"
-                ]
+                merge_options_settings.match_on_device_observer_uid = (
+                    merge_options_form.cleaned_data["match_on_device_observer_uid"]
+                )
                 merge_options_settings.save()
                 if merge_options_form.cleaned_data["match_on_device_observer_uid"]:
                     messages.info(
@@ -221,8 +272,8 @@ def display_names_view(request):
     ).distinct()
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     merge_options_form = MergeOnDeviceObserverUIDForm(
@@ -244,12 +295,10 @@ def display_names_view(request):
         "modalities": ["CT", "RF", "MG", "DX", "OT"],
     }
 
-    return render(request, "remapp/displaynameview.html", return_structure,)
+    return render(request, "remapp/displaynameview.html", return_structure)
 
 
 def display_name_gen_hash(eq):
-    from remapp.tools.hash_id import hash_id
-
     eq.manufacturer_hash = hash_id(eq.manufacturer)
     eq.institution_name_hash = hash_id(eq.institution_name)
     eq.station_name_hash = hash_id(eq.station_name)
@@ -264,9 +313,6 @@ def display_name_gen_hash(eq):
 
 @login_required
 def display_name_update(request):
-    from remapp.models import UniqueEquipmentNames
-    from remapp.forms import UpdateDisplayNamesForm
-
     if request.method == "POST":
         error_message = ""
         new_display_name = request.POST.get("new_display_name")
@@ -344,8 +390,8 @@ def display_name_update(request):
         )
 
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
 
         for group in request.user.groups.all():
@@ -362,16 +408,13 @@ def display_name_populate(request):
     :param request: Request object containing modality
     :return: HTML table
     """
-    from django.db.models import Q
-    from remapp.models import UniqueEquipmentNames
-
     if request.is_ajax():
         data = request.POST
         modality = data.get("modality")
         f = UniqueEquipmentNames.objects.order_by("display_name")
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in request.user.groups.all():
             admin[group.name] = True
@@ -435,7 +478,7 @@ def display_name_populate(request):
         return render(
             request,
             template,
-            {"name_set": name_set, "admin": admin, "modality": modality, "dual": dual,},
+            {"name_set": name_set, "admin": admin, "modality": modality, "dual": dual},
         )
 
 
@@ -446,8 +489,6 @@ def display_name_modality_filter(equip_name_pk=None, modality=None):
     :param modality: Modality to filter on
     :return: Reduced queryset of studies, plus count of pre-modality filtered studies for modality OT
     """
-    from django.db.models import Q
-
     if not equip_name_pk:
         logger.error(
             "Display name modality filter function called without a primary key ID for the unique names table"
@@ -507,10 +548,10 @@ def display_name_last_date_and_count(request):
         template_latest = "remapp/displayname-last-date.html"
         template_count = "remapp/displayname-count.html"
         count_html = render_to_string(
-            template_count, {"count": count, "count_all": count_all,}, request=request
+            template_count, {"count": count, "count_all": count_all}, request=request
         )
         latest_html = render_to_string(
-            template_latest, {"latest": latest,}, request=request
+            template_latest, {"latest": latest}, request=request
         )
         return_html = {"count_html": count_html, "latest_html": latest_html}
         html_dict = json.dumps(return_html)
@@ -526,9 +567,6 @@ def review_summary_list(request, equip_name_pk=None, modality=None, delete_equip
     :param modality: modality to filter by
     :return:
     """
-    from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-    from remapp.models import UniqueEquipmentNames
-
     if not equip_name_pk:
         logger.error("Attempt to load review_summary_list without equip_name_pk")
         messages.error(
@@ -560,8 +598,8 @@ def review_summary_list(request, equip_name_pk=None, modality=None, delete_equip
             studies = paginator.page(paginator.num_pages)
 
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
 
         for group in request.user.groups.all():
@@ -720,18 +758,15 @@ def reset_dual(pk=None):
         .exclude(modality_type__exact="RF")
         .exclude(modality_type__exact="CR")
     )
-    message_start = (
-        "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are "
-        "DX, {3} are CR, {4} are RF and {5} are something else before processing,".format(
-            studies[0]
-            .generalequipmentmoduleattr_set.get()
-            .unique_equipment_name.display_name,
-            studies.count(),
-            studies.filter(modality_type__exact="DX").count(),
-            studies.filter(modality_type__exact="CR").count(),
-            studies.filter(modality_type__exact="RF").count(),
-            not_dx_rf_cr.count(),
-        )
+    message_start = "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are " "DX, {3} are CR, {4} are RF and {5} are something else before processing,".format(  # pylint: disable=line-too-long
+        studies[0]
+        .generalequipmentmoduleattr_set.get()
+        .unique_equipment_name.display_name,
+        studies.count(),
+        studies.filter(modality_type__exact="DX").count(),
+        studies.filter(modality_type__exact="CR").count(),
+        studies.filter(modality_type__exact="RF").count(),
+        not_dx_rf_cr.count(),
     )
 
     logger.debug(message_start)
@@ -842,7 +877,7 @@ def _get_review_study_data(study):
 
     :param study: GeneralStudyModuleAttr object
     :return: Dict of study data
-        """
+    """
     study_data = {
         "study_date": study.study_date,
         "study_time": study.study_time,
@@ -877,8 +912,8 @@ def _get_review_study_data(study):
         except ObjectDoesNotExist:
             study_data["ctaccumulateddosedata"] = ""
         try:
-            ctirradiationeventdata_set = ctradiationdose.ctirradiationeventdata_set.order_by(
-                "pk"
+            ctirradiationeventdata_set = (
+                ctradiationdose.ctirradiationeventdata_set.order_by("pk")
             )
 
             study_data["cteventdata"] = "{0} events.<br>".format(
@@ -1134,8 +1169,6 @@ def _get_broken_studies(modality=None):
     :param modality: modality to filter by
     :return: Query filter of studies
     """
-    from django.db.models import Q
-
     if modality == "DX":
         all_mod = GeneralStudyModuleAttr.objects.filter(
             Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
@@ -1170,8 +1203,6 @@ def review_failed_imports(request, modality=None):
     :param modality: modality to filter by
     :return:
     """
-    from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
     if not modality in ["CT", "RF", "MG", "DX"]:
         logger.error("Attempt to load review_failed_imports without suitable modality")
         messages.error(
@@ -1201,8 +1232,8 @@ def review_failed_imports(request, modality=None):
             studies = paginator.page(paginator.num_pages)
 
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
 
         for group in request.user.groups.all():
@@ -1240,15 +1271,6 @@ def review_failed_imports(request, modality=None):
 
 @login_required
 def chart_options_view(request):
-    from remapp.forms import (
-        GeneralChartOptionsDisplayForm,
-        DXChartOptionsDisplayForm,
-        CTChartOptionsDisplayForm,
-        RFChartOptionsDisplayForm,
-        MGChartOptionsDisplayForm,
-    )
-    from openremproject import settings
-
     if request.method == "POST":
         general_form = GeneralChartOptionsDisplayForm(request.POST)
         ct_form = CTChartOptionsDisplayForm(request.POST)
@@ -1276,20 +1298,41 @@ def chart_options_view(request):
             user_profile.plotInitialSortingDirection = general_form.cleaned_data[
                 "plotInitialSortingDirection"
             ]
-            if "postgresql" in settings.DATABASES["default"]["ENGINE"]:
-                user_profile.plotAverageChoice = general_form.cleaned_data[
-                    "plotMeanMedianOrBoth"
-                ]
+            user_profile.plotThemeChoice = general_form.cleaned_data["plotThemeChoice"]
+            user_profile.plotColourMapChoice = general_form.cleaned_data[
+                "plotColourMapChoice"
+            ]
+            user_profile.plotFacetColWrapVal = general_form.cleaned_data[
+                "plotFacetColWrapVal"
+            ]
             user_profile.plotSeriesPerSystem = general_form.cleaned_data[
                 "plotSeriesPerSystem"
             ]
             user_profile.plotHistogramBins = general_form.cleaned_data[
                 "plotHistogramBins"
             ]
+            user_profile.plotHistogramGlobalBins = general_form.cleaned_data[
+                "plotHistogramGlobalBins"
+            ]
             user_profile.plotHistograms = general_form.cleaned_data["plotHistograms"]
             user_profile.plotCaseInsensitiveCategories = general_form.cleaned_data[
                 "plotCaseInsensitiveCategories"
             ]
+
+            if "mean" in general_form.cleaned_data["plotAverageChoice"]:
+                user_profile.plotMean = True
+            else:
+                user_profile.plotMean = False
+
+            if "median" in general_form.cleaned_data["plotAverageChoice"]:
+                user_profile.plotMedian = True
+            else:
+                user_profile.plotMedian = False
+
+            if "boxplot" in general_form.cleaned_data["plotAverageChoice"]:
+                user_profile.plotBoxplots = True
+            else:
+                user_profile.plotBoxplots = False
 
             user_profile.plotCTAcquisitionMeanDLP = ct_form.cleaned_data[
                 "plotCTAcquisitionMeanDLP"
@@ -1299,6 +1342,18 @@ def chart_options_view(request):
             ]
             user_profile.plotCTAcquisitionFreq = ct_form.cleaned_data[
                 "plotCTAcquisitionFreq"
+            ]
+            user_profile.plotCTAcquisitionCTDIvsMass = ct_form.cleaned_data[
+                "plotCTAcquisitionCTDIvsMass"
+            ]
+            user_profile.plotCTAcquisitionDLPvsMass = ct_form.cleaned_data[
+                "plotCTAcquisitionDLPvsMass"
+            ]
+            user_profile.plotCTAcquisitionCTDIOverTime = ct_form.cleaned_data[
+                "plotCTAcquisitionCTDIOverTime"
+            ]
+            user_profile.plotCTAcquisitionDLPOverTime = ct_form.cleaned_data[
+                "plotCTAcquisitionDLPOverTime"
             ]
             user_profile.plotCTStudyMeanDLP = ct_form.cleaned_data["plotCTStudyMeanDLP"]
             user_profile.plotCTStudyMeanCTDI = ct_form.cleaned_data[
@@ -1321,8 +1376,8 @@ def chart_options_view(request):
             user_profile.plotCTStudyMeanDLPOverTime = ct_form.cleaned_data[
                 "plotCTStudyMeanDLPOverTime"
             ]
-            user_profile.plotCTStudyMeanDLPOverTimePeriod = ct_form.cleaned_data[
-                "plotCTStudyMeanDLPOverTimePeriod"
+            user_profile.plotCTOverTimePeriod = ct_form.cleaned_data[
+                "plotCTOverTimePeriod"
             ]
             user_profile.plotCTInitialSortingChoice = ct_form.cleaned_data[
                 "plotCTInitialSortingChoice"
@@ -1361,6 +1416,15 @@ def chart_options_view(request):
             user_profile.plotDXAcquisitionMeanDAPOverTimePeriod = dx_form.cleaned_data[
                 "plotDXAcquisitionMeanDAPOverTimePeriod"
             ]
+            user_profile.plotDXAcquisitionDAPvsMass = dx_form.cleaned_data[
+                "plotDXAcquisitionDAPvsMass"
+            ]
+            user_profile.plotDXStudyDAPvsMass = dx_form.cleaned_data[
+                "plotDXStudyDAPvsMass"
+            ]
+            user_profile.plotDXRequestDAPvsMass = dx_form.cleaned_data[
+                "plotDXRequestDAPvsMass"
+            ]
             user_profile.plotDXInitialSortingChoice = dx_form.cleaned_data[
                 "plotDXInitialSortingChoice"
             ]
@@ -1370,14 +1434,35 @@ def chart_options_view(request):
             ]
             user_profile.plotRFStudyFreq = rf_form.cleaned_data["plotRFStudyFreq"]
             user_profile.plotRFStudyDAP = rf_form.cleaned_data["plotRFStudyDAP"]
+            user_profile.plotRFStudyDAPOverTime = rf_form.cleaned_data[
+                "plotRFStudyDAPOverTime"
+            ]
             user_profile.plotRFRequestFreq = rf_form.cleaned_data["plotRFRequestFreq"]
             user_profile.plotRFRequestDAP = rf_form.cleaned_data["plotRFRequestDAP"]
+            user_profile.plotRFRequestDAPOverTime = rf_form.cleaned_data[
+                "plotRFRequestDAPOverTime"
+            ]
+            user_profile.plotRFOverTimePeriod = rf_form.cleaned_data[
+                "plotRFOverTimePeriod"
+            ]
+            user_profile.plotRFSplitByPhysician = rf_form.cleaned_data[
+                "plotRFSplitByPhysician"
+            ]
             user_profile.plotRFInitialSortingChoice = rf_form.cleaned_data[
                 "plotRFInitialSortingChoice"
             ]
 
-            user_profile.plotMGStudyPerDayAndHour = mg_form.cleaned_data[
-                "plotMGStudyPerDayAndHour"
+            user_profile.plotMGacquisitionFreq =  mg_form.cleaned_data[
+                "plotMGacquisitionFreq"
+            ]
+            user_profile.plotMGaverageAGD =  mg_form.cleaned_data[
+                "plotMGaverageAGD"
+            ]
+            user_profile.plotMGaverageAGDvsThickness = mg_form.cleaned_data[
+                "plotMGaverageAGDvsThickness"
+            ]
+            user_profile.plotMGAcquisitionAGDOverTime = mg_form.cleaned_data[
+                "plotMGAcquisitionAGDOverTime"
             ]
             user_profile.plotMGAGDvsThickness = mg_form.cleaned_data[
                 "plotMGAGDvsThickness"
@@ -1388,14 +1473,23 @@ def chart_options_view(request):
             user_profile.plotMGmAsvsThickness = mg_form.cleaned_data[
                 "plotMGmAsvsThickness"
             ]
+            user_profile.plotMGStudyPerDayAndHour = mg_form.cleaned_data[
+                "plotMGStudyPerDayAndHour"
+            ]
+            user_profile.plotMGOverTimePeriod = mg_form.cleaned_data[
+                "plotMGOverTimePeriod"
+            ]
+            user_profile.plotMGInitialSortingChoice = mg_form.cleaned_data[
+                "plotMGInitialSortingChoice"
+            ]
 
             user_profile.save()
 
         messages.success(request, "Chart options have been updated")
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -1409,20 +1503,36 @@ def chart_options_view(request):
         create_user_profile(sender=request.user, instance=request.user, created=True)
         user_profile = request.user.userprofile
 
+    average_choices = []
+    if user_profile.plotMean:
+        average_choices.append("mean")
+    if user_profile.plotMedian:
+        average_choices.append("median")
+    if user_profile.plotBoxplots:
+        average_choices.append("boxplot")
+
     general_form_data = {
         "plotCharts": user_profile.plotCharts,
-        "plotMeanMedianOrBoth": user_profile.plotAverageChoice,
+        "plotAverageChoice": average_choices,
         "plotInitialSortingDirection": user_profile.plotInitialSortingDirection,
         "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
         "plotHistogramBins": user_profile.plotHistogramBins,
         "plotHistograms": user_profile.plotHistograms,
+        "plotHistogramGlobalBins": user_profile.plotHistogramGlobalBins,
         "plotCaseInsensitiveCategories": user_profile.plotCaseInsensitiveCategories,
+        "plotThemeChoice": user_profile.plotThemeChoice,
+        "plotColourMapChoice": user_profile.plotColourMapChoice,
+        "plotFacetColWrapVal": user_profile.plotFacetColWrapVal,
     }
 
     ct_form_data = {
         "plotCTAcquisitionMeanDLP": user_profile.plotCTAcquisitionMeanDLP,
         "plotCTAcquisitionMeanCTDI": user_profile.plotCTAcquisitionMeanCTDI,
         "plotCTAcquisitionFreq": user_profile.plotCTAcquisitionFreq,
+        "plotCTAcquisitionCTDIvsMass": user_profile.plotCTAcquisitionCTDIvsMass,
+        "plotCTAcquisitionDLPvsMass": user_profile.plotCTAcquisitionDLPvsMass,
+        "plotCTAcquisitionCTDIOverTime": user_profile.plotCTAcquisitionCTDIOverTime,
+        "plotCTAcquisitionDLPOverTime": user_profile.plotCTAcquisitionDLPOverTime,
         "plotCTStudyMeanDLP": user_profile.plotCTStudyMeanDLP,
         "plotCTStudyMeanCTDI": user_profile.plotCTStudyMeanCTDI,
         "plotCTStudyFreq": user_profile.plotCTStudyFreq,
@@ -1432,7 +1542,7 @@ def chart_options_view(request):
         "plotCTRequestNumEvents": user_profile.plotCTRequestNumEvents,
         "plotCTStudyPerDayAndHour": user_profile.plotCTStudyPerDayAndHour,
         "plotCTStudyMeanDLPOverTime": user_profile.plotCTStudyMeanDLPOverTime,
-        "plotCTStudyMeanDLPOverTimePeriod": user_profile.plotCTStudyMeanDLPOverTimePeriod,
+        "plotCTOverTimePeriod": user_profile.plotCTOverTimePeriod,
         "plotCTInitialSortingChoice": user_profile.plotCTInitialSortingChoice,
     }
 
@@ -1450,6 +1560,9 @@ def chart_options_view(request):
         "plotDXAcquisitionMeanmAsOverTime": user_profile.plotDXAcquisitionMeanmAsOverTime,
         "plotDXAcquisitionMeanDAPOverTime": user_profile.plotDXAcquisitionMeanDAPOverTime,
         "plotDXAcquisitionMeanDAPOverTimePeriod": user_profile.plotDXAcquisitionMeanDAPOverTimePeriod,
+        "plotDXAcquisitionDAPvsMass": user_profile.plotDXAcquisitionDAPvsMass,
+        "plotDXStudyDAPvsMass": user_profile.plotDXStudyDAPvsMass,
+        "plotDXRequestDAPvsMass": user_profile.plotDXRequestDAPvsMass,
         "plotDXInitialSortingChoice": user_profile.plotDXInitialSortingChoice,
     }
 
@@ -1457,16 +1570,26 @@ def chart_options_view(request):
         "plotRFStudyPerDayAndHour": user_profile.plotRFStudyPerDayAndHour,
         "plotRFStudyFreq": user_profile.plotRFStudyFreq,
         "plotRFStudyDAP": user_profile.plotRFStudyDAP,
+        "plotRFStudyDAPOverTime": user_profile.plotRFStudyDAPOverTime,
         "plotRFRequestFreq": user_profile.plotRFRequestFreq,
         "plotRFRequestDAP": user_profile.plotRFRequestDAP,
+        "plotRFRequestDAPOverTime": user_profile.plotRFRequestDAPOverTime,
+        "plotRFOverTimePeriod": user_profile.plotRFOverTimePeriod,
+        "plotRFSplitByPhysician": user_profile.plotRFSplitByPhysician,
         "plotRFInitialSortingChoice": user_profile.plotRFInitialSortingChoice,
     }
 
     mg_form_data = {
-        "plotMGStudyPerDayAndHour": user_profile.plotMGStudyPerDayAndHour,
+        "plotMGacquisitionFreq": user_profile.plotMGacquisitionFreq,
+        "plotMGaverageAGD": user_profile.plotMGaverageAGD,
+        "plotMGaverageAGDvsThickness": user_profile.plotMGaverageAGDvsThickness,
+        "plotMGAcquisitionAGDOverTime": user_profile.plotMGAcquisitionAGDOverTime,
         "plotMGAGDvsThickness": user_profile.plotMGAGDvsThickness,
         "plotMGkVpvsThickness": user_profile.plotMGkVpvsThickness,
         "plotMGmAsvsThickness": user_profile.plotMGmAsvsThickness,
+        "plotMGStudyPerDayAndHour": user_profile.plotMGStudyPerDayAndHour,
+        "plotMGOverTimePeriod": user_profile.plotMGOverTimePeriod,
+        "plotMGInitialSortingChoice": user_profile.plotMGInitialSortingChoice,
     }
 
     general_chart_options_form = GeneralChartOptionsDisplayForm(general_form_data)
@@ -1484,7 +1607,7 @@ def chart_options_view(request):
         "MGChartOptionsForm": mg_chart_options_form,
     }
 
-    return render(request, "remapp/displaychartoptions.html", return_structure,)
+    return render(request, "remapp/displaychartoptions.html", return_structure)
 
 
 @login_required
@@ -1494,10 +1617,6 @@ def homepage_options_view(request):
     :param request: request object
     :return: dictionary of home page settings, html template location and request object
     """
-    from remapp.forms import HomepageOptionsForm
-    from remapp.models import HomePageAdminSettings
-    from django.utils.safestring import mark_safe
-
     try:
         HomePageAdminSettings.objects.get()
     except ObjectDoesNotExist:
@@ -1511,7 +1630,7 @@ def homepage_options_view(request):
             messages.info(
                 request,
                 mark_safe(
-                    "The display of homepage workload stats is disabled; only a member of the admin group can change this setting"
+                    "The display of homepage workload stats is disabled; only a member of the admin group can change this setting"  # pylint: disable=line-too-long
                 ),
             )  # nosec
 
@@ -1543,9 +1662,9 @@ def homepage_options_view(request):
                     != display_workload_stats
                 ):
                     homepage_admin_settings = HomePageAdminSettings.objects.all()[0]
-                    homepage_admin_settings.enable_workload_stats = homepage_options_form.cleaned_data[
-                        "enable_workload_stats"
-                    ]
+                    homepage_admin_settings.enable_workload_stats = (
+                        homepage_options_form.cleaned_data["enable_workload_stats"]
+                    )
                     homepage_admin_settings.save()
                     if homepage_options_form.cleaned_data["enable_workload_stats"]:
                         messages.info(request, "Display of workload stats enabled")
@@ -1556,8 +1675,8 @@ def homepage_options_view(request):
         return HttpResponseRedirect(reverse_lazy("homepage_options_view"))
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -1587,21 +1706,18 @@ def homepage_options_view(request):
         "home_config": home_config,
     }
 
-    return render(request, "remapp/displayhomepageoptions.html", return_structure,)
+    return render(request, "remapp/displayhomepageoptions.html", return_structure)
 
 
 @login_required
 def not_patient_indicators(request):
-    """Displays current not-patient indicators
-    """
-    from remapp.models import NotPatientIndicatorsID, NotPatientIndicatorsName
-
+    """Displays current not-patient indicators"""
     not_patient_ids = NotPatientIndicatorsID.objects.all()
     not_patient_names = NotPatientIndicatorsName.objects.all()
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -1618,8 +1734,6 @@ def not_patient_indicators(request):
 @login_required
 def not_patient_indicators_as_074(request):
     """Add patterns to no-patient indicators to replicate 0.7.4 behaviour"""
-    from remapp.models import NotPatientIndicatorsID, NotPatientIndicatorsName
-
     if request.user.groups.filter(name="admingroup"):
         not_patient_ids = NotPatientIndicatorsID.objects.all()
         not_patient_names = NotPatientIndicatorsName.objects.all()
@@ -1649,8 +1763,6 @@ def not_patient_indicators_as_074(request):
 @login_required
 def admin_questions_hide_not_patient(request):
     """Hides the not-patient revert to 0.7.4 question"""
-    from remapp.models import AdminTaskQuestions
-
     if request.user.groups.filter(name="admingroup"):
         admin_question = AdminTaskQuestions.objects.all()[0]
         admin_question.ask_revert_to_074_question = False
@@ -1672,8 +1784,8 @@ def _create_admin_dict(request):
     :return: dict containing version numbers and admin group membership
     """
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
     for group in request.user.groups.all():
         admin[group.name] = True
@@ -1683,12 +1795,11 @@ def _create_admin_dict(request):
 @login_required
 def task_service_status(request):
     """AJAX function to get task services statuses and RabbitMQ queued tasks"""
-    import requests
-    from openremproject import settings
-
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
         try:
-            flower = requests.get(f"{FLOWER_URL}:{FLOWER_PORT}/api/tasks")
+            flower = requests.get(
+                f"{settings.FLOWER_URL}:{settings.FLOWER_PORT}/api/tasks"
+            )
             if flower.status_code == 200:
                 flower_status = 200
             else:
@@ -1699,14 +1810,14 @@ def task_service_status(request):
         celery_queue = {}
         try:
             queues = requests.get(
-                f"{BROKER_MGMT_URL}api/queues", auth=("guest", "guest")
+                f"{settings.BROKER_MGMT_URL}api/queues", auth=("guest", "guest")
             )
             if queues.status_code == 200:
                 rabbitmq_status = 200
             else:
                 rabbitmq_status = queues.status_code
             for queue in queues.json():
-                if queue["name"] == settings.CELERY_DEFAULT_QUEUE:
+                if queue["name"] == settings.CELERY_TASK_DEFAULT_QUEUE:
                     default_queue = queue
                 elif "celery.pidbox" in queue["name"]:
                     celery_queue = queue
@@ -1730,10 +1841,8 @@ def task_service_status(request):
 @login_required
 def rabbitmq_purge(request, queue=None):
     """Function to purge one of the RabbitMQ queues"""
-    import requests
-
     if queue and request.user.groups.filter(name="admingroup"):
-        queue_url = f"{BROKER_MGMT_URL}/api/queues/%2f/{queue}/contents"
+        queue_url = f"{settings.BROKER_MGMT_URL}/api/queues/%2f/{queue}/contents"
         requests.delete(queue_url, auth=("guest", "guest"))
         return redirect(reverse_lazy("celery_admin"))
 
@@ -1750,13 +1859,11 @@ def celery_admin(request):
 
 def celery_tasks(request, stage=None):
     """AJAX function to get current task details"""
-    import requests
-    from datetime import datetime
-    from .models import DicomQuery, Exports
-
     if request.is_ajax() and request.user.groups.filter(name="admingroup"):
         try:
-            flower = requests.get(f"{FLOWER_URL}:{FLOWER_PORT}/api/tasks")
+            flower = requests.get(
+                f"{settings.FLOWER_URL}:{settings.FLOWER_PORT}/api/tasks"
+            )
             if flower.status_code == 200:
                 tasks = []
                 recent_tasks = []
@@ -1829,26 +1936,18 @@ def celery_tasks(request, stage=None):
                             this_task["type"] = None
                     except AttributeError:
                         this_task["type"] = None
-                    tasks += [
-                        this_task,
-                    ]
+                    tasks += [this_task]
                     recent_time_delta = 60 * 60 * 6  # six hours
                     if "STARTED" in this_task["state"]:
-                        active_tasks += [
-                            this_task,
-                        ]
+                        active_tasks += [this_task]
                     elif (
                         this_task["started"]
                         and (datetime_now - this_task["started"]).total_seconds()
                         < recent_time_delta
                     ):
-                        recent_tasks += [
-                            this_task,
-                        ]
+                        recent_tasks += [this_task]
                     else:
-                        older_tasks += [
-                            this_task,
-                        ]
+                        older_tasks += [this_task]
                 dicom_tasks = DicomQuery.objects.order_by("pk")
                 if "active" in stage:
                     return render(
@@ -1876,11 +1975,10 @@ def celery_tasks(request, stage=None):
 
 def celery_abort(request, task_id=None, type=None):
     """Function to abort one of the Celery tasks"""
-    import requests
-    from remapp.models import Exports, DicomQuery
-
     if task_id and request.user.groups.filter(name="admingroup"):
-        queue_url = f"{FLOWER_URL}:{FLOWER_PORT}/api/task/revoke/{task_id}"
+        queue_url = (
+            f"{settings.FLOWER_URL}:{settings.FLOWER_PORT}/api/task/revoke/{task_id}"
+        )
         payload = {"terminate": "true"}
         abort = requests.post(queue_url, data=payload)
         if abort.status_code == 200:
@@ -1946,12 +2044,7 @@ def celery_abort(request, task_id=None, type=None):
 
 
 class PatientIDSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
-    """UpdateView to update the patient ID settings
-
-    """
-
-    from remapp.models import PatientIDSettings
-
+    """UpdateView to update the patient ID settings"""
     model = PatientIDSettings
     fields = [
         "name_stored",
@@ -1965,8 +2058,8 @@ class PatientIDSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
     def get_context_data(self, **context):
         context = super(PatientIDSettingsUpdate, self).get_context_data(**context)
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -1975,21 +2068,15 @@ class PatientIDSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
 
 
 class DicomDeleteSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
-    """UpdateView tp update the settings relating to deleting DICOM after import
-
-    """
-
-    from remapp.models import DicomDeleteSettings
-    from remapp.forms import DicomDeleteSettingsForm
-
+    """UpdateView tp update the settings relating to deleting DICOM after import"""
     model = DicomDeleteSettings
     form_class = DicomDeleteSettingsForm
 
     def get_context_data(self, **context):
         context = super(DicomDeleteSettingsUpdate, self).get_context_data(**context)
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -1998,17 +2085,7 @@ class DicomDeleteSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
 
 
 class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
-    """UpdateView for configuring the fluoroscopy high dose alert settings
-
-    """
-
-    from remapp.models import HighDoseMetricAlertSettings
-    from remapp.forms import RFHighDoseFluoroAlertsForm
-    from django.db.utils import ProgrammingError as AvoidDataMigrationErrorPostgres
-    from django.db.utils import OperationalError as AvoidDataMigrationErrorSQLite
-
-    # from django.core.exceptions import ObjectDoesNotExist
-
+    """UpdateView for configuring the fluoroscopy high dose alert settings"""
     try:
         HighDoseMetricAlertSettings.get_solo()  # will create item if it doesn't exist
     except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
@@ -2020,8 +2097,8 @@ class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
     def get_context_data(self, **context):
         context = super(RFHighDoseAlertSettings, self).get_context_data(**context)
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -2070,7 +2147,7 @@ class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
             if "accum_dose_delta_weeks" in form.changed_data:
                 messages.warning(
                     self.request,
-                    'The time period used to sum total DAP and total dose at RP has changed. The summed data must be recalculated: click on the "Recalculate all summed data" button below. The recalculation can take several minutes',
+                    'The time period used to sum total DAP and total dose at RP has changed. The summed data must be recalculated: click on the "Recalculate all summed data" button below. The recalculation can take several minutes',  # pylint: disable=line-too-long
                 )
             return super(RFHighDoseAlertSettings, self).form_valid(form)
         else:
@@ -2081,14 +2158,7 @@ class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
 @login_required
 @csrf_exempt
 def rf_alert_notifications_view(request):
-    """View for display and modification of fluoroscopy high dose alert recipients
-
-    """
-    from django.contrib.auth.models import User
-    from remapp.models import HighDoseMetricAlertRecipients
-    from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
-    from .tools.get_values import get_keys_by_value
-
+    """View for display and modification of fluoroscopy high dose alert recipients"""
     if request.method == "POST" and request.user.groups.filter(name="admingroup"):
         # Check to see if we need to send a test message
         if "Send test" in list(request.POST.values()):
@@ -2096,7 +2166,7 @@ def rf_alert_notifications_view(request):
             email_response = send_rf_high_dose_alert_email(
                 study_pk=None, test_message=True, test_user=recipient
             )
-            if email_response == None:
+            if email_response is None:
                 messages.success(request, "Test e-mail sent to {0}".format(recipient))
             else:
                 messages.error(
@@ -2128,8 +2198,8 @@ def rf_alert_notifications_view(request):
     f = User.objects.order_by("username")
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -2137,39 +2207,27 @@ def rf_alert_notifications_view(request):
 
     return_structure = {"user_list": f, "admin": admin}
 
-    return render(request, "remapp/rfalertnotificationsview.html", return_structure,)
+    return render(request, "remapp/rfalertnotificationsview.html", return_structure)
 
 
 @login_required
 def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
-    """View to recalculate the summed total DAP and total dose at RP for all RF studies
-
-    """
-    from django.http import JsonResponse
-    from remapp.extractors.extract_common import populate_rf_delta_weeks_summary
-
+    """View to recalculate the summed total DAP and total dose at RP for all RF studies"""
     if not request.user.groups.filter(name="admingroup"):
         # Send the user to the home page
         return HttpResponseRedirect(reverse_lazy("home"))
     else:
         # Empty the PKsForSummedRFDoseStudiesInDeltaWeeks table
-        from remapp.models import PKsForSummedRFDoseStudiesInDeltaWeeks
-
         PKsForSummedRFDoseStudiesInDeltaWeeks.objects.all().delete()
 
-        # In the AccumIntegratedProjRadiogDose table delete all dose_area_product_total_over_delta_weeks and dose_rp_total_over_delta_weeks entries
-        from remapp.models import AccumIntegratedProjRadiogDose
-
+        # In the AccumIntegratedProjRadiogDose table delete all dose_area_product_total_over_delta_weeks
+        # and dose_rp_total_over_delta_weeks entries
         AccumIntegratedProjRadiogDose.objects.all().update(
             dose_area_product_total_over_delta_weeks=None,
             dose_rp_total_over_delta_weeks=None,
         )
 
         # For each RF study recalculate dose_area_product_total_over_delta_weeks and dose_rp_total_over_delta_weeks
-        from datetime import timedelta
-        from django.db.models import Sum
-        from remapp.models import HighDoseMetricAlertSettings
-
         try:
             HighDoseMetricAlertSettings.objects.get()
         except ObjectDoesNotExist:
@@ -2195,9 +2253,9 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
                 study_date = study.study_date
                 oldest_date = study_date - timedelta(weeks=week_delta)
 
-                # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                # The try and except parts of this code are here because some of the studies in my database didn't have the
-                # expected data in the related fields - not sure why. Perhaps an issue with the extractor routine?
+                # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                # The try and except parts of this code are here because some of the studies in my database didn't have
+                # the expected data in the related fields - not sure why. Perhaps an issue with the extractor routine?
                 try:
                     study.projectionxrayradiationdose_set.get().accumxraydose_set.all()
                 except ObjectDoesNotExist:
@@ -2222,8 +2280,8 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
                         accumxraydose.accumintegratedprojradiogdose_set.get().pk
                     )
 
-                    accum_int_proj_to_update = AccumIntegratedProjRadiogDose.objects.get(
-                        pk=accum_int_proj_pk
+                    accum_int_proj_to_update = (
+                        AccumIntegratedProjRadiogDose.objects.get(pk=accum_int_proj_pk)
                     )
 
                     included_studies = all_rf_studies.filter(
@@ -2288,16 +2346,7 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
 
 
 class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
-    """UpdateView for configuring the skin dose map calculation choices
-
-    """
-
-    from remapp.models import SkinDoseMapCalcSettings
-    from remapp.forms import SkinDoseMapCalcSettingsForm
-    from django.core.exceptions import ObjectDoesNotExist
-    from django.db.utils import ProgrammingError as AvoidDataMigrationErrorPostgres
-    from django.db.utils import OperationalError as AvoidDataMigrationErrorSQLite
-
+    """UpdateView for configuring the skin dose map calculation choices"""
     try:
         SkinDoseMapCalcSettings.get_solo()  # will create item if it doesn't exist
     except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
@@ -2309,8 +2358,8 @@ class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-varia
     def get_context_data(self, **context):
         context = super(SkinDoseMapCalcSettingsUpdate, self).get_context_data(**context)
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -2326,21 +2375,15 @@ class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-varia
 
 
 class NotPatientNameCreate(CreateView):  # pylint: disable=unused-variable
-    """CreateView for configuration of indicators a study might not be a patient study
-
-    """
-
-    from remapp.forms import NotPatientNameForm
-    from remapp.models import NotPatientIndicatorsName
-
+    """CreateView for configuration of indicators a study might not be a patient study"""
     model = NotPatientIndicatorsName
     form_class = NotPatientNameForm
 
     def get_context_data(self, **context):
         context = super(NotPatientNameCreate, self).get_context_data(**context)
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -2349,21 +2392,15 @@ class NotPatientNameCreate(CreateView):  # pylint: disable=unused-variable
 
 
 class NotPatientNameUpdate(UpdateView):  # pylint: disable=unused-variable
-    """UpdateView to update choices regarding not-patient indicators
-
-    """
-
-    from remapp.forms import NotPatientNameForm
-    from remapp.models import NotPatientIndicatorsName
-
+    """UpdateView to update choices regarding not-patient indicators"""
     model = NotPatientIndicatorsName
     form_class = NotPatientNameForm
 
     def get_context_data(self, **context):
         context = super(NotPatientNameUpdate, self).get_context_data(**context)
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -2372,20 +2409,15 @@ class NotPatientNameUpdate(UpdateView):  # pylint: disable=unused-variable
 
 
 class NotPatientNameDelete(DeleteView):  # pylint: disable=unused-variable
-    """DeleteView for the not-patient name indicator table
-
-    """
-
-    from remapp.models import NotPatientIndicatorsName
-
+    """DeleteView for the not-patient name indicator table"""
     model = NotPatientIndicatorsName
     success_url = reverse_lazy("not_patient_indicators")
 
     def get_context_data(self, **context):
         context[self.context_object_name] = self.object
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -2394,21 +2426,15 @@ class NotPatientNameDelete(DeleteView):  # pylint: disable=unused-variable
 
 
 class NotPatientIDCreate(CreateView):  # pylint: disable=unused-variable
-    """CreateView for not-patient ID indicators
-
-    """
-
-    from remapp.forms import NotPatientIDForm
-    from remapp.models import NotPatientIndicatorsID
-
+    """CreateView for not-patient ID indicators"""
     model = NotPatientIndicatorsID
     form_class = NotPatientIDForm
 
     def get_context_data(self, **context):
         context = super(NotPatientIDCreate, self).get_context_data(**context)
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -2417,21 +2443,15 @@ class NotPatientIDCreate(CreateView):  # pylint: disable=unused-variable
 
 
 class NotPatientIDUpdate(UpdateView):  # pylint: disable=unused-variable
-    """UpdateView for non-patient ID indicators
-
-    """
-
-    from remapp.forms import NotPatientIDForm
-    from remapp.models import NotPatientIndicatorsID
-
+    """UpdateView for non-patient ID indicators"""
     model = NotPatientIndicatorsID
     form_class = NotPatientIDForm
 
     def get_context_data(self, **context):
         context = super(NotPatientIDUpdate, self).get_context_data(**context)
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -2440,20 +2460,15 @@ class NotPatientIDUpdate(UpdateView):  # pylint: disable=unused-variable
 
 
 class NotPatientIDDelete(DeleteView):  # pylint: disable=unused-variable
-    """DeleteView for non-patient ID indicators
-
-    """
-
-    from remapp.models import NotPatientIndicatorsID
-
+    """DeleteView for non-patient ID indicators"""
     model = NotPatientIndicatorsID
     success_url = reverse_lazy("not_patient_indicators")
 
     def get_context_data(self, **context):
         context[self.context_object_name] = self.object
         admin = {
-            "openremversion": remapp.__version__,
-            "docsversion": remapp.__docs_version__,
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
         }
         for group in self.request.user.groups.all():
             admin[group.name] = True
@@ -2467,14 +2482,6 @@ def populate_summary(request):
     :param request:
     :return:
     """
-    from remapp.tools.populate_summary import (
-        populate_summary_ct,
-        populate_summary_mg,
-        populate_summary_dx,
-        populate_summary_rf,
-    )
-    from remapp.models import SummaryFields
-
     if request.user.groups.filter(name="admingroup"):
         try:
             task_ct = SummaryFields.objects.get(modality_type__exact="CT")
@@ -2514,9 +2521,6 @@ def populate_summary(request):
 
 def populate_summary_progress(request):
     """AJAX function to get populate summary fields progress"""
-    from django.db.models import Q
-    from remapp.models import SummaryFields, UpgradeStatus
-
     if request.is_ajax():
         if request.user.groups.filter(name="admingroup"):
             try:

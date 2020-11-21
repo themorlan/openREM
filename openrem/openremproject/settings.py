@@ -39,14 +39,16 @@ JS_REVERSE_OUTPUT_PATH = os.path.join(STATIC_ROOT, "js", "django_reverse")
 VIRTUAL_DIRECTORY = os.environ.get("VIRTUAL_DIRECTORY", default="")
 
 # Celery settings
-broker_url = os.environ.get("BROKER_URL", default="amqp://guest:guest@localhost:5672//")
+CELERY_BROKER_URL = os.environ.get(
+    "BROKER_URL", default="amqp://guest:guest@localhost:5672//"
+)
 BROKER_MGMT_URL = os.environ.get("BROKER_MGMT_URL", default="http://localhost:15672/")
 
-accept_content = ["json"]
-task_serializer = "json"
-result_serializer = "json"
-task_default_queue = "default"
-worker_prefetch_multiplier = 1
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASKS_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_DEFAULT_QUEUE = "default"
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 
 FLOWER_PORT = int(os.environ.get("FLOWER_PORT", default=5555))
 FLOWER_URL = os.environ.get("FLOWER_URL", default="http://localhost")
@@ -58,7 +60,7 @@ beat_schedule = {
         "options": {
             "expires": 10
         },  # expire if not run ten seconds after being scheduled
-    },
+    }
 }
 
 
@@ -116,9 +118,9 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "django.template.context_processors.request",  # Added by ETM
                 "django.contrib.messages.context_processors.messages",
-            ],
+            ]
         },
-    },
+    }
 ]
 
 MIDDLEWARE = [
@@ -212,7 +214,7 @@ LOGGING = {
             "level": "ERROR",
             "propagate": True,
         },
-        "remapp": {"handlers": ["file"], "level": "INFO",},
+        "remapp": {"handlers": ["file"], "level": "INFO"},
         "remapp.netdicom.qrscu": {
             "handlers": ["qr_file"],
             "level": "INFO",

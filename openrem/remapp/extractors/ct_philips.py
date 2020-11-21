@@ -445,7 +445,7 @@ def ct_philips(philips_file):
 
     :param filename: relative or absolute path to Philips CT dose report DICOM image file.
     :type filename: str.
-    
+
     Tested with:
         * Philips Gemini TF PET-CT v2.3.0
         * Brilliance BigBore v3.5.4.17001.

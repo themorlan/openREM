@@ -104,7 +104,13 @@
                     <ul class="dropdown-menu">
                       <li class="dropdown-header">{% trans "User level config" %}</li>
                       <li><a href="{% url 'chart_options_view' %}">{% trans "Chart options" %}</a></li>
-                      <li><a href="{%  url 'charts_off' %}">{% trans "Switch charts off" %}</a></li>
+                      <li><a href="{%  url 'charts_toggle' %}">
+                          {% if request.user.userprofile.plotCharts %}
+                              {% trans "Switch charts off" %}
+                          {% else %}
+                              {% trans "Switch charts on" %}
+                          {% endif %}
+                      </a></li>
                       {% if not admin.admingroup %}
                         <li><a href="{% url 'display_names_view' %}">{% trans "View display names & modality" %}</a></li>
                         <li><a href="{% url 'not_patient_indicators' %}">{% trans "View not-patient indicators" %}</a></li>

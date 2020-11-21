@@ -12,7 +12,7 @@ register = template.Library()
 
 @register.simple_tag()
 def update_variable(value):
-    """ Template assignment tag to return a supplied value to enable template variable values to be updated
+    """Template assignment tag to return a supplied value to enable template variable values to be updated
 
     :param value: the value to return
     :return: the received value parameter

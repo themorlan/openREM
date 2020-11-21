@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
-"PO-Revision-Date: 2020-10-08 17:05+0000\n"
+"POT-Creation-Date: 2020-10-13 20:31+0100\n"
+"PO-Revision-Date: 2020-10-14 20:26+0000\n"
 "Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/openrem/"
 "rtd-installation/nb_NO/>\n"
@@ -71,7 +71,7 @@ msgid "Open a web browser and go to http://localhost/"
 msgstr "Åpne en nettleser og gå til http://localhost/"
 
 #: ../../installation.rst:46
-msgid "Non-docker alternative - Linux only"
+msgid "Non-Docker alternative - Linux only"
 msgstr "Ikke-Docker-alternativ - Bare Linux"
 
 #: ../../installation.rst:48

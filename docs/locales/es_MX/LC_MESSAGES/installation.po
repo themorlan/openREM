@@ -1,23 +1,24 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
 # This file is distributed under the same license as the OpenREM package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
-"PO-Revision-Date: 2020-10-13 15:17+0000\n"
-"Last-Translator: Marcelo Sosa <msosa79@outlook.com>\n"
+"POT-Creation-Date: 2020-10-13 20:31+0100\n"
+"PO-Revision-Date: 2020-10-14 20:26+0000\n"
+"Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: Spanish (Mexico) <https://hosted.weblate.org/projects/openrem/"
-"rtd-installation-docker-orthanc-config/es_MX/>\n"
+"rtd-installation/es_MX/>\n"
 "Language: es_MX\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 4.3-dev\n"
+"Generated-By: Babel 2.8.0\n"
 
 #: ../../installation.rst:3
 msgid "Installation"
@@ -46,10 +47,14 @@ msgstr "Instalar"
 #: ../../installation.rst:17
 msgid "Extract the ZIP file and open a shell (command prompt) in the new folder"
 msgstr ""
-"Extraer el archivo ZIP y abrir shell (símbolo de sistema) en la nueva carpeta"
+"Extraer el archivo ZIP y abrir shell (símbolo de sistema) en la nueva "
+"carpeta"
 
 #: ../../installation.rst:18
-msgid "Customise any variables in ``.env.prod`` and in the ``orthanc_1`` section in ``docker-compose.yml`` as necessary. A full description of the options are found in:"
+msgid ""
+"Customise any variables in ``.env.prod`` and in the ``orthanc_1`` section"
+" in ``docker-compose.yml`` as necessary. A full description of the "
+"options are found in:"
 msgstr ""
 "Personalizar cualquier variable en ``.env.prod`` y en la ``orthanc_1`` "
 "sección en ``docker-compose.yml`` como sea necesario. Una descripción "
@@ -68,16 +73,19 @@ msgid "Open a web browser and go to http://localhost/"
 msgstr "Abrir un navegador web e ir a http://localhost/"
 
 #: ../../installation.rst:46
-msgid "Non-docker alternative - Linux only"
-msgstr "Alternativa sin docker - Solo Linux"
+msgid "Non-Docker alternative - Linux only"
+msgstr "Alternativa sin Docker - Solo Linux"
 
 #: ../../installation.rst:48
-msgid "We recommend all installations to use the Docker method described above. However, it is possible to install without Docker, but only on Linux. The instructions are a prescriptive install on Ubuntu:"
+msgid ""
+"We recommend all installations to use the Docker method described above. "
+"However, it is possible to install without Docker, but only on Linux. The"
+" instructions are a prescriptive install on Ubuntu:"
 msgstr ""
-"Se recomienda que todas las instalaciones utilicen el método Docker como se "
-"describe mas arriba. Sin embargo, es posible realizar una instalación sin "
-"Docker, solo en Linux. Las instrucciones son una instalación prescriptiva en "
-"Ubuntu:"
+"Se recomienda que todas las instalaciones utilicen el método Docker como "
+"se describe mas arriba. Sin embargo, es posible realizar una instalación "
+"sin Docker, solo en Linux. Las instrucciones son una instalación "
+"prescriptiva en Ubuntu:"
 
 #: ../../installation.rst:58
 msgid "Offline Docker installations"
@@ -92,10 +100,12 @@ msgid "Databases"
 msgstr "Bases de dato"
 
 #: ../../installation.rst:80
-msgid "To be removed here, but we need some of the content in other pages, so leaving for now"
+msgid ""
+"To be removed here, but we need some of the content in other pages, so "
+"leaving for now"
 msgstr ""
-"A ser removido aquí, pero necesitamos parte del contenido en otras paginas, "
-"entonces lo dejamos por ahora"
+"A ser removido aquí, pero necesitamos parte del contenido en otras "
+"paginas, entonces lo dejamos por ahora"
 
 #: ../../installation.rst:93
 msgid "Web servers"
