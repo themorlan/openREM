@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-12 09:38+0100\n"
-"PO-Revision-Date: 2020-11-21 14:04+0000\n"
+"PO-Revision-Date: 2020-11-21 14:10+0000\n"
 "Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: Spanish (Mexico) <https://hosted.weblate.org/projects/openrem/"
 "rtd-installation-linux-non-docker/es_MX/>\n"
@@ -426,7 +426,7 @@ msgstr "Habilitar la interfaz de administración de colas de RabbitMQ"
 
 #: ../../quick_start_linux.rst:664
 msgid "**Optional -- RabbitMQ Administrator**"
-msgstr "** Opcional: administrador de RabbitMQ **"
+msgstr "**Opcional: administrador de RabbitMQ**"
 
 #: ../../quick_start_linux.rst:666
 msgid "This is not required unless you wish to interact with the RabbitMQ management interface directly. Most functions can be carried out in the OpenREM interface instead. If you do wish to create a user for this purpose, see the general instructions to :ref:`enableRabbitMQ`."
