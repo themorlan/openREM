@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-13 20:53+0100\n"
+"POT-Creation-Date: 2020-11-21 13:34+0000\n"
 "PO-Revision-Date: 2020-10-07 10:39+0000\n"
 "Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/openrem/"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 4.3-dev\n"
 
-#: remapp/exports/ct_export.py:161
+#: remapp/exports/ct_export.py:159
 #, python-brace-format
 msgid ""
 "Writing study {row} of {numrows} to All data sheet and individual protocol "
@@ -138,19 +138,19 @@ msgid ""
 "Removing duplicates of previous objects removed {duplicates_removed} studies."
 msgstr ""
 
-#: remapp/templates/base.html:52 remapp/views.py:2233
+#: remapp/templates/base.html:52 remapp/views.py:917
 msgid "CT"
 msgstr ""
 
-#: remapp/templates/base.html:56 remapp/views.py:2237
+#: remapp/templates/base.html:56 remapp/views.py:921
 msgid "Fluoroscopy"
 msgstr ""
 
-#: remapp/templates/base.html:60 remapp/views.py:2241
+#: remapp/templates/base.html:60 remapp/views.py:925
 msgid "Mammography"
 msgstr ""
 
-#: remapp/templates/base.html:64 remapp/views.py:2245
+#: remapp/templates/base.html:64 remapp/views.py:929
 msgid "Radiography"
 msgstr ""
 
@@ -186,91 +186,95 @@ msgstr ""
 msgid "Chart options"
 msgstr ""
 
-#: remapp/templates/base.html:107
+#: remapp/templates/base.html:109
 msgid "Switch charts off"
 msgstr ""
 
-#: remapp/templates/base.html:109
+#: remapp/templates/base.html:111
+msgid "Switch charts on"
+msgstr ""
+
+#: remapp/templates/base.html:115
 msgid "View display names & modality"
 msgstr ""
 
-#: remapp/templates/base.html:110
+#: remapp/templates/base.html:116
 msgid "View not-patient indicators"
 msgstr ""
 
-#: remapp/templates/base.html:114
+#: remapp/templates/base.html:120
 msgid "Home page options"
 msgstr ""
 
-#: remapp/templates/base.html:119
+#: remapp/templates/base.html:125
 msgid "System level settings"
 msgstr ""
 
-#: remapp/templates/base.html:120
+#: remapp/templates/base.html:126
 msgid "Users"
 msgstr ""
 
-#: remapp/templates/base.html:121
+#: remapp/templates/base.html:127
 msgid "Display names & modality"
 msgstr ""
 
-#: remapp/templates/base.html:122
+#: remapp/templates/base.html:128
 msgid "DICOM object deletion"
 msgstr ""
 
-#: remapp/templates/base.html:123
+#: remapp/templates/base.html:129
 msgid "DICOM networking"
 msgstr ""
 
-#: remapp/templates/base.html:124
+#: remapp/templates/base.html:130
 msgid "Patient ID"
 msgstr ""
 
-#: remapp/templates/base.html:125
+#: remapp/templates/base.html:131
 msgid "Not-patient indicators"
 msgstr ""
 
-#: remapp/templates/base.html:126
+#: remapp/templates/base.html:132
 msgid "Skin dose map"
 msgstr ""
 
-#: remapp/templates/base.html:127
+#: remapp/templates/base.html:133
 msgid "Fluoro alert levels"
 msgstr ""
 
-#: remapp/templates/base.html:128
+#: remapp/templates/base.html:134
 msgid "Fluoro alert notification"
 msgstr ""
 
-#: remapp/templates/base.html:129
+#: remapp/templates/base.html:135
 msgid "Tasks"
 msgstr ""
 
-#: remapp/templates/base.html:144
+#: remapp/templates/base.html:150
 msgid "User"
 msgstr ""
 
-#: remapp/templates/base.html:150
+#: remapp/templates/base.html:156
 msgid "Change password"
 msgstr ""
 
-#: remapp/templates/base.html:151
+#: remapp/templates/base.html:157
 msgid "Logout"
 msgstr ""
 
-#: remapp/templates/base.html:154
+#: remapp/templates/base.html:160
 msgid "Login"
 msgstr ""
 
-#: remapp/templates/base.html:161
+#: remapp/templates/base.html:167
 msgid "Docs"
 msgstr ""
 
-#: remapp/templates/base.html:168
+#: remapp/templates/base.html:174
 msgid "OpenREM documentation - opens in a new tab"
 msgstr ""
 
-#: remapp/templates/base.html:169
+#: remapp/templates/base.html:175
 #, python-format
 msgid "OpenREM Documentation (%(docsversion)s)"
 msgstr ""
