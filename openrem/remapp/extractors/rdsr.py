@@ -122,26 +122,32 @@ def _person_participant(dataset, event_data_type, foreign_key):
         )
     else:
         return
-    person.person_name = dataset.PersonName
-    for cont in dataset.ContentSequence:
-        if cont.ConceptNameCodeSequence[0].CodeMeaning == "Person Role in Procedure":
-            person.person_role_in_procedure_cid = get_or_create_cid(
-                cont.ConceptCodeSequence[0].CodeValue,
-                cont.ConceptCodeSequence[0].CodeMeaning,
-            )
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Person ID":
-            person.person_id = cont.TextValue
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Person ID Issue":
-            person.person_id_issuer = cont.TextValue
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Organization Name":
-            person.organization_name = cont.TextValue
-        elif (
-            cont.ConceptNameCodeSequence[0].CodeMeaning == "Person Role in Organization"
-        ):
-            person.person_role_in_organization_cid = get_or_create_cid(
-                cont.ConceptCodeSequence[0].CodeValue,
-                cont.ConceptCodeSequence[0].CodeMeaning,
-            )
+    try:
+        person.person_name = dataset.PersonName
+    except AttributeError:
+        logger.debug("Person Name ConceptNameCodeSequence, but no PersonName element")
+    try:
+        for cont in dataset.ContentSequence:
+            if cont.ConceptNameCodeSequence[0].CodeMeaning == "Person Role in Procedure":
+                person.person_role_in_procedure_cid = get_or_create_cid(
+                    cont.ConceptCodeSequence[0].CodeValue,
+                    cont.ConceptCodeSequence[0].CodeMeaning,
+                )
+            elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Person ID":
+                person.person_id = cont.TextValue
+            elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Person ID Issue":
+                person.person_id_issuer = cont.TextValue
+            elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Organization Name":
+                person.organization_name = cont.TextValue
+            elif (
+                cont.ConceptNameCodeSequence[0].CodeMeaning == "Person Role in Organization"
+            ):
+                person.person_role_in_organization_cid = get_or_create_cid(
+                    cont.ConceptCodeSequence[0].CodeValue,
+                    cont.ConceptCodeSequence[0].CodeMeaning,
+                )
+    except AttributeError:
+        logger.debug("Person Name sequence malformed")
     person.save()
 
 
