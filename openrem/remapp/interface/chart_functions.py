@@ -82,6 +82,16 @@ def create_dataframe(
     data_point_value_multipliers=None,
     uid=None,
 ):
+    """Creates a Pandas DataFrame from the supplied database records.
+
+    :param database_events: the database events
+    :param field_dict: a dictionart of fields to include in the DataFrame. This should include a list of database
+    field names called "names", "values", "dates", "times" and "system"
+    :param data_point_name_lowercase: flag to determine whether to make all "names" field values lower case
+    :param data_point_value_multipliers: value to multiply each "values" field value by
+    :param uid: a database field containing a unique identifier for each record
+    :return: a Pandas DataFrame with a column per required field
+    """
     start = None
     if settings.DEBUG:
         start = datetime.now()
