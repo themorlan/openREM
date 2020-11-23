@@ -53,6 +53,15 @@ def global_config(
         height=1080,
         width=1920,
 ):
+    """Creates a Plotly global configuration dictionary. The parameters all relate
+    to the chart bitmap that can be saved by the user.
+
+    :param filename: the file name to use if the user saves the chart as a graphic file
+    :param height_multiplier: scaling factor to multiply chart height by
+    :param height: the default height of the chart graphic file
+    :param width: the default width of the chart graphic file
+    :return: a dictionary of Plotly options
+    """
     return {
         "toImageButtonOptions": {
             "format": "png",
