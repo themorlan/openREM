@@ -154,6 +154,7 @@ def create_dataframe_weekdays(df, df_name_col, df_date_col="study_date"):
         start = datetime.now()
 
     df["weekday"] = pd.DatetimeIndex(df[df_date_col]).day_name()
+    df["weekday"] = df["weekday"].astype("category")
     df["hour"] = df["study_time"].apply(lambda row: row.hour).astype("int8")
 
     df_time_series = (
