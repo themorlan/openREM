@@ -32,24 +32,31 @@ class ImportVeritonWithDoseCheck(TestCase):
         self.assertEqual(study.modality_type, "CT")
         self.assertAlmostEqual(
             study.ctradiationdose_set.get()
-                .ctaccumulateddosedata_set.get()
-                .ct_dose_length_product_total,
+            .ctaccumulateddosedata_set.get()
+            .ct_dose_length_product_total,
             Decimal(187.339),
         )
 
-        series2_dose_check = study.ctradiationdose_set.get().ctirradiationeventdata_set.order_by(
-            "id"
-        )[1].ctdosecheckdetails_set.get()
-        series3_dose_check = study.ctradiationdose_set.get().ctirradiationeventdata_set.order_by(
-            "id"
-        )[2].ctdosecheckdetails_set.get()
-        series4_dose_check = study.ctradiationdose_set.get().ctirradiationeventdata_set.order_by(
-            "id"
-        )[3].ctdosecheckdetails_set.get()
-        series5_dose_check = study.ctradiationdose_set.get().ctirradiationeventdata_set.order_by(
-            "id"
-        )[4].ctdosecheckdetails_set.get()
-
+        series2_dose_check = (
+            study.ctradiationdose_set.get()
+            .ctirradiationeventdata_set.order_by("id")[1]
+            .ctdosecheckdetails_set.get()
+        )
+        series3_dose_check = (
+            study.ctradiationdose_set.get()
+            .ctirradiationeventdata_set.order_by("id")[2]
+            .ctdosecheckdetails_set.get()
+        )
+        series4_dose_check = (
+            study.ctradiationdose_set.get()
+            .ctirradiationeventdata_set.order_by("id")[3]
+            .ctdosecheckdetails_set.get()
+        )
+        series5_dose_check = (
+            study.ctradiationdose_set.get()
+            .ctirradiationeventdata_set.order_by("id")[4]
+            .ctdosecheckdetails_set.get()
+        )
 
         self.assertFalse(series2_dose_check.dlp_alert_value_configured)
         self.assertFalse(series2_dose_check.ctdivol_alert_value_configured)

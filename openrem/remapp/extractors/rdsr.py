@@ -42,23 +42,64 @@ import django
 from django.db.models import Avg, Sum, ObjectDoesNotExist
 import pydicom
 
-from .extract_common import ct_event_type_count, populate_mammo_agd_summary, populate_dx_rf_summary, \
-    populate_rf_delta_weeks_summary
-from ..models import AccumCassetteBsdProjRadiogDose, AccumIntegratedProjRadiogDose,\
-    AccumMammographyXRayDose, AccumProjXRayDose, AccumXRayDose,\
-    Calibration, CtAccumulatedDoseData, CtDoseCheckDetails, CtIrradiationEventData, CtRadiationDose, CtXRaySourceParameters,\
-    DeviceParticipant, DicomDeleteSettings, DoseRelatedDistanceMeasurements, Exposure, GeneralStudyModuleAttr, GeneralEquipmentModuleAttr,\
-    HighDoseMetricAlertSettings, ImageViewModifier, IrradEventXRayData,\
-    IrradEventXRayDetectorData, IrradEventXRayMechanicalData, IrradEventXRaySourceData,\
-    Kvp, MergeOnDeviceObserverUIDSettings, ObserverContext, PatientIDSettings, PatientModuleAttr, PatientStudyModuleAttr,\
-    PersonParticipant, PKsForSummedRFDoseStudiesInDeltaWeeks, ProjectionXRayRadiationDose,\
-    PulseWidth, ScanningLength, SkinDoseMapCalcSettings,\
-    UniqueEquipmentNames, XrayFilters, XrayGrid,\
-    XrayTubeCurrent
+from .extract_common import (
+    ct_event_type_count,
+    populate_mammo_agd_summary,
+    populate_dx_rf_summary,
+    populate_rf_delta_weeks_summary,
+)
+from ..models import (
+    AccumCassetteBsdProjRadiogDose,
+    AccumIntegratedProjRadiogDose,
+    AccumMammographyXRayDose,
+    AccumProjXRayDose,
+    AccumXRayDose,
+    Calibration,
+    CtAccumulatedDoseData,
+    CtDoseCheckDetails,
+    CtIrradiationEventData,
+    CtRadiationDose,
+    CtXRaySourceParameters,
+    DeviceParticipant,
+    DicomDeleteSettings,
+    DoseRelatedDistanceMeasurements,
+    Exposure,
+    GeneralStudyModuleAttr,
+    GeneralEquipmentModuleAttr,
+    HighDoseMetricAlertSettings,
+    ImageViewModifier,
+    IrradEventXRayData,
+    IrradEventXRayDetectorData,
+    IrradEventXRayMechanicalData,
+    IrradEventXRaySourceData,
+    Kvp,
+    MergeOnDeviceObserverUIDSettings,
+    ObserverContext,
+    PatientIDSettings,
+    PatientModuleAttr,
+    PatientStudyModuleAttr,
+    PersonParticipant,
+    PKsForSummedRFDoseStudiesInDeltaWeeks,
+    ProjectionXRayRadiationDose,
+    PulseWidth,
+    ScanningLength,
+    SkinDoseMapCalcSettings,
+    UniqueEquipmentNames,
+    XrayFilters,
+    XrayGrid,
+    XrayTubeCurrent,
+)
 from ..tools.check_uid import record_sop_instance_uid
 from ..tools.dcmdatetime import get_date, get_time, make_date, make_date_time, make_time
-from ..tools.get_values import get_or_create_cid, get_seq_code_meaning, get_seq_code_value, get_value_kw,\
-    list_to_string, safe_strings, test_numeric_value
+from ..tools.get_values import (
+    get_or_create_cid,
+    get_seq_code_meaning,
+    get_seq_code_value,
+    get_value_kw,
+    list_to_string,
+    safe_strings,
+    test_numeric_value,
+)
 from ..tools.hash_id import hash_id
 from ..tools.make_skin_map import make_skin_map
 from ..tools.not_patient_indicators import get_not_pt
@@ -146,7 +187,10 @@ def _person_participant(dataset, event_data_type, foreign_key):
         logger.debug("Person Name ConceptNameCodeSequence, but no PersonName element")
     try:
         for cont in dataset.ContentSequence:
-            if cont.ConceptNameCodeSequence[0].CodeMeaning == "Person Role in Procedure":
+            if (
+                cont.ConceptNameCodeSequence[0].CodeMeaning
+                == "Person Role in Procedure"
+            ):
                 person.person_role_in_procedure_cid = get_or_create_cid(
                     cont.ConceptCodeSequence[0].CodeValue,
                     cont.ConceptCodeSequence[0].CodeMeaning,
@@ -158,7 +202,8 @@ def _person_participant(dataset, event_data_type, foreign_key):
             elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Organization Name":
                 person.organization_name = cont.TextValue
             elif (
-                cont.ConceptNameCodeSequence[0].CodeMeaning == "Person Role in Organization"
+                cont.ConceptNameCodeSequence[0].CodeMeaning
+                == "Person Role in Organization"
             ):
                 person.person_role_in_organization_cid = get_or_create_cid(
                     cont.ConceptCodeSequence[0].CodeValue,
@@ -186,8 +231,10 @@ def _deviceparticipant(dataset, eventdatatype, foreignkey, ch):
     elif eventdatatype == "ct_event":
         device = DeviceParticipant.objects.create(ct_irradiation_event_data=foreignkey)
     else:
-        logger.warning(f"RDSR import, in _deviceparticipant, but no suitable eventdatatype (is {eventdatatype})")
-        return()
+        logger.warning(
+            f"RDSR import, in _deviceparticipant, but no suitable eventdatatype (is {eventdatatype})"
+        )
+        return ()
     for cont in dataset.ContentSequence:
         if cont.ConceptNameCodeSequence[0].CodeMeaning == "Device Role in Procedure":
             device.device_role_in_procedure = get_or_create_cid(
@@ -694,8 +741,9 @@ def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
                             bottom_shutter_pos + top_shutter_pos
                         ) * Sdd  # in mm
                         private_collimated_field_area = (
-                                private_collimated_field_height * private_collimated_field_width
-                            ) / 1000000  # in m2
+                            private_collimated_field_height
+                            * private_collimated_field_width
+                        ) / 1000000  # in m2
                 except AttributeError:
                     pass
         except IndexError:
@@ -732,11 +780,11 @@ def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
             pass
     if not source.average_xray_tube_current:
         if source.xraytubecurrent_set.all().count() > 0:
-            source.average_xray_tube_current = (
-                source.xraytubecurrent_set.all().aggregate(Avg("xray_tube_current"))[
-                    "xray_tube_current__avg"
-                ]
-            )
+            source.average_xray_tube_current = source.xraytubecurrent_set.all().aggregate(
+                Avg("xray_tube_current")
+            )[
+                "xray_tube_current__avg"
+            ]
             source.save()
 
 
@@ -1261,8 +1309,8 @@ def _scanninglength(dataset, event):  # TID 10014
                 cont.ConceptNameCodeSequence[0].CodeMeaning.lower()
                 == "bottom z location of reconstructable volume"
             ):
-                scanlen.bottom_z_location_of_reconstructable_volume = (
-                    test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
+                scanlen.bottom_z_location_of_reconstructable_volume = test_numeric_value(
+                    cont.MeasuredValueSequence[0].NumericValue
                 )
             elif (
                 cont.ConceptNameCodeSequence[0].CodeMeaning.lower()
@@ -1374,8 +1422,8 @@ def _ctdosecheckdetails(dataset, dosecheckdetails, ch, isalertdetails):  # TID 1
                 cont.ConceptNameCodeSequence[0].CodeMeaning
                 == "Accumulated CTDIvol Forward Estimate"
             ):
-                dosecheckdetails.accumulated_ctdivol_forward_estimate = (
-                    test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
+                dosecheckdetails.accumulated_ctdivol_forward_estimate = test_numeric_value(
+                    cont.MeasuredValueSequence[0].NumericValue
                 )
             if cont.ConceptNameCodeSequence[0].CodeMeaning == "Reason For Proceeding":
                 dosecheckdetails.alert_reason_for_proceeding = safe_strings(
@@ -1857,11 +1905,11 @@ def _generalequipmentmoduleattributes(dataset, study, ch):
         # If we have a device_observer_uid and it is desired, merge this "new" device with an existing one based on the
         # device observer uid.
         try:
-            match_on_device_observer_uid = (
-                MergeOnDeviceObserverUIDSettings.objects.values_list(
-                    "match_on_device_observer_uid", flat=True
-                )[0]
-            )
+            match_on_device_observer_uid = MergeOnDeviceObserverUIDSettings.objects.values_list(
+                "match_on_device_observer_uid", flat=True
+            )[
+                0
+            ]
         except IndexError:
             match_on_device_observer_uid = False
         if match_on_device_observer_uid and device_observer_uid:
@@ -1938,14 +1986,20 @@ def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
     pat.not_patient_indicator = get_not_pt(dataset)
     patientatt = PatientStudyModuleAttr.objects.get(general_study_module_attributes=g)
     if patient_birth_date:
-        patientatt.patient_age_decimal = Decimal((g.study_date.date() - patient_birth_date.date()).days) / Decimal("365.25")
+        patientatt.patient_age_decimal = Decimal(
+            (g.study_date.date() - patient_birth_date.date()).days
+        ) / Decimal("365.25")
     elif patientatt.patient_age:
         if patientatt.patient_age[-1:] == "Y":
             patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1])
         elif patientatt.patient_age[-1:] == "M":
-            patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1]) / Decimal("12")
+            patientatt.patient_age_decimal = Decimal(
+                patientatt.patient_age[:-1]
+            ) / Decimal("12")
         elif patientatt.patient_age[-1:] == "D":
-            patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1]) / Decimal("365.25")
+            patientatt.patient_age_decimal = Decimal(
+                patientatt.patient_age[:-1]
+            ) / Decimal("365.25")
     if patientatt.patient_age_decimal:
         patientatt.patient_age_decimal = patientatt.patient_age_decimal.quantize(
             Decimal(".1")
@@ -2331,11 +2385,11 @@ def _rdsr2db(dataset):
         week_delta = HighDoseMetricAlertSettings.objects.values_list(
             "accum_dose_delta_weeks", flat=True
         )[0]
-        calc_accum_dose_over_delta_weeks_on_import = (
-            HighDoseMetricAlertSettings.objects.values_list(
-                "calc_accum_dose_over_delta_weeks_on_import", flat=True
-            )[0]
-        )
+        calc_accum_dose_over_delta_weeks_on_import = HighDoseMetricAlertSettings.objects.values_list(
+            "calc_accum_dose_over_delta_weeks_on_import", flat=True
+        )[
+            0
+        ]
         if calc_accum_dose_over_delta_weeks_on_import:
 
             all_rf_studies = GeneralStudyModuleAttr.objects.filter(
@@ -2371,8 +2425,8 @@ def _rdsr2db(dataset):
                         accumxraydose.accumintegratedprojradiogdose_set.get().pk
                     )
 
-                    accum_int_proj_to_update = (
-                        AccumIntegratedProjRadiogDose.objects.get(pk=accum_int_proj_pk)
+                    accum_int_proj_to_update = AccumIntegratedProjRadiogDose.objects.get(
+                        pk=accum_int_proj_pk
                     )
 
                     included_studies = all_rf_studies.filter(
