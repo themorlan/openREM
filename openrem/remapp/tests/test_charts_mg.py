@@ -99,9 +99,15 @@ class ChartsMG(TestCase):
             self.assertEqual(dataset["name"], chart_data[idx]["name"])
             np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
             np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"])
-            np.testing.assert_array_almost_equal(
-                dataset["customdata"], chart_data[idx]["customdata"]
-            )
+
+            # Check the system names
+            np.testing.assert_array_equal([i[0] for i in dataset["customdata"]], [i[0] for i in chart_data[idx]["customdata"]])
+
+            # Check the average values
+            np.testing.assert_array_almost_equal([i[1] for i in dataset["customdata"]], [i[1] for i in chart_data[idx]["customdata"]])
+
+            # Check the frequency values
+            np.testing.assert_array_almost_equal([i[2] for i in dataset["customdata"]], [i[2] for i in chart_data[idx]["customdata"]])
 
     def check_frequency_data(self, chart_data, standard_data):
         for idx, dataset in enumerate(standard_data["data"]):
@@ -245,7 +251,8 @@ class ChartsMG(TestCase):
         standard_data = [
             {
                 "customdata": np.array(
-                    [[0.0, 1.29, 2.0], [0.0, 0.26, 1.0], [0.0, 1.373, 1.0]]
+                    [["All systems", 1.29, 2.0], ["All systems", 0.26, 1.0], ["All systems", 1.373, 1.0]],
+                    dtype=object,
                 ),
                 "name": "All systems",
                 "x": np.array(["Blank", "Flat Field Tomo", "ROUTINE"], dtype=object),
@@ -261,7 +268,8 @@ class ChartsMG(TestCase):
         standard_data = [
             {
                 "customdata": np.array(
-                    [[0.0, 1.29, 2.0], [0.0, 0.26, 1.0], [0.0, 1.373, 1.0]]
+                    [["All systems", 1.29, 2.0], ["All systems", 0.26, 1.0], ["All systems", 1.373, 1.0]],
+                    dtype=object,
                 ),
                 "name": "All systems",
                 "x": np.array(["Blank", "Flat Field Tomo", "ROUTINE"], dtype=object),
@@ -299,7 +307,8 @@ class ChartsMG(TestCase):
         standard_data = [
             {
                 "customdata": np.array(
-                    [[0.0, np.nan, 0.0], [0.0, 0.26, 1.0], [0.0, np.nan, 0.0]]
+                    [["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0], ["Breast Imaging Clinic PQW_HOL_SELENIA", 0.26, 1.0], ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0]],
+                    dtype=object,
                 ),
                 "name": "Breast Imaging Clinic PQW_HOL_SELENIA",
                 "x": np.array(["Blank", "Flat Field Tomo", "ROUTINE"], dtype=object),
@@ -307,7 +316,8 @@ class ChartsMG(TestCase):
             },
             {
                 "customdata": np.array(
-                    [[1.0, 1.29, 2.0], [1.0, np.nan, 0.0], [1.0, np.nan, 0.0]]
+                    [["OpenREM Dimensions", 1.29, 2.0], ["OpenREM Dimensions", np.nan, 0.0], ["OpenREM Dimensions", np.nan, 0.0]],
+                    dtype=object,
                 ),
                 "name": "OpenREM Dimensions",
                 "x": np.array(["Blank", "Flat Field Tomo", "ROUTINE"], dtype=object),
@@ -315,7 +325,8 @@ class ChartsMG(TestCase):
             },
             {
                 "customdata": np.array(
-                    [[2.0, np.nan, 0.0], [2.0, np.nan, 0.0], [2.0, 1.373, 1.0]]
+                    [["中心医院 SENODS01", np.nan, 0.0], ["中心医院 SENODS01", np.nan, 0.0], ["中心医院 SENODS01", 1.373, 1.0]],
+                    dtype=object,
                 ),
                 "name": "中心医院 SENODS01",
                 "x": np.array(["Blank", "Flat Field Tomo", "ROUTINE"], dtype=object),
@@ -331,7 +342,8 @@ class ChartsMG(TestCase):
         standard_data = [
             {
                 "customdata": np.array(
-                    [[0.0, np.nan, 0.0], [0.0, 0.26, 1.0], [0.0, np.nan, 0.0]]
+                    [["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0], ["Breast Imaging Clinic PQW_HOL_SELENIA", 0.26, 1.0], ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0]],
+                    dtype=object,
                 ),
                 "name": "Breast Imaging Clinic PQW_HOL_SELENIA",
                 "x": np.array(["Blank", "Flat Field Tomo", "ROUTINE"], dtype=object),
@@ -339,7 +351,8 @@ class ChartsMG(TestCase):
             },
             {
                 "customdata": np.array(
-                    [[1.0, 1.29, 2.0], [1.0, np.nan, 0.0], [1.0, np.nan, 0.0]]
+                    [["OpenREM Dimensions", 1.29, 2.0], ["OpenREM Dimensions", np.nan, 0.0], ["OpenREM Dimensions", np.nan, 0.0]],
+                    dtype=object,
                 ),
                 "name": "OpenREM Dimensions",
                 "x": np.array(["Blank", "Flat Field Tomo", "ROUTINE"], dtype=object),
@@ -347,7 +360,8 @@ class ChartsMG(TestCase):
             },
             {
                 "customdata": np.array(
-                    [[2.0, np.nan, 0.0], [2.0, np.nan, 0.0], [2.0, 1.373, 1.0]]
+                    [["中心医院 SENODS01", np.nan, 0.0], ["中心医院 SENODS01", np.nan, 0.0], ["中心医院 SENODS01", 1.373, 1.0]],
+                    dtype=object,
                 ),
                 "name": "中心医院 SENODS01",
                 "x": np.array(["Blank", "Flat Field Tomo", "ROUTINE"], dtype=object),
@@ -562,9 +576,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        [0, "Friday", 12, 1],
-                        [0, "Sunday", 12, 1],
-                        [0, "Thursday", 12, 1],
+                        ["All systems", "Friday", 12, 1],
+                        ["All systems", "Sunday", 12, 1],
+                        ["All systems", "Thursday", 12, 1],
                     ],
                     dtype=object,
                 ),
@@ -591,9 +605,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        [0, "Friday", 12, 0],
-                        [0, "Sunday", 12, 0],
-                        [0, "Thursday", 12, 1],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", "Friday", 12, 0],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", "Sunday", 12, 0],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", "Thursday", 12, 1],
                     ],
                     dtype=object,
                 ),
@@ -612,9 +626,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        [1, "Friday", 12, 0],
-                        [1, "Sunday", 12, 1],
-                        [1, "Thursday", 12, 0],
+                        ["OpenREM Dimensions", "Friday", 12, 0],
+                        ["OpenREM Dimensions", "Sunday", 12, 1],
+                        ["OpenREM Dimensions", "Thursday", 12, 0],
                     ],
                     dtype=object,
                 ),
@@ -629,9 +643,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        [2, "Friday", 12, 1],
-                        [2, "Sunday", 12, 0],
-                        [2, "Thursday", 12, 0],
+                        ["中心医院 SENODS01", "Friday", 12, 1],
+                        ["中心医院 SENODS01", "Sunday", 12, 0],
+                        ["中心医院 SENODS01", "Thursday", 12, 0],
                     ],
                     dtype=object,
                 ),
