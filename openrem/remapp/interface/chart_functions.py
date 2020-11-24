@@ -88,7 +88,11 @@ def create_dataframe(
     fields_to_include.update(field_dict["system"])
 
     # NOTE: I am not excluding zero-value events from the calculations (zero DLP or zero CTDI)
-    df = pd.DataFrame.from_records(database_events.values(*fields_to_include))
+    df = pd.DataFrame.from_records(
+        database_events.values_list(*fields_to_include),  # values_list uses less memory than values
+        columns=fields_to_include,  # need to specify the column names as we're now using values_list
+        coerce_float=True,  # force Decimal to float - saves doing a type conversion later
+    )
 
     dtype_conversion = {}
     for name_field in field_dict["names"]:
@@ -108,7 +112,6 @@ def create_dataframe(
     dtype_conversion["x_ray_system_name"] = "category"
 
     for idx, value_field in enumerate(field_dict["values"]):
-        df[value_field] = df[value_field].astype(float)
         if data_point_value_multipliers:
             df[value_field] *= data_point_value_multipliers[idx]
 
