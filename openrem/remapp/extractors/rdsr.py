@@ -42,15 +42,6 @@ import django
 from django.db.models import Avg, Sum, ObjectDoesNotExist
 import pydicom
 
-# setup django/OpenREM
-basepath = os.path.dirname(__file__)
-projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
-if projectpath not in sys.path:
-    sys.path.insert(1, projectpath)
-os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
-django.setup()
-
-
 from .extract_common import ct_event_type_count, populate_mammo_agd_summary, populate_dx_rf_summary, \
     populate_rf_delta_weeks_summary
 from ..models import AccumCassetteBsdProjRadiogDose, AccumIntegratedProjRadiogDose,\
@@ -72,6 +63,14 @@ from ..tools.hash_id import hash_id
 from ..tools.make_skin_map import make_skin_map
 from ..tools.not_patient_indicators import get_not_pt
 from ..tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
+
+# setup django/OpenREM. Moving after imports might break it. And the path thing might not be needed...
+basepath = os.path.dirname(__file__)
+projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
+if projectpath not in sys.path:
+    sys.path.insert(1, projectpath)
+os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
+django.setup()
 
 
 logger = logging.getLogger(
@@ -186,6 +185,9 @@ def _deviceparticipant(dataset, eventdatatype, foreignkey, ch):
         device = DeviceParticipant.objects.create(ct_accumulated_dose_data=foreignkey)
     elif eventdatatype == "ct_event":
         device = DeviceParticipant.objects.create(ct_irradiation_event_data=foreignkey)
+    else:
+        logger.warning(f"RDSR import, in _deviceparticipant, but no suitable eventdatatype (is {eventdatatype})")
+        return()
     for cont in dataset.ContentSequence:
         if cont.ConceptNameCodeSequence[0].CodeMeaning == "Device Role in Procedure":
             device.device_role_in_procedure = get_or_create_cid(
