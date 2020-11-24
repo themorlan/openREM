@@ -28,22 +28,19 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-
-from __future__ import division
-from __future__ import absolute_import
-
-from past.utils import old_div
-import logging
-import os
-import sys
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from decimal import Decimal
+import logging
+import os
+import sys
 from time import sleep
 
+from celery import shared_task
 from defusedxml.ElementTree import fromstring, ParseError
 import django
 from django.db.models import Avg, Sum, ObjectDoesNotExist
+import pydicom
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -53,8 +50,6 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
-from celery import shared_task
-import pydicom
 
 from .extract_common import ct_event_type_count, populate_mammo_agd_summary, populate_dx_rf_summary, \
     populate_rf_delta_weeks_summary
@@ -62,7 +57,7 @@ from ..models import AccumCassetteBsdProjRadiogDose, AccumIntegratedProjRadiogDo
     AccumMammographyXRayDose, AccumProjXRayDose, AccumXRayDose,\
     Calibration, CtAccumulatedDoseData, CtDoseCheckDetails, CtIrradiationEventData, CtRadiationDose, CtXRaySourceParameters,\
     DeviceParticipant, DicomDeleteSettings, DoseRelatedDistanceMeasurements, Exposure, GeneralStudyModuleAttr, GeneralEquipmentModuleAttr,\
-    ImageViewModifier, IrradEventXRayData,\
+    HighDoseMetricAlertSettings, ImageViewModifier, IrradEventXRayData,\
     IrradEventXRayDetectorData, IrradEventXRayMechanicalData, IrradEventXRaySourceData,\
     Kvp, MergeOnDeviceObserverUIDSettings, ObserverContext, PatientIDSettings, PatientModuleAttr, PatientStudyModuleAttr,\
     PersonParticipant, PKsForSummedRFDoseStudiesInDeltaWeeks, ProjectionXRayRadiationDose,\
@@ -74,6 +69,7 @@ from ..tools.dcmdatetime import get_date, get_time, make_date, make_date_time, m
 from ..tools.get_values import get_or_create_cid, get_seq_code_meaning, get_seq_code_value, get_value_kw,\
     list_to_string, safe_strings, test_numeric_value
 from ..tools.hash_id import hash_id
+from ..tools.make_skin_map import make_skin_map
 from ..tools.not_patient_indicators import get_not_pt
 from ..tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 
@@ -695,13 +691,9 @@ def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
                         private_collimated_field_width = (
                             bottom_shutter_pos + top_shutter_pos
                         ) * Sdd  # in mm
-                        private_collimated_field_area = old_div(
-                            (
-                                private_collimated_field_height
-                                * private_collimated_field_width
-                            ),
-                            1000000,
-                        )  # in m2
+                        private_collimated_field_area = (
+                                private_collimated_field_height * private_collimated_field_width
+                            ) / 1000000  # in m2
                 except AttributeError:
                     pass
         except IndexError:
@@ -1944,21 +1936,14 @@ def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
     pat.not_patient_indicator = get_not_pt(dataset)
     patientatt = PatientStudyModuleAttr.objects.get(general_study_module_attributes=g)
     if patient_birth_date:
-        patientatt.patient_age_decimal = old_div(
-            Decimal((g.study_date.date() - patient_birth_date.date()).days),
-            Decimal("365.25"),
-        )
+        patientatt.patient_age_decimal = Decimal((g.study_date.date() - patient_birth_date.date()).days) / Decimal("365.25")
     elif patientatt.patient_age:
         if patientatt.patient_age[-1:] == "Y":
             patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1])
         elif patientatt.patient_age[-1:] == "M":
-            patientatt.patient_age_decimal = old_div(
-                Decimal(patientatt.patient_age[:-1]), Decimal("12")
-            )
+            patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1]) / Decimal("12")
         elif patientatt.patient_age[-1:] == "D":
-            patientatt.patient_age_decimal = old_div(
-                Decimal(patientatt.patient_age[:-1]), Decimal("365.25")
-            )
+            patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1]) / Decimal("365.25")
     if patientatt.patient_age_decimal:
         patientatt.patient_age_decimal = patientatt.patient_age_decimal.quantize(
             Decimal(".1")
@@ -2329,18 +2314,12 @@ def _rdsr2db(dataset):
         "calc_on_import", flat=True
     )[0]
     if g.modality_type == "RF" and enable_skin_dose_maps and calc_on_import:
-        from remapp.tools.make_skin_map import make_skin_map
-
         make_skin_map.delay(g.pk)
 
     # Calculate summed total DAP and dose at RP for studies that have this study's patient ID, going back week_delta
     # weeks in time from this study date. Only do this if activated in the fluoro alert settings (check whether
     # HighDoseMetricAlertSettings.calc_accum_dose_over_delta_weeks_on_import is True).
     if g.modality_type == "RF":
-        from remapp.models import (
-            HighDoseMetricAlertSettings,
-            AccumIntegratedProjRadiogDose,
-        )
 
         try:
             HighDoseMetricAlertSettings.objects.get()
