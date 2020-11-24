@@ -64,7 +64,7 @@ from ..tools.make_skin_map import make_skin_map
 from ..tools.not_patient_indicators import get_not_pt
 from ..tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 
-# setup django/OpenREM. Moving after imports might break it. And the path thing might not be needed...
+# setup django/OpenREM.
 basepath = os.path.dirname(__file__)
 projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
 if projectpath not in sys.path:
