@@ -48,7 +48,31 @@ from .extract_common import (
     populate_dx_rf_summary,
     populate_rf_delta_weeks_summary,
 )
-from ..models import (
+from ..tools.check_uid import record_sop_instance_uid
+from ..tools.dcmdatetime import get_date, get_time, make_date, make_date_time, make_time
+from ..tools.get_values import (
+    get_or_create_cid,
+    get_seq_code_meaning,
+    get_seq_code_value,
+    get_value_kw,
+    list_to_string,
+    safe_strings,
+    test_numeric_value,
+)
+from ..tools.hash_id import hash_id
+from ..tools.make_skin_map import make_skin_map
+from ..tools.not_patient_indicators import get_not_pt
+from ..tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
+
+# setup django/OpenREM. Moving after imports might break it. And the path thing might not be needed...
+basepath = os.path.dirname(__file__)
+projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
+if projectpath not in sys.path:
+    sys.path.insert(1, projectpath)
+os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
+django.setup()
+
+from remapp.models import (
     AccumCassetteBsdProjRadiogDose,
     AccumIntegratedProjRadiogDose,
     AccumMammographyXRayDose,
@@ -89,30 +113,6 @@ from ..models import (
     XrayGrid,
     XrayTubeCurrent,
 )
-from ..tools.check_uid import record_sop_instance_uid
-from ..tools.dcmdatetime import get_date, get_time, make_date, make_date_time, make_time
-from ..tools.get_values import (
-    get_or_create_cid,
-    get_seq_code_meaning,
-    get_seq_code_value,
-    get_value_kw,
-    list_to_string,
-    safe_strings,
-    test_numeric_value,
-)
-from ..tools.hash_id import hash_id
-from ..tools.make_skin_map import make_skin_map
-from ..tools.not_patient_indicators import get_not_pt
-from ..tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
-
-# setup django/OpenREM. Moving after imports might break it. And the path thing might not be needed...
-basepath = os.path.dirname(__file__)
-projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
-if projectpath not in sys.path:
-    sys.path.insert(1, projectpath)
-os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
-django.setup()
-
 
 logger = logging.getLogger(
     "remapp.extractors.rdsr"
