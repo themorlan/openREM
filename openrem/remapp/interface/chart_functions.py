@@ -107,7 +107,11 @@ def create_dataframe(
     fields_to_include.update(field_dict["system"])
 
     # NOTE: I am not excluding zero-value events from the calculations (zero DLP or zero CTDI)
-    df = pd.DataFrame.from_records(database_events.values(*fields_to_include))
+    df = pd.DataFrame.from_records(
+        data=database_events.values_list(*fields_to_include),  # values_list uses less memory than values
+        columns=fields_to_include,  # need to specify the column names as we're now using values_list
+        coerce_float=True,  # force Decimal to float - saves doing a type conversion later
+    )
 
     dtype_conversion = {}
     for name_field in field_dict["names"]:
@@ -127,7 +131,6 @@ def create_dataframe(
     dtype_conversion["x_ray_system_name"] = "category"
 
     for idx, value_field in enumerate(field_dict["values"]):
-        df[value_field] = df[value_field].astype(float)
         if data_point_value_multipliers:
             df[value_field] *= data_point_value_multipliers[idx]
 
@@ -169,7 +172,7 @@ def create_dataframe_weekdays(df, df_name_col, df_date_col="study_date"):
     if settings.DEBUG:
         start = datetime.now()
 
-    df["weekday"] = pd.DatetimeIndex(df[df_date_col]).day_name()
+    df["weekday"] = pd.Categorical(pd.DatetimeIndex(df[df_date_col]).day_name())
     df["hour"] = df["study_time"].apply(lambda row: row.hour).astype("int8")
 
     df_time_series = (
@@ -477,7 +480,7 @@ def plotly_histogram_barchart(
 
     try:
         fig = make_subplots(
-            rows=n_facet_rows, cols=params["facet_col_wrap"], vertical_spacing=0.50 / n_facet_rows
+            rows=n_facet_rows, cols=params["facet_col_wrap"], vertical_spacing=0.40 / n_facet_rows
         )
 
         current_row = 1
@@ -604,7 +607,7 @@ def plotly_binned_statistic_barchart(
 
     try:
         fig = make_subplots(
-            rows=n_facet_rows, cols=params["facet_col_wrap"], vertical_spacing=0.50 / n_facet_rows
+            rows=n_facet_rows, cols=params["facet_col_wrap"], vertical_spacing=0.40 / n_facet_rows
         )
 
         current_row = 1
@@ -748,7 +751,7 @@ def plotly_timeseries_linechart(
             color=params["df_name_col"],
             facet_col=params["facet_col"],
             facet_col_wrap=params["facet_col_wrap"],
-            facet_row_spacing=0.50 / n_facet_rows,
+            facet_row_spacing=0.40 / n_facet_rows,
             labels={
                 params["facet_col"]: params["facet_title"],
                 params["df_value_col"]: params["value_axis_title"],
@@ -829,7 +832,7 @@ def plotly_scatter(
             color=params["df_category_name_col"],
             facet_col=params["df_group_col"],
             facet_col_wrap=params["facet_col_wrap"],
-            facet_row_spacing=0.50 / n_facet_rows,
+            facet_row_spacing=0.40 / n_facet_rows,
             labels={
                 params["df_x_col"]: params["x_axis_title"],
                 params["df_y_col"]: params["y_axis_title"],
@@ -886,7 +889,7 @@ def plotly_barchart_weekdays(
             y=df_value_col,
             facet_col="x_ray_system_name",
             facet_col_wrap=facet_col_wrap,
-            facet_row_spacing=0.50 / n_facet_rows,
+            facet_row_spacing=0.40 / n_facet_rows,
             color=df_value_col,
             labels={
                 df_name_col: name_axis_title,
