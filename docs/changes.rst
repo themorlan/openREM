@@ -4,7 +4,9 @@ OpenREM version history
 
 1.0.0b1 (2020-xx-xx)
 --------------------
+* :issue:`871`  Charts: corrected RF chart x-axis labels
 * :issue:`870`  Charts: reduced memory footprint of Pandas DataFrame creation
+* :issue:`869`  Charts: added doc strings to new chart code
 * :issue:`868`  Docker: fixed Python version at 3.8
 * :issue:`865`  Imports: enabled workaround to import Spectrum Dynamics RDSR
 * :issue:`864`  Tasks: updated Celery settings for Celery 6.
