@@ -6,6 +6,7 @@ OpenREM version history
 --------------------
 * :issue:`870`  Charts: reduced memory footprint of Pandas DataFrame creation
 * :issue:`868`  Docker: fixed Python version at 3.8
+* :issue:`865`  Imports: enabled workaround to import Spectrum Dynamics RDSR
 * :issue:`864`  Tasks: updated Celery settings for Celery 6.
 * :issue:`854`  Interface: added date constraints to links on homepage
 * :issue:`853`  Testing: reduced Bitbucket pipeline minutes usage
