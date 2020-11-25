@@ -86,7 +86,7 @@ def create_dataframe(
 
     :param database_events: the database events
     :param field_dict: a dictionart of fields to include in the DataFrame. This should include a list of database
-    field names called "names", "values", "dates", "times" and "system"
+    field names called "names", "values", "dates", "times" and optionally "system"
     :param data_point_name_lowercase: flag to determine whether to make all "names" field values lower case
     :param data_point_value_multipliers: value to multiply each "values" field value by
     :param uid: a database field containing a unique identifier for each record
@@ -153,6 +153,16 @@ def create_dataframe_time_series(
     time_period="M",
     average_choices=None,
 ):
+    """Creates a Pandas DataFrame time series of average values grouped by x_ray_system_name and df_name_col
+
+    :param df: the Pandas DataFrame containing the raw data
+    :param df_name_col: the DataFrame columnn name used to group the data
+    :param df_value_col: the DataFrame column containing the values to be averaged
+    :param df_date_col: the DataFrame column containing the dates
+    :param time_period: the time period to average over; choices are
+    :param average_choices:
+    :return:
+    """
     if average_choices is None:
         average_choices = ["mean"]
 
