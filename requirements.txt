@@ -2,8 +2,8 @@ django>=2.2,<2.3
 django-filter==2.2.0
 pytz>=0a
 humanize==2.0.0
-pynetdicom>=1.5.1,<1.6
 pydicom==2.0.0
+pynetdicom>=1.5.1,<1.6
 xlsxwriter==1.2.8
 celery==4.4.7
 django-qsstats-magic==1.1.0
@@ -19,8 +19,8 @@ mock==4.0.2
 django-js-reverse==0.9.1
 requests==2.23.0
 flower==0.9.5
-numpy==1.18.2
-scipy==1.5.2
+numpy==1.19.4
+scipy==1.5.4
 future==0.18.2
 defusedxml==0.6.0
 psycopg2-binary==2.8.4
