@@ -324,12 +324,14 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
         if user_profile.plotMean or user_profile.plotMedian:
 
             x_col = "study_description"
+            x_col_title = "Study description"
             groupby_cols = ["study_description"]
             facet_col = None
 
             if user_profile.plotRFSplitByPhysician:
                 groupby_cols = groupby_cols + ["performing_physician_name"]
                 x_col = "performing_physician_name"
+                x_col_title = "Performing physician"
                 facet_col = "study_description"
 
             df_aggregated = create_dataframe_aggregates(
@@ -338,7 +340,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
             parameter_dict = {
                 "df_name_col": x_col,
-                "name_axis_title": "Study description",
+                "name_axis_title": x_col_title,
                 "colourmap": user_profile.plotColourMapChoice,
                 "sorted_category_list": sorted_study_categories,
                 "facet_col": facet_col,
@@ -367,17 +369,19 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
         if user_profile.plotBoxplots:
             x_col = "study_description"
+            x_col_title = "Study description"
             facet_col = None
 
             if user_profile.plotRFSplitByPhysician:
                 x_col = "performing_physician_name"
+                x_col_title = "Performing physician"
                 facet_col = "study_description"
 
             parameter_dict = {
                 "df_name_col": x_col,
                 "df_value_col": "total_dap",
                 "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
-                "name_axis_title": "Study description",
+                "name_axis_title": x_col_title,
                 "colourmap": user_profile.plotColourMapChoice,
                 "filename": "OpenREM RF study description DAP boxplot",
                 "sorted_category_list": sorted_study_categories,
@@ -394,13 +398,22 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             category_names_col = "study_description"
             group_by_col = "x_ray_system_name"
             legend_title = "Study description"
+
+            if user_profile.plotRFSplitByPhysician:
+                group_by_col = "performing_physician_name"
+
             facet_names = list(df[group_by_col].unique())
             category_names = list(sorted_study_categories.values())[0]
 
             if user_profile.plotGroupingChoice == "series":
                 category_names_col = "x_ray_system_name"
-                group_by_col = "study_description"
                 legend_title = "System"
+
+                if user_profile.plotRFSplitByPhysician:
+                    category_names_col = "performing_physician_name"
+                    legend_title = "Physician"
+
+                group_by_col = "study_description"
                 category_names = facet_names
                 facet_names = list(sorted_study_categories.values())[0]
 
@@ -426,12 +439,14 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
     if user_profile.plotRFStudyFreq:
         x_col = "study_description"
+        x_col_title = "Study description"
         groupby_cols = ["study_description"]
         facet_col = None
 
         if user_profile.plotRFSplitByPhysician:
             groupby_cols = groupby_cols + ["performing_physician_name"]
             x_col = "performing_physician_name"
+            x_col_title = "Performing physician"
             facet_col = "study_description"
 
         parameter_dict = {
@@ -440,7 +455,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 user_profile.plotInitialSortingDirection,
                 user_profile.plotRFInitialSortingChoice,
             ],
-            "legend_title": "Study description",
+            "legend_title": x_col_title,
             "df_x_axis_col": "x_ray_system_name",
             "x_axis_title": "System",
             "grouping_choice": user_profile.plotGroupingChoice,
@@ -473,12 +488,14 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
         if user_profile.plotMean or user_profile.plotMedian:
 
             x_col = "requested_procedure_code_meaning"
+            x_col_title = "Requested procedure"
             groupby_cols = ["requested_procedure_code_meaning"]
             facet_col = None
 
             if user_profile.plotRFSplitByPhysician:
                 groupby_cols = groupby_cols + ["performing_physician_name"]
                 x_col = "performing_physician_name"
+                x_col_title = "Performing physician"
                 facet_col = "requested_procedure_code_meaning"
 
             df_aggregated = create_dataframe_aggregates(
@@ -487,7 +504,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
             parameter_dict = {
                 "df_name_col": x_col,
-                "name_axis_title": "Requested procedure",
+                "name_axis_title": x_col_title,
                 "colourmap": user_profile.plotColourMapChoice,
                 "sorted_category_list": sorted_study_categories,
                 "facet_col": facet_col,
@@ -516,17 +533,19 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
         if user_profile.plotBoxplots:
             x_col = "requested_procedure_code_meaning"
+            x_col_title = "Requested procedure"
             facet_col = None
 
             if user_profile.plotRFSplitByPhysician:
                 x_col = "performing_physician_name"
+                x_col_title = "Performing physician"
                 facet_col = "requested_procedure_code_meaning"
 
             parameter_dict = {
                 "df_name_col": x_col,
                 "df_value_col": "total_dap",
                 "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
-                "name_axis_title": "Requested procedure",
+                "name_axis_title": x_col_title,
                 "colourmap": user_profile.plotColourMapChoice,
                 "filename": "OpenREM RF requested procedure DAP boxplot",
                 "sorted_category_list": sorted_request_categories,
@@ -543,13 +562,22 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             category_names_col = "requested_procedure_code_meaning"
             group_by_col = "x_ray_system_name"
             legend_title = "Requested procedure"
+
+            if user_profile.plotRFSplitByPhysician:
+                group_by_col = "performing_physician_name"
+
             facet_names = list(df[group_by_col].unique())
             category_names = list(sorted_request_categories.values())[0]
 
             if user_profile.plotGroupingChoice == "series":
                 category_names_col = "x_ray_system_name"
-                group_by_col = "requested_procedure_code_meaning"
                 legend_title = "System"
+
+                if user_profile.plotRFSplitByPhysician:
+                    category_names_col = "performing_physician_name"
+                    legend_title = "Physician"
+
+                group_by_col = "requested_procedure_code_meaning"
                 category_names = facet_names
                 facet_names = list(sorted_request_categories.values())[0]
 
@@ -575,12 +603,14 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
     if user_profile.plotRFRequestFreq:
         x_col = "requested_procedure_code_meaning"
+        x_col_title = "Requested procedure"
         groupby_cols = ["requested_procedure_code_meaning"]
         facet_col = None
 
         if user_profile.plotRFSplitByPhysician:
             groupby_cols = groupby_cols + ["performing_physician_name"]
             x_col = "performing_physician_name"
+            x_col_title = "Performing physician"
             facet_col = "requested_procedure_code_meaning"
 
         parameter_dict = {
@@ -589,7 +619,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 user_profile.plotInitialSortingDirection,
                 user_profile.plotRFInitialSortingChoice,
             ],
-            "legend_title": "Requested procedure",
+            "legend_title": x_col_title,
             "df_x_axis_col": "x_ray_system_name",
             "x_axis_title": "System",
             "grouping_choice": user_profile.plotGroupingChoice,
@@ -613,7 +643,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
         if user_profile.plotGroupingChoice == "series":
             facet_title = "Study description"
 
-        parameter_dict = {  # pylint: disable=line-too-long
+        parameter_dict = {
             "df_name_col": "study_description",
             "df_value_col": "total_dap",
             "df_date_col": "study_date",
@@ -636,6 +666,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
         result = construct_over_time_charts(
             df,
             parameter_dict,
+            group_by_physician=user_profile.plotRFSplitByPhysician,
         )
 
         if user_profile.plotMean:
@@ -672,6 +703,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
         result = construct_over_time_charts(
             df,
             parameter_dict,
+            group_by_physician=user_profile.plotRFSplitByPhysician,
         )
 
         if user_profile.plotMean:

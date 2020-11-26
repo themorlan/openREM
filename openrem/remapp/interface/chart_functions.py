@@ -53,6 +53,16 @@ def global_config(
         height=1080,
         width=1920,
 ):
+    """
+    Creates a Plotly global configuration dictionary. The parameters all relate
+    to the chart bitmap that can be saved by the user.
+
+    :param filename: the file name to use if the user saves the chart as a graphic file
+    :param height_multiplier: scaling factor to multiply chart height by
+    :param height: the default height of the chart graphic file
+    :param width: the default width of the chart graphic file
+    :return: a dictionary of Plotly options
+    """
     return {
         "toImageButtonOptions": {
             "format": "png",
@@ -73,6 +83,19 @@ def create_dataframe(
     data_point_value_multipliers=None,
     uid=None,
 ):
+    """
+    Creates a Pandas DataFrame from the supplied database records.
+    names fields are made categorical to save system memory
+    Any missing (na) values in names fields are set to Blank
+
+    :param database_events: the database events
+    :param field_dict: a dictionary of fields to include in the DataFrame. This should include a list of database
+    field names called "names", "values", "dates", "times" and optionally "system"
+    :param data_point_name_lowercase: flag to determine whether to make all "names" field values lower case
+    :param data_point_value_multipliers: value to multiply each "values" field value by
+    :param uid: a database field containing a unique identifier for each record
+    :return: a Pandas DataFrame with a column per required field
+    """
     start = None
     if settings.DEBUG:
         start = datetime.now()
@@ -133,13 +156,30 @@ def create_dataframe_time_series(
     df_date_col="study_date",
     time_period="M",
     average_choices=None,
+    group_by_physician=None,
 ):
+    """
+    Creates a Pandas DataFrame time series of average values grouped by x_ray_system_name and df_name_col
+
+    :param df: the Pandas DataFrame containing the raw data
+    :param df_name_col: the DataFrame columnn name used to group the data
+    :param df_value_col: the DataFrame column containing the values to be averaged
+    :param df_date_col: the DataFrame column containing the dates
+    :param time_period: the time period to average over; choices are
+    :param average_choices:
+    :param group_by_physician:
+    :return: a Pandas DataFrame containing the time series of average values grouped by system and name
+    """
     if average_choices is None:
         average_choices = ["mean"]
 
+    group_by_column = "x_ray_system_name"
+    if group_by_physician:
+        group_by_column = "performing_physician_name"
+
     df_time_series = (
         df.set_index(df_date_col)
-        .groupby(["x_ray_system_name", df_name_col, pd.Grouper(freq=time_period)])
+        .groupby([group_by_column, df_name_col, pd.Grouper(freq=time_period)])
         .agg({df_value_col: average_choices})
     )
     df_time_series.columns = [s + df_value_col for s in average_choices]
@@ -148,7 +188,15 @@ def create_dataframe_time_series(
 
 
 def create_dataframe_weekdays(df, df_name_col, df_date_col="study_date"):
+    """
+    Creates a Pandas DataFrame of the number of events in each day of the
+    week, and in hour of that day.
 
+    :param df: the raw DataFrame; it must have a "study_time" and "x_ray_system_name" column
+    :param df_name_col: the df column to group the results by
+    :param df_date_col: the df column containing dates
+    :return: a Pandas DataFrame containing the number of studies per day and hour grouped by name
+    """
     start = None
     if settings.DEBUG:
         start = datetime.now()
@@ -169,6 +217,16 @@ def create_dataframe_weekdays(df, df_name_col, df_date_col="study_date"):
 
 
 def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None):
+    """
+    Creates a Pandas DataFrame with the specified statistics (mean, median, count, for example) grouped by
+    x-ray system name and by the list of provided df_name_cols.
+
+    :param df: the raw data; it must have an "x_ray_system_name" column
+    :param df_name_cols: a list of df column names to group by
+    :param df_agg_col: the df column over which to calculate the statistics
+    :param stats_to_use: a list of statistics to calculate, such as mean, median, count
+    :return: a Pandas DataFrame containing the grouped aggregate data
+    """
     start = None
     if settings.DEBUG:
         start = datetime.now()
@@ -190,10 +248,23 @@ def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None)
 
 
 def plotly_set_default_theme(theme_name):
+    """
+    A short method to set the plotly chart theme
+
+    :param theme_name: the name of the theme
+    :return:
+    """
     pio.templates.default = theme_name
 
 
 def calculate_colour_sequence(scale_name="jet", n_colours=10):
+    """
+    Calculates a colour sequence
+
+    :param scale_name: the name of the matplotlib colour scale to use
+    :param n_colours:  the number of colours required
+    :return: a list of colours
+    """
     colour_seq = []
     cmap = matplotlib.cm.get_cmap(scale_name)
     if n_colours > 1:
@@ -208,6 +279,11 @@ def calculate_colour_sequence(scale_name="jet", n_colours=10):
 
 
 def empty_dataframe_msg():
+    """
+    Returns a string containing an HTML DIV with a message warning that the DataFrame is empty
+
+    :return:
+    """
     msg = "<div class='alert alert-warning' role='alert'>"
     msg += "No data left after excluding missing values.</div>"
 
@@ -215,6 +291,13 @@ def empty_dataframe_msg():
 
 
 def failed_chart_message_div(custom_msg_line, e):
+    """
+    Returns a string containing an HTML DIV with a failed chart message
+
+    :param custom_msg_line:
+    :param e:
+    :return:
+    """
     msg = "<div class='alert alert-warning' role='alert'>"
     if settings.DEBUG:
         msg += custom_msg_line
@@ -227,6 +310,14 @@ def failed_chart_message_div(custom_msg_line, e):
 
 
 def csv_data_barchart(fig, params):
+    """
+    Calculates a Pandas DataFrame containing chart data to be used for csv download
+
+    :param fig: a plotly figure containing the data to extract
+    :param params: a dictionary of parameters; must include "df_name_col", "name_axis_title", "value_axis_title" and
+    "facet_col"
+    :return:
+    """
     fig_data_dict = fig.to_dict()["data"]
 
     if params["df_name_col"] != "performing_physician_name":
@@ -252,6 +343,13 @@ def csv_data_barchart(fig, params):
 
 
 def csv_data_frequency(fig, params):
+    """
+    Calculates a Pandas DataFrame containing chart data to be used for csv download
+
+    :param fig: a plotly figure containing the data to extract
+    :param params: a dictionary of parameters; must include "x_axis_title"
+    :return:
+    """
     fig_data_dict = fig.to_dict()["data"]
 
     df = pd.DataFrame(data=fig_data_dict[0]["x"], columns=[params["x_axis_title"]])
@@ -262,6 +360,14 @@ def csv_data_frequency(fig, params):
 
 
 def calc_facet_rows_and_height(df, facet_col_name, facet_col_wrap):
+    """
+    Calculate the required chart height and number of facet rows. 500 pixel height per row.
+
+    :param df: the Pandas DataFrame containing the data
+    :param facet_col_name: the DataFrame column containing the facet names
+    :param facet_col_wrap: the number of subplots to have on each row
+    :return: the chart height in pixels and the number of facet rows
+    """
     n_facet_rows = math.ceil(len(df[facet_col_name].unique()) / facet_col_wrap)
     chart_height = n_facet_rows * 500
     if chart_height < 500:
@@ -273,6 +379,14 @@ def plotly_boxplot(
     df,
     params,
 ):
+    """
+    Produce a plotly boxplot
+
+    :param df: the Pandas DataFrame containing the data
+    :param params: a dictionary of parameters; must include "colourmap", "df_value_col", "df_name_col", "df_facet_col",
+    "df_facet_col_wrap", "value_axis_title", "name_axis_title", "sorted_category_list", "return_as_dict"
+    :return:
+    """
     chart_height = 500
     n_facet_rows = 1
 
@@ -336,6 +450,14 @@ def plotly_boxplot(
 
 
 def create_freq_sorted_category_list(df, df_name_col, sorting):
+    """
+    Create a sorted list of categories for frequency charts
+
+    :param df:
+    :param df_name_col:
+    :param sorting:
+    :return:
+    """
     category_sorting_df = df.groupby(df_name_col).count().reset_index()
     if sorting[1] == "name":
         sort_by = df_name_col
@@ -354,6 +476,15 @@ def create_freq_sorted_category_list(df, df_name_col, sorting):
 
 
 def create_sorted_category_list(df, df_name_col, df_value_col, sorting):
+    """
+    Create a sorted list of categories for scatter and over-time charts
+
+    :param df:
+    :param df_name_col:
+    :param df_value_col:
+    :param sorting:
+    :return:
+    """
     # Calculate the required aggregates for creating a list of categories for sorting
     grouped_df = df.groupby(df_name_col).agg({df_value_col: ["mean", "count"]})
     grouped_df.columns = grouped_df.columns.droplevel(level=0)
@@ -380,6 +511,14 @@ def plotly_barchart(
     params,
     csv_name="OpenREM chart data.csv",
 ):
+    """
+    Create a plotly bar chart
+
+    :param df:
+    :param params:
+    :param csv_name:
+    :return:
+    """
     chart_height = 500
     n_facet_rows = 1
 
@@ -445,6 +584,13 @@ def plotly_histogram_barchart(
     df,
     params,
 ):
+    """
+    Create a plotly histogram bar chart
+
+    :param df:
+    :param params:
+    :return:
+    """
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
@@ -565,6 +711,14 @@ def plotly_histogram_barchart(
 
 
 def calc_histogram_bin_data(df, value_col_name, n_bins=10):
+    """
+    Calculate bin data for histograms
+
+    :param df:
+    :param value_col_name:
+    :param n_bins:
+    :return:
+    """
     min_bin_value, max_bin_value = df[value_col_name].agg([min, max])
     bins = np.linspace(min_bin_value, max_bin_value, n_bins + 1)
     mid_bins = 0.5 * (bins[:-1] + bins[1:])
@@ -578,6 +732,13 @@ def plotly_binned_statistic_barchart(
     df,
     params,
 ):
+    """
+    Create a plotly binned statistic bar chart
+
+    :param df:
+    :param params:
+    :return:
+    """
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
@@ -719,6 +880,13 @@ def plotly_timeseries_linechart(
     df,
     params,
 ):
+    """
+    Create a plotly line chart of data over time
+
+    :param df:
+    :param params:
+    :return:
+    """
     chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["facet_col"], params["facet_col_wrap"])
 
     n_colours = len(df[params["df_name_col"]].unique())
@@ -741,9 +909,9 @@ def plotly_timeseries_linechart(
                 params["df_date_col"]: params["name_axis_title"],
                 "x_ray_system_name": "System",
             },
-            hover_name="x_ray_system_name",
+            hover_name=params["df_name_col"],
             hover_data={
-                "x_ray_system_name": False,
+                params["df_name_col"]: False,
                 params["df_value_col"]: ":.2f",
                 params["df_count_col"]: ":.0f",
             },
@@ -786,6 +954,13 @@ def plotly_scatter(
     df,
     params,
 ):
+    """
+    Create a plotly scatter chart
+
+    :param df:
+    :param params:
+    :return:
+    """
     sorted_category_list = create_sorted_category_list(df, params["df_name_col"], params["df_y_col"], params["sorting"])
 
     params["df_category_name_col"] = params["df_name_col"]
@@ -861,6 +1036,20 @@ def plotly_barchart_weekdays(
     facet_col_wrap=3,
     return_as_dict=False,
 ):
+    """
+    Create a plotly bar chart of event workload
+
+    :param df:
+    :param df_name_col:
+    :param df_value_col:
+    :param name_axis_title:
+    :param value_axis_title:
+    :param colourmap:
+    :param filename:
+    :param facet_col_wrap:
+    :param return_as_dict:
+    :return:
+    """
     chart_height, n_facet_rows = calc_facet_rows_and_height(df, "x_ray_system_name", facet_col_wrap)
 
     try:
@@ -927,6 +1116,14 @@ def plotly_frequency_barchart(
     params,
     csv_name="OpenREM chart data.csv",
 ):
+    """
+    Create a plotly bar chart of event frequency
+
+    :param df:
+    :param params:
+    :param csv_name:
+    :return:
+    """
     if params["groupby_cols"] is None:
         params["groupby_cols"] = [params["df_name_col"]]
 
@@ -1004,7 +1201,16 @@ def plotly_frequency_barchart(
 def construct_over_time_charts(
     df,
     params,
+    group_by_physician=None,
 ):
+    """
+    Shell to prepare plotly line chart of values over time
+
+    :param df:
+    :param params:
+    :param group_by_physician:
+    :return:
+    """
     sorted_categories = create_sorted_category_list(
         df, params["df_name_col"], params["df_value_col"], params["sorting"]
     )
@@ -1025,13 +1231,20 @@ def construct_over_time_charts(
         df_date_col=params["df_date_col"],
         time_period=params["time_period"],
         average_choices=params["average_choices"],
+        group_by_physician=group_by_physician,
     )
 
     category_names_col = params["df_name_col"]
     group_by_col = "x_ray_system_name"
+    if group_by_physician:
+        group_by_col = "performing_physician_name"
+
     if params["grouping_choice"] == "series":
         category_names_col = "x_ray_system_name"
         group_by_col = params["df_name_col"]
+        if group_by_physician:
+            category_names_col = "performing_physician_name"
+            params["name_title"] = "Physician"
 
     return_value = {}
 
