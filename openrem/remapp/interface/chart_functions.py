@@ -188,7 +188,7 @@ def create_dataframe_weekdays(df, df_name_col, df_date_col="study_date"):
     """Creates a Pandas DataFrame of the number of events in each day of the
     week, and in hour of that day.
 
-    :param df: the raw DataFrame
+    :param df: the raw DataFrame; it must have a "study_time" and "x_ray_system_name" column
     :param df_name_col: the df column to group the results by
     :param df_date_col: the df column containing dates
     :return: a Pandas DataFrame containing the number of studies per day and hour grouped by name
@@ -216,7 +216,7 @@ def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None)
     """Creates a Pandas DataFrame with the specified statistics (mean, median, count, for example) grouped by
     x-ray system name and by the list of provided df_name_cols.
 
-    :param df: the raw data
+    :param df: the raw data; it must have an "x_ray_system_name" column
     :param df_name_cols: a list of df column names to group by
     :param df_agg_col: the df column over which to calculate the statistics
     :param stats_to_use: a list of statistics to calculate, such as mean, median, count
@@ -303,8 +303,9 @@ def failed_chart_message_div(custom_msg_line, e):
 def csv_data_barchart(fig, params):
     """Calculates a Pandas DataFrame containing chart data to be used for csv download
 
-    :param fig:
-    :param params: a dictionary of parameters
+    :param fig: a plotly figure containing the data to extract
+    :param params: a dictionary of parameters; must include "df_name_col", "name_axis_title", "value_axis_title" and
+    "facet_col"
     :return:
     """
     fig_data_dict = fig.to_dict()["data"]
@@ -334,8 +335,8 @@ def csv_data_barchart(fig, params):
 def csv_data_frequency(fig, params):
     """Calculates a Pandas DataFrame containing chart data to be used for csv download
 
-    :param fig:
-    :param params:
+    :param fig: a plotly figure containing the data to extract
+    :param params: a dictionary of parameters; must include "x_axis_title"
     :return:
     """
     fig_data_dict = fig.to_dict()["data"]
@@ -348,12 +349,12 @@ def csv_data_frequency(fig, params):
 
 
 def calc_facet_rows_and_height(df, facet_col_name, facet_col_wrap):
-    """Calculate the required chart height and number of facet rows
+    """Calculate the required chart height and number of facet rows. 500 pixel height per row.
 
-    :param df:
-    :param facet_col_name:
-    :param facet_col_wrap:
-    :return:
+    :param df: the Pandas DataFrame containing the data
+    :param facet_col_name: the DataFrame column containing the facet names
+    :param facet_col_wrap: the number of subplots to have on each row
+    :return: the chart height in pixels and the number of facet rows
     """
     n_facet_rows = math.ceil(len(df[facet_col_name].unique()) / facet_col_wrap)
     chart_height = n_facet_rows * 500
@@ -368,8 +369,9 @@ def plotly_boxplot(
 ):
     """Produce a plotly boxplot
 
-    :param df:
-    :param params:
+    :param df: the Pandas DataFrame containing the data
+    :param params: a dictionary of parameters; must include "colourmap", "df_value_col", "df_name_col", "df_facet_col",
+    "df_facet_col_wrap", "value_axis_title", "name_axis_title", "sorted_category_list", "return_as_dict"
     :return:
     """
     chart_height = 500
