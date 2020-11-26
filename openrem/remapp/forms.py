@@ -283,7 +283,7 @@ class RFChartOptionsForm(forms.Form):
         label="Split plots by physician", required=False
     )
     plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe("Grouping choice"), choices=CommonVariables.CHART_GROUPING, required=False
+        label=mark_safe("Grouping choice"), choices=CommonVariables.CHART_GROUPING_RF, required=False
     )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False

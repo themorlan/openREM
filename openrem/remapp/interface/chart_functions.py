@@ -87,7 +87,7 @@ def create_dataframe(
     Any missing (na) values in names fields are set to Blank
 
     :param database_events: the database events
-    :param field_dict: a dictionart of fields to include in the DataFrame. This should include a list of database
+    :param field_dict: a dictionary of fields to include in the DataFrame. This should include a list of database
     field names called "names", "values", "dates", "times" and optionally "system"
     :param data_point_name_lowercase: flag to determine whether to make all "names" field values lower case
     :param data_point_value_multipliers: value to multiply each "values" field value by
@@ -154,6 +154,7 @@ def create_dataframe_time_series(
     df_date_col="study_date",
     time_period="M",
     average_choices=None,
+    group_by_physician=None,
 ):
     """Creates a Pandas DataFrame time series of average values grouped by x_ray_system_name and df_name_col
 
@@ -163,14 +164,19 @@ def create_dataframe_time_series(
     :param df_date_col: the DataFrame column containing the dates
     :param time_period: the time period to average over; choices are
     :param average_choices:
+    :param group_by_physician:
     :return: a Pandas DataFrame containing the time series of average values grouped by system and name
     """
     if average_choices is None:
         average_choices = ["mean"]
 
+    group_by_column = "x_ray_system_name"
+    if group_by_physician:
+        group_by_column = "performing_physician_name"
+
     df_time_series = (
         df.set_index(df_date_col)
-        .groupby(["x_ray_system_name", df_name_col, pd.Grouper(freq=time_period)])
+        .groupby([group_by_column, df_name_col, pd.Grouper(freq=time_period)])
         .agg({df_value_col: average_choices})
     )
     df_time_series.columns = [s + df_value_col for s in average_choices]
@@ -298,7 +304,7 @@ def csv_data_barchart(fig, params):
     """Calculates a Pandas DataFrame containing chart data to be used for csv download
 
     :param fig:
-    :param params:
+    :param params: a dictionary of parameters
     :return:
     """
     fig_data_dict = fig.to_dict()["data"]
@@ -881,9 +887,9 @@ def plotly_timeseries_linechart(
                 params["df_date_col"]: params["name_axis_title"],
                 "x_ray_system_name": "System",
             },
-            hover_name="x_ray_system_name",
+            hover_name=params["df_name_col"],
             hover_data={
-                "x_ray_system_name": False,
+                params["df_name_col"]: False,
                 params["df_value_col"]: ":.2f",
                 params["df_count_col"]: ":.0f",
             },
@@ -1170,11 +1176,13 @@ def plotly_frequency_barchart(
 def construct_over_time_charts(
     df,
     params,
+    group_by_physician=None,
 ):
     """Shell to prepare plotly line chart of values over time
 
     :param df:
     :param params:
+    :param group_by_physician:
     :return:
     """
     sorted_categories = create_sorted_category_list(
@@ -1197,13 +1205,20 @@ def construct_over_time_charts(
         df_date_col=params["df_date_col"],
         time_period=params["time_period"],
         average_choices=params["average_choices"],
+        group_by_physician=group_by_physician,
     )
 
     category_names_col = params["df_name_col"]
     group_by_col = "x_ray_system_name"
+    if group_by_physician:
+        group_by_col = "performing_physician_name"
+
     if params["grouping_choice"] == "series":
         category_names_col = "x_ray_system_name"
         group_by_col = params["df_name_col"]
+        if group_by_physician:
+            category_names_col = "performing_physician_name"
+            params["name_title"] = "Physician"
 
     return_value = {}
 

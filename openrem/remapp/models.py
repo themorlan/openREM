@@ -448,6 +448,7 @@ class CommonVariables:
     SERIES = "series"
     SYSTEM = "system"
     CHART_GROUPING = ((SYSTEM, "System names"), (SERIES, "Series item names"))
+    CHART_GROUPING_RF = ((SYSTEM, "System or physician"), (SERIES, "Series item names"))
     ITEMS_PER_PAGE = (
         (10, "10"),
         (25, "25"),
