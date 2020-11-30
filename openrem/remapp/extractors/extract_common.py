@@ -27,8 +27,16 @@
     :synopsis: Module of functions common to multiple extractor routines
 """
 
+from decimal import Decimal
 import logging
+
 from django.db.models import ObjectDoesNotExist
+
+from ..models import PatientIDSettings, PatientModuleAttr, PatientStudyModuleAttr
+from ..tools.dcmdatetime import get_date
+from ..tools.get_values import get_value_kw
+from ..tools.not_patient_indicators import get_not_pt
+from ..tools.hash_id import hash_id
 
 
 def get_study_check_dup(dataset, modality="DX"):
@@ -341,3 +349,55 @@ def populate_rf_delta_weeks_summary(g):
                 g.study_instance_uid
             )
         )
+
+
+def patient_module_attributes(dataset, g):  # C.7.1.1
+    """Get patient module attributes
+
+    :param dataset: DICOM object
+    :param g: GeneralStudyModuleAttr database table
+    :return: None - database is updated
+    """
+
+    pat = PatientModuleAttr.objects.create(general_study_module_attributes=g)
+    patient_birth_date = get_date("PatientBirthDate", dataset)
+    pat.patient_sex = get_value_kw("PatientSex", dataset)
+    pat.not_patient_indicator = get_not_pt(dataset)
+    patientatt = PatientStudyModuleAttr.objects.get(general_study_module_attributes=g)
+    if patient_birth_date:
+        patientatt.patient_age_decimal = Decimal(
+            (g.study_date.date() - patient_birth_date.date()).days
+        ) / Decimal("365.25")
+    elif patientatt.patient_age:
+        if patientatt.patient_age[-1:] == "Y":
+            patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1])
+        elif patientatt.patient_age[-1:] == "M":
+            patientatt.patient_age_decimal = Decimal(
+                patientatt.patient_age[:-1]
+            ) / Decimal("12")
+        elif patientatt.patient_age[-1:] == "D":
+            patientatt.patient_age_decimal = Decimal(
+                patientatt.patient_age[:-1]
+            ) / Decimal("365.25")
+    if patientatt.patient_age_decimal:
+        patientatt.patient_age_decimal = patientatt.patient_age_decimal.quantize(
+            Decimal(".1")
+        )
+    patientatt.save()
+
+    patient_id_settings = PatientIDSettings.objects.get()
+    if patient_id_settings.name_stored:
+        name = get_value_kw("PatientName", dataset)
+        if name and patient_id_settings.name_hashed:
+            name = hash_id(name)
+            pat.name_hashed = True
+        pat.patient_name = name
+    if patient_id_settings.id_stored:
+        patid = get_value_kw("PatientID", dataset)
+        if patid and patient_id_settings.id_hashed:
+            patid = hash_id(patid)
+            pat.id_hashed = True
+        pat.patient_id = patid
+    if patient_id_settings.dob_stored and patient_birth_date:
+        pat.patient_birth_date = patient_birth_date
+    pat.save()

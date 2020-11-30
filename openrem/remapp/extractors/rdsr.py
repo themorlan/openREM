@@ -44,6 +44,7 @@ import pydicom
 
 from .extract_common import (
     ct_event_type_count,
+    patient_module_attributes,
     populate_mammo_agd_summary,
     populate_dx_rf_summary,
     populate_rf_delta_weeks_summary,
@@ -61,7 +62,6 @@ from ..tools.get_values import (
 )
 from ..tools.hash_id import hash_id
 from ..tools.make_skin_map import make_skin_map
-from ..tools.not_patient_indicators import get_not_pt
 from ..tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 
 # setup django/OpenREM.
@@ -1959,53 +1959,6 @@ def _patientstudymoduleattributes(dataset, g):  # C.7.2.2
     patientatt.save()
 
 
-def _patientmoduleattributes(dataset, g):  # C.7.1.1
-
-    pat = PatientModuleAttr.objects.create(general_study_module_attributes=g)
-
-    patient_birth_date = get_date("PatientBirthDate", dataset)
-    pat.patient_sex = get_value_kw("PatientSex", dataset)
-    pat.not_patient_indicator = get_not_pt(dataset)
-    patientatt = PatientStudyModuleAttr.objects.get(general_study_module_attributes=g)
-    if patient_birth_date:
-        patientatt.patient_age_decimal = Decimal(
-            (g.study_date.date() - patient_birth_date.date()).days
-        ) / Decimal("365.25")
-    elif patientatt.patient_age:
-        if patientatt.patient_age[-1:] == "Y":
-            patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1])
-        elif patientatt.patient_age[-1:] == "M":
-            patientatt.patient_age_decimal = Decimal(
-                patientatt.patient_age[:-1]
-            ) / Decimal("12")
-        elif patientatt.patient_age[-1:] == "D":
-            patientatt.patient_age_decimal = Decimal(
-                patientatt.patient_age[:-1]
-            ) / Decimal("365.25")
-    if patientatt.patient_age_decimal:
-        patientatt.patient_age_decimal = patientatt.patient_age_decimal.quantize(
-            Decimal(".1")
-        )
-    patientatt.save()
-
-    patient_id_settings = PatientIDSettings.objects.get()
-    if patient_id_settings.name_stored:
-        name = get_value_kw("PatientName", dataset)
-        if name and patient_id_settings.name_hashed:
-            name = hash_id(name)
-            pat.name_hashed = True
-        pat.patient_name = name
-    if patient_id_settings.id_stored:
-        patid = get_value_kw("PatientID", dataset)
-        if patid and patient_id_settings.id_hashed:
-            patid = hash_id(patid)
-            pat.id_hashed = True
-        pat.patient_id = patid
-    if patient_id_settings.dob_stored and patient_birth_date:
-        pat.patient_birth_date = patient_birth_date
-    pat.save()
-
-
 def _generalstudymoduleattributes(dataset, g):
 
     g.study_instance_uid = get_value_kw("StudyInstanceUID", dataset)
@@ -2337,7 +2290,7 @@ def _rdsr2db(dataset):
     _generalequipmentmoduleattributes(dataset, g)
     _generalstudymoduleattributes(dataset, g)
     _patientstudymoduleattributes(dataset, g)
-    _patientmoduleattributes(dataset, g)
+    patient_module_attributes(dataset, g)
 
     try:
         SkinDoseMapCalcSettings.objects.get()
