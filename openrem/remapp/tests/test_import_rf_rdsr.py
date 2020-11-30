@@ -50,6 +50,9 @@ class ImportRFRDSRPhilips(TestCase):
             first_source_data.collimated_field_area, first_field_area
         )
 
+        performing_physician_name = study.performing_physician_name
+        self.assertEqual(performing_physician_name, 'Yamada^Tarou=山田^太郎=やまだ^たろう')
+
 
 class ImportRFRDSRPhilipsAzurion(TestCase):
     """
