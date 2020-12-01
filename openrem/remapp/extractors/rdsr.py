@@ -65,7 +65,7 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
-from .extract_common import (
+from .extract_common import (  # pylint: disable=wrong-import-order, wrong-import-position
     ct_event_type_count,
     patient_module_attributes,
     populate_mammo_agd_summary,

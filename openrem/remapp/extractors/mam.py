@@ -46,7 +46,7 @@ django.setup()
 
 from celery import shared_task
 
-from .extract_common import patient_module_attributes
+from .extract_common import patient_module_attributes   # pylint: disable=wrong-import-order, wrong-import-position
 
 
 def _xrayfilters(dataset, source):
