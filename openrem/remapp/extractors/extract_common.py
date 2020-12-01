@@ -37,7 +37,12 @@ from ..tools.get_values import get_value_kw
 from ..tools.not_patient_indicators import get_not_pt
 from ..tools.hash_id import hash_id
 from ..tools.check_uid import record_sop_instance_uid
-from remapp.models import GeneralStudyModuleAttr, PatientIDSettings, PatientModuleAttr, PatientStudyModuleAttr
+from remapp.models import (
+    GeneralStudyModuleAttr,
+    PatientIDSettings,
+    PatientModuleAttr,
+    PatientStudyModuleAttr,
+)
 
 
 def get_study_check_dup(dataset, modality="DX"):

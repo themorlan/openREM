@@ -1619,7 +1619,7 @@ def _ctirradiationeventdata(dataset, ct):  # TID 10013
         comments = event.comment.split(",")
         for comm in comments:
             if comm.lstrip().startswith("X-ray Modulation Type"):
-                modulationtype = comm[(comm.find("=") + 2):]
+                modulationtype = comm[(comm.find("=") + 2) :]
                 event.xray_modulation_type = modulationtype
 
     ## personparticipant here

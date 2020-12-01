@@ -49,8 +49,14 @@ from pydicom.valuerep import MultiValue
 
 from ..tools import check_uid
 from ..tools.dcmdatetime import get_date, get_time, make_date_time
-from ..tools.get_values import get_value_kw, get_value_num, get_or_create_cid, get_seq_code_value, \
-    get_seq_code_meaning, list_to_string
+from ..tools.get_values import (
+    get_value_kw,
+    get_value_num,
+    get_or_create_cid,
+    get_seq_code_value,
+    get_seq_code_meaning,
+    list_to_string,
+)
 from ..tools.hash_id import hash_id
 
 # setup django/OpenREM
@@ -61,13 +67,31 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
-from .extract_common import get_study_check_dup, populate_dx_rf_summary, patient_module_attributes
-from remapp.models import AccumXRayDose, AccumIntegratedProjRadiogDose, DicomDeleteSettings, \
-    DoseRelatedDistanceMeasurements, \
-    Exposure, GeneralEquipmentModuleAttr, GeneralStudyModuleAttr, \
-    IrradEventXRayData, IrradEventXRayDetectorData, IrradEventXRayMechanicalData, IrradEventXRaySourceData, \
-    Kvp, PatientIDSettings, PatientStudyModuleAttr,\
-    ProjectionXRayRadiationDose, UniqueEquipmentNames, XrayFilters, XrayGrid
+from .extract_common import (
+    get_study_check_dup,
+    populate_dx_rf_summary,
+    patient_module_attributes,
+)
+from remapp.models import (
+    AccumXRayDose,
+    AccumIntegratedProjRadiogDose,
+    DicomDeleteSettings,
+    DoseRelatedDistanceMeasurements,
+    Exposure,
+    GeneralEquipmentModuleAttr,
+    GeneralStudyModuleAttr,
+    IrradEventXRayData,
+    IrradEventXRayDetectorData,
+    IrradEventXRayMechanicalData,
+    IrradEventXRaySourceData,
+    Kvp,
+    PatientIDSettings,
+    PatientStudyModuleAttr,
+    ProjectionXRayRadiationDose,
+    UniqueEquipmentNames,
+    XrayFilters,
+    XrayGrid,
+)
 
 logger = logging.getLogger(
     "remapp.extractors.dx"
@@ -489,7 +513,9 @@ def _irradiationeventxraydata(dataset, proj):  # TID 10003
 
     dap = get_value_kw("ImageAndFluoroscopyAreaDoseProduct", dataset)
     if dap:
-        event.dose_area_product = dap / 100000  # Value of DICOM tag (0018,115e) in dGy.cm2, converted to Gy.m2
+        event.dose_area_product = (
+            dap / 100000
+        )  # Value of DICOM tag (0018,115e) in dGy.cm2, converted to Gy.m2
     event.save()
 
     _irradiationeventxraydetectordata(dataset, event)
@@ -735,7 +761,9 @@ def _dx2db(dataset):
         )  # Give initial event a chance to get to save on _projectionxrayradiationdose
         this_study = get_study_check_dup(dataset, modality="DX")
         if this_study:
-            _irradiationeventxraydata(dataset, this_study.projectionxrayradiationdose_set.get())
+            _irradiationeventxraydata(
+                dataset, this_study.projectionxrayradiationdose_set.get()
+            )
             populate_dx_rf_summary(this_study)
             this_study.number_of_events = (
                 this_study.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
@@ -814,8 +842,7 @@ def _dx2db(dataset):
                     this_study = get_study_check_dup(dataset, modality="DX")
                     if this_study:
                         _irradiationeventxraydata(
-                            dataset,
-                            this_study.projectionxrayradiationdose_set.get(),
+                            dataset, this_study.projectionxrayradiationdose_set.get(),
                         )
 
 

@@ -40,8 +40,14 @@ from django.db.models import Max, Min, ObjectDoesNotExist
 import pydicom
 
 from ..tools.dcmdatetime import get_date_time, get_date, get_time
-from ..tools.get_values import get_value_kw, get_value_num, get_or_create_cid, \
-    get_seq_code_meaning, get_seq_code_value, list_to_string
+from ..tools.get_values import (
+    get_value_kw,
+    get_value_num,
+    get_or_create_cid,
+    get_seq_code_meaning,
+    get_seq_code_value,
+    list_to_string,
+)
 from ..tools.hash_id import hash_id
 
 # setup django/OpenREM
@@ -53,10 +59,19 @@ os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
 from .extract_common import ct_event_type_count, patient_module_attributes
-from remapp.models import CtAccumulatedDoseData, CtIrradiationEventData, CtRadiationDose, CtXRaySourceParameters, \
-    DicomDeleteSettings,\
-    GeneralEquipmentModuleAttr, GeneralStudyModuleAttr, PatientIDSettings, PatientStudyModuleAttr, \
-    ScanningLength, UniqueEquipmentNames
+from remapp.models import (
+    CtAccumulatedDoseData,
+    CtIrradiationEventData,
+    CtRadiationDose,
+    CtXRaySourceParameters,
+    DicomDeleteSettings,
+    GeneralEquipmentModuleAttr,
+    GeneralStudyModuleAttr,
+    PatientIDSettings,
+    PatientStudyModuleAttr,
+    ScanningLength,
+    UniqueEquipmentNames,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -339,7 +354,9 @@ def _generalstudymoduleattributes(dataset, g):
 def _philips_ct2db(dataset):
     if "StudyInstanceUID" in dataset:
         study_instance_uid = dataset.StudyInstanceUID
-        existing = GeneralStudyModuleAttr.objects.filter(study_instance_uid__exact=study_instance_uid)
+        existing = GeneralStudyModuleAttr.objects.filter(
+            study_instance_uid__exact=study_instance_uid
+        )
         if existing:
             return
 
