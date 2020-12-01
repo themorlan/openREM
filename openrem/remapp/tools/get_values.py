@@ -169,20 +169,6 @@ def test_numeric_value(string_number):
         return None
 
 
-def safe_strings(string, char_set=charset.default_encoding):
-    """
-    Function to encode non-ASCII characters correctly. Probably not required any longer, but leaving in for now.
-    :param string: String to encode
-    :param char_set: Character set used by DICOM file
-    :return: Encoded string
-    """
-    try:
-        python_char_set = charset.python_encoding[char_set]
-    except KeyError:
-        python_char_set = charset.default_encoding
-    return smart_text(string, encoding=python_char_set)
-
-
 def list_to_string(dicom_value):
     """
     Turn multivalue names into a single string for correct encoding and pretty reproduction

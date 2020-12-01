@@ -50,7 +50,6 @@ from ..tools.get_values import (
     get_seq_code_value,
     get_value_kw,
     list_to_string,
-    safe_strings,
     test_numeric_value,
 )
 from ..tools.hash_id import hash_id
@@ -1215,7 +1214,7 @@ def _accumulatedtotalprojectionradiographydose(dataset, accum):  # TID 10007
                         cont.ConceptCodeSequence[0].CodeMeaning,
                     )
                 except AttributeError:
-                    accumint.reference_point_definition = safe_strings(cont.TextValue)
+                    accumint.reference_point_definition = cont.TextValue
         except IndexError:
             pass
     accumint.save()
@@ -1612,7 +1611,7 @@ def _ctirradiationeventdata(dataset, ct):  # TID 10013
             cont.ConceptNameCodeSequence[0].CodeMeaning.lower()
             == "x-ray modulation type"
         ):
-            event.xray_modulation_type = safe_strings(cont.TextValue)
+            event.xray_modulation_type = cont.TextValue
         if cont.ConceptNameCodeSequence[0].CodeMeaning == "Comment":
             event.comment = cont.TextValue
     if not event.xray_modulation_type and event.comment:
