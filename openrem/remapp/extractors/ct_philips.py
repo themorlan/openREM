@@ -28,19 +28,21 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-from __future__ import division
-from __future__ import absolute_import
-
-from past.utils import old_div
+from datetime import datetime, timedelta
 import logging
 import os
 import sys
 
+from celery import shared_task
 from decimal import Decimal
 import django
-from django.db.models import ObjectDoesNotExist
+from django.db.models import Max, Min, ObjectDoesNotExist
+import pydicom
 
-logger = logging.getLogger(__name__)
+from ..tools.dcmdatetime import get_date_time, get_date, get_time
+from ..tools.get_values import get_value_kw, get_value_num, get_or_create_cid, \
+    get_seq_code_meaning, get_seq_code_value, list_to_string
+from ..tools.hash_id import hash_id
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -50,22 +52,22 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
-from celery import shared_task
+from .extract_common import ct_event_type_count, patient_module_attributes
+from remapp.models import CtAccumulatedDoseData, CtIrradiationEventData, CtRadiationDose, CtXRaySourceParameters, \
+    DicomDeleteSettings,\
+    GeneralEquipmentModuleAttr, GeneralStudyModuleAttr, PatientIDSettings, PatientStudyModuleAttr, \
+    ScanningLength, UniqueEquipmentNames
+
+logger = logging.getLogger(__name__)
 
 
 def _scanninglength(dataset, event):  # TID 10014
-    from remapp.models import ScanningLength
-    from remapp.tools.get_values import get_value_kw
-
     scanlen = ScanningLength.objects.create(ct_irradiation_event_data=event)
     scanlen.scanning_length = get_value_kw("ScanLength", dataset)
     scanlen.save()
 
 
 def _ctxraysourceparameters(dataset, event):
-    from remapp.models import CtXRaySourceParameters
-    from remapp.tools.get_values import get_value_kw
-
     param = CtXRaySourceParameters.objects.create(ct_irradiation_event_data=event)
     param.identification_of_the_xray_source = "A"
     param.kvp = get_value_kw("KVP", dataset)
@@ -77,11 +79,6 @@ def _ctxraysourceparameters(dataset, event):
 
 
 def _ctirradiationeventdata(dataset, ct):  # TID 10013
-    from remapp.models import CtIrradiationEventData
-    from remapp.tools.get_values import get_value_kw, get_value_num, get_or_create_cid
-    from remapp.tools.dcmdatetime import get_date_time
-    from pydicom import uid
-
     event = CtIrradiationEventData.objects.create(ct_radiation_dose=ct)
     event.acquisition_protocol = get_value_kw("SeriesDescription", dataset)
     # target region is mandatory, but I don't have it
@@ -102,7 +99,7 @@ def _ctirradiationeventdata(dataset, ct):  # TID 10013
         event.ct_acquisition_type = get_or_create_cid("113807", "Free Acquisition")
     # procedure context is optional and not reported (contrast or not)
     # irradiation event uid would be available in image headers, but assuming just working from dose report image:
-    event.irradiation_event_uid = uid.generate_uid()
+    event.irradiation_event_uid = pydicom.uid.generate_uid()
     exptime = get_value_kw("ExposureTime", dataset)
     if exptime:
         event.exposure_time = exptime / 1000.0
@@ -135,10 +132,7 @@ def _ctirradiationeventdata(dataset, ct):  # TID 10013
     event.save()
 
 
-def _ctaccumulateddosedata(dataset, ct, ch):  # TID 10012
-    from remapp.models import CtAccumulatedDoseData
-    from remapp.tools.get_values import get_value_kw, get_value_num
-
+def _ctaccumulateddosedata(dataset, ct):  # TID 10012
     ctacc = CtAccumulatedDoseData.objects.create(ct_radiation_dose=ct)
     ctacc.total_number_of_irradiation_events = get_value_kw(
         "TotalNumberOfExposures", dataset
@@ -150,12 +144,7 @@ def _ctaccumulateddosedata(dataset, ct, ch):  # TID 10012
     ctacc.save()
 
 
-def _ctradiationdose(dataset, g, ch):
-    from remapp.models import CtRadiationDose
-    from remapp.tools.get_values import get_value_kw, get_value_num, get_or_create_cid
-    from datetime import timedelta
-    from django.db.models import Min, Max
-
+def _ctradiationdose(dataset, g):
     proj = CtRadiationDose.objects.create(general_study_module_attributes=g)
     proj.procedure_reported = get_or_create_cid("P5-08000", "Computed Tomography X-Ray")
     proj.has_intent = get_or_create_cid("R-408C3", "Diagnostic Intent")
@@ -177,7 +166,7 @@ def _ctradiationdose(dataset, g, ch):
         "113866", "Copied From Image Attributes"
     )
     proj.save()
-    _ctaccumulateddosedata(dataset, proj, ch)
+    _ctaccumulateddosedata(dataset, proj)
     for series in dataset.ExposureDoseSequence:
         if "AcquisitionType" in series:
             _ctirradiationeventdata(series, proj)
@@ -219,12 +208,7 @@ def _ctradiationdose(dataset, g, ch):
         proj.save()
 
 
-def _generalequipmentmoduleattributes(dataset, study, ch):
-    from remapp.models import GeneralEquipmentModuleAttr, UniqueEquipmentNames
-    from remapp.tools.dcmdatetime import get_date, get_time
-    from remapp.tools.get_values import get_value_kw
-    from remapp.tools.hash_id import hash_id
-
+def _generalequipmentmoduleattributes(dataset, study):
     equip = GeneralEquipmentModuleAttr.objects.create(
         general_study_module_attributes=study
     )
@@ -285,9 +269,6 @@ def _generalequipmentmoduleattributes(dataset, study, ch):
 
 
 def _patientstudymoduleattributes(dataset, g):  # C.7.2.2
-    from remapp.models import PatientStudyModuleAttr
-    from remapp.tools.get_values import get_value_kw
-
     patientatt = PatientStudyModuleAttr.objects.create(
         general_study_module_attributes=g
     )
@@ -296,73 +277,7 @@ def _patientstudymoduleattributes(dataset, g):  # C.7.2.2
     patientatt.save()
 
 
-def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
-    from decimal import Decimal
-    from remapp.models import PatientModuleAttr, PatientStudyModuleAttr
-    from remapp.models import PatientIDSettings
-    from remapp.tools.get_values import get_value_kw
-    from remapp.tools.dcmdatetime import get_date
-    from remapp.tools.not_patient_indicators import get_not_pt
-    from remapp.tools.hash_id import hash_id
-
-    pat = PatientModuleAttr.objects.create(general_study_module_attributes=g)
-    patient_birth_date = get_date("PatientBirthDate", dataset)
-    pat.patient_sex = get_value_kw("PatientSex", dataset)
-    pat.not_patient_indicator = get_not_pt(dataset)
-    patientatt = PatientStudyModuleAttr.objects.get(general_study_module_attributes=g)
-    if patient_birth_date:
-        patientatt.patient_age_decimal = old_div(
-            Decimal((g.study_date.date() - patient_birth_date.date()).days),
-            Decimal("365.25"),
-        )
-    elif patientatt.patient_age:
-        if patientatt.patient_age[-1:] == "Y":
-            patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1])
-        elif patientatt.patient_age[-1:] == "M":
-            patientatt.patient_age_decimal = old_div(
-                Decimal(patientatt.patient_age[:-1]), Decimal("12")
-            )
-        elif patientatt.patient_age[-1:] == "D":
-            patientatt.patient_age_decimal = old_div(
-                Decimal(patientatt.patient_age[:-1]), Decimal("365.25")
-            )
-    if patientatt.patient_age_decimal:
-        patientatt.patient_age_decimal = patientatt.patient_age_decimal.quantize(
-            Decimal(".1")
-        )
-    patientatt.save()
-
-    patient_id_settings = PatientIDSettings.objects.get()
-    if patient_id_settings.name_stored:
-        name = get_value_kw("PatientName", dataset)
-        if name and patient_id_settings.name_hashed:
-            name = hash_id(name)
-            pat.name_hashed = True
-        pat.patient_name = name
-    if patient_id_settings.id_stored:
-        patid = get_value_kw("PatientID", dataset)
-        if patid and patient_id_settings.id_hashed:
-            patid = hash_id(patid)
-            pat.id_hashed = True
-        pat.patient_id = patid
-    if patient_id_settings.dob_stored and patient_birth_date:
-        pat.patient_birth_date = patient_birth_date
-    pat.save()
-
-
-def _generalstudymoduleattributes(dataset, g, ch):
-    from datetime import datetime
-    from remapp.extractors.extract_common import ct_event_type_count
-    from remapp.models import PatientIDSettings
-    from remapp.tools.get_values import (
-        get_value_kw,
-        get_seq_code_meaning,
-        get_seq_code_value,
-        list_to_string,
-    )
-    from remapp.tools.dcmdatetime import get_date, get_time
-    from remapp.tools.hash_id import hash_id
-
+def _generalstudymoduleattributes(dataset, g):
     g.study_instance_uid = get_value_kw("StudyInstanceUID", dataset)
     g.study_date = get_date("StudyDate", dataset)
     g.study_time = get_time("StudyTime", dataset)
@@ -393,7 +308,7 @@ def _generalstudymoduleattributes(dataset, g, ch):
         "RequestedProcedureDescription", dataset
     )
     g.save()
-    _ctradiationdose(dataset, g, ch)
+    _ctradiationdose(dataset, g)
     try:
         g.number_of_events = (
             g.ctradiationdose_set.get().ctirradiationeventdata_set.count()
@@ -422,21 +337,17 @@ def _generalstudymoduleattributes(dataset, g, ch):
 
 
 def _philips_ct2db(dataset):
-    from remapp.models import GeneralStudyModuleAttr
-    from remapp.tools.get_values import get_value_kw
-
     if "StudyInstanceUID" in dataset:
-        uid = dataset.StudyInstanceUID
-        existing = GeneralStudyModuleAttr.objects.filter(study_instance_uid__exact=uid)
+        study_instance_uid = dataset.StudyInstanceUID
+        existing = GeneralStudyModuleAttr.objects.filter(study_instance_uid__exact=study_instance_uid)
         if existing:
             return
 
     g = GeneralStudyModuleAttr.objects.create()
-    ch = get_value_kw("SpecificCharacterSet", dataset)
-    _generalstudymoduleattributes(dataset, g, ch)
-    _generalequipmentmoduleattributes(dataset, g, ch)
+    _generalstudymoduleattributes(dataset, g)
+    _generalequipmentmoduleattributes(dataset, g)
     _patientstudymoduleattributes(dataset, g)
-    _patientmoduleattributes(dataset, g, ch)
+    patient_module_attributes(dataset, g)
 
 
 @shared_task(name="remapp.extractors.ct_philips.ct_philips")
@@ -450,9 +361,6 @@ def ct_philips(philips_file):
         * Philips Gemini TF PET-CT v2.3.0
         * Brilliance BigBore v3.5.4.17001.
     """
-
-    import pydicom
-    from remapp.models import DicomDeleteSettings
 
     try:
         del_settings = DicomDeleteSettings.objects.get()
