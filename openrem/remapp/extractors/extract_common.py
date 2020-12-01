@@ -32,11 +32,12 @@ import logging
 
 from django.db.models import ObjectDoesNotExist
 
-from ..models import PatientIDSettings, PatientModuleAttr, PatientStudyModuleAttr
-from ..tools.dcmdatetime import get_date
+from ..tools.dcmdatetime import get_date, make_date_time
 from ..tools.get_values import get_value_kw
 from ..tools.not_patient_indicators import get_not_pt
 from ..tools.hash_id import hash_id
+from ..tools.check_uid import record_sop_instance_uid
+from remapp.models import GeneralStudyModuleAttr, PatientIDSettings, PatientModuleAttr, PatientStudyModuleAttr
 
 
 def get_study_check_dup(dataset, modality="DX"):
@@ -46,10 +47,6 @@ def get_study_check_dup(dataset, modality="DX"):
     :param modality: Modality of image object being imported; 'MG' or 'DX'
     :return: Study object to proceed with
     """
-    from remapp.models import GeneralStudyModuleAttr
-    from remapp.tools import check_uid
-    from remapp.tools.get_values import get_value_kw
-    from remapp.tools.dcmdatetime import make_date_time
 
     if modality == "MG":
         logger = logging.getLogger("remapp.extractors.mam")
@@ -118,7 +115,7 @@ def get_study_check_dup(dataset, modality="DX"):
             modality, event_uid, study_uid
         )
     )
-    check_uid.record_sop_instance_uid(this_study, event_uid)
+    record_sop_instance_uid(this_study, event_uid)
     # further check required to ensure 'for processing' and 'for presentation'
     # versions of the same irradiation event don't get imported twice
     # Also check it isn't a Hologic SC tomo file

@@ -42,13 +42,6 @@ import django
 from django.db.models import Avg, Sum, ObjectDoesNotExist
 import pydicom
 
-from .extract_common import (
-    ct_event_type_count,
-    patient_module_attributes,
-    populate_mammo_agd_summary,
-    populate_dx_rf_summary,
-    populate_rf_delta_weeks_summary,
-)
 from ..tools.check_uid import record_sop_instance_uid
 from ..tools.dcmdatetime import get_date, get_time, make_date, make_date_time, make_time
 from ..tools.get_values import (
@@ -72,6 +65,13 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
+from .extract_common import (
+    ct_event_type_count,
+    patient_module_attributes,
+    populate_mammo_agd_summary,
+    populate_dx_rf_summary,
+    populate_rf_delta_weeks_summary,
+)
 from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-position
     AccumCassetteBsdProjRadiogDose,
     AccumIntegratedProjRadiogDose,
