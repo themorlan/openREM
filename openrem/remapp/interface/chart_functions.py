@@ -259,7 +259,7 @@ def plotly_set_default_theme(theme_name):
 
 def calculate_colour_sequence(scale_name="jet", n_colours=10):
     """
-    Calculates a colour sequence
+    Calculates a sequence of n_colours from the matplotlib colourmap scale_name
 
     :param scale_name: the name of the matplotlib colour scale to use
     :param n_colours:  the number of colours required
@@ -294,9 +294,9 @@ def failed_chart_message_div(custom_msg_line, e):
     """
     Returns a string containing an HTML DIV with a failed chart message
 
-    :param custom_msg_line:
-    :param e:
-    :return:
+    :param custom_msg_line: a custom line to add to the message
+    :param e: the error
+    :return: a string containing the message in an html div
     """
     msg = "<div class='alert alert-warning' role='alert'>"
     if settings.DEBUG:
@@ -316,7 +316,7 @@ def csv_data_barchart(fig, params):
     :param fig: a plotly figure containing the data to extract
     :param params: a dictionary of parameters; must include "df_name_col", "name_axis_title", "value_axis_title" and
     "facet_col"
-    :return:
+    :return: a DataFrame containing the data for download
     """
     fig_data_dict = fig.to_dict()["data"]
 
@@ -348,7 +348,7 @@ def csv_data_frequency(fig, params):
 
     :param fig: a plotly figure containing the data to extract
     :param params: a dictionary of parameters; must include "x_axis_title"
-    :return:
+    :return: a DataFrame containing the data for download
     """
     fig_data_dict = fig.to_dict()["data"]
 
@@ -361,12 +361,13 @@ def csv_data_frequency(fig, params):
 
 def calc_facet_rows_and_height(df, facet_col_name, facet_col_wrap):
     """
-    Calculate the required chart height and number of facet rows. 500 pixel height per row.
+    Calculates the required total chart height and the number of facet rows. Each row has a hard-written height
+    of 500 pixels.
 
     :param df: the Pandas DataFrame containing the data
     :param facet_col_name: the DataFrame column containing the facet names
     :param facet_col_wrap: the number of subplots to have on each row
-    :return: the chart height in pixels and the number of facet rows
+    :return: a two element list containing the chart height in pixels and the number of facet rows
     """
     n_facet_rows = math.ceil(len(df[facet_col_name].unique()) / facet_col_wrap)
     chart_height = n_facet_rows * 500
@@ -712,12 +713,12 @@ def plotly_histogram_barchart(
 
 def calc_histogram_bin_data(df, value_col_name, n_bins=10):
     """
-    Calculate bin data for histograms
+    Calculates histogram bin label text, bin boundaries and bin mid-points
 
-    :param df:
-    :param value_col_name:
-    :param n_bins:
-    :return:
+    :param df: the Pandas DataFrame containing the data
+    :param value_col_name: name of the DataFrame column that contains the values
+    :param n_bins: the number of bins to use
+    :return: a three element list containing the bin labels, bin boundaries and bin mid-points
     """
     min_bin_value, max_bin_value = df[value_col_name].agg([min, max])
     bins = np.linspace(min_bin_value, max_bin_value, n_bins + 1)
@@ -1204,11 +1205,11 @@ def construct_over_time_charts(
     group_by_physician=None,
 ):
     """
-    Shell to prepare plotly line chart of values over time
+    Create a plotly line chart of average values over time, optionally grouped by performing physician name
 
-    :param df:
-    :param params:
-    :param group_by_physician:
+    :param df: the Pandas DataFrame containing the data
+    :param params: a dictionary of processing parameters
+    :param group_by_physician: boolean flag to set whether to group by physician name
     :return:
     """
     sorted_categories = create_sorted_category_list(
