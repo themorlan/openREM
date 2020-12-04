@@ -57,10 +57,10 @@ def global_config(
     Creates a Plotly global configuration dictionary. The parameters all relate
     to the chart bitmap that can be saved by the user.
 
-    :param filename: the file name to use if the user saves the chart as a graphic file
-    :param height_multiplier: scaling factor to multiply chart height by
-    :param height: the default height of the chart graphic file
-    :param width: the default width of the chart graphic file
+    :param filename: string containing the file name to use if the user saves the chart as a graphic file
+    :param height_multiplier: floating point value used to scale the chart height
+    :param height: int value for the height of the chart graphic file
+    :param width: int value for the width of the chart graphic file
     :return: a dictionary of Plotly options
     """
     return {
@@ -89,11 +89,11 @@ def create_dataframe(
     Any missing (na) values in names fields are set to Blank
 
     :param database_events: the database events
-    :param field_dict: a dictionary of fields to include in the DataFrame. This should include a list of database
-    field names called "names", "values", "dates", "times" and optionally "system"
-    :param data_point_name_lowercase: flag to determine whether to make all "names" field values lower case
-    :param data_point_value_multipliers: value to multiply each "values" field value by
-    :param uid: a database field containing a unique identifier for each record
+    :param field_dict: a dictionary of lists, each containing database field names to include in the DataFrame. The
+    dictionary should include "names", "values", "dates", "times" and optionally "system" items
+    :param data_point_name_lowercase: boolean flag to determine whether to make all "names" field values lower case
+    :param data_point_value_multipliers: list of float valuse to multiply each "values" field value by
+    :param uid: string containing database field name which contains a unique identifier for each record
     :return: a Pandas DataFrame with a column per required field
     """
     start = None
@@ -162,13 +162,14 @@ def create_dataframe_time_series(
     Creates a Pandas DataFrame time series of average values grouped by x_ray_system_name and df_name_col
 
     :param df: the Pandas DataFrame containing the raw data
-    :param df_name_col: the DataFrame columnn name used to group the data
-    :param df_value_col: the DataFrame column containing the values to be averaged
-    :param df_date_col: the DataFrame column containing the dates
-    :param time_period: the time period to average over; choices are
-    :param average_choices:
-    :param group_by_physician:
-    :return: a Pandas DataFrame containing the time series of average values grouped by system and name
+    :param df_name_col: string containing the DataFrame columnn name used to group the data
+    :param df_value_col: string containing the DataFrame column containing the values to be averaged
+    :param df_date_col: string containing the DataFrame column containing the dates
+    :param time_period: string containing the time period to average over; "A" (years), "Q" (quarters), "M" (months),
+    "W" (weeks), "D" (days)
+    :param average_choices: list of strings containing one or both of "mean" and "median"
+    :param group_by_physician: boolean flag to set whether to group by physician
+    :return: Pandas DataFrame containing the time series of average values grouped by system and name
     """
     if average_choices is None:
         average_choices = ["mean"]
@@ -192,10 +193,10 @@ def create_dataframe_weekdays(df, df_name_col, df_date_col="study_date"):
     Creates a Pandas DataFrame of the number of events in each day of the
     week, and in hour of that day.
 
-    :param df: the raw DataFrame; it must have a "study_time" and "x_ray_system_name" column
-    :param df_name_col: the df column to group the results by
-    :param df_date_col: the df column containing dates
-    :return: a Pandas DataFrame containing the number of studies per day and hour grouped by name
+    :param df: Pandas DataFrame containing the raw data; it must have a "study_time" and "x_ray_system_name" column
+    :param df_name_col: string containing the df column name to group the results by
+    :param df_date_col: string containing the df column name containing dates
+    :return: Pandas DataFrame containing the number of studies per day and hour grouped by name
     """
     start = None
     if settings.DEBUG:
@@ -221,11 +222,11 @@ def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None)
     Creates a Pandas DataFrame with the specified statistics (mean, median, count, for example) grouped by
     x-ray system name and by the list of provided df_name_cols.
 
-    :param df: the raw data; it must have an "x_ray_system_name" column
-    :param df_name_cols: a list of df column names to group by
-    :param df_agg_col: the df column over which to calculate the statistics
-    :param stats_to_use: a list of statistics to calculate, such as mean, median, count
-    :return: a Pandas DataFrame containing the grouped aggregate data
+    :param df: Pandas DataFrame containing the raw data; it must have an "x_ray_system_name" column
+    :param df_name_cols: list of strings representing the DataFrame column names to group by
+    :param df_agg_col: string containing the DataFrame column over which to calculate the statistics
+    :param stats_to_use: list of strings containing the statistics to calculate, such as "mean", "median", "count"
+    :return: Pandas DataFrame containing the grouped aggregate data
     """
     start = None
     if settings.DEBUG:
@@ -261,9 +262,9 @@ def calculate_colour_sequence(scale_name="jet", n_colours=10):
     """
     Calculates a sequence of n_colours from the matplotlib colourmap scale_name
 
-    :param scale_name: the name of the matplotlib colour scale to use
-    :param n_colours:  the number of colours required
-    :return: a list of colours
+    :param scale_name: string containing the name of the matplotlib colour scale to use
+    :param n_colours: int representing the number of colours required
+    :return: list of hexadecimal colours from a matplotlib colormap
     """
     colour_seq = []
     cmap = matplotlib.cm.get_cmap(scale_name)
@@ -282,7 +283,7 @@ def empty_dataframe_msg():
     """
     Returns a string containing an HTML DIV with a message warning that the DataFrame is empty
 
-    :return:
+    :return: string containing an html div with the empty DataFrame message
     """
     msg = "<div class='alert alert-warning' role='alert'>"
     msg += "No data left after excluding missing values.</div>"
@@ -294,9 +295,9 @@ def failed_chart_message_div(custom_msg_line, e):
     """
     Returns a string containing an HTML DIV with a failed chart message
 
-    :param custom_msg_line: a custom line to add to the message
-    :param e: the error
-    :return: a string containing the message in an html div
+    :param custom_msg_line: string containing a custom line to add to the message
+    :param e: Python error object
+    :return: string containing the message in an HTML DIV
     """
     msg = "<div class='alert alert-warning' role='alert'>"
     if settings.DEBUG:
@@ -313,10 +314,10 @@ def csv_data_barchart(fig, params):
     """
     Calculates a Pandas DataFrame containing chart data to be used for csv download
 
-    :param fig: a plotly figure containing the data to extract
+    :param fig: Plotly figure containing the data to extract
     :param params: a dictionary of parameters; must include "df_name_col", "name_axis_title", "value_axis_title" and
     "facet_col"
-    :return: a DataFrame containing the data for download
+    :return: DataFrame containing the data for download
     """
     fig_data_dict = fig.to_dict()["data"]
 
@@ -346,9 +347,9 @@ def csv_data_frequency(fig, params):
     """
     Calculates a Pandas DataFrame containing chart data to be used for csv download
 
-    :param fig: a plotly figure containing the data to extract
+    :param fig: Plotly figure containing the data to extract
     :param params: a dictionary of parameters; must include "x_axis_title"
-    :return: a DataFrame containing the data for download
+    :return: DataFrame containing the data for download
     """
     fig_data_dict = fig.to_dict()["data"]
 
@@ -364,10 +365,10 @@ def calc_facet_rows_and_height(df, facet_col_name, facet_col_wrap):
     Calculates the required total chart height and the number of facet rows. Each row has a hard-written height
     of 500 pixels.
 
-    :param df: the Pandas DataFrame containing the data
-    :param facet_col_name: the DataFrame column containing the facet names
-    :param facet_col_wrap: the number of subplots to have on each row
-    :return: a two element list containing the chart height in pixels and the number of facet rows
+    :param df: Pandas DataFrame containing the data
+    :param facet_col_name: string containing the DataFrame column name containing the facet names
+    :param facet_col_wrap: int representing the number of subplots to have on each row
+    :return: two-element list containing the chart height in pixels (int) and the number of facet rows (int)
     """
     n_facet_rows = math.ceil(len(df[facet_col_name].unique()) / facet_col_wrap)
     chart_height = n_facet_rows * 500
@@ -383,10 +384,11 @@ def plotly_boxplot(
     """
     Produce a plotly boxplot
 
-    :param df: the Pandas DataFrame containing the data
+    :param df: Pandas DataFrame containing the data
     :param params: a dictionary of parameters; must include "colourmap", "df_value_col", "df_name_col", "df_facet_col",
     "df_facet_col_wrap", "value_axis_title", "name_axis_title", "sorted_category_list", "return_as_dict"
-    :return:
+    :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
+    or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     chart_height = 500
     n_facet_rows = 1
