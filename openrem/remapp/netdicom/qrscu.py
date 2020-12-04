@@ -8,22 +8,25 @@ Specialised QR routine to get just the objects that might be useful for dose rel
 modality
 """
 
-from builtins import str  # pylint: disable=redefined-builtin
-from celery import shared_task
-import django
+import collections
+from datetime import datetime
 import logging
 import os
 import sys
 import uuid
-import collections
-from pynetdicom import AE, debug_logger, _config
+
+from celery import shared_task
+import django
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import gettext as _
+from pydicom.dataset import Dataset
+from pynetdicom import AE, _config  # , debug_logger
 from pynetdicom.sop_class import (
     StudyRootQueryRetrieveInformationModelFind,
     StudyRootQueryRetrieveInformationModelMove,
 )
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils.translation import gettext as _
-
+from ..templatetags.remappduration import naturalduration
+from ..tools.dcmdatetime import make_dcm_date_range, make_dcm_time_range
 
 logger = logging.getLogger(
     "remapp.netdicom.qrscu"
@@ -35,6 +38,9 @@ if projectpath not in sys.path:
     sys.path.insert(1, projectpath)
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
+
+from remapp.models import DicomQuery, DicomRemoteQR, DicomStoreSCP
+
 _config.LOG_RESPONSE_IDENTIFIERS = False
 _config.LOG_HANDLER_LEVEL = "none"
 _config.LOG_REQUEST_IDENTIFIERS = False
@@ -1310,12 +1316,6 @@ def qrscu(
 
     """
 
-    from datetime import datetime
-
-    from pydicom.dataset import Dataset
-    from remapp.models import DicomQuery, DicomRemoteQR, DicomStoreSCP
-    from remapp.templatetags.remappduration import naturalduration
-    from remapp.tools.dcmdatetime import make_dcm_date_range, make_dcm_time_range
 
     debug_timer = datetime.now()
     if not query_id:
