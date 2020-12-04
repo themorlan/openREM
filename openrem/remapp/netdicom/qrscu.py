@@ -39,7 +39,9 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
-from remapp.models import DicomQuery, DicomRemoteQR, DicomStoreSCP
+from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-position
+    DicomQuery, DicomRemoteQR, DicomStoreSCP, GeneralStudyModuleAttr
+)
 
 _config.LOG_RESPONSE_IDENTIFIERS = False
 _config.LOG_HANDLER_LEVEL = "none"
@@ -77,7 +79,6 @@ def _remove_duplicates(query, study_rsp, assoc, query_id):
     :param query_id: current query ID for logging
     :return: Study, series and image level responses deleted if not useful
     """
-    from ..models import GeneralStudyModuleAttr
 
     logger.debug(
         "{0} About to remove any studies we already have in the database".format(
