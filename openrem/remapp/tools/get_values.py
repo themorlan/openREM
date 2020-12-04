@@ -55,7 +55,7 @@ def get_value_kw(tag, dataset):
 
 def get_value_num(tag, dataset):
     """Get DICOM value by tag group and element number.
-    
+
     Always use get_value_kw by preference for readability. This module can
     be required when reading private elements.
 
@@ -124,7 +124,7 @@ def get_or_create_cid(codevalue, codemeaning):
 
     if codevalue:
         if not ContextID.objects.all().filter(code_value=codevalue).exists():
-            cid = ContextID(code_value=codevalue, code_meaning=codemeaning,)
+            cid = ContextID(code_value=codevalue, code_meaning=codemeaning)
             cid.save()
         code = ContextID.objects.filter(code_value__exact=codevalue)
         if code.count() > 1:
@@ -167,20 +167,6 @@ def test_numeric_value(string_number):
         return string_number
     except (ValueError, TypeError):
         return None
-
-
-def safe_strings(string, char_set=charset.default_encoding):
-    """
-    Function to encode non-ASCII characters correctly. Probably not required any longer, but leaving in for now.
-    :param string: String to encode
-    :param char_set: Character set used by DICOM file
-    :return: Encoded string
-    """
-    try:
-        python_char_set = charset.python_encoding[char_set]
-    except KeyError:
-        python_char_set = charset.default_encoding
-    return smart_text(string, encoding=python_char_set)
 
 
 def list_to_string(dicom_value):

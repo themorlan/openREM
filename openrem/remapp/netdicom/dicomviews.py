@@ -478,8 +478,7 @@ def get_store_status(request):
 
 @login_required
 def dicom_summary(request):
-    """Displays current DICOM configuration
-    """
+    """Displays current DICOM configuration"""
 
     try:
         del_settings = DicomDeleteSettings.objects.get()
@@ -508,9 +507,7 @@ def dicom_summary(request):
 
 
 class DicomStoreCreate(CreateView):  # pylint: disable=unused-variable
-    """CreateView to add details of a DICOM Store to the database
-
-    """
+    """CreateView to add details of a DICOM Store to the database"""
 
     model = DicomStoreSCP
     form_class = DicomStoreForm
@@ -526,9 +523,7 @@ class DicomStoreCreate(CreateView):  # pylint: disable=unused-variable
 
 
 class DicomStoreUpdate(UpdateView):  # pylint: disable=unused-variable
-    """UpdateView to update details of a DICOM store in the database
-
-    """
+    """UpdateView to update details of a DICOM store in the database"""
 
     model = DicomStoreSCP
     form_class = DicomStoreForm
@@ -543,9 +538,7 @@ class DicomStoreUpdate(UpdateView):  # pylint: disable=unused-variable
 
 
 class DicomStoreDelete(DeleteView):  # pylint: disable=unused-variable
-    """DeleteView to delete DICOM store information from the database
-
-    """
+    """DeleteView to delete DICOM store information from the database"""
 
     model = DicomStoreSCP
     success_url = reverse_lazy("dicom_summary")
@@ -560,9 +553,7 @@ class DicomStoreDelete(DeleteView):  # pylint: disable=unused-variable
 
 
 class DicomQRCreate(CreateView):  # pylint: disable=unused-variable
-    """CreateView to add details of a DICOM query-retrieve node
-
-    """
+    """CreateView to add details of a DICOM query-retrieve node"""
 
     model = DicomRemoteQR
     form_class = DicomQRForm
@@ -577,9 +568,7 @@ class DicomQRCreate(CreateView):  # pylint: disable=unused-variable
 
 
 class DicomQRUpdate(UpdateView):  # pylint: disable=unused-variable
-    """UpdateView to update details of a DICOM query-retrieve node
-
-    """
+    """UpdateView to update details of a DICOM query-retrieve node"""
 
     model = DicomRemoteQR
     form_class = DicomQRForm
@@ -594,9 +583,7 @@ class DicomQRUpdate(UpdateView):  # pylint: disable=unused-variable
 
 
 class DicomQRDelete(DeleteView):  # pylint: disable=unused-variable
-    """DeleteView to delete details of a DICOM query-retrieve node
-
-    """
+    """DeleteView to delete details of a DICOM query-retrieve node"""
 
     model = DicomRemoteQR
     success_url = reverse_lazy("dicom_summary")

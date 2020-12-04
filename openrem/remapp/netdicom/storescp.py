@@ -41,11 +41,7 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
-from pynetdicom import (
-    AE,
-    evt,
-    StoragePresentationContexts,
-)
+from pynetdicom import AE, evt, StoragePresentationContexts
 from pynetdicom.sop_class import VerificationSOPClass
 from ..version import __implementation_uid__ as OPENREM_UID
 

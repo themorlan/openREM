@@ -2,8 +2,16 @@
 OpenREM version history
 =======================
 
+
 1.0.0b1 (2020-xx-xx)
 --------------------
+* :issue:`872`  Charts: added ability to split fluoroscopy over-time and histogram charts by physician
+* :issue:`871`  Charts: corrected RF chart x-axis labels
+* :issue:`870`  Charts: reduced memory footprint of Pandas DataFrame creation
+* :issue:`869`  Charts: added doc strings to new chart code
+* :issue:`868`  Docker: fixed Python version at 3.8
+* :issue:`866`  Simplified code for different character sets, enabled MultiValue SpecificCharacterSet
+* :issue:`865`  Imports: enabled workaround to import Spectrum Dynamics RDSR
 * :issue:`864`  Tasks: updated Celery settings for Celery 6.
 * :issue:`854`  Interface: added date constraints to links on homepage
 * :issue:`853`  Testing: reduced Bitbucket pipeline minutes usage
@@ -21,6 +29,7 @@ OpenREM version history
 * :issue:`838`  Imports: fixed issues with changed PersonName behaviour in pydicom 2.0
 * :issue:`836`  Installation: updated requirements, Docker and docs for pynetdicom 1.5, pydicom 2.0
 * :issue:`835`  Docker: fixed timeout issue with slow pagination
+* :issue:`830`  Charts: fixed incorrect histogram data in charts
 * :issue:`829`  Installation: added docs for Docker install on computer without internet access
 * :issue:`828`  Docker: enabled email configuration to work
 * :issue:`827`  SkinDose: Made SkinDose results available in OpenREM and made alert triggering possible
@@ -56,8 +65,10 @@ OpenREM version history
 * :issue:`513`  Internationalization: first translation strings added to documentation
 * :issue:`512`  Internationalization: first translation strings added to interface
 * :issue:`457`  Updated OpenREM to use Django 2.2
+* :issue:`477`  Charts: replaced HighCharts with open source Plotly library
 * :issue:`437`  Updated OpenREM to use django-filters v2
 * :issue:`404`  Ported OpenREM to Python 3
+* :issue:`233`  Charts: added charts of average CTDI and DLP over time
 
 0.10.0 (2019-11-08)
 -------------------
