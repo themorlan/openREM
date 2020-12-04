@@ -187,22 +187,14 @@ def _ctradiationdose(dataset, g):
             _ctirradiationeventdata(series, proj)
     events = proj.ctirradiationeventdata_set.all()
     if not events:
-        station_name = get_value_kw("StationName", dataset)
-        manufacturer = get_value_kw("Manufacturer", dataset)
-        manufacturer_model_name = get_value_kw("ManufacturerModelName", dataset)
-        study_date = g.study_date.date()
-        study_time = g.study_time.time()
-        accession_number = g.accession_number
-        logger.warning(
-            "There were no events in ct_philips import, or they couldn't be read. {0} {1} {2} {3} {4} {5}".format(
-                station_name,
-                manufacturer,
-                manufacturer_model_name,
-                study_date,
-                study_time,
-                accession_number,
-            )
-        )
+        logger.warning(f"There were no events in ct_philips import, or they couldn't be read. "
+                       f"{get_value_kw('StationName', dataset)}"
+                       f"{get_value_kw('Manufacturer', dataset)}"
+                       f"{get_value_kw('ManufacturerModelName', dataset)}"
+                       f"{g.study_date.date()}"
+                       f"{g.study_time.time()}"
+                       f"{g.accession_number}"
+                       )
     else:
         # Come back and set start and end of irradiation after creating the x-ray events
         proj.start_of_xray_irradiation = events.aggregate(Min("date_time_started"))[
