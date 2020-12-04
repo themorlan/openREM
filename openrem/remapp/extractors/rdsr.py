@@ -231,7 +231,7 @@ def _deviceparticipant(dataset, eventdatatype, foreignkey):
         logger.warning(
             f"RDSR import, in _deviceparticipant, but no suitable eventdatatype (is {eventdatatype})"
         )
-        return ()
+        return
     for cont in dataset.ContentSequence:
         if cont.ConceptNameCodeSequence[0].CodeMeaning == "Device Role in Procedure":
             device.device_role_in_procedure = get_or_create_cid(
