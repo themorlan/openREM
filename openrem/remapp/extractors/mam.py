@@ -28,10 +28,6 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-from __future__ import division
-from __future__ import absolute_import
-
-from past.utils import old_div
 import os
 import sys
 import django
@@ -49,6 +45,8 @@ os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
 from celery import shared_task
+
+from .extract_common import patient_module_attributes   # pylint: disable=wrong-import-order, wrong-import-position
 
 
 def _xrayfilters(dataset, source):
@@ -433,60 +431,6 @@ def _patientstudymoduleattributes(dataset, g):  # C.7.2.2
     patientatt.save()
 
 
-def _patientmoduleattributes(dataset, g):  # C.7.1.1
-    from decimal import Decimal
-    from remapp.models import PatientModuleAttr, PatientStudyModuleAttr
-    from remapp.models import PatientIDSettings
-    from remapp.tools.get_values import get_value_kw
-    from remapp.tools.dcmdatetime import get_date
-    from remapp.tools.not_patient_indicators import get_not_pt
-    from remapp.tools.hash_id import hash_id
-
-    pat = PatientModuleAttr.objects.create(general_study_module_attributes=g)
-    pat.patient_sex = get_value_kw("PatientSex", dataset)
-    patient_birth_date = get_date("PatientBirthDate", dataset)
-    pat.not_patient_indicator = get_not_pt(dataset)
-    patientatt = PatientStudyModuleAttr.objects.get(general_study_module_attributes=g)
-    if patient_birth_date:
-        patientatt.patient_age_decimal = old_div(
-            Decimal((g.study_date.date() - patient_birth_date.date()).days),
-            Decimal("365.25"),
-        )
-    elif patientatt.patient_age:
-        if patientatt.patient_age[-1:] == "Y":
-            patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1])
-        elif patientatt.patient_age[-1:] == "M":
-            patientatt.patient_age_decimal = old_div(
-                Decimal(patientatt.patient_age[:-1]), Decimal("12")
-            )
-        elif patientatt.patient_age[-1:] == "D":
-            patientatt.patient_age_decimal = old_div(
-                Decimal(patientatt.patient_age[:-1]), Decimal("365.25")
-            )
-    if patientatt.patient_age_decimal:
-        patientatt.patient_age_decimal = patientatt.patient_age_decimal.quantize(
-            Decimal(".1")
-        )
-    patientatt.save()
-
-    patient_id_settings = PatientIDSettings.objects.get()
-    if patient_id_settings.name_stored:
-        name = get_value_kw("PatientName", dataset)
-        if name and patient_id_settings.name_hashed:
-            name = hash_id(name)
-            pat.name_hashed = True
-        pat.patient_name = name
-    if patient_id_settings.id_stored:
-        patid = get_value_kw("PatientID", dataset)
-        if patid and patient_id_settings.id_hashed:
-            patid = hash_id(patid)
-            pat.id_hashed = True
-        pat.patient_id = patid
-    if patient_id_settings.dob_stored and patient_birth_date:
-        pat.patient_birth_date = patient_birth_date
-    pat.save()
-
-
 def _generalstudymoduleattributes(dataset, g):
     from datetime import datetime
     from remapp.extractors.extract_common import populate_mammo_agd_summary
@@ -544,7 +488,7 @@ def _generalstudymoduleattributes(dataset, g):
     _generalequipmentmoduleattributes(dataset, g)
     _projectionxrayradiationdose(dataset, g)
     _patientstudymoduleattributes(dataset, g)
-    _patientmoduleattributes(dataset, g)
+    patient_module_attributes(dataset, g)
     populate_mammo_agd_summary(g)
     g.number_of_events = (
         g.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()

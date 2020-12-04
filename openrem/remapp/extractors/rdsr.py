@@ -42,12 +42,6 @@ import django
 from django.db.models import Avg, Sum, ObjectDoesNotExist
 import pydicom
 
-from .extract_common import (
-    ct_event_type_count,
-    populate_mammo_agd_summary,
-    populate_dx_rf_summary,
-    populate_rf_delta_weeks_summary,
-)
 from ..tools.check_uid import record_sop_instance_uid
 from ..tools.dcmdatetime import get_date, get_time, make_date, make_date_time, make_time
 from ..tools.get_values import (
@@ -56,12 +50,10 @@ from ..tools.get_values import (
     get_seq_code_value,
     get_value_kw,
     list_to_string,
-    safe_strings,
     test_numeric_value,
 )
 from ..tools.hash_id import hash_id
 from ..tools.make_skin_map import make_skin_map
-from ..tools.not_patient_indicators import get_not_pt
 from ..tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 
 # setup django/OpenREM.
@@ -72,6 +64,13 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
+from .extract_common import (  # pylint: disable=wrong-import-order, wrong-import-position
+    ct_event_type_count,
+    patient_module_attributes,
+    populate_mammo_agd_summary,
+    populate_dx_rf_summary,
+    populate_rf_delta_weeks_summary,
+)
 from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-position
     AccumCassetteBsdProjRadiogDose,
     AccumIntegratedProjRadiogDose,
@@ -119,7 +118,7 @@ logger = logging.getLogger(
 )  # Explicitly named so that it is still handled when using __main__
 
 
-def _observercontext(dataset, obs, ch):  # TID 1002
+def _observercontext(dataset, obs):  # TID 1002
     for cont in dataset.ContentSequence:
         if cont.ConceptNameCodeSequence[0].CodeMeaning == "Observer Type":
             obs.observer_type = get_or_create_cid(
@@ -132,28 +131,26 @@ def _observercontext(dataset, obs, ch):  # TID 1002
             except AttributeError:
                 obs.device_observer_uid = cont.TextValue
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Device Observer Name":
-            obs.device_observer_name = safe_strings(cont.TextValue, ch)
+            obs.device_observer_name = cont.TextValue
         elif (
             cont.ConceptNameCodeSequence[0].CodeMeaning
             == "Device Observer Manufacturer"
         ):
-            obs.device_observer_manufacturer = safe_strings(cont.TextValue, ch)
+            obs.device_observer_manufacturer = cont.TextValue
         elif (
             cont.ConceptNameCodeSequence[0].CodeMeaning == "Device Observer Model Name"
         ):
-            obs.device_observer_model_name = safe_strings(cont.TextValue, ch)
+            obs.device_observer_model_name = cont.TextValue
         elif (
             cont.ConceptNameCodeSequence[0].CodeMeaning
             == "Device Observer Serial Number"
         ):
-            obs.device_observer_serial_number = safe_strings(cont.TextValue, ch)
+            obs.device_observer_serial_number = cont.TextValue
         elif (
             cont.ConceptNameCodeSequence[0].CodeMeaning
             == "Device Observer Physical Location during observation"
         ):
-            obs.device_observer_physical_location_during_observation = safe_strings(
-                cont.TextValue, ch
-            )
+            obs.device_observer_physical_location_during_observation = cont.TextValue
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Device Role in Procedure":
             obs.device_role_in_procedure = get_or_create_cid(
                 cont.ConceptCodeSequence[0].CodeValue,
@@ -214,7 +211,7 @@ def _person_participant(dataset, event_data_type, foreign_key):
     person.save()
 
 
-def _deviceparticipant(dataset, eventdatatype, foreignkey, ch):
+def _deviceparticipant(dataset, eventdatatype, foreignkey):
 
     if eventdatatype == "detector":
         device = DeviceParticipant.objects.create(
@@ -234,7 +231,7 @@ def _deviceparticipant(dataset, eventdatatype, foreignkey, ch):
         logger.warning(
             f"RDSR import, in _deviceparticipant, but no suitable eventdatatype (is {eventdatatype})"
         )
-        return ()
+        return
     for cont in dataset.ContentSequence:
         if cont.ConceptNameCodeSequence[0].CodeMeaning == "Device Role in Procedure":
             device.device_role_in_procedure = get_or_create_cid(
@@ -243,27 +240,21 @@ def _deviceparticipant(dataset, eventdatatype, foreignkey, ch):
             )
             for cont2 in cont.ContentSequence:
                 if cont2.ConceptNameCodeSequence[0].CodeMeaning == "Device Name":
-                    device.device_name = safe_strings(cont2.TextValue, char_set=ch)
+                    device.device_name = cont2.TextValue
                 elif (
                     cont2.ConceptNameCodeSequence[0].CodeMeaning
                     == "Device Manufacturer"
                 ):
-                    device.device_manufacturer = safe_strings(
-                        cont2.TextValue, char_set=ch
-                    )
+                    device.device_manufacturer = cont2.TextValue
                 elif (
                     cont2.ConceptNameCodeSequence[0].CodeMeaning == "Device Model Name"
                 ):
-                    device.device_model_name = safe_strings(
-                        cont2.TextValue, char_set=ch
-                    )
+                    device.device_model_name = cont2.TextValue
                 elif (
                     cont2.ConceptNameCodeSequence[0].CodeMeaning
                     == "Device Serial Number"
                 ):
-                    device.device_serial_number = safe_strings(
-                        cont2.TextValue, char_set=ch
-                    )
+                    device.device_serial_number = cont2.TextValue
                 elif (
                     cont2.ConceptNameCodeSequence[0].CodeMeaning
                     == "Device Observer UID"
@@ -557,7 +548,7 @@ def _check_rp_dose_units(rp_dose_sequence):
         return rp_dose
 
 
-def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
+def _irradiationeventxraysourcedata(dataset, event):  # TID 10003b
     # Name in DICOM standard for TID 10003B is Irradiation Event X-Ray Source Data
     # See http://dicom.nema.org/medical/dicom/current/output/chtml/part16/sect_TID_10003B.html
     # TODO: review model to convert to cid where appropriate, and add additional fields
@@ -582,9 +573,7 @@ def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
                         cont.ConceptCodeSequence[0].CodeMeaning,
                     )
                 except AttributeError:
-                    source.reference_point_definition = safe_strings(
-                        cont.TextValue, char_set=ch
-                    )
+                    source.reference_point_definition = cont.TextValue
             elif (
                 cont.ConceptNameCodeSequence[0].CodeMeaning == "Average Glandular Dose"
             ):
@@ -748,7 +737,7 @@ def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
                     pass
         except IndexError:
             pass
-    _deviceparticipant(dataset, "source", source, ch)
+    _deviceparticipant(dataset, "source", source)
     try:
         source.ii_field_size = (
             fromstring(source.irradiation_event_xray_data.comment)
@@ -788,7 +777,7 @@ def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
             source.save()
 
 
-def _irradiationeventxraydetectordata(dataset, event, ch):  # TID 10003a
+def _irradiationeventxraydetectordata(dataset, event):  # TID 10003a
 
     detector = IrradEventXRayDetectorData.objects.create(
         irradiation_event_xray_data=event
@@ -806,7 +795,7 @@ def _irradiationeventxraydetectordata(dataset, event, ch):  # TID 10003a
             detector.deviation_index = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue
             )
-    _deviceparticipant(dataset, "detector", detector, ch)
+    _deviceparticipant(dataset, "detector", detector)
     detector.save()
 
 
@@ -883,7 +872,7 @@ def _get_patient_position_from_xml_string(event, xml_string):
         )
 
 
-def _irradiationeventxraydata(dataset, proj, ch, fulldataset):  # TID 10003
+def _irradiationeventxraydata(dataset, proj, fulldataset):  # TID 10003
     # TODO: review model to convert to cid where appropriate, and add additional fields
 
     event = IrradEventXRayData.objects.create(projection_xray_radiation_dose=proj)
@@ -896,7 +885,7 @@ def _irradiationeventxraydata(dataset, proj, ch, fulldataset):  # TID 10003
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Irradiation Event UID":
             event.irradiation_event_uid = cont.UID
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Irradiation Event Label":
-            event.irradiation_event_label = safe_strings(cont.TextValue, char_set=ch)
+            event.irradiation_event_label = cont.TextValue
             for cont2 in cont.ContentSequence:
                 if cont.ConceptNameCodeSequence[0].CodeMeaning == "Label Type":
                     event.label_type = get_or_create_cid(
@@ -914,7 +903,7 @@ def _irradiationeventxraydata(dataset, proj, ch, fulldataset):  # TID 10003
             )
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Acquisition Protocol":
             try:
-                event.acquisition_protocol = safe_strings(cont.TextValue, char_set=ch)
+                event.acquisition_protocol = cont.TextValue
             except AttributeError:
                 event.acquisition_protocol = None
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Anatomical structure":
@@ -997,9 +986,7 @@ def _irradiationeventxraydata(dataset, proj, ch, fulldataset):  # TID 10003
                     cont.ConceptCodeSequence[0].CodeMeaning,
                 )
             except AttributeError:
-                event.reference_point_definition_text = safe_strings(
-                    cont.TextValue, char_set=ch
-                )
+                event.reference_point_definition_text = cont.TextValue
         if cont.ValueType == "CONTAINER":
             if (
                 cont.ConceptNameCodeSequence[0].CodeMeaning
@@ -1014,21 +1001,21 @@ def _irradiationeventxraydata(dataset, proj, ch, fulldataset):  # TID 10003
                     ):
                         event.percent_fibroglandular_tissue = cont2.NumericValue
         if cont.ConceptNameCodeSequence[0].CodeMeaning == "Comment":
-            event.comment = safe_strings(cont.TextValue, char_set=ch)
+            event.comment = cont.TextValue
     event.save()
     for cont3 in fulldataset.ContentSequence:
         if cont3.ConceptNameCodeSequence[0].CodeMeaning == "Comment":
             _get_patient_position_from_xml_string(event, cont3.TextValue)
     # needs include for optional multiple person participant
-    _irradiationeventxraydetectordata(dataset, event, ch)
+    _irradiationeventxraydetectordata(dataset, event)
     _irradiationeventxraymechanicaldata(dataset, event)
     # in some cases we need mechanical data before x-ray source data
-    _irradiationeventxraysourcedata(dataset, event, ch)
+    _irradiationeventxraysourcedata(dataset, event)
 
     event.save()
 
 
-def _calibration(dataset, accum, ch):
+def _calibration(dataset, accum):
 
     cal = Calibration.objects.create(accumulated_xray_dose=accum)
     for cont in dataset.ContentSequence:
@@ -1054,9 +1041,7 @@ def _calibration(dataset, accum, ch):
             cont.ConceptNameCodeSequence[0].CodeMeaning
             == "Calibration Responsible Party"
         ):
-            cal.calibration_responsible_party = safe_strings(
-                cont.TextValue, char_set=ch
-            )
+            cal.calibration_responsible_party = cont.TextValue
     cal.save()
 
 
@@ -1229,13 +1214,13 @@ def _accumulatedtotalprojectionradiographydose(dataset, accum):  # TID 10007
                         cont.ConceptCodeSequence[0].CodeMeaning,
                     )
                 except AttributeError:
-                    accumint.reference_point_definition = safe_strings(cont.TextValue)
+                    accumint.reference_point_definition = cont.TextValue
         except IndexError:
             pass
     accumint.save()
 
 
-def _accumulatedxraydose(dataset, proj, ch):  # TID 10002
+def _accumulatedxraydose(dataset, proj):  # TID 10002
 
     accum = AccumXRayDose.objects.create(projection_xray_radiation_dose=proj)
     for cont in dataset.ContentSequence:
@@ -1246,7 +1231,7 @@ def _accumulatedxraydose(dataset, proj, ch):  # TID 10002
             )
         if cont.ValueType == "CONTAINER":
             if cont.ConceptNameCodeSequence[0].CodeMeaning == "Calibration":
-                _calibration(cont, accum, ch)
+                _calibration(cont, accum)
     if proj.acquisition_device_type_cid:
         if (
             "Fluoroscopy-Guided" in proj.acquisition_device_type_cid.code_meaning
@@ -1384,7 +1369,7 @@ def _ctxraysourceparameters(dataset, event):
     param.save()
 
 
-def _ctdosecheckdetails(dataset, dosecheckdetails, ch, isalertdetails):  # TID 10015
+def _ctdosecheckdetails(dataset, dosecheckdetails, isalertdetails):  # TID 10015
     # PARTLY TESTED CODE (no DSR available that has Reason For Proceeding and/or Forward Estimate)
 
     if isalertdetails:
@@ -1426,9 +1411,7 @@ def _ctdosecheckdetails(dataset, dosecheckdetails, ch, isalertdetails):  # TID 1
                     cont.MeasuredValueSequence[0].NumericValue
                 )
             if cont.ConceptNameCodeSequence[0].CodeMeaning == "Reason For Proceeding":
-                dosecheckdetails.alert_reason_for_proceeding = safe_strings(
-                    cont.TextValue, ch
-                )
+                dosecheckdetails.alert_reason_for_proceeding = cont.TextValue
             if cont.ConceptNameCodeSequence[0].CodeMeaning == "Person Name":
                 _person_participant(cont, "ct_dose_check_alert", dosecheckdetails)
     else:
@@ -1470,9 +1453,7 @@ def _ctdosecheckdetails(dataset, dosecheckdetails, ch, isalertdetails):  # TID 1
                     cont.MeasuredValueSequence[0].NumericValue
                 )
             if cont.ConceptNameCodeSequence[0].CodeMeaning == "Reason For Proceeding":
-                dosecheckdetails.notification_reason_for_proceeding = safe_strings(
-                    cont.TextValue, ch
-                )
+                dosecheckdetails.notification_reason_for_proceeding = cont.TextValue
             if cont.ConceptNameCodeSequence[0].CodeMeaning == "Person Name":
                 _person_participant(
                     cont, "ct_dose_check_notification", dosecheckdetails
@@ -1480,13 +1461,13 @@ def _ctdosecheckdetails(dataset, dosecheckdetails, ch, isalertdetails):  # TID 1
     dosecheckdetails.save()
 
 
-def _ctirradiationeventdata(dataset, ct, ch):  # TID 10013
+def _ctirradiationeventdata(dataset, ct):  # TID 10013
 
     event = CtIrradiationEventData.objects.create(ct_radiation_dose=ct)
     ctdosecheckdetails = None
     for cont in dataset.ContentSequence:
         if cont.ConceptNameCodeSequence[0].CodeMeaning == "Acquisition Protocol":
-            event.acquisition_protocol = safe_strings(cont.TextValue, char_set=ch)
+            event.acquisition_protocol = cont.TextValue
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Target Region":
             try:
                 event.target_region = get_or_create_cid(
@@ -1616,7 +1597,7 @@ def _ctirradiationeventdata(dataset, ct, ch):  # TID 10013
                             ctdosecheckdetails = CtDoseCheckDetails.objects.create(
                                 ct_irradiation_event_data=event
                             )
-                        _ctdosecheckdetails(cont2, ctdosecheckdetails, ch, True)
+                        _ctdosecheckdetails(cont2, ctdosecheckdetails, True)
                     elif (
                         cont2.ConceptNameCodeSequence[0].CodeMeaning
                         == "Dose Check Notification Details"
@@ -1625,14 +1606,14 @@ def _ctirradiationeventdata(dataset, ct, ch):  # TID 10013
                             ctdosecheckdetails = CtDoseCheckDetails.objects.create(
                                 ct_irradiation_event_data=event
                             )
-                        _ctdosecheckdetails(cont2, ctdosecheckdetails, ch, False)
+                        _ctdosecheckdetails(cont2, ctdosecheckdetails, False)
         if (
             cont.ConceptNameCodeSequence[0].CodeMeaning.lower()
             == "x-ray modulation type"
         ):
-            event.xray_modulation_type = safe_strings(cont.TextValue)
+            event.xray_modulation_type = cont.TextValue
         if cont.ConceptNameCodeSequence[0].CodeMeaning == "Comment":
-            event.comment = safe_strings(cont.TextValue, char_set=ch)
+            event.comment = cont.TextValue
     if not event.xray_modulation_type and event.comment:
         comments = event.comment.split(",")
         for comm in comments:
@@ -1641,13 +1622,13 @@ def _ctirradiationeventdata(dataset, ct, ch):  # TID 10013
                 event.xray_modulation_type = modulationtype
 
     ## personparticipant here
-    _deviceparticipant(dataset, "ct_event", event, ch)
+    _deviceparticipant(dataset, "ct_event", event)
     if ctdosecheckdetails is not None:
         ctdosecheckdetails.save()
     event.save()
 
 
-def _ctaccumulateddosedata(dataset, ct, ch):  # TID 10012
+def _ctaccumulateddosedata(dataset, ct):  # TID 10012
 
     ctacc = CtAccumulatedDoseData.objects.create(ct_radiation_dose=ct)
     for cont in dataset.ContentSequence:
@@ -1673,13 +1654,13 @@ def _ctaccumulateddosedata(dataset, ct, ch):  # TID 10012
         # Reference authority code or name belongs here, followed by the effective dose details
         #
         if cont.ConceptNameCodeSequence[0].CodeMeaning == "Comment":
-            ctacc.comment = safe_strings(cont.TextValue, char_set=ch)
-    _deviceparticipant(dataset, "ct_accumulated", ctacc, ch)
+            ctacc.comment = cont.TextValue
+    _deviceparticipant(dataset, "ct_accumulated", ctacc)
 
     ctacc.save()
 
 
-def _projectionxrayradiationdose(dataset, g, reporttype, ch):
+def _projectionxrayradiationdose(dataset, g, reporttype):
 
     if reporttype == "projection":
         proj = ProjectionXRayRadiationDose.objects.create(
@@ -1767,7 +1748,7 @@ def _projectionxrayradiationdose(dataset, g, reporttype, ch):
                 cont.ConceptCodeSequence[0].CodeMeaning,
             )
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Comment":
-            proj.comment = safe_strings(cont.TextValue, char_set=ch)
+            proj.comment = cont.TextValue
         elif (
             cont.ConceptNameCodeSequence[0].CodeMeaning == "Source of Dose Information"
         ):
@@ -1812,30 +1793,30 @@ def _projectionxrayradiationdose(dataset, g, reporttype, ch):
                 )
             else:
                 obs = ObserverContext.objects.create(ct_radiation_dose=proj)
-            _observercontext(dataset, obs, ch)
+            _observercontext(dataset, obs)
 
         if cont.ValueType == "CONTAINER":
             if (
                 cont.ConceptNameCodeSequence[0].CodeMeaning
                 == "Accumulated X-Ray Dose Data"
             ):
-                _accumulatedxraydose(cont, proj, ch)
+                _accumulatedxraydose(cont, proj)
             if (
                 cont.ConceptNameCodeSequence[0].CodeMeaning
                 == "Irradiation Event X-Ray Data"
             ):
-                _irradiationeventxraydata(cont, proj, ch, dataset)
+                _irradiationeventxraydata(cont, proj, dataset)
             if (
                 cont.ConceptNameCodeSequence[0].CodeMeaning
                 == "CT Accumulated Dose Data"
             ):
                 proj.general_study_module_attributes.modality_type = "CT"
-                _ctaccumulateddosedata(cont, proj, ch)
+                _ctaccumulateddosedata(cont, proj)
             if cont.ConceptNameCodeSequence[0].CodeMeaning == "CT Acquisition":
-                _ctirradiationeventdata(cont, proj, ch)
+                _ctirradiationeventdata(cont, proj)
 
 
-def _generalequipmentmoduleattributes(dataset, study, ch):
+def _generalequipmentmoduleattributes(dataset, study):
 
     equip = GeneralEquipmentModuleAttr.objects.create(
         general_study_module_attributes=study
@@ -1977,54 +1958,7 @@ def _patientstudymoduleattributes(dataset, g):  # C.7.2.2
     patientatt.save()
 
 
-def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
-
-    pat = PatientModuleAttr.objects.create(general_study_module_attributes=g)
-
-    patient_birth_date = get_date("PatientBirthDate", dataset)
-    pat.patient_sex = get_value_kw("PatientSex", dataset)
-    pat.not_patient_indicator = get_not_pt(dataset)
-    patientatt = PatientStudyModuleAttr.objects.get(general_study_module_attributes=g)
-    if patient_birth_date:
-        patientatt.patient_age_decimal = Decimal(
-            (g.study_date.date() - patient_birth_date.date()).days
-        ) / Decimal("365.25")
-    elif patientatt.patient_age:
-        if patientatt.patient_age[-1:] == "Y":
-            patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1])
-        elif patientatt.patient_age[-1:] == "M":
-            patientatt.patient_age_decimal = Decimal(
-                patientatt.patient_age[:-1]
-            ) / Decimal("12")
-        elif patientatt.patient_age[-1:] == "D":
-            patientatt.patient_age_decimal = Decimal(
-                patientatt.patient_age[:-1]
-            ) / Decimal("365.25")
-    if patientatt.patient_age_decimal:
-        patientatt.patient_age_decimal = patientatt.patient_age_decimal.quantize(
-            Decimal(".1")
-        )
-    patientatt.save()
-
-    patient_id_settings = PatientIDSettings.objects.get()
-    if patient_id_settings.name_stored:
-        name = get_value_kw("PatientName", dataset)
-        if name and patient_id_settings.name_hashed:
-            name = hash_id(name)
-            pat.name_hashed = True
-        pat.patient_name = name
-    if patient_id_settings.id_stored:
-        patid = get_value_kw("PatientID", dataset)
-        if patid and patient_id_settings.id_hashed:
-            patid = hash_id(patid)
-            pat.id_hashed = True
-        pat.patient_id = patid
-    if patient_id_settings.dob_stored and patient_birth_date:
-        pat.patient_birth_date = patient_birth_date
-    pat.save()
-
-
-def _generalstudymoduleattributes(dataset, g, ch):
+def _generalstudymoduleattributes(dataset, g):
 
     g.study_instance_uid = get_value_kw("StudyInstanceUID", dataset)
     g.series_instance_uid = get_value_kw("SeriesInstanceUID", dataset)
@@ -2115,9 +2049,9 @@ def _generalstudymoduleattributes(dataset, g, ch):
             g.delete()
             return
     if template_identifier == "10001":
-        _projectionxrayradiationdose(dataset, g, "projection", ch)
+        _projectionxrayradiationdose(dataset, g, "projection")
     elif template_identifier == "10011":
-        _projectionxrayradiationdose(dataset, g, "ct", ch)
+        _projectionxrayradiationdose(dataset, g, "ct")
     g.save()
     if not g.requested_procedure_code_meaning:
         if "RequestAttributesSequence" in dataset and dataset[0x40, 0x275].VM:
@@ -2352,11 +2286,10 @@ def _rdsr2db(dataset):
     if keep_existing_sop_instance_uids:
         for sop_instance_uid in existing_sop_instance_uids:
             record_sop_instance_uid(g, sop_instance_uid)
-    ch = get_value_kw("SpecificCharacterSet", dataset)
-    _generalequipmentmoduleattributes(dataset, g, ch)
-    _generalstudymoduleattributes(dataset, g, ch)
+    _generalequipmentmoduleattributes(dataset, g)
+    _generalstudymoduleattributes(dataset, g)
     _patientstudymoduleattributes(dataset, g)
-    _patientmoduleattributes(dataset, g, ch)
+    patient_module_attributes(dataset, g)
 
     try:
         SkinDoseMapCalcSettings.objects.get()
