@@ -8,40 +8,51 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-21 14:06+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2020-12-05 12:43+0000\n"
+"Last-Translator: Paolo Marcheschi <paolo.marcheschi@gmail.com>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/openrem/"
+"web-interface/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.4-dev\n"
 
 #: remapp/exports/ct_export.py:159
-#, python-brace-format
+#, fuzzy, python-brace-format
 msgid ""
 "Writing study {row} of {numrows} to All data sheet and individual protocol "
 "sheets"
 msgstr ""
+"Scrittura dello studio {row} di {numrows} su Tutte le schede tecniche e le "
+"singole schede di protocollo"
 
 #: remapp/netdicom/qrscu.py:79
 msgid ""
 "Checking to see if any response studies are already in the OpenREM database"
-msgstr ""
+msgstr "Verifico se sono già presenti dati per gli studi nel database OpenREM"
 
 #: remapp/netdicom/qrscu.py:204
 #, python-brace-format
 msgid ""
 "Filter at {level} level on {filter_name} that {filter_type} {filter_list}"
 msgstr ""
+"Filtrare al livello {level} su {filter_name} e su {filter_type} {filter_list}"
 
 #: remapp/netdicom/qrscu.py:257
 msgid ""
 "Getting series and image level information and deleting series we can't use"
 msgstr ""
+"Recupero informazioni al livello di serie e immagine ed elimino serie che "
+"non possiamo utilizzare"
 
 #: remapp/netdicom/qrscu.py:807
+#, fuzzy
 msgid "Image level matching for this study is complete (there many be more)"
 msgstr ""
+"La corrispondenza a livello di immagine per questo studio è stata completata "
+"(ce ne saranno molti altri)"
 
 #: remapp/netdicom/qrscu.py:817
 msgid "Image level matches are continuing."
