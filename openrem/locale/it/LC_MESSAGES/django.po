@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-21 14:06+0000\n"
-"PO-Revision-Date: 2020-12-05 14:23+0000\n"
+"PO-Revision-Date: 2020-12-05 20:57+0000\n"
 "Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/openrem/"
 "web-interface/it/>\n"
@@ -132,14 +132,14 @@ msgstr ""
 msgid ""
 "studies with description that do not include '{text}' removed {num} studies, "
 msgstr ""
-"studi con descrizione che non includono \"{text}\" eliminati {num} studi, "
+"studi con descrizione che non includono '{text}' eliminati {num} studi, "
 
 #: remapp/netdicom/qrscu.py:1711
 #, python-brace-format
 msgid ""
 "only studies with station names that include '{text}' removed {num} studies, "
 msgstr ""
-"solo studi con nomi di stazioni che includono \"{text}\" eliminati {num} "
+"solo studi con nomi di stazioni che includono '{text}' eliminati {num} "
 "studi, "
 
 #: remapp/netdicom/qrscu.py:1718
@@ -148,7 +148,7 @@ msgid ""
 "studies with station names that do not include '{text}' removed {num} "
 "studies, "
 msgstr ""
-"studi con descrizione che non includono \"{text}\" eliminati {num} studi, "
+"studi con descrizione che non includono '{text}' eliminati {num} studi, "
 
 #: remapp/netdicom/qrscu.py:1726
 #, python-brace-format
