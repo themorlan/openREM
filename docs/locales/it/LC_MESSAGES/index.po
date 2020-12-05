@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 22:50+0100\n"
 "PO-Revision-Date: 2020-12-05 20:25+0000\n"
-"Last-Translator: Paolo Marcheschi <paolo.marcheschi@gmail.com>\n"
+"Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/openrem/"
 "rtd-index/it/>\n"
 "Language: it\n"
@@ -36,7 +36,7 @@ msgstr ""
 #: ../../index.rst:16
 msgid "Please see `openrem.org <https://openrem.org>`_ for more details."
 msgstr ""
-"Si prega di consultare `openrem.org <https://openrem.org>` _ per maggiori "
+"Si prega di consultare `openrem.org <https://openrem.org>`_ per maggiori "
 "dettagli."
 
 #: ../../index.rst:18
