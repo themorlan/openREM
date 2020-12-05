@@ -1,0 +1,501 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../iis_on_windows.rst:3 fea726ffba2b4c719968203295a2daee
+msgid "Running OpenREM on Windows with IIS"
+msgstr ""
+
+#: ../../iis_on_windows.rst:5 0ad218147c494ac995de5ad73ffd10d3
+msgid ""
+"These instructions are for running OpenREM under IIS on Windows Server "
+"2012, but should work on Windows 7/8/10 and later versions of Windows "
+"Server with minimal modification. The instructions are based on "
+"http://blog.mattwoodward.com/2016/07/running-django-application-on-"
+"windows.html"
+msgstr ""
+
+#: ../../iis_on_windows.rst:10 fe30fc86a6e34a3d80ba6b5e86122d9c
+msgid "Why use IIS?"
+msgstr ""
+
+#: ../../iis_on_windows.rst:11 c4627364213d40939fc2a482b07b3350
+msgid ""
+"The built-in Django webserver is not advised for production environments."
+" There are a few alternatives for serving a Django application. Apache is"
+" probably the best known web server, but  has some requirements under "
+"Windows in combination with Python / Django that are hard to fulfill (see"
+" "
+"https://github.com/GrahamDumpleton/mod_wsgi/blob/develop/win32/README.rst)."
+" IIS is default available on Windows Server and doesn't have these "
+"requirements."
+msgstr ""
+
+#: ../../iis_on_windows.rst:19 8dbd22626dfa44368203cedbe61d816f
+msgid "Prerequisites"
+msgstr ""
+
+#: ../../iis_on_windows.rst:22 ab4f9276fe0b4eec875804c52995c7bf
+msgid ""
+"A working OpenREM installation, that serves web pages using the built-in "
+"web server."
+msgstr ""
+
+#: ../../iis_on_windows.rst:22 e0ab1f5b1b794e2ba97c81a1c740d8ae
+msgid "You can test this using the instructions in :doc:`startservices`"
+msgstr ""
+
+#: ../../iis_on_windows.rst:25 04403f675ec1411c93bbceb9c39ceca2
+msgid "Steps to perform"
+msgstr ""
+
+#: ../../iis_on_windows.rst:28 5a0e86f215d344d3beb8e7c03e851436
+msgid "Install wfastcgy Python package"
+msgstr ""
+
+#: ../../iis_on_windows.rst:30 ca70aee995d64d418e706203982e9bbe
+msgid ""
+"Open a command prompt and navigate to the python\\script directory if "
+"that directory is not in your path"
+msgstr ""
+
+#: ../../iis_on_windows.rst:31 ef4bb2ae392b4f9088ab43c1e8e1965a
+msgid "Type ``pip install wfastcgi``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:32 6d61e451d4dd4e0d83ee3b2ab39ef820
+msgid "Close the command prompt by entering ``exit``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:35 d9e52c7c80cf4e21a4e9b10345f3e7c4
+msgid "Install IIS"
+msgstr ""
+
+#: ../../iis_on_windows.rst:37 8e48019cfabd430c9b2ba2c1ecd7870c
+msgid "Open Control panel"
+msgstr ""
+
+#: ../../iis_on_windows.rst:38 c7eab6dc875e415cbb38d94cf46617c8
+msgid "Take care the ``view by`` is on small or large icons (not category view)"
+msgstr ""
+
+#: ../../iis_on_windows.rst:39 fc3b59684d4241589474ce24d2bdece1
+msgid "Select Program and Features"
+msgstr ""
+
+#: ../../iis_on_windows.rst:40 3f3f3cb7480a4db3bd44a9acfe693478
+msgid "Select Turn Windows features on or off"
+msgstr ""
+
+#: ../../iis_on_windows.rst:41 9e3e3d2ee0304f159fe3b970c9e780dd
+msgid "**Windows Server 2012**"
+msgstr ""
+
+#: ../../iis_on_windows.rst:43 a205d33048b04f71988e71bbe80a33f5
+msgid "Click ``Next``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:44 b69342a0959e4e28bbfd905456a0f32c
+msgid ""
+"Leave the ``Role-based or feature-based installation`` radio button "
+"selected and click ``Next``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:45 e31fe977b05545588071b1729182eb21
+msgid "Leave the current server highlighted and click ``Next``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:46 8925611cfddc49b09bfa4793cde1de64
+msgid "Scroll to the bottom of the list and check ``Web Server (IIS)``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:47 b1fa68b47f654e21b04d7aebf7f6d82c
+msgid ""
+"In the dialog that appears, leave the ``Include management tools (if "
+"applicable)`` checkbox checked and click ``Add Features``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:49 c87e7725720d4538bc6fdce06f18e017
+msgid ""
+"On the ``Select server roles`` step, now that ``Web Server (IIS)`` is "
+"checked, click ``Next``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:50 f0170519706a4002bfc49661a472ebc8
+msgid "Leave the defaults and click ``Next``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:51 5cadd3f035f841a28c6bbe1010f6b21b
+msgid "On the ``Web Server Role (IIS)`` step, click ``Next``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:52 fecab7c9be04474795ac96381c77835f
+msgid ""
+"On the ``Select role services`` step, scroll down to ``Application "
+"Development``, expand that section, and check the ``CGI`` box. click "
+"``Next``."
+msgstr ""
+
+#: ../../iis_on_windows.rst:54 5382ecd2f2034252a97ffc0290dcf7ca
+msgid "Click ``Install`` and after installation, click ``Close``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:56 e502c6c7054f42848450df4c2446dd8a
+msgid "**Window 7 & Windows 10**"
+msgstr ""
+
+#: ../../iis_on_windows.rst:58 dd5b0bdcba61453282169e52ca7cd18c
+msgid "Tick ``Internet information services`` to turn the default features on"
+msgstr ""
+
+#: ../../iis_on_windows.rst:59 c801c55c4a9244fe98e860496f4a6756
+msgid ""
+"In ``World Wide Web Services``, ``Application Development Features``, "
+"tick ``CGI``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:60 ../../iis_on_windows.rst:115
+#: 1e8b1b449fcb4a55ae5f3e9dc1719715 66301d3a2bd14ee98165a862a89ddc13
+msgid "Click ``OK``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:61 f066f28c91744977a7923e45aa0c4e53
+msgid ""
+"Click ``Close`` (Windows 10 only, In Windows 7 the ``Windows Features`` "
+"window will close automatically)"
+msgstr ""
+
+#: ../../iis_on_windows.rst:63 3e530d938bed4701826af0f7fd6817b3
+msgid "Close the Server Manager and the Control Panel"
+msgstr ""
+
+#: ../../iis_on_windows.rst:65 3247d2db086c4ade8c472e8196a3500a
+msgid ""
+"To test the IIS installation browse to http://localhost. You should see "
+"the default IIS \"Welcome\" Page."
+msgstr ""
+
+#: ../../iis_on_windows.rst:68 2c45864cc1ef46719a014c8e31c38ecd
+msgid "Configure IIS"
+msgstr ""
+
+#: ../../iis_on_windows.rst:70 722e3ed56229465e9b2ace77a58af559
+msgid ""
+"Open Administrative Tools and double-click the Internet Information "
+"Services (IIS) Manager link. You may need to right click and ``Run as "
+"Adminstrator``. - For Windows 7 the ``Administrative Tools`` are not "
+"available by default, you can also type ``inetmgr`` in the ``search "
+"program and files`` text box."
+msgstr ""
+
+#: ../../iis_on_windows.rst:73 3d11e2a5a5fe414f95a070854e0d17e4
+msgid "Click on the name of the server within the IIS manager"
+msgstr ""
+
+#: ../../iis_on_windows.rst:74 88509a81bf0348d7bc015ed42f4f5788
+msgid "Click No if a pop-up about the Web Platform Components appears"
+msgstr ""
+
+#: ../../iis_on_windows.rst:75 b87b2b965a0242989adc9c1744832071
+msgid "Double-click on the ``FastCGI Settings`` icon"
+msgstr ""
+
+#: ../../iis_on_windows.rst:76 3675db78de12498fb8b2b5ef9a95845b
+msgid "In the right pane under ``actions`` click ``Add Application...``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:77 fca826b556884082bac26ce89472805e
+msgid ""
+"In the ``Full Path`` box type the path to the Python executable, e.g.: "
+"``c:\\python27\\python.exe``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:78 ed9cf72366c54cc4901fc05d39a8666f
+msgid ""
+"In the ``Arguments`` box type the path to wfastcgi.py file, e.g.: "
+"``c:\\python27\\Lib\\site-packages\\wfastcgi.py``."
+msgstr ""
+
+#: ../../iis_on_windows.rst:82 0baebcef939147b89fe9dbab0b76208e
+msgid ""
+"If your path contains spaces be sure to have double quotes(``\"``) around"
+" the argument"
+msgstr ""
+
+#: ../../iis_on_windows.rst:84 b612664c21014b739e47995f37243c4d
+msgid ""
+"Under ``FastCGI properties``, click on ``(Collection)`` next to "
+"``Environment Variables`` and click on the grey ``...`` box"
+msgstr ""
+
+#: ../../iis_on_windows.rst:86 b4ba7f60576047e99e721f8f6e77fd31
+msgid "In the EnvironmentVariables Collection Editor dialog, click ``Add``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:87 6476556614264a418511b732a2bf8d3c
+msgid ""
+"Under ``Name properties`` on the right, click the input box to the right "
+"of ``Name,`` and replace the text ``Name`` by ``DJANGO_SETTINGS_MODULE`` "
+"(capitals is important)"
+msgstr ""
+
+#: ../../iis_on_windows.rst:89 100b52cdf39d46c084dd20ef9384beeb
+msgid "As ``Value`` enter ``openremproject.settings``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:90 fc7bd4a7b9dd4e1aa604efe798fab3e8
+msgid ""
+"Click Add again and add a variable with name ``PYTHON_PATH`` and value "
+"the path to the openrem path, e.g. ``C:\\Python27\\Lib\\site-"
+"packages\\openrem``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:92 d044c71f689e49648876d8177b6e9a7e
+msgid ""
+"Click Add for the third time and a variable with name ``WSGI_HANDLER`` "
+"and value ``django.core.wsgi.get_wsgi_application()``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:94 573020d138364ec996d6b3b4be1484c8
+msgid "Click ``Ok`` to close the ``EnviromentVariables Collection Editor``."
+msgstr ""
+
+#: ../../iis_on_windows.rst:95 d628faa9d5c34faf8d80d74d9c23fbf5
+msgid ""
+"Under ``FastCGI properties`` find the ``Activity Timeout`` entry and "
+"increase the value to 300. This is to ensure that the server allows "
+"enough time for skin dose map data to be calculated."
+msgstr ""
+
+#: ../../iis_on_windows.rst:97 919fa84dd7f9425ab849f5a479cfc529
+msgid "Click ``Ok`` to close the ``Add FastCGI Application dialog``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:98 4d6419bfd4224edeb92a7a10716adbb9
+msgid ""
+"Start Windows Explorer and browse to the Python folder, e.g. "
+"``C:\\Python27``, or if using a virtualenv browse to that"
+msgstr ""
+
+#: ../../iis_on_windows.rst:99 40a8129f8487497c82b34e102c791a4c
+msgid ""
+"Right click on the ``Lib`` sub-folder and choose properties. In the "
+"security tab, make sure ``IIS_IUSRS`` has ``Read``, ``Write``, "
+"``Execute`` and ``Change`` permissions for this directory and the "
+"subdirectories."
+msgstr ""
+
+#: ../../iis_on_windows.rst:101 52435980b1bc4fc291a46ae278fd11a7
+msgid ""
+"Repeat the above step for the ``Scripts`` sub-folder, and also for the "
+"``MEDIA_ROOT`` folder (as configured in ``local_settings.py``; default "
+"``c:/Temp/OpenREM/media``)"
+msgstr ""
+
+#: ../../iis_on_windows.rst:106 199bb144db764fa18c3f72929ab63543
+msgid "Create a new website"
+msgstr ""
+
+#: ../../iis_on_windows.rst:108 29d9ee4047d740e4b17b0c3f4716edf5
+msgid "In the IIS manager under connections expand the tree under server name"
+msgstr ""
+
+#: ../../iis_on_windows.rst:109 7bdb097a1eb5474d8fce018a72f5ba6c
+msgid "Right-click on sites and click ``Add Website...``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:110 fbbef688497047a0a34a2390943a1a08
+msgid "Enter as sitename ``OpenREM``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:111 1004bf60f29e44acb6ec7cd6edc7dc3d
+msgid ""
+"As physical path enter the same path as the ``PYTHON_PATH`` in the "
+"``FastCGI`` settings above, e.g. ``C:\\Python27\\Lib\\site-"
+"packages\\openrem``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:113 59ea7625d46f4c19b7acd1b2ab62b7aa
+msgid ""
+"Set the port to the port you desire. If you wish to use the default port "
+"80, you need to stop and/or remove  the default website or change the "
+"port of the default website"
+msgstr ""
+
+#: ../../iis_on_windows.rst:118 5973c30eb76a4a34b2c323a8dce6d751
+msgid "Configure the new website"
+msgstr ""
+
+#: ../../iis_on_windows.rst:120 380c4842d449427193b6187368ca8eda
+msgid "In IIS manager **double** click on the OpenREM website under Sites"
+msgstr ""
+
+#: ../../iis_on_windows.rst:121 ../../iis_on_windows.rst:165
+#: 00f627052350445a8522d4162a34805b 39c22525b26947aaaede87d5fa4ad716
+msgid "Double click on the ``Handler Mappings`` icon in the middle pane"
+msgstr ""
+
+#: ../../iis_on_windows.rst:122 90e3a73e627a4369be4e841a2c84c6ea
+msgid ""
+"In the right pane, under ``Actions``, click ``Add Module Mappings`` or "
+"``Add Module Mapping..``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:123 524eddba708b4bc58051d5989624c2d1
+msgid "In the ``Request Path`` box enter an asterix (``*``)"
+msgstr ""
+
+#: ../../iis_on_windows.rst:124 6e5e589ebffa4c0d860e43ff70408d00
+msgid "In the ``Module`` box select ``FastCgiModule`` (not the CgiModule)"
+msgstr ""
+
+#: ../../iis_on_windows.rst:125 e0adcd61c8fc4c3bacf9862eda577535
+msgid ""
+"In the ``Executable`` box enter "
+"``path\\to\\python.exe|path\\to\\wfastcgi.py``, e.g.: "
+"``c:\\python27\\python.exe|c:\\python27\\Lib\\site-"
+"packages\\wfastcgi.py``. The ``|`` character between the two paths is "
+"usually to be found with ``Shift`` ``\\``."
+msgstr ""
+
+#: ../../iis_on_windows.rst:128 84b2de1a74644adb944011d705057592
+msgid "In ``Name`` type ``OpenREM cgi handler`` (value of name is not important)"
+msgstr ""
+
+#: ../../iis_on_windows.rst:132 2d95dd0b797949169a8ed112b0f55dde
+msgid ""
+"If one of your paths contains a space use quotations marks around that "
+"path. Don't use quotations marks around the full statement."
+msgstr ""
+
+#: ../../iis_on_windows.rst:135 cb157940f488409bbd605606996f93c7
+msgid ""
+"Click the ``Request Restrictions`` button and uncheck the ``Invoke "
+"handler only if request is mapped to:`` checkbox"
+msgstr ""
+
+#: ../../iis_on_windows.rst:136 ceeae7ddf9c44304bee1be687cec9a51
+msgid ""
+"Click ``Ok`` twice to close the Request Restrictions dialog and the Add "
+"Module Mapping dialog"
+msgstr ""
+
+#: ../../iis_on_windows.rst:137 f93e41ca2a064f8286e8500c4a7616a1
+msgid ""
+"When prompted ``Do you want to create a FastCGI application for this "
+"executable?`` click ``No``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:140 ee10ba2274db4a51a8b87b70e32fba90
+msgid ""
+"The website should work now: browse to http://localhost:port (port is the"
+" number you configured the website on. If the port is 80, you can omit "
+"the colon and port number)."
+msgstr ""
+
+#: ../../iis_on_windows.rst:144 98ebb0c69dde45189ad19bce5e23df70
+msgid ""
+"The website will look \"ugly\" as the static files (like the css-files) "
+"are not yet configured"
+msgstr ""
+
+#: ../../iis_on_windows.rst:147 740cf31e76b9488b946b911ec34ebd3e
+msgid "Configure Django and IIS to serve static files"
+msgstr ""
+
+#: ../../iis_on_windows.rst:149 4ec83cf2574c411a8ef655d90fd2c48a
+msgid ""
+"Create a directory called ``static`` in your openrem directory, e.g. "
+"``C:\\Python27\\Lib\\site-packages\\openrem\\static``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:151 981e5d4552924a82922ce93205015fbd
+msgid ""
+"In the Openrem ``local_settings.py`` file, located in the openremproject "
+"directory (e.g. ``C:\\Python27\\Lib\\site-"
+"packages\\openrem\\oprenremproject\\local_settings.py``) find the "
+"``STATIC_ROOT`` variable and set the value to match the directory you "
+"just created. The backslashes should be replaced by forward slashed. e.g."
+" ``STATIC_ROOT = 'C:/Python27/Lib/site-packages/openrem/static'``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:155 334ea867f7fe4551a1b328a722eec681
+msgid ""
+"Open a command prompt and navigate to the openrem directory, e.g. "
+"``C:\\Python27\\Lib\\site-packages\\openrem``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:156 170226a8634541618f0d8ecf49a91087
+msgid "Type ``python manage.py collectstatic``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:157 bce4f6654c65469ea455c53b55d2c401
+msgid "Type ``Yes`` to confirm if the static root directory mentioned is correct"
+msgstr ""
+
+#: ../../iis_on_windows.rst:158 d1e6cef69c424bf0a6500b8436f0b5c4
+msgid "Close the command prompt by typing ``exit``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:159 ce08fe97767543689a73665b3873d696
+msgid "In IIS right-click on the OpenREM website (under Sites)"
+msgstr ""
+
+#: ../../iis_on_windows.rst:160 6f9f168a8e5f4334be6eab6d84ad084d
+msgid "Click ``Add Virtual Directory``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:161 82eee39212b84c51b485f674a468f491
+msgid ""
+"Type ``static`` as alias and the path to the static directoy as "
+"``Physical Path``, e.g. ``C:\\Python27\\Lib\\site-"
+"packages\\openrem\\static``"
+msgstr ""
+
+#: ../../iis_on_windows.rst:163 3bf0e90fa7b94788adf7753e7ed6e6ba
+msgid "Click ``Ok`` to close the dialog box"
+msgstr ""
+
+#: ../../iis_on_windows.rst:164 3bdc5f7562c8430481b5779d49e2d920
+msgid ""
+"Click on the ``static`` directory in IIS within the OpenREM site (unfold "
+"the OpenREM site)"
+msgstr ""
+
+#: ../../iis_on_windows.rst:166 0aa56f9999c145dc8c08bb0f0583c217
+msgid "On the right pane click ``View Ordered Lists...`` under Actions"
+msgstr ""
+
+#: ../../iis_on_windows.rst:167 22bda1710de74faabb00f43fe6107be2
+msgid ""
+"Click on the ``StaticFile Handler`` in the middle pane and on ``Move Up``"
+" in the right pane until the ``StaticFile Handler`` is on the top"
+msgstr ""
+
+#: ../../iis_on_windows.rst:172 a474e36ee466466ea77580b7ccbf6fe4
+msgid ""
+"You may get a warning that you are detaching the virtual directory. Click"
+" ``Yes`` on this warning."
+msgstr ""
+
+#: ../../iis_on_windows.rst:174 9c05a07d321d4c66bee6b8524d28c112
+msgid ""
+"Check the website by browsing to http://localhost:port, everything should"
+" be fine now."
+msgstr ""
+
