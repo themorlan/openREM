@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"POT-Creation-Date: 2020-12-05 21:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -156,10 +156,6 @@ msgstr ""
 
 #: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.return_for_export:1
 msgid "Prevent errors due to missing data in models :param model: database table :param field: database field :return: value or None"
-msgstr ""
-
-#: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.safe_strings:1
-msgid "Function to encode non-ASCII characters correctly. Probably not required any longer, but leaving in for now. :param string: String to encode :param char_set: Character set used by DICOM file :return: Encoded string"
 msgstr ""
 
 #: ../../../openrem/remapp/tools/get_values.py:docstring of openrem.remapp.tools.get_values.test_numeric_value:1
