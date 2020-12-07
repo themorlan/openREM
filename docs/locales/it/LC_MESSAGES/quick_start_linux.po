@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-12 09:38+0100\n"
-"PO-Revision-Date: 2020-12-07 22:57+0000\n"
-"Last-Translator: Paolo Marcheschi <paolo.marcheschi@gmail.com>\n"
+"PO-Revision-Date: 2020-12-07 22:58+0000\n"
+"Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/openrem/"
 "rtd-installation-linux-non-docker/it/>\n"
 "Language: it\n"
@@ -100,7 +100,7 @@ msgstr "**Fonti Apt**"
 
 #: ../../quick_start_linux.rst:41
 msgid "We will need the ``universe`` repository enabled. Check first:"
-msgstr "Avremo bisogno del repository ''universe'' abilitato. Controlla prima:"
+msgstr "Avremo bisogno del repository ``universe`` abilitato. Controlla prima:"
 
 #: ../../quick_start_linux.rst:47
 msgid "Look for::"
