@@ -1899,27 +1899,29 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
 def _move_if_established(ae, assoc, d, study_no, series_no, query, remote):
     if assoc.is_established:
         move = _move_req(ae, assoc, d, study_no, series_no, query)
-        return move, None
+        if move:
+            return True, None
     elif assoc.is_aborted:
-        logger.info(
+        logger.warning(
             f"Query_id {query.query_id}: Association aborted during move requests, trying again"
         )
-        assoc = ae.associate(remote["host"], remote["port"], ae_title=remote["aet"])
-        if assoc.is_established:
-            move = _move_req(ae, assoc, d, study_no, series_no, query)
-            return move, None
-        elif assoc.is_aborted:
-            msg = "Move aborted twice in succession. Aborting move request."
-            logger.warning(f"Query_id {query.query_id}: {msg}")
-            return False, msg
-        elif assoc.is_rejected:
-            msg = "Association rejected after being aborted. Aborting move request."
-            logger.warning(f"Query_id {query.query_id}: {msg}")
-            return False, msg
-        msg = "Re-association attempt not established, aborted or rejected!"
     else:
-        msg = "Move association not established, and not aborted!"
-    logger.error(f"Query_id {query.query_id}: {msg}")
+        logger.error(f"Query_id {query.query_id}: Move association not established, and not aborted!")
+    assoc = ae.associate(remote["host"], remote["port"], ae_title=remote["aet"])
+    if assoc.is_established:
+        move = _move_req(ae, assoc, d, study_no, series_no, query)
+        if move:
+            return True, None
+    elif assoc.is_aborted:
+        msg = "Move aborted twice in succession. Aborting move request."
+        logger.warning(f"Query_id {query.query_id}: {msg}")
+        return False, msg
+    elif assoc.is_rejected:
+        msg = "Association rejected after being aborted. Aborting move request."
+        logger.warning(f"Query_id {query.query_id}: {msg}")
+        return False, msg
+    msg = "Move failed twice in succession. Aborting move request"
+    logger.warning(f"Query_id {query.query_id}: {msg}")
     return False, msg
 
 
