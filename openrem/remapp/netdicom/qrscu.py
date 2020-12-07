@@ -1873,11 +1873,6 @@ def _move_req(my_ae, assoc, d, study_no, series_no, query):
                 f"Sub-ops completed: {completed_sub_ops}, failed: {failed_sub_ops}, "
                 f"warning: {warning_sub_ops}."
             )
-            # LO : #LO: make move a less chatty in info-logging
-            if not status.Status in (0xFF00, 0xFF01, 0x0000):
-                logger.warning(msg)
-            else:
-                logger.debug(msg)
             query.move_summary = msg
             query.save()
         else:
