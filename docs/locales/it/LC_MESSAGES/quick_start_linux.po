@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-12 09:38+0100\n"
-"PO-Revision-Date: 2020-12-05 20:57+0000\n"
-"Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
+"PO-Revision-Date: 2020-12-07 22:57+0000\n"
+"Last-Translator: Paolo Marcheschi <paolo.marcheschi@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/openrem/"
 "rtd-installation-linux-non-docker/it/>\n"
 "Language: it\n"
@@ -87,6 +87,8 @@ msgstr ""
 #: ../../quick_start_linux.rst:31
 msgid "Modify the content to ensure the following two lines are present -- **substitute the correct server hostname on the second line**::"
 msgstr ""
+"Modificare il contenuto per garantire che siano presenti le seguenti due "
+"linee. **Sostituire il nome host del server corretto sulla seconda linea**::"
 
 #: ../../quick_start_linux.rst:37
 msgid "``Ctrl-o`` (write-[o]ut), ``Return`` to accept, then ``Ctrl-x`` to e[x]it"
@@ -94,11 +96,11 @@ msgstr ""
 
 #: ../../quick_start_linux.rst:39
 msgid "**Apt sources**"
-msgstr ""
+msgstr "**Fonti Apt**"
 
 #: ../../quick_start_linux.rst:41
 msgid "We will need the ``universe`` repository enabled. Check first:"
-msgstr ""
+msgstr "Avremo bisogno del repository ''universe'' abilitato. Controlla prima:"
 
 #: ../../quick_start_linux.rst:47
 msgid "Look for::"
@@ -107,10 +109,12 @@ msgstr ""
 #: ../../quick_start_linux.rst:52
 msgid "If these two lines are not there, add them in (``sudo nano /etc/apt/sources.list``)."
 msgstr ""
+"Se queste due righe non ci sono, aggiungerle (``sudo nano /etc/apt/sources."
+"list``)."
 
 #: ../../quick_start_linux.rst:54
 msgid "**Groups**"
-msgstr ""
+msgstr "**Gruppi**"
 
 #: ../../quick_start_linux.rst:56
 msgid "Now create new group ``openrem`` and add your user to it (``$USER`` will automatically substitute for the user you are running as) :"
