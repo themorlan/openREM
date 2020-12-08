@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: OpenREM 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-12 09:38+0100\n"
-"PO-Revision-Date: 2020-12-07 22:58+0000\n"
+"PO-Revision-Date: 2020-12-08 08:43+0000\n"
 "Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/openrem/"
 "rtd-installation-linux-non-docker/it/>\n"
@@ -26,9 +26,9 @@ msgstr "Installazione completa su Ubuntu in una pagina"
 #: ../../quick_start_linux.rst:4
 msgid "This setup is no longer recommended - the Docker :doc:`installation` method is instead. If a non-Docker installation is required then this guide can be followed."
 msgstr ""
-"Questa configurazione non è più consigliata - invece lo è il metodo Docker: "
-"doc:`installation`. Se è necessaria un'installazione non Docker, è possibile "
-"seguire questa guida."
+"Questa configurazione non è più consigliata - invece lo è il metodo Docker "
+":doc:`installation`. Se è necessaria un'installazione non Docker, è "
+"possibile seguire questa guida."
 
 #: ../../quick_start_linux.rst:7
 msgid "This install is based on Ubuntu 18.04 using:"
@@ -76,7 +76,7 @@ msgstr "Preparazione iniziale"
 
 #: ../../quick_start_linux.rst:23
 msgid "**Host file**"
-msgstr "** File host**"
+msgstr "**File host**"
 
 #: ../../quick_start_linux.rst:25
 msgid "First edit ``/etc/hosts`` to add the local server name -- else ``rabbitmq-server`` will not start when installed:"
