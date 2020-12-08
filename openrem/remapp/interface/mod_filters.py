@@ -307,6 +307,7 @@ CT_ACQ_TYPE_CHOICES = (
 EVENT_NUMBER_CHOICES = (
     (None, "Any"),
     (0, "None"),
+    ("some", ">0"),
     (1, "1"),
     (2, "2"),
     (3, "3"),
@@ -334,19 +335,24 @@ def _specify_event_numbers(queryset, name, value):
         value = int(value)
     except ValueError:
         if value == "more":
-            if "num_events" in name:
-                filtered = queryset.filter(number_of_events__gt=10)
-            elif "num_spiral_events" in name:
-                filtered = queryset.filter(number_of_spiral__gt=10)
-            elif "num_axial_events" in name:
-                filtered = queryset.filter(number_of_axial__gt=10)
-            elif "num_spr_events" in name:
-                filtered = queryset.filter(number_of_const_angle__gt=10)
-            elif "num_stationary_events" in name:
-                filtered = queryset.filter(number_of_stationary__gt=10)
-            else:
-                return queryset
-            return filtered
+            min_value = 10
+        elif value == "some":
+            min_value = 0
+        else:
+            return queryset
+        if "num_events" in name:
+            filtered = queryset.filter(number_of_events__gt=min_value)
+        elif "num_spiral_events" in name:
+            filtered = queryset.filter(number_of_spiral__gt=min_value)
+        elif "num_axial_events" in name:
+            filtered = queryset.filter(number_of_axial__gt=min_value)
+        elif "num_spr_events" in name:
+            filtered = queryset.filter(number_of_const_angle__gt=min_value)
+        elif "num_stationary_events" in name:
+            filtered = queryset.filter(number_of_stationary__gt=min_value)
+        else:
+            return queryset
+        return filtered
         return queryset
     if "num_events" in name:
         filtered = queryset.filter(number_of_events__exact=value)
