@@ -52,7 +52,7 @@ class FilterViewTests(TestCase):
         self.client.login(username="temporary", password="temporary")
         response = self.client.get(reverse("ct_summary_list_filter"), follow=True)
         self.assertEqual(response.status_code, 200)
-        responses_text = u"There are 7 studies in this list."
+        responses_text = "There are 7 studies in this list."
         self.assertContains(response, responses_text)
 
     def test_filter_study_desc(self):
@@ -64,10 +64,10 @@ class FilterViewTests(TestCase):
             "http://test/openrem/ct/?study_description=abdomen", follow=True
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
         display_name = (
-            u"PHILIPS-E71E3F0"  # Display name of study with matching study description
+            "PHILIPS-E71E3F0"  # Display name of study with matching study description
         )
         self.assertContains(response, display_name)
 
@@ -80,10 +80,10 @@ class FilterViewTests(TestCase):
             "http://test/openrem/ct/?procedure_code_meaning=abdomen", follow=True
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
         display_name = (
-            u"ACC12345601"  # Display name of study with matching study description
+            "ACC12345601"  # Display name of study with matching study description
         )
         self.assertContains(response, display_name)
 
@@ -97,10 +97,10 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
         display_name = (
-            u"001234512345678"  # Display name of study with matching study description
+            "001234512345678"  # Display name of study with matching study description
         )
         self.assertContains(response, display_name)
 
@@ -114,9 +114,9 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
-        accession_number = u"ACC12345601"  # Accession number of study with matching acquisition protocol
+        accession_number = "ACC12345601"  # Accession number of study with matching acquisition protocol
         self.assertContains(response, accession_number)
 
     def test_specify_event_numbers(self):
@@ -130,12 +130,12 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        four_responses_text = u"There are 4 studies in this list."
+        four_responses_text = "There are 4 studies in this list."
         self.assertContains(response, four_responses_text)
-        accession_number_1 = u"4935683"
-        accession_number_2 = u"74624646290"
-        accession_number_3 = u"001234512345678"
-        accession_number_4 = u"0012345.12345678"
+        accession_number_1 = "4935683"
+        accession_number_2 = "74624646290"
+        accession_number_3 = "001234512345678"
+        accession_number_4 = "0012345.12345678"
         self.assertContains(response, accession_number_1)
         self.assertContains(response, accession_number_2)
         self.assertContains(response, accession_number_3)
@@ -146,11 +146,11 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        three_responses_text = u"There are 3 studies in this list."
+        three_responses_text = "There are 3 studies in this list."
         self.assertContains(response, three_responses_text)
-        accession_number_1 = u"4935683"
-        accession_number_2 = u"74624646290"
-        accession_number_3 = u"0012345.12345678"
+        accession_number_1 = "4935683"
+        accession_number_2 = "74624646290"
+        accession_number_3 = "0012345.12345678"
         self.assertContains(response, accession_number_1)
         self.assertContains(response, accession_number_2)
         self.assertContains(response, accession_number_3)
@@ -160,9 +160,9 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
-        accession_number_1 = u"001234512345678"
+        accession_number_1 = "001234512345678"
         self.assertContains(response, accession_number_1)
 
         response = self.client.get(
@@ -170,9 +170,9 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
-        accession_number_1 = u"ACC12345601"
+        accession_number_1 = "ACC12345601"
         self.assertContains(response, accession_number_1)
 
         response = self.client.get(
@@ -180,9 +180,9 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
-        accession_number_1 = u"001234512345678"
+        accession_number_1 = "001234512345678"
         self.assertContains(response, accession_number_1)
 
         response = self.client.get(
@@ -190,11 +190,11 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        three_responses_text = u"There are 3 studies in this list."
+        three_responses_text = "There are 3 studies in this list."
         self.assertContains(response, three_responses_text)
-        accession_number_1 = u"IH_KUB_2mm"
-        accession_number_2 = u"4935683"
-        accession_number_3 = u"ACC12345601"
+        accession_number_1 = "IH_KUB_2mm"
+        accession_number_2 = "4935683"
+        accession_number_3 = "ACC12345601"
         self.assertContains(response, accession_number_1)
         self.assertContains(response, accession_number_2)
         self.assertContains(response, accession_number_3)
@@ -204,9 +204,9 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
-        accession_number_1 = u"ACC12345601"
+        accession_number_1 = "ACC12345601"
         self.assertContains(response, accession_number_1)
 
         response = self.client.get(
@@ -214,9 +214,9 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
-        accession_number_1 = u"001234512345678"
+        accession_number_1 = "001234512345678"
         self.assertContains(response, accession_number_1)
 
         response = self.client.get(
@@ -224,9 +224,9 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
-        accession_number_1 = u"ACC12345601"
+        accession_number_1 = "ACC12345601"
         self.assertContains(response, accession_number_1)
 
         response = self.client.get(
@@ -234,9 +234,9 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
-        accession_number_1 = u"74624646290"
+        accession_number_1 = "74624646290"
         self.assertContains(response, accession_number_1)
 
         response = self.client.get(
@@ -244,7 +244,7 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 1 studies in this list."
+        one_responses_text = "There are 1 studies in this list."
         self.assertContains(response, one_responses_text)
-        accession_number_1 = u"ACC12345601"
+        accession_number_1 = "ACC12345601"
         self.assertContains(response, accession_number_1)
