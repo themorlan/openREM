@@ -294,16 +294,6 @@ class RFFilterPlusPid(RFSummaryListFilter):
         )
 
 
-# Values from DICOM CID 10013 CT Acquisition Type
-CT_ACQ_TYPE_CHOICES = (
-    ("Spiral Acquisition", "Spiral"),
-    ("Sequenced Acquisition", "Axial"),
-    ("Constant Angle Acquisition", "Localiser"),
-    ("Stationary Acquisition", "Stationary acquisition"),
-    ("Free Acquisition", "Free acquisition"),
-)
-
-
 EVENT_NUMBER_CHOICES = (
     (None, "Any"),
     (0, "None"),
@@ -438,13 +428,6 @@ class CTSummaryListFilter(django_filters.FilterSet):
         choices=TEST_CHOICES,
         widget=forms.Select,
     )
-    ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning = django_filters.MultipleChoiceFilter(
-        lookup_expr="iexact",
-        label="Acquisition type restriction",
-        field_name="ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning",
-        choices=CT_ACQ_TYPE_CHOICES,
-        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
-    )
     num_events = django_filters.ChoiceFilter(
         method=_specify_event_numbers,
         label="Num. events total",
@@ -500,7 +483,6 @@ class CTSummaryListFilter(django_filters.FilterSet):
             "total_dlp__lte",
             "generalequipmentmoduleattr__unique_equipment_name__display_name",
             "test_data",
-            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning",
             "num_events",
             "num_spiral_events",
             "num_axial_events",
