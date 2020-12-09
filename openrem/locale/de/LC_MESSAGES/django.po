@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-21 14:06+0000\n"
-"PO-Revision-Date: 2020-10-26 23:19+0000\n"
-"Last-Translator: Georg Stamm <stamm.georg@gmail.com>\n"
+"POT-Creation-Date: 2020-12-05 21:13+0000\n"
+"PO-Revision-Date: 2020-11-28 13:29+0000\n"
+"Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/openrem/web-"
 "interface/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3.2-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 
 #: remapp/exports/ct_export.py:159
 #, python-brace-format
@@ -215,10 +215,8 @@ msgid "Switch charts off"
 msgstr "Graphiken ausschalten"
 
 #: remapp/templates/base.html:111
-#, fuzzy
-#| msgid "Switch charts off"
 msgid "Switch charts on"
-msgstr "Graphiken ausschalten"
+msgstr "Graphiken einschalten"
 
 #: remapp/templates/base.html:115
 msgid "View display names & modality"

@@ -1,0 +1,146 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../upgrade-offline.rst:3
+msgid "Upgrade an offline OpenREM installation"
+msgstr ""
+
+#: ../../upgrade-offline.rst:5
+msgid ""
+"Upgrading OpenREM requires new Python packages to be available as well as"
+" the latest version of OpenREM. These can be downloaded on any computer "
+"with Python 2.7 installed and an internet connection, though if you have "
+"trouble when installing the packages you might need to use a similar "
+"computer to the one you are installing on - same operating system and "
+"matching 32-bit or 64-bit."
+msgstr ""
+
+#: ../../upgrade-offline.rst:10
+msgid ""
+"OpenREM version 0.10 has a minimum Python version of 2.7.9. Use the "
+"instructions in the :doc:`upgrade_previous_0.10.0` release notes to check"
+" this before downloading the new OpenREM packages. The latest Python 2.7 "
+"installation can be obtained from "
+"https://www.python.org/downloads/windows/"
+msgstr ""
+
+#: ../../upgrade-offline.rst:14
+msgid "Follow the link to the 'Latest Python 2 release'"
+msgstr ""
+
+#: ../../upgrade-offline.rst:15
+msgid "Download either the ``Windows x86 MSI installer`` for 32-bit Windows or"
+msgstr ""
+
+#: ../../upgrade-offline.rst:16
+msgid "Download ``Windows x86-64 MSI installer`` for 64-bit Windows"
+msgstr ""
+
+#: ../../upgrade-offline.rst:19
+msgid "On a computer with internet access"
+msgstr ""
+
+#: ../../upgrade-offline.rst:21
+msgid ""
+"In a console, navigate to a suitable place and create a new directory to "
+"collect all the packages in, then use pip to download them all:"
+msgstr ""
+
+#: ../../upgrade-offline.rst:29
+msgid "Download specific version of Celery:"
+msgstr ""
+
+#: ../../upgrade-offline.rst:31 ../../upgrade-offline.rst:79
+msgid "**Linux server:**"
+msgstr ""
+
+#: ../../upgrade-offline.rst:37 ../../upgrade-offline.rst:85
+msgid "**Windows server:**"
+msgstr ""
+
+#: ../../upgrade-offline.rst:43
+msgid "Download OpenREM and all other dependencies:"
+msgstr ""
+
+#: ../../upgrade-offline.rst:50
+msgid "Copy everything to the OpenREM server"
+msgstr ""
+
+#: ../../upgrade-offline.rst:52
+msgid "Copy the directory to the OpenREM server"
+msgstr ""
+
+#: ../../upgrade-offline.rst:55
+msgid "On the OpenREM server without internet access"
+msgstr ""
+
+#: ../../upgrade-offline.rst:57
+msgid "Back up your database"
+msgstr ""
+
+#: ../../upgrade-offline.rst:59
+msgid "For PostgreSQL on linux you can refer to :ref:`backup-psql-db`"
+msgstr ""
+
+#: ../../upgrade-offline.rst:60
+msgid "For PostgreSQL on Windows you can refer to :doc:`backupRestorePostgreSQL`"
+msgstr ""
+
+#: ../../upgrade-offline.rst:61
+msgid ""
+"For a non-production SQLite3 database, simply make a copy of the database"
+" file"
+msgstr ""
+
+#: ../../upgrade-offline.rst:63
+msgid "Stop any Celery workers"
+msgstr ""
+
+#: ../../upgrade-offline.rst:65
+msgid ""
+"Consider temporarily disabling your DICOM Store SCP, or redirecting the "
+"data to be processed later"
+msgstr ""
+
+#: ../../upgrade-offline.rst:67
+msgid "Install the new version of Python 2.7 if applicable"
+msgstr ""
+
+#: ../../upgrade-offline.rst:69
+msgid "If you are using a virtualenv, activate it"
+msgstr ""
+
+#: ../../upgrade-offline.rst:71
+msgid "Upgrade setuptools:"
+msgstr ""
+
+#: ../../upgrade-offline.rst:77
+msgid "Install specific version of Celery:"
+msgstr ""
+
+#: ../../upgrade-offline.rst:91
+msgid "Install OpenREM:"
+msgstr ""
+
+#: ../../upgrade-offline.rst:97
+msgid ""
+"Now go back to :ref:`update_configuration0100`, migrate the database and "
+"finish the upgrade."
+msgstr ""
+

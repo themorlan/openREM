@@ -1,0 +1,182 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-25 21:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../conquestUbuntu.rst:3 94f3ad78ce3e46f29ebfe07e0a960753
+msgid "Conquest DICOM store node on Ubuntu 16.04"
+msgstr ""
+
+#: ../../conquestUbuntu.rst:7 d5839d355be54c84828d7f6131e5d2a1
+msgid "Installation"
+msgstr ""
+
+#: ../../conquestUbuntu.rst:9 e6ab3e94f1b24840aaf4e5fee49edc21
+msgid ""
+"Ubuntu 16.04 has the Conquest DICOM server `in its repositories,`_ so "
+"this makes installation very easy. However, it isn't the latest version "
+"and isn't going to be updated further. However, if you are using Ubuntu "
+"16.04 then it does make for a relatively easy install."
+msgstr ""
+
+#: ../../conquestUbuntu.rst:13 60b8dd4d5aca467282a43ed0f0a2d880
+msgid ""
+"There are options to install with different databases – for OpenREM we're"
+" not really going to use the database so the easiest option is to use "
+"SQLite:"
+msgstr ""
+
+#: ../../conquestUbuntu.rst:23 2777c9d9b31f43118d9126c7368744cb
+msgid "Basic configuration"
+msgstr ""
+
+#: ../../conquestUbuntu.rst:26 8a7b305c026240979c453630d8a89141
+msgid "Modify dgatesop.lst"
+msgstr ""
+
+#: ../../conquestUbuntu.rst:28 23d3581bbdb94594a5a339e3a9bef611
+msgid ""
+"Edit the ``dgatesop.lst`` file in the ``/etc/conquest-dicom-server`` "
+"folder, for example"
+msgstr ""
+
+#: ../../conquestUbuntu.rst:34 8f386100e4d449138f26f80c327899c6
+msgid "And add the following line"
+msgstr ""
+
+#: ../../conquestUbuntu.rst:40 272b1445708948be94616b9d29e8b6ee
+msgid ""
+"It isn't critical where it goes, but I tend to add it where it belongs "
+"between ``KeyObjectSelectionDocument`` and ``PETStorage``. I also add in "
+"the spaces to make it line up, but again this is just for aesthetic "
+"reasons!"
+msgstr ""
+
+#: ../../conquestUbuntu.rst:44 3d453bc556d14f3dbb8059fe662ab9e2
+msgid ""
+"If you are pasting from the clipboard into nano from within Linux, use "
+"``Shift-Ctrl-v``. If you are using PuTTY in Windows to interact with "
+"Ubuntu, a right click on the mouse or ``Shift-Insert`` should paste the "
+"text into the terminal."
+msgstr ""
+
+#: ../../conquestUbuntu.rst:48 5d758df6a70541b5bc2d52968edb694a
+msgid ""
+"To save and exit from nano, use ``Ctrl-o`` (out), press return to confirm"
+" the filename and then ``Ctrl-x`` (exit)."
+msgstr ""
+
+#: ../../conquestUbuntu.rst:51 19452c6d5a9543b3a2f2d42c4a569fc3
+msgid "Configuration"
+msgstr ""
+
+#: ../../conquestUbuntu.rst:53 fb81a486e52f407ba3ebfaeabe3ed0e0
+msgid ""
+"Here will be a link to the dicom.ini config... the text below will be "
+"subsumed into it"
+msgstr ""
+
+#: ../../conquestUbuntu.rst:61 f59ce5e9792b4827ab6e06a63ea89fdf
+msgid "Configure the Store SCP"
+msgstr ""
+
+#: ../../conquestUbuntu.rst:63 989cacc4edd44f839dc235d16ae4d328
+msgid ""
+"Edit the ``dicom.ini`` file in the ``/etc/conquest-dicom-server`` folder,"
+" for example"
+msgstr ""
+
+#: ../../conquestUbuntu.rst:69 6b3a3bf2148e48a3a9b27803d0551631
+msgid ""
+"Modify the following lines as required. The server name field – with the "
+"Conquest default of ``CONQUESTSRV1`` – is the AE Title, so should be 16 "
+"characters or less and consist of letters and numbers with no spaces. It "
+"is case insensitive. The ``TCPPort`` is normally either 104, the standard"
+" DICOM port, or any number greater than 1023."
+msgstr ""
+
+#: ../../conquestUbuntu.rst:80 5fb47c8796d04924a3e7edd416a798b3
+msgid "Again, save and exit."
+msgstr ""
+
+#: ../../conquestUbuntu.rst:82 d48413eacba74845bcbb24c75fcf2fb7
+msgid "If you've changed the AE Title and/or port, restart conquest:"
+msgstr ""
+
+#: ../../conquestUbuntu.rst:91 5e5da0295f544429ac405f6ea9cdbd47
+msgid "Testing basic configuration"
+msgstr ""
+
+#: ../../conquestUbuntu.rst:93 f3584d27af55439697d0f4a3bb5852a2
+msgid ""
+"Test the Store SCP by returning to OpenREM and navigating to ``Config`` "
+"-> ``DICOM network configuration``."
+msgstr ""
+
+#: ../../conquestUbuntu.rst:95 6415f1a7a75447299ec1334db59fc335
+msgid ""
+"Click to ``Add new store`` and enter the AE title and port you have set, "
+"along with a reference name."
+msgstr ""
+
+#: ../../conquestUbuntu.rst:97 1252c437503d4a36b30ee3a2a5e808ca
+msgid ""
+"Click to ``Submit``, and you will return to the summary page which should"
+" inform you if the server is running."
+msgstr ""
+
+#: ../../conquestUbuntu.rst:102 aae54f8cc20e42cba9443bdae447b1d4
+msgid "Configure Conquest to work with OpenREM"
+msgstr ""
+
+#: ../../conquestUbuntu.rst:104 20998448f52b456fadea0e49d9caa29b
+msgid ""
+"The next stage is to configure Conquest to store the incoming object and "
+"ask OpenREM to process them."
+msgstr ""
+
+#: ../../conquestUbuntu.rst:108 916424f479fa4969998ae9108c252747
+msgid "Conquest configuration"
+msgstr ""
+
+#: ../../conquestUbuntu.rst:110 a2c9f701adf94b86b632e8666ec7c455
+msgid ""
+"At the end of the ``/etc/conquest-dicom-server/dicom.ini`` file, add the "
+"following lines. You will need to tailor them to save the file to an "
+"appropriate place. The ``_conquest`` user will need to be able to write "
+"to that location. You will also need to make sure the path to the scripts"
+" you just created are correct."
+msgstr ""
+
+#: ../../conquestUbuntu.rst:114 cdf23937a0a1467cb4c3f14c4307fd29
+msgid ""
+"The example below assumes images will be saved in ``/var/lib/conquest-"
+"dicom-server/incoming/``, which you can create as follows:"
+msgstr ""
+
+#: ../../conquestUbuntu.rst:122 8f0c2d4fb45544248262a3c3f07b804e
+msgid ""
+"Each instruction in the ``dicom.ini`` file below has a ``destroy`` "
+"instruction to delete Conquest's copy of the file and to remove it from "
+"it's database. This isn't the version we've saved in ``incoming`` to "
+"process."
+msgstr ""
+
+#: ../../conquestUbuntu.rst:153 d5d03b9bdc6146f78456cdce4bc96a27
+msgid "Finally, restart conquest to make use of the new settings:"
+msgstr ""
+
