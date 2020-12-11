@@ -248,3 +248,11 @@ class FilterViewTests(TestCase):
         self.assertContains(response, one_responses_text)
         accession_number_1 = "ACC12345601"
         self.assertContains(response, accession_number_1)
+
+        response = self.client.get(
+            "http://test/openrem/ct/?num_spiral_events=&num_axial_events=&num_spr_events=some&num_stationary_events=",
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        five_responses_text = "There are 5 studies in this list."
+        self.assertContains(response, five_responses_text)
