@@ -27,9 +27,7 @@
 {% if exam.modality_type == "CT" %}
             <td>
                 <a href="{% url 'ct_detail_view' pk=exam.id %}">{{ exam.study_description }}</a> |
-                {{ exam.accession_number }} |
-                {{ exam.patientstudymoduleattr_set.get.patient_size|floatformat:0 }} cm |
-                {{ exam.patientstudymoduleattr_set.get.patient_weight|floatformat:0 }} kg
+                {{ exam.accession_number }}
             </td>
             <td>{{ exam.ctradiationdose_set.get.ctaccumulateddosedata_set.get.total_number_of_irradiation_events }}</td>
             <td>{{ exam.ctradiationdose_set.get.ctaccumulateddosedata_set.get.ct_dose_length_product_total|floatformat:2 }}</td>
