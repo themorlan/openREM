@@ -43,7 +43,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from .qrscu import movescu, qrscu
-from .storescp import start_store
 from .tools import echoscu
 from .. import __docs_version__, __version__
 from ..forms import DicomQueryForm, DicomQRForm, DicomStoreForm
@@ -51,34 +50,6 @@ from ..models import DicomDeleteSettings, DicomQuery, DicomStoreSCP, DicomRemote
 from ..views_admin import _create_admin_dict
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
-
-
-@csrf_exempt
-@login_required
-def run_store(request, pk):
-    """View to start built-in STORE-SCP"""
-    if request.user.groups.filter(name="admingroup"):
-        store = DicomStoreSCP.objects.get(pk__exact=pk)
-        store.run = True
-        store.save()
-        start_store(store_pk=pk)
-    return redirect(reverse_lazy("dicom_summary"))
-
-
-@csrf_exempt
-@login_required
-def stop_store(request, pk):
-    """View to stop built-in STORE-SCP"""
-    if request.user.groups.filter(name="admingroup"):
-        store = DicomStoreSCP.objects.filter(pk__exact=pk)
-        if store:
-            store[0].run = False
-            store[0].save()
-            store[0].status = "Quit signal sent"
-            store[0].save()
-        else:
-            print("Can't stop store SCP: Invalid primary key")
-    return redirect(reverse_lazy("dicom_summary"))
 
 
 @csrf_exempt
