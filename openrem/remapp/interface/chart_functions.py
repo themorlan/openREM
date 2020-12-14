@@ -393,17 +393,17 @@ def plotly_boxplot(
     chart_height = 500
     n_facet_rows = 1
 
-    if params["facet_col"]:
-        chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["facet_col"], params["facet_col_wrap"])
-
-    n_colours = len(df.x_ray_system_name.unique())
-    colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
-
     try:
         # Drop any rows with nan values in x or y
         df = df.dropna(subset=[params["df_value_col"]])
         if df.empty:
             return empty_dataframe_msg()
+
+        if params["facet_col"]:
+            chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["facet_col"], params["facet_col_wrap"])
+
+        n_colours = len(df.x_ray_system_name.unique())
+        colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
 
         fig = px.box(
             df,
@@ -995,16 +995,16 @@ def plotly_scatter(
         params["df_group_col"] = params["df_name_col"]
         params["legend_title"] = "System"
 
-    chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["df_group_col"], params["facet_col_wrap"])
-
-    n_colours = len(df[params["df_category_name_col"]].unique())
-    colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
-
     try:
         # Drop any rows with nan values in x or y
         df = df.dropna(subset=[params["df_x_col"], params["df_y_col"]])
         if df.empty:
             return empty_dataframe_msg()
+
+        chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["df_group_col"], params["facet_col_wrap"])
+
+        n_colours = len(df[params["df_category_name_col"]].unique())
+        colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
 
         fig = px.scatter(
             df,
@@ -1028,8 +1028,8 @@ def plotly_scatter(
 
         fig.update_traces(marker_line=dict(width=1, color="LightSlateGray"))
 
-        fig.update_xaxes(showticklabels=True)
-        fig.update_yaxes(showticklabels=True)
+        fig.update_xaxes(showticklabels=True, matches=None)
+        fig.update_yaxes(showticklabels=True, matches=None)
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
