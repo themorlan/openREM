@@ -600,20 +600,20 @@ def plotly_histogram_barchart(
 
     :param df: Pandas DataFrame containing the data
     :param params: a dictionary of parameters where
-        ``params["df_value_col"]`` (string) DataFrame column containing values
-        ``params["value_axis_title"]`` (string) x-axis title
-        ``params["df_category_col"]`` (string) DataFrame column containing categories
-        ``params["df_category_name_list"]``
-        ``params["df_facet_col"]`` (string) DataFrame column used to create subplots
-        ``params["df_facet_category_list"]`` string list of each df_facet_col entry to create a subplot for
-        ``params["df_facet_col_wrap"]`` (int) number of subplots per row
-        ``params["n_bins"]`` (int) number of hisgogram bins to use
-        ``params["colourmap"]`` (string) colourmap to use
-        ``params["global_max_min"]`` (boolean) flag to calculate global max and min or per-subplot max and min
-        ``params["legend_title"]`` (string) legend title
-        ``params["return_as_dict"]`` (boolean) flag to trigger return as a dictionary rather than a HTML DIV
-        ``params["filename"]`` (string) default filename to use for plot bitmap export
-    :return:Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
+        :param  params["df_value_col"]: (string) DataFrame column containing values
+        :param  params["value_axis_title"]: (string) x-axis title
+        :param  params["df_category_col"]: (string) DataFrame column containing categories
+        :param  params["df_category_name_list"]:
+        :param  params["df_facet_col"]: (string) DataFrame column used to create subplots
+        :param  params["df_facet_category_list"]: string list of each df_facet_col entry to create a subplot for
+        :param  params["df_facet_col_wrap"]: (int) number of subplots per row
+        :param  params["n_bins"]: (int) number of hisgogram bins to use
+        :param  params["colourmap"]: (string) colourmap to use
+        :param  params["global_max_min"]: (boolean) flag to calculate global max and min or per-subplot max and min
+        :param  params["legend_title"]: (string) legend title
+        :param  params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
+        :param  params["filename"]: (string) default filename to use for plot bitmap export
+    :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
     or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     # pylint: disable=too-many-locals
