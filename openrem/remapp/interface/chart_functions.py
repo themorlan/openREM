@@ -454,12 +454,15 @@ def plotly_boxplot(
 
 def create_freq_sorted_category_list(df, df_name_col, sorting):
     """
-    Create a sorted list of categories for frequency charts
+    Create a sorted list of categories for frequency charts. Makes use of  Pandas DataFrame sort_values
+    (https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.sort_values.html).
+    sorting[0] sets sort direction
+    sorting[1] used to determine field to sort on: "name" sorts by df_name_col; otherwise sorted by "x_ray_system_name"
 
-    :param df:
-    :param df_name_col:
-    :param sorting:
-    :return:
+    :param df: Pandas DataFrame containing the data
+    :param df_name_col: DataFrame column containing the category names
+    :param sorting: 2-element list. [0] sets sort direction, [1] used to determine which field to sort on
+    :return: dictionary with key df_name_col and a list of sorted categories as the value
     """
     category_sorting_df = df.groupby(df_name_col).count().reset_index()
     if sorting[1] == "name":
@@ -480,13 +483,18 @@ def create_freq_sorted_category_list(df, df_name_col, sorting):
 
 def create_sorted_category_list(df, df_name_col, df_value_col, sorting):
     """
-    Create a sorted list of categories for scatter and over-time charts
+    Create a sorted list of categories for scatter and over-time charts. The data is grouped by df_name_col and the
+    mean and count calculated for each. The grouped DataFrame is then sorted according to the provided sorting.
+    Makes use of  Pandas DataFrame sort_values
+    (https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.sort_values.html).
+    sorting[0] sets sort direction
+    sorting[1] used to determine sort order: "name" sorts by df_name_col; otherwise sorted by "x_ray_system_name"
 
-    :param df:
-    :param df_name_col:
-    :param df_value_col:
-    :param sorting:
-    :return:
+    :param df: Pandas DataFrame containing the data
+    :param df_name_col: DataFrame column containing the category names. Used to group the data
+    :param df_value_col: DataFrame column containing values to count and calculate the mean
+    :param sorting: 2-element list. [0] sets sort direction, [1] used to determine which field to sort on
+    :return: dictionary with key df_name_col and a list of sorted categories as the value
     """
     # Calculate the required aggregates for creating a list of categories for sorting
     grouped_df = df.groupby(df_name_col).agg({df_value_col: ["mean", "count"]})
@@ -590,9 +598,23 @@ def plotly_histogram_barchart(
     """
     Create a plotly histogram bar chart
 
-    :param df:
-    :param params:
-    :return:
+    :param df: Pandas DataFrame containing the data
+    :param params: a dictionary of parameters; must include:
+    "df_value_col"
+    "value_axis_title"
+    "df_category_col"
+    "df_category_name_list",
+    "df_facet_category_list"
+    "df_facet_col"
+    "df_facet_col_wrap"
+    "n_bins"
+    "colourmap"
+    "global_max_min"
+    "legend_title"
+    "return_as_dict"
+    "filename"
+    :return:Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
+    or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
