@@ -602,10 +602,10 @@ def plotly_histogram_barchart(
     :param params: a dictionary of parameters
     :param  params["df_value_col"]: (string) DataFrame column containing values
     :param  params["value_axis_title"]: (string) x-axis title
-    :param  params["df_category_col"]: (string) DataFrame column containing categories
-    :param  params["df_category_name_list"]:
     :param  params["df_facet_col"]: (string) DataFrame column used to create subplots
     :param  params["df_facet_category_list"]: string list of each df_facet_col entry to create a subplot for
+    :param  params["df_category_col"]: (string) DataFrame column containing categories
+    :param  params["df_category_name_list"]: string list of each category name
     :param  params["df_facet_col_wrap"]: (int) number of subplots per row
     :param  params["n_bins"]: (int) number of hisgogram bins to use
     :param  params["colourmap"]: (string) colourmap to use
