@@ -599,8 +599,8 @@ def plotly_histogram_barchart(
     Create a plotly histogram bar chart
 
     :param df: Pandas DataFrame containing the data
-    :param params: a dictionary of parameters; must include:
-    "df_value_col"
+    :param params: a dictionary of parameters
+    :param params["df_value_col"]: string name of the DataFrame column containing values
     "value_axis_title"
     "df_category_col"
     "df_category_name_list",
