@@ -311,9 +311,12 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
     sorted_study_categories = None
     if user_profile.plotRFStudyDAP:
+        sorting_col = "study_description"
+        if user_profile.plotRFSplitByPhysician:
+            sorting_col = "performing_physician_name"
         sorted_study_categories = create_sorted_category_list(
             df,
-            "study_description",
+            sorting_col,
             "total_dap",
             [
                 user_profile.plotInitialSortingDirection,
@@ -475,9 +478,12 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
     sorted_request_categories = None
     if user_profile.plotRFRequestDAP:
+        sorting_col = "requested_procedure_code_meaning"
+        if user_profile.plotRFSplitByPhysician:
+            sorting_col = "performing_physician_name"
         sorted_request_categories = create_sorted_category_list(
             df,
-            "requested_procedure_code_meaning",
+            sorting_col,
             "total_dap",
             [
                 user_profile.plotInitialSortingDirection,
@@ -506,7 +512,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 "df_name_col": x_col,
                 "name_axis_title": x_col_title,
                 "colourmap": user_profile.plotColourMapChoice,
-                "sorted_category_list": sorted_study_categories,
+                "sorted_category_list": sorted_request_categories,
                 "facet_col": facet_col,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "return_as_dict": return_as_dict,
