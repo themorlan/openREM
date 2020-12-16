@@ -385,8 +385,16 @@ def plotly_boxplot(
     Produce a plotly boxplot
 
     :param df: Pandas DataFrame containing the data
-    :param params: a dictionary of parameters; must include "colourmap", "df_value_col", "df_name_col", "df_facet_col",
-    "df_facet_col_wrap", "value_axis_title", "name_axis_title", "sorted_category_list", "return_as_dict"
+    :param params: a dictionary of parameters
+    :param params["df_value_col"]: (string) DataFrame column containing values
+    :param params["value_axis_title"]: (string) x-axis title
+    :param params["df_name_col"]: (string) DataFrame column containing categories
+    :param params["name_axis_title"]: (string) y-axis title
+    :param params["df_facet_col"]: (string) DataFrame column used to create subplots
+    :param params["df_facet_col_wrap"]: (int) number of subplots per row
+    :param params["sorted_category_list"]: string list of each category name
+    :param params["colourmap"]: (string) colourmap to use
+    :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
     or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
