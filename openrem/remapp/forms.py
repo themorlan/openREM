@@ -977,7 +977,7 @@ class DicomStoreForm(forms.ModelForm):
 
     class Meta(object):
         model = DicomStoreSCP
-        fields = ["name", "aetitle", "peer", "port", "controlled", "keep_alive"]
+        fields = ["name", "aetitle", "peer", "port"]
         labels = {
             "peer": "Peer: Set this to localhost",
             "port": "Port: port 104 is standard for DICOM but ports higher than 1024 require fewer admin rights",

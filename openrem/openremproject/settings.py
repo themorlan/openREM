@@ -53,17 +53,6 @@ CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 FLOWER_PORT = int(os.environ.get("FLOWER_PORT", default=5555))
 FLOWER_URL = os.environ.get("FLOWER_URL", default="http://localhost")
 
-beat_schedule = {
-    "trigger-dicom-keep-alive": {
-        "task": "remapp.netdicom.keepalive.keep_alive",
-        "schedule": crontab(minute="*/1"),
-        "options": {
-            "expires": 10
-        },  # expire if not run ten seconds after being scheduled
-    }
-}
-
-
 ROOT_PROJECT = os.path.join(os.path.split(__file__)[0], "..")
 
 # Local time zone for this installation. Choices can be found here:
