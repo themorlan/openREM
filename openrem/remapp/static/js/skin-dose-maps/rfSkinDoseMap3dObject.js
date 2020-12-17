@@ -309,11 +309,11 @@ function skinDoseMap3dObject(skinDoseMap3dCanvasName, colourScaleName) {
         mesh.position.y = ( _this.phantomHeight + _this.phantomHeadHeight) / 2;
         _this.meshes.push(mesh);
 
-        geometry = new THREE.CircleGeometry(_this.phantomFlatWidth / 2, 32, 0, 2 * Math.PI);
+        geometry = new THREE.CircleGeometry(_this.phantomHeadRadius, 32, 0, 2 * Math.PI);
         mesh = new THREE.Mesh(geometry);
         mesh.position.y = ( _this.phantomHeight/2 + _this.phantomHeadHeight);
         mesh.position.x = Math.round(_this.phantomFlatWidth / 2) - ( _this.phantomFlatWidth / 2 ) ;
-        mesh.rotation.x = -Math.PI / 2;
+        mesh.rotation.x = Math.PI / 2;
         mesh.rotation.y = Math.PI;
         _this.meshes.push(mesh);
 
