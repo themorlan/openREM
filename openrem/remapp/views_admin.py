@@ -40,8 +40,6 @@ from datetime import datetime, timedelta
 import requests
 from builtins import map  # pylint: disable=redefined-builtin
 
-# Following two lines added so that sphinx autodocumentation works.
-from future import standard_library
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
