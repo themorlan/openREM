@@ -90,7 +90,7 @@ def create_dataframe(
 
     :param database_events: the database events
     :param field_dict: a dictionary of lists, each containing database field names to include in the DataFrame. The
-    dictionary should include "names", "values", "dates", "times" and optionally "system" items
+                       dictionary should include "names", "values", "dates", "times" and optionally "system" items
     :param data_point_name_lowercase: boolean flag to determine whether to make all "names" field values lower case
     :param data_point_value_multipliers: list of float valuse to multiply each "values" field value by
     :param uid: string containing database field name which contains a unique identifier for each record
@@ -166,7 +166,7 @@ def create_dataframe_time_series(
     :param df_value_col: string containing the DataFrame column containing the values to be averaged
     :param df_date_col: string containing the DataFrame column containing the dates
     :param time_period: string containing the time period to average over; "A" (years), "Q" (quarters), "M" (months),
-    "W" (weeks), "D" (days)
+                        "W" (weeks), "D" (days)
     :param average_choices: list of strings containing one or both of "mean" and "median"
     :param group_by_physician: boolean flag to set whether to group by physician
     :return: Pandas DataFrame containing the time series of average values grouped by system and name
@@ -399,7 +399,7 @@ def plotly_boxplot(
     :param params["colourmap"]: (string) colourmap to use
     :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if params["return_as_dict"] is
-    True); or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
+             True); or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     chart_height = 500
     n_facet_rows = 1
@@ -467,7 +467,9 @@ def create_freq_sorted_category_list(df, df_name_col, sorting):
     """
     Create a sorted list of categories for frequency charts. Makes use of  Pandas DataFrame sort_values
     (https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.sort_values.html).
+
     sorting[0] sets sort direction
+
     sorting[1] used to determine field to sort on: "name" sorts by df_name_col; otherwise sorted by "x_ray_system_name"
 
     :param df: Pandas DataFrame containing the data
@@ -498,7 +500,9 @@ def create_sorted_category_list(df, df_name_col, df_value_col, sorting):
     mean and count calculated for each. The grouped DataFrame is then sorted according to the provided sorting.
     Makes use of  Pandas DataFrame sort_values
     (https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.sort_values.html).
+
     sorting[0] sets sort direction
+
     sorting[1] used to determine sort order: "name" sorts by df_name_col; otherwise sorted by "x_ray_system_name"
 
     :param df: Pandas DataFrame containing the data
@@ -550,7 +554,7 @@ def plotly_barchart(
     :param params["filename"]: (string) default filename to use for plot bitmap export
     :param csv_name: (string) default filename to use for plot csv export
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if params["return_as_dict"] is
-    True); or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
+             True); or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     chart_height = 500
     n_facet_rows = 1
@@ -636,7 +640,7 @@ def plotly_histogram_barchart(
     :param  params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
     :param  params["filename"]: (string) default filename to use for plot bitmap export
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if params["return_as_dict"] is
-    True); or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
+             True); or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
@@ -801,7 +805,7 @@ def plotly_binned_statistic_barchart(
     :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
     :param params["filename"]: (string) default filename to use for plot bitmap export
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if params["return_as_dict"] is
-    True); or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
+             True); or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
@@ -964,7 +968,7 @@ def plotly_timeseries_linechart(
     :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
     :param params["filename"]: (string) default filename to use for plot bitmap export
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
-    or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
+             or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["facet_col"], params["facet_col_wrap"])
 
@@ -1051,7 +1055,7 @@ def plotly_scatter(
     :param params["file_name"]: (string) default filename to use for plot bitmap export
     :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
-    or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
+             or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     sorted_category_list = create_sorted_category_list(df, params["df_name_col"], params["df_y_col"], params["sorting"])
 
@@ -1141,7 +1145,7 @@ def plotly_barchart_weekdays(
     :param facet_col_wrap: (int) number of subplots per row
     :param return_as_dict: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
-    or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
+             or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     chart_height, n_facet_rows = calc_facet_rows_and_height(df, "x_ray_system_name", facet_col_wrap)
 
@@ -1218,7 +1222,7 @@ def plotly_frequency_barchart(
     :param params["x_axis_title"]: (string) x-axis title
     :param params["groupby_cols"]: list of strings with DataFrame columns to group data by
     :param params["grouping_choice"]: (string) "series" or "system"
-    :param params["sorting_choice"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort on
+    :param params["sorting_choice"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort
     :param params["legend_title"]: (string) legend title
     :param params["sorted_categories"]: string list of each category name
     :param params["facet_col"]: (string) DataFrame column used to create subplots
@@ -1228,7 +1232,7 @@ def plotly_frequency_barchart(
     :param params["filename"]: (string) default filename to use for plot bitmap export
     :param csv_name: (string) default filename to use for plot csv export
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
-    or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
+             or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     if params["groupby_cols"] is None:
         params["groupby_cols"] = [params["df_name_col"]]
@@ -1325,7 +1329,7 @@ def construct_over_time_charts(
     :param params["sorting"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort on
     :param params["average_choices"]: lsit of strings containing requred averages ("mean", "median")
     :param params["time_period"]: string containing the time period to average over; "A" (years), "Q" (quarters),
-    "M" (months), "W" (weeks), "D" (days)
+                                  "M" (months), "W" (weeks), "D" (days)
     :param params["grouping_choice"]: (string) "series" or "system"
     :param params["colourmap"]: (string) colourmap to use
     :param params["file_name"]: (string) default filename to use for plot bitmap export
@@ -1333,8 +1337,8 @@ def construct_over_time_charts(
     :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
     :param group_by_physician: boolean flag to set whether to group by physician name
     :return: a dictionary containing a combination of ["mean"] and ["median"] entries, each of which contains a Plotly
-    figure embedded in an HTML DIV; or Plotly figure as a dictionary (if params["return_as_dict"] is True); or an error
-    message embedded in an HTML DIV if there was a ValueError when calculating the figure
+             figure embedded in an HTML DIV; or Plotly figure as a dictionary (if params["return_as_dict"] is True); or an
+             error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     sorted_categories = create_sorted_category_list(
         df, params["df_name_col"], params["df_value_col"], params["sorting"]
@@ -1417,8 +1421,10 @@ def download_link(object_to_download, download_filename, download_link_text="Dow
     download_link_text (str): Text to display for download link.
 
     Examples:
-    download_link(YOUR_DF, 'YOUR_DF.csv', 'Click here to download data!')
-    download_link(YOUR_STRING, 'YOUR_STRING.txt', 'Click here to download your text!')
+
+    ``download_link(YOUR_DF, 'YOUR_DF.csv', 'Click here to download data!')``
+
+    ``download_link(YOUR_STRING, 'YOUR_STRING.txt', 'Click here to download your text!')``
 
     """
     if isinstance(object_to_download, pd.DataFrame):
