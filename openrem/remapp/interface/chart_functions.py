@@ -365,7 +365,7 @@ def csv_data_frequency(fig, params):
 
 def calc_facet_rows_and_height(df, facet_col_name, facet_col_wrap):
     """
-    Calculates the required total chart height and the number of facet rows. Each row has a hard-written height
+    Calculates the required total chart height and the number of facet rows. Each row has a hard-coded height
     of 500 pixels.
 
     :param df: Pandas DataFrame containing the data
@@ -783,7 +783,23 @@ def plotly_binned_statistic_barchart(
     Create a plotly binned statistic bar chart
 
     :param df: Pandas DataFrame containing the data
-    :param params:
+    :param params: a dictionary of parameters
+    :param params["df_category_col"]: (string) DataFrame column containing categories
+    :param params["df_facet_col"]: (string) DataFrame column used to create subplots
+    :param params["facet_title"]: (string) Subplot title
+    :param params["facet_col_wrap"]: (int) number of subplots per row
+    :param params["user_bins"]: list of ints containing bin edges for binning
+    :param params["df_facet_category_list"]: list of df_facet_col entries for which to create subplots
+    :param params["df_category_col"]: (string) DataFrame column containing categories
+    :param params["df_category_list"]: list of categories for which to create subplots
+    :param params["df_x_value_col"]: (string) DataFrame column containing x data
+    :param params["df_y_value_col"]: (string) DataFrame column containing y data
+    :param params["x_axis_title"]: (string) Title for x-axis
+    :param params["y_axis_title"]: (string) Title for y-axis
+    :param params["stat_name"]: (string) "mean" or "median"
+    :param params["colourmap"]: (string) colourmap to use
+    :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
+    :param params["filename"]: (string) default filename to use for plot bitmap export
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if params["return_as_dict"] is
     True); or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
@@ -939,6 +955,7 @@ def plotly_timeseries_linechart(
     :param  params["df_value_col"]: (string) DataFrame column containing values
     :param  params["value_axis_title"]: (string) y-axis title
     :param  params["colourmap"]: (string) colourmap to use
+    :param  params["colourmap"]: (string) colourmap to use
     :param  params["df_date_col"]: (string) DataFrame column containing dates
     :param  params["df_count_col"]: (string) DataFrame column containing frequency data
     :param  params["df_name_col"]: (string) DataFrame column containing categories
@@ -1020,7 +1037,19 @@ def plotly_scatter(
     Create a plotly scatter chart
 
     :param df: Pandas DataFrame containing the data
-    :param params:
+    :param params: a dictionary of parameters
+    :param params["df_name_col"]: (string) DataFrame column containing categories
+    :param params["df_x_col"]: (string) DataFrame column containing x values
+    :param params["df_y_col"]: (string) DataFrame column containing y values
+    :param params["sorting"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort on
+    :param params["grouping_choice"]: (string) "series" or "system"
+    :param params["legend_title"]: (string) legend title
+    :param params["facet_col_wrap"]: (int) number of subplots per row
+    :param params["colourmap"]: (string) colourmap to use
+    :param params["x_axis_title"]: (string) x-axis title
+    :param params["y_axis_title"]: (string) y-axis title
+    :param params["file_name"]: (string) default filename to use for plot bitmap export
+    :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
     or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
@@ -1281,12 +1310,31 @@ def construct_over_time_charts(
     group_by_physician=None,
 ):
     """
-    Create a plotly line chart of average values over time, optionally grouped by performing physician name
+    Construct a Plotly line chart of average values over time, optionally grouped by performing physician name
 
     :param df: the Pandas DataFrame containing the data
     :param params: a dictionary of processing parameters
+
+    :param params["df_name_col"]: (string) DataFrame column containing categories
+    :param params["name_title"]: (string) name title
+    :param params["df_value_col"]: (string) DataFrame column containing values
+    :param params["value_title"]: (string) y-axis title
+    :param params["df_date_col"]: (string) DataFrame column containing dates
+    :param params["date_title"]: (string) date title
+    :param params["facet_title"]: (string) subplot title
+    :param params["sorting"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort on
+    :param params["average_choices"]: lsit of strings containing requred averages ("mean", "median")
+    :param params["time_period"]: string containing the time period to average over; "A" (years), "Q" (quarters),
+    "M" (months), "W" (weeks), "D" (days)
+    :param params["grouping_choice"]: (string) "series" or "system"
+    :param params["colourmap"]: (string) colourmap to use
+    :param params["file_name"]: (string) default filename to use for plot bitmap export
+    :param params["facet_col_wrap"]: (int) number of subplots per row
+    :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
     :param group_by_physician: boolean flag to set whether to group by physician name
-    :return:
+    :return: a dictionary containing a combination of ["mean"] and ["median"] entries, each of which contains a Plotly
+    figure embedded in an HTML DIV; or Plotly figure as a dictionary (if params["return_as_dict"] is True); or an error
+    message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     sorted_categories = create_sorted_category_list(
         df, params["df_name_col"], params["df_value_col"], params["sorting"]
