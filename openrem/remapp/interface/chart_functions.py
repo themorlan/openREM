@@ -395,8 +395,8 @@ def plotly_boxplot(
     :param params["sorted_category_list"]: string list of each category name
     :param params["colourmap"]: (string) colourmap to use
     :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
-    :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
-    or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
+    :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if params["return_as_dict"] is
+    True); or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     chart_height = 500
     n_facet_rows = 1
@@ -533,10 +533,21 @@ def plotly_barchart(
     """
     Create a plotly bar chart
 
-    :param df:
-    :param params:
-    :param csv_name:
-    :return:
+    :param df: Pandas DataFrame containing the data
+    :param params: a dictionary of parameters
+    :param params["average_choice"]: (string) DataFrame column containing values ("mean" or "median")
+    :param params["value_axis_title"]: (string) x-axis title
+    :param params["df_name_col"]: (string) DataFrame column containing categories
+    :param params["name_axis_title"]: (string) y-axis title
+    :param params["facet_col"]: (string) DataFrame column used to create subplots
+    :param params["facet_col_wrap"]: (int) number of subplots per row
+    :param params["sorted_category_list"]: string list of each category name
+    :param params["colourmap"]: (string) colourmap to use
+    :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
+    :param params["filename"]: (string) default filename to use for plot bitmap export
+    :param csv_name: (string) default filename to use for plot csv export
+    :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if params["return_as_dict"] is
+    True); or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     chart_height = 500
     n_facet_rows = 1
@@ -621,8 +632,8 @@ def plotly_histogram_barchart(
     :param  params["legend_title"]: (string) legend title
     :param  params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
     :param  params["filename"]: (string) default filename to use for plot bitmap export
-    :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
-    or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
+    :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if params["return_as_dict"] is
+    True); or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
@@ -748,8 +759,8 @@ def calc_histogram_bin_data(df, value_col_name, n_bins=10):
     Calculates histogram bin label text, bin boundaries and bin mid-points
 
     :param df: the Pandas DataFrame containing the data
-    :param value_col_name: name of the DataFrame column that contains the values
-    :param n_bins: the number of bins to use
+    :param value_col_name: (string )name of the DataFrame column that contains the values
+    :param n_bins: (int) the number of bins to use
     :return: a three element list containing the bin labels, bin boundaries and bin mid-points
     """
     min_bin_value, max_bin_value = df[value_col_name].agg([min, max])
@@ -768,9 +779,10 @@ def plotly_binned_statistic_barchart(
     """
     Create a plotly binned statistic bar chart
 
-    :param df:
+    :param df: Pandas DataFrame containing the data
     :param params:
-    :return:
+    :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if params["return_as_dict"] is
+    True); or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
@@ -916,9 +928,10 @@ def plotly_timeseries_linechart(
     """
     Create a plotly line chart of data over time
 
-    :param df:
+    :param df: Pandas DataFrame containing the data
     :param params:
-    :return:
+    :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
+    or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["facet_col"], params["facet_col_wrap"])
 
@@ -990,9 +1003,10 @@ def plotly_scatter(
     """
     Create a plotly scatter chart
 
-    :param df:
+    :param df: Pandas DataFrame containing the data
     :param params:
-    :return:
+    :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
+    or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     sorted_category_list = create_sorted_category_list(df, params["df_name_col"], params["df_y_col"], params["sorting"])
 
@@ -1072,16 +1086,17 @@ def plotly_barchart_weekdays(
     """
     Create a plotly bar chart of event workload
 
-    :param df:
-    :param df_name_col:
-    :param df_value_col:
-    :param name_axis_title:
-    :param value_axis_title:
-    :param colourmap:
-    :param filename:
-    :param facet_col_wrap:
-    :param return_as_dict:
-    :return:
+    :param df: Pandas DataFrame containing the data
+    :param df_name_col: (string) DataFrame column containing categories
+    :param df_value_col: (string) DataFrame column containing values
+    :param name_axis_title: (string) y-axis title
+    :param value_axis_title: (string) x-axis title
+    :param colourmap: (string) colourmap to use
+    :param filename: (string) default filename to use for plot bitmap export
+    :param facet_col_wrap: (int) number of subplots per row
+    :param return_as_dict: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
+    :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
+    or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     chart_height, n_facet_rows = calc_facet_rows_and_height(df, "x_ray_system_name", facet_col_wrap)
 
@@ -1152,10 +1167,11 @@ def plotly_frequency_barchart(
     """
     Create a plotly bar chart of event frequency
 
-    :param df:
+    :param df: Pandas DataFrame containing the data
     :param params:
-    :param csv_name:
-    :return:
+    :param csv_name: (string) default filename to use for plot csv export
+    :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
+    or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     if params["groupby_cols"] is None:
         params["groupby_cols"] = [params["df_name_col"]]
