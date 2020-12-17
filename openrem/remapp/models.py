@@ -29,7 +29,6 @@
 """
 
 # Following two lines added so that sphinx autodocumentation works.
-from past.utils import old_div
 from builtins import object  # pylint: disable=redefined-builtin
 import json
 from django.db import models
@@ -1359,7 +1358,7 @@ class Exposure(models.Model):  # EV 113736
         from numbers import Number
 
         if isinstance(self.exposure, Number):
-            return old_div(self.exposure, Decimal(1000.0))
+            return self.exposure / Decimal(1000.0)
         else:
             return None
 
