@@ -315,8 +315,11 @@ def csv_data_barchart(fig, params):
     Calculates a Pandas DataFrame containing chart data to be used for csv download
 
     :param fig: Plotly figure containing the data to extract
-    :param params: a dictionary of parameters; must include "df_name_col", "name_axis_title", "value_axis_title" and
-    "facet_col"
+    :param params: a dictionary of parameters
+    :param params["df_name_col"]: (string) DataFrame column containing categories
+    :param params["name_axis_title"]: (string) title for the name data
+    :param params["value_axis_title"]: (string) title for the value data
+    :param params["facet_col"]: (string) DataFrame column used to split data into subgroups
     :return: DataFrame containing the data for download
     """
     fig_data_dict = fig.to_dict()["data"]
@@ -536,9 +539,9 @@ def plotly_barchart(
     :param df: Pandas DataFrame containing the data
     :param params: a dictionary of parameters
     :param params["average_choice"]: (string) DataFrame column containing values ("mean" or "median")
-    :param params["value_axis_title"]: (string) x-axis title
+    :param params["value_axis_title"]: (string) y-axis title
     :param params["df_name_col"]: (string) DataFrame column containing categories
-    :param params["name_axis_title"]: (string) y-axis title
+    :param params["name_axis_title"]: (string) x-axis title
     :param params["facet_col"]: (string) DataFrame column used to create subplots
     :param params["facet_col_wrap"]: (int) number of subplots per row
     :param params["sorted_category_list"]: string list of each category name
@@ -620,7 +623,7 @@ def plotly_histogram_barchart(
     :param df: Pandas DataFrame containing the data
     :param params: a dictionary of parameters
     :param  params["df_value_col"]: (string) DataFrame column containing values
-    :param  params["value_axis_title"]: (string) x-axis title
+    :param  params["value_axis_title"]: (string) y-axis title
     :param  params["df_facet_col"]: (string) DataFrame column used to create subplots
     :param  params["df_facet_category_list"]: string list of each df_facet_col entry to create a subplot for
     :param  params["df_category_col"]: (string) DataFrame column containing categories
@@ -929,7 +932,20 @@ def plotly_timeseries_linechart(
     Create a plotly line chart of data over time
 
     :param df: Pandas DataFrame containing the data
-    :param params:
+    :param params: a dictionary of parameters
+    :param  params["df_facet_col"]: (string) DataFrame column used to create subplots
+    :param  params["df_facet_col_wrap"]: (int) number of subplots per row
+    :param  params["facet_title"]: (string) subplot title
+    :param  params["df_value_col"]: (string) DataFrame column containing values
+    :param  params["value_axis_title"]: (string) y-axis title
+    :param  params["colourmap"]: (string) colourmap to use
+    :param  params["df_date_col"]: (string) DataFrame column containing dates
+    :param  params["df_count_col"]: (string) DataFrame column containing frequency data
+    :param  params["df_name_col"]: (string) DataFrame column containing categories
+    :param  params["legend_title"]: (string) legend title
+    :param  params["name_axis_title"]: (string) x-axis title
+    :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
+    :param params["filename"]: (string) default filename to use for plot bitmap export
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
     or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
@@ -1089,8 +1105,8 @@ def plotly_barchart_weekdays(
     :param df: Pandas DataFrame containing the data
     :param df_name_col: (string) DataFrame column containing categories
     :param df_value_col: (string) DataFrame column containing values
-    :param name_axis_title: (string) y-axis title
-    :param value_axis_title: (string) x-axis title
+    :param name_axis_title: (string) x-axis title
+    :param value_axis_title: (string) y-axis title
     :param colourmap: (string) colourmap to use
     :param filename: (string) default filename to use for plot bitmap export
     :param facet_col_wrap: (int) number of subplots per row
@@ -1168,7 +1184,19 @@ def plotly_frequency_barchart(
     Create a plotly bar chart of event frequency
 
     :param df: Pandas DataFrame containing the data
-    :param params:
+    :param params: a dictionary of parameters
+    :param params["df_x_axis_col"]: (string) DataFrame column containing categories
+    :param params["x_axis_title"]: (string) x-axis title
+    :param params["groupby_cols"]: list of strings with DataFrame columns to group data by
+    :param params["grouping_choice"]: (string) "series" or "system"
+    :param params["sorting_choice"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort on
+    :param params["legend_title"]: (string) legend title
+    :param params["sorted_categories"]: string list of each category name
+    :param params["facet_col"]: (string) DataFrame column used to create subplots
+    :param params["facet_col_wrap"]: (int) number of subplots per row
+    :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
+    :param params["colourmap"]: (string) colourmap to use
+    :param params["filename"]: (string) default filename to use for plot bitmap export
     :param csv_name: (string) default filename to use for plot csv export
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
     or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
