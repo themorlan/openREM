@@ -84,60 +84,61 @@ This is currently used to display the average glandular dose binned into compres
 Chart options on the modality pages
 ***********************************
 
-========================== ============================== =====================================================
- Name                       Configuration options           Notes
-========================== ============================== =====================================================
- Average plots              Any combination of **mean**,
-                            **median** or **boxplot**
--------------------------- ------------------------------ -----------------------------------------------------
- Time period                One of **day**, **week**,
-                            **month**, **quarter**,
-                            **year**
--------------------------- ------------------------------ -----------------------------------------------------
- Grouping choice            | **System names**              | **System names** groups by x-ray system
-                            | **Series item names**         | **Series item names** groups by each category
--------------------------- ------------------------------ -----------------------------------------------------
- Plot a series per system   **On** or **off**               **On** splits the data by x-ray system
--------------------------- ------------------------------ -----------------------------------------------------
- Calculate histogram data   **On** or **off**               **On** calculate histograms for average bar charts
--------------------------- ------------------------------ -----------------------------------------------------
- Chart sorting              One of **name**,               Sort the chart data according to the selected
-                            **frequency**, or **value**    choice
--------------------------- ------------------------------ -----------------------------------------------------
- Sorting direction          One of **ascending**           Sets the sort direction
-                            or **descending**
--------------------------- ------------------------------ -----------------------------------------------------
- Split plots by physician   **On** or **off**              Calculate a series per physician (*fluoroscopy only*)
-========================== ============================== =====================================================
+========================== ============================== ===================================================
+Name                       Configuration options          Notes
+========================== ============================== ===================================================
+Average plots              | Any combination of **mean**,
+                           | **median** or **boxplot**
+-------------------------- ------------------------------ ---------------------------------------------------
+Time period                | One of **day**, **week**,
+                           | **month**, **quarter**,
+                           | or **year**
+-------------------------- ------------------------------ ---------------------------------------------------
+Grouping choice            | **System names**             | **System names** groups by x-ray system
+                           | **Series item names**        | **Series item names** groups by each category
+-------------------------- ------------------------------ ---------------------------------------------------
+Plot a series per system   **On** or **off**              **On** splits the data by x-ray system
+-------------------------- ------------------------------ ---------------------------------------------------
+Calculate histogram data   **On** or **off**              **On** calculate histograms for average bar charts
+-------------------------- ------------------------------ ---------------------------------------------------
+Chart sorting              | One of **name**,             | Sort the chart data according to the
+                           | **frequency**, or **value**  | selected choice
+-------------------------- ------------------------------ ---------------------------------------------------
+Sorting direction          | One of **ascending**         Sets the sort direction
+                           | or **descending**
+-------------------------- ------------------------------ ---------------------------------------------------
+Split plots by physician   **On** or **off**              | Calculate a series per physician
+                                                          | (*fluoroscopy only*)
+========================== ============================== ===================================================
 
 
 
-****************************************
-Additional chart options on Config page
-****************************************
+*******************************************
+Additional chart options on ``Config`` page
+*******************************************
 
-==================================== ============================== ====================================================
-Name                                 Configuration options          Notes
-==================================== ============================== ====================================================
-Number of histogram bins             Value in the range 2 - 40      Default is 10
------------------------------------- ------------------------------ ----------------------------------------------------
-Fixed histogram bins across subplots **On** or **off**              **On** forces all histograms to use the same bins
------------------------------------- ------------------------------ ----------------------------------------------------
-Case-insensitive categories          **On** or **off**              **On** all category names forced to lowercase
------------------------------------- ------------------------------ ----------------------------------------------------
-Chart theme                          One of **Plotly**,             Set the Plotly theme to use for the charts. Some
-                                     **Plotly white**,              examples are provided on the Plotly themes_ page
-                                     **Plotly dark**,               (an external link).
-                                     **presentation**,
-                                     **ggplot2**,
-                                     **Seaborn** or
-                                     **simple white**
------------------------------------- ------------------------------ ----------------------------------------------------
+==================================== ========================= ==================================================
+Name                                 Configuration options     Notes
+==================================== ========================= ==================================================
+Number of histogram bins             Value in the range 2 - 40 Default is 10
+------------------------------------ ------------------------- --------------------------------------------------
+Fixed histogram bins across subplots **On** or **off**         **On** forces all histograms to use the same bins
+------------------------------------ ------------------------- --------------------------------------------------
+Case-insensitive categories          **On** or **off**         **On** all category names forced to lowercase
+------------------------------------ ------------------------- --------------------------------------------------
+Chart theme                          | One of **Plotly**,      | Set the Plotly theme to use for the charts. Some
+                                     | **Plotly white**,       | examples are provided on the Plotly themes_ page
+                                     | **Plotly dark**,        | (an external link).
+                                     | **presentation**,
+                                     | **ggplot2**,
+                                     | **Seaborn** or
+                                     | **simple white**
+------------------------------------ ------------------------- --------------------------------------------------
 Colour map choice                    One of the available
                                      matplotlib colour maps
------------------------------------- ------------------------------ ----------------------------------------------------
-Number of charts per row             Value in the range 1 - 10      Sets the number of sub-plots in each row
-==================================== ============================== ====================================================
+------------------------------------ ------------------------- --------------------------------------------------
+Number of charts per row             Value in the range 1 - 10 Sets the number of sub-plots in each row
+==================================== ========================= ==================================================
 
 
 
@@ -148,11 +149,11 @@ Available CT charts
 ====================================== =================================================================
 Chart name                             Chart type
 ====================================== =================================================================
-Acquisition DLP                        | Bar chart of mean and / or median DLP per acquisition protocol
+Acquisition DLP                        | Bar chart of average DLP per acquisition protocol
                                        | Boxplot with data point per acquisition protocol
                                        | Histograms also plotted if *Calculate histogram data* **on**
 -------------------------------------- -----------------------------------------------------------------
-Acquisition CTDI\ :sub:`vol`           | Bar chart of mean and / or median DLP per
+Acquisition CTDI\ :sub:`vol`           | Bar chart of average DLP per
                                        | Boxplot with data point per acquisition protocol
                                        | Histograms also plotted if *Calculate histogram data* **on**
 -------------------------------------- -----------------------------------------------------------------
@@ -163,41 +164,44 @@ Acquisition CTDI\ :sub:`vol` vs mass   Scatter chart of CTDI\ :sub:`vol` vs mass
 -------------------------------------- -----------------------------------------------------------------
 Acquisition DLP vs mass	               Scatter chart of DLP vs mass for each acquisition protocol
 -------------------------------------- -----------------------------------------------------------------
-Acquisition CTDI\ :sub:`vol` over time Line chart of mean and / or median CTDI\ :sub:`vol` over time
+Acquisition CTDI\ :sub:`vol` over time | Line chart of average CTDI\ :sub:`vol` over time
+                                       | for each acquisition protocol
 -------------------------------------- -----------------------------------------------------------------
-Acquisition DLP over time              Line chart of mean and / or median DLP over time for each acquisition protocol
+Acquisition DLP over time              | Line chart of average DLP over time
+                                       | for each acquisition protocol
 -------------------------------------- -----------------------------------------------------------------
-Study DLP                              | Bar chart of mean and / or median DLP per study description
+Study DLP                              | Bar chart of average DLP per study description
                                        | Boxplot with data point per study description
                                        | Histograms also plotted if *Calculate histogram data* **on**
 -------------------------------------- -----------------------------------------------------------------
-Study CTDI\ :sub:`vol`	               | Bar chart of mean and / or median CTDI\ :sub:`vol` per study description
+Study CTDI\ :sub:`vol`	               | Bar chart of average CTDI\ :sub:`vol` per study description
                                        | Boxplot with data point per study description
                                        | Histograms also plotted if *Calculate histogram data* **on**
 -------------------------------------- -----------------------------------------------------------------
 Study frequency	                       | Bar chart of frequency of each study description
 -------------------------------------- -----------------------------------------------------------------
-Study events                           | Bar chart of mean and / or median number of radiation events per study description
+Study events                           | Bar chart of average number of radiation events per study description
                                        | Boxplot with data point per study description
                                        | Histograms also plotted if *Calculate histogram data* **on**
 -------------------------------------- -----------------------------------------------------------------
 Study workload                         Bar chart of number of studies carried out on each day of the week,
                                        with each bar sub-divided into hours of the day
 -------------------------------------- -----------------------------------------------------------------
-Study DLP over time	                   Line chart of mean and / or median DLP over time for each study description
+Study DLP over time	                   | Line chart of average DLP over time
+                                       | for each study description
 -------------------------------------- -----------------------------------------------------------------
-Requested procedure DLP                | Bar chart of mean and / or median DLP per requested procedure name
+Requested procedure DLP                | Bar chart of average DLP per requested procedure name
                                        | Boxplot with data point per study description
                                        | Histograms also plotted if *Calculate histogram data* **on**
-
 -------------------------------------- -----------------------------------------------------------------
 Requested procedure frequency	       | Bar chart of frequency of each requested procedure name
 -------------------------------------- -----------------------------------------------------------------
-Requested procedure events             | Bar chart of mean and / or median number of radiation events per requested procedure name
+Requested procedure events             | Bar chart of average number of radiation events per requested procedure name
                                        | Boxplot with data point per study description
                                        | Histograms also plotted if *Calculate histogram data* **on**
 -------------------------------------- -----------------------------------------------------------------
-Requested procedure DLP over time      Line chart of mean and / or median DLP over time for each study description
+Requested procedure DLP over time      | Line chart of average DLP over time
+                                       | for each study description
 ====================================== =================================================================
 
 
