@@ -412,56 +412,43 @@ class DicomQRRspImage(models.Model):
     sop_class_uid = models.TextField(blank=True, null=True)
 
 
-class UserProfile(models.Model):
-    """
-    Table to store user profile settings
-    """
-
-    DAYS = "days"
-    WEEKS = "weeks"
-    MONTHS = "months"
-    YEARS = "years"
-    TIME_PERIOD = (
-        (DAYS, "Days"),
-        (WEEKS, "Weeks"),
-        (MONTHS, "Months"),
-        (YEARS, "Years"),
+class CommonVariables:
+    DEFAULT_COLOUR_MAP = "RdYlBu"
+    CHART_COLOUR_MAPS = (
+        (DEFAULT_COLOUR_MAP, "Red-yellow-blue (default)"),
+        ("Spectral", "Spectral"),
+        ("RdYlGn", "Red-yellow-green"),
+        ("rainbow", "Rainbow"),
+        ("jet", "Jet"),
+        ("PiYG", "Pink-green"),
+        ("PRGn", "Purple-green"),
+        ("BrBG", "Brown-blue-green"),
+        ("PuOr", "Purple-orange"),
+        ("RdBu", "Red-blue"),
+        ("RdGy", "Red-grey"),
+        ("YlGnBu", "Yellow-green-blue"),
+        ("YlOrBr", "Yellow-orange-brown"),
+        ("hot", "Hot"),
+        ("inferno", "Inferno"),
+        ("magma", "Magma"),
+        ("plasma", "Plasma"),
+        ("viridis", "Viridis"),
+        ("cividis", "Cividis"),
     )
-
-    MEAN = "mean"
-    MEDIAN = "median"
-    BOTH = "both"
-    AVERAGES = (
-        (MEAN, "mean"),
-        (MEDIAN, "median"),
-        (BOTH, "both"),
+    PLOTLY_THEME = "plotly"
+    CHART_THEMES = (
+        (PLOTLY_THEME, "Plotly (default)"),
+        ("plotly_white", "Plotly white"),
+        ("plotly_dark", "Plotly dark"),
+        ("presentation", "Presentation"),
+        ("ggplot2", "ggplot2"),
+        ("seaborn", "Seaborn"),
+        ("simple_white", "Simple white"),
     )
-
-    DLP = "dlp"
-    CTDI = "ctdi"
-    FREQ = "freq"
-    NAME = "name"
-    SORTING_CHOICES_CT = (
-        (DLP, "DLP"),
-        (CTDI, "CTDI"),
-        (FREQ, "Frequency"),
-        (NAME, "Name"),
-    )
-
-    DAP = "dap"
-    SORTING_CHOICES_DX = (
-        (DAP, "DAP"),
-        (FREQ, "Frequency"),
-        (NAME, "Name"),
-    )
-
-    ASCENDING = 1
-    DESCENDING = -1
-    SORTING_DIRECTION = (
-        (ASCENDING, "Ascending"),
-        (DESCENDING, "Descending"),
-    )
-
+    SERIES = "series"
+    SYSTEM = "system"
+    CHART_GROUPING = ((SYSTEM, "System names"), (SERIES, "Series item names"))
+    CHART_GROUPING_RF = ((SYSTEM, "System or physician"), (SERIES, "Series item names"))
     ITEMS_PER_PAGE = (
         (10, "10"),
         (25, "25"),
@@ -470,29 +457,74 @@ class UserProfile(models.Model):
         (200, "200"),
         (400, "400"),
     )
+    DESCENDING = 0
+    ASCENDING = 1
+    SORTING_DIRECTION = ((ASCENDING, "Ascending"), (DESCENDING, "Descending"))
+    VALUE = "value"
+    FREQ = "frequency"
+    NAME = "name"
+    SORTING_CHOICES = ((NAME, "Name"), (FREQ, "Frequency"), (VALUE, "Value"))
+    YEARS = "A"
+    QUARTERS = "Q"
+    MONTHS = "M"
+    WEEKS = "W"
+    DAYS = "D"
+    TIME_PERIOD = (
+        (DAYS, "Days"),
+        (WEEKS, "Weeks"),
+        (MONTHS, "Months"),
+        (QUARTERS, "Quarters"),
+        (YEARS, "Years"),
+    )
 
-    itemsPerPage = models.IntegerField(null=True, choices=ITEMS_PER_PAGE, default=25)
+    MEAN = "mean"
+    MEDIAN = "median"
+    BOXPLOT = "boxplot"
+    AVERAGES = ((MEAN, "Mean"), (MEDIAN, "Median"), (BOXPLOT, "Boxplot"))
+
+
+class UserProfile(models.Model, CommonVariables):
+    """
+    Table to store user profile settings
+    """
+    itemsPerPage = models.IntegerField(null=True, choices=CommonVariables.ITEMS_PER_PAGE, default=25)
 
     # This field is required.
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    # Flag to set whether median calculations can be carried out
-    median_available = models.BooleanField(default=False, editable=False)
+    plotGroupingChoice = models.CharField(
+        max_length=6, choices=CommonVariables.CHART_GROUPING, default=CommonVariables.SYSTEM
+    )
 
-    plotAverageChoice = models.CharField(max_length=6, choices=AVERAGES, default=MEAN)
+    plotThemeChoice = models.CharField(
+        max_length=12, choices=CommonVariables.CHART_THEMES, default=CommonVariables.PLOTLY_THEME
+    )
+
+    plotColourMapChoice = models.CharField(
+        max_length=8, choices=CommonVariables.CHART_COLOUR_MAPS, default=CommonVariables.DEFAULT_COLOUR_MAP
+    )
+
+    plotFacetColWrapVal = models.PositiveSmallIntegerField(default=3)
 
     plotInitialSortingDirection = models.IntegerField(
-        null=True, choices=SORTING_DIRECTION, default=DESCENDING
+        null=True, choices=CommonVariables.SORTING_DIRECTION, default=CommonVariables.DESCENDING
     )
+
+    plotBoxplots = models.BooleanField(default=False, editable=False)
+    plotMean = models.BooleanField(default=True, editable=False)
+    plotMedian = models.BooleanField(default=False, editable=False)
 
     # Plotting controls
     plotCharts = models.BooleanField(default=False)
     plotDXAcquisitionMeanDAP = models.BooleanField(default=True)
     plotDXAcquisitionFreq = models.BooleanField(default=False)
+    plotDXAcquisitionDAPvsMass = models.BooleanField(default=False)
     plotDXStudyMeanDAP = models.BooleanField(default=True)
     plotDXStudyFreq = models.BooleanField(default=True)
+    plotDXStudyDAPvsMass = models.BooleanField(default=False)
     plotDXRequestMeanDAP = models.BooleanField(default=True)
     plotDXRequestFreq = models.BooleanField(default=True)
+    plotDXRequestDAPvsMass = models.BooleanField(default=False)
     plotDXAcquisitionMeankVp = models.BooleanField(default=False)
     plotDXAcquisitionMeanmAs = models.BooleanField(default=False)
     plotDXStudyPerDayAndHour = models.BooleanField(default=False)
@@ -500,15 +532,19 @@ class UserProfile(models.Model):
     plotDXAcquisitionMeanmAsOverTime = models.BooleanField(default=False)
     plotDXAcquisitionMeanDAPOverTime = models.BooleanField(default=False)
     plotDXAcquisitionMeanDAPOverTimePeriod = models.CharField(
-        max_length=6, choices=TIME_PERIOD, default=MONTHS
+        max_length=13, choices=CommonVariables.TIME_PERIOD, default=CommonVariables.MONTHS
     )
     plotDXInitialSortingChoice = models.CharField(
-        max_length=4, choices=SORTING_CHOICES_DX, default=FREQ
+        max_length=9, choices=CommonVariables.SORTING_CHOICES, default=CommonVariables.FREQ
     )
 
     plotCTAcquisitionMeanDLP = models.BooleanField(default=True)
     plotCTAcquisitionMeanCTDI = models.BooleanField(default=True)
     plotCTAcquisitionFreq = models.BooleanField(default=False)
+    plotCTAcquisitionCTDIvsMass = models.BooleanField(default=False)
+    plotCTAcquisitionDLPvsMass = models.BooleanField(default=False)
+    plotCTAcquisitionCTDIOverTime = models.BooleanField(default=False)
+    plotCTAcquisitionDLPOverTime = models.BooleanField(default=False)
     plotCTStudyMeanDLP = models.BooleanField(default=True)
     plotCTStudyMeanCTDI = models.BooleanField(default=True)
     plotCTStudyFreq = models.BooleanField(default=False)
@@ -516,28 +552,45 @@ class UserProfile(models.Model):
     plotCTRequestMeanDLP = models.BooleanField(default=False)
     plotCTRequestFreq = models.BooleanField(default=False)
     plotCTRequestNumEvents = models.BooleanField(default=False)
+    plotCTRequestDLPOverTime = models.BooleanField(default=False)
     plotCTStudyPerDayAndHour = models.BooleanField(default=False)
     plotCTStudyMeanDLPOverTime = models.BooleanField(default=False)
-    plotCTStudyMeanDLPOverTimePeriod = models.CharField(
-        max_length=6, choices=TIME_PERIOD, default=MONTHS
+    plotCTOverTimePeriod = models.CharField(
+        max_length=13, choices=CommonVariables.TIME_PERIOD, default=CommonVariables.MONTHS
     )
     plotCTInitialSortingChoice = models.CharField(
-        max_length=4, choices=SORTING_CHOICES_CT, default=FREQ
+        max_length=9, choices=CommonVariables.SORTING_CHOICES, default=CommonVariables.FREQ
     )
 
     plotRFStudyPerDayAndHour = models.BooleanField(default=False)
     plotRFStudyFreq = models.BooleanField(default=False)
     plotRFStudyDAP = models.BooleanField(default=True)
+    plotRFStudyDAPOverTime = models.BooleanField(default=False)
     plotRFRequestDAP = models.BooleanField(default=True)
     plotRFRequestFreq = models.BooleanField(default=True)
-    plotRFInitialSortingChoice = models.CharField(
-        max_length=4, choices=SORTING_CHOICES_DX, default=FREQ
+    plotRFRequestDAPOverTime = models.BooleanField(default=False)
+    plotRFOverTimePeriod = models.CharField(
+        max_length=13, choices=CommonVariables.TIME_PERIOD, default=CommonVariables.MONTHS
     )
+    plotRFInitialSortingChoice = models.CharField(
+        max_length=9, choices=CommonVariables.SORTING_CHOICES, default=CommonVariables.FREQ
+    )
+    plotRFSplitByPhysician = models.BooleanField(default=False)
 
     plotMGStudyPerDayAndHour = models.BooleanField(default=False)
     plotMGAGDvsThickness = models.BooleanField(default=False)
     plotMGkVpvsThickness = models.BooleanField(default=False)
     plotMGmAsvsThickness = models.BooleanField(default=False)
+    plotMGaverageAGDvsThickness = models.BooleanField(default=False)
+    plotMGaverageAGD = models.BooleanField(default=False)
+    plotMGacquisitionFreq = models.BooleanField(default=False)
+    plotMGAcquisitionAGDOverTime = models.BooleanField(default=False)
+    plotMGOverTimePeriod = models.CharField(
+        max_length=13, choices=CommonVariables.TIME_PERIOD, default=CommonVariables.MONTHS
+    )
+    plotMGInitialSortingChoice = models.CharField(
+        max_length=9, choices=CommonVariables.SORTING_CHOICES, default=CommonVariables.FREQ
+    )
 
     displayCT = models.BooleanField(default=True)
     displayRF = models.BooleanField(default=True)
@@ -549,6 +602,8 @@ class UserProfile(models.Model):
     plotHistogramBins = models.PositiveSmallIntegerField(default=20)
 
     plotHistograms = models.BooleanField(default=False)
+
+    plotHistogramGlobalBins = models.BooleanField(default=False)
 
     plotCaseInsensitiveCategories = models.BooleanField(default=False)
 
@@ -647,8 +702,7 @@ class SizeUpload(models.Model):
 
 
 class Exports(models.Model):
-    """Table to hold the export status and filenames
-    """
+    """Table to hold the export status and filenames"""
 
     task_id = models.TextField()
     filename = models.FileField(upload_to="exports/%Y/%m/%d", null=True)
@@ -795,9 +849,7 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
 
 
 class SkinDoseMapResults(models.Model):
-    """Table to hold the results from OpenSkin
-
-    """
+    """Table to hold the results from OpenSkin"""
 
     general_study_module_attributes = models.ForeignKey(
         GeneralStudyModuleAttr, on_delete=models.CASCADE
@@ -1249,8 +1301,7 @@ class IrradEventXRaySourceData(models.Model):  # TID 10003b
     )
 
     def convert_gy_to_mgy(self):
-        """Converts Gy to mGy for display in web interface
-        """
+        """Converts Gy to mGy for display in web interface"""
         if self.dose_rp:
             return 1000 * self.dose_rp
 
@@ -1270,8 +1321,7 @@ class XrayGrid(models.Model):
 
 
 class PulseWidth(models.Model):  # EV 113793
-    """In TID 10003b. Code value 113793 (ms)
-    """
+    """In TID 10003b. Code value 113793 (ms)"""
 
     irradiation_event_xray_source_data = models.ForeignKey(
         IrradEventXRaySourceData, on_delete=models.CASCADE
@@ -1282,8 +1332,7 @@ class PulseWidth(models.Model):  # EV 113793
 
 
 class Kvp(models.Model):  # EV 113733
-    """In TID 10003b. Code value 113733 (kV)
-    """
+    """In TID 10003b. Code value 113733 (kV)"""
 
     irradiation_event_xray_source_data = models.ForeignKey(
         IrradEventXRaySourceData, on_delete=models.CASCADE
@@ -1292,8 +1341,7 @@ class Kvp(models.Model):  # EV 113733
 
 
 class XrayTubeCurrent(models.Model):  # EV 113734
-    """In TID 10003b. Code value 113734 (mA)
-    """
+    """In TID 10003b. Code value 113734 (mA)"""
 
     irradiation_event_xray_source_data = models.ForeignKey(
         IrradEventXRaySourceData, on_delete=models.CASCADE
@@ -1304,8 +1352,7 @@ class XrayTubeCurrent(models.Model):  # EV 113734
 
 
 class Exposure(models.Model):  # EV 113736
-    """In TID 10003b. Code value 113736 (uAs)
-    """
+    """In TID 10003b. Code value 113736 (uAs)"""
 
     irradiation_event_xray_source_data = models.ForeignKey(
         IrradEventXRaySourceData, on_delete=models.CASCADE
@@ -1315,8 +1362,7 @@ class Exposure(models.Model):  # EV 113736
     )
 
     def convert_uAs_to_mAs(self):
-        """Converts uAs to mAs for display in web interface
-        """
+        """Converts uAs to mAs for display in web interface"""
         from decimal import Decimal
         from numbers import Number
 
@@ -1327,8 +1373,7 @@ class Exposure(models.Model):  # EV 113736
 
 
 class XrayFilters(models.Model):  # EV 113771
-    """Container in TID 10003b. Code value 113771
-    """
+    """Container in TID 10003b. Code value 113771"""
 
     irradiation_event_xray_source_data = models.ForeignKey(
         IrradEventXRaySourceData, on_delete=models.CASCADE
@@ -1504,14 +1549,12 @@ class AccumProjXRayDose(models.Model):  # TID 10004
     )
 
     def fluoro_gym2_to_cgycm2(self):
-        """Converts fluoroscopy DAP total from Gy.m2 to cGy.cm2 for display in web interface
-        """
+        """Converts fluoroscopy DAP total from Gy.m2 to cGy.cm2 for display in web interface"""
         if self.fluoro_dose_area_product_total:
             return 1000000 * self.fluoro_dose_area_product_total
 
     def acq_gym2_to_cgycm2(self):
-        """Converts acquisition DAP total from Gy.m2 to cGy.cm2 for display in web interface
-        """
+        """Converts acquisition DAP total from Gy.m2 to cGy.cm2 for display in web interface"""
         if self.acquisition_dose_area_product_total:
             return 1000000 * self.acquisition_dose_area_product_total
 
@@ -1577,8 +1620,7 @@ class AccumIntegratedProjRadiogDose(models.Model):  # TID 10007
     reference_point_definition = models.TextField(blank=True, null=True)
 
     def convert_gym2_to_cgycm2(self):
-        """Converts Gy.m2 to cGy.cm2 for display in web interface
-        """
+        """Converts Gy.m2 to cGy.cm2 for display in web interface"""
         if self.dose_area_product_total:
             return 1000000 * self.dose_area_product_total
 
@@ -1590,8 +1632,7 @@ class AccumIntegratedProjRadiogDose(models.Model):  # TID 10007
     )
 
     def total_dap_delta_gym2_to_cgycm2(self):
-        """Converts total DAP over delta days from Gy.m2 to cGy.cm2 for display in web interface
-        """
+        """Converts total DAP over delta days from Gy.m2 to cGy.cm2 for display in web interface"""
         if self.dose_area_product_total_over_delta_weeks:
             return 1000000 * self.dose_area_product_total_over_delta_weeks
 
@@ -1748,8 +1789,7 @@ class CtRadiationDose(models.Model):  # TID 10011
 
 
 class SourceOfCTDoseInformation(models.Model):  # CID 10021
-    """Source of CT Dose Information
-    """
+    """Source of CT Dose Information"""
 
     # TODO: populate this table when extracting and move existing data. Task #164
     ct_radiation_dose = models.ForeignKey(CtRadiationDose, on_delete=models.CASCADE)
@@ -1895,8 +1935,7 @@ class CtIrradiationEventData(models.Model):  # TID 10013
 
 
 class CtReconstructionAlgorithm(models.Model):
-    """Container in TID 10013 to hold CT reconstruction methods
-    """
+    """Container in TID 10013 to hold CT reconstruction methods"""
 
     # TODO: Add this to the rdsr extraction routines. Issue #166
     ct_irradiation_event_data = models.ForeignKey(
@@ -1908,8 +1947,7 @@ class CtReconstructionAlgorithm(models.Model):
 
 
 class CtXRaySourceParameters(models.Model):
-    """Container in TID 10013 to hold CT x-ray source parameters
-    """
+    """Container in TID 10013 to hold CT x-ray source parameters"""
 
     ct_irradiation_event_data = models.ForeignKey(
         CtIrradiationEventData, on_delete=models.CASCADE
@@ -1965,8 +2003,7 @@ class ScanningLength(models.Model):  # TID 10014
 
 
 class SizeSpecificDoseEstimation(models.Model):
-    """Container in TID 10013 to hold size specific dose estimation details
-    """
+    """Container in TID 10013 to hold size specific dose estimation details"""
 
     # TODO: Add this to the rdsr extraction routines. Issue #168
     ct_irradiation_event_data = models.ForeignKey(
@@ -2004,8 +2041,7 @@ class SizeSpecificDoseEstimation(models.Model):
 
 
 class WEDSeriesOrInstances(models.Model):
-    """From TID 10013 Series or Instance used for Water Equivalent Diameter estimation
-    """
+    """From TID 10013 Series or Instance used for Water Equivalent Diameter estimation"""
 
     size_specific_dose_estimation = models.ForeignKey(
         SizeSpecificDoseEstimation, on_delete=models.CASCADE
@@ -2214,17 +2250,8 @@ class PersonParticipant(models.Model):  # TID 1020
         return self.person_name
 
 
-class Median(models.Aggregate):
-    function = "PERCENTILE_CONT"
-    name = "median"
-    output_field = models.FloatField()
-    template = "%(function)s(0.5) WITHIN GROUP (ORDER BY %(expressions)s)"
-
-
 class SummaryFields(models.Model):
-    """Status and progress of populating the summary fields in GeneralStudyModuleAttr
-
-    """
+    """Status and progress of populating the summary fields in GeneralStudyModuleAttr"""
 
     modality_type = models.CharField(max_length=2, null=True)
     complete = models.BooleanField(default=False)

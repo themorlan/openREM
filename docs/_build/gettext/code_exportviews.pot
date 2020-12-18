@@ -1,0 +1,211 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../code_exportviews.rst:2
+msgid "Export Views"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.ct_xlsx_phe2019:1
+msgid "View to launch celery task to export CT studies to xlsx file in PHE 2019 CT survey format"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.ct_xlsx_phe2019:0
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.ctcsv1:0
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.ctxlsx1:0
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.deletefile:0
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.download:0
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.dx_xlsx_phe2019:0
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.dxcsv1:0
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.dxxlsx1:0
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.export:0
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.export_abort:0
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.flcsv1:0
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.mgnhsbsp:0
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.rf_xlsx_phe2019:0
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.rfxlsx1:0
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.update_active:0
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.update_complete:0
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.update_error:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.ct_xlsx_phe2019:3
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.dx_xlsx_phe2019:3
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.rf_xlsx_phe2019:3
+msgid "Contains the database filtering parameters and user details."
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.ctcsv1:1
+msgid "View to launch celery task to export CT studies to csv file"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.ctcsv1:3
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.ctxlsx1:3
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.dxcsv1:3
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.dxxlsx1:3
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.flcsv1:3
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.mgnhsbsp:3
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.rfxlsx1:3
+msgid "Contains the database filtering parameters. Also used to get user group."
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.ctcsv1:4
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.ctxlsx1:4
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.dxcsv1:4
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.dxxlsx1:4
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.flcsv1:4
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.rfxlsx1:4
+msgid "string, 0 or 1 from URL indicating if names should be exported"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.ctcsv1:5
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.ctxlsx1:5
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.dxcsv1:5
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.dxxlsx1:5
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.flcsv1:5
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.rfxlsx1:5
+msgid "string, 0 or 1 from URL indicating if patient ID should be exported"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.ctxlsx1:1
+msgid "View to launch celery task to export CT studies to xlsx file"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.deletefile:1
+msgid "View to delete export files from the server"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.deletefile:3
+msgid "Contains the task ID"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.download:1
+msgid "View to handle downloads of files from the server"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.download:3
+msgid "Originally used for download of the export spreadsheets, now also used for downloading the patient size import logfiles."
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.download:6
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.export:3
+msgid "Used to get user group."
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.download:7
+msgid "ID of the export or logfile"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.dx_xlsx_phe2019:1
+msgid "View to launch celery task to export DX studies to xlsx file in PHE 2019 DX survey format"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.dx_xlsx_phe2019:4
+msgid "string, 'projection' or 'exam'"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.dxcsv1:1
+msgid "View to launch celery task to export DX and CR studies to csv file"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.dxxlsx1:1
+msgid "View to launch celery task to export DX and CR studies to xlsx file"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.export:1
+msgid "View to list current and completed exports to track progress, download and delete"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.export_abort:1
+msgid "View to abort current export job"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.export_abort:3
+msgid "Contains the task primary key"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.flcsv1:1
+msgid "View to launch celery task to export fluoroscopy studies to csv file"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.include_pid:1
+msgid "Check if user is allowed to export PID, then check if they have asked to. :param request: request so we can determine the user and therefore groups :param name: string, 0 or 1 from URL indicating if names should be exported :param pat_id: string, 0 or 1 from URL indicating if patient ID should be exported :return: dict, with pidgroup, include_names and include_pat_id as bools"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.mgcsv1:1
+msgid "Launches export of mammo data to CSV :param request: Contains the database filtering parameters. Also used to get user group. :param name: string, 0 or 1 from URL indicating if names should be exported :param pat_id: string, 0 or 1 from URL indicating if patient ID should be exported :return:"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.mgnhsbsp:1
+msgid "View to launch celery task to export mammography studies to csv file using a NHSBSP template"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.mgxlsx1:1
+msgid "Launches export of mammo data to xlsx :param request: Contains the database filtering parameters. Also used to get user group. :param name: string, 0 or 1 from URL indicating if names should be exported :param pat_id: string, 0 or 1 from URL indicating if patient ID should be exported :return:"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.rf_xlsx_phe2019:1
+msgid "View to launch celery task to export fluoro studies to xlsx file in PHE 2019 IR/fluoro survey format"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.rfopenskin:1
+msgid "Create csv export suitable for import to standalone openSkin :param request: request object :param pk: primary key of study in GeneralStudyModuleAttr table"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.rfxlsx1:1
+msgid "View to launch celery task to export fluoroscopy studies to xlsx file"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.update_active:1
+msgid "AJAX function to return active exports"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.update_active:3
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.update_error:3
+msgid "Request object"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.update_active:0
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.update_complete:0
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.update_error:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.update_active:4
+msgid "HTML table of active exports"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.update_complete:1
+msgid "AJAX function to return recently completed exports"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.update_complete:3
+msgid "Request object, including pk of latest complete export at initial page load"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.update_complete:4
+msgid "HTML table of completed exports"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.update_error:1
+msgid "AJAX function to return exports in error state"
+msgstr ""
+
+#: ../../../openrem/remapp/exports/exportviews.py:docstring of remapp.exports.exportviews.update_error:4
+msgid "HTML table of exports in error state"
+msgstr ""

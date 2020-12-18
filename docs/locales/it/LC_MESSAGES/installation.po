@@ -1,0 +1,101 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-13 20:31+0100\n"
+"PO-Revision-Date: 2020-12-05 20:47+0000\n"
+"Last-Translator: Paolo Marcheschi <paolo.marcheschi@gmail.com>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/openrem/"
+"rtd-installation/it/>\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.4-dev\n"
+
+#: ../../installation.rst:3
+msgid "Installation"
+msgstr "Installazione"
+
+#: ../../installation.rst:6
+msgid "Windows or Linux: Docker install"
+msgstr "Windows o Linux: installazione Docker"
+
+#: ../../installation.rst:9
+msgid "Preparation"
+msgstr "Preparazione"
+
+#: ../../installation.rst:10
+msgid "Install Docker"
+msgstr "Installare Docker"
+
+#: ../../installation.rst:11
+msgid "Download https://bitbucket.org/openrem/docker/get/develop.zip"
+msgstr "Download https://bitbucket.org/openrem/docker/get/develop.zip"
+
+#: ../../installation.rst:16
+msgid "Install"
+msgstr "Installare"
+
+#: ../../installation.rst:17
+msgid "Extract the ZIP file and open a shell (command prompt) in the new folder"
+msgstr ""
+"Estrai il file ZIP e apri una shell (prompt dei comandi) nella nuova cartella"
+
+#: ../../installation.rst:18
+msgid "Customise any variables in ``.env.prod`` and in the ``orthanc_1`` section in ``docker-compose.yml`` as necessary. A full description of the options are found in:"
+msgstr ""
+"Personalizza le variabili in ``.env.prod`` e nella sezione ``orthanc_1`` in "
+"``docker-compose.yml`` come necessario. Una descrizione completa delle "
+"opzioni si trova in:"
+
+#: ../../installation.rst:27
+msgid "Start the containers with:"
+msgstr "Avviare i container con:"
+
+#: ../../installation.rst:33
+msgid "Get the database and translations ready:"
+msgstr "Prepara il database e le traduzioni:"
+
+#: ../../installation.rst:43
+msgid "Open a web browser and go to http://localhost/"
+msgstr "Apri un browser web e vai su http://localhost/"
+
+#: ../../installation.rst:46
+msgid "Non-Docker alternative - Linux only"
+msgstr "Alternativa non Docker: solo Linux"
+
+#: ../../installation.rst:48
+msgid "We recommend all installations to use the Docker method described above. However, it is possible to install without Docker, but only on Linux. The instructions are a prescriptive install on Ubuntu:"
+msgstr ""
+"Si consiglia per tutte le installazioni di utilizzare il metodo Docker "
+"descritto sopra. Tuttavia, è possibile installare senza Docker, ma solo su "
+"Linux. Le istruzioni si riferiscono ad un'installazione standard su Ubuntu:"
+
+#: ../../installation.rst:58
+msgid "Offline Docker installations"
+msgstr "Installazioni Docker offline"
+
+#: ../../installation.rst:67
+msgid "Upgrading an existing installation"
+msgstr "Aggiornamento di un'installazione esistente"
+
+#: ../../installation.rst:78
+msgid "Databases"
+msgstr "Database"
+
+#: ../../installation.rst:80
+msgid "To be removed here, but we need some of the content in other pages, so leaving for now"
+msgstr ""
+"Deve essere rimosso , ma abbiamo bisogno di alcuni contenuti in altre "
+"pagine, quindi per ora lasciamo"
+
+#: ../../installation.rst:93
+msgid "Web servers"
+msgstr "Server Web"

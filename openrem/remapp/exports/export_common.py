@@ -111,23 +111,16 @@ def common_headers(modality=None, pid=False, name=None, patid=None):
         "Display name",
         "Accession number",
         "Operator",
-        "Study date",
-        "Study time",
     ]
+    if modality == "RF":
+        headers += ["Physician"]
+    headers += ["Study date", "Study time"]
     if pid and (name or patid):
-        headers += [
-            "Date of birth",
-        ]
-    headers += [
-        "Age",
-        "Sex",
-    ]
+        headers += ["Date of birth"]
+    headers += ["Age", "Sex"]
     mammo = bool(modality == "MG")
     if not mammo:
-        headers += [
-            "Height",
-            "Mass (kg)",
-        ]
+        headers += ["Height", "Mass (kg)"]
     headers += [
         "Test patient?",
         "Study description",
@@ -382,17 +375,13 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
         display_name,
         exams.accession_number,
         exams.operator_name,
-        exams.study_date,
-        exams.study_time,
     ]
+    if modality == "RF":
+        examdata += [exams.performing_physician_name]
+    examdata += [exams.study_date, exams.study_time]
     if pid and (name or patid):
-        examdata += [
-            patient_birth_date,
-        ]
-    examdata += [
-        patient_study_data["patient_age_decimal"],
-        patient_sex,
-    ]
+        examdata += [patient_birth_date]
+    examdata += [patient_study_data["patient_age_decimal"], patient_sex]
     if modality not in "MG":
         examdata += [
             patient_study_data["patient_size"],
@@ -405,19 +394,11 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
         comment,
     ]
     if modality in "CT":
-        examdata += [
-            event_count,
-            ct_dose_length_product_total,
-        ]
+        examdata += [event_count, ct_dose_length_product_total]
     elif modality in "DX":
-        examdata += [
-            event_count,
-            cgycm2,
-        ]
+        examdata += [event_count, cgycm2]
     elif modality in ["RF", "MG"]:
-        examdata += [
-            event_count,
-        ]
+        examdata += [event_count]
 
     return examdata
 
@@ -737,7 +718,7 @@ def abort_if_zero_studies(num_studies, tsk):
 def create_export_task(
     celery_uuid, modality, export_type, date_stamp, pid, user, filters_dict
 ):
-    """ Create export task, add filter details and Celery UUID to export table to track later
+    """Create export task, add filter details and Celery UUID to export table to track later
 
     :param celery_uuid: UUID allocated by Celery for task
     :param modality: export modality

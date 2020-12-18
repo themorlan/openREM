@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
 #    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
 #
@@ -30,42 +31,73 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-from __future__ import absolute_import
 
-# Following two lines added so that sphinx autodocumentation works.
-from future import standard_library
-
-standard_library.install_aliases()
-from builtins import map  # pylint: disable=redefined-builtin
 import os
+import gzip
+import json
+import logging
+from datetime import datetime, timedelta
+from decimal import Decimal
+import pickle  # nosec
+from collections import OrderedDict
 
-os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
-
+from django.db.models import Sum, Q, Min
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.urls import reverse_lazy
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
-from django.views.decorators.csrf import csrf_exempt
-import json
-import logging
-import remapp
-from openrem.openremproject.settings import MEDIA_ROOT
-from .models import GeneralStudyModuleAttr, create_user_profile
-
-try:
-    from numpy import *
-
-    plotting = 1
-except ImportError:
-    plotting = 0
-
-
 from django.template.defaultfilters import register
+from django.urls import reverse_lazy
+from django.utils.translation import gettext as _
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+import numpy as np
+
+from .forms import itemsPerPageForm
+from .interface.mod_filters import (
+    RFSummaryListFilter,
+    RFFilterPlusPid,
+    dx_acq_filter,
+    ct_acq_filter,
+    MGSummaryListFilter,
+    MGFilterPlusPid,
+)
+from .tools.make_skin_map import make_skin_map
+from .version import __skin_map_version__
+from .views_charts_ct import (
+    generate_required_ct_charts_list,
+    ct_chart_form_processing,
+)
+from .views_charts_dx import (
+    generate_required_dx_charts_list,
+    dx_chart_form_processing,
+)
+from .views_charts_mg import (
+    generate_required_mg_charts_list,
+    mg_chart_form_processing,
+)
+from .views_charts_rf import (
+    generate_required_rf_charts_list,
+    rf_chart_form_processing,
+)
+from .models import (
+    GeneralStudyModuleAttr,
+    create_user_profile,
+    HighDoseMetricAlertSettings,
+    SkinDoseMapCalcSettings,
+    PatientIDSettings,
+    DicomDeleteSettings,
+    AdminTaskQuestions,
+    HomePageAdminSettings,
+    UpgradeStatus,
+)
+from .version import __version__, __docs_version__
+
+os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 
 
 logger = logging.getLogger(__name__)
@@ -98,12 +130,7 @@ def logout_page(request):
 
 @login_required
 def dx_summary_list_filter(request):
-    """Obtain data for radiographic summary view
-    """
-    from remapp.interface.mod_filters import dx_acq_filter
-    from remapp.forms import DXChartOptionsForm, itemsPerPageForm
-    from openremproject import settings
-
+    """Obtain data for radiographic summary view"""
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = dx_acq_filter(request.GET, pid=pid)
 
@@ -115,101 +142,7 @@ def dx_summary_list_filter(request):
         create_user_profile(sender=request.user, instance=request.user, created=True)
         user_profile = request.user.userprofile
 
-    if (
-        user_profile.median_available
-        and "postgresql" in settings.DATABASES["default"]["ENGINE"]
-    ):
-        median_available = True
-    elif "postgresql" in settings.DATABASES["default"]["ENGINE"]:
-        user_profile.median_available = True
-        user_profile.save()
-        median_available = True
-    else:
-        user_profile.median_available = False
-        user_profile.save()
-        median_available = False
-
-    # Obtain the chart options from the request
-    chart_options_form = DXChartOptionsForm(request.GET)
-    # check whether the form data is valid
-    if chart_options_form.is_valid():
-        # Use the form data if the user clicked on the submit button
-        if "submit" in request.GET:
-            # process the data in form.cleaned_data as required
-            user_profile.plotCharts = chart_options_form.cleaned_data["plotCharts"]
-            user_profile.plotDXAcquisitionMeanDAP = chart_options_form.cleaned_data[
-                "plotDXAcquisitionMeanDAP"
-            ]
-            user_profile.plotDXAcquisitionFreq = chart_options_form.cleaned_data[
-                "plotDXAcquisitionFreq"
-            ]
-            user_profile.plotDXStudyMeanDAP = chart_options_form.cleaned_data[
-                "plotDXStudyMeanDAP"
-            ]
-            user_profile.plotDXStudyFreq = chart_options_form.cleaned_data[
-                "plotDXStudyFreq"
-            ]
-            user_profile.plotDXRequestMeanDAP = chart_options_form.cleaned_data[
-                "plotDXRequestMeanDAP"
-            ]
-            user_profile.plotDXRequestFreq = chart_options_form.cleaned_data[
-                "plotDXRequestFreq"
-            ]
-            user_profile.plotDXAcquisitionMeankVp = chart_options_form.cleaned_data[
-                "plotDXAcquisitionMeankVp"
-            ]
-            user_profile.plotDXAcquisitionMeanmAs = chart_options_form.cleaned_data[
-                "plotDXAcquisitionMeanmAs"
-            ]
-            user_profile.plotDXStudyPerDayAndHour = chart_options_form.cleaned_data[
-                "plotDXStudyPerDayAndHour"
-            ]
-            user_profile.plotDXAcquisitionMeankVpOverTime = chart_options_form.cleaned_data[
-                "plotDXAcquisitionMeankVpOverTime"
-            ]
-            user_profile.plotDXAcquisitionMeanmAsOverTime = chart_options_form.cleaned_data[
-                "plotDXAcquisitionMeanmAsOverTime"
-            ]
-            user_profile.plotDXAcquisitionMeanDAPOverTime = chart_options_form.cleaned_data[
-                "plotDXAcquisitionMeanDAPOverTime"
-            ]
-            user_profile.plotDXAcquisitionMeanDAPOverTimePeriod = chart_options_form.cleaned_data[
-                "plotDXAcquisitionMeanDAPOverTimePeriod"
-            ]
-            if median_available:
-                user_profile.plotAverageChoice = chart_options_form.cleaned_data[
-                    "plotMeanMedianOrBoth"
-                ]
-            user_profile.plotSeriesPerSystem = chart_options_form.cleaned_data[
-                "plotSeriesPerSystem"
-            ]
-            user_profile.plotHistograms = chart_options_form.cleaned_data[
-                "plotHistograms"
-            ]
-            user_profile.save()
-
-        # If submit was not clicked then use the settings already stored in the user's profile
-        else:
-            form_data = {
-                "plotCharts": user_profile.plotCharts,
-                "plotDXAcquisitionMeanDAP": user_profile.plotDXAcquisitionMeanDAP,
-                "plotDXAcquisitionFreq": user_profile.plotDXAcquisitionFreq,
-                "plotDXStudyMeanDAP": user_profile.plotDXStudyMeanDAP,
-                "plotDXStudyFreq": user_profile.plotDXStudyFreq,
-                "plotDXRequestMeanDAP": user_profile.plotDXRequestMeanDAP,
-                "plotDXRequestFreq": user_profile.plotDXRequestFreq,
-                "plotDXAcquisitionMeankVp": user_profile.plotDXAcquisitionMeankVp,
-                "plotDXAcquisitionMeanmAs": user_profile.plotDXAcquisitionMeanmAs,
-                "plotDXStudyPerDayAndHour": user_profile.plotDXStudyPerDayAndHour,
-                "plotDXAcquisitionMeankVpOverTime": user_profile.plotDXAcquisitionMeankVpOverTime,
-                "plotDXAcquisitionMeanmAsOverTime": user_profile.plotDXAcquisitionMeanmAsOverTime,
-                "plotDXAcquisitionMeanDAPOverTime": user_profile.plotDXAcquisitionMeanDAPOverTime,
-                "plotDXAcquisitionMeanDAPOverTimePeriod": user_profile.plotDXAcquisitionMeanDAPOverTimePeriod,
-                "plotMeanMedianOrBoth": user_profile.plotAverageChoice,
-                "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
-                "plotHistograms": user_profile.plotHistograms,
-            }
-            chart_options_form = DXChartOptionsForm(form_data)
+    chart_options_form = dx_chart_form_processing(request, user_profile)
 
     # Obtain the number of items per page from the request
     items_per_page_form = itemsPerPageForm(request.GET)
@@ -227,8 +160,8 @@ def dx_summary_list_filter(request):
             items_per_page_form = itemsPerPageForm(form_data)
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -251,361 +184,17 @@ def dx_summary_list_filter(request):
         "itemsPerPageForm": items_per_page_form,
     }
 
-    return render(request, "remapp/dxfiltered.html", return_structure,)
-
-
-@login_required
-def dx_summary_chart_data(request):
-    """Obtain data for Ajax chart call
-    """
-    from remapp.interface.mod_filters import DXSummaryListFilter
-    from django.db.models import Q
-    from openremproject import settings
-    from django.http import JsonResponse
-
-    f = DXSummaryListFilter(
-        request.GET,
-        queryset=GeneralStudyModuleAttr.objects.filter(
-            Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
-        )
-        .order_by()
-        .distinct(),
-    )
-
-    try:
-        # See if the user has plot settings in userprofile
-        user_profile = request.user.userprofile
-    except ObjectDoesNotExist:
-        # Create a default userprofile for the user if one doesn't exist
-        create_user_profile(sender=request.user, instance=request.user, created=True)
-        user_profile = request.user.userprofile
-
-    if (
-        user_profile.median_available
-        and "postgresql" in settings.DATABASES["default"]["ENGINE"]
-    ):
-        median_available = True
-    elif "postgresql" in settings.DATABASES["default"]["ENGINE"]:
-        user_profile.median_available = True
-        user_profile.save()
-        median_available = True
-    else:
-        user_profile.median_available = False
-        user_profile.save()
-        median_available = False
-
-    if settings.DEBUG:
-        from datetime import datetime
-
-        start_time = datetime.now()
-
-    return_structure = dx_plot_calculations(
-        f,
-        user_profile.plotDXAcquisitionMeanDAP,
-        user_profile.plotDXAcquisitionFreq,
-        user_profile.plotDXStudyMeanDAP,
-        user_profile.plotDXStudyFreq,
-        user_profile.plotDXRequestMeanDAP,
-        user_profile.plotDXRequestFreq,
-        user_profile.plotDXAcquisitionMeankVpOverTime,
-        user_profile.plotDXAcquisitionMeanmAsOverTime,
-        user_profile.plotDXAcquisitionMeanDAPOverTime,
-        user_profile.plotDXAcquisitionMeanDAPOverTimePeriod,
-        user_profile.plotDXAcquisitionMeankVp,
-        user_profile.plotDXAcquisitionMeanmAs,
-        user_profile.plotDXStudyPerDayAndHour,
-        median_available,
-        user_profile.plotAverageChoice,
-        user_profile.plotSeriesPerSystem,
-        user_profile.plotHistogramBins,
-        user_profile.plotHistograms,
-        user_profile.plotCaseInsensitiveCategories,
-    )
-
-    if settings.DEBUG:
-        logger.debug(f"Elapsed time is {datetime.now() - start_time}")
-
-    return JsonResponse(return_structure, safe=False)
-
-
-def dx_plot_calculations(
-    f,
-    plot_acquisition_mean_dap,
-    plot_acquisition_freq,
-    plot_study_mean_dap,
-    plot_study_freq,
-    plot_request_mean_dap,
-    plot_request_freq,
-    plot_acquisition_mean_kvp_over_time,
-    plot_acquisition_mean_mas_over_time,
-    plot_acquisition_mean_dap_over_time,
-    plot_acquisition_mean_dap_over_time_period,
-    plot_acquisition_mean_kvp,
-    plot_acquisition_mean_mas,
-    plot_study_per_day_and_hour,
-    median_available,
-    plot_average_choice,
-    plot_series_per_systems,
-    plot_histogram_bins,
-    plot_histograms,
-    plot_case_insensitive_categories,
-):
-    """Calculations for radiographic charts
-    """
-    from .interface.chart_functions import (
-        average_chart_inc_histogram_data,
-        average_chart_over_time_data,
-        workload_chart_data,
-    )
-    from django.utils.datastructures import MultiValueDictKeyError
-
-    return_structure = {}
-
-    if (
-        plot_study_mean_dap
-        or plot_study_freq
-        or plot_study_per_day_and_hour
-        or plot_request_mean_dap
-        or plot_request_freq
-    ):
-        try:
-            if f.form.data["acquisition_protocol"]:
-                exp_include = f.qs.values_list("study_instance_uid")
-        except MultiValueDictKeyError:
-            pass
-        except KeyError:
-            pass
-
-    if plot_study_mean_dap or plot_study_freq or plot_study_per_day_and_hour:
-        try:
-            if f.form.data["acquisition_protocol"]:
-                # The user has filtered on acquisition_protocol, so need to use the slow method of querying the database
-                # to avoid studies being duplicated when there is more than one of a particular acquisition type in a
-                # study.
-                study_events = GeneralStudyModuleAttr.objects.exclude(
-                    total_dap__isnull=True
-                ).filter(study_instance_uid__in=exp_include)
-            else:
-                # The user hasn't filtered on acquisition, so we can use the faster database querying.
-                study_events = f.qs
-        except MultiValueDictKeyError:
-            study_events = f.qs
-        except KeyError:
-            study_events = f.qs
-
-    if plot_request_mean_dap or plot_request_freq:
-        try:
-            if f.form.data["acquisition_protocol"]:
-                # The user has filtered on acquisition_protocol, so need to use the slow method of querying the database
-                # to avoid studies being duplicated when there is more than one of a particular acquisition type in a
-                # study.
-                request_events = GeneralStudyModuleAttr.objects.exclude(
-                    total_dap__isnull=True
-                ).filter(study_instance_uid__in=exp_include)
-            else:
-                # The user hasn't filtered on acquisition, so we can use the faster database querying.
-                request_events = f.qs
-        except MultiValueDictKeyError:
-            request_events = f.qs
-        except KeyError:
-            request_events = f.qs
-
-    if plot_acquisition_mean_dap or plot_acquisition_freq:
-        result = average_chart_inc_histogram_data(
-            f.qs,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-            "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
-            1000000,
-            plot_acquisition_mean_dap,
-            plot_acquisition_freq,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
+    if user_profile.plotCharts:
+        return_structure["required_charts"] = generate_required_dx_charts_list(
+            user_profile
         )
 
-        return_structure["acquisitionSystemList"] = result["system_list"]
-        return_structure["acquisition_names"] = result["series_names"]
-        return_structure["acquisitionSummary"] = result["summary"]
-        if plot_acquisition_mean_dap and plot_histograms:
-            return_structure["acquisitionHistogramData"] = result["histogram_data"]
-
-    if plot_request_mean_dap or plot_request_freq:
-        result = average_chart_inc_histogram_data(
-            request_events,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "requested_procedure_code_meaning",
-            "total_dap",
-            1000000,
-            plot_request_mean_dap,
-            plot_request_freq,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
-        )
-
-        return_structure["requestSystemList"] = result["system_list"]
-        return_structure["request_names"] = result["series_names"]
-        return_structure["requestSummary"] = result["summary"]
-        if plot_request_mean_dap and plot_histograms:
-            return_structure["requestHistogramData"] = result["histogram_data"]
-
-    if plot_study_mean_dap or plot_study_freq:
-        result = average_chart_inc_histogram_data(
-            study_events,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "study_description",
-            "total_dap",
-            1000000,
-            plot_study_mean_dap,
-            plot_study_freq,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
-        )
-
-        return_structure["studySystemList"] = result["system_list"]
-        return_structure["study_names"] = result["series_names"]
-        return_structure["studySummary"] = result["summary"]
-        if plot_study_mean_dap and plot_histograms:
-            return_structure["studyHistogramData"] = result["histogram_data"]
-
-    if plot_acquisition_mean_kvp:
-        result = average_chart_inc_histogram_data(
-            f.qs,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-            "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
-            1,
-            plot_acquisition_mean_kvp,
-            0,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
-        )
-
-        return_structure["acquisitionkVpSystemList"] = result["system_list"]
-        return_structure["acquisition_kvp_names"] = result["series_names"]
-        return_structure["acquisitionkVpSummary"] = result["summary"]
-        if plot_histograms:
-            return_structure["acquisitionHistogramkVpData"] = result["histogram_data"]
-
-    if plot_acquisition_mean_mas:
-        result = average_chart_inc_histogram_data(
-            f.qs,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-            "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
-            0.001,
-            plot_acquisition_mean_mas,
-            0,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
-        )
-
-        return_structure["acquisitionmAsSystemList"] = result["system_list"]
-        return_structure["acquisition_mas_names"] = result["series_names"]
-        return_structure["acquisitionmAsSummary"] = result["summary"]
-        if plot_histograms:
-            return_structure["acquisitionHistogrammAsData"] = result["histogram_data"]
-
-    if plot_acquisition_mean_dap_over_time:
-        result = average_chart_over_time_data(
-            f.qs,
-            "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-            "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
-            "study_date",
-            "projectionxrayradiationdose__irradeventxraydata__date_time_started",
-            median_available,
-            plot_average_choice,
-            1000000,
-            plot_acquisition_mean_dap_over_time_period,
-            case_insensitive_categories=plot_case_insensitive_categories,
-        )
-        if median_available and (
-            plot_average_choice == "median" or plot_average_choice == "both"
-        ):
-            return_structure["acquisitionMedianDAPoverTime"] = result[
-                "median_over_time"
-            ]
-        if plot_average_choice == "mean" or plot_average_choice == "both":
-            return_structure["acquisitionMeanDAPoverTime"] = result["mean_over_time"]
-        if not plot_acquisition_mean_dap and not plot_acquisition_freq:
-            return_structure["acquisition_names"] = result["series_names"]
-
-    if plot_acquisition_mean_kvp_over_time:
-        result = average_chart_over_time_data(
-            f.qs,
-            "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-            "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
-            "study_date",
-            "projectionxrayradiationdose__irradeventxraydata__date_time_started",
-            median_available,
-            plot_average_choice,
-            1,
-            plot_acquisition_mean_dap_over_time_period,
-            case_insensitive_categories=plot_case_insensitive_categories,
-        )
-        if median_available and (
-            plot_average_choice == "median" or plot_average_choice == "both"
-        ):
-            return_structure["acquisitionMediankVpoverTime"] = result[
-                "median_over_time"
-            ]
-        if plot_average_choice == "mean" or plot_average_choice == "both":
-            return_structure["acquisitionMeankVpoverTime"] = result["mean_over_time"]
-        return_structure["acquisition_kvp_names"] = result["series_names"]
-
-    if plot_acquisition_mean_mas_over_time:
-        result = average_chart_over_time_data(
-            f.qs,
-            "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-            "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
-            "study_date",
-            "projectionxrayradiationdose__irradeventxraydata__date_time_started",
-            median_available,
-            plot_average_choice,
-            0.001,
-            plot_acquisition_mean_dap_over_time_period,
-            case_insensitive_categories=plot_case_insensitive_categories,
-        )
-        if median_available and (
-            plot_average_choice == "median" or plot_average_choice == "both"
-        ):
-            return_structure["acquisitionMedianmAsoverTime"] = result[
-                "median_over_time"
-            ]
-        if plot_average_choice == "mean" or plot_average_choice == "both":
-            return_structure["acquisitionMeanmAsoverTime"] = result["mean_over_time"]
-        return_structure["acquisition_mas_names"] = result["series_names"]
-
-    if plot_study_per_day_and_hour:
-        result = workload_chart_data(study_events)
-        return_structure["studiesPerHourInWeekdays"] = result["workload"]
-
-    return return_structure
+    return render(request, "remapp/dxfiltered.html", return_structure)
 
 
 @login_required
 def dx_detail_view(request, pk=None):
-    """Detail view for a DX study
-    """
+    """Detail view for a DX study"""
 
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
@@ -614,8 +203,8 @@ def dx_detail_view(request, pk=None):
         return redirect(reverse_lazy("dx_summary_list_filter"))
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -648,13 +237,7 @@ def dx_detail_view(request, pk=None):
 
 @login_required
 def rf_summary_list_filter(request):
-    """Obtain data for radiographic summary view
-    """
-    from remapp.interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
-    from openremproject import settings
-    from remapp.forms import RFChartOptionsForm, itemsPerPageForm
-    from remapp.models import HighDoseMetricAlertSettings
-
+    """Obtain data for radiographic summary view"""
     if request.user.groups.filter(name="pidgroup"):
         f = RFFilterPlusPid(
             request.GET,
@@ -678,68 +261,7 @@ def rf_summary_list_filter(request):
         create_user_profile(sender=request.user, instance=request.user, created=True)
         user_profile = request.user.userprofile
 
-    if (
-        user_profile.median_available
-        and "postgresql" in settings.DATABASES["default"]["ENGINE"]
-    ):
-        median_available = True
-    elif "postgresql" in settings.DATABASES["default"]["ENGINE"]:
-        user_profile.median_available = True
-        user_profile.save()
-        median_available = True
-    else:
-        user_profile.median_available = False
-        user_profile.save()
-        median_available = False
-
-    # Obtain the chart options from the request
-    chart_options_form = RFChartOptionsForm(request.GET)
-    # Check whether the form data is valid
-    if chart_options_form.is_valid():
-        # Use the form data if the user clicked on the submit button
-        if "submit" in request.GET:
-            # process the data in form.cleaned_data as required
-            user_profile.plotCharts = chart_options_form.cleaned_data["plotCharts"]
-            user_profile.plotRFStudyPerDayAndHour = chart_options_form.cleaned_data[
-                "plotRFStudyPerDayAndHour"
-            ]
-            user_profile.plotRFStudyFreq = chart_options_form.cleaned_data[
-                "plotRFStudyFreq"
-            ]
-            user_profile.plotRFStudyDAP = chart_options_form.cleaned_data[
-                "plotRFStudyDAP"
-            ]
-            user_profile.plotRFRequestFreq = chart_options_form.cleaned_data[
-                "plotRFRequestFreq"
-            ]
-            user_profile.plotRFRequestDAP = chart_options_form.cleaned_data[
-                "plotRFRequestDAP"
-            ]
-            if median_available:
-                user_profile.plotAverageChoice = chart_options_form.cleaned_data[
-                    "plotMeanMedianOrBoth"
-                ]
-            user_profile.plotSeriesPerSystem = chart_options_form.cleaned_data[
-                "plotSeriesPerSystem"
-            ]
-            user_profile.plotHistograms = chart_options_form.cleaned_data[
-                "plotHistograms"
-            ]
-            user_profile.save()
-
-        else:
-            form_data = {
-                "plotCharts": user_profile.plotCharts,
-                "plotRFStudyPerDayAndHour": user_profile.plotRFStudyPerDayAndHour,
-                "plotRFStudyFreq": user_profile.plotRFStudyFreq,
-                "plotRFStudyDAP": user_profile.plotRFStudyDAP,
-                "plotRFRequestFreq": user_profile.plotRFRequestFreq,
-                "plotRFRequestDAP": user_profile.plotRFRequestDAP,
-                "plotMeanMedianOrBoth": user_profile.plotAverageChoice,
-                "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
-                "plotHistograms": user_profile.plotHistograms,
-            }
-            chart_options_form = RFChartOptionsForm(form_data)
+    chart_options_form = rf_chart_form_processing(request, user_profile)
 
     # Obtain the number of items per page from the request
     items_per_page_form = itemsPerPageForm(request.GET)
@@ -769,8 +291,8 @@ def rf_summary_list_filter(request):
     )[0]
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     # # Calculate skin dose map for all objects in the database
@@ -829,180 +351,17 @@ def rf_summary_list_filter(request):
         "alertLevels": alert_levels,
     }
 
+    if user_profile.plotCharts:
+        return_structure["required_charts"] = generate_required_rf_charts_list(
+            user_profile
+        )
+
     return render(request, "remapp/rffiltered.html", return_structure)
 
 
 @login_required
-def rf_summary_chart_data(request):
-    """Obtain data for Ajax chart call
-    """
-    from remapp.interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
-    from openremproject import settings
-    from django.http import JsonResponse
-
-    if request.user.groups.filter(name="pidgroup"):
-        f = RFFilterPlusPid(
-            request.GET,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
-            .order_by()
-            .distinct(),
-        )
-    else:
-        f = RFSummaryListFilter(
-            request.GET,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
-            .order_by()
-            .distinct(),
-        )
-
-    try:
-        # See if the user has plot settings in userprofile
-        user_profile = request.user.userprofile
-    except ObjectDoesNotExist:
-        # Create a default userprofile for the user if one doesn't exist
-        create_user_profile(sender=request.user, instance=request.user, created=True)
-        user_profile = request.user.userprofile
-
-    if (
-        user_profile.median_available
-        and "postgresql" in settings.DATABASES["default"]["ENGINE"]
-    ):
-        median_available = True
-    elif "postgresql" in settings.DATABASES["default"]["ENGINE"]:
-        user_profile.median_available = True
-        user_profile.save()
-        median_available = True
-    else:
-        user_profile.median_available = False
-        user_profile.save()
-        median_available = False
-
-    if settings.DEBUG:
-        from datetime import datetime
-
-        start_time = datetime.now()
-
-    return_structure = rf_plot_calculations(
-        f,
-        median_available,
-        user_profile.plotAverageChoice,
-        user_profile.plotSeriesPerSystem,
-        user_profile.plotHistogramBins,
-        user_profile.plotRFStudyPerDayAndHour,
-        user_profile.plotRFStudyFreq,
-        user_profile.plotRFStudyDAP,
-        user_profile.plotRFRequestFreq,
-        user_profile.plotRFRequestDAP,
-        user_profile.plotHistograms,
-        user_profile.plotCaseInsensitiveCategories,
-    )
-
-    if settings.DEBUG:
-        logger.debug(f"Elapsed time is {datetime.now() - start_time}")
-
-    return JsonResponse(return_structure, safe=False)
-
-
-def rf_plot_calculations(
-    f,
-    median_available,
-    plot_average_choice,
-    plot_series_per_systems,
-    plot_histogram_bins,
-    plot_study_per_day_and_hour,
-    plot_study_freq,
-    plot_study_dap,
-    plot_request_freq,
-    plot_request_dap,
-    plot_histograms,
-    plot_case_insensitive_categories,
-):
-    """Calculations for fluoroscopy charts
-    """
-    from .interface.chart_functions import (
-        average_chart_inc_histogram_data,
-        workload_chart_data,
-    )
-
-    return_structure = {}
-
-    if (
-        plot_study_per_day_and_hour
-        or plot_study_freq
-        or plot_study_dap
-        or plot_request_freq
-        or plot_request_dap
-    ):
-        # No acquisition-level filters, so can use f.qs for all charts at the moment.
-        # exp_include = f.qs.values_list('study_instance_uid')
-        # study_events = GeneralStudyModuleAttr.objects.filter(study_instance_uid__in=exp_include)
-        study_and_request_events = f.qs
-
-    if plot_study_per_day_and_hour:
-        result = workload_chart_data(study_and_request_events)
-        return_structure["studiesPerHourInWeekdays"] = result["workload"]
-
-    if plot_study_freq or plot_study_dap:
-        result = average_chart_inc_histogram_data(
-            study_and_request_events,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "study_description",
-            "total_dap",
-            1000000,
-            plot_study_dap,
-            plot_study_freq,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
-        )
-
-        return_structure["studySystemList"] = result["system_list"]
-        return_structure["studyNameList"] = result["series_names"]
-        return_structure["studySummary"] = result["summary"]
-        if plot_study_dap and plot_histograms:
-            return_structure["studyHistogramData"] = result["histogram_data"]
-
-    if plot_request_freq or plot_request_dap:
-        result = average_chart_inc_histogram_data(
-            study_and_request_events,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "requested_procedure_code_meaning",
-            "total_dap",
-            1000000,
-            plot_request_dap,
-            plot_request_freq,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
-        )
-
-        return_structure["requestSystemList"] = result["system_list"]
-        return_structure["requestNameList"] = result["series_names"]
-        return_structure["requestSummary"] = result["summary"]
-        if plot_request_dap and plot_histograms:
-            return_structure["requestHistogramData"] = result["histogram_data"]
-
-    return return_structure
-
-
-@login_required
 def rf_detail_view(request, pk=None):
-    """Detail view for an RF study
-    """
-    from decimal import Decimal
-    from django.db.models import Sum
-    import numpy as np
-    from remapp.models import HighDoseMetricAlertSettings, SkinDoseMapCalcSettings
-    from django.core.exceptions import ObjectDoesNotExist
-    from datetime import timedelta
-    from packaging import version
-
+    """Detail view for an RF study"""
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
@@ -1021,9 +380,11 @@ def rf_detail_view(request, pk=None):
     total_dose = 0
     # Iterate over the planes (for bi-plane systems, for single plane systems there is only one)
     projection_xray_dose_set = study.projectionxrayradiationdose_set.get()
-    accumxraydose_set_all_planes = projection_xray_dose_set.accumxraydose_set.select_related(
-        "acquisition_plane"
-    ).all()
+    accumxraydose_set_all_planes = (
+        projection_xray_dose_set.accumxraydose_set.select_related(
+            "acquisition_plane"
+        ).all()
+    )
     events_all = projection_xray_dose_set.irradeventxraydata_set.select_related(
         "irradiation_event_type",
         "patient_table_relationship_cid",
@@ -1057,7 +418,7 @@ def rf_detail_view(request, pk=None):
         total_dose = total_dose + accum_dose_ds.dose_rp_total
 
     # get info for different Acquisition Types
-    stu_inc_totals = (
+    stu_inc_totals = (  # pylint: disable=line-too-long
         GeneralStudyModuleAttr.objects.filter(
             pk=pk,
             projectionxrayradiationdose__irradeventxraydata__irradiation_event_type__code_meaning__contains="Acquisition",
@@ -1091,7 +452,7 @@ def rf_detail_view(request, pk=None):
     )
     # stu_time_totals = [None] * len(stu_irr_types)
     for _, irr_type in enumerate(acq_irr_types):
-        stu_time_totals.append(
+        stu_time_totals.append(  # pylint: disable=line-too-long
             list(
                 GeneralStudyModuleAttr.objects.filter(
                     pk=pk,
@@ -1158,8 +519,8 @@ def rf_detail_view(request, pk=None):
 
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
         "enable_skin_dose_maps": SkinDoseMapCalcSettings.objects.values_list(
             "enable_skin_dose_maps", flat=True
         )[0],
@@ -1186,16 +547,7 @@ def rf_detail_view(request, pk=None):
 
 @login_required
 def rf_detail_view_skin_map(request, pk=None):
-    """View to calculate a skin dose map. Currently just a copy of rf_detail_view
-    """
-    from django.contrib import messages
-    from remapp.models import GeneralStudyModuleAttr
-    from django.http import JsonResponse
-    import pickle as pickle
-    import gzip
-
-    from django.core.exceptions import ObjectDoesNotExist
-
+    """View to calculate a skin dose map. Currently just a copy of rf_detail_view"""
     try:
         GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
@@ -1203,8 +555,8 @@ def rf_detail_view_skin_map(request, pk=None):
         return redirect(reverse_lazy("rf_summary_list_filter"))
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -1215,7 +567,7 @@ def rf_detail_view_skin_map(request, pk=None):
         study_date = GeneralStudyModuleAttr.objects.get(pk=pk).study_date
         if study_date:
             skin_map_path = os.path.join(
-                MEDIA_ROOT,
+                settings.MEDIA_ROOT,
                 "skin_maps",
                 "{0:0>4}".format(study_date.year),
                 "{0:0>2}".format(study_date.month),
@@ -1224,14 +576,12 @@ def rf_detail_view_skin_map(request, pk=None):
             )
         else:
             skin_map_path = os.path.join(
-                MEDIA_ROOT, "skin_maps", "skin_map_" + str(pk) + ".p"
+                settings.MEDIA_ROOT, "skin_maps", "skin_map_" + str(pk) + ".p"
             )
     except:
         skin_map_path = os.path.join(
-            MEDIA_ROOT, "skin_maps", "skin_map_" + str(pk) + ".p"
+            settings.MEDIA_ROOT, "skin_maps", "skin_map_" + str(pk) + ".p"
         )
-
-    from remapp.version import __skin_map_version__
 
     # If patient weight is missing from the database then db_pat_mass will be undefined
     try:
@@ -1287,8 +637,6 @@ def rf_detail_view_skin_map(request, pk=None):
             pass
 
     if not loaded_existing_data:
-        from remapp.tools.make_skin_map import make_skin_map
-
         make_skin_map(pk)
         with gzip.open(skin_map_path, "rb") as f:
             return_structure = pickle.load(f)
@@ -1299,12 +647,7 @@ def rf_detail_view_skin_map(request, pk=None):
 
 @login_required
 def ct_summary_list_filter(request):
-    """Obtain data for CT summary view
-    """
-    from remapp.interface.mod_filters import ct_acq_filter
-    from remapp.forms import CTChartOptionsForm, itemsPerPageForm
-    from openremproject import settings
-
+    """Obtain data for CT summary view"""
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = ct_acq_filter(request.GET, pid=pid)
 
@@ -1316,100 +659,7 @@ def ct_summary_list_filter(request):
         create_user_profile(sender=request.user, instance=request.user, created=True)
         user_profile = request.user.userprofile
 
-    if (
-        user_profile.median_available
-        and "postgresql" in settings.DATABASES["default"]["ENGINE"]
-    ):
-        median_available = True
-    elif "postgresql" in settings.DATABASES["default"]["ENGINE"]:
-        user_profile.median_available = True
-        user_profile.save()
-        median_available = True
-    else:
-        user_profile.median_available = False
-        user_profile.save()
-        median_available = False
-
-    # Obtain the chart options from the request
-    chart_options_form = CTChartOptionsForm(request.GET)
-    # Check whether the form data is valid
-    if chart_options_form.is_valid():
-        # Use the form data if the user clicked on the submit button
-        if "submit" in request.GET:
-            # process the data in form.cleaned_data as required
-            user_profile.plotCharts = chart_options_form.cleaned_data["plotCharts"]
-            user_profile.plotCTAcquisitionMeanDLP = chart_options_form.cleaned_data[
-                "plotCTAcquisitionMeanDLP"
-            ]
-            user_profile.plotCTAcquisitionMeanCTDI = chart_options_form.cleaned_data[
-                "plotCTAcquisitionMeanCTDI"
-            ]
-            user_profile.plotCTAcquisitionFreq = chart_options_form.cleaned_data[
-                "plotCTAcquisitionFreq"
-            ]
-            user_profile.plotCTStudyMeanDLP = chart_options_form.cleaned_data[
-                "plotCTStudyMeanDLP"
-            ]
-            user_profile.plotCTStudyMeanCTDI = chart_options_form.cleaned_data[
-                "plotCTStudyMeanCTDI"
-            ]
-            user_profile.plotCTStudyFreq = chart_options_form.cleaned_data[
-                "plotCTStudyFreq"
-            ]
-            user_profile.plotCTStudyNumEvents = chart_options_form.cleaned_data[
-                "plotCTStudyNumEvents"
-            ]
-            user_profile.plotCTRequestMeanDLP = chart_options_form.cleaned_data[
-                "plotCTRequestMeanDLP"
-            ]
-            user_profile.plotCTRequestFreq = chart_options_form.cleaned_data[
-                "plotCTRequestFreq"
-            ]
-            user_profile.plotCTRequestNumEvents = chart_options_form.cleaned_data[
-                "plotCTRequestNumEvents"
-            ]
-            user_profile.plotCTStudyPerDayAndHour = chart_options_form.cleaned_data[
-                "plotCTStudyPerDayAndHour"
-            ]
-            user_profile.plotCTStudyMeanDLPOverTime = chart_options_form.cleaned_data[
-                "plotCTStudyMeanDLPOverTime"
-            ]
-            user_profile.plotCTStudyMeanDLPOverTimePeriod = chart_options_form.cleaned_data[
-                "plotCTStudyMeanDLPOverTimePeriod"
-            ]
-            if median_available:
-                user_profile.plotAverageChoice = chart_options_form.cleaned_data[
-                    "plotMeanMedianOrBoth"
-                ]
-            user_profile.plotSeriesPerSystem = chart_options_form.cleaned_data[
-                "plotSeriesPerSystem"
-            ]
-            user_profile.plotHistograms = chart_options_form.cleaned_data[
-                "plotHistograms"
-            ]
-            user_profile.save()
-
-        else:
-            form_data = {
-                "plotCharts": user_profile.plotCharts,
-                "plotCTAcquisitionMeanDLP": user_profile.plotCTAcquisitionMeanDLP,
-                "plotCTAcquisitionMeanCTDI": user_profile.plotCTAcquisitionMeanCTDI,
-                "plotCTAcquisitionFreq": user_profile.plotCTAcquisitionFreq,
-                "plotCTStudyMeanDLP": user_profile.plotCTStudyMeanDLP,
-                "plotCTStudyMeanCTDI": user_profile.plotCTStudyMeanCTDI,
-                "plotCTStudyFreq": user_profile.plotCTStudyFreq,
-                "plotCTStudyNumEvents": user_profile.plotCTStudyNumEvents,
-                "plotCTRequestMeanDLP": user_profile.plotCTRequestMeanDLP,
-                "plotCTRequestFreq": user_profile.plotCTRequestFreq,
-                "plotCTRequestNumEvents": user_profile.plotCTRequestNumEvents,
-                "plotCTStudyPerDayAndHour": user_profile.plotCTStudyPerDayAndHour,
-                "plotCTStudyMeanDLPOverTime": user_profile.plotCTStudyMeanDLPOverTime,
-                "plotCTStudyMeanDLPOverTimePeriod": user_profile.plotCTStudyMeanDLPOverTimePeriod,
-                "plotMeanMedianOrBoth": user_profile.plotAverageChoice,
-                "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
-                "plotHistograms": user_profile.plotHistograms,
-            }
-            chart_options_form = CTChartOptionsForm(form_data)
+    chart_options_form = ct_chart_form_processing(request, user_profile)
 
     # Obtain the number of items per page from the request
     items_per_page_form = itemsPerPageForm(request.GET)
@@ -1427,8 +677,8 @@ def ct_summary_list_filter(request):
             items_per_page_form = itemsPerPageForm(form_data)
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -1451,388 +701,17 @@ def ct_summary_list_filter(request):
         "itemsPerPageForm": items_per_page_form,
     }
 
-    return render(request, "remapp/ctfiltered.html", return_structure,)
-
-
-@login_required
-def ct_summary_chart_data(request):
-    """Obtain data for CT charts Ajax call
-    """
-    from remapp.interface.mod_filters import ct_acq_filter
-    from openremproject import settings
-    from django.http import JsonResponse
-
-    pid = bool(request.user.groups.filter(name="pidgroup"))
-    f = ct_acq_filter(request.GET, pid=pid)
-
-    try:
-        # See if the user has plot settings in userprofile
-        user_profile = request.user.userprofile
-    except ObjectDoesNotExist:
-        # Create a default userprofile for the user if one doesn't exist
-        create_user_profile(sender=request.user, instance=request.user, created=True)
-        user_profile = request.user.userprofile
-
-    if (
-        user_profile.median_available
-        and "postgresql" in settings.DATABASES["default"]["ENGINE"]
-    ):
-        median_available = True
-    elif "postgresql" in settings.DATABASES["default"]["ENGINE"]:
-        user_profile.median_available = True
-        user_profile.save()
-        median_available = True
-    else:
-        user_profile.median_available = False
-        user_profile.save()
-        median_available = False
-
-    if settings.DEBUG:
-        from datetime import datetime
-
-        start_time = datetime.now()
-
-    return_structure = ct_plot_calculations(
-        f,
-        user_profile.plotCTAcquisitionFreq,
-        user_profile.plotCTAcquisitionMeanCTDI,
-        user_profile.plotCTAcquisitionMeanDLP,
-        user_profile.plotCTRequestFreq,
-        user_profile.plotCTRequestMeanDLP,
-        user_profile.plotCTRequestNumEvents,
-        user_profile.plotCTStudyFreq,
-        user_profile.plotCTStudyMeanDLP,
-        user_profile.plotCTStudyMeanCTDI,
-        user_profile.plotCTStudyNumEvents,
-        user_profile.plotCTStudyMeanDLPOverTime,
-        user_profile.plotCTStudyMeanDLPOverTimePeriod,
-        user_profile.plotCTStudyPerDayAndHour,
-        median_available,
-        user_profile.plotAverageChoice,
-        user_profile.plotSeriesPerSystem,
-        user_profile.plotHistogramBins,
-        user_profile.plotHistograms,
-        user_profile.plotCaseInsensitiveCategories,
-    )
-
-    if settings.DEBUG:
-        logger.debug(f"Elapsed time is {datetime.now() - start_time}")
-
-    return JsonResponse(return_structure, safe=False)
-
-
-def ct_plot_calculations(
-    f,
-    plot_acquisition_freq,
-    plot_acquisition_mean_ctdi,
-    plot_acquisition_mean_dlp,
-    plot_request_freq,
-    plot_request_mean_dlp,
-    plot_request_num_events,
-    plot_study_freq,
-    plot_study_mean_dlp,
-    plot_study_mean_ctdi,
-    plot_study_num_events,
-    plot_study_mean_dlp_over_time,
-    plot_study_mean_dlp_over_time_period,
-    plot_study_per_day_and_hour,
-    median_available,
-    plot_average_choice,
-    plot_series_per_systems,
-    plot_histogram_bins,
-    plot_histograms,
-    plot_case_insensitive_categories,
-):
-    """CT chart data calculations
-    """
-    from .interface.chart_functions import (
-        average_chart_inc_histogram_data,
-        average_chart_over_time_data,
-        workload_chart_data,
-    )
-
-    return_structure = {}
-
-    if (
-        plot_study_mean_dlp
-        or plot_study_mean_ctdi
-        or plot_study_freq
-        or plot_study_num_events
-        or plot_study_mean_dlp_over_time
-        or plot_study_per_day_and_hour
-        or plot_request_mean_dlp
-        or plot_request_freq
-        or plot_request_num_events
-    ):
-        prefetch_list = [
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name"
-        ]
-        if plot_study_mean_ctdi:
-            prefetch_list.append(
-                "ctradiationdose__ctirradiationeventdata__mean_ctdivol"
-            )
-
-        if (
-            "acquisition_protocol" in f.form.data
-            and f.form.data["acquisition_protocol"]
-        ) or (
-            "ct_acquisition_type" in f.form.data and f.form.data["ct_acquisition_type"]
-        ):
-            # The user has filtered on acquisition_protocol, so need to use the slow method of querying the database
-            # to avoid studies being duplicated when there is more than one of a particular acquisition type in a
-            # study.
-            try:
-                exp_include = f.qs.values_list("study_instance_uid")
-                study_and_request_events = (
-                    GeneralStudyModuleAttr.objects.exclude(total_dlp__isnull=True)
-                    .filter(study_instance_uid__in=exp_include)
-                    .values(*prefetch_list)
-                )
-            except KeyError:
-                study_and_request_events = f.qs.values(*prefetch_list)
-        else:
-            # The user hasn't filtered on acquisition, so we can use the faster database querying.
-            study_and_request_events = f.qs.values(*prefetch_list)
-
-    if plot_acquisition_mean_dlp or plot_acquisition_freq or plot_acquisition_mean_ctdi:
-        prefetch_list = [
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-        ]
-        if plot_acquisition_mean_dlp:
-            prefetch_list.append("ctradiationdose__ctirradiationeventdata__dlp")
-        if plot_acquisition_mean_ctdi:
-            prefetch_list.append(
-                "ctradiationdose__ctirradiationeventdata__mean_ctdivol"
-            )
-
-        if (
-            plot_histograms
-            and "ct_acquisition_type" in f.form.data
-            and f.form.data["ct_acquisition_type"]
-        ):
-            # The user has filtered on acquisition_protocol, so need to use the slow method of querying the database
-            # to avoid studies being duplicated when there is more than one of a particular acquisition type in a
-            # study.
-            try:
-                exp_include = f.qs.values_list("study_instance_uid")
-                acquisition_events = (
-                    GeneralStudyModuleAttr.objects.exclude(total_dlp__isnull=True)
-                    .filter(
-                        study_instance_uid__in=exp_include,
-                        ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning__iexact=f.form.data[
-                            "ct_acquisition_type"
-                        ],
-                    )
-                    .values(*prefetch_list)
-                )
-            except KeyError:
-                acquisition_events = f.qs.values(*prefetch_list)
-        else:
-            acquisition_events = f.qs.values(*prefetch_list)
-
-    if plot_acquisition_mean_dlp or plot_acquisition_freq:
-        result = average_chart_inc_histogram_data(
-            acquisition_events,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-            "ctradiationdose__ctirradiationeventdata__dlp",
-            1,
-            plot_acquisition_mean_dlp,
-            plot_acquisition_freq,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
-            exclude_constant_angle=True,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
+    if user_profile.plotCharts:
+        return_structure["required_charts"] = generate_required_ct_charts_list(
+            user_profile
         )
 
-        return_structure["acquisitionSystemList"] = result["system_list"]
-        return_structure["acquisitionNameList"] = result["series_names"]
-        return_structure["acquisitionSummary"] = result["summary"]
-        if plot_acquisition_mean_dlp and plot_histograms:
-            return_structure["acquisitionHistogramData"] = result["histogram_data"]
-
-    if plot_acquisition_mean_ctdi:
-        result = average_chart_inc_histogram_data(
-            acquisition_events,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-            "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-            1,
-            plot_acquisition_mean_ctdi,
-            plot_acquisition_freq,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
-            exclude_constant_angle=True,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
-        )
-
-        return_structure["acquisitionSystemListCTDI"] = result["system_list"]
-        return_structure["acquisitionNameListCTDI"] = result["series_names"]
-        return_structure["acquisitionSummaryCTDI"] = result["summary"]
-        if plot_histograms:
-            return_structure["acquisitionHistogramDataCTDI"] = result["histogram_data"]
-
-    if plot_study_mean_dlp or plot_study_freq:
-        result = average_chart_inc_histogram_data(
-            study_and_request_events,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "study_description",
-            "total_dlp",
-            1,
-            plot_study_mean_dlp,
-            plot_study_freq,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
-        )
-
-        return_structure["studySystemList"] = result["system_list"]
-        return_structure["studyNameList"] = result["series_names"]
-        return_structure["studySummary"] = result["summary"]
-        if plot_study_mean_dlp and plot_histograms:
-            return_structure["studyHistogramData"] = result["histogram_data"]
-
-    if plot_study_mean_ctdi:
-        result = average_chart_inc_histogram_data(
-            study_and_request_events,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "study_description",
-            "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-            1,
-            plot_study_mean_ctdi,
-            0,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
-            exclude_constant_angle=True,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
-        )
-
-        return_structure["studySystemListCTDI"] = result["system_list"]
-        return_structure["studyNameListCTDI"] = result["series_names"]
-        return_structure["studySummaryCTDI"] = result["summary"]
-        if plot_histograms:
-            return_structure["studyHistogramDataCTDI"] = result["histogram_data"]
-
-    if plot_study_num_events:
-        result = average_chart_inc_histogram_data(
-            study_and_request_events,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "study_description",
-            "number_of_events",
-            1,
-            plot_study_num_events,
-            0,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
-        )
-
-        return_structure["studySummaryNumEvents"] = result["summary"]
-        if not plot_study_mean_dlp and not plot_study_freq:
-            return_structure["studySystemList"] = result["system_list"]
-            return_structure["studyNameList"] = result["series_names"]
-        if plot_study_num_events and plot_histograms:
-            return_structure["studyHistogramDataNumEvents"] = result["histogram_data"]
-
-    if plot_request_mean_dlp or plot_request_freq:
-        result = average_chart_inc_histogram_data(
-            study_and_request_events,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "requested_procedure_code_meaning",
-            "total_dlp",
-            1,
-            plot_request_mean_dlp,
-            plot_request_freq,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
-        )
-
-        return_structure["requestSystemList"] = result["system_list"]
-        return_structure["requestNameList"] = result["series_names"]
-        return_structure["requestSummary"] = result["summary"]
-        if plot_request_mean_dlp and plot_histograms:
-            return_structure["requestHistogramData"] = result["histogram_data"]
-
-    if plot_request_num_events:
-        result = average_chart_inc_histogram_data(
-            study_and_request_events,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-            "requested_procedure_code_meaning",
-            "number_of_events",
-            1,
-            plot_request_num_events,
-            0,
-            plot_series_per_systems,
-            plot_average_choice,
-            median_available,
-            plot_histogram_bins,
-            calculate_histograms=plot_histograms,
-            case_insensitive_categories=plot_case_insensitive_categories,
-        )
-
-        return_structure["requestSummaryNumEvents"] = result["summary"]
-        if not plot_request_mean_dlp and not plot_request_freq:
-            return_structure["requestSystemList"] = result["system_list"]
-            return_structure["requestNameList"] = result["series_names"]
-        if plot_request_num_events and plot_histograms:
-            return_structure["requestHistogramDataNumEvents"] = result["histogram_data"]
-
-    if plot_study_mean_dlp_over_time:
-        result = average_chart_over_time_data(
-            study_and_request_events,
-            "study_description",
-            "total_dlp",
-            "study_date",
-            "study_date",
-            median_available,
-            plot_average_choice,
-            1,
-            plot_study_mean_dlp_over_time_period,
-            case_insensitive_categories=plot_case_insensitive_categories,
-        )
-        if median_available and (
-            plot_average_choice == "median" or plot_average_choice == "both"
-        ):
-            return_structure["studyMedianDLPoverTime"] = result["median_over_time"]
-        if plot_average_choice == "mean" or plot_average_choice == "both":
-            return_structure["studyMeanDLPoverTime"] = result["mean_over_time"]
-        if not plot_study_mean_dlp and not plot_study_freq:
-            return_structure["studyNameList"] = result["series_names"]
-
-    if plot_study_per_day_and_hour:
-        result = workload_chart_data(study_and_request_events)
-        return_structure["studiesPerHourInWeekdays"] = result["workload"]
-
-    return return_structure
+    return render(request, "remapp/ctfiltered.html", return_structure)
 
 
 @login_required
 def ct_detail_view(request, pk=None):
-    """Detail view for a CT study
-    """
-    from django.contrib import messages
-    from remapp.models import GeneralStudyModuleAttr
-
+    """Detail view for a CT study"""
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
@@ -1848,8 +727,8 @@ def ct_detail_view(request, pk=None):
     )
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -1864,12 +743,7 @@ def ct_detail_view(request, pk=None):
 
 @login_required
 def mg_summary_list_filter(request):
-    """Mammography data for summary view
-    """
-    from remapp.interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
-    from openremproject import settings
-    from remapp.forms import MGChartOptionsForm, itemsPerPageForm
-
+    """Mammography data for summary view"""
     filter_data = request.GET.copy()
     if "page" in filter_data:
         del filter_data["page"]
@@ -1897,52 +771,7 @@ def mg_summary_list_filter(request):
         create_user_profile(sender=request.user, instance=request.user, created=True)
         user_profile = request.user.userprofile
 
-    if "postgresql" in settings.DATABASES["default"]["ENGINE"]:
-        user_profile.median_available = True
-        user_profile.save()
-    else:
-        user_profile.median_available = False
-        user_profile.save()
-
-    # Obtain the chart options from the request
-    chart_options_form = MGChartOptionsForm(request.GET)
-    # Check whether the form data is valid
-    if chart_options_form.is_valid():
-        # Use the form data if the user clicked on the submit button
-        if "submit" in request.GET:
-            # process the data in form.cleaned_data as required
-            user_profile.plotCharts = chart_options_form.cleaned_data["plotCharts"]
-            user_profile.plotMGStudyPerDayAndHour = chart_options_form.cleaned_data[
-                "plotMGStudyPerDayAndHour"
-            ]
-            user_profile.plotMGAGDvsThickness = chart_options_form.cleaned_data[
-                "plotMGAGDvsThickness"
-            ]
-            user_profile.plotMGkVpvsThickness = chart_options_form.cleaned_data[
-                "plotMGkVpvsThickness"
-            ]
-            user_profile.plotMGmAsvsThickness = chart_options_form.cleaned_data[
-                "plotMGmAsvsThickness"
-            ]
-            user_profile.plotSeriesPerSystem = chart_options_form.cleaned_data[
-                "plotSeriesPerSystem"
-            ]
-            # Uncomment the following line when there's at least one bar chart for mammo
-            # user_profile.plotHistograms = chart_options_form.cleaned_data['plotHistograms']
-            user_profile.save()
-
-        else:
-            form_data = {
-                "plotCharts": user_profile.plotCharts,
-                "plotMGStudyPerDayAndHour": user_profile.plotMGStudyPerDayAndHour,
-                "plotMGAGDvsThickness": user_profile.plotMGAGDvsThickness,
-                "plotMGkVpvsThickness": user_profile.plotMGkVpvsThickness,
-                "plotMGmAsvsThickness": user_profile.plotMGmAsvsThickness,
-                "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
-            }
-            # Uncomment the following line when there's at least one bar chart for mammo
-            #'plotHistograms': user_profile.plotHistograms}
-            chart_options_form = MGChartOptionsForm(form_data)
+    chart_options_form = mg_chart_form_processing(request, user_profile)
 
     # Obtain the number of items per page from the request
     items_per_page_form = itemsPerPageForm(request.GET)
@@ -1960,8 +789,8 @@ def mg_summary_list_filter(request):
             items_per_page_form = itemsPerPageForm(form_data)
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -1984,152 +813,17 @@ def mg_summary_list_filter(request):
         "itemsPerPageForm": items_per_page_form,
     }
 
-    return render(request, "remapp/mgfiltered.html", return_structure,)
-
-
-@login_required
-def mg_summary_chart_data(request):
-    """Obtain data for mammography chart data Ajax view
-    """
-    from remapp.interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
-    from openremproject import settings
-    from django.http import JsonResponse
-
-    if request.user.groups.filter(name="pidgroup"):
-        f = MGFilterPlusPid(
-            request.GET,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
-            .order_by()
-            .distinct(),
-        )
-    else:
-        f = MGSummaryListFilter(
-            request.GET,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
-            .order_by()
-            .distinct(),
+    if user_profile.plotCharts:
+        return_structure["required_charts"] = generate_required_mg_charts_list(
+            user_profile
         )
 
-    try:
-        # See if the user has plot settings in userprofile
-        user_profile = request.user.userprofile
-    except ObjectDoesNotExist:
-        # Create a default userprofile for the user if one doesn't exist
-        create_user_profile(sender=request.user, instance=request.user, created=True)
-        user_profile = request.user.userprofile
-
-    if (
-        user_profile.median_available
-        and "postgresql" in settings.DATABASES["default"]["ENGINE"]
-    ):
-        median_available = True
-    elif "postgresql" in settings.DATABASES["default"]["ENGINE"]:
-        user_profile.median_available = True
-        user_profile.save()
-        median_available = True
-    else:
-        user_profile.median_available = False
-        user_profile.save()
-        median_available = False
-
-    if settings.DEBUG:
-        from datetime import datetime
-
-        start_time = datetime.now()
-
-    return_structure = mg_plot_calculations(
-        f,
-        median_available,
-        user_profile.plotAverageChoice,
-        user_profile.plotSeriesPerSystem,
-        user_profile.plotHistogramBins,
-        user_profile.plotMGStudyPerDayAndHour,
-        user_profile.plotMGAGDvsThickness,
-        user_profile.plotMGkVpvsThickness,
-        user_profile.plotMGmAsvsThickness,
-    )
-
-    if settings.DEBUG:
-        logger.debug(f"Elapsed time is {datetime.now() - start_time}")
-
-    return JsonResponse(return_structure, safe=False)
-
-
-def mg_plot_calculations(
-    f,
-    median_available,
-    plot_average_choice,
-    plot_series_per_systems,
-    plot_histogram_bins,
-    plot_study_per_day_and_hour,
-    plot_agd_vs_thickness,
-    plot_kvp_vs_thickness,
-    plot_mas_vs_thickness,
-):
-    """Calculations for mammography charts
-    """
-    from .interface.chart_functions import workload_chart_data, scatter_plot_data
-
-    return_structure = {}
-
-    if plot_study_per_day_and_hour:
-        # No acquisition-level filters, so can use f.qs for all charts at the moment.
-        # exp_include = f.qs.values_list('study_instance_uid')
-        # study_events = GeneralStudyModuleAttr.objects.filter(study_instance_uid__in=exp_include)
-        study_events = f.qs
-
-        result = workload_chart_data(study_events)
-        return_structure["studiesPerHourInWeekdays"] = result["workload"]
-
-    if plot_agd_vs_thickness:
-        result = scatter_plot_data(
-            f.qs,
-            "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
-            "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
-            1,
-            plot_series_per_systems,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-        )
-        return_structure["AGDvsThickness"] = result["scatterData"]
-        return_structure["maxThicknessAndAGD"] = result["maxXandY"]
-        return_structure["AGDvsThicknessSystems"] = result["system_list"]
-
-    if plot_kvp_vs_thickness:
-        result = scatter_plot_data(
-            f.qs,
-            "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
-            "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
-            1,
-            plot_series_per_systems,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-        )
-        return_structure["kVpvsThickness"] = result["scatterData"]
-        return_structure["maxThicknessAndkVp"] = result["maxXandY"]
-        return_structure["kVpvsThicknessSystems"] = result["system_list"]
-
-    if plot_mas_vs_thickness:
-        result = scatter_plot_data(
-            f.qs,
-            "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
-            "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
-            0.001,
-            plot_series_per_systems,
-            "generalequipmentmoduleattr__unique_equipment_name_id__display_name",
-        )
-        return_structure["mAsvsThickness"] = result["scatterData"]
-        return_structure["maxThicknessAndmAs"] = result["maxXandY"]
-        return_structure["mAsvsThicknessSystems"] = result["system_list"]
-
-    return return_structure
+    return render(request, "remapp/mgfiltered.html", return_structure)
 
 
 @login_required
 def mg_detail_view(request, pk=None):
-    """Detail view for a CT study
-    """
-    from django.contrib import messages
-    from remapp.models import GeneralStudyModuleAttr
-
+    """Detail view for a CT study"""
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except:
@@ -2137,8 +831,8 @@ def mg_detail_view(request, pk=None):
         return redirect(reverse_lazy("mg_summary_list_filter"))
 
     admin = {
-        "openremversion": remapp.__version__,
-        "docsversion": remapp.__docs_version__,
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
     }
 
     for group in request.user.groups.all():
@@ -2168,16 +862,6 @@ def mg_detail_view(request, pk=None):
 
 
 def openrem_home(request):
-    from remapp.models import (
-        PatientIDSettings,
-        DicomDeleteSettings,
-        AdminTaskQuestions,
-        HomePageAdminSettings,
-        UpgradeStatus,
-    )
-    from django.db.models import Q  # For the Q "OR" query used for DX and CR
-    from collections import OrderedDict
-
     try:
         HomePageAdminSettings.objects.get()
     except ObjectDoesNotExist:
@@ -2232,19 +916,19 @@ def openrem_home(request):
     allstudies = GeneralStudyModuleAttr.objects.all()
     modalities = OrderedDict()
     modalities["CT"] = {
-        "name": "CT",
+        "name": _("CT"),
         "count": allstudies.filter(modality_type__exact="CT").count(),
     }
     modalities["RF"] = {
-        "name": "Fluoroscopy",
+        "name": _("Fluoroscopy"),
         "count": allstudies.filter(modality_type__exact="RF").count(),
     }
     modalities["MG"] = {
-        "name": "Mammography",
+        "name": _("Mammography"),
         "count": allstudies.filter(modality_type__exact="MG").count(),
     }
     modalities["DX"] = {
-        "name": "Radiography",
+        "name": _("Radiography"),
         "count": allstudies.filter(
             Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
         ).count(),
@@ -2253,9 +937,7 @@ def openrem_home(request):
     mods_to_delete = []
     for modality in modalities:
         if not modalities[modality]["count"]:
-            mods_to_delete += [
-                modality,
-            ]
+            mods_to_delete += [modality]
             if request.user.is_authenticated:
                 setattr(user_profile, "display{0}".format(modality), False)
         else:
@@ -2267,9 +949,7 @@ def openrem_home(request):
     for modality in mods_to_delete:
         del modalities[modality]
 
-    homedata = {
-        "total": allstudies.count(),
-    }
+    homedata = {"total": allstudies.count()}
 
     # Determine whether to calculate workload settings
     display_workload_stats = HomePageAdminSettings.objects.values_list(
@@ -2284,7 +964,7 @@ def openrem_home(request):
             home_config["day_delta_a"] = 7
             home_config["day_delta_b"] = 28
 
-    admin = dict(openremversion=remapp.__version__, docsversion=remapp.__docs_version__)
+    admin = dict(openremversion=__version__, docsversion=__docs_version__)
 
     for group in request.user.groups.all():
         admin[group.name] = True
@@ -2324,9 +1004,13 @@ def openrem_home(request):
     # except ObjectDoesNotExist:
     #     HighDoseMetricAlertSettings.objects.create()
     #
-    # send_alert_emails = HighDoseMetricAlertSettings.objects.values_list('send_high_dose_metric_alert_emails', flat=True)[0]
+    # send_alert_emails = HighDoseMetricAlertSettings.objects.values_list(
+    #     'send_high_dose_metric_alert_emails', flat=True
+    # )[0]
     # if send_alert_emails:
-    #     recipients = User.objects.filter(highdosemetricalertrecipients__receive_high_dose_metric_alerts__exact=True).values_list('email', flat=True)
+    #     recipients = User.objects.filter(
+    #         highdosemetricalertrecipients__receive_high_dose_metric_alerts__exact=True
+    #     ).values_list('email', flat=True)
     #     send_mail('OpenREM high dose alert test',
     #               'This is a test for high dose alert e-mails from OpenREM',
     #               settings.EMAIL_DOSE_ALERT_SENDER,
@@ -2357,8 +1041,6 @@ def update_modality_totals(request):
     :param request: request object
     :return: dictionary of totals
     """
-    from django.db.models import Q
-
     if request.is_ajax():
         allstudies = GeneralStudyModuleAttr.objects.all()
         resp = {
@@ -2381,11 +1063,6 @@ def update_latest_studies(request):
     :param request: Request object
     :return: HTML table of modalities
     """
-    from django.db.models import Q, Min
-    from datetime import datetime
-    from collections import OrderedDict
-    from remapp.models import HomePageAdminSettings
-
     if request.is_ajax():
         data = request.POST
         modality = data.get("modality")
@@ -2453,10 +1130,15 @@ def update_latest_studies(request):
         display_workload_stats = HomePageAdminSettings.objects.values_list(
             "enable_workload_stats", flat=True
         )[0]
+        today = datetime.now()
+        date_a = today - timedelta(days=day_delta_a)
+        date_b = today - timedelta(days=day_delta_b)
         home_config = {
             "display_workload_stats": display_workload_stats,
             "day_delta_a": day_delta_a,
             "day_delta_b": day_delta_b,
+            "date_a": datetime.strftime(date_a, "%Y-%m-%d"),
+            "date_b": datetime.strftime(date_b, "%Y-%m-%d"),
         }
 
         return render(
@@ -2478,10 +1160,6 @@ def update_study_workload(request):
     :param request: Request object
     :return: HTML table of modalities
     """
-    from django.db.models import Q, Min
-    from datetime import datetime, timedelta
-    from collections import OrderedDict
-
     if request.is_ajax():
         data = request.POST
         modality = data.get("modality")

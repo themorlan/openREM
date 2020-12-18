@@ -14,9 +14,7 @@ from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
 
 
 class ImportRFRDSRPhilips(TestCase):
-    """Tests for importing the Philips Allura RDSR
-
-    """
+    """Tests for importing the Philips Allura RDSR"""
 
     def test_private_collimation_data(self):
         """Tests that the collimated field information has been successfully obtained
@@ -51,6 +49,9 @@ class ImportRFRDSRPhilips(TestCase):
         self.assertAlmostEqual(
             first_source_data.collimated_field_area, first_field_area
         )
+
+        performing_physician_name = study.performing_physician_name
+        self.assertEqual(performing_physician_name, "Yamada^Tarou=山田^太郎=やまだ^たろう")
 
 
 class ImportRFRDSRPhilipsAzurion(TestCase):
@@ -217,9 +218,7 @@ class RPDoseUnitsTest(TestCase):
 
 
 class ImportRFRDSRSiemens(TestCase):
-    """Tests for importing the Siemens Zee RDSR
-
-    """
+    """Tests for importing the Siemens Zee RDSR"""
 
     def test_comment_xml_extraction(self):
         """Tests that the patient orientation and II size information has been successfully obtained

@@ -304,7 +304,7 @@ def _create_parser():
 
 
 def csv2db():
-    """ Import patient height and weight data from csv RIS exports. Called from ``openrem_ptsizecsv.py`` script
+    """Import patient height and weight data from csv RIS exports. Called from ``openrem_ptsizecsv.py`` script
 
     :param args: sys.argv from the command line call
 

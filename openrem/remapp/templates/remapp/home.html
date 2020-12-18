@@ -1,4 +1,5 @@
 {% extends "remapp/base.html" %}
+{% load i18n %}
 
 {% block headextras %}
     <script src="{{ STATIC_URL }}js/sorttable.js"></script>
@@ -58,12 +59,16 @@
     {% endif %}
 
     <p>
-        There are {{ homedata.total }} studies in this database. Page last refreshed on {% now "jS F Y \a\t H:i" %}.
+        {# Translators: Number of studies in DB listed above home-page table. No final full-stop in English due to a.m./p.m. #}
+        {% now "DATETIME_FORMAT" as current_time %}
+        {% blocktrans with total_studies=homedata.total trimmed%}
+            There are {{ total_studies }} studies in this database. Page last refreshed on {{ current_time }}
+        {% endblocktrans %}
         {% if user.is_authenticated %}
             {% if request.user.userprofile.plotCharts %}
-                Chart plotting on.
+                {% trans "Chart plotting on." %}
             {% else %}
-                Chart plotting off.
+                {% trans "Chart plotting off." %}
             {% endif %}
         {% endif %}
     </p>
@@ -194,17 +199,19 @@
         <div id="{{ modality }}-table">
             <table class="table table-bordered table-hover row-clickable">
                 <tr>
-                    <th style="width:25%">System name</th>
-                    <th style="width:25%">Total number of studies</th>
-                    <th style="width:25%">Latest study</th>
+                    <th style="width:25%">{% trans "System name" %}</th>
+                    <th style="width:25%">{% trans "Total number of studies" %}</th>
+                    <th style="width:25%">{% trans "Latest study" %}</th>
                     {% if home_config.display_workload_stats %}
-                        <th style="width:12.5%">Number in last {{ home_config.day_delta_a }} days</th>
-                        <th style="width:12.5%">Number in last {{ home_config.day_delta_b }} days</th>
+                        <th style="width:12.5%">{% blocktrans with home_config.day_delta_a as day_delta trimmed %}
+                            Number in last {{ day_delta }} days{% endblocktrans %}</th>
+                        <th style="width:12.5%">{% blocktrans with home_config.day_delta_b as day_delta trimmed %}
+                            Number in last {{ day_delta }} days{% endblocktrans %}</th>
                     {% endif %}
                 </tr>
                 <tr>
-                    <td colspan={% if home_config.display_workload_stats %}"5"{% else %}"3"{% endif %}
-                    >Please wait - querying the database</td>
+                    <td colspan={% if home_config.display_workload_stats %}"5"{% else %}"3"{% endif %}>
+                    {% trans "Please wait - querying the database" %}</td>
                 </tr>
             </table>
         </div>

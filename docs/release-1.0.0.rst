@@ -10,6 +10,8 @@ Headline changes
 * Django 2.2
 * Docker
 
+* Performing physician added to standard fluoroscopy exports (:issue:`840`)
+
 *******************
 Upgrade preparation
 *******************
@@ -17,6 +19,12 @@ Upgrade preparation
 * These instructions assume you are upgrading from 0.10.0.
 * **Upgrades from 0.9.1 or earlier should review** :doc:`upgrade_previous_0.10.0`. -- needs changing
 
+..  toctree::
+    :maxdepth: 1
+
+    upgrade_previous_0.10.0
+
+.. _post_upgrade0100:
 
 ******************************************
 Upgrade process from a PostgresQL database
@@ -58,6 +66,8 @@ Export the database
 
 Set up the new installation
 ===========================
+
+.. _update_configuration0100:
 
 * Install Docker
 * Download and extract https://bitbucket.org/openrem/docker/get/develop.zip and open a shell (command window) in the
@@ -132,6 +142,12 @@ database), and create the static files:
 
     $ docker-compose exec openrem python manage.py collectstatic --noinput --clear
 
+Generate translation binary files
+
+.. code-block:: console
+
+    $ docker-compose exec openrem python django-admin compilemessages
+
 Copy in any existing skin dose map pickle files from your existing ``MEDIA_ROOT/skin_maps`` folder (optional, they can
 be calculated again):
 
@@ -203,8 +219,6 @@ Install the new version of OpenREM
 
     $ pip install openrem==1.0.0b1
 
-.. _update_configuration0100:
-
 Update the local_settings.py file
 =================================
 
@@ -229,7 +243,7 @@ Prepare the migrations folder:
 .. code-block:: console
 
     $ rm remapp/migrations/0*.py
-    $ rm remapp/migrations/0*.pyc
+    $ rm remapp/migrations/0*.pyc  # may result in 'cannot remove' if there are none
     $ mv remapp/migrations/0001_initial.py{.1-0-upgrade,}
 
 Migrate the database:
@@ -276,6 +290,11 @@ Update static files
 
     See  :doc:`virtual_directory` for more details.
 
+Generate translation binary files
+
+.. code-block:: console
+
+    $ python django-admin compilemessages
 
 Update all the services configurations
 ======================================
@@ -337,4 +356,3 @@ Reload systemd and restart the services
     $ sudo systemctl start orthanc.service
 
 
-.. _post_upgrade0100:

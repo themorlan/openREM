@@ -1,0 +1,402 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../release-0.7.0.rst:3
+msgid "OpenREM Release Notes version 0.7.1"
+msgstr ""
+
+#: ../../release-0.7.0.rst:7
+msgid "Headline changes"
+msgstr ""
+
+#: ../../release-0.7.0.rst:9
+msgid "System"
+msgstr ""
+
+#: ../../release-0.7.0.rst:11
+msgid "Django upgraded to version 1.8"
+msgstr ""
+
+#: ../../release-0.7.0.rst:12
+msgid "Median function added to the database if using PostgreSQL"
+msgstr ""
+
+#: ../../release-0.7.0.rst:13
+msgid ""
+"New user-defined display name for each unique system so that rooms with "
+"the same DICOM station name are displayed separately"
+msgstr ""
+
+#: ../../release-0.7.0.rst:14
+msgid ""
+"Patient name and ID can optionally be stored in system, available for "
+"searching and export, but not displayed"
+msgstr ""
+
+#: ../../release-0.7.0.rst:15
+msgid ""
+"Patient name, ID and accession number can be stored as a one-way hash, "
+"and remain searchable"
+msgstr ""
+
+#: ../../release-0.7.0.rst:16
+msgid "Permission system has become more granular"
+msgstr ""
+
+#: ../../release-0.7.0.rst:17
+msgid "System can now accept non-ASCII characters in protocol names etc"
+msgstr ""
+
+#: ../../release-0.7.0.rst:18
+msgid "Menus have been tidied up"
+msgstr ""
+
+#: ../../release-0.7.0.rst:19
+msgid "Settings file has been updated"
+msgstr ""
+
+#: ../../release-0.7.0.rst:21
+msgid "Charts and interface"
+msgstr ""
+
+#: ../../release-0.7.0.rst:23
+msgid ""
+"Bar chart data points sorted by frequency, value or name in ascending or "
+"descending order"
+msgstr ""
+
+#: ../../release-0.7.0.rst:24
+msgid "CT chart of DLP per requested procedure type"
+msgstr ""
+
+#: ../../release-0.7.0.rst:25
+msgid "CT chart of requested procedure frequency"
+msgstr ""
+
+#: ../../release-0.7.0.rst:26
+msgid "CT chart of CTDIvol per study description"
+msgstr ""
+
+#: ../../release-0.7.0.rst:27
+msgid "Chart data returned using AJAX to make pages more responsive"
+msgstr ""
+
+#: ../../release-0.7.0.rst:28
+msgid "Chart plotting options available via Config menu"
+msgstr ""
+
+#: ../../release-0.7.0.rst:29
+msgid "Charts can now be made full-screen"
+msgstr ""
+
+#: ../../release-0.7.0.rst:30
+msgid ""
+"CTDIw phantom size is displayed with the CTDIvol measurement on the CT "
+"study detail page"
+msgstr ""
+
+#: ../../release-0.7.0.rst:31
+msgid "Charts show a series called \"Blank\" when the series name is ``None``"
+msgstr ""
+
+#: ../../release-0.7.0.rst:32
+msgid "Queries for chart data now faster in most situations"
+msgstr ""
+
+#: ../../release-0.7.0.rst:33
+msgid "Histograms can be disabled or enabled for bar charts"
+msgstr ""
+
+#: ../../release-0.7.0.rst:34
+msgid "User-specified number of histogram bins from 2 to 40"
+msgstr ""
+
+#: ../../release-0.7.0.rst:35
+msgid "Mammography chart of average glandular dose vs. compressed thickness"
+msgstr ""
+
+#: ../../release-0.7.0.rst:36
+msgid "Mammography chart showing the number of studies carried out per weekday"
+msgstr ""
+
+#: ../../release-0.7.0.rst:37
+msgid "Fluoroscopy chart of average DAP for each study description"
+msgstr ""
+
+#: ../../release-0.7.0.rst:38
+msgid "Fluoroscopy chart of the frequency of each study description"
+msgstr ""
+
+#: ../../release-0.7.0.rst:39
+msgid "Fluoroscopy chart showing the number of studies carried out per weekday"
+msgstr ""
+
+#: ../../release-0.7.0.rst:40
+msgid "Context specific documentation has been added to the Docs menu"
+msgstr ""
+
+#: ../../release-0.7.0.rst:42
+msgid "DICOM Networking"
+msgstr ""
+
+#: ../../release-0.7.0.rst:44
+msgid ""
+"Query retrieve function is now built in to query PACS systems or "
+"modalities via the Import menu"
+msgstr ""
+
+#: ../../release-0.7.0.rst:45
+msgid ""
+"Configuring and running DICOM Store SCP is available and managed in the "
+"web interface, but not recommended"
+msgstr ""
+
+#: ../../release-0.7.0.rst:46
+msgid "Documentation improved"
+msgstr ""
+
+#: ../../release-0.7.0.rst:48
+msgid "Imports"
+msgstr ""
+
+#: ../../release-0.7.0.rst:50
+msgid "Mammography RDSRs import correctly"
+msgstr ""
+
+#: ../../release-0.7.0.rst:51
+msgid ""
+"Mammography imports from images **now create an accumulated AGD value per"
+" breast**"
+msgstr ""
+
+#: ../../release-0.7.0.rst:52
+msgid ""
+"GE Senographe DS compression **now recorded correctly in Newtons** for "
+"new imports"
+msgstr ""
+
+#: ../../release-0.7.0.rst:53
+msgid ""
+"Philips Allura fluoroscopy RDSRs import correctly, including calculating "
+"the exposure time"
+msgstr ""
+
+#: ../../release-0.7.0.rst:54
+msgid "Bi-plane fluoroscopy imports can now be displayed in the web interface"
+msgstr ""
+
+#: ../../release-0.7.0.rst:55
+msgid ""
+"Patient height imports from csv **now convert from cm to m** - previously"
+" height was assumed to be cm and inserted into database without change. "
+"Existing height data will remain as cm value for csv imports, and m value"
+" for RDSR imports"
+msgstr ""
+
+#: ../../release-0.7.0.rst:58
+msgid "Better handling of non-ASCII characters"
+msgstr ""
+
+#: ../../release-0.7.0.rst:59
+msgid "Tube current is now extracted from Siemens Intevo RDSRs"
+msgstr ""
+
+#: ../../release-0.7.0.rst:61
+msgid "Exports"
+msgstr ""
+
+#: ../../release-0.7.0.rst:63
+msgid "Patient sex is included in all exports"
+msgstr ""
+
+#: ../../release-0.7.0.rst:64
+msgid ""
+"Filters generated by navigating through charts can now be used to filter "
+"export data"
+msgstr ""
+
+#: ../../release-0.7.0.rst:65
+msgid "Study description and laterality are now included in mammography exports"
+msgstr ""
+
+#: ../../release-0.7.0.rst:66
+msgid "Bi-fluoroscopy studies can be exported"
+msgstr ""
+
+#: ../../release-0.7.0.rst:68
+msgid "Skin dose maps"
+msgstr ""
+
+#: ../../release-0.7.0.rst:70
+msgid ""
+"Skin dose maps have been withdrawn from OpenREM version 0.7.0 due to "
+"incorrect orientation calculations that need to be fixed before openSkin "
+"can be reimplemented into OpenREM"
+msgstr ""
+
+#: ../../release-0.7.0.rst:74
+msgid "Changes since 0.7.0"
+msgstr ""
+
+#: ../../release-0.7.0.rst:76
+msgid "Extremely minor change to the documenation links"
+msgstr ""
+
+#: ../../release-0.7.0.rst:80
+msgid "Upgrading an OpenREM server with no internet access"
+msgstr ""
+
+#: ../../release-0.7.0.rst:82
+msgid ""
+"Follow the instructions found at :doc:`upgrade-offline`, before returning"
+" here to update the database and configuration."
+msgstr ""
+
+#: ../../release-0.7.0.rst:88
+msgid "Upgrading from version 0.6.0"
+msgstr ""
+
+#: ../../release-0.7.0.rst:90
+msgid "Back up your database"
+msgstr ""
+
+#: ../../release-0.7.0.rst:92
+msgid "For PostgreSQL you can refer to :ref:`backup-psql-db`"
+msgstr ""
+
+#: ../../release-0.7.0.rst:93
+msgid ""
+"For a non-production SQLite3 database, simply make a copy of the database"
+" file"
+msgstr ""
+
+#: ../../release-0.7.0.rst:95 ../../release-0.7.0.rst:164
+msgid "Stop any Celery workers"
+msgstr ""
+
+#: ../../release-0.7.0.rst:97
+msgid ""
+"The 0.7.0 upgrade must be made from a 0.6.0 (or later) database, and a "
+"schema migration is required:"
+msgstr ""
+
+#: ../../release-0.7.0.rst:103
+msgid "In a shell/command window, move into the openrem folder:"
+msgstr ""
+
+#: ../../release-0.7.0.rst:105
+msgid "Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``"
+msgstr ""
+
+#: ../../release-0.7.0.rst:106
+msgid "Other linux: ``/usr/lib/python2.7/site-packages/openrem/``"
+msgstr ""
+
+#: ../../release-0.7.0.rst:107
+msgid "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/``"
+msgstr ""
+
+#: ../../release-0.7.0.rst:108
+msgid "Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\``"
+msgstr ""
+
+#: ../../release-0.7.0.rst:109
+msgid "Windows virtualenv: ``virtualenvfolder\\Lib\\site-packages\\openrem\\``"
+msgstr ""
+
+#: ../../release-0.7.0.rst:111
+msgid ""
+"Delete all numbered migration files in openrem's ``remapp/migrations`` "
+"folder, **leaving the 0002 files ending in .inactive**"
+msgstr ""
+
+#: ../../release-0.7.0.rst:113
+msgid ""
+"If there is no file named ``__init__.py`` in the ``remapp/migrations`` "
+"folder, please create it."
+msgstr ""
+
+#: ../../release-0.7.0.rst:114
+msgid ""
+"If you have accidentally deleted the 0002 files ending in ``.inactive``, "
+"you can get a new copy from `the bitbucket repository "
+"<https://bitbucket.org/openrem/openrem/src/008ec3c2e7ffee89355c10fda39a6293b79fa89f/stuff/0002_upgrade_0_7_from_0_6.py.inactive?at=develop>`_."
+msgstr ""
+
+#: ../../release-0.7.0.rst:123
+msgid "Now rename the file"
+msgstr ""
+
+#: ../../release-0.7.0.rst:129
+msgid "to:"
+msgstr ""
+
+#: ../../release-0.7.0.rst:135
+msgid "and then run"
+msgstr ""
+
+#: ../../release-0.7.0.rst:143
+msgid "With a large database, this may take some time!"
+msgstr ""
+
+#: ../../release-0.7.0.rst:145
+msgid ""
+"Review the new ``openremproject/local_settings.py.example`` file and copy"
+" accross the logging section. Then see :ref:`local_settings_logfile` "
+"settings in the install docs."
+msgstr ""
+
+#: ../../release-0.7.0.rst:148
+msgid ""
+"If you are using PuTTY on Windows to interact with a linux server, you "
+"can select the logging configuration section of the example file with "
+"your mouse, and it will be automatically copied to the clipboard. Then "
+"open the existing ``local_settings.py`` file with nano, move the curser "
+"down to the bottom and click the right mouse button to paste."
+msgstr ""
+
+#: ../../release-0.7.0.rst:153 ../../release-0.7.0.rst:184
+msgid "Restart all the services!"
+msgstr ""
+
+#: ../../release-0.7.0.rst:155 ../../release-0.7.0.rst:186
+msgid ""
+"Some of the commands and services have changed - follow the guide at "
+":doc:`startservices`."
+msgstr ""
+
+#: ../../release-0.7.0.rst:162
+msgid "Upgrading from version 0.7.0 beta 7 or later"
+msgstr ""
+
+#: ../../release-0.7.0.rst:166
+msgid "You will need to do a database migration."
+msgstr ""
+
+#: ../../release-0.7.0.rst:172
+msgid "From the openrem folder (see above):"
+msgstr ""
+
+#: ../../release-0.7.0.rst:179
+msgid ""
+"Review the new ``local_settings.py.example`` file and copy accross the "
+"logging section. Then see :ref:`local_settings_logfile` settings in the "
+"install docs."
+msgstr ""
+

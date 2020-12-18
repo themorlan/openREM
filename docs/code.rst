@@ -6,7 +6,9 @@ Contents:
 ..  toctree::
     :maxdepth: 2
    
+    code_dev_env
     code_running_tests
+    translations
     enabling_debug_toolbar
     code_dicomimport
     code_nondicomimport

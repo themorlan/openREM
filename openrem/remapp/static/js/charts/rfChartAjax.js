@@ -14,40 +14,70 @@ $(document).ready(function() {
         data: requestData,
         dataType: "json",
         success: function( json ) {
-            // Initialise some colours to use for plotting
-            var colourScale = chroma.scale("RdYlBu");
+
+            // DLP per study chart data
+            if(typeof json.studyMeanData !== "undefined") {
+                $("#studyMeanDAPChartDiv").html(json.studyMeanData);
+                $("#studyMeanDAPChartParentDiv").append(json.studyMeanDataCSV);
+            }
+            if(typeof json.studyMedianData !=="undefined") {
+                $("#studyMedianDAPChartDiv").html(json.studyMedianData);
+                $("#studyMedianDAPChartParentDiv").append(json.studyMedianDataCSV);
+            }
+            if(typeof json.studyBoxplotData !=="undefined") {
+                $("#studyBoxplotDAPChartDiv").html(json.studyBoxplotData);
+            }
+            if(typeof json.studyHistogramData !=="undefined") {
+                $("#studyHistogramDAPChartDiv").html(json.studyHistogramData);
+            }
+
+            // DLP per request chart data
+            if(typeof json.requestMeanData !== "undefined") {
+                $("#requestMeanDAPChartDiv").html(json.requestMeanData);
+                $("#requestMeanDAPChartParentDiv").append(json.requestMeanDataCSV);
+            }
+            if(typeof json.requestMedianData !== "undefined") {
+                $("#requestMedianDAPChartDiv").html(json.requestMedianData);
+                $("#requestMedianDAPChartParentDiv").append(json.requestMedianDataCSV);
+            }
+            if(typeof json.requestBoxplotData !=="undefined") {
+                $("#requestBoxplotDAPChartDiv").html(json.requestBoxplotData);
+            }
+            if(typeof json.requestHistogramData !=="undefined") {
+                $("#requestHistogramDAPChartDiv").html(json.requestHistogramData);
+            }
+
+            // Requested procedure DAP over time chart data
+            if(typeof json.requestMeanDAPOverTime !== "undefined") {
+                $("#requestMeanDAPOverTimeChartDiv").html(json.requestMeanDAPOverTime);
+            }
+            if(typeof json.requestMedianDAPOverTime !== "undefined") {
+                $("#requestMedianDAPOverTimeChartDiv").html(json.requestMedianDAPOverTime);
+            }
+
+            // Study DAP over time chart data
+            if(typeof json.studyMeanDAPOverTime !== "undefined") {
+                $("#studyMeanDAPOverTimeChartDiv").html(json.studyMeanDAPOverTime);
+            }
+            if(typeof json.studyMedianDAPOverTime !== "undefined") {
+                $("#studyMedianDAPOverTimeChartDiv").html(json.studyMedianDAPOverTime);
+            }
+
+            // Study frequency chart data start
+            if(typeof json.studyFrequencyData !== "undefined") {
+                $("#studyFrequencyChartDiv").html(json.studyFrequencyData);
+                $("#studyFrequencyChartParentDiv").append(json.studyFrequencyDataCSV);
+            }
+
+            // Request frequency chart data start
+            if(typeof json.requestFrequencyData !== "undefined") {
+                $("#requestFrequencyChartDiv").html(json.requestFrequencyData);
+                $("#requestFrequencyChartParentDiv").append(json.requestFrequencyDataCSV);
+            }
 
             // Study workload chart data
-            if(typeof plotRFStudyPerDayAndHour !== "undefined") {
-                updateWorkloadChart(json.studiesPerHourInWeekdays, "piechartStudyWorkloadDIV", colourScale);
-            }
-
-            // Study description frequency chart data start
-            if(typeof plotRFStudyFreq !== "undefined") {
-                updateFrequencyChart(json.studyNameList, json.studySystemList, json.studySummary, urlStartStudy, "piechartStudyDIV", colourScale);
-            }
-
-            // Requested procedure frequency chart data start
-            if(typeof plotRFRequestFreq !== "undefined") {
-                updateFrequencyChart(json.requestNameList, json.requestSystemList, json.requestSummary, urlStartRequest, "piechartRequestDIV", colourScale);
-            }
-
-            // DAP per study description data
-            if( typeof plotRFStudyDAP !== "undefined") {
-                updateAverageChart(json.studyNameList, json.studySystemList, json.studySummary, json.studyHistogramData, plotAverageChoice, "plotRFStudyDAPContainer", colourScale);
-                /*eslint-disable no-undef*/
-                sortChartDataToDefault(chartSorting, chartSortingDirection, "plotRFStudyDAPContainer");
-                /*eslint-enable no-undef*/
-                hideButtonsIfOneSeries("plotRFStudyDAPContainer", "study_dap_series_");
-            }
-
-            // DAP per requested procedure data
-            if( typeof plotRFRequestDAP !== "undefined") {
-                updateAverageChart(json.requestNameList, json.requestSystemList, json.requestSummary, json.requestHistogramData, plotAverageChoice, "plotRFRequestDAPContainer", colourScale);
-                /*eslint-disable no-undef*/
-                sortChartDataToDefault(chartSorting, chartSortingDirection, "plotRFRequestDAPContainer");
-                /*eslint-enable no-undef*/
-                hideButtonsIfOneSeries("plotRFRequestDAPContainer", "request_dap_series_");
+            if(typeof json.studyWorkloadData !== "undefined") {
+                $("#studyWorkloadChartDiv").html(json.studyWorkloadData);
             }
 
             $(".ajax-progress").hide();

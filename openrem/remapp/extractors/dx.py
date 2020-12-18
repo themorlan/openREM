@@ -33,18 +33,31 @@
 ..  moduleauthor:: David Platten, Ed McDonagh
 
 """
-from __future__ import division
-from __future__ import absolute_import
-
-from past.utils import old_div
-import os
-import sys
-import django
+from datetime import datetime
+from decimal import Decimal
 import logging
+import os
+from random import random
+import sys
+from time import sleep
 
-logger = logging.getLogger(
-    "remapp.extractors.dx"
-)  # Explicitly named so that it is still handled when using __main__
+from celery import shared_task
+import django
+from django.core.exceptions import ObjectDoesNotExist
+import pydicom
+from pydicom.valuerep import MultiValue
+
+from ..tools import check_uid
+from ..tools.dcmdatetime import get_date, get_time, make_date_time
+from ..tools.get_values import (
+    get_value_kw,
+    get_value_num,
+    get_or_create_cid,
+    get_seq_code_value,
+    get_seq_code_meaning,
+    list_to_string,
+)
+from ..tools.hash_id import hash_id
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -54,12 +67,38 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
-from celery import shared_task
+from .extract_common import (  # pylint: disable=wrong-import-order, wrong-import-position
+    get_study_check_dup,
+    populate_dx_rf_summary,
+    patient_module_attributes,
+)
+from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-position
+    AccumXRayDose,
+    AccumIntegratedProjRadiogDose,
+    DicomDeleteSettings,
+    DoseRelatedDistanceMeasurements,
+    Exposure,
+    GeneralEquipmentModuleAttr,
+    GeneralStudyModuleAttr,
+    IrradEventXRayData,
+    IrradEventXRayDetectorData,
+    IrradEventXRayMechanicalData,
+    IrradEventXRaySourceData,
+    Kvp,
+    PatientIDSettings,
+    PatientStudyModuleAttr,
+    ProjectionXRayRadiationDose,
+    UniqueEquipmentNames,
+    XrayFilters,
+    XrayGrid,
+)
+
+logger = logging.getLogger(
+    "remapp.extractors.dx"
+)  # Explicitly named so that it is still handled when using __main__
 
 
 def _xrayfilters(filttype, material, thickmax, thickmin, source):
-    from remapp.models import XrayFilters
-    from remapp.tools.get_values import get_or_create_cid
 
     filters = XrayFilters.objects.create(irradiation_event_xray_source_data=source)
     if filttype:
@@ -130,9 +169,6 @@ def _xrayfilters(filttype, material, thickmax, thickmin, source):
 
 
 def _xrayfiltersnone(source):
-    from remapp.models import XrayFilters
-    from remapp.tools.get_values import get_value_kw, get_or_create_cid
-
     filters = XrayFilters.objects.create(irradiation_event_xray_source_data=source)
     filters.xray_filter_type = get_or_create_cid("111609", "No filter")
     filters.save()
@@ -158,9 +194,6 @@ def _xray_filters_multiple(
 
 
 def _xray_filters_prep(dataset, source):
-    from pydicom.valuerep import MultiValue
-    from remapp.tools.get_values import get_value_kw
-
     xray_filter_type = get_value_kw("FilterType", dataset)
     xray_filter_material = get_value_kw("FilterMaterial", dataset)
 
@@ -223,19 +256,13 @@ def _xray_filters_prep(dataset, source):
 
 
 def _kvp(dataset, source):
-    from remapp.models import Kvp
-    from remapp.tools.get_values import get_value_kw
-
     kv = Kvp.objects.create(irradiation_event_xray_source_data=source)
     kv.kvp = get_value_kw("KVP", dataset)
     kv.save()
 
 
 def _exposure(dataset, source):
-    from remapp.models import Exposure
-
     exp = Exposure.objects.create(irradiation_event_xray_source_data=source)
-    from remapp.tools.get_values import get_value_kw
 
     exp.exposure = get_value_kw("ExposureInuAs", dataset)  # uAs
     if not exp.exposure:
@@ -246,9 +273,6 @@ def _exposure(dataset, source):
 
 
 def _xraygrid(gridcode, source):
-    from remapp.models import XrayGrid
-    from remapp.tools.get_values import get_or_create_cid
-
     grid = XrayGrid.objects.create(irradiation_event_xray_source_data=source)
     if gridcode == "111646":
         grid.xray_grid = get_or_create_cid("111646", "No grid")
@@ -266,9 +290,6 @@ def _xraygrid(gridcode, source):
 
 
 def _irradiationeventxraydetectordata(dataset, event):
-    from remapp.models import IrradEventXRayDetectorData
-    from remapp.tools.get_values import get_value_kw, get_or_create_cid
-
     detector = IrradEventXRayDetectorData.objects.create(
         irradiation_event_xray_data=event
     )
@@ -303,9 +324,6 @@ def _irradiationeventxraydetectordata(dataset, event):
 
 def _irradiationeventxraysourcedata(dataset, event):
     # TODO: review model to convert to cid where appropriate, and add additional fields such as field height and width
-    from remapp.models import IrradEventXRaySourceData
-    from remapp.tools.get_values import get_value_kw, get_or_create_cid
-
     source = IrradEventXRaySourceData.objects.create(irradiation_event_xray_data=event)
     source.average_xray_tube_current = get_value_kw("XRayTubeCurrent", dataset)
     if not source.average_xray_tube_current:
@@ -355,9 +373,6 @@ def _irradiationeventxraysourcedata(dataset, event):
 
 
 def _doserelateddistancemeasurements(dataset, mech):
-    from remapp.models import DoseRelatedDistanceMeasurements
-    from remapp.tools.get_values import get_value_kw, get_value_num
-
     dist = DoseRelatedDistanceMeasurements.objects.create(
         irradiation_event_xray_mechanical_data=mech
     )
@@ -395,9 +410,6 @@ def _doserelateddistancemeasurements(dataset, mech):
 
 
 def _irradiationeventxraymechanicaldata(dataset, event):
-    from remapp.models import IrradEventXRayMechanicalData
-    from remapp.tools.get_values import get_value_kw
-
     mech = IrradEventXRayMechanicalData.objects.create(
         irradiation_event_xray_data=event
     )
@@ -421,16 +433,8 @@ def _irradiationeventxraymechanicaldata(dataset, event):
     _doserelateddistancemeasurements(dataset, mech)
 
 
-def _irradiationeventxraydata(dataset, proj, ch):  # TID 10003
+def _irradiationeventxraydata(dataset, proj):  # TID 10003
     # TODO: review model to convert to cid where appropriate, and add additional fields
-    from remapp.models import IrradEventXRayData
-    from remapp.tools.get_values import (
-        get_value_kw,
-        get_or_create_cid,
-        get_seq_code_value,
-        get_seq_code_meaning,
-    )
-    from remapp.tools.dcmdatetime import make_date_time
 
     event = IrradEventXRayData.objects.create(projection_xray_radiation_dose=proj)
     event.acquisition_plane = get_or_create_cid("113622", "Single Plane")
@@ -509,8 +513,8 @@ def _irradiationeventxraydata(dataset, proj, ch):  # TID 10003
 
     dap = get_value_kw("ImageAndFluoroscopyAreaDoseProduct", dataset)
     if dap:
-        event.dose_area_product = old_div(
-            dap, 100000
+        event.dose_area_product = (
+            dap / 100000
         )  # Value of DICOM tag (0018,115e) in dGy.cm2, converted to Gy.m2
     event.save()
 
@@ -521,9 +525,6 @@ def _irradiationeventxraydata(dataset, proj, ch):  # TID 10003
 
 
 def _accumulatedxraydose(proj):
-    from remapp.models import AccumXRayDose, AccumIntegratedProjRadiogDose
-    from remapp.tools.get_values import get_or_create_cid
-
     accum = AccumXRayDose.objects.create(projection_xray_radiation_dose=proj)
     accum.acquisition_plane = get_or_create_cid("113622", "Single Plane")
     accum.save()
@@ -534,8 +535,6 @@ def _accumulatedxraydose(proj):
 
 
 def _accumulatedxraydose_update(event):
-    from decimal import Decimal
-
     accumint = (
         event.projection_xray_radiation_dose.accumxraydose_set.get().accumintegratedprojradiogdose_set.get()
     )
@@ -547,10 +546,7 @@ def _accumulatedxraydose_update(event):
     accumint.save()
 
 
-def _projectionxrayradiationdose(dataset, g, ch):
-    from remapp.models import ProjectionXRayRadiationDose
-    from remapp.tools.get_values import get_or_create_cid
-
+def _projectionxrayradiationdose(dataset, g):
     proj = ProjectionXRayRadiationDose.objects.create(general_study_module_attributes=g)
     proj.procedure_reported = get_or_create_cid("113704", "Projection X-Ray")
     proj.has_intent = get_or_create_cid("R-408C3", "Diagnostic Intent")
@@ -563,15 +559,10 @@ def _projectionxrayradiationdose(dataset, g, ch):
     proj.xray_mechanical_data_available = get_or_create_cid("R-0038D", "Yes")
     proj.save()
     _accumulatedxraydose(proj)
-    _irradiationeventxraydata(dataset, proj, ch)
+    _irradiationeventxraydata(dataset, proj)
 
 
-def _generalequipmentmoduleattributes(dataset, study, ch):
-    from remapp.models import GeneralEquipmentModuleAttr, UniqueEquipmentNames
-    from remapp.tools.dcmdatetime import get_date, get_time
-    from remapp.tools.get_values import get_value_kw
-    from remapp.tools.hash_id import hash_id
-
+def _generalequipmentmoduleattributes(dataset, study):
     equip = GeneralEquipmentModuleAttr.objects.create(
         general_study_module_attributes=study
     )
@@ -630,9 +621,6 @@ def _generalequipmentmoduleattributes(dataset, study, ch):
 
 
 def _patientstudymoduleattributes(dataset, g):  # C.7.2.2
-    from remapp.models import PatientStudyModuleAttr
-    from remapp.tools.get_values import get_value_kw
-
     patientatt = PatientStudyModuleAttr.objects.create(
         general_study_module_attributes=g
     )
@@ -642,75 +630,7 @@ def _patientstudymoduleattributes(dataset, g):  # C.7.2.2
     patientatt.save()
 
 
-def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
-    from decimal import Decimal
-    from remapp.models import PatientModuleAttr, PatientStudyModuleAttr
-    from remapp.models import PatientIDSettings
-    from remapp.tools.get_values import get_value_kw
-    from remapp.tools.dcmdatetime import get_date
-    from remapp.tools.not_patient_indicators import get_not_pt
-    from remapp.tools.hash_id import hash_id
-
-    pat = PatientModuleAttr.objects.create(general_study_module_attributes=g)
-    pat.patient_sex = get_value_kw("PatientSex", dataset)
-    patient_birth_date = get_date("PatientBirthDate", dataset)
-    pat.not_patient_indicator = get_not_pt(dataset)
-    patientatt = PatientStudyModuleAttr.objects.get(general_study_module_attributes=g)
-    if patient_birth_date:
-        patientatt.patient_age_decimal = old_div(
-            Decimal((g.study_date.date() - patient_birth_date.date()).days),
-            Decimal("365.25"),
-        )
-    elif patientatt.patient_age:
-        if patientatt.patient_age[-1:] == "Y":
-            patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1])
-        elif patientatt.patient_age[-1:] == "M":
-            patientatt.patient_age_decimal = old_div(
-                Decimal(patientatt.patient_age[:-1]), Decimal("12")
-            )
-        elif patientatt.patient_age[-1:] == "D":
-            patientatt.patient_age_decimal = old_div(
-                Decimal(patientatt.patient_age[:-1]), Decimal("365.25")
-            )
-    if patientatt.patient_age_decimal:
-        patientatt.patient_age_decimal = patientatt.patient_age_decimal.quantize(
-            Decimal(".1")
-        )
-    patientatt.save()
-
-    patient_id_settings = PatientIDSettings.objects.get()
-    if patient_id_settings.name_stored:
-        name = get_value_kw("PatientName", dataset)
-        if name and patient_id_settings.name_hashed:
-            name = hash_id(name)
-            pat.name_hashed = True
-        pat.patient_name = name
-    if patient_id_settings.id_stored:
-        patid = get_value_kw("PatientID", dataset)
-        if patid and patient_id_settings.id_hashed:
-            patid = hash_id(patid)
-            pat.id_hashed = True
-        pat.patient_id = patid
-    if patient_id_settings.dob_stored and patient_birth_date:
-        pat.patient_birth_date = patient_birth_date
-    pat.save()
-
-
 def _generalstudymoduleattributes(dataset, g):
-    from datetime import datetime
-    from remapp.extractors.extract_common import populate_dx_rf_summary
-    from remapp.models import PatientIDSettings
-    from remapp.tools.get_values import (
-        get_value_kw,
-        get_seq_code_meaning,
-        get_seq_code_value,
-        get_value_num,
-        list_to_string,
-    )
-    from remapp.tools.dcmdatetime import get_date, get_time
-    from remapp.tools.hash_id import hash_id
-
-    ch = get_value_kw("SpecificCharacterSet", dataset)
     g.study_date = get_date("StudyDate", dataset)
     g.study_time = get_time("StudyTime", dataset)
     g.study_workload_chart_time = datetime.combine(
@@ -802,10 +722,10 @@ def _generalstudymoduleattributes(dataset, g):
             g.requested_procedure_code_meaning = get_value_num(0x00081030, dataset)
     g.save()
 
-    _generalequipmentmoduleattributes(dataset, g, ch)
-    _projectionxrayradiationdose(dataset, g, ch)
+    _generalequipmentmoduleattributes(dataset, g)
+    _projectionxrayradiationdose(dataset, g)
     _patientstudymoduleattributes(dataset, g)
-    _patientmoduleattributes(dataset, g, ch)
+    patient_module_attributes(dataset, g)
     populate_dx_rf_summary(g)
     g.number_of_events = (
         g.projectionxrayradiationdose_set.get().irradeventxraydata_set.count()
@@ -830,22 +750,10 @@ def _test_if_dx(dataset):
 
 
 def _dx2db(dataset):
-    import sys
-    from time import sleep
-    from random import random
-    from remapp.extractors.extract_common import (
-        get_study_check_dup,
-        populate_dx_rf_summary,
-    )
-    from remapp.models import GeneralStudyModuleAttr
-    from remapp.tools import check_uid
-    from remapp.tools.get_values import get_value_kw
-
     study_uid = get_value_kw("StudyInstanceUID", dataset)
     if not study_uid:
         sys.exit("No UID returned")
     study_in_db = check_uid.check_uid(study_uid)
-    ch = get_value_kw("SpecificCharacterSet", dataset)
 
     if study_in_db:
         sleep(
@@ -854,7 +762,7 @@ def _dx2db(dataset):
         this_study = get_study_check_dup(dataset, modality="DX")
         if this_study:
             _irradiationeventxraydata(
-                dataset, this_study.projectionxrayradiationdose_set.get(), ch
+                dataset, this_study.projectionxrayradiationdose_set.get()
             )
             populate_dx_rf_summary(this_study)
             this_study.number_of_events = (
@@ -903,7 +811,6 @@ def _dx2db(dataset):
                             _irradiationeventxraydata(
                                 dataset,
                                 this_study.projectionxrayradiationdose_set.get(),
-                                ch,
                             )
                     while not study_in_db:
                         g = GeneralStudyModuleAttr.objects.create()
@@ -927,7 +834,6 @@ def _dx2db(dataset):
                                     _irradiationeventxraydata(
                                         dataset,
                                         this_study.projectionxrayradiationdose_set.get(),
-                                        ch,
                                     )
                 elif study_in_db == 1:
                     sleep(
@@ -936,9 +842,7 @@ def _dx2db(dataset):
                     this_study = get_study_check_dup(dataset, modality="DX")
                     if this_study:
                         _irradiationeventxraydata(
-                            dataset,
-                            this_study.projectionxrayradiationdose_set.get(),
-                            ch,
+                            dataset, this_study.projectionxrayradiationdose_set.get(),
                         )
 
 
@@ -948,7 +852,6 @@ def _fix_kodak_filters(dataset):
     :param dataset: DICOM dataset
     :return: Repaired DICOM dataset
     """
-    from remapp.tools.get_values import get_value_kw
 
     try:  # Black magic pydicom method suggested by Darcy Mason: https://groups.google.com/forum/?hl=en-GB#!topic/pydicom/x_WsC2gCLck
         xray_filter_thickness_minimum = get_value_kw("FilterThicknessMinimum", dataset)
@@ -987,10 +890,6 @@ def dx(dig_file):
     :type filename: str.
 
     """
-
-    import pydicom
-    from django.core.exceptions import ObjectDoesNotExist
-    from remapp.models import DicomDeleteSettings
 
     try:
         del_settings = DicomDeleteSettings.objects.get()

@@ -1,0 +1,196 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../netdicom-orthanc-config.rst:2 b8df2c0b67b244d9a8cdd9328ff4fa4f
+msgid "Orthanc Store configuration"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:5 ff915ae72a894ccc87fd46f6b7258e6d
+msgid "Create Lua file"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:7 10ae5d2a633a4f7283c996887588a92e
+msgid ""
+"Open the following link in a new tab and copy and paste the content into "
+"a text editor. Save this as a new file called "
+"``openrem_orthanc_config.lua``. This can be saved anywhere, provided that"
+" Orthanc is able to access it:"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:10 b644a6cfff3044db9c1e5dcae884dc36
+msgid "|openrem_orthanc_conf_link|"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:14 f28960431fb040549902c364ac4327ca
+msgid "Edit the top two sections"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:87 0778855006fa4d5caf47c197f6deb0d9
+msgid "Guide to customising Orthanc configuration"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:89 d11c2eee9f8344369f8f6bb8e9f43b31
+msgid ""
+"**python_executable** Set this to the path and name of the python "
+"executable used by OpenREM::"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:100 0bdf9ae48de1436eb7f53428e54ba285
+msgid ""
+"**python_scripts_path** Set this to the path of the python scripts folder"
+" used by OpenREM::"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:111 ad0d0ea8fd404ad1be4ea63a8b705c83
+msgid ""
+"**temp_path** Set this to the path where you want Orthanc to temporarily "
+"store DICOM files. Note: the folder must exist and Orthanc must be able "
+"to write to it. On Ubuntu Linux the user is ``orthanc``::"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:122 611b0e42b9c64901a4014bc20a6a8db6
+msgid "Using Orthanc to collect Physics QA images:"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:124 e19f910fb58b4ad0995dbdec8cf87301
+msgid ""
+"**use_physics_filtering** set this to ``false`` if you don't want to use "
+"this facility. If this is false, the other physics image related values "
+"don't matter. If it is ``true``, then ensure that 7zip or similar "
+"(Windows) or zip (Linux) are installed, and:"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:128 e063bd87b8f24962b33f3fc27fe156e7
+msgid ""
+"**physics_to_keep_folder** *Optional* Set this to the path where you want"
+" to keep physics-related DICOM images::"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:132 e994c0d2429446729f093e2f689073f8
+msgid ""
+"**physics_to_keep** A list to check against patient name and ID to see if"
+" the images should be kept. Orthanc will put anything that matches this "
+"in the ``physics_to_keep_folder``::"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:137 e17f71a041964422950fdad8a5fd79ce
+msgid ""
+"Lists of things to ignore. Orthanc will ignore anything matching the "
+"content of these comma separated lists: they will not be imported into "
+"OpenREM::"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:146 61cdad6cc80b4cf78d862c6b6dd24ece
+msgid ""
+"Attempting to get dose data from CT studies with no RDSR using the "
+"OpenREMToshiba CT extractor"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:148 feb0e39a6b4747b6baadf99bbb7446ab
+msgid ""
+"**use_toshiba_ct_extractor** set this to ``false`` if you haven't "
+"installed the additional :ref:`install_toshiba_resources` or do not wish "
+"to use this function. Otherwise:"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:151 86355ad8863f4ce4bfe1ebb9d4418657
+msgid ""
+"**toshiba_extractor_systems** A list of CT make and model pairs that you "
+"want to use with the Toshiba CT extractor. You can add to this list, but "
+"you will need to verify that the dose data created matches what you "
+"expect. These will only be considered if an RDSR is not found with the "
+"study, otherwise that will be used in preference. The format is "
+"``{{'manufacturer', 'model'}, {'manufacturer two'}, {'model two'}}`` etc."
+" They will be matched against the names presented in the DICOM headers::"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:163 7eb6e03e5f5546ce94b51dafd2dfd1ee
+msgid "Configure Orthanc to make use of the openrem_orthanc_config.lua file"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:165 500c3ac1594e430480f8b1439771f18c
+msgid "Edit ``orthanc.json`` which can be found in:"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:167 b7d97953812b4e9c8c6aa6a0e84e3203
+msgid "Ubuntu linux: ``/etc/orthanc/``"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:168 21ab343ebf6542379b3d0d2fdd1a497e
+msgid "Windows: ``C:\\Program Files\\Orthanc Server\\Configuration\\``"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:170 30b3a2cb43914a51bd5db432db947ca4
+msgid "Find and edit the section below:"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:172 d58031beef0c4164841606afa0463467
+msgid "Linux:"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:182 a6e477751ba747179a265503813d9d7d
+msgid "Windows (note the double back-slash):"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:193 772efd167bb14a2dba33df4ac02b722c
+msgid "Check permissions"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:195 697a6a845ac4424bbe0d6e71103cf4f7
+msgid "**Linux**"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:197 9b82de5116da4000984294c67e1c3073
+msgid "orthanc user needs to be able to write to the OpenREM logs"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:198 254c8504d80a4d42a43ef5b5d5d492f2
+msgid "orthanc user needs to be able to write to the temp directory we specified"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:200 48393fcad3144b11a01d0d826acad222
+msgid "**Windows**"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:202 48177e2402314c73b96424485ff90b3e
+msgid ""
+"Orthanc will be running as a local admin user, so should be able to "
+"function without any special consideration"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:205 be44f8032b254111889b85dc53bcca3f
+msgid "Restart Orthanc"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:207 8b7436ef97164711bffe57e3a1c20c06
+msgid "Ubuntu linux::"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:211 51f1947a3e6c4faba89ae14a607d2581
+msgid "Windows:"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:213 05b3e3b2333d48309846fb741b353b37
+msgid "Run ``Services.msc`` as an administrator"
+msgstr ""
+
+#: ../../netdicom-orthanc-config.rst:214 42ec40dc669042c5b59707b96d9c0efa
+msgid "Right-hand click on the Orthanc entry and select ``Restart``"
+msgstr ""
+
