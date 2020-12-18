@@ -36,7 +36,6 @@ class ChartsCT(TestCase):
         ct4 = os.path.join("test_files", "CT-RDSR-Siemens_Flash-QA-DS.dcm")
         ct5 = os.path.join("test_files", "CT-RDSR-Siemens_Flash-TAP-SS.dcm")
         ct6 = os.path.join("test_files", "CT-RDSR-ToshibaPixelMed.dcm")
-        ct7 = os.path.join("test_files", "CT-SC-Philips_Brilliance16P.dcm")
         root_tests = os.path.dirname(os.path.abspath(__file__))
 
         rdsr.rdsr(os.path.join(root_tests, ct1))
@@ -45,7 +44,6 @@ class ChartsCT(TestCase):
         rdsr.rdsr(os.path.join(root_tests, ct4))
         rdsr.rdsr(os.path.join(root_tests, ct5))
         rdsr.rdsr(os.path.join(root_tests, ct6))
-        rdsr.rdsr(os.path.join(root_tests, ct7))
 
     def user_profile_reset(self):
         self.user.userprofile.plotCharts = True
