@@ -1330,3 +1330,243 @@ class ChartsCT(TestCase):
         chart_data = self.chart_data["acquisitionBoxplotDLPData"]["data"]
 
         self.check_boxplot_data(chart_data, standard_data)
+
+    def test_study_dlp(self):
+        # Test of mean and median study DLP, count, system and acquisition protocol names
+        # Also tests raw data going into the box plots
+        f = self.login_get_filterset()
+
+        # Set user profile options
+        self.user.userprofile.plotCTStudyMeanDLP = True
+        self.user.userprofile.plotMean = True
+        self.user.userprofile.plotMedian = True
+        self.user.userprofile.plotBoxplots = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        # Test the mean data
+        standard_data = [
+            {
+                "customdata": np.array(
+                    [
+                        ['All systems', 468.02, 2],
+                        ['All systems', 415.82, 1],
+                        ['All systems', 2002.39, 1],
+                        ['All systems', 1590.0, 1],
+                        ['All systems', 724.52, 1]
+                    ],
+                    dtype=object,
+                ),
+                "name": "All systems",
+                "x": np.array(
+                    [
+                        "Blank",
+                        "Colonography",
+                        "FACIAL BONES",
+                        "Specials^PhysicsTesting (Adult)",
+                        "Thorax^TAP (Adult)"
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        468.02,
+                        415.82,
+                        2002.39,
+                        1590.00,
+                        724.52
+                    ]
+                ),
+            }
+        ]
+
+        chart_data = self.chart_data["studyMeanDLPData"]["data"]
+
+        self.check_average_data(chart_data, standard_data)
+
+# Test the median data
+        standard_data = [
+            {
+                "customdata": np.array(
+                    [
+                        ['All systems', 468.02, 2.0],
+                        ['All systems', 415.82, 1.0],
+                        ['All systems', 2002.39, 1.0],
+                        ['All systems', 1590.0, 1.0],
+                        ['All systems', 724.52, 1.0],
+                    ],
+                    dtype=object,
+                ),
+                "name": "All systems",
+                "x": np.array(
+                    [
+                        "Blank",
+                        "Colonography",
+                        "FACIAL BONES",
+                        "Specials^PhysicsTesting (Adult)",
+                        "Thorax^TAP (Adult)",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        468.02,
+                        415.82,
+                        2002.39,
+                        1590.  ,
+                        724.52,
+                    ]
+                ),
+            }
+        ]
+
+        chart_data = self.chart_data["studyMedianDLPData"]["data"]
+
+        self.check_average_data(chart_data, standard_data)
+
+        # Check the boxplot data
+        standard_data = [
+            {
+                "name": "All systems",
+                "x": np.array(
+                    [
+                        "Colonography",
+                        "FACIAL BONES",
+                        "Specials^PhysicsTesting (Adult)",
+                        "Thorax^TAP (Adult)",
+                        "Blank",
+                        "Blank"
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        415.82,
+                        2002.39,
+                        1590.  ,
+                        724.52,
+                        586.34,
+                        349.7
+                    ]
+                ),
+            }
+        ]
+
+        chart_data = self.chart_data["studyBoxplotDLPData"]["data"]
+        self.check_boxplot_data(chart_data, standard_data)
+
+    def test_request_dlp(self):
+        # Test of mean and median requested procedure DLP,
+        # Also tests raw data going into the box plots
+        f = self.login_get_filterset()
+
+        # Set user profile options
+        self.user.userprofile.plotCTRequestMeanDLP = True
+        self.user.userprofile.plotMean = True
+        self.user.userprofile.plotMedian = True
+        self.user.userprofile.plotBoxplots = True
+        self.user.userprofile.save()
+
+        # Obtain chart data
+        self.obtain_chart_data(f)
+
+        # Test the mean data
+        standard_data = [
+            {
+                "customdata": np.array(
+                    [
+                        ['All systems', 735.4649999999999, 4],
+                        ['All systems', 724.52, 1],
+                        ['All systems', 2002.39, 1]
+                    ],
+                    dtype=object,
+                ),
+                "name": "All systems",
+                "x": np.array(
+                    [
+                        "Blank",
+                        "CT Thorax abdomen and pelvis with contrast",
+                        "FACIAL BONES"
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        735.465,
+                        724.52 ,
+                        2002.39
+                    ]
+                ),
+            }
+        ]
+
+        chart_data = self.chart_data["requestMeanDLPData"]["data"]
+
+        self.check_average_data(chart_data, standard_data)
+
+# Test the median data
+        standard_data = [
+            {
+                "customdata": np.array(
+                    [
+                        ['All systems', 501.08000000000004, 4],
+                        ['All systems', 724.52, 1],
+                        ['All systems', 2002.39, 1],
+                    ],
+                    dtype=object,
+                ),
+                "name": "All systems",
+                "x": np.array(
+                    [
+                        "Blank",
+                        "CT Thorax abdomen and pelvis with contrast",
+                        "FACIAL BONES"
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        501.08,
+                        724.52,
+                        2002.39
+                    ]
+                ),
+            }
+        ]
+
+        chart_data = self.chart_data["requestMedianDLPData"]["data"]
+
+        self.check_average_data(chart_data, standard_data)
+
+        # Check the boxplot data
+        standard_data = [
+            {
+                "name": "All systems",
+                "x": np.array(
+                    [
+                        "CT Thorax abdomen and pelvis with contrast",
+                        "FACIAL BONES",
+                        "Blank",
+                        "Blank",
+                        "Blank",
+                        "Blank"
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        724.52,
+                        2002.39,
+                        349.7 ,
+                        415.82,
+                        586.34,
+                        1590.
+                    ]
+                ),
+            }
+        ]
+
+        chart_data = self.chart_data["requestBoxplotDLPData"]["data"]
+        self.check_boxplot_data(chart_data, standard_data)
