@@ -105,7 +105,6 @@ from .tools.populate_summary import (
 from .tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 from .version import __version__, __docs_version__
 
-standard_library.install_aliases()
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 

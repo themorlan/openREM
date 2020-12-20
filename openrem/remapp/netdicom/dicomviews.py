@@ -74,12 +74,6 @@ def status_update_store(request):
         resp[
             "delbutton"
         ] = "<button type='button' class='btn btn-primary' disabled='disabled'>Delete</button>"
-        resp["startbutton"] = ""
-        resp[
-            "stopbutton"
-        ] = "<a class='btn btn-danger' href='{0}' role='button'>Stop server</a>".format(
-            reverse_lazy("stop_store", kwargs={"pk": scp_pk})
-        )
     else:
         resp["message"] = "<div>Last status: {0}</div>".format(store.status)
         resp["statusindicator"] = (
@@ -92,12 +86,6 @@ def status_update_store(request):
         ] = "<a class='btn btn-primary' href='{0}' role='button'>Delete</a>".format(
             reverse_lazy("dicomstore_delete", kwargs={"pk": scp_pk})
         )
-        resp[
-            "startbutton"
-        ] = "<a class='btn btn-success' href='{0}' role='button'>Start server</a>".format(
-            reverse_lazy("run_store", kwargs={"pk": scp_pk})
-        )
-        resp["stopbutton"] = ""
 
     return HttpResponse(json.dumps(resp), content_type="application/json")
 
