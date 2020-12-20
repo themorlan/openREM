@@ -30,7 +30,8 @@ Boxplot of values across a number of categories
 
 Example boxplot.
 
-These show either mean or median data.
+.. raw:: html
+   :file: charts/testChart.html
 
 
 ==============================
