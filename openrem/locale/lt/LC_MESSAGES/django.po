@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-12-05 21:13+0000\n"
-"PO-Revision-Date: 2020-12-19 11:28+0000\n"
+"PO-Revision-Date: 2020-12-21 21:29+0000\n"
 "Last-Translator: Romualdas Griškevičius <romasg@gmail.com>\n"
 "Language-Team: Lithuanian <https://hosted.weblate.org/projects/openrem/"
 "web-interface/lt/>\n"
@@ -62,6 +62,7 @@ msgstr ""
 #: remapp/netdicom/qrscu.py:1080
 msgid "Connection timed out, was aborted or received invalid response"
 msgstr ""
+"Baigėsi ryšio laikas, jis buvo nutrauktas arba gautas neteisingas atsakymas"
 
 #: remapp/netdicom/qrscu.py:906
 msgid "Series level matching for this study is complete (there may be more)"
@@ -146,27 +147,27 @@ msgstr ""
 
 #: remapp/templates/base.html:52 remapp/views.py:917
 msgid "CT"
-msgstr ""
+msgstr "KT"
 
 #: remapp/templates/base.html:56 remapp/views.py:921
 msgid "Fluoroscopy"
-msgstr ""
+msgstr "Fluoroskopija"
 
 #: remapp/templates/base.html:60 remapp/views.py:925
 msgid "Mammography"
-msgstr ""
+msgstr "Mamografija"
 
 #: remapp/templates/base.html:64 remapp/views.py:929
 msgid "Radiography"
-msgstr ""
+msgstr "Radiologija"
 
 #: remapp/templates/base.html:76
 msgid "Imports"
-msgstr ""
+msgstr "Importavimas"
 
 #: remapp/templates/base.html:80
 msgid "Import patient size info"
-msgstr ""
+msgstr "Importuoti paciento dydžio informaciją"
 
 #: remapp/templates/base.html:83
 msgid "Previous patient size imports"
