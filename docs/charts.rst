@@ -46,7 +46,8 @@ Bar chart of category frequency
 Scatter chart of x vs y values
 ==============================
 
-Example scatter chart.
+.. raw:: html
+   :file: charts/scatter.html
 
 
 =====================
@@ -63,8 +64,6 @@ These show the number of events taking place per weekday, sub-divided into hours
 Line chart of average value over time
 =====================================
 
-Example line chart of average value over time.
-
 These show either mean or median data.
 
 Each datapoint represents the average over a user-specified time period. This can be a day, week, month, quarter or
@@ -78,12 +77,12 @@ year.
 Bar chart of average value binned by another value across categories
 ====================================================================
 
-Example bar chart showing mammography AGD vs compressed breast thickness bins.
-
 These show either mean or median data over a number of binned criteria.
 
 This is currently used to display the average glandular dose binned into compressed breast thickness bands.
 
+.. raw:: html
+   :file: charts/binned_statistic.html
 
 
 ***********************************

@@ -310,7 +310,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     "facet_title": legend_title,
                     "user_bins": [20, 30, 40, 50, 60, 70, 80, 90],
                     "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM CT acquisition protocol AGD vs thickness",
+                    "filename": "OpenREM CT acquisition protocol average AGD vs thickness",
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "df_facet_category_list": facet_names,
                     "df_category_name_list": category_names,
