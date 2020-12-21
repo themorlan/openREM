@@ -293,3 +293,6 @@ try:
 except ImportError:
     # For Docker builds, there will not be a local_settings.py, 'local settings' are passed via environment variables
     pass
+
+# Save charts as HTML files in a charts sub-folder of the MEDIA_ROOT folder on the OpenREM server.
+SAVE_CHARTS_AS_HTML = False

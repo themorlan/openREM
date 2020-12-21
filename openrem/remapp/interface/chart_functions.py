@@ -381,7 +381,7 @@ def calc_facet_rows_and_height(df, facet_col_name, facet_col_wrap):
     return chart_height, n_facet_rows
 
 
-def save_fig_as_html_div(fig, filename, active=False):
+def save_fig_as_html_div(fig, filename, active=settings.SAVE_CHARTS_AS_HTML):
     """
     Saves the Plotly figure as an HTML file containing a single DIV. The file is saved on the OpenREM server in
     MEDIA_ROOT\charts\yyyy\mm\dd\. Viewing the saved file requires an active internet connection as the Plotly
