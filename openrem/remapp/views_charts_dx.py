@@ -769,7 +769,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "x_axis_title": "System",
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
-                "file_name": "OpenREM DX acquisition protocol frequency",
+                "filename": "OpenREM DX acquisition protocol frequency",
                 "sorted_categories": sorted_categories,
                 "groupby_cols": None,
                 "facet_col": None,
@@ -805,7 +805,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                "file_name": "OpenREM DX acquisition protocol DAP over time",
+                "filename": "OpenREM DX acquisition protocol DAP over time",
                 "return_as_dict": return_as_dict,
             }
             result = construct_over_time_charts(
@@ -841,7 +841,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                "file_name": "OpenREM DX acquisition protocol kVp over time",
+                "filename": "OpenREM DX acquisition protocol kVp over time",
                 "return_as_dict": return_as_dict,
             }
             result = construct_over_time_charts(
@@ -877,7 +877,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                "file_name": "OpenREM DX acquisition protocol mAs over time",
+                "filename": "OpenREM DX acquisition protocol mAs over time",
                 "return_as_dict": return_as_dict,
             }
             result = construct_over_time_charts(
@@ -905,7 +905,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "x_axis_title": "Patient mass (kg)",
                 "y_axis_title": "DAP (mGy.cm<sup>2</sub>)",
-                "file_name": "OpenREM DX acquisition protocol DAP vs patient mass",
+                "filename": "OpenREM DX acquisition protocol DAP vs patient mass",
                 "return_as_dict": return_as_dict,
             }
             return_structure["acquisitionDAPvsMass"] = plotly_scatter(
@@ -1092,7 +1092,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "x_axis_title": "System",
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
-                "file_name": "OpenREM DX study description frequency",
+                "filename": "OpenREM DX study description frequency",
                 "sorted_categories": sorted_study_dap_categories,
                 "groupby_cols": None,
                 "facet_col": None,
@@ -1218,7 +1218,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "x_axis_title": "System",
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
-                "file_name": "OpenREM DX requested procedure frequency",
+                "filename": "OpenREM DX requested procedure frequency",
                 "sorted_categories": sorted_request_dap_categories,
                 "groupby_cols": None,
                 "facet_col": None,
@@ -1263,7 +1263,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "x_axis_title": "Patient mass (kg)",
                 "y_axis_title": "DAP (mGy.cm<sup>2</sub>)",
-                "file_name": "OpenREM DX study description DAP vs patient mass",
+                "filename": "OpenREM DX study description DAP vs patient mass",
                 "return_as_dict": return_as_dict,
             }
             return_structure["studyDAPvsMass"] = plotly_scatter(
@@ -1286,7 +1286,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "x_axis_title": "Patient mass (kg)",
                 "y_axis_title": "DAP (mGy.cm<sup>2</sub>)",
-                "file_name": "OpenREM DX requested procedure DAP vs patient mass",
+                "filename": "OpenREM DX requested procedure DAP vs patient mass",
                 "return_as_dict": return_as_dict,
             }
             return_structure["requestDAPvsMass"] = plotly_scatter(

@@ -463,7 +463,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "x_axis_title": "System",
             "grouping_choice": user_profile.plotGroupingChoice,
             "colourmap": user_profile.plotColourMapChoice,
-            "file_name": "OpenREM RF study description frequency",
+            "filename": "OpenREM RF study description frequency",
             "sorted_categories": sorted_study_categories,
             "groupby_cols": groupby_cols,
             "facet_col": facet_col,
@@ -630,7 +630,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "x_axis_title": "System",
             "grouping_choice": user_profile.plotGroupingChoice,
             "colourmap": user_profile.plotColourMapChoice,
-            "file_name": "OpenREM RF requested procedure frequency",
+            "filename": "OpenREM RF requested procedure frequency",
             "sorted_categories": sorted_request_categories,
             "groupby_cols": groupby_cols,
             "facet_col": facet_col,
@@ -666,7 +666,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "grouping_choice": user_profile.plotGroupingChoice,
             "colourmap": user_profile.plotColourMapChoice,
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
-            "file_name": "OpenREM RF study DAP over time",
+            "filename": "OpenREM RF study DAP over time",
             "return_as_dict": return_as_dict,
         }
         result = construct_over_time_charts(
@@ -703,7 +703,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "grouping_choice": user_profile.plotGroupingChoice,
             "colourmap": user_profile.plotColourMapChoice,
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
-            "file_name": "OpenREM RF requested procedure DAP over time",
+            "filename": "OpenREM RF requested procedure DAP over time",
             "return_as_dict": return_as_dict,
         }
         result = construct_over_time_charts(
