@@ -19,6 +19,7 @@ Contents:
     code_views
     code_exportviews
     code_forms
+    code_charts
     code_netdicom
     code_adding_charts
 
