@@ -62,10 +62,8 @@ def status_update_store(request):
 
     echo_response = echoscu(scp_pk=scp_pk, store_scp=True)
 
-    store = DicomStoreSCP.objects.get(pk=scp_pk)
-
+    resp["message"] = f"<div>{echo_response}</div>"
     if echo_response == "Success":
-        resp["message"] = "<div>Last status: {0}</div>".format(store.status)
         resp["statusindicator"] = (
             "<h3 class='pull-right panel-title'>"
             "<span class='glyphicon glyphicon-ok' aria-hidden='true'></span>"
@@ -75,11 +73,10 @@ def status_update_store(request):
             "delbutton"
         ] = "<button type='button' class='btn btn-primary' disabled='disabled'>Delete</button>"
     else:
-        resp["message"] = "<div>Last status: {0}</div>".format(store.status)
         resp["statusindicator"] = (
             "<h3 class='pull-right panel-title status-red'>"
             "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>"
-            "<span class='sr-only'>Error:</span> {0}</h3>".format(echo_response)
+            "<span class='sr-only'>Error:</span> Server is down - see status</h3>".format(echo_response)
         )
         resp[
             "delbutton"
