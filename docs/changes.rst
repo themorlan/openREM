@@ -15,6 +15,7 @@ OpenREM version history
 * :issue:`865`  Imports: enabled workaround to import Spectrum Dynamics RDSR
 * :issue:`864`  Tasks: updated Celery settings for Celery 6.
 * :issue:`863`  Interface: removed height and weight from CT study delete
+* :issue:`856`  Interface: removed CT acquisition type restriction tick boxes
 * :issue:`854`  Interface: added date constraints to links on homepage
 * :issue:`853`  Testing: reduced Bitbucket pipeline minutes usage
 * :issue:`852`  Code quality: skin dose code formatted with Black

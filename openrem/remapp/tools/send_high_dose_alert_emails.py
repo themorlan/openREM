@@ -168,11 +168,9 @@ def send_rf_high_dose_alert_email(study_pk=None, test_message=None, test_user=No
     ):
 
         projection_xray_dose_set = study.projectionxrayradiationdose_set.get()
-        accumxraydose_set_all_planes = (
-            projection_xray_dose_set.accumxraydose_set.select_related(
-                "acquisition_plane"
-            ).all()
-        )
+        accumxraydose_set_all_planes = projection_xray_dose_set.accumxraydose_set.select_related(
+            "acquisition_plane"
+        ).all()
 
         content_dict = {
             "study": study,

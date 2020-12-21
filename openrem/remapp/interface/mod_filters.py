@@ -166,8 +166,8 @@ class RFSummaryListFilter(django_filters.FilterSet):
     requested_procedure_code_meaning = django_filters.CharFilter(
         lookup_expr="icontains", label="Requested procedure"
     )
-    projectionxrayradiationdose__irradeventxraydata__acquisition_protocol = (
-        django_filters.CharFilter(lookup_expr="icontains", label="Acquisition protocol")
+    projectionxrayradiationdose__irradeventxraydata__acquisition_protocol = django_filters.CharFilter(
+        lookup_expr="icontains", label="Acquisition protocol"
     )
     patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
         lookup_expr="gte",
@@ -203,8 +203,8 @@ class RFSummaryListFilter(django_filters.FilterSet):
     study_dap_max = django_filters.NumberFilter(
         method=_dap_filter, label="Max study DAP (cGy·cm²)"
     )
-    generalequipmentmoduleattr__unique_equipment_name__display_name = (
-        django_filters.CharFilter(lookup_expr="icontains", label="Display name")
+    generalequipmentmoduleattr__unique_equipment_name__display_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Display name"
     )
     test_data = django_filters.ChoiceFilter(
         lookup_expr="isnull",
@@ -294,19 +294,10 @@ class RFFilterPlusPid(RFSummaryListFilter):
         )
 
 
-# Values from DICOM CID 10013 CT Acquisition Type
-CT_ACQ_TYPE_CHOICES = (
-    ("Spiral Acquisition", "Spiral"),
-    ("Sequenced Acquisition", "Axial"),
-    ("Constant Angle Acquisition", "Localiser"),
-    ("Stationary Acquisition", "Stationary acquisition"),
-    ("Free Acquisition", "Free acquisition"),
-)
-
-
 EVENT_NUMBER_CHOICES = (
     (None, "Any"),
     (0, "None"),
+    ("some", ">0"),
     (1, "1"),
     (2, "2"),
     (3, "3"),
@@ -334,19 +325,24 @@ def _specify_event_numbers(queryset, name, value):
         value = int(value)
     except ValueError:
         if value == "more":
-            if "num_events" in name:
-                filtered = queryset.filter(number_of_events__gt=10)
-            elif "num_spiral_events" in name:
-                filtered = queryset.filter(number_of_spiral__gt=10)
-            elif "num_axial_events" in name:
-                filtered = queryset.filter(number_of_axial__gt=10)
-            elif "num_spr_events" in name:
-                filtered = queryset.filter(number_of_const_angle__gt=10)
-            elif "num_stationary_events" in name:
-                filtered = queryset.filter(number_of_stationary__gt=10)
-            else:
-                return queryset
-            return filtered
+            min_value = 10
+        elif value == "some":
+            min_value = 0
+        else:
+            return queryset
+        if "num_events" in name:
+            filtered = queryset.filter(number_of_events__gt=min_value)
+        elif "num_spiral_events" in name:
+            filtered = queryset.filter(number_of_spiral__gt=min_value)
+        elif "num_axial_events" in name:
+            filtered = queryset.filter(number_of_axial__gt=min_value)
+        elif "num_spr_events" in name:
+            filtered = queryset.filter(number_of_const_angle__gt=min_value)
+        elif "num_stationary_events" in name:
+            filtered = queryset.filter(number_of_stationary__gt=min_value)
+        else:
+            return queryset
+        return filtered
         return queryset
     if "num_events" in name:
         filtered = queryset.filter(number_of_events__exact=value)
@@ -388,8 +384,8 @@ class CTSummaryListFilter(django_filters.FilterSet):
     requested_procedure_code_meaning = django_filters.CharFilter(
         lookup_expr="icontains", label="Requested procedure"
     )
-    ctradiationdose__ctirradiationeventdata__acquisition_protocol = (
-        django_filters.CharFilter(lookup_expr="icontains", label="Acquisition protocol")
+    ctradiationdose__ctirradiationeventdata__acquisition_protocol = django_filters.CharFilter(
+        lookup_expr="icontains", label="Acquisition protocol"
     )
     patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
         lookup_expr="gte",
@@ -422,8 +418,8 @@ class CTSummaryListFilter(django_filters.FilterSet):
     total_dlp__lte = django_filters.NumberFilter(
         lookup_expr="lte", field_name="total_dlp", label="Max study DLP"
     )
-    generalequipmentmoduleattr__unique_equipment_name__display_name = (
-        django_filters.CharFilter(lookup_expr="icontains", label="Display name")
+    generalequipmentmoduleattr__unique_equipment_name__display_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Display name"
     )
     test_data = django_filters.ChoiceFilter(
         lookup_expr="isnull",
@@ -431,13 +427,6 @@ class CTSummaryListFilter(django_filters.FilterSet):
         field_name="patientmoduleattr__not_patient_indicator",
         choices=TEST_CHOICES,
         widget=forms.Select,
-    )
-    ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning = django_filters.MultipleChoiceFilter(
-        lookup_expr="iexact",
-        label="Acquisition type restriction",
-        field_name="ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning",
-        choices=CT_ACQ_TYPE_CHOICES,
-        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     num_events = django_filters.ChoiceFilter(
         method=_specify_event_numbers,
@@ -494,7 +483,6 @@ class CTSummaryListFilter(django_filters.FilterSet):
             "total_dlp__lte",
             "generalequipmentmoduleattr__unique_equipment_name__display_name",
             "test_data",
-            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning",
             "num_events",
             "num_spiral_events",
             "num_axial_events",
@@ -691,8 +679,8 @@ class MGSummaryListFilter(django_filters.FilterSet):
     requested_procedure_code_meaning = django_filters.CharFilter(
         lookup_expr="icontains", label="Requested procedure"
     )
-    projectionxrayradiationdose__irradeventxraydata__acquisition_protocol = (
-        django_filters.CharFilter(lookup_expr="icontains", label="Acquisition protocol")
+    projectionxrayradiationdose__irradeventxraydata__acquisition_protocol = django_filters.CharFilter(
+        lookup_expr="icontains", label="Acquisition protocol"
     )
     patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
         lookup_expr="gte",
@@ -719,8 +707,8 @@ class MGSummaryListFilter(django_filters.FilterSet):
     accession_number = django_filters.CharFilter(
         method=_custom_acc_filter, label="Accession number"
     )
-    generalequipmentmoduleattr__unique_equipment_name__display_name = (
-        django_filters.CharFilter(lookup_expr="icontains", label="Display name")
+    generalequipmentmoduleattr__unique_equipment_name__display_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Display name"
     )
     num_events = django_filters.ChoiceFilter(
         method=_specify_event_numbers,
@@ -840,8 +828,8 @@ class DXSummaryListFilter(django_filters.FilterSet):
     requested_procedure_code_meaning = django_filters.CharFilter(
         lookup_expr="icontains", label="Requested procedure"
     )
-    projectionxrayradiationdose__irradeventxraydata__acquisition_protocol = (
-        django_filters.CharFilter(lookup_expr="icontains", label="Acquisition protocol")
+    projectionxrayradiationdose__irradeventxraydata__acquisition_protocol = django_filters.CharFilter(
+        lookup_expr="icontains", label="Acquisition protocol"
     )
     patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
         lookup_expr="gte",
@@ -880,8 +868,8 @@ class DXSummaryListFilter(django_filters.FilterSet):
     event_dap_max = django_filters.NumberFilter(
         method=_dap_filter, label="Max acquisition DAP (cGy·cm²)"
     )
-    generalequipmentmoduleattr__unique_equipment_name__display_name = (
-        django_filters.CharFilter(lookup_expr="icontains", label="Display name")
+    generalequipmentmoduleattr__unique_equipment_name__display_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Display name"
     )
     num_events = django_filters.ChoiceFilter(
         method=_specify_event_numbers,
