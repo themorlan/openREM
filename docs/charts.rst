@@ -12,26 +12,34 @@ Chart types
 Bar chart of average values across categories
 =============================================
 
-Example bar chart.
-
 These show either mean or median data.
 
-
-===============================================
-Histogram bar chart of values across categories
-===============================================
-
-Example histogram bar chart.
+.. raw:: html
+   :file: charts/barchart.html
 
 
 ===============================================
 Boxplot of values across a number of categories
 ===============================================
 
-Example boxplot.
+.. raw:: html
+   :file: charts/boxplot.html
+
+
+===============================================
+Histogram bar chart of values across categories
+===============================================
 
 .. raw:: html
-   :file: charts/testChart.html
+   :file: charts/histogram.html
+
+
+===============================
+Bar chart of category frequency
+===============================
+
+.. raw:: html
+   :file: charts/frequency.html
 
 
 ==============================
@@ -41,11 +49,14 @@ Scatter chart of x vs y values
 Example scatter chart.
 
 
-===============================
-Bar chart of category frequency
-===============================
+=====================
+Bar chart of workload
+=====================
 
-Example frequency bar chart.
+These show the number of events taking place per weekday, sub-divided into hours of the day.
+
+.. raw:: html
+   :file: charts/workload.html
 
 
 =====================================
@@ -59,14 +70,8 @@ These show either mean or median data.
 Each datapoint represents the average over a user-specified time period. This can be a day, week, month, quarter or
 year.
 
-
-=====================
-Bar chart of workload
-=====================
-
-Example bar chart showing workload.
-
-These show the number of events taking place per weekday, sub-divided into hours of the day.
+.. raw:: html
+   :file: charts/overtime.html
 
 
 ====================================================================

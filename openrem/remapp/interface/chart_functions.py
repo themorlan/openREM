@@ -128,6 +128,9 @@ def create_dataframe(
         if data_point_name_lowercase:
             df[name_field] = df[name_field].str.lower()
 
+        # Strip any trailing whitespace from the end of any names
+        df[name_field] = df[name_field].str.strip()
+
     if field_dict["system"]:
         df.rename(columns={field_dict["system"][0]: "x_ray_system_name"}, inplace=True)
         df.sort_values(by="x_ray_system_name", inplace=True)
