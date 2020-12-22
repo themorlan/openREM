@@ -12,11 +12,31 @@ The charts below are examples of the types of chart included in OpenREM version 
 interactive in the same way as the charts included in a live OpenREM system. The data contained in the example charts
 is synthetic.
 
+Single-clicking on a legend entry toggles the display of that series. Double-clicking on a legend entry hides all but
+that series; double-click again to show all series.
+
+Hovering the cursor over a chart causes the chart menu to appear along the top right corner. From the menu you can:
+
+* save a bitmap version of the chart
+* set zoom, pan and selection options
+* autoscale the chart
+* reset the axes, and also reset the  regions
+* toggle spike lines to graphically illustrate x- and y-axis data values on hover
+* choose whether to show the closest data when hovering, or to compare data on hover
+
 =============================================
 Bar chart of average values across categories
 =============================================
 
-These can be configured to show mean or median data.
+These can be configured to show mean or median data. The example below shows the median DAP for each requested procedure
+name containing the word "knee" across eight x-ray rooms.
+
+Hovering the cursor over a bar shows the:
+
+* x-ray room name
+* requested procedure name
+* median DAP for that room and procedure
+* number of requests for that room and procedure
 
 .. raw:: html
    :file: charts/barchart.html
@@ -26,6 +46,23 @@ These can be configured to show mean or median data.
 Boxplot of values across a number of categories
 ===============================================
 
+The example below shows the same data as for the bar chart above, but presented as a box plot.
+
+Hovering the cursor over an outlier shows the:
+
+* x-ray room name
+* requested procedure name
+* DAP of the data point
+
+Hovering the cursor over the box shows the:
+
+* maximum value
+* minimum value
+* median
+* 1st and 3rd quartiles
+* lower fence: 1rd quartile - (1.5 x interquartile range)
+* upper fence: 3rd quartile + (1.5 x interquartile range)
+
 .. raw:: html
    :file: charts/boxplot.html
 
@@ -33,6 +70,17 @@ Boxplot of values across a number of categories
 ===============================================
 Histogram bar chart of values across categories
 ===============================================
+
+The example below shows the distribution of DAP values for the knee data used in the box and bar plots above. The
+number of bins used in the histograms can be configured in the `Additional chart options on the Config page`_.
+
+Hovering the cursor over a bar shows the:
+
+* requested procedure name
+* x-ray room name
+* bin DAP range
+* bin DAP mid-point value
+* bin frequency
 
 .. raw:: html
    :file: charts/histogram.html
@@ -42,6 +90,16 @@ Histogram bar chart of values across categories
 Bar chart of category frequency
 ===============================
 
+The example below shows the frequency of the "knee" requested procedures for each x-ray room. The height of each bar is
+the total frequency for that requested procedure. Each bar is sub-divided into sections representing the number of
+requests for each x-ray room.
+
+Hovering the cursor over a bar section shows the:
+
+* x-ray room name
+* requested procedure name
+* requested procedure frequency
+
 .. raw:: html
    :file: charts/frequency.html
 
@@ -49,6 +107,16 @@ Bar chart of category frequency
 ==============================
 Scatter chart of x vs y values
 ==============================
+
+The example below shows the average glandular dose plotted against compressed breast thickness for "MAMMOGRAM"
+acquisitions made on two x-ray systems.
+
+Hovering the cursor over a bar section shows the:
+
+* x-ray room name
+* acquisition protocol name
+* compressed breast thickness
+* average glandular dose
 
 .. raw:: html
    :file: charts/scatter.html
@@ -64,12 +132,12 @@ There is a bar per weekday. The total height of this bar is the number of studie
 bar is sub-divided into sections representing the number of studies carried out in each of the 24 hours of that day.
 Each section is colour-coded according to how many studies it represents.
 
-Hovering your mouse over a section shows you:
+Hovering the cursor over a section shows you the:
 
-* the x-ray room name
-* the day of the week that the section represents
-* the hour of the day that the section represents
-* the number of studies that took place in that hour on that weekday in that x-ray room
+* x-ray room name
+* day of the week that the section represents
+* hour of the day that the section represents
+* number of studies that took place in that hour on that weekday in that x-ray room
 
 .. raw:: html
    :file: charts/workload.html
@@ -79,22 +147,38 @@ Hovering your mouse over a section shows you:
 Line chart of average value over time
 =====================================
 
-These show either mean or median data.
+These can be configured to show mean or median data. Each datapoint represents the average over a user-specified time
+period. This can be a day, week, month, quarter or year.
 
-Each datapoint represents the average over a user-specified time period. This can be a day, week, month, quarter or
-year.
+The example below shows the median DAP for Chest PA acquisitions made in six x-ray rooms over the course of two and a
+half years.
+
+Hovering the cursor over a section shows you the:
+
+* x-ray room name
+* acquisition protocol
+* date
+* average DAP value
+* number of acquisitions included in the sample
 
 .. raw:: html
    :file: charts/overtime.html
 
 
-====================================================================
-Bar chart of average value binned by another value across categories
-====================================================================
+=========================================================================
+Bar chart of average value against another binned value across categories
+=========================================================================
 
-These show either mean or median data over a number of binned criteria.
+These can be configured to show mean or median data. The example below shows the median average glandular dose from
+"MAMMOGRAM" protocol exposures plotted against compressed breast thickness bins. The data is from two x-ray systems.
 
-This is currently used to display the average glandular dose binned into compressed breast thickness bands.
+Hovering the cursor over a section shows you the:
+
+* x-ray room name
+* acquisition protocol
+* average AGD value
+* number of acquisitions included in the sample
+* compressed breast thickness bin range
 
 .. raw:: html
    :file: charts/binned_statistic.html
@@ -133,9 +217,9 @@ Calculate histogram data   **On** or **off**              **On** calculate histo
 
 
 
-***************************************
-Additional chart options on Config page
-***************************************
+*******************************************
+Additional chart options on the Config page
+*******************************************
 
 ==================================== ========================= ==================================================
 Name                                 Configuration options     Notes
