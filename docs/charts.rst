@@ -153,13 +153,45 @@ Number of charts per row             Value in the range 1 - 10 Sets the number o
 Available colourmaps
 ====================
 
-=============== ===========================
-Name            Swatch
-=============== ===========================
-Red yellow blue .. image:: img/RdYlBu.png
---------------- ---------------------------
-Spectral        .. image:: img/Spectral.png
-=============== ===========================
+=================== ===========================
+Name                Swatch
+=================== ===========================
+Red yellow blue     .. image:: img/RdYlBu.png
+------------------- ---------------------------
+Spectral            .. image:: img/Spectral.png
+------------------- ---------------------------
+Rainbow             .. image:: img/rainbow.png
+------------------- ---------------------------
+Jet                 .. image:: img/jet.png
+------------------- ---------------------------
+Pink yellow green   .. image:: img/PiYG.png
+------------------- ---------------------------
+Purple green        .. image:: img/PRGn.png
+------------------- ---------------------------
+Brown green         .. image:: img/BrBG.png
+------------------- ---------------------------
+Purple orange       .. image:: img/PuOr.png
+------------------- ---------------------------
+Red blue            .. image:: img/RdBu.png
+------------------- ---------------------------
+Red grey            .. image:: img/RdGy.png
+------------------- ---------------------------
+Yellow green blue   .. image:: img/YlGnBu.png
+------------------- ---------------------------
+Yellow orange brown .. image:: img/YlOrBr.png
+------------------- ---------------------------
+Hot                 .. image:: img/hot.png
+------------------- ---------------------------
+Inferno             .. image:: img/inferno.png
+------------------- ---------------------------
+Magma               .. image:: img/magma.png
+------------------- ---------------------------
+Plasma              .. image:: img/plasma.png
+------------------- ---------------------------
+Viridis             .. image:: img/viridis.png
+------------------- ---------------------------
+Cividis             .. image:: img/Spectral.png
+=================== ===========================
 
 
 *******************
