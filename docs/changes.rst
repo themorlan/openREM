@@ -11,6 +11,7 @@ OpenREM version history
 * :issue:`870`  Charts: reduced memory footprint of Pandas DataFrame creation
 * :issue:`869`  Charts: added doc strings to new chart code
 * :issue:`868`  Docker: fixed Python version at 3.8
+* :issue:`867`  Documentation: updated chart documentation
 * :issue:`866`  Simplified code for different character sets, enabled MultiValue SpecificCharacterSet
 * :issue:`865`  Imports: enabled workaround to import Spectrum Dynamics RDSR
 * :issue:`864`  Tasks: updated Celery settings for Celery 6.
