@@ -58,7 +58,18 @@ Scatter chart of x vs y values
 Bar chart of workload
 =====================
 
-These show the number of events taking place per weekday, sub-divided into hours of the day.
+These show the number of studies taking place per weekday, sub-divided into hours of the day.
+
+There is a bar per weekday. The total height of this bar is the number of studies carried out on that weekday. Each
+bar is sub-divided into sections representing the number of studies carried out in each of the 24 hours of that day.
+Each section is colour-coded according to how many studies it represents.
+
+Hovering your mouse over a section shows you:
+
+* the x-ray room name
+* the day of the week that the section represents
+* the hour of the day that the section represents
+* the number of studies that took place in that hour on that weekday in that x-ray room
 
 .. raw:: html
    :file: charts/workload.html
