@@ -1,6 +1,5 @@
 # Django settings for OpenREM project.
 
-from celery.schedules import crontab
 from django.utils.translation import gettext_lazy as _
 import os
 

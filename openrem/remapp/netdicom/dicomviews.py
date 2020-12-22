@@ -76,7 +76,7 @@ def status_update_store(request):
         resp["statusindicator"] = (
             "<h3 class='pull-right panel-title status-red'>"
             "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>"
-            "<span class='sr-only'>Error:</span> Server is down - see status</h3>".format(echo_response)
+            "<span class='sr-only'>Error:</span> Server is down - see status</h3>"
         )
         resp[
             "delbutton"
