@@ -84,7 +84,9 @@ function skinDoseMap3dObject(skinDoseMap3dCanvasName, colourScaleName) {
         var torsoStart = _this.phantomHeadHeight;
         var torsoEnd = _this.phantomHeadHeight + _this.phantomHeight;
         var phantomHeadCircumference = 2 * Math.PI * _this.phantomHeadRadius;
-        k = l = m = n = o = 0;
+
+        // Draw the torso values
+        k = l = m = n = 0;
         for (i = torsoStart; i < torsoEnd; i++) {
             for (j = 0; j < _this.phantomFlatWidth; j++) {
                 newColour = this.getNewColour(i, j);
@@ -122,7 +124,11 @@ function skinDoseMap3dObject(skinDoseMap3dCanvasName, colourScaleName) {
                 dataTextureRight.image.data[n+3] = 0;
                 n += 4;
             }
+        }
 
+        // Draw the head values
+        o = 0;
+        for (i = 0; i < torsoStart; i++) {
             for (j = 0; j < phantomHeadCircumference; j++) {
                 newColour = this.getNewColour(i, j);
                 dataTextureHead.image.data[o] = newColour[0];
