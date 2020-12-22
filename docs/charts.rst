@@ -16,7 +16,7 @@ is synthetic.
 Bar chart of average values across categories
 =============================================
 
-These can be configured to show  mean or median data.
+These can be configured to show mean or median data.
 
 .. raw:: html
    :file: charts/barchart.html
@@ -135,19 +135,21 @@ Fixed histogram bins across subplots **On** or **off**         **On** forces all
 ------------------------------------ ------------------------- --------------------------------------------------
 Case-insensitive categories          **On** or **off**         **On** all category names forced to lowercase
 ------------------------------------ ------------------------- --------------------------------------------------
-| Chart theme                        | One of **Plotly**,      | Set the Plotly theme to use for the charts. Some
-                                       **Plotly white**,       | examples are provided on the Plotly themes_ page
-                                     | **Plotly dark**,        | (an external link).
+Colour map choice                    One of the available      See the `Available colourmaps`_ section
+                                     matplotlib colour maps
+------------------------------------ ------------------------- --------------------------------------------------
+| Chart theme                        | One of **Plotly**,      | Set the Plotly theme to use for the charts.
+                                       **Plotly white**,       | `Some available themes`_ are provided below. Examples of all themes
+                                     | **Plotly dark**,        | on the Plotly themes_ page (external link).
                                        **presentation**,
                                      | **ggplot2**,
                                        **Seaborn** or
                                      | **simple white**
 ------------------------------------ ------------------------- --------------------------------------------------
-Colour map choice                    One of the available
-                                     matplotlib colour maps
------------------------------------- ------------------------- --------------------------------------------------
 Number of charts per row             Value in the range 1 - 10 Sets the number of sub-plots in each row
 ==================================== ========================= ==================================================
+
+
 
 ====================
 Available colourmaps
@@ -192,6 +194,36 @@ Viridis             .. image:: img/viridis.png
 ------------------- ---------------------------
 Cividis             .. image:: img/Spectral.png
 =================== ===========================
+
+
+
+=====================
+Some available themes
+=====================
+
+The example `Chart types`_ at the top of this document use the default Plotly theme. Below are some examples of other
+available themes.
+
++++++++++++
+Plotly dark
++++++++++++
+
+.. raw:: html
+   :file: charts/barchart_plotly_dark.html
+
+++++++++++++
+Presentation
+++++++++++++
+
+.. raw:: html
+   :file: charts/barchart_presentation.html
+
+++++++++++++
+Simple white
+++++++++++++
+
+.. raw:: html
+   :file: charts/barchart_simple_white.html
 
 
 *******************
