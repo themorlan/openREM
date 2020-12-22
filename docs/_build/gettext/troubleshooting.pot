@@ -1,0 +1,133 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../troubleshooting.rst:3
+msgid "Troubleshooting"
+msgstr ""
+
+#: ../../troubleshooting.rst:11
+msgid "If you have a modality where every study has one event (usually CT), review"
+msgstr ""
+
+#: ../../troubleshooting.rst:18
+msgid "If planar X-ray studies are appearing in fluoroscopy or vice-versa, review"
+msgstr ""
+
+#: ../../troubleshooting.rst:20
+msgid ":doc:`i_displaynames`"
+msgstr ""
+
+#: ../../troubleshooting.rst:22
+msgid "For DICOM networking:"
+msgstr ""
+
+#: ../../troubleshooting.rst:24
+msgid ":ref:`qrtroubleshooting` for query retrieve"
+msgstr ""
+
+#: ../../troubleshooting.rst:25
+msgid ":ref:`storetroubleshooting` for DICOM store"
+msgstr ""
+
+#: ../../troubleshooting.rst:27
+msgid "For RabbitMQ/task management:"
+msgstr ""
+
+#: ../../troubleshooting.rst:29
+msgid ":doc:`rabbitmq_management`"
+msgstr ""
+
+#: ../../troubleshooting.rst:32
+msgid "Log files"
+msgstr ""
+
+#: ../../troubleshooting.rst:34
+msgid "Log file location, naming and verbosity were configured in the ``local_settings.py`` configuration - see the :ref:`local_settings_logfile` configuration docs for details."
+msgstr ""
+
+#: ../../troubleshooting.rst:37
+msgid "If the defaults have not been modified, then there will be three log files in your ``MEDIAROOT`` folder which you configured at installation. See the install config section on :ref:`mediarootsettings` for details."
+msgstr ""
+
+#: ../../troubleshooting.rst:40
+msgid "The ``openrem.log`` has general logging information, the other two are specific to the DICOM store and DICOM query-retrieve functions if you are making use of them."
+msgstr ""
+
+#: ../../troubleshooting.rst:43
+msgid "You can increase the verbosity of the log files by changing the log 'level' to ``DEBUG``, or you can decrease the verbosity to ``WARNING``, ``ERROR``, or ``CRITICAL``. The default is ``INFO``."
+msgstr ""
+
+#: ../../troubleshooting.rst:47
+msgid "Starting again!"
+msgstr ""
+
+#: ../../troubleshooting.rst:49
+msgid "If for any reason you want to start again with the database, then this is how you might do it:"
+msgstr ""
+
+#: ../../troubleshooting.rst:52
+msgid "SLQite3 database"
+msgstr ""
+
+#: ../../troubleshooting.rst:54
+msgid "Delete or rename your existing database file (location will be described in your ``local_settings.py`` file)"
+msgstr ""
+
+#: ../../troubleshooting.rst:55
+msgid ":ref:`database_creation`"
+msgstr ""
+
+#: ../../troubleshooting.rst:58
+msgid "Any database"
+msgstr ""
+
+#: ../../troubleshooting.rst:60
+msgid "These instructions will also allow you to keep any user settings if you use an SQLite3 database."
+msgstr ""
+
+#: ../../troubleshooting.rst:62
+msgid "In a shell/command window, move into the openrem folder:"
+msgstr ""
+
+#: ../../troubleshooting.rst:64
+msgid "Ubuntu linux: ``cd /usr/local/lib/python2.7/dist-packages/openrem/``"
+msgstr ""
+
+#: ../../troubleshooting.rst:65
+msgid "Other linux: ``cd /usr/lib/python2.7/site-packages/openrem/``"
+msgstr ""
+
+#: ../../troubleshooting.rst:66
+msgid "Linux virtualenv: ``cd virtualenvfolder/lib/python2.7/site-packages/openrem/``"
+msgstr ""
+
+#: ../../troubleshooting.rst:67
+msgid "Windows: ``cd C:\\Python27\\Lib\\site-packages\\openrem\\``"
+msgstr ""
+
+#: ../../troubleshooting.rst:68
+msgid "Windows virtualenv: ``cd virtualenvfolder\\Lib\\site-packages\\openrem\\``"
+msgstr ""
+
+#: ../../troubleshooting.rst:70
+msgid "Run the django python shell:"
+msgstr ""
+
+#: ../../troubleshooting.rst:83
+msgid "And if you are sure you want to delete all the studies..."
+msgstr ""

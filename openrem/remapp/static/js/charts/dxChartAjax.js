@@ -18,118 +18,147 @@ $(document).ready(function() {
         data: requestData,
         dataType: "json",
         success: function( json ) {
-            // Initialise some colours to use for plotting
-            var colourScale = chroma.scale("RdYlBu");
 
-            // Acquisition DAP chart data
-            if(typeof plotDXAcquisitionMeanDAP !== "undefined") {
-                updateAverageChart(json.acquisition_names, json.acquisitionSystemList, json.acquisitionSummary, json.acquisitionHistogramData, plotAverageChoice, "container", colourScale);
-                sortChartDataToDefault(chartSorting, chartSortingDirection, "container");
-                hideButtonsIfOneSeries("container", "acq_dap_series_");
+            // DAP per acquisition chart data
+            if(typeof json.acquisitionMeanDAPData !== "undefined") {
+                $("#acquisitionMeanDAPChartDiv").html(json.acquisitionMeanDAPData);
+                $("#acquisitionMeanDAPChartParentDiv").append(json.acquisitionMeanDAPDataCSV);
+            }
+            if(typeof json.acquisitionMedianDAPData !== "undefined") {
+                $("#acquisitionMedianDAPChartDiv").html(json.acquisitionMedianDAPData);
+                $("#acquisitionMedianDAPChartParentDiv").append(json.acquisitionMedianDAPDataCSV);
+            }
+            if(typeof json.acquisitionBoxplotDAPData !=="undefined") {
+                $("#acquisitionBoxplotDAPChartDiv").html(json.acquisitionBoxplotDAPData);
+            }
+            if(typeof json.acquisitionHistogramDAPData !=="undefined") {
+                $("#acquisitionHistogramDAPChartDiv").html(json.acquisitionHistogramDAPData);
             }
 
-            // DAP per requested procedure data
-            if( typeof plotDXRequestMeanDAP !== "undefined") {
-                updateAverageChart(json.request_names, json.requestSystemList, json.requestSummary, json.requestHistogramData, plotAverageChoice, "plotDXRequestMeanDAPContainer", colourScale);
-                sortChartDataToDefault(chartSorting, chartSortingDirection, "plotDXRequestMeanDAPContainer");
-                hideButtonsIfOneSeries("plotDXRequestMeanDAPContainer", "req_dap_series_");
+            // Acquisition frequency chart data start
+            if(typeof json.acquisitionFrequencyData !== "undefined") {
+                $("#acquisitionFrequencyChartDiv").html(json.acquisitionFrequencyData);
+                $("#acquisitionFrequencyChartParentDiv").append(json.acquisitionFrequencyDataCSV);
             }
 
-            // DAP per study description data
-            if( typeof plotDXStudyMeanDAP !== "undefined") {
-                updateAverageChart(json.study_names, json.studySystemList, json.studySummary, json.studyHistogramData, plotAverageChoice, "plotDXStudyMeanDAPContainer", colourScale);
-                sortChartDataToDefault(chartSorting, chartSortingDirection, "plotDXStudyMeanDAPContainer");
-                hideButtonsIfOneSeries("plotDXStudyMeanDAPContainer", "study_dap_series_");
+            // kVp per acquisition chart data
+            if(typeof json.acquisitionMeankVpData !== "undefined") {
+                $("#acquisitionMeankVpChartDiv").html(json.acquisitionMeankVpData);
+                $("#acquisitionMeankVpChartParentDiv").append(json.acquisitionMeankVpDataCSV);
+            }
+            if(typeof json.acquisitionMediankVpData !== "undefined") {
+                $("#acquisitionMediankVpChartDiv").html(json.acquisitionMediankVpData);
+                $("#acquisitionMediankVpChartParentDiv").append(json.acquisitionMediankVpDataCSV);
+            }
+            if(typeof json.acquisitionBoxplotkVpData !=="undefined") {
+                $("#acquisitionBoxplotkVpChartDiv").html(json.acquisitionBoxplotkVpData);
+            }
+            if(typeof json.acquisitionHistogramkVpData !=="undefined") {
+                $("#acquisitionHistogramkVpChartDiv").html(json.acquisitionHistogramkVpData);
             }
 
-            // kVp chart data
-            if( typeof plotDXAcquisitionMeankVp !== "undefined") {
-                updateAverageChart(json.acquisition_kvp_names, json.acquisitionkVpSystemList, json.acquisitionkVpSummary, json.acquisitionHistogramkVpData, plotAverageChoice, "chartAcquisitionMeankVp", colourScale);
-                sortChartDataToDefault(chartSorting, chartSortingDirection, "chartAcquisitionMeankVp");
-                hideButtonsIfOneSeries("chartAcquisitionMeankVp", "acq_kvp_series_");
+            // mAs per acquisition chart data
+            if(typeof json.acquisitionMeanmAsData !== "undefined") {
+                $("#acquisitionMeanmAsChartDiv").html(json.acquisitionMeanmAsData);
+                $("#acquisitionMeanmAsChartParentDiv").append(json.acquisitionMeanmAsDataCSV);
+            }
+            if(typeof json.acquisitionMedianmAsData !== "undefined") {
+                $("#acquisitionMedianmAsChartDiv").html(json.acquisitionMedianmAsData);
+                $("#acquisitionMedianmAsChartParentDiv").append(json.acquisitionMedianmAsDataCSV);
+            }
+            if(typeof json.acquisitionBoxplotmAsData !=="undefined") {
+                $("#acquisitionBoxplotmAsChartDiv").html(json.acquisitionBoxplotmAsData);
+            }
+            if(typeof json.acquisitionHistogrammAsData !=="undefined") {
+                $("#acquisitionHistogrammAsChartDiv").html(json.acquisitionHistogrammAsData);
             }
 
-            // mAs chart data start
-            if(typeof plotDXAcquisitionMeanmAs !== "undefined") {
-                updateAverageChart(json.acquisition_mas_names, json.acquisitionmAsSystemList, json.acquisitionmAsSummary, json.acquisitionHistogrammAsData, plotAverageChoice, "chartAcquisitionMeanmAs", colourScale);
-                sortChartDataToDefault(chartSorting, chartSortingDirection, "chartAcquisitionMeanmAs");
-                hideButtonsIfOneSeries("chartAcquisitionMeanmAs", "acq_mas_series_");
+            // DAP per study chart data
+            if(typeof json.studyMeanDAPData !== "undefined") {
+                $("#studyMeanDAPChartDiv").html(json.studyMeanDAPData);
+                $("#studyMeanDAPChartParentDiv").append(json.studyMeanDAPDataCSV);
+            }
+            if(typeof json.studyMedianDAPData !== "undefined") {
+                $("#studyMedianDAPChartDiv").html(json.studyMedianDAPData);
+                $("#studyMedianDAPChartParentDiv").append(json.studyMedianDAPDataCSV);
+            }
+            if(typeof json.studyBoxplotDAPData !=="undefined") {
+                $("#studyBoxplotDAPChartDiv").html(json.studyBoxplotDAPData);
+            }
+            if(typeof json.studyHistogramDAPData !=="undefined") {
+                $("#studyHistogramDAPChartDiv").html(json.studyHistogramDAPData);
             }
 
-            // Acquisition frequency chart data
-            if(typeof plotDXAcquisitionFreq !== "undefined") {
-                updateFrequencyChart(json.acquisition_names, json.acquisitionSystemList, json.acquisitionSummary, urlStartAcq, "piechartProtocolDIV", colourScale);
+            // Study frequency chart data start
+            if(typeof json.studyFrequencyData !== "undefined") {
+                $("#studyFrequencyChartDiv").html(json.studyFrequencyData);
+                $("#studyFrequencyChartParentDiv").append(json.studyFrequencyDataCSV);
             }
 
-            // Requested procedure frequency chart data
-            if(typeof plotDXRequestFreq !== "undefined") {
-                updateFrequencyChart(json.request_names, json.requestSystemList, json.requestSummary, urlStartReq, "piechartRequestDIV", colourScale);
+            // DAP per request chart data
+            if(typeof json.requestMeanDAPData !== "undefined") {
+                $("#requestMeanDAPChartDiv").html(json.requestMeanDAPData);
+                $("#requestMeanDAPChartParentDiv").append(json.requestMeanDAPDataCSV);
+            }
+            if(typeof json.requestMedianDAPData !== "undefined") {
+                $("#requestMedianDAPChartDiv").html(json.requestMedianDAPData);
+                $("#requestMedianDAPChartParentDiv").append(json.requestMedianDAPDataCSV);
+            }
+            if(typeof json.requestBoxplotDAPData !=="undefined") {
+                $("#requestBoxplotDAPChartDiv").html(json.requestBoxplotDAPData);
+            }
+            if(typeof json.requestHistogramDAPData !=="undefined") {
+                $("#requestHistogramDAPChartDiv").html(json.requestHistogramDAPData);
             }
 
-            // Study description frequency chart data start
-            if(typeof plotDXStudyFreq !== "undefined") {
-                updateFrequencyChart(json.study_names, json.studySystemList, json.studySummary, urlStartStudy, "piechartStudyDIV", colourScale);
+            // Request frequency chart data start
+            if(typeof json.requestFrequencyData !== "undefined") {
+                $("#requestFrequencyChartDiv").html(json.requestFrequencyData);
+                $("#requestFrequencyChartParentDiv").append(json.requestFrequencyDataCSV);
             }
 
-            var piechartProtocolDiv;
-
-            // DAP over time chart data
-            if(typeof plotDXAcquisitionMeanDAPOverTime !== "undefined") {
-                var acquisitionLineColours;
-                if (typeof plotDXAcquisitionFreq !== "undefined") {
-                    acquisitionLineColours = [];
-                    piechartProtocolDiv = $("#piechartProtocolDIV");
-                    for (i = 0; i < piechartProtocolDiv.highcharts().series[0].data.length; i++) {
-                        acquisitionLineColours.push(piechartProtocolDiv.highcharts().series[0].data.sort(sortByName)[i].color);
-                    }
-                    piechartProtocolDiv.highcharts().series[0].data.sort(sortByY);
-                }
-                else {acquisitionLineColours = colourScale.colors(json.acquisition_names.length);}
-
-                var acqDapOverTime = (plotAverageChoice === "mean") ? json.acquisitionMeanDAPoverTime : json.acquisitionMedianDAPoverTime;
-                updateOverTimeChart(json.acquisition_names, acqDapOverTime, acquisitionLineColours, urlStartAcq, "AcquisitionMeanDAPOverTimeDIV");
-                hideButtonsIfOneSeries("AcquisitionMeanDAPOverTimeDIV", "acq_dap_over_time_series_");
+            // Acquisition DAP over time chart data
+            if(typeof json.acquisitionMeanDAPOverTime !== "undefined") {
+                $("#acquisitionMeanDAPOverTimeChartDiv").html(json.acquisitionMeanDAPOverTime);
+            }
+            if(typeof json.acquisitionMedianDAPOverTime !== "undefined") {
+                $("#acquisitionMedianDAPOverTimeChartDiv").html(json.acquisitionMedianDAPOverTime);
             }
 
-            // kVp over time chart data
-            if(typeof plotDXAcquisitionMeankVpOverTime !== "undefined") {
-                var protocolKvpLineColours;
-                if (typeof plotDXAcquisitionFreq !== "undefined") {
-                    protocolKvpLineColours = [];
-                    piechartProtocolDiv = $("#piechartProtocolDIV");
-                    for (i = 0; i < piechartProtocolDiv.highcharts().series[0].data.length; i++) {
-                        protocolKvpLineColours.push(piechartProtocolDiv.highcharts().series[0].data.sort(sortByName)[i].color);
-                    }
-                    piechartProtocolDiv.highcharts().series[0].data.sort(sortByY);
-                }
-                else {protocolKvpLineColours = colourScale.colors(json.acquisition_kvp_names.length);}
-
-                var acqKvpOverTime = (plotAverageChoice === "mean") ? json.acquisitionMeankVpoverTime : json.acquisitionMediankVpoverTime;
-                updateOverTimeChart(json.acquisition_kvp_names, acqKvpOverTime, protocolKvpLineColours, urlStartAcq, "AcquisitionMeankVpOverTimeDIV");
-                hideButtonsIfOneSeries("AcquisitionMeankVpOverTimeDIV", "acq_kvp_over_time_series_");
+            // Acquisition kVp over time chart data
+            if(typeof json.acquisitionMeankVpOverTime !== "undefined") {
+                $("#acquisitionMeankVpOverTimeChartDiv").html(json.acquisitionMeankVpOverTime);
+            }
+            if(typeof json.acquisitionMediankVpOverTime !== "undefined") {
+                $("#acquisitionMediankVpOverTimeChartDiv").html(json.acquisitionMediankVpOverTime);
             }
 
-            // mAs over time chart data
-            if(typeof plotDXAcquisitionMeanmAsOverTime !== "undefined") {
-                var protocolMasLineColours;
-                if (typeof plotDXAcquisitionFreq !== "undefined") {
-                    protocolMasLineColours = [];
-                    piechartProtocolDiv = $("#piechartProtocolDIV");
-                    for (i = 0; i < piechartProtocolDiv.highcharts().series[0].data.length; i++) {
-                        protocolMasLineColours.push(piechartProtocolDiv.highcharts().series[0].data.sort(sortByName)[i].color);
-                    }
-                    piechartProtocolDiv.highcharts().series[0].data.sort(sortByY);
-                }
-                else {protocolMasLineColours = colourScale.colors(json.acquisition_mas_names.length);}
-
-                var acqMasOverTime = (plotAverageChoice === "mean") ? json.acquisitionMeanmAsoverTime : json.acquisitionMedianmAsoverTime;
-                updateOverTimeChart(json.acquisition_mas_names, acqMasOverTime, protocolMasLineColours, urlStartAcq, "AcquisitionMeanmAsOverTimeDIV");
-                hideButtonsIfOneSeries("AcquisitionMeanmAsOverTimeDIV", "acq_mas_over_time_series_");
+            // Acquisition mAs over time chart data
+            if(typeof json.acquisitionMeanmAsOverTime !== "undefined") {
+                $("#acquisitionMeanmAsOverTimeChartDiv").html(json.acquisitionMeanmAsOverTime);
+            }
+            if(typeof json.acquisitionMedianmAsOverTime !== "undefined") {
+                $("#acquisitionMedianmAsOverTimeChartDiv").html(json.acquisitionMedianmAsOverTime);
             }
 
             // Study workload chart data
-            if(typeof plotDXStudyPerDayAndHour !== "undefined") {
-                updateWorkloadChart(json.studiesPerHourInWeekdays, "piechartStudyWorkloadDIV", colourScale);
+            if(typeof json.studyWorkloadData !== "undefined") {
+                $("#studyWorkloadChartDiv").html(json.studyWorkloadData);
+            }
+
+            // Acquisition DAP vs mass
+            if(typeof json.acquisitionDAPvsMass !== "undefined") {
+                $("#acquisitionDAPvsMassChartDiv").html(json.acquisitionDAPvsMass);
+            }
+
+            // Study DAP vs mass
+            if(typeof json.studyDAPvsMass !== "undefined") {
+                $("#studyDAPvsMassChartDiv").html(json.studyDAPvsMass);
+            }
+
+            // Request DAP vs mass
+            if(typeof json.requestDAPvsMass !== "undefined") {
+                $("#requestDAPvsMassChartDiv").html(json.requestDAPvsMass);
             }
 
             $(".ajax-progress").hide();

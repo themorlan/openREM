@@ -1,12 +1,7 @@
 # Django settings for OpenREM project.
 
-from __future__ import absolute_import
-
-# ^^^ The above is required if you want to import from the celery
-# library.  If you don't have this then `from celery.schedules import`
-# becomes `proj.celery.schedules` in Python 2.x since it allows
-# for relative imports by default.
 from celery.schedules import crontab
+from django.utils.translation import gettext_lazy as _
 import os
 
 
@@ -26,7 +21,7 @@ DATABASES = {
     }
 }
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY", default="shouldn'tbethisone")
 
 DEBUG = int(os.environ.get("DEBUG", default=0))
 
@@ -34,9 +29,9 @@ DEBUG = int(os.environ.get("DEBUG", default=0))
 # For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default="localhost").split(" ")
 
-MEDIA_URL = "/media/"
+MEDIA_URL = os.environ.get("MEDIA_URL", default="/media/")
 MEDIA_ROOT = os.environ.get("MEDIA_ROOT", default=os.path.join(BASE_DIR, "mediafiles"))
-STATIC_URL = "/static/"
+STATIC_URL = os.environ.get("STATIC_URL", default="/static/")
 STATIC_ROOT = os.environ.get(
     "STATIC_ROOT", default=os.path.join(BASE_DIR, "staticfiles")
 )
@@ -44,26 +39,28 @@ JS_REVERSE_OUTPUT_PATH = os.path.join(STATIC_ROOT, "js", "django_reverse")
 VIRTUAL_DIRECTORY = os.environ.get("VIRTUAL_DIRECTORY", default="")
 
 # Celery settings
-BROKER_URL = os.environ.get("BROKER_URL", default="amqp://guest:guest@localhost:5672//")
+CELERY_BROKER_URL = os.environ.get(
+    "BROKER_URL", default="amqp://guest:guest@localhost:5672//"
+)
 BROKER_MGMT_URL = os.environ.get("BROKER_MGMT_URL", default="http://localhost:15672/")
 
 CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASK_SERIALIZER = "json"
+CELERY_TASKS_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
-CELERY_DEFAULT_QUEUE = "default"
-CELERYD_PREFETCH_MULTIPLIER = 1
+CELERY_TASK_DEFAULT_QUEUE = "default"
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 
 FLOWER_PORT = int(os.environ.get("FLOWER_PORT", default=5555))
 FLOWER_URL = os.environ.get("FLOWER_URL", default="http://localhost")
 
-CELERYBEAT_SCHEDULE = {
+beat_schedule = {
     "trigger-dicom-keep-alive": {
         "task": "remapp.netdicom.keepalive.keep_alive",
         "schedule": crontab(minute="*/1"),
         "options": {
             "expires": 10
         },  # expire if not run ten seconds after being scheduled
-    },
+    }
 }
 
 
@@ -121,14 +118,15 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "django.template.context_processors.request",  # Added by ETM
                 "django.contrib.messages.context_processors.messages",
-            ],
+            ]
         },
-    },
+    }
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -159,7 +157,11 @@ INSTALLED_APPS = (
 
 CRISPY_TEMPLATE_PACK = "bootstrap3"
 
-LOG_ROOT = os.environ.get("LOG_ROOT", default=MEDIA_ROOT)
+on_rtd = os.environ.get("READTHEDOCS") == "True"
+if not on_rtd:
+    LOG_ROOT = os.environ.get("LOG_ROOT", default=MEDIA_ROOT)
+else:
+    LOG_ROOT = BASE_DIR
 LOG_FILENAME = os.path.join(LOG_ROOT, "openrem.log")
 QR_FILENAME = os.path.join(LOG_ROOT, "openrem_qr.log")
 STORE_FILENAME = os.path.join(LOG_ROOT, "openrem_store.log")
@@ -212,7 +214,7 @@ LOGGING = {
             "level": "ERROR",
             "propagate": True,
         },
-        "remapp": {"handlers": ["file"], "level": "INFO",},
+        "remapp": {"handlers": ["file"], "level": "INFO"},
         "remapp.netdicom.qrscu": {
             "handlers": ["qr_file"],
             "level": "INFO",
@@ -268,17 +270,13 @@ JAVA_OPTIONS = "-Xms256m -Xmx512m -Xss1m -cp"
 PIXELMED_JAR = "/home/app/pixelmed/pixelmed.jar"
 PIXELMED_JAR_OPTIONS = "-Djava.awt.headless=true com.pixelmed.doseocr.OCR -"
 
-# Dummy variable for running the website in a virtual_directory. Don't set value here - copy variable into
-# local_settings.py and configure there.
-VIRTUAL_DIRECTORY = ""
-
 # E-mail server settings - see https://docs.djangoproject.com/en/1.8/topics/email/
 EMAIL_HOST = os.environ.get("EMAIL_HOST", default="localhost")
 EMAIL_PORT = os.environ.get("EMAIL_PORT", default="25")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", default="")  # nosec
-EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", default=False)
-EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL", default=False)
+EMAIL_USE_TLS = int(os.environ.get("EMAIL_USE_TLS", default=0))
+EMAIL_USE_SSL = int(os.environ.get("EMAIL_USE_SSL", default=0))
 EMAIL_DOSE_ALERT_SENDER = os.environ.get(
     "EMAIL_DOSE_ALERT_SENDER", default="your.alert@email.address"
 )
@@ -288,6 +286,7 @@ EMAIL_OPENREM_URL = os.environ.get(
 
 DOCKER_INSTALL = int(os.environ.get("DOCKER_INSTALL", default=False))
 
+LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
 
 try:
     from .local_settings import *  # NOQA: F401

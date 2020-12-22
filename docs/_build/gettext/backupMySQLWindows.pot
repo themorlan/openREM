@@ -1,0 +1,61 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../backupMySQLWindows.rst:2
+msgid "Backing up MySQL on Windows"
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:4
+msgid "Content contributed by DJ Platten"
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:6
+msgid "These instructions are based on Windows XP."
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:9
+msgid "As a one-off, create a MySQL user called ``backup`` with a password of ``backup`` that has full rights to the database:"
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:15
+msgid "Grant the ``backup`` user full privileges on the database called ``openremdatabasemysql``:"
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:21
+msgid "Grant the ``backup`` user privileges to create databases:"
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:27
+msgid "Reload the privileges to ensure that MySQL registers the new ones:"
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:34
+msgid "To backup the contents of the database from the command line to a file called ``backup.sql`` (note that the lack of spaces after the ``-u`` and ``-p`` is not a typo):"
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:40
+msgid "To restore the database, assuming that it doesn't exist anymore, first it needs to be created:"
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:46
+msgid "Then restore the contents of the database from a file called ``backup.sql``:"
+msgstr ""
+
+#: ../../backupMySQLWindows.rst:54
+msgid "An example DOS batch file to back up the contents of the ``openremdatabasemysql`` database using a time stamp of the form ``yyyy-mm-dd_hhmm``, zip up the resulting file, delete the uncompressed version and then copy it to a network location (the network copy will only work if the user that runs the batch file has permission on the network):"
+msgstr ""

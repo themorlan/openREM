@@ -270,7 +270,7 @@ Edit the new local_settings file
     PIXELMED_JAR_OPTIONS = '-Djava.awt.headless=true com.pixelmed.doseocr.OCR -'
 
 Now create the database. Make sure you are still in the openrem python folder and
-the virtualenv is active (prompt will look like
+the virtualenv is active — prompt will look like
 
 .. code-block:: console
 
@@ -295,6 +295,11 @@ Otherwise see :ref:`activatevirtualenv` and navigate back to that folder:
     $ mv remapp/migrations/0002_0_7_fresh_install_add_median.py{.inactive,}
     $ python manage.py migrate
 
+Generate translation binary files
+
+.. code-block:: console
+
+    $ python django-admin compilemessages
 
 Webserver
 ^^^^^^^^^
@@ -409,7 +414,7 @@ First, create a Celery configuration file:
 
 .. code-block:: console
 
-    $ nano /var/dose/celery/celery.conf``
+    $ nano /var/dose/celery/celery.conf
 
 .. code-block:: bash
 
@@ -589,7 +594,7 @@ Allow Orthanc to use DICOM port
 -------------------------------
 
 By default, Orthanc uses port 4242. If you wish to use a lower port, specifically the DICOM port of 104, you will need
-to give the Orthan binary special permission to do so:
+to give the Orthanc binary special permission to do so:
 
 .. code-block:: console
 
@@ -628,7 +633,7 @@ the physics folder from their home folder. Then if they use a program like `WinS
 images to another (Windows) computer on the network. WinSCP can also be run directly from a USB stick if you are unable
 to install software :-)
 
-Add the new user (replace  ``newusername`` as appropriate):
+Add the new user (replace ``newusername`` as appropriate):
 
 .. code-block:: console
 

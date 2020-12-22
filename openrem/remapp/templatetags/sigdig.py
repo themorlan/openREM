@@ -16,7 +16,7 @@ register = template.Library()
 
 @register.filter
 def sigdig(value, digits=3):
-    """ Template filter to return number with specified number of significant figures
+    """Template filter to return number with specified number of significant figures
 
     :param value: number to consider
     :param digits: number of significant figures, default 3

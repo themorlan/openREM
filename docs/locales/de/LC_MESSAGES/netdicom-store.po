@@ -1,0 +1,43 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../netdicom-store.rst:2 1f8646a0a3fd4c42a3cdaa69dd336104
+msgid "Conquest Store configuration"
+msgstr ""
+
+#: ../../netdicom-store.rst:4 e1c72157bea440a89b3b3396f4a4de9f
+msgid ""
+"The instructions for installing Conquest were included in the "
+":ref:`installdicomstore` docs."
+msgstr ""
+
+#: ../../netdicom-store.rst:6 91115361e36a4f4f8f8a9e298cbe03ef
+msgid ""
+"Now OpenREM is installed, you need to configure ``dicom.ini`` and setup "
+"the import scripts"
+msgstr ""
+
+#: ../../netdicom-store.rst:10 0830651b5be34074b04c4ed9d82783d4
+msgid "Import scripts"
+msgstr ""
+
+#: ../../netdicom-store.rst:20 44589d3372ca4f679390fc18b2559be2
+msgid "dicom.ini configuration"
+msgstr ""
+

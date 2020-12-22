@@ -131,7 +131,7 @@ def collimate(a_ray, area, d_ref):
 def build_ray(
     table_longitudinal, table_lateral, table_height, lr_angle, cc_angle, d_ref
 ):
-    """ This function takes RDSR geometry information and uses it to build
+    """This function takes RDSR geometry information and uses it to build
     an x-ray (Segment_3) taking into account translation and rotation.
 
     Args:

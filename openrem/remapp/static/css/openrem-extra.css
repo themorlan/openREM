@@ -371,3 +371,45 @@ ul.no-marker {
     /*overflow: scroll;*/
     /*overflow-x: hidden;*/
 }
+
+div.altair-chart-container {
+  width: 100%;
+  height: auto!important;
+  min-width: 200px;
+  min-height: 100px;
+}
+
+canvas.marks {
+  max-width: 100%!important;
+  height: auto!important;
+  min-width: 200px;
+  min-height: 100px;
+}
+
+div.plotly_parent {
+  min-width: 1000px;
+}
+
+ul.CheckboxSelectMultiple {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul.RadioSelect {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+td.valign_top {
+  vertical-align: top;
+}
+
+li.no-wrap {
+  white-space: nowrap;
+}
+
+img.colour_swatch {
+  border: 1px solid #CCCCCC;
+}

@@ -59,7 +59,7 @@ logger = logging.getLogger("remapp.extractors.ct_toshiba")
 
 
 def _find_dose_summary_objects(folder_path):
-    """ This function looks for objects with a SOPClassUID of "Secondary
+    """This function looks for objects with a SOPClassUID of "Secondary
     Capture Image Storage" and an ImageType with a length of 2.
 
     Dose summary objects have a 2-element ImageType:
@@ -114,8 +114,7 @@ def _find_dose_summary_objects(folder_path):
 
 
 def _copy_files_from_a_to_b(src_folder, dest_folder):
-    """Copy files in src_folder to dest_folder
-    """
+    """Copy files in src_folder to dest_folder"""
     src_files = os.listdir(src_folder)
     for file_name in src_files:
         full_file_name = os.path.join(src_folder, file_name)

@@ -1,0 +1,456 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../release-0.9.1.rst:3
+msgid "Upgrade to OpenREM 0.9.1"
+msgstr ""
+
+#: ../../release-0.9.1.rst:7
+msgid "Headline changes"
+msgstr ""
+
+#: ../../release-0.9.1.rst:9
+msgid ""
+"Imports: fixed imports for GE surgical flat panel c-arm with irregular "
+"value types and value meanings"
+msgstr ""
+
+#: ../../release-0.9.1.rst:10
+msgid ""
+"Interface: added feature to filter by specific number of exposure types "
+"-- CT only"
+msgstr ""
+
+#: ../../release-0.9.1.rst:11
+msgid ""
+"Query-retrieve: new option to get SR series when PACS returns empty "
+"series level response"
+msgstr ""
+
+#: ../../release-0.9.1.rst:12
+msgid ""
+"Query-retrieve: handle illegal missing instance number in image level "
+"response"
+msgstr ""
+
+#: ../../release-0.9.1.rst:13
+msgid "Query-retrieve: improved logging"
+msgstr ""
+
+#: ../../release-0.9.1.rst:14
+msgid "Exports: added export to UK PHE 2019 CT survey format"
+msgstr ""
+
+#: ../../release-0.9.1.rst:15
+msgid ""
+"General documentation and interface improvements, bug fixes, and changes "
+"to prepare for Python 3"
+msgstr ""
+
+#: ../../release-0.9.1.rst:19
+msgid "Upgrade preparation"
+msgstr ""
+
+#: ../../release-0.9.1.rst:21
+msgid ""
+"Version 0.9 of OpenREM has a minimum Python version of 2.7.9 (still needs"
+" to be 2.7 not 3) and a minimum version of setuptools. If your "
+"installation was originally for OpenREM 0.6 in 2014 or earlier, these may"
+" now be too old and need updating."
+msgstr ""
+
+#: ../../release-0.9.1.rst:25
+msgid ""
+"To check the Python version, activate the virtualenv if you are using "
+"one, then:"
+msgstr ""
+
+#: ../../release-0.9.1.rst:31
+msgid "If the version is earlier than ``2.7.9``, then an upgrade is needed."
+msgstr ""
+
+#: ../../release-0.9.1.rst:33
+msgid "**Ubuntu Linux**"
+msgstr ""
+
+#: ../../release-0.9.1.rst:35
+msgid "Check which version of Ubuntu is installed (``lsb_release -a``)"
+msgstr ""
+
+#: ../../release-0.9.1.rst:36
+msgid ""
+"If it is 14.04 LTS (Trusty), then an operating system upgrade or "
+"migration to a new server is required. If migrating, ensure the version "
+"of OpenREM installed on the new server is the same as the one on the old "
+"server, then :ref:`restore-psql-linux` following the instructions and "
+"when up and running again perform the upgrade on the new server"
+msgstr ""
+
+#: ../../release-0.9.1.rst:40
+msgid "16.04 LTS (Xenial) or later should have 2.7.11 or later available."
+msgstr ""
+
+#: ../../release-0.9.1.rst:41
+msgid ""
+"For other Linux distributions check in their archives for which versions "
+"are available."
+msgstr ""
+
+#: ../../release-0.9.1.rst:43
+msgid "**Windows**"
+msgstr ""
+
+#: ../../release-0.9.1.rst:45
+msgid ""
+"A newer version of Python 2.7 can be downloaded from `python.org "
+"<https://www.python.org/downloads>`_ and installed over the current "
+"version."
+msgstr ""
+
+#: ../../release-0.9.1.rst:48
+msgid "**Linux and Windows**"
+msgstr ""
+
+#: ../../release-0.9.1.rst:50
+msgid ""
+"With a version of Python 2.7.9 or later, setuptools can be updated "
+"(activate virtualenv if using one):"
+msgstr ""
+
+#: ../../release-0.9.1.rst:58
+msgid "Upgrading an OpenREM server with no internet access"
+msgstr ""
+
+#: ../../release-0.9.1.rst:60
+msgid ""
+"Follow the instructions found at :doc:`upgrade-offline`, before returning"
+" here to update the configuration, migrate the database and complete the "
+"upgrade."
+msgstr ""
+
+#: ../../release-0.9.1.rst:65
+msgid "Upgrading from version 0.7.1 or earlier"
+msgstr ""
+
+#: ../../release-0.9.1.rst:67
+msgid ""
+"Follow the instructions to :doc:`release-0.7.3` first, then return to "
+"these instructions to upgrade to 0.9.1."
+msgstr ""
+
+#: ../../release-0.9.1.rst:72
+msgid "Upgrading from version 0.7.3 or later"
+msgstr ""
+
+#: ../../release-0.9.1.rst:75
+msgid "Upgrade"
+msgstr ""
+
+#: ../../release-0.9.1.rst:77
+msgid "Back up your database"
+msgstr ""
+
+#: ../../release-0.9.1.rst:79
+msgid "For PostgreSQL on linux you can refer to :ref:`backup-psql-db`"
+msgstr ""
+
+#: ../../release-0.9.1.rst:80
+msgid "For PostgreSQL on Windows you can refer to :doc:`backupRestorePostgreSQL`"
+msgstr ""
+
+#: ../../release-0.9.1.rst:81
+msgid ""
+"For a non-production SQLite3 database, simply make a copy of the database"
+" file"
+msgstr ""
+
+#: ../../release-0.9.1.rst:83
+msgid "Stop any Celery workers"
+msgstr ""
+
+#: ../../release-0.9.1.rst:85
+msgid ""
+"Consider temporarily disabling your DICOM Store SCP, or redirecting the "
+"data to be processed later"
+msgstr ""
+
+#: ../../release-0.9.1.rst:87
+msgid "If you are using a virtualenv, activate it"
+msgstr ""
+
+#: ../../release-0.9.1.rst:89
+msgid "Install specific version of Celery:"
+msgstr ""
+
+#: ../../release-0.9.1.rst:91
+msgid "**Linux server:**"
+msgstr ""
+
+#: ../../release-0.9.1.rst:97
+msgid "**Windows server:**"
+msgstr ""
+
+#: ../../release-0.9.1.rst:103
+msgid "Install the new version of OpenREM:"
+msgstr ""
+
+#: ../../release-0.9.1.rst:112
+msgid "Update the configuration"
+msgstr ""
+
+#: ../../release-0.9.1.rst:114
+msgid "Locate and edit your local_settings file"
+msgstr ""
+
+#: ../../release-0.9.1.rst:116 ../../release-0.9.1.rst:169
+msgid ""
+"Ubuntu linux: ``/usr/local/lib/python2.7/dist-"
+"packages/openrem/openremproject/local_settings.py``"
+msgstr ""
+
+#: ../../release-0.9.1.rst:117 ../../release-0.9.1.rst:170
+msgid ""
+"Other linux: ``/usr/lib/python2.7/site-"
+"packages/openrem/openremproject/local_settings.py``"
+msgstr ""
+
+#: ../../release-0.9.1.rst:118 ../../release-0.9.1.rst:171
+msgid ""
+"Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-"
+"packages/openrem/openremproject/local_settings.py``"
+msgstr ""
+
+#: ../../release-0.9.1.rst:119 ../../release-0.9.1.rst:172
+msgid ""
+"Windows: ``C:\\Python27\\Lib\\site-"
+"packages\\openrem\\openremproject\\local_settings.py``"
+msgstr ""
+
+#: ../../release-0.9.1.rst:120 ../../release-0.9.1.rst:173
+msgid ""
+"Windows virtualenv: ``virtualenvfolder\\Lib\\site-"
+"packages\\openrem\\openremproject\\local_settings.py``"
+msgstr ""
+
+#: ../../release-0.9.1.rst:124
+msgid "Date format - changed with 0.8"
+msgstr ""
+
+#: ../../release-0.9.1.rst:125
+msgid ""
+"Set the date format for xlsx exports (need to check csv situation). Copy "
+"the following code into your ``local_settings.py`` file if you want to "
+"change it from ``dd/mm/yyy``:"
+msgstr ""
+
+#: ../../release-0.9.1.rst:136
+msgid "Time zone and language - changed with 0.8"
+msgstr ""
+
+#: ../../release-0.9.1.rst:138
+msgid ""
+"Consider setting the timezone and language in ``local_settings.py``. See "
+"``local_settings.py.example``."
+msgstr ""
+
+#: ../../release-0.9.1.rst:141
+msgid "Add additional log file configuration - changed with 0.8"
+msgstr ""
+
+#: ../../release-0.9.1.rst:145
+msgid ""
+"If the configuration is not added for the new ``openrem_extractor.log`` "
+"you will find it being created where ever you start the webserver from, "
+"and starting the webserver may fail."
+msgstr ""
+
+#: ../../release-0.9.1.rst:148
+msgid ""
+"Add the new extractor log file configuration to the ``local_settings.py``"
+" - you can copy the 'Logging configuration' section from  "
+"``local_settings.py.example`` if you haven't made many changes to this "
+"section. See the :ref:`local_settings_logfile` settings in the install "
+"instructions."
+msgstr ""
+
+#: ../../release-0.9.1.rst:154
+msgid ""
+"If you are upgrading from an earlier beta with the Toshiba RDSR creation "
+"logs defined, this has changed names and must be modified in "
+"``local_settings.py`` before the migration below. It should be changed "
+"to::"
+msgstr ""
+
+#: ../../release-0.9.1.rst:159
+msgid "substituting ``INFO`` for whichever level of logging is desired."
+msgstr ""
+
+#: ../../release-0.9.1.rst:162
+msgid "E-mail server settings - changed with 0.9.0"
+msgstr ""
+
+#: ../../release-0.9.1.rst:164
+msgid ""
+"If you want selected OpenREM users to be automatically sent fluoroscopy "
+"high dose alerts then set the details of the e-mail server to be used in "
+"the `E-mail server settings` part of your ``local_settings.py`` file. "
+"Locate and edit your local_settings file"
+msgstr ""
+
+#: ../../release-0.9.1.rst:175
+msgid ""
+"Then change the e-mail section settings to reflect the e-mail server that"
+" is to be used:"
+msgstr ""
+
+#: ../../release-0.9.1.rst:189
+msgid "See the :ref:`email_configuration` documentation for full details."
+msgstr ""
+
+#: ../../release-0.9.1.rst:193
+msgid "Migrate the database"
+msgstr ""
+
+#: ../../release-0.9.1.rst:195
+msgid "In a shell/command window, move into the ``openrem`` folder:"
+msgstr ""
+
+#: ../../release-0.9.1.rst:197
+msgid "Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``"
+msgstr ""
+
+#: ../../release-0.9.1.rst:198
+msgid "Other linux: ``/usr/lib/python2.7/site-packages/openrem/``"
+msgstr ""
+
+#: ../../release-0.9.1.rst:199
+msgid "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/``"
+msgstr ""
+
+#: ../../release-0.9.1.rst:200
+msgid "Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\``"
+msgstr ""
+
+#: ../../release-0.9.1.rst:201
+msgid "Windows virtualenv: ``virtualenvfolder\\Lib\\site-packages\\openrem\\``"
+msgstr ""
+
+#: ../../release-0.9.1.rst:210
+msgid "Update static files"
+msgstr ""
+
+#: ../../release-0.9.1.rst:212
+msgid ""
+"In the same shell/command window as you used above run the following "
+"command to clear the static files belonging to your previous OpenREM "
+"version and replace them with those belonging to the version you have "
+"just installed (assuming you are using a production web server...):"
+msgstr ""
+
+#: ../../release-0.9.1.rst:220
+msgid "Virtual directory users"
+msgstr ""
+
+#: ../../release-0.9.1.rst:222
+msgid ""
+"If you are running your website in a virtual directory, you also have to "
+"update the reverse.js file. To get the file in the correct path, take "
+"care that you insert just after the declaration of ``STATIC_ROOT`` the "
+"following line in your ``local_settings.py``:"
+msgstr ""
+
+#: ../../release-0.9.1.rst:230
+msgid "To update the reverse.js file execute the following command:"
+msgstr ""
+
+#: ../../release-0.9.1.rst:236
+msgid "See  :doc:`virtual_directory` for more details."
+msgstr ""
+
+#: ../../release-0.9.1.rst:239
+msgid "Enable task management - changed in 0.9.0"
+msgstr ""
+
+#: ../../release-0.9.1.rst:242
+msgid "RabbitMQ management interface"
+msgstr ""
+
+#: ../../release-0.9.1.rst:244
+msgid ""
+"To make use of the RabbitMQ queue display and purge control, the "
+"management interface needs to be enabled. To do so, follow the "
+"instructions at :ref:`enableRabbitMQ`."
+msgstr ""
+
+#: ../../release-0.9.1.rst:248
+msgid "Celery management interface, Flower"
+msgstr ""
+
+#: ../../release-0.9.1.rst:250
+msgid ""
+"To make use of the Celery task management, Flower needs to be running. To"
+" do so, follow the instructions in :ref:`start_flower`. For 'one-page "
+"Ubuntu' installs, add the Flower related config and create, register and "
+"start the systemd service files as described in "
+":ref:`one_page_linux_celery`. If you need to change the default Flower "
+"port of 5555 then make sure you do so in "
+"``openremproject\\local_settings.py`` to add/modify the line "
+"``FLOWER_PORT = 5555`` as well as when you start Flower."
+msgstr ""
+
+#: ../../release-0.9.1.rst:257
+msgid "Celery for Windows config - changed in 0.9.0"
+msgstr ""
+
+#: ../../release-0.9.1.rst:259
+msgid ""
+"For best performance and reliability when using Celery on Windows, if "
+"your command for starting Celery specifies a pool option, for example "
+"``-P solo``, remove it so that Celery reverts to using the default "
+"``prefork`` pool. This will enable multiple tasks to run concurrently and"
+" it will be possible to terminate tasks."
+msgstr ""
+
+#: ../../release-0.9.1.rst:263
+msgid ""
+"If you are a Windows user you may also wish to review :doc:`celery-"
+"windows` as the example control batch files have been updated."
+msgstr ""
+
+#: ../../release-0.9.1.rst:268
+msgid "Ubuntu installs that followed :doc:`quick_start_linux`"
+msgstr ""
+
+#: ../../release-0.9.1.rst:270
+msgid ""
+"Systemd service files have been renamed in these docs to use *openrem-"
+"function* rather than *function-openrem*. To update the service files "
+"accordingly, follow the following steps. **This is optional**, but will "
+"make finding them easier (e.g. ``sudo systemctl status "
+"openrem-[tab][tab]`` will list them!)"
+msgstr ""
+
+#: ../../release-0.9.1.rst:297
+msgid "Restart all the services"
+msgstr ""
+
+#: ../../release-0.9.1.rst:299
+msgid "Follow the guide at :doc:`startservices`."
+msgstr ""
+

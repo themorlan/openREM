@@ -69,8 +69,8 @@ may be useful to request that an e-mail account be created specifically for send
 It may be possible to configure the e-mail server to allow sending of messages that originate from the OpenREM
 server without authentication, in which case the user and password settings should not be required.
 
-The ``EMAIL_USE_TLS`` and ``EMAIL_USE_TLS`` options should be configured to match the encryption requirements of
-the e-mail server.
+The ``EMAIL_USE_TLS`` and ``EMAIL_USE_SSL`` options should be configured to match the encryption requirements of
+the e-mail server. Use ``0`` for False (default) and ``1`` for True. Only one of these options should be set to ``1``.
 
 The ``EMAIL_DOSE_ALERT_SENDER`` should contain the e-mail address that you want to use as the sender address.
 
@@ -119,6 +119,11 @@ XLSX date and time settings for exports:
 
         XLSX_DATE=dd/mm/yyyy
         XLSX_TIME=hh:mm:ss
+
+Virtual directory settings
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+See :doc:`virtual_directory` for details of these variables - normally these can be left commented out.
 
 Variables that should only be changed if you know what you are doing
 --------------------------------------------------------------------

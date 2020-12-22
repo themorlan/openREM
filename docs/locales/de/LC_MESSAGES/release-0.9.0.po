@@ -1,0 +1,325 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../release-0.9.0.rst:3 dbcc6020f862408e868978f6c2cbb354
+msgid "Upgrade to OpenREM 0.9.0"
+msgstr ""
+
+#: ../../release-0.9.0.rst:7 91240c999aca4614b49cc8f2c03e6184
+msgid "Headline changes"
+msgstr ""
+
+#: ../../release-0.9.0.rst:9 6363b5d0c2b94413a57be7136bbb941b
+msgid ""
+"Interface: added feature to display workload stats in the home page "
+"modality tables"
+msgstr ""
+
+#: ../../release-0.9.0.rst:10 ca778b5dec044153b336749233fb2de2
+msgid "Interface: added :doc:`i_fluoro_high_dose_alerts` feature"
+msgstr ""
+
+#: ../../release-0.9.0.rst:11 a34b999595eb4db8829b05338acac986
+msgid ""
+"Interface: dual-plane DX studies can now be handled in summary list and "
+"study detail pages"
+msgstr ""
+
+#: ../../release-0.9.0.rst:12 c4d04557834b4d16bd8afc71ead96e2c
+msgid ""
+"Interface: new option to set display name when unique fields change based"
+" on device observer UID in RDSR"
+msgstr ""
+
+#: ../../release-0.9.0.rst:13 fd5374c0e821496783e7fa2d8a360d4d
+msgid ""
+"Charts: added fluoroscopy charts of DAP and frequency per requested "
+"procedure, fixed bugs in links for others"
+msgstr ""
+
+#: ../../release-0.9.0.rst:14 7d588ade022a49888975120a7e4775ff
+msgid "Query-retrieve: handle non-return of ModalitiesInStudy correctly"
+msgstr ""
+
+#: ../../release-0.9.0.rst:15 9fad71663c3b4506aa344e2c9894ee77
+msgid "Query-retrieve: increased query logging and summary feedback"
+msgstr ""
+
+#: ../../release-0.9.0.rst:16 b41a4208cf6249a0acb081f4e316dd37
+msgid "Query-retrieve: use time range in search (command line only)"
+msgstr ""
+
+#: ../../release-0.9.0.rst:17 75bb30e734ed4cb1b432f7a7b74d4138
+msgid "Imports: fix for empty NumericValues in RDSR"
+msgstr ""
+
+#: ../../release-0.9.0.rst:18 79aac03efac24a8092a4f55a759071a0
+msgid ""
+"Imports: fix for Toshiba RDSR with incorrect multiple values in SD field "
+"for vHP"
+msgstr ""
+
+#: ../../release-0.9.0.rst:19 305cf512822e4515996878f44bb5567b
+msgid "Imports: fix for Philips Azurion RDSR with incorrect AcquisitionDeviceType"
+msgstr ""
+
+#: ../../release-0.9.0.rst:20 0cfaf920904b419aae57bd7bf2715e0d
+msgid "Imports: fix for Varian RDSRs"
+msgstr ""
+
+#: ../../release-0.9.0.rst:21 5a025c55736c4ef181edde0a02601f70
+msgid ""
+"Exports: made more robust for exporting malformed studies, fixed "
+"filtering bugs"
+msgstr ""
+
+#: ../../release-0.9.0.rst:22 bb326713a2ab45339dfa94b30534dd5f
+msgid ""
+"Administration: automatic e-mail alerts sent when fluoroscopy studies "
+"exceed a dose alert level"
+msgstr ""
+
+#: ../../release-0.9.0.rst:23 cc4a678305b44a08a5756e89e28d2082
+msgid ""
+"Administration: added facility to list and delete studies where the "
+"import failed"
+msgstr ""
+
+#: ../../release-0.9.0.rst:24 f9655a08b46f4065834a1ac7d66c1d64
+msgid "Administration: added interface to RabbitMQ queues and Celery tasks"
+msgstr ""
+
+#: ../../release-0.9.0.rst:25 0614c1db5c204ad887d4471af6ac583a
+msgid "Administration: short-term fix for task performance and control on Windows"
+msgstr ""
+
+#: ../../release-0.9.0.rst:26 e1967e93faeb4ee39440368c5af6302f
+msgid "Documentation: further refinement of the linux one-page install"
+msgstr ""
+
+#: ../../release-0.9.0.rst:27 798fd7b58a424a99b4db43dea6d82c63
+msgid "Installation: :doc:`virtual_directory`"
+msgstr ""
+
+#: ../../release-0.9.0.rst:32 777a1bd30aab4dddb1b8a0d71eb99638
+msgid "Upgrading an OpenREM server with no internet access"
+msgstr ""
+
+#: ../../release-0.9.0.rst:34 b4d85dba8c0e49a191f9b1c75ddfb97f
+msgid ""
+"Follow the instructions found at :doc:`upgrade-offline`, before returning"
+" here to update the database and configuration."
+msgstr ""
+
+#: ../../release-0.9.0.rst:38 f609ac4a33dc4d89985d102b2e1bb1ef
+msgid "Upgrading from version 0.8.x"
+msgstr ""
+
+#: ../../release-0.9.0.rst:41 aad2d754992c4b1a886435676c5adf60
+msgid "Upgrade"
+msgstr ""
+
+#: ../../release-0.9.0.rst:43 478dc1bf3baa4c8a9af3d30fd7456012
+msgid "Back up your database"
+msgstr ""
+
+#: ../../release-0.9.0.rst:45 d4b97515960b40ce92d2a1b0c98235c9
+msgid "For PostgreSQL on linux you can refer to :ref:`backup-psql-db`"
+msgstr ""
+
+#: ../../release-0.9.0.rst:46 5a9de95446c249319ad2932427791269
+msgid "For PostgreSQL on Windows you can refer to :doc:`backupRestorePostgreSQL`"
+msgstr ""
+
+#: ../../release-0.9.0.rst:47 3f597ed95f3d43718144e1f986c9bfc5
+msgid ""
+"For a non-production SQLite3 database, simply make a copy of the database"
+" file"
+msgstr ""
+
+#: ../../release-0.9.0.rst:49 c83e4e5d5273428cbb3ef355e3a70c78
+msgid "Stop any Celery workers"
+msgstr ""
+
+#: ../../release-0.9.0.rst:51 17d7af5d4bce4bf0815b65c17bb491be
+msgid ""
+"Consider temporarily disabling your DICOM Store SCP, or redirecting the "
+"data to be processed later"
+msgstr ""
+
+#: ../../release-0.9.0.rst:53 2304217c59e34a40bb0a850a739daa1f
+msgid "If you are using a virtualenv, activate it"
+msgstr ""
+
+#: ../../release-0.9.0.rst:55 43f76ebd906f4f38ad0542ef20c33c46
+msgid "Install the new version of OpenREM:"
+msgstr ""
+
+#: ../../release-0.9.0.rst:64 a988f9fa43b246a69d06c85152de0a72
+msgid "Migrate the database"
+msgstr ""
+
+#: ../../release-0.9.0.rst:66 ae6f5662a81b4706aab3aa516b3eadba
+msgid "In a shell/command window, move into the ``openrem`` folder:"
+msgstr ""
+
+#: ../../release-0.9.0.rst:68 26e887ec70374d2990a29828faccdc9e
+msgid "Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``"
+msgstr ""
+
+#: ../../release-0.9.0.rst:69 1b2cdb810ec14bc4b4e53031e04a9553
+msgid "Other linux: ``/usr/lib/python2.7/site-packages/openrem/``"
+msgstr ""
+
+#: ../../release-0.9.0.rst:70 18eda569a3ae4d509dc3258d96198f73
+msgid "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/``"
+msgstr ""
+
+#: ../../release-0.9.0.rst:71 b5c8659572e5406785f84299aad8c901
+msgid "Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\``"
+msgstr ""
+
+#: ../../release-0.9.0.rst:72 f6ef7545984d47799948a877428d7751
+msgid "Windows virtualenv: ``virtualenvfolder\\Lib\\site-packages\\openrem\\``"
+msgstr ""
+
+#: ../../release-0.9.0.rst:81 661ff078d9f540a183a4414a71c833ae
+msgid "Update static files"
+msgstr ""
+
+#: ../../release-0.9.0.rst:83 5588e0fc4d94473d84b709d3f5061297
+msgid ""
+"In the same shell/command window as you used above run the following "
+"command to clear the static files belonging to your previous OpenREM "
+"version and replace them with those belonging to the version you have "
+"just installed (assuming you are using a production web server...):"
+msgstr ""
+
+#: ../../release-0.9.0.rst:93 79caffb3911540a38e13e0797586498e
+msgid "Enable the RabbitMQ management interface"
+msgstr ""
+
+#: ../../release-0.9.0.rst:95 f263aac85777414c9df99143544280d1
+msgid ""
+"To make use of the RabbitMQ queue display and purge control, the "
+"management interface needs to be enabled. To do so, follow the "
+"instructions at :ref:`enableRabbitMQ`."
+msgstr ""
+
+#: ../../release-0.9.0.rst:99 d90e0f6f83ac41678000476cfae4219c
+msgid "Enable the Celery management interface, Flower"
+msgstr ""
+
+#: ../../release-0.9.0.rst:101 8d3d5542456344a698d64a73e38315ef
+msgid ""
+"To make use of the Celery task management, Flower needs to be running. To"
+" do so, follow the instructions in :ref:`start_flower`. For 'one-page "
+"Ubuntu' installs, add the Flower related config and create, register and "
+"start the systemd service files as described in "
+":ref:`one_page_linux_celery`. If you need to change the default Flower "
+"port of 5555 then make sure you do so in "
+"``openremproject\\local_settings.py`` to add/modify the line "
+"``FLOWER_PORT = 5555`` as well as when you start Flower."
+msgstr ""
+
+#: ../../release-0.9.0.rst:108 1cf00fc2e85444b3be355bed5adec345
+msgid "Changes to Celery for Windows"
+msgstr ""
+
+#: ../../release-0.9.0.rst:110 9de298ac93c24165bda2b2d0cf00a665
+msgid ""
+"For best performance and reliability when using Celery on Windows, it is "
+"recommended to do the following from the openrem folder (activate "
+"virtualenv if using one):"
+msgstr ""
+
+#: ../../release-0.9.0.rst:117 6f0a325ad860433a88f1099aa8eb836d
+msgid ""
+"If your command for starting Celery specifies a pool option, for example "
+"``-P solo``, remove it so that Celery reverts to using the default "
+"``prefork`` pool. This will enable multiple tasks to run concurrently and"
+" it will be possible to terminate tasks."
+msgstr ""
+
+#: ../../release-0.9.0.rst:121 0c5e446a94354807a599748b29201272
+msgid ""
+"If you are a Windows user you may also wish to review :doc:`celery-"
+"windows` as the example control batch files have been updated."
+msgstr ""
+
+#: ../../release-0.9.0.rst:125 5a429567cc6345ecaa4d0c36131b9ad9
+msgid "E-mail server settings"
+msgstr ""
+
+#: ../../release-0.9.0.rst:126 b36ab5a1bd66464396cb67ee94b509b5
+msgid ""
+"If you want selected OpenREM users to be automatically sent fluoroscopy "
+"high dose alerts then set the details of the e-mail server to be used in "
+"the `E-mail server settings` part of your ``local_settings.py`` file. "
+"Locate and edit your local_settings file"
+msgstr ""
+
+#: ../../release-0.9.0.rst:131 2f0bac60d4c94fed9f278190dd032623
+msgid ""
+"Ubuntu linux: ``/usr/local/lib/python2.7/dist-"
+"packages/openrem/openremproject/local_settings.py``"
+msgstr ""
+
+#: ../../release-0.9.0.rst:132 1c6510be420b49fe9825d3f17aceb84a
+msgid ""
+"Other linux: ``/usr/lib/python2.7/site-"
+"packages/openrem/openremproject/local_settings.py``"
+msgstr ""
+
+#: ../../release-0.9.0.rst:133 c53373698aa04f32af6ef3a57650551e
+msgid ""
+"Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-"
+"packages/openrem/openremproject/local_settings.py``"
+msgstr ""
+
+#: ../../release-0.9.0.rst:134 1dcaeab9677d44f3bff93fa7faf929d2
+msgid ""
+"Windows: ``C:\\Python27\\Lib\\site-"
+"packages\\openrem\\openremproject\\local_settings.py``"
+msgstr ""
+
+#: ../../release-0.9.0.rst:135 abb1d13dc594439b8a615008bf9ec2db
+msgid ""
+"Windows virtualenv: ``virtualenvfolder\\Lib\\site-"
+"packages\\openrem\\openremproject\\local_settings.py``"
+msgstr ""
+
+#: ../../release-0.9.0.rst:137 8e6e32d9778c474b94a95996b27acf81
+msgid ""
+"Then change the e-mail section settings to reflect the e-mail server that"
+" is to be used:"
+msgstr ""
+
+#: ../../release-0.9.0.rst:151 ae133fc9aefe4452a9f5b131411a9c34
+msgid "See the :ref:`email_configuration` documentation for full details."
+msgstr ""
+
+#: ../../release-0.9.0.rst:155 67e79eed58634721993b589497a7fd7f
+msgid "Restart all the services"
+msgstr ""
+
+#: ../../release-0.9.0.rst:157 d2b5143152594562a8030867b63feb90
+msgid "Follow the guide at :doc:`startservices`."
+msgstr ""
+

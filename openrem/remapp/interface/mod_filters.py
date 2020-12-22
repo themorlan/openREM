@@ -40,10 +40,7 @@ from ..tools.hash_id import hash_id
 
 logger = logging.getLogger(__name__)
 
-TEST_CHOICES = (
-    ("", "Yes (default)"),
-    (2, "No (caution)"),
-)
+TEST_CHOICES = (("", "Yes (default)"), (2, "No (caution)"))
 
 
 def custom_name_filter(queryset, name, value):
@@ -117,9 +114,8 @@ def _dap_filter(queryset, name, value):
 
 
 class DateTimeOrderingFilter(django_filters.OrderingFilter):
-    """Custom filter to order by date and time as they are two seperate fields
 
-    """
+    """Custom filter to order by date and time as they are two seperate fields"""
 
     def __init__(self, *args, **kwargs):
         super(DateTimeOrderingFilter, self).__init__(*args, **kwargs)
@@ -146,9 +142,8 @@ class DateTimeOrderingFilter(django_filters.OrderingFilter):
 
 
 class RFSummaryListFilter(django_filters.FilterSet):
-    """Filter for fluoroscopy studies to display in web interface.
 
-    """
+    """Filter for fluoroscopy studies to display in web interface."""
 
     study_date__gt = django_filters.DateFilter(
         lookup_expr="gte",
@@ -286,6 +281,7 @@ class RFSummaryListFilter(django_filters.FilterSet):
 
 
 class RFFilterPlusPid(RFSummaryListFilter):
+
     """Adding patient name and ID to filter if permissions allow"""
 
     def __init__(self, *args, **kwargs):
@@ -298,19 +294,10 @@ class RFFilterPlusPid(RFSummaryListFilter):
         )
 
 
-# Values from DICOM CID 10013 CT Acquisition Type
-CT_ACQ_TYPE_CHOICES = (
-    ("Spiral Acquisition", "Spiral"),
-    ("Sequenced Acquisition", "Axial"),
-    ("Constant Angle Acquisition", "Localiser"),
-    ("Stationary Acquisition", "Stationary acquisition"),
-    ("Free Acquisition", "Free acquisition"),
-)
-
-
 EVENT_NUMBER_CHOICES = (
     (None, "Any"),
     (0, "None"),
+    ("some", ">0"),
     (1, "1"),
     (2, "2"),
     (3, "3"),
@@ -326,6 +313,7 @@ EVENT_NUMBER_CHOICES = (
 
 
 def _specify_event_numbers(queryset, name, value):
+
     """Method filter for specifying number of events in each study
 
     :param queryset: Study list
@@ -337,19 +325,24 @@ def _specify_event_numbers(queryset, name, value):
         value = int(value)
     except ValueError:
         if value == "more":
-            if "num_events" in name:
-                filtered = queryset.filter(number_of_events__gt=10)
-            elif "num_spiral_events" in name:
-                filtered = queryset.filter(number_of_spiral__gt=10)
-            elif "num_axial_events" in name:
-                filtered = queryset.filter(number_of_axial__gt=10)
-            elif "num_spr_events" in name:
-                filtered = queryset.filter(number_of_const_angle__gt=10)
-            elif "num_stationary_events" in name:
-                filtered = queryset.filter(number_of_stationary__gt=10)
-            else:
-                return queryset
-            return filtered
+            min_value = 10
+        elif value == "some":
+            min_value = 0
+        else:
+            return queryset
+        if "num_events" in name:
+            filtered = queryset.filter(number_of_events__gt=min_value)
+        elif "num_spiral_events" in name:
+            filtered = queryset.filter(number_of_spiral__gt=min_value)
+        elif "num_axial_events" in name:
+            filtered = queryset.filter(number_of_axial__gt=min_value)
+        elif "num_spr_events" in name:
+            filtered = queryset.filter(number_of_const_angle__gt=min_value)
+        elif "num_stationary_events" in name:
+            filtered = queryset.filter(number_of_stationary__gt=min_value)
+        else:
+            return queryset
+        return filtered
         return queryset
     if "num_events" in name:
         filtered = queryset.filter(number_of_events__exact=value)
@@ -367,9 +360,8 @@ def _specify_event_numbers(queryset, name, value):
 
 
 class CTSummaryListFilter(django_filters.FilterSet):
-    """Filter for CT studies to display in web interface.
 
-    """
+    """Filter for CT studies to display in web interface."""
 
     study_date__gt = django_filters.DateFilter(
         lookup_expr="gte",
@@ -436,13 +428,6 @@ class CTSummaryListFilter(django_filters.FilterSet):
         choices=TEST_CHOICES,
         widget=forms.Select,
     )
-    ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning = django_filters.MultipleChoiceFilter(
-        lookup_expr="iexact",
-        label="Acquisition type restriction",
-        field_name="ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning",
-        choices=CT_ACQ_TYPE_CHOICES,
-        widget=forms.CheckboxSelectMultiple,
-    )
     num_events = django_filters.ChoiceFilter(
         method=_specify_event_numbers,
         label="Num. events total",
@@ -498,7 +483,6 @@ class CTSummaryListFilter(django_filters.FilterSet):
             "total_dlp__lte",
             "generalequipmentmoduleattr__unique_equipment_name__display_name",
             "test_data",
-            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning",
             "num_events",
             "num_spiral_events",
             "num_axial_events",
@@ -544,6 +528,7 @@ class CTSummaryListFilter(django_filters.FilterSet):
 
 
 class CTFilterPlusPid(CTSummaryListFilter):
+
     """Adding patient name and ID to filter if permissions allow"""
 
     def __init__(self, *args, **kwargs):
@@ -557,7 +542,9 @@ class CTFilterPlusPid(CTSummaryListFilter):
 
 
 def ct_acq_filter(filters, pid=False):
+
     """Additional filters at event level"""
+
     filteredInclude = []
     if "acquisition_protocol" in filters and (
         "acquisition_ctdi_min" in filters
@@ -668,9 +655,8 @@ def ct_acq_filter(filters, pid=False):
 
 
 class MGSummaryListFilter(django_filters.FilterSet):
-    """Filter for mammography studies to display in web interface.
 
-    """
+    """Filter for mammography studies to display in web interface."""
 
     study_date__gt = django_filters.DateFilter(
         lookup_expr="gte",
@@ -818,9 +804,8 @@ class MGFilterPlusPid(MGSummaryListFilter):
 
 
 class DXSummaryListFilter(django_filters.FilterSet):
-    """Filter for DX studies to display in web interface.
 
-    """
+    """Filter for DX studies to display in web interface."""
 
     study_date__gt = django_filters.DateFilter(
         lookup_expr="gte",
@@ -878,10 +863,10 @@ class DXSummaryListFilter(django_filters.FilterSet):
         method=_dap_filter, label="Max study DAP (cGy·cm²)"
     )
     event_dap_min = django_filters.NumberFilter(
-        method=_dap_filter, label="Min acquisition DAP (cGy·cm²)",
+        method=_dap_filter, label="Min acquisition DAP (cGy·cm²)"
     )
     event_dap_max = django_filters.NumberFilter(
-        method=_dap_filter, label="Max acquisition DAP (cGy·cm²)",
+        method=_dap_filter, label="Max acquisition DAP (cGy·cm²)"
     )
     generalequipmentmoduleattr__unique_equipment_name__display_name = django_filters.CharFilter(
         lookup_expr="icontains", label="Display name"
@@ -967,6 +952,7 @@ class DXSummaryListFilter(django_filters.FilterSet):
 
 
 class DXFilterPlusPid(DXSummaryListFilter):
+
     """Adding patient name and ID to filter if permissions allow"""
 
     def __init__(self, *args, **kwargs):
@@ -980,6 +966,7 @@ class DXFilterPlusPid(DXSummaryListFilter):
 
 
 def dx_acq_filter(filters, pid=False):
+
     """Additional filters at event level"""
     filteredInclude = []
     if "acquisition_protocol" in filters and (

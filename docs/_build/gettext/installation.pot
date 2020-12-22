@@ -1,0 +1,89 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-13 20:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../installation.rst:3
+msgid "Installation"
+msgstr ""
+
+#: ../../installation.rst:6
+msgid "Windows or Linux: Docker install"
+msgstr ""
+
+#: ../../installation.rst:9
+msgid "Preparation"
+msgstr ""
+
+#: ../../installation.rst:10
+msgid "Install Docker"
+msgstr ""
+
+#: ../../installation.rst:11
+msgid "Download https://bitbucket.org/openrem/docker/get/develop.zip"
+msgstr ""
+
+#: ../../installation.rst:16
+msgid "Install"
+msgstr ""
+
+#: ../../installation.rst:17
+msgid "Extract the ZIP file and open a shell (command prompt) in the new folder"
+msgstr ""
+
+#: ../../installation.rst:18
+msgid "Customise any variables in ``.env.prod`` and in the ``orthanc_1`` section in ``docker-compose.yml`` as necessary. A full description of the options are found in:"
+msgstr ""
+
+#: ../../installation.rst:27
+msgid "Start the containers with:"
+msgstr ""
+
+#: ../../installation.rst:33
+msgid "Get the database and translations ready:"
+msgstr ""
+
+#: ../../installation.rst:43
+msgid "Open a web browser and go to http://localhost/"
+msgstr ""
+
+#: ../../installation.rst:46
+msgid "Non-Docker alternative - Linux only"
+msgstr ""
+
+#: ../../installation.rst:48
+msgid "We recommend all installations to use the Docker method described above. However, it is possible to install without Docker, but only on Linux. The instructions are a prescriptive install on Ubuntu:"
+msgstr ""
+
+#: ../../installation.rst:58
+msgid "Offline Docker installations"
+msgstr ""
+
+#: ../../installation.rst:67
+msgid "Upgrading an existing installation"
+msgstr ""
+
+#: ../../installation.rst:78
+msgid "Databases"
+msgstr ""
+
+#: ../../installation.rst:80
+msgid "To be removed here, but we need some of the content in other pages, so leaving for now"
+msgstr ""
+
+#: ../../installation.rst:93
+msgid "Web servers"
+msgstr ""

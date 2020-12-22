@@ -38,8 +38,7 @@ class SummaryTotalDoses(TestCase):
         rdsr.rdsr(os.path.join(root_tests, rf_philips_allura))
 
     def test_summary_total_dose_table(self):
-        """Test the summary total dose table
-        """
+        """Test the summary total dose table"""
         self.client.login(username="temporary", password="temporary")
 
         # Obtain the private keys of the two studies.

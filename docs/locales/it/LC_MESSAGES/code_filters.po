@@ -1,0 +1,94 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../code_filters.rst:2
+msgid "Filtering code"
+msgstr ""
+
+#: of remapp.interface.mod_filters.CTFilterPlusPid:1
+#: remapp.interface.mod_filters.DXFilterPlusPid:1
+#: remapp.interface.mod_filters.MGFilterPlusPid:1
+#: remapp.interface.mod_filters.RFFilterPlusPid:1
+msgid "Adding patient name and ID to filter if permissions allow"
+msgstr ""
+
+#: of remapp.interface.mod_filters.CTSummaryListFilter:1
+msgid "Filter for CT studies to display in web interface."
+msgstr ""
+
+#: of remapp.interface.mod_filters.CTSummaryListFilter.Meta:1
+#: remapp.interface.mod_filters.DXSummaryListFilter.Meta:1
+#: remapp.interface.mod_filters.MGSummaryListFilter.Meta:1
+#: remapp.interface.mod_filters.RFSummaryListFilter.Meta:1
+msgid "Lists fields and order-by information for django-filter filtering"
+msgstr ""
+
+#: of remapp.interface.mod_filters.DXSummaryListFilter:1
+msgid "Filter for DX studies to display in web interface."
+msgstr ""
+
+#: of remapp.interface.mod_filters.DateTimeOrderingFilter:1
+msgid "Custom filter to order by date and time as they are two seperate fields"
+msgstr ""
+
+#: of remapp.interface.mod_filters.DateTimeOrderingFilter.filter:1
+msgid "Sets order_by to date then time and returns queryset"
+msgstr ""
+
+#: of remapp.interface.mod_filters.DateTimeOrderingFilter.filter
+msgid "Parameters"
+msgstr ""
+
+#: of remapp.interface.mod_filters.DateTimeOrderingFilter.filter:3
+msgid "queryset"
+msgstr ""
+
+#: of remapp.interface.mod_filters.DateTimeOrderingFilter.filter:4
+msgid "list containing ordering type as string"
+msgstr ""
+
+#: of remapp.interface.mod_filters.DateTimeOrderingFilter.filter
+msgid "Returns"
+msgstr ""
+
+#: of remapp.interface.mod_filters.DateTimeOrderingFilter.filter:5
+msgid "ordered queryset"
+msgstr ""
+
+#: of remapp.interface.mod_filters.MGSummaryListFilter:1
+msgid "Filter for mammography studies to display in web interface."
+msgstr ""
+
+#: of remapp.interface.mod_filters.RFSummaryListFilter:1
+msgid "Filter for fluoroscopy studies to display in web interface."
+msgstr ""
+
+#: of remapp.interface.mod_filters.ct_acq_filter:1
+#: remapp.interface.mod_filters.dx_acq_filter:1
+msgid "Additional filters at event level"
+msgstr ""
+
+#: of remapp.interface.mod_filters.custom_id_filter:1
+msgid "Search for ID as plain text and encrypted"
+msgstr ""
+
+#: of remapp.interface.mod_filters.custom_name_filter:1
+msgid "Search for name as plain text and encrypted"
+msgstr ""
+

@@ -1,0 +1,536 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../charts.rst:3 545dede773f546d79374366e423af5e4
+msgid "Charts"
+msgstr ""
+
+#: ../../charts.rst:7 00c55c3016e64949ad92bd31473b8f39
+msgid "Chart types"
+msgstr ""
+
+#: ../../charts.rst:11 d2982d55dc4d46338756a61e68692635
+msgid "1. Bar chart of average values across a number of categories"
+msgstr ""
+
+#: ../../charts.rst:19 5fdec50996ef4f529c0fb4223b0f08c0
+msgid "Figure 1: Bar chart of mean DLP per acquisition"
+msgstr ""
+
+#: ../../charts.rst:21 f6cf19d4500f45b699e1a85cf0539304
+msgid "An example of mean DAP per acquisition type is shown in figure 1."
+msgstr ""
+
+#: ../../charts.rst:29 f00017e44aa041eb9964ebe070ea9cb3
+msgid "Figure 2: Bar chart sorting options"
+msgstr ""
+
+#: ../../charts.rst:31 a6c2a1be8da8422c8307777e43a7dce5
+msgid ""
+"Below each bar chart there are options to sort the order of the data. "
+"This can be ascending or descending by average value, size of data "
+"sample, or alphabetically (figure 2)."
+msgstr ""
+
+#: ../../charts.rst:35 12ef503866f24954a5a4b7b1cdf93fab
+msgid ""
+"Clicking on an entry in the bar chart legend toggles the display of the "
+"corresponding series on the chart."
+msgstr ""
+
+#: ../../charts.rst:44 974ceb1f533645aca81860001269e6dc
+msgid "Figure 3: Histogram of abdomen DLP values"
+msgstr ""
+
+#: ../../charts.rst:46 bfdf1f52b7ad4372a30afd373c34b24c
+msgid ""
+"If you have histogram calculation switched on then clicking on an "
+"individual data point on a bar chart will take you to a histogram of the "
+"data for that point so that you can see the shape of the value's "
+"distribution (figure 3)."
+msgstr ""
+
+#: ../../charts.rst:50 2c76d5b29c1c431b8093b87a3ac9e3e3
+msgid ""
+"Bar charts can be plotted with a series per x-ray system (figure 4). This"
+" can be toggled using the `Plot a series per system` checkbox in the "
+"`Chart options`."
+msgstr ""
+
+#: ../../charts.rst:53 502aa245cced44ed8c6cd6945266ebab
+msgid ""
+"Clicking the left-hand mouse button on the chart background and dragging "
+"left or right selects part of the series. Releasing the mouse button "
+"zooms in on this selection. A ``Reset zoom`` button appears when zoomed "
+"in: clicking this resets the chart so that the full series can be seen "
+"again. The zoom feature works on both the main series and the histograms."
+" The zooming can be useful when there is a category on the chart that has"
+" a very low value compared to others. Zooming in on this category will "
+"enable the low values to be seen, as the chart rescales the y-axis after "
+"the zoom."
+msgstr ""
+
+#: ../../charts.rst:68 ccd306a38b174429a17c0f00eb7476bc
+msgid "Figure 4: Bar chart of mean DLP (one system per series)"
+msgstr ""
+
+#: ../../charts.rst:70 a753ad0c15d1453996e984d983341413
+msgid ""
+"Clicking on the `Toggle data table` button toggles the display of an HTML"
+" table containing the data from the current chart. This button is hidden "
+"if you are viewing the chart in full screen mode. An example showing a "
+"data table is shown in figure 5."
+msgstr ""
+
+#: ../../charts.rst:81 1be0cd72316d486e920fde77df7b50fe
+msgid "Figure 5: Bar chart with data table displayed"
+msgstr ""
+
+#: ../../charts.rst:83 4420f92b5268481a970644545240b12a
+msgid ""
+"If the the bar chart that you are viewing shows more than one series then"
+" clicking on a category name on the x-axis will take you to a plot that "
+"shows multiple histograms: one for each series (figure 6)."
+msgstr ""
+
+#: ../../charts.rst:87 aae25f0b482241b688de8ea427e924e8
+msgid ""
+"If the bar chart that you are viewing shows more than one series then "
+"buttons are available to `Hide all series`, `Show all series`, and "
+"`Toggle all series`. These provide a quick way to switch which series are"
+" being displayed without having to click on individual series in the "
+"chart legend."
+msgstr ""
+
+#: ../../charts.rst:98 f08f6e1138374817b64d3c67cd3813df
+msgid "Figure 6: Histogram of abdomen DLP values, one series per system"
+msgstr ""
+
+#: ../../charts.rst:100 8079cfe8fcc34392865f5fa1bd7803f7
+msgid ""
+"The histogram data can be plotted as absolute values, or be normalised to"
+" a value of 1.0 (figure 7). This can be toggled by clicking on the button"
+" that is shown below the histogram plots. The normalisation can be useful"
+" when trying to compare the shape of several histograms, especially when "
+"some histograms have much less data than others."
+msgstr ""
+
+#: ../../charts.rst:112 a112c9827aaa48438160bd75b9807e16
+msgid "Figure 7: Normalised histogram of abdomen DLP, one series per system"
+msgstr ""
+
+#: ../../charts.rst:114 bb9d72f9a14f44ba95de585ac13f7833
+msgid ""
+"Each histogram data point includes a text link that appears when the "
+"mouse pointer moves over it. Clicking on this link will filter the "
+"displayed studies, showing those that correspond to what is contained in "
+"the histogram bin."
+msgstr ""
+
+#: ../../charts.rst:118 ../../charts.rst:168 6dd2fc400be04810a47dc1f0d7607384
+#: 852f1095f9be4bcfb3bc2a80c21b3ba1
+msgid ""
+"Clicking on a legend entry toggles the visibility of the corresponding "
+"series."
+msgstr ""
+
+#: ../../charts.rst:120 ../../charts.rst:143 ../../charts.rst:170
+#: ../../charts.rst:235 1bc8799e80ab4ee5ba3f0011a0dc43bc
+#: 59b4140f66de482fafc6b629ec32febf 815bae5d71ad42d5ba36a72847f7dc09
+#: c64dcd4b55394daeb32c11cceb12690b
+msgid ""
+"Only data with non-zero and non-blank dose values are included in the "
+"chart data calculations."
+msgstr ""
+
+#: ../../charts.rst:125 8ddff00ef3e74bb49c304c2bbf219d0b
+msgid "2. Pie chart showing the frequency of each item in a category"
+msgstr ""
+
+#: ../../charts.rst:133 57f1345c44aa4570aff245c44bcb75a6
+msgid "Figure 8: Pie chart of acquisition frequency"
+msgstr ""
+
+#: ../../charts.rst:135 c103e2f50d064f988ffca2ee6b74bc0f
+msgid ""
+"Figure 8 shows a pie chart of the number of acquisitions made for every "
+"acquisition protocol present in the tabulated data."
+msgstr ""
+
+#: ../../charts.rst:138 df2015fca0e0444a9bd4ba012551d6bf
+msgid ""
+"Clicking on any of the pie chart segments will filter the displayed "
+"studies, showing only the studies that correspond to what is contained in"
+" that segment. As for the bar charts, this doesn't work perfectly, as the"
+" category filtering isn't exact."
+msgstr ""
+
+#: ../../charts.rst:149 e4b19f9ab1544a42b7128bc7b57ae2e3
+msgid "3. Line chart showing how an average value changes over time"
+msgstr ""
+
+#: ../../charts.rst:157 851f35d7c34047e5a943a31d3705400d
+msgid "Figure 9: Line chart of mean DLP per study type over time"
+msgstr ""
+
+#: ../../charts.rst:159 7e4232c209a542b9929900b6fa88f64a
+msgid ""
+"A line is plotted for each category, with a point calculated every day, "
+"week, month or year. This can be a good way of looking at how things have"
+" changed over time. For example, the mean DLP of each study type, "
+"calculated with a data point per month is shown in figure 9."
+msgstr ""
+
+#: ../../charts.rst:164 33063e247fd84e7bad100f364c53e4b8
+msgid ""
+"Clicking the left-hand mouse button on the chart and dragging left or "
+"right across a range of dates and then releasing the mouse button will "
+"zoom in on that selection."
+msgstr ""
+
+#: ../../charts.rst:175 16e32f8cb78946b19f4c797c72bcdcde
+msgid "4. Pie chart showing the number of events per day of the week"
+msgstr ""
+
+#: ../../charts.rst:183 e69f54044b0e4401a560aa941ec8f230
+msgid "Figure 10: Pie chart of study workload per day of the week"
+msgstr ""
+
+#: ../../charts.rst:191 16b0deaa1dbc41208fdc60e43d6f48ad
+msgid "Figure 11: Pie chart of study workload per hour in a day"
+msgstr ""
+
+#: ../../charts.rst:193 1d3387e4e39d4723beead284b102802a
+msgid ""
+"Each segment represents a day of the week, and shows the number of events"
+" that have taken place on that day (figure 10). Clicking on one of the "
+"segments will take you to a pie chart that shows the number of events per"
+" on that day (figure 11)."
+msgstr ""
+
+#: ../../charts.rst:198 e8cebf3f6a8f48a981d24d02e225bad9
+msgid ""
+"All data, including zero blank dose values are included in the data "
+"calculations for this chart type."
+msgstr ""
+
+#: ../../charts.rst:203 5d444b745ae14af492973314a6d382c8
+msgid "5. Scatter plot showing one value vs. another"
+msgstr ""
+
+#: ../../charts.rst:211 20ac4332a92c48af82e0d883c94cb991
+msgid "Figure 12: Scatter plot of average glandular dose vs. compressed thickness"
+msgstr ""
+
+#: ../../charts.rst:219 bbb13bc53c1c43068fa04d951bd8145c
+msgid ""
+"Figure 13: Scatter plot of average glandular dose vs. compressed "
+"thickness; one series per system"
+msgstr ""
+
+#: ../../charts.rst:221 f9dfaa4fee5c4267bb9b55e181b921b1
+msgid ""
+"This plot type shows a data point per event (figure 12). The series name "
+"and data values are shown when the mouse cursor is positioned over a data"
+" point."
+msgstr ""
+
+#: ../../charts.rst:224 3e91cb080e594d79ac4f7377bf1b0e16
+msgid ""
+"These can be plotted with a series per x-ray system (figure 13). This can"
+" be toggled using the `Plot a series per system` checkbox in the `Chart "
+"options`."
+msgstr ""
+
+#: ../../charts.rst:227 ffebb79db7f14629b4b18715d824be5a
+msgid ""
+"Clicking the left-hand mouse button on the chart and dragging a "
+"rectangular region will zoom in on that selection of the chart. A ``Reset"
+" zoom`` button appears when zoomed in: clicking this resets the chart so "
+"that the full series can be seen again."
+msgstr ""
+
+#: ../../charts.rst:232 414abfe93a6641ee8f8d1bd46fc484bd
+msgid ""
+"Clicking on a system's legend entry toggles the display of the "
+"corresponding series on the chart."
+msgstr ""
+
+#: ../../charts.rst:240 f014a091fc004c1cb0c99ee9bc5e3ea8
+msgid "Exporting chart data"
+msgstr ""
+
+#: ../../charts.rst:242 9c5e31275e254d30a719efd5e26c706b
+msgid ""
+"An image file of a chart can be saved using the menu in the top-right "
+"hand side of any of the charts. The same menu can be used to save the "
+"data used to plot a chart: the data can be downloaded in either csv or "
+"xls format."
+msgstr ""
+
+#: ../../charts.rst:248 d9894346ee944a1cb4c3f6184fc22421
+msgid "Chart options"
+msgstr ""
+
+#: ../../charts.rst:256 1dd643e8966245719133f08fc0a3104c
+msgid "Figure 13: OpenREM chart options"
+msgstr ""
+
+#: ../../charts.rst:258 244300bdb0a94fe4aa6b99fa18193f6d
+msgid ""
+"Chart options can be configured by choosing the ``Chart options`` item "
+"from the ``User options`` menu on the OpenREM homepage (figure 13)."
+msgstr ""
+
+#: ../../charts.rst:261 cfb97947af1a4820bd4c0eee9e4f638a
+msgid ""
+"CT and radiographic plot options can also be set from their respective "
+"summary pages."
+msgstr ""
+
+#: ../../charts.rst:264 639b3b79cc6a4de0a06f03feb2392262
+msgid ""
+"The first option, ``Plot charts?``, determines whether any plots are "
+"shown. This also controls whether the data for the plots is calculated by"
+" OpenREM."
+msgstr ""
+
+#: ../../charts.rst:267 8890c4044a814ba2ab567b987b8439ef
+msgid ""
+"Switching ``Case-insensitive categories`` on will force chart categories "
+"to be lowercase. This can be helpful if several rooms use the same "
+"wording but with different capitalisation for acquisition protocol, study"
+" description or requested procedure. With this option switched on then "
+"all rooms with the same wording, irrespective of capitalisation, will be "
+"shown side-by-side under the same single category. With the option "
+"switched off there will be a seperate category for each differently "
+"capitalised category."
+msgstr ""
+
+#: ../../charts.rst:275 273435bd295544a6a6c6df78a2dfe5a5
+msgid ""
+"Some plot data is slow to calculate when there is a large amount of data:"
+" some users may prefer to leave ``Plot charts?`` off for performance "
+"reasons. ``Plot charts?`` can be switched on and activated with a click "
+"of the ``Submit`` button after the data has been filtered."
+msgstr ""
+
+#: ../../charts.rst:286 e21ba081d6ba493a990cd88ea303a38b
+msgid "Figure 14: Switching charts off"
+msgstr ""
+
+#: ../../charts.rst:288 88dd52d3642d433d94675db562fb8c17
+msgid ""
+"The user can also switch off chart plotting by clicking on the ``Switch "
+"charts off`` link in the ``User options`` menu in the navigation bar at "
+"the top of any OpenREM page, as shown in figure 14."
+msgstr ""
+
+#: ../../charts.rst:292 e85233c651ac4372abed739594a72b87
+msgid ""
+"The user can choose whether the data displayed on the charts is the mean,"
+" median or both by using the drop-down ``Average to use`` selection. Only"
+" the bar charts can display both mean and median together. Other charts "
+"display just median data when this option is selected."
+msgstr ""
+
+#: ../../charts.rst:297 ef5fc4b2f06745c58d3dcb1e4ee86dba
+msgid ""
+"The charts can be sorted by either bar height, frequency or "
+"alphabetically by category. The default sorting direction can be set to "
+"ascending or descending using the drop-down list near the top of the "
+"``chart options``."
+msgstr ""
+
+#: ../../charts.rst:301 347c1fafc16c44888641827255c161ea
+msgid ""
+"A user's chart options can also be configured by an administrator via "
+"OpenREM's user administration page."
+msgstr ""
+
+#: ../../charts.rst:306 7f71bf87bc5148f1ac656f623858c972
+msgid "Chart types - CT"
+msgstr ""
+
+#: ../../charts.rst:308 ae7c86a531c94309ad55e6c13828a19d
+msgid ""
+"Bar chart of average DLP for each acquisition protocol (all systems "
+"combined)"
+msgstr ""
+
+#: ../../charts.rst:310 d395f60c2f8647e9b857876ccfc5ab33
+msgid ""
+"Bar chart of average DLP for each acquisition protocol (one series per "
+"system)"
+msgstr ""
+
+#: ../../charts.rst:312 ../../charts.rst:334 45a5a833cee246b3aa79c8a22a9e2f73
+#: fc4f4265f4d8442580ba05b3fbf85b81
+msgid "Pie chart of the frequency of each acquisition protocol"
+msgstr ""
+
+#: ../../charts.rst:314 da08cea19bee4d77b9550e90e4540157
+msgid "Pie chart showing the number of studies carried on each day of the week"
+msgstr ""
+
+#: ../../charts.rst:316 abe68621114e45a5bb01325ba0e44356
+msgid "Line chart showing the average DLP of each study name over time"
+msgstr ""
+
+#: ../../charts.rst:318 fb3f7e074bd04fe6a9cfba12d1b88431
+msgid "Bar chart of average CTDI\\ :sub:`vol` for each acquisition protocol"
+msgstr ""
+
+#: ../../charts.rst:320 e06ebe1cf60248dd96c9d20662f73007
+msgid "Bar chart of average DLP for each study name"
+msgstr ""
+
+#: ../../charts.rst:322 62d88d459914457686a32a2a2a024f66
+msgid "Pie chart of the frequency of each study name"
+msgstr ""
+
+#: ../../charts.rst:324 67ca5b94ac6f428d9dc479f66ff23a31
+msgid "Bar chart of average DLP for each requested procedure"
+msgstr ""
+
+#: ../../charts.rst:326 ../../charts.rst:344 ../../charts.rst:370
+#: 0eecf2a6634143bfa6708bb348b09e81 5c7572a889b046f097b4a0c6e9a0c111
+#: 8c10e760cceb49fc8ff6d7fac8426785
+msgid "Pie chart of the frequency of each requested procedure"
+msgstr ""
+
+#: ../../charts.rst:330 4640836ca8b94194886ad8b905106d98
+msgid "Chart types - radiography"
+msgstr ""
+
+#: ../../charts.rst:332 1fa83eba237e483580050a64135f3b76
+msgid "Bar chart of average DAP for each acquisition protocol"
+msgstr ""
+
+#: ../../charts.rst:336 ../../charts.rst:364 92d5e8b299934ab1983b9237c2098bbd
+#: 991ba5052e974d67a90a82b896f99d76
+msgid "Bar chart of average DAP for each study description"
+msgstr ""
+
+#: ../../charts.rst:338 ../../charts.rst:366 47142264509c4ba4a1e9ec3c82b73829
+#: d6bca4fa701f4b5ebc90a1eb5280b78e
+msgid "Pie chart of the frequency of each study description"
+msgstr ""
+
+#: ../../charts.rst:340 be8d5641d5bc4bf785e48d690c81b593
+msgid ""
+"Bar chart of average number of irradiation events for each study "
+"description"
+msgstr ""
+
+#: ../../charts.rst:342 ../../charts.rst:368 2d0c520668bb4c83a86f40795e596be1
+#: 66a92265aadc4b4d91682ee00762fd4d
+msgid "Bar chart of average DAP for each requested procedure"
+msgstr ""
+
+#: ../../charts.rst:346 ab0f0cd64dcf4d09b5430dfb4fc42d22
+msgid ""
+"Bar chart of average number of irradiation events for each requested "
+"procedure"
+msgstr ""
+
+#: ../../charts.rst:348 ee8b8fc72f4c489e994ed0a7856c26ca
+msgid "Bar chart of average kVp for each acquisition protocol"
+msgstr ""
+
+#: ../../charts.rst:350 a04b92020c174b11a774287403c1f33c
+msgid "Bar chart of average mAs for each acquisition protocol"
+msgstr ""
+
+#: ../../charts.rst:352 ../../charts.rst:372 ../../charts.rst:387
+#: b6081fe606e047628cdd29885e540922 d8124456513c43d5bac098a1ad9a00de
+#: e913c7ab352743098b8163581627de7d
+msgid "Pie chart showing the number of studies carried out per weekday"
+msgstr ""
+
+#: ../../charts.rst:354 2e4b499d9a8b4cd89ad86fe28e13b5fd
+msgid "Line chart of average DAP of each acquisition protocol over time"
+msgstr ""
+
+#: ../../charts.rst:356 de5f3f44ad054e84ba7febe1632fbc8a
+msgid "Line chart of average mAs of each acquisition protocol over time"
+msgstr ""
+
+#: ../../charts.rst:358 549709dc2da14d9d805e4b51ef243f5d
+msgid "Line chart of average kVp of each acquisition protocol over time"
+msgstr ""
+
+#: ../../charts.rst:362 07693678e50144da82566a6f5b324575
+msgid "Chart types - fluoroscopy"
+msgstr ""
+
+#: ../../charts.rst:376 4b0e50523d2c4acca8a07eabaf58931e
+msgid "Chart types - mammography"
+msgstr ""
+
+#: ../../charts.rst:378 c41d2946d4d344a09910cc2cafdf75f8
+msgid ""
+"Scatter plot of average glandular dose vs. compressed thickness for each "
+"acquisition"
+msgstr ""
+
+#: ../../charts.rst:381 9af91a0eaa08482eb6da8bb656d85fa2
+msgid "Scatter plot of kVp vs. compressed thickness for each acquisition"
+msgstr ""
+
+#: ../../charts.rst:384 2cb266d8cf5d465e8d8344d1c6e53299
+msgid "Scatter plot of mAs vs. compressed thickness for each acquisition"
+msgstr ""
+
+#: ../../charts.rst:391 2e13ec59b17f46279da3891c1a0a8349
+msgid "Performance notes"
+msgstr ""
+
+#: ../../charts.rst:395 5a4bdbc20bff492db96fd5e03322760a
+msgid "All chart types"
+msgstr ""
+
+#: ../../charts.rst:397 5048013af1cd4b9c90f98baafcf2a9a3
+msgid ""
+"For any study- or request-based charts, filtering using `Acquisition "
+"protocol` forces OpenREM to use a slightly slower method of querying the "
+"database for chart data."
+msgstr ""
+
+#: ../../charts.rst:403 6c8f59644fae488c9207a0253a54aa76
+msgid "Bar charts"
+msgstr ""
+
+#: ../../charts.rst:405 d7d6c3b2aa1b4737af42b80c43e44009
+msgid ""
+"Switching off histogram calculation in `Chart options` will speed up bar "
+"chart data calculation."
+msgstr ""
+
+#: ../../charts.rst:408 ../../charts.rst:415 71a08b5d816545b9aa47b49ca0aee839
+#: 76b559fcff1d42a2adf1885d5f9e4c68
+msgid ""
+"Switching off `Plot a series per system` in the `Chart options` will "
+"speed up data calculation."
+msgstr ""
+
+#: ../../charts.rst:413 1f68ddff8df6494290f1a6ee2551b48f
+msgid "Scatter plots"
+msgstr ""
+
