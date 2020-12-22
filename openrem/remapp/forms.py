@@ -559,6 +559,9 @@ class GeneralChartOptionsDisplayForm(forms.Form):
     plotCaseInsensitiveCategories = forms.BooleanField(
         label="Case-insensitive categories", required=False
     )
+    plotRemoveCategoryTrailingWhitespace = forms.BooleanField(
+        label="Remove trailing whitespace from categories", required=False
+    )
     plotGrouping = forms.ChoiceField(
         label="Chart grouping", choices=CommonVariables.CHART_GROUPING, required=False
     )

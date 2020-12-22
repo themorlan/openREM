@@ -81,6 +81,7 @@ def create_dataframe(
     database_events,
     field_dict,
     data_point_name_lowercase=None,
+    data_point_name_remove_trailing_whitespace=None,
     data_point_value_multipliers=None,
     uid=None,
 ):
@@ -93,6 +94,7 @@ def create_dataframe(
     :param field_dict: a dictionary of lists, each containing database field names to include in the DataFrame. The
                        dictionary should include "names", "values", "dates", "times" and optionally "system" items
     :param data_point_name_lowercase: boolean flag to determine whether to make all "names" field values lower case
+    :param data_point_name_remove_trailing_whitespace: boolean flag to determine whether to strip trailing whitespace
     :param data_point_value_multipliers: list of float valuse to multiply each "values" field value by
     :param uid: string containing database field name which contains a unique identifier for each record
     :return: a Pandas DataFrame with a column per required field
@@ -129,7 +131,8 @@ def create_dataframe(
             df[name_field] = df[name_field].str.lower()
 
         # Strip any trailing whitespace from the end of any names
-        df[name_field] = df[name_field].str.strip()
+        if data_point_name_remove_trailing_whitespace:
+            df[name_field] = df[name_field].str.strip()
 
     if field_dict["system"]:
         df.rename(columns={field_dict["system"][0]: "x_ray_system_name"}, inplace=True)

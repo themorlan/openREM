@@ -607,6 +607,8 @@ class UserProfile(models.Model, CommonVariables):
 
     plotCaseInsensitiveCategories = models.BooleanField(default=False)
 
+    plotRemoveCategoryTrailingWhitespace = models.BooleanField(default=False)
+
     summaryWorkloadDaysA = models.IntegerField(
         blank=True,
         null=True,
