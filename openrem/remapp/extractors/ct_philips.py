@@ -58,7 +58,10 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
-from .extract_common import ct_event_type_count, patient_module_attributes  # pylint: disable=wrong-import-order, wrong-import-position
+from .extract_common import (  # pylint: disable=wrong-import-order, wrong-import-position
+    ct_event_type_count,
+    patient_module_attributes,
+)
 from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-position
     CtAccumulatedDoseData,
     CtIrradiationEventData,
@@ -187,14 +190,15 @@ def _ctradiationdose(dataset, g):
             _ctirradiationeventdata(series, proj)
     events = proj.ctirradiationeventdata_set.all()
     if not events:
-        logger.warning(f"There were no events in ct_philips import, or they couldn't be read. "
-                       f"{get_value_kw('StationName', dataset)}"
-                       f"{get_value_kw('Manufacturer', dataset)}"
-                       f"{get_value_kw('ManufacturerModelName', dataset)}"
-                       f"{g.study_date.date()}"
-                       f"{g.study_time.time()}"
-                       f"{g.accession_number}"
-                       )
+        logger.warning(
+            f"There were no events in ct_philips import, or they couldn't be read. "
+            f"{get_value_kw('StationName', dataset)}"
+            f"{get_value_kw('Manufacturer', dataset)}"
+            f"{get_value_kw('ManufacturerModelName', dataset)}"
+            f"{g.study_date.date()}"
+            f"{g.study_time.time()}"
+            f"{g.accession_number}"
+        )
     else:
         # Come back and set start and end of irradiation after creating the x-ray events
         proj.start_of_xray_irradiation = events.aggregate(Min("date_time_started"))[

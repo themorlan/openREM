@@ -136,9 +136,7 @@ class ExportCTxlsx(TestCase):
 
         """
         filter_set = {
-            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning": [
-                "Spiral Acquisition"
-            ],
+            "num_spiral_events": "some",
             "o": "-study_date",
         }
         pid = True
@@ -159,9 +157,7 @@ class ExportCTxlsx(TestCase):
 
         """
         filter_set = {
-            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning": [
-                "Sequenced Acquisition"
-            ],
+            "num_axial_events": "some",
             "o": "-study_date",
         }
         pid = True
@@ -182,10 +178,8 @@ class ExportCTxlsx(TestCase):
 
         """
         filter_set = {
-            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning": [
-                "Spiral Acquisition",
-                "Sequenced Acquisition",
-            ],
+            "num_spiral_events": "some",
+            "num_axial_events": "some",
             "o": "-study_date",
         }
         pid = True
@@ -195,7 +189,7 @@ class ExportCTxlsx(TestCase):
         ctxlsx(filter_set, pid=pid, name=name, patid=patient_id, user=self.user)
 
         task = Exports.objects.all()[0]
-        self.assertEqual(4, task.num_records)
+        self.assertEqual(1, task.num_records)
 
         # cleanup
         task.filename.delete()  # delete file so local testing doesn't get too messy!
