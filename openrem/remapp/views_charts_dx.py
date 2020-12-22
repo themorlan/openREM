@@ -437,6 +437,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_name_remove_trailing_whitespace=user_profile.plotRemoveCategoryTrailingWhitespace,
+            data_point_name_remove_multiple_whitespace=user_profile.plotRemoveCategoryMultipleWhitespace,
             data_point_value_multipliers=value_multipliers,
             uid="projectionxrayradiationdose__irradeventxraydata__pk",
         )
@@ -976,6 +977,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_name_remove_trailing_whitespace=user_profile.plotRemoveCategoryTrailingWhitespace,
+            data_point_name_remove_multiple_whitespace=user_profile.plotRemoveCategoryMultipleWhitespace,
             data_point_value_multipliers=value_multipliers,
             uid="pk",
         )

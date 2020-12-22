@@ -82,6 +82,7 @@ def create_dataframe(
     field_dict,
     data_point_name_lowercase=None,
     data_point_name_remove_trailing_whitespace=None,
+    data_point_name_remove_multiple_whitespace=None,
     data_point_value_multipliers=None,
     uid=None,
 ):
@@ -95,6 +96,7 @@ def create_dataframe(
                        dictionary should include "names", "values", "dates", "times" and optionally "system" items
     :param data_point_name_lowercase: boolean flag to determine whether to make all "names" field values lower case
     :param data_point_name_remove_trailing_whitespace: boolean flag to determine whether to strip trailing whitespace
+    :param data_point_name_remove_multiple_whitespace: boolean flag to determine whether to strip multiple whitespace
     :param data_point_value_multipliers: list of float valuse to multiply each "values" field value by
     :param uid: string containing database field name which contains a unique identifier for each record
     :return: a Pandas DataFrame with a column per required field
@@ -126,6 +128,7 @@ def create_dataframe(
 
         # Replace any empty values with "Blank" (Plotly doesn't like empty values)
         df[name_field].fillna(value="Blank", inplace=True)
+
         # Make lowercase if required
         if data_point_name_lowercase:
             df[name_field] = df[name_field].str.lower()
@@ -133,6 +136,10 @@ def create_dataframe(
         # Strip any trailing whitespace from the end of any names
         if data_point_name_remove_trailing_whitespace:
             df[name_field] = df[name_field].str.strip()
+
+        # Replace multiple spaces with single space
+        if data_point_name_remove_multiple_whitespace:
+            df[name_field] = df[name_field].replace("\s+", " ", regex=True)
 
     if field_dict["system"]:
         df.rename(columns={field_dict["system"][0]: "x_ray_system_name"}, inplace=True)

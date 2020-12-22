@@ -609,6 +609,8 @@ class UserProfile(models.Model, CommonVariables):
 
     plotRemoveCategoryTrailingWhitespace = models.BooleanField(default=False)
 
+    plotRemoveCategoryMultipleWhitespace = models.BooleanField(default=False)
+
     summaryWorkloadDaysA = models.IntegerField(
         blank=True,
         null=True,

@@ -516,6 +516,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_name_remove_trailing_whitespace=user_profile.plotRemoveCategoryTrailingWhitespace,
+            data_point_name_remove_multiple_whitespace=user_profile.plotRemoveCategoryMultipleWhitespace,
             uid="ctradiationdose__ctirradiationeventdata__pk",
         )
         #######################################################################
@@ -948,6 +949,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_name_remove_trailing_whitespace=user_profile.plotRemoveCategoryTrailingWhitespace,
+            data_point_name_remove_multiple_whitespace=user_profile.plotRemoveCategoryMultipleWhitespace,
             uid="pk",
         )
         #######################################################################

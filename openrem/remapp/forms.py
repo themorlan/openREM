@@ -562,6 +562,9 @@ class GeneralChartOptionsDisplayForm(forms.Form):
     plotRemoveCategoryTrailingWhitespace = forms.BooleanField(
         label="Remove trailing whitespace from categories", required=False
     )
+    plotRemoveCategoryMultipleWhitespace = forms.BooleanField(
+        label="Remove multiple whitespace from categories", required=False
+    )
     plotGrouping = forms.ChoiceField(
         label="Chart grouping", choices=CommonVariables.CHART_GROUPING, required=False
     )
