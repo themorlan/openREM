@@ -67,7 +67,6 @@ from .interface.mod_filters import (
     MGFilterPlusPid,
 )
 from .tools.make_skin_map import make_skin_map
-from .version import __skin_map_version__
 from .views_charts_ct import (
     generate_required_ct_charts_list,
     ct_chart_form_processing,
@@ -95,7 +94,7 @@ from .models import (
     HomePageAdminSettings,
     UpgradeStatus,
 )
-from .version import __version__, __docs_version__
+from .version import __version__, __docs_version__, __skin_map_version__
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 
