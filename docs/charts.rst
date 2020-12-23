@@ -235,35 +235,36 @@ Split plots by physician   **On** or **off**                         Calculate a
 Additional chart options on the Config page
 *******************************************
 
-========================================== ========================= ==================================================
-Name                                       Configuration options     Notes
-========================================== ========================= ==================================================
-Number of histogram bins                   Value in the range 2 - 40 Default is 10
------------------------------------------- ------------------------- --------------------------------------------------
-Fixed histogram bins across subplots       **On** or **off**         **On** forces all histograms to use the same bins
------------------------------------------- ------------------------- --------------------------------------------------
-Case-insensitive categories                **On** or **off**         **On** all category names forced to lowercase |br|
-                                                                     For example, "Chest PA" becomes "chest pa"
------------------------------------------- ------------------------- --------------------------------------------------
-Remove trailing whitespace from categories **On** or **off**         **On** strips whitespace from the end of category names |br|
-                                                                     For example, "Chest PA " becomes "Chest PA"
------------------------------------------- ------------------------- --------------------------------------------------
-Remove multiple whitespace from categories **On** or **off**         **On** removes multiple whitespace from category names |br|
-                                                                     For example, "Chest   PA" becomes "Chest PA"
------------------------------------------- ------------------------- --------------------------------------------------
-Colour map choice                          One of the available |br| See the `available colourmaps`_ section
-                                           matplotlib colour maps
------------------------------------------- ------------------------- --------------------------------------------------
-Chart theme                                One of **Plotly**,        Set the Plotly theme to use for the charts. |br|
-                                           **Plotly white**, |br|    Some `example themed charts`_ are provided below. |br|
-                                           **Plotly dark**,          Examples of all themes on the Plotly themes_ |br|
-                                           **presentation**, |br|    page (external link).
-                                           **ggplot2**,
-                                           **Seaborn** or |br|
-                                           **simple white**
------------------------------------------- ------------------------- --------------------------------------------------
-Number of charts per row                   Value in the range 1 - 10 Sets the number of sub-plots in each row
-========================================== ========================= ==================================================
+================================ ========================= ===========================================================
+Name                             Configuration options     Notes
+================================ ========================= ===========================================================
+Number of histogram bins         Value in the range 2 - 40 Default is 10
+-------------------------------- ------------------------- -----------------------------------------------------------
+Fixed histogram bins across |br| **On** or **off**         **On** forces all histogram sub-plots |br|
+sub-plots                                                  to use the same bins
+-------------------------------- ------------------------- -----------------------------------------------------------
+Case-insensitive categories      **On** or **off**         **On** all category names forced to lowercase |br|
+                                                           For example, "Chest PA" becomes "chest pa"
+-------------------------------- ------------------------- -----------------------------------------------------------
+Remove trailing whitespace |br|  **On** or **off**         **On** strips trailing whitespace from category names |br|
+from categories                                            For example, "Chest PA " becomes "Chest PA"
+-------------------------------- ------------------------- -----------------------------------------------------------
+Remove multiple whitespace |br|  **On** or **off**         **On** removes multiple whitespace from category names |br|
+from categories                                            For example, "Chest   PA" becomes "Chest PA"
+-------------------------------- ------------------------- -----------------------------------------------------------
+Colour map choice                One of the available |br| See the `available colourmaps`_ section
+                                 matplotlib colour maps
+-------------------------------- ------------------------- -----------------------------------------------------------
+Chart theme                      One of **Plotly**,        Set the Plotly theme to use for the charts. |br|
+                                 **Plotly white**, |br|    Some `example themed charts`_ are provided below. |br|
+                                 **Plotly dark**,          Examples of all themes on the Plotly themes_ |br|
+                                 **presentation**, |br|    page (external link).
+                                 **ggplot2**,
+                                 **Seaborn** or |br|
+                                 **simple white**
+-------------------------------- ------------------------- -----------------------------------------------------------
+Number of charts per row         Value in the range 1 - 10 Sets the number of sub-plots in each row
+================================ ========================= ===========================================================
 
 
 .. _available colourmaps:
