@@ -272,7 +272,7 @@ def plotly_set_default_theme(theme_name):
     pio.templates.default = theme_name
 
 
-def calculate_colour_sequence(scale_name="jet", n_colours=10):
+def calculate_colour_sequence(scale_name="RdYlBu", n_colours=10):
     """
     Calculates a sequence of n_colours from the matplotlib colourmap scale_name
 

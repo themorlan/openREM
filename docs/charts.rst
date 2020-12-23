@@ -279,10 +279,6 @@ Red yellow blue     .. image:: img/RdYlBu.png
 ------------------- ---------------------------
 Spectral            .. image:: img/Spectral.png
 ------------------- ---------------------------
-Rainbow             .. image:: img/rainbow.png
-------------------- ---------------------------
-Jet                 .. image:: img/jet.png
-------------------- ---------------------------
 Pink yellow green   .. image:: img/PiYG.png
 ------------------- ---------------------------
 Purple green        .. image:: img/PRGn.png
