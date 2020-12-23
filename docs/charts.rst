@@ -159,11 +159,9 @@ period. This can be a day, week, month, quarter or year.
 The example below shows the median DAP for "Head" requests made in four CT scanners over the course of two and a half
 years.
 
-With *Grouping choice* set to **Series item names** in the `Chart options on the modality pages`_ sub-plot is created
-for each requested procedure name, each with a series per x-ray system as shown below.
-
-The *Number of charts per row* in the `Additional chart options on the Config page`_ was set to 2 for these example
-charts.
+With *Grouping choice* set to **Series item names** in the `Chart options on the modality pages`_ a sub-plot is created
+for each requested procedure name, each with a series per x-ray system as shown below. The *Number of charts per row* in
+the `Additional chart options on the Config page`_ was set to 2 for these example charts.
 
 Hovering the cursor over a section shows you the:
 
@@ -239,35 +237,35 @@ Calculate histogram data   **On** or **off**              **On** calculate histo
 Additional chart options on the Config page
 *******************************************
 
-==================================== ========================= ==================================================
-Name                                 Configuration options     Notes
-==================================== ========================= ==================================================
-Number of histogram bins             Value in the range 2 - 40 Default is 10
------------------------------------- ------------------------- --------------------------------------------------
-Fixed histogram bins across subplots **On** or **off**         **On** forces all histograms to use the same bins
------------------------------------- ------------------------- --------------------------------------------------
-| Case-insensitive categories        | **On** or **off**       | **On** all category names forced to lowercase
-                                                               | For example, "Chest PA" becomes "chest pa"
------------------------------------- ------------------------- --------------------------------------------------
-| Remove trailing whitespace from    | **On** or **off**       | **On** strips whitespace from the end of category names
-categories                                                     | For example, "Chest PA " becomes "Chest PA"
------------------------------------- ------------------------- --------------------------------------------------
-| Remove multiple whitespace from    | **On** or **off**       | **On** removes multiple whitespace from category names
-categories                                                     | For example, "Chest   PA" becomes "Chest PA"
------------------------------------- ------------------------- --------------------------------------------------
-Colour map choice                    One of the available      See the `Available colourmaps`_ section
-                                     matplotlib colour maps
------------------------------------- ------------------------- --------------------------------------------------
-| Chart theme                        | One of **Plotly**,      | Set the Plotly theme to use for the charts.
-                                       **Plotly white**,       | `Some available themes`_ are provided below. Examples of all themes
-                                     | **Plotly dark**,        | on the Plotly themes_ page (external link).
-                                       **presentation**,
-                                     | **ggplot2**,
-                                       **Seaborn** or
-                                     | **simple white**
------------------------------------- ------------------------- --------------------------------------------------
-Number of charts per row             Value in the range 1 - 10 Sets the number of sub-plots in each row
-==================================== ========================= ==================================================
+============================================ ========================= =================================================
+Name                                         Configuration options     Notes
+============================================ ========================= =================================================
+Number of histogram bins                     Value in the range 2 - 40 Default is 10
+-------------------------------------------- ------------------------- -------------------------------------------------
+Fixed histogram bins across subplots         **On** or **off**         **On** forces all histograms to use the same bins
+-------------------------------------------- ------------------------- -------------------------------------------------
+| Case-insensitive categories                | **On** or **off**       | **On** all category names forced to lowercase
+                                                                       | For example, "Chest PA" becomes "chest pa"
+-------------------------------------------- ------------------------- -------------------------------------------------
+| Remove trailing whitespace from categories | **On** or **off**       | **On** strips whitespace from the end of category names
+                                                                       | For example, "Chest PA " becomes "Chest PA"
+-------------------------------------------- ------------------------- -------------------------------------------------
+| Remove multiple whitespace from categories | **On** or **off**       | **On** removes multiple whitespace from category names
+                                                                       | For example, "Chest   PA" becomes "Chest PA"
+-------------------------------------------- ------------------------- -------------------------------------------------
+Colour map choice                            One of the available      See the `Available colourmaps`_ section
+                                             matplotlib colour maps
+-------------------------------------------- ------------------------- -------------------------------------------------
+| Chart theme                                | One of **Plotly**,      | Set the Plotly theme to use for the charts.
+                                               **Plotly white**,       | `Some available themes`_ are provided below.
+                                             | **Plotly dark**,        | Examples of all themes on the Plotly themes_
+                                               **presentation**,       | page (external link).
+                                             | **ggplot2**,
+                                               **Seaborn** or
+                                             | **simple white**
+-------------------------------------------- ------------------------- -------------------------------------------------
+Number of charts per row                     Value in the range 1 - 10 Sets the number of sub-plots in each row
+============================================ ========================= =================================================
 
 
 ====================
