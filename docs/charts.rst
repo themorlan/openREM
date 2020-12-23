@@ -203,7 +203,7 @@ Hovering the cursor over a section shows you the:
 Chart options on the modality pages
 ***********************************
 
-========================== ===============================   ===================================================
+========================== ================================= ===================================================
 Name                       Configuration options             Notes
 ========================== ================================= ===================================================
 Average plots              Any combination of **mean**, |br|
@@ -529,3 +529,5 @@ Study workload                       | Bar chart of number of studies carried ou
 .. _themes: https://plotly.com/python/templates/
 
 .. |br| raw:: html
+
+    <br>
