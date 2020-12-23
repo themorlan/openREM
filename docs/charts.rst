@@ -156,19 +156,25 @@ Line chart of average value over time
 These can be configured to show mean or median data. Each datapoint represents the average over a user-specified time
 period. This can be a day, week, month, quarter or year.
 
-The example below shows the median DAP for Chest PA acquisitions made in six x-ray rooms over the course of two and a
-half years.
+The example below shows the median DAP for "Head" requests made in four CT scanners over the course of two and a half
+years.
 
 Hovering the cursor over a section shows you the:
 
-* x-ray room name
-* acquisition protocol
+* scanner name
+* requested procedure name
 * date
-* average DAP value
-* number of acquisitions included in the sample
+* average DLP value
+* number of requests included in the sample
 
 .. raw:: html
    :file: charts/overtime.html
+
+Setting *Grouping choice* to **System names** in the `Chart options on the modality pages`_ groups the data by x-ray
+system name rather than requested procedure name, as shown below:
+
+.. raw:: html
+   :file: charts/overtime_group_by_system.html
 
 
 =========================================================================
