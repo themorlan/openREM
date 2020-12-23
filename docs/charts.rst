@@ -203,32 +203,32 @@ Hovering the cursor over a section shows you the:
 Chart options on the modality pages
 ***********************************
 
-========================== ============================== ===================================================
-Name                       Configuration options          Notes
-========================== ============================== ===================================================
-Average plots              | Any combination of **mean**,
-                           | **median** or **boxplot**
--------------------------- ------------------------------ ---------------------------------------------------
-Time period                | One of **day**, **week**,    Applies to over-time charts
+========================== ===============================   ===================================================
+Name                       Configuration options             Notes
+========================== ================================= ===================================================
+Average plots              Any combination of **mean**, |br|
+                           **median** or **boxplot**
+-------------------------- --------------------------------- ---------------------------------------------------
+Time period                | One of **day**, **week**,       Applies to over-time charts
                            | **month**, **quarter**,
                            | or **year**
--------------------------- ------------------------------ ---------------------------------------------------
-Grouping choice            | **System names**             | **System names** groups by x-ray system
-                           | **Series item names**        | **Series item names** groups by each category
--------------------------- ------------------------------ ---------------------------------------------------
-Plot a series per system   **On** or **off**              **On** splits the data by x-ray system
--------------------------- ------------------------------ ---------------------------------------------------
-Calculate histogram data   **On** or **off**              **On** calculate histograms for average bar charts
--------------------------- ------------------------------ ---------------------------------------------------
-Chart sorting              | One of **name**,             | Sort the chart data according to the
-                           | **frequency**, or **value**  | selected choice
--------------------------- ------------------------------ ---------------------------------------------------
-Sorting direction          | One of **ascending**         Sets the sort direction
+-------------------------- --------------------------------- ---------------------------------------------------
+Grouping choice            | **System names**                | **System names** groups by x-ray system
+                           | **Series item names**           | **Series item names** groups by each category
+-------------------------- --------------------------------- ---------------------------------------------------
+Plot a series per system   **On** or **off**                 **On** splits the data by x-ray system
+-------------------------- --------------------------------- ---------------------------------------------------
+Calculate histogram data   **On** or **off**                 **On** calculate histograms for average bar charts
+-------------------------- --------------------------------- ---------------------------------------------------
+Chart sorting              | One of **name**,                | Sort the chart data according to the
+                           | **frequency**, or **value**     | selected choice
+-------------------------- --------------------------------- ---------------------------------------------------
+Sorting direction          | One of **ascending**            Sets the sort direction
                            | or **descending**
--------------------------- ------------------------------ ---------------------------------------------------
-Split plots by physician   **On** or **off**              | Calculate a series per physician
-                                                          | (*some fluoroscopy charts only*)
-========================== ============================== ===================================================
+-------------------------- --------------------------------- ---------------------------------------------------
+Split plots by physician   **On** or **off**                 | Calculate a series per physician
+                                                             | (*some fluoroscopy charts only*)
+========================== ================================= ===================================================
 
 
 
@@ -527,3 +527,5 @@ Study workload                       | Bar chart of number of studies carried ou
 .. _Pandas: https://pandas.pydata.org/
 
 .. _themes: https://plotly.com/python/templates/
+
+.. |br| raw:: html
