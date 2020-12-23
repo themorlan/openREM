@@ -212,7 +212,7 @@ Average plots              Any combination of **mean**, |br|
 Time period                One of **day**, **week**, **month**, |br| Applies to over-time charts
                            **quarter** or **year**
 -------------------------- ----------------------------------------- --------------------------------------------------
-Grouping choice            **System names** |br|                     **System names** groups by x-ray system |br|
+Grouping choice            **System names** or |br|                  **System names** groups by x-ray system |br|
                            **Series item names**                     **Series item names** groups by each category
 -------------------------- ----------------------------------------- --------------------------------------------------
 Plot a series per system   **On** or **off**                         **On** splits the data by x-ray system
@@ -222,8 +222,8 @@ Calculate histogram data   **On** or **off**                         **On** calc
 Chart sorting              One of **name**, **frequency** |br|       Sort the chart data according to the |br|
                            or **value**                              selected choice
 -------------------------- ----------------------------------------- --------------------------------------------------
-Sorting direction          One of **ascending** |br|                 Sets the sort direction
-                           or **descending**
+Sorting direction          **Ascending** or |br|                     Sets the sort direction
+                           **descending**
 -------------------------- ----------------------------------------- --------------------------------------------------
 Split plots by physician   **On** or **off**                         Calculate a series per physician |br|
                                                                      (*some fluoroscopy charts only*)
@@ -251,11 +251,11 @@ Remove trailing whitespace from categories **On** or **off**         **On** stri
 Remove multiple whitespace from categories **On** or **off**         **On** removes multiple whitespace from category names |br|
                                                                      For example, "Chest   PA" becomes "Chest PA"
 ------------------------------------------ ------------------------- --------------------------------------------------
-Colour map choice                          One of the available |br| See the `Available colourmaps`_ section
+Colour map choice                          One of the available |br| See the `available colourmaps`_ section
                                            matplotlib colour maps
 ------------------------------------------ ------------------------- --------------------------------------------------
 Chart theme                                One of **Plotly**,        Set the Plotly theme to use for the charts. |br|
-                                           **Plotly white**, |br|    `Some available themes`_ are provided below. |br|
+                                           **Plotly white**, |br|    Some `example themed charts`_ are provided below. |br|
                                            **Plotly dark**,          Examples of all themes on the Plotly themes_ |br|
                                            **presentation**, |br|    page (external link).
                                            **ggplot2**,
@@ -265,6 +265,8 @@ Chart theme                                One of **Plotly**,        Set the Plo
 Number of charts per row                   Value in the range 1 - 10 Sets the number of sub-plots in each row
 ========================================== ========================= ==================================================
 
+
+.. _available colourmaps:
 
 ====================
 Available colourmaps
@@ -311,6 +313,7 @@ Cividis             .. image:: img/Spectral.png
 =================== ===========================
 
 
+.. _example themed charts:
 
 =====================
 Some available themes
