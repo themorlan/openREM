@@ -1321,6 +1321,12 @@ def chart_options_view(request):
             user_profile.plotCaseInsensitiveCategories = general_form.cleaned_data[
                 "plotCaseInsensitiveCategories"
             ]
+            user_profile.plotRemoveCategoryTrailingWhitespace = general_form.cleaned_data[
+                "plotRemoveCategoryTrailingWhitespace"
+            ]
+            user_profile.plotRemoveCategoryMultipleWhitespace = general_form.cleaned_data[
+                "plotRemoveCategoryMultipleWhitespace"
+            ]
 
             if "mean" in general_form.cleaned_data["plotAverageChoice"]:
                 user_profile.plotMean = True
@@ -1521,6 +1527,8 @@ def chart_options_view(request):
         "plotHistograms": user_profile.plotHistograms,
         "plotHistogramGlobalBins": user_profile.plotHistogramGlobalBins,
         "plotCaseInsensitiveCategories": user_profile.plotCaseInsensitiveCategories,
+        "plotRemoveCategoryTrailingWhitespace": user_profile.plotRemoveCategoryTrailingWhitespace,
+        "plotRemoveCategoryMultipleWhitespace": user_profile.plotRemoveCategoryMultipleWhitespace,
         "plotThemeChoice": user_profile.plotThemeChoice,
         "plotColourMapChoice": user_profile.plotColourMapChoice,
         "plotFacetColWrapVal": user_profile.plotFacetColWrapVal,

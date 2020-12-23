@@ -30,6 +30,7 @@
 
 """
 
+import os
 import math
 import base64
 from builtins import range  # pylint: disable=redefined-builtin
@@ -80,6 +81,8 @@ def create_dataframe(
     database_events,
     field_dict,
     data_point_name_lowercase=None,
+    data_point_name_remove_trailing_whitespace=None,
+    data_point_name_remove_multiple_whitespace=None,
     data_point_value_multipliers=None,
     uid=None,
 ):
@@ -92,6 +95,8 @@ def create_dataframe(
     :param field_dict: a dictionary of lists, each containing database field names to include in the DataFrame. The
                        dictionary should include "names", "values", "dates", "times" and optionally "system" items
     :param data_point_name_lowercase: boolean flag to determine whether to make all "names" field values lower case
+    :param data_point_name_remove_trailing_whitespace: boolean flag to determine whether to strip trailing whitespace
+    :param data_point_name_remove_multiple_whitespace: boolean flag to determine whether to strip multiple whitespace
     :param data_point_value_multipliers: list of float valuse to multiply each "values" field value by
     :param uid: string containing database field name which contains a unique identifier for each record
     :return: a Pandas DataFrame with a column per required field
@@ -123,9 +128,18 @@ def create_dataframe(
 
         # Replace any empty values with "Blank" (Plotly doesn't like empty values)
         df[name_field].fillna(value="Blank", inplace=True)
+
         # Make lowercase if required
         if data_point_name_lowercase:
             df[name_field] = df[name_field].str.lower()
+
+        # Strip any trailing whitespace from the end of any names
+        if data_point_name_remove_trailing_whitespace:
+            df[name_field] = df[name_field].str.strip()
+
+        # Replace multiple spaces with single space
+        if data_point_name_remove_multiple_whitespace:
+            df[name_field] = df[name_field].replace("\s+", " ", regex=True)
 
     if field_dict["system"]:
         df.rename(columns={field_dict["system"][0]: "x_ray_system_name"}, inplace=True)
@@ -258,7 +272,7 @@ def plotly_set_default_theme(theme_name):
     pio.templates.default = theme_name
 
 
-def calculate_colour_sequence(scale_name="jet", n_colours=10):
+def calculate_colour_sequence(scale_name="RdYlBu", n_colours=10):
     """
     Calculates a sequence of n_colours from the matplotlib colourmap scale_name
 
@@ -380,6 +394,32 @@ def calc_facet_rows_and_height(df, facet_col_name, facet_col_wrap):
     return chart_height, n_facet_rows
 
 
+def save_fig_as_html_div(fig, filename, active=settings.SAVE_CHARTS_AS_HTML):
+    """
+    Saves the Plotly figure as an HTML file containing a single DIV. The file is saved on the OpenREM server in
+    MEDIA_ROOT\charts\yyyy\mm\dd\. Viewing the saved file requires an active internet connection as the Plotly
+    JavaScript library is not included in the file.
+
+    This method is not currently accessible to an OpenREM user or administrator - it is present to assist developers
+    when producing example charts for the OpenREM documentation. It must be manually activated by setting active=True
+    in the method definition.
+
+    Args:
+        fig: a Plotly figure
+        filename: (string )the filename to use
+        active: (boolean) to set whether to save the figure
+    """
+    if active:
+        datestamp = datetime.now()
+        path = os.path.join(settings.MEDIA_ROOT, "charts", datestamp.strftime("%Y/%m/%d"))
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, "charts", datestamp.strftime("%Y/%m/%d")), exist_ok=True)
+        fig.write_html(
+            os.path.join(path, filename + ".html"),
+            include_plotlyjs="cdn",
+            full_html=False,
+        )
+
+
 def plotly_boxplot(
     df,
     params,
@@ -445,6 +485,8 @@ def plotly_boxplot(
         fig.update_yaxes(showticklabels=True, matches=None)
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+
+        save_fig_as_html_div(fig, params["filename"])
 
         if params["return_as_dict"]:
             return fig.to_dict()
@@ -601,6 +643,8 @@ def plotly_barchart(
 
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
+    save_fig_as_html_div(fig, params["filename"])
+
     if params["return_as_dict"]:
         return fig.to_dict(), None
     else:
@@ -743,6 +787,8 @@ def plotly_histogram_barchart(
 
         fig.update_layout(layout)
         fig.update_layout(legend_title_text=params["legend_title"])
+
+        save_fig_as_html_div(fig, params["filename"])
 
         if params["return_as_dict"]:
             return fig.to_dict()
@@ -927,6 +973,8 @@ def plotly_binned_statistic_barchart(
         fig.update_layout(layout)
         fig.update_layout(legend_title_text=params["facet_title"])
 
+        save_fig_as_html_div(fig, params["filename"])
+
         if params["return_as_dict"]:
             return fig.to_dict()
         else:
@@ -934,7 +982,7 @@ def plotly_binned_statistic_barchart(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(params["file_name"], height_multiplier=chart_height / 500.0),
+                config=global_config(params["filename"], height_multiplier=chart_height / 500.0),
             )
 
     except ValueError as e:
@@ -1016,6 +1064,8 @@ def plotly_timeseries_linechart(
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
+        save_fig_as_html_div(fig, params["filename"])
+
         if params["return_as_dict"]:
             return fig.to_dict()
         else:
@@ -1052,7 +1102,7 @@ def plotly_scatter(
     :param params["colourmap"]: (string) colourmap to use
     :param params["x_axis_title"]: (string) x-axis title
     :param params["y_axis_title"]: (string) y-axis title
-    :param params["file_name"]: (string) default filename to use for plot bitmap export
+    :param params["filename"]: (string) default filename to use for plot bitmap export
     :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
              or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
@@ -1104,6 +1154,8 @@ def plotly_scatter(
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
+        save_fig_as_html_div(fig, params["filename"])
+
         if params["return_as_dict"]:
             return fig.to_dict()
         else:
@@ -1111,7 +1163,7 @@ def plotly_scatter(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(params["file_name"], height_multiplier=chart_height / 500.0),
+                config=global_config(params["filename"], height_multiplier=chart_height / 500.0),
             )
 
     except ValueError as e:
@@ -1190,6 +1242,8 @@ def plotly_barchart_weekdays(
         )
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+
+        save_fig_as_html_div(fig, filename)
 
         if return_as_dict:
             return fig.to_dict()
@@ -1290,7 +1344,7 @@ def plotly_frequency_barchart(
 
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
-    csv_data_frequency(fig, params)
+    save_fig_as_html_div(fig, params["filename"])
 
     if params["return_as_dict"]:
         return fig.to_dict(), None
@@ -1304,7 +1358,7 @@ def plotly_frequency_barchart(
             fig,
             output_type="div",
             include_plotlyjs=False,
-            config=global_config(params["file_name"], height_multiplier=chart_height / 500.0),
+            config=global_config(params["filename"], height_multiplier=chart_height / 500.0),
         ), csv_data
 
 
@@ -1332,7 +1386,7 @@ def construct_over_time_charts(
                                   "M" (months), "W" (weeks), "D" (days)
     :param params["grouping_choice"]: (string) "series" or "system"
     :param params["colourmap"]: (string) colourmap to use
-    :param params["file_name"]: (string) default filename to use for plot bitmap export
+    :param params["filename"]: (string) default filename to use for plot bitmap export
     :param params["facet_col_wrap"]: (int) number of subplots per row
     :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
     :param group_by_physician: boolean flag to set whether to group by physician name
@@ -1387,7 +1441,7 @@ def construct_over_time_charts(
         "name_axis_title": params["date_title"],
         "legend_title": params["name_title"],
         "colourmap": params["colourmap"],
-        "filename": params["file_name"],
+        "filename": params["filename"],
         "facet_col_wrap": params["facet_col_wrap"],
         "sorted_category_list": sorted_categories,
         "return_as_dict": params["return_as_dict"],

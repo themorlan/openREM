@@ -515,6 +515,8 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             f.qs,
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
+            data_point_name_remove_trailing_whitespace=user_profile.plotRemoveCategoryTrailingWhitespace,
+            data_point_name_remove_multiple_whitespace=user_profile.plotRemoveCategoryMultipleWhitespace,
             uid="ctradiationdose__ctirradiationeventdata__pk",
         )
         #######################################################################
@@ -749,7 +751,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "x_axis_title": "System",
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
-                "file_name": "OpenREM CT acquisition protocol frequency",
+                "filename": "OpenREM CT acquisition protocol frequency",
                 "sorted_categories": sorted_categories,
                 "groupby_cols": None,
                 "facet_col": None,
@@ -777,7 +779,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "x_axis_title": "Patient mass (kg)",
                 "y_axis_title": "CTDI<sub>vol</sub> (mGy)",
-                "file_name": "OpenREM CT acquisition protocol CTDI vs patient mass",
+                "filename": "OpenREM CT acquisition protocol CTDI vs patient mass",
                 "return_as_dict": return_as_dict,
             }
             return_structure["acquisitionScatterCTDIvsMass"] = plotly_scatter(
@@ -800,7 +802,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "x_axis_title": "Patient mass (kg)",
                 "y_axis_title": "DLP (mGy.cm)",
-                "file_name": "OpenREM CT acquisition protocol DLP vs patient mass",
+                "filename": "OpenREM CT acquisition protocol DLP vs patient mass",
                 "return_as_dict": return_as_dict,
             }
             return_structure["acquisitionScatterDLPvsMass"] = plotly_scatter(
@@ -831,7 +833,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                "file_name": "OpenREM CT acquisition protocol CTDI over time",
+                "filename": "OpenREM CT acquisition protocol CTDI over time",
                 "return_as_dict": return_as_dict,
             }
             result = construct_over_time_charts(
@@ -867,7 +869,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                "file_name": "OpenREM CT acquisition protocol DLP over time",
+                "filename": "OpenREM CT acquisition protocol DLP over time",
                 "return_as_dict": return_as_dict,
             }
             result = construct_over_time_charts(
@@ -946,6 +948,8 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             f.qs,
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
+            data_point_name_remove_trailing_whitespace=user_profile.plotRemoveCategoryTrailingWhitespace,
+            data_point_name_remove_multiple_whitespace=user_profile.plotRemoveCategoryMultipleWhitespace,
             uid="pk",
         )
         #######################################################################
@@ -1275,7 +1279,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "x_axis_title": "System",
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
-                "file_name": "OpenREM CT study description frequency",
+                "filename": "OpenREM CT study description frequency",
                 "sorted_categories": sorted_categories,
                 "groupby_cols": None,
                 "facet_col": None,
@@ -1508,7 +1512,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "x_axis_title": "System",
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
-                "file_name": "OpenREM CT requested procedure frequency",
+                "filename": "OpenREM CT requested procedure frequency",
                 "sorted_categories": sorted_categories,
                 "groupby_cols": None,
                 "facet_col": None,
@@ -1544,7 +1548,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                "file_name": "OpenREM CT study description DLP over time",
+                "filename": "OpenREM CT study description DLP over time",
                 "return_as_dict": return_as_dict,
             }
             result = construct_over_time_charts(
@@ -1580,7 +1584,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                "file_name": "OpenREM CT requested procedure DLP over time",
+                "filename": "OpenREM CT requested procedure DLP over time",
                 "return_as_dict": return_as_dict,
             }
             result = construct_over_time_charts(

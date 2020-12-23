@@ -418,8 +418,6 @@ class CommonVariables:
         (DEFAULT_COLOUR_MAP, "Red-yellow-blue (default)"),
         ("Spectral", "Spectral"),
         ("RdYlGn", "Red-yellow-green"),
-        ("rainbow", "Rainbow"),
-        ("jet", "Jet"),
         ("PiYG", "Pink-green"),
         ("PRGn", "Purple-green"),
         ("BrBG", "Brown-blue-green"),
@@ -606,6 +604,10 @@ class UserProfile(models.Model, CommonVariables):
     plotHistogramGlobalBins = models.BooleanField(default=False)
 
     plotCaseInsensitiveCategories = models.BooleanField(default=False)
+
+    plotRemoveCategoryTrailingWhitespace = models.BooleanField(default=False)
+
+    plotRemoveCategoryMultipleWhitespace = models.BooleanField(default=False)
 
     summaryWorkloadDaysA = models.IntegerField(
         blank=True,

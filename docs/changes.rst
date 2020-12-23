@@ -5,12 +5,14 @@ OpenREM version history
 
 1.0.0b1 (2020-xx-xx)
 --------------------
+* :issue:`881`  Charts: add option to remove multiple and trailing whitespace in category names
 * :issue:`879`  Charts: fixed sorting of fluoroscopy charts when split by physician
 * :issue:`872`  Charts: added ability to split fluoroscopy over-time and histogram charts by physician
 * :issue:`871`  Charts: corrected RF chart x-axis labels
 * :issue:`870`  Charts: reduced memory footprint of Pandas DataFrame creation
 * :issue:`869`  Charts: added doc strings to new chart code
 * :issue:`868`  Docker: fixed Python version at 3.8
+* :issue:`867`  Documentation: updated chart documentation
 * :issue:`866`  Simplified code for different character sets, enabled MultiValue SpecificCharacterSet
 * :issue:`865`  Imports: enabled workaround to import Spectrum Dynamics RDSR
 * :issue:`864`  Tasks: updated Celery settings for Celery 6.

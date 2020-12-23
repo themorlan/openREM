@@ -271,6 +271,8 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             f.qs,
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
+            data_point_name_remove_trailing_whitespace=user_profile.plotRemoveCategoryTrailingWhitespace,
+            data_point_name_remove_multiple_whitespace=user_profile.plotRemoveCategoryMultipleWhitespace,
             uid="projectionxrayradiationdose__irradeventxraydata__pk",
         )
 
@@ -310,7 +312,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     "facet_title": legend_title,
                     "user_bins": [20, 30, 40, 50, 60, 70, 80, 90],
                     "colourmap": user_profile.plotColourMapChoice,
-                    "file_name": "OpenREM CT acquisition protocol AGD vs thickness",
+                    "filename": "OpenREM CT acquisition protocol average AGD vs thickness",
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "df_facet_category_list": facet_names,
                     "df_category_name_list": category_names,
@@ -439,7 +441,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "x_axis_title": "Compressed breast thickness (mm)",
                 "y_axis_title": "AGD (mGy)",
-                "file_name": "OpenREM CT acquisition protocol AGD vs thickness",
+                "filename": "OpenREM CT acquisition protocol AGD vs thickness",
                 "return_as_dict": return_as_dict,
             }
             return_structure["AGDvsThickness"] = plotly_scatter(  # pylint: disable=line-too-long
@@ -462,7 +464,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "x_axis_title": "Compressed breast thickness (mm)",
                 "y_axis_title": "kVp",
-                "file_name": "OpenREM CT acquisition protocol kVp vs thickness",
+                "filename": "OpenREM CT acquisition protocol kVp vs thickness",
                 "return_as_dict": return_as_dict,
             }
             return_structure["kVpvsThickness"] = plotly_scatter(  # pylint: disable=line-too-long
@@ -485,7 +487,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "x_axis_title": "Compressed breast thickness (mm)",
                 "y_axis_title": "mAs",
-                "file_name": "OpenREM CT acquisition protocol mAs vs thickness",
+                "filename": "OpenREM CT acquisition protocol mAs vs thickness",
                 "return_as_dict": return_as_dict,
             }
             return_structure["mAsvsThickness"] = plotly_scatter(  # pylint: disable=line-too-long
@@ -509,7 +511,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "x_axis_title": "System",
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
-                "file_name": "OpenREM MG acquisition protocol frequency",
+                "filename": "OpenREM MG acquisition protocol frequency",
                 "sorted_categories": sorted_categories,
                 "groupby_cols": None,
                 "facet_col": None,
@@ -545,7 +547,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                "file_name": "OpenREM MG acquisition protocol AGD over time",
+                "filename": "OpenREM MG acquisition protocol AGD over time",
                 "return_as_dict": return_as_dict,
             }
             result = construct_over_time_charts(
@@ -589,6 +591,8 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             f.qs,
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
+            data_point_name_remove_trailing_whitespace=user_profile.plotRemoveCategoryTrailingWhitespace,
+            data_point_name_remove_multiple_whitespace=user_profile.plotRemoveCategoryMultipleWhitespace,
             uid="pk",
         )
 
