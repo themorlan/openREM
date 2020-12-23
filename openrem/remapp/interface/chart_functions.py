@@ -131,7 +131,7 @@ def create_dataframe(
     if settings.DEBUG:
         print(f"Initial Dataframe created from records in {datetime.now() - start}")
         start = datetime.now()
-        print(f"Initial DataFrame info, including memory use, is:")
+        print("Initial DataFrame info, including memory use, is:")
         df.info()
 
     # Replace any NaN values in the names columns with "Blank"
@@ -177,7 +177,7 @@ def create_dataframe(
         print(
             f"Dataframe fillna, lower case, whitespace stripping etc took {datetime.now() - start}"
         )
-        print(f"DataFrame info after processing, including memory use, is:")
+        print("DataFrame info after processing, including memory use, is:")
         df.info()
 
     return df
