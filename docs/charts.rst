@@ -103,8 +103,8 @@ Hovering the cursor over a bar section shows the:
 .. raw:: html
    :file: charts/frequency.html
 
-Setting *Grouping choice* to **System names** groups the data by x-ray system name rather than requested procedure
-name, as shown below:
+Setting *Grouping choice* to **System names** in the `Chart options on the modality pages`_ groups the data by x-ray
+system name rather than requested procedure name, as shown below:
 
 .. raw:: html
    :file: charts/frequency_group_by_system.html
