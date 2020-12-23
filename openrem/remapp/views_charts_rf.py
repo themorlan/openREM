@@ -228,15 +228,18 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
     # Prepare Pandas DataFrame to use for charts
     name_fields = []
     charts_of_interest = [
-        user_profile.plotRFStudyFreq, user_profile.plotRFStudyDAP,
-        user_profile.plotRFStudyPerDayAndHour, user_profile.plotRFStudyDAPOverTime,
+        user_profile.plotRFStudyFreq,
+        user_profile.plotRFStudyDAP,
+        user_profile.plotRFStudyPerDayAndHour,
+        user_profile.plotRFStudyDAPOverTime,
     ]
     if any(charts_of_interest):
         name_fields.append("study_description")
     if user_profile.plotRFSplitByPhysician:
         name_fields.append("performing_physician_name")
     charts_of_interest = [
-        user_profile.plotRFRequestFreq, user_profile.plotRFRequestDAP,
+        user_profile.plotRFRequestFreq,
+        user_profile.plotRFRequestDAP,
         user_profile.plotRFRequestDAPOverTime,
     ]
     if any(charts_of_interest):
@@ -245,8 +248,10 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
     value_fields = []
     value_multipliers = []
     charts_of_interest = [
-        user_profile.plotRFStudyDAP, user_profile.plotRFRequestDAP,
-        user_profile.plotRFStudyDAPOverTime, user_profile.plotRFRequestDAPOverTime,
+        user_profile.plotRFStudyDAP,
+        user_profile.plotRFRequestDAP,
+        user_profile.plotRFStudyDAPOverTime,
+        user_profile.plotRFRequestDAPOverTime,
     ]
     if any(charts_of_interest):
         value_fields.append("total_dap")
@@ -254,7 +259,8 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
     date_fields = []
     charts_of_interest = [
-        user_profile.plotRFStudyPerDayAndHour, user_profile.plotRFStudyDAPOverTime,
+        user_profile.plotRFStudyPerDayAndHour,
+        user_profile.plotRFStudyDAPOverTime,
         user_profile.plotRFRequestDAPOverTime,
     ]
     if any(charts_of_interest):
@@ -356,7 +362,10 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] = "OpenREM RF study description DAP mean"
                 parameter_dict["average_choice"] = "mean"
-                return_structure["studyMeanData"], return_structure["studyMeanDataCSV"] = plotly_barchart(
+                (
+                    return_structure["studyMeanData"],
+                    return_structure["studyMeanDataCSV"],
+                ) = plotly_barchart(
                     df_aggregated,
                     parameter_dict,
                     "studyMeanDAPData.csv",
@@ -366,7 +375,10 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] = "OpenREM RF study description DAP median"
                 parameter_dict["average_choice"] = "median"
-                return_structure["studyMedianData"], return_structure["studyMedianDataCSV"] = plotly_barchart(
+                (
+                    return_structure["studyMedianData"],
+                    return_structure["studyMedianDataCSV"],
+                ) = plotly_barchart(
                     df_aggregated,
                     parameter_dict,
                     "studyMedianDAPData.csv",
@@ -472,7 +484,10 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
             "return_as_dict": return_as_dict,
         }
-        return_structure["studyFrequencyData"], return_structure["studyFrequencyDataCSV"] = plotly_frequency_barchart(
+        (
+            return_structure["studyFrequencyData"],
+            return_structure["studyFrequencyDataCSV"],
+        ) = plotly_frequency_barchart(
             df,
             parameter_dict,
             csv_name="studyFrequencyData.csv",
@@ -521,9 +536,12 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             }
             if user_profile.plotMean:
                 parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
-                parameter_dict["filename"] ="OpenREM RF requested procedure DAP mean"
+                parameter_dict["filename"] = "OpenREM RF requested procedure DAP mean"
                 parameter_dict["average_choice"] = "mean"
-                return_structure["requestMeanData"], return_structure["requestMeanDataCSV"] = plotly_barchart(
+                (
+                    return_structure["requestMeanData"],
+                    return_structure["requestMeanDataCSV"],
+                ) = plotly_barchart(
                     df_aggregated,
                     parameter_dict,
                     "requestMeanDAPData.csv",
@@ -531,9 +549,12 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotMedian:
                 parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
-                parameter_dict["filename"] ="OpenREM RF requested procedure DAP median"
+                parameter_dict["filename"] = "OpenREM RF requested procedure DAP median"
                 parameter_dict["average_choice"] = "median"
-                return_structure["requestMedianData"], return_structure["requestMedianDataCSV"] = plotly_barchart(
+                (
+                    return_structure["requestMedianData"],
+                    return_structure["requestMedianDataCSV"],
+                ) = plotly_barchart(
                     df_aggregated,
                     parameter_dict,
                     "requestMedianDAPData.csv",
@@ -639,7 +660,10 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
             "return_as_dict": return_as_dict,
         }
-        return_structure["requestFrequencyData"], return_structure["requestFrequencyDataCSV"] = plotly_frequency_barchart(  # pylint: disable=line-too-long
+        (
+            return_structure["requestFrequencyData"],
+            return_structure["requestFrequencyDataCSV"],
+        ) = plotly_frequency_barchart(  # pylint: disable=line-too-long
             df,
             parameter_dict,
             csv_name="requestFrequencyData.csv",

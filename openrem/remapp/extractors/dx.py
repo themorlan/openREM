@@ -842,7 +842,8 @@ def _dx2db(dataset):
                     this_study = get_study_check_dup(dataset, modality="DX")
                     if this_study:
                         _irradiationeventxraydata(
-                            dataset, this_study.projectionxrayradiationdose_set.get(),
+                            dataset,
+                            this_study.projectionxrayradiationdose_set.get(),
                         )
 
 

@@ -49,10 +49,10 @@ from scipy import stats
 
 
 def global_config(
-        filename,
-        height_multiplier=1.0,
-        height=1080,
-        width=1920,
+    filename,
+    height_multiplier=1.0,
+    height=1080,
+    width=1920,
 ):
     """
     Creates a Plotly global configuration dictionary. The parameters all relate
@@ -121,7 +121,9 @@ def create_dataframe(
 
     # NOTE: I am not excluding zero-value events from the calculations (zero DLP or zero CTDI)
     df = pd.DataFrame.from_records(
-        data=database_events.values_list(*fields_to_include),  # values_list uses less memory than values
+        data=database_events.values_list(
+            *fields_to_include
+        ),  # values_list uses less memory than values
         columns=fields_to_include,  # need to specify the column names as we're now using values_list
         coerce_float=True,  # force Decimal to float - saves doing a type conversion later
     )
@@ -145,7 +147,9 @@ def create_dataframe(
 
     # Replace multiple spaces with single space from any names column values
     if data_point_name_remove_multiple_whitespace:
-        df[field_dict["names"]] = df[field_dict["names"]].apply(lambda x: x.replace("\s+", " ", regex=True))
+        df[field_dict["names"]] = df[field_dict["names"]].apply(
+            lambda x: x.replace("\s+", " ", regex=True)
+        )
 
     # Make the names columns all "category" type - this saves memory. Must be done after the above, as the string
     # replacement lines revert the columns back to "object"
@@ -170,7 +174,9 @@ def create_dataframe(
         df[date_field] = pd.to_datetime(df[date_field], format="%Y-%m-%d")
 
     if settings.DEBUG:
-        print(f"Dataframe fillna, lower case, whitespace stripping etc took {datetime.now() - start}")
+        print(
+            f"Dataframe fillna, lower case, whitespace stripping etc took {datetime.now() - start}"
+        )
         print(f"DataFrame info after processing, including memory use, is:")
         df.info()
 
@@ -353,23 +359,42 @@ def csv_data_barchart(fig, params):
     fig_data_dict = fig.to_dict()["data"]
 
     if params["df_name_col"] != "performing_physician_name":
-        df = pd.DataFrame(data=fig_data_dict[0]["x"], columns=[params["name_axis_title"]])
+        df = pd.DataFrame(
+            data=fig_data_dict[0]["x"], columns=[params["name_axis_title"]]
+        )
         for data_set in fig_data_dict:
             new_col_df = pd.DataFrame(
                 data=data_set["customdata"][:, 1:],
-                columns=[data_set["name"] + " " + params["value_axis_title"], "Frequency"]
+                columns=[
+                    data_set["name"] + " " + params["value_axis_title"],
+                    "Frequency",
+                ],
             )
             df = pd.concat([df, new_col_df], axis=1)
 
         return df
 
     else:
-        df = pd.DataFrame(data=fig_data_dict[0]["x"], columns=[params["name_axis_title"]])
+        df = pd.DataFrame(
+            data=fig_data_dict[0]["x"], columns=[params["name_axis_title"]]
+        )
         for data_set in fig_data_dict:
-            series_name = data_set["hovertemplate"].split(params["facet_col"] + "=")[1].split("<br>")[0]
-            new_col_df = pd.DataFrame(data=data_set["customdata"][:, 1:],  # pylint: disable=line-too-long
-                                      columns=[data_set["name"] + " " + series_name + " " + params["value_axis_title"], "Frequency"]  # pylint: disable=line-too-long
-                                      )
+            series_name = (
+                data_set["hovertemplate"]
+                .split(params["facet_col"] + "=")[1]
+                .split("<br>")[0]
+            )
+            new_col_df = pd.DataFrame(
+                data=data_set["customdata"][:, 1:],  # pylint: disable=line-too-long
+                columns=[
+                    data_set["name"]
+                    + " "
+                    + series_name
+                    + " "
+                    + params["value_axis_title"],
+                    "Frequency",
+                ],  # pylint: disable=line-too-long
+            )
             df = pd.concat([df, new_col_df], axis=1)
         return df
 
@@ -386,7 +411,9 @@ def csv_data_frequency(fig, params):
 
     df = pd.DataFrame(data=fig_data_dict[0]["x"], columns=[params["x_axis_title"]])
     for data_set in fig_data_dict:
-        df = pd.concat([df, pd.DataFrame(data=data_set["y"], columns=[data_set["name"]])], axis=1)
+        df = pd.concat(
+            [df, pd.DataFrame(data=data_set["y"], columns=[data_set["name"]])], axis=1
+        )
 
     return df
 
@@ -425,8 +452,13 @@ def save_fig_as_html_div(fig, filename, active=settings.SAVE_CHARTS_AS_HTML):
     """
     if active:
         datestamp = datetime.now()
-        path = os.path.join(settings.MEDIA_ROOT, "charts", datestamp.strftime("%Y/%m/%d"))
-        os.makedirs(os.path.join(settings.MEDIA_ROOT, "charts", datestamp.strftime("%Y/%m/%d")), exist_ok=True)
+        path = os.path.join(
+            settings.MEDIA_ROOT, "charts", datestamp.strftime("%Y/%m/%d")
+        )
+        os.makedirs(
+            os.path.join(settings.MEDIA_ROOT, "charts", datestamp.strftime("%Y/%m/%d")),
+            exist_ok=True,
+        )
         fig.write_html(
             os.path.join(path, filename + ".html"),
             include_plotlyjs="cdn",
@@ -465,7 +497,9 @@ def plotly_boxplot(
             return empty_dataframe_msg()
 
         if params["facet_col"]:
-            chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["facet_col"], params["facet_col_wrap"])
+            chart_height, n_facet_rows = calc_facet_rows_and_height(
+                df, params["facet_col"], params["facet_col_wrap"]
+            )
 
         n_colours = len(df.x_ray_system_name.unique())
         colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
@@ -491,10 +525,7 @@ def plotly_boxplot(
         fig.update_traces(quartilemethod="exclusive")
 
         fig.update_xaxes(
-            tickson="boundaries",
-            ticks="outside",
-            ticklen=5,
-            showticklabels=True
+            tickson="boundaries", ticks="outside", ticklen=5, showticklabels=True
         )
         fig.update_yaxes(showticklabels=True, matches=None)
 
@@ -509,13 +540,15 @@ def plotly_boxplot(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(params["filename"], height_multiplier=chart_height / 500.0),
+                config=global_config(
+                    params["filename"], height_multiplier=chart_height / 500.0
+                ),
             )
 
     except ValueError as e:
         return failed_chart_message_div(
             "Could not resolve chart. Try filtering the data to reduce the number of systems.",
-            e
+            e,
         )
 
 
@@ -616,7 +649,9 @@ def plotly_barchart(
     n_facet_rows = 1
 
     if params["facet_col"]:
-        chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["facet_col"], params["facet_col_wrap"])
+        chart_height, n_facet_rows = calc_facet_rows_and_height(
+            df, params["facet_col"], params["facet_col_wrap"]
+        )
 
     n_colours = len(df.x_ray_system_name.unique())
     colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
@@ -648,10 +683,7 @@ def plotly_barchart(
     )
 
     fig.update_xaxes(
-        tickson="boundaries",
-        ticks="outside",
-        ticklen=5,
-        showticklabels=True
+        tickson="boundaries", ticks="outside", ticklen=5, showticklabels=True
     )
     fig.update_yaxes(showticklabels=True, matches=None)
 
@@ -667,12 +699,17 @@ def plotly_barchart(
             csv_name,
         )
 
-        return plot(
-            fig,
-            output_type="div",
-            include_plotlyjs=False,
-            config=global_config(params["filename"], height_multiplier=chart_height / 500.0),
-        ), csv_data
+        return (
+            plot(
+                fig,
+                output_type="div",
+                include_plotlyjs=False,
+                config=global_config(
+                    params["filename"], height_multiplier=chart_height / 500.0
+                ),
+            ),
+            csv_data,
+        )
 
 
 def plotly_histogram_barchart(
@@ -703,7 +740,9 @@ def plotly_histogram_barchart(
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
-    chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["df_facet_col"], params["facet_col_wrap"])
+    chart_height, n_facet_rows = calc_facet_rows_and_height(
+        df, params["df_facet_col"], params["facet_col_wrap"]
+    )
 
     n_colours = len(df[params["df_category_col"]].unique())
     colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
@@ -712,11 +751,15 @@ def plotly_histogram_barchart(
     mid_bins = None
     bin_labels = None
     if params["global_max_min"]:
-        bin_labels, bins, mid_bins = calc_histogram_bin_data(df, params["df_value_col"], n_bins=params["n_bins"])
+        bin_labels, bins, mid_bins = calc_histogram_bin_data(
+            df, params["df_value_col"], n_bins=params["n_bins"]
+        )
 
     try:
         fig = make_subplots(
-            rows=n_facet_rows, cols=params["facet_col_wrap"], vertical_spacing=0.40 / n_facet_rows
+            rows=n_facet_rows,
+            cols=params["facet_col_wrap"],
+            vertical_spacing=0.40 / n_facet_rows,
         )
 
         current_row = 1
@@ -811,13 +854,15 @@ def plotly_histogram_barchart(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(params["filename"], height_multiplier=chart_height / 500.0),
+                config=global_config(
+                    params["filename"], height_multiplier=chart_height / 500.0
+                ),
             )
 
     except ValueError as e:
         return failed_chart_message_div(
             "Could not resolve chart. Try filtering the data to reduce the number of categories or systems.",
-            e
+            e,
         )
 
 
@@ -870,14 +915,18 @@ def plotly_binned_statistic_barchart(
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
-    chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["df_facet_col"], params["facet_col_wrap"])
+    chart_height, n_facet_rows = calc_facet_rows_and_height(
+        df, params["df_facet_col"], params["facet_col_wrap"]
+    )
 
     n_colours = len(df[params["df_category_col"]].unique())
     colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
 
     try:
         fig = make_subplots(
-            rows=n_facet_rows, cols=params["facet_col_wrap"], vertical_spacing=0.40 / n_facet_rows
+            rows=n_facet_rows,
+            cols=params["facet_col_wrap"],
+            vertical_spacing=0.40 / n_facet_rows,
         )
 
         current_row = 1
@@ -971,7 +1020,9 @@ def plotly_binned_statistic_barchart(
 
             if current_col == 1:
                 fig.update_yaxes(
-                    title_text=params["stat_name"].capitalize() + " " + params["y_axis_title"],
+                    title_text=params["stat_name"].capitalize()
+                    + " "
+                    + params["y_axis_title"],
                     row=current_row,
                     col=current_col,
                 )
@@ -996,13 +1047,15 @@ def plotly_binned_statistic_barchart(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(params["filename"], height_multiplier=chart_height / 500.0),
+                config=global_config(
+                    params["filename"], height_multiplier=chart_height / 500.0
+                ),
             )
 
     except ValueError as e:
         return failed_chart_message_div(
             "Could not resolve chart. Try filtering the data to reduce the number of categories or systems.",
-            e
+            e,
         )
 
 
@@ -1032,7 +1085,9 @@ def plotly_timeseries_linechart(
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
              or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
-    chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["facet_col"], params["facet_col_wrap"])
+    chart_height, n_facet_rows = calc_facet_rows_and_height(
+        df, params["facet_col"], params["facet_col_wrap"]
+    )
 
     n_colours = len(df[params["df_name_col"]].unique())
     colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
@@ -1087,13 +1142,15 @@ def plotly_timeseries_linechart(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(params["filename"], height_multiplier=chart_height / 500.0),
+                config=global_config(
+                    params["filename"], height_multiplier=chart_height / 500.0
+                ),
             )
 
     except ValueError as e:
         return failed_chart_message_div(
             "Could not resolve chart. Try filtering the data to reduce the number of categories or systems.",
-            e
+            e,
         )
 
 
@@ -1121,7 +1178,9 @@ def plotly_scatter(
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
              or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
-    sorted_category_list = create_sorted_category_list(df, params["df_name_col"], params["df_y_col"], params["sorting"])
+    sorted_category_list = create_sorted_category_list(
+        df, params["df_name_col"], params["df_y_col"], params["sorting"]
+    )
 
     params["df_category_name_col"] = params["df_name_col"]
     params["df_group_col"] = "x_ray_system_name"
@@ -1136,7 +1195,9 @@ def plotly_scatter(
         if df.empty:
             return empty_dataframe_msg()
 
-        chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["df_group_col"], params["facet_col_wrap"])
+        chart_height, n_facet_rows = calc_facet_rows_and_height(
+            df, params["df_group_col"], params["facet_col_wrap"]
+        )
 
         n_colours = len(df[params["df_category_name_col"]].unique())
         colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
@@ -1177,13 +1238,15 @@ def plotly_scatter(
                 fig,
                 output_type="div",
                 include_plotlyjs=False,
-                config=global_config(params["filename"], height_multiplier=chart_height / 500.0),
+                config=global_config(
+                    params["filename"], height_multiplier=chart_height / 500.0
+                ),
             )
 
     except ValueError as e:
         return failed_chart_message_div(
             "Could not resolve chart. Try filtering the data to reduce the number of categories or systems.",
-            e
+            e,
         )
 
 
@@ -1213,7 +1276,9 @@ def plotly_barchart_weekdays(
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
              or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
-    chart_height, n_facet_rows = calc_facet_rows_and_height(df, "x_ray_system_name", facet_col_wrap)
+    chart_height, n_facet_rows = calc_facet_rows_and_height(
+        df, "x_ray_system_name", facet_col_wrap
+    )
 
     try:
         fig = px.bar(
@@ -1272,7 +1337,7 @@ def plotly_barchart_weekdays(
     except ValueError as e:
         return failed_chart_message_div(
             "Could not resolve chart. Try filtering the data to reduce the number of systems.",
-            e
+            e,
         )
 
 
@@ -1325,7 +1390,9 @@ def plotly_frequency_barchart(
     n_facet_rows = 1
 
     if params["facet_col"]:
-        chart_height, n_facet_rows = calc_facet_rows_and_height(df, params["facet_col"], params["facet_col_wrap"])
+        chart_height, n_facet_rows = calc_facet_rows_and_height(
+            df, params["facet_col"], params["facet_col_wrap"]
+        )
 
     n_colours = len(df_aggregated[df_legend_col].unique())
     colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
@@ -1368,12 +1435,17 @@ def plotly_frequency_barchart(
             csv_name,
         )
 
-        return plot(
-            fig,
-            output_type="div",
-            include_plotlyjs=False,
-            config=global_config(params["filename"], height_multiplier=chart_height / 500.0),
-        ), csv_data
+        return (
+            plot(
+                fig,
+                output_type="div",
+                include_plotlyjs=False,
+                config=global_config(
+                    params["filename"], height_multiplier=chart_height / 500.0
+                ),
+            ),
+            csv_data,
+        )
 
 
 def construct_over_time_charts(
@@ -1477,7 +1549,9 @@ def construct_over_time_charts(
     return return_value
 
 
-def download_link(object_to_download, download_filename, download_link_text="Download csv"):
+def download_link(
+    object_to_download, download_filename, download_link_text="Download csv"
+):
     """
     Adapted from:
     https://discuss.streamlit.io/t/heres-a-download-function-that-works-for-dataframes-and-txt/4052

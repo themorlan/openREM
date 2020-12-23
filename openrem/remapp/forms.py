@@ -156,7 +156,9 @@ class DXChartOptionsForm(forms.Form):
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe("Grouping choice"), choices=CommonVariables.CHART_GROUPING, required=False
+        label=mark_safe("Grouping choice"),
+        choices=CommonVariables.CHART_GROUPING,
+        required=False,
     )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
@@ -168,7 +170,9 @@ class DXChartOptionsForm(forms.Form):
         label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction", choices=CommonVariables.SORTING_DIRECTION, required=False
+        label="Sorting direction",
+        choices=CommonVariables.SORTING_DIRECTION,
+        required=False,
     )
 
 
@@ -232,7 +236,9 @@ class CTChartOptionsForm(forms.Form):
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe("Grouping choice"), choices=CommonVariables.CHART_GROUPING, required=False
+        label=mark_safe("Grouping choice"),
+        choices=CommonVariables.CHART_GROUPING,
+        required=False,
     )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
@@ -244,7 +250,9 @@ class CTChartOptionsForm(forms.Form):
         label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction", choices=CommonVariables.SORTING_DIRECTION, required=False
+        label="Sorting direction",
+        choices=CommonVariables.SORTING_DIRECTION,
+        required=False,
     )
 
 
@@ -283,7 +291,9 @@ class RFChartOptionsForm(forms.Form):
         label="Split plots by physician", required=False
     )
     plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe("Grouping choice"), choices=CommonVariables.CHART_GROUPING_RF, required=False
+        label=mark_safe("Grouping choice"),
+        choices=CommonVariables.CHART_GROUPING_RF,
+        required=False,
     )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
@@ -295,7 +305,9 @@ class RFChartOptionsForm(forms.Form):
         label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction", choices=CommonVariables.SORTING_DIRECTION, required=False
+        label="Sorting direction",
+        choices=CommonVariables.SORTING_DIRECTION,
+        required=False,
     )
 
 
@@ -327,7 +339,9 @@ class RFChartOptionsDisplayForm(forms.Form):
         label="Split plots by physician", required=False
     )
     plotRFInitialSortingChoice = forms.ChoiceField(
-        label="Default chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
+        label="Default chart sorting",
+        choices=CommonVariables.SORTING_CHOICES,
+        required=False,
     )
 
 
@@ -370,7 +384,9 @@ class MGChartOptionsForm(forms.Form):
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe("Grouping choice"), choices=CommonVariables.CHART_GROUPING, required=False
+        label=mark_safe("Grouping choice"),
+        choices=CommonVariables.CHART_GROUPING,
+        required=False,
     )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
@@ -382,7 +398,9 @@ class MGChartOptionsForm(forms.Form):
         label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction", choices=CommonVariables.SORTING_DIRECTION, required=False
+        label="Sorting direction",
+        choices=CommonVariables.SORTING_DIRECTION,
+        required=False,
     )
 
 
@@ -469,7 +487,9 @@ class DXChartOptionsDisplayForm(forms.Form):
         label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
     )
     plotDXInitialSortingChoice = forms.ChoiceField(
-        label="Default chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
+        label="Default chart sorting",
+        choices=CommonVariables.SORTING_CHOICES,
+        required=False,
     )
 
 
@@ -542,7 +562,9 @@ class GeneralChartOptionsDisplayForm(forms.Form):
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction", choices=CommonVariables.SORTING_DIRECTION, required=False
+        label="Sorting direction",
+        choices=CommonVariables.SORTING_DIRECTION,
+        required=False,
     )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
