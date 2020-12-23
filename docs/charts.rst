@@ -159,6 +159,12 @@ period. This can be a day, week, month, quarter or year.
 The example below shows the median DAP for "Head" requests made in four CT scanners over the course of two and a half
 years.
 
+With *Grouping choice* set to **Series item names** in the `Chart options on the modality pages`_ sub-plot is created
+for each requested procedure name, each with a series per x-ray system as shown below.
+
+The *Number of charts per row* in the `Additional chart options on the Config page`_ was set to 2 for these example
+charts.
+
 Hovering the cursor over a section shows you the:
 
 * scanner name
@@ -170,8 +176,8 @@ Hovering the cursor over a section shows you the:
 .. raw:: html
    :file: charts/overtime.html
 
-Setting *Grouping choice* to **System names** in the `Chart options on the modality pages`_ groups the data by x-ray
-system name rather than requested procedure name, as shown below:
+Setting *Grouping choice* to **System names** in the `Chart options on the modality pages`_ changes the grouping. Now
+a sub-plot is created for each x-ray system, each with a series per requested procedure name, as shown below:
 
 .. raw:: html
    :file: charts/overtime_group_by_system.html
@@ -244,10 +250,10 @@ Fixed histogram bins across subplots **On** or **off**         **On** forces all
                                                                | For example, "Chest PA" becomes "chest pa"
 ------------------------------------ ------------------------- --------------------------------------------------
 | Remove trailing whitespace from    | **On** or **off**       | **On** strips whitespace from the end of category names
-  categories                                                   | For example, "Chest PA " becomes "Chest PA"
+categories                                                     | For example, "Chest PA " becomes "Chest PA"
 ------------------------------------ ------------------------- --------------------------------------------------
 | Remove multiple whitespace from    | **On** or **off**       | **On** removes multiple whitespace from category names
-  categories                                                   | For example, "Chest   PA" becomes "Chest PA"
+categories                                                     | For example, "Chest   PA" becomes "Chest PA"
 ------------------------------------ ------------------------- --------------------------------------------------
 Colour map choice                    One of the available      See the `Available colourmaps`_ section
                                      matplotlib colour maps
@@ -262,7 +268,6 @@ Colour map choice                    One of the available      See the `Availabl
 ------------------------------------ ------------------------- --------------------------------------------------
 Number of charts per row             Value in the range 1 - 10 Sets the number of sub-plots in each row
 ==================================== ========================= ==================================================
-
 
 
 ====================
@@ -360,8 +365,8 @@ Acquisition frequency                  Bar chart of acquisition protocol frequen
 | Acquisition DLP over time            | Line chart of average DLP over time
                                        | for each acquisition protocol
 -------------------------------------- -----------------------------------------------------------------
-| Acquisition CTDI\ :sub:`vol`         | Line chart of average CTDI\ :sub:`vol` over time
-  over time                            | for each acquisition protocol
+| Acquisition CTDI\ :sub:`vol` over    | Line chart of average CTDI\ :sub:`vol` over time
+time                                   | for each acquisition protocol
 -------------------------------------- -----------------------------------------------------------------
 Acquisition DLP vs mass                Scatter chart of DLP vs patient mass for each acquisition protocol
 -------------------------------------- -----------------------------------------------------------------
