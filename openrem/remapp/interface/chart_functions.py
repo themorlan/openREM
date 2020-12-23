@@ -115,6 +115,10 @@ def create_dataframe(
     fields_to_include.update(field_dict["times"])
     fields_to_include.update(field_dict["system"])
 
+    start = None
+    if settings.DEBUG:
+        start = datetime.now()
+
     # NOTE: I am not excluding zero-value events from the calculations (zero DLP or zero CTDI)
     df = pd.DataFrame.from_records(
         data=database_events.values_list(*fields_to_include),  # values_list uses less memory than values
@@ -122,43 +126,53 @@ def create_dataframe(
         coerce_float=True,  # force Decimal to float - saves doing a type conversion later
     )
 
-    dtype_conversion = {}
-    for name_field in field_dict["names"]:
-        dtype_conversion[name_field] = "category"
+    if settings.DEBUG:
+        print(f"Initial Dataframe created from records in {datetime.now() - start}")
+        start = datetime.now()
+        print(f"Initial DataFrame info, including memory use, is:")
+        df.info()
 
-        # Replace any empty values with "Blank" (Plotly doesn't like empty values)
-        df[name_field].fillna(value="Blank", inplace=True)
+    # Replace any NaN values in the names columns with "Blank"
+    df[field_dict["names"]] = df[field_dict["names"]].apply(lambda x: x.fillna("Blank"))
 
-        # Make lowercase if required
-        if data_point_name_lowercase:
-            df[name_field] = df[name_field].str.lower()
+    # Make names column values lowercase if required
+    if data_point_name_lowercase:
+        df[field_dict["names"]] = df[field_dict["names"]].apply(lambda x: x.str.lower())
 
-        # Strip any trailing whitespace from the end of any names
-        if data_point_name_remove_trailing_whitespace:
-            df[name_field] = df[name_field].str.strip()
+    # Strip any trailing whitespace from the end of any names column values
+    if data_point_name_remove_trailing_whitespace:
+        df[field_dict["names"]] = df[field_dict["names"]].apply(lambda x: x.str.strip())
 
-        # Replace multiple spaces with single space
-        if data_point_name_remove_multiple_whitespace:
-            df[name_field] = df[name_field].replace("\s+", " ", regex=True)
+    # Replace multiple spaces with single space from any names column values
+    if data_point_name_remove_multiple_whitespace:
+        df[field_dict["names"]] = df[field_dict["names"]].apply(lambda x: x.replace("\s+", " ", regex=True))
 
+    # Make the names columns all "category" type - this saves memory. Must be done after the above, as the string
+    # replacement lines revert the columns back to "object"
+    df[field_dict["names"]] = df[field_dict["names"]].astype("category")
+
+    # Rename the "system" column to "x_ray_system_name" if it is present
     if field_dict["system"]:
         df.rename(columns={field_dict["system"][0]: "x_ray_system_name"}, inplace=True)
+        df["x_ray_system_name"] = df["x_ray_system_name"].astype("category")
         df.sort_values(by="x_ray_system_name", inplace=True)
+    # Else create the "x_ray_system_name" column populated with a single "All systems" category
     else:
-        df.insert(0, "x_ray_system_name", "All systems")
-    dtype_conversion["x_ray_system_name"] = "category"
+        df["x_ray_system_name"] = pd.Categorical(np.full(len(df.index), "All systems"))
 
+    # Loop through each value field, multiplying the values by the corresponding multiplier
     for idx, value_field in enumerate(field_dict["values"]):
         if data_point_value_multipliers:
             df[value_field] *= data_point_value_multipliers[idx]
 
+    # Convert each date field to a pd datetime using a specific date format
     for date_field in field_dict["dates"]:
         df[date_field] = pd.to_datetime(df[date_field], format="%Y-%m-%d")
 
-    df = df.astype(dtype_conversion)
-
     if settings.DEBUG:
-        print(f"Dataframe created in {datetime.now() - start}")
+        print(f"Dataframe fillna, lower case, whitespace stripping etc took {datetime.now() - start}")
+        print(f"DataFrame info after processing, including memory use, is:")
+        df.info()
 
     return df
 
