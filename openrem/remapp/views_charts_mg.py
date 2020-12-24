@@ -278,8 +278,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             f.qs,
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
-            data_point_name_remove_trailing_whitespace=user_profile.plotRemoveCategoryTrailingWhitespace,
-            data_point_name_remove_multiple_whitespace=user_profile.plotRemoveCategoryMultipleWhitespace,
+            data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
             uid="projectionxrayradiationdose__irradeventxraydata__pk",
         )
 
@@ -621,8 +620,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             f.qs,
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
-            data_point_name_remove_trailing_whitespace=user_profile.plotRemoveCategoryTrailingWhitespace,
-            data_point_name_remove_multiple_whitespace=user_profile.plotRemoveCategoryMultipleWhitespace,
+            data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
             uid="pk",
         )
 

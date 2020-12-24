@@ -81,8 +81,7 @@ def create_dataframe(
     database_events,
     field_dict,
     data_point_name_lowercase=None,
-    data_point_name_remove_trailing_whitespace=None,
-    data_point_name_remove_multiple_whitespace=None,
+    data_point_name_remove_whitespace_padding=None,
     data_point_value_multipliers=None,
     uid=None,
 ):
@@ -95,8 +94,7 @@ def create_dataframe(
     :param field_dict: a dictionary of lists, each containing database field names to include in the DataFrame. The
                        dictionary should include "names", "values", "dates", "times" and optionally "system" items
     :param data_point_name_lowercase: boolean flag to determine whether to make all "names" field values lower case
-    :param data_point_name_remove_trailing_whitespace: boolean flag to determine whether to strip trailing whitespace
-    :param data_point_name_remove_multiple_whitespace: boolean flag to determine whether to strip multiple whitespace
+    :param data_point_name_remove_whitespace_padding: boolean flag to determine whether to strip whitespace
     :param data_point_value_multipliers: list of float valuse to multiply each "values" field value by
     :param uid: string containing database field name which contains a unique identifier for each record
     :return: a Pandas DataFrame with a column per required field
@@ -145,15 +143,10 @@ def create_dataframe(
     if data_point_name_lowercase:
         df[field_dict["names"]] = df[field_dict["names"]].apply(lambda x: x.str.lower())
 
-    # Strip any trailing whitespace from the end of any names column values
-    if data_point_name_remove_trailing_whitespace:
-        df[field_dict["names"]] = df[field_dict["names"]].apply(lambda x: x.str.strip())
-
-    # Replace multiple spaces with single space from any names column values
-    if data_point_name_remove_multiple_whitespace:
-        df[field_dict["names"]] = df[field_dict["names"]].apply(
-            lambda x: x.replace("\s+", " ", regex=True)
-        )
+    # Strip whitespace from the beginning and end of any names column values
+    # Also replace multiple spaces with a single space
+    if data_point_name_remove_whitespace_padding:
+        df[field_dict["names"]] = df[field_dict["names"]].apply(lambda x: x.str.strip().replace("\s+", " ", regex=True))
 
     # Make the names columns all "category" type - this saves memory. Must be done after the above, as the string
     # replacement lines revert the columns back to "object"

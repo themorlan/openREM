@@ -246,11 +246,9 @@ Fixed histogram bins across sub-plots      **On** or **off**         Forces all 
 Case-insensitive categories                **On** or **off**         Category names forced to lowercase |br|
                                                                      For example, "Chest PA" becomes "chest pa"
 ------------------------------------------ ------------------------- ---------------------------------------------------
-Remove trailing whitespace from categories **On** or **off**         Strips trailing whitespace from category names |br|
-                                                                     For example, "Chest PA " becomes "Chest PA"
------------------------------------------- ------------------------- ---------------------------------------------------
-Remove multiple whitespace from categories **On** or **off**         Removes multiple whitespace from category names |br|
-                                                                     For example, "Chest   PA" becomes "Chest PA"
+Remove category whitespace padding         **On** or **off**         Removes spaces at beginning and end of category |br|
+                                                                     names, replaces multiple spaces with single spaces |br|
+                                                                     For example, " Chest   PA " becomes "Chest PA"
 ------------------------------------------ ------------------------- ---------------------------------------------------
 Colour map choice                          One of the available |br| See the `available colourmaps`_ section
                                            matplotlib colour maps
