@@ -120,8 +120,12 @@ def create_dataframe(
         start = datetime.now()
 
     # NOTE: I am not excluding zero-value events from the calculations (zero DLP or zero CTDI)
+
+    # The "order_by()" in the command below removes the custom ordering on the query set that is used to order things
+    # correctly on the filtered page tables. This ordering isn't required for the DataFrame; removing it speeds up
+    # the DataFrame.from_records command.
     df = pd.DataFrame.from_records(
-        data=database_events.values_list(
+        data=database_events.order_by().values_list(
             *fields_to_include
         ),  # values_list uses less memory than values
         columns=fields_to_include,  # need to specify the column names as we're now using values_list
