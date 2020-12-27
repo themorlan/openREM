@@ -174,11 +174,11 @@ def charts_toggle(request):
 @login_required
 def display_names_view(request):
     try:
-        match_on_device_observer_uid = MergeOnDeviceObserverUIDSettings.objects.values_list(
-            "match_on_device_observer_uid", flat=True
-        )[
-            0
-        ]
+        match_on_device_observer_uid = (
+            MergeOnDeviceObserverUIDSettings.objects.values_list(
+                "match_on_device_observer_uid", flat=True
+            )[0]
+        )
     except IndexError:
         match_on_device_observer_uid = False
         m = MergeOnDeviceObserverUIDSettings(match_on_device_observer_uid=False)
@@ -194,9 +194,9 @@ def display_names_view(request):
                 merge_options_settings = MergeOnDeviceObserverUIDSettings.objects.all()[
                     0
                 ]
-                merge_options_settings.match_on_device_observer_uid = merge_options_form.cleaned_data[
-                    "match_on_device_observer_uid"
-                ]
+                merge_options_settings.match_on_device_observer_uid = (
+                    merge_options_form.cleaned_data["match_on_device_observer_uid"]
+                )
                 merge_options_settings.save()
                 if merge_options_form.cleaned_data["match_on_device_observer_uid"]:
                     messages.info(
@@ -755,18 +755,15 @@ def reset_dual(pk=None):
         .exclude(modality_type__exact="RF")
         .exclude(modality_type__exact="CR")
     )
-    message_start = (
-        "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are "
-        "DX, {3} are CR, {4} are RF and {5} are something else before processing,".format(  # pylint: disable=line-too-long
-            studies[0]
-            .generalequipmentmoduleattr_set.get()
-            .unique_equipment_name.display_name,
-            studies.count(),
-            studies.filter(modality_type__exact="DX").count(),
-            studies.filter(modality_type__exact="CR").count(),
-            studies.filter(modality_type__exact="RF").count(),
-            not_dx_rf_cr.count(),
-        )
+    message_start = "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are " "DX, {3} are CR, {4} are RF and {5} are something else before processing,".format(  # pylint: disable=line-too-long
+        studies[0]
+        .generalequipmentmoduleattr_set.get()
+        .unique_equipment_name.display_name,
+        studies.count(),
+        studies.filter(modality_type__exact="DX").count(),
+        studies.filter(modality_type__exact="CR").count(),
+        studies.filter(modality_type__exact="RF").count(),
+        not_dx_rf_cr.count(),
     )
 
     logger.debug(message_start)
@@ -912,8 +909,8 @@ def _get_review_study_data(study):
         except ObjectDoesNotExist:
             study_data["ctaccumulateddosedata"] = ""
         try:
-            ctirradiationeventdata_set = ctradiationdose.ctirradiationeventdata_set.order_by(
-                "pk"
+            ctirradiationeventdata_set = (
+                ctradiationdose.ctirradiationeventdata_set.order_by("pk")
             )
 
             study_data["cteventdata"] = "{0} events.<br>".format(
@@ -1660,9 +1657,9 @@ def homepage_options_view(request):
                     != display_workload_stats
                 ):
                     homepage_admin_settings = HomePageAdminSettings.objects.all()[0]
-                    homepage_admin_settings.enable_workload_stats = homepage_options_form.cleaned_data[
-                        "enable_workload_stats"
-                    ]
+                    homepage_admin_settings.enable_workload_stats = (
+                        homepage_options_form.cleaned_data["enable_workload_stats"]
+                    )
                     homepage_admin_settings.save()
                     if homepage_options_form.cleaned_data["enable_workload_stats"]:
                         messages.info(request, "Display of workload stats enabled")
@@ -2281,8 +2278,8 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
                         accumxraydose.accumintegratedprojradiogdose_set.get().pk
                     )
 
-                    accum_int_proj_to_update = AccumIntegratedProjRadiogDose.objects.get(
-                        pk=accum_int_proj_pk
+                    accum_int_proj_to_update = (
+                        AccumIntegratedProjRadiogDose.objects.get(pk=accum_int_proj_pk)
                     )
 
                     included_studies = all_rf_studies.filter(

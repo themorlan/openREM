@@ -233,11 +233,11 @@ class ImportRFRDSRSiemens(TestCase):
         rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.order_by("id")[0]
 
-        event_data = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by(
-            "id"
-        )[
-            0
-        ]
+        event_data = (
+            study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by(
+                "id"
+            )[0]
+        )
         self.assertEqual(
             event_data.patient_table_relationship_cid.code_value, "F-10470"
         )
@@ -296,8 +296,10 @@ class ImportRFRDSRGESurgical(TestCase):
         self.assertEqual(total_acq_dap, Decimal(0))
         self.assertEqual(total_acq_rp_dose, Decimal(0))
 
-        events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by(
-            "pk"
+        events = (
+            study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by(
+                "pk"
+            )
         )
         event_4 = events[3]
         self.assertEqual(
@@ -407,8 +409,10 @@ class ImportRFRDSRCanonUltimaxi(TestCase):
 
         # Test a reference point dose from an individual exposure
         # The first exposure RP dose is is stored in the RDSR as 0.384 with units of mGy
-        events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by(
-            "pk"
+        events = (
+            study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by(
+                "pk"
+            )
         )
         event_1_source = events[0].irradeventxraysourcedata_set.get()
         self.assertAlmostEqual(event_1_source.dose_rp, Decimal(0.000384000000))

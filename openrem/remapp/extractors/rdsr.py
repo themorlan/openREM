@@ -769,11 +769,11 @@ def _irradiationeventxraysourcedata(dataset, event):  # TID 10003b
             pass
     if not source.average_xray_tube_current:
         if source.xraytubecurrent_set.all().count() > 0:
-            source.average_xray_tube_current = source.xraytubecurrent_set.all().aggregate(
-                Avg("xray_tube_current")
-            )[
-                "xray_tube_current__avg"
-            ]
+            source.average_xray_tube_current = (
+                source.xraytubecurrent_set.all().aggregate(Avg("xray_tube_current"))[
+                    "xray_tube_current__avg"
+                ]
+            )
             source.save()
 
 
@@ -1294,8 +1294,8 @@ def _scanninglength(dataset, event):  # TID 10014
                 cont.ConceptNameCodeSequence[0].CodeMeaning.lower()
                 == "bottom z location of reconstructable volume"
             ):
-                scanlen.bottom_z_location_of_reconstructable_volume = test_numeric_value(
-                    cont.MeasuredValueSequence[0].NumericValue
+                scanlen.bottom_z_location_of_reconstructable_volume = (
+                    test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
                 )
             elif (
                 cont.ConceptNameCodeSequence[0].CodeMeaning.lower()
@@ -1407,8 +1407,8 @@ def _ctdosecheckdetails(dataset, dosecheckdetails, isalertdetails):  # TID 10015
                 cont.ConceptNameCodeSequence[0].CodeMeaning
                 == "Accumulated CTDIvol Forward Estimate"
             ):
-                dosecheckdetails.accumulated_ctdivol_forward_estimate = test_numeric_value(
-                    cont.MeasuredValueSequence[0].NumericValue
+                dosecheckdetails.accumulated_ctdivol_forward_estimate = (
+                    test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
                 )
             if cont.ConceptNameCodeSequence[0].CodeMeaning == "Reason For Proceeding":
                 dosecheckdetails.alert_reason_for_proceeding = cont.TextValue
@@ -1886,11 +1886,11 @@ def _generalequipmentmoduleattributes(dataset, study):
         # If we have a device_observer_uid and it is desired, merge this "new" device with an existing one based on the
         # device observer uid.
         try:
-            match_on_device_observer_uid = MergeOnDeviceObserverUIDSettings.objects.values_list(
-                "match_on_device_observer_uid", flat=True
-            )[
-                0
-            ]
+            match_on_device_observer_uid = (
+                MergeOnDeviceObserverUIDSettings.objects.values_list(
+                    "match_on_device_observer_uid", flat=True
+                )[0]
+            )
         except IndexError:
             match_on_device_observer_uid = False
         if match_on_device_observer_uid and device_observer_uid:
@@ -2318,11 +2318,11 @@ def _rdsr2db(dataset):
         week_delta = HighDoseMetricAlertSettings.objects.values_list(
             "accum_dose_delta_weeks", flat=True
         )[0]
-        calc_accum_dose_over_delta_weeks_on_import = HighDoseMetricAlertSettings.objects.values_list(
-            "calc_accum_dose_over_delta_weeks_on_import", flat=True
-        )[
-            0
-        ]
+        calc_accum_dose_over_delta_weeks_on_import = (
+            HighDoseMetricAlertSettings.objects.values_list(
+                "calc_accum_dose_over_delta_weeks_on_import", flat=True
+            )[0]
+        )
         if calc_accum_dose_over_delta_weeks_on_import:
 
             all_rf_studies = GeneralStudyModuleAttr.objects.filter(
@@ -2358,8 +2358,8 @@ def _rdsr2db(dataset):
                         accumxraydose.accumintegratedprojradiogdose_set.get().pk
                     )
 
-                    accum_int_proj_to_update = AccumIntegratedProjRadiogDose.objects.get(
-                        pk=accum_int_proj_pk
+                    accum_int_proj_to_update = (
+                        AccumIntegratedProjRadiogDose.objects.get(pk=accum_int_proj_pk)
                     )
 
                     included_studies = all_rf_studies.filter(
