@@ -1915,9 +1915,11 @@ def ct_toshiba(folder_name):
                                     content_seq.ConceptNameCodeSequence[0].CodeMeaning
                                     == "CT Dose Length Product Total"
                                 ):
-                                    additional_amount = content_seq.MeasuredValueSequence[
-                                        0
-                                    ].NumericValue
+                                    additional_amount = (
+                                        content_seq.MeasuredValueSequence[
+                                            0
+                                        ].NumericValue
+                                    )
                                     logger.debug(
                                         "Found extra DLP: {0}".format(additional_amount)
                                     )
@@ -1932,9 +1934,11 @@ def ct_toshiba(folder_name):
                                                 ].CodeMeaning
                                                 == "CTDIw Phantom Type"
                                             ):
-                                                additional_type = cont_seq.ConceptCodeSequence[
-                                                    0
-                                                ].CodeMeaning
+                                                additional_type = (
+                                                    cont_seq.ConceptCodeSequence[
+                                                        0
+                                                    ].CodeMeaning
+                                                )
 
                             for i, content_seq in enumerate(
                                 combined_rdsr_accumulated_dose_data.ContentSequence
@@ -1962,52 +1966,45 @@ def ct_toshiba(folder_name):
                                                 ].CodeMeaning
                                                 == "CTDIw Phantom Type"
                                             ):
-                                                total_type = cont_seq.ConceptCodeSequence[
-                                                    0
-                                                ].CodeMeaning
+                                                total_type = (
+                                                    cont_seq.ConceptCodeSequence[
+                                                        0
+                                                    ].CodeMeaning
+                                                )
 
                                     if current_amount and additional_amount:
                                         # If combined_rdsr total DLP and new one use the same dosimetry phantom then just add them together.
                                         if total_type == additional_type:
                                             content_seq.MeasuredValueSequence[
                                                 0
-                                            ].NumericValue = (
-                                                "%.2f"
-                                                % (
-                                                    content_seq.MeasuredValueSequence[
-                                                        0
-                                                    ].NumericValue
-                                                    + additional_amount
-                                                )
+                                            ].NumericValue = "%.2f" % (
+                                                content_seq.MeasuredValueSequence[
+                                                    0
+                                                ].NumericValue
+                                                + additional_amount
                                             )
                                         # If additional DLP is to 16 cm head phantom then divide it by 2 before adding.
                                         elif "head" in additional_type.lower():
                                             content_seq.MeasuredValueSequence[
                                                 0
-                                            ].NumericValue = (
-                                                "%.2f"
-                                                % (
-                                                    content_seq.MeasuredValueSequence[
-                                                        0
-                                                    ].NumericValue
-                                                    + (additional_amount / 2.0)
-                                                )
+                                            ].NumericValue = "%.2f" % (
+                                                content_seq.MeasuredValueSequence[
+                                                    0
+                                                ].NumericValue
+                                                + (additional_amount / 2.0)
                                             )
                                         # If current total DLP is to 16 cm head phantom then divide it by 2 before adding the 32 cm additional.
                                         else:
                                             content_seq.MeasuredValueSequence[
                                                 0
-                                            ].NumericValue = (
-                                                "%.2f"
-                                                % (
-                                                    (
-                                                        content_seq.MeasuredValueSequence[
-                                                            0
-                                                        ].NumericValue
-                                                        / 2.0
-                                                    )
-                                                    + additional_amount
+                                            ].NumericValue = "%.2f" % (
+                                                (
+                                                    content_seq.MeasuredValueSequence[
+                                                        0
+                                                    ].NumericValue
+                                                    / 2.0
                                                 )
+                                                + additional_amount
                                             )
                                         logger.debug(
                                             "Updated to: {0}".format(

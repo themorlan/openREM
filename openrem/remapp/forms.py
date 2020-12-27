@@ -946,29 +946,6 @@ class DicomStoreForm(forms.ModelForm):
         if not settings.DOCKER_INSTALL:
             self.helper.layout = Layout(
                 Div("name", "aetitle", "peer", "port"),
-                Accordion(
-                    AccordionGroup(
-                        "Advanced - test/development use only",
-                        Div(
-                            HTML(
-                                """
-                            <p>
-                              DICOM store node built in to OpenREM is not yet ready for production. See
-                                <a href="https://docs.openrem.org/en/{{ admin.docsversion }}/netdicom-nodes.html"
-                                    target="_blank" data-toggle="tooltip"
-                                    title="DICOM store documentation - opens in a new tab">
-                                    DICOM store documentation (Advanced)
-                                </a>
-                            </p>
-                            """
-                            )
-                        ),
-                        # Trick to force label to join the other labels, otherwise sits to right
-                        PrependedText("controlled", ""),
-                        PrependedText("keep_alive", ""),
-                        active=False,
-                    )
-                ),
                 FormActions(Submit("submit", "Submit")),
                 Div(
                     HTML(
@@ -1005,12 +982,10 @@ class DicomStoreForm(forms.ModelForm):
 
     class Meta(object):
         model = DicomStoreSCP
-        fields = ["name", "aetitle", "peer", "port", "controlled", "keep_alive"]
+        fields = ["name", "aetitle", "peer", "port"]
         labels = {
             "peer": "Peer: Set this to localhost",
             "port": "Port: port 104 is standard for DICOM but ports higher than 1024 require fewer admin rights",
-            "controlled": "Advanced use only: tick this box to control the server using OpenREM",
-            "keep_alive": "Advanced use only: tick this box to auto-start this server using celery beat",
         }
         if settings.DOCKER_INSTALL:
             labels["peer"] = "Docker container name: initial default is orthanc_1"
