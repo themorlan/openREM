@@ -35,8 +35,10 @@ def generate_required_ct_charts_list(profile):
     required_charts = []
 
     charts_of_interest = [
-        profile.plotCTAcquisitionDLPOverTime, profile.plotCTAcquisitionCTDIOverTime,
-        profile.plotCTStudyMeanDLPOverTime, profile.plotCTRequestDLPOverTime,
+        profile.plotCTAcquisitionDLPOverTime,
+        profile.plotCTAcquisitionCTDIOverTime,
+        profile.plotCTStudyMeanDLPOverTime,
+        profile.plotCTRequestDLPOverTime,
     ]
     if any(charts_of_interest):
         keys = list(dict(profile.TIME_PERIOD).keys())
@@ -453,8 +455,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         average_choices.append("median")
 
     charts_of_interest = [
-        user_profile.plotCTAcquisitionDLPOverTime, user_profile.plotCTAcquisitionCTDIOverTime,
-        user_profile.plotCTStudyMeanDLPOverTime, user_profile.plotCTRequestDLPOverTime,
+        user_profile.plotCTAcquisitionDLPOverTime,
+        user_profile.plotCTAcquisitionCTDIOverTime,
+        user_profile.plotCTStudyMeanDLPOverTime,
+        user_profile.plotCTRequestDLPOverTime,
     ]
     if any(charts_of_interest):
         plot_timeunit_period = user_profile.plotCTOverTimePeriod
@@ -462,9 +466,12 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
     #######################################################################
     # Prepare acquisition-level Pandas DataFrame to use for charts
     charts_of_interest = [
-        user_profile.plotCTAcquisitionFreq, user_profile.plotCTAcquisitionMeanCTDI,
-        user_profile.plotCTAcquisitionMeanDLP, user_profile.plotCTAcquisitionCTDIvsMass,
-        user_profile.plotCTAcquisitionDLPvsMass, user_profile.plotCTAcquisitionCTDIOverTime,
+        user_profile.plotCTAcquisitionFreq,
+        user_profile.plotCTAcquisitionMeanCTDI,
+        user_profile.plotCTAcquisitionMeanDLP,
+        user_profile.plotCTAcquisitionCTDIvsMass,
+        user_profile.plotCTAcquisitionDLPvsMass,
+        user_profile.plotCTAcquisitionCTDIOverTime,
         user_profile.plotCTAcquisitionDLPOverTime,
     ]
     if any(charts_of_interest):
@@ -515,8 +522,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             f.qs,
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
-            data_point_name_remove_trailing_whitespace=user_profile.plotRemoveCategoryTrailingWhitespace,
-            data_point_name_remove_multiple_whitespace=user_profile.plotRemoveCategoryMultipleWhitespace,
+            data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
             uid="ctradiationdose__ctirradiationeventdata__pk",
         )
         #######################################################################
@@ -554,9 +560,14 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean DLP (mGy.cm)"
-                    parameter_dict["filename"] = "OpenREM CT acquisition protocol DLP mean"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT acquisition protocol DLP mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["acquisitionMeanDLPData"], return_structure["acquisitionMeanDLPDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
+                    (
+                        return_structure["acquisitionMeanDLPData"],
+                        return_structure["acquisitionMeanDLPDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
                         csv_name="acquisitionMeanDLPData.csv",
@@ -564,9 +575,14 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median DLP (mGy.cm)"
-                    parameter_dict["filename"] = "OpenREM CT acquisition protocol DLP median"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT acquisition protocol DLP median"
                     parameter_dict["average_choice"] = "median"
-                    return_structure["acquisitionMedianDLPData"], return_structure["acquisitionMedianDLPDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
+                    (
+                        return_structure["acquisitionMedianDLPData"],
+                        return_structure["acquisitionMedianDLPDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
                         csv_name="acquisitionMedianDLPData.csv",
@@ -623,7 +639,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "global_max_min": user_profile.plotHistogramGlobalBins,
                     "return_as_dict": return_as_dict,
                 }
-                return_structure["acquisitionHistogramDLPData"] = plotly_histogram_barchart(
+                return_structure[
+                    "acquisitionHistogramDLPData"
+                ] = plotly_histogram_barchart(
                     df,
                     parameter_dict,
                 )
@@ -659,19 +677,31 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean CTDI<sub>vol</sub> (mGy)"
-                    parameter_dict["filename"] = "OpenREM CT acquisition protocol CTDI mean"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT acquisition protocol CTDI mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["acquisitionMeanCTDIData"], return_structure["acquisitionMeanCTDIDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
+                    (
+                        return_structure["acquisitionMeanCTDIData"],
+                        return_structure["acquisitionMeanCTDIDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
                         csv_name="acquisitionMeanCTDIData.csv",
                     )
 
                 if user_profile.plotMedian:
-                    parameter_dict["value_axis_title"] = "Median CTDI<sub>vol</sub> (mGy)"
-                    parameter_dict["filename"] = "OpenREM CT acquisition protocol CTDI median"
+                    parameter_dict[
+                        "value_axis_title"
+                    ] = "Median CTDI<sub>vol</sub> (mGy)"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT acquisition protocol CTDI median"
                     parameter_dict["average_choice"] = "median"
-                    return_structure["acquisitionMedianCTDIData"], return_structure["acquisitionMedianCTDIDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
+                    (
+                        return_structure["acquisitionMedianCTDIData"],
+                        return_structure["acquisitionMedianCTDIDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
                         csv_name="acquisitionMedianCTDIData.csv",
@@ -728,7 +758,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "global_max_min": user_profile.plotHistogramGlobalBins,
                     "return_as_dict": return_as_dict,
                 }
-                return_structure["acquisitionHistogramCTDIData"] = plotly_histogram_barchart(
+                return_structure[
+                    "acquisitionHistogramCTDIData"
+                ] = plotly_histogram_barchart(
                     df,
                     parameter_dict,
                 )
@@ -758,7 +790,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "return_as_dict": return_as_dict,
             }
-            return_structure["acquisitionFrequencyData"], return_structure["acquisitionFrequencyDataCSV"] = plotly_frequency_barchart(  # pylint: disable=line-too-long
+            (
+                return_structure["acquisitionFrequencyData"],
+                return_structure["acquisitionFrequencyDataCSV"],
+            ) = plotly_frequency_barchart(  # pylint: disable=line-too-long
                 df,
                 parameter_dict,
                 csv_name="acquisitionFrequencyData.csv",
@@ -885,34 +920,46 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts
     charts_of_interest = [
-        user_profile.plotCTRequestFreq, user_profile.plotCTRequestMeanDLP,
-        user_profile.plotCTRequestNumEvents, user_profile.plotCTRequestDLPOverTime,
-        user_profile.plotCTStudyFreq, user_profile.plotCTStudyMeanDLP,
-        user_profile.plotCTStudyMeanCTDI, user_profile.plotCTStudyNumEvents,
-        user_profile.plotCTStudyMeanDLPOverTime, user_profile.plotCTStudyPerDayAndHour,
+        user_profile.plotCTRequestFreq,
+        user_profile.plotCTRequestMeanDLP,
+        user_profile.plotCTRequestNumEvents,
+        user_profile.plotCTRequestDLPOverTime,
+        user_profile.plotCTStudyFreq,
+        user_profile.plotCTStudyMeanDLP,
+        user_profile.plotCTStudyMeanCTDI,
+        user_profile.plotCTStudyNumEvents,
+        user_profile.plotCTStudyMeanDLPOverTime,
+        user_profile.plotCTStudyPerDayAndHour,
     ]
     if any(charts_of_interest):
 
         name_fields = []
         charts_of_interest = [
-            user_profile.plotCTStudyMeanDLP, user_profile.plotCTStudyFreq,
-            user_profile.plotCTStudyMeanDLPOverTime, user_profile.plotCTStudyPerDayAndHour,
-            user_profile.plotCTStudyNumEvents, user_profile.plotCTStudyMeanCTDI,
+            user_profile.plotCTStudyMeanDLP,
+            user_profile.plotCTStudyFreq,
+            user_profile.plotCTStudyMeanDLPOverTime,
+            user_profile.plotCTStudyPerDayAndHour,
+            user_profile.plotCTStudyNumEvents,
+            user_profile.plotCTStudyMeanCTDI,
         ]
         if any(charts_of_interest):
             name_fields.append("study_description")
 
         charts_of_interest = [
-            user_profile.plotCTRequestMeanDLP, user_profile.plotCTRequestFreq,
-            user_profile.plotCTRequestNumEvents, user_profile.plotCTRequestDLPOverTime,
+            user_profile.plotCTRequestMeanDLP,
+            user_profile.plotCTRequestFreq,
+            user_profile.plotCTRequestNumEvents,
+            user_profile.plotCTRequestDLPOverTime,
         ]
         if any(charts_of_interest):
             name_fields.append("requested_procedure_code_meaning")
 
         value_fields = []
         charts_of_interest = [
-            user_profile.plotCTStudyMeanDLP, user_profile.plotCTStudyMeanDLPOverTime,
-            user_profile.plotCTRequestMeanDLP, user_profile.plotCTRequestDLPOverTime,
+            user_profile.plotCTStudyMeanDLP,
+            user_profile.plotCTStudyMeanDLPOverTime,
+            user_profile.plotCTRequestMeanDLP,
+            user_profile.plotCTRequestDLPOverTime,
         ]
         if any(charts_of_interest):
             value_fields.append("total_dlp")
@@ -924,7 +971,8 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         date_fields = []
         time_fields = []
         charts_of_interest = [
-            user_profile.plotCTStudyMeanDLPOverTime, user_profile.plotCTStudyPerDayAndHour,
+            user_profile.plotCTStudyMeanDLPOverTime,
+            user_profile.plotCTStudyPerDayAndHour,
             user_profile.plotCTRequestDLPOverTime,
         ]
         if any(charts_of_interest):
@@ -948,8 +996,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             f.qs,
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
-            data_point_name_remove_trailing_whitespace=user_profile.plotRemoveCategoryTrailingWhitespace,
-            data_point_name_remove_multiple_whitespace=user_profile.plotRemoveCategoryMultipleWhitespace,
+            data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
             uid="pk",
         )
         #######################################################################
@@ -989,7 +1036,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["value_axis_title"] = "Mean DLP (mGy.cm)"
                     parameter_dict["filename"] = "OpenREM CT study description DLP mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["studyMeanDLPData"], return_structure["studyMeanDLPDataCSV"] = plotly_barchart(
+                    (
+                        return_structure["studyMeanDLPData"],
+                        return_structure["studyMeanDLPDataCSV"],
+                    ) = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
                         csv_name="studyMeanDLPData.csv",
@@ -997,9 +1047,14 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median DLP (mGy.cm)"
-                    parameter_dict["filename"] = "OpenREM CT study description DLP median"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT study description DLP median"
                     parameter_dict["average_choice"] = "median"
-                    return_structure["studyMedianDLPData"], return_structure["studyMedianDLPDataCSV"] = plotly_barchart(
+                    (
+                        return_structure["studyMedianDLPData"],
+                        return_structure["studyMedianDLPDataCSV"],
+                    ) = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
                         csv_name="studyMedianDLPData.csv",
@@ -1088,19 +1143,31 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean CTDI<sub>vol</sub> (mGy)"
-                    parameter_dict["filename"] = "OpenREM CT study description CTDI mean"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT study description CTDI mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["studyMeanCTDIData"], return_structure["studyMeanCTDIDataCSV"] = plotly_barchart(
+                    (
+                        return_structure["studyMeanCTDIData"],
+                        return_structure["studyMeanCTDIDataCSV"],
+                    ) = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
                         csv_name="studyMeanCTDIData.csv",
                     )
 
                 if user_profile.plotMedian:
-                    parameter_dict["value_axis_title"] = "Median CTDI<sub>vol</sub> (mGy)"
-                    parameter_dict["filename"] = "OpenREM CT study description CTDI median"
+                    parameter_dict[
+                        "value_axis_title"
+                    ] = "Median CTDI<sub>vol</sub> (mGy)"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT study description CTDI median"
                     parameter_dict["average_choice"] = "median"
-                    return_structure["studyMedianCTDIData"], return_structure["studyMedianCTDIDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
+                    (
+                        return_structure["studyMedianCTDIData"],
+                        return_structure["studyMedianCTDIDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
                         csv_name="studyMedianCTDIData.csv",
@@ -1189,9 +1256,14 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean events"
-                    parameter_dict["filename"] = "OpenREM CT study description events mean"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT study description events mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["studyMeanNumEventsData"], return_structure["studyMeanNumEventsDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
+                    (
+                        return_structure["studyMeanNumEventsData"],
+                        return_structure["studyMeanNumEventsDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
                         csv_name="studyMeanNumEventsData.csv",
@@ -1199,9 +1271,14 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median events"
-                    parameter_dict["filename"] = "OpenREM CT study description events median"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT study description events median"
                     parameter_dict["average_choice"] = "median"
-                    return_structure["studyMedianNumEventsData"], return_structure["studyMedianNumEventsDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
+                    (
+                        return_structure["studyMedianNumEventsData"],
+                        return_structure["studyMedianNumEventsDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
                         csv_name="studyMedianNumEventsData.csv",
@@ -1254,7 +1331,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "global_max_min": user_profile.plotHistogramGlobalBins,
                     "return_as_dict": return_as_dict,
                 }
-                return_structure["studyHistogramNumEventsData"] = plotly_histogram_barchart(
+                return_structure[
+                    "studyHistogramNumEventsData"
+                ] = plotly_histogram_barchart(
                     df,
                     parameter_dict,
                 )
@@ -1286,7 +1365,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "return_as_dict": return_as_dict,
             }
-            return_structure["studyFrequencyData"], return_structure["studyFrequencyDataCSV"] = plotly_frequency_barchart(  # pylint: disable=line-too-long
+            (
+                return_structure["studyFrequencyData"],
+                return_structure["studyFrequencyDataCSV"],
+            ) = plotly_frequency_barchart(  # pylint: disable=line-too-long
                 df,
                 parameter_dict,
                 csv_name="studyFrequencyData.csv",
@@ -1323,9 +1405,14 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean DLP (mGy.cm)"
-                    parameter_dict["filename"] = "OpenREM CT requested procedure DLP mean"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT requested procedure DLP mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["requestMeanDLPData"], return_structure["requestMeanDLPDataCSV"] = plotly_barchart(
+                    (
+                        return_structure["requestMeanDLPData"],
+                        return_structure["requestMeanDLPDataCSV"],
+                    ) = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
                         csv_name="requestMeanDLPData.csv",
@@ -1333,9 +1420,14 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median DLP (mGy.cm)"
-                    parameter_dict["filename"] = "OpenREM CT requested procedure DLP median"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT requested procedure DLP median"
                     parameter_dict["average_choice"] = "median"
-                    return_structure["requestMedianDLPData"], return_structure["requestMedianDLPDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
+                    (
+                        return_structure["requestMedianDLPData"],
+                        return_structure["requestMedianDLPDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
                         csv_name="requestMedianDLPData.csv",
@@ -1424,9 +1516,14 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean events"
-                    parameter_dict["filename"] = "OpenREM CT requested procedure events mean"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT requested procedure events mean"
                     parameter_dict["average_choice"] = "mean"
-                    return_structure["requestMeanNumEventsData"], return_structure["requestMeanNumEventsDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
+                    (
+                        return_structure["requestMeanNumEventsData"],
+                        return_structure["requestMeanNumEventsDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
                         csv_name="requestMeanNumEventsData.csv",
@@ -1434,9 +1531,14 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median events"
-                    parameter_dict["filename"] = "OpenREM CT requested procedure events median"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT requested procedure events median"
                     parameter_dict["average_choice"] = "median"
-                    return_structure["requestMedianNumEventsData"], return_structure["requestMedianNumEventsDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
+                    (
+                        return_structure["requestMedianNumEventsData"],
+                        return_structure["requestMedianNumEventsDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
                         csv_name="requestMedianNumEventsData.csv",
@@ -1489,7 +1591,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "global_max_min": user_profile.plotHistogramGlobalBins,
                     "return_as_dict": return_as_dict,
                 }
-                return_structure["requestHistogramNumEventsData"] = plotly_histogram_barchart(
+                return_structure[
+                    "requestHistogramNumEventsData"
+                ] = plotly_histogram_barchart(
                     df,
                     parameter_dict,
                 )
@@ -1519,10 +1623,11 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "return_as_dict": return_as_dict,
             }
-            return_structure["requestFrequencyData"], return_structure["requestFrequencyDataCSV"] = plotly_frequency_barchart(  # pylint: disable=line-too-long
-                df,
-                parameter_dict,
-                csv_name="requestFrequencyData.csv"
+            (
+                return_structure["requestFrequencyData"],
+                return_structure["requestFrequencyDataCSV"],
+            ) = plotly_frequency_barchart(  # pylint: disable=line-too-long
+                df, parameter_dict, csv_name="requestFrequencyData.csv"
             )
 
         if user_profile.plotCTStudyMeanDLPOverTime:

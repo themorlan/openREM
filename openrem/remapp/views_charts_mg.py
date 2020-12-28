@@ -211,9 +211,12 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
     #######################################################################
     # Prepare acquisition-level Pandas DataFrame to use for charts
     charts_of_interest = [
-        user_profile.plotMGAGDvsThickness, user_profile.plotMGkVpvsThickness,
-        user_profile.plotMGmAsvsThickness, user_profile.plotMGaverageAGDvsThickness,
-        user_profile.plotMGaverageAGD, user_profile.plotMGacquisitionFreq,
+        user_profile.plotMGAGDvsThickness,
+        user_profile.plotMGkVpvsThickness,
+        user_profile.plotMGmAsvsThickness,
+        user_profile.plotMGaverageAGDvsThickness,
+        user_profile.plotMGaverageAGD,
+        user_profile.plotMGacquisitionFreq,
         user_profile.plotMGAcquisitionAGDOverTime,
     ]
     if any(charts_of_interest):
@@ -224,8 +227,10 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
 
         value_fields = []
         charts_of_interest = [
-            user_profile.plotMGAGDvsThickness, user_profile.plotMGaverageAGDvsThickness,
-            user_profile.plotMGaverageAGD, user_profile.plotMGAcquisitionAGDOverTime,
+            user_profile.plotMGAGDvsThickness,
+            user_profile.plotMGaverageAGDvsThickness,
+            user_profile.plotMGaverageAGD,
+            user_profile.plotMGAcquisitionAGDOverTime,
         ]
         if any(charts_of_interest):
             value_fields.append(
@@ -240,8 +245,10 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"
             )
         charts_of_interest = [
-            user_profile.plotMGAGDvsThickness, user_profile.plotMGkVpvsThickness,
-            user_profile.plotMGmAsvsThickness, user_profile.plotMGaverageAGDvsThickness,
+            user_profile.plotMGAGDvsThickness,
+            user_profile.plotMGkVpvsThickness,
+            user_profile.plotMGmAsvsThickness,
+            user_profile.plotMGaverageAGDvsThickness,
         ]
         if any(charts_of_interest):
             value_fields.append(
@@ -271,8 +278,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             f.qs,
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
-            data_point_name_remove_trailing_whitespace=user_profile.plotRemoveCategoryTrailingWhitespace,
-            data_point_name_remove_multiple_whitespace=user_profile.plotRemoveCategoryMultipleWhitespace,
+            data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
             uid="projectionxrayradiationdose__irradeventxraydata__pk",
         )
 
@@ -320,14 +326,18 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["stat_name"] = "mean"
-                    return_structure["meanAGDvsThickness"] = plotly_binned_statistic_barchart(
+                    return_structure[
+                        "meanAGDvsThickness"
+                    ] = plotly_binned_statistic_barchart(
                         df,
                         parameter_dict,
                     )
 
                 if user_profile.plotMedian:
                     parameter_dict["stat_name"] = "median"
-                    return_structure["medianAGDvsThickness"] = plotly_binned_statistic_barchart(
+                    return_structure[
+                        "medianAGDvsThickness"
+                    ] = plotly_binned_statistic_barchart(
                         df,
                         parameter_dict,
                     )
@@ -354,9 +364,14 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     }
                     if user_profile.plotMean:
                         parameter_dict["value_axis_title"] = "Mean AGD (mGy)"
-                        parameter_dict["filename"] = "OpenREM MG acquisition protocol AGD mean"
+                        parameter_dict[
+                            "filename"
+                        ] = "OpenREM MG acquisition protocol AGD mean"
                         parameter_dict["average_choice"] = "mean"
-                        return_structure["acquisitionMeanAGDData"], return_structure["acquisitionMeanAGDDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
+                        (
+                            return_structure["acquisitionMeanAGDData"],
+                            return_structure["acquisitionMeanAGDDataCSV"],
+                        ) = plotly_barchart(  # pylint: disable=line-too-long
                             df_aggregated,
                             parameter_dict,
                             "acquisitionMeanAGDData.csv",
@@ -364,9 +379,14 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
 
                     if user_profile.plotMedian:
                         parameter_dict["value_axis_title"] = "Median AGD (mGy)"
-                        parameter_dict["filename"] = "OpenREM MG acquisition protocol AGD median"
+                        parameter_dict[
+                            "filename"
+                        ] = "OpenREM MG acquisition protocol AGD median"
                         parameter_dict["average_choice"] = "median"
-                        return_structure["acquisitionMedianAGDData"], return_structure["acquisitionMedianAGDDataCSV"] = plotly_barchart(  # pylint: disable=line-too-long
+                        (
+                            return_structure["acquisitionMedianAGDData"],
+                            return_structure["acquisitionMedianAGDDataCSV"],
+                        ) = plotly_barchart(  # pylint: disable=line-too-long
                             df_aggregated,
                             parameter_dict,
                             "acquisitionMedianAGDData.csv",
@@ -421,7 +441,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         "global_max_min": user_profile.plotHistogramGlobalBins,
                         "return_as_dict": return_as_dict,
                     }
-                    return_structure["acquisitionHistogramAGDData"] = plotly_histogram_barchart(
+                    return_structure[
+                        "acquisitionHistogramAGDData"
+                    ] = plotly_histogram_barchart(
                         df,
                         parameter_dict,
                     )
@@ -444,7 +466,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "filename": "OpenREM CT acquisition protocol AGD vs thickness",
                 "return_as_dict": return_as_dict,
             }
-            return_structure["AGDvsThickness"] = plotly_scatter(  # pylint: disable=line-too-long
+            return_structure[
+                "AGDvsThickness"
+            ] = plotly_scatter(  # pylint: disable=line-too-long
                 df,
                 parameter_dict,
             )
@@ -467,7 +491,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "filename": "OpenREM CT acquisition protocol kVp vs thickness",
                 "return_as_dict": return_as_dict,
             }
-            return_structure["kVpvsThickness"] = plotly_scatter(  # pylint: disable=line-too-long
+            return_structure[
+                "kVpvsThickness"
+            ] = plotly_scatter(  # pylint: disable=line-too-long
                 df,
                 parameter_dict,
             )
@@ -490,7 +516,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "filename": "OpenREM CT acquisition protocol mAs vs thickness",
                 "return_as_dict": return_as_dict,
             }
-            return_structure["mAsvsThickness"] = plotly_scatter(  # pylint: disable=line-too-long
+            return_structure[
+                "mAsvsThickness"
+            ] = plotly_scatter(  # pylint: disable=line-too-long
                 df,
                 parameter_dict,
             )
@@ -518,10 +546,11 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "return_as_dict": return_as_dict,
             }
-            return_structure["acquisitionFrequencyData"], return_structure["acquisitionFrequencyDataCSV"] = plotly_frequency_barchart(  # pylint: disable=line-too-long
-                df,
-                parameter_dict,
-                csv_name="acquisitionFrequencyData.csv"
+            (
+                return_structure["acquisitionFrequencyData"],
+                return_structure["acquisitionFrequencyDataCSV"],
+            ) = plotly_frequency_barchart(  # pylint: disable=line-too-long
+                df, parameter_dict, csv_name="acquisitionFrequencyData.csv"
             )
 
         if user_profile.plotMGAcquisitionAGDOverTime:
@@ -591,8 +620,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             f.qs,
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
-            data_point_name_remove_trailing_whitespace=user_profile.plotRemoveCategoryTrailingWhitespace,
-            data_point_name_remove_multiple_whitespace=user_profile.plotRemoveCategoryMultipleWhitespace,
+            data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
             uid="pk",
         )
 
