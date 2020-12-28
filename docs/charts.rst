@@ -41,6 +41,7 @@ Hovering the cursor over a bar shows the:
 .. raw:: html
    :file: charts/barchart.html
 
+|
 
 ===============================================
 Boxplot of values across a number of categories
@@ -66,6 +67,7 @@ Hovering the cursor over the box shows the:
 .. raw:: html
    :file: charts/boxplot.html
 
+|
 
 ===============================================
 Histogram bar chart of values across categories
@@ -85,6 +87,7 @@ Hovering the cursor over a bar shows the:
 .. raw:: html
    :file: charts/histogram.html
 
+|
 
 ===============================
 Bar chart of category frequency
@@ -103,12 +106,15 @@ Hovering the cursor over a bar section shows the:
 .. raw:: html
    :file: charts/frequency.html
 
+|
+
 Setting *Grouping choice* to **System names** in the `Chart options on the modality pages`_ groups the data by x-ray
 system name rather than requested procedure name, as shown below:
 
 .. raw:: html
    :file: charts/frequency_group_by_system.html
 
+|
 
 ==============================
 Scatter chart of x vs y values
@@ -127,6 +133,7 @@ Hovering the cursor over a bar section shows the:
 .. raw:: html
    :file: charts/scatter.html
 
+|
 
 =====================
 Bar chart of workload
@@ -148,6 +155,7 @@ Hovering the cursor over a section shows you the:
 .. raw:: html
    :file: charts/workload.html
 
+|
 
 =====================================
 Line chart of average value over time
@@ -173,12 +181,15 @@ Hovering the cursor over a section shows you the:
 .. raw:: html
    :file: charts/overtime.html
 
+|
+
 Setting *Grouping choice* to **System names** in the `Chart options on the modality pages`_ changes the grouping. Now
 a sub-plot is created for each x-ray system, each with a series per requested procedure name, as shown below:
 
 .. raw:: html
    :file: charts/overtime_group_by_system.html
 
+|
 
 =========================================================================
 Bar chart of average value against another binned value across categories
@@ -198,6 +209,7 @@ Hovering the cursor over a section shows you the:
 .. raw:: html
    :file: charts/binned_statistic.html
 
+|
 
 ***********************************
 Chart options on the modality pages
@@ -228,7 +240,6 @@ Sorting direction          **Ascending** or |br|                     Sets the so
 Split plots by physician   **On** or **off**                         Calculate a series per physician |br|
                                                                      (*some fluoroscopy charts only*)
 ========================== ========================================= ==================================================
-
 
 
 *******************************************
@@ -324,12 +335,16 @@ Plotly dark
 .. raw:: html
    :file: charts/barchart_plotly_dark.html
 
+|
+
 ++++++++++++
 Presentation
 ++++++++++++
 
 .. raw:: html
    :file: charts/barchart_presentation.html
+
+|
 
 ++++++++++++
 Simple white
@@ -338,6 +353,7 @@ Simple white
 .. raw:: html
    :file: charts/barchart_simple_white.html
 
+|
 
 *******************
 Available CT charts
