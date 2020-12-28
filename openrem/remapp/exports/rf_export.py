@@ -218,7 +218,9 @@ def _all_data_headers(pid=False, name=None, patid=None):
     :param patid: has patient ID been selected for export
     :return: list of headers for all_data sheet and csv sheet
     """
-    all_data_headers = common_headers(pid=pid, name=name, patid=patid) + [
+    all_data_headers = common_headers(
+        modality="RF", pid=pid, name=name, patid=patid
+    ) + [
         "A DAP total (Gy.m^2)",
         "A Dose RP total (Gy)",
         "A Fluoro DAP total (Gy.m^2)",
@@ -704,9 +706,7 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
                 )
             )
             logger.error(error_message)
-            writer.writerow(
-                [error_message,]
-            )
+            writer.writerow([error_message])
 
     tsk.progress = "All study data written."
     tsk.save()
@@ -1013,13 +1013,7 @@ def rf_phe_2019(filterdict, user=None):
         tsk.progress = "Writing study {0} of {1}".format(row + 1, num_rows)
         tsk.save()
 
-        row_data = [
-            "",
-            row + 1,
-            exam.pk,
-            exam.study_date,
-            exam.total_dap,
-        ]
+        row_data = ["", row + 1, exam.pk, exam.study_date, exam.total_dap]
         accum_data = []
         for plane in exam.projectionxrayradiationdose_set.get().accumxraydose_set.all():
             accum_data.append(_get_accumulated_data(plane))
@@ -1099,12 +1093,10 @@ def rf_phe_2019(filterdict, user=None):
                     fluoro_events.order_by()
                     .values_list("acquisition_protocol", flat=True)
                     .distinct()
-                ),
+                )
             ]
         except TypeError:
-            row_data += [
-                "",
-            ]
+            row_data += [""]
         try:
             row_data += [
                 " | ".join(
@@ -1113,12 +1105,10 @@ def rf_phe_2019(filterdict, user=None):
                         "irradeventxraysourcedata__fluoro_mode__code_meaning", flat=True
                     )
                     .distinct()
-                ),
+                )
             ]
         except TypeError:
-            row_data += [
-                "",
-            ]
+            row_data += [""]
         fluoro_frame_rates = (
             fluoro_events.order_by()
             .values_list("irradeventxraysourcedata__pulse_rate", flat=True)
@@ -1131,18 +1121,12 @@ def rf_phe_2019(filterdict, user=None):
                 format(x, "1.1f") for x in fluoro_frame_rates if x is not None
             )
             column_aq += " fps. "
-            row_data += [
-                "Multiple rates",
-            ]
+            row_data += ["Multiple rates"]
         else:
             try:
-                row_data += [
-                    fluoro_frame_rates[0],
-                ]
+                row_data += [fluoro_frame_rates[0]]
             except IndexError:
-                row_data += [
-                    "",
-                ]
+                row_data += [""]
         acquisition_frame_rates = (
             acquisition_events.order_by()
             .values_list("irradeventxraysourcedata__pulse_rate", flat=True)
@@ -1164,13 +1148,9 @@ def rf_phe_2019(filterdict, user=None):
             column_aq += " fps. "
         else:
             try:
-                row_data += [
-                    acquisition_frame_rates[0],
-                ]
+                row_data += [acquisition_frame_rates[0]]
             except IndexError:
-                row_data += [
-                    "",
-                ]
+                row_data += [""]
         row_data += [acquisition_events.count()]
         try:
             grid_types = (
@@ -1185,10 +1165,7 @@ def rf_phe_2019(filterdict, user=None):
                 grid_types = grid_types[1:]
         except ObjectDoesNotExist:
             grid_types = [""]
-        row_data += [
-            " | ".join(grid_types),
-            "",  # AEC used - not recorded in RDSR
-        ]
+        row_data += [" | ".join(grid_types), ""]  # AEC used - not recorded in RDSR
         patient_position = (
             events.order_by()
             .values_list(
@@ -1293,23 +1270,8 @@ def rf_phe_2019(filterdict, user=None):
                     "irradeventxraysourcedata__xrayfilters__xray_filter_thickness_maximum__max"
                 ],
             )
-        row_data += [
-            "",  # filtration automated?
-            filters_cu_str,
-            filters_al_str,
-        ]
-        row_data += [
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-        ]
+        row_data += ["", filters_cu_str, filters_al_str]  # filtration automated?
+        row_data += ["", "", "", "", "", "", "", "", "", ""]
         row_data += [column_aq]
         sheet.write_row(row + 6, 0, row_data)
 

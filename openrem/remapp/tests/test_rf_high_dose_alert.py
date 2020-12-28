@@ -70,8 +70,7 @@ class RFHighDoseAlert(TestCase):
         self.two_exams_text = u"(2 exams)"
 
     def test_cumulative_dap(self):
-        """ Test that the calculated cumulative DAP over delta weeks is correct for the two studies
-        """
+        """Test that the calculated cumulative DAP over delta weeks is correct for the two studies"""
 
         self.client.login(username="temporary", password="temporary")
         filter_set = ""
@@ -105,8 +104,7 @@ class RFHighDoseAlert(TestCase):
         )
 
     def test_cumulative_rp_dose(self):
-        """ Test that calculated cumulative total dose at RP over delta weeks is correct
-        """
+        """Test that calculated cumulative total dose at RP over delta weeks is correct"""
         self.client.login(username="temporary", password="temporary")
         filter_set = ""
         f = RFSummaryListFilter(
@@ -335,8 +333,7 @@ class RFHighDoseAlert(TestCase):
         self.assertContains(response, self.rp_000_text, count=1)
 
     def test_skin_dose(self):
-        """Test that the peak skin dose is calculated correctly
-        """
+        """Test that the peak skin dose is calculated correctly"""
         self.client.login(username="temporary", password="temporary")
         # Obtain the pk
         filter_set = ""

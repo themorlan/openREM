@@ -1,13 +1,17 @@
 {% load humanize %}
+{% load i18n %}
+
 {%  with modality|add:'_summary_list_filter' as url_name %}
   <table class="table table-bordered table-hover row-clickable sortable" id="summary_table_{{ modality }}">
     <tr>
-      <th>System name</th>
-      <th>Total number of studies</th>
-      <th>Latest study</th>
+      <th>{% trans "System name" %}</th>
+      <th>{% trans "Total number of studies" %}</th>
+      <th>{% trans "Latest study" %}</th>
       {% if home_config.display_workload_stats %}
-        <th>Number in last {{ home_config.day_delta_a }} days</th>
-        <th>Number in last {{ home_config.day_delta_b }} days</th>
+        <th>{% blocktrans with home_config.day_delta_a as day_delta trimmed %}
+            Number in last {{ day_delta }} days{% endblocktrans %}</th>
+        <th>{% blocktrans with home_config.day_delta_b as day_delta trimmed %}
+            Number in last {{ day_delta }} days{% endblocktrans %}</th>
       {% endif %}
     </tr>
     {% for display_name,details in data.items %}
@@ -74,10 +78,10 @@
         </td>
         {% if home_config.display_workload_stats %}
           <td style="width:12.5%">
-            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date" id="{{ details.displayname_pk }}_a"></a>
+            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date&study_date__gt={{ home_config.date_a }}" id="{{ details.displayname_pk }}_a"></a>
           </td>
           <td style="width:12.5%">
-            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date" id="{{ details.displayname_pk }}_b"></a>
+            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date&study_date__gt={{ home_config.date_b }}" id="{{ details.displayname_pk }}_b"></a>
           </td>
         {% endif %}
       {% endif %}

@@ -15,14 +15,10 @@ from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
 
 
 class ImportToshibaWithVariableHelicalPitch(TestCase):
-    """Test module for safe handling of illegal multi-value in SD value
-
-    """
+    """Test module for safe handling of illegal multi-value in SD value"""
 
     def test_dose_check_import(self):
-        """Imports a Toshiba RDSR with variable helical pitch with illegal string in DS field
-
-        """
+        """Imports a Toshiba RDSR with variable helical pitch with illegal string in DS field"""
         PatientIDSettings.objects.create()
 
         dicom_file = "test_files/CT-RDSR-Toshiba_MultiValSD.dcm"

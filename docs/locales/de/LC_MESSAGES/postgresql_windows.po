@@ -1,0 +1,151 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../postgresql_windows.rst:3 0d94d0c03c2a4b3984e7b9d6bd56f657
+msgid "PostgreSQL database (Windows)"
+msgstr ""
+
+#: ../../postgresql_windows.rst:5 208865ed7f2f4812a517515cf61db5c2
+msgid "Original author JA Cole"
+msgstr ""
+
+#: ../../postgresql_windows.rst:8 6f87316375ed4f3f9f4297a3bcce1070
+msgid "Get PostgreSQL and the python connector"
+msgstr ""
+
+#: ../../postgresql_windows.rst:10 65dd8240caf243d2971face2129d0ce5
+msgid ""
+"Download the installer from http://www.enterprisedb.com/products-"
+"services-training/pgdownload#windows"
+msgstr ""
+
+#: ../../postgresql_windows.rst:11 5021972db3984860b9d205b1d9e41882
+msgid ""
+"Install the Python PostgreSQL connector (activate the virtualenv first if"
+" using)::"
+msgstr ""
+
+#: ../../postgresql_windows.rst:18 0d69d17edfe547e7add40dc7d34abe40
+msgid "Install PostgreSQL"
+msgstr ""
+
+#: ../../postgresql_windows.rst:20 0b4e5763055e412aa93aceb64e7222bd
+msgid ""
+"Run the the postgresql installer. It will ask for a location. Ensure the "
+"\"data\" directory is *not* under \"Program Files\" as this can cause "
+"permissions errors. Enter a superuser password when prompted. Make sure "
+"you keep this safe as you will need it."
+msgstr ""
+
+#: ../../postgresql_windows.rst:25 e2c28d4aef014d2683e44c1dc17f1e99
+msgid "Create a user and database"
+msgstr ""
+
+#: ../../postgresql_windows.rst:27 a23f4921ebea4a8193aed4179fdd4658
+msgid "Open pgAdmin"
+msgstr ""
+
+#: ../../postgresql_windows.rst:29 a0398d734c04406db0f7c755c5caf4dc
+msgid "Click on servers to expand"
+msgstr ""
+
+#: ../../postgresql_windows.rst:30 86b62da8574b48918bd3a46bd9994759
+msgid "Double click on PostgreSQL 9.6 (or whichever version you have installed)"
+msgstr ""
+
+#: ../../postgresql_windows.rst:31 cafa17d7e413487ea65d46514ca86a99
+msgid "Enter your superuser password"
+msgstr ""
+
+#: ../../postgresql_windows.rst:32 af590c3927144f1783a64d3288bab7d8
+msgid "Right click on \"login roles\" and choose \"New login role\""
+msgstr ""
+
+#: ../../postgresql_windows.rst:33 1452c11329c84ef2b301231d714ca551
+msgid ""
+"Create the openremuser (or whatever you want your user to be called) and "
+"under \"Definition\" add a password"
+msgstr ""
+
+#: ../../postgresql_windows.rst:34 e3fd7a47c4d94371b8a518a2b64dbc25
+msgid ""
+"Under \"Privileges\" ensure that \"Can login\" and \"Create databases\" "
+"are set to \"Yes\""
+msgstr ""
+
+#: ../../postgresql_windows.rst:35 996b686e33c548e0b69c47a0e296c2f7
+msgid "Click OK"
+msgstr ""
+
+#: ../../postgresql_windows.rst:36 323a0f61c5ec4de2b22513323ff0bacd
+msgid "Right click on databases and choose \"New database\""
+msgstr ""
+
+#: ../../postgresql_windows.rst:37 14d80c6d26cc4d36b6aed61db0e5362c
+msgid ""
+"Name the database (openremdb is fine) and assign the the owner to the "
+"user you just created"
+msgstr ""
+
+#: ../../postgresql_windows.rst:40 6403eecb23b04ac585091e78fbab89ca
+msgid ""
+"**If this is your initial install**, you are now ready to install "
+"OpenREM, so go to the :doc:`install` docs."
+msgstr ""
+
+#: ../../postgresql_windows.rst:42 6cd9fe61433c48d6957662c2126149b7
+msgid "If you are replacing a SQLite test install with PostgreSQL, continue here."
+msgstr ""
+
+#: ../../postgresql_windows.rst:45 2f16e9344b114d339ea25d126f6b356b
+msgid "Configure OpenREM to use the database"
+msgstr ""
+
+#: ../../postgresql_windows.rst:48 3530733d48b94d74919817f751519f82
+msgid ""
+"Find and edit the settings file (notepad works fine). The path depends on"
+" your python install, but could be something like:"
+msgstr ""
+
+#: ../../postgresql_windows.rst:48 857ff5ca18c742849c68e512b17904df
+msgid ""
+"``C:\\lib\\python2.7\\site-"
+"packages\\openrem\\openremproject\\local_settings.py``"
+msgstr ""
+
+#: ../../postgresql_windows.rst:54 73ae9f45e34c47929ade6d2c0cc51a25
+msgid "Set the following (changing name, user and password as appropriate):"
+msgstr ""
+
+#: ../../postgresql_windows.rst:51 913aefbcb07c4be38a6bb29c7b4d86a2
+msgid "``'ENGINE': 'django.db.backends.postgresql_psycopg2',``"
+msgstr ""
+
+#: ../../postgresql_windows.rst:52 25f2603cc4f14e5984d1b7bab2ed24de
+msgid "``'NAME': 'openremdb',``"
+msgstr ""
+
+#: ../../postgresql_windows.rst:53 0681495deab249f38467192f782fcdcb
+msgid "``'USER': 'openremuser',``"
+msgstr ""
+
+#: ../../postgresql_windows.rst:54 3ea2604083274defacef8633dcbb33ce
+msgid "``'PASSWORD': 'openrem_pw',``"
+msgstr ""
+

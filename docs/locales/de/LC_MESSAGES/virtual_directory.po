@@ -1,0 +1,139 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../virtual_directory.rst:3 21be48863ecb44e9be3db4e42fab23fe
+msgid "Running the OpenREM website in a virtual directory"
+msgstr ""
+
+#: ../../virtual_directory.rst:5 96543ea8bd7e4bbfade87d9ad1382431
+msgid ""
+"If you want to run the OpenREM in a virtual directory (like "
+"http://server/dms/) you need to configure this in your web server "
+"configuration as well as in the OpenREM configuration."
+msgstr ""
+
+#: ../../virtual_directory.rst:8 8408a9d409d3487f898a70c5c738baea
+msgid "The following steps are necessary:"
+msgstr ""
+
+#: ../../virtual_directory.rst:10 8b924218dbbb408b9d6cddaea0d4301b
+msgid "Configure virtual directory settings in the Docker ``.env.prod`` file"
+msgstr ""
+
+#: ../../virtual_directory.rst:11 3acda072a46c4f9ca533d9446a1eba4d
+msgid "Update Nginx webserver configuration"
+msgstr ""
+
+#: ../../virtual_directory.rst:12 01447e97951a41c089ecc5af939d962d
+msgid "Update the ``reverse.js`` file"
+msgstr ""
+
+#: ../../virtual_directory.rst:13 eec440e098e04256bddf6be7a0b3d48c
+msgid "Restart the containers"
+msgstr ""
+
+#: ../../virtual_directory.rst:16 2d9e3625f410459197a46a31d7b48390
+msgid "Docker setup"
+msgstr ""
+
+#: ../../virtual_directory.rst:18 b6fb8279812a4a6d92d45401f023610f
+msgid ""
+"Stop the containers if they are running before changing the "
+"configuration, using a shell (command prompt) in the Docker OpenREM "
+"installation folder"
+msgstr ""
+
+#: ../../virtual_directory.rst:26 548cc5be88ee4fd99585c7491e6a6280
+msgid "Configure virtual directory settings in .env.prod"
+msgstr ""
+
+#: ../../virtual_directory.rst:28 b1d2c843c2cb4f61b396df69560fdae2
+msgid ""
+"Django needs to know the virtual directory name and which URLs the static"
+" and media files are served from."
+msgstr ""
+
+#: ../../virtual_directory.rst:30 2d02752ef0f94b48b36901ceff7b9abb
+msgid ""
+"Edit ``.env.prod``, uncomment the following lines (remove the ``#``) and "
+"set them as appropriate. For example, to serve the website from a "
+"subfolder/virtual directory named ``dms``:"
+msgstr ""
+
+#: ../../virtual_directory.rst:41 ../../virtual_directory.rst:112
+#: 5ffff9ed444e454a9a1880e5e3107038 9f243cf2ab33434591c02d7b827583ff
+msgid "Modify webserver configuration"
+msgstr ""
+
+#: ../../virtual_directory.rst:43 35b5d8c1995e4ed5bc99f8da7a38f4be
+msgid ""
+"Edit ``nginx-conf/conf.d/openrem.conf`` to update the locations — again "
+"using the example virtual directory ``dms``:"
+msgstr ""
+
+#: ../../virtual_directory.rst:62 649b4a1f015449d79a16defa1a420b1a
+msgid "Start the containers"
+msgstr ""
+
+#: ../../virtual_directory.rst:69 ../../virtual_directory.rst:132
+#: 44c19a59f0a641968407ebc19053a301 74673016bd6e4612b75f62d112369e36
+msgid "Update reverse.js"
+msgstr ""
+
+#: ../../virtual_directory.rst:71 4f3ac03d0e764fa2a4de1f7e7940c592
+msgid ""
+"The static reverse.js file should be updated in order to change the URLs "
+"in the static javascript files."
+msgstr ""
+
+#: ../../virtual_directory.rst:73 4098e605a4574992be824a9fc3da37c8
+msgid ""
+"Open a shell (command prompt) and navigate to the Docker OpenREM "
+"installation folder"
+msgstr ""
+
+#: ../../virtual_directory.rst:81 6bcdce8b67ec4bef9a404e0e567a96ba
+msgid "Test!"
+msgstr ""
+
+#: ../../virtual_directory.rst:83 dfde875237574f23834d1161c9397ae7
+msgid ""
+"You should now be able to reach the OpenREM interface using the virtual "
+"directory address."
+msgstr ""
+
+#: ../../virtual_directory.rst:87 1fb5944189d7464fad63a1af86479895
+msgid "Non-Docker Linux install"
+msgstr ""
+
+#: ../../virtual_directory.rst:95 a4e64764b2db421a8598ddd85ab15e18
+msgid "Update local_settings.py"
+msgstr ""
+
+#: ../../virtual_directory.rst:97 fbd32893f8c54e35bfcb7f6c268eaa2d
+msgid ""
+"Update ``local_settings.py`` with the same variables as in the "
+"``.env.prod`` file. If the values aren't in your copy of the file just "
+"add them in:"
+msgstr ""
+
+#: ../../virtual_directory.rst:141 ffcea4d9bc4141c9b757f307419ca873
+msgid "Restart the services"
+msgstr ""
+

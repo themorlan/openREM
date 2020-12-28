@@ -16,14 +16,10 @@ from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
 
 
 class ImportToshibaWithDoseCheck(TestCase):
-    """Test module focusing on proper extraction of dose check data
-
-    """
+    """Test module focusing on proper extraction of dose check data"""
 
     def test_dose_check_import(self):
-        """Imports a known RDSR and checks the dose check details
-
-        """
+        """Imports a known RDSR and checks the dose check details"""
         PatientIDSettings.objects.create()
 
         dicom_file = "test_files/CT-RDSR-Toshiba_DoseCheck.dcm"

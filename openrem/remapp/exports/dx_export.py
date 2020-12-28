@@ -196,18 +196,11 @@ def _dx_get_series_data(s):
     except AttributeError:
         anatomical_structure = ""
 
-    series_data = [
-        s.acquisition_protocol,
-        anatomical_structure,
-    ]
+    series_data = [s.acquisition_protocol, anatomical_structure]
     try:
-        series_data += [
-            s.image_view.code_meaning,
-        ]
+        series_data += [s.image_view.code_meaning]
     except AttributeError:
-        series_data += [
-            None,
-        ]
+        series_data += [None]
     series_data += [
         source_data["exposure_control_mode"],
         source_data["kvp"],
@@ -275,9 +268,7 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
     tsk.save()
 
     headers = common_headers(pid=pid, name=name, patid=patid)
-    headers += [
-        "DAP total (cGy.cm^2)",
-    ]
+    headers += ["DAP total (cGy.cm^2)"]
 
     from django.db.models import Max
 
@@ -332,9 +323,7 @@ def exportDX2excel(filterdict, pid=False, name=None, patid=None, user=None):
                 )
             )
             logger.error(error_message)
-            writer.writerow(
-                [error_message,]
-            )
+            writer.writerow([error_message])
 
     tsk.progress = "All study data written."
     tsk.save()
@@ -388,9 +377,7 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     # Some prep
     commonheaders = common_headers(pid=pid, name=name, patid=patid)
-    commonheaders += [
-        "DAP total (cGy.cm^2)",
-    ]
+    commonheaders += ["DAP total (cGy.cm^2)"]
     protocolheaders = commonheaders + [
         "Protocol",
         "Anatomy",
@@ -547,18 +534,9 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
     tsk.progress = "{0} studies in query.".format(tsk.num_records)
     tsk.save()
 
-    columns_a_d = [
-        "",
-        "PHE Record No",
-        "Contributor's record ID",
-        "Exam date",
-    ]
-    column_e_projection = [
-        "Projection DAP dose",
-    ]
-    column_e_study = [
-        "Study DAP dose",
-    ]
+    columns_a_d = ["", "PHE Record No", "Contributor's record ID", "Exam date"]
+    column_e_projection = ["Projection DAP dose"]
+    column_e_study = ["Study DAP dose"]
     columns_f_m = [
         "DAP dose units",
         "Protocol name",
@@ -569,9 +547,7 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
         "Sex",
         "Height",
     ]
-    study_num_projections = [
-        "number of projections",
-    ]
+    study_num_projections = ["number of projections"]
 
     per_projection_headings = [
         "Detector used",
@@ -649,13 +625,9 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
             )
         row_data = ["", row + 1, exam.pk, exam.study_date]
         if not projection:
-            row_data += [
-                exam.dap_total_cgycm2(),
-            ]
+            row_data += [exam.dap_total_cgycm2()]
         else:
-            row_data += [
-                projection_events[0].convert_gym2_to_cgycm2(),
-            ]
+            row_data += [projection_events[0].convert_gym2_to_cgycm2()]
         row_data += ["cGy·cm²"]
 
         exam_name_text = (
@@ -681,13 +653,9 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
             row_data += [exam.number_of_events]
             for x in range(event_columns):
                 try:
-                    row_data += [
-                        projection_events[x].convert_gym2_to_cgycm2(),
-                    ]
+                    row_data += [projection_events[x].convert_gym2_to_cgycm2()]
                 except IndexError:
-                    row_data += [
-                        "",
-                    ]
+                    row_data += [""]
 
         for event in projection_events:
             source_data = _get_source_data(event)
@@ -727,9 +695,7 @@ def dx_phe_2019(filterdict, user=None, projection=True, bespoke=False):
                 pt_position = "{0}, {1}".format(pt_position, pt_table_rel)
 
             if not projection:
-                row_data += [
-                    event.acquisition_protocol,
-                ]
+                row_data += [event.acquisition_protocol]
             sdd = ""
             if distances["distance_source_to_detector"]:
                 sdd = distances["distance_source_to_detector"] / 10

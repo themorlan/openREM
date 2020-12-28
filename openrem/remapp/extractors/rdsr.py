@@ -28,19 +28,35 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-
-from __future__ import division
-from __future__ import absolute_import
-
-from past.utils import old_div
+from collections import OrderedDict
+from datetime import datetime, timedelta
+from decimal import Decimal
 import logging
 import os
 import sys
+from time import sleep
 
+from celery import shared_task
+from defusedxml.ElementTree import fromstring, ParseError
 import django
-from django.db.models import ObjectDoesNotExist
+from django.db.models import Avg, Sum, ObjectDoesNotExist
+import pydicom
 
-# setup django/OpenREM
+from ..tools.check_uid import record_sop_instance_uid
+from ..tools.dcmdatetime import get_date, get_time, make_date, make_date_time, make_time
+from ..tools.get_values import (
+    get_or_create_cid,
+    get_seq_code_meaning,
+    get_seq_code_value,
+    get_value_kw,
+    list_to_string,
+    test_numeric_value,
+)
+from ..tools.hash_id import hash_id
+from ..tools.make_skin_map import make_skin_map
+from ..tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
+
+# setup django/OpenREM.
 basepath = os.path.dirname(__file__)
 projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
 if projectpath not in sys.path:
@@ -48,17 +64,61 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
-from celery import shared_task
-from remapp.tools.get_values import test_numeric_value
+from .extract_common import (  # pylint: disable=wrong-import-order, wrong-import-position
+    ct_event_type_count,
+    patient_module_attributes,
+    populate_mammo_agd_summary,
+    populate_dx_rf_summary,
+    populate_rf_delta_weeks_summary,
+)
+from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-position
+    AccumCassetteBsdProjRadiogDose,
+    AccumIntegratedProjRadiogDose,
+    AccumMammographyXRayDose,
+    AccumProjXRayDose,
+    AccumXRayDose,
+    Calibration,
+    CtAccumulatedDoseData,
+    CtDoseCheckDetails,
+    CtIrradiationEventData,
+    CtRadiationDose,
+    CtXRaySourceParameters,
+    DeviceParticipant,
+    DicomDeleteSettings,
+    DoseRelatedDistanceMeasurements,
+    Exposure,
+    GeneralStudyModuleAttr,
+    GeneralEquipmentModuleAttr,
+    HighDoseMetricAlertSettings,
+    ImageViewModifier,
+    IrradEventXRayData,
+    IrradEventXRayDetectorData,
+    IrradEventXRayMechanicalData,
+    IrradEventXRaySourceData,
+    Kvp,
+    MergeOnDeviceObserverUIDSettings,
+    ObserverContext,
+    PatientIDSettings,
+    PatientModuleAttr,
+    PatientStudyModuleAttr,
+    PersonParticipant,
+    PKsForSummedRFDoseStudiesInDeltaWeeks,
+    ProjectionXRayRadiationDose,
+    PulseWidth,
+    ScanningLength,
+    SkinDoseMapCalcSettings,
+    UniqueEquipmentNames,
+    XrayFilters,
+    XrayGrid,
+    XrayTubeCurrent,
+)
 
 logger = logging.getLogger(
     "remapp.extractors.rdsr"
 )  # Explicitly named so that it is still handled when using __main__
 
 
-def _observercontext(dataset, obs, ch):  # TID 1002
-    from remapp.tools.get_values import get_or_create_cid, safe_strings
-
+def _observercontext(dataset, obs):  # TID 1002
     for cont in dataset.ContentSequence:
         if cont.ConceptNameCodeSequence[0].CodeMeaning == "Observer Type":
             obs.observer_type = get_or_create_cid(
@@ -71,28 +131,26 @@ def _observercontext(dataset, obs, ch):  # TID 1002
             except AttributeError:
                 obs.device_observer_uid = cont.TextValue
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Device Observer Name":
-            obs.device_observer_name = safe_strings(cont.TextValue, ch)
+            obs.device_observer_name = cont.TextValue
         elif (
             cont.ConceptNameCodeSequence[0].CodeMeaning
             == "Device Observer Manufacturer"
         ):
-            obs.device_observer_manufacturer = safe_strings(cont.TextValue, ch)
+            obs.device_observer_manufacturer = cont.TextValue
         elif (
             cont.ConceptNameCodeSequence[0].CodeMeaning == "Device Observer Model Name"
         ):
-            obs.device_observer_model_name = safe_strings(cont.TextValue, ch)
+            obs.device_observer_model_name = cont.TextValue
         elif (
             cont.ConceptNameCodeSequence[0].CodeMeaning
             == "Device Observer Serial Number"
         ):
-            obs.device_observer_serial_number = safe_strings(cont.TextValue, ch)
+            obs.device_observer_serial_number = cont.TextValue
         elif (
             cont.ConceptNameCodeSequence[0].CodeMeaning
             == "Device Observer Physical Location during observation"
         ):
-            obs.device_observer_physical_location_during_observation = safe_strings(
-                cont.TextValue, ch
-            )
+            obs.device_observer_physical_location_during_observation = cont.TextValue
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Device Role in Procedure":
             obs.device_role_in_procedure = get_or_create_cid(
                 cont.ConceptCodeSequence[0].CodeValue,
@@ -109,8 +167,6 @@ def _person_participant(dataset, event_data_type, foreign_key):
     :param foreign_key: object of model this modal will link to
     :return: None
     """
-    from remapp.models import PersonParticipant
-    from remapp.tools.get_values import get_or_create_cid
 
     if event_data_type == "ct_dose_check_alert":
         person = PersonParticipant.objects.create(
@@ -122,32 +178,40 @@ def _person_participant(dataset, event_data_type, foreign_key):
         )
     else:
         return
-    person.person_name = dataset.PersonName
-    for cont in dataset.ContentSequence:
-        if cont.ConceptNameCodeSequence[0].CodeMeaning == "Person Role in Procedure":
-            person.person_role_in_procedure_cid = get_or_create_cid(
-                cont.ConceptCodeSequence[0].CodeValue,
-                cont.ConceptCodeSequence[0].CodeMeaning,
-            )
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Person ID":
-            person.person_id = cont.TextValue
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Person ID Issue":
-            person.person_id_issuer = cont.TextValue
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Organization Name":
-            person.organization_name = cont.TextValue
-        elif (
-            cont.ConceptNameCodeSequence[0].CodeMeaning == "Person Role in Organization"
-        ):
-            person.person_role_in_organization_cid = get_or_create_cid(
-                cont.ConceptCodeSequence[0].CodeValue,
-                cont.ConceptCodeSequence[0].CodeMeaning,
-            )
+    try:
+        person.person_name = dataset.PersonName
+    except AttributeError:
+        logger.debug("Person Name ConceptNameCodeSequence, but no PersonName element")
+    try:
+        for cont in dataset.ContentSequence:
+            if (
+                cont.ConceptNameCodeSequence[0].CodeMeaning
+                == "Person Role in Procedure"
+            ):
+                person.person_role_in_procedure_cid = get_or_create_cid(
+                    cont.ConceptCodeSequence[0].CodeValue,
+                    cont.ConceptCodeSequence[0].CodeMeaning,
+                )
+            elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Person ID":
+                person.person_id = cont.TextValue
+            elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Person ID Issue":
+                person.person_id_issuer = cont.TextValue
+            elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Organization Name":
+                person.organization_name = cont.TextValue
+            elif (
+                cont.ConceptNameCodeSequence[0].CodeMeaning
+                == "Person Role in Organization"
+            ):
+                person.person_role_in_organization_cid = get_or_create_cid(
+                    cont.ConceptCodeSequence[0].CodeValue,
+                    cont.ConceptCodeSequence[0].CodeMeaning,
+                )
+    except AttributeError:
+        logger.debug("Person Name sequence malformed")
     person.save()
 
 
-def _deviceparticipant(dataset, eventdatatype, foreignkey, ch):
-    from remapp.models import DeviceParticipant
-    from remapp.tools.get_values import get_or_create_cid, safe_strings
+def _deviceparticipant(dataset, eventdatatype, foreignkey):
 
     if eventdatatype == "detector":
         device = DeviceParticipant.objects.create(
@@ -163,6 +227,11 @@ def _deviceparticipant(dataset, eventdatatype, foreignkey, ch):
         device = DeviceParticipant.objects.create(ct_accumulated_dose_data=foreignkey)
     elif eventdatatype == "ct_event":
         device = DeviceParticipant.objects.create(ct_irradiation_event_data=foreignkey)
+    else:
+        logger.warning(
+            f"RDSR import, in _deviceparticipant, but no suitable eventdatatype (is {eventdatatype})"
+        )
+        return
     for cont in dataset.ContentSequence:
         if cont.ConceptNameCodeSequence[0].CodeMeaning == "Device Role in Procedure":
             device.device_role_in_procedure = get_or_create_cid(
@@ -171,27 +240,21 @@ def _deviceparticipant(dataset, eventdatatype, foreignkey, ch):
             )
             for cont2 in cont.ContentSequence:
                 if cont2.ConceptNameCodeSequence[0].CodeMeaning == "Device Name":
-                    device.device_name = safe_strings(cont2.TextValue, char_set=ch)
+                    device.device_name = cont2.TextValue
                 elif (
                     cont2.ConceptNameCodeSequence[0].CodeMeaning
                     == "Device Manufacturer"
                 ):
-                    device.device_manufacturer = safe_strings(
-                        cont2.TextValue, char_set=ch
-                    )
+                    device.device_manufacturer = cont2.TextValue
                 elif (
                     cont2.ConceptNameCodeSequence[0].CodeMeaning == "Device Model Name"
                 ):
-                    device.device_model_name = safe_strings(
-                        cont2.TextValue, char_set=ch
-                    )
+                    device.device_model_name = cont2.TextValue
                 elif (
                     cont2.ConceptNameCodeSequence[0].CodeMeaning
                     == "Device Serial Number"
                 ):
-                    device.device_serial_number = safe_strings(
-                        cont2.TextValue, char_set=ch
-                    )
+                    device.device_serial_number = cont2.TextValue
                 elif (
                     cont2.ConceptNameCodeSequence[0].CodeMeaning
                     == "Device Observer UID"
@@ -207,7 +270,6 @@ def _pulsewidth(pulse_width_value, source):
     :param source: database object in IrradEventXRaySourceData table
     :return: None
     """
-    from remapp.models import PulseWidth
 
     try:
         pulse = PulseWidth.objects.create(irradiation_event_xray_source_data=source)
@@ -233,7 +295,6 @@ def _kvptable(kvp_value, source):
     :param source: database object in IrradEventXRaySourceData table
     :return: None
     """
-    from remapp.models import Kvp
 
     try:
         kvpdata = Kvp.objects.create(irradiation_event_xray_source_data=source)
@@ -256,7 +317,6 @@ def _xraytubecurrent(current_value, source):
     :param source: database object in IrradEventXRaySourceData table
     :return: None
     """
-    from remapp.models import XrayTubeCurrent
 
     try:
         tubecurrent = XrayTubeCurrent.objects.create(
@@ -283,7 +343,6 @@ def _exposure(exposure_value, source):
     :param source: database object in IrradEventXRaySourceData table
     :return: None
     """
-    from remapp.models import Exposure
 
     try:
         exposure = Exposure.objects.create(irradiation_event_xray_source_data=source)
@@ -303,8 +362,6 @@ def _exposure(exposure_value, source):
 
 
 def _xrayfilters(content_sequence, source):
-    from remapp.models import XrayFilters
-    from remapp.tools.get_values import get_or_create_cid
 
     filters = XrayFilters.objects.create(irradiation_event_xray_source_data=source)
     for cont2 in content_sequence:
@@ -336,7 +393,6 @@ def _xrayfilters(content_sequence, source):
 
 
 def _doserelateddistancemeasurements(dataset, mech):  # CID 10008
-    from remapp.models import DoseRelatedDistanceMeasurements
 
     distance = DoseRelatedDistanceMeasurements.objects.create(
         irradiation_event_xray_mechanical_data=mech
@@ -366,8 +422,6 @@ def _doserelateddistancemeasurements(dataset, mech):  # CID 10008
 
 
 def _irradiationeventxraymechanicaldata(dataset, event):  # TID 10003c
-    from remapp.models import IrradEventXRayMechanicalData
-    from remapp.tools.get_values import get_or_create_cid
 
     mech = IrradEventXRayMechanicalData.objects.create(
         irradiation_event_xray_data=event
@@ -494,15 +548,10 @@ def _check_rp_dose_units(rp_dose_sequence):
         return rp_dose
 
 
-def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
+def _irradiationeventxraysourcedata(dataset, event):  # TID 10003b
     # Name in DICOM standard for TID 10003B is Irradiation Event X-Ray Source Data
     # See http://dicom.nema.org/medical/dicom/current/output/chtml/part16/sect_TID_10003B.html
     # TODO: review model to convert to cid where appropriate, and add additional fields
-    from decimal import Decimal
-    from django.db.models import Avg
-    from remapp.models import IrradEventXRaySourceData, XrayGrid
-    from remapp.tools.get_values import get_or_create_cid, safe_strings
-    from defusedxml.ElementTree import fromstring, ParseError
 
     # Variables below are used if privately defined parameters are available
     private_collimated_field_height = None
@@ -524,9 +573,7 @@ def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
                         cont.ConceptCodeSequence[0].CodeMeaning,
                     )
                 except AttributeError:
-                    source.reference_point_definition = safe_strings(
-                        cont.TextValue, char_set=ch
-                    )
+                    source.reference_point_definition = cont.TextValue
             elif (
                 cont.ConceptNameCodeSequence[0].CodeMeaning == "Average Glandular Dose"
             ):
@@ -682,18 +729,15 @@ def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
                         private_collimated_field_width = (
                             bottom_shutter_pos + top_shutter_pos
                         ) * Sdd  # in mm
-                        private_collimated_field_area = old_div(
-                            (
-                                private_collimated_field_height
-                                * private_collimated_field_width
-                            ),
-                            1000000,
-                        )  # in m2
+                        private_collimated_field_area = (
+                            private_collimated_field_height
+                            * private_collimated_field_width
+                        ) / 1000000  # in m2
                 except AttributeError:
                     pass
         except IndexError:
             pass
-    _deviceparticipant(dataset, "source", source, ch)
+    _deviceparticipant(dataset, "source", source)
     try:
         source.ii_field_size = (
             fromstring(source.irradiation_event_xray_data.comment)
@@ -725,16 +769,15 @@ def _irradiationeventxraysourcedata(dataset, event, ch):  # TID 10003b
             pass
     if not source.average_xray_tube_current:
         if source.xraytubecurrent_set.all().count() > 0:
-            source.average_xray_tube_current = source.xraytubecurrent_set.all().aggregate(
-                Avg("xray_tube_current")
-            )[
-                "xray_tube_current__avg"
-            ]
+            source.average_xray_tube_current = (
+                source.xraytubecurrent_set.all().aggregate(Avg("xray_tube_current"))[
+                    "xray_tube_current__avg"
+                ]
+            )
             source.save()
 
 
-def _irradiationeventxraydetectordata(dataset, event, ch):  # TID 10003a
-    from remapp.models import IrradEventXRayDetectorData
+def _irradiationeventxraydetectordata(dataset, event):  # TID 10003a
 
     detector = IrradEventXRayDetectorData.objects.create(
         irradiation_event_xray_data=event
@@ -752,13 +795,11 @@ def _irradiationeventxraydetectordata(dataset, event, ch):  # TID 10003a
             detector.deviation_index = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue
             )
-    _deviceparticipant(dataset, "detector", detector, ch)
+    _deviceparticipant(dataset, "detector", detector)
     detector.save()
 
 
 def _imageviewmodifier(dataset, event):
-    from remapp.models import ImageViewModifier
-    from remapp.tools.get_values import get_or_create_cid
 
     modifier = ImageViewModifier.objects.create(irradiation_event_xray_data=event)
     for cont in dataset.ContentSequence:
@@ -778,8 +819,6 @@ def _get_patient_position_from_xml_string(event, xml_string):
     :param xml_string: Comment value
     :return:
     """
-    from defusedxml.ElementTree import fromstring, ParseError
-    from remapp.tools.get_values import get_or_create_cid
 
     if not xml_string:
         return
@@ -833,11 +872,8 @@ def _get_patient_position_from_xml_string(event, xml_string):
         )
 
 
-def _irradiationeventxraydata(dataset, proj, ch, fulldataset):  # TID 10003
+def _irradiationeventxraydata(dataset, proj, fulldataset):  # TID 10003
     # TODO: review model to convert to cid where appropriate, and add additional fields
-    from remapp.models import IrradEventXRayData
-    from remapp.tools.get_values import get_or_create_cid, safe_strings
-    from remapp.tools.dcmdatetime import make_date_time
 
     event = IrradEventXRayData.objects.create(projection_xray_radiation_dose=proj)
     for cont in dataset.ContentSequence:
@@ -849,7 +885,7 @@ def _irradiationeventxraydata(dataset, proj, ch, fulldataset):  # TID 10003
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Irradiation Event UID":
             event.irradiation_event_uid = cont.UID
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Irradiation Event Label":
-            event.irradiation_event_label = safe_strings(cont.TextValue, char_set=ch)
+            event.irradiation_event_label = cont.TextValue
             for cont2 in cont.ContentSequence:
                 if cont.ConceptNameCodeSequence[0].CodeMeaning == "Label Type":
                     event.label_type = get_or_create_cid(
@@ -867,7 +903,7 @@ def _irradiationeventxraydata(dataset, proj, ch, fulldataset):  # TID 10003
             )
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Acquisition Protocol":
             try:
-                event.acquisition_protocol = safe_strings(cont.TextValue, char_set=ch)
+                event.acquisition_protocol = cont.TextValue
             except AttributeError:
                 event.acquisition_protocol = None
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Anatomical structure":
@@ -950,9 +986,7 @@ def _irradiationeventxraydata(dataset, proj, ch, fulldataset):  # TID 10003
                     cont.ConceptCodeSequence[0].CodeMeaning,
                 )
             except AttributeError:
-                event.reference_point_definition_text = safe_strings(
-                    cont.TextValue, char_set=ch
-                )
+                event.reference_point_definition_text = cont.TextValue
         if cont.ValueType == "CONTAINER":
             if (
                 cont.ConceptNameCodeSequence[0].CodeMeaning
@@ -967,24 +1001,21 @@ def _irradiationeventxraydata(dataset, proj, ch, fulldataset):  # TID 10003
                     ):
                         event.percent_fibroglandular_tissue = cont2.NumericValue
         if cont.ConceptNameCodeSequence[0].CodeMeaning == "Comment":
-            event.comment = safe_strings(cont.TextValue, char_set=ch)
+            event.comment = cont.TextValue
     event.save()
     for cont3 in fulldataset.ContentSequence:
         if cont3.ConceptNameCodeSequence[0].CodeMeaning == "Comment":
             _get_patient_position_from_xml_string(event, cont3.TextValue)
     # needs include for optional multiple person participant
-    _irradiationeventxraydetectordata(dataset, event, ch)
+    _irradiationeventxraydetectordata(dataset, event)
     _irradiationeventxraymechanicaldata(dataset, event)
     # in some cases we need mechanical data before x-ray source data
-    _irradiationeventxraysourcedata(dataset, event, ch)
+    _irradiationeventxraysourcedata(dataset, event)
 
     event.save()
 
 
-def _calibration(dataset, accum, ch):
-    from remapp.models import Calibration
-    from remapp.tools.get_values import get_or_create_cid, safe_strings
-    from remapp.tools.dcmdatetime import make_date_time
+def _calibration(dataset, accum):
 
     cal = Calibration.objects.create(accumulated_xray_dose=accum)
     for cont in dataset.ContentSequence:
@@ -1010,15 +1041,11 @@ def _calibration(dataset, accum, ch):
             cont.ConceptNameCodeSequence[0].CodeMeaning
             == "Calibration Responsible Party"
         ):
-            cal.calibration_responsible_party = safe_strings(
-                cont.TextValue, char_set=ch
-            )
+            cal.calibration_responsible_party = cont.TextValue
     cal.save()
 
 
 def _accumulatedmammoxraydose(dataset, accum):  # TID 10005
-    from remapp.models import AccumMammographyXRayDose
-    from remapp.tools.get_values import get_or_create_cid
 
     for cont in dataset.ContentSequence:
         if (
@@ -1043,8 +1070,6 @@ def _accumulatedmammoxraydose(dataset, accum):  # TID 10005
 def _accumulatedfluoroxraydose(dataset, accum):  # TID 10004
     # Name in DICOM standard for TID 10004 is Accumulated Fluoroscopy and Acquisition Projection X-Ray Dose
     # See http://dicom.nema.org/medical/Dicom/2017e/output/chtml/part16/sect_TID_10004.html
-    from remapp.tools.get_values import get_or_create_cid
-    from remapp.models import AccumProjXRayDose
 
     accumproj = AccumProjXRayDose.objects.create(accumulated_xray_dose=accum)
     for cont in dataset.ContentSequence:
@@ -1135,8 +1160,6 @@ def _accumulatedfluoroxraydose(dataset, accum):  # TID 10004
 
 
 def _accumulatedcassettebasedprojectionradiographydose(dataset, accum):  # TID 10006
-    from remapp.models import AccumCassetteBsdProjRadiogDose
-    from remapp.tools.get_values import get_or_create_cid
 
     accumcass = AccumCassetteBsdProjRadiogDose.objects.create(
         accumulated_xray_dose=accum
@@ -1160,8 +1183,6 @@ def _accumulatedcassettebasedprojectionradiographydose(dataset, accum):  # TID 1
 def _accumulatedtotalprojectionradiographydose(dataset, accum):  # TID 10007
     # Name in DICOM standard for TID 10007 is Accumulated Total Projection Radiography Dose
     # See http://dicom.nema.org/medical/Dicom/2017e/output/chtml/part16/sect_TID_10007.html
-    from remapp.models import AccumIntegratedProjRadiogDose
-    from remapp.tools.get_values import get_or_create_cid, safe_strings
 
     accumint = AccumIntegratedProjRadiogDose.objects.create(accumulated_xray_dose=accum)
     for cont in dataset.ContentSequence:
@@ -1193,15 +1214,13 @@ def _accumulatedtotalprojectionradiographydose(dataset, accum):  # TID 10007
                         cont.ConceptCodeSequence[0].CodeMeaning,
                     )
                 except AttributeError:
-                    accumint.reference_point_definition = safe_strings(cont.TextValue)
+                    accumint.reference_point_definition = cont.TextValue
         except IndexError:
             pass
     accumint.save()
 
 
-def _accumulatedxraydose(dataset, proj, ch):  # TID 10002
-    from remapp.models import AccumXRayDose
-    from remapp.tools.get_values import get_or_create_cid
+def _accumulatedxraydose(dataset, proj):  # TID 10002
 
     accum = AccumXRayDose.objects.create(projection_xray_radiation_dose=proj)
     for cont in dataset.ContentSequence:
@@ -1212,7 +1231,7 @@ def _accumulatedxraydose(dataset, proj, ch):  # TID 10002
             )
         if cont.ValueType == "CONTAINER":
             if cont.ConceptNameCodeSequence[0].CodeMeaning == "Calibration":
-                _calibration(cont, accum, ch)
+                _calibration(cont, accum)
     if proj.acquisition_device_type_cid:
         if (
             "Fluoroscopy-Guided" in proj.acquisition_device_type_cid.code_meaning
@@ -1245,7 +1264,6 @@ def _accumulatedxraydose(dataset, proj, ch):  # TID 10002
 
 
 def _scanninglength(dataset, event):  # TID 10014
-    from remapp.models import ScanningLength
 
     scanlen = ScanningLength.objects.create(ct_irradiation_event_data=event)
     try:
@@ -1276,8 +1294,8 @@ def _scanninglength(dataset, event):  # TID 10014
                 cont.ConceptNameCodeSequence[0].CodeMeaning.lower()
                 == "bottom z location of reconstructable volume"
             ):
-                scanlen.bottom_z_location_of_reconstructable_volume = test_numeric_value(
-                    cont.MeasuredValueSequence[0].NumericValue
+                scanlen.bottom_z_location_of_reconstructable_volume = (
+                    test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
                 )
             elif (
                 cont.ConceptNameCodeSequence[0].CodeMeaning.lower()
@@ -1304,7 +1322,6 @@ def _scanninglength(dataset, event):  # TID 10014
 
 
 def _ctxraysourceparameters(dataset, event):
-    from remapp.models import CtXRaySourceParameters
 
     param = CtXRaySourceParameters.objects.create(ct_irradiation_event_data=event)
     for cont in dataset.ContentSequence:
@@ -1352,9 +1369,8 @@ def _ctxraysourceparameters(dataset, event):
     param.save()
 
 
-def _ctdosecheckdetails(dataset, dosecheckdetails, ch, isalertdetails):  # TID 10015
+def _ctdosecheckdetails(dataset, dosecheckdetails, isalertdetails):  # TID 10015
     # PARTLY TESTED CODE (no DSR available that has Reason For Proceeding and/or Forward Estimate)
-    from remapp.tools.get_values import safe_strings
 
     if isalertdetails:
         for cont in dataset.ContentSequence:
@@ -1391,13 +1407,11 @@ def _ctdosecheckdetails(dataset, dosecheckdetails, ch, isalertdetails):  # TID 1
                 cont.ConceptNameCodeSequence[0].CodeMeaning
                 == "Accumulated CTDIvol Forward Estimate"
             ):
-                dosecheckdetails.accumulated_ctdivol_forward_estimate = test_numeric_value(
-                    cont.MeasuredValueSequence[0].NumericValue
+                dosecheckdetails.accumulated_ctdivol_forward_estimate = (
+                    test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
                 )
             if cont.ConceptNameCodeSequence[0].CodeMeaning == "Reason For Proceeding":
-                dosecheckdetails.alert_reason_for_proceeding = safe_strings(
-                    cont.TextValue, ch
-                )
+                dosecheckdetails.alert_reason_for_proceeding = cont.TextValue
             if cont.ConceptNameCodeSequence[0].CodeMeaning == "Person Name":
                 _person_participant(cont, "ct_dose_check_alert", dosecheckdetails)
     else:
@@ -1439,9 +1453,7 @@ def _ctdosecheckdetails(dataset, dosecheckdetails, ch, isalertdetails):  # TID 1
                     cont.MeasuredValueSequence[0].NumericValue
                 )
             if cont.ConceptNameCodeSequence[0].CodeMeaning == "Reason For Proceeding":
-                dosecheckdetails.notification_reason_for_proceeding = safe_strings(
-                    cont.TextValue, ch
-                )
+                dosecheckdetails.notification_reason_for_proceeding = cont.TextValue
             if cont.ConceptNameCodeSequence[0].CodeMeaning == "Person Name":
                 _person_participant(
                     cont, "ct_dose_check_notification", dosecheckdetails
@@ -1449,15 +1461,13 @@ def _ctdosecheckdetails(dataset, dosecheckdetails, ch, isalertdetails):  # TID 1
     dosecheckdetails.save()
 
 
-def _ctirradiationeventdata(dataset, ct, ch):  # TID 10013
-    from remapp.models import CtIrradiationEventData, CtDoseCheckDetails
-    from remapp.tools.get_values import get_or_create_cid, safe_strings
+def _ctirradiationeventdata(dataset, ct):  # TID 10013
 
     event = CtIrradiationEventData.objects.create(ct_radiation_dose=ct)
     ctdosecheckdetails = None
     for cont in dataset.ContentSequence:
         if cont.ConceptNameCodeSequence[0].CodeMeaning == "Acquisition Protocol":
-            event.acquisition_protocol = safe_strings(cont.TextValue, char_set=ch)
+            event.acquisition_protocol = cont.TextValue
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Target Region":
             try:
                 event.target_region = get_or_create_cid(
@@ -1587,7 +1597,7 @@ def _ctirradiationeventdata(dataset, ct, ch):  # TID 10013
                             ctdosecheckdetails = CtDoseCheckDetails.objects.create(
                                 ct_irradiation_event_data=event
                             )
-                        _ctdosecheckdetails(cont2, ctdosecheckdetails, ch, True)
+                        _ctdosecheckdetails(cont2, ctdosecheckdetails, True)
                     elif (
                         cont2.ConceptNameCodeSequence[0].CodeMeaning
                         == "Dose Check Notification Details"
@@ -1596,14 +1606,14 @@ def _ctirradiationeventdata(dataset, ct, ch):  # TID 10013
                             ctdosecheckdetails = CtDoseCheckDetails.objects.create(
                                 ct_irradiation_event_data=event
                             )
-                        _ctdosecheckdetails(cont2, ctdosecheckdetails, ch, False)
+                        _ctdosecheckdetails(cont2, ctdosecheckdetails, False)
         if (
             cont.ConceptNameCodeSequence[0].CodeMeaning.lower()
             == "x-ray modulation type"
         ):
-            event.xray_modulation_type = safe_strings(cont.TextValue)
+            event.xray_modulation_type = cont.TextValue
         if cont.ConceptNameCodeSequence[0].CodeMeaning == "Comment":
-            event.comment = safe_strings(cont.TextValue, char_set=ch)
+            event.comment = cont.TextValue
     if not event.xray_modulation_type and event.comment:
         comments = event.comment.split(",")
         for comm in comments:
@@ -1612,15 +1622,13 @@ def _ctirradiationeventdata(dataset, ct, ch):  # TID 10013
                 event.xray_modulation_type = modulationtype
 
     ## personparticipant here
-    _deviceparticipant(dataset, "ct_event", event, ch)
+    _deviceparticipant(dataset, "ct_event", event)
     if ctdosecheckdetails is not None:
         ctdosecheckdetails.save()
     event.save()
 
 
-def _ctaccumulateddosedata(dataset, ct, ch):  # TID 10012
-    from remapp.models import CtAccumulatedDoseData
-    from remapp.tools.get_values import safe_strings
+def _ctaccumulateddosedata(dataset, ct):  # TID 10012
 
     ctacc = CtAccumulatedDoseData.objects.create(ct_radiation_dose=ct)
     for cont in dataset.ContentSequence:
@@ -1646,21 +1654,13 @@ def _ctaccumulateddosedata(dataset, ct, ch):  # TID 10012
         # Reference authority code or name belongs here, followed by the effective dose details
         #
         if cont.ConceptNameCodeSequence[0].CodeMeaning == "Comment":
-            ctacc.comment = safe_strings(cont.TextValue, char_set=ch)
-    _deviceparticipant(dataset, "ct_accumulated", ctacc, ch)
+            ctacc.comment = cont.TextValue
+    _deviceparticipant(dataset, "ct_accumulated", ctacc)
 
     ctacc.save()
 
 
-def _projectionxrayradiationdose(dataset, g, reporttype, ch):
-    from remapp.models import (
-        ProjectionXRayRadiationDose,
-        CtRadiationDose,
-        ObserverContext,
-        GeneralEquipmentModuleAttr,
-    )
-    from remapp.tools.get_values import get_or_create_cid, safe_strings
-    from remapp.tools.dcmdatetime import make_date_time
+def _projectionxrayradiationdose(dataset, g, reporttype):
 
     if reporttype == "projection":
         proj = ProjectionXRayRadiationDose.objects.create(
@@ -1748,7 +1748,7 @@ def _projectionxrayradiationdose(dataset, g, reporttype, ch):
                 cont.ConceptCodeSequence[0].CodeMeaning,
             )
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Comment":
-            proj.comment = safe_strings(cont.TextValue, char_set=ch)
+            proj.comment = cont.TextValue
         elif (
             cont.ConceptNameCodeSequence[0].CodeMeaning == "Source of Dose Information"
         ):
@@ -1793,38 +1793,30 @@ def _projectionxrayradiationdose(dataset, g, reporttype, ch):
                 )
             else:
                 obs = ObserverContext.objects.create(ct_radiation_dose=proj)
-            _observercontext(dataset, obs, ch)
+            _observercontext(dataset, obs)
 
         if cont.ValueType == "CONTAINER":
             if (
                 cont.ConceptNameCodeSequence[0].CodeMeaning
                 == "Accumulated X-Ray Dose Data"
             ):
-                _accumulatedxraydose(cont, proj, ch)
+                _accumulatedxraydose(cont, proj)
             if (
                 cont.ConceptNameCodeSequence[0].CodeMeaning
                 == "Irradiation Event X-Ray Data"
             ):
-                _irradiationeventxraydata(cont, proj, ch, dataset)
+                _irradiationeventxraydata(cont, proj, dataset)
             if (
                 cont.ConceptNameCodeSequence[0].CodeMeaning
                 == "CT Accumulated Dose Data"
             ):
                 proj.general_study_module_attributes.modality_type = "CT"
-                _ctaccumulateddosedata(cont, proj, ch)
+                _ctaccumulateddosedata(cont, proj)
             if cont.ConceptNameCodeSequence[0].CodeMeaning == "CT Acquisition":
-                _ctirradiationeventdata(cont, proj, ch)
+                _ctirradiationeventdata(cont, proj)
 
 
-def _generalequipmentmoduleattributes(dataset, study, ch):
-    from remapp.models import (
-        GeneralEquipmentModuleAttr,
-        UniqueEquipmentNames,
-        MergeOnDeviceObserverUIDSettings,
-    )
-    from remapp.tools.dcmdatetime import get_date, get_time
-    from remapp.tools.get_values import get_value_kw
-    from remapp.tools.hash_id import hash_id
+def _generalequipmentmoduleattributes(dataset, study):
 
     equip = GeneralEquipmentModuleAttr.objects.create(
         general_study_module_attributes=study
@@ -1894,11 +1886,11 @@ def _generalequipmentmoduleattributes(dataset, study, ch):
         # If we have a device_observer_uid and it is desired, merge this "new" device with an existing one based on the
         # device observer uid.
         try:
-            match_on_device_observer_uid = MergeOnDeviceObserverUIDSettings.objects.values_list(
-                "match_on_device_observer_uid", flat=True
-            )[
-                0
-            ]
+            match_on_device_observer_uid = (
+                MergeOnDeviceObserverUIDSettings.objects.values_list(
+                    "match_on_device_observer_uid", flat=True
+                )[0]
+            )
         except IndexError:
             match_on_device_observer_uid = False
         if match_on_device_observer_uid and device_observer_uid:
@@ -1956,8 +1948,6 @@ def _generalequipmentmoduleattributes(dataset, study, ch):
 
 
 def _patientstudymoduleattributes(dataset, g):  # C.7.2.2
-    from remapp.models import PatientStudyModuleAttr
-    from remapp.tools.get_values import get_value_kw
 
     patientatt = PatientStudyModuleAttr.objects.create(
         general_study_module_attributes=g
@@ -1968,77 +1958,7 @@ def _patientstudymoduleattributes(dataset, g):  # C.7.2.2
     patientatt.save()
 
 
-def _patientmoduleattributes(dataset, g, ch):  # C.7.1.1
-    from decimal import Decimal
-    from remapp.models import PatientModuleAttr, PatientStudyModuleAttr
-    from remapp.tools.get_values import get_value_kw
-    from remapp.tools.dcmdatetime import get_date
-    from remapp.tools.not_patient_indicators import get_not_pt
-    from remapp.models import PatientIDSettings
-    from remapp.tools.hash_id import hash_id
-
-    pat = PatientModuleAttr.objects.create(general_study_module_attributes=g)
-
-    patient_birth_date = get_date("PatientBirthDate", dataset)
-    pat.patient_sex = get_value_kw("PatientSex", dataset)
-    pat.not_patient_indicator = get_not_pt(dataset)
-    patientatt = PatientStudyModuleAttr.objects.get(general_study_module_attributes=g)
-    if patient_birth_date:
-        patientatt.patient_age_decimal = old_div(
-            Decimal((g.study_date.date() - patient_birth_date.date()).days),
-            Decimal("365.25"),
-        )
-    elif patientatt.patient_age:
-        if patientatt.patient_age[-1:] == "Y":
-            patientatt.patient_age_decimal = Decimal(patientatt.patient_age[:-1])
-        elif patientatt.patient_age[-1:] == "M":
-            patientatt.patient_age_decimal = old_div(
-                Decimal(patientatt.patient_age[:-1]), Decimal("12")
-            )
-        elif patientatt.patient_age[-1:] == "D":
-            patientatt.patient_age_decimal = old_div(
-                Decimal(patientatt.patient_age[:-1]), Decimal("365.25")
-            )
-    if patientatt.patient_age_decimal:
-        patientatt.patient_age_decimal = patientatt.patient_age_decimal.quantize(
-            Decimal(".1")
-        )
-    patientatt.save()
-
-    patient_id_settings = PatientIDSettings.objects.get()
-    if patient_id_settings.name_stored:
-        name = get_value_kw("PatientName", dataset)
-        if name and patient_id_settings.name_hashed:
-            name = hash_id(name)
-            pat.name_hashed = True
-        pat.patient_name = name
-    if patient_id_settings.id_stored:
-        patid = get_value_kw("PatientID", dataset)
-        if patid and patient_id_settings.id_hashed:
-            patid = hash_id(patid)
-            pat.id_hashed = True
-        pat.patient_id = patid
-    if patient_id_settings.dob_stored and patient_birth_date:
-        pat.patient_birth_date = patient_birth_date
-    pat.save()
-
-
-def _generalstudymoduleattributes(dataset, g, ch):
-    from datetime import datetime
-    from remapp.extractors.extract_common import (
-        ct_event_type_count,
-        populate_mammo_agd_summary,
-        populate_dx_rf_summary,
-    )
-    from remapp.models import PatientIDSettings
-    from remapp.tools.get_values import (
-        get_value_kw,
-        get_seq_code_value,
-        get_seq_code_meaning,
-        list_to_string,
-    )
-    from remapp.tools.dcmdatetime import get_date, get_time, make_date, make_time
-    from remapp.tools.hash_id import hash_id
+def _generalstudymoduleattributes(dataset, g):
 
     g.study_instance_uid = get_value_kw("StudyInstanceUID", dataset)
     g.series_instance_uid = get_value_kw("SeriesInstanceUID", dataset)
@@ -2129,9 +2049,9 @@ def _generalstudymoduleattributes(dataset, g, ch):
             g.delete()
             return
     if template_identifier == "10001":
-        _projectionxrayradiationdose(dataset, g, "projection", ch)
+        _projectionxrayradiationdose(dataset, g, "projection")
     elif template_identifier == "10011":
-        _projectionxrayradiationdose(dataset, g, "ct", ch)
+        _projectionxrayradiationdose(dataset, g, "ct")
     g.save()
     if not g.requested_procedure_code_meaning:
         if "RequestAttributesSequence" in dataset and dataset[0x40, 0x275].VM:
@@ -2190,12 +2110,6 @@ def _generalstudymoduleattributes(dataset, g, ch):
 
 
 def _rdsr2db(dataset):
-    from collections import OrderedDict
-    from time import sleep
-    from remapp.extractors.extract_common import populate_rf_delta_weeks_summary
-    from remapp.models import GeneralStudyModuleAttr, SkinDoseMapCalcSettings
-    from remapp.tools.check_uid import record_sop_instance_uid
-    from remapp.tools.get_values import get_value_kw
 
     existing_sop_instance_uids = set()
     keep_existing_sop_instance_uids = False
@@ -2372,11 +2286,10 @@ def _rdsr2db(dataset):
     if keep_existing_sop_instance_uids:
         for sop_instance_uid in existing_sop_instance_uids:
             record_sop_instance_uid(g, sop_instance_uid)
-    ch = get_value_kw("SpecificCharacterSet", dataset)
-    _generalequipmentmoduleattributes(dataset, g, ch)
-    _generalstudymoduleattributes(dataset, g, ch)
+    _generalequipmentmoduleattributes(dataset, g)
+    _generalstudymoduleattributes(dataset, g)
     _patientstudymoduleattributes(dataset, g)
-    _patientmoduleattributes(dataset, g, ch)
+    patient_module_attributes(dataset, g)
 
     try:
         SkinDoseMapCalcSettings.objects.get()
@@ -2390,18 +2303,12 @@ def _rdsr2db(dataset):
         "calc_on_import", flat=True
     )[0]
     if g.modality_type == "RF" and enable_skin_dose_maps and calc_on_import:
-        from remapp.tools.make_skin_map import make_skin_map
-
         make_skin_map.delay(g.pk)
 
     # Calculate summed total DAP and dose at RP for studies that have this study's patient ID, going back week_delta
     # weeks in time from this study date. Only do this if activated in the fluoro alert settings (check whether
     # HighDoseMetricAlertSettings.calc_accum_dose_over_delta_weeks_on_import is True).
     if g.modality_type == "RF":
-        from remapp.models import (
-            HighDoseMetricAlertSettings,
-            AccumIntegratedProjRadiogDose,
-        )
 
         try:
             HighDoseMetricAlertSettings.objects.get()
@@ -2411,15 +2318,12 @@ def _rdsr2db(dataset):
         week_delta = HighDoseMetricAlertSettings.objects.values_list(
             "accum_dose_delta_weeks", flat=True
         )[0]
-        calc_accum_dose_over_delta_weeks_on_import = HighDoseMetricAlertSettings.objects.values_list(
-            "calc_accum_dose_over_delta_weeks_on_import", flat=True
-        )[
-            0
-        ]
+        calc_accum_dose_over_delta_weeks_on_import = (
+            HighDoseMetricAlertSettings.objects.values_list(
+                "calc_accum_dose_over_delta_weeks_on_import", flat=True
+            )[0]
+        )
         if calc_accum_dose_over_delta_weeks_on_import:
-            from datetime import timedelta
-            from django.db.models import Sum
-            from remapp.models import PKsForSummedRFDoseStudiesInDeltaWeeks
 
             all_rf_studies = GeneralStudyModuleAttr.objects.filter(
                 modality_type__exact="RF"
@@ -2454,8 +2358,8 @@ def _rdsr2db(dataset):
                         accumxraydose.accumintegratedprojradiogdose_set.get().pk
                     )
 
-                    accum_int_proj_to_update = AccumIntegratedProjRadiogDose.objects.get(
-                        pk=accum_int_proj_pk
+                    accum_int_proj_to_update = (
+                        AccumIntegratedProjRadiogDose.objects.get(pk=accum_int_proj_pk)
                     )
 
                     included_studies = all_rf_studies.filter(
@@ -2502,10 +2406,6 @@ def _rdsr2db(dataset):
             "send_high_dose_metric_alert_emails_skin", flat=True
         )[0]
         if send_alert_emails_ref and not send_alert_emails_skin:
-            from remapp.tools.send_high_dose_alert_emails import (
-                send_rf_high_dose_alert_email,
-            )
-
             send_rf_high_dose_alert_email(g.pk)
 
 
@@ -2554,9 +2454,6 @@ def rdsr(rdsr_file):
     :param rdsr_file: relative or absolute path to Radiation Dose Structured Report.
     :type rdsr_file: str.
     """
-
-    import pydicom
-    from remapp.models import DicomDeleteSettings
 
     try:
         del_settings = DicomDeleteSettings.objects.get()

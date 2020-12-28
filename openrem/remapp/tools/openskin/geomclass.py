@@ -44,7 +44,7 @@ class Triangle3:
 
 
 class Segment3:
-    """ This is a class to construct line segments in 3 dimensional Cartesian coordinate space.
+    """This is a class to construct line segments in 3 dimensional Cartesian coordinate space.
 
     These segments are used to represent rays from the focus to isocentre or from the focus to the skin cell
     under evaluation.
@@ -77,7 +77,7 @@ class Segment3:
 
 
 class PhantomFlat:
-    """ This class defines a surface to which dose will be delivered.
+    """This class defines a surface to which dose will be delivered.
 
     Constructor Args:
         phantom_type: the type of phantom being assembled
@@ -127,7 +127,7 @@ class PhantomFlat:
 
 
 class Phantom3:
-    """ This class defines a surface in 3d to project dose onto.
+    """This class defines a surface in 3d to project dose onto.
     It is formed of a central cuboid with two semi cylinders on the sides.
 
     Constructor Args:
@@ -344,7 +344,7 @@ class Phantom3:
 
 
 class SkinDose:
-    """ This class holds dose maps for a defined phantom. It is intended
+    """This class holds dose maps for a defined phantom. It is intended
     to simplify combining multiple views.
 
     Constructor Args:

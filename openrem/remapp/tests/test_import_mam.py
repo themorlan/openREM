@@ -1,8 +1,6 @@
 # This Python file uses the following encoding: utf-8
 # test_import_mam.py
 
-from __future__ import division
-from past.utils import old_div
 import datetime
 import logging
 import os
@@ -169,7 +167,7 @@ class ImportMGImg(TestCase):
             .irradeventxraydata_set.get()
             .irradeventxraysourcedata_set.get()
             .collimated_field_area,
-            old_div((Decimal(229) * Decimal(191)), Decimal(1000000)),
+            (Decimal(229) * Decimal(191)) / Decimal(1000000),
         )
         self.assertAlmostEqual(
             study.projectionxrayradiationdose_set.get()
@@ -393,7 +391,7 @@ class ImportDuplicatesMG(TestCase):
                     "DEBUG",
                     u"A previous MG object with this study UID (1.3.6.1.4.1.5962.99.1.1270844358.1571783457"
                     u".1525984267206.3.0) and time (2013-04-12T13:22:23) has been imported. Stopping",
-                ),
+                )
             )
 
         # Import third object, different event
@@ -436,5 +434,5 @@ class ImportDuplicatesMG(TestCase):
                     "DEBUG",
                     u"MG instance UID 1.3.6.1.4.1.5962.99.1.1270844358.1571783457.1525984267206.2.0 of study UID "
                     u"1.3.6.1.4.1.5962.99.1.1270844358.1571783457.1525984267206.3.0 previously processed, stopping.",
-                ),
+                )
             )

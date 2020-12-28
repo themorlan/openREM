@@ -2,415 +2,547 @@
 Charts
 ######
 
+From OpenREM version 1.0.0+ charts use the Plotly_ open source Python library.
+
 ***********
 Chart types
 ***********
 
-============================================================
-1. Bar chart of average values across a number of categories
-============================================================
+The charts below are examples of the types of chart included in OpenREM version 1.0.0+. The examples are fully
+interactive in the same way as the charts included in a live OpenREM system. The data contained in the example charts
+is synthetic.
 
-.. figure:: img/ChartCTMeanDLP.png
-   :figwidth: 50%
-   :align: right
-   :alt: Bar chart of mean DLP per acquisition
-   :target: _images/ChartCTMeanDLP.png
+Single-clicking on a legend entry toggles the display of that series. Double-clicking on a legend entry hides all but
+that series; double-click again to show all series.
 
-   Figure 1: Bar chart of mean DLP per acquisition
+Hovering the cursor over a chart causes the chart menu to appear along the top right corner. From the menu you can:
 
-An example of mean DAP per acquisition type is shown in figure 1.
-
-.. figure:: img/ChartCTSortingOptions.png
-   :figwidth: 50%
-   :align: right
-   :alt: Bar chart sorting options
-   :target: _images/ChartCTSortingOptions.png
-
-   Figure 2: Bar chart sorting options
-
-Below each bar chart there are options to sort the order of the data. This can
-be ascending or descending by average value, size of data sample, or
-alphabetically (figure 2).
-
-Clicking on an entry in the bar chart legend toggles the display of the
-corresponding series on the chart.
-
-.. figure:: img/ChartCTMeanDLPhistogram.png
-   :figwidth: 50%
-   :align: right
-   :alt: Histogram of acquisition DLP
-   :target: _images/ChartCTMeanDLPhistogram.png
-
-   Figure 3: Histogram of abdomen DLP values
-
-If you have histogram calculation switched on then clicking on an individual
-data point on a bar chart will take you to a histogram of the data for that
-point so that you can see the shape of the value's distribution (figure 3).
-
-Bar charts can be plotted with a series per x-ray system (figure 4). This can
-be toggled using the `Plot a series per system` checkbox in the `Chart options`.
-
-Clicking the left-hand mouse button on the chart background and dragging left
-or right selects part of the series. Releasing the mouse button zooms in on
-this selection. A ``Reset zoom`` button appears when zoomed in: clicking this
-resets the chart so that the full series can be seen again. The zoom feature
-works on both the main series and the histograms. The zooming can be useful
-when there is a category on the chart that has a very low value compared to
-others. Zooming in on this category will enable the low values to be seen, as
-the chart rescales the y-axis after the zoom.
-
-.. figure:: img/ChartCTMeanDLPperSystem.png
-   :figwidth: 50%
-   :align: right
-   :alt: Bar chart of mean DLP (one system per series)
-   :target: _images/ChartCTMeanDLPperSystem.png
-
-   Figure 4: Bar chart of mean DLP (one system per series)
-
-Clicking on the `Toggle data table` button toggles the display of an HTML table
-containing the data from the current chart. This button is hidden if you are
-viewing the chart in full screen mode. An example showing a data table is shown
-in figure 5.
-
-.. figure:: img/ChartCTDataTable.png
-   :figwidth: 50%
-   :align: right
-   :alt: Bar chart with data table displayed
-   :target: _images/ChartCTDataTable.png
-
-   Figure 5: Bar chart with data table displayed
-
-If the the bar chart that you are viewing shows more than one series then
-clicking on a category name on the x-axis will take you to a plot that shows
-multiple histograms: one for each series (figure 6).
-
-If the bar chart that you are viewing shows more than one series then buttons
-are available to `Hide all series`, `Show all series`, and `Toggle all series`.
-These provide a quick way to switch which series are being displayed without
-having to click on individual series in the chart legend.
-
-.. figure:: img/ChartCTMeanDLPhistogramPerSystem.png
-   :figwidth: 50%
-   :align: right
-   :alt: Histogram of abdomen DLP (one series per system)
-   :target: _images/ChartCTMeanDLPhistogramPerSystem.png
-
-   Figure 6: Histogram of abdomen DLP values, one series per system
-
-The histogram data can be plotted as absolute values, or be normalised to a
-value of 1.0 (figure 7). This can be toggled by clicking on the button that is
-shown below the histogram plots. The normalisation can be useful when trying to
-compare the shape of several histograms, especially when some histograms have
-much less data than others.
-
-.. figure:: img/ChartCTMeanDLPhistogramPerSystemNorm.png
-   :figwidth: 50%
-   :align: right
-   :alt: Normalised histogram of abdomen DLP (one series per system)
-   :target: _images/ChartCTMeanDLPhistogramPerSystemNorm.png
-
-   Figure 7: Normalised histogram of abdomen DLP, one series per system
-
-Each histogram data point includes a text link that appears when the mouse
-pointer moves over it. Clicking on this link will filter the displayed studies,
-showing those that correspond to what is contained in the histogram bin.
-
-Clicking on a legend entry toggles the visibility of the corresponding series.
-
-Only data with non-zero and non-blank dose values are included in the chart
-data calculations.
-
-=============================================================
-2. Pie chart showing the frequency of each item in a category
-=============================================================
-
-.. figure:: img/ChartCTacquisitionFreq.png
-   :figwidth: 50%
-   :align: right
-   :alt: Pie chart of acquisition frequency
-   :target: _images/ChartCTacquisitionFreq.png
-
-   Figure 8: Pie chart of acquisition frequency
-
-Figure 8 shows a pie chart of the number of acquisitions made for every
-acquisition protocol present in the tabulated data.
-
-Clicking on any of the pie chart segments will filter the displayed studies,
-showing only the studies that correspond to what is contained in that segment.
-As for the bar charts, this doesn't work perfectly, as the category filtering
-isn't exact.
-
-Only data with non-zero and non-blank dose values are included in the chart
-data calculations.
-
-
-============================================================
-3. Line chart showing how an average value changes over time
-============================================================
-
-.. figure:: img/ChartCTMeanDLPoverTime.png
-   :figwidth: 50%
-   :align: right
-   :alt: Line chart of mean DLP per study type over time
-   :target: _images/ChartCTMeanDLPoverTime.png
-
-   Figure 9: Line chart of mean DLP per study type over time
-
-A line is plotted for each category, with a point calculated every day, week,
-month or year. This can be a good way of looking at how things have changed
-over time. For example, the mean DLP of each study type, calculated with a
-data point per month is shown in figure 9.
-
-Clicking the left-hand mouse button on the chart and dragging left or right
-across a range of dates and then releasing the mouse button will zoom in on
-that selection.
-
-Clicking on a legend entry toggles the visibility of the corresponding series.
-
-Only data with non-zero and non-blank dose values are included in the chart
-data calculations.
-
-=============================================================
-4. Pie chart showing the number of events per day of the week
-=============================================================
-
-.. figure:: img/ChartCTworkload.png
-   :figwidth: 50%
-   :align: right
-   :alt: Pie chart of study workload per day of the week
-   :target: _images/ChartCTworkload.png
-
-   Figure 10: Pie chart of study workload per day of the week
-
-.. figure:: img/ChartCTworkload24hours.png
-   :figwidth: 50%
-   :align: right
-   :alt: Pie chart of study workload per hour in a day
-   :target: _images/ChartCTworkload24hours.png
-
-   Figure 11: Pie chart of study workload per hour in a day
-
-Each segment represents a day of the week, and shows the number of events that
-have taken place on that day (figure 10). Clicking on one of the segments will
-take you to a pie chart that shows the number of events per on that day (figure
-11).
-
-All data, including zero blank dose values are included in the data
-calculations for this chart type.
+* save a bitmap version of the chart
+* set zoom, pan and selection options
+* autoscale the chart
+* reset the axes, and also reset the  regions
+* toggle spike lines to graphically illustrate x- and y-axis data values on hover
+* choose whether to show the closest data when hovering, or to compare data on hover
 
 =============================================
-5. Scatter plot showing one value vs. another
+Bar chart of average values across categories
 =============================================
 
-.. figure:: img/ChartMGScatter.png
-   :figwidth: 50%
-   :align: right
-   :alt: Scatter plot of average glandular dose vs. compressed thickness
-   :target: _images/ChartMGScatter.png
+These can be configured to show mean or median data. The example below shows the median DAP for each requested procedure
+name containing the word "knee" across eight x-ray rooms.
 
-   Figure 12: Scatter plot of average glandular dose vs. compressed thickness
+Hovering the cursor over a bar shows the:
 
-.. figure:: img/ChartMGScatterPerSystem.png
-   :figwidth: 50%
-   :align: right
-   :alt: Scatter plot of average glandular dose vs. compressed thickness; one series per system
-   :target: _images/ChartMGScatterPerSystem.png
+* x-ray room name
+* requested procedure name
+* median DAP for that room and procedure
+* number of requests for that room and procedure
 
-   Figure 13: Scatter plot of average glandular dose vs. compressed thickness; one series per system
+.. raw:: html
+   :file: charts/barchart.html
 
-This plot type shows a data point per event (figure 12). The series name and
-data values are shown when the mouse cursor is positioned over a data point.
+|
 
-These can be plotted with a series per x-ray system (figure 13). This can be
-toggled using the `Plot a series per system` checkbox in the `Chart options`.
+===============================================
+Boxplot of values across a number of categories
+===============================================
 
-Clicking the left-hand mouse button on the chart and dragging a rectangular
-region will zoom in on that selection of the chart. A ``Reset zoom`` button
-appears when zoomed in: clicking this resets the chart so that the full series
-can be seen again.
+The example below shows the same data as for the bar chart above, but presented as a box plot.
 
-Clicking on a system's legend entry toggles the display of the corresponding
-series on the chart.
+Hovering the cursor over an outlier shows the:
 
-Only data with non-zero and non-blank dose values are included in the chart
-data calculations.
+* x-ray room name
+* requested procedure name
+* DAP of the data point
 
-********************
-Exporting chart data
-********************
+Hovering the cursor over the box shows the:
 
-An image file of a chart can be saved using the menu in the top-right hand side
-of any of the charts. The same menu can be used to save the data used to plot a
-chart: the data can be downloaded in either csv or xls format.
+* maximum value
+* minimum value
+* median
+* 1st and 3rd quartiles
+* lower fence: 1rd quartile - (1.5 x interquartile range)
+* upper fence: 3rd quartile + (1.5 x interquartile range)
 
-*************
-Chart options
-*************
+.. raw:: html
+   :file: charts/boxplot.html
 
-.. figure:: img/ChartOptions.png
-   :figwidth: 25 %
-   :align: right
-   :alt: OpenREM chart options
-   :target: _images/ChartOptions.png
+|
 
-   Figure 13: OpenREM chart options
+===============================================
+Histogram bar chart of values across categories
+===============================================
 
-Chart options can be configured by choosing the ``Chart options`` item from the
-``User options`` menu on the OpenREM homepage (figure 13).
+The example below shows the distribution of DAP values for the knee data used in the box and bar plots above. The
+number of bins used in the histograms can be configured in the `Additional chart options on the Config page`_.
 
-CT and radiographic plot options can also be set from their respective
-summary pages.
+Hovering the cursor over a bar shows the:
 
-The first option, ``Plot charts?``, determines whether any plots are shown.
-This also controls whether the data for the plots is calculated by OpenREM.
+* requested procedure name
+* x-ray room name
+* bin DAP range
+* bin DAP mid-point value
+* bin frequency
 
-Switching ``Case-insensitive categories`` on will force chart categories to be
-lowercase. This can be helpful if several rooms use the same wording but with
-different capitalisation for acquisition protocol, study description or
-requested procedure. With this option switched on then all rooms with the same
-wording, irrespective of capitalisation, will be shown side-by-side under the
-same single category. With the option switched off there will be a seperate
-category for each differently capitalised category.
+.. raw:: html
+   :file: charts/histogram.html
 
-Some plot data is slow to calculate when there is a large amount of data: some
-users may prefer to leave ``Plot charts?`` off for performance reasons.
-``Plot charts?`` can be switched on and activated with a click of the
-``Submit`` button after the data has been filtered.
+|
 
-.. figure:: img/UserOptionsMenu.png
-   :figwidth: 25 %
-   :align: right
-   :alt: Switching charts off
-   :target: _images/UserOptionsMenu.png
+===============================
+Bar chart of category frequency
+===============================
 
-   Figure 14: Switching charts off
+The example below shows the frequency of the "knee" requested procedures for each x-ray room. The height of each bar is
+the total frequency for that requested procedure. Each bar is sub-divided into sections representing the number of
+requests for each x-ray room.
 
-The user can also switch off chart plotting by clicking on the
-``Switch charts off`` link in the ``User options`` menu in the navigation bar
-at the top of any OpenREM page, as shown in figure 14.
+Hovering the cursor over a bar section shows the:
 
-The user can choose whether the data displayed on the charts is the mean,
-median or both by using the drop-down ``Average to use`` selection. Only the
-bar charts can display both mean and median together. Other charts display just
-median data when this option is selected.
+* x-ray room name
+* requested procedure name
+* requested procedure frequency
 
-The charts can be sorted by either bar height, frequency or alphabetically by
-category. The default sorting direction can be set to ascending or descending
-using the drop-down list near the top of the ``chart options``.
+.. raw:: html
+   :file: charts/frequency.html
 
-A user's chart options can also be configured by an administrator via OpenREM's
-user administration page.
+|
 
-****************
-Chart types - CT
-****************
+Setting *Grouping choice* to **System names** in the `Chart options on the modality pages`_ groups the data by x-ray
+system name rather than requested procedure name, as shown below:
 
-* Bar chart of average DLP for each acquisition protocol (all systems combined)
+.. raw:: html
+   :file: charts/frequency_group_by_system.html
 
-* Bar chart of average DLP for each acquisition protocol (one series per system)
+|
 
-* Pie chart of the frequency of each acquisition protocol
+==============================
+Scatter chart of x vs y values
+==============================
 
-* Pie chart showing the number of studies carried on each day of the week
+The example below shows the average glandular dose plotted against compressed breast thickness for "MAMMOGRAM"
+acquisitions made on two x-ray systems.
 
-* Line chart showing the average DLP of each study name over time
+Hovering the cursor over a bar section shows the:
 
-* Bar chart of average CTDI\ :sub:`vol` for each acquisition protocol
+* x-ray room name
+* acquisition protocol name
+* compressed breast thickness
+* average glandular dose
 
-* Bar chart of average DLP for each study name
+.. raw:: html
+   :file: charts/scatter.html
 
-* Pie chart of the frequency of each study name
+|
 
-* Bar chart of average DLP for each requested procedure
+=====================
+Bar chart of workload
+=====================
 
-* Pie chart of the frequency of each requested procedure
+These show the number of studies taking place per weekday, sub-divided into hours of the day.
 
-*************************
-Chart types - radiography
-*************************
+There is a bar per weekday. The total height of this bar is the number of studies carried out on that weekday. Each
+bar is sub-divided into sections representing the number of studies carried out in each of the 24 hours of that day.
+Each section is colour-coded according to how many studies it represents.
 
-* Bar chart of average DAP for each acquisition protocol
+Hovering the cursor over a section shows you the:
 
-* Pie chart of the frequency of each acquisition protocol
+* x-ray room name
+* day of the week that the section represents
+* hour of the day that the section represents
+* number of studies that took place in that hour on that weekday in that x-ray room
 
-* Bar chart of average DAP for each study description
-
-* Pie chart of the frequency of each study description
-
-* Bar chart of average number of irradiation events for each study description
-
-* Bar chart of average DAP for each requested procedure
-
-* Pie chart of the frequency of each requested procedure
-
-* Bar chart of average number of irradiation events for each requested procedure
-
-* Bar chart of average kVp for each acquisition protocol
-
-* Bar chart of average mAs for each acquisition protocol
-
-* Pie chart showing the number of studies carried out per weekday
-
-* Line chart of average DAP of each acquisition protocol over time
-
-* Line chart of average mAs of each acquisition protocol over time
-
-* Line chart of average kVp of each acquisition protocol over time
-
-*************************
-Chart types - fluoroscopy
-*************************
-
-* Bar chart of average DAP for each study description
-
-* Pie chart of the frequency of each study description
-
-* Bar chart of average DAP for each requested procedure
-
-* Pie chart of the frequency of each requested procedure
-
-* Pie chart showing the number of studies carried out per weekday
-
-*************************
-Chart types - mammography
-*************************
-
-* Scatter plot of average glandular dose vs. compressed thickness for each
-  acquisition
-
-* Scatter plot of kVp vs. compressed thickness for each
-  acquisition
-
-* Scatter plot of mAs vs. compressed thickness for each
-  acquisition
-
-* Pie chart showing the number of studies carried out per weekday
-
-*****************
-Performance notes
-*****************
-
-===============
-All chart types
-===============
-
-For any study- or request-based charts, filtering using `Acquisition protocol`
-forces OpenREM to use a slightly slower method of querying the database for chart
-data.
-
-==========
-Bar charts
-==========
-
-Switching off histogram calculation in `Chart options` will speed up bar chart
-data calculation.
-
-Switching off `Plot a series per system` in the `Chart options` will speed up
-data calculation.
-
-=============
-Scatter plots
-=============
-
-Switching off `Plot a series per system` in the `Chart options` will speed up
-data calculation.
+.. raw:: html
+   :file: charts/workload.html
+
+|
+
+=====================================
+Line chart of average value over time
+=====================================
+
+These can be configured to show mean or median data. Each datapoint represents the average over a user-specified time
+period. This can be a day, week, month, quarter or year.
+
+The example below shows the median DAP for "Head" requests made in four CT scanners over the course of five years.
+
+With *Grouping choice* set to **Series item names** in the `Chart options on the modality pages`_ a sub-plot is created
+for each requested procedure name, each with a series per x-ray system as shown below. The *Number of charts per row* in
+the `Additional chart options on the Config page`_ was set to 2 for these example charts.
+
+Hovering the cursor over a section shows you the:
+
+* scanner name
+* requested procedure name
+* date
+* average DLP value
+* number of requests included in the sample
+
+.. raw:: html
+   :file: charts/overtime.html
+
+|
+
+Setting *Grouping choice* to **System names** in the `Chart options on the modality pages`_ changes the grouping. Now
+a sub-plot is created for each x-ray system, each with a series per requested procedure name, as shown below:
+
+.. raw:: html
+   :file: charts/overtime_group_by_system.html
+
+|
+
+=========================================================================
+Bar chart of average value against another binned value across categories
+=========================================================================
+
+These can be configured to show mean or median data. The example below shows the median average glandular dose from
+"MAMMOGRAM" protocol exposures plotted against compressed breast thickness bins. The data is from two x-ray systems.
+
+Hovering the cursor over a section shows you the:
+
+* x-ray room name
+* acquisition protocol
+* average AGD value
+* number of acquisitions included in the sample
+* compressed breast thickness bin range
+
+.. raw:: html
+   :file: charts/binned_statistic.html
+
+|
+
+***********************************
+Chart options on the modality pages
+***********************************
+
+========================== ========================================= ==================================================
+Name                       Configuration options                     Notes
+========================== ========================================= ==================================================
+Average plots              Any combination of **mean**, |br|
+                           **median** or **boxplot**
+-------------------------- ----------------------------------------- --------------------------------------------------
+Time period                One of **day**, **week**, **month**, |br| Applies to over-time charts
+                           **quarter** or **year**
+-------------------------- ----------------------------------------- --------------------------------------------------
+Grouping choice            **System names** or |br|                  **System names** groups by x-ray system |br|
+                           **Series item names**                     **Series item names** groups by each category
+-------------------------- ----------------------------------------- --------------------------------------------------
+Plot a series per system   **On** or **off**                         Splits the data by x-ray system
+-------------------------- ----------------------------------------- --------------------------------------------------
+Calculate histogram data   **On** or **off**                         Calculate histograms for average bar charts
+-------------------------- ----------------------------------------- --------------------------------------------------
+Chart sorting              One of **name**, **frequency** |br|       Sort the chart data according to the |br|
+                           or **value**                              selected choice
+-------------------------- ----------------------------------------- --------------------------------------------------
+Sorting direction          **Ascending** or |br|                     Sets the sort direction
+                           **descending**
+-------------------------- ----------------------------------------- --------------------------------------------------
+Split plots by physician   **On** or **off**                         Calculate a series per physician |br|
+                                                                     (*some fluoroscopy charts only*)
+========================== ========================================= ==================================================
+
+
+*******************************************
+Additional chart options on the Config page
+*******************************************
+
+========================================== ========================= ===================================================
+Name                                       Configuration options     Notes
+========================================== ========================= ===================================================
+Number of histogram bins                   Value in the range 2 - 40 Default is 10
+------------------------------------------ ------------------------- ---------------------------------------------------
+Fixed histogram bins across sub-plots      **On** or **off**         Forces all histogram sub-plots |br|
+                                                                     to use the same bins
+------------------------------------------ ------------------------- ---------------------------------------------------
+Case-insensitive categories                **On** or **off**         Category names forced to lowercase |br|
+                                                                     For example, "Chest PA" becomes "chest pa"
+------------------------------------------ ------------------------- ---------------------------------------------------
+Remove category whitespace padding         **On** or **off**         Removes spaces at beginning and end of category |br|
+                                                                     names, replaces multiple spaces with single spaces |br|
+                                                                     For example, " Chest   PA " becomes "Chest PA"
+------------------------------------------ ------------------------- ---------------------------------------------------
+Colour map choice                          One of the available |br| See the `available colourmaps`_ section
+                                           matplotlib colour maps
+------------------------------------------ ------------------------- ---------------------------------------------------
+Chart theme                                One of **Plotly**,        Set the Plotly theme to use for the charts. |br|
+                                           **Plotly white**, |br|    Some `example themed charts`_ are provided below. |br|
+                                           **Plotly dark**,          Examples of all themes on the Plotly themes_ |br|
+                                           **presentation**, |br|    page (external link).
+                                           **ggplot2**,
+                                           **Seaborn** or |br|
+                                           **simple white**
+------------------------------------------ ------------------------- ---------------------------------------------------
+Number of charts per row                   Value in the range 1 - 10 Sets the number of sub-plots in each row
+========================================== ========================= ===================================================
+
+
+.. _available colourmaps:
+
+====================
+Available colourmaps
+====================
+
+=================== ===========================
+Name                Swatch
+=================== ===========================
+Red yellow blue     .. image:: img/RdYlBu.png
+------------------- ---------------------------
+Spectral            .. image:: img/Spectral.png
+------------------- ---------------------------
+Pink yellow green   .. image:: img/PiYG.png
+------------------- ---------------------------
+Purple green        .. image:: img/PRGn.png
+------------------- ---------------------------
+Brown green         .. image:: img/BrBG.png
+------------------- ---------------------------
+Purple orange       .. image:: img/PuOr.png
+------------------- ---------------------------
+Red blue            .. image:: img/RdBu.png
+------------------- ---------------------------
+Red grey            .. image:: img/RdGy.png
+------------------- ---------------------------
+Yellow green blue   .. image:: img/YlGnBu.png
+------------------- ---------------------------
+Yellow orange brown .. image:: img/YlOrBr.png
+------------------- ---------------------------
+Hot                 .. image:: img/hot.png
+------------------- ---------------------------
+Inferno             .. image:: img/inferno.png
+------------------- ---------------------------
+Magma               .. image:: img/magma.png
+------------------- ---------------------------
+Plasma              .. image:: img/plasma.png
+------------------- ---------------------------
+Viridis             .. image:: img/viridis.png
+------------------- ---------------------------
+Cividis             .. image:: img/Spectral.png
+=================== ===========================
+
+
+.. _example themed charts:
+
+=====================
+Some available themes
+=====================
+
+The example `Chart types`_ at the top of this document use the default Plotly theme. Below are some examples of other
+available themes.
+
++++++++++++
+Plotly dark
++++++++++++
+
+.. raw:: html
+   :file: charts/barchart_plotly_dark.html
+
+|
+
+++++++++++++
+Presentation
+++++++++++++
+
+.. raw:: html
+   :file: charts/barchart_presentation.html
+
+|
+
+++++++++++++
+Simple white
+++++++++++++
+
+.. raw:: html
+   :file: charts/barchart_simple_white.html
+
+|
+
+*******************
+Available CT charts
+*******************
+
+====================================== ==============================================================================
+Chart name                             Chart type
+====================================== ==============================================================================
+Acquisition frequency                  Bar chart of acquisition protocol frequency
+-------------------------------------- ------------------------------------------------------------------------------
+Acquisition DLP                        Bar chart of average DLP per acquisition protocol |br|
+                                       Boxplot with data point per acquisition protocol |br|
+                                       Histograms also plotted if *Calculate histogram data* **on**
+-------------------------------------- ------------------------------------------------------------------------------
+Acquisition CTDI\ :sub:`vol`           Bar chart of average CTDI\ :sub:`vol` per acquisition protocol |br|
+                                       Boxplot with data point per acquisition protocol |br|
+                                       Histograms also plotted if *Calculate histogram data* **on**
+-------------------------------------- ------------------------------------------------------------------------------
+Acquisition DLP over time              Line chart of average DLP over time |br|
+                                       for each acquisition protocol
+-------------------------------------- ------------------------------------------------------------------------------
+Acquisition CTDI\ :sub:`vol` over time Line chart of average CTDI\ :sub:`vol` over time |br|
+                                       for each acquisition protocol
+-------------------------------------- ------------------------------------------------------------------------------
+Acquisition DLP vs mass                Scatter chart of DLP vs patient mass for each acquisition protocol
+-------------------------------------- ------------------------------------------------------------------------------
+Acquisition CTDI\ :sub:`vol` vs mass   Scatter chart of CTDI\ :sub:`vol` vs patient mass for each |br|
+                                       acquisition protocol
+-------------------------------------- ------------------------------------------------------------------------------
+Study frequency                        Bar chart of study description frequency
+-------------------------------------- ------------------------------------------------------------------------------
+Study DLP                              Bar chart of average DLP per study description |br|
+                                       Boxplot with data point per study description |br|
+                                       Histograms also plotted if *Calculate histogram data* **on**
+-------------------------------------- ------------------------------------------------------------------------------
+Study CTDI\ :sub:`vol`                 Bar chart of average CTDI\ :sub:`vol` per study description |br|
+                                       Boxplot with data point per study description |br|
+                                       Histograms also plotted if *Calculate histogram data* **on**
+-------------------------------------- ------------------------------------------------------------------------------
+Study events                           Bar chart of average number of radiation events per study description |br|
+                                       Boxplot with data point per study description |br|
+                                       Histograms also plotted if *Calculate histogram data* **on**
+-------------------------------------- ------------------------------------------------------------------------------
+Study DLP over time                    Line chart of average DLP over time |br|
+                                       for each study description
+-------------------------------------- ------------------------------------------------------------------------------
+Study workload                         Bar chart of number of studies carried out on each day of the |br|
+                                       week, with each bar sub-divided into hours of the day
+-------------------------------------- ------------------------------------------------------------------------------
+Requested procedure frequency          Bar chart of requested procedure name frequency
+-------------------------------------- ------------------------------------------------------------------------------
+Requested procedure DLP                Bar chart of average DLP per requested procedure name |br|
+                                       Boxplot with data point per study description |br|
+                                       Histograms also plotted if *Calculate histogram data* **on**
+-------------------------------------- ------------------------------------------------------------------------------
+Requested procedure events             Bar chart of average number of radiation events per requested procedure name |br|
+                                       Boxplot with data point per study description |br|
+                                       Histograms also plotted if *Calculate histogram data* **on**
+-------------------------------------- ------------------------------------------------------------------------------
+Requested procedure DLP over time      Line chart of average DLP over time |br|
+                                       for each study description
+====================================== ==============================================================================
+
+
+*****************************
+Available radiographic charts
+*****************************
+
+=============================== ==================================================================
+Chart name                      Chart type
+=============================== ==================================================================
+Acquisition frequency           Bar chart of acquisition protocol frequency
+------------------------------- ------------------------------------------------------------------
+Acquisition DAP                 Bar chart of average DAP per acquisition protocol |br|
+                                Boxplot with data point per acquisition protocol |br|
+                                Histograms also plotted if *Calculate histogram data* **on**
+------------------------------- ------------------------------------------------------------------
+Acquisition mAs                 Bar chart of average mAs per acquisition protocol |br|
+                                Boxplot with data point per acquisition protocol |br|
+                                Histograms also plotted if *Calculate histogram data* **on**
+------------------------------- ------------------------------------------------------------------
+Acquisition kVp                 Bar chart of average kVp per acquisition protocol |br|
+                                Boxplot with data point per acquisition protocol |br|
+                                Histograms also plotted if *Calculate histogram data* **on**
+------------------------------- ------------------------------------------------------------------
+Acquisition DAP over time       Line chart of average DAP over time |br|
+                                for each acquisition protocol
+------------------------------- ------------------------------------------------------------------
+Acquisition mAs over time       Line chart of average mAs over time |br|
+                                for each acquisition protocol
+------------------------------- ------------------------------------------------------------------
+Acquisition kVp over time       Line chart of average kVp over time |br|
+                                for each acquisition protocol
+------------------------------- ------------------------------------------------------------------
+Acquisition DAP vs mass         Scatter chart of DAP vs patient mass |br|
+                                for each acquisition protocol
+------------------------------- ------------------------------------------------------------------
+Study frequency                 Bar chart of study description frequency
+------------------------------- ------------------------------------------------------------------
+Study DAP                       Bar chart of average DAP per study description |br|
+                                Boxplot with data point per study description |br|
+                                Histograms also plotted if *Calculate histogram data* **on**
+------------------------------- ------------------------------------------------------------------
+Study DAP vs mass               Scatter chart of DAP vs patient mass for each study description
+------------------------------- ------------------------------------------------------------------
+Study workload                  Bar chart of number of studies carried out on each day of the |br|
+                                week, with each bar sub-divided into hours of the day
+------------------------------- ------------------------------------------------------------------
+Requested procedure frequency   Bar chart of requested procedure name frequency
+------------------------------- ------------------------------------------------------------------
+Requested procedure DAP         Bar chart of average DAP per requested procedure name |br|
+                                Boxplot with data point per study description |br|
+                                Histograms also plotted if *Calculate histogram data* **on**
+------------------------------- ------------------------------------------------------------------
+Requested procedure DAP vs mass Scatter chart of DAP vs patient mass |br|
+                                for each requested procedure name
+=============================== ==================================================================
+
+
+****************************
+Available fluoroscopy charts
+****************************
+
+================================= ===============================================================
+Chart name                        Chart type
+================================= ===============================================================
+Study frequency                   Bar chart of study description frequency
+--------------------------------- ---------------------------------------------------------------
+Study DAP                         Bar chart of average DAP per study description |br|
+                                  Boxplot with data point per study description |br|
+                                  Histograms also plotted if *Calculate histogram data* **on**
+--------------------------------- ---------------------------------------------------------------
+Study DAP over time               Line chart of average DAP over time |br|
+                                  for each study description
+--------------------------------- ---------------------------------------------------------------
+Study workload                    Bar chart of number of studies carried out on each day of the |br|
+                                  week, with each bar sub-divided into hours of the day
+--------------------------------- ---------------------------------------------------------------
+Requested procedure frequency     Bar chart of requested procedure name frequency
+--------------------------------- ---------------------------------------------------------------
+Requested procedure DAP           Bar chart of average DAP per requested procedure name |br|
+                                  Boxplot with data point per study description |br|
+                                  Histograms also plotted if *Calculate histogram data* **on**
+--------------------------------- ---------------------------------------------------------------
+Requested procedure DAP over time Line chart of average DAP over time |br|
+                                  for each study description
+================================= ===============================================================
+
+
+****************************
+Available mammography charts
+****************************
+
+==================================== ===================================================================
+Chart name                           Chart type
+==================================== ===================================================================
+Acquisition frequency                Bar chart of acquisition protocol frequency
+------------------------------------ -------------------------------------------------------------------
+Acquisition AGD                      Bar chart of average AGDP per acquisition protocol |br|
+                                     Boxplot with data point per acquisition protocol |br|
+                                     Histograms also plotted if *Calculate histogram data* **on**
+------------------------------------ -------------------------------------------------------------------
+Acquisition average AGD vs thickness Bar chart of average AGD for each of the following nine compressed |br|
+                                     breast thickness bands: |br|
+                                     min ≤ x < 20; 20 ≤ x < 30; 30 ≤ x < 40; 40 ≤ x < 50; 50 ≤ x < 60; |br|
+                                     60 ≤ x < 70; 70 ≤ x < 80; 80 ≤ x < 90; 90 ≤ x < max
+------------------------------------ -------------------------------------------------------------------
+Acquisition AGD over time            Line chart of average AGD over time |br|
+                                     for each acquisition protocol
+------------------------------------ -------------------------------------------------------------------
+Acquisition AGD vs thickness         Scatter chart of AGD vs compressed breast thickness |br|
+                                     for each acquisition protocol
+------------------------------------ -------------------------------------------------------------------
+Acquisition mAs vs thickness         Scatter chart of mAs vs compressed breast thickness |br|
+                                     for each acquisition protocol
+------------------------------------ -------------------------------------------------------------------
+Acquisition kVp vs thickness         Scatter chart of kVp vs compressed breast thickness |br|
+                                     for each acquisition protocol
+------------------------------------ -------------------------------------------------------------------
+Study workload                       Bar chart of number of studies carried out on each day of the |br|
+                                     week, with each bar sub-divided into hours of the day
+==================================== ===================================================================
+
+.. _Plotly: https://plotly.com/python/
+
+.. _Pandas: https://pandas.pydata.org/
+
+.. _themes: https://plotly.com/python/templates/
+
+.. |br| raw:: html
+
+    <br>

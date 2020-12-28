@@ -1,0 +1,72 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../code_nondicomimport.rst:2 bf51c21d5b4d472c91e672065652b5d8
+msgid "Non-DICOM import modules"
+msgstr ""
+
+#: ../../code_nondicomimport.rst:5 162ac50d8fd64a2185cf7b526641b2f6
+msgid "Patient height and weight csv import module"
+msgstr ""
+
+#: ../../code_nondicomimport.rst:7 5a093cc9a5dc496983a293bb9da6b12f
+msgid ""
+"This module enables a csv file to be parsed and the height and weight "
+"information extracted and added to existing studies in the OpenREM "
+"database. An example may be a csv extract from a RIS or EPR system."
+msgstr ""
+
+#: ../../code_nondicomimport.rst:11 1dc491ddbdba4fb5b476e35cac829e21
+msgid ""
+"There needs to be a common unique identifier for the exam - currently "
+"this is limited to accession number or study instance UID."
+msgstr ""
+
+#: 0a71e6b844e64bcb8b1367eaf5a5d5e4 2a0de257b311411381f6738564392d44 of
+#: remapp.extractors.ptsizecsv2db.websizeimport:1
+msgid "Task to import patient size data from the OpenREM web interface."
+msgstr ""
+
+#: 577c4188b70b435091de340d0085ae65 6cb89592049549329b909a8c494c3b73
+#: b9a2acf81db349a3bc591317fbd1fcab of remapp.extractors.ptsizecsv2db.csv2db
+#: remapp.extractors.ptsizecsv2db.websizeimport
+msgid "Parameters"
+msgstr ""
+
+#: 54568afb5e7943a291646dd215e3e152 a4fa07afdda84c929561e5878c24b862 of
+#: remapp.extractors.ptsizecsv2db.websizeimport:3
+msgid ""
+"Database index key for the import record, containing the path to the "
+"import csv file and the field header details."
+msgstr ""
+
+#: a0ac042ffc9e4b7c897b8da27f39a0e9 of remapp.extractors.ptsizecsv2db.csv2db:1
+msgid ""
+"Import patient height and weight data from csv RIS exports. Called from "
+"``openrem_ptsizecsv.py`` script"
+msgstr ""
+
+#: f21452a2b8a34b5fb41441255461d0c3 of remapp.extractors.ptsizecsv2db.csv2db:3
+msgid "sys.argv from the command line call"
+msgstr ""
+
+#: 6a40e988066d4101830987b27e6f4e69 of remapp.extractors.ptsizecsv2db.csv2db:5
+msgid "Example::"
+msgstr ""
+

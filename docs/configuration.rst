@@ -2,8 +2,6 @@
 Configuration and administration
 ################################
 
-See also: ``local_settings.py`` :ref:`localsettingsconfig`
-
 .. toctree::
     :maxdepth: 2
 

@@ -1,0 +1,12 @@
+Data structure for bar charts with optional histogram
+
+CT example using "Requested procedure name" and "Total DLP"
+
+A flat data structure in a Pandas dataframe?
+
+Requested procedure name
+X-ray system name
+Request frequency
+Mean DLP
+Median DLP
+DLP histogram []

@@ -22,10 +22,45 @@
         <h3 class="panel-title">General chart options</h3>
       </div>
       <div class="panel-body">
-        <table>
-          {% csrf_token %}
-          {{ GeneralChartOptionsForm }}
-        </table>
+
+        <div class="row">
+            {% csrf_token %}
+
+            <!-- First column div with all fields except the colour map choice -->
+            <div class="col-md-2">
+                <table>
+                {% for field in GeneralChartOptionsForm %}
+                    {{ field.errors }}
+                    <tr>
+                        {% if field.name != "plotColourMapChoice" %}
+                            <td>{{ field.label_tag }}</td>
+                            <td>{{ field }}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </table>
+            </div>
+
+            <!-- Second column div with just the colour map choice field -->
+            <div class="col-md-1">
+            {% for field in GeneralChartOptionsForm %}
+                {{ field.errors }}
+                {% if field.name == "plotColourMapChoice" %}
+                    {{ GeneralChartOptionsForm.plotColourMapChoice.label_tag }}
+                    <ul class="RadioSelect">
+                        {% for x, y in GeneralChartOptionsForm.fields.plotColourMapChoice.choices %}
+                            <label for="value_{{ forloop.counter0 }}">
+                                <li class="no-wrap">
+                                    <input type="radio" name="plotColourMapChoice" value="{{ x }}" id="value_{{ forloop.counter0 }}" {% if GeneralChartOptionsForm.plotColourMapChoice.value == x %}checked{% endif %}>&nbsp<img src="{{ STATIC_URL }}img/{{ x }}.png" alt="{{ y }}" width="150" height="15" class="colour_swatch"> {{ x }}
+                                </li>
+                            </label>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endfor %}
+            </div>
+
+        </div>
         <input class="btn btn-default" name="submit" type="submit" />
       </div>
 

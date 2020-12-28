@@ -1,8 +1,6 @@
 # This Python file uses the following encoding: utf-8
 # test_import_rf_rdsr_philips.py
 
-from __future__ import division
-from past.utils import old_div
 import os
 from decimal import Decimal
 import datetime
@@ -14,9 +12,7 @@ from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
 
 
 class ImportRFRDSRPhilips(TestCase):
-    """Tests for importing the Philips Allura RDSR
-
-    """
+    """Tests for importing the Philips Allura RDSR"""
 
     def test_private_collimation_data(self):
         """Tests that the collimated field information has been successfully obtained
@@ -40,7 +36,7 @@ class ImportRFRDSRPhilips(TestCase):
 
         first_field_height = Decimal((164.5 + 164.5) * 1.194)
         first_field_width = Decimal((131.0 + 131.0) * 1.194)
-        first_field_area = old_div((first_field_height * first_field_width), 1000000)
+        first_field_area = (first_field_height * first_field_width) / 1000000
 
         self.assertAlmostEqual(
             first_source_data.collimated_field_height, first_field_height
@@ -51,6 +47,9 @@ class ImportRFRDSRPhilips(TestCase):
         self.assertAlmostEqual(
             first_source_data.collimated_field_area, first_field_area
         )
+
+        performing_physician_name = study.performing_physician_name
+        self.assertEqual(performing_physician_name, "Yamada^Tarou=山田^太郎=やまだ^たろう")
 
 
 class ImportRFRDSRPhilipsAzurion(TestCase):
@@ -217,9 +216,7 @@ class RPDoseUnitsTest(TestCase):
 
 
 class ImportRFRDSRSiemens(TestCase):
-    """Tests for importing the Siemens Zee RDSR
-
-    """
+    """Tests for importing the Siemens Zee RDSR"""
 
     def test_comment_xml_extraction(self):
         """Tests that the patient orientation and II size information has been successfully obtained
@@ -236,11 +233,11 @@ class ImportRFRDSRSiemens(TestCase):
         rdsr.rdsr(dicom_path)
         study = GeneralStudyModuleAttr.objects.order_by("id")[0]
 
-        event_data = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by(
-            "id"
-        )[
-            0
-        ]
+        event_data = (
+            study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by(
+                "id"
+            )[0]
+        )
         self.assertEqual(
             event_data.patient_table_relationship_cid.code_value, "F-10470"
         )
@@ -299,8 +296,10 @@ class ImportRFRDSRGESurgical(TestCase):
         self.assertEqual(total_acq_dap, Decimal(0))
         self.assertEqual(total_acq_rp_dose, Decimal(0))
 
-        events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by(
-            "pk"
+        events = (
+            study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by(
+                "pk"
+            )
         )
         event_4 = events[3]
         self.assertEqual(
@@ -410,8 +409,10 @@ class ImportRFRDSRCanonUltimaxi(TestCase):
 
         # Test a reference point dose from an individual exposure
         # The first exposure RP dose is is stored in the RDSR as 0.384 with units of mGy
-        events = study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by(
-            "pk"
+        events = (
+            study.projectionxrayradiationdose_set.get().irradeventxraydata_set.order_by(
+                "pk"
+            )
         )
         event_1_source = events[0].irradeventxraysourcedata_set.get()
         self.assertAlmostEqual(event_1_source.dose_rp, Decimal(0.000384000000))
