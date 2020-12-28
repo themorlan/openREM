@@ -22,15 +22,274 @@
             <div class="col-md-9">
 
                 {% if request.user.userprofile.plotCharts %}
-
                     <script src="{{ STATIC_URL }}js/django_reverse/reverse.js"></script>
                     <script src="{{ STATIC_URL }}js/charts/chartFullScreen.js"></script>
                     <script src="{{ STATIC_URL }}js/charts/chartSetExportSize.js"></script>
                     <script src="{{ STATIC_URL }}js/chroma.min.js"></script>
                     <script src="{{ STATIC_URL }}js/charts/chartUpdateData.js"></script>
-        <script src="{{ STATIC_URL }}js/django_reverse/reverse.js"></script>
+                {% endif %}
 
-                    <div class="ajax-progress"><img src="{{ STATIC_URL }}img/ajax-loader.gif" alt='Preparing charts...'></div>
+                {% if advancedSearchAvailable %}
+                    <div class="panel panel-info" style="display: block;">
+                        <div class="panel-heading" role="tab" id="headingSearch">
+                            <table style="width: 100%;">
+                              <tr>
+                                <td><h3 class="panel-title">
+                                  <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                      href="#collapseSearch" aria-expanded="false" aria-controls="collapseSearch">
+                                    Advanced filtering
+                                  </span>
+                                </h3></td>
+                                <td style="text-align: right;"><a href="{% url 'ct_summary_list_filter' %}">
+                                    <small>Switch to default Exam filter</small></a>
+                                </td>
+                              </tr>
+                            </table>
+                        </div>
+                        <div id="collapseSearch" class="panel-collapse collapse in" role="tabpanel"
+                             aria-labelledby="headingSearch">
+                            <div class="advanced_search">
+                                <div id="div_search_string" class="built_search_string">
+                                    {{ filter.form.as_p }}
+                                </div>
+                                <div id="search_builder" class="search_builder_class">
+                                  <table id="search_builder_table" class="small header-background" style="width:100%">
+                                    <tr>
+                                      <th>Boolean operator</th><th>Opening bracket(s)</th><th>Parameter</th>
+                                      <th>Operator</th><th>Value</th><th>Closing bracket(s)</th><th></th>
+                                    </tr>
+                                  </table>
+                                </div>
+                                <div style="text-align: right;" >
+                                    <input class="btn btn-default" name="submit" type="submit" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <table class="table table-bordered table-hover row-clickable small">
+                    <tr>
+                        <th>Institution</th>
+                        <th>
+                            <table>
+                                <tr><td>Make</td></tr>
+                                <tr><td>Model</td></tr>
+                                <tr><td class="nowrap">Display name</td></tr>
+                            </table>
+                        </th>
+                        <th>Date</th>
+                        <th>
+                            <table>
+                                <tr><td class="nowrap">Study description</td></tr>
+                                <tr><td class="nowrap">Procedure</td></tr>
+                                <tr><td class="nowrap">Requested Procedure</td></tr>
+                                <tr><td class="nowrap">Accession number</td></tr>
+                            </table>
+                        </th>
+                        <th>Number of events</th>
+                        <th>Total DLP (mGy.cm)</th>
+                        {% if admin.admingroup %}
+                            <th>Delete?</th>
+                        {% endif %}
+                    </tr>
+                    {% for exam in filter.qs %}
+                      {% with equipment=exam.generalequipmentmoduleattr_set.get %}
+                      {% with ct_dose_set=exam.ctradiationdose_set.get %}
+                      {% with ct_accumulated=ct_dose_set.ctaccumulateddosedata_set.get %}
+                         <tr>
+                            <td>
+                                <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                                    {{ equipment.institution_name }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                                    <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';">
+                                        <tr><td class="nowrap">{{ equipment.manufacturer }}</td></tr>
+                                        <tr><td class="nowrap">{{ equipment.manufacturer_model_name }}</td></tr>
+                                        <tr><td class="nowrap">{{ equipment.unique_equipment_name.display_name }}</td></tr>
+                                    </table>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                                    {{ exam.study_date|date:"Y-m-d" }} {{ exam.study_time|date:"H:i" }}
+                                </a>
+                            </td>
+
+                            <td>
+                                <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                                    <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';">
+                                        <tr><td class="nowrap">{{ exam.study_description }}</td></tr>
+                                        <tr><td class="nowrap">{{ exam.procedure_code_meaning }}</td></tr>
+                                        <tr><td class="nowrap">{{ exam.requested_procedure_code_meaning }}</td></tr>
+                                        {% if not exam.accession_hashed %}
+                                            <tr><td class="nowrap">{{ exam.accession_number }}</td></tr>
+                                        {% endif %}
+                                    </table>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                                    {{ ct_accumulated.total_number_of_irradiation_events }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                                    {{ ct_accumulated.ct_dose_length_product_total|floatformat:2 }}
+                                </a>
+                            </td>
+                            {% if admin.admingroup %}
+                                <td>
+                                    <a href="{% url 'study_delete' exam.id %}">Delete</a>
+                                </td>
+                            {% endif %}
+                        </tr>
+                      {% endwith %}{% endwith %}{% endwith %}
+                    {% endfor %}
+                </table>
+            </div>
+
+            <div class="col-md-3">
+                <div class="panel panel-info small">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Data export</h3>
+                    </div>
+                    <div class="panel-body">
+                        {% if admin.exportgroup %}
+                            <p><strong>Note:</strong> Apply the exam filter first to refine what is exported.</p>
+                            <p>
+                                <a href="{% url 'ctcsv1' 0 0 %}?{{ request.GET.urlencode }}"
+                                   class="btn btn-default btn-sm" role="button">Export to CSV&nbsp;</a>
+                                {% if admin.pidgroup %}
+                                    <a href="{%  url 'ctcsv1' 1 0 %}?{{ request.GET.urlencode }}"
+                                       class="btn btn-default btn-sm" role="button">With names</a>
+                                    <a href="{% url 'ctcsv1' 0 1 %}?{{ request.GET.urlencode }}"
+                                       class="btn btn-default btn-sm" role="button">With ID</a>
+                                    <a href="{% url 'ctcsv1' 1 1 %}?{{ request.GET.urlencode }}"
+                                       class="btn btn-default btn-sm" role="button">With both</a>
+                                    </p>
+                                    <p>
+                                {% endif %}
+                                <a href="{% url 'ctxlsx1' 0 0 %}?{{ request.GET.urlencode }}"
+                                   class="btn btn-default btn-sm" role="button">Export to XLSX</a>
+                                {% if admin.pidgroup %}
+                                    <a href="{% url 'ctxlsx1' 1 0 %}?{{ request.GET.urlencode }}"
+                                       class="btn btn-default btn-sm" role="button">With names</a>
+                                    <a href="{% url 'ctxlsx1' 0 1 %}?{{ request.GET.urlencode }}"
+                                       class="btn btn-default btn-sm" role="button">With ID</a>
+                                    <a href="{% url 'ctxlsx1' 1 1 %}?{{ request.GET.urlencode }}"
+                                       class="btn btn-default btn-sm" role="button">With both</a>
+                                {% endif %}
+                                </p>
+
+                        {% else %}
+                            <p>
+                                No export permissions
+                            </p>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+                {{ studyfilter }}
+
+                <div class="panel panel-info small">
+                        <div class="panel-heading">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td><h3 class="panel-title">Exam filter</h3></td>
+                                    <td style="text-align: right;" {% if advancedSearchAvailable %}hidden{% endif %}>
+                                        <a href="{% url 'ct_summary_list_filter' %}?advanced_search=True">
+                                            <small>Switch to advanced filtering</small>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="panel-body" {% if advancedSearchAvailable %}hidden{% endif %}>
+                        <!-- if advanced_search, don't render filter fields, but do render hidden fields -->
+                            {% if not advancedSearchAvailable %}
+                                <i>Date format yyyy-mm-dd</i>
+                                {% for field in filter.form.visible_fields %}
+                                    <div class="form-group">
+                                        <div class="col-xs-4">
+                                            <label>{{ field.label_tag }}</label>
+                                        </div>
+                                        <div class="col-xs-8">
+                                            {{ field.errors }}
+                                            {{ field }}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            {% for field in filter.form.hidden_fields %}
+                                <div style="display:none">{{ field }}</div>
+                            {% endfor %}
+                            <input class="btn btn-default" name="submit" type="submit" />
+                        </div>
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Chart options</h3>
+                    </div>
+                    <div class="panel-body">
+                        <table>
+                            {% csrf_token %}
+                            {{ chartOptionsForm }}
+                        </table>
+                        <input class="btn btn-default" name="submit" type="submit" />
+                    </div>
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Table options</h3>
+                    </div>
+                    <div class="panel-body">
+                        <table>
+                            {{ itemsPerPageForm }}
+                        </table>
+                        <input class="btn btn-default" name="submit" type="submit" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+{% endblock %}
+
+    {% block colmain %}
+
+
+    {% endblock %}
+
+    {% block colside %}
+
+    {% endblock %}
+
+
+
+
+{% block jsblock %}
+    <script src="{{ STATIC_URL }}js/advancedSearch.js"></script>
+    <script>
+        let staticurl = "{{ STATIC_URL|safe }}";
+        let filterOptionsJSON = {{ json_filter_options|safe }};
+        let searchString = "{{ advancedSearchString|safe }}";
+        $(document).ready(function() {
+            initializeJSON(filterOptionsJSON, staticurl);
+            document.getElementById("id_advanced_search_string").value = searchString;
+            if (!!(searchString.trim()))
+                createBuilderFromSearchString(searchString);
+            else
+                addSearchBuilderLine(-1, true);
+        })
+    </script>
+
+{% endblock %}
+
+{% block plotdata %}
+    {% if request.user.userprofile.plotCharts %}
+
+        <div class="ajax-progress"><img src="{{ STATIC_URL }}img/ajax-loader.gif" alt='Preparing charts...'></div>
 
         <!-- JavaScript to enable Plotly charts -->
         <script src="{{ STATIC_URL }}js/charts/plotly-1.58.2.min.js"></script>
