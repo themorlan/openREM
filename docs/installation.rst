@@ -16,6 +16,7 @@ Install
 -------
 * Extract the ZIP file and open a shell (command prompt) in the new folder
 * Customise any variables in
+
     * ``.env.prod``
     * the ``orthanc_1`` section of ``docker-compose.yml``
     * ``orthanc_1.json``

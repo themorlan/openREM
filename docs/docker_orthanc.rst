@@ -8,10 +8,6 @@ Configuration is split between two files: ``docker-compose.yml`` contains option
 to tailor which DICOM files we want to process and whether we want to make use of the server for Physics QA
 images. ``orthanc_1.json`` contains options for overriding the default Orthanc configuration.
 
-The ``docker-compose.yml`` file defines all the containers that are needed for OpenREM, including the Orthanc
-container(s) that provide the DICOM Store functionality to enable scanners to send directly to OpenREM, and for
-query-retrieve to function.
-
 OpenREM Lua script configuration
 --------------------------------
 
@@ -79,7 +75,8 @@ Orthanc Configuration
 ---------------------
 
 This file is formatted as JSON. It can contain any configuration options that appear in the standard Orthanc
-``orthanc.json`` file, but the ones that are needed for OpenREM are included as standard and described below:
+``orthanc.json`` file, but the ones that are needed for OpenREM are included in ``orthanc_1.json``
+as standard and described below. Edit ``orthanc_1.json`` to make the changes.
 
 DICOM Application Entity Title
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -102,10 +99,14 @@ Docker, the second number is used internally.
 
 For example, to use port 8104:
 
+**docker-compose.yml**
+
 .. code-block:: yaml
 
     ports:
       - 8104:8104
+
+**orthanc_1.json**
 
 .. code-block:: json
 
@@ -118,10 +119,14 @@ There will normally not be any studies in the Orthanc database once they have be
 enable the Orthanc web viewer, enable the port in ``docker-compose.yml`` and set ``RemoteAccessAllowed`` to ``true``
 in ``orthanc_1.json``. The first number in the port configuration can be changed if required:
 
+**docker-compose.yml**
+
 .. code-block:: yaml
 
     ports:
       - 8042:8042
+
+**orthanc_1.json**
 
 .. code-block:: json
 
@@ -135,11 +140,12 @@ in ``orthanc_1.json``. The first number in the port configuration can be changed
 Lua script path
 ^^^^^^^^^^^^^^^
 
-The path within the Orthanc container for the OpenREM Lua script is specified here - this should not be changed.
+The path within the Orthanc container for the OpenREM Lua script is specified here - this should not be changed
+(see below for advanced options).
 
 
-Advanced Orthanc configuration
-------------------------------
+Advanced options
+----------------
 
 Multiple stores
 ^^^^^^^^^^^^^^^
@@ -163,5 +169,5 @@ documentation as to how they are used.
 
 A custom version of the ``openrem_orthanc_config_docker.lua`` script can be used if required. Copy the existing one
 and place the new one, with a new name, in the ``orthanc/`` folder, and set the ``LuaScripts`` value in
-``orthanc_1.json`` to match. **Pay special attention to the first section**, up to the ``ToAscii`` function, that has
-been changed for the Docker implementation.
+``orthanc_1.json`` to match. **Pay special attention to the first sections**, up to the ``ToAscii`` function,
+these sections have been changed for the Docker implementation.
