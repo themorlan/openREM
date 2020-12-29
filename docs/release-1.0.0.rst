@@ -72,8 +72,8 @@ Set up the new installation
 * Install Docker
 * Download and extract https://bitbucket.org/openrem/docker/get/develop.zip and open a shell (command window) in the
   new folder
-* Customise variables in ``.env.prod`` and in the ``orthanc_1`` section in ``docker-compose.yml`` as necessary.
-  A full description of the options are found in:
+* Customise variables in ``.env.prod``, the ``orthanc_1`` section in ``docker-compose.yml``
+  and in ``orthanc_1.json`` as necessary.  A full description of the options are found in:
 
 ..  toctree::
     :maxdepth: 1
