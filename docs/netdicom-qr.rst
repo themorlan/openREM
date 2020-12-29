@@ -152,7 +152,7 @@ Assuming the PACS database ID is 2, and the store node ID is 1, the command woul
 
 .. sourcecode:: console
 
-    docker-compose exec openrem openrem_qr.py 2 1 -dx -f 2010-04-05 -t 2010-04-06 -e "imported"
+    $ docker-compose exec openrem openrem_qr.py 2 1 -dx -f 2010-04-05 -t 2010-04-06 -e "imported"
 
 If you want to do this regularly to catch new studies, you might like to use a script something like this on linux:
 
@@ -177,8 +177,11 @@ example PowerShell script is shown below:
     # Script to obtain all CT studies from a DICOM node on the day prior to the
     # date the script is run and import them into OpenREM.
     # Get yesterday's date
+
     $dateString = "{0:yyyy-MM-dd}" -f (get-date).AddDays(-1)
+
     # Run the openrem_qr.py script with yesterday's date as the to and from date
+
     docker-compose -f C:\Path\To\docker-compose.yml exec openrem openrem_qr.py 2 1 -ct -f $dateString -t $dateString
 
 The above PowerShell script could be run on a regular basis by adding a task to the Windows ``Task Scheduler`` that
@@ -208,7 +211,7 @@ database ID 1:
 
 .. sourcecode:: bash
 
-    docker-compose exec openrem openrem_qr.py 2 1 -ct -sd 2018-03-19 -tf 1200 -tt 1500
+    $ docker-compose exec openrem openrem_qr.py 2 1 -ct -sd 2018-03-19 -tf 1200 -tt 1500
 
 
 
