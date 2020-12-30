@@ -82,7 +82,13 @@ Upgrading an existing installation
 Databases
 =========
 
-To be removed here, but we need some of the content in other pages, so leaving for now
+..  toctree::
+    :maxdepth: 2
+
+    database
+
+
+Remaining pages to be reviewed to see if any information needs to be retained, then deleted:
 
 ..  toctree::
     :maxdepth: 2
