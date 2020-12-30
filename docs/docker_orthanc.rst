@@ -1,5 +1,5 @@
-DICOM store configuration
-=========================
+DICOM store configuration (Orthanc)
+===================================
 
 Orthanc provides the DICOM Store functionality to enable scanners to send directly to OpenREM, and for
 query-retrieve to function.
