@@ -54,7 +54,7 @@ We recommend all installations to use the Docker method described above. However
 Docker, but only on Linux. The instructions are a prescriptive install on Ubuntu:
 
 ..  toctree::
-    :maxdepth: 1
+    :maxdepth: 2
 
     quick_start_linux
 

@@ -12,7 +12,6 @@ Database backup
 
     $ docker-compose exec db pg_dump -U openrem_user -d openrem_prod -F c -f /db_backup/openremdump.bak
 
-* To restore the database follow the upgrade instructions.
 * To automate a regular backup (**recommended**) adapt the following command in a bash script:
 
 .. code-block:: bash
@@ -27,6 +26,52 @@ Database backup
 
     $dateString = "{0:yyyy-MM-dd}" -f (get-date)
     docker-compose -f C:\Path\To\docker-compose.yml exec db pg_dump -U openrem_user -d openrem_prod -F c -f /db_backup/openremdump-$dateString.bak
+
+****************
+Database restore
+****************
+
+To restore a database backup to a new Docker container, install using the :doc:`installation` instructions and bring
+the containers up, but don't run the database commands. These instructions can also be used to create a duplicate
+server on a different system for testing or other purposes.
+
+* Copy the database backup to the ``db_backup/`` folder of the new install (the name is assumed to be
+  ``openremdump.bak``, change as necessary)
+* Open a shell (command prompt) in the new install folder (where ``docker-compose.yml`` is)
+
+.. code-block:: console
+
+    $ docker-compose exec db pg_restore --no-privileges --no-owner -U openrem_user -d openrem_prod /db_backup/openremdump.bak
+
+You may get an error about the public schema, this is normal.
+
+* Get the database ready and set up Django:
+
+.. code-block:: console
+
+    $ docker-compose exec openrem python manage.py migrate --fake-initial
+
+.. code-block:: console
+
+    $ docker-compose exec openrem python manage.py migrate remapp --fake
+
+.. code-block:: console
+
+    $ docker-compose exec openrem python manage.py makemigrations remapp
+
+.. code-block:: console
+
+    $ docker-compose exec openrem python manage.py migrate
+
+.. code-block:: console
+
+    $ docker-compose exec openrem python manage.py collectstatic --noinput --clear
+
+.. code-block:: console
+
+    $ docker-compose exec openrem python django-admin compilemessages
+
+The OpenREM server should now be ready to use again.
 
 ********
 Advanced

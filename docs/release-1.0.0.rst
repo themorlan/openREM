@@ -148,13 +148,6 @@ Generate translation binary files
 
     $ docker-compose exec openrem python django-admin compilemessages
 
-Copy in any existing skin dose map pickle files from your existing ``MEDIA_ROOT/skin_maps`` folder (optional, they can
-be calculated again):
-
-.. code-block:: console
-
-    $ docker cp path/to/skin_maps/. openrem:/home/app/openrem/mediafiles/skin_maps/
-
 The new OpenREM installation should now be ready to be used.
 
 ***************************************************
