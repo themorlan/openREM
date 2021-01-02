@@ -87,15 +87,6 @@ Databases
 
     database
 
-
-Remaining pages to be reviewed to see if any information needs to be retained, then deleted:
-
-..  toctree::
-    :maxdepth: 2
-
-    backupRestorePostgreSQL
-    backupMySQLWindows
-
 .. _webservers:
 
 Web servers
