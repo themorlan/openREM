@@ -192,6 +192,8 @@ Reload postgres:
 
     $ sudo systemctl reload postgresql
 
+.. _updatelinuxconfig:
+
 Configure OpenREM
 -----------------
 
