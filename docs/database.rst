@@ -173,7 +173,7 @@ Database restore
 
 * If this restore was to a new system prior to upgrade, you can now proceed with the upgrade instructions.
 
-.. _database-windows
+.. _database-windows:
 
 ******
 Legacy
