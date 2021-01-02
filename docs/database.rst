@@ -172,3 +172,15 @@ Database restore
     python manage.py migrate remapp --fake
 
 * If this restore was to a new system prior to upgrade, you can now proceed with the upgrade instructions.
+
+.. _database-windows
+
+******
+Legacy
+******
+
+Windows is only a supported platform for OpenREM v1 and later when using Docker. Therefore there
+are no instructions for maintenance of databases on that platform, except in the upgrade guide in
+the release notes: :ref:`release1-0upgrade`.
+
+For upgrades between older versions, please refer to the docs that accompany those versions.

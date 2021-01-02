@@ -93,7 +93,6 @@ Remaining pages to be reviewed to see if any information needs to be retained, t
 ..  toctree::
     :maxdepth: 2
 
-    postgresql_windows
     backupRestorePostgreSQL
     backupMySQLWindows
 

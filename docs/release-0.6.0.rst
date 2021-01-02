@@ -98,7 +98,7 @@ Upgrading from version 0.5.1
 
 * Back up your database
 
-    * For PostgreSQL you can refer to :doc:`backupRestorePostgreSQL`
+    * For PostgreSQL you can refer to :ref:`database-windows`
     * For a non-production SQLite3 database, simply make a copy of the database file
 
 * The 0.6.0 upgrade must be made from a 0.5.1 (or later) database, and a schema migration is required:

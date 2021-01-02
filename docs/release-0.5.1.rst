@@ -39,7 +39,7 @@ Upgrading from version 0.3.9 or earlier
 
 * Back up your database
 
-    * For PostgreSQL you can refer to :doc:`backupRestorePostgreSQL`
+    * For PostgreSQL you can refer to :ref:`database-windows`
     * For a non-production SQLite3 database, simply make a copy of the database file
 
 *  ``pip install openrem==0.4.2``
@@ -118,7 +118,7 @@ Upgrading from versions 0.4.0 - 0.4.2
 
 * Back up your database
 
-    * For PostgreSQL you can refer to :doc:`backupRestorePostgreSQL`
+    * For PostgreSQL you can refer to :ref:`database-windows`
     * For a non-production SQLite3 database, simply make a copy of the database file
 
 * Install version 0.5.0
@@ -199,7 +199,7 @@ Upgrading from version 0.4.3
 
 * Back up your database
 
-    * For PostgreSQL you can refer to :doc:`backupRestorePostgreSQL`
+    * For PostgreSQL you can refer to :ref:`database-windows`
     * For a non-production SQLite3 database, simply make a copy of the database file
 
 * The 0.5.1 upgrade `must` be made from a 0.5.0 database, so a schema migration is required:
@@ -225,7 +225,7 @@ Upgrading from version 0.5.0
 
 * Back up your database
 
-    * For PostgreSQL you can refer to :doc:`backupRestorePostgreSQL`
+    * For PostgreSQL you can refer to :ref:`database-windows`
     * For a non-production SQLite3 database, simply make a copy of the database file
 
 * Install 0.5.1:
