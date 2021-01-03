@@ -154,6 +154,8 @@ Add orthanc and www-data users to openrem group
 
     $ sudo adduser www-data openrem
 
+.. _Linux-DB:
+
 Database and OpenREM config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
