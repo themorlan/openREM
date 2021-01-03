@@ -699,6 +699,11 @@ class MGSummaryListFilter(django_filters.FilterSet):
             field_name="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
         )
     )
+
+    projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode = (
+        django_filters.CharFilter(lookup_expr="icontains", label="Exposure mode")
+    )
+
     patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
         lookup_expr="gte",
         label="Min age (yrs)",
@@ -763,6 +768,7 @@ class MGSummaryListFilter(django_filters.FilterSet):
             "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__lte",
             "patientstudymoduleattr__patient_age_decimal__gte",
             "patientstudymoduleattr__patient_age_decimal__lte",
+            "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode",
             "accession_number",
             "generalequipmentmoduleattr__unique_equipment_name__display_name",
             "num_events",
