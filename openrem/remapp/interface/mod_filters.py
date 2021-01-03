@@ -685,21 +685,14 @@ class MGSummaryListFilter(django_filters.FilterSet):
     projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning = (
         django_filters.CharFilter(lookup_expr="icontains", label="View code")
     )
-    projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__gte = (
-        django_filters.NumberFilter(
-            lookup_expr="gte",
-            label="Min breast thickness (mm)",
-            field_name="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
-        )
-    )
-    projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__lte = (
-        django_filters.NumberFilter(
-            lookup_expr="lte",
-            label="Max breast thickness (mm)",
-            field_name="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
-        )
-    )
 
+    projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range = (
+        django_filters.NumericRangeFilter(
+            lookup_expr="range",
+            label="Breast thickness (mm)",
+            field_name="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+        )
+    )
     projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode = (
         django_filters.CharFilter(lookup_expr="icontains", label="Exposure mode")
     )
@@ -764,8 +757,7 @@ class MGSummaryListFilter(django_filters.FilterSet):
             "generalequipmentmoduleattr__manufacturer",
             "generalequipmentmoduleattr__manufacturer_model_name",
             "generalequipmentmoduleattr__station_name",
-            "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__gte",
-            "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__lte",
+            "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range",
             "patientstudymoduleattr__patient_age_decimal__gte",
             "patientstudymoduleattr__patient_age_decimal__lte",
             "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode",
