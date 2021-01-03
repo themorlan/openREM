@@ -175,9 +175,9 @@ Database restore
 
 .. _database-windows:
 
-******
-Legacy
-******
+*****************************
+Legacy - databases on Windows
+*****************************
 
 Windows is only a supported platform for OpenREM v1 and later when using Docker. Therefore there
 are no instructions for maintenance of databases on that platform, except in the upgrade guide in
