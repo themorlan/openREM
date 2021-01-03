@@ -93,7 +93,7 @@ Web servers
 ===========
 
 ..  toctree::
-    :maxdepth: 1
+    :maxdepth: 2
 
     webserver_config
     virtual_directory
