@@ -43,7 +43,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from .qrscu import movescu, qrscu
-from .storescp import start_store
 from .tools import echoscu
 from .. import __docs_version__, __version__
 from ..forms import DicomQueryForm, DicomQRForm, DicomStoreForm
@@ -51,34 +50,6 @@ from ..models import DicomDeleteSettings, DicomQuery, DicomStoreSCP, DicomRemote
 from ..views_admin import _create_admin_dict
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
-
-
-@csrf_exempt
-@login_required
-def run_store(request, pk):
-    """View to start built-in STORE-SCP"""
-    if request.user.groups.filter(name="admingroup"):
-        store = DicomStoreSCP.objects.get(pk__exact=pk)
-        store.run = True
-        store.save()
-        start_store(store_pk=pk)
-    return redirect(reverse_lazy("dicom_summary"))
-
-
-@csrf_exempt
-@login_required
-def stop_store(request, pk):
-    """View to stop built-in STORE-SCP"""
-    if request.user.groups.filter(name="admingroup"):
-        store = DicomStoreSCP.objects.filter(pk__exact=pk)
-        if store:
-            store[0].run = False
-            store[0].save()
-            store[0].status = "Quit signal sent"
-            store[0].save()
-        else:
-            print("Can't stop store SCP: Invalid primary key")
-    return redirect(reverse_lazy("dicom_summary"))
 
 
 @csrf_exempt
@@ -91,10 +62,8 @@ def status_update_store(request):
 
     echo_response = echoscu(scp_pk=scp_pk, store_scp=True)
 
-    store = DicomStoreSCP.objects.get(pk=scp_pk)
-
+    resp["message"] = f"<div>{echo_response}</div>"
     if echo_response == "Success":
-        resp["message"] = "<div>Last status: {0}</div>".format(store.status)
         resp["statusindicator"] = (
             "<h3 class='pull-right panel-title'>"
             "<span class='glyphicon glyphicon-ok' aria-hidden='true'></span>"
@@ -103,30 +72,17 @@ def status_update_store(request):
         resp[
             "delbutton"
         ] = "<button type='button' class='btn btn-primary' disabled='disabled'>Delete</button>"
-        resp["startbutton"] = ""
-        resp[
-            "stopbutton"
-        ] = "<a class='btn btn-danger' href='{0}' role='button'>Stop server</a>".format(
-            reverse_lazy("stop_store", kwargs={"pk": scp_pk})
-        )
     else:
-        resp["message"] = "<div>Last status: {0}</div>".format(store.status)
         resp["statusindicator"] = (
             "<h3 class='pull-right panel-title status-red'>"
             "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>"
-            "<span class='sr-only'>Error:</span> {0}</h3>".format(echo_response)
+            "<span class='sr-only'>Error:</span> Server is down - see status</h3>"
         )
         resp[
             "delbutton"
         ] = "<a class='btn btn-primary' href='{0}' role='button'>Delete</a>".format(
             reverse_lazy("dicomstore_delete", kwargs={"pk": scp_pk})
         )
-        resp[
-            "startbutton"
-        ] = "<a class='btn btn-success' href='{0}' role='button'>Start server</a>".format(
-            reverse_lazy("run_store", kwargs={"pk": scp_pk})
-        )
-        resp["stopbutton"] = ""
 
     return HttpResponse(json.dumps(resp), content_type="application/json")
 

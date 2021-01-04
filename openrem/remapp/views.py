@@ -379,9 +379,11 @@ def rf_detail_view(request, pk=None):
     total_dose = 0
     # Iterate over the planes (for bi-plane systems, for single plane systems there is only one)
     projection_xray_dose_set = study.projectionxrayradiationdose_set.get()
-    accumxraydose_set_all_planes = projection_xray_dose_set.accumxraydose_set.select_related(
-        "acquisition_plane"
-    ).all()
+    accumxraydose_set_all_planes = (
+        projection_xray_dose_set.accumxraydose_set.select_related(
+            "acquisition_plane"
+        ).all()
+    )
     events_all = projection_xray_dose_set.irradeventxraydata_set.select_related(
         "irradiation_event_type",
         "patient_table_relationship_cid",
