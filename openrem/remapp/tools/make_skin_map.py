@@ -63,6 +63,7 @@ def make_skin_map(study_pk=None):
     from django.core.exceptions import ObjectDoesNotExist
     import numpy as np
 
+
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
         HighDoseMetricAlertSettings.objects.get()
@@ -72,6 +73,7 @@ def make_skin_map(study_pk=None):
         send_alert_emails_ref = HighDoseMetricAlertSettings.objects.values_list(
             "send_high_dose_metric_alert_emails_ref", flat=True
         )[0]
+
         pat_mass_source = "assumed"
         try:
             pat_mass = float(study.patientstudymoduleattr_set.get().patient_weight)
@@ -88,6 +90,7 @@ def make_skin_map(study_pk=None):
             pat_height = (
                 float(study.patientstudymoduleattr_set.get().patient_size) * 100
             )
+
             pat_height_source = "extracted"
         except (ValueError, TypeError):
             pat_height = 178.6
@@ -340,6 +343,8 @@ def make_skin_map(study_pk=None):
             "height": my_exp_map.phantom.height,
             "phantom_width": my_exp_map.phantom.phantom_width,
             "phantom_height": my_exp_map.phantom.phantom_height,
+            "phantom_head_height": my_exp_map.phantom.phantom_head_height,
+            "phantom_head_radius": my_exp_map.phantom.phantom_head_radius,
             "phantom_depth": my_exp_map.phantom.phantom_depth,
             "phantom_flat_dist": my_exp_map.phantom.phantom_flat_dist,
             "phantom_curved_dist": my_exp_map.phantom.phantom_curved_dist,
