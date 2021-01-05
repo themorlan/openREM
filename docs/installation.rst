@@ -89,8 +89,8 @@ Databases
 
 .. _webservers:
 
-Web servers
-===========
+Advanced web servers options
+============================
 
 ..  toctree::
     :maxdepth: 2
