@@ -1,3 +1,4 @@
+# pylint: disable=line-too-long
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
 #    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
 #
@@ -685,12 +686,12 @@ class MGSummaryListFilter(django_filters.FilterSet):
     projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning = (
         django_filters.CharFilter(lookup_expr="icontains", label="View code")
     )
-    projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range = django_filters.NumericRangeFilter(  # pylint: disable=line-too-long
+    projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range = django_filters.NumericRangeFilter(
         lookup_expr="range",
         label="Breast thickness range (mm)",
         field_name="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
     )
-    projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode = django_filters.CharFilter(  # pylint: disable=line-too-long
+    projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode = django_filters.CharFilter(
         lookup_expr="icontains", label="Exposure control mode"
     )
     patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
@@ -741,7 +742,7 @@ class MGSummaryListFilter(django_filters.FilterSet):
         """
 
         model = GeneralStudyModuleAttr
-        fields = [  # pylint: disable=line-too-long
+        fields = [
             "study_date__gt",
             "study_date__lt",
             "study_description",
