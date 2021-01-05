@@ -54,7 +54,7 @@ function skinDoseMap3dHUDObject() {
         _this.hudContext.fillText(_this.patientHeight + " m", 150, 45);
         _this.hudContext.fillText(_this.patientMass + " kg", 150, 60);
         _this.hudContext.fillText(_this.patientOrientation, 150, 75);
-        _this.hudContext.fillText(_this.fractionDAP * 100 +"%", 150, 90);
+        _this.hudContext.fillText((_this.fractionDAP * 100).toFixed(1) + "%", 150, 90);
 
 
         _this.hudContext.font = "bold 8pt arial";
@@ -103,7 +103,7 @@ function skinDoseMap3dHUDObject() {
         _this.hudContext.fillText(_this.patientHeight + " m", 150, 45);
         _this.hudContext.fillText(_this.patientMass + " kg", 150, 60);
         _this.hudContext.fillText(_this.patientOrientation, 150, 75);
-        _this.hudContext.fillText(_this.fractionDAP, 150, 90);
+        _this.hudContext.fillText((_this.fractionDAP * 100).toFixed(1) + "%", 150, 90);
 
         _this.hudContext.font = "bold 8pt arial";
         _this.hudContext.fillText(_this.maxDoseLabel + " Gy", 150, 15);
