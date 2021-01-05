@@ -81,6 +81,7 @@
     <th>Exposure time (ms)</th>
     <th>ESD (mGy)</th>
     <th>AGD (mGy)</th>
+    <th>Exposure control mode</th>
     {% for event in events_all %}
       {% with source_data=event.irradeventxraysourcedata_set.select_related.get %}
     <tr>
@@ -95,9 +96,10 @@
         <td>{{ source_data.exposure_time|floatformat:0 }}</td>
         <td>{{ event.entrance_exposure_at_rp|floatformat:3 }}</td>
         <td>{{ source_data.average_glandular_dose|floatformat:3 }}</td>
+        <td>{{ source_data.exposure_control_mode }}</td>
     </tr>
     <tr>
-        <td colspan = "11"><small> <strong>Exposure Control Mode Description:</strong>{{ event.comment }} </small></td>
+        <td colspan = "12"><small> <strong>Exposure Control Mode Description:</strong>{{ event.comment }} </small></td>
     </tr>
       {%  endwith %}
     {% endfor %}
