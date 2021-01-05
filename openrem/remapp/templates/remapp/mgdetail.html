@@ -1,5 +1,9 @@
 {% extends "remapp/base.html" %}
 
+{% block headextras %}
+  <script src="{{ STATIC_URL }}js/sorttable.js"></script>
+{% endblock %}
+
 {% block navbar %}
             {% if request.user.userprofile.displayCT %}<li><a href="{% url 'ct_summary_list_filter' %}">CT</a></li>{% endif %}
             {% if request.user.userprofile.displayRF %}<li><a href="{% url 'rf_summary_list_filter' %}">Fluoroscopy</a></li>{% endif %}
@@ -69,7 +73,7 @@
 </div>
 
 
-<table class="table table-striped table-bordered small">
+<table class="table table-striped table-bordered small sortable">
     <th>Time</th>
     <th>Acquisition protocol</th>
     <th>Laterality</th>
@@ -83,6 +87,7 @@
     <th>ESD (mGy)</th>
     <th>AGD (mGy)</th>
     <th>Exposure control mode</th>
+    <th>Exposure control mode description</th>
     {% for event in events_all %}
       {% with source_data=event.irradeventxraysourcedata_set.select_related.get %}
     <tr>
@@ -99,9 +104,9 @@
         <td>{{ event.entrance_exposure_at_rp|floatformat:3 }}</td>
         <td>{{ source_data.average_glandular_dose|floatformat:3 }}</td>
         <td>{{ source_data.exposure_control_mode }}</td>
+        <td><small>{{ event.comment }}</small></td>
     </tr>
     <tr>
-        <td colspan = "13"><small> <strong>Exposure Control Mode Description:</strong>{{ event.comment }} </small></td>
     </tr>
       {%  endwith %}
     {% endfor %}
