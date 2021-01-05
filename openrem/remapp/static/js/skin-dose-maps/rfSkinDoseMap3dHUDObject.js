@@ -19,6 +19,7 @@ function skinDoseMap3dHUDObject() {
     this.patientHeightSource = "Assumed";
     this.patientMassSource = "Assumed";
     this.patientOrientationSource = "Assumed";
+    this.fractionDAP = "";
 
     this.hudCanvas = document.createElement("canvas");
     this.hudContext = this.hudCanvas.getContext("2d");
@@ -47,11 +48,14 @@ function skinDoseMap3dHUDObject() {
         _this.hudContext.fillText(_this.patientHeightSource + " patient height:", 5, 45);
         _this.hudContext.fillText(_this.patientMassSource + " patient mass:", 5, 60);
         _this.hudContext.fillText(_this.patientOrientationSource + " patient orientation:", 5, 75);
+        _this.hudContext.fillText("Dap percentage contributed:", 5, 90);
 
         _this.hudContext.fillText(_this.phantomDimensionsLabel + " (HxWxD)", 150, 30);
         _this.hudContext.fillText(_this.patientHeight + " m", 150, 45);
         _this.hudContext.fillText(_this.patientMass + " kg", 150, 60);
         _this.hudContext.fillText(_this.patientOrientation, 150, 75);
+        _this.hudContext.fillText(_this.fractionDAP * 100 +"%", 150, 90);
+
 
         _this.hudContext.font = "bold 8pt arial";
         _this.hudContext.fillText(_this.maxDoseLabel + " Gy", 150, 15);
@@ -93,11 +97,13 @@ function skinDoseMap3dHUDObject() {
         _this.hudContext.fillText(_this.patientHeightSource + " patient height:", 5, 45);
         _this.hudContext.fillText(_this.patientMassSource + " patient mass:", 5, 60);
         _this.hudContext.fillText(_this.patientOrientationSource + " patient orientation:", 5, 75);
+        _this.hudContext.fillText("Dap percentage phantom:", 5, 90);
 
         _this.hudContext.fillText(_this.phantomDimensionsLabel + " (HxWxD)", 150, 30);
         _this.hudContext.fillText(_this.patientHeight + " m", 150, 45);
         _this.hudContext.fillText(_this.patientMass + " kg", 150, 60);
         _this.hudContext.fillText(_this.patientOrientation, 150, 75);
+        _this.hudContext.fillText(_this.fractionDAP, 150, 90);
 
         _this.hudContext.font = "bold 8pt arial";
         _this.hudContext.fillText(_this.maxDoseLabel + " Gy", 150, 15);

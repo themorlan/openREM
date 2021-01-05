@@ -349,6 +349,7 @@ def make_skin_map(study_pk=None):
             "patient_height_source": pat_height_source,
             "patient_mass_source": pat_mass_source,
             "patient_orientation_source": pat_pos_source,
+            "fraction_DAP": my_exp_map.my_dose.dap_count / np.float(study.total_dap),
             "skin_map_version": __skin_map_version__,
         }
 

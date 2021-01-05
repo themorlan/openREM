@@ -363,6 +363,7 @@ class SkinDose:
         self.views = []
         self.dose_array = []
         self.total_dose = []
+        self.dap_count = 0
 
     def add_view(self, view_str):
         """
@@ -375,7 +376,7 @@ class SkinDose:
         else:
             self.views = np.vstack((self.views, view_str))
 
-    def add_dose(self, skin_map):
+    def add_dose(self, skin_map, dap):
         """
         Add the skin-dose of a specific view/irradiation event to the "summed" skin-dose map
 
@@ -388,3 +389,6 @@ class SkinDose:
         else:
             self.dose_array = np.dstack((self.dose_array, skin_map))
             self.total_dose = self.total_dose + skin_map
+
+        if np.sum(skin_map):
+            self.dap_count += dap

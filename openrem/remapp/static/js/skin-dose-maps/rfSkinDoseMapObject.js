@@ -33,6 +33,7 @@ function skinDoseMapObject(skinDoseMapCanvasName, colourScaleName) {
     this.patientHeightSource = "Assumed";
     this.patientMassSource = "Assumed";
     this.patientOrientationSource = "Assumed";
+    this.fractionDAP = "0";
 
     this.phantomFlatWidth = 14;
     this.phantomCurvedEdgeWidth = 31;
@@ -156,11 +157,13 @@ function skinDoseMapObject(skinDoseMapCanvasName, colourScaleName) {
         _this.skinDoseMapContext.fillText(_this.patientHeightSource + " patient height:", 5, 45);
         _this.skinDoseMapContext.fillText(_this.patientMassSource + " patient mass:", 5, 60);
         _this.skinDoseMapContext.fillText(_this.patientOrientationSource + " patient orientation:", 5, 75);
+        _this.skinDoseMapContext.fillText("Dap percentage contributed", 5, 90);
 
         _this.skinDoseMapContext.fillText(_this.phantomDimensionsLabel + " (HxWxD)", 150, 30);
         _this.skinDoseMapContext.fillText(_this.patientHeight + " m", 150, 45);
         _this.skinDoseMapContext.fillText(_this.patientMass + " kg", 150, 60);
         _this.skinDoseMapContext.fillText(_this.patientOrientation, 150, 75);
+        _this.skinDoseMapContext.fillText(_this.fractionDAP * 100 +"%", 150, 90);
 
         _this.skinDoseMapContext.font = "bold 8pt arial";
         _this.skinDoseMapContext.fillText(_this.maxDoseLabel + " Gy", 150, 15);
