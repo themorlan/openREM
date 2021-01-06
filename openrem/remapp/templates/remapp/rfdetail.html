@@ -315,13 +315,13 @@
             <div id="skin_map_wwwl_controls">
                 <table aria-describedby="Skin dose map window width and level controls">
                     <tr>
-                        <th colspan="row"><input type="button" onclick="reset(skinDoseMapObj, skinDoseMapColourScaleObj, skinDoseMap3dObj, show3dSkinDoseMap, skinDoseMap3dPersonObj)" value="Reset controls" class="btn btn-default btn-sm btn-block" role="button" /></th>
+                        <th scope="row"><input type="button" onclick="reset(skinDoseMapObj, skinDoseMapColourScaleObj, skinDoseMap3dObj, show3dSkinDoseMap, skinDoseMap3dPersonObj)" value="Reset controls" class="btn btn-default btn-sm btn-block" role="button" /></th>
                         <td style="padding-right: 20px"><a onclick="$('#skin_map_maxmin_controls').show();$('#skin_map_wwwl_controls').hide();" class="btn btn-default btn-sm btn-block" role="button">Use max/min</a></td>
                         <td class="rangeCell"><input type="range" title="windowLevelSlider" name="windowLevelSlider" id="windowLevelSlider" min="0" max="2" value="0.1" step="0.001" oninput="updateWindowLevel(this.value, skinDoseMapObj, skinDoseMapColourScaleObj, skinDoseMap3dObj, show3dSkinDoseMap)" /></td>
                         <td><input type="text" title="currentWindowLevel" name="currentWindowLevel" id="currentWindowLevel" size="5" onchange="updateWindowLevel(this.value, skinDoseMapObj, skinDoseMapColourScaleObj, skinDoseMap3dObj, show3dSkinDoseMap)" class="skinMapControls" /> Gy window level</td>
                     </tr>
                     <tr>
-                        <th colspan="row"><a onclick="$('.colour_scale_selection').toggle();" class="btn btn-default btn-sm btn-block" role="button">Colour scales</a></th>
+                        <th scope="row"><a onclick="$('.colour_scale_selection').toggle();" class="btn btn-default btn-sm btn-block" role="button">Colour scales</a></th>
                         <td style="padding-right: 20px"><a onclick="switch2d3dSkinDoseMap();" class="btn btn-default btn-sm btn-block" role="button" id="swap3dButton1">Toggle 2D/3D view</a></td>
                         <td class="rangeCell"><input type="range" title="windowWidthSlider" name="windowWidthSlider" id="windowWidthSlider" min="0" max="4" value="0.2" step="0.001" oninput="updateWindowWidth(this.value, skinDoseMapObj, skinDoseMapColourScaleObj, skinDoseMap3dObj, show3dSkinDoseMap)" /></td>
                         <td><input type="text" title="currentWindowWidth" name="currentWindowWidth" id="currentWindowWidth" size="5" onchange="updateWindowWidth(this.value, skinDoseMapObj, skinDoseMapColourScaleObj, skinDoseMap3dObj, show3dSkinDoseMap)" class="skinMapControls" /> Gy window width</td>
@@ -332,13 +332,13 @@
             <div id="skin_map_maxmin_controls">
                 <table aria-describedby="Skin dose map maximum and minimum dose value controls">
                     <tr>
-                        <th colspan="row"><input type="button" onclick="reset(skinDoseMapObj, skinDoseMapColourScaleObj, skinDoseMap3dObj, show3dSkinDoseMap, skinDoseMap3dPersonObj)" value="Reset controls" class="btn btn-default btn-sm btn-block" role="button" /></th>
+                        <th scope="row"><input type="button" onclick="reset(skinDoseMapObj, skinDoseMapColourScaleObj, skinDoseMap3dObj, show3dSkinDoseMap, skinDoseMap3dPersonObj)" value="Reset controls" class="btn btn-default btn-sm btn-block" role="button" /></th>
                         <td style="padding-right: 20px"><a onclick="$('#skin_map_maxmin_controls').hide();$('#skin_map_wwwl_controls').show();" class="btn btn-default btn-sm btn-block" role="button">Use WW/WL</a></td>
                         <td class="rangeCell"><input type="range" title="minDoseSlider" name="minDoseSlider" id="minDoseSlider" min="0" max="2" value="0.1" step="0.001" oninput="updateMinDisplayedDose(this.value, skinDoseMapObj, skinDoseMapColourScaleObj, skinDoseMap3dObj, show3dSkinDoseMap)" /></td>
                         <td><input type="text" title="currentMinDisplayedDose" name="currentMinDisplayedDose" id="currentMinDisplayedDose" size="5" onchange="updateMinDisplayedDoseManual(this.value, skinDoseMapObj, skinDoseMapColourScaleObj, skinDoseMap3dObj, show3dSkinDoseMap)" class="skinMapControls" /> Gy min. displayed dose</td>
                     </tr>
                     <tr>
-                        <th colspan="row"><a onclick="$('.colour_scale_selection').toggle();" class="btn btn-default btn-sm btn-block" role="button">Colour scales</a></th>
+                        <th scope="row"><a onclick="$('.colour_scale_selection').toggle();" class="btn btn-default btn-sm btn-block" role="button">Colour scales</a></th>
                         <td style="padding-right: 20px"><a onclick="switch2d3dSkinDoseMap();" class="btn btn-default btn-sm btn-block" role="button" id="swap3dButton2">Toggle 2D/3D view</a></td>
                         <td class="rangeCell"><input type="range" title="maxDoseSlider" name="maxDoseSlider" id="maxDoseSlider" min="0" max="4" value="0.2" step="0.001" oninput="updateMaxDisplayedDose(this.value, skinDoseMapObj, skinDoseMapColourScaleObj, skinDoseMap3dObj, show3dSkinDoseMap)" /></td>
                         <td><input type="text" title="currentMaxDisplayedDose" name="currentMaxDisplayedDose" id="currentMaxDisplayedDose" size="5" onchange="updateMaxDisplayedDoseManual(this.value, skinDoseMapObj, skinDoseMapColourScaleObj, skinDoseMap3dObj, show3dSkinDoseMap)" class="skinMapControls" /> Gy max. displayed dose</td>
