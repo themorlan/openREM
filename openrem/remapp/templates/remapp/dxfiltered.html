@@ -116,7 +116,7 @@
 {% block col1 %}
 
     <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
-        <row>
+        <tr>
             <th scope="col">Institution</th>
             <th scope="col">
                 <table aria-describedby="Make, model and display name">
@@ -153,7 +153,7 @@
             {% if admin.admingroup %}
                 <th scope="col">Delete?</th>
             {% endif %}
-        </row>
+        </tr>
         {% for exam in study_list %}
             {% with equipment=exam.generalequipmentmoduleattr_set.get %}
                         <tr>

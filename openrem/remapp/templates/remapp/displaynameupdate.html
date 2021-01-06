@@ -16,9 +16,18 @@
   <form action="{% url 'display_name_update' %}" method="post">{% csrf_token %}
   {% endif %}
   <table class="table table-bordered table-hover row-clickable" aria-describedby="Display names to update">
-    <row>
-      <th scope="col">Display name</th><th scope="col">User defined modality</th><th scope="col">Institution</th><th scope="col">Department</th><th scope="col">Manufacturer</th><th scope="col">Model</th><th scope="col">Station name</th><th scope="col">Serial no.</th><th scope="col">Software version</th><th scope="col">Gantry ID</th>
-    </row>
+    <tr>
+      <th scope="col">Display name</th>
+      <th scope="col">User defined modality</th>
+      <th scope="col">Institution</th>
+      <th scope="col">Department</th>
+      <th scope="col">Manufacturer</th>
+      <th scope="col">Model</th>
+      <th scope="col">Station name</th>
+      <th scope="col">Serial no.</th>
+      <th scope="col">Software version</th>
+      <th scope="col">Gantry ID</th>
+    </tr>
 
     {% for eachname in name_list %}
       <tr>

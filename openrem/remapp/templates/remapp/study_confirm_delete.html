@@ -6,17 +6,32 @@
 <form method="post">{% csrf_token %}
 
 <table class="table table-striped" aria-describedby="Summary of studies to delete">
-        <th scope="col">Institution</th><th scope="col">Make | Model | Station name</th><th scope="col">Date</th>
+    <tr>
+        <th scope="col">Institution</th>
+        <th scope="col">Make | Model | Station name</th>
+        <th scope="col">Date</th>
 {% if exam.modality_type == "CT" %}
-        <th scope="col">Study description | Accession number</th><th scope="col">Number of events</th><th scope="col">Dose Length Product Total mGy.cm</th>
+        <th scope="col">Study description | Accession number</th>
+        <th scope="col">Number of events</th>
+        <th scope="col">Dose Length Product Total mGy.cm</th>
 {% elif exam.modality_type == "RF" %}
-        <th scope="col">Study description | Accession number</th><th scope="col">Number of events</th><th scope="col">DAP Total cGy.cm2</th><th scope="col">Dose at RP total Gy</th><th scope="col">Physician</th>
+        <th scope="col">Study description | Accession number</th>
+        <th scope="col">Number of events</th>
+        <th scope="col">DAP Total cGy.cm2</th>
+        <th scope="col">Dose at RP total Gy</th>
+        <th scope="col">Physician</th>
 {% elif exam.modality_type == "MG" %}
-        <th scope="col">Protocol | Accession number</th><th scope="col">Number of events</th><th scope="col">Laterality</th><th scope="col">Accumulated AGD (mGy)</th>
+        <th scope="col">Protocol | Accession number</th>
+        <th scope="col">Number of events</th>
+        <th scope="col">Laterality</th>
+        <th scope="col">Accumulated AGD (mGy)</th>
 {% elif exam.modality_type == "DX" or exam.modality_type == "CR" %}
-        <th scope="col">Protocol | Accession number</th><th scope="col">Number of events</th><th scope="col">DAP Total cGy.cm<sup>2</sup></th>
+        <th scope="col">Protocol | Accession number</th>
+        <th scope="col">Number of events</th>
+        <th scope="col">DAP Total cGy.cm<sup>2</sup></th>
 {% endif %}
-        <tr>
+    </tr>
+    <tr>
             <td>{{ exam.generalequipmentmoduleattr_set.get.institution_name }}</td>
             <td>
                 {{ exam.generalequipmentmoduleattr_set.get.manufacturer }} |
