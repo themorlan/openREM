@@ -1,3 +1,4 @@
+# pylint: disable=line-too-long, too-many-lines
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
 #    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
 #
@@ -682,6 +683,17 @@ class MGSummaryListFilter(django_filters.FilterSet):
     projectionxrayradiationdose__irradeventxraydata__acquisition_protocol = (
         django_filters.CharFilter(lookup_expr="icontains", label="Acquisition protocol")
     )
+    projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning = (
+        django_filters.CharFilter(lookup_expr="icontains", label="View code")
+    )
+    projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range = django_filters.NumericRangeFilter(
+        lookup_expr="range",
+        label="Breast thickness range (mm)",
+        field_name="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+    )
+    projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode = django_filters.CharFilter(
+        lookup_expr="icontains", label="Exposure control mode"
+    )
     patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
         lookup_expr="gte",
         label="Min age (yrs)",
@@ -737,6 +749,9 @@ class MGSummaryListFilter(django_filters.FilterSet):
             "procedure_code_meaning",
             "requested_procedure_code_meaning",
             "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+            "projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning",
+            "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range",
+            "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode",
             "generalequipmentmoduleattr__institution_name",
             "generalequipmentmoduleattr__manufacturer",
             "generalequipmentmoduleattr__manufacturer_model_name",

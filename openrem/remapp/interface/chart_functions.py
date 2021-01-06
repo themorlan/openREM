@@ -146,7 +146,9 @@ def create_dataframe(
     # Strip whitespace from the beginning and end of any names column values
     # Also replace multiple spaces with a single space
     if data_point_name_remove_whitespace_padding:
-        df[field_dict["names"]] = df[field_dict["names"]].apply(lambda x: x.str.strip().replace("\s+", " ", regex=True))
+        df[field_dict["names"]] = df[field_dict["names"]].apply(
+            lambda x: x.str.strip().replace("\s+", " ", regex=True)
+        )
 
     # Make the names columns all "category" type - this saves memory. Must be done after the above, as the string
     # replacement lines revert the columns back to "object"
