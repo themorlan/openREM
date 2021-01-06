@@ -41,12 +41,13 @@
 <div class="row">
   <div class="col-md-3">
     <table class="table table-condensed table-bordered small">
+      <caption>Total number of events and DLP in the study</caption>
       <tr>
-        <th>Total number of events</th>
+        <th scope="col">Total number of events</th>
         <td>{{ accum_dose.total_number_of_irradiation_events }}</td>
       </tr>
       <tr>
-        <th>Total DLP </th>
+        <th scope="col">Total DLP </th>
         <td>{{ accum_dose.ct_dose_length_product_total|floatformat:2 }} mGy&middot;cm</td>
       </tr>
     </table>
@@ -54,20 +55,21 @@
 </div>
 
 <table class="table table-striped table-bordered small">
-    <th>Acquisition protocol</th>
-    <th>Type</th>
-    <th>CTDI<sub>vol</sub> (mGy)</th>
-    <th>DLP (mGy&middot;cm)</th>
-    <th>Scanning length (mm)</th>
-    <th>kVp</th>
-    <th>mA</th>
-    <th>Max mA</th>
-    <th>Exposure time per rotation (s)</th>
-    <th>Pitch</th>
-    <th>Exposure time (s)</th>
-    <th>Slice thickness (mm)</th>
-    <th>Collimation (mm)</th>
-    <th>X-ray modulation type</th>
+    <caption>Exposure details for each acquisition contained in the study</caption>
+    <th scope="col">Acquisition protocol</th>
+    <th scope="col">Type</th>
+    <th scope="col">CTDI<sub>vol</sub> (mGy)</th>
+    <th scope="col">DLP (mGy&middot;cm)</th>
+    <th scope="col">Scanning length (mm)</th>
+    <th scope="col">kVp</th>
+    <th scope="col">mA</th>
+    <th scope="col">Max mA</th>
+    <th scope="col">Exposure time per rotation (s)</th>
+    <th scope="col">Pitch</th>
+    <th scope="col">Exposure time (s)</th>
+    <th scope="col">Slice thickness (mm)</th>
+    <th scope="col">Collimation (mm)</th>
+    <th scope="col">X-ray modulation type</th>
     {% for event in events_all %}
       {% with source=event.ctxraysourceparameters_set.all %}
       {% with dose_check=event.ctdosecheckdetails_set.get %}
