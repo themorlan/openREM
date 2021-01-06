@@ -89,13 +89,13 @@ Databases
 
 .. _webservers:
 
-Advanced web servers options
-============================
+Advanced server configuration
+=============================
 
 ..  toctree::
     :maxdepth: 2
 
     webserver_config
     virtual_directory
-
+    celery
 

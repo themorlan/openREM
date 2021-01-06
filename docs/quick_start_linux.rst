@@ -435,9 +435,7 @@ First, create a Celery configuration file:
     CELERYD_MULTI="multi"
 
     # Extra command-line arguments to the worker
-    # Adjust the concurrency as appropriate, or remove the option to use default
-    # based on number of processor cores available
-    CELERYD_OPTS="-O=fair --concurrency=4 --queues=default"
+    CELERYD_OPTS="-O=fair --queues=default"
 
     # - %n will be replaced with the first part of the nodename.
     # - %I will be replaced with the current child process index
