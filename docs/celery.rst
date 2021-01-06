@@ -15,7 +15,7 @@ to match the number of CPUs available.
 
 The easiest way to increase the number of workers is to scale up the ``worker`` Docker container.
 
-* Open a shell (command prompt) in the Docker folder
+Open a shell (command prompt) in the Docker folder
 
 .. code-block:: console
 
