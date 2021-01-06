@@ -85,7 +85,7 @@
     </span>
 </div>
 
-  <table class="table table-bordered table-striped">
+  <table class="table table-bordered table-striped" aria-describedby="Summary of failed imports">
     <tr>
       <td colspan="2">General</td>
       <td colspan="1">Equipment module</td>
@@ -96,24 +96,24 @@
       <td colspan="4">Irradiation event data</td>
     </tr>
     <tr>
-      <th>Date and time</th>
-      <th>Accession number <br> Study description</th>
-      <th>Equipment details</th>
-      <th>General</th>
-      <th>Study</th>
-      <th>Template</th>
-      <th>Accumulated</th>
-      <th>Events</th>
-      <th>Template</th>
-      <th>Accumulated</th>
-      <th>Fluoro & DX</th>
-      <th>Mammography</th>
-      <th>Cassette based</th>
-      <th>Projection</th>
-      <th>General</th>
-      <th>Detector</th>
-      <th>Source</th>
-      <th>Mechanical</th>
+      <th scope="col">Date and time</th>
+      <th scope="col">Accession number <br> Study description</th>
+      <th scope="col">Equipment details</th>
+      <th scope="col">General</th>
+      <th scope="col">Study</th>
+      <th scope="col">Template</th>
+      <th scope="col">Accumulated</th>
+      <th scope="col">Events</th>
+      <th scope="col">Template</th>
+      <th scope="col">Accumulated</th>
+      <th scope="col">Fluoro & DX</th>
+      <th scope="col">Mammography</th>
+      <th scope="col">Cassette based</th>
+      <th scope="col">Projection</th>
+      <th scope="col">General</th>
+      <th scope="col">Detector</th>
+      <th scope="col">Source</th>
+      <th scope="col">Mechanical</th>
     </tr>
     {% for study in studies %}
 
