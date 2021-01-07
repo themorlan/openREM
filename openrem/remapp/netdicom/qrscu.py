@@ -336,9 +336,7 @@ def _prune_series_responses(
             study.save()
 
             if "SR" in study.get_modalities_in_study():
-                if _check_sr_type_in_study(
-                    assoc, study, query, query.query_id, get_empty_sr
-                ) in ["RDSR", "null_response"]:
+                if _check_sr_type_in_study(assoc, study, query, get_empty_sr) in ["RDSR", "null_response"]:
                     logger.debug(
                         "{0} RDSR in MG study, keep SR, delete all other series".format(
                             query_id
@@ -365,9 +363,7 @@ def _prune_series_responses(
             study.save()
 
             if "SR" in study.get_modalities_in_study():
-                if _check_sr_type_in_study(
-                    assoc, study, query, query.query_id, get_empty_sr
-                ) in ["RDSR", "null_response"]:
+                if _check_sr_type_in_study(assoc, study, query, get_empty_sr) in ["RDSR", "null_response"]:
                     logger.debug(
                         "{0} RDSR in DX study, keep SR, delete all other series".format(
                             query_id
@@ -390,9 +386,7 @@ def _prune_series_responses(
             # Only RDSR or some ESR useful here
             study.modality = "FL"
             study.save()
-            sr_type = _check_sr_type_in_study(
-                assoc, study, query, query.query_id, get_empty_sr
-            )
+            sr_type = _check_sr_type_in_study(assoc, study, query, get_empty_sr)
             if sr_type == "no_dose_report":
                 logger.debug(
                     "{0} No usable SR in RF study. Deleting from query.".format(
@@ -422,9 +416,7 @@ def _prune_series_responses(
             series = study.dicomqrrspseries_set.all()
             sr_type = None
             if "SR" in study.get_modalities_in_study():
-                sr_type = _check_sr_type_in_study(
-                    assoc, study, query, query.query_id, get_empty_sr
-                )
+                sr_type = _check_sr_type_in_study(assoc, study, query, get_empty_sr)
             if "SR" and sr_type in ("RDSR", "ESR", "null_response"):
                 logger.debug(
                     "{0} {1} in CT study, keep SR, delete all other series".format(
@@ -464,9 +456,7 @@ def _prune_series_responses(
                     deleted_studies["CT"] += 1
 
         elif all_mods["SR"]["inc"]:
-            sr_type = _check_sr_type_in_study(
-                assoc, study, query, query.query_id, get_empty_sr
-            )
+            sr_type = _check_sr_type_in_study(assoc, study, query, get_empty_sr)
             if sr_type == "RDSR":
                 logger.debug(
                     "{0} SR only query, found RDSR, deleted other SRs".format(query_id)
@@ -687,7 +677,7 @@ def _prune_study_responses(query, filters):
 
 
 # returns SR-type: RDSR or ESR; otherwise returns 'no_dose_report'
-def _check_sr_type_in_study(assoc, study, query, query_id, get_empty_sr):
+def _check_sr_type_in_study(assoc, study, query, get_empty_sr):
     """Checks at an image level whether SR in study is RDSR, ESR, or something else (Radiologist's report for example)
 
     * If RDSR is found, all non-RDSR SR series responses are deleted
@@ -699,80 +689,66 @@ def _check_sr_type_in_study(assoc, study, query, query_id, get_empty_sr):
 
     :param assoc: Current DICOM query object
     :param study: study level C-Find response object in database
-    :param query_id: current query ID for logging
     :param get_empty_sr: Whether to get SR series that return empty at image level query
     :return: string indicating SR type remaining in study
     """
+
+    query_id = query.query_id
+
     series_sr = study.dicomqrrspseries_set.filter(modality__exact="SR")
     logger.debug(
-        "{1} Check SR type: Number of series with SR {0}".format(
-            series_sr.count(), query_id
-        )
+        f"{query_id.hex[:8]} Check SR type: Number of series with SR {series_sr.count()}"
     )
-    sopclasses = set()
+    sop_classes = set()
     for sr in series_sr:
         _query_images(assoc, sr, query)
         images = sr.dicomqrrspimage_set.all()
         if images.count() == 0:
             if get_empty_sr:
                 logger.debug(
-                    "{0} Check SR type: studyuid: {1} seriesuid: {2}. Image level response returned null, "
-                    "-emptysr=True so assuming SR is RDSR".format(
-                        query_id, study.study_instance_uid, sr.series_instance_uid
-                    )
+                    f"{query_id.hex[:8]} Check SR type: studyuid: {study.study_instance_uid} "
+                    f"seriesuid: {sr.series_instance_uid}. Image level response returned null, "
+                    f"-emptysr=True so assuming SR is RDSR"
                 )
-                sopclasses.add("null_response")
+                sop_classes.add("null_response")
             logger.warning(
-                "{2} Check SR type: Oops, series {0} of study instance UID {1} returned null at image level"
-                "query. Try '-emptysr' option?".format(
-                    sr.series_number, study.study_instance_uid, query_id
-                )
+                f"{query_id.hex[:8]} Check SR type: Oops, series {sr.series_number} of study instance "
+                f"UID {study.study_instance_uid} returned null at image level query. Try '-emptysr' option?"
             )
             continue
-        sopclasses.add(images[0].sop_class_uid)
+        sop_classes.add(images[0].sop_class_uid)
         sr.sop_class_in_series = images[0].sop_class_uid
         sr.save()
         logger.debug(
-            "{4} Check SR type: studyuid: {0}   seriesuid: {1}   nrimages: {2}   sopclasses: {3}".format(
-                study.study_instance_uid,
-                sr.series_instance_uid,
-                images.count(),
-                sopclasses,
-                query_id,
-            )
+            f"{query_id.hex[:8]} Check SR type: studyuid: {study.study_instance_uid}   "
+            f"seriesuid: {sr.series_instance_uid}   nrimages: {images.count()}   sop_classes: {sop_classes}"
         )
-    logger.debug("{1} Check SR type: sopclasses: {0}".format(sopclasses, query_id))
-    if "1.2.840.10008.5.1.4.1.1.88.67" in sopclasses:
+    logger.debug(f"{query_id.hex[:8]} Check SR type: sop_classes: {sop_classes}")
+    if "1.2.840.10008.5.1.4.1.1.88.67" in sop_classes:
         for sr in series_sr:
             if sr.sop_class_in_series != "1.2.840.10008.5.1.4.1.1.88.67":
                 logger.debug(
-                    "{0} Chesk SR type: Have RDSR, deleting non-RDSR SR".format(
-                        query_id
-                    )
+                    f"{query_id.hex[:8]} Chesk SR type: Have RDSR, deleting non-RDSR SR"
                 )
                 sr.delete()
         return "RDSR"
-    elif "1.2.840.10008.5.1.4.1.1.88.22" in sopclasses:
+    elif "1.2.840.10008.5.1.4.1.1.88.22" in sop_classes:
         for sr in series_sr:
             if sr.sop_class_in_series != "1.2.840.10008.5.1.4.1.1.88.22":
                 logger.debug(
-                    "{0} Check SR type: Have ESR, deleting non-RDSR, non-ESR SR".format(
-                        query_id
-                    )
+                    f"{query_id.hex[:8]} Check SR type: Have ESR, deleting non-RDSR, non-ESR SR"
                 )
                 sr.delete()
         return "ESR"
-    elif "null_response" in sopclasses:
+    elif "null_response" in sop_classes:
         logger.debug(
-            "{0} Check SR type: Image level response was null and -emptysr=True, "
-            "assuming SR series are RDSR.".format(query_id)
+            f"{query_id.hex[:8]} Check SR type: Image level response was null and -emptysr=True, "
+            f"assuming SR series are RDSR."
         )
         return "null_response"
     else:
         logger.debug(
-            "{0} Check SR type: {1} non-RDSR, non-ESR SR series remain".format(
-                query_id, series_sr.count()
-            )
+            f"{query_id.hex[:8]} Check SR type: {series_sr.count()} non-RDSR, non-ESR SR series remain"
         )
         return "no_dose_report"
 
