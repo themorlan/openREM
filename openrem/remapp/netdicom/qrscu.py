@@ -205,7 +205,7 @@ def _filter(query, level, filter_name, filter_list, filter_type):
         filtertype = False
     else:
         logger.error(
-            "{0} _filter called without filter_type. Cannot filter!".format(query_id)
+            f"{query_id.hex[:8]} _filter called without filter_type. Cannot filter!"
         )
         return
 
@@ -219,9 +219,7 @@ def _filter(query, level, filter_name, filter_list, filter_type):
         )
     )
     logger.debug(
-        "{4} Filter at {0} level on {1} that {2} {3}".format(
-            level, filter_name, filter_type, filter_list, query_id
-        )
+        f"{query_id.hex[:8]} Filter at {level} level on {filter_name} that {filter_type} {filter_list}"
     )
     for study in study_rsp:
         if level == "study":
@@ -256,7 +254,7 @@ def _filter(query, level, filter_name, filter_list, filter_type):
             if nr_series_remaining == 0:
                 study.delete()
     study_rsp = query.dicomqrrspstudy_set.all()
-    logger.info("{1} Now have {0} studies".format(study_rsp.count(), query_id))
+    logger.info(f"{query_id.hex[:8]} Now have {study_rsp.count()} studies")
 
 
 def _prune_series_responses(
