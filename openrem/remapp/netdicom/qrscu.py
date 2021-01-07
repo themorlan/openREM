@@ -8,12 +8,14 @@ Specialised QR routine to get just the objects that might be useful for dose rel
 modality
 """
 
+import argparse
 import collections
 from datetime import datetime
 import logging
 import os
 import sys
 import uuid
+
 
 from celery import shared_task
 import django
@@ -25,8 +27,11 @@ from pynetdicom.sop_class import (
     StudyRootQueryRetrieveInformationModelFind,
     StudyRootQueryRetrieveInformationModelMove,
 )
+
+from .tools import echoscu
 from ..templatetags.remappduration import naturalduration
-from ..tools.dcmdatetime import make_dcm_date_range, make_dcm_time_range
+from ..tools.dcmdatetime import get_time, make_dcm_date_range, make_dcm_time_range
+from ..tools.get_values import get_value_kw
 
 logger = logging.getLogger(
     "remapp.netdicom.qrscu"
@@ -41,6 +46,9 @@ django.setup()
 
 from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-position
     DicomQuery,
+    DicomQRRspImage,
+    DicomQRRspSeries,
+    DicomQRRspStudy,
     DicomRemoteQR,
     DicomStoreSCP,
     GeneralStudyModuleAttr,
@@ -685,8 +693,6 @@ def _check_sr_type_in_study(assoc, study, query, get_empty_sr):
 
 
 def _query_images(assoc, seriesrsp, query, initial_image_only=False, msg_id=None):
-    from ..models import DicomQRRspImage
-    from pydicom.dataset import Dataset
 
     query_id = query.query_id
 
@@ -783,10 +789,6 @@ def _query_series(assoc, d2, studyrsp, query):
     :return: None
     """
 
-    from ..tools.dcmdatetime import get_time
-    from ..tools.get_values import get_value_kw
-    from ..models import DicomQRRspSeries
-
     d2.QueryRetrieveLevel = "SERIES"
     d2.SeriesDescription = ""
     d2.SeriesNumber = ""
@@ -881,8 +883,6 @@ def _query_series(assoc, d2, studyrsp, query):
 
 
 def _query_study(assoc, d, query, study_query_id):
-    from ..models import DicomQRRspStudy
-    from ..tools.get_values import get_value_kw
 
     d.QueryRetrieveLevel = "STUDY"
     d.PatientName = ""
@@ -1786,9 +1786,6 @@ def movescu(query_id):
     :param query_id: UUID of query in the DicomQuery table
     :return: None
     """
-    from pydicom.dataset import Dataset
-    from ..models import DicomQuery
-
     # debug_logger()
 
     logger.debug("Query_id {0}: Starting move request".format(query_id))
@@ -1952,7 +1949,6 @@ def movescu(query_id):
 
 
 def _create_parser():
-    import argparse
 
     parser = argparse.ArgumentParser(
         description="Query remote server and retrieve to OpenREM"
@@ -2058,8 +2054,6 @@ def _create_parser():
 
 
 def _process_args(parser_args, parser):
-    import datetime
-    from remapp.netdicom.tools import echoscu
 
     logger.info("qrscu script called")
 
@@ -2092,14 +2086,14 @@ def _process_args(parser_args, parser):
     single_date = False
     try:
         if parser_args.dfrom:
-            datetime.datetime.strptime(parser_args.dfrom, "%Y-%m-%d")
+            datetime.strptime(parser_args.dfrom, "%Y-%m-%d")
             logger.info("Date from: {0}".format(parser_args.dfrom))
             date_1 = parser_args.dfrom
         if parser_args.duntil:
-            datetime.datetime.strptime(parser_args.duntil, "%Y-%m-%d")
+            datetime.strptime(parser_args.duntil, "%Y-%m-%d")
             logger.info("Date until: {0}".format(parser_args.duntil))
         if parser_args.single_date:
-            datetime.datetime.strptime(parser_args.single_date, "%Y-%m-%d")
+            datetime.strptime(parser_args.single_date, "%Y-%m-%d")
             logger.info("Single date: {0}".format(parser_args.single_date))
             date_1 = parser_args.single_date
             single_date = True
@@ -2113,10 +2107,10 @@ def _process_args(parser_args, parser):
         # Need to check only one date provided - only accept if times within a day. Time range with date range will give
         # those times each day. Extended negotiation allows for time on date 1 to time on date 2, but we don't have that
         if parser_args.tfrom:
-            datetime.datetime.strptime(parser_args.tfrom, "%H%M")
+            datetime.strptime(parser_args.tfrom, "%H%M")
             logger.info("Time from: {0}".format(parser_args.tfrom))
         if parser_args.tuntil:
-            datetime.datetime.strptime(parser_args.tuntil, "%H%M")
+            datetime.strptime(parser_args.tuntil, "%H%M")
             logger.info("Time until: {0}".format(parser_args.tuntil))
     except ValueError:
         parser.error("Incorrect time format, should be HHMM")
