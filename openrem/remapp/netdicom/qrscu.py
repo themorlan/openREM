@@ -1607,26 +1607,27 @@ def qrscu(
         series_pruning_log = ""
         if all_mods["FL"]["inc"]:
             series_pruning_log += _(
-                "{0} RF studies were deleted from query due to no suitable RDSR being found. ".format(
-                deleted_studies["RF"]
-            ))
+                "{num_del_studies} RF studies were deleted from query due to no suitable RDSR being found. ".format(
+                    num_del_studies=deleted_studies["RF"]
+                )
+            )
         if all_mods["CT"]["inc"]:
             series_pruning_log += _(
-                "{0} CT studies were deleted from query due to no suitable images or reports being "
-                "found. Of the remaining CT studies, {1} have RDSR or ESR, {2} have Philips dose images, "
-                "{3} have been prepared for the Toshiba import option and {4} have been prepared as "
-                "possibly containing Philips dose images. ".format(
-                    deleted_studies["CT"],
-                    kept_ct["SR"],
-                    kept_ct["philips"],
-                    kept_ct["toshiba"],
-                    kept_ct["maybe_philips"],
+                "{ct_del_studies} CT studies were deleted from query due to no suitable images or reports being "
+                "found. Of the remaining CT studies, {kept_ct_sr} have RDSR or ESR, {kept_ct_philips} have Philips "
+                "dose images, {kept_ct_toshiba} have been prepared for the Toshiba import option and "
+                "{kept_ct_maybe_philips} have been prepared as possibly containing Philips dose images. ".format(
+                    ct_del_studies=deleted_studies["CT"],
+                    kept_ct_sr=kept_ct["SR"],
+                    kept_ct_philips=kept_ct["philips"],
+                    kept_ct_toshiba=kept_ct["toshiba"],
+                    kept_ct_maybe_philips=kept_ct["maybe_philips"],
                 )
             )
         if all_mods["SR"]["inc"]:
-            series_pruning_log += _("{0} SR studies were deleted from query due to no suitable SR being found. ".format(
-                deleted_studies["SR"]
-            ))
+            series_pruning_log += _("{del_sr_studies} SR studies were deleted from query due to no suitable SR"
+                                    " being found. ".format(del_sr_studies=deleted_studies["SR"])
+            )
         logger.info(f"{query_id.hex[:8]} {series_pruning_log}")
 
         study_rsp = query.dicomqrrspstudy_set.all()
