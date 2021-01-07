@@ -497,30 +497,26 @@ def _get_philips_dose_images(series, get_toshiba_images, query_id):
         val for dic in series.values("series_description") for val in list(dic.values())
     )
     logger.debug(
-        "{1} Get Philips:  series_descriptions are {0}".format(
-            series_descriptions, query_id
-        )
+        f"{query_id.hex[:8]} Get Philips:  series_descriptions are {series_descriptions}"
     )
     if series_descriptions != {None}:
         if series.filter(series_description__iexact="dose info"):
             logger.debug(
-                "{0} Get Philips: found likely Philips dose image, no SR, delete all other series".format(
-                    query_id
-                )
+                f"{query_id.hex[:8]} Get Philips: found likely Philips dose image, no SR, delete all other series"
             )
             series.exclude(series_description__iexact="dose info").delete()
             return True, True
         else:
             logger.debug(
-                "{0} Get Philips: not matched Philips dose image".format(query_id)
+                f"{query_id.hex[:8]} Get Philips: not matched Philips dose image"
             )
             return True, False
     elif get_toshiba_images:
         return False, False
     else:
         logger.debug(
-            "{0} Get Philips: no series descriptions, keeping only series with < 6 images in case we might"
-            "get a Philips dose info image".format(query_id)
+            f"{query_id.hex[:8]} Get Philips: no series descriptions, keeping only series with < 6 images in "
+            f"case we might get a Philips dose info image"
         )
         series.filter(number_of_series_related_instances__gt=5).delete()
         return False, True
