@@ -277,9 +277,7 @@ def _prune_series_responses(
     query.save()
     query_id = query.query_id
     logger.info(
-        "{0} Getting series and image level information and deleting series we can't use".format(
-            query_id
-        )
+        f"{query_id.hex[:8]} Getting series and image level information and deleting series we can't use"
     )
 
     study_rsp = query.dicomqrrspstudy_set.all()
@@ -300,9 +298,7 @@ def _prune_series_responses(
         if after_count < before_count:
             deleted_studies_filters["stationname_inc"] = before_count - after_count
             logger.debug(
-                "{0} stationname_inc removed {1} studies".format(
-                    query.query_id, deleted_studies_filters["stationname_inc"]
-                )
+                f"{query_id.hex[:8]} stationname_inc removed {deleted_studies_filters['stationname_inc']} studies"
             )
 
     if filters["stationname_exc"]:
@@ -318,16 +314,12 @@ def _prune_series_responses(
         if after_count < before_count:
             deleted_studies_filters["stationname_exc"] = before_count - after_count
             logger.debug(
-                "{0} stationname_exc removed {1} studies".format(
-                    query.query_id, deleted_studies_filters["stationname_exc"]
-                )
+                f"{query_id.hex[:8]} stationname_exc removed {deleted_studies_filters['stationname_exc']} studies"
             )
 
     for study in study_rsp:
         logger.debug(
-            "{0} Modalities in this study are: {1}".format(
-                query_id, study.get_modalities_in_study()
-            )
+            f"{query_id.hex[:8]} Modalities in this study are: {study.get_modalities_in_study()}"
         )
         if all_mods["MG"]["inc"] and "MG" in study.get_modalities_in_study():
             # If _check_sr_type_in_study returns an RDSR, all other SR series will have been deleted and then all images
@@ -338,17 +330,13 @@ def _prune_series_responses(
             if "SR" in study.get_modalities_in_study():
                 if _check_sr_type_in_study(assoc, study, query, get_empty_sr) in ["RDSR", "null_response"]:
                     logger.debug(
-                        "{0} RDSR in MG study, keep SR, delete all other series".format(
-                            query_id
-                        )
+                        f"{query_id.hex[:8]} RDSR in MG study, keep SR, delete all other series"
                     )
                     series = study.dicomqrrspseries_set.all()
                     series.exclude(modality__exact="SR").delete()
                 else:
                     logger.debug(
-                        "{0} no RDSR in MG study, deleting other SR series".format(
-                            query_id
-                        )
+                        f"{query_id.hex[:8]} no RDSR in MG study, deleting other SR series"
                     )
                     series = study.dicomqrrspseries_set.all()
                     series.filter(modality__exact="SR").delete()
@@ -365,17 +353,13 @@ def _prune_series_responses(
             if "SR" in study.get_modalities_in_study():
                 if _check_sr_type_in_study(assoc, study, query, get_empty_sr) in ["RDSR", "null_response"]:
                     logger.debug(
-                        "{0} RDSR in DX study, keep SR, delete all other series".format(
-                            query_id
-                        )
+                        f"{query_id.hex[:8]} RDSR in DX study, keep SR, delete all other series"
                     )
                     series = study.dicomqrrspseries_set.all()
                     series.exclude(modality__exact="SR").delete()
                 else:
                     logger.debug(
-                        "{0} no RDSR in DX study, deleting other SR series".format(
-                            query_id
-                        )
+                        f"{query_id.hex[:8]} no RDSR in DX study, deleting other SR series"
                     )
                     series = study.dicomqrrspseries_set.all()
                     series.filter(modality__exact="SR").delete()
@@ -389,17 +373,13 @@ def _prune_series_responses(
             sr_type = _check_sr_type_in_study(assoc, study, query, get_empty_sr)
             if sr_type == "no_dose_report":
                 logger.debug(
-                    "{0} No usable SR in RF study. Deleting from query.".format(
-                        query_id
-                    )
+                    f"{query_id.hex[:8]} No usable SR in RF study. Deleting from query."
                 )
                 study.delete()
                 deleted_studies["RF"] += 1
             else:
                 logger.debug(
-                    "{0} {1} in RF study, keep SR, delete all other series".format(
-                        query_id, sr_type
-                    )
+                    f"{query_id.hex[:8]} {sr_type} in RF study, keep SR, delete all other series"
                 )
                 series = study.dicomqrrspseries_set.all()
                 series.exclude(modality__exact="SR").delete()
@@ -419,15 +399,13 @@ def _prune_series_responses(
                 sr_type = _check_sr_type_in_study(assoc, study, query, get_empty_sr)
             if "SR" and sr_type in ("RDSR", "ESR", "null_response"):
                 logger.debug(
-                    "{0} {1} in CT study, keep SR, delete all other series".format(
-                        query_id, sr_type
-                    )
+                    f"{query_id.hex[:8]} {sr_type} in CT study, keep SR, delete all other series"
                 )
                 series.exclude(modality__exact="SR").delete()
                 kept_ct["SR"] += 1
             else:
                 logger.debug(
-                    "{0} No usable SR in CT study, checking for Philips dose images"
+                    f"{query_id.hex[:8]} No usable SR in CT study, checking for Philips dose images"
                 )
                 philips_desc, philips_found = _get_philips_dose_images(
                     series, get_toshiba_images, query_id
@@ -436,21 +414,20 @@ def _prune_series_responses(
                     kept_ct["philips"] += 1
                 elif not philips_found and get_toshiba_images:
                     logger.debug(
-                        "{0} No usable CT SR, no Philips dose image found, preparing study for Toshiba "
-                        "option".format(query_id)
+                        f"{query_id.hex[:8]} No usable CT SR, no Philips dose image found, preparing study for "
+                        f"Toshiba option"
                     )
                     _get_toshiba_dose_images(series, assoc, query)
                     kept_ct["toshiba"] += 1
                 elif not philips_desc and philips_found:
                     logger.debug(
-                        "{0} No usable CT SR, series descriptions, retaining small series in case useful."
+                        f"{query_id.hex[:8]} No usable CT SR, series descriptions, retaining small series in "
+                        f"case useful."
                     )
                     kept_ct["maybe_philips"] += 1
                 else:
                     logger.debug(
-                        "{0} No usable CT information available, deleting study from query".format(
-                            query_id
-                        )
+                        f"{query_id.hex[:8]} No usable CT information available, deleting study from query"
                     )
                     study.delete()
                     deleted_studies["CT"] += 1
@@ -459,26 +436,24 @@ def _prune_series_responses(
             sr_type = _check_sr_type_in_study(assoc, study, query, get_empty_sr)
             if sr_type == "RDSR":
                 logger.debug(
-                    "{0} SR only query, found RDSR, deleted other SRs".format(query_id)
+                    f"{query_id.hex[:8]} SR only query, found RDSR, deleted other SRs"
                 )
             elif sr_type == "ESR":
                 logger.debug(
-                    "{0} SR only query, found ESR, deleted other SRs".format(query_id)
+                    f"{query_id.hex[:8]} SR only query, found ESR, deleted other SRs"
                 )
             elif sr_type == "null_response":
-                logger.debug("{0} SR type unknown, -emptysr=True".format(query_id))
+                logger.debug(f"{query_id.hex[:8]} SR type unknown, -emptysr=True")
             elif sr_type == "no_dose_report":
                 logger.debug(
-                    "{0} No RDSR or ESR found. Study will be deleted.".format(query_id)
+                    f"{query_id.hex[:8]} No RDSR or ESR found. Study will be deleted."
                 )
                 study.delete()
                 deleted_studies["SR"] += 1
 
         if study.id is not None and study.dicomqrrspseries_set.all().count() == 0:
             logger.debug(
-                "{1} Deleting empty study with suid {0}".format(
-                    study.study_instance_uid, query_id
-                )
+                f"{query_id.hex[:8]} Deleting empty study with suid {study.study_instance_uid}"
             )
             study.delete()
 
