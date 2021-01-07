@@ -571,6 +571,8 @@ def _get_toshiba_dose_images(study_series, assoc, query, query_id):
 
 def _prune_study_responses(query, filters):
 
+    query_id = query.query_id
+
     deleted_studies_filters = {
         "study_desc_inc": 0,
         "study_desc_exc": 0,
@@ -580,11 +582,8 @@ def _prune_study_responses(query, filters):
     if filters["study_desc_inc"]:
         before_count = query.dicomqrrspstudy_set.all().count()
         logger.debug(
-            "{2} About to filter on study_desc_inc: {0}, currently have {1} studies.".format(
-                filters["study_desc_inc"],
-                query.dicomqrrspstudy_set.all().count(),
-                query.query_id,
-            )
+            f"{query_id.hex[:8]} About to filter on study_desc_inc: {filters['study_desc_inc']}, "
+            f"currently have {query.dicomqrrspstudy_set.all().count()} studies."
         )
         _filter(
             query,
@@ -597,18 +596,13 @@ def _prune_study_responses(query, filters):
         if after_count < before_count:
             deleted_studies_filters["study_desc_inc"] = before_count - after_count
             logger.debug(
-                "{0} study_desc_inc removed {1} studies".format(
-                    query.query_id, deleted_studies_filters["study_desc_inc"]
-                )
+                f"{query_id.hex[:8]} study_desc_inc removed {deleted_studies_filters['study_desc_inc']} studies"
             )
     if filters["study_desc_exc"]:
         before_count = query.dicomqrrspstudy_set.all().count()
         logger.debug(
-            "{2} About to filter on study_desc_exc: {0}, currently have {1} studies.".format(
-                filters["study_desc_exc"],
-                query.dicomqrrspstudy_set.all().count(),
-                query.query_id,
-            )
+            f"{query_id.hex[:8]} About to filter on study_desc_exc: {filters['study_desc_exc']}, "
+            f"currently have {query.dicomqrrspstudy_set.all().count()} studies."
         )
         _filter(
             query,
@@ -621,18 +615,14 @@ def _prune_study_responses(query, filters):
         if after_count < before_count:
             deleted_studies_filters["study_desc_exc"] = before_count - after_count
             logger.debug(
-                "{0} study_desc_exc removed {1} studies".format(
-                    query.query_id, deleted_studies_filters["study_desc_exc"]
-                )
+                f"{query_id.hex[:8]} study_desc_exc removed "
+                f"{deleted_studies_filters['study_desc_exc']} studies"
             )
     if filters["stationname_inc"]:
         before_count = query.dicomqrrspstudy_set.all().count()
         logger.debug(
-            "{2} About to filter on stationname_inc: {0}, currently have {1} studies.".format(
-                filters["stationname_inc"],
-                query.dicomqrrspstudy_set.all().count(),
-                query.query_id,
-            )
+            f"{query_id.hex[:8]} About to filter on stationname_inc: {filters['stationname_inc']}, "
+            f"currently have {query.dicomqrrspstudy_set.all().count()} studies."
         )
         _filter(
             query,
@@ -645,18 +635,13 @@ def _prune_study_responses(query, filters):
         if after_count < before_count:
             deleted_studies_filters["stationname_inc"] = before_count - after_count
             logger.debug(
-                "{0} stationname_inc removed {1} studies".format(
-                    query.query_id, deleted_studies_filters["stationname_inc"]
-                )
+                f"{query_id.hex[:8]} stationname_inc removed {deleted_studies_filters['stationname_inc']} studies"
             )
     if filters["stationname_exc"]:
         before_count = query.dicomqrrspstudy_set.all().count()
         logger.debug(
-            "{2} About to filter on stationname_exc: {0}, currently have {1} studies.".format(
-                filters["stationname_exc"],
-                query.dicomqrrspstudy_set.all().count(),
-                query.query_id,
-            )
+            f"{query_id.hex[:8]} About to filter on stationname_exc: {filters['stationname_exc']}, "
+            f"currently have {query.dicomqrrspstudy_set.all().count()} studies."
         )
         _filter(
             query,
@@ -669,9 +654,7 @@ def _prune_study_responses(query, filters):
         if after_count < before_count:
             deleted_studies_filters["stationname_exc"] = before_count - after_count
             logger.debug(
-                "{0} stationname_exc removed {1} studies".format(
-                    query.query_id, deleted_studies_filters["stationname_exc"]
-                )
+                f"{query_id.hex[:8]} stationname_exc removed {deleted_studies_filters['stationname_exc']} studies"
             )
     return deleted_studies_filters
 
