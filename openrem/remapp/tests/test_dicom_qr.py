@@ -1590,7 +1590,7 @@ class RemoveDuplicates(TestCase):
         study_rsp = query.dicomqrrspstudy_set.all()
         assoc = None
         query_id = None
-        _remove_duplicates(query, study_rsp, assoc, query_id)
+        _remove_duplicates(query, study_rsp, assoc)
 
         study_responses_post = DicomQRRspStudy.objects.all()
         self.assertEqual(study_responses_post.count(), 1)
@@ -1663,7 +1663,7 @@ class RemoveDuplicates(TestCase):
         study_rsp = query.dicomqrrspstudy_set.all()
         assoc = None
         query_id = None
-        _remove_duplicates(query, study_rsp, assoc, query_id)
+        _remove_duplicates(query, study_rsp, assoc)
 
         study_responses_post = DicomQRRspStudy.objects.all()
         self.assertEqual(study_responses_post.count(), 1)
@@ -1729,7 +1729,7 @@ class RemoveDuplicates(TestCase):
         study_rsp = query.dicomqrrspstudy_set.all()
         assoc = None
         query_id = None
-        _remove_duplicates(query, study_rsp, assoc, query_id)
+        _remove_duplicates(query, study_rsp, assoc)
 
         study_responses_post = DicomQRRspStudy.objects.all()
         self.assertEqual(study_responses_post.count(), 1)
@@ -1804,7 +1804,7 @@ class RemoveDuplicates(TestCase):
         study_rsp = query.dicomqrrspstudy_set.all()
         assoc = None
         query_id = None
-        _remove_duplicates(query, study_rsp, assoc, query_id)
+        _remove_duplicates(query, study_rsp, assoc)
 
         # One image response should have been deleted, one remain
         study_responses_post = DicomQRRspStudy.objects.all()

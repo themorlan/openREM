@@ -70,16 +70,16 @@ def _generate_modalities_in_study(study_rsp, query_id):
     study_rsp.save()
 
 
-def _remove_duplicates(query, study_rsp, assoc, query_id):
+def _remove_duplicates(query, study_rsp, assoc):
     """
     Checks for objects in C-Find response already being in the OpenREM database to remove them from the C-Move request
     :param query: Query object in database
     :param study_rsp: study level C-Find response object in database
     :param assoc: current DICOM Query object
-    :param query_id: current query ID for logging
     :return: Study, series and image level responses deleted if not useful
     """
 
+    query_id = query.query_id
     logger.debug(
         "{0} About to remove any studies we already have in the database".format(
             query_id
@@ -152,7 +152,7 @@ def _remove_duplicates(query, study_rsp, assoc, query_id):
                                 study_number, study.study_instance_uid, query_id
                             )
                         )
-                        _query_images(assoc, series_rsp, query, query_id)
+                        _query_images(assoc, series_rsp, query)
                         for image_rsp in series_rsp.dicomqrrspimage_set.all():
                             logger.debug(
                                 "{3} Study {0} {1} Checking for SOPInstanceUID {2}".format(
@@ -544,9 +544,7 @@ def _get_toshiba_dose_images(study_series, assoc, query, query_id):
     """
 
     for index, series in enumerate(study_series):
-        _query_images(
-            assoc, series, query, query_id, initial_image_only=True, msg_id=index + 1
-        )
+        _query_images(assoc, series, query, initial_image_only=True, msg_id=index + 1)
         images = series.dicomqrrspimage_set.all()
         if images.count() == 0:
             logger.debug(
@@ -713,7 +711,7 @@ def _check_sr_type_in_study(assoc, study, query, query_id, get_empty_sr):
     )
     sopclasses = set()
     for sr in series_sr:
-        _query_images(assoc, sr, query, query_id)
+        _query_images(assoc, sr, query)
         images = sr.dicomqrrspimage_set.all()
         if images.count() == 0:
             if get_empty_sr:
@@ -779,12 +777,12 @@ def _check_sr_type_in_study(assoc, study, query, query_id, get_empty_sr):
         return "no_dose_report"
 
 
-def _query_images(
-    assoc, seriesrsp, query, query_id, initial_image_only=False, msg_id=None
-):
+def _query_images(assoc, seriesrsp, query, initial_image_only=False, msg_id=None):
     from ..models import DicomQRRspImage
     from pydicom.dataset import Dataset
 
+    query_id = query.query_id
+    
     logger.debug("Query_id {0}: In _query_images".format(query_id))
 
     d3 = Dataset()
@@ -802,14 +800,12 @@ def _query_images(
         msg_id = 1
 
     logger.debug(
-        "Query_id {0}: query is {1}, intial_imge_only is {2}, msg_id is {3}".format(
-            query_id, d3, initial_image_only, msg_id
-        )
+        f"{query_id.hex[:8]} query is {d3}, initial_image_only is {initial_image_only}, msg_id is {msg_id}"
     )
 
     responses = assoc.send_c_find(d3, StudyRootQueryRetrieveInformationModelFind)
 
-    query_id = uuid.uuid4()
+    image_query_id = uuid.uuid4()
 
     imRspNo = 0
 
@@ -817,9 +813,7 @@ def _query_images(
         if status:
             if status.Status == 0x0000:
                 logger.debug(
-                    "{0} Image level matching is complete for this study".format(
-                        query_id
-                    )
+                    f"{query_id.hex[:8]}/{image_query_id.hex[:8]} Image level matching is complete for this study"
                 )
                 query.stage = _(
                     "Image level matching for this study is complete (there many be more)"
@@ -828,49 +822,43 @@ def _query_images(
                 return
             if status.Status in (0xFF00, 0xFF01):
                 logger.debug(
-                    "{0} Image level matches are continuing (0x{1:04x})".format(
-                        query_id, status.Status
-                    )
+                    f"{query_id.hex[:8]}/{image_query_id.hex[:8]} Image level matches are continuing "
+                    f"(0x{status.Status:04x})"
                 )
                 query.stage = _("Image level matches are continuing.")
                 query.save()
                 imRspNo += 1
                 logger.debug(
-                    "Query_id {0}: Image Response {1}: {2}".format(
-                        query_id, imRspNo, identifier
-                    )
+                    f"{query_id.hex[:8]}/{image_query_id.hex[:8]} Image Response {imRspNo}: {identifier}"
                 )
                 imagesrsp = DicomQRRspImage.objects.create(
                     dicom_qr_rsp_series=seriesrsp
                 )
-                imagesrsp.query_id = query_id
+                imagesrsp.query_id = image_query_id
                 # Mandatory tags
                 imagesrsp.sop_instance_uid = identifier.SOPInstanceUID
                 try:
                     imagesrsp.sop_class_uid = identifier.SOPClassUID
                 except AttributeError:
                     logger.warning(
-                        "Query_id {0}: StudyInstUID {1} Image Response {2}: no SOPClassUID. If "
-                        "CT, might need to use Toshiba Advanced option (additional config required)".format(
-                            query_id, d3.StudyInstanceUID, imRspNo
-                        )
+                        f"{query_id.hex[:8]}/{image_query_id.hex[:8]} StudyInstUID {d3.StudyInstanceUID} Image "
+                        f"Response {imRspNo}: no SOPClassUID. If CT, might need to use Toshiba Advanced option"
+                        f" (additional config required)"
                     )
                     imagesrsp.sop_class_uid = ""
                 try:
                     imagesrsp.instance_number = int(identifier.InstanceNumber)
                 except (ValueError, TypeError, AttributeError):
                     logger.warning(
-                        "Query_id {0}: Image Response {1}: illegal response, no InstanceNumber".format(
-                            query_id, imRspNo
-                        )
+                        f"{query_id.hex[:8]}/{image_query_id.hex[:8]} Image Response {imRspNo}: illegal response, "
+                        f"no InstanceNumber"
                     )
                     imagesrsp.instance_number = None  # integer so can't be ''
                 imagesrsp.save()
         else:
             logger.info(
-                "{0} Connection timed out, was aborted or received invalid response".format(
-                    query_id
-                )
+                f"{query_id.hex[:8]}/{image_query_id.hex[:8]} Connection timed out, was aborted or received invalid"
+                f" response"
             )
             query.stage = _(
                 "Connection timed out, was aborted or received invalid response"
@@ -917,7 +905,7 @@ def _query_series(assoc, d2, studyrsp, query):
         if status:
             if status.Status == 0x0000:
                 logger.debug(
-                    f"{query_id.hex[:8]}/{series_query_id[:8]} Series level matching is complete for this study"
+                    f"{query_id.hex[:8]}/{series_query_id.hex[:8]} Series level matching is complete for this study"
                 )
                 query.stage = _(
                     "Series level matching for this study is complete (there may be more)"
@@ -926,7 +914,7 @@ def _query_series(assoc, d2, studyrsp, query):
                 return
             if status.Status in (0xFF00, 0xFF01):
                 logger.debug(
-                    f"{query_id.hex[:8]}/{series_query_id[:8]} Series level matches are"
+                    f"{query_id.hex[:8]}/{series_query_id.hex[:8]} Series level matches are"
                     f" continuing (0x{status.Status:04x})"
                 )
                 query.stage = _("Series level matches are continuing.")
@@ -941,7 +929,8 @@ def _query_series(assoc, d2, studyrsp, query):
                 except AttributeError:
                     seriesrsp.modality = "OT"  # not sure why a series is returned without, assume we don't want it.
                     logger.warning(
-                        f"{query_id.hex[:8]}/{series_query_id[:8]} Illegal response with no modality at series level"
+                        f"{query_id.hex[:8]}/{series_query_id.hex[:8]} Illegal response with no modality at"
+                        f" series level"
                     )
                 try:
                     seriesrsp.series_number = int(identifier.SeriesNumber)
@@ -967,7 +956,7 @@ def _query_series(assoc, d2, studyrsp, query):
                 seriesrsp.station_name = get_value_kw("StationName", identifier)
                 seriesrsp.series_time = get_time("SeriesTime", identifier)
                 logger.debug(
-                    f"{query_id.hex[:8]}/{series_query_id[:8]} Series Response {seRspNo}: "
+                    f"{query_id.hex[:8]}/{series_query_id.hex[:8]} Series Response {seRspNo}: "
                     f"Modality {seriesrsp.modality}, StationName {seriesrsp.station_name}, "
                     f"StudyUID {d2.StudyInstanceUID}, Series No. {seriesrsp.series_number}, "
                     f"Series description {seriesrsp.series_description}"
@@ -975,7 +964,7 @@ def _query_series(assoc, d2, studyrsp, query):
                 seriesrsp.save()
         else:
             logger.info(
-                f"{query_id.hex[:8]}/{series_query_id[:8]} Connection timed out, was aborted or received "
+                f"{query_id.hex[:8]}/{series_query_id.hex[:8]} Connection timed out, was aborted or received "
                 f"invalid response"
             )
             query.stage = _(
@@ -1632,7 +1621,7 @@ def qrscu(
                 f"{query_id.hex[:8]} Removing any responses that match data we already have in the database"
             )
             query.save()
-            _remove_duplicates(query, study_rsp, assoc, query_id)
+            _remove_duplicates(query, study_rsp, assoc)
             study_numbers["current"] = query.dicomqrrspstudy_set.all().count()
             study_numbers["duplicates_removed"] = (
                 before_remove_duplicates - study_numbers["current"]
