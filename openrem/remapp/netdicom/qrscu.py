@@ -439,7 +439,7 @@ def _prune_series_responses(
                         "{0} No usable CT SR, no Philips dose image found, preparing study for Toshiba "
                         "option".format(query_id)
                     )
-                    _get_toshiba_dose_images(series, assoc, query, query_id)
+                    _get_toshiba_dose_images(series, assoc, query)
                     kept_ct["toshiba"] += 1
                 elif not philips_desc and philips_found:
                     logger.debug(
@@ -526,46 +526,42 @@ def _get_philips_dose_images(series, get_toshiba_images, query_id):
         return False, True
 
 
-def _get_toshiba_dose_images(study_series, assoc, query, query_id):
+def _get_toshiba_dose_images(study_series, assoc, query):
     """
     Get images for Toshiba studies with no RDSR
     :param study_series: database set
     :return: None. Non-useful entries will be removed from database
     """
 
+    query_id = query.query_id
+
     for index, series in enumerate(study_series):
         _query_images(assoc, series, query, initial_image_only=True, msg_id=index + 1)
         images = series.dicomqrrspimage_set.all()
         if images.count() == 0:
             logger.debug(
-                "{0} Toshiba option: No images in series, deleting series.".format(
-                    query_id
-                )
+                f"{query_id.hex[:8]} Toshiba option: No images in series, deleting series."
             )
             series.delete()
         else:
             if images[0].sop_class_uid != "1.2.840.10008.5.1.4.1.1.7":
                 logger.debug(
-                    "{0}: Toshiba option: Image series, SOPClassUID {1}, "
-                    " delete all but first image.".format(
-                        query_id, images[0].sop_class_uid
-                    )
+                    f"{query_id.hex[:8]} Toshiba option: Image series, SOPClassUID {images[0].sop_class_uid}, "
+                    f"delete all but first image."
                 )
                 images.exclude(
                     sop_instance_uid__exact=images[0].sop_instance_uid
                 ).delete()
                 logger.debug(
-                    "{0}: Toshiba option: Deleted other images, now {1} remaining (should be 1)".format(
-                        query_id, images.count()
-                    )
+                    f"{query_id.hex[:8]} Toshiba option: Deleted other images, now {images.count()} "
+                    f"remaining (should be 1)"
                 )
                 series.image_level_move = True
                 series.save()
             else:
                 logger.debug(
-                    "{0}: Toshiba option: Secondary capture series, keep the {1} images in this series.".format(
-                        query_id, images.count()
-                    )
+                    f"{query_id.hex[:8]} Toshiba option: Secondary capture series, keep the {images.count()} "
+                    f"images in this series."
                 )
 
 
