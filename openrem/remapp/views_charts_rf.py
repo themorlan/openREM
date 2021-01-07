@@ -228,15 +228,18 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
     # Prepare Pandas DataFrame to use for charts
     name_fields = []
     charts_of_interest = [
-        user_profile.plotRFStudyFreq, user_profile.plotRFStudyDAP,
-        user_profile.plotRFStudyPerDayAndHour, user_profile.plotRFStudyDAPOverTime,
+        user_profile.plotRFStudyFreq,
+        user_profile.plotRFStudyDAP,
+        user_profile.plotRFStudyPerDayAndHour,
+        user_profile.plotRFStudyDAPOverTime,
     ]
     if any(charts_of_interest):
         name_fields.append("study_description")
     if user_profile.plotRFSplitByPhysician:
         name_fields.append("performing_physician_name")
     charts_of_interest = [
-        user_profile.plotRFRequestFreq, user_profile.plotRFRequestDAP,
+        user_profile.plotRFRequestFreq,
+        user_profile.plotRFRequestDAP,
         user_profile.plotRFRequestDAPOverTime,
     ]
     if any(charts_of_interest):
@@ -245,8 +248,10 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
     value_fields = []
     value_multipliers = []
     charts_of_interest = [
-        user_profile.plotRFStudyDAP, user_profile.plotRFRequestDAP,
-        user_profile.plotRFStudyDAPOverTime, user_profile.plotRFRequestDAPOverTime,
+        user_profile.plotRFStudyDAP,
+        user_profile.plotRFRequestDAP,
+        user_profile.plotRFStudyDAPOverTime,
+        user_profile.plotRFRequestDAPOverTime,
     ]
     if any(charts_of_interest):
         value_fields.append("total_dap")
@@ -254,7 +259,8 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
     date_fields = []
     charts_of_interest = [
-        user_profile.plotRFStudyPerDayAndHour, user_profile.plotRFStudyDAPOverTime,
+        user_profile.plotRFStudyPerDayAndHour,
+        user_profile.plotRFStudyDAPOverTime,
         user_profile.plotRFRequestDAPOverTime,
     ]
     if any(charts_of_interest):
@@ -281,6 +287,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
         f.qs,
         fields,
         data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
+        data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
         data_point_value_multipliers=value_multipliers,
         uid="pk",
     )
@@ -311,9 +318,12 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
     sorted_study_categories = None
     if user_profile.plotRFStudyDAP:
+        sorting_col = "study_description"
+        if user_profile.plotRFSplitByPhysician:
+            sorting_col = "performing_physician_name"
         sorted_study_categories = create_sorted_category_list(
             df,
-            "study_description",
+            sorting_col,
             "total_dap",
             [
                 user_profile.plotInitialSortingDirection,
@@ -351,7 +361,10 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] = "OpenREM RF study description DAP mean"
                 parameter_dict["average_choice"] = "mean"
-                return_structure["studyMeanData"], return_structure["studyMeanDataCSV"] = plotly_barchart(
+                (
+                    return_structure["studyMeanData"],
+                    return_structure["studyMeanDataCSV"],
+                ) = plotly_barchart(
                     df_aggregated,
                     parameter_dict,
                     "studyMeanDAPData.csv",
@@ -361,7 +374,10 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] = "OpenREM RF study description DAP median"
                 parameter_dict["average_choice"] = "median"
-                return_structure["studyMedianData"], return_structure["studyMedianDataCSV"] = plotly_barchart(
+                (
+                    return_structure["studyMedianData"],
+                    return_structure["studyMedianDataCSV"],
+                ) = plotly_barchart(
                     df_aggregated,
                     parameter_dict,
                     "studyMedianDAPData.csv",
@@ -460,14 +476,17 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "x_axis_title": "System",
             "grouping_choice": user_profile.plotGroupingChoice,
             "colourmap": user_profile.plotColourMapChoice,
-            "file_name": "OpenREM RF study description frequency",
+            "filename": "OpenREM RF study description frequency",
             "sorted_categories": sorted_study_categories,
             "groupby_cols": groupby_cols,
             "facet_col": facet_col,
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
             "return_as_dict": return_as_dict,
         }
-        return_structure["studyFrequencyData"], return_structure["studyFrequencyDataCSV"] = plotly_frequency_barchart(
+        (
+            return_structure["studyFrequencyData"],
+            return_structure["studyFrequencyDataCSV"],
+        ) = plotly_frequency_barchart(
             df,
             parameter_dict,
             csv_name="studyFrequencyData.csv",
@@ -475,9 +494,12 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
     sorted_request_categories = None
     if user_profile.plotRFRequestDAP:
+        sorting_col = "requested_procedure_code_meaning"
+        if user_profile.plotRFSplitByPhysician:
+            sorting_col = "performing_physician_name"
         sorted_request_categories = create_sorted_category_list(
             df,
-            "requested_procedure_code_meaning",
+            sorting_col,
             "total_dap",
             [
                 user_profile.plotInitialSortingDirection,
@@ -506,16 +528,19 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 "df_name_col": x_col,
                 "name_axis_title": x_col_title,
                 "colourmap": user_profile.plotColourMapChoice,
-                "sorted_category_list": sorted_study_categories,
+                "sorted_category_list": sorted_request_categories,
                 "facet_col": facet_col,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "return_as_dict": return_as_dict,
             }
             if user_profile.plotMean:
                 parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
-                parameter_dict["filename"] ="OpenREM RF requested procedure DAP mean"
+                parameter_dict["filename"] = "OpenREM RF requested procedure DAP mean"
                 parameter_dict["average_choice"] = "mean"
-                return_structure["requestMeanData"], return_structure["requestMeanDataCSV"] = plotly_barchart(
+                (
+                    return_structure["requestMeanData"],
+                    return_structure["requestMeanDataCSV"],
+                ) = plotly_barchart(
                     df_aggregated,
                     parameter_dict,
                     "requestMeanDAPData.csv",
@@ -523,9 +548,12 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotMedian:
                 parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
-                parameter_dict["filename"] ="OpenREM RF requested procedure DAP median"
+                parameter_dict["filename"] = "OpenREM RF requested procedure DAP median"
                 parameter_dict["average_choice"] = "median"
-                return_structure["requestMedianData"], return_structure["requestMedianDataCSV"] = plotly_barchart(
+                (
+                    return_structure["requestMedianData"],
+                    return_structure["requestMedianDataCSV"],
+                ) = plotly_barchart(
                     df_aggregated,
                     parameter_dict,
                     "requestMedianDAPData.csv",
@@ -624,14 +652,17 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "x_axis_title": "System",
             "grouping_choice": user_profile.plotGroupingChoice,
             "colourmap": user_profile.plotColourMapChoice,
-            "file_name": "OpenREM RF requested procedure frequency",
+            "filename": "OpenREM RF requested procedure frequency",
             "sorted_categories": sorted_request_categories,
             "groupby_cols": groupby_cols,
             "facet_col": facet_col,
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
             "return_as_dict": return_as_dict,
         }
-        return_structure["requestFrequencyData"], return_structure["requestFrequencyDataCSV"] = plotly_frequency_barchart(  # pylint: disable=line-too-long
+        (
+            return_structure["requestFrequencyData"],
+            return_structure["requestFrequencyDataCSV"],
+        ) = plotly_frequency_barchart(  # pylint: disable=line-too-long
             df,
             parameter_dict,
             csv_name="requestFrequencyData.csv",
@@ -660,7 +691,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "grouping_choice": user_profile.plotGroupingChoice,
             "colourmap": user_profile.plotColourMapChoice,
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
-            "file_name": "OpenREM RF study DAP over time",
+            "filename": "OpenREM RF study DAP over time",
             "return_as_dict": return_as_dict,
         }
         result = construct_over_time_charts(
@@ -697,7 +728,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "grouping_choice": user_profile.plotGroupingChoice,
             "colourmap": user_profile.plotColourMapChoice,
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
-            "file_name": "OpenREM RF requested procedure DAP over time",
+            "filename": "OpenREM RF requested procedure DAP over time",
             "return_as_dict": return_as_dict,
         }
         result = construct_over_time_charts(

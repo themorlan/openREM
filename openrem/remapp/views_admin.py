@@ -40,8 +40,6 @@ from datetime import datetime, timedelta
 import requests
 from builtins import map  # pylint: disable=redefined-builtin
 
-# Following two lines added so that sphinx autodocumentation works.
-from future import standard_library
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -107,7 +105,6 @@ from .tools.populate_summary import (
 from .tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 from .version import __version__, __docs_version__
 
-standard_library.install_aliases()
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 
@@ -1318,6 +1315,9 @@ def chart_options_view(request):
             user_profile.plotCaseInsensitiveCategories = general_form.cleaned_data[
                 "plotCaseInsensitiveCategories"
             ]
+            user_profile.plotRemoveCategoryWhitespacePadding = (
+                general_form.cleaned_data["plotRemoveCategoryWhitespacePadding"]
+            )
 
             if "mean" in general_form.cleaned_data["plotAverageChoice"]:
                 user_profile.plotMean = True
@@ -1452,12 +1452,10 @@ def chart_options_view(request):
                 "plotRFInitialSortingChoice"
             ]
 
-            user_profile.plotMGacquisitionFreq =  mg_form.cleaned_data[
+            user_profile.plotMGacquisitionFreq = mg_form.cleaned_data[
                 "plotMGacquisitionFreq"
             ]
-            user_profile.plotMGaverageAGD =  mg_form.cleaned_data[
-                "plotMGaverageAGD"
-            ]
+            user_profile.plotMGaverageAGD = mg_form.cleaned_data["plotMGaverageAGD"]
             user_profile.plotMGaverageAGDvsThickness = mg_form.cleaned_data[
                 "plotMGaverageAGDvsThickness"
             ]
@@ -1520,6 +1518,7 @@ def chart_options_view(request):
         "plotHistograms": user_profile.plotHistograms,
         "plotHistogramGlobalBins": user_profile.plotHistogramGlobalBins,
         "plotCaseInsensitiveCategories": user_profile.plotCaseInsensitiveCategories,
+        "plotRemoveCategoryWhitespacePadding": user_profile.plotRemoveCategoryWhitespacePadding,
         "plotThemeChoice": user_profile.plotThemeChoice,
         "plotColourMapChoice": user_profile.plotColourMapChoice,
         "plotFacetColWrapVal": user_profile.plotFacetColWrapVal,
@@ -2045,6 +2044,7 @@ def celery_abort(request, task_id=None, type=None):
 
 class PatientIDSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
     """UpdateView to update the patient ID settings"""
+
     model = PatientIDSettings
     fields = [
         "name_stored",
@@ -2069,6 +2069,7 @@ class PatientIDSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
 
 class DicomDeleteSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
     """UpdateView tp update the settings relating to deleting DICOM after import"""
+
     model = DicomDeleteSettings
     form_class = DicomDeleteSettingsForm
 
@@ -2086,6 +2087,7 @@ class DicomDeleteSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
 
 class RFHighDoseAlertSettings(UpdateView):  # pylint: disable=unused-variable
     """UpdateView for configuring the fluoroscopy high dose alert settings"""
+
     try:
         HighDoseMetricAlertSettings.get_solo()  # will create item if it doesn't exist
     except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
@@ -2347,6 +2349,7 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
 
 class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
     """UpdateView for configuring the skin dose map calculation choices"""
+
     try:
         SkinDoseMapCalcSettings.get_solo()  # will create item if it doesn't exist
     except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
@@ -2376,6 +2379,7 @@ class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-varia
 
 class NotPatientNameCreate(CreateView):  # pylint: disable=unused-variable
     """CreateView for configuration of indicators a study might not be a patient study"""
+
     model = NotPatientIndicatorsName
     form_class = NotPatientNameForm
 
@@ -2393,6 +2397,7 @@ class NotPatientNameCreate(CreateView):  # pylint: disable=unused-variable
 
 class NotPatientNameUpdate(UpdateView):  # pylint: disable=unused-variable
     """UpdateView to update choices regarding not-patient indicators"""
+
     model = NotPatientIndicatorsName
     form_class = NotPatientNameForm
 
@@ -2410,6 +2415,7 @@ class NotPatientNameUpdate(UpdateView):  # pylint: disable=unused-variable
 
 class NotPatientNameDelete(DeleteView):  # pylint: disable=unused-variable
     """DeleteView for the not-patient name indicator table"""
+
     model = NotPatientIndicatorsName
     success_url = reverse_lazy("not_patient_indicators")
 
@@ -2427,6 +2433,7 @@ class NotPatientNameDelete(DeleteView):  # pylint: disable=unused-variable
 
 class NotPatientIDCreate(CreateView):  # pylint: disable=unused-variable
     """CreateView for not-patient ID indicators"""
+
     model = NotPatientIndicatorsID
     form_class = NotPatientIDForm
 
@@ -2444,6 +2451,7 @@ class NotPatientIDCreate(CreateView):  # pylint: disable=unused-variable
 
 class NotPatientIDUpdate(UpdateView):  # pylint: disable=unused-variable
     """UpdateView for non-patient ID indicators"""
+
     model = NotPatientIndicatorsID
     form_class = NotPatientIDForm
 
@@ -2461,6 +2469,7 @@ class NotPatientIDUpdate(UpdateView):  # pylint: disable=unused-variable
 
 class NotPatientIDDelete(DeleteView):  # pylint: disable=unused-variable
     """DeleteView for non-patient ID indicators"""
+
     model = NotPatientIndicatorsID
     success_url = reverse_lazy("not_patient_indicators")
 

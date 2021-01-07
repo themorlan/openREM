@@ -1,3 +1,4 @@
+# pylint: disable=line-too-long, too-many-lines
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
 #    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
 #
@@ -294,19 +295,10 @@ class RFFilterPlusPid(RFSummaryListFilter):
         )
 
 
-# Values from DICOM CID 10013 CT Acquisition Type
-CT_ACQ_TYPE_CHOICES = (
-    ("Spiral Acquisition", "Spiral"),
-    ("Sequenced Acquisition", "Axial"),
-    ("Constant Angle Acquisition", "Localiser"),
-    ("Stationary Acquisition", "Stationary acquisition"),
-    ("Free Acquisition", "Free acquisition"),
-)
-
-
 EVENT_NUMBER_CHOICES = (
     (None, "Any"),
     (0, "None"),
+    ("some", ">0"),
     (1, "1"),
     (2, "2"),
     (3, "3"),
@@ -334,19 +326,24 @@ def _specify_event_numbers(queryset, name, value):
         value = int(value)
     except ValueError:
         if value == "more":
-            if "num_events" in name:
-                filtered = queryset.filter(number_of_events__gt=10)
-            elif "num_spiral_events" in name:
-                filtered = queryset.filter(number_of_spiral__gt=10)
-            elif "num_axial_events" in name:
-                filtered = queryset.filter(number_of_axial__gt=10)
-            elif "num_spr_events" in name:
-                filtered = queryset.filter(number_of_const_angle__gt=10)
-            elif "num_stationary_events" in name:
-                filtered = queryset.filter(number_of_stationary__gt=10)
-            else:
-                return queryset
-            return filtered
+            min_value = 10
+        elif value == "some":
+            min_value = 0
+        else:
+            return queryset
+        if "num_events" in name:
+            filtered = queryset.filter(number_of_events__gt=min_value)
+        elif "num_spiral_events" in name:
+            filtered = queryset.filter(number_of_spiral__gt=min_value)
+        elif "num_axial_events" in name:
+            filtered = queryset.filter(number_of_axial__gt=min_value)
+        elif "num_spr_events" in name:
+            filtered = queryset.filter(number_of_const_angle__gt=min_value)
+        elif "num_stationary_events" in name:
+            filtered = queryset.filter(number_of_stationary__gt=min_value)
+        else:
+            return queryset
+        return filtered
         return queryset
     if "num_events" in name:
         filtered = queryset.filter(number_of_events__exact=value)
@@ -432,13 +429,6 @@ class CTSummaryListFilter(django_filters.FilterSet):
         choices=TEST_CHOICES,
         widget=forms.Select,
     )
-    ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning = django_filters.MultipleChoiceFilter(
-        lookup_expr="iexact",
-        label="Acquisition type restriction",
-        field_name="ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning",
-        choices=CT_ACQ_TYPE_CHOICES,
-        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
-    )
     num_events = django_filters.ChoiceFilter(
         method=_specify_event_numbers,
         label="Num. events total",
@@ -494,7 +484,6 @@ class CTSummaryListFilter(django_filters.FilterSet):
             "total_dlp__lte",
             "generalequipmentmoduleattr__unique_equipment_name__display_name",
             "test_data",
-            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning",
             "num_events",
             "num_spiral_events",
             "num_axial_events",
@@ -694,6 +683,17 @@ class MGSummaryListFilter(django_filters.FilterSet):
     projectionxrayradiationdose__irradeventxraydata__acquisition_protocol = (
         django_filters.CharFilter(lookup_expr="icontains", label="Acquisition protocol")
     )
+    projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning = (
+        django_filters.CharFilter(lookup_expr="icontains", label="View code")
+    )
+    projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range = django_filters.NumericRangeFilter(
+        lookup_expr="range",
+        label="Breast thickness range (mm)",
+        field_name="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+    )
+    projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode = django_filters.CharFilter(
+        lookup_expr="icontains", label="Exposure control mode"
+    )
     patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
         lookup_expr="gte",
         label="Min age (yrs)",
@@ -749,6 +749,9 @@ class MGSummaryListFilter(django_filters.FilterSet):
             "procedure_code_meaning",
             "requested_procedure_code_meaning",
             "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+            "projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning",
+            "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range",
+            "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode",
             "generalequipmentmoduleattr__institution_name",
             "generalequipmentmoduleattr__manufacturer",
             "generalequipmentmoduleattr__manufacturer_model_name",

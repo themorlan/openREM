@@ -63,8 +63,6 @@
                                   $( '#store-status-{{ scp.pk }}' ).html( json.message );
                                   $( '#store-status-indicator-{{ scp.pk }}' ).html( json.statusindicator );
                                   $( '#store-delete-{{ scp.pk }}' ).html( json.delbutton );
-                                  $( '#store-start-{{ scp.pk }}' ).html( json.startbutton );
-                                  $( '#store-stop-{{ scp.pk }}' ).html( json.stopbutton );
                                   setTimeout(function(){
                                       var data = {
                                           scp_pk: {{ scp.pk }}
@@ -102,12 +100,6 @@
                           <th>Database ID</th>
                           <td>{{ scp.pk }}</td>
                       </tr>
-                      {% if not docker_install %}
-                      <tr>
-                          <th>Auto start and keep-alive?</th>
-                          <td>{{ scp.keep_alive }}</td>
-                      </tr>
-                      {% endif %}
                       <tr>
                           <th>Status</th>
                           <td><div id="store-status-{{ scp.pk }}"></div>
@@ -116,14 +108,9 @@
                       </tr>
                   </table>
 
-
                   <hr>
                   <a class="btn btn-primary" href="{% url 'dicomstore_update' pk=scp.id %}" role="button">Modify</a>
                   <span id="store-delete-{{ scp.pk }}"></span>
-                  {% if scp.controlled %}
-                      <span id="store-start-{{ scp.pk }}" class="pull-right"></span>
-                      <span id="store-stop-{{ scp.pk }}" class="pull-right"></span>
-                  {% endif %}
               </div>
           </div>
           {% endfor %}
