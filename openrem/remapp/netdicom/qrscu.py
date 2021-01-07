@@ -995,7 +995,7 @@ def _query_series(assoc, d2, studyrsp, query, query_id):
             query.save()
 
 
-def _query_study(assoc, d, query, query_id):
+def _query_study(assoc, d, query, study_query_id):
     from ..models import DicomQRRspStudy
     from ..tools.get_values import get_value_kw
 
@@ -1010,29 +1010,31 @@ def _query_study(assoc, d, query, query_id):
     d.StationName = ""
     d.SpecificCharacterSet = ""
 
-    logger.debug("{0}: Study level association requested".format(query_id))
-    logger.debug("{0}: Study level query is {1}".format(query_id, d))
+    query_id = query.query_id
+
+    logger.debug(f"{query_id.hex[:8]}/{study_query_id.hex[:8]} Study level association requested")
+    logger.debug(f"{query_id.hex[:8]}/{study_query_id.hex[:8]} Study level query is {d}")
     responses = assoc.send_c_find(d, StudyRootQueryRetrieveInformationModelFind)
 
-    logger.debug("{0}: _query_study done with status {1}".format(query_id, responses))
+    logger.debug(f"{query_id.hex[:8]}/{study_query_id.hex[:8]} _query_study done with status {responses}")
 
     rspno = 0
 
     for (status, identifier) in responses:
         if status:
             if status.Status == 0x0000:
-                logger.info("{0} Matching is complete".format(query_id))
                 query.stage = _(
                     "Study level matching for {modalities} is complete".format(
                         modalities=d.ModalitiesInStudy
                     )
                 )
                 query.save()
+                logger.info(f"{study_query_id} {query.stage}")
                 return
             if status.Status in (0xFF00, 0xFF01):
                 logger.debug(
                     "{0} Matches are continuing (0x{1:04x})".format(
-                        query_id, status.Status
+                        study_query_id, status.Status
                     )
                 )
                 query.stage = _(
@@ -1045,23 +1047,20 @@ def _query_study(assoc, d, query, query_id):
                 # logger.debug(identifier)
                 rspno += 1
                 rsp = DicomQRRspStudy.objects.create(dicom_query=query)
-                rsp.query_id = query_id
+                rsp.query_id = study_query_id
                 # Unique key
                 rsp.study_instance_uid = identifier.StudyInstanceUID
                 # Required keys - none of interest
                 logger.debug(
-                    "{2} Response {0}, StudyUID: {1}".format(
-                        rspno, rsp.study_instance_uid, query_id
-                    )
+                    f"{query_id.hex[:8]}/{study_query_id.hex[:8]} Response {rspno}, StudyUID: {rsp.study_instance_uid}"
                 )
 
                 # Optional and special keys
                 rsp.study_description = get_value_kw("StudyDescription", identifier)
                 rsp.station_name = get_value_kw("StationName", identifier)
                 logger.debug(
-                    "{2} Study Description: {0}; Station Name: {1}".format(
-                        rsp.study_description, rsp.station_name, query_id
-                    )
+                    f"{query_id.hex[:8]}/{study_query_id.hex[:8]} Study Description: {rsp.study_description}; "
+                    f"Station Name: {rsp.station_name}"
                 )
 
                 # Populate modalities_in_study, stored as JSON
@@ -1075,14 +1074,13 @@ def _query_study(assoc, d, query, query_id):
                     else:  # if multiple modalities, type = MultiValue (['XA', 'RF'])
                         rsp.set_modalities_in_study(identifier.ModalitiesInStudy)
                     logger.debug(
-                        "{1} ModalitiesInStudy: {0}".format(
-                            rsp.get_modalities_in_study(), query_id
-                        )
+                        f"{query_id.hex[:8]}/{study_query_id.hex[:8]} "
+                        f"ModalitiesInStudy: {rsp.get_modalities_in_study()}"
                     )
                 except AttributeError:
                     rsp.set_modalities_in_study([""])
                     logger.debug(
-                        "{0} ModalitiesInStudy was not in response".format(query_id)
+                        f"{query_id.hex[:8]}/{study_query_id.hex[:8]} ModalitiesInStudy was not in response"
                     )
 
                 rsp.modality = None  # Used later
@@ -1090,9 +1088,8 @@ def _query_study(assoc, d, query, query_id):
 
         else:
             logger.info(
-                "{0} Connection timed out, was aborted or received invalid response".format(
-                    query_id
-                )
+                f"{query_id.hex[:8]}/{study_query_id.hex[:8]} Connection timed out, was aborted or received "
+                f"invalid response"
             )
             query.stage = _(
                 "Connection timed out, was aborted or received invalid response"
