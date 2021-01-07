@@ -55,7 +55,7 @@ def _generate_modalities_in_study(study_rsp, query_id):
     :return: response updated with ModalitiesInStudy
     """
     logger.debug(
-        "{0} modalities_returned = False, so building from series info".format(query_id)
+        f"{query_id.hex[:8]} modalities_returned = False, so building from series info"
     )
     series_rsp = study_rsp.dicomqrrspseries_set.all()
     study_rsp.set_modalities_in_study(
@@ -81,9 +81,7 @@ def _remove_duplicates(query, study_rsp, assoc):
 
     query_id = query.query_id
     logger.debug(
-        "{0} About to remove any studies we already have in the database".format(
-            query_id
-        )
+        f"{query_id.hex[:8]} About to remove any studies we already have in the database"
     )
     query.stage = _(
         "Checking to see if any response studies are already in the OpenREM database"
@@ -92,14 +90,11 @@ def _remove_duplicates(query, study_rsp, assoc):
         query.save()
     except Exception as e:
         logger.error(
-            "{1} query.save in remove duplicates didn't work because of {0}".format(
-                e, query_id
-            )
+            f"{query_id.hex[:8]} query.save in remove duplicates didn't work because of {e}"
         )
     logger.debug(
-        "{0} Checking to see if any of the {1} studies are already in the OpenREM database".format(
-            query_id, study_rsp.count()
-        )
+        f"{query_id.hex[:8]} Checking to see if any of the {study_rsp.count()} studies are already in the "
+        f"OpenREM database"
     )
     for study_number, study in enumerate(study_rsp):
         existing_studies = GeneralStudyModuleAttr.objects.filter(
@@ -107,39 +102,27 @@ def _remove_duplicates(query, study_rsp, assoc):
         )
         if existing_studies.exists():
             logger.debug(
-                "{2} Study {0} {1} exists in database already".format(
-                    study_number, study.study_instance_uid, query_id
-                )
+                f"{query_id.hex[:8]} Study {study_number} {study.study_instance_uid} exists in database already"
             )
             for existing_study in existing_studies:
                 existing_sop_instance_uids = set()
                 for previous_object in existing_study.objectuidsprocessed_set.all():
                     existing_sop_instance_uids.add(previous_object.sop_instance_uid)
                 logger.debug(
-                    "{3} Study {0} {1} has previously processed the following SOPInstanceUIDs: {2}".format(
-                        study_number,
-                        study.study_instance_uid,
-                        existing_sop_instance_uids,
-                        query_id,
-                    )
+                    f"{query_id.hex[:8]} Study {study_number} {study.study_instance_uid} has previously processed "
+                    f"the following SOPInstanceUIDs: {existing_sop_instance_uids}"
                 )
                 for series_rsp in study.dicomqrrspseries_set.all():
                     if series_rsp.modality == "SR":
                         for image_rsp in series_rsp.dicomqrrspimage_set.all():
                             logger.debug(
-                                "{3} Study {0} {1} Checking for SOPInstanceUID {2}".format(
-                                    study_number,
-                                    study.study_instance_uid,
-                                    image_rsp.sop_instance_uid,
-                                    query_id,
-                                )
+                                f"{query_id.hex[:8]} Study {study_number} {study.study_instance_uid} Checking "
+                                f"for SOPInstanceUID {image_rsp.sop_instance_uid}"
                             )
                             if image_rsp.sop_instance_uid in existing_sop_instance_uids:
                                 logger.debug(
-                                    "{2} Study {0} {1} Found SOPInstanceUID processed before, "
-                                    "won't ask for this one".format(
-                                        study_number, study.study_instance_uid, query_id
-                                    )
+                                    f"{query_id.hex[:8]} Study {study_number} {study.study_instance_uid} Found "
+                                    f"SOPInstanceUID processed before, won't ask for this one"
                                 )
                                 image_rsp.delete()
                                 series_rsp.image_level_move = True  # If we have deleted images we need to set this flag
@@ -148,26 +131,19 @@ def _remove_duplicates(query, study_rsp, assoc):
                             series_rsp.delete()
                     elif series_rsp.modality in ["MG", "DX", "CR"]:
                         logger.debug(
-                            "{2} Study {0} {1} about to query at image level to get SOPInstanceUID".format(
-                                study_number, study.study_instance_uid, query_id
-                            )
+                            f"{query_id.hex[:8]} Study {study_number} {study.study_instance_uid} about to query at "
+                            f"image level to get SOPInstanceUID"
                         )
                         _query_images(assoc, series_rsp, query)
                         for image_rsp in series_rsp.dicomqrrspimage_set.all():
                             logger.debug(
-                                "{3} Study {0} {1} Checking for SOPInstanceUID {2}".format(
-                                    study_number,
-                                    study.study_instance_uid,
-                                    image_rsp.sop_instance_uid,
-                                    query_id,
-                                )
+                                f"{query_id.hex[:8]} Study {study_number} {study.study_instance_uid} Checking for "
+                                f"SOPInstanceUID {image_rsp.sop_instance_uid}"
                             )
                             if image_rsp.sop_instance_uid in existing_sop_instance_uids:
                                 logger.debug(
-                                    "{2} Study {0} {1} Found SOPInstanceUID processed before, "
-                                    "won't ask for this one".format(
-                                        study_number, study.study_instance_uid, query_id
-                                    )
+                                    f"{query_id.hex[:8]} Study {study_number} {study.study_instance_uid} Found "
+                                    f"SOPInstanceUID processed before, won't ask for this one"
                                 )
                                 image_rsp.delete()
                                 series_rsp.image_level_move = True  # If we have deleted images we need to set this flag
@@ -181,9 +157,7 @@ def _remove_duplicates(query, study_rsp, assoc):
 
     study_rsp = query.dicomqrrspstudy_set.all()
     logger.info(
-        "{1} After removing studies we already have in the db, {0} studies are left".format(
-            study_rsp.count(), query_id
-        )
+        f"{query_id.hex[:8]} After removing studies we already have in the db, {study_rsp.count()} studies are left"
     )
 
 
