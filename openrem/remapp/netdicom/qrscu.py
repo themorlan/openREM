@@ -1163,25 +1163,22 @@ def _query_for_each_modality(all_mods, query, d, assoc):
                     )
                     query.save()
                     logger.debug(
-                        "{1} Currently querying for {0} studies…".format(mod, query_id)
+                        f"{query_id.hex[:8]} Currently querying for {mod} studies…"
                     )
                     d.ModalitiesInStudy = mod
                     if query.qr_scp_fk.use_modality_tag:
                         logger.debug(
-                            "{0} Using modality tag in study level query.".format(
-                                query_id
-                            )
+                            f"{query_id.hex[:8]} Using modality tag in study level query."
                         )
                         d.Modality = ""
-                    query_id = uuid.uuid4()
-                    _query_study(assoc, d, query, query_id)
+                    study_query_id = uuid.uuid4()
+                    _query_study(assoc, d, query, study_query_id)
                     study_rsp = query.dicomqrrspstudy_set.filter(
-                        query_id__exact=query_id
+                        query_id__exact=study_query_id
                     )
                     logger.debug(
-                        "{2} Queried for {0}, now have {1} study level responses".format(
-                            mod, study_rsp.count(), query_id
-                        )
+                        f"{query_id.hex[:8]}/{study_query_id.hex[:8]} Queried for {mod}, now have "
+                        f"{study_rsp.count()} study level responses"
                     )
                     for (
                         rsp
@@ -1197,30 +1194,29 @@ def _query_for_each_modality(all_mods, query, d, assoc):
                             if mod not in rsp.get_modalities_in_study():
                                 modality_matching = False
                                 logger.debug(
-                                    "{0} Remote node returns but doesn't match against "
-                                    "ModalitiesInStudy".format(query_id)
+                                    f"{query_id.hex[:8]}/{study_query_id.hex[:8]} Remote node returns but doesn't"
+                                    f" match against ModalitiesInStudy"
                                 )
                                 break  # This indicates that there was no modality match, so we have everything already
                         else:  # modalities in study is empty
                             modalities_returned = False
                             if query.qr_scp_fk.use_modality_tag:
                                 logger.debug(
-                                    "{0} Remote node doesn't support ModalitiesInStudy, but is configured to "
-                                    "'use_modality_tags' so assume it has filtered and query again with next "
-                                    "modality".format(query_id)
+                                    f"{query_id.hex[:8]}/{study_query_id.hex[:8]} Remote node doesn't support"
+                                    f" ModalitiesInStudy, but is configured to 'use_modality_tags' so assume it has"
+                                    f" filtered and query again with next modality"
                                 )
                                 break
                             # ModalitiesInStudy not supported, therefore assume not matched on key
                             modality_matching = False
                             logger.debug(
-                                "{0} Remote node doesn't support ModalitiesInStudy, assume we have "
-                                "everything".format(query_id)
+                                f"{query_id.hex[:8]}/{study_query_id.hex[:8]} Remote node doesn't support"
+                                f" ModalitiesInStudy, assume we have everything"
                             )
                             break
     logger.debug(
-        "{2} modalities_returned: {0}; modality_matching: {1}".format(
-            modalities_returned, modality_matching, query_id
-        )
+        f"{query_id.hex[:8]} modalities_returned: {modalities_returned}; "
+        f"modality_matching: {modality_matching}"
     )
     return modalities_returned, modality_matching
 
