@@ -878,14 +878,13 @@ def _query_images(
             query.save()
 
 
-def _query_series(assoc, d2, studyrsp, query, query_id):
+def _query_series(assoc, d2, studyrsp, query):
     """Query for series level data for each study
 
     :param query:
     :param assoc: DICOM association with C-FIND SCP
     :param d2: DICOM dataset containing StudyInstanceUID to be used for series level query
     :param studyrsp: database entry for the study
-    :param query_id: UID identifying this query (common to study/series/image level)
     :return: None
     """
 
@@ -903,8 +902,10 @@ def _query_series(assoc, d2, studyrsp, query, query_id):
     d2.SpecificCharacterSet = ""
     d2.SeriesTime = ""
 
-    logger.debug("{0} In _query_series".format(query_id))
-    logger.debug("{0} series query is {1}".format(query_id, d2))
+    query_id = query.query_id
+
+    logger.debug(f"{query_id.hex[:8]} In _query_series")
+    logger.debug(f"{query_id.hex[:8]} series query is {d2}")
 
     responses = assoc.send_c_find(d2, StudyRootQueryRetrieveInformationModelFind)
 
@@ -916,9 +917,7 @@ def _query_series(assoc, d2, studyrsp, query, query_id):
         if status:
             if status.Status == 0x0000:
                 logger.debug(
-                    "{0} Series level matching is complete for this study".format(
-                        query_id
-                    )
+                    f"{query_id.hex[:8]}/{series_query_id[:8]} Series level matching is complete for this study"
                 )
                 query.stage = _(
                     "Series level matching for this study is complete (there may be more)"
@@ -927,9 +926,8 @@ def _query_series(assoc, d2, studyrsp, query, query_id):
                 return
             if status.Status in (0xFF00, 0xFF01):
                 logger.debug(
-                    "{0} Series level matches are continuing (0x{1:04x})".format(
-                        query_id, status.Status
-                    )
+                    f"{query_id.hex[:8]}/{series_query_id[:8]} Series level matches are"
+                    f" continuing (0x{status.Status:04x})"
                 )
                 query.stage = _("Series level matches are continuing.")
                 query.save()
@@ -943,9 +941,7 @@ def _query_series(assoc, d2, studyrsp, query, query_id):
                 except AttributeError:
                     seriesrsp.modality = "OT"  # not sure why a series is returned without, assume we don't want it.
                     logger.warning(
-                        "{0} Illegal response with no modality at series level".format(
-                            query_id
-                        )
+                        f"{query_id.hex[:8]}/{series_query_id[:8]} Illegal response with no modality at series level"
                     )
                 try:
                     seriesrsp.series_number = int(identifier.SeriesNumber)
@@ -971,23 +967,16 @@ def _query_series(assoc, d2, studyrsp, query, query_id):
                 seriesrsp.station_name = get_value_kw("StationName", identifier)
                 seriesrsp.series_time = get_time("SeriesTime", identifier)
                 logger.debug(
-                    "{6} Series Response {0}: Modality {1}, StationName {2}, StudyUID {3}, Series No. {4}, "
-                    "Series description {5}".format(
-                        seRspNo,
-                        seriesrsp.modality,
-                        seriesrsp.station_name,
-                        d2.StudyInstanceUID,
-                        seriesrsp.series_number,
-                        seriesrsp.series_description,
-                        query_id,
-                    )
+                    f"{query_id.hex[:8]}/{series_query_id[:8]} Series Response {seRspNo}: "
+                    f"Modality {seriesrsp.modality}, StationName {seriesrsp.station_name}, "
+                    f"StudyUID {d2.StudyInstanceUID}, Series No. {seriesrsp.series_number}, "
+                    f"Series description {seriesrsp.series_description}"
                 )
                 seriesrsp.save()
         else:
             logger.info(
-                "{0} Connection timed out, was aborted or received invalid response".format(
-                    query_id
-                )
+                f"{query_id.hex[:8]}/{series_query_id[:8]} Connection timed out, was aborted or received "
+                f"invalid response"
             )
             query.stage = _(
                 "Connection timed out, was aborted or received invalid response"
@@ -1529,7 +1518,7 @@ def qrscu(
             # Series level query
             d2 = Dataset()
             d2.StudyInstanceUID = rsp.study_instance_uid
-            _query_series(assoc, d2, rsp, query, query_id)
+            _query_series(assoc, d2, rsp, query)
             if not modalities_returned:
                 _generate_modalities_in_study(rsp, query_id)
         logger.debug(f"{query_id.hex[:8]} Series level query complete.")
