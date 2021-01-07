@@ -602,7 +602,15 @@ class ResponseFiltering(TestCase):
         from ..netdicom.qrscu import _filter
 
         query = DicomQuery.objects.get()
-        _filter(query, "study", "study_description", ["test",], "include")
+        _filter(
+            query,
+            "study",
+            "study_description",
+            [
+                "test",
+            ],
+            "include",
+        )
 
         self.assertEqual(query.dicomqrrspstudy_set.all().count(), 4)
         studies = query.dicomqrrspstudy_set.all()
@@ -1762,7 +1770,9 @@ class RemoveDuplicates(TestCase):
         )
         st1.study_description = "DX study"
         st1.set_modalities_in_study(
-            ["DX",]
+            [
+                "DX",
+            ]
         )
         st1.save()
 

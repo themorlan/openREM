@@ -40,7 +40,10 @@ os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
 from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-position
-    DicomQuery, DicomRemoteQR, DicomStoreSCP, GeneralStudyModuleAttr
+    DicomQuery,
+    DicomRemoteQR,
+    DicomStoreSCP,
+    GeneralStudyModuleAttr,
 )
 
 _config.LOG_RESPONSE_IDENTIFIERS = False
@@ -300,7 +303,10 @@ def _prune_series_responses(
             study.save()
 
             if "SR" in study.get_modalities_in_study():
-                if _check_sr_type_in_study(assoc, study, query, get_empty_sr) in ["RDSR", "null_response"]:
+                if _check_sr_type_in_study(assoc, study, query, get_empty_sr) in [
+                    "RDSR",
+                    "null_response",
+                ]:
                     logger.debug(
                         f"{query_id.hex[:8]} RDSR in MG study, keep SR, delete all other series"
                     )
@@ -323,7 +329,10 @@ def _prune_series_responses(
             study.save()
 
             if "SR" in study.get_modalities_in_study():
-                if _check_sr_type_in_study(assoc, study, query, get_empty_sr) in ["RDSR", "null_response"]:
+                if _check_sr_type_in_study(assoc, study, query, get_empty_sr) in [
+                    "RDSR",
+                    "null_response",
+                ]:
                     logger.debug(
                         f"{query_id.hex[:8]} RDSR in DX study, keep SR, delete all other series"
                     )
@@ -680,7 +689,7 @@ def _query_images(assoc, seriesrsp, query, initial_image_only=False, msg_id=None
     from pydicom.dataset import Dataset
 
     query_id = query.query_id
-    
+
     logger.debug("Query_id {0}: In _query_images".format(query_id))
 
     d3 = Dataset()
@@ -888,11 +897,17 @@ def _query_study(assoc, d, query, study_query_id):
 
     query_id = query.query_id
 
-    logger.debug(f"{query_id.hex[:8]}/{study_query_id.hex[:8]} Study level association requested")
-    logger.debug(f"{query_id.hex[:8]}/{study_query_id.hex[:8]} Study level query is {d}")
+    logger.debug(
+        f"{query_id.hex[:8]}/{study_query_id.hex[:8]} Study level association requested"
+    )
+    logger.debug(
+        f"{query_id.hex[:8]}/{study_query_id.hex[:8]} Study level query is {d}"
+    )
     responses = assoc.send_c_find(d, StudyRootQueryRetrieveInformationModelFind)
 
-    logger.debug(f"{query_id.hex[:8]}/{study_query_id.hex[:8]} _query_study done with status {responses}")
+    logger.debug(
+        f"{query_id.hex[:8]}/{study_query_id.hex[:8]} _query_study done with status {responses}"
+    )
 
     rspno = 0
 
@@ -1186,7 +1201,6 @@ def qrscu(
 
     """
 
-
     debug_timer = datetime.now()
     if not query_id:
         query_id = uuid.uuid4()
@@ -1290,7 +1304,9 @@ def qrscu(
 
     if assoc.is_established:
 
-        logger.info(f"{query_id.hex[:8]} Celery {celery_task_uuid[:8]} DICOM FindSCU: {query.query_summary}")
+        logger.info(
+            f"{query_id.hex[:8]} Celery {celery_task_uuid[:8]} DICOM FindSCU: {query.query_summary}"
+        )
         d = Dataset()
         d.StudyDate = study_date
         d.StudyTime = study_time
@@ -1423,9 +1439,7 @@ def qrscu(
             query.stage = _("Deleting studies we didn't ask for")
             query.save()
             logger.info(f"{query_id.hex[:8]} Deleting studies we didn't ask for")
-            logger.debug(
-                f"{query_id.hex[:8]} mods_in_study_set is {mods_in_study_set}"
-            )
+            logger.debug(f"{query_id.hex[:8]} mods_in_study_set is {mods_in_study_set}")
             for mod_set in mods_in_study_set:
                 logger.debug(f"{query_id.hex[:8]} mod_set is {mod_set}")
                 delete = True
@@ -1494,8 +1508,9 @@ def qrscu(
                 )
             )
         if all_mods["SR"]["inc"]:
-            series_pruning_log += _("{del_sr_studies} SR studies were deleted from query due to no suitable SR"
-                                    " being found. ".format(del_sr_studies=deleted_studies["SR"])
+            series_pruning_log += _(
+                "{del_sr_studies} SR studies were deleted from query due to no suitable SR"
+                " being found. ".format(del_sr_studies=deleted_studies["SR"])
             )
         logger.info(f"{query_id.hex[:8]} {series_pruning_log}")
 
@@ -1741,7 +1756,9 @@ def _move_if_established(ae, assoc, d, study_no, series_no, query, remote):
             f"Query_id {query.query_id}: Association aborted during move requests, trying again"
         )
     else:
-        logger.error(f"Query_id {query.query_id}: Move association not established, and not aborted!")
+        logger.error(
+            f"Query_id {query.query_id}: Move association not established, and not aborted!"
+        )
     assoc = ae.associate(remote["host"], remote["port"], ae_title=remote["aet"])
     if assoc.is_established:
         move = _move_req(ae, assoc, d, study_no, series_no, query)
