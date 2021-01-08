@@ -31,6 +31,9 @@ Bar chart of average values across categories
 These can be configured to show mean or median data. The example below shows the median DAP for each requested procedure
 name containing the word "knee" across eight x-ray rooms.
 
+When viewing a chart of this type in OpenREM, the chart data can be downloaded as a csv file by clicking the
+*Download csv* button displayed below the chart. This feature is not available for the example charts in this document.
+
 Hovering the cursor over a bar shows the:
 
 * x-ray room name
@@ -96,6 +99,9 @@ Bar chart of category frequency
 The example below shows the frequency of the "knee" requested procedures for each x-ray room. The height of each bar is
 the total frequency for that requested procedure. Each bar is sub-divided into sections representing the number of
 requests for each x-ray room.
+
+When viewing a chart of this type in OpenREM, the chart data can be downloaded as a csv file by clicking the
+*Download csv* button displayed below the chart. This feature is not available for the example charts in this document.
 
 Hovering the cursor over a bar section shows the:
 
