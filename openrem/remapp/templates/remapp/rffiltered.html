@@ -61,47 +61,54 @@
 
     {{ studyfilter }}
 
-    <form action="" method="get" class="form-horizontal" role="form">
-         <div class="panel panel-info small">
-            <div class="panel-heading">
-              <h3 class="panel-title">Exam filter</h3>
-            </div>
-            <div class="panel-body">
-                <i>Date format yyyy-mm-dd</i>
-                {% for field in filter.form %}
-                    <div class="form-group">
-                        <div class="col-xs-4">
-                            <label>{{ field.label_tag }}</label>
-                        </div>
-                        <div class="col-xs-8">
-                            {{ field.errors }}
-                            {{ field }}
-                        </div>
+     <div class="panel panel-info small">
+        <div class="panel-heading" {% if advancedSearchAvailable %}hidden{% endif %}>
+            <table style="width: 100%;">
+                <tr>
+                    <td><h3 class="panel-title">Exam filter</h3></td>
+                    <td style="text-align: right;">
+                        <a href="{% url 'rf_summary_list_filter' %}?advanced_search=True">
+                            <small>Switch to advanced filtering</small>
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="panel-body">
+            <i>Date format yyyy-mm-dd</i>
+            {% for field in filter.form %}
+                <div class="form-group">
+                    <div class="col-xs-4">
+                        <label>{{ field.label_tag }}</label>
                     </div>
-                {% endfor %}
-                <input class="btn btn-default" type="submit" />
-            </div>
-            <div class="panel-heading">
-                <h3 class="panel-title">Chart options</h3>
-            </div>
-            <div class="panel-body">
-                <table>
-                    {% csrf_token %}
-                    {{ chartOptionsForm }}
-                </table>
-                <input class="btn btn-default" name="submit" type="submit" />
-            </div>
-            <div class="panel-heading">
-                <h3 class="panel-title">Table options</h3>
-            </div>
-            <div class="panel-body">
-                <table>
-                    {{ itemsPerPageForm }}
-                </table>
-                <input class="btn btn-default" name="submit" type="submit" />
-            </div>
-          </div>
-    </form>
+                    <div class="col-xs-8">
+                        {{ field.errors }}
+                        {{ field }}
+                    </div>
+                </div>
+            {% endfor %}
+            <input class="btn btn-default" type="submit" />
+        </div>
+        <div class="panel-heading">
+            <h3 class="panel-title">Chart options</h3>
+        </div>
+        <div class="panel-body">
+            <table>
+                {% csrf_token %}
+                {{ chartOptionsForm }}
+            </table>
+            <input class="btn btn-default" name="submit" type="submit" />
+        </div>
+        <div class="panel-heading">
+            <h3 class="panel-title">Table options</h3>
+        </div>
+        <div class="panel-body">
+            <table>
+                {{ itemsPerPageForm }}
+            </table>
+            <input class="btn btn-default" name="submit" type="submit" />
+        </div>
+      </div>
 
     <script src="{{ STATIC_URL }}js/datepicker.js"></script>
     <script src="{{ STATIC_URL }}js/formatDate.js"></script>
@@ -290,8 +297,23 @@
         {% endfor %}
     </table>
 
+{% endblock %}
 
-
+{% block jsblock %}
+    <script src="{{ STATIC_URL }}js/advancedSearch.js"></script>
+    <script>
+        let staticurl = "{{ STATIC_URL|safe }}";
+        let filterOptionsJSON = {{ json_filter_options|safe }};
+        let searchString = "{{ advancedSearchString|safe }}";
+        $(document).ready(function() {
+            initializeJSON(filterOptionsJSON, staticurl);
+            document.getElementById("id_advanced_search_string").value = searchString;
+            if (!!(searchString.trim()))
+                createBuilderFromSearchString(searchString);
+            else
+                addSearchBuilderLine(-1, true);
+        })
+    </script>
 {% endblock %}
 
 {% block plotdata %}
