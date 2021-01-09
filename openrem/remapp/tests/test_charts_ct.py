@@ -4297,3 +4297,1307 @@ class ChartsCT(TestCase):
                 self.assertEqual(chart_data[idx]["name"], dataset["name"])
             np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"])
             np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
+
+    def test_acq_ctdi(self):
+                # Test of mean and median requested procedure DLP,
+                # Also tests raw data going into the box plots
+                f = self.login_get_filterset()
+
+                # Set user profile options
+                self.user.userprofile.plotCTAcquisitionMeanCTDI = True
+                self.user.userprofile.plotMean = True
+                self.user.userprofile.plotMedian = True
+                self.user.userprofile.plotBoxplots = True
+                self.user.userprofile.plotHistograms = True
+                self.user.userprofile.save()
+
+                # Obtain chart data
+                self.obtain_chart_data(f)
+
+                # Test the mean data
+                standard_data = [
+                    {
+                        "customdata": np.array(
+                            [
+                                ['All systems', 222.59, 1],
+                                ['All systems', 31.193749999999998, 16],
+                                ['All systems', 15.45, 1],
+                                ['All systems', 13.17, 1],
+                                ['All systems', 33.83, 1],
+                                ['All systems', 5.52, 1],
+                                ['All systems', 6.26, 1],
+                                ['All systems', 19.525, 2],
+                                ['All systems', 29.67, 1],
+                                ['All systems', 65.47, 1],
+                                ['All systems', 3.61, 1],
+                                ['All systems', 1.2, 1],
+                                ['All systems', 9.91, 1],
+                                ['All systems', 0.14, 1]
+                            ],
+                            dtype=object,
+                        ),
+                        "name": "All systems",
+                        "x": np.array(
+                            ['10.13 RADIOTHERAPY QA',
+                             'Blank',
+                             'DE_laser align',
+                             'DS 100kV',
+                             'DS 140kV',
+                             'DS 50mAs',
+                             'DS 80kV',
+                             'DS axial std',
+                             'DS_hel p 0.23',
+                             'DS_helical',
+                             'Monitoring',
+                             'PreMonitoring',
+                             'TAP',
+                             'testÃ¦Ã¸Ã¥'],
+                            dtype=object,
+                        ),
+                        "y": np.array(
+                            [2.225900e+02,
+                             3.119375e+01,
+                             1.545000e+01,
+                             1.317000e+01,
+                             3.383000e+01,
+                             5.520000e+00,
+                             6.260000e+00,
+                             1.952500e+01,
+                             2.967000e+01,
+                             6.547000e+01,
+                             3.610000e+00,
+                             1.200000e+00,
+                             9.910000e+00,
+                             1.400000e-01]
+                        ),
+                    }
+                ]
+
+                chart_data = self.chart_data["acquisitionMeanCTDIData"]["data"]
+
+                self.check_average_data(chart_data, standard_data)
+
+                # Test the median data
+                standard_data = [
+                    {
+                        "customdata": np.array(
+                            [['All systems', 222.59, 1],
+                             ['All systems', 25.049999999999997, 16],
+                             ['All systems', 15.45, 1],
+                             ['All systems', 13.17, 1],
+                             ['All systems', 33.83, 1],
+                             ['All systems', 5.52, 1],
+                             ['All systems', 6.26, 1],
+                             ['All systems', 19.525, 2],
+                             ['All systems', 29.67, 1],
+                             ['All systems', 65.47, 1],
+                             ['All systems', 3.61, 1],
+                             ['All systems', 1.2, 1],
+                             ['All systems', 9.91, 1],
+                             ['All systems', 0.14, 1]],
+                            dtype=object,
+                        ),
+                        "name": "All systems",
+                        "x": np.array(
+                            ['10.13 RADIOTHERAPY QA', 'Blank', 'DE_laser align', 'DS 100kV',
+                             'DS 140kV', 'DS 50mAs', 'DS 80kV', 'DS axial std', 'DS_hel p 0.23',
+                             'DS_helical', 'Monitoring', 'PreMonitoring', 'TAP', 'testÃ¦Ã¸Ã¥'],
+                            dtype=object,
+                        ),
+                        "y": np.array(
+                            [2.2259e+02, 2.5050e+01, 1.5450e+01, 1.3170e+01, 3.3830e+01,
+                             5.5200e+00, 6.2600e+00, 1.9525e+01, 2.9670e+01, 6.5470e+01,
+                             3.6100e+00, 1.2000e+00, 9.9100e+00, 1.4000e-01]
+                        ),
+                    }
+                ]
+
+                chart_data = self.chart_data["acquisitionMedianCTDIData"]["data"]
+
+                self.check_average_data(chart_data, standard_data)
+
+                # Check the boxplot data
+                standard_data = [
+                    {
+                        "name": "All systems",
+                        "x": np.array(
+                            ['10.13 RADIOTHERAPY QA', 'DE_laser align', 'DS 100kV', 'DS 140kV',
+                             'DS 50mAs', 'DS 80kV', 'DS axial std', 'DS axial std',
+                             'DS_hel p 0.23', 'DS_helical', 'Monitoring', 'PreMonitoring',
+                             'TAP', 'testÃ¦Ã¸Ã¥', 'Blank', 'Blank', 'Blank', 'Blank', 'Blank',
+                             'Blank', 'Blank', 'Blank', 'Blank', 'Blank', 'Blank', 'Blank',
+                             'Blank', 'Blank', 'Blank', 'Blank'],
+                            dtype=object,
+                        ),
+                        "y": np.array(
+                            [2.2259e+02, 1.5450e+01, 1.3170e+01, 3.3830e+01, 5.5200e+00,
+                             6.2600e+00, 2.1950e+01, 1.7100e+01, 2.9670e+01, 6.5470e+01,
+                             3.6100e+00, 1.2000e+00, 9.9100e+00, 1.4000e-01, 3.2300e+00,
+                             5.3000e+00, 3.2830e+01, 8.7400e+00, 4.9300e+00, 6.2300e+00,
+                             2.2260e+01, 5.8400e+00, 1.7612e+02, 2.9310e+01, 2.9310e+01,
+                             3.1660e+01, 3.2830e+01, 6.0410e+01, 2.5400e+01, 2.4700e+01]
+                        ),
+                    }
+                ]
+
+                chart_data = self.chart_data["acquisitionBoxplotCTDIData"]["data"]
+                self.check_boxplot_data(chart_data, standard_data)
+
+                # Check the histogram data
+                standard_data1 = [
+                    {
+                        "name": "Blank",
+                        "text": np.array(
+                            ['0.14≤x<22.39', '22.39≤x<44.63', '44.63≤x<66.88', '66.88≤x<89.12',
+                             '89.12≤x<111.37', '111.37≤x<133.61', '133.61≤x<155.85',
+                             '155.85≤x<178.10', '178.10≤x<200.34', '200.34≤x<222.59'],
+                            dtype='<U15',
+                        ),
+                        "y": np.array(
+                            [7, 7, 1, 0, 0, 0, 0, 1, 0, 0],
+                        ),
+                        # frequency data corresponds to the 'Blank' bars on the histogram
+                        "x": np.array(
+                            [11.2625, 33.5075, 55.7525, 77.9975, 100.2425, 122.4875,
+                             144.7325, 166.9775, 189.2225, 211.4675],
+                        ),
+                    },
+                    {
+                        "name": "DS axial std",
+                        "text": np.array(
+                            ['0.14≤x<22.39', '22.39≤x<44.63', '44.63≤x<66.88', '66.88≤x<89.12',
+                             '89.12≤x<111.37', '111.37≤x<133.61', '133.61≤x<155.85',
+                             '155.85≤x<178.10', '178.10≤x<200.34', '200.34≤x<222.59'],
+                            dtype="<U15",
+                        ),
+                        "x": np.array(
+                            [11.2625, 33.5075, 55.7525, 77.9975, 100.2425, 122.4875,
+                             144.7325, 166.9775, 189.2225, 211.4675],
+                        ),
+                        "y": np.array(
+                            [2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        ),
+                    },
+                    {
+                        "name": "10.13 RADIOTHERAPY QA",
+                        "text": np.array(
+                            ['0.14≤x<22.39', '22.39≤x<44.63', '44.63≤x<66.88', '66.88≤x<89.12',
+                             '89.12≤x<111.37', '111.37≤x<133.61', '133.61≤x<155.85',
+                             '155.85≤x<178.10', '178.10≤x<200.34', '200.34≤x<222.59'],
+                            dtype="<U15",
+                        ),
+                        "x": np.array(
+                            [11.2625, 33.5075, 55.7525, 77.9975, 100.2425, 122.4875,
+                             144.7325, 166.9775, 189.2225, 211.4675],
+                        ),
+                        "y": np.array(
+                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                        ),
+                    },
+                    {
+                        "name": "DE_laser align",
+                        "text": np.array(
+                            ['0.14≤x<22.39', '22.39≤x<44.63', '44.63≤x<66.88', '66.88≤x<89.12',
+                             '89.12≤x<111.37', '111.37≤x<133.61', '133.61≤x<155.85',
+                             '155.85≤x<178.10', '178.10≤x<200.34', '200.34≤x<222.59'],
+                            dtype="<U15",
+                        ),
+                        "x": np.array(
+                            [11.2625, 33.5075, 55.7525, 77.9975, 100.2425, 122.4875,
+                             144.7325, 166.9775, 189.2225, 211.4675],
+                        ),
+                        "y": np.array(
+                            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        ),
+                    },
+                    {
+                        "name": "DS 100kV",
+                        "text": np.array(
+                            ['0.14≤x<22.39', '22.39≤x<44.63', '44.63≤x<66.88', '66.88≤x<89.12',
+                             '89.12≤x<111.37', '111.37≤x<133.61', '133.61≤x<155.85',
+                             '155.85≤x<178.10', '178.10≤x<200.34', '200.34≤x<222.59'],
+                            dtype="<U15",
+                        ),
+                        "x": np.array(
+                            [11.2625, 33.5075, 55.7525, 77.9975, 100.2425, 122.4875,
+                             144.7325, 166.9775, 189.2225, 211.4675],
+                        ),
+                        "y": np.array(
+                            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        ),
+                    },
+                    {
+                        "name": "DS 140kV",
+                        "text": np.array(
+                            ['0.14≤x<22.39', '22.39≤x<44.63', '44.63≤x<66.88', '66.88≤x<89.12',
+                             '89.12≤x<111.37', '111.37≤x<133.61', '133.61≤x<155.85',
+                             '155.85≤x<178.10', '178.10≤x<200.34', '200.34≤x<222.59'],
+                            dtype="<U15",
+                        ),
+                        "x": np.array(
+                            [11.2625, 33.5075, 55.7525, 77.9975, 100.2425, 122.4875,
+                             144.7325, 166.9775, 189.2225, 211.4675],
+                        ),
+                        "y": np.array(
+                            [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                        ),
+                    },
+                    {
+                        "name": "DS 50mAs",
+                        "text": np.array(
+                            ['0.14≤x<22.39', '22.39≤x<44.63', '44.63≤x<66.88', '66.88≤x<89.12',
+                             '89.12≤x<111.37', '111.37≤x<133.61', '133.61≤x<155.85',
+                             '155.85≤x<178.10', '178.10≤x<200.34', '200.34≤x<222.59'],
+                            dtype="<U15",
+                        ),
+                        "x": np.array(
+                            [11.2625, 33.5075, 55.7525, 77.9975, 100.2425, 122.4875,
+                             144.7325, 166.9775, 189.2225, 211.4675],
+                        ),
+                        "y": np.array(
+                            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        ),
+                    },
+                    {
+                        "name": "DS 80kV",
+                        "text": np.array(
+                            ['0.14≤x<22.39', '22.39≤x<44.63', '44.63≤x<66.88', '66.88≤x<89.12',
+                             '89.12≤x<111.37', '111.37≤x<133.61', '133.61≤x<155.85',
+                             '155.85≤x<178.10', '178.10≤x<200.34', '200.34≤x<222.59'],
+                            dtype="<U15",
+                        ),
+                        "x": np.array(
+                            [11.2625, 33.5075, 55.7525, 77.9975, 100.2425, 122.4875,
+                             144.7325, 166.9775, 189.2225, 211.4675],
+                        ),
+                        "y": np.array(
+                            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        ),
+                    },
+                    {
+                        "name": "DS_hel p 0.23",
+                        "text": np.array(
+                            ['0.14≤x<22.39', '22.39≤x<44.63', '44.63≤x<66.88', '66.88≤x<89.12',
+                             '89.12≤x<111.37', '111.37≤x<133.61', '133.61≤x<155.85',
+                             '155.85≤x<178.10', '178.10≤x<200.34', '200.34≤x<222.59'],
+                            dtype="<U15",
+                        ),
+                        "x": np.array(
+                            [11.2625, 33.5075, 55.7525, 77.9975, 100.2425, 122.4875,
+                             144.7325, 166.9775, 189.2225, 211.4675],
+                        ),
+                        "y": np.array(
+                            [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                        ),
+                    },
+                    {
+                        "name": "DS_helical",
+                        "text": np.array(
+                            ['0.14≤x<22.39', '22.39≤x<44.63', '44.63≤x<66.88', '66.88≤x<89.12',
+                             '89.12≤x<111.37', '111.37≤x<133.61', '133.61≤x<155.85',
+                             '155.85≤x<178.10', '178.10≤x<200.34', '200.34≤x<222.59'],
+                            dtype="<U15",
+                        ),
+                        "x": np.array(
+                            [11.2625, 33.5075, 55.7525, 77.9975, 100.2425, 122.4875,
+                             144.7325, 166.9775, 189.2225, 211.4675],
+                        ),
+                        "y": np.array(
+                            [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                        ),
+                    },
+                    {
+                        "name": "Monitoring",
+                        "text": np.array(
+                            ['0.14≤x<22.39', '22.39≤x<44.63', '44.63≤x<66.88', '66.88≤x<89.12',
+                             '89.12≤x<111.37', '111.37≤x<133.61', '133.61≤x<155.85',
+                             '155.85≤x<178.10', '178.10≤x<200.34', '200.34≤x<222.59'],
+                            dtype="<U15",
+                        ),
+                        "x": np.array(
+                            [11.2625, 33.5075, 55.7525, 77.9975, 100.2425, 122.4875,
+                             144.7325, 166.9775, 189.2225, 211.4675],
+                        ),
+                        "y": np.array(
+                            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        ),
+                    },
+                    {
+                        "name": "PreMonitoring",
+                        "text": np.array(
+                            ['0.14≤x<22.39', '22.39≤x<44.63', '44.63≤x<66.88', '66.88≤x<89.12',
+                             '89.12≤x<111.37', '111.37≤x<133.61', '133.61≤x<155.85',
+                             '155.85≤x<178.10', '178.10≤x<200.34', '200.34≤x<222.59'],
+                            dtype="<U15",
+                        ),
+                        "x": np.array(
+                            [11.2625, 33.5075, 55.7525, 77.9975, 100.2425, 122.4875,
+                             144.7325, 166.9775, 189.2225, 211.4675],
+                        ),
+                        "y": np.array(
+                            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        ),
+                    },
+                    {
+                        "name": "TAP",
+                        "text": np.array(
+                            ['0.14≤x<22.39', '22.39≤x<44.63', '44.63≤x<66.88', '66.88≤x<89.12',
+                             '89.12≤x<111.37', '111.37≤x<133.61', '133.61≤x<155.85',
+                             '155.85≤x<178.10', '178.10≤x<200.34', '200.34≤x<222.59'],
+                            dtype="<U15",
+                        ),
+                        "x": np.array(
+                            [11.2625, 33.5075, 55.7525, 77.9975, 100.2425, 122.4875,
+                             144.7325, 166.9775, 189.2225, 211.4675],
+                        ),
+                        "y": np.array(
+                            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        ),
+                    },
+                    {
+                        "name": "testÃ¦Ã¸Ã¥",
+                        "text": np.array(
+                            ['0.14≤x<22.39', '22.39≤x<44.63', '44.63≤x<66.88', '66.88≤x<89.12',
+                             '89.12≤x<111.37', '111.37≤x<133.61', '133.61≤x<155.85',
+                             '155.85≤x<178.10', '178.10≤x<200.34', '200.34≤x<222.59'],
+                            dtype="<U15",
+                        ),
+                        "x": np.array(
+                            [11.2625, 33.5075, 55.7525, 77.9975, 100.2425, 122.4875,
+                             144.7325, 166.9775, 189.2225, 211.4675],
+                        ),
+                        "y": np.array(
+                            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        ),
+                    },
+                ]
+
+                chart_data1 = self.chart_data["acquisitionHistogramCTDIData"]["data"]
+
+                for idx, dataset in enumerate(standard_data1):
+                    self.assertEqual(chart_data1[idx]["name"], dataset["name"])
+                    np.testing.assert_almost_equal(chart_data1[idx]["x"], dataset["x"])
+                    np.testing.assert_equal(chart_data1[idx]["y"], dataset["y"])
+
+                    # Almost equal used for equivalence because the chart data isn't equal to the standard data
+                    # at a high number of decimal places
+                    # chart_data renamed chart_data1 in this instance so that the for loop above related to the histograms
+                    # does not apply to all other tests
+
+                    # Repeat the above, but plot a series per system
+                    self.user.userprofile.plotSeriesPerSystem = True
+                    self.user.userprofile.save()
+
+                    # Obtain chart data
+                    self.obtain_chart_data(f)
+
+                    # Test the mean data
+                    standard_data = [
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', 34.550909090909094, 11],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "A VCT Hospital VCTScanner",
+                            "x": np.array(
+                                ['10.13 RADIOTHERAPY QA',
+                                 'Blank',
+                                 'DE_laser align',
+                                 'DS 100kV',
+                                 'DS 140kV',
+                                 'DS 50mAs',
+                                 'DS 80kV',
+                                 'DS axial std',
+                                 'DS_hel p 0.23',
+                                 'DS_helical',
+                                 'Monitoring',
+                                 'PreMonitoring',
+                                 'TAP',
+                                 'testÃ¦Ã¸Ã¥'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [np.nan, 34.55090909, np.nan, np.nan, np.nan,
+                                 np.nan, np.nan, np.nan, np.nan, np.nan,
+                                 np.nan, np.nan, np.nan, np.nan]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', 4.265, 2],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "An Optima Hospital geoptima",
+                            "x": np.array(
+                                ['10.13 RADIOTHERAPY QA',
+                                 'Blank',
+                                 'DE_laser align',
+                                 'DS 100kV',
+                                 'DS 140kV',
+                                 'DS 50mAs',
+                                 'DS 80kV',
+                                 'DS axial std',
+                                 'DS_hel p 0.23',
+                                 'DS_helical',
+                                 'Monitoring',
+                                 'PreMonitoring',
+                                 'TAP',
+                                 'testÃ¦Ã¸Ã¥'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [np.nan, 4.265, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan,
+                                 np.nan, np.nan, np.nan, np.nan, np.nan]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0],
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0],
+                                    ['Gnats Bottom Hospital CTAWP91919', 15.45, 1],
+                                    ['Gnats Bottom Hospital CTAWP91919', 13.17, 1],
+                                    ['Gnats Bottom Hospital CTAWP91919', 33.83, 1],
+                                    ['Gnats Bottom Hospital CTAWP91919', 5.52, 1],
+                                    ['Gnats Bottom Hospital CTAWP91919', 6.26, 1],
+                                    ['Gnats Bottom Hospital CTAWP91919', 19.525, 2],
+                                    ['Gnats Bottom Hospital CTAWP91919', 29.67, 1],
+                                    ['Gnats Bottom Hospital CTAWP91919', 65.47, 1],
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0],
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0],
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0],
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "Gnats Bottom Hospital CTAWP91919",
+                            "x": np.array(
+                                ['10.13 RADIOTHERAPY QA',
+                                 'Blank',
+                                 'DE_laser align',
+                                 'DS 100kV',
+                                 'DS 140kV',
+                                 'DS 50mAs',
+                                 'DS 80kV',
+                                 'DS axial std',
+                                 'DS_hel p 0.23',
+                                 'DS_helical',
+                                 'Monitoring',
+                                 'PreMonitoring',
+                                 'TAP',
+                                 'testÃ¦Ã¸Ã¥'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [np.nan, np.nan, 15.45, 13.17, 33.83, 5.52, 6.26, 19.525,
+                                 29.67, 65.47, np.nan, np.nan, np.nan, np.nan]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', 3.61, 1],
+                                    ['Hospital Number One Trust CTAWP00001', 1.2, 1],
+                                    ['Hospital Number One Trust CTAWP00001', 9.91, 1],
+                                    ['Hospital Number One Trust CTAWP00001', 0.14, 1]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "Hospital Number One Trust CTAWP00001",
+                            "x": np.array(
+                                ['10.13 RADIOTHERAPY QA',
+                                 'Blank',
+                                 'DE_laser align',
+                                 'DS 100kV',
+                                 'DS 140kV',
+                                 'DS 50mAs',
+                                 'DS 80kV',
+                                 'DS axial std',
+                                 'DS_hel p 0.23',
+                                 'DS_helical',
+                                 'Monitoring',
+                                 'PreMonitoring',
+                                 'TAP',
+                                 'testÃ¦Ã¸Ã¥'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, 3.61,
+                                 1.2, 9.91, 0.14]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['OpenREM centre médical rt16', 222.59, 1],
+                                    ['OpenREM centre médical rt16', 60.41, 1],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "OpenREM centre médical rt16",
+                            "x": np.array(
+                                ['10.13 RADIOTHERAPY QA',
+                                 'Blank',
+                                 'DE_laser align',
+                                 'DS 100kV',
+                                 'DS 140kV',
+                                 'DS 50mAs',
+                                 'DS 80kV',
+                                 'DS axial std',
+                                 'DS_hel p 0.23',
+                                 'DS_helical',
+                                 'Monitoring',
+                                 'PreMonitoring',
+                                 'TAP',
+                                 'testÃ¦Ã¸Ã¥'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [222.59, 60.41, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan,
+                                 np.nan, np.nan, np.nan, np.nan, np.nan, np.nan]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', 25.049999999999997, 2],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "Oxbridge County Hospital CTTOSHIBA1",
+                            "x": np.array(
+                                ['10.13 RADIOTHERAPY QA',
+                                 'Blank',
+                                 'DE_laser align',
+                                 'DS 100kV',
+                                 'DS 140kV',
+                                 'DS 50mAs',
+                                 'DS 80kV',
+                                 'DS axial std',
+                                 'DS_hel p 0.23',
+                                 'DS_helical',
+                                 'Monitoring',
+                                 'PreMonitoring',
+                                 'TAP',
+                                 'testÃ¦Ã¸Ã¥'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [np.nan, 25.05, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan,
+                                 np.nan, np.nan, np.nan, np.nan, np.nan]
+                            ),
+                        },
+
+                    ]
+
+                    chart_data = self.chart_data["acquisitionMeanCTDIData"]["data"]
+
+                    self.check_average_data(chart_data, standard_data)
+
+                # Test the median data
+                    standard_data = [
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', 29.31, 11],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "A VCT Hospital VCTScanner",
+                            "x": np.array(
+                                ['10.13 RADIOTHERAPY QA',
+                                 'Blank',
+                                 'DE_laser align',
+                                 'DS 100kV',
+                                 'DS 140kV',
+                                 'DS 50mAs',
+                                 'DS 80kV',
+                                 'DS axial std',
+                                 'DS_hel p 0.23',
+                                 'DS_helical',
+                                 'Monitoring',
+                                 'PreMonitoring',
+                                 'TAP',
+                                 'testÃ¦Ã¸Ã¥'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [np.nan, 29.31, np.nan, np.nan, np.nan,
+                                 np.nan, np.nan, np.nan, np.nan, np.nan,
+                                 np.nan, np.nan, np.nan, np.nan]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', 4.265, 2],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "An Optima Hospital geoptima",
+                            "x": np.array(
+                                ['10.13 RADIOTHERAPY QA',
+                                 'Blank',
+                                 'DE_laser align',
+                                 'DS 100kV',
+                                 'DS 140kV',
+                                 'DS 50mAs',
+                                 'DS 80kV',
+                                 'DS axial std',
+                                 'DS_hel p 0.23',
+                                 'DS_helical',
+                                 'Monitoring',
+                                 'PreMonitoring',
+                                 'TAP',
+                                 'testÃ¦Ã¸Ã¥'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [np.nan, 4.265, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan,
+                                 np.nan, np.nan, np.nan, np.nan, np.nan]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0],
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0],
+                                    ['Gnats Bottom Hospital CTAWP91919', 15.45, 1],
+                                    ['Gnats Bottom Hospital CTAWP91919', 13.17, 1],
+                                    ['Gnats Bottom Hospital CTAWP91919', 33.83, 1],
+                                    ['Gnats Bottom Hospital CTAWP91919', 5.52, 1],
+                                    ['Gnats Bottom Hospital CTAWP91919', 6.26, 1],
+                                    ['Gnats Bottom Hospital CTAWP91919', 19.525, 2],
+                                    ['Gnats Bottom Hospital CTAWP91919', 29.67, 1],
+                                    ['Gnats Bottom Hospital CTAWP91919', 65.47, 1],
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0],
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0],
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0],
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "Gnats Bottom Hospital CTAWP91919",
+                            "x": np.array(
+                                ['10.13 RADIOTHERAPY QA',
+                                 'Blank',
+                                 'DE_laser align',
+                                 'DS 100kV',
+                                 'DS 140kV',
+                                 'DS 50mAs',
+                                 'DS 80kV',
+                                 'DS axial std',
+                                 'DS_hel p 0.23',
+                                 'DS_helical',
+                                 'Monitoring',
+                                 'PreMonitoring',
+                                 'TAP',
+                                 'testÃ¦Ã¸Ã¥'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [np.nan, np.nan, 15.45, 13.17, 33.83, 5.52, 6.26, 19.525,
+                                 29.67, 65.47, np.nan, np.nan, np.nan, np.nan]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', 3.61, 1],
+                                    ['Hospital Number One Trust CTAWP00001', 1.2, 1],
+                                    ['Hospital Number One Trust CTAWP00001', 9.91, 1],
+                                    ['Hospital Number One Trust CTAWP00001', 0.14, 1]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "Hospital Number One Trust CTAWP00001",
+                            "x": np.array(
+                                ['10.13 RADIOTHERAPY QA',
+                                 'Blank',
+                                 'DE_laser align',
+                                 'DS 100kV',
+                                 'DS 140kV',
+                                 'DS 50mAs',
+                                 'DS 80kV',
+                                 'DS axial std',
+                                 'DS_hel p 0.23',
+                                 'DS_helical',
+                                 'Monitoring',
+                                 'PreMonitoring',
+                                 'TAP',
+                                 'testÃ¦Ã¸Ã¥'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, 3.61,
+                                 1.2, 9.91, 0.14]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['OpenREM centre médical rt16', 222.59, 1],
+                                    ['OpenREM centre médical rt16', 60.41, 1],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "OpenREM centre médical rt16",
+                            "x": np.array(
+                                ['10.13 RADIOTHERAPY QA',
+                                 'Blank',
+                                 'DE_laser align',
+                                 'DS 100kV',
+                                 'DS 140kV',
+                                 'DS 50mAs',
+                                 'DS 80kV',
+                                 'DS axial std',
+                                 'DS_hel p 0.23',
+                                 'DS_helical',
+                                 'Monitoring',
+                                 'PreMonitoring',
+                                 'TAP',
+                                 'testÃ¦Ã¸Ã¥'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [222.59, 60.41, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan,
+                                 np.nan, np.nan, np.nan, np.nan, np.nan, np.nan]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', 25.049999999999997, 2],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "Oxbridge County Hospital CTTOSHIBA1",
+                            "x": np.array(
+                                ['10.13 RADIOTHERAPY QA',
+                                 'Blank',
+                                 'DE_laser align',
+                                 'DS 100kV',
+                                 'DS 140kV',
+                                 'DS 50mAs',
+                                 'DS 80kV',
+                                 'DS axial std',
+                                 'DS_hel p 0.23',
+                                 'DS_helical',
+                                 'Monitoring',
+                                 'PreMonitoring',
+                                 'TAP',
+                                 'testÃ¦Ã¸Ã¥'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [np.nan, 25.05, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan,
+                                 np.nan, np.nan, np.nan, np.nan, np.nan]
+                            ),
+                        },
+
+                    ]
+
+
+                    chart_data = self.chart_data["acquisitionMedianCTDIData"]["data"]
+
+                    self.check_average_data(chart_data, standard_data)
+
+                    # Check the boxplot data
+                    standard_data = [
+                        {
+                            "name": "A VCT Hospital VCTScanner",
+                            "x": np.array(
+                                ['Blank', 'Blank', 'Blank', 'Blank', 'Blank', 'Blank', 'Blank',
+                                 'Blank', 'Blank', 'Blank', 'Blank'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [8.74, 4.93, 6.23, 22.26, 5.84, 176.12, 29.31, 29.31,
+                                 32.83, 31.66, 32.83]
+                            ),
+                        },
+                        {
+                            "name": "An Optima Hospital geoptima",
+                            "x": np.array(
+                                ['Blank', 'Blank'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [5.3 , 3.23]
+                            ),
+                        },
+                        {
+                            "name": "Gnats Bottom Hospital CTAWP91919",
+                            "x": np.array(
+                                ['DE_laser align', 'DS 100kV', 'DS 140kV', 'DS 50mAs', 'DS 80kV',
+                                 'DS axial std', 'DS_helical', 'DS_hel p 0.23', 'DS axial std'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [15.45, 13.17, 33.83,  5.52,  6.26, 21.95, 65.47, 29.67, 17.1 ]
+                            ),
+                        },
+                        {
+                            "name": "Hospital Number One Trust CTAWP00001",
+                            "x": np.array(
+                                ['Monitoring', 'TAP', 'testÃ¦Ã¸Ã¥', 'PreMonitoring'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [3.61, 9.91, 0.14, 1.2 ]
+                            ),
+                        },
+                        {
+                            "name": "OpenREM centre médical rt16",
+                            "x": np.array(
+                                ['Blank', '10.13 RADIOTHERAPY QA'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [ 60.41, 222.59]
+                            ),
+                        },
+                        {
+                            "name": "Oxbridge County Hospital CTTOSHIBA1",
+                            "x": np.array(
+                                ['Blank', 'Blank'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [25.4, 24.7]
+                            ),
+                        },
+
+                    ]
+
+                    chart_data = self.chart_data["acquisitionBoxplotCTDIData"]["data"]
+                    self.check_boxplot_data(chart_data, standard_data)
+
+                    # Check the histogram data
+                    standard_data1 = [
+                        {
+                            "name": "Blank",
+                            "text": np.array(
+                                ['4.93≤x<22.05', '22.05≤x<39.17', '39.17≤x<56.29', '56.29≤x<73.41',
+                                 '73.41≤x<90.53', '90.53≤x<107.64', '107.64≤x<124.76',
+                                 '124.76≤x<141.88', '141.88≤x<159.00', '159.00≤x<176.12'],
+                                dtype='<U15',
+                            ),
+                            "y": np.array(
+                                [4, 6, 0, 0, 0, 0, 0, 0, 0, 1],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [13.4895, 30.6085, 47.7275, 64.8465, 81.9655, 99.0845,
+                                 116.2035, 133.3225, 150.4415, 167.5605],
+                            ),
+                        },
+                        {
+                            "name": "Blank",
+                            "text": np.array(
+                                ['3.23≤x<3.44', '3.44≤x<3.64', '3.64≤x<3.85', '3.85≤x<4.06',
+                                 '4.06≤x<4.26', '4.26≤x<4.47', '4.47≤x<4.68', '4.68≤x<4.89',
+                                 '4.89≤x<5.09', '5.09≤x<5.30'],
+                                dtype='<U11',
+                            ),
+                            "y": np.array(
+                                [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [3.3335, 3.5405, 3.7475, 3.9545, 4.1615, 4.3685, 4.5755, 4.7825,
+                                 4.9895, 5.1965],
+                            ),
+                        },
+                        {
+                            "name": "DS axial std",
+                            "text": np.array(
+                                ['5.52≤x<11.52', '11.52≤x<17.51', '17.51≤x<23.50', '23.50≤x<29.50',
+                                 '29.50≤x<35.50', '35.50≤x<41.49', '41.49≤x<47.48', '47.48≤x<53.48',
+                                 '53.48≤x<59.47', '59.47≤x<65.47'],
+                                dtype='<U13',
+                            ),
+                            "y": np.array(
+                                [0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [8.5175, 14.5125, 20.5075, 26.5025, 32.4975, 38.4925, 44.4875,
+                                 50.4825, 56.4775, 62.4725],
+                            ),
+                        },
+                        {
+                            "name": "DE_laser align",
+                            "text": np.array(
+                                ['5.52≤x<11.52', '11.52≤x<17.51', '17.51≤x<23.50', '23.50≤x<29.50',
+                                 '29.50≤x<35.50', '35.50≤x<41.49', '41.49≤x<47.48', '47.48≤x<53.48',
+                                 '53.48≤x<59.47', '59.47≤x<65.47'],
+                                dtype='<U13',
+                            ),
+                            "y": np.array(
+                                [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [8.5175, 14.5125, 20.5075, 26.5025, 32.4975, 38.4925, 44.4875,
+                                 50.4825, 56.4775, 62.4725],
+                            ),
+                        },
+                        {
+                            "name": "DS 100kV",
+                            "text": np.array(
+                                ['5.52≤x<11.52', '11.52≤x<17.51', '17.51≤x<23.50', '23.50≤x<29.50',
+                                 '29.50≤x<35.50', '35.50≤x<41.49', '41.49≤x<47.48', '47.48≤x<53.48',
+                                 '53.48≤x<59.47', '59.47≤x<65.47'],
+                                dtype='<U13',
+                            ),
+                            "y": np.array(
+                                [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [8.5175, 14.5125, 20.5075, 26.5025, 32.4975, 38.4925, 44.4875,
+                                 50.4825, 56.4775, 62.4725],
+                            ),
+                        },
+                        {
+                            "name": "DS 140kV",
+                            "text": np.array(
+                                ['5.52≤x<11.52', '11.52≤x<17.51', '17.51≤x<23.50', '23.50≤x<29.50',
+                                 '29.50≤x<35.50', '35.50≤x<41.49', '41.49≤x<47.48', '47.48≤x<53.48',
+                                 '53.48≤x<59.47', '59.47≤x<65.47'],
+                                dtype='<U13',
+                            ),
+                            "y": np.array(
+                                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [8.5175, 14.5125, 20.5075, 26.5025, 32.4975, 38.4925, 44.4875,
+                                 50.4825, 56.4775, 62.4725],
+                            ),
+                        },
+                        {
+                            "name": "DS 50mAs",
+                            "text": np.array(
+                                ['5.52≤x<11.52', '11.52≤x<17.51', '17.51≤x<23.50', '23.50≤x<29.50',
+                                 '29.50≤x<35.50', '35.50≤x<41.49', '41.49≤x<47.48', '47.48≤x<53.48',
+                                 '53.48≤x<59.47', '59.47≤x<65.47'],
+                                dtype='<U13',
+                            ),
+                            "y": np.array(
+                                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [8.5175, 14.5125, 20.5075, 26.5025, 32.4975, 38.4925, 44.4875,
+                                 50.4825, 56.4775, 62.4725],
+                            ),
+                        },
+                        {
+                            "name": "DS 80kV",
+                            "text": np.array(
+                                ['5.52≤x<11.52', '11.52≤x<17.51', '17.51≤x<23.50', '23.50≤x<29.50',
+                                 '29.50≤x<35.50', '35.50≤x<41.49', '41.49≤x<47.48', '47.48≤x<53.48',
+                                 '53.48≤x<59.47', '59.47≤x<65.47'],
+                                dtype='<U13',
+                            ),
+                            "y": np.array(
+                                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [8.5175, 14.5125, 20.5075, 26.5025, 32.4975, 38.4925, 44.4875,
+                                 50.4825, 56.4775, 62.4725],
+                            ),
+                        },
+                        {
+                            "name": "DS_hel p 0.23",
+                            "text": np.array(
+                                ['5.52≤x<11.52', '11.52≤x<17.51', '17.51≤x<23.50', '23.50≤x<29.50',
+                                 '29.50≤x<35.50', '35.50≤x<41.49', '41.49≤x<47.48', '47.48≤x<53.48',
+                                 '53.48≤x<59.47', '59.47≤x<65.47'],
+                                dtype='<U13',
+                            ),
+                            "y": np.array(
+                                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [8.5175, 14.5125, 20.5075, 26.5025, 32.4975, 38.4925, 44.4875,
+                                 50.4825, 56.4775, 62.4725],
+                            ),
+                        },
+                        {
+                            "name": "DS_helical",
+                            "text": np.array(
+                                ['5.52≤x<11.52', '11.52≤x<17.51', '17.51≤x<23.50', '23.50≤x<29.50',
+                                 '29.50≤x<35.50', '35.50≤x<41.49', '41.49≤x<47.48', '47.48≤x<53.48',
+                                 '53.48≤x<59.47', '59.47≤x<65.47'],
+                                dtype='<U13',
+                            ),
+                            "y": np.array(
+                                [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [8.5175, 14.5125, 20.5075, 26.5025, 32.4975, 38.4925, 44.4875,
+                                 50.4825, 56.4775, 62.4725],
+                            ),
+                        },
+                        {
+                            "name": "Monitoring",
+                            "text": np.array(
+                                ['0.14≤x<1.12', '1.12≤x<2.09', '2.09≤x<3.07', '3.07≤x<4.05',
+                                 '4.05≤x<5.02', '5.02≤x<6.00', '6.00≤x<6.98', '6.98≤x<7.96',
+                                 '7.96≤x<8.93', '8.93≤x<9.91'],
+                                dtype='<U11',
+                            ),
+                            "y": np.array(
+                                [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [0.6285, 1.6055, 2.5825, 3.5595, 4.5365, 5.5135, 6.4905, 7.4675,
+                                 8.4445, 9.4215],
+                            ),
+                        },
+                        {
+                            "name": "PreMonitoring",
+                            "text": np.array(
+                                ['0.14≤x<1.12', '1.12≤x<2.09', '2.09≤x<3.07', '3.07≤x<4.05',
+                                 '4.05≤x<5.02', '5.02≤x<6.00', '6.00≤x<6.98', '6.98≤x<7.96',
+                                 '7.96≤x<8.93', '8.93≤x<9.91'],
+                                dtype='<U11',
+                            ),
+                            "y": np.array(
+                                [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [0.6285, 1.6055, 2.5825, 3.5595, 4.5365, 5.5135, 6.4905, 7.4675,
+                                 8.4445, 9.4215],
+                            ),
+                        },
+                        {
+                            "name": "TAP",
+                            "text": np.array(
+                                ['0.14≤x<1.12', '1.12≤x<2.09', '2.09≤x<3.07', '3.07≤x<4.05',
+                                 '4.05≤x<5.02', '5.02≤x<6.00', '6.00≤x<6.98', '6.98≤x<7.96',
+                                 '7.96≤x<8.93', '8.93≤x<9.91'],
+                                dtype='<U11',
+                            ),
+                            "y": np.array(
+                                [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [0.6285, 1.6055, 2.5825, 3.5595, 4.5365, 5.5135, 6.4905, 7.4675,
+                                 8.4445, 9.4215],
+                            ),
+                        },
+                        {
+                            "name": "testÃ¦Ã¸Ã¥",
+                            "text": np.array(
+                                ['0.14≤x<1.12', '1.12≤x<2.09', '2.09≤x<3.07', '3.07≤x<4.05',
+                                 '4.05≤x<5.02', '5.02≤x<6.00', '6.00≤x<6.98', '6.98≤x<7.96',
+                                 '7.96≤x<8.93', '8.93≤x<9.91'],
+                                dtype='<U11',
+                            ),
+                            "y": np.array(
+                                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [0.6285, 1.6055, 2.5825, 3.5595, 4.5365, 5.5135, 6.4905, 7.4675,
+                                 8.4445, 9.4215],
+                            ),
+                        },
+                        {
+                            "name": "Blank",
+                            "text": np.array(
+                                ['60.41≤x<76.63', '76.63≤x<92.85', '92.85≤x<109.06',
+                                 '109.06≤x<125.28', '125.28≤x<141.50', '141.50≤x<157.72',
+                                 '157.72≤x<173.94', '173.94≤x<190.15', '190.15≤x<206.37',
+                                 '206.37≤x<222.59'],
+                                dtype='<U15',
+                            ),
+                            "y": np.array(
+                                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [68.519, 84.737, 100.955, 117.173, 133.391, 149.609, 165.827,
+                                 182.045, 198.263, 214.481],
+                            ),
+                        },
+                        {
+                            "name": "10.13 RADIOTHERAPY QA",
+                            "text": np.array(
+                                ['60.41≤x<76.63', '76.63≤x<92.85', '92.85≤x<109.06',
+                                 '109.06≤x<125.28', '125.28≤x<141.50', '141.50≤x<157.72',
+                                 '157.72≤x<173.94', '173.94≤x<190.15', '190.15≤x<206.37',
+                                 '206.37≤x<222.59'],
+                                dtype='<U15',
+                            ),
+                            "y": np.array(
+                                [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [68.519, 84.737, 100.955, 117.173, 133.391, 149.609, 165.827,
+                                 182.045, 198.263, 214.481],
+                            ),
+                        },
+                        {
+                            "name": "Blank",
+                            "text": np.array(
+                                ['24.70≤x<24.77', '24.77≤x<24.84', '24.84≤x<24.91', '24.91≤x<24.98',
+                                 '24.98≤x<25.05', '25.05≤x<25.12', '25.12≤x<25.19', '25.19≤x<25.26',
+                                 '25.26≤x<25.33', '25.33≤x<25.40'],
+                                dtype='<U13',
+                            ),
+                            "y": np.array(
+                                [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [24.735, 24.805, 24.875, 24.945, 25.015, 25.085, 25.155, 25.225,
+                                 25.295, 25.365],
+                            ),
+                        },
+
+                    ]
+
+                    chart_data2 = self.chart_data["acquisitionHistogramCTDIData"]["data"]
+
+                    for idx, dataset in enumerate(standard_data1):
+                        self.assertEqual(chart_data2[idx]["name"], dataset["name"])
+                        np.testing.assert_almost_equal(chart_data2[idx]["x"], dataset["x"])
+                        np.testing.assert_equal(chart_data2[idx]["y"], dataset["y"])
