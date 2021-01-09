@@ -84,6 +84,28 @@ def _generate_modalities_in_study(study_rsp, query_id):
     study_rsp.save()
 
 
+def _remove_image_sop_uids(
+    series_rsp, query_id_8, study_number, study_instance_uid, existing_sop_instance_uids
+):
+    for image_rsp in series_rsp.dicomqrrspimage_set.all():
+        logger.debug(
+            f"{query_id_8} Study {study_number} {study_instance_uid} Checking for"
+            f"SOPInstanceUID {image_rsp.sop_instance_uid}"
+        )
+        if image_rsp.sop_instance_uid in existing_sop_instance_uids:
+            logger.debug(
+                f"{query_id_8} Study {study_number} {study_instance_uid} Found "
+                f"SOPInstanceUID processed before, won't ask for this one"
+            )
+            image_rsp.delete()
+            series_rsp.image_level_move = (
+                True  # If we have deleted images we need to set this flag
+            )
+            series_rsp.save()
+    if not series_rsp.dicomqrrspimage_set.order_by("pk"):
+        series_rsp.delete()
+
+
 def _remove_duplicates(query, study_rsp, assoc):
     """
     Checks for objects in C-Find response already being in the OpenREM database to remove them from the C-Move request
@@ -131,42 +153,26 @@ def _remove_duplicates(query, study_rsp, assoc):
                 )
                 for series_rsp in study.dicomqrrspseries_set.all():
                     if series_rsp.modality == "SR":
-                        for image_rsp in series_rsp.dicomqrrspimage_set.all():
-                            logger.debug(
-                                f"{query_id_8} Study {study_number} {study.study_instance_uid} Checking "
-                                f"for SOPInstanceUID {image_rsp.sop_instance_uid}"
-                            )
-                            if image_rsp.sop_instance_uid in existing_sop_instance_uids:
-                                logger.debug(
-                                    f"{query_id_8} Study {study_number} {study.study_instance_uid} Found "
-                                    f"SOPInstanceUID processed before, won't ask for this one"
-                                )
-                                image_rsp.delete()
-                                series_rsp.image_level_move = True  # If we have deleted images we need to set this flag
-                                series_rsp.save()
-                        if not series_rsp.dicomqrrspimage_set.order_by("pk"):
-                            series_rsp.delete()
+                        _remove_image_sop_uids(
+                            series_rsp,
+                            query_id_8,
+                            study_number,
+                            study.study_instance_uid,
+                            existing_sop_instance_uids,
+                        )
                     elif series_rsp.modality in ["MG", "DX", "CR"]:
                         logger.debug(
                             f"{query_id_8} Study {study_number} {study.study_instance_uid} about to query at "
                             f"image level to get SOPInstanceUID"
                         )
                         _query_images(assoc, series_rsp, query)
-                        for image_rsp in series_rsp.dicomqrrspimage_set.all():
-                            logger.debug(
-                                f"{query_id_8} Study {study_number} {study.study_instance_uid} Checking for "
-                                f"SOPInstanceUID {image_rsp.sop_instance_uid}"
-                            )
-                            if image_rsp.sop_instance_uid in existing_sop_instance_uids:
-                                logger.debug(
-                                    f"{query_id_8} Study {study_number} {study.study_instance_uid} Found "
-                                    f"SOPInstanceUID processed before, won't ask for this one"
-                                )
-                                image_rsp.delete()
-                                series_rsp.image_level_move = True  # If we have deleted images we need to set this flag
-                                series_rsp.save()
-                        if not series_rsp.dicomqrrspimage_set.order_by("pk"):
-                            series_rsp.delete()
+                        _remove_image_sop_uids(
+                            series_rsp,
+                            query_id_8,
+                            study_number,
+                            study.study_instance_uid,
+                            existing_sop_instance_uids,
+                        )
                     else:
                         series_rsp.delete()
         if not study.dicomqrrspseries_set.order_by("pk"):
@@ -198,9 +204,7 @@ def _filter(query, level, filter_name, filter_list, filter_type):
     elif filter_type == "include":
         filtertype = False
     else:
-        logger.error(
-            f"{query_id_8} _filter called without filter_type. Cannot filter!"
-        )
+        logger.error(f"{query_id_8} _filter called without filter_type. Cannot filter!")
         return
 
     study_rsp = query.dicomqrrspstudy_set.all()
@@ -489,9 +493,7 @@ def _get_philips_dose_images(series, get_toshiba_images, query_id):
             series.exclude(series_description__iexact="dose info").delete()
             return True, True
         else:
-            logger.debug(
-                f"{query_id_8} Get Philips: not matched Philips dose image"
-            )
+            logger.debug(f"{query_id_8} Get Philips: not matched Philips dose image")
             return True, False
     elif get_toshiba_images:
         return False, False
@@ -936,9 +938,7 @@ def _query_study(assoc, d, query, study_query_id):
     logger.debug(
         f"{query_id_8}/{study_query_id.hex[:8]} Study level association requested"
     )
-    logger.debug(
-        f"{query_id_8}/{study_query_id.hex[:8]} Study level query is {d}"
-    )
+    logger.debug(f"{query_id_8}/{study_query_id.hex[:8]} Study level query is {d}")
     responses = assoc.send_c_find(d, StudyRootQueryRetrieveInformationModelFind)
 
     logger.debug(
@@ -1089,9 +1089,7 @@ def _query_for_each_modality(all_mods, query, d, assoc):
                         )
                     )
                     query.save()
-                    logger.debug(
-                        f"{query_id_8} Currently querying for {mod} studies…"
-                    )
+                    logger.debug(f"{query_id_8} Currently querying for {mod} studies…")
                     d.ModalitiesInStudy = mod
                     if query.qr_scp_fk.use_modality_tag:
                         logger.debug(
@@ -2093,7 +2091,9 @@ def _create_parser():
 
 
 def _process_args(parser_args, parser):
-    from .tools import echoscu  # If I don't leave this here the patching doesn't work in test...
+    from .tools import (
+        echoscu,
+    )  # If I don't leave this here the patching doesn't work in test...
 
     logger.info("qrscu script called")
 
