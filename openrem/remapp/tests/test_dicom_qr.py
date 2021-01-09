@@ -24,7 +24,7 @@ from ..models import (
 from ..netdicom import qrscu
 
 
-def _fake_check_sr_type_in_study_with_rdsr(assoc, study, query, query_id, get_empty_sr):
+def _fake_check_sr_type_in_study_with_rdsr(assoc, study, query, get_empty_sr):
     return "RDSR"
 
 
@@ -34,7 +34,7 @@ fake_responses = [
 ]
 
 
-def _fake_two_modalities(assoc, d, query, query_id, *args, **kwargs):
+def _fake_two_modalities(assoc, d, query, study_query_id, *args, **kwargs):
     """
     Mock routine that returns a set of four MG studies the first time it is called, and a set of three CT studies the
     second time  it is called.
@@ -45,7 +45,7 @@ def _fake_two_modalities(assoc, d, query, query_id, *args, **kwargs):
     :param remote_ae:   Not used in mock
     :param d:           Not used in mock
     :param query:       Database foreign key to create DicomQRRspStudy objects
-    :param query_id:    Query ID to tie DicomQRRspStudy from this query together
+    :param study_query_id:    Query ID to tie DicomQRRspStudy from this query together
     :param args:        Not used in mock
     :param kwargs:      Not used in mock
     :return:            Seven MG and CT DicomQRRspStudy objects in the database
@@ -53,12 +53,12 @@ def _fake_two_modalities(assoc, d, query, query_id, *args, **kwargs):
     mods = fake_responses.pop()
     for mod_list in mods:
         rsp = DicomQRRspStudy.objects.create(dicom_query=query)
-        rsp.query_id = query_id
+        rsp.query_id = study_query_id
         rsp.set_modalities_in_study(mod_list)
         rsp.save()
 
 
-def _fake_all_modalities(assoc, d, query, query_id, *args, **kwargs):
+def _fake_all_modalities(assoc, d, query, study_query_id, *args, **kwargs):
     """
     Mock routine to return a modality response that includes a study with a 'modalities in study' that does not have
     the requested modality in.
@@ -69,7 +69,7 @@ def _fake_all_modalities(assoc, d, query, query_id, *args, **kwargs):
     :param remote_ae:   Not used in mock
     :param d:           Not used in mock
     :param query:       Database foreign key to create DicomQRRspStudy objects
-    :param query_id:    Query ID to tie DicomQRRspStudy from this query together
+    :param study_query_id:    Query ID to tie DicomQRRspStudy from this query together
     :param args:        Not used in mock
     :param kwargs:      Not used in mock
     :return:            Two DicomQRRspStudy objects in the database
@@ -77,7 +77,7 @@ def _fake_all_modalities(assoc, d, query, query_id, *args, **kwargs):
     mods = [["MG", "SR"], ["US", "SR"]]
     for mod_list in mods:
         rsp = DicomQRRspStudy.objects.create(dicom_query=query)
-        rsp.query_id = query_id
+        rsp.query_id = study_query_id
         rsp.set_modalities_in_study(mod_list)
         rsp.save()
 
@@ -619,7 +619,7 @@ class ResponseFiltering(TestCase):
                 self.assertTrue("goodstation" in study.station_name)
 
 
-def _fake_image_query(assoc, sr, query, query_id):
+def _fake_image_query(assoc, sr, query):
     return
 
 
