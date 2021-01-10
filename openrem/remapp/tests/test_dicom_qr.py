@@ -24,7 +24,9 @@ from ..models import (
 from ..netdicom import qrscu
 
 
-def _fake_check_sr_type_in_study_with_rdsr(assoc, study, query, get_empty_sr):
+def _fake_check_sr_type_in_study_with_rdsr(
+    ae, remote, assoc, study, query, get_empty_sr
+):
     return "RDSR"
 
 
@@ -34,7 +36,7 @@ fake_responses = [
 ]
 
 
-def _fake_two_modalities(assoc, d, query, study_query_id, *args, **kwargs):
+def _fake_two_modalities(ae, remote, assoc, d, query, study_query_id, *args, **kwargs):
     """
     Mock routine that returns a set of four MG studies the first time it is called, and a set of three CT studies the
     second time  it is called.
@@ -58,7 +60,7 @@ def _fake_two_modalities(assoc, d, query, study_query_id, *args, **kwargs):
         rsp.save()
 
 
-def _fake_all_modalities(assoc, d, query, study_query_id, *args, **kwargs):
+def _fake_all_modalities(ae, remote, assoc, d, query, study_query_id, *args, **kwargs):
     """
     Mock routine to return a modality response that includes a study with a 'modalities in study' that does not have
     the requested modality in.
@@ -126,8 +128,10 @@ class StudyQueryLogic(TestCase):
 
         d = Dataset()
         assoc = None
+        ae = None
+        remote = None
         modalities_returned, modality_matching = _query_for_each_modality(
-            all_mods, query, d, assoc
+            all_mods, query, d, assoc, ae, remote
         )
 
         self.assertEqual(DicomQRRspStudy.objects.count(), 2)
@@ -156,8 +160,10 @@ class StudyQueryLogic(TestCase):
 
         d = Dataset()
         assoc = None
+        ae = None
+        remote = None
         modalities_returned, modality_matching = _query_for_each_modality(
-            all_mods, query, d, assoc
+            all_mods, query, d, assoc, ae, remote
         )
 
         self.assertEqual(DicomQRRspStudy.objects.count(), 7)
@@ -243,7 +249,11 @@ class QRPhilipsCT(TestCase):
         self.assertEqual(rst1.dicomqrrspseries_set.all().count(), 3)
 
         assoc = None
+        ae = None
+        remote = None
         qrscu._prune_series_responses(
+            ae,
+            remote,
             assoc,
             query,
             all_mods,
@@ -294,7 +304,11 @@ class QRPhilipsCT(TestCase):
         self.assertEqual(rst1.dicomqrrspseries_set.all().count(), 3)
 
         assoc = None
+        ae = None
+        remote = None
         qrscu._prune_series_responses(
+            ae,
+            remote,
             assoc,
             query,
             all_mods,
@@ -337,7 +351,11 @@ class QRPhilipsCT(TestCase):
         self.assertEqual(rst1.dicomqrrspseries_set.all().count(), 2)
 
         assoc = None
+        ae = None
+        remote = None
         qrscu._prune_series_responses(
+            ae,
+            remote,
             assoc,
             query,
             all_mods,
@@ -401,7 +419,11 @@ class QRPhilipsCT(TestCase):
         self.assertEqual(rst1.dicomqrrspseries_set.all().count(), 4)
 
         assoc = None
+        ae = None
+        remote = None
         qrscu._prune_series_responses(
+            ae,
+            remote,
             assoc,
             query,
             all_mods,
@@ -619,7 +641,7 @@ class ResponseFiltering(TestCase):
                 self.assertTrue("goodstation" in study.station_name)
 
 
-def _fake_image_query(assoc, sr, query):
+def _fake_image_query(ae, remote, assoc, sr, query):
     return
 
 
@@ -675,7 +697,11 @@ class PruneSeriesResponses(TestCase):
         all_mods = self.all_mods
         filters = self.filters
         assoc = None
+        ae = None
+        remote = None
         _prune_series_responses(
+            ae,
+            remote,
             assoc,
             query,
             all_mods,
@@ -747,7 +773,11 @@ class PruneSeriesResponses(TestCase):
         all_mods = self.all_mods
         filters = self.filters
         assoc = None
+        ae = None
+        remote = None
         _prune_series_responses(
+            ae,
+            remote,
             assoc,
             query,
             all_mods,
@@ -807,7 +837,11 @@ class PruneSeriesResponses(TestCase):
         all_mods = self.all_mods
         filters = self.filters
         assoc = None
+        ae = None
+        remote = None
         _prune_series_responses(
+            ae,
+            remote,
             assoc,
             query,
             all_mods,
@@ -895,7 +929,11 @@ class PruneSeriesResponses(TestCase):
         all_mods = self.all_mods
         filters = self.filters
         assoc = None
+        ae = None
+        remote = None
         _prune_series_responses(
+            ae,
+            remote,
             assoc,
             query,
             all_mods,
@@ -955,7 +993,11 @@ class PruneSeriesResponses(TestCase):
         all_mods = self.all_mods
         filters = self.filters
         assoc = None
+        ae = None
+        remote = None
         _prune_series_responses(
+            ae,
+            remote,
             assoc,
             query,
             all_mods,
@@ -1025,7 +1067,11 @@ class PruneSeriesResponses(TestCase):
         all_mods = self.all_mods
         filters = self.filters
         assoc = None
+        ae = None
+        remote = None
         _prune_series_responses(
+            ae,
+            remote,
             assoc,
             query,
             all_mods,
@@ -1080,7 +1126,11 @@ class PruneSeriesResponses(TestCase):
         all_mods = self.all_mods
         filters = self.filters
         assoc = None
+        ae = None
+        remote = None
         _prune_series_responses(
+            ae,
+            remote,
             assoc,
             query,
             all_mods,
@@ -1134,8 +1184,17 @@ class PruneSeriesResponses(TestCase):
         all_mods = self.all_mods
         filters = self.filters
         assoc = None
+        ae = None
+        remote = None
         _prune_series_responses(
-            assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=True
+            ae,
+            remote,
+            assoc,
+            query,
+            all_mods,
+            filters,
+            get_toshiba_images=False,
+            get_empty_sr=True,
         )
         studies = query.dicomqrrspstudy_set.all()
         self.assertEqual(studies.count(), 1)
@@ -1249,7 +1308,11 @@ class PruneSeriesResponsesCT(TestCase):
         all_mods = self.all_mods
         filters = self.filters
         assoc = None
+        ae = None
+        remote = None
         _prune_series_responses(
+            ae,
+            remote,
             assoc,
             query,
             all_mods,
@@ -1281,7 +1344,11 @@ class PruneSeriesResponsesCT(TestCase):
         all_mods = self.all_mods
         filters = self.filters
         assoc = None
+        ae = None
+        remote = None
         _prune_series_responses(
+            ae,
+            remote,
             assoc,
             query,
             all_mods,
@@ -1315,7 +1382,11 @@ class PruneSeriesResponsesCT(TestCase):
         all_mods = self.all_mods
         filters = self.filters
         assoc = None
+        ae = None
+        remote = None
         _prune_series_responses(
+            ae,
+            remote,
             assoc,
             query,
             all_mods,
@@ -1350,7 +1421,11 @@ class PruneSeriesResponsesCT(TestCase):
         all_mods = self.all_mods
         filters = self.filters
         assoc = None
+        ae = None
+        remote = None
         _prune_series_responses(
+            ae,
+            remote,
             assoc,
             query,
             all_mods,
@@ -1385,8 +1460,11 @@ class PruneSeriesResponsesCT(TestCase):
         all_mods = self.all_mods
         filters = self.filters
         assoc = None
-
+        ae = None
+        remote = None
         _prune_series_responses(
+            ae,
+            remote,
             assoc,
             query,
             all_mods,
@@ -1394,6 +1472,7 @@ class PruneSeriesResponsesCT(TestCase):
             get_toshiba_images=False,
             get_empty_sr=False,
         )
+
 
         studies = query.dicomqrrspstudy_set.all()
         self.assertEqual(studies.count(), 1)
@@ -1422,9 +1501,17 @@ class PruneSeriesResponsesCT(TestCase):
         all_mods = self.all_mods
         filters = self.filters
         assoc = None
-
+        ae = None
+        remote = None
         _prune_series_responses(
-            assoc, query, all_mods, filters, get_toshiba_images=False, get_empty_sr=True
+            ae,
+            remote,
+            assoc,
+            query,
+            all_mods,
+            filters,
+            get_toshiba_images=False,
+            get_empty_sr=True,
         )
 
         studies = query.dicomqrrspstudy_set.all()
@@ -1597,8 +1684,9 @@ class RemoveDuplicates(TestCase):
 
         study_rsp = query.dicomqrrspstudy_set.all()
         assoc = None
-        query_id = None
-        _remove_duplicates(query, study_rsp, assoc)
+        ae = None
+        remote = None
+        _remove_duplicates(ae, remote, query, study_rsp, assoc)
 
         study_responses_post = DicomQRRspStudy.objects.all()
         self.assertEqual(study_responses_post.count(), 1)
@@ -1670,8 +1758,9 @@ class RemoveDuplicates(TestCase):
 
         study_rsp = query.dicomqrrspstudy_set.all()
         assoc = None
-        query_id = None
-        _remove_duplicates(query, study_rsp, assoc)
+        ae = None
+        remote = None
+        _remove_duplicates(ae, remote, query, study_rsp, assoc)
 
         study_responses_post = DicomQRRspStudy.objects.all()
         self.assertEqual(study_responses_post.count(), 1)
@@ -1736,8 +1825,9 @@ class RemoveDuplicates(TestCase):
 
         study_rsp = query.dicomqrrspstudy_set.all()
         assoc = None
-        query_id = None
-        _remove_duplicates(query, study_rsp, assoc)
+        ae = None
+        remote = None
+        _remove_duplicates(ae, remote, query, study_rsp, assoc)
 
         study_responses_post = DicomQRRspStudy.objects.all()
         self.assertEqual(study_responses_post.count(), 1)
@@ -1813,8 +1903,9 @@ class RemoveDuplicates(TestCase):
 
         study_rsp = query.dicomqrrspstudy_set.all()
         assoc = None
-        query_id = None
-        _remove_duplicates(query, study_rsp, assoc)
+        ae = None
+        remote = None
+        _remove_duplicates(ae, remote, query, study_rsp, assoc)
 
         # One image response should have been deleted, one remain
         study_responses_post = DicomQRRspStudy.objects.all()
