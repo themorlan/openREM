@@ -106,7 +106,7 @@ def _remove_image_sop_uids(
         series_rsp.delete()
 
 
-def _remove_duplicates(query, study_rsp, assoc):
+def _remove_duplicates(ae, remote, query, study_rsp, assoc):
     """
     Checks for objects in C-Find response already being in the OpenREM database to remove them from the C-Move request
     :param query: Query object in database
@@ -165,7 +165,7 @@ def _remove_duplicates(query, study_rsp, assoc):
                             f"{query_id_8} Study {study_number} {study.study_instance_uid} about to query at "
                             f"image level to get SOPInstanceUID"
                         )
-                        _query_images(assoc, series_rsp, query)
+                        _query_images(ae, remote, assoc, series_rsp, query)
                         _remove_image_sop_uids(
                             series_rsp,
                             query_id_8,
@@ -256,7 +256,7 @@ def _filter(query, level, filter_name, filter_list, filter_type):
 
 
 def _prune_series_responses(
-    assoc, query, all_mods, filters, get_toshiba_images, get_empty_sr
+    ae, remote, assoc, query, all_mods, filters, get_toshiba_images, get_empty_sr
 ):
     """
     For each study level response, remove any series that we know can't be used.
@@ -328,7 +328,9 @@ def _prune_series_responses(
             study.save()
 
             if "SR" in study.get_modalities_in_study():
-                if _check_sr_type_in_study(assoc, study, query, get_empty_sr) in [
+                if _check_sr_type_in_study(
+                    ae, remote, assoc, study, query, get_empty_sr
+                ) in [
                     "RDSR",
                     "null_response",
                 ]:
@@ -354,7 +356,9 @@ def _prune_series_responses(
             study.save()
 
             if "SR" in study.get_modalities_in_study():
-                if _check_sr_type_in_study(assoc, study, query, get_empty_sr) in [
+                if _check_sr_type_in_study(
+                    ae, remote, assoc, study, query, get_empty_sr
+                ) in [
                     "RDSR",
                     "null_response",
                 ]:
@@ -376,7 +380,9 @@ def _prune_series_responses(
             # Only RDSR or some ESR useful here
             study.modality = "FL"
             study.save()
-            sr_type = _check_sr_type_in_study(assoc, study, query, get_empty_sr)
+            sr_type = _check_sr_type_in_study(
+                ae, remote, assoc, study, query, get_empty_sr
+            )
             if sr_type == "no_dose_report":
                 logger.debug(
                     f"{query_id_8} No usable SR in RF study. Deleting from query."
@@ -402,7 +408,9 @@ def _prune_series_responses(
             series = study.dicomqrrspseries_set.all()
             sr_type = None
             if "SR" in study.get_modalities_in_study():
-                sr_type = _check_sr_type_in_study(assoc, study, query, get_empty_sr)
+                sr_type = _check_sr_type_in_study(
+                    ae, remote, assoc, study, query, get_empty_sr
+                )
             if "SR" and sr_type in ("RDSR", "ESR", "null_response"):
                 logger.debug(
                     f"{query_id_8} {sr_type} in CT study, keep SR, delete all other series"
@@ -423,7 +431,7 @@ def _prune_series_responses(
                         f"{query_id_8} No usable CT SR, no Philips dose image found, preparing study for "
                         f"Toshiba option"
                     )
-                    _get_toshiba_dose_images(series, assoc, query)
+                    _get_toshiba_dose_images(ae, remote, series, assoc, query)
                     kept_ct["toshiba"] += 1
                 elif not philips_desc and philips_found:
                     logger.debug(
@@ -439,7 +447,9 @@ def _prune_series_responses(
                     deleted_studies["CT"] += 1
 
         elif all_mods["SR"]["inc"]:
-            sr_type = _check_sr_type_in_study(assoc, study, query, get_empty_sr)
+            sr_type = _check_sr_type_in_study(
+                ae, remote, assoc, study, query, get_empty_sr
+            )
             if sr_type == "RDSR":
                 logger.debug(
                     f"{query_id_8} SR only query, found RDSR, deleted other SRs"
@@ -506,7 +516,7 @@ def _get_philips_dose_images(series, get_toshiba_images, query_id):
         return False, True
 
 
-def _get_toshiba_dose_images(study_series, assoc, query):
+def _get_toshiba_dose_images(ae, remote, study_series, assoc, query):
     """
     Get images for Toshiba studies with no RDSR
     :param study_series: database set
@@ -519,7 +529,9 @@ def _get_toshiba_dose_images(study_series, assoc, query):
         query_id_8 = query.query_id[:8]
 
     for index, series in enumerate(study_series):
-        _query_images(assoc, series, query, initial_image_only=True, msg_id=index + 1)
+        _query_images(
+            ae, remote, assoc, series, query, initial_image_only=True, msg_id=index + 1
+        )
         images = series.dicomqrrspimage_set.all()
         if images.count() == 0:
             logger.debug(
@@ -642,7 +654,7 @@ def _prune_study_responses(query, filters):
 
 
 # returns SR-type: RDSR or ESR; otherwise returns 'no_dose_report'
-def _check_sr_type_in_study(assoc, study, query, get_empty_sr):
+def _check_sr_type_in_study(ae, remote, assoc, study, query, get_empty_sr):
     """Checks at an image level whether SR in study is RDSR, ESR, or something else (Radiologist's report for example)
 
     * If RDSR is found, all non-RDSR SR series responses are deleted
@@ -669,7 +681,7 @@ def _check_sr_type_in_study(assoc, study, query, get_empty_sr):
     )
     sop_classes = set()
     for sr in series_sr:
-        _query_images(assoc, sr, query)
+        _query_images(ae, remote, assoc, sr, query)
         images = sr.dicomqrrspimage_set.all()
         if images.count() == 0:
             if get_empty_sr:
@@ -721,7 +733,47 @@ def _check_sr_type_in_study(assoc, study, query, get_empty_sr):
         return "no_dose_report"
 
 
-def _query_images(assoc, seriesrsp, query, initial_image_only=False, msg_id=None):
+def _get_responses(ae, remote, assoc, query, query_details):
+
+    if assoc.is_established:
+        responses = assoc.send_c_find(
+            query_details["dataset"], StudyRootQueryRetrieveInformationModelFind
+        )
+        return assoc, responses
+    elif assoc.is_aborted:
+        logger.warning(
+            f"{query_details['query_id_8']}/{query_details['query_level_id_8']} Association "
+            f"aborted during query, trying again"
+        )
+    else:
+        logger.error(
+            f"{query_details['query_id_8']}/{query_details['query_level_id_8']} Association "
+            f"not established, and not aborted!"
+        )
+    assoc = ae.associate(remote["host"], remote["port"], ae_title=remote["aet"])
+    if assoc.is_established:
+        responses = assoc.send_c_find(
+            query_details["dataset"], StudyRootQueryRetrieveInformationModelFind
+        )
+        return assoc, responses
+    elif assoc.is_aborted:
+        msg = _("Association aborted twice in succession. Aborting query")
+    elif assoc.is_rejected:
+        msg = _("Association rejected after being aborted. Aborting query")
+    else:
+        msg = _("Association failed. Aborting query.")
+    logger.warning(
+        f"{query_details['query_id_8']}/{query_details['query_level_id_8']} {msg}"
+    )
+    query.stage = msg
+    query.failed = True
+    query.save()
+    exit()
+
+
+def _query_images(
+    ae, remote, assoc, seriesrsp, query, initial_image_only=False, msg_id=None
+):
 
     try:
         query_id_8 = query.query_id.hex[:8]
@@ -748,11 +800,22 @@ def _query_images(assoc, seriesrsp, query, initial_image_only=False, msg_id=None
         f"{query_id_8} query is {d3}, initial_image_only is {initial_image_only}, msg_id is {msg_id}"
     )
 
-    responses = assoc.send_c_find(d3, StudyRootQueryRetrieveInformationModelFind)
-
     image_query_id = uuid.uuid4()
 
-    imRspNo = 0
+    # responses = assoc.send_c_find(d3, StudyRootQueryRetrieveInformationModelFind)
+    assoc, responses = _get_responses(
+        ae,
+        remote,
+        assoc,
+        query,
+        query_details={
+            "dataset": d3,
+            "query_id_8": query_id_8,
+            "query_level_id_8": image_query_id.hex[:8],
+        },
+    )
+
+    im_rsp_no = 0
 
     for (status, identifier) in responses:
         if status:
@@ -772,9 +835,9 @@ def _query_images(assoc, seriesrsp, query, initial_image_only=False, msg_id=None
                 )
                 query.stage = _("Image level matches are continuing.")
                 query.save()
-                imRspNo += 1
+                im_rsp_no += 1
                 logger.debug(
-                    f"{query_id_8}/{image_query_id.hex[:8]} Image Response {imRspNo}: {identifier}"
+                    f"{query_id_8}/{image_query_id.hex[:8]} Image Response {im_rsp_no}: {identifier}"
                 )
                 imagesrsp = DicomQRRspImage.objects.create(
                     dicom_qr_rsp_series=seriesrsp
@@ -787,7 +850,7 @@ def _query_images(assoc, seriesrsp, query, initial_image_only=False, msg_id=None
                 except AttributeError:
                     logger.warning(
                         f"{query_id_8}/{image_query_id.hex[:8]} StudyInstUID {d3.StudyInstanceUID} Image "
-                        f"Response {imRspNo}: no SOPClassUID. If CT, might need to use Toshiba Advanced option"
+                        f"Response {im_rsp_no}: no SOPClassUID. If CT, might need to use Toshiba Advanced option"
                         f" (additional config required)"
                     )
                     imagesrsp.sop_class_uid = ""
@@ -795,7 +858,7 @@ def _query_images(assoc, seriesrsp, query, initial_image_only=False, msg_id=None
                     imagesrsp.instance_number = int(identifier.InstanceNumber)
                 except (ValueError, TypeError, AttributeError):
                     logger.warning(
-                        f"{query_id_8}/{image_query_id.hex[:8]} Image Response {imRspNo}: illegal response, "
+                        f"{query_id_8}/{image_query_id.hex[:8]} Image Response {im_rsp_no}: illegal response, "
                         f"no InstanceNumber"
                     )
                     imagesrsp.instance_number = None  # integer so can't be ''
@@ -811,7 +874,7 @@ def _query_images(assoc, seriesrsp, query, initial_image_only=False, msg_id=None
             query.save()
 
 
-def _query_series(assoc, d2, studyrsp, query):
+def _query_series(ae, remote, assoc, d2, studyrsp, query):
     """Query for series level data for each study
 
     :param query:
@@ -839,11 +902,22 @@ def _query_series(assoc, d2, studyrsp, query):
     logger.debug(f"{query_id_8} In _query_series")
     logger.debug(f"{query_id_8} series query is {d2}")
 
-    responses = assoc.send_c_find(d2, StudyRootQueryRetrieveInformationModelFind)
-
     series_query_id = uuid.uuid4()
 
-    seRspNo = 0
+    # responses = assoc.send_c_find(d2, StudyRootQueryRetrieveInformationModelFind)
+    assoc, responses = _get_responses(
+        ae,
+        remote,
+        assoc,
+        query,
+        query_details={
+            "dataset": d2,
+            "query_id_8": query_id_8,
+            "query_level_id_8": series_query_id.hex[:8],
+        },
+    )
+
+    se_rsp_no = 0
 
     for (status, identifier) in responses:
         if status:
@@ -863,7 +937,7 @@ def _query_series(assoc, d2, studyrsp, query):
                 )
                 query.stage = _("Series level matches are continuing.")
                 query.save()
-                seRspNo += 1
+                se_rsp_no += 1
                 seriesrsp = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=studyrsp)
                 seriesrsp.query_id = series_query_id
                 # Mandatory tags
@@ -900,7 +974,7 @@ def _query_series(assoc, d2, studyrsp, query):
                 seriesrsp.station_name = get_value_kw("StationName", identifier)
                 seriesrsp.series_time = get_time("SeriesTime", identifier)
                 logger.debug(
-                    f"{query_id_8}/{series_query_id.hex[:8]} Series Response {seRspNo}: "
+                    f"{query_id_8}/{series_query_id.hex[:8]} Series Response {se_rsp_no}: "
                     f"Modality {seriesrsp.modality}, StationName {seriesrsp.station_name}, "
                     f"StudyUID {d2.StudyInstanceUID}, Series No. {seriesrsp.series_number}, "
                     f"Series description {seriesrsp.series_description}"
@@ -917,7 +991,7 @@ def _query_series(assoc, d2, studyrsp, query):
             query.save()
 
 
-def _query_study(assoc, d, query, study_query_id):
+def _query_study(ae, remote, assoc, d, query, study_query_id):
 
     d.QueryRetrieveLevel = "STUDY"
     d.PatientName = ""
@@ -939,7 +1013,18 @@ def _query_study(assoc, d, query, study_query_id):
         f"{query_id_8}/{study_query_id.hex[:8]} Study level association requested"
     )
     logger.debug(f"{query_id_8}/{study_query_id.hex[:8]} Study level query is {d}")
-    responses = assoc.send_c_find(d, StudyRootQueryRetrieveInformationModelFind)
+    assoc, responses = _get_responses(
+        ae,
+        remote,
+        assoc,
+        query,
+        query_details={
+            "dataset": d,
+            "query_id_8": query_id_8,
+            "query_level_id_8": study_query_id.hex[:8],
+        },
+    )
+    # responses = assoc.send_c_find(d, StudyRootQueryRetrieveInformationModelFind)
 
     logger.debug(
         f"{query_id_8}/{study_query_id.hex[:8]} _query_study done with status {responses}"
@@ -1024,40 +1109,7 @@ def _query_study(assoc, d, query, study_query_id):
             query.save()
 
 
-def _create_association(my_ae, remote_host, remote_port, remote_ae, query):
-    # create association with remote AE
-    logger.info(
-        "{0}: Request association with {1} ({2} {3} from {4})".format(
-            query.query_id, remote_ae, remote_host, remote_port, my_ae
-        )
-    )
-    assoc = my_ae.RequestAssociation(remote_ae)
-    if assoc:
-        logger.debug("{0}: Association created: {1}".format(query.query_id, assoc))
-    else:
-        query.failed = True
-        query.message = "{0}: Association unsuccessful".format(query.query_id)
-        query.complete = True
-        query.save()
-        my_ae.Quit()
-        logger.error(
-            "{0} to {1} failed as association was unsuccessful".format(
-                query.query_id, remote_ae
-            )
-        )
-        return
-    return assoc
-
-
-def _echo(assoc, query_id):
-    echo = assoc.VerificationSOPClass.SCU(1)
-    logger.debug(
-        "{0}: DICOM echo was returned with status {1}".format(query_id, echo.Type)
-    )
-    return echo
-
-
-def _query_for_each_modality(all_mods, query, d, assoc):
+def _query_for_each_modality(all_mods, query, d, assoc, ae, remote):
     """
     Uses _query_study for each modality we've asked for, and populates study level response data in the database
     :param all_mods: dict of dicts indicating which modalities to request
@@ -1097,7 +1149,7 @@ def _query_for_each_modality(all_mods, query, d, assoc):
                         )
                         d.Modality = ""
                     study_query_id = uuid.uuid4()
-                    _query_study(assoc, d, query, study_query_id)
+                    _query_study(ae, remote, assoc, d, query, study_query_id)
                     study_rsp = query.dicomqrrspstudy_set.filter(
                         query_id__exact=study_query_id
                     )
@@ -1285,12 +1337,13 @@ def qrscu(
         modalities = ["SR"]
 
     qr_scp = DicomRemoteQR.objects.get(pk=qr_scp_pk)
+    remote = {}
     if qr_scp.hostname:
-        remote_host = qr_scp.hostname
+        remote["host"] = qr_scp.hostname
     else:
-        remote_host = qr_scp.ip
-    remote_port = qr_scp.port
-    remote_aet = qr_scp.aetitle
+        remote["host"] = qr_scp.ip
+    remote["port"] = qr_scp.port
+    remote["aet"] = qr_scp.aetitle
     our_aet = qr_scp.callingaet
     if not our_aet:
         our_aet = "OPENREMDEFAULT"
@@ -1299,7 +1352,7 @@ def qrscu(
     ae.add_requested_context(StudyRootQueryRetrieveInformationModelFind)
     ae.ae_title = our_aet
 
-    logger.debug(f"{query_id.hex[:8]} Remote AE is {remote_aet}")
+    logger.debug(f"{query_id.hex[:8]} Remote AE is {remote['aet']}")
 
     query = DicomQuery.objects.create()
     query.query_id = query_id
@@ -1337,7 +1390,7 @@ def qrscu(
     )
     query.save()
 
-    assoc = ae.associate(remote_host, remote_port, ae_title=remote_aet)
+    assoc = ae.associate(remote["host"], remote["port"], ae_title=remote["aet"])
 
     if assoc.is_established:
 
@@ -1365,7 +1418,12 @@ def qrscu(
 
         # query for all requested studies
         modalities_returned, modality_matching = _query_for_each_modality(
-            all_mods, query, d, assoc
+            all_mods,
+            query,
+            d,
+            assoc,
+            ae,
+            remote,
         )
 
         # Now we have all our studies. Time to throw duplicates and away any we don't want
@@ -1458,7 +1516,7 @@ def qrscu(
             # Series level query
             d2 = Dataset()
             d2.StudyInstanceUID = rsp.study_instance_uid
-            _query_series(assoc, d2, rsp, query)
+            _query_series(ae, remote, assoc, d2, rsp, query)
             if not modalities_returned:
                 _generate_modalities_in_study(rsp, query_id)
         logger.debug(f"{query_id.hex[:8]} Series level query complete.")
@@ -1515,7 +1573,14 @@ def qrscu(
             deleted_studies_filters_series,
             kept_ct,
         ) = _prune_series_responses(
-            assoc, query, all_mods, filters, get_toshiba_images, get_empty_sr
+            ae,
+            remote,
+            assoc,
+            query,
+            all_mods,
+            filters,
+            get_toshiba_images,
+            get_empty_sr,
         )
         deleted_studies_filters["stationname_inc"] += deleted_studies_filters_series[
             "stationname_inc"
@@ -1571,7 +1636,7 @@ def qrscu(
                 f"{query_id.hex[:8]} Removing any responses that match data we already have in the database"
             )
             query.save()
-            _remove_duplicates(query, study_rsp, assoc)
+            _remove_duplicates(ae, remote, query, study_rsp, assoc)
             study_numbers["current"] = query.dicomqrrspstudy_set.all().count()
             study_numbers["duplicates_removed"] = (
                 before_remove_duplicates - study_numbers["current"]
@@ -1665,18 +1730,18 @@ def qrscu(
                 assoc.acceptor.primitive.result_str, assoc.acceptor.primitive.reason_str
             )
             logger.warning(
-                f"{query_id.hex[:8]} Association rejected from {remote_host} {remote_port}"
-                f" {remote_aet}. {msg}"
+                f"{query_id.hex[:8]} Association rejected from {remote['host']} {remote['port']}"
+                f" {remote['aet']}. {msg}"
             )
         elif assoc.is_aborted:
             msg = _("Association aborted or never connected")
             logger.warning(
-                f"{query_id.hex[:8]} {msg} to {remote_host} {remote_port} {remote_aet}"
+                f"{query_id.hex[:8]} {msg} to {remote['host']} {remote['port']} {remote['aet']}"
             )
         else:
             msg = _("Association Failed")
             logger.warning(
-                f"{query_id.hex[:8]} {msg} with {remote_host} {remote_port} {remote_aet}"
+                f"{query_id.hex[:8]} {msg} with {remote['host']} {remote['port']} {remote['aet']}"
             )
         query.message = msg
         query.stage = msg
