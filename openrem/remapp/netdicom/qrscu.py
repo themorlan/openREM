@@ -768,7 +768,7 @@ def _get_responses(ae, remote, assoc, query, query_details):
     query.stage = msg
     query.failed = True
     query.save()
-    exit()
+    sys.exit()
 
 
 def _query_images(
@@ -2156,7 +2156,7 @@ def _create_parser():
 
 
 def _process_args(parser_args, parser):
-    from .tools import (
+    from .tools import (  # pylint: disable-import-outside-toplevel
         echoscu,
     )  # If I don't leave this here the patching doesn't work in test...
 
