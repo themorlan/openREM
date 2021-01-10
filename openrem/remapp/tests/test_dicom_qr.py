@@ -1473,7 +1473,6 @@ class PruneSeriesResponsesCT(TestCase):
             get_empty_sr=False,
         )
 
-
         studies = query.dicomqrrspstudy_set.all()
         self.assertEqual(studies.count(), 1)
         series = studies[0].dicomqrrspseries_set.all()
