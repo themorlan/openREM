@@ -646,9 +646,6 @@ def rf_detail_view_skin_map(request, pk=None):
 @login_required
 def ct_summary_list_filter(request):
     """Obtain data for CT summary view"""
-    from remapp.interface.mod_filters import ct_acq_filter
-    from remapp.forms import CTChartOptionsForm, itemsPerPageForm
-    from openremproject import settings
     from remapp.interface.advanced_search_functions import get_advanced_search_options_ct, AdvancedSearchFilter
     advanced_search_available = False  # by default: default filtering
     advanced_search_options = '{}'

@@ -74,19 +74,21 @@
                 </tr>
             </table>
         </div>
-        <div class="panel-body">
-            <i>Date format yyyy-mm-dd</i>
-            {% for field in filter.form %}
-                <div class="form-group">
-                    <div class="col-xs-4">
-                        <label>{{ field.label_tag }}</label>
+        <div class="panel-body" {% if advancedSearchAvailable %}hidden{% endif %}>
+            {% if not advancedSearchAvailable %}
+                <i>Date format yyyy-mm-dd</i>
+                {% for field in filter.form %}
+                    <div class="form-group">
+                        <div class="col-xs-4">
+                            <label>{{ field.label_tag }}</label>
+                        </div>
+                        <div class="col-xs-8">
+                            {{ field.errors }}
+                            {{ field }}
+                        </div>
                     </div>
-                    <div class="col-xs-8">
-                        {{ field.errors }}
-                        {{ field }}
-                    </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            {% endif %}
             <input class="btn btn-default" type="submit" />
         </div>
         <div class="panel-heading">
@@ -307,11 +309,13 @@
         let searchString = "{{ advancedSearchString|safe }}";
         $(document).ready(function() {
             initializeJSON(filterOptionsJSON, staticurl);
-            document.getElementById("id_advanced_search_string").value = searchString;
-            if (!!(searchString.trim()))
-                createBuilderFromSearchString(searchString);
-            else
-                addSearchBuilderLine(-1, true);
+            if (document.getElementById("id_advanced_search_string") != null) {
+                document.getElementById("id_advanced_search_string").value = searchString;
+                if (!!(searchString.trim()))
+                    createBuilderFromSearchString(searchString);
+                else
+                    addSearchBuilderLine(-1, true);
+            }
         })
     </script>
 {% endblock %}

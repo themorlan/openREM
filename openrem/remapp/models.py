@@ -1795,7 +1795,7 @@ class CtRadiationDose(models.Model):  # TID 10011
         related_name="tid1011_uid",
         on_delete=models.CASCADE,
     )  # CID 10001
-    comment = models.TextField(blank=True, null=True)
+    comment = models.TextField(blank=True, null=True,  verbose_name='CT radiation dose comment')
     # does need to be a table on its own as is 1-n
     source_of_dose_information = models.ForeignKey(
         ContextID,
@@ -1931,7 +1931,7 @@ class CtIrradiationEventData(models.Model):  # TID 10013
     mean_ctdifreeair = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
     )
-    dlp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    dlp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True, verbose_name='DLP for event')
     effective_dose = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
     )
