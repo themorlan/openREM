@@ -645,7 +645,7 @@ def rf_detail_view_skin_map(request, pk=None):
 @login_required
 def ct_summary_list_filter(request):
     """Obtain data for CT summary view"""
-    from remapp.interface.advanced_search_functions import get_advanced_search_options_ct, AdvancedSearchFilter
+    from .interface.advanced_search_functions import get_advanced_search_options_ct, AdvancedSearchFilter
     advanced_search_available = False  # by default: default filtering
     advanced_search_options = '{}'
     advanced_search_str = ''

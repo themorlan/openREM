@@ -411,8 +411,25 @@ def generate_required_ct_charts_list(profile):
 @login_required
 def ct_summary_chart_data(request):
     """Obtain data for CT charts Ajax call"""
+    from .interface.advanced_search_functions import get_advanced_search_options_ct, AdvancedSearchFilter
+    import json
+    advanced_search_available = False  # by default: default filtering
+    advanced_search_options = '{}'
+    advanced_search_str = ''
+
     pid = bool(request.user.groups.filter(name="pidgroup"))
-    f = ct_acq_filter(request.GET, pid=pid)
+    if 'advanced_search' in request.GET:
+        advanced_search_available = bool(request.GET['advanced_search'])
+    elif 'advanced_search_string' in request.GET and request.GET['advanced_search_string']:
+        advanced_search_available = True
+    if advanced_search_available:
+        if "submit" in request.GET:
+            advanced_search_str = request.GET['advanced_search_string']
+        advanced_search_options = get_advanced_search_options_ct(pid)
+        f = AdvancedSearchFilter({'advanced_search_string': advanced_search_str},
+                                 json.loads(advanced_search_options), 'CT')
+    else:
+        f = ct_acq_filter(request.GET, pid=pid)
 
     try:
         # See if the user has plot settings in userprofile
