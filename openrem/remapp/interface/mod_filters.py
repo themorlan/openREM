@@ -542,9 +542,42 @@ class CTFilterPlusPid(CTSummaryListFilter):
         )
 
 
+def check_advanced_filter(filters):
+    advanced_search_available = False
+    if 'advanced_search' in filters:
+        advanced_search_available = bool(filters['advanced_search'])
+    elif 'advanced_search_string' in filters and filters['advanced_search_string']:
+        advanced_search_available = True
+    return advanced_search_available
+
+
+def ct_acq_advanced_filter(filters, pid=False):
+    """
+    Check if advanced filter is used, if that is the case return queryset
+    :param filters: request.GET containing the filters
+    :param pid: allow filtering for pid
+    :return: queryset or None if advanced filter is not used
+    """
+    import json
+    from remapp.interface.advanced_search_functions import get_advanced_search_options_ct, AdvancedSearchFilter
+    advanced_search_str = ''
+
+    if check_advanced_filter(filters):
+        if "submit" in filters:
+            advanced_search_str = filters['advanced_search_string']
+        advanced_search_options = get_advanced_search_options_ct(pid)
+        return AdvancedSearchFilter({'advanced_search_string': advanced_search_str},
+                                    json.loads(advanced_search_options), 'CT')
+    else:
+        return None
+
+
 def ct_acq_filter(filters, pid=False):
 
     """Additional filters at event level"""
+    # First check if advanced filtering is performed
+    if check_advanced_filter(filters):
+        return ct_acq_advanced_filter(filters, pid=False)
 
     filteredInclude = []
     if "acquisition_protocol" in filters and (
@@ -846,6 +879,17 @@ class DXSummaryListFilter(django_filters.FilterSet):
     projectionxrayradiationdose__irradeventxraydata__acquisition_protocol = (
         django_filters.CharFilter(lookup_expr="icontains", label="Acquisition protocol")
     )
+    projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning = (
+        django_filters.CharFilter(lookup_expr="icontains", label="View code")
+    )
+    projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range = django_filters.NumericRangeFilter(
+        lookup_expr="range",
+        label="Breast thickness range (mm)",
+        field_name="projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",
+    )
+    projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode = django_filters.CharFilter(
+        lookup_expr="icontains", label="Exposure control mode"
+    )
     patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
         lookup_expr="gte",
         label="Min age (yrs)",
@@ -913,6 +957,9 @@ class DXSummaryListFilter(django_filters.FilterSet):
             "procedure_code_meaning",
             "requested_procedure_code_meaning",
             "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+            "projectionxrayradiationdose__irradeventxraydata__image_view__code_meaning",
+            "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness__range",
+            "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure_control_mode",
             "generalequipmentmoduleattr__institution_name",
             "generalequipmentmoduleattr__manufacturer",
             "generalequipmentmoduleattr__manufacturer_model_name",

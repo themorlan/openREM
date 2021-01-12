@@ -645,24 +645,11 @@ def rf_detail_view_skin_map(request, pk=None):
 @login_required
 def ct_summary_list_filter(request):
     """Obtain data for CT summary view"""
-    from .interface.advanced_search_functions import get_advanced_search_options_ct, AdvancedSearchFilter
-    advanced_search_available = False  # by default: default filtering
-    advanced_search_options = '{}'
-    advanced_search_str = ''
+    from remapp.interface.mod_filters import check_advanced_filter
+    from remapp.interface.advanced_search_functions import get_advanced_search_options_ct
 
     pid = bool(request.user.groups.filter(name="pidgroup"))
-    if 'advanced_search' in request.GET:
-        advanced_search_available = bool(request.GET['advanced_search'])
-    elif 'advanced_search_string' in request.GET and request.GET['advanced_search_string']:
-        advanced_search_available = True
-    if advanced_search_available:
-        if "submit" in request.GET:
-            advanced_search_str = request.GET['advanced_search_string']
-        advanced_search_options = get_advanced_search_options_ct(pid)
-        f = AdvancedSearchFilter({'advanced_search_string': advanced_search_str},
-                                 json.loads(advanced_search_options), 'CT')
-    else:
-        f = ct_acq_filter(request.GET, pid=pid)
+    f = ct_acq_filter(request.GET, pid=pid)
 
     try:
         # See if the user has plot settings in userprofile
@@ -719,14 +706,18 @@ def ct_summary_list_filter(request):
             user_profile
         )
 
+    advanced_search_options = {}
+    advanced_search_string = request.GET.get('advanced_search_string', "")
+    advanced_search_available = check_advanced_filter(request.GET)
     if advanced_search_available:
+        advanced_search_options = get_advanced_search_options_ct(pid)
         return_structure["json_filter_options"] = advanced_search_options
-        return_structure["advancedSearchString"] = advanced_search_str
+        return_structure["advancedSearchString"] = advanced_search_string
 
     return_structure.update({"filter": f, "admin": admin, "chartOptionsForm": chart_options_form,
                              "advancedSearchAvailable": advanced_search_available,
                              "json_filter_options": advanced_search_options,
-                             "advancedSearchString": advanced_search_str,
+                             "advancedSearchString": advanced_search_string,
                              "itemsPerPageForm": items_per_page_form})
 
     return render(request, "remapp/ctfiltered.html", return_structure)

@@ -775,7 +775,7 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
         * requested_procedure_code_value_and_meaning
     """
 
-    study_instance_uid = models.TextField(blank=True, null=True)
+    study_instance_uid = models.TextField(blank=True, null=True, verbose_name="StudyInstanceUID")
     study_date = models.DateField(blank=True, null=True)
     study_time = models.TimeField(blank=True, null=True)
     study_workload_chart_time = models.DateTimeField(blank=True, null=True)
@@ -797,48 +797,48 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
     requested_procedure_code_value = models.TextField(blank=True, null=True)
     requested_procedure_code_meaning = models.TextField(blank=True, null=True)
     # Series and content to distinguish between multiple cumulative RDSRs
-    series_instance_uid = models.TextField(blank=True, null=True)
+    series_instance_uid = models.TextField(blank=True, null=True, verbose_name='SeriesInstanceUID')
     series_time = models.TimeField(blank=True, null=True)
     content_time = models.TimeField(blank=True, null=True)
 
     # Additional study summary fields
     number_of_events = models.IntegerField(blank=True, null=True)
-    number_of_events_a = models.IntegerField(blank=True, null=True)
-    number_of_events_b = models.IntegerField(blank=True, null=True)
-    number_of_axial = models.IntegerField(blank=True, null=True)
-    number_of_spiral = models.IntegerField(blank=True, null=True)
-    number_of_stationary = models.IntegerField(blank=True, null=True)
-    number_of_const_angle = models.IntegerField(blank=True, null=True)
+    number_of_events_a = models.IntegerField(blank=True, null=True, verbose_name='Number of events - tube A')
+    number_of_events_b = models.IntegerField(blank=True, null=True, verbose_name='Number of events - tube B')
+    number_of_axial = models.IntegerField(blank=True, null=True, verbose_name='Number of axial events')
+    number_of_spiral = models.IntegerField(blank=True, null=True, verbose_name='Number of spiral events')
+    number_of_stationary = models.IntegerField(blank=True, null=True, verbose_name='Number of stationary events')
+    number_of_const_angle = models.IntegerField(blank=True, null=True, verbose_name='Number of constant angle events')
     total_dlp = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
+        max_digits=16, decimal_places=8, blank=True, null=True, verbose_name='Total study DLP'
     )
     total_dap_a = models.DecimalField(
-        max_digits=16, decimal_places=12, blank=True, null=True
+        max_digits=16, decimal_places=12, blank=True, null=True, verbose_name='Total DAP - tube A'
     )
     total_dap_b = models.DecimalField(
-        max_digits=16, decimal_places=12, blank=True, null=True
+        max_digits=16, decimal_places=12, blank=True, null=True, verbose_name='Total DAP - tube B'
     )
-    total_dap = models.DecimalField(max_digits=16, decimal_places=12, null=True)
+    total_dap = models.DecimalField(max_digits=16, decimal_places=12, null=True, verbose_name='Total study DAP')
     total_rp_dose_a = models.DecimalField(
-        max_digits=16, decimal_places=12, blank=True, null=True
+        max_digits=16, decimal_places=12, blank=True, null=True, verbose_name='Total study dose at RP'
     )
     total_rp_dose_b = models.DecimalField(
-        max_digits=16, decimal_places=12, blank=True, null=True
+        max_digits=16, decimal_places=12, blank=True, null=True, verbose_name='Total study dose at RP - tube A'
     )
     total_dap_delta_weeks = models.DecimalField(
-        max_digits=16, decimal_places=12, blank=True, null=True
+        max_digits=16, decimal_places=12, blank=True, null=True, verbose_name='Total study dose at RP - tube B'
     )
     total_rp_dose_delta_weeks = models.DecimalField(
-        max_digits=16, decimal_places=12, blank=True, null=True
+        max_digits=16, decimal_places=12, blank=True, null=True, verbose_name='Total dose at RP - during n weeks'
     )
     total_agd_left = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
+        max_digits=16, decimal_places=8, blank=True, null=True, verbose_name='Total study AGD - left breast'
     )
     total_agd_right = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
+        max_digits=16, decimal_places=8, blank=True, null=True, verbose_name='Total study AGD - right breast'
     )
     total_agd_both = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
+        max_digits=16, decimal_places=8, blank=True, null=True, verbose_name='Total study AGD - both breasts'
     )  # for legacy
     number_of_planes = models.IntegerField(blank=True, null=True)
 
@@ -1355,7 +1355,7 @@ class Kvp(models.Model):  # EV 113733
     irradiation_event_xray_source_data = models.ForeignKey(
         IrradEventXRaySourceData, on_delete=models.CASCADE
     )
-    kvp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    kvp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True, verbose_name='kVp')
 
 
 class XrayTubeCurrent(models.Model):  # EV 113734
@@ -1681,11 +1681,11 @@ class PatientModuleAttr(models.Model):  # C.7.1.1
     )
     patient_name = models.TextField(blank=True, null=True)
     name_hashed = models.BooleanField(default=False)
-    patient_id = models.TextField(blank=True, null=True)
+    patient_id = models.TextField(blank=True, null=True, verbose_name="Patient ID")
     id_hashed = models.BooleanField(default=False)
     patient_birth_date = models.DateField(blank=True, null=True)
     patient_sex = models.CharField(max_length=2, blank=True, null=True)
-    other_patient_ids = models.TextField(blank=True, null=True)
+    other_patient_ids = models.TextField(blank=True, null=True, verbose_name = "Other patient IDs")
     not_patient_indicator = models.TextField(blank=True, null=True)
 
 
@@ -1702,9 +1702,9 @@ class PatientStudyModuleAttr(models.Model):  # C.7.2.2
     )
     admitting_diagnosis_description = models.TextField(blank=True, null=True)
     admitting_diagnosis_code_sequence = models.TextField(blank=True, null=True)
-    patient_age = models.CharField(max_length=4, blank=True, null=True)
+    patient_age = models.CharField(max_length=4, blank=True, null=True, verbose_name='Patient age (DICOM encoding)')
     patient_age_decimal = models.DecimalField(
-        max_digits=7, decimal_places=3, blank=True, null=True
+        max_digits=7, decimal_places=3, blank=True, null=True, verbose_name='Patient age in years'
     )
     patient_size = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
@@ -1830,10 +1830,10 @@ class CtAccumulatedDoseData(models.Model):  # TID 10012
         max_digits=16, decimal_places=0, blank=True, null=True
     )
     ct_dose_length_product_total = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
+        max_digits=16, decimal_places=8, blank=True, null=True, verbose_name="Total study DLP"
     )
     ct_effective_dose_total = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
+        max_digits=16, decimal_places=8, blank=True, null=True, verbose_name="Total study effective dose"
     )
     reference_authority_code = models.ForeignKey(
         ContextID,
@@ -1853,7 +1853,7 @@ class CtAccumulatedDoseData(models.Model):  # TID 10012
     patient_model = models.TextField(blank=True, null=True)
     effective_dose_phantom_type = models.TextField(blank=True, null=True)
     dosimeter_type = models.TextField(blank=True, null=True)
-    comment = models.TextField(blank=True, null=True)
+    comment = models.TextField(blank=True, null=True, verbose_name="CT accumulated dose data comment")
 
 
 class CtIrradiationEventData(models.Model):  # TID 10013
@@ -1882,6 +1882,7 @@ class CtIrradiationEventData(models.Model):  # TID 10013
         null=True,
         related_name="tid10013_type",
         on_delete=models.CASCADE,
+        verbose_name="CT acquisition type"
     )  # CID 10013
     procedure_context = models.ForeignKey(
         ContextID,
@@ -1890,7 +1891,7 @@ class CtIrradiationEventData(models.Model):  # TID 10013
         related_name="tid10013_context",
         on_delete=models.CASCADE,
     )  # CID 10014
-    irradiation_event_uid = models.TextField(blank=True, null=True)
+    irradiation_event_uid = models.TextField(blank=True, null=True, verbose_name="IrradiationEventUID")
     #  TODO: Add extraction of the label and label type (Series, acquisition, instance number) Issue #167
     irradiation_event_label = models.TextField(blank=True, null=True)
     label_type = models.ForeignKey(
@@ -1899,6 +1900,7 @@ class CtIrradiationEventData(models.Model):  # TID 10013
         null=True,
         related_name="tid10013_labeltype",
         on_delete=models.CASCADE,
+        verbose_name='Irradiation event label type'
     )  # CID 10022
     exposure_time = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
@@ -1924,16 +1926,17 @@ class CtIrradiationEventData(models.Model):  # TID 10013
         null=True,
         related_name="tid10013_phantom",
         on_delete=models.CASCADE,
+        verbose_name="CTDIw phantom type"
     )  # CID 4052
     ctdifreeair_calculation_factor = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
+        max_digits=16, decimal_places=8, blank=True, null=True, verbose_name="CTDI free in air calculation factor"
     )
     mean_ctdifreeair = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
     )
-    dlp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True, verbose_name='DLP for event')
+    dlp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True, verbose_name="DLP for event")
     effective_dose = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
+        max_digits=16, decimal_places=8, blank=True, null=True, verbose_name="Effective dose for event"
     )
     measurement_method = models.ForeignKey(
         ContextID,
@@ -1941,12 +1944,13 @@ class CtIrradiationEventData(models.Model):  # TID 10013
         null=True,
         related_name="tid10013_method",
         on_delete=models.CASCADE,
+        verbose_name="Effective dose measurement method"
     )  # CID 10011
     effective_dose_conversion_factor = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
     )
     xray_modulation_type = models.TextField(blank=True, null=True)
-    comment = models.TextField(blank=True, null=True)
+    comment = models.TextField(blank=True, null=True, verbose_name='Event comment')
     # Not in DICOM standard:
     date_time_started = models.DateTimeField(blank=True, null=True)
     series_description = models.TextField(blank=True, null=True)
@@ -1971,7 +1975,7 @@ class CtXRaySourceParameters(models.Model):
         CtIrradiationEventData, on_delete=models.CASCADE
     )
     identification_of_the_xray_source = models.TextField(blank=True, null=True)
-    kvp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+    kvp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True, verbose_name='kVp')
     maximum_xray_tube_current = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
     )
@@ -2017,7 +2021,7 @@ class ScanningLength(models.Model):  # TID 10014
     bottom_z_location_of_scanning_length = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
     )
-    frame_of_reference_uid = models.TextField(blank=True, null=True)
+    frame_of_reference_uid = models.TextField(blank=True, null=True, verbose_name="FrameOfReferenceUID")
 
 
 class SizeSpecificDoseEstimation(models.Model):
@@ -2033,6 +2037,7 @@ class SizeSpecificDoseEstimation(models.Model):
         null=True,
         related_name="ssde_method",
         on_delete=models.CASCADE,
+        verbose_name="Size specific dose measurement method"
     )  # CID 10023
     measured_lateral_dimension = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
@@ -2064,7 +2069,8 @@ class WEDSeriesOrInstances(models.Model):
     size_specific_dose_estimation = models.ForeignKey(
         SizeSpecificDoseEstimation, on_delete=models.CASCADE
     )
-    wed_series_or_instance = models.TextField(blank=True, null=True)  # referenced UID
+    # referenced UID
+    wed_series_or_instance = models.TextField(blank=True, null=True, verbose_name="WedSeriesOrInstanceUID")
 
 
 class CtDoseCheckDetails(models.Model):  # TID 10015
@@ -2077,35 +2083,36 @@ class CtDoseCheckDetails(models.Model):  # TID 10015
     ct_irradiation_event_data = models.ForeignKey(
         CtIrradiationEventData, on_delete=models.CASCADE
     )
-    dlp_alert_value_configured = models.NullBooleanField()
-    ctdivol_alert_value_configured = models.NullBooleanField()
+    dlp_alert_value_configured = models.NullBooleanField(verbose_name="DLP alert value configured")
+    ctdivol_alert_value_configured = models.NullBooleanField(verbose_name="CTDIvol alert value configures")
     dlp_alert_value = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
+        max_digits=16, decimal_places=8, blank=True, null=True, verbose_name="DLP alert value"
     )
     ctdivol_alert_value = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
+        max_digits=16, decimal_places=8, blank=True, null=True, verbose_name="CTDIvol alert value"
     )
     accumulated_dlp_forward_estimate = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
+        max_digits=16, decimal_places=8, blank=True, null=True, verbose_name="Accumulated DLP forward estimate"
     )
     accumulated_ctdivol_forward_estimate = models.DecimalField(
-        max_digits=16, decimal_places=8, blank=True, null=True
+        max_digits=16, decimal_places=8, blank=True, null=True, verbose_name="Accumulated CTDIvol forward estimate"
     )
     # alert_ added to allow two fields that are in different containers in std
     alert_reason_for_proceeding = models.TextField(blank=True, null=True)
-    dlp_notification_value_configured = models.NullBooleanField()
-    ctdivol_notification_value_configured = models.NullBooleanField()
+    dlp_notification_value_configured = models.NullBooleanField(verbose_name="DLP notification value configured")
+    ctdivol_notification_value_configured = models.NullBooleanField(
+        verbose_name="CTDIvol notification value configured")
     dlp_notification_value = models.DecimalField(
-        max_digits=8, decimal_places=4, blank=True, null=True
+        max_digits=8, decimal_places=4, blank=True, null=True, verbose_name="DLP notification value"
     )
     ctdivol_notification_value = models.DecimalField(
-        max_digits=8, decimal_places=4, blank=True, null=True
+        max_digits=8, decimal_places=4, blank=True, null=True, verbose_name="CTDIvol notification value"
     )
     dlp_forward_estimate = models.DecimalField(
-        max_digits=8, decimal_places=4, blank=True, null=True
+        max_digits=8, decimal_places=4, blank=True, null=True, verbose_name="DLP forward estimate"
     )
     ctdivol_forward_estimate = models.DecimalField(
-        max_digits=8, decimal_places=4, blank=True, null=True
+        max_digits=8, decimal_places=4, blank=True, null=True, verbose_name="CTDIvol forward estimate"
     )
     # notification_ added to allow two fields that are in different containers in std
     notification_reason_for_proceeding = models.TextField(blank=True, null=True)

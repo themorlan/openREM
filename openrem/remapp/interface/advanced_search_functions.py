@@ -37,8 +37,10 @@ def add2json_search_string(json_string, dbfield, label=None, comparison=None):
     if label is None or len(label) == 0:
         label = db_field_list[-1].replace('_', ' ')
     if dbfield and label and comparison:
+        # assumes labels with at least 2 characters
+        label = label[0].upper() + label[1:]
         return json_string + '{"db_field":"' + dbfield + '",' + \
-               '"label":"' + label.title() + '",' + \
+               '"label":"' + label + '",' + \
                '"comparison":' + comparison + '},'
     else:
         return json_string
@@ -181,7 +183,9 @@ class AdvancedSearchFilter(django_filters.FilterSet):
                 if operator != '':
                     cur_q_object.add(prev_q_object, operator)
         if self.modality:
-            cur_q_object.add(self.__parse_advanced_search("{{[Modality Type] is '{0}'}}".format(self.modality.upper())),
+            # TODO: not so nice: hardcoded 'Modality type'. If someone changes verbose_name in models.py,
+            #  it doesn't work
+            cur_q_object.add(self.__parse_advanced_search("{{[Modality type] is '{0}'}}".format(self.modality.upper())),
                              "AND")
         if cur_q_object:
             _qs = _qs.filter(cur_q_object)
@@ -283,8 +287,8 @@ def get_advanced_search_options_ct(pid=True):
     json_search = add_model2json_search(PatientModuleAttr, json_search, 'patientmoduleattr__')
     json_search = add_model2json_search(PatientStudyModuleAttr, json_search, 'patientstudymoduleattr__', pid)
     json_search = add_model2json_search(GeneralEquipmentModuleAttr, json_search, 'generalequipmentmoduleattr__')
-    json_search = add_model2json_search(UniqueEquipmentNames, json_search,
-                                        'generalequipmentmoduleattr__unique_equipment_name__')
+    # json_search = add_model2json_search(UniqueEquipmentNames, json_search,
+    #                                     'generalequipmentmoduleattr__unique_equipment_name__')
     json_search = add_model2json_search(CtRadiationDose, json_search, 'ctradiationdose__')
     json_search = add_model2json_search(CtAccumulatedDoseData, json_search, 'ctradiationdose__ctaccumulateddosedata__')
     json_search = add_model2json_search(CtIrradiationEventData, json_search,
