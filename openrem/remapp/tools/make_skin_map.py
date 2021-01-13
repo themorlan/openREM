@@ -333,6 +333,7 @@ def make_skin_map(study_pk=None):
             patient_size=pat_height,
             skin_map_version=__skin_map_version__,
             peak_skin_dose=max_skin_dose,
+            dap_fraction=my_exp_map.my_dose.dap_count / np.float(study.total_dap),
         ).save()
         return_structure = {
             "skin_map": my_exp_map.my_dose.total_dose.flatten().tolist(),
