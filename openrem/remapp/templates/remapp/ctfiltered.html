@@ -37,8 +37,8 @@
                     <div id="search_builder" class="search_builder_class">
                       <table id="search_builder_table" class="small header-background" style="width:100%">
                         <tr>
-                          <th>Boolean operator</th><th>Opening bracket(s)</th><th>Parameter</th>
-                          <th>Operator</th><th>Value</th><th>Closing bracket(s)</th><th></th>
+                            <th>Boolean operator</th><th colspan="2">Opening bracket(s)</th><th>Parameter</th>
+                          <th>Operator</th><th>Value</th><th colspan="2">Closing bracket(s)</th><th></th>
                         </tr>
                       </table>
                     </div>
@@ -105,11 +105,13 @@
             <table style="width: 100%;">
                 <tr>
                     <td><h3 class="panel-title">Exam filter</h3></td>
-                    <td style="text-align: right;" >
-                        <a href="{% url 'ct_summary_list_filter' %}?advanced_search=True">
-                            <small>Switch to advanced filtering</small>
-                        </a>
-                    </td>
+                    {% if request.user.userprofile.hasAdvancedFiltering %}
+                        <td style="text-align: right;" >
+                            <a href="{% url 'ct_summary_list_filter' %}?advanced_search=True">
+                                <small>Switch to advanced filtering</small>
+                            </a>
+                        </td>
+                    {% endif %}
                 </tr>
             </table>
         </div>

@@ -65,11 +65,13 @@
             <table style="width: 100%;">
                 <tr>
                     <td><h3 class="panel-title">Exam filter</h3></td>
-                    <td style="text-align: right;">
-                        <a href="{% url 'mg_summary_list_filter' %}?advanced_search=True">
-                            <small>Switch to advanced filtering</small>
-                        </a>
-                    </td>
+                    {% if request.user.userprofile.hasAdvancedFiltering %}
+                        <td style="text-align: right;">
+                            <a href="{% url 'mg_summary_list_filter' %}?advanced_search=True">
+                                <small>Switch to advanced filtering</small>
+                            </a>
+                        </td>
+                    {% endif %}
                 </tr>
             </table>
         </div>

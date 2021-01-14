@@ -22,15 +22,34 @@ function addSearchBuilderLine(pos, first) {
 
     $('#search_builder_table tr:last').after("<tr id='line_" + strNewPos + "' class='builder_line'>" +
       "    <td><select id='concatoperator_" + strNewPos + "' class='concatoperator'>" + concatOptions +
-        "    </select></td>" +
-      "    <td><input style='width:100%' id='prebracket_" + strNewPos + "' class='prebrackets' size=1/></td>" +
+      "        </select></td>" +
+      "    <td style='text-align:right'>" +
+      "      <a href='javascript:;' class='remove_prebracket'>" +
+      "        <img id='removeprebracket_" + strNewPos + "' src='" + staticUrl + "img/delete.png' alt='remove bracket'/>" +
+      "      </a>" +
+      "      <a href='javascript:;' class='add_prebracket'>" +
+      "        <img id='addprebracket_" + strNewPos + "' src='" + staticUrl + "img/add.png' alt='add bracket'/>" +
+      "      </a>" +
+      "    </td>" +
+      "    <td><input style='width:100%' id='prebracket_" + strNewPos + "' class='prebrackets' " +
+      "               readonly/></td>" +
       "    <td><select style='width:100%' id='parameter_" + strNewPos + "' class='parameter'></select></td>" +
       "    <td><select style='width:100%' id='operator_" + strNewPos + "' class='operator'></select></td>" +
       "    <td><div id='search_term_" + strNewPos + "' class='search_inline_div'>" +
       "        <input id='term_" + strNewPos + "' class='searchinput' size=40/>" +
       "    </div></td>" +
-      "    <td><input style='width:100%' id='postbracket_" + strNewPos + "' class='postbrackets' size=1/>" +
-      "    <td><a href='javascript:;' class='rem_line' style='visibility: " + (first ? "hidden" : "visible") + ";'>" +
+      "    <td style='text-align:right'>" +
+      "      <a href='javascript:;' class='remove_postbracket'>" +
+      "        <img id='removepostbracket_" + strNewPos + "' src='" + staticUrl + "img/delete.png' alt='remove bracket'/>" +
+      "      </a>" +
+      "      <a href='javascript:;' class='add_postbracket'>" +
+      "        <img id='addpostbracket_" + strNewPos + "' src='" + staticUrl + "img/add.png' alt='add bracket'/>" +
+      "      </a>" +
+      "    </td>" +
+      "    <td><input style='width:100%' id='postbracket_" + strNewPos + "' class='postbrackets' " +
+      "               readonly/></td>" +
+      "    <td style='text-align:right'>" +
+      "        <a href='javascript:;' class='rem_line' style='visibility: " + (first ? "hidden" : "visible") + ";'>" +
       "        <img id='remline_" + strNewPos + "' src='" + staticUrl + "img/delete.png' alt='remove line'/></a>" +
       "    <a href='javascript:;' class='add_line'><img id='addline_" + strNewPos + "' src='" + staticUrl + "img/add.png' alt='add line'/></a></td>" +
       "</tr>");
@@ -215,33 +234,6 @@ function addHandlers()
         setTimeout(updateSearchString, 100);
     });
 
-    let $preBrackets = $(".prebrackets");
-    let $postBrackets = $(".postbrackets");
-    let $preAndPostBrackets = $(".prebrackets, .postbrackets");
-    $preAndPostBrackets.off();
-    $preAndPostBrackets.on("keyup", function() {
-        checkBrackets();
-        updateSearchString();
-    });
-    $preAndPostBrackets.on("paste", function(event) {
-        //don't allow paste
-        event.preventDefault();
-    });
-    $preBrackets.keydown(function (event) {
-      // allow: backspace, tab, enter, shift, escape, delete, delete
-      // second line is key 9/(
-      if (!(($.inArray(event.originalEvent.keyCode, [8, 9, 13, 16, 27, 46, 110]) !== -1) ||
-          (event.originalEvent.shiftKey === true && event.originalEvent.keyCode === 57)))
-        event.preventDefault();
-    });
-    $postBrackets.keydown(function (event) {
-      // allow: backspace, tab, enter, shift, escape, delete, delete
-      // second line is key  0/)
-      if (!(($.inArray(event.originalEvent.keyCode, [8, 9, 13, 16, 27, 46, 110]) !== -1) ||
-          (event.originalEvent.shiftKey === true && event.originalEvent.keyCode === 48)))
-        event.preventDefault();
-    });
-
     $(".parameter").change(function(event) {
         updateOperatorCB(event.target);
         updateSearchString();
@@ -254,6 +246,83 @@ function addHandlers()
     $(".concatoperator").change(function() {
         updateSearchString();
     });
+
+    let $addPrebracket = $(".add_prebracket");
+    $addPrebracket.off();
+    $addPrebracket.on("click", function(event) {
+        let id;
+        if (event.target.className === "add_prebracket") {
+            //pressed enter with focus on hyperlink instead of clicking "image"
+            //still click-event is triggered
+            id = event.target.firstChild.id.substring(event.target.id.indexOf("_")+1);
+        }
+        else {
+            id = event.target.id.substring(event.target.id.indexOf("_")+1);
+        }
+        document.getElementById('prebracket_'+id).value =
+            document.getElementById('prebracket_'+id).value + "("
+        checkBrackets();
+        updateSearchString();
+    });
+
+    let $addPostbracket = $(".add_postbracket");
+    $addPostbracket.off();
+    $addPostbracket.on("click", function(event) {
+        let id;
+        if (event.target.className === "add_postbracket") {
+            //pressed enter with focus on hyperlink instead of clicking "image"
+            //still click-event is triggered
+            id = event.target.firstChild.id.substring(event.target.id.indexOf("_")+1);
+        }
+        else {
+            id = event.target.id.substring(event.target.id.indexOf("_")+1);
+        }
+        document.getElementById('postbracket_'+id).value =
+            document.getElementById('postbracket_'+id).value + ")"
+        checkBrackets();
+        updateSearchString();
+    });
+
+    let $removePrebracket = $(".remove_prebracket");
+    $removePrebracket.off();
+    $removePrebracket.on("click", function(event) {
+        let id;
+        if (event.target.className === "remove_prebracket") {
+            //pressed enter with focus on hyperlink instead of clicking "image"
+            //still click-event is triggered
+            id = event.target.firstChild.id.substring(event.target.id.indexOf("_")+1);
+        }
+        else {
+            id = event.target.id.substring(event.target.id.indexOf("_")+1);
+        }
+        let inputprebracket = document.getElementById('prebracket_'+id).value;
+        if (inputprebracket.length > 0)
+            document.getElementById('prebracket_'+id).value =
+                inputprebracket.substr(0, inputprebracket.length-1);
+        checkBrackets();
+        updateSearchString();
+    });
+
+    let $removePostbracket = $(".remove_postbracket");
+    $removePostbracket.off();
+    $removePostbracket.on("click", function(event) {
+        let id;
+        if (event.target.className === "remove_postbracket") {
+            //pressed enter with focus on hyperlink instead of clicking "image"
+            //still click-event is triggered
+            id = event.target.firstChild.id.substring(event.target.id.indexOf("_")+1);
+        }
+        else {
+            id = event.target.id.substring(event.target.id.indexOf("_")+1);
+        }
+        let inputpostbracket = document.getElementById('postbracket_'+id).value;
+        if (inputpostbracket.length > 0)
+            document.getElementById('postbracket_'+id).value =
+                inputpostbracket.substr(0, inputpostbracket.length-1);
+        checkBrackets();
+        updateSearchString();
+    });
+
 
     let $addLine = $(".add_line");
     $addLine.off();

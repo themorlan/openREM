@@ -638,6 +638,8 @@ class UserProfile(models.Model, CommonVariables):
         verbose_name="Number of days over which to sum studies B",
     )
 
+    hasAdvancedFiltering = models.BooleanField(default=False)
+
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
