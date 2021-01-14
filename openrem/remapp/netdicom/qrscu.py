@@ -276,7 +276,7 @@ def _prune_series_responses(
         query_id_8 = query_id.hex[:8]
     except AttributeError:
         query_id_8 = query_id[:8]
-    logger.info(
+    logger.debug(
         f"{query_id_8} Getting series and image level information and deleting series we can't use"
     )
 
@@ -848,7 +848,7 @@ def _query_images(
                 try:
                     imagesrsp.sop_class_uid = identifier.SOPClassUID
                 except AttributeError:
-                    logger.warning(
+                    logger.debug(
                         f"{query_id_8}/{image_query_id.hex[:8]} StudyInstUID {d3.StudyInstanceUID} Image "
                         f"Response {im_rsp_no}: no SOPClassUID. If CT, might need to use Toshiba Advanced option"
                         f" (additional config required)"
@@ -1041,13 +1041,11 @@ def _query_study(ae, remote, assoc, d, query, study_query_id):
                     )
                 )
                 query.save()
-                logger.info(f"{study_query_id} {query.stage}")
+                logger.info(f"{query_id_8}/{study_query_id.hex[:8]} {query.stage}")
                 return
             if status.Status in (0xFF00, 0xFF01):
                 logger.debug(
-                    "{0} Matches are continuing (0x{1:04x})".format(
-                        study_query_id, status.Status
-                    )
+                    f"{query_id_8}/{study_query_id.hex[:8]} Matches are continuing (0x{status.Status:04x})"
                 )
                 query.stage = _(
                     "Matches are continuing for {modalities} studies".format(
@@ -1205,10 +1203,14 @@ def _remove_duplicates_in_study_response(query, initial_count):
     :return: response count after removing duplicates
     """
 
+    query_id = query.query_id
+    try:
+        query_id_8 = query_id.hex[:8]
+    except AttributeError:
+        query_id_8 = query_id[:8]
+
     logger.debug(
-        "{0} {1} study responses returned, removing duplicates.".format(
-            query.query_id, initial_count
-        )
+        f"{query_id_8} {initial_count} study responses returned, removing duplicates."
     )
     try:
         for study_rsp in (
@@ -1224,16 +1226,12 @@ def _remove_duplicates_in_study_response(query, initial_count):
         query.save()
         current_count = query.dicomqrrspstudy_set.count()
         logger.info(
-            "{0} Removed {1} duplicates from response, {2} remain.".format(
-                query.query_id, initial_count - current_count, current_count
-            )
+            f"{query_id_8} Removed {initial_count - current_count} duplicates from response, {current_count} remain."
         )
         return current_count
     except NotImplementedError:
         logger.info(
-            "{0} Unable to remove duplicates - works with PostgreSQL only".format(
-                query.query_id
-            )
+            f"{query_id_8} Unable to remove duplicates - works with PostgreSQL only"
         )
         return initial_count
 
@@ -1293,7 +1291,12 @@ def qrscu(
     debug_timer = datetime.now()
     if not query_id:
         query_id = uuid.uuid4()
-    logger.debug("Query_id is {0}".format(query_id))
+    try:
+        query_id_8 = query_id.hex[:8]
+    except AttributeError:
+        query_id_8 = query_id[:8]
+
+    logger.debug(f"Query_id is {query_id_8}")
     logger.debug(
         "{12} qrscu args passed: qr_scp_pk={0}, store_scp_pk={1}, implicit={2}, explicit={3}, move={4}, "
         "queryID={5}, date_from={6}, date_until={7}, modalities={8}, inc_sr={9}, remove_duplicates={10}, "
@@ -1314,22 +1317,20 @@ def qrscu(
         )
     )
     celery_task_uuid = qrscu.request.id
-    logger.debug(f"Alt id is {celery_task_uuid}")
+    logger.debug(f"Celery task UUID is {celery_task_uuid}")
 
     # Currently, if called from qrscu_script modalities will either be a list of modalities or it will be "SR".
     # Web interface hasn't changed, so will be a list of modalities and or the inc_sr flag
     # Need to normalise one way or the other.
-    logger.debug(
-        f"{query_id.hex[:8]} Checking for modality selection and sr_only clash"
-    )
+    logger.debug(f"{query_id_8} Checking for modality selection and sr_only clash")
     if modalities is None and inc_sr is False:
         logger.error(
-            f"{query_id.hex[:8]} Query retrieve routine called with no modalities selected"
+            f"{query_id_8} Query retrieve routine called with no modalities selected"
         )
         return
     elif modalities is not None and inc_sr is True:
         logger.error(
-            f"{query_id.hex[:8]} Query retrieve routine should be called with a modality selection _or_ SR only query,"
+            f"{query_id_8} Query retrieve routine should be called with a modality selection _or_ SR only query,"
             f" not both. Modalities is {modalities}, inc_sr is {inc_sr}"
         )
         return
@@ -1352,7 +1353,7 @@ def qrscu(
     ae.add_requested_context(StudyRootQueryRetrieveInformationModelFind)
     ae.ae_title = our_aet
 
-    logger.debug(f"{query_id.hex[:8]} Remote AE is {remote['aet']}")
+    logger.debug(f"{query_id_8} Remote AE is {remote['aet']}")
 
     query = DicomQuery.objects.create()
     query.query_id = query_id
@@ -1381,12 +1382,17 @@ def qrscu(
         modality_text = f"Modalities = {modalities}"
     active_filters = {k: v for k, v in filters.items() if v is not None}
     # active_filters_text = "<br/>".join(": ".join(_) for _ in active_filters.items())
-    query.query_summary = (
-        f"QR SCP PK = {qr_scp_pk} ({qr_scp.name}). <br>"
-        f"Store SCP PK = {store_scp_pk} ({query.store_scp_fk.name}).<br>{study_date_time}.<br>"
-        f"{modality_text}.<br>Filters = {active_filters}.<br>"
+    query_summary_1 = (
+        f"QR SCP PK = {qr_scp_pk} ({qr_scp.name}). "
+        f"Store SCP PK = {store_scp_pk} ({query.store_scp_fk.name})."
+    )
+    query_summary_2 = f"{study_date_time}. {modality_text}. Filters = {active_filters}."
+    query_summary_3 = (
         f"Advanced options: Remove duplicates = {remove_duplicates}, "
         f"Get Toshiba images = {get_toshiba_images}, Get 'empty' SR series = {get_empty_sr}"
+    )
+    query.query_summary = (
+        f"{query_summary_1} <br> {query_summary_2} <br> {query_summary_3}"
     )
     query.save()
 
@@ -1395,7 +1401,8 @@ def qrscu(
     if assoc.is_established:
 
         logger.info(
-            f"{query_id.hex[:8]} Celery {celery_task_uuid[:8]} DICOM FindSCU: {query.query_summary}"
+            f"{query_id_8} Celery {celery_task_uuid[:8]} "
+            f"DICOM FindSCU: {query_summary_1} \n    {query_summary_2} \n    {query_summary_3}"
         )
         d = Dataset()
         d.StudyDate = study_date
@@ -1439,7 +1446,7 @@ def qrscu(
         study_rsp = query.dicomqrrspstudy_set.all()
         if modalities_returned and inc_sr:
             logger.debug(
-                f"{query_id.hex[:8]} Modalities_returned is true and we only want studies with only SR in;"
+                f"{query_id_8} Modalities_returned is true and we only want studies with only SR in;"
                 " removing everything else."
             )
             for study in study_rsp:
@@ -1451,7 +1458,7 @@ def qrscu(
                 study_numbers["initial"] - study_numbers["current"]
             )
             logger.info(
-                f"{query_id.hex[:8]} Finished removing studies that have anything other than SR in, "
+                f"{query_id_8} Finished removing studies that have anything other than SR in, "
                 f"{study_numbers['sr_only_removed']} removed, {study_numbers['current']} remain"
             )
 
@@ -1485,7 +1492,7 @@ def qrscu(
             query.stage = _("Pruning study responses based on inc/exc options")
             query.save()
             logger.debug(
-                f"{query_id.hex[:8]} Pruning study responses based on inc/exc options: {''.join(filter_logs)}"
+                f"{query_id_8} Pruning study responses based on inc/exc options: {''.join(filter_logs)}"
             )
             before_study_prune = study_numbers["current"]
             deleted_studies_filters = _prune_study_responses(query, filters)
@@ -1495,7 +1502,7 @@ def qrscu(
                 before_study_prune - study_numbers["current"]
             )
             logger.info(
-                f"{query_id.hex[:8]} Pruning studies based on inc/exc has removed "
+                f"{query_id_8} Pruning studies based on inc/exc has removed "
                 f"{study_numbers['inc_exc_removed']} studies, {study_numbers['current']} studies remain."
             )
         else:
@@ -1505,12 +1512,12 @@ def qrscu(
                 "stationname_inc": 0,
                 "stationname_exc": 0,
             }
-            logger.debug(f"{query_id.hex[:8]} No inc/exc options selected")
+            logger.debug(f"{query_id_8} No inc/exc options selected")
 
         query.stage = _("Querying at series level to get more details about studies")
         query.save()
         logger.debug(
-            f"{query_id.hex[:8]} Querying at series level to get more details about studies"
+            f"{query_id_8} Querying at series level to get more details about studies"
         )
         for rsp in study_rsp:
             # Series level query
@@ -1519,7 +1526,7 @@ def qrscu(
             _query_series(ae, remote, assoc, d2, rsp, query)
             if not modalities_returned:
                 _generate_modalities_in_study(rsp, query_id)
-        logger.debug(f"{query_id.hex[:8]} Series level query complete.")
+        logger.debug(f"{query_id_8} Series level query complete.")
 
         if (not modality_matching) or qr_scp.use_modality_tag:
             before_not_modality_matching = study_numbers["current"]
@@ -1529,23 +1536,23 @@ def qrscu(
                 for val in list(dic.values())
             )
             logger.debug(
-                f"{query_id.hex[:8]} mods in study are: {study_rsp.values('modalities_in_study')}"
+                f"{query_id_8} mods in study are: {study_rsp.values('modalities_in_study')}"
             )
             query.stage = _("Deleting studies we didn't ask for")
             query.save()
-            logger.info(f"{query_id.hex[:8]} Deleting studies we didn't ask for")
-            logger.debug(f"{query_id.hex[:8]} mods_in_study_set is {mods_in_study_set}")
+            logger.debug(f"{query_id_8} Deleting studies we didn't ask for")
+            logger.debug(f"{query_id_8} mods_in_study_set is {mods_in_study_set}")
             for mod_set in mods_in_study_set:
-                logger.debug(f"{query_id.hex[:8]} mod_set is {mod_set}")
+                logger.debug(f"{query_id_8} mod_set is {mod_set}")
                 delete = True
                 for mod_choice, details in list(all_mods.items()):
                     if details["inc"]:
                         logger.debug(
-                            f"{query_id.hex[:8]} mod_choice {mod_choice}, details {details}"
+                            f"{query_id_8} mod_choice {mod_choice}, details {details}"
                         )
                         for mod in details["mods"]:
                             logger.debug(
-                                f"{query_id.hex[:8]} mod is {mod}, mod_set is {mod_set}"
+                                f"{query_id_8} mod is {mod}, mod_set is {mod_set}"
                             )
                             if mod in mod_set:
                                 delete = False
@@ -1559,14 +1566,14 @@ def qrscu(
                 before_not_modality_matching - study_numbers["current"]
             )
             logger.info(
-                f"{query_id.hex[:8]} Removing studies of modalities not asked for removed "
+                f"{query_id_8} Removing studies of modalities not asked for removed "
                 f"{study_numbers['wrong_modality_removed']} studies, "
                 f"{study_numbers['current']} studies remain"
             )
 
         query.stage = _("Pruning series responses")
         query.save()
-        logger.debug(f"{query_id.hex[:8]} Pruning series responses")
+        logger.debug(f"{query_id_8} Pruning series responses")
         before_series_pruning = study_numbers["current"]
         (
             deleted_studies,
@@ -1614,7 +1621,7 @@ def qrscu(
                 "{del_sr_studies} SR studies were deleted from query due to no suitable SR"
                 " being found. ".format(del_sr_studies=deleted_studies["SR"])
             )
-        logger.info(f"{query_id.hex[:8]} {series_pruning_log}")
+        logger.debug(f"{query_id_8} {series_pruning_log}")
 
         study_rsp = query.dicomqrrspstudy_set.all()
         study_numbers["current"] = study_rsp.count()
@@ -1622,7 +1629,7 @@ def qrscu(
             before_series_pruning - study_numbers["current"]
         )
         logger.info(
-            f"{query_id.hex[:8]} Pruning series responses removed {study_numbers['series_pruning_removed']} "
+            f"{query_id_8} Pruning series responses removed {study_numbers['series_pruning_removed']} "
             f"studies, leaving {study_numbers['current']} studies"
         )
 
@@ -1633,7 +1640,7 @@ def qrscu(
                 "Removing any responses that match data we already have in the database"
             )
             logger.debug(
-                f"{query_id.hex[:8]} Removing any responses that match data we already have in the database"
+                f"{query_id_8} Removing any responses that match data we already have in the database"
             )
             query.save()
             _remove_duplicates(ae, remote, query, study_rsp, assoc)
@@ -1642,7 +1649,7 @@ def qrscu(
                 before_remove_duplicates - study_numbers["current"]
             )
             logger.info(
-                f"{query_id.hex[:8]} Removing duplicates of previous objects removed "
+                f"{query_id_8} Removing duplicates of previous objects removed "
                 f"{study_numbers['duplicates_removed']}, "
                 f"leaving {study_numbers['current']}"
             )
@@ -1699,27 +1706,27 @@ def qrscu(
                 )
             )
         query.save()
-        logger.info(f"{query_id.hex[:8]} {query.stage}")
+        logger.info(f"{query_id_8} {query.stage}")
 
         logger.debug(
-            f"{query.query_id.hex[:8]} Query complete. Move is {move}. Query took {time_took}"
+            f"{query_id_8} Query complete. Move is {move}. Query took {time_took}"
         )
 
-        if logger.isEnabledFor(logging.DEBUG):
-            logger.debug(
-                f"{query_id.hex[:8]} Query result contains the following studies / series:"
-            )
-            studies = query.dicomqrrspstudy_set.all()
-            for study in studies:
-                for series in study.dicomqrrspseries_set.all():
-                    logger.debug(
-                        f"{query_id.hex[:8]}    "
-                        f"Study: {study.study_description} ({study.study_instance_uid}) "
-                        f"modalities: {study.get_modalities_in_study()}, "
-                        f"Series: {series.series_instance_uid}, "
-                        f"modality: {series.modality} "
-                        f"containing {series.number_of_series_related_instances} objects."
-                    )
+        # if logger.isEnabledFor(logging.DEBUG):
+        #     logger.debug(
+        #         f"{query_id_8} Query result contains the following studies / series:"
+        #     )
+        #     studies = query.dicomqrrspstudy_set.all()
+        #     for study in studies:
+        #         for series in study.dicomqrrspseries_set.all():
+        #             logger.debug(
+        #                 f"{query_id_8}    "
+        #                 f"Study: {study.study_description} ({study.study_instance_uid}) "
+        #                 f"modalities: {study.get_modalities_in_study()}, "
+        #                 f"Series: {series.series_instance_uid}, "
+        #                 f"modality: {series.modality} "
+        #                 f"containing {series.number_of_series_related_instances} objects."
+        #             )
 
         if move:
             movescu.delay(str(query.query_id))
@@ -1730,18 +1737,18 @@ def qrscu(
                 assoc.acceptor.primitive.result_str, assoc.acceptor.primitive.reason_str
             )
             logger.warning(
-                f"{query_id.hex[:8]} Association rejected from {remote['host']} {remote['port']}"
+                f"{query_id_8} Association rejected from {remote['host']} {remote['port']}"
                 f" {remote['aet']}. {msg}"
             )
         elif assoc.is_aborted:
             msg = _("Association aborted or never connected")
             logger.warning(
-                f"{query_id.hex[:8]} {msg} to {remote['host']} {remote['port']} {remote['aet']}"
+                f"{query_id_8} {msg} to {remote['host']} {remote['port']} {remote['aet']}"
             )
         else:
             msg = _("Association Failed")
             logger.warning(
-                f"{query_id.hex[:8]} {msg} with {remote['host']} {remote['port']} {remote['aet']}"
+                f"{query_id_8} {msg} with {remote['host']} {remote['port']} {remote['aet']}"
             )
         query.message = msg
         query.stage = msg
