@@ -91,16 +91,16 @@ function fillComboBox(cb) {
 
 function checkBrackets() {
     let bracketSaldo = 0;
-    $(".builder_line").each(function() {
-        let prebracket = $(this).find(".prebrackets")[0].value;
-        let postbracket = $(this).find(".postbrackets")[0].value;
-        let regexpBracketOpen = new RegExp(/\(/, "g");
-        let regexpBracketClose = new RegExp(/\)/, "g");
-        if (prebracket.match(regexpBracketOpen) !== null)
-            bracketSaldo += prebracket.match(regexpBracketOpen).length;
-        if (postbracket.match(regexpBracketClose) !== null)
-            bracketSaldo -= postbracket.match(regexpBracketClose).length;
-    });
+    let lineNumber = 0;
+    while (document.getElementById("prebracket_" + lineNumber.toString()) !== null) {
+        let prebracketNr = document.getElementById("prebracket_" + lineNumber.toString()).value.length;
+        let postbracketNr = document.getElementById("postbracket_" + lineNumber.toString()).value.length;
+        bracketSaldo = bracketSaldo + prebracketNr - postbracketNr;
+        if (bracketSaldo < 0)
+            // if bracketSaldo < 0 there are more closing brackets than opening brackets at this point.
+            break;
+        lineNumber++;
+    }
     if (bracketSaldo > 0) {
         $(".prebrackets").filter(function() {
             return this.value.length > 0

@@ -122,11 +122,11 @@ class AdvancedSearchFilter(django_filters.FilterSet):
             # doesn't have one)
             operator = ''
             start_pos_operator = -2
-            if not((opening_bracket_pos == 0) or (local_search_string[opening_bracket_pos-1] == '(')):
+            if not ((opening_bracket_pos == 0) or (local_search_string[opening_bracket_pos - 1] == '(')):
                 start_pos_operator = local_search_string.rfind('}', 0, opening_bracket_pos)
                 if local_search_string.rfind('(', 0, opening_bracket_pos) > start_pos_operator:
                     start_pos_operator = local_search_string.rfind('(', 0, opening_bracket_pos)
-                operator = local_search_string[start_pos_operator+1:opening_bracket_pos - 1].strip()
+                operator = local_search_string[start_pos_operator + 1:opening_bracket_pos - 1].strip()
             temp_q_object = self.__parse_advanced_search(inner_search_string)
             if operator.find('NOT') > -1:
                 temp_q_object.negate()
@@ -140,7 +140,7 @@ class AdvancedSearchFilter(django_filters.FilterSet):
                     cur_q_object.add(prev_q_object, operator, squash=False)
             prev_q_object = deepcopy(cur_q_object)
             if start_pos_operator > -2:
-                local_search_string = (local_search_string[0:start_pos_operator+1] +
+                local_search_string = (local_search_string[0:start_pos_operator + 1] +
                                        local_search_string[closing_bracket_pos + 1:]).strip()
             else:
                 local_search_string = (local_search_string[0:opening_bracket_pos] +
@@ -149,7 +149,7 @@ class AdvancedSearchFilter(django_filters.FilterSet):
             while '()' in local_search_string:
                 # if position before last_closing_bracket_pos lower this variable with 2.
                 pos_brackets = local_search_string.find('()')
-                local_search_string = local_search_string[0:pos_brackets] + local_search_string[pos_brackets+2:]
+                local_search_string = local_search_string[0:pos_brackets] + local_search_string[pos_brackets + 2:]
                 if pos_brackets < last_closing_bracket_pos:
                     last_closing_bracket_pos = last_closing_bracket_pos - 2
             closing_bracket_pos = local_search_string.find(')', last_closing_bracket_pos)
@@ -174,8 +174,8 @@ class AdvancedSearchFilter(django_filters.FilterSet):
                     _search_string = local_search_string[local_search_string.find('{'):]
                 else:
                     # operator is at the end of the search string
-                    operator = local_search_string[local_search_string.find('}')+1:].strip()
-                    _search_string = local_search_string[:local_search_string.find('}')+1]
+                    operator = local_search_string[local_search_string.find('}') + 1:].strip()
+                    _search_string = local_search_string[:local_search_string.find('}') + 1]
                 cur_q_object = self.__parse_advanced_search(local_search_string)
                 if operator.find('NOT') > -1:
                     cur_q_object.negate()
@@ -287,8 +287,6 @@ def get_advanced_search_options_ct(pid=True):
     json_search = add_model2json_search(PatientModuleAttr, json_search, 'patientmoduleattr__')
     json_search = add_model2json_search(PatientStudyModuleAttr, json_search, 'patientstudymoduleattr__', pid)
     json_search = add_model2json_search(GeneralEquipmentModuleAttr, json_search, 'generalequipmentmoduleattr__')
-    # json_search = add_model2json_search(UniqueEquipmentNames, json_search,
-    #                                     'generalequipmentmoduleattr__unique_equipment_name__')
     json_search = add_model2json_search(CtRadiationDose, json_search, 'ctradiationdose__')
     json_search = add_model2json_search(CtAccumulatedDoseData, json_search, 'ctradiationdose__ctaccumulateddosedata__')
     json_search = add_model2json_search(CtIrradiationEventData, json_search,
@@ -303,4 +301,87 @@ def get_advanced_search_options_ct(pid=True):
                                         'ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__')
     json_search = '[' + json_search[:-1] + ']'
 
+    return json_search
+
+
+def get_advanced_search_options_2dplane(pid=True):
+    """
+    Adds all advanced search options for DX to the json-search-options
+    :return: json-search-options for modality DX
+    """
+    from remapp.models import GeneralStudyModuleAttr, PatientModuleAttr, PatientStudyModuleAttr, \
+        GeneralEquipmentModuleAttr, ProjectionXRayRadiationDose, IrradEventXRayData, ImageViewModifier, \
+        IrradEventXRayData, IrradEventXRaySourceData, XrayGrid, Kvp, XrayTubeCurrent, Exposure, XrayFilters, \
+        IrradEventXRayMechanicalData, DoseRelatedDistanceMeasurements
+
+    json_search = ''
+    json_search = add_model2json_search(GeneralStudyModuleAttr, json_search)
+    json_search = add_model2json_search(PatientModuleAttr, json_search, 'patientmoduleattr__')
+    json_search = add_model2json_search(PatientStudyModuleAttr, json_search, 'patientstudymoduleattr__', pid)
+    json_search = add_model2json_search(GeneralEquipmentModuleAttr, json_search, 'generalequipmentmoduleattr__')
+    json_search = add_model2json_search(ProjectionXRayRadiationDose, json_search, 'projectionxrayradiationdose__')
+    json_search = add_model2json_search(IrradEventXRayData, json_search,
+                                        'projectionxrayradiationdose__irradeventxraydata__')
+    json_search = add_model2json_search(ImageViewModifier, json_search,
+                                        'projectionxrayradiationdose__irradeventxraydata__imageviewmodifier__')
+    json_search = add_model2json_search(IrradEventXRaySourceData, json_search,
+                                        'projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__')
+    json_search = add_model2json_search(XrayGrid, json_search,
+                                        'projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata_'
+                                        'xraygrid__')
+    json_search = add_model2json_search(Kvp, json_search,
+                                        'projectionxrayradiationdose__irradeventxraydata__'
+                                        'irradeventxrayxourcedata__kvp__')
+    json_search = add_model2json_search(XrayTubeCurrent, json_search,
+                                        'projectionxrayradiationdose__irradeventxraydata__'
+                                        'irradeventxrayxourcedata__xraytubecurrent__')
+    json_search = add_model2json_search(Exposure, json_search,
+                                        'projectionxrayradiationdose__irradeventxraydata__'
+                                        'irradeventxrayxourcedata__exposure__')
+    json_search = add_model2json_search(XrayFilters, json_search,
+                                        'projectionxrayradiationdose__irradeventxraydata__'
+                                        'irradeventxrayxourcedata__xrayfilters__')
+    json_search = add_model2json_search(IrradEventXRayMechanicalData, json_search,
+                                        'projectionxrayradiationdose__irradeventxraydata__'
+                                        'irradeventxraymechanicaldata__')
+    json_search = add_model2json_search(DoseRelatedDistanceMeasurements, json_search,
+                                        'projectionxrayradiationdose__irradeventxraydata__'
+                                        'irradeventxraymechanicaldata__doserelateddistancemeasurements')
+
+    return json_search
+
+
+def get_advanced_search_options_dx(pid=True):
+    from remapp.models import AccumXRayDose, AccumProjXRayDose, AccumCassetteBsdProjRadiogDose, \
+        AccumIntegratedProjRadiogDose
+
+    json_search = get_advanced_search_options_2dplane(pid)
+    json_search = add_model2json_search(AccumXRayDose, json_search,
+                                        'projectionxrayradiationdose__accumxraydose__')
+    json_search = add_model2json_search(AccumProjXRayDose, json_search,
+                                        'projectionxrayradiationdose__accumxraydose__accumprojxraydose')
+    json_search = add_model2json_search(AccumCassetteBsdProjRadiogDose, json_search,
+                                        'projectionxrayradiationdose__accumxraydose__accumcassettebsdprojradiogdose')
+    json_search = add_model2json_search(AccumIntegratedProjRadiogDose, json_search,
+                                        'projectionxrayradiationdose__accumxraydose__accumintegratedprojradiogdose')
+
+    return json_search
+
+
+def get_advanced_search_options_rf(pid=True):
+    from remapp.models import PulseWidth
+
+    json_search = get_advanced_search_options_dx(pid)  # is this correct?
+    json_search = add_model2json_search(PulseWidth, json_search,
+                                        'projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata_'
+                                        'pulsewidth__')
+    return json_search
+
+
+def get_advanced_search_options_mg(pid=True):
+    from remapp.models import AccumMammographyXRayDose
+
+    json_search = get_advanced_search_options_2dplane(pid)  # is this correct?
+    json_search = add_model2json_search(AccumMammographyXRayDose, json_search,
+                                        'projectionxrayradiationdose__accumxraydose__accummammographyxraydose__')
     return json_search
