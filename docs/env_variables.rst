@@ -15,12 +15,14 @@ http://www.miniwebtool.com/django-secret-key-generator/ for this:
 
         SECRET_KEY=
 
-Should be a single string of hosts with a space between each. For example:
-``DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1] myservername``
+Should be a single string of hosts with a space between each. ``nginx`` is required,
+``localhost 127.0.0.1 [::]`` allows access on the server using the localhost name or IP (using IPv4 or IPv6)
+and the name and/IP address of your server needs to be added to the end to be able to access the OpenREM interface
+from other computers. For example: ``DJANGO_ALLOWED_HOSTS=nginx localhost 127.0.0.1 [::1] myservername``
 
     .. code-block:: none
 
-        DJANGO_ALLOWED_HOSTS=
+        DJANGO_ALLOWED_HOSTS=nginx localhost 127.0.0.1 [::1]
 
 
 Variables to help with debugging problems
