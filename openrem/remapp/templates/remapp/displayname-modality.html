@@ -1,25 +1,25 @@
 <p>There are {{ name_set.count }} entries in this table. Back to the <a href="#top">top</a>.</p>
-<table class="table table-bordered table-hover row-clickable sortable" id="display_name_table_{{ modality }}">
+<table class="table table-bordered table-hover row-clickable sortable" id="display_name_table_{{ modality }}" aria-describedby="{{ modality }} systems">
   <tr>
     {% if admin.admingroup %}
-      <th>Update?</th>
+      <th scope="col">Update?</th>
     {% endif %}
-    <th>Display name</th>
+    <th scope="col">Display name</th>
     {% if dual %}
-      <th>User defined modality</th>
+      <th scope="col">User defined modality</th>
     {% endif %}
-    <th>Institution</th>
-    <th>Department</th>
-    <th>Manufacturer</th>
-    <th>Model</th>
-    <th>Station name</th>
-    <th>Serial no.</th>
-    <th>Software version</th>
-    <th>Gantry ID</th>
-    <th>How many studies</th>
-    <th>Date of last study</th>
+    <th scope="col">Institution</th>
+    <th scope="col">Department</th>
+    <th scope="col">Manufacturer</th>
+    <th scope="col">Model</th>
+    <th scope="col">Station name</th>
+    <th scope="col">Serial no.</th>
+    <th scope="col">Software version</th>
+    <th scope="col">Gantry ID</th>
+    <th scope="col">How many studies</th>
+    <th scope="col">Date of last study</th>
     {% if admin.admingroup %}
-    <th>Review</th>
+    <th scope="col">Review</th>
     {% endif %}
   </tr>
   {% for eachrow in name_set %}
