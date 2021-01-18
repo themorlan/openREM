@@ -130,6 +130,9 @@ def logout_page(request):
 @login_required
 def dx_summary_list_filter(request):
     """Obtain data for radiographic summary view"""
+    from remapp.interface.mod_filters import check_advanced_filter
+    from remapp.interface.advanced_search_functions import get_advanced_search_options_dx
+
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = dx_acq_filter(request.GET, pid=pid)
 
@@ -187,6 +190,20 @@ def dx_summary_list_filter(request):
         return_structure["required_charts"] = generate_required_dx_charts_list(
             user_profile
         )
+
+    advanced_search_options = {}
+    advanced_search_string = request.GET.get('advanced_search_string', "")
+    advanced_search_available = check_advanced_filter(request.GET)
+    if advanced_search_available:
+        advanced_search_options = get_advanced_search_options_dx(pid)
+        return_structure["json_filter_options"] = advanced_search_options
+        return_structure["advancedSearchString"] = advanced_search_string
+
+    return_structure.update({"filter": f, "admin": admin, "chartOptionsForm": chart_options_form,
+                             "advancedSearchAvailable": advanced_search_available,
+                             "json_filter_options": advanced_search_options,
+                             "advancedSearchString": advanced_search_string,
+                             "itemsPerPageForm": items_per_page_form})
 
     return render(request, "remapp/dxfiltered.html", return_structure)
 

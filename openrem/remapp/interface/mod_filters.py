@@ -1027,9 +1027,34 @@ class DXFilterPlusPid(DXSummaryListFilter):
         )
 
 
+def dx_acq_advanced_filter(filters, pid=False):
+    """
+    Check if advanced filter is used, if that is the case return queryset
+    :param filters: request.GET containing the filters
+    :param pid: allow filtering for pid
+    :return: queryset or None if advanced filter is not used
+    """
+    import json
+    from remapp.interface.advanced_search_functions import get_advanced_search_options_dx, AdvancedSearchFilter
+    advanced_search_str = ''
+
+    if check_advanced_filter(filters):
+        if "submit" in filters:
+            advanced_search_str = filters['advanced_search_string']
+        advanced_search_options = get_advanced_search_options_dx(pid)
+        return AdvancedSearchFilter({'advanced_search_string': advanced_search_str},
+                                    json.loads(advanced_search_options), 'CR')  # TODO: Do we have to add DX?
+    else:
+        return None
+
+
 def dx_acq_filter(filters, pid=False):
 
     """Additional filters at event level"""
+    # First check if advanced filtering is performed
+    if check_advanced_filter(filters):
+        return dx_acq_advanced_filter(filters, pid=False)
+
     filteredInclude = []
     if "acquisition_protocol" in filters and (
         "acquisition_dap_min" in filters

@@ -1,7 +1,6 @@
 {% extends "remapp/filteredbase.html" %}
 
-{% block navdx %}
-    <li class="active">{% endblock %}
+{% block navdx %}<li class="active">{% endblock %}
 
 {% block toprow %}
 
@@ -9,6 +8,47 @@
         There are {{ filter.qs.count }} studies in this list.
     </p>
 
+{% endblock %}
+
+{% block avancedfilter %}
+    {% if advancedSearchAvailable %}
+        <div class="panel panel-info" style="display: block;">
+            <div class="panel-heading" role="tab" id="headingSearch">
+                <table style="width: 100%;">
+                  <tr>
+                    <td><h3 class="panel-title">
+                      <span class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                          href="#collapseSearch" aria-expanded="false" aria-controls="collapseSearch">
+                        Advanced filtering
+                      </span>
+                    </h3></td>
+                    <td style="text-align: right;"><a href="{% url 'dx_summary_list_filter' %}">
+                        <small>Switch to default Exam filter</small></a>
+                    </td>
+                  </tr>
+                </table>
+            </div>
+            <div id="collapseSearch" class="panel-collapse collapse in" role="tabpanel"
+                 aria-labelledby="headingSearch">
+                <div class="advanced_search">
+                    <div id="div_search_string" class="built_search_string">
+                        {{ filter.form.as_p }}
+                    </div>
+                    <div id="search_builder" class="search_builder_class">
+                      <table id="search_builder_table" class="small header-background" style="width:100%">
+                        <tr>
+                            <th>Boolean operator</th><th colspan="2">Opening bracket(s)</th><th>Parameter</th>
+                          <th>Operator</th><th>Value</th><th colspan="2">Closing bracket(s)</th><th></th>
+                        </tr>
+                      </table>
+                    </div>
+                    <div style="text-align: right;" >
+                        <input class="btn btn-default" name="submit" type="submit" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block col2 %}
