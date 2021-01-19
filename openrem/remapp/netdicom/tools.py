@@ -27,10 +27,13 @@
 # anthing else.
 
 import logging
+
 from pynetdicom import AE, VerificationPresentationContexts
 
 logger = logging.getLogger(__name__)
 qr_logger = logging.getLogger("remapp.netdicom.qrscu")
+
+from remapp.models import DicomRemoteQR, DicomStoreSCP
 
 
 def echoscu(scp_pk=None, store_scp=False, qr_scp=False):
@@ -41,7 +44,6 @@ def echoscu(scp_pk=None, store_scp=False, qr_scp=False):
     :param qr_scp: True if checking QR SCP
     :return: 'AssocFail', Success or ?
     """
-    from ..models import DicomRemoteQR, DicomStoreSCP
 
     if store_scp and scp_pk:
         scp = DicomStoreSCP.objects.get(pk=scp_pk)
