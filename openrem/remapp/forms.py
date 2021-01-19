@@ -1022,13 +1022,13 @@ class SkinDoseMapCalcSettingsForm(forms.ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_class = "form-horizontal"
         self.helper.layout = Layout(
-            Div("enable_skin_dose_maps", "calc_on_import"),
-            FormActions(Submit("submit", "Submit")),
+            Div("enable_skin_dose_maps", "calc_on_import", "overule_whitelist"),
+            FormActions(Submit("submit", "submit")),
         )
 
     class Meta(object):
         model = SkinDoseMapCalcSettings
-        fields = ["enable_skin_dose_maps", "calc_on_import"]
+        fields = ["enable_skin_dose_maps", "calc_on_import", "overule_whitelist"]
 
 
 class NotPatientNameForm(forms.ModelForm):

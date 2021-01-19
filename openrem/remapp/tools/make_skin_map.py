@@ -54,6 +54,7 @@ def make_skin_map(study_pk=None):
         GeneralStudyModuleAttr,
         HighDoseMetricAlertSettings,
         SkinDoseMapResults,
+        OpenSkinWhiteList,
     )
     from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
     from openremproject.settings import MEDIA_ROOT
@@ -63,9 +64,24 @@ def make_skin_map(study_pk=None):
     from django.core.exceptions import ObjectDoesNotExist
     import numpy as np
 
-
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
+        entry = OpenSkinWhiteList.objects.get(
+            manufacturer=study.generalequipmentmoduleattr_set.get().manufacturer,
+            manufacturer_model_name=study.generalequipmentmoduleattr_set.get().manufacturer_model_name,
+        )
+
+        if entry is not None and entry.software_version:
+            entry = OpenSkinWhiteList.objects.get(
+                manufacturer=study.generalequipmentmoduleattr_set.get().manufacturer,
+                manufacturer_model_name=study.generalequipmentmoduleattr_set.get().manufacturer_model_name,
+                software_version=study.generalequipmentmoduleattr_set.get().software_versions,
+            )
+        if entry is None:
+            if end_alert_emails_ref:
+                send_rf_high_dose_alert_email(study.pk)
+            return
+
         HighDoseMetricAlertSettings.objects.get()
         send_alert_emails_skin = HighDoseMetricAlertSettings.objects.values_list(
             "send_high_dose_metric_alert_emails_skin", flat=True

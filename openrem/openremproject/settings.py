@@ -36,6 +36,7 @@ STATIC_ROOT = os.environ.get(
 )
 JS_REVERSE_OUTPUT_PATH = os.path.join(STATIC_ROOT, "js", "django_reverse")
 VIRTUAL_DIRECTORY = os.environ.get("VIRTUAL_DIRECTORY", default="")
+FIXTURES_DIRS = os.path.join(BASE_DIR, "/remapp/fixtures")
 
 # Celery settings
 CELERY_BROKER_URL = os.environ.get(
