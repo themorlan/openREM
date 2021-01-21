@@ -2,10 +2,59 @@
 Troubleshooting
 ***************
 
+General Docker troubleshooting
+==============================
+
+All commands should be run from the folder where ``docker-compose.yml`` is.
+
+To list the active containers:
+
+.. code-block:: console
+
+    $ docker-compose ps
+
+To list active containers running anywhere on the system:
+
+.. code-block:: console
+
+    $ docker ps
+
+To start the containers and detach (so you get the command prompt back instead of seeing all the logging):
+
+.. code-block:: console
+
+    $ docker-compose up -d
+
+To stop the containers:
+
+.. code-block:: console
+
+    $ docker-compose down
+
+To see logs of all the containers in follow mode (``-f``) and with timestamps (``-t``):
+
+.. code-block:: console
+
+    $ docker-compose logs -ft
+
+To see logs of just one container in follow mode - use the service name from the ``docker-compose.yml`` file, choose
+from ``openrem``, ``worker`` (Celery), ``flower`` (Flower), ``db`` (PostgreSQL), ``nginx`` (web server),
+``broker`` (RabbitMQ), ``orthanc_1`` (DICOM server):
+
+.. code-block:: console
+
+    $ docker-compose logs -f orthanc_1
+
+Other Docker errors
+===================
+
 .. toctree::
     :maxdepth: 2
 
     docker_up
+
+Older stuff
+===========
 
 ..  toctree::
     :maxdepth: 1

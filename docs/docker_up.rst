@@ -1,5 +1,5 @@
-docker-compose up errors
-========================
+Errors at docker-compose up
+===========================
 
 Cannot start service nginx
 --------------------------
