@@ -99,7 +99,7 @@ your backup filename.
 
 .. code-block:: console
 
-    $ docker cp /path/to/openremdump.bak db_backup/
+    $ cp /path/to/openremdump.bak db_backup/
 
 .. code-block:: console
 
@@ -147,7 +147,7 @@ Generate translation binary files
 
 .. code-block:: console
 
-    $ docker-compose exec openrem python django-admin compilemessages
+    $ docker-compose exec openrem python manage.py compilemessages
 
 The new OpenREM installation should now be ready to be used.
 

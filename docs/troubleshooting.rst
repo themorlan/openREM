@@ -2,6 +2,11 @@
 Troubleshooting
 ***************
 
+.. toctree::
+    :maxdepth: 2
+
+    docker_up
+
 ..  toctree::
     :maxdepth: 1
 
