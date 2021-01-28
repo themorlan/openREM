@@ -1669,7 +1669,7 @@ def qrscu(
             )
         )
         query.stage += series_pruning_log
-        filter_pruning_logs = "Filtering for "
+        filter_pruning_logs = ""
         if filters["study_desc_inc"]:
             filter_pruning_logs += _(
                 "only studies with description that include '{text}' removed {num} studies, ".format(
@@ -1698,7 +1698,8 @@ def qrscu(
                     num=deleted_studies_filters["stationname_exc"],
                 )
             )
-        query.stage += filter_pruning_logs
+        if filter_pruning_logs:
+            query.stage += _("Filtering for {pruning_logs}.".format(pruning_logs=filter_pruning_logs[:-2]))
         if remove_duplicates:
             query.stage += _(
                 "Removing duplicates of previous objects removed {duplicates_removed} studies.".format(
