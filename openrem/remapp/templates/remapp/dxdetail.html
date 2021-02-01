@@ -41,9 +41,9 @@
       </ul>
       <div class="row">
         <div class="col-md-3">
-          <table class="table table-condensed table-bordered small">
+          <table class="table table-condensed table-bordered small" aria-describedby="Total number of events and DAP in the study">
             <tr>
-              <th>Total number of events</th>
+              <th scope="col">Total number of events</th>
               <td>
                 {% for record in accum_set %}
                   {% with accum_integrated=record.accumintegratedprojradiogdose_set.get %}
@@ -61,7 +61,7 @@
               </td>
             </tr>
             <tr>
-              <th>Total DAP</th>
+              <th scope="col">Total DAP</th>
               <td>
                 {% for record in accum_set %}
                   {% with accum_integrated=record.accumintegratedprojradiogdose_set.get %}
@@ -80,26 +80,26 @@
         </div>
       </div>
 
-      <table class="table table-striped table-bordered small">
-        <th>Time</th>
-        <th>Acquisition protocol</th>
-        <th>
-          Anatomy, laterality <br>
-          Targe region <br>
+      <table class="table table-striped table-bordered small" aria-describedby="Exposure details for each acquisition contained in the study">
+        <th scope="col">Time</th>
+        <th scope="col">Acquisition protocol</th>
+        <th scope="col">
+          Anatomy, laterality<br>
+          Targe region<br>
           View
         </th>
-        <th>kVp</th>
-        <th>mAs</th>
-        <th>mA</th>
-        <th>Time<br>(ms)</th>
-        <th>Filters<br>(mm)</th>
-        <th>SID<br>(mm)</th>
-        <th>Grid FD<br>(mm)</th>
-        <th>Exposure Index<br>IEC</th>
-        <th>Exposure Index<br>vendor</th>
-        <th>DAP<br>(cGy.cm<sup>2</sup>)</th>
-        <th>Control mode</th>
-        <th>Comment</th>
+        <th scope="col">kVp</th>
+        <th scope="col">mAs</th>
+        <th scope="col">mA</th>
+        <th scope="col">Time<br>(ms)</th>
+        <th scope="col">Filters<br>(mm)</th>
+        <th scope="col">SID<br>(mm)</th>
+        <th scope="col">Grid FD<br>(mm)</th>
+        <th scope="col">Exposure Index<br>IEC</th>
+        <th scope="col">Exposure Index<br>vendor</th>
+        <th scope="col">DAP<br>(cGy.cm<sup>2</sup>)</th>
+        <th scope="col">Exposure control mode</th>
+        <th scope="col">Comment</th>
         {% for event in events_all %}
           {% with sourcedata=event.irradeventxraysourcedata_set.get %}
             {% with detector_data=event.irradeventxraydetectordata_set.get %}

@@ -170,7 +170,6 @@ class Phantom3:
             prone = False
             pat_pos_z = 1.0
             pat_pos_y = 1.0
-            origin[1] = origin[1] - 24 * height / ref_height
         elif pat_pos == "FFS":
             prone = False
             pat_pos_z = 1.0
@@ -180,7 +179,6 @@ class Phantom3:
             prone = True
             pat_pos_z = -1.0
             pat_pos_y = 1.0
-            origin[1] = origin[1] - 24 * height / ref_height
         elif pat_pos == "FFP":
             prone = True
             pat_pos_z = -1.0
@@ -198,6 +196,9 @@ class Phantom3:
         flat_width = ref_width / ref_radius * radius
         round_flat = round(flat_width, 0)
         flat_spacing = flat_width / round_flat
+        head_height = round(24 * height / ref_height)
+        head_circumference = 58
+        radius_head = head_circumference / (2 * math.pi)
 
         # The three properties were added by DJP to describe
         # the dimensions of the 3D phantom.
@@ -206,12 +207,18 @@ class Phantom3:
         self.phantom_depth = round(radius * 2, 0)
         self.phantom_flat_dist = round_flat
         self.phantom_curved_dist = round_circumference
+        self.phantom_head_radius = radius_head
+        self.phantom_head_height = head_height
 
         self.width = int(2 * round_circumference + 2 * round_flat)
         self.height = int(round(torso, 0))
         self.phantom_type = "3d"
-        self.phantom_map = np.empty((self.width, self.height), dtype=object)
-        self.normal_map = np.empty((self.width, self.height), dtype=object)
+        self.phantom_map = np.empty(
+            (self.width, self.height + self.phantom_head_height), dtype=object
+        )
+        self.normal_map = np.empty(
+            (self.width, self.height + self.phantom_head_height), dtype=object
+        )
         transition1 = (round_flat / 2.0) + 0.5  # Centre line flat to start of curve.
         transition2 = (
             transition1 + round_circumference
@@ -228,9 +235,13 @@ class Phantom3:
             row_index = iterator.multi_index[0] - origin[0]
             col_index = iterator.multi_index[1] - origin[1]
             angle_step = math.pi / round_circumference
+            angle_step_head = 2 * math.pi / head_circumference
             z_offset = -origin[2]
 
-            if row_index < transition1:
+            if (
+                row_index < transition1
+                and col_index > self.phantom_head_height - origin[1]
+            ):
                 my_z = (2.0 * radius + z_offset) * pat_pos_z
                 my_x = (
                     row_index * flat_spacing
@@ -242,7 +253,10 @@ class Phantom3:
                     np.array([my_x, my_y, my_z + pat_pos_z]),
                     np.array([my_x, my_y, my_z]),
                 )
-            elif transition1 <= row_index < transition2:
+            elif (
+                transition1 <= row_index < transition2
+                and col_index > self.phantom_head_height - origin[1]
+            ):
                 my_y = col_index * pat_pos_y
                 my_x = (
                     flat_spacing * round(transition1, 0)
@@ -268,7 +282,10 @@ class Phantom3:
                 normal = Segment3(
                     np.array([normal_x, my_y, normal_z]), np.array([my_x, my_y, my_z])
                 )
-            elif transition2 <= row_index < transition3:
+            elif (
+                transition2 <= row_index < transition3
+                and col_index > self.phantom_head_height - origin[1]
+            ):
                 my_z = z_offset * pat_pos_z
                 my_x = (
                     flat_width
@@ -282,7 +299,10 @@ class Phantom3:
                     np.array([my_x, my_y, my_z - pat_pos_z]),
                     np.array([my_x, my_y, my_z]),
                 )
-            elif transition3 <= row_index < transition4:
+            elif (
+                transition3 <= row_index < transition4
+                and col_index > self.phantom_head_height - origin[1]
+            ):
                 my_y = col_index * pat_pos_y
                 my_x = (
                     -flat_spacing * round(round_flat / 2, 0)
@@ -306,7 +326,10 @@ class Phantom3:
                 normal = Segment3(
                     np.array([normal_x, my_y, normal_z]), np.array([my_x, my_y, my_z])
                 )
-            else:
+            elif (
+                row_index >= transition4
+                and col_index > self.phantom_head_height - origin[1]
+            ):
                 my_z = (2.0 * radius + z_offset) * pat_pos_z
                 my_x = (
                     (row_index - self.width) * flat_spacing
@@ -318,6 +341,33 @@ class Phantom3:
                     np.array([my_x, my_y, my_z + pat_pos_z]),
                     np.array([my_x, my_y, my_z]),
                 )
+                # phantom head map
+            elif (
+                row_index < head_circumference
+                and col_index <= self.phantom_head_height - origin[1]
+            ):
+                my_y = col_index * pat_pos_y
+                my_x = (
+                    radius_head * math.cos(angle_step_head * row_index)
+                    - (round_flat / 2.0)
+                    + round(round_flat / 2.0, 0)
+                )
+                my_z = (
+                    z_offset + radius_head * (math.sin(angle_step_head * row_index) + 1)
+                ) * pat_pos_z
+                normal_x = my_x + math.sin(angle_step_head * row_index)
+                normal_z = my_y + math.cos(angle_step_head * (row_index + 0))
+                normal = Segment3(
+                    np.array([normal_x, my_y, normal_z]), np.array([my_x, my_y, my_z])
+                )
+            else:
+                my_y, my_x, my_z = [-999, -999, -999]
+                normal = Segment3(
+                    np.array([-999, -999, -999]), np.array([-999, -999, -999])
+                )
+                # for now a trick to have single phantom map for both head and torso, it would be neater to
+                # implement a phantom map for both head and torso.
+                # this region of the phantom map will never intersect with ray segments and will not be used in JS
             self.phantom_map[
                 iterator.multi_index[0], iterator.multi_index[1]
             ] = np.array([my_x, my_y, my_z])
@@ -328,6 +378,7 @@ class Phantom3:
         # self.normal_map = np.flipud(self.normal_map)
         self.phantom_map = np.fliplr(self.phantom_map)
         self.normal_map = np.fliplr(self.normal_map)
+
         if prone:
             self.normal_map = np.roll(
                 self.normal_map,
