@@ -45,6 +45,18 @@ from ``openrem``, ``worker`` (Celery), ``flower`` (Flower), ``db`` (PostgreSQL),
 
     $ docker-compose logs -f orthanc_1
 
+To list the OpenREM log folder (with details, sorted with newest at the bottom, 'human' file sizes):
+
+.. code-block:: console
+
+    $ docker-compose exec -t openrem ls -rlth /logs
+
+To review the ``openrem.log`` file for example:
+
+.. code-block:: console
+
+    $ docker-compose exec openrem more /logs/openrem.log
+
 Other Docker errors
 ===================
 
