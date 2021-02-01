@@ -88,20 +88,6 @@ Start the containers with:
 
     $ docker-compose up -d
 
-Add the configuration of the webserver and the DICOM server:
-
-.. code-block:: console
-
-    $ docker cp nginx-conf/conf.d/. nginx:/etc/nginx/conf.d/
-    $ docker cp orthanc/. orthanc_1:/etc/share/orthanc/scripts/
-
-Restart the containers for the new configuration to be enabled:
-
-.. code-block:: console
-
-    $ docker-compose down
-    $ docker-compose up -d
-
 Copy the database backup to the postgres docker container and import it. If you have changed the database variables,
 ensure that:
 
