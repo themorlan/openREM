@@ -49,7 +49,7 @@ To list the OpenREM log folder (with details, sorted with newest at the bottom, 
 
 .. code-block:: console
 
-    $ docker-compose exec -t openrem ls -rlth /logs
+    $ docker-compose exec openrem ls -rlth /logs
 
 To review the ``openrem.log`` file for example:
 
