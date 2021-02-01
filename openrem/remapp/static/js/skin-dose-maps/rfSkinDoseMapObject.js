@@ -157,7 +157,7 @@ function skinDoseMapObject(skinDoseMapCanvasName, colourScaleName) {
         _this.skinDoseMapContext.fillText(_this.patientHeightSource + " patient height:", 5, 45);
         _this.skinDoseMapContext.fillText(_this.patientMassSource + " patient mass:", 5, 60);
         _this.skinDoseMapContext.fillText(_this.patientOrientationSource + " patient orientation:", 5, 75);
-        _this.skinDoseMapContext.fillText("DAP percentage contributed", 5, 90);
+        _this.skinDoseMapContext.fillText("DAP percentage contributed:", 5, 90);
 
         _this.skinDoseMapContext.fillText(_this.phantomDimensionsLabel + " (HxWxD)", 150, 30);
         _this.skinDoseMapContext.fillText(_this.patientHeight + " m", 150, 45);

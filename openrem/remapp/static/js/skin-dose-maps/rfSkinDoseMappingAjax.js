@@ -95,7 +95,7 @@ $(document).ready(function() {
                     skinDoseMapObj.patientHeight = (json.patient_height / 100).toFixed(2);
                     skinDoseMapObj.patientMass = json.patient_mass.toFixed(1);
                     skinDoseMapObj.patientOrientation = json.patient_orientation;
-                    skinDoseMapObj.fractionDAP = json.fraction_DAP
+                    skinDoseMapObj.fractionDAP = json.fraction_DAP;
 
 
                     if (json.patient_height_source.indexOf("extracted") >= 0) {skinDoseMapObj.patientHeightSource = "Extracted";}
