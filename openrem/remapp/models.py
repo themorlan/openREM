@@ -104,7 +104,7 @@ class SkinDoseMapCalcSettings(SingletonModel):
         default=True, verbose_name="Calculate skin dose map on import?"
     )
 
-    overule_whitelist = models.BooleanField(
+    overrule_whitelist = models.BooleanField(
         default=False, verbose_name="Ignore systems white list?"
     )
 

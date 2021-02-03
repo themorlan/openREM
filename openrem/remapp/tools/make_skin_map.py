@@ -25,7 +25,7 @@
 ..  module:: make_skin_map.
     :synopsis: Module to calculate skin dose map from study data.
 
-..  moduleauthor:: Ed McDonagh, David Platten
+..  moduleauthor:: Ed McDonagh, David Platten, Wens Kong
 
 """
 import os
@@ -42,6 +42,7 @@ os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
 from celery import shared_task
+from packaging import version
 
 # Explicitly name logger so that it is still handled when using __main__
 logger = logging.getLogger("remapp.tools.make_skin_map")
@@ -52,15 +53,12 @@ def make_skin_map(study_pk=None):
     import remapp.tools.openskin.calc_exp_map as calc_exp_map
     from remapp.models import (
         GeneralStudyModuleAttr,
-        HighDoseMetricAlertSettings,
         SkinDoseMapResults,
         SkinDoseMapCalcSettings,
         OpenSkinWhiteList,
     )
-    from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
-    from openremproject.settings import MEDIA_ROOT
-    import pickle
-    import gzip
+    from remapp.tools.save_skin_map_structure import save_openskin_structure
+
     from remapp.version import __skin_map_version__
     from django.core.exceptions import ObjectDoesNotExist
     import numpy as np
@@ -68,32 +66,30 @@ def make_skin_map(study_pk=None):
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
         if not SkinDoseMapCalcSettings.objects.values_list(
-            "overule_whitelist", flat=True
+            "overrule_whitelist", flat=True
         )[0]:
-            entry = OpenSkinWhiteList.objects.get(
-                manufacturer=study.generalequipmentmoduleattr_set.get().manufacturer,
-                manufacturer_model_name=study.generalequipmentmoduleattr_set.get().manufacturer_model_name,
-            )
-
-            if entry is not None and entry.software_version:
+            try:
                 entry = OpenSkinWhiteList.objects.get(
                     manufacturer=study.generalequipmentmoduleattr_set.get().manufacturer,
                     manufacturer_model_name=study.generalequipmentmoduleattr_set.get().manufacturer_model_name,
-                    software_version=study.generalequipmentmoduleattr_set.get().software_versions,
                 )
+            except ObjectDoesNotExist:
+                entry = None
+            # When a software version is specified in the fixture file, check whether its equal or newer
+            if entry is not None and entry.software_version:
+                if version.parse(
+                    study.generalequipmentmoduleattr_set.get().software_versions
+                ) <= version.parse(entry.software_version):
+                    entry = None
             if entry is None:
-                if end_alert_emails_ref:
-                    send_rf_high_dose_alert_email(study.pk)
-                    # WK: should implement something to prevent skin map recalculating on page refresh
+                save_openskin_structure(
+                    study,
+                    {
+                        "skin_map": [0, 0],
+                        "skin_map_version": __skin_map_version__,
+                    },
+                )
                 return
-
-        HighDoseMetricAlertSettings.objects.get()
-        send_alert_emails_skin = HighDoseMetricAlertSettings.objects.values_list(
-            "send_high_dose_metric_alert_emails_skin", flat=True
-        )[0]
-        send_alert_emails_ref = HighDoseMetricAlertSettings.objects.values_list(
-            "send_high_dose_metric_alert_emails_ref", flat=True
-        )[0]
 
         pat_mass_source = "assumed"
         try:
@@ -379,28 +375,4 @@ def make_skin_map(study_pk=None):
         }
 
         # Save the return_structure as a pickle in a skin_maps sub-folder of the MEDIA_ROOT folder
-        try:
-            study_date = study.study_date
-            if study_date:
-                skin_map_path = os.path.join(
-                    MEDIA_ROOT,
-                    "skin_maps",
-                    f"{study_date.year:0>4}",
-                    f"{study_date.month:0>2}",
-                    f"{study_date.day:0>2}",
-                )
-            else:
-                skin_map_path = os.path.join(MEDIA_ROOT, "skin_maps")
-        except:
-            skin_map_path = os.path.join(MEDIA_ROOT, "skin_maps")
-
-        if not os.path.exists(skin_map_path):
-            os.makedirs(skin_map_path)
-
-        with gzip.open(
-            os.path.join(skin_map_path, "skin_map_" + str(study_pk) + ".p"), "wb"
-        ) as pickle_file:
-            pickle.dump(return_structure, pickle_file)
-
-        if send_alert_emails_skin or send_alert_emails_ref:
-            send_rf_high_dose_alert_email(study.pk)
+        save_openskin_structure(study, return_structure)
