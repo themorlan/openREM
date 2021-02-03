@@ -33,6 +33,9 @@ Functionality that is available
 * The calculated peak skin dose, phantom dimensions, patient height, mass and
   orientation used for the calculations are shown in the top left hand corner
   of the skin dose map
+* Additionally the DAP percentage that hits the phantom and therefore contributes
+  to the skin dose is shown, enhancing the interpretability of the magnitude of
+  the skin dose.
 * If skin dose map display is disabled then fluoroscopy study data can be
   exported in a format suitable for the stand-alone openSkin routines
 
