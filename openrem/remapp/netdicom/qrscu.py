@@ -1352,6 +1352,7 @@ def qrscu(
     ae = AE()
     ae.add_requested_context(StudyRootQueryRetrieveInformationModelFind)
     ae.ae_title = our_aet
+    ae.dimse_timeout = 300
 
     logger.debug(f"{query_id_8} Remote AE is {remote['aet']}")
 
@@ -1919,6 +1920,7 @@ def movescu(query_id):
     ae = AE()
     ae.add_requested_context(StudyRootQueryRetrieveInformationModelMove)
     ae.ae_title = store_scp.aetitle
+    ae.dimse_timeout = 300
 
     logger.debug("Move AE my_ae {0} started".format(ae))
 
