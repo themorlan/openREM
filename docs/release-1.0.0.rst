@@ -99,7 +99,7 @@ your backup filename.
 
 .. code-block:: console
 
-    $ docker cp /path/to/openremdump.bak db:/db_backup/
+    $ docker cp /path/to/openremdump.bak openrem-db:/db_backup/
 
 .. code-block:: console
 
