@@ -105,12 +105,15 @@ administrator via the ``Skin dose map settings`` option in the ``Config menu``:
 
 * Enable skin dose maps
 * Calculate skin dose maps on import
+* Ignore systems white list
 
 The first of these sets whether skin dose map data is calculated, and also
 switches the display of skin dose maps on or off. The second option controls
 whether the skin dose map data is calculated at the point when a new study is
 imported into OpenREM, or calculated when a user first views the details of
-that particular study in the OpenREM interface.
+that particular study in the OpenREM interface. The third option allows the
+user to enables skin dose maps for systems that are not validated for 
+OpenSkin. 
 
 When skin dose maps are enabled:
 
