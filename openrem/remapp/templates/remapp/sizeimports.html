@@ -25,8 +25,13 @@
 
     {% if current %}
     <h4>Import tasks in progress</h4>
-    <table class="table table-striped">
-        <th>Filename</th><th>Import started</th><th>Progress</th><th></th>
+    <table class="table table-striped" aria-describedby="Import task progress">
+        <tr>
+            <th scope="col">Filename</th>
+            <th scope="col">Import started</th>
+            <th scope="col">Progress</th>
+            <th scope="col"></th>
+        </tr>
         {% for tsk in current %}
         <tr>
             <td>{{ tsk.sizefile.name }}</td>
@@ -40,8 +45,13 @@
 
     {% if errors %}
     <h4>Import tasks in an error state</h4>
-    <table class="table table-striped">
-        <th>Filename</th><th>Import started</th><th>Error message</th><th></th>
+    <table class="table table-striped" aria-describedby="Import tasks in an error state">
+        <tr>
+            <th scope="col">Filename</th>
+            <th scope="col">Import started</th>
+            <th scope="col">Error message</th>
+            <th scope="col"></th>
+        </tr>
         {% for tsk in errors %}
         <tr>
             <td>{{ tsk.sizefile.name }}</td>
@@ -56,14 +66,20 @@
     <h4>Completed import tasks</h4>
     <form action="{% url 'size_delete' %}" method="POST">
     {% csrf_token %}
-    <table class="table table-striped">
-        <th>Import started</th><th>Import time</th><th>No. rows</th><th>Download logfile</th><th>Delete?</th>
+    <table class="table table-striped" aria-describedby="Completed import tasks">
+        <tr>
+            <th scope="col">Import started</th>
+            <th scope="col">Import time</th>
+            <th scope="col">No. rows</th>
+            <th scope="col">Download logfile</th>
+            <th scope="col">Delete?</th>
+        </tr>
         {% for tsk in complete %}
         <tr>
             <td>{{ tsk.import_date|naturaltime }}</td>
             <td>{{ tsk.processtime|naturalduration }}</td>
             <td>{{ tsk.num_records }}</td>
-            <td><a href="{% url 'size_download' task_id=tsk.task_id %}">Download</a></a></td>
+            <td><a href="{% url 'size_download' task_id=tsk.task_id %}">Download</a></td>
             <td>
                 <div class = "checkbox">
                     <label>

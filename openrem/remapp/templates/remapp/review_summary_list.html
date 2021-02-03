@@ -21,18 +21,18 @@
     <p>The entry in the unique equipment names table for these {{ modality }} studies looks like this
     </p>
 
-    <table class="table table-bordered">
+    <table class="table table-bordered" aria-describedby="Summary of unique equipment names for these {{ modality }} studies">
         <tr>
-            <th>Display name</th>
-            <th>User defined modality</th>
-            <th>Institution</th>
-            <th>Department</th>
-            <th>Manufacturer</th>
-            <th>Model</th>
-            <th>Station name</th>
-            <th>Serial no.</th>
-            <th>Software version</th>
-            <th>Gantry ID</th>
+            <th scope="col">Display name</th>
+            <th scope="col">User defined modality</th>
+            <th scope="col">Institution</th>
+            <th scope="col">Department</th>
+            <th scope="col">Manufacturer</th>
+            <th scope="col">Model</th>
+            <th scope="col">Station name</th>
+            <th scope="col">Serial no.</th>
+            <th scope="col">Software version</th>
+            <th scope="col">Gantry ID</th>
         </tr>
         <tr>
             <td>{{ equipment.display_name }}</td>
@@ -171,7 +171,7 @@
 
 
 
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered table-striped" aria-describedby="Summary of each study that will be deleted by this action">
         <tr>
             <td colspan="2">General</td>
             <td colspan="2">Patient module</td>
@@ -181,23 +181,23 @@
             <td colspan="4">Irradiation event data</td>
         </tr>
         <tr>
-            <th>Date</th>
-            <th>Time</th>
-            <th>General</th>
-            <th>Study</th>
-            <th>Template</th>
-            <th>Accumulated</th>
-            <th>Events</th>
-            <th>Template</th>
-            <th>Accumulated</th>
-            <th>Fluoro & DX</th>
-            <th>Mammography</th>
-            <th>Cassette based</th>
-            <th>Projection</th>
-            <th>General</th>
-            <th>Detector</th>
-            <th>Source</th>
-            <th>Mechanical</th>
+            <th scope="col">Date</th>
+            <th scope="col">Time</th>
+            <th scope="col">General</th>
+            <th scope="col">Study</th>
+            <th scope="col">Template</th>
+            <th scope="col">Accumulated</th>
+            <th scope="col">Events</th>
+            <th scope="col">Template</th>
+            <th scope="col">Accumulated</th>
+            <th scope="col">Fluoro & DX</th>
+            <th scope="col">Mammography</th>
+            <th scope="col">Cassette based</th>
+            <th scope="col">Projection</th>
+            <th scope="col">General</th>
+            <th scope="col">Detector</th>
+            <th scope="col">Source</th>
+            <th scope="col">Mechanical</th>
         </tr>
         {% for study in studies %}
 
