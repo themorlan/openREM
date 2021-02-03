@@ -1117,7 +1117,7 @@ def plotly_timeseries_linechart(
             color_discrete_sequence=colour_sequence,
             category_orders=params["sorted_category_list"],
             height=chart_height,
-            render_mode="webgl",
+            render_mode="svg",
         )
 
         for data_set in fig.data:
