@@ -12,6 +12,7 @@ from remapp.models import (
     SkinDoseMapResults,
 )
 from remapp.tools.make_skin_map import make_skin_map
+from openremproject.settings import MEDIA_ROOT, BASE_DIR
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from remapp.interface.mod_filters import RFSummaryListFilter
@@ -348,6 +349,8 @@ class RFHighDoseAlert(TestCase):
         ]
 
         # Obtain peak skin dose
+        cmd = "python " + BASE_DIR + "/manage.py loaddata openskin_whitelist.json"
+        os.system(cmd)
         make_skin_map(pk_20160512)
         skinresult = SkinDoseMapResults.objects.get(
             general_study_module_attributes=pk_20160512

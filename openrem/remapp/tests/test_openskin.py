@@ -12,7 +12,7 @@ from .test_files.skin_map_zee import ZEE_SKIN_MAP
 from ..extractors import rdsr
 from ..models import PatientIDSettings, GeneralStudyModuleAttr
 from ..tools.make_skin_map import make_skin_map
-from openremproject.settings import MEDIA_ROOT
+from openremproject.settings import MEDIA_ROOT, BASE_DIR
 
 
 class OpenSkinBlackBox(TestCase):
@@ -34,6 +34,8 @@ class OpenSkinBlackBox(TestCase):
     def test_skin_map_zee(self):
         """Test known Siemens Zee RDSR"""
         study = GeneralStudyModuleAttr.objects.order_by("id")[0]
+        cmd = "python " + BASE_DIR + "/manage.py loaddata openskin_whitelist.json"
+        os.system(cmd)
         make_skin_map(study.pk)
         study_date = study.study_date
         skin_map_path = os.path.join(
