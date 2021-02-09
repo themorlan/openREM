@@ -6,17 +6,19 @@ import pickle
 import os
 
 from django.contrib.auth.models import User
+from django.conf import settings
 from django.test import TestCase
 
 from .test_files.skin_map_zee import ZEE_SKIN_MAP
 from ..extractors import rdsr
 from ..models import PatientIDSettings, GeneralStudyModuleAttr
 from ..tools.make_skin_map import make_skin_map
-from openremproject.settings import MEDIA_ROOT, BASE_DIR
 
 
 class OpenSkinBlackBox(TestCase):
     """Test openSkin as a black box - known study in, known skin map file out"""
+    # Load whitelist fixture to allow RDSR to have skin map calculated
+    fixtures = ["openskin_whitelist.json"]
 
     def setUp(self):
         """
@@ -34,12 +36,11 @@ class OpenSkinBlackBox(TestCase):
     def test_skin_map_zee(self):
         """Test known Siemens Zee RDSR"""
         study = GeneralStudyModuleAttr.objects.order_by("id")[0]
-        cmd = "python " + BASE_DIR + "/manage.py loaddata openskin_whitelist.json"
-        os.system(cmd)
+
         make_skin_map(study.pk)
         study_date = study.study_date
         skin_map_path = os.path.join(
-            MEDIA_ROOT,
+            settings.MEDIA_ROOT,
             "skin_maps",
             "{0:0>4}".format(study_date.year),
             "{0:0>2}".format(study_date.month),
