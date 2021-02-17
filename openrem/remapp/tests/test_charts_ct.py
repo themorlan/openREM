@@ -5601,3 +5601,671 @@ class ChartsCT(TestCase):
                         self.assertEqual(chart_data2[idx]["name"], dataset["name"])
                         np.testing.assert_almost_equal(chart_data2[idx]["x"], dataset["x"])
                         np.testing.assert_equal(chart_data2[idx]["y"], dataset["y"])
+
+    def test_study_ctdi(self):
+                # Test of mean and median requested procedure DLP,
+                # Also tests raw data going into the box plots
+                f = self.login_get_filterset()
+
+                # Set user profile options
+                self.user.userprofile.plotCTStudyMeanCTDI = True
+                self.user.userprofile.plotMean = True
+                self.user.userprofile.plotMedian = True
+                self.user.userprofile.plotBoxplots = True
+                self.user.userprofile.plotHistograms = True
+                self.user.userprofile.save()
+
+                # Obtain chart data
+                self.obtain_chart_data(f)
+
+                # Test the mean data
+                standard_data = [
+                    {
+                        "customdata": np.array(
+                            [
+                                ['All systems', 83.275, 4],
+                                ['All systems', 4.265, 2],
+                                ['All systems', 35.324444444444445, 9],
+                                ['All systems', 23.157777777777778, 9],
+                                ['All systems', 3.715, 4]
+                            ],
+                            dtype=object,
+                        ),
+                        "name": "All systems",
+                        "x": np.array(
+                            ['Blank', 'Colonography', 'FACIAL BONES',
+                             'Specials^PhysicsTesting (Adult)', 'Thorax^TAP (Adult)'],
+                            dtype=object,
+                        ),
+                        "y": np.array(
+                            [83.275, 4.265, 35.32444444, 23.15777778, 3.715]
+                        ),
+                    }
+                ]
+
+                chart_data = self.chart_data["studyMeanCTDIData"]["data"]
+
+                self.check_average_data(chart_data, standard_data)
+
+                # Test the median data
+                standard_data = [
+                    {
+                        "customdata": np.array(
+                            [['All systems', 42.905, 4],
+                             ['All systems', 4.265, 2],
+                             ['All systems', 22.26, 9],
+                             ['All systems', 17.1, 9],
+                             ['All systems', 2.405, 4]],
+                            dtype=object,
+                        ),
+                        "name": "All systems",
+                        "x": np.array(
+                            ['Blank', 'Colonography', 'FACIAL BONES',
+                             'Specials^PhysicsTesting (Adult)', 'Thorax^TAP (Adult)'],
+                            dtype=object,
+                        ),
+                        "y": np.array(
+                            [42.905,  4.265, 22.26 , 17.1  ,  2.405]
+                        ),
+                    }
+                ]
+
+                chart_data = self.chart_data["studyMedianCTDIData"]["data"]
+
+                self.check_average_data(chart_data, standard_data)
+
+                # Check the boxplot data
+                standard_data = [
+                    {
+                        "name": "All systems",
+                        "x": np.array(
+                            ['Thorax^TAP (Adult)', 'Thorax^TAP (Adult)', 'Colonography',
+                             'Thorax^TAP (Adult)', 'FACIAL BONES', 'Colonography',
+                             'Specials^PhysicsTesting (Adult)', 'FACIAL BONES', 'FACIAL BONES',
+                             'Specials^PhysicsTesting (Adult)', 'FACIAL BONES',
+                             'Thorax^TAP (Adult)', 'Specials^PhysicsTesting (Adult)',
+                             'Specials^PhysicsTesting (Adult)',
+                             'Specials^PhysicsTesting (Adult)',
+                             'Specials^PhysicsTesting (Adult)', 'FACIAL BONES', 'Blank',
+                             'Blank', 'FACIAL BONES', 'Specials^PhysicsTesting (Adult)',
+                             'FACIAL BONES', 'FACIAL BONES', 'Specials^PhysicsTesting (Adult)',
+                             'Blank', 'Specials^PhysicsTesting (Adult)', 'FACIAL BONES',
+                             'Blank'],
+                            dtype=object,
+                        ),
+                        "y": np.array(
+                            [1.4000e-01, 1.2000e+00, 3.2300e+00, 3.6100e+00, 4.9300e+00,
+                             5.3000e+00, 5.5200e+00, 5.8400e+00, 6.2300e+00, 6.2600e+00,
+                             8.7400e+00, 9.9100e+00, 1.3170e+01, 1.5450e+01, 1.7100e+01,
+                             2.1950e+01, 2.2260e+01, 2.4700e+01, 2.5400e+01, 2.9310e+01,
+                             2.9670e+01, 3.1660e+01, 3.2830e+01, 3.3830e+01, 6.0410e+01,
+                             6.5470e+01, 1.7612e+02, 2.2259e+02]
+                        ),
+                    }
+                ]
+
+                chart_data = self.chart_data["studyBoxplotCTDIData"]["data"]
+                self.check_boxplot_data(chart_data, standard_data)
+
+                # Check the histogram data
+                standard_data1 = [
+                    {
+                        "name": "FACIAL BONES",
+                        "text": np.array(
+                            ['0.14≤x<22.39', '22.39≤x<44.63', '44.63≤x<66.88', '66.88≤x<89.12',
+                             '89.12≤x<111.37', '111.37≤x<133.61', '133.61≤x<155.85',
+                             '155.85≤x<178.10', '178.10≤x<200.34', '200.34≤x<222.59'],
+                            dtype='<U15',
+                        ),
+                        "y": np.array(
+                            [5, 3, 0, 0, 0, 0, 0, 1, 0, 0],
+                        ),
+                        # frequency data corresponds to the 'Blank' bars on the histogram
+                        "x": np.array(
+                            [11.2625, 33.5075, 55.7525, 77.9975, 100.2425, 122.4875,
+                             144.7325, 166.9775, 189.2225, 211.4675],
+                        ),
+                    },
+                    {
+                        "name": "Specials^PhysicsTesting (Adult)",
+                        "text": np.array(
+                            ['0.14≤x<22.39', '22.39≤x<44.63', '44.63≤x<66.88', '66.88≤x<89.12',
+                             '89.12≤x<111.37', '111.37≤x<133.61', '133.61≤x<155.85',
+                             '155.85≤x<178.10', '178.10≤x<200.34', '200.34≤x<222.59'],
+                            dtype="<U15",
+                        ),
+                        "x": np.array(
+                            [11.2625, 33.5075, 55.7525, 77.9975, 100.2425, 122.4875,
+                             144.7325, 166.9775, 189.2225, 211.4675],
+                        ),
+                        "y": np.array(
+                            [6, 2, 1, 0, 0, 0, 0, 0, 0, 0],
+                        ),
+                    },
+                    {
+                        "name": "Blank",
+                        "text": np.array(
+                            ['0.14≤x<22.39', '22.39≤x<44.63', '44.63≤x<66.88', '66.88≤x<89.12',
+                             '89.12≤x<111.37', '111.37≤x<133.61', '133.61≤x<155.85',
+                             '155.85≤x<178.10', '178.10≤x<200.34', '200.34≤x<222.59'],
+                            dtype="<U15",
+                        ),
+                        "x": np.array(
+                            [11.2625, 33.5075, 55.7525, 77.9975, 100.2425, 122.4875,
+                             144.7325, 166.9775, 189.2225, 211.4675],
+                        ),
+                        "y": np.array(
+                            [0, 2, 1, 0, 0, 0, 0, 0, 0, 1],
+                        ),
+                    },
+                    {
+                        "name": "Thorax^TAP (Adult)",
+                        "text": np.array(
+                            ['0.14≤x<22.39', '22.39≤x<44.63', '44.63≤x<66.88', '66.88≤x<89.12',
+                             '89.12≤x<111.37', '111.37≤x<133.61', '133.61≤x<155.85',
+                             '155.85≤x<178.10', '178.10≤x<200.34', '200.34≤x<222.59'],
+                            dtype="<U15",
+                        ),
+                        "x": np.array(
+                            [11.2625, 33.5075, 55.7525, 77.9975, 100.2425, 122.4875,
+                             144.7325, 166.9775, 189.2225, 211.4675],
+                        ),
+                        "y": np.array(
+                            [4, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        ),
+                    },
+                    {
+                        "name": "Colonography",
+                        "text": np.array(
+                            ['0.14≤x<22.39', '22.39≤x<44.63', '44.63≤x<66.88', '66.88≤x<89.12',
+                             '89.12≤x<111.37', '111.37≤x<133.61', '133.61≤x<155.85',
+                             '155.85≤x<178.10', '178.10≤x<200.34', '200.34≤x<222.59'],
+                            dtype="<U15",
+                        ),
+                        "x": np.array(
+                            [11.2625, 33.5075, 55.7525, 77.9975, 100.2425, 122.4875,
+                             144.7325, 166.9775, 189.2225, 211.4675],
+                        ),
+                        "y": np.array(
+                            [2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        ),
+                    },
+                ]
+
+                chart_data1 = self.chart_data["studyHistogramCTDIData"]["data"]
+
+                for idx, dataset in enumerate(standard_data1):
+                    self.assertEqual(chart_data1[idx]["name"], dataset["name"])
+                    np.testing.assert_almost_equal(chart_data1[idx]["x"], dataset["x"])
+                    np.testing.assert_equal(chart_data1[idx]["y"], dataset["y"])
+
+                    # Repeat the above, but plot a series per system
+                    self.user.userprofile.plotSeriesPerSystem = True
+                    self.user.userprofile.save()
+
+                    # Obtain chart data
+                    self.obtain_chart_data(f)
+
+                    # Test the mean data
+                    standard_data = [
+                        {
+                            "customdata": np.array([
+                                ['A VCT Hospital VCTScanner', np.nan, 0],
+                                ['A VCT Hospital VCTScanner', np.nan, 0],
+                                ['A VCT Hospital VCTScanner', 35.324444444444445, 9],
+                                ['A VCT Hospital VCTScanner', np.nan, 0],
+                                ['A VCT Hospital VCTScanner', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "A VCT Hospital VCTScanner",
+                            "x": np.array(
+                                ['Blank', 'Colonography', 'FACIAL BONES',
+                                 'Specials^PhysicsTesting (Adult)', 'Thorax^TAP (Adult)'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [np.nan, np.nan, 35.32444444, np.nan, np.nan]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', 4.265, 2],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "An Optima Hospital geoptima",
+                            "x": np.array(
+                                ['Blank', 'Colonography', 'FACIAL BONES',
+                                 'Specials^PhysicsTesting (Adult)', 'Thorax^TAP (Adult)'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [np.nan, 4.265, np.nan, np.nan, np.nan]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0],
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0],
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0],
+                                    ['Gnats Bottom Hospital CTAWP91919', 23.157777777777774, 9],
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "Gnats Bottom Hospital CTAWP91919",
+                            "x": np.array(
+                                ['Blank', 'Colonography', 'FACIAL BONES',
+                                 'Specials^PhysicsTesting (Adult)', 'Thorax^TAP (Adult)'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [np.nan, np.nan, np.nan, 23.15777778, np.nan]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', 3.715, 4]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "Hospital Number One Trust CTAWP00001",
+                            "x": np.array(
+                                ['Blank', 'Colonography', 'FACIAL BONES',
+                                 'Specials^PhysicsTesting (Adult)', 'Thorax^TAP (Adult)'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [np.nan, np.nan, np.nan, np.nan, 3.715]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['OpenREM centre médical rt16', 141.5, 2],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "OpenREM centre médical rt16",
+                            "x": np.array(
+                                ['Blank', 'Colonography', 'FACIAL BONES',
+                                 'Specials^PhysicsTesting (Adult)', 'Thorax^TAP (Adult)'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [141.5, np.nan, np.nan, np.nan, np.nan]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['Oxbridge County Hospital CTTOSHIBA1', 25.049999999999997, 2],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "Oxbridge County Hospital CTTOSHIBA1",
+                            "x": np.array(
+                                ['Blank', 'Colonography', 'FACIAL BONES',
+                                 'Specials^PhysicsTesting (Adult)', 'Thorax^TAP (Adult)'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [25.05, np.nan, np.nan, np.nan, np.nan]
+                            ),
+                        },
+
+                    ]
+
+                    chart_data = self.chart_data["studyMeanCTDIData"]["data"]
+
+                    self.check_average_data(chart_data, standard_data)
+
+                    # Test the median data
+                    standard_data = [
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', 22.26, 9],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0],
+                                    ['A VCT Hospital VCTScanner', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "A VCT Hospital VCTScanner",
+                            "x": np.array(
+                                ['Blank', 'Colonography', 'FACIAL BONES',
+                                 'Specials^PhysicsTesting (Adult)', 'Thorax^TAP (Adult)'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [np.nan, np.nan, 22.26, np.nan, np.nan]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', 4.265, 2],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0],
+                                    ['An Optima Hospital geoptima', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "An Optima Hospital geoptima",
+                            "x": np.array(
+                                ['Blank', 'Colonography', 'FACIAL BONES',
+                                 'Specials^PhysicsTesting (Adult)', 'Thorax^TAP (Adult)'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [np.nan, 4.265, np.nan, np.nan, np.nan]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0],
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0],
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0],
+                                    ['Gnats Bottom Hospital CTAWP91919', 17.1, 9],
+                                    ['Gnats Bottom Hospital CTAWP91919', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "Gnats Bottom Hospital CTAWP91919",
+                            "x": np.array(
+                                ['Blank', 'Colonography', 'FACIAL BONES',
+                                 'Specials^PhysicsTesting (Adult)', 'Thorax^TAP (Adult)'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [np.nan, np.nan, np.nan, 17.1, np.nan]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', np.nan, 0],
+                                    ['Hospital Number One Trust CTAWP00001', 2.405, 4]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "Hospital Number One Trust CTAWP00001",
+                            "x": np.array(
+                                ['Blank', 'Colonography', 'FACIAL BONES',
+                                 'Specials^PhysicsTesting (Adult)', 'Thorax^TAP (Adult)'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [np.nan, np.nan, np.nan, np.nan, 2.405]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['OpenREM centre médical rt16', 141.5, 2],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0],
+                                    ['OpenREM centre médical rt16', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "OpenREM centre médical rt16",
+                            "x": np.array(
+                                ['Blank', 'Colonography', 'FACIAL BONES',
+                                 'Specials^PhysicsTesting (Adult)', 'Thorax^TAP (Adult)'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [141.5, np.nan, np.nan, np.nan, np.nan]
+                            ),
+                        },
+                        {
+                            "customdata": np.array(
+                                [
+                                    ['Oxbridge County Hospital CTTOSHIBA1', 25.049999999999997, 2],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0],
+                                    ['Oxbridge County Hospital CTTOSHIBA1', np.nan, 0]
+                                ],
+                                dtype=object,
+                            ),
+                            "name": "Oxbridge County Hospital CTTOSHIBA1",
+                            "x": np.array(
+                                ['Blank', 'Colonography', 'FACIAL BONES',
+                                 'Specials^PhysicsTesting (Adult)', 'Thorax^TAP (Adult)'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [25.05, np.nan, np.nan, np.nan, np.nan]
+                            ),
+                        },
+
+
+                    ]
+
+                    chart_data = self.chart_data["studyMedianCTDIData"]["data"]
+
+                    self.check_average_data(chart_data, standard_data)
+
+                    # Check the boxplot data
+                    standard_data = [
+                        {
+                            "name": "A VCT Hospital VCTScanner",
+                            "x": np.array(
+                                ['FACIAL BONES', 'FACIAL BONES', 'FACIAL BONES', 'FACIAL BONES',
+                                 'FACIAL BONES', 'FACIAL BONES', 'FACIAL BONES', 'FACIAL BONES',
+                                 'FACIAL BONES'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [29.31, 176.12, 4.93, 5.84, 6.23, 8.74, 22.26, 32.83,
+                                 31.66]
+                            ),
+                        },
+                        {
+                            "name": "An Optima Hospital geoptima",
+                            "x": np.array(
+                                ['Colonography', 'Colonography'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [3.23, 5.3]
+                            ),
+                        },
+                        {
+                            "name": "Gnats Bottom Hospital CTAWP91919",
+                            "x": np.array(
+                                ['Specials^PhysicsTesting (Adult)',
+                                 'Specials^PhysicsTesting (Adult)',
+                                 'Specials^PhysicsTesting (Adult)',
+                                 'Specials^PhysicsTesting (Adult)',
+                                 'Specials^PhysicsTesting (Adult)',
+                                 'Specials^PhysicsTesting (Adult)',
+                                 'Specials^PhysicsTesting (Adult)',
+                                 'Specials^PhysicsTesting (Adult)',
+                                 'Specials^PhysicsTesting (Adult)'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [65.47, 33.83, 29.67, 21.95, 13.17, 15.45,  6.26,  5.52, 17.1]
+                            ),
+                        },
+                        {
+                            "name": "Hospital Number One Trust CTAWP00001",
+                            "x": np.array(
+                                ['Thorax^TAP (Adult)', 'Thorax^TAP (Adult)', 'Thorax^TAP (Adult)',
+                                 'Thorax^TAP (Adult)'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [0.14, 1.2 , 3.61, 9.91]
+                            ),
+                        },
+                        {
+                            "name": "OpenREM centre médical rt16",
+                            "x": np.array(
+                                ['Blank', 'Blank'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [222.59,  60.41]
+                            ),
+                        },
+                        {
+                            "name": "Oxbridge County Hospital CTTOSHIBA1",
+                            "x": np.array(
+                                ['Blank', 'Blank'],
+                                dtype=object,
+                            ),
+                            "y": np.array(
+                                [24.7, 25.4]
+                            ),
+                        },
+
+                    ]
+
+                    chart_data = self.chart_data["studyBoxplotCTDIData"]["data"]
+                    self.check_boxplot_data(chart_data, standard_data)
+
+                    # Check the histogram data
+                    standard_data1 = [
+                        {
+                            "name": "FACIAL BONES",
+                            "text": np.array(
+                                ['4.93≤x<22.05', '22.05≤x<39.17', '39.17≤x<56.29', '56.29≤x<73.41',
+                                 '73.41≤x<90.53', '90.53≤x<107.64', '107.64≤x<124.76',
+                                 '124.76≤x<141.88', '141.88≤x<159.00', '159.00≤x<176.12'],
+                                dtype='<U15',
+                            ),
+                            "y": np.array(
+                                [4, 4, 0, 0, 0, 0, 0, 0, 0, 1],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [13.4895, 30.6085, 47.7275, 64.8465, 81.9655, 99.0845,
+                                 116.2035, 133.3225, 150.4415, 167.5605],
+                            ),
+                        },
+                        {
+                            "name": "Colonography",
+                            "text": np.array(
+                                ['3.23≤x<3.44', '3.44≤x<3.64', '3.64≤x<3.85', '3.85≤x<4.06',
+                                 '4.06≤x<4.26', '4.26≤x<4.47', '4.47≤x<4.68', '4.68≤x<4.89',
+                                 '4.89≤x<5.09', '5.09≤x<5.30'],
+                                dtype='<U11',
+                            ),
+                            "y": np.array(
+                                [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [3.3335, 3.5405, 3.7475, 3.9545, 4.1615, 4.3685, 4.5755, 4.7825,
+                                 4.9895, 5.1965],
+                            ),
+                        },
+                        {
+                            "name": "Specials^PhysicsTesting (Adult)",
+                            "text": np.array(
+                                ['5.52≤x<11.52', '11.52≤x<17.51', '17.51≤x<23.50', '23.50≤x<29.50',
+                                 '29.50≤x<35.50', '35.50≤x<41.49', '41.49≤x<47.48', '47.48≤x<53.48',
+                                 '53.48≤x<59.47', '59.47≤x<65.47'],
+                                dtype='<U13',
+                            ),
+                            "y": np.array(
+                                [2, 3, 1, 0, 2, 0, 0, 0, 0, 1],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [8.5175, 14.5125, 20.5075, 26.5025, 32.4975, 38.4925, 44.4875,
+                                 50.4825, 56.4775, 62.4725],
+                            ),
+                        },
+                        {
+                            "name": "Thorax^TAP (Adult)",
+                            "text": np.array(
+                                ['0.14≤x<1.12', '1.12≤x<2.09', '2.09≤x<3.07', '3.07≤x<4.05',
+                                 '4.05≤x<5.02', '5.02≤x<6.00', '6.00≤x<6.98', '6.98≤x<7.96',
+                                 '7.96≤x<8.93', '8.93≤x<9.91'],
+                                dtype='<U11',
+                            ),
+                            "y": np.array(
+                                [1, 1, 0, 1, 0, 0, 0, 0, 0, 1],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [0.6285, 1.6055, 2.5825, 3.5595, 4.5365, 5.5135, 6.4905, 7.4675,
+                                 8.4445, 9.4215],
+                            ),
+                        },
+                        {
+                            "name": "Blank",
+                            "text": np.array(
+                                ['60.41≤x<76.63', '76.63≤x<92.85', '92.85≤x<109.06',
+                                 '109.06≤x<125.28', '125.28≤x<141.50', '141.50≤x<157.72',
+                                 '157.72≤x<173.94', '173.94≤x<190.15', '190.15≤x<206.37',
+                                 '206.37≤x<222.59'],
+                                dtype='<U15',
+                            ),
+                            "y": np.array(
+                                [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [68.519, 84.737, 100.955, 117.173, 133.391, 149.609, 165.827,
+                                 182.045, 198.263, 214.481],
+                            ),
+                        },
+                        {
+                            "name": "Blank",
+                            "text": np.array(
+                                ['24.70≤x<24.77', '24.77≤x<24.84', '24.84≤x<24.91', '24.91≤x<24.98',
+                                 '24.98≤x<25.05', '25.05≤x<25.12', '25.12≤x<25.19', '25.19≤x<25.26',
+                                 '25.26≤x<25.33', '25.33≤x<25.40'],
+                                dtype='<U13',
+                            ),
+                            "y": np.array(
+                                [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                            ),
+                            # frequency data corresponds to the 'Blank' bars on the histogram
+                            "x": np.array(
+                                [24.735, 24.805, 24.875, 24.945, 25.015, 25.085, 25.155, 25.225,
+                                 25.295, 25.365],
+                            ),
+                        },
+
+                    ]
+
+                    chart_data2 = self.chart_data["studyHistogramCTDIData"]["data"]
+                    for idx, dataset in enumerate(standard_data1):
+                        self.assertEqual(chart_data2[idx]["name"], dataset["name"])
+                        np.testing.assert_almost_equal(chart_data2[idx]["x"], dataset["x"])
+                        np.testing.assert_equal(chart_data2[idx]["y"], dataset["y"])
