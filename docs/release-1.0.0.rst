@@ -140,6 +140,10 @@ database), and create the static files:
 
 .. code-block:: console
 
+    $ docker-compose exec openrem python manage.py loaddata openskin_whitelist.json
+
+.. code-block:: console
+
     $ docker-compose exec openrem python manage.py collectstatic --noinput --clear
 
 Generate translation binary files
@@ -263,6 +267,10 @@ Migrate the database:
 .. code-block:: console
 
     $ python manage.py migrate
+
+.. code-block:: console
+
+    $ python manage.py loaddata openskin_whitelist.json
 
 
 Update static files
