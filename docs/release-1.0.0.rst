@@ -2,6 +2,8 @@
 Upgrade to OpenREM 1.0.0
 ########################
 
+**Document not ready for translation**
+
 ****************
 Headline changes
 ****************

@@ -1,6 +1,8 @@
 One page complete Ubuntu install
 ================================
 
+**Document not ready for translation**
+
 This setup is no longer recommended - the Docker :doc:`installation` method is instead. If a non-Docker installation is
 required then this guide can be followed.
 

@@ -2,6 +2,8 @@
 Celery and Flower configuration
 ###############################
 
+**Document not ready for translation**
+
 Celery and RabbitMQ are used by OpenREM to run tasks in the background, like exports and DICOM queries. RabbitMQ
 handles the message queue and Celery provides the 'workers' that perform the tasks.
 

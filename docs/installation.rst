@@ -2,6 +2,8 @@
 Installation
 ************
 
+**Document not ready for translation**
+
 Windows or Linux: Docker install
 =================================
 

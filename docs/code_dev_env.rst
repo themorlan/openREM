@@ -2,6 +2,8 @@
 Creating a development environment
 ##################################
 
+**Document not ready for translation**
+
 Install Python 3.6+, preferably Python 3.8: check your Linux distribution docs to see how to install a particular
 version; for Windows go to https://www.python.org/downloads/. Check "Add Python 3.8 to PATH" during installation.
 

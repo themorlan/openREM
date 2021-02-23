@@ -2,6 +2,8 @@
 Database administration
 #######################
 
+**Document not ready for translation**
+
 ***************
 Database backup
 ***************

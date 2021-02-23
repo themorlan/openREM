@@ -2,6 +2,8 @@
 DICOM Query Retrieve Service
 ############################
 
+**Document not ready for translation**
+
 
 To query retrieve dose related objects from a remote server, you need to review the :doc:`netdicom-store` documents
 first to make sure you have created a DICOM Store node which will import objects to OpenREM.
