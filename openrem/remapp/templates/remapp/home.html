@@ -75,7 +75,7 @@
 
     {% if admin.admingroup %}
         {% if admin_questions_true %}
-            <table class="table table-bordered">
+            <table class="table table-bordered" aria-describedby="Admin questions regarding non-patient exposures">
                 {% if admin_questions.not_patient_indicator_question %}
                     <tr>
                         <td>
@@ -147,11 +147,11 @@
     <p>
     <p id="summary-progress"></p>
     </p>
-    <table class="table table-bordered">
+    <table class="table table-bordered" aria-describedby="Number of studies for each modality">
         <tr>
             {% for modality, details in modalities.items %}
                 {% with modality|add:'_summary_list_filter' as url_name %}
-                    <th style="width:25%"><a href="{% url url_name|lower %}">{{ details.name }}</a></th>
+                    <th scope="col" style="width:25%"><a href="{% url url_name|lower %}">{{ details.name }}</a></th>
                 {% endwith %}
             {% endfor %}
         </tr>
@@ -197,15 +197,15 @@
 
         <h4>{{ details.name }} summary table</h4>
         <div id="{{ modality }}-table">
-            <table class="table table-bordered table-hover row-clickable">
+            <table class="table table-bordered table-hover row-clickable" aria-describedby="{{ details.name }} summary table">
                 <tr>
-                    <th style="width:25%">{% trans "System name" %}</th>
-                    <th style="width:25%">{% trans "Total number of studies" %}</th>
-                    <th style="width:25%">{% trans "Latest study" %}</th>
+                    <th scope="col" style="width:25%">{% trans "System name" %}</th>
+                    <th scope="col" style="width:25%">{% trans "Total number of studies" %}</th>
+                    <th scope="col" style="width:25%">{% trans "Latest study" %}</th>
                     {% if home_config.display_workload_stats %}
-                        <th style="width:12.5%">{% blocktrans with home_config.day_delta_a as day_delta trimmed %}
+                        <th scope="col" style="width:12.5%">{% blocktrans with home_config.day_delta_a as day_delta trimmed %}
                             Number in last {{ day_delta }} days{% endblocktrans %}</th>
-                        <th style="width:12.5%">{% blocktrans with home_config.day_delta_b as day_delta trimmed %}
+                        <th scope="col" style="width:12.5%">{% blocktrans with home_config.day_delta_b as day_delta trimmed %}
                             Number in last {{ day_delta }} days{% endblocktrans %}</th>
                     {% endif %}
                 </tr>

@@ -15,10 +15,19 @@
   {% if admin.admingroup %}
   <form action="{% url 'display_name_update' %}" method="post">{% csrf_token %}
   {% endif %}
-  <table class="table table-bordered table-hover row-clickable">
-    <row>
-      <th>Display name</th><th>User defined modality</th><th>Institution</th><th>Department</th><th>Manufacturer</th><th>Model</th><th>Station name</th><th>Serial no.</th><th>Software version</th><th>Gantry ID</th>
-    </row>
+  <table class="table table-bordered table-hover row-clickable" aria-describedby="Display names to update">
+    <tr>
+      <th scope="col">Display name</th>
+      <th scope="col">User defined modality</th>
+      <th scope="col">Institution</th>
+      <th scope="col">Department</th>
+      <th scope="col">Manufacturer</th>
+      <th scope="col">Model</th>
+      <th scope="col">Station name</th>
+      <th scope="col">Serial no.</th>
+      <th scope="col">Software version</th>
+      <th scope="col">Gantry ID</th>
+    </tr>
 
     {% for eachname in name_list %}
       <tr>
@@ -38,14 +47,14 @@
   </table>
 
   {% if admin.admingroup %}
-  	  <table>
+  	  <table aria-describedby="New display name details">
   	  <tr>
-  	  	<td>Enter new display name to be used for all of the above systems:</td>
-  	  	<td><input name="new_display_name" type="text" value="" /></td>
+        <th scope="row">Enter new display name to be used for all of the above systems:</th>
+        <td><input name="new_display_name" type="text" value="" /></td>
   	  </tr>
   	  <tr>
-      	<td>Enter a user defined modality type for all of the above systems:</td>
-      	<td>
+        <th scope="row">Enter a user defined modality type for all of the above systems:</th>
+        <td>
           <select name="new_user_defined_modality">
         	  <option value="">[Leave unchanged]</option>
       		  <option value="DX">DX (planar x-ray)</option>

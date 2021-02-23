@@ -3,6 +3,7 @@
     <html>
 
     <head>
+        <title>OpenREM fluroscopy high dose alert e-mail</title>
         <style>
             body {
                 font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -30,7 +31,6 @@
                 margin: .67em 0;
                 margin-top: 0.67em;
                 margin-bottom: 0.67em;
-                font-size: 2em;
             }
 
             h1, h2 {
@@ -89,7 +89,9 @@
                 automatically sent by OpenREM: please do not reply as this mailbox is not monitored.</p>
             <br>
             <h2>This study</h2>
-            <table class="table table-condensed table-bordered">
+            <table class="table table-condensed table-bordered" aria-describedby="Summary for this study">
+                <th scope="col">Item</th>
+                <th scope="col">Value</th>
                 <tr>
                     <td>Study date:</td>
                     <td>{{ study.study_date|date:"d/m/y" }}</td>
@@ -180,7 +182,9 @@
             {% if alert_levels.show_accum_dose_over_delta_weeks %}
                 <br>
                 <h2>Studies from the past {{ week_delta }} weeks for this patient ID</h2>
-                <table class="table table-condensed table-bordered">
+                <table class="table table-condensed table-bordered" aria-describedby="Total DAP and dose at reference point for studies from the past {{ week_delta }} weeks for this patient ID">
+                    <th scope="col">Item</th>
+                    <th scope="col">Value</th>
                     <tr>
                         <td>Number of studies:</td>
                         <td>{{ studies_in_week_delta.count }}
@@ -220,14 +224,14 @@
                     {% endwith %}
                 </table>
                 <br>
-                <table class="table table-condensed table-bordered">
+                <table class="table table-condensed table-bordered" aria-describedby="Summary of studies from the past {{ week_delta }} weeks for this patient ID">
                     <tr>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Accession number</th>
-                        <th>Total DAP (cGy.cm<sup>2</sup>)</th>
-                        <th>Total dose at RP (Gy)</th>
-                        <th>OpenREM link</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Time</th>
+                        <th scope="col">Accession number</th>
+                        <th scope="col">Total DAP (cGy.cm<sup>2</sup>)</th>
+                        <th scope="col">Total dose at RP (Gy)</th>
+                        <th scope="col">OpenREM link</th>
                     </tr>
                     {% for each_study in studies_in_week_delta %}
                         <tr>

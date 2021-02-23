@@ -81,27 +81,27 @@
               </div>
               <div class="panel-body">
                   <h4>Server details</h4>
-                  <table class="table">
+                  <table class="table" aria-describedby="{{ scp.name }} DICOM Store SCP details">
                       <tr>
-                          <th>AE Title</th>
+                          <th scope="col">AE Title</th>
                           <td>{{ scp.aetitle }}</td>
                       </tr>
                       {% if docker_install %}
                       <tr>
-                          <th>Docker container name</th>
+                          <th scope="col">Docker container name</th>
                           <td>{{ scp.peer }}</td>
                       </tr>
                       {% endif %}
                       <tr>
-                          <th>Port</th>
+                          <th scope="col">Port</th>
                           <td>{{ scp.port }}</td>
                       </tr>
                       <tr>
-                          <th>Database ID</th>
+                          <th scope="col">Database ID</th>
                           <td>{{ scp.pk }}</td>
                       </tr>
                       <tr>
-                          <th>Status</th>
+                          <th scope="col">Status</th>
                           <td><div id="store-status-{{ scp.pk }}"></div>
 
                           </td>
@@ -139,33 +139,33 @@
                       <h3 class="panel-title">{{ qr.name }}</h3>
                   </div>
                   <div class="panel-body">
-                      <table class="table">
+                      <table class="table" aria-describedby="Remote query retrieve node {{ qr.aetitle }}">
                           <tr>
-                              <th>Remote AE Title</th>
+                              <th scope="col">Remote AE Title</th>
                               <td>{{ qr.aetitle }}</td>
                           </tr>
                           <tr>
-                              <th>Our AE Title</th>
+                              <th scope="col">Our AE Title</th>
                               <td>{{ qr.callingaet }}</td>
                           </tr>
                           <tr>
-                              <th>Peer</th>
+                              <th scope="col">Peer</th>
                               <td>{{ qr.hostname }}</td>
                           </tr>
                           <tr>
-                              <th>Port</th>
+                              <th scope="col">Port</th>
                               <td>{{ qr.port }}</td>
                           </tr>
                           <tr>
-                              <th>IP Address</th>
+                              <th scope="col">IP Address</th>
                               <td>{{ qr.ip }}</td>
                           </tr>
                           <tr>
-                              <th>Use Modality in Study Query</th>
+                              <th scope="col">Use Modality in Study Query</th>
                               <td>{{ qr.use_modality_tag }}</td>
                           </tr>
                           <tr>
-                              <th>Database ID</th>
+                              <th scope="col">Database ID</th>
                               <td>{{ qr.pk }}</td>
                           </tr>
                       </table>
@@ -201,25 +201,25 @@
                   </div>
                   <div class="panel-body">
                       <h4>After processing incoming objects, delete...</h4>
-                      <table class="table">
+                      <table class="table" aria-describedby="Settings for all Store SCPs">
                           <tr>
-                              <th>unmatched objects?</th>
+                              <th scope="col">unmatched objects?</th>
                               <td>{{ del_settings.del_no_match }}</td>
                           </tr>
                           <tr>
-                              <th>Radiation Dose Structured Reports?</th>
+                              <th scope="col">Radiation Dose Structured Reports?</th>
                               <td>{{ del_settings.del_rdsr }}</td>
                           </tr>
                           <tr>
-                              <th>Mammography images?</th>
+                              <th scope="col">Mammography images?</th>
                               <td>{{ del_settings.del_mg_im }}</td>
                           </tr>
                           <tr>
-                              <th>Radiology images?</th>
+                              <th scope="col">Radiology images?</th>
                               <td>{{ del_settings.del_dx_im }}</td>
                           </tr>
                           <tr>
-                              <th>Philips CT dose info images?</th>
+                              <th scope="col">Philips CT dose info images?</th>
                               <td>{{ del_settings.del_ct_phil }}</td>
                           </tr>
                       </table>
