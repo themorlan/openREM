@@ -43,7 +43,9 @@ USER root
 RUN chmod -R 775 $APP_HOME/mediafiles \
  && chmod -R 775 $APP_HOME/staticfiles \
  && chmod -R g+s $APP_HOME/mediafiles \
- && chmod -R g+s $APP_HOME/staticfiles
+ && chmod -R g+s $APP_HOME/staticfiles \
+ && mkdir /logs && chown app:app /logs \
+ && mkdir /imports && chown app:app /imports
 
 USER app
 RUN pip install -e .
