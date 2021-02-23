@@ -32,6 +32,7 @@ import os
 import sys
 import logging
 import django
+from packaging import version
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -42,7 +43,6 @@ os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
 from celery import shared_task
-from packaging import version
 
 # Explicitly name logger so that it is still handled when using __main__
 logger = logging.getLogger("remapp.tools.make_skin_map")
@@ -55,7 +55,7 @@ def make_skin_map(study_pk=None):
         GeneralStudyModuleAttr,
         SkinDoseMapResults,
         SkinDoseMapCalcSettings,
-        OpenSkinWhiteList,
+        OpenSkinSafeList,
     )
     from remapp.tools.save_skin_map_structure import save_openskin_structure
 
@@ -66,10 +66,10 @@ def make_skin_map(study_pk=None):
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
         if not SkinDoseMapCalcSettings.objects.values_list(
-            "overrule_whitelist", flat=True
+            "overrule_safelist", flat=True
         )[0]:
             try:
-                entry = OpenSkinWhiteList.objects.get(
+                entry = OpenSkinSafeList.objects.get(
                     manufacturer=study.generalequipmentmoduleattr_set.get().manufacturer,
                     manufacturer_model_name=study.generalequipmentmoduleattr_set.get().manufacturer_model_name,
                 )

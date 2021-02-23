@@ -6,6 +6,7 @@ OpenREM version history
 1.0.0b1 (2020-xx-xx)
 --------------------
 * :issue:`893`  Charts: fixed issue with over-time charts with many sub-plots failing to plot correctly
+* :issue:`888`  SkinDose: added option to support skin dose calculations for listed systems only
 * :issue:`886`  Code quality: addressed some SonarCloud issues
 * :issue:`881`  Charts: add option to remove multiple and trailing whitespace in category names
 * :issue:`879`  Charts: fixed sorting of fluoroscopy charts when split by physician

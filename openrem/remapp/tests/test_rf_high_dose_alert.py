@@ -20,8 +20,8 @@ from decimal import Decimal
 
 @override_settings(LANGUAGE_CODE="en-us")
 class RFHighDoseAlert(TestCase):
-    # Load openskin whitelist into database for final test
-    fixtures = ["openskin_whitelist.json"]
+    # Load openskin safelist into database for final test
+    fixtures = ["openskin_safelist.json"]
 
     def setUp(self):
         self.factory = RequestFactory()

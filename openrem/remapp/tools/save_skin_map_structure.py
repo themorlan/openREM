@@ -28,14 +28,13 @@
 ..  moduleauthor:: Ed McDonagh, David Platten, Wens Kong
 
 """
+import gzip
 import os
-import sys
+import pickle
 
-from remapp.models import GeneralStudyModuleAttr, HighDoseMetricAlertSettings
+from remapp.models import HighDoseMetricAlertSettings
 from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 from openremproject.settings import MEDIA_ROOT
-import pickle
-import gzip
 
 
 def save_openskin_structure(study, return_struct):

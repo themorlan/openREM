@@ -105,7 +105,7 @@ administrator via the ``Skin dose map settings`` option in the ``Config menu``:
 
 * Enable skin dose maps
 * Calculate skin dose maps on import
-* Ignore systems white list
+* Ignore systems safelist
 
 The first of these sets whether skin dose map data is calculated, and also
 switches the display of skin dose maps on or off. The second option controls

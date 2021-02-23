@@ -17,8 +17,9 @@ from ..tools.make_skin_map import make_skin_map
 
 class OpenSkinBlackBox(TestCase):
     """Test openSkin as a black box - known study in, known skin map file out"""
-    # Load whitelist fixture to allow RDSR to have skin map calculated
-    fixtures = ["openskin_whitelist.json"]
+
+    # Load safelist fixture to allow RDSR to have skin map calculated
+    fixtures = ["openskin_safelist.json"]
 
     def setUp(self):
         """

@@ -36,7 +36,7 @@ Get the database and translations ready:
 
     $ docker-compose exec openrem python manage.py makemigrations remapp --noinput
     $ docker-compose exec openrem python manage.py migrate --noinput
-    $ docker-compose exec openrem python manage.py loaddata openskin_whitelist.json
+    $ docker-compose exec openrem python manage.py loaddata openskin_safelist.json
     $ docker-compose exec openrem python manage.py collectstatic --noinput --clear
     $ docker-compose exec openrem python manage.py compilemessages
     $ docker-compose exec openrem python manage.py createsuperuser
