@@ -631,6 +631,8 @@ def _patientstudymoduleattributes(dataset, g):  # C.7.2.2
         Decimal(patientatt.patient_size)
     except DecimalException:
         patientatt.patient_size = None
+    except TypeError:
+        pass
     patientatt.save()
 
 
