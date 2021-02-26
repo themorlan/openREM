@@ -88,16 +88,16 @@
 
     <h4>Completed export tasks</h4>
     <form action="{% url 'deletefile' %}" method="POST">
-      <table class="table table-striped">
-        <th>Exported</th>
-        <th>Modality</th>
-        <th>Export type</th>
-        <th>Export filters</th>
-        <th>No. records</th>
-        <th>Export time</th>
-        <th>User</th>
-        <th>Download</th>
-        <th><input type="checkbox" id="select_all"/> Delete?</th>
+      <table class="table table-striped" aria-describedby="Completed export tasks">
+        <th scope="col">Exported</th>
+        <th scope="col">Modality</th>
+        <th scope="col">Export type</th>
+        <th scope="col">Export filters</th>
+        <th scope="col">No. records</th>
+        <th scope="col">Export time</th>
+        <th scope="col">User</th>
+        <th scope="col">Download</th>
+        <th scope="col"><input type="checkbox" id="select_all"/> Delete?</th>
         {% for tsk in complete %}
           <tr>
             <td>{{ tsk.export_date|naturaltime }}</td>

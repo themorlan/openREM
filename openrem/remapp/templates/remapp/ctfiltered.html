@@ -86,7 +86,7 @@
                 <h3 class="panel-title">Chart options</h3>
             </div>
             <div class="panel-body">
-                <table>
+                <table aria-describedby="CT chart options">
                     {% csrf_token %}
                     {{ chartOptionsForm }}
                 </table>
@@ -96,7 +96,7 @@
                 <h3 class="panel-title">Table options</h3>
             </div>
             <div class="panel-body">
-                <table>
+                <table aria-describedby="Number of rows per page option">
                     {{ itemsPerPageForm }}
                 </table>
                 <input class="btn btn-default" name="submit" type="submit" />
@@ -112,27 +112,27 @@
 {% block col1 %}
 
 
-    <table class="table table-bordered table-hover row-clickable small">
+    <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
         <tr>
             <th>Institution</th>
             <th>
-                <table>
-                    <tr><td>Make</td></tr>
-                    <tr><td>Model</td></tr>
-                    <tr><td class="nowrap">Display name</td></tr>
+                <table aria-describedby="Make, model and display name">
+                    <tr><th scope="col">Make</th></tr>
+                    <tr><th scope="col">Model</th></tr>
+                    <tr><th scope="col" class="nowrap">Display name</th></tr>
                 </table>
             </th>
             <th>Date</th>
             <th>
-                <table>
-                    <tr><td class="nowrap">Study description</td></tr>
-                    <tr><td class="nowrap">Procedure</td></tr>
-                    <tr><td class="nowrap">Requested Procedure</td></tr>
-                    <tr><td class="nowrap">Accession number</td></tr>
+                <table aria-describedby="Study description, procedure, requested procedure and accession number">
+                    <tr><th scope="col" class="nowrap">Study description</th></tr>
+                    <tr><th scope="col" class="nowrap">Procedure</th></tr>
+                    <tr><th scope="col" class="nowrap">Requested Procedure</th></tr>
+                    <tr><th scope="col" class="nowrap">Accession number</th></tr>
                 </table>
             </th>
-            <th>Number of events</th>
-            <th>Total DLP (mGy.cm)</th>
+            <th scope="col">Number of events</th>
+            <th scope="col">Total DLP (mGy.cm)</th>
             {% if admin.admingroup %}
                 <th>Delete?</th>
             {% endif %}
@@ -147,7 +147,7 @@
                 </td>
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';">
+                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="Manufacturer, model and display name">
                             <tr><td class="nowrap">{{ equipment.manufacturer }}</td></tr>
                             <tr><td class="nowrap">{{ equipment.manufacturer_model_name }}</td></tr>
                             <tr><td class="nowrap">{{ equipment.unique_equipment_name.display_name }}</td></tr>
@@ -160,7 +160,7 @@
                 </a>
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';">
+                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="Study description, procedure and requested procedure name">
                             <tr><td class="nowrap">{{ exam.study_description }}</td></tr>
                             <tr><td class="nowrap">{{ exam.procedure_code_meaning }}</td></tr>
                             <tr><td class="nowrap">{{ exam.requested_procedure_code_meaning }}</td></tr>
@@ -205,7 +205,7 @@
         <div class="ajax-progress"><img src="{{ STATIC_URL }}img/ajax-loader.gif"></div>
 
         <!-- JavaScript to enable Plotly charts -->
-        <script src="{{ STATIC_URL }}js/charts/plotly-1.57.1.min.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/plotly-1.58.2.min.js"></script>
         <!-- End of JavaScript to enable Plotly charts -->
 
         <!-- JavaScript Plotly chart resizing code. -->

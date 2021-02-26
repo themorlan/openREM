@@ -29,7 +29,6 @@
 """
 
 # Following two lines added so that sphinx autodocumentation works.
-from past.utils import old_div
 from builtins import object  # pylint: disable=redefined-builtin
 import json
 from django.db import models
@@ -292,14 +291,6 @@ class DicomStoreSCP(models.Model):
     port = models.IntegerField(default=104)
     task_id = models.CharField(max_length=64, blank=True, null=True)
     status = models.CharField(max_length=64, blank=True, null=True)
-    run = models.BooleanField(default=False)
-    keep_alive = models.BooleanField(
-        default=False,
-        verbose_name="Should this server be kept auto-started and kept alive (using celery beat)",
-    )
-    controlled = models.BooleanField(
-        default=False, verbose_name="Is this server controlled by OpenREM"
-    )
 
     def get_absolute_url(self):
         return reverse("dicom_summary")
@@ -418,8 +409,6 @@ class CommonVariables:
         (DEFAULT_COLOUR_MAP, "Red-yellow-blue (default)"),
         ("Spectral", "Spectral"),
         ("RdYlGn", "Red-yellow-green"),
-        ("rainbow", "Rainbow"),
-        ("jet", "Jet"),
         ("PiYG", "Pink-green"),
         ("PRGn", "Purple-green"),
         ("BrBG", "Brown-blue-green"),
@@ -487,27 +476,38 @@ class UserProfile(models.Model, CommonVariables):
     """
     Table to store user profile settings
     """
-    itemsPerPage = models.IntegerField(null=True, choices=CommonVariables.ITEMS_PER_PAGE, default=25)
+
+    itemsPerPage = models.IntegerField(
+        null=True, choices=CommonVariables.ITEMS_PER_PAGE, default=25
+    )
 
     # This field is required.
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     plotGroupingChoice = models.CharField(
-        max_length=6, choices=CommonVariables.CHART_GROUPING, default=CommonVariables.SYSTEM
+        max_length=6,
+        choices=CommonVariables.CHART_GROUPING,
+        default=CommonVariables.SYSTEM,
     )
 
     plotThemeChoice = models.CharField(
-        max_length=12, choices=CommonVariables.CHART_THEMES, default=CommonVariables.PLOTLY_THEME
+        max_length=12,
+        choices=CommonVariables.CHART_THEMES,
+        default=CommonVariables.PLOTLY_THEME,
     )
 
     plotColourMapChoice = models.CharField(
-        max_length=8, choices=CommonVariables.CHART_COLOUR_MAPS, default=CommonVariables.DEFAULT_COLOUR_MAP
+        max_length=8,
+        choices=CommonVariables.CHART_COLOUR_MAPS,
+        default=CommonVariables.DEFAULT_COLOUR_MAP,
     )
 
     plotFacetColWrapVal = models.PositiveSmallIntegerField(default=3)
 
     plotInitialSortingDirection = models.IntegerField(
-        null=True, choices=CommonVariables.SORTING_DIRECTION, default=CommonVariables.DESCENDING
+        null=True,
+        choices=CommonVariables.SORTING_DIRECTION,
+        default=CommonVariables.DESCENDING,
     )
 
     plotBoxplots = models.BooleanField(default=False, editable=False)
@@ -532,10 +532,14 @@ class UserProfile(models.Model, CommonVariables):
     plotDXAcquisitionMeanmAsOverTime = models.BooleanField(default=False)
     plotDXAcquisitionMeanDAPOverTime = models.BooleanField(default=False)
     plotDXAcquisitionMeanDAPOverTimePeriod = models.CharField(
-        max_length=13, choices=CommonVariables.TIME_PERIOD, default=CommonVariables.MONTHS
+        max_length=13,
+        choices=CommonVariables.TIME_PERIOD,
+        default=CommonVariables.MONTHS,
     )
     plotDXInitialSortingChoice = models.CharField(
-        max_length=9, choices=CommonVariables.SORTING_CHOICES, default=CommonVariables.FREQ
+        max_length=9,
+        choices=CommonVariables.SORTING_CHOICES,
+        default=CommonVariables.FREQ,
     )
 
     plotCTAcquisitionMeanDLP = models.BooleanField(default=True)
@@ -556,10 +560,14 @@ class UserProfile(models.Model, CommonVariables):
     plotCTStudyPerDayAndHour = models.BooleanField(default=False)
     plotCTStudyMeanDLPOverTime = models.BooleanField(default=False)
     plotCTOverTimePeriod = models.CharField(
-        max_length=13, choices=CommonVariables.TIME_PERIOD, default=CommonVariables.MONTHS
+        max_length=13,
+        choices=CommonVariables.TIME_PERIOD,
+        default=CommonVariables.MONTHS,
     )
     plotCTInitialSortingChoice = models.CharField(
-        max_length=9, choices=CommonVariables.SORTING_CHOICES, default=CommonVariables.FREQ
+        max_length=9,
+        choices=CommonVariables.SORTING_CHOICES,
+        default=CommonVariables.FREQ,
     )
 
     plotRFStudyPerDayAndHour = models.BooleanField(default=False)
@@ -570,10 +578,14 @@ class UserProfile(models.Model, CommonVariables):
     plotRFRequestFreq = models.BooleanField(default=True)
     plotRFRequestDAPOverTime = models.BooleanField(default=False)
     plotRFOverTimePeriod = models.CharField(
-        max_length=13, choices=CommonVariables.TIME_PERIOD, default=CommonVariables.MONTHS
+        max_length=13,
+        choices=CommonVariables.TIME_PERIOD,
+        default=CommonVariables.MONTHS,
     )
     plotRFInitialSortingChoice = models.CharField(
-        max_length=9, choices=CommonVariables.SORTING_CHOICES, default=CommonVariables.FREQ
+        max_length=9,
+        choices=CommonVariables.SORTING_CHOICES,
+        default=CommonVariables.FREQ,
     )
     plotRFSplitByPhysician = models.BooleanField(default=False)
 
@@ -586,10 +598,14 @@ class UserProfile(models.Model, CommonVariables):
     plotMGacquisitionFreq = models.BooleanField(default=False)
     plotMGAcquisitionAGDOverTime = models.BooleanField(default=False)
     plotMGOverTimePeriod = models.CharField(
-        max_length=13, choices=CommonVariables.TIME_PERIOD, default=CommonVariables.MONTHS
+        max_length=13,
+        choices=CommonVariables.TIME_PERIOD,
+        default=CommonVariables.MONTHS,
     )
     plotMGInitialSortingChoice = models.CharField(
-        max_length=9, choices=CommonVariables.SORTING_CHOICES, default=CommonVariables.FREQ
+        max_length=9,
+        choices=CommonVariables.SORTING_CHOICES,
+        default=CommonVariables.FREQ,
     )
 
     displayCT = models.BooleanField(default=True)
@@ -606,6 +622,8 @@ class UserProfile(models.Model, CommonVariables):
     plotHistogramGlobalBins = models.BooleanField(default=False)
 
     plotCaseInsensitiveCategories = models.BooleanField(default=False)
+
+    plotRemoveCategoryWhitespacePadding = models.BooleanField(default=False)
 
     summaryWorkloadDaysA = models.IntegerField(
         blank=True,
@@ -1367,7 +1385,7 @@ class Exposure(models.Model):  # EV 113736
         from numbers import Number
 
         if isinstance(self.exposure, Number):
-            return old_div(self.exposure, Decimal(1000.0))
+            return self.exposure / Decimal(1000.0)
         else:
             return None
 

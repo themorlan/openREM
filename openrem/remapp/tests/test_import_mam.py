@@ -1,8 +1,6 @@
 # This Python file uses the following encoding: utf-8
 # test_import_mam.py
 
-from __future__ import division
-from past.utils import old_div
 import datetime
 import logging
 import os
@@ -169,7 +167,7 @@ class ImportMGImg(TestCase):
             .irradeventxraydata_set.get()
             .irradeventxraysourcedata_set.get()
             .collimated_field_area,
-            old_div((Decimal(229) * Decimal(191)), Decimal(1000000)),
+            (Decimal(229) * Decimal(191)) / Decimal(1000000),
         )
         self.assertAlmostEqual(
             study.projectionxrayradiationdose_set.get()

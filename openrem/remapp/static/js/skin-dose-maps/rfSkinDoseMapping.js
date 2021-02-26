@@ -421,7 +421,7 @@ $("#skinDoseMap")
         };
     });
 
-colourScaleSelection("colour_scale_selection");
+colourScaleSelection();
 
 $("[data-tooltip='skin_dose_map']").qtip({
     content: {

@@ -90,7 +90,7 @@
                 <h3 class="panel-title">Chart options</h3>
             </div>
             <div class="panel-body">
-                <table>
+                <table aria-describedby="Radiographic chart options">
                     {% csrf_token %}
                     {{ chartOptionsForm }}
                 </table>
@@ -100,7 +100,7 @@
                 <h3 class="panel-title">Table options</h3>
             </div>
             <div class="panel-body">
-                <table>
+                <table aria-describedby="Number of rows per page option">
                     {{ itemsPerPageForm }}
                 </table>
                 <input class="btn btn-default" name="submit" type="submit"/>
@@ -115,11 +115,11 @@
 
 {% block col1 %}
 
-    <table class="table table-bordered table-hover row-clickable small">
-        <row>
-            <th>Institution</th>
-            <th>
-                <table>
+    <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
+        <tr>
+            <th scope="col">Institution</th>
+            <th scope="col">
+                <table aria-describedby="Make, model and display name">
                     <tr>
                         <td>Make</td>
                     </tr>
@@ -131,9 +131,9 @@
                     </tr>
                 </table>
             </th>
-            <th>Date</th>
-            <th>
-                <table>
+            <th scope="col">Date</th>
+            <th scope="col">
+                <table aria-describedby="Study description, procedure, requested procedure and accession number">
                     <tr>
                         <td class="nowrap">Study description</td>
                     </tr>
@@ -148,12 +148,12 @@
                     </tr>
                 </table>
             </th>
-            <th>Number of events</th>
-            <th>Total DAP (cGy.cm<sup>2</sup>)</th>
+            <th scope="col">Number of events</th>
+            <th scope="col">Total DAP (cGy.cm<sup>2</sup>)</th>
             {% if admin.admingroup %}
-                <th>Delete?</th>
+                <th scope="col">Delete?</th>
             {% endif %}
-        </row>
+        </tr>
         {% for exam in study_list %}
             {% with equipment=exam.generalequipmentmoduleattr_set.get %}
                         <tr>
@@ -164,7 +164,7 @@
                             </td>
                             <td>
                                 <a href="{% url 'dx_detail_view' pk=exam.id %}">
-                                    <table onclick="window.location='{% url 'dx_detail_view' pk=exam.id %}';">
+                                    <table onclick="window.location='{% url 'dx_detail_view' pk=exam.id %}';" aria-describedby="Manufacturer, model and display name">
                                         <tr>
                                             <td class="nowrap">{{ equipment.manufacturer }}</td>
                                         </tr>
@@ -184,7 +184,7 @@
                             </td>
                             <td>
                                 <a href="{% url 'dx_detail_view' pk=exam.id %}">
-                                    <table onclick="window.location='{% url 'dx_detail_view' pk=exam.id %}';">
+                                    <table onclick="window.location='{% url 'dx_detail_view' pk=exam.id %}';" aria-describedby="Study description, procedure and requested procedure name">
                                         <tr>
                                             <td class="nowrap">{{ exam.study_description }}</td>
                                         </tr>
@@ -242,7 +242,7 @@
         <div class="ajax-progress"><img src="{{ STATIC_URL }}img/ajax-loader.gif"></div>
 
         <!-- JavaScript to enable Plotly charts -->
-        <script src="{{ STATIC_URL }}js/charts/plotly-1.57.1.min.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/plotly-1.58.2.min.js"></script>
         <!-- End of JavaScript to enable Plotly charts -->
 
         <!-- JavaScript Plotly chart resizing code. -->

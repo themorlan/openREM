@@ -332,7 +332,7 @@ function skinDoseMapObject(skinDoseMapCanvasName, colourScaleName) {
      * @param phantomFlatWidth
      * @param phantomCurvedEdgeWidth
      */
-    this.initialise = function (skinMapData, skinMapWidth, skinMapHeight, phantomFlatWidth, phantomCurvedEdgeWidth) {
+    this.initialise = function (skinMapData, skinMapWidth, skinMapHeight, phantomFlatWidth, phantomCurvedEdgeWidth, phantomHeadHeight) {
         var _this = this;
         _this.skinDoseMap = skinMapData;
         _this.skinDoseMapWidth = skinMapWidth;
@@ -346,6 +346,7 @@ function skinDoseMapObject(skinDoseMapCanvasName, colourScaleName) {
 
         _this.phantomFlatWidth = phantomFlatWidth;
         _this.phantomCurvedEdgeWidth = phantomCurvedEdgeWidth;
+        _this.phantomHeadHeight = phantomHeadHeight;
 
         _this.resizeSkinDoseMap();
         _this.updateBoundaries();

@@ -68,7 +68,8 @@ $(document).ready(function() {
 
             if (isCanvasSupported()) {
 
-                skinDoseMapObj.initialise(json.skin_map, json.width, json.height, json.phantom_flat_dist, json.phantom_curved_dist);
+                skinDoseMapObj.initialise(json.skin_map, json.width, json.height, json.phantom_flat_dist,
+                json.phantom_curved_dist, json.phantom_head_height);
 
                 if (skinDoseMapObj.maxDose !== 0 && isFinite(skinDoseMapObj.maxDose)) {
 
@@ -90,7 +91,7 @@ $(document).ready(function() {
                     skinDoseMapGroupOrigHeight = skinDoseMapGroup.height();
 
                     skinDoseMapObj.maxDoseLabel = skinDoseMapObj.maxDose.toFixed(decimalPlaces);
-                    skinDoseMapObj.phantomDimensionsLabel = json.phantom_height + "x" + json.phantom_width + "x" + json.phantom_depth;
+                    skinDoseMapObj.phantomDimensionsLabel = json.phantom_height + json.phantom_head_height + "x" + json.phantom_width + "x" + json.phantom_depth;
                     skinDoseMapObj.patientHeight = (json.patient_height / 100).toFixed(2);
                     skinDoseMapObj.patientMass = json.patient_mass.toFixed(1);
                     skinDoseMapObj.patientOrientation = json.patient_orientation;
@@ -136,12 +137,14 @@ $(document).ready(function() {
                         skinDoseMap3dObj.canvas.height = skinDoseMapObj.skinDoseMapCanvas.height;
                         skinDoseMap3dObj.windowWidth = skinDoseMapObj.windowWidth;
                         skinDoseMap3dObj.windowLevel = skinDoseMapObj.windowLevel;
-                        skinDoseMap3dObj.initialise(json.skin_map, json.phantom_flat_dist, json.phantom_curved_dist, json.phantom_height, json.phantom_depth / 2);
+                        skinDoseMap3dObj.initialise(json.skin_map, json.phantom_flat_dist, json.phantom_curved_dist,
+                        json.phantom_height, json.phantom_depth / 2, json.phantom_head_height, json.phantom_head_radius);
                         skinDoseMap3dObj.draw();
-                        skinDoseMap3dPersonObj.initialise(json.phantom_height);
+                        skinDoseMap3dPersonObj.initialise(json.phantom_height + json.phantom_head_height);
 
                         skinDoseMap3dHUDObj.maxDoseLabel = skinDoseMapObj.maxDose.toFixed(decimalPlaces);
-                        skinDoseMap3dHUDObj.phantomDimensionsLabel = json.phantom_height + "x" + json.phantom_width + "x" + json.phantom_depth;
+                        skinDoseMap3dHUDObj.phantomDimensionsLabel = json.phantom_height + json.phantom_head_height + "x"
+                            + json.phantom_width + "x" + json.phantom_depth;
                         skinDoseMap3dHUDObj.patientHeight = (json.patient_height / 100).toFixed(2);
                         skinDoseMap3dHUDObj.patientMass = json.patient_mass.toFixed(1);
                         skinDoseMap3dHUDObj.patientOrientation = json.patient_orientation;

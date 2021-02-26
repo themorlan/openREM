@@ -118,13 +118,22 @@ class ChartsCT(TestCase):
             np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"])
 
             # Check the system names
-            np.testing.assert_array_equal([i[0] for i in dataset["customdata"]], [i[0] for i in chart_data[idx]["customdata"]])
+            np.testing.assert_array_equal(
+                [i[0] for i in dataset["customdata"]],
+                [i[0] for i in chart_data[idx]["customdata"]],
+            )
 
             # Check the average values
-            np.testing.assert_array_almost_equal([i[1] for i in dataset["customdata"]], [i[1] for i in chart_data[idx]["customdata"]])
+            np.testing.assert_array_almost_equal(
+                [i[1] for i in dataset["customdata"]],
+                [i[1] for i in chart_data[idx]["customdata"]],
+            )
 
             # Check the frequency values
-            np.testing.assert_array_almost_equal([i[2] for i in dataset["customdata"]], [i[2] for i in chart_data[idx]["customdata"]])
+            np.testing.assert_array_almost_equal(
+                [i[2] for i in dataset["customdata"]],
+                [i[2] for i in chart_data[idx]["customdata"]],
+            )
 
     def check_frequency_data(self, chart_data, standard_data):
         for idx, dataset in enumerate(standard_data["data"]):

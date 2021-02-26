@@ -319,8 +319,6 @@ dicom_patterns = [
         dicomviews.DicomStoreDelete.as_view(),
         name="dicomstore_delete",
     ),
-    path("store/<int:pk>/start/", dicomviews.run_store, name="run_store"),
-    path("store/<int:pk>/stop/", dicomviews.stop_store, name="stop_store"),
     path(
         "store/statusupdate", dicomviews.status_update_store, name="status_update_store"
     ),

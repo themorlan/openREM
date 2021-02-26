@@ -57,7 +57,10 @@ def skin_map(
     """
     ref_length_squared = math.pow(d_ref, 2)
 
-    skin_dose_map = np.zeros((phantom.width, phantom.height), dtype=np.dtype(Decimal))
+    skin_dose_map = np.zeros(
+        (phantom.width, phantom.height + phantom.phantom_head_height),
+        dtype=np.dtype(Decimal),
+    )
     focus = x_ray.source
     table1 = Triangle3(
         np.array([-table_width / 2, 0, 0]),
@@ -83,6 +86,7 @@ def skin_map(
         my_x = phantom.phantom_map[lookup_row, lookup_col][0]
         my_y = phantom.phantom_map[lookup_row, lookup_col][1]
         my_z = phantom.phantom_map[lookup_row, lookup_col][2]
+
         my_ray = Segment3(focus, np.array([my_x, my_y, my_z]))
         reverse_normal = phantom.normal_map[lookup_row, lookup_col]
 

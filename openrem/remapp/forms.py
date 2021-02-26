@@ -107,41 +107,41 @@ class DXChartOptionsForm(forms.Form):
     """Form for DX chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
-    plotDXAcquisitionMeanDAP = forms.BooleanField(
-        label="Acquisition DAP", required=False
-    )
     plotDXAcquisitionFreq = forms.BooleanField(
         label="Acquisition frequency", required=False
     )
-    plotDXAcquisitionMeankVp = forms.BooleanField(
-        label="Acquisition kVp", required=False
+    plotDXAcquisitionMeanDAP = forms.BooleanField(
+        label="Acquisition DAP", required=False
     )
     plotDXAcquisitionMeanmAs = forms.BooleanField(
         label="Acquisition mAs", required=False
     )
+    plotDXAcquisitionMeankVp = forms.BooleanField(
+        label="Acquisition kVp", required=False
+    )
     plotDXAcquisitionMeanDAPOverTime = forms.BooleanField(
         label="Acquisition DAP over time", required=False
-    )
-    plotDXAcquisitionMeankVpOverTime = forms.BooleanField(
-        label="Acquisition kVp over time", required=False
     )
     plotDXAcquisitionMeanmAsOverTime = forms.BooleanField(
         label="Acquisition mAs over time", required=False
     )
+    plotDXAcquisitionMeankVpOverTime = forms.BooleanField(
+        label="Acquisition kVp over time", required=False
+    )
     plotDXAcquisitionDAPvsMass = forms.BooleanField(
         label="Acquisition DAP vs mass", required=False
     )
-    plotDXStudyMeanDAP = forms.BooleanField(label="Study DAP", required=False)
     plotDXStudyFreq = forms.BooleanField(label="Study frequency", required=False)
+    plotDXStudyMeanDAP = forms.BooleanField(label="Study DAP", required=False)
+    plotDXStudyDAPvsMass = forms.BooleanField(label="Study DAP vs mass", required=False)
     plotDXStudyPerDayAndHour = forms.BooleanField(
         label="Study workload", required=False
     )
-    plotDXStudyDAPvsMass = forms.BooleanField(label="Study DAP vs mass", required=False)
-    plotDXRequestMeanDAP = forms.BooleanField(
-        label="Requested procedure DAP", required=False
-    )
     plotDXRequestFreq = forms.BooleanField(
         label="Requested procedure frequency", required=False
+    )
+    plotDXRequestMeanDAP = forms.BooleanField(
+        label="Requested procedure DAP", required=False
     )
     plotDXRequestDAPvsMass = forms.BooleanField(
         label="Requested procedure DAP vs mass", required=False
@@ -156,7 +156,9 @@ class DXChartOptionsForm(forms.Form):
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe("Grouping choice"), choices=CommonVariables.CHART_GROUPING, required=False
+        label=mark_safe("Grouping choice"),
+        choices=CommonVariables.CHART_GROUPING,
+        required=False,
     )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
@@ -168,7 +170,9 @@ class DXChartOptionsForm(forms.Form):
         label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction", choices=CommonVariables.SORTING_DIRECTION, required=False
+        label="Sorting direction",
+        choices=CommonVariables.SORTING_DIRECTION,
+        required=False,
     )
 
 
@@ -177,44 +181,44 @@ class CTChartOptionsForm(forms.Form):
     """Form for CT chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
+    plotCTAcquisitionFreq = forms.BooleanField(
+        label="Acquisition frequency", required=False
+    )
     plotCTAcquisitionMeanDLP = forms.BooleanField(
         label="Acquisition DLP", required=False
     )
     plotCTAcquisitionMeanCTDI = forms.BooleanField(  # nosec
         label=mark_safe("Acquisition CTDI<sub>vol</sub>"), required=False
     )
-    plotCTAcquisitionFreq = forms.BooleanField(
-        label="Acquisition frequency", required=False
-    )
-    plotCTAcquisitionCTDIvsMass = forms.BooleanField(  # nosec
-        label=mark_safe("Acquisition CTDI<sub>vol</sub> vs mass"), required=False
-    )
-    plotCTAcquisitionDLPvsMass = forms.BooleanField(
-        label="Acquisition DLP vs mass", required=False
+    plotCTAcquisitionDLPOverTime = forms.BooleanField(
+        label="Acquisition DLP over time", required=False
     )
     plotCTAcquisitionCTDIOverTime = forms.BooleanField(  # nosec
         label=mark_safe("Acquisition CTDI<sub>vol</sub> over time"), required=False
     )
-    plotCTAcquisitionDLPOverTime = forms.BooleanField(
-        label="Acquisition DLP over time", required=False
+    plotCTAcquisitionDLPvsMass = forms.BooleanField(
+        label="Acquisition DLP vs mass", required=False
     )
+    plotCTAcquisitionCTDIvsMass = forms.BooleanField(  # nosec
+        label=mark_safe("Acquisition CTDI<sub>vol</sub> vs mass"), required=False
+    )
+    plotCTStudyFreq = forms.BooleanField(label="Study frequency", required=False)
     plotCTStudyMeanDLP = forms.BooleanField(label="Study DLP", required=False)
     plotCTStudyMeanCTDI = forms.BooleanField(  # nosec
         label=mark_safe("Study CTDI<sub>vol</sub>"), required=False
     )
-    plotCTStudyFreq = forms.BooleanField(label="Study frequency", required=False)
     plotCTStudyNumEvents = forms.BooleanField(label="Study events", required=False)
-    plotCTStudyPerDayAndHour = forms.BooleanField(
-        label="Study workload", required=False
-    )
     plotCTStudyMeanDLPOverTime = forms.BooleanField(
         label="Study DLP over time", required=False
     )
-    plotCTRequestMeanDLP = forms.BooleanField(
-        label="Requested procedure DLP", required=False
+    plotCTStudyPerDayAndHour = forms.BooleanField(
+        label="Study workload", required=False
     )
     plotCTRequestFreq = forms.BooleanField(
         label="Requested procedure frequency", required=False
+    )
+    plotCTRequestMeanDLP = forms.BooleanField(
+        label="Requested procedure DLP", required=False
     )
     plotCTRequestNumEvents = forms.BooleanField(
         label="Requested procedure events", required=False
@@ -232,7 +236,9 @@ class CTChartOptionsForm(forms.Form):
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe("Grouping choice"), choices=CommonVariables.CHART_GROUPING, required=False
+        label=mark_safe("Grouping choice"),
+        choices=CommonVariables.CHART_GROUPING,
+        required=False,
     )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
@@ -244,7 +250,9 @@ class CTChartOptionsForm(forms.Form):
         label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction", choices=CommonVariables.SORTING_DIRECTION, required=False
+        label="Sorting direction",
+        choices=CommonVariables.SORTING_DIRECTION,
+        required=False,
     )
 
 
@@ -253,19 +261,19 @@ class RFChartOptionsForm(forms.Form):
     """Form for RF chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
-    plotRFStudyDAP = forms.BooleanField(label="Study DAP", required=False)
     plotRFStudyFreq = forms.BooleanField(label="Study frequency", required=False)
-    plotRFStudyPerDayAndHour = forms.BooleanField(
-        label="Study workload", required=False
-    )
+    plotRFStudyDAP = forms.BooleanField(label="Study DAP", required=False)
     plotRFStudyDAPOverTime = forms.BooleanField(
         label="Study DAP over time", required=False
     )
-    plotRFRequestDAP = forms.BooleanField(
-        label="Requested procedure DAP", required=False
+    plotRFStudyPerDayAndHour = forms.BooleanField(
+        label="Study workload", required=False
     )
     plotRFRequestFreq = forms.BooleanField(
         label="Requested procedure frequency", required=False
+    )
+    plotRFRequestDAP = forms.BooleanField(
+        label="Requested procedure DAP", required=False
     )
     plotRFRequestDAPOverTime = forms.BooleanField(
         label="Requested procedure DAP over time", required=False
@@ -283,7 +291,9 @@ class RFChartOptionsForm(forms.Form):
         label="Split plots by physician", required=False
     )
     plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe("Grouping choice"), choices=CommonVariables.CHART_GROUPING_RF, required=False
+        label=mark_safe("Grouping choice"),
+        choices=CommonVariables.CHART_GROUPING_RF,
+        required=False,
     )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
@@ -295,7 +305,9 @@ class RFChartOptionsForm(forms.Form):
         label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction", choices=CommonVariables.SORTING_DIRECTION, required=False
+        label="Sorting direction",
+        choices=CommonVariables.SORTING_DIRECTION,
+        required=False,
     )
 
 
@@ -303,20 +315,19 @@ class RFChartOptionsDisplayForm(forms.Form):
 
     """Form for RF chart display options"""
 
-    plotRFStudyDAP = forms.BooleanField(label="Study DAP", required=False)
     plotRFStudyFreq = forms.BooleanField(label="Study frequency", required=False)
-    plotRFStudyPerDayAndHour = forms.BooleanField(
-        label="Study workload", required=False
-    )
+    plotRFStudyDAP = forms.BooleanField(label="Study DAP", required=False)
     plotRFStudyDAPOverTime = forms.BooleanField(
         label="Study DAP over time", required=False
     )
-
-    plotRFRequestDAP = forms.BooleanField(
-        label="Requested procedure DAP", required=False
+    plotRFStudyPerDayAndHour = forms.BooleanField(
+        label="Study workload", required=False
     )
     plotRFRequestFreq = forms.BooleanField(
         label="Requested procedure frequency", required=False
+    )
+    plotRFRequestDAP = forms.BooleanField(
+        label="Requested procedure DAP", required=False
     )
     plotRFRequestDAPOverTime = forms.BooleanField(
         label="Requested procedure DAP over time", required=False
@@ -328,7 +339,9 @@ class RFChartOptionsDisplayForm(forms.Form):
         label="Split plots by physician", required=False
     )
     plotRFInitialSortingChoice = forms.ChoiceField(
-        label="Default chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
+        label="Default chart sorting",
+        choices=CommonVariables.SORTING_CHOICES,
+        required=False,
     )
 
 
@@ -343,20 +356,20 @@ class MGChartOptionsForm(forms.Form):
     plotMGaverageAGD = forms.BooleanField(
         label="Acquisition average AGD", required=False
     )
-    plotMGAGDvsThickness = forms.BooleanField(
-        label="Acquisition AGD vs. compressed thickness", required=False
-    )
     plotMGaverageAGDvsThickness = forms.BooleanField(
         label="Acquisition average AGD vs. compressed thickness", required=False
     )
     plotMGAcquisitionAGDOverTime = forms.BooleanField(
         label="Acquisition AGD over time", required=False
     )
-    plotMGkVpvsThickness = forms.BooleanField(
-        label="Acquisition kVp vs. compressed thickness", required=False
+    plotMGAGDvsThickness = forms.BooleanField(
+        label="Acquisition AGD vs. compressed thickness", required=False
     )
     plotMGmAsvsThickness = forms.BooleanField(
         label="Acquisition mAs vs. compressed thickness", required=False
+    )
+    plotMGkVpvsThickness = forms.BooleanField(
+        label="Acquisition kVp vs. compressed thickness", required=False
     )
     plotMGStudyPerDayAndHour = forms.BooleanField(
         label="Study workload", required=False
@@ -371,7 +384,9 @@ class MGChartOptionsForm(forms.Form):
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe("Grouping choice"), choices=CommonVariables.CHART_GROUPING, required=False
+        label=mark_safe("Grouping choice"),
+        choices=CommonVariables.CHART_GROUPING,
+        required=False,
     )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
@@ -383,7 +398,9 @@ class MGChartOptionsForm(forms.Form):
         label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction", choices=CommonVariables.SORTING_DIRECTION, required=False
+        label="Sorting direction",
+        choices=CommonVariables.SORTING_DIRECTION,
+        required=False,
     )
 
 
@@ -406,11 +423,11 @@ class MGChartOptionsDisplayForm(forms.Form):
     plotMGAGDvsThickness = forms.BooleanField(
         label="Acquisition AGD vs. compressed thickness", required=False
     )
-    plotMGkVpvsThickness = forms.BooleanField(
-        label="Acquisition kVp vs. compressed thickness", required=False
-    )
     plotMGmAsvsThickness = forms.BooleanField(
         label="Acquisition mAs vs. compressed thickness", required=False
+    )
+    plotMGkVpvsThickness = forms.BooleanField(
+        label="Acquisition kVp vs. compressed thickness", required=False
     )
     plotMGStudyPerDayAndHour = forms.BooleanField(
         label="Study workload", required=False
@@ -427,41 +444,41 @@ class DXChartOptionsDisplayForm(forms.Form):
 
     """Form for DX chart display options"""
 
-    plotDXAcquisitionMeanDAP = forms.BooleanField(
-        label="Acquisition DAP", required=False
-    )
     plotDXAcquisitionFreq = forms.BooleanField(
         label="Acquisition frequency", required=False
+    )
+    plotDXAcquisitionMeanDAP = forms.BooleanField(
+        label="Acquisition DAP", required=False
     )
     plotDXAcquisitionMeanmAs = forms.BooleanField(
         label="Acquisition mAs", required=False
     )
-    plotDXAcquisitionMeankVpOverTime = forms.BooleanField(
-        label="Acquisition kVp over time", required=False
-    )
-    plotDXAcquisitionMeanmAsOverTime = forms.BooleanField(
-        label="Acquisition mAs over time", required=False
+    plotDXAcquisitionMeankVp = forms.BooleanField(
+        label="Acquisition kVp", required=False
     )
     plotDXAcquisitionMeanDAPOverTime = forms.BooleanField(
         label="Acquisition DAP over time", required=False
     )
+    plotDXAcquisitionMeanmAsOverTime = forms.BooleanField(
+        label="Acquisition mAs over time", required=False
+    )
+    plotDXAcquisitionMeankVpOverTime = forms.BooleanField(
+        label="Acquisition kVp over time", required=False
+    )
     plotDXAcquisitionDAPvsMass = forms.BooleanField(
         label="Acquisition DAP vs mass", required=False
     )
-    plotDXAcquisitionMeankVp = forms.BooleanField(
-        label="Acquisition kVp", required=False
-    )
-    plotDXStudyMeanDAP = forms.BooleanField(label="Study DAP", required=False)
     plotDXStudyFreq = forms.BooleanField(label="Study frequency", required=False)
+    plotDXStudyMeanDAP = forms.BooleanField(label="Study DAP", required=False)
+    plotDXStudyDAPvsMass = forms.BooleanField(label="Study DAP vs mass", required=False)
     plotDXStudyPerDayAndHour = forms.BooleanField(
         label="Study workload", required=False
     )
-    plotDXStudyDAPvsMass = forms.BooleanField(label="Study DAP vs mass", required=False)
-    plotDXRequestMeanDAP = forms.BooleanField(
-        label="Requested procedure DAP", required=False
-    )
     plotDXRequestFreq = forms.BooleanField(
         label="Requested procedure frequency", required=False
+    )
+    plotDXRequestMeanDAP = forms.BooleanField(
+        label="Requested procedure DAP", required=False
     )
     plotDXRequestDAPvsMass = forms.BooleanField(
         label="Requested procedure DAP vs mass", required=False
@@ -470,7 +487,9 @@ class DXChartOptionsDisplayForm(forms.Form):
         label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
     )
     plotDXInitialSortingChoice = forms.ChoiceField(
-        label="Default chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
+        label="Default chart sorting",
+        choices=CommonVariables.SORTING_CHOICES,
+        required=False,
     )
 
 
@@ -478,44 +497,44 @@ class CTChartOptionsDisplayForm(forms.Form):
 
     """Form for CT chart display options"""
 
+    plotCTAcquisitionFreq = forms.BooleanField(
+        label="Acquisition frequency", required=False
+    )
     plotCTAcquisitionMeanDLP = forms.BooleanField(
         label="Acquisition DLP", required=False
     )
     plotCTAcquisitionMeanCTDI = forms.BooleanField(  # nosec
         label=mark_safe("Acquisition CTDI<sub>vol</sub>"), required=False
     )
-    plotCTAcquisitionFreq = forms.BooleanField(
-        label="Acquisition frequency", required=False
-    )
-    plotCTAcquisitionCTDIvsMass = forms.BooleanField(
-        label="Acquisition CTDI vs mass", required=False
-    )
-    plotCTAcquisitionDLPvsMass = forms.BooleanField(
-        label="Acquisition DLP vs mass", required=False
+    plotCTAcquisitionDLPOverTime = forms.BooleanField(
+        label="Acquisition DLP over time", required=False
     )
     plotCTAcquisitionCTDIOverTime = forms.BooleanField(  # nosec
         label=mark_safe("Acquisition CTDI<sub>vol</sub> over time"), required=False
     )
-    plotCTAcquisitionDLPOverTime = forms.BooleanField(
-        label="Acquisition DLP over time", required=False
+    plotCTAcquisitionDLPvsMass = forms.BooleanField(
+        label="Acquisition DLP vs mass", required=False
     )
+    plotCTAcquisitionCTDIvsMass = forms.BooleanField(
+        label="Acquisition CTDI vs mass", required=False
+    )
+    plotCTStudyFreq = forms.BooleanField(label="Study frequency", required=False)
     plotCTStudyMeanDLP = forms.BooleanField(label="Study DLP", required=False)
     plotCTStudyMeanCTDI = forms.BooleanField(  # nosec
         label=mark_safe("Study CTDI<sub>vol</sub>"), required=False
     )
-    plotCTStudyFreq = forms.BooleanField(label="Study frequency", required=False)
     plotCTStudyNumEvents = forms.BooleanField(label="Study events", required=False)
-    plotCTStudyPerDayAndHour = forms.BooleanField(
-        label="Study workload", required=False
-    )
     plotCTStudyMeanDLPOverTime = forms.BooleanField(
         label="Study DLP over time", required=False
     )
-    plotCTRequestMeanDLP = forms.BooleanField(
-        label="Requested procedure DLP", required=False
+    plotCTStudyPerDayAndHour = forms.BooleanField(
+        label="Study workload", required=False
     )
     plotCTRequestFreq = forms.BooleanField(
         label="Requested procedure frequency", required=False
+    )
+    plotCTRequestMeanDLP = forms.BooleanField(
+        label="Requested procedure DLP", required=False
     )
     plotCTRequestNumEvents = forms.BooleanField(
         label="Requested procedure events", required=False
@@ -543,7 +562,9 @@ class GeneralChartOptionsDisplayForm(forms.Form):
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
     plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction", choices=CommonVariables.SORTING_DIRECTION, required=False
+        label="Sorting direction",
+        choices=CommonVariables.SORTING_DIRECTION,
+        required=False,
     )
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
@@ -559,6 +580,9 @@ class GeneralChartOptionsDisplayForm(forms.Form):
     )
     plotCaseInsensitiveCategories = forms.BooleanField(
         label="Case-insensitive categories", required=False
+    )
+    plotRemoveCategoryWhitespacePadding = forms.BooleanField(
+        label="Remove category whitespace padding", required=False
     )
     plotGrouping = forms.ChoiceField(
         label="Chart grouping", choices=CommonVariables.CHART_GROUPING, required=False
@@ -941,29 +965,6 @@ class DicomStoreForm(forms.ModelForm):
         if not settings.DOCKER_INSTALL:
             self.helper.layout = Layout(
                 Div("name", "aetitle", "peer", "port"),
-                Accordion(
-                    AccordionGroup(
-                        "Advanced - test/development use only",
-                        Div(
-                            HTML(
-                                """
-                            <p>
-                              DICOM store node built in to OpenREM is not yet ready for production. See
-                                <a href="https://docs.openrem.org/en/{{ admin.docsversion }}/netdicom-nodes.html"
-                                    target="_blank" data-toggle="tooltip"
-                                    title="DICOM store documentation - opens in a new tab">
-                                    DICOM store documentation (Advanced)
-                                </a>
-                            </p>
-                            """
-                            )
-                        ),
-                        # Trick to force label to join the other labels, otherwise sits to right
-                        PrependedText("controlled", ""),
-                        PrependedText("keep_alive", ""),
-                        active=False,
-                    )
-                ),
                 FormActions(Submit("submit", "Submit")),
                 Div(
                     HTML(
@@ -1000,12 +1001,10 @@ class DicomStoreForm(forms.ModelForm):
 
     class Meta(object):
         model = DicomStoreSCP
-        fields = ["name", "aetitle", "peer", "port", "controlled", "keep_alive"]
+        fields = ["name", "aetitle", "peer", "port"]
         labels = {
             "peer": "Peer: Set this to localhost",
             "port": "Port: port 104 is standard for DICOM but ports higher than 1024 require fewer admin rights",
-            "controlled": "Advanced use only: tick this box to control the server using OpenREM",
-            "keep_alive": "Advanced use only: tick this box to auto-start this server using celery beat",
         }
         if settings.DOCKER_INSTALL:
             labels["peer"] = "Docker container name: initial default is orthanc_1"

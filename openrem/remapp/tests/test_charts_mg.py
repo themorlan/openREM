@@ -101,13 +101,22 @@ class ChartsMG(TestCase):
             np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"])
 
             # Check the system names
-            np.testing.assert_array_equal([i[0] for i in dataset["customdata"]], [i[0] for i in chart_data[idx]["customdata"]])
+            np.testing.assert_array_equal(
+                [i[0] for i in dataset["customdata"]],
+                [i[0] for i in chart_data[idx]["customdata"]],
+            )
 
             # Check the average values
-            np.testing.assert_array_almost_equal([i[1] for i in dataset["customdata"]], [i[1] for i in chart_data[idx]["customdata"]])
+            np.testing.assert_array_almost_equal(
+                [i[1] for i in dataset["customdata"]],
+                [i[1] for i in chart_data[idx]["customdata"]],
+            )
 
             # Check the frequency values
-            np.testing.assert_array_almost_equal([i[2] for i in dataset["customdata"]], [i[2] for i in chart_data[idx]["customdata"]])
+            np.testing.assert_array_almost_equal(
+                [i[2] for i in dataset["customdata"]],
+                [i[2] for i in chart_data[idx]["customdata"]],
+            )
 
     def check_frequency_data(self, chart_data, standard_data):
         for idx, dataset in enumerate(standard_data["data"]):
@@ -251,7 +260,11 @@ class ChartsMG(TestCase):
         standard_data = [
             {
                 "customdata": np.array(
-                    [["All systems", 1.29, 2.0], ["All systems", 0.26, 1.0], ["All systems", 1.373, 1.0]],
+                    [
+                        ["All systems", 1.29, 2.0],
+                        ["All systems", 0.26, 1.0],
+                        ["All systems", 1.373, 1.0],
+                    ],
                     dtype=object,
                 ),
                 "name": "All systems",
@@ -268,7 +281,11 @@ class ChartsMG(TestCase):
         standard_data = [
             {
                 "customdata": np.array(
-                    [["All systems", 1.29, 2.0], ["All systems", 0.26, 1.0], ["All systems", 1.373, 1.0]],
+                    [
+                        ["All systems", 1.29, 2.0],
+                        ["All systems", 0.26, 1.0],
+                        ["All systems", 1.373, 1.0],
+                    ],
                     dtype=object,
                 ),
                 "name": "All systems",
@@ -307,7 +324,11 @@ class ChartsMG(TestCase):
         standard_data = [
             {
                 "customdata": np.array(
-                    [["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0], ["Breast Imaging Clinic PQW_HOL_SELENIA", 0.26, 1.0], ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0]],
+                    [
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", 0.26, 1.0],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0],
+                    ],
                     dtype=object,
                 ),
                 "name": "Breast Imaging Clinic PQW_HOL_SELENIA",
@@ -316,7 +337,11 @@ class ChartsMG(TestCase):
             },
             {
                 "customdata": np.array(
-                    [["OpenREM Dimensions", 1.29, 2.0], ["OpenREM Dimensions", np.nan, 0.0], ["OpenREM Dimensions", np.nan, 0.0]],
+                    [
+                        ["OpenREM Dimensions", 1.29, 2.0],
+                        ["OpenREM Dimensions", np.nan, 0.0],
+                        ["OpenREM Dimensions", np.nan, 0.0],
+                    ],
                     dtype=object,
                 ),
                 "name": "OpenREM Dimensions",
@@ -325,7 +350,11 @@ class ChartsMG(TestCase):
             },
             {
                 "customdata": np.array(
-                    [["中心医院 SENODS01", np.nan, 0.0], ["中心医院 SENODS01", np.nan, 0.0], ["中心医院 SENODS01", 1.373, 1.0]],
+                    [
+                        ["中心医院 SENODS01", np.nan, 0.0],
+                        ["中心医院 SENODS01", np.nan, 0.0],
+                        ["中心医院 SENODS01", 1.373, 1.0],
+                    ],
                     dtype=object,
                 ),
                 "name": "中心医院 SENODS01",
@@ -342,7 +371,11 @@ class ChartsMG(TestCase):
         standard_data = [
             {
                 "customdata": np.array(
-                    [["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0], ["Breast Imaging Clinic PQW_HOL_SELENIA", 0.26, 1.0], ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0]],
+                    [
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", 0.26, 1.0],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0],
+                    ],
                     dtype=object,
                 ),
                 "name": "Breast Imaging Clinic PQW_HOL_SELENIA",
@@ -351,7 +384,11 @@ class ChartsMG(TestCase):
             },
             {
                 "customdata": np.array(
-                    [["OpenREM Dimensions", 1.29, 2.0], ["OpenREM Dimensions", np.nan, 0.0], ["OpenREM Dimensions", np.nan, 0.0]],
+                    [
+                        ["OpenREM Dimensions", 1.29, 2.0],
+                        ["OpenREM Dimensions", np.nan, 0.0],
+                        ["OpenREM Dimensions", np.nan, 0.0],
+                    ],
                     dtype=object,
                 ),
                 "name": "OpenREM Dimensions",
@@ -360,7 +397,11 @@ class ChartsMG(TestCase):
             },
             {
                 "customdata": np.array(
-                    [["中心医院 SENODS01", np.nan, 0.0], ["中心医院 SENODS01", np.nan, 0.0], ["中心医院 SENODS01", 1.373, 1.0]],
+                    [
+                        ["中心医院 SENODS01", np.nan, 0.0],
+                        ["中心医院 SENODS01", np.nan, 0.0],
+                        ["中心医院 SENODS01", 1.373, 1.0],
+                    ],
                     dtype=object,
                 ),
                 "name": "中心医院 SENODS01",

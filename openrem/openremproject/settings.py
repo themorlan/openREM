@@ -1,6 +1,5 @@
 # Django settings for OpenREM project.
 
-from celery.schedules import crontab
 from django.utils.translation import gettext_lazy as _
 import os
 
@@ -52,17 +51,6 @@ CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 
 FLOWER_PORT = int(os.environ.get("FLOWER_PORT", default=5555))
 FLOWER_URL = os.environ.get("FLOWER_URL", default="http://localhost")
-
-beat_schedule = {
-    "trigger-dicom-keep-alive": {
-        "task": "remapp.netdicom.keepalive.keep_alive",
-        "schedule": crontab(minute="*/1"),
-        "options": {
-            "expires": 10
-        },  # expire if not run ten seconds after being scheduled
-    }
-}
-
 
 ROOT_PROJECT = os.path.join(os.path.split(__file__)[0], "..")
 
@@ -293,3 +281,6 @@ try:
 except ImportError:
     # For Docker builds, there will not be a local_settings.py, 'local settings' are passed via environment variables
     pass
+
+# Save charts as HTML files in a charts sub-folder of the MEDIA_ROOT folder on the OpenREM server.
+SAVE_CHARTS_AS_HTML = False
