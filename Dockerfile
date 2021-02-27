@@ -45,7 +45,9 @@ RUN chmod -R 775 $APP_HOME/mediafiles \
  && chmod -R g+s $APP_HOME/mediafiles \
  && chmod -R g+s $APP_HOME/staticfiles \
  && mkdir /logs && chown app:app /logs \
- && mkdir /imports && chown app:app /imports
+ && mkdir /imports && chown app:app /imports \
+ && chown app:app $HOME/pixelmed/pixelmed.jar \
+ && chmod 555 $HOME/pixelmed/pixelmed.jar
 
 USER app
 RUN pip install -e .
