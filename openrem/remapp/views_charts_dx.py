@@ -8,6 +8,13 @@ from openremproject import settings
 from remapp.forms import DXChartOptionsForm
 from remapp.interface.mod_filters import dx_acq_filter
 from remapp.models import create_user_profile
+from remapp.views_admin import (
+    set_average_chart_options,
+    required_average_choices,
+    initialise_dx_form_data,
+    set_dx_chart_options,
+    set_common_chart_options,
+)
 from .interface.chart_functions import (
     create_dataframe,
     create_dataframe_weekdays,
@@ -21,13 +28,6 @@ from .interface.chart_functions import (
     plotly_frequency_barchart,
     plotly_scatter,
     construct_over_time_charts,
-)
-from remapp.views_admin import (
-    set_average_chart_options,
-    required_average_choices,
-    initialise_dx_form_data,
-    set_dx_chart_options,
-    set_common_chart_options,
 )
 
 logger = logging.getLogger(__name__)

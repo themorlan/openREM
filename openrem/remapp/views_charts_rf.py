@@ -8,6 +8,13 @@ from openremproject import settings
 from remapp.forms import RFChartOptionsForm
 from remapp.interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
 from remapp.models import GeneralStudyModuleAttr, create_user_profile
+from remapp.views_admin import (
+    required_average_choices,
+    initialise_rf_form_data,
+    set_average_chart_options,
+    set_rf_chart_options,
+    set_common_chart_options,
+)
 from .interface.chart_functions import (
     create_dataframe,
     create_dataframe_weekdays,
@@ -20,13 +27,6 @@ from .interface.chart_functions import (
     plotly_set_default_theme,
     plotly_frequency_barchart,
     construct_over_time_charts,
-)
-from remapp.views_admin import (
-    required_average_choices,
-    initialise_rf_form_data,
-    set_average_chart_options,
-    set_rf_chart_options,
-    set_common_chart_options,
 )
 
 logger = logging.getLogger(__name__)

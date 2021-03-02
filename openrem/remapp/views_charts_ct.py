@@ -12,6 +12,14 @@ from remapp.models import (
     create_user_profile,
     CommonVariables,
 )
+from remapp.views_admin import (
+    required_average_choices,
+    required_ct_acquisition_types,
+    initialise_ct_form_data,
+    set_ct_chart_options,
+    set_average_chart_options,
+    set_common_chart_options,
+)
 from .interface.chart_functions import (
     create_dataframe,
     create_dataframe_weekdays,
@@ -25,14 +33,6 @@ from .interface.chart_functions import (
     plotly_frequency_barchart,
     plotly_scatter,
     construct_over_time_charts,
-)
-from remapp.views_admin import (
-    required_average_choices,
-    required_ct_acquisition_types,
-    initialise_ct_form_data,
-    set_ct_chart_options,
-    set_average_chart_options,
-    set_common_chart_options,
 )
 
 logger = logging.getLogger(__name__)

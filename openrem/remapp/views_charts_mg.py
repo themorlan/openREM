@@ -8,6 +8,13 @@ from openremproject import settings
 from remapp.forms import MGChartOptionsForm
 from remapp.interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
 from remapp.models import GeneralStudyModuleAttr, create_user_profile
+from remapp.views_admin import (
+    required_average_choices,
+    initialise_mg_form_data,
+    set_average_chart_options,
+    set_mg_chart_options,
+    set_common_chart_options,
+)
 from .interface.chart_functions import (
     create_dataframe,
     create_dataframe_weekdays,
@@ -22,13 +29,6 @@ from .interface.chart_functions import (
     plotly_set_default_theme,
     create_sorted_category_list,
     create_dataframe_aggregates,
-)
-from remapp.views_admin import (
-    required_average_choices,
-    initialise_mg_form_data,
-    set_average_chart_options,
-    set_mg_chart_options,
-    set_common_chart_options,
 )
 
 logger = logging.getLogger(__name__)
