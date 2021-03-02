@@ -26,6 +26,14 @@ from .interface.chart_functions import (
     plotly_scatter,
     construct_over_time_charts,
 )
+from remapp.views_admin import (
+    required_average_choices,
+    required_ct_acquisition_types,
+    initialise_ct_form_data,
+    set_ct_chart_options,
+    set_average_chart_options,
+    set_common_chart_options,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -533,17 +541,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         )
 
         # Only keep the required acquisition types
-        types_to_keep = []
-        if user_profile.plotCTSequencedAcquisition:
-            types_to_keep.append(CommonVariables.CT_SEQUENCED_ACQUISITION_TYPE)
-        if user_profile.plotCTSpiralAcquisition:
-            types_to_keep.append(CommonVariables.CT_SPIRAL_ACQUISITION_TYPE)
-        if user_profile.plotCTConstantAngleAcquisition:
-            types_to_keep.append(CommonVariables.CT_CONSTANT_ANGLE_ACQUISITION_TYPE)
-        if user_profile.plotCTStationaryAcquisition:
-            types_to_keep.append(CommonVariables.CT_STATIONARY_ACQUISITION_TYPE)
-        if user_profile.plotCTFreeAcquisition:
-            types_to_keep.append(CommonVariables.CT_FREE_ACQUISITION_TYPE)
+        types_to_keep = required_ct_acquisition_types(user_profile)
 
         df = df[
             df.ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning.isin(
@@ -1757,198 +1755,32 @@ def ct_chart_form_processing(request, user_profile):
         # Use the form data if the user clicked on the submit button
         if "submit" in request.GET:
             # process the data in form.cleaned_data as required
-            user_profile.plotCharts = chart_options_form.cleaned_data["plotCharts"]
-            user_profile.plotCTAcquisitionMeanDLP = chart_options_form.cleaned_data[
-                "plotCTAcquisitionMeanDLP"
-            ]
-            user_profile.plotCTAcquisitionMeanCTDI = chart_options_form.cleaned_data[
-                "plotCTAcquisitionMeanCTDI"
-            ]
-            user_profile.plotCTAcquisitionFreq = chart_options_form.cleaned_data[
-                "plotCTAcquisitionFreq"
-            ]
-            user_profile.plotCTAcquisitionCTDIvsMass = chart_options_form.cleaned_data[
-                "plotCTAcquisitionCTDIvsMass"
-            ]
-            user_profile.plotCTAcquisitionDLPvsMass = chart_options_form.cleaned_data[
-                "plotCTAcquisitionDLPvsMass"
-            ]
-            user_profile.plotCTAcquisitionCTDIOverTime = (
-                chart_options_form.cleaned_data["plotCTAcquisitionCTDIOverTime"]
-            )
-            user_profile.plotCTAcquisitionDLPOverTime = chart_options_form.cleaned_data[
-                "plotCTAcquisitionDLPOverTime"
-            ]
 
-            if (
-                CommonVariables.CT_SEQUENCED_ACQUISITION_TYPE
-                in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]
-            ):
-                user_profile.plotCTSequencedAcquisition = True
-            else:
-                user_profile.plotCTSequencedAcquisition = False
+            set_common_chart_options(chart_options_form, user_profile)
 
-            if (
-                CommonVariables.CT_SPIRAL_ACQUISITION_TYPE
-                in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]
-            ):
-                user_profile.plotCTSpiralAcquisition = True
-            else:
-                user_profile.plotCTSpiralAcquisition = False
+            set_average_chart_options(chart_options_form, user_profile)
 
-            if (
-                CommonVariables.CT_CONSTANT_ANGLE_ACQUISITION_TYPE
-                in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]
-            ):
-                user_profile.plotCTConstantAngleAcquisition = True
-            else:
-                user_profile.plotCTConstantAngleAcquisition = False
-
-            if (
-                CommonVariables.CT_STATIONARY_ACQUISITION_TYPE
-                in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]
-            ):
-                user_profile.plotCTStationaryAcquisition = True
-            else:
-                user_profile.plotCTStationaryAcquisition = False
-
-            if (
-                CommonVariables.CT_FREE_ACQUISITION_TYPE
-                in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]
-            ):
-                user_profile.plotCTFreeAcquisition = True
-            else:
-                user_profile.plotCTFreeAcquisition = False
-
-            user_profile.plotCTStudyMeanDLP = chart_options_form.cleaned_data[
-                "plotCTStudyMeanDLP"
-            ]
-            user_profile.plotCTStudyMeanCTDI = chart_options_form.cleaned_data[
-                "plotCTStudyMeanCTDI"
-            ]
-            user_profile.plotCTStudyFreq = chart_options_form.cleaned_data[
-                "plotCTStudyFreq"
-            ]
-            user_profile.plotCTStudyNumEvents = chart_options_form.cleaned_data[
-                "plotCTStudyNumEvents"
-            ]
-            user_profile.plotCTStudyPerDayAndHour = chart_options_form.cleaned_data[
-                "plotCTStudyPerDayAndHour"
-            ]
-            user_profile.plotCTStudyMeanDLPOverTime = chart_options_form.cleaned_data[
-                "plotCTStudyMeanDLPOverTime"
-            ]
-            user_profile.plotCTRequestMeanDLP = chart_options_form.cleaned_data[
-                "plotCTRequestMeanDLP"
-            ]
-            user_profile.plotCTRequestFreq = chart_options_form.cleaned_data[
-                "plotCTRequestFreq"
-            ]
-            user_profile.plotCTRequestNumEvents = chart_options_form.cleaned_data[
-                "plotCTRequestNumEvents"
-            ]
-            user_profile.plotCTRequestDLPOverTime = chart_options_form.cleaned_data[
-                "plotCTRequestDLPOverTime"
-            ]
-            user_profile.plotCTOverTimePeriod = chart_options_form.cleaned_data[
-                "plotCTOverTimePeriod"
-            ]
-            user_profile.plotGroupingChoice = chart_options_form.cleaned_data[
-                "plotGrouping"
-            ]
-            user_profile.plotSeriesPerSystem = chart_options_form.cleaned_data[
-                "plotSeriesPerSystem"
-            ]
-            user_profile.plotHistograms = chart_options_form.cleaned_data[
-                "plotHistograms"
-            ]
-            user_profile.plotCTInitialSortingChoice = chart_options_form.cleaned_data[
-                "plotCTInitialSortingChoice"
-            ]
-            user_profile.plotInitialSortingDirection = chart_options_form.cleaned_data[
-                "plotInitialSortingDirection"
-            ]
-
-            if (
-                CommonVariables.MEAN
-                in chart_options_form.cleaned_data["plotAverageChoice"]
-            ):
-                user_profile.plotMean = True
-            else:
-                user_profile.plotMean = False
-
-            if (
-                CommonVariables.MEDIAN
-                in chart_options_form.cleaned_data["plotAverageChoice"]
-            ):
-                user_profile.plotMedian = True
-            else:
-                user_profile.plotMedian = False
-
-            if (
-                CommonVariables.BOXPLOT
-                in chart_options_form.cleaned_data["plotAverageChoice"]
-            ):
-                user_profile.plotBoxplots = True
-            else:
-                user_profile.plotBoxplots = False
+            set_ct_chart_options(chart_options_form, user_profile)
 
             user_profile.save()
 
         else:
-            average_choices = []
-            if user_profile.plotMean:
-                average_choices.append(CommonVariables.MEAN)
-            if user_profile.plotMedian:
-                average_choices.append(CommonVariables.MEDIAN)
-            if user_profile.plotBoxplots:
-                average_choices.append(CommonVariables.BOXPLOT)
+            average_choices = required_average_choices(user_profile)
 
-            ct_acquisition_types = []
-            if user_profile.plotCTSequencedAcquisition:
-                ct_acquisition_types.append(
-                    CommonVariables.CT_SEQUENCED_ACQUISITION_TYPE
-                )
-            if user_profile.plotCTSpiralAcquisition:
-                ct_acquisition_types.append(CommonVariables.CT_SPIRAL_ACQUISITION_TYPE)
-            if user_profile.plotCTConstantAngleAcquisition:
-                ct_acquisition_types.append(
-                    CommonVariables.CT_CONSTANT_ANGLE_ACQUISITION_TYPE
-                )
-            if user_profile.plotCTStationaryAcquisition:
-                ct_acquisition_types.append(
-                    CommonVariables.CT_STATIONARY_ACQUISITION_TYPE
-                )
-            if user_profile.plotCTFreeAcquisition:
-                ct_acquisition_types.append(CommonVariables.CT_FREE_ACQUISITION_TYPE)
+            ct_acquisition_types = required_ct_acquisition_types(user_profile)
+
+            ct_form_data = initialise_ct_form_data(ct_acquisition_types, user_profile)
 
             form_data = {
                 "plotCharts": user_profile.plotCharts,
-                "plotCTAcquisitionMeanDLP": user_profile.plotCTAcquisitionMeanDLP,
-                "plotCTAcquisitionMeanCTDI": user_profile.plotCTAcquisitionMeanCTDI,
-                "plotCTAcquisitionFreq": user_profile.plotCTAcquisitionFreq,
-                "plotCTAcquisitionCTDIvsMass": user_profile.plotCTAcquisitionCTDIvsMass,
-                "plotCTAcquisitionDLPvsMass": user_profile.plotCTAcquisitionDLPvsMass,
-                "plotCTAcquisitionCTDIOverTime": user_profile.plotCTAcquisitionCTDIOverTime,
-                "plotCTAcquisitionDLPOverTime": user_profile.plotCTAcquisitionDLPOverTime,
-                "plotCTAcquisitionTypes": ct_acquisition_types,
-                "plotCTStudyMeanDLP": user_profile.plotCTStudyMeanDLP,
-                "plotCTStudyMeanCTDI": user_profile.plotCTStudyMeanCTDI,
-                "plotCTStudyFreq": user_profile.plotCTStudyFreq,
-                "plotCTStudyNumEvents": user_profile.plotCTStudyNumEvents,
-                "plotCTRequestMeanDLP": user_profile.plotCTRequestMeanDLP,
-                "plotCTRequestFreq": user_profile.plotCTRequestFreq,
-                "plotCTRequestNumEvents": user_profile.plotCTRequestNumEvents,
-                "plotCTRequestDLPOverTime": user_profile.plotCTRequestDLPOverTime,
-                "plotCTStudyPerDayAndHour": user_profile.plotCTStudyPerDayAndHour,
-                "plotCTStudyMeanDLPOverTime": user_profile.plotCTStudyMeanDLPOverTime,
-                "plotCTOverTimePeriod": user_profile.plotCTOverTimePeriod,
                 "plotGrouping": user_profile.plotGroupingChoice,
                 "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
                 "plotHistograms": user_profile.plotHistograms,
-                "plotCTInitialSortingChoice": user_profile.plotCTInitialSortingChoice,
                 "plotInitialSortingDirection": user_profile.plotInitialSortingDirection,
                 "plotAverageChoice": average_choices,
             }
+
+            form_data = {**form_data, **ct_form_data}
+
             chart_options_form = CTChartOptionsForm(form_data)
     return chart_options_form

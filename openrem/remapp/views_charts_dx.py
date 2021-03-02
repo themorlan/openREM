@@ -22,6 +22,13 @@ from .interface.chart_functions import (
     plotly_scatter,
     construct_over_time_charts,
 )
+from remapp.views_admin import (
+    set_average_chart_options,
+    required_average_choices,
+    initialise_dx_form_data,
+    set_dx_chart_options,
+    set_common_chart_options,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -1394,124 +1401,31 @@ def dx_chart_form_processing(request, user_profile):
         # Use the form data if the user clicked on the submit button
         if "submit" in request.GET:
             # process the data in form.cleaned_data as required
-            user_profile.plotCharts = chart_options_form.cleaned_data["plotCharts"]
-            user_profile.plotDXAcquisitionMeanDAP = chart_options_form.cleaned_data[
-                "plotDXAcquisitionMeanDAP"
-            ]
-            user_profile.plotDXAcquisitionFreq = chart_options_form.cleaned_data[
-                "plotDXAcquisitionFreq"
-            ]
-            user_profile.plotDXStudyMeanDAP = chart_options_form.cleaned_data[
-                "plotDXStudyMeanDAP"
-            ]
-            user_profile.plotDXStudyFreq = chart_options_form.cleaned_data[
-                "plotDXStudyFreq"
-            ]
-            user_profile.plotDXRequestMeanDAP = chart_options_form.cleaned_data[
-                "plotDXRequestMeanDAP"
-            ]
-            user_profile.plotDXRequestFreq = chart_options_form.cleaned_data[
-                "plotDXRequestFreq"
-            ]
-            user_profile.plotDXAcquisitionMeankVp = chart_options_form.cleaned_data[
-                "plotDXAcquisitionMeankVp"
-            ]
-            user_profile.plotDXAcquisitionMeanmAs = chart_options_form.cleaned_data[
-                "plotDXAcquisitionMeanmAs"
-            ]
-            user_profile.plotDXStudyPerDayAndHour = chart_options_form.cleaned_data[
-                "plotDXStudyPerDayAndHour"
-            ]
-            user_profile.plotDXAcquisitionMeankVpOverTime = (
-                chart_options_form.cleaned_data["plotDXAcquisitionMeankVpOverTime"]
-            )
-            user_profile.plotDXAcquisitionMeanmAsOverTime = (
-                chart_options_form.cleaned_data["plotDXAcquisitionMeanmAsOverTime"]
-            )
-            user_profile.plotDXAcquisitionMeanDAPOverTime = (
-                chart_options_form.cleaned_data["plotDXAcquisitionMeanDAPOverTime"]
-            )
-            user_profile.plotDXAcquisitionMeanDAPOverTimePeriod = (
-                chart_options_form.cleaned_data[
-                    "plotDXAcquisitionMeanDAPOverTimePeriod"
-                ]
-            )
-            user_profile.plotDXAcquisitionDAPvsMass = chart_options_form.cleaned_data[
-                "plotDXAcquisitionDAPvsMass"
-            ]
-            user_profile.plotDXStudyDAPvsMass = chart_options_form.cleaned_data[
-                "plotDXStudyDAPvsMass"
-            ]
-            user_profile.plotDXRequestDAPvsMass = chart_options_form.cleaned_data[
-                "plotDXRequestDAPvsMass"
-            ]
-            user_profile.plotGroupingChoice = chart_options_form.cleaned_data[
-                "plotGrouping"
-            ]
-            user_profile.plotSeriesPerSystem = chart_options_form.cleaned_data[
-                "plotSeriesPerSystem"
-            ]
-            user_profile.plotHistograms = chart_options_form.cleaned_data[
-                "plotHistograms"
-            ]
-            user_profile.plotDXInitialSortingChoice = chart_options_form.cleaned_data[
-                "plotDXInitialSortingChoice"
-            ]
-            user_profile.plotInitialSortingDirection = chart_options_form.cleaned_data[
-                "plotInitialSortingDirection"
-            ]
 
-            if "mean" in chart_options_form.cleaned_data["plotAverageChoice"]:
-                user_profile.plotMean = True
-            else:
-                user_profile.plotMean = False
+            set_common_chart_options(chart_options_form, user_profile)
 
-            if "median" in chart_options_form.cleaned_data["plotAverageChoice"]:
-                user_profile.plotMedian = True
-            else:
-                user_profile.plotMedian = False
+            set_average_chart_options(chart_options_form, user_profile)
 
-            if "boxplot" in chart_options_form.cleaned_data["plotAverageChoice"]:
-                user_profile.plotBoxplots = True
-            else:
-                user_profile.plotBoxplots = False
+            set_dx_chart_options(chart_options_form, user_profile)
 
             user_profile.save()
 
         # If submit was not clicked then use the settings already stored in the user's profile
         else:
-            average_choices = []
-            if user_profile.plotMean:
-                average_choices.append("mean")
-            if user_profile.plotMedian:
-                average_choices.append("median")
-            if user_profile.plotBoxplots:
-                average_choices.append("boxplot")
+            average_choices = required_average_choices(user_profile)
+
+            dx_form_data = initialise_dx_form_data(user_profile)
 
             form_data = {
                 "plotCharts": user_profile.plotCharts,
-                "plotDXAcquisitionMeanDAP": user_profile.plotDXAcquisitionMeanDAP,
-                "plotDXAcquisitionFreq": user_profile.plotDXAcquisitionFreq,
-                "plotDXStudyMeanDAP": user_profile.plotDXStudyMeanDAP,
-                "plotDXStudyFreq": user_profile.plotDXStudyFreq,
-                "plotDXRequestMeanDAP": user_profile.plotDXRequestMeanDAP,
-                "plotDXRequestFreq": user_profile.plotDXRequestFreq,
-                "plotDXAcquisitionMeankVp": user_profile.plotDXAcquisitionMeankVp,
-                "plotDXAcquisitionMeanmAs": user_profile.plotDXAcquisitionMeanmAs,
-                "plotDXStudyPerDayAndHour": user_profile.plotDXStudyPerDayAndHour,
-                "plotDXAcquisitionMeankVpOverTime": user_profile.plotDXAcquisitionMeankVpOverTime,
-                "plotDXAcquisitionMeanmAsOverTime": user_profile.plotDXAcquisitionMeanmAsOverTime,
-                "plotDXAcquisitionMeanDAPOverTime": user_profile.plotDXAcquisitionMeanDAPOverTime,
-                "plotDXAcquisitionMeanDAPOverTimePeriod": user_profile.plotDXAcquisitionMeanDAPOverTimePeriod,
-                "plotDXAcquisitionDAPvsMass": user_profile.plotDXAcquisitionDAPvsMass,
-                "plotDXStudyDAPvsMass": user_profile.plotDXStudyDAPvsMass,
-                "plotDXRequestDAPvsMass": user_profile.plotDXRequestDAPvsMass,
                 "plotGrouping": user_profile.plotGroupingChoice,
                 "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
                 "plotHistograms": user_profile.plotHistograms,
-                "plotDXInitialSortingChoice": user_profile.plotDXInitialSortingChoice,
                 "plotInitialSortingDirection": user_profile.plotInitialSortingDirection,
                 "plotAverageChoice": average_choices,
             }
+
+            form_data = {**form_data, **dx_form_data}
+
             chart_options_form = DXChartOptionsForm(form_data)
     return chart_options_form

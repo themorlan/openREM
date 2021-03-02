@@ -21,6 +21,13 @@ from .interface.chart_functions import (
     plotly_frequency_barchart,
     construct_over_time_charts,
 )
+from remapp.views_admin import (
+    required_average_choices,
+    initialise_rf_form_data,
+    set_average_chart_options,
+    set_rf_chart_options,
+    set_common_chart_options,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -754,93 +761,30 @@ def rf_chart_form_processing(request, user_profile):
         # Use the form data if the user clicked on the submit button
         if "submit" in request.GET:
             # process the data in form.cleaned_data as required
-            user_profile.plotCharts = chart_options_form.cleaned_data["plotCharts"]
-            user_profile.plotRFStudyPerDayAndHour = chart_options_form.cleaned_data[
-                "plotRFStudyPerDayAndHour"
-            ]
-            user_profile.plotRFStudyFreq = chart_options_form.cleaned_data[
-                "plotRFStudyFreq"
-            ]
-            user_profile.plotRFStudyDAP = chart_options_form.cleaned_data[
-                "plotRFStudyDAP"
-            ]
-            user_profile.plotRFStudyDAPOverTime = chart_options_form.cleaned_data[
-                "plotRFStudyDAPOverTime"
-            ]
-            user_profile.plotRFRequestFreq = chart_options_form.cleaned_data[
-                "plotRFRequestFreq"
-            ]
-            user_profile.plotRFRequestDAP = chart_options_form.cleaned_data[
-                "plotRFRequestDAP"
-            ]
-            user_profile.plotRFRequestDAPOverTime = chart_options_form.cleaned_data[
-                "plotRFRequestDAPOverTime"
-            ]
-            user_profile.plotRFOverTimePeriod = chart_options_form.cleaned_data[
-                "plotRFOverTimePeriod"
-            ]
-            user_profile.plotRFSplitByPhysician = chart_options_form.cleaned_data[
-                "plotRFSplitByPhysician"
-            ]
-            user_profile.plotGroupingChoice = chart_options_form.cleaned_data[
-                "plotGrouping"
-            ]
-            user_profile.plotSeriesPerSystem = chart_options_form.cleaned_data[
-                "plotSeriesPerSystem"
-            ]
-            user_profile.plotHistograms = chart_options_form.cleaned_data[
-                "plotHistograms"
-            ]
-            user_profile.plotRFInitialSortingChoice = chart_options_form.cleaned_data[
-                "plotRFInitialSortingChoice"
-            ]
-            user_profile.plotInitialSortingDirection = chart_options_form.cleaned_data[
-                "plotInitialSortingDirection"
-            ]
 
-            if "mean" in chart_options_form.cleaned_data["plotAverageChoice"]:
-                user_profile.plotMean = True
-            else:
-                user_profile.plotMean = False
+            set_common_chart_options(chart_options_form, user_profile)
 
-            if "median" in chart_options_form.cleaned_data["plotAverageChoice"]:
-                user_profile.plotMedian = True
-            else:
-                user_profile.plotMedian = False
+            set_average_chart_options(chart_options_form, user_profile)
 
-            if "boxplot" in chart_options_form.cleaned_data["plotAverageChoice"]:
-                user_profile.plotBoxplots = True
-            else:
-                user_profile.plotBoxplots = False
+            set_rf_chart_options(chart_options_form, user_profile)
 
             user_profile.save()
 
         else:
-            average_choices = []
-            if user_profile.plotMean:
-                average_choices.append("mean")
-            if user_profile.plotMedian:
-                average_choices.append("median")
-            if user_profile.plotBoxplots:
-                average_choices.append("boxplot")
+            average_choices = required_average_choices(user_profile)
+
+            rf_form_data = initialise_rf_form_data(user_profile)
 
             form_data = {
                 "plotCharts": user_profile.plotCharts,
-                "plotRFStudyPerDayAndHour": user_profile.plotRFStudyPerDayAndHour,
-                "plotRFStudyFreq": user_profile.plotRFStudyFreq,
-                "plotRFStudyDAP": user_profile.plotRFStudyDAP,
-                "plotRFStudyDAPOverTime": user_profile.plotRFStudyDAPOverTime,
-                "plotRFRequestFreq": user_profile.plotRFRequestFreq,
-                "plotRFRequestDAP": user_profile.plotRFRequestDAP,
-                "plotRFRequestDAPOverTime": user_profile.plotRFRequestDAPOverTime,
-                "plotRFOverTimePeriod": user_profile.plotRFOverTimePeriod,
-                "plotRFSplitByPhysician": user_profile.plotRFSplitByPhysician,
                 "plotGrouping": user_profile.plotGroupingChoice,
                 "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
                 "plotHistograms": user_profile.plotHistograms,
-                "plotRFInitialSortingChoice": user_profile.plotRFInitialSortingChoice,
                 "plotInitialSortingDirection": user_profile.plotInitialSortingDirection,
                 "plotAverageChoice": average_choices,
             }
+
+            form_data = {**form_data, **rf_form_data}
+
             chart_options_form = RFChartOptionsForm(form_data)
     return chart_options_form

@@ -526,7 +526,7 @@ class CTChartOptionsDisplayForm(forms.Form):
     plotCTAcquisitionCTDIvsMass = forms.BooleanField(
         label="Acquisition CTDI vs mass", required=False
     )
-    plotCTAcquisitionTypes = forms.MultipleChoiceField(
+    plotCTAcquisitionTypes = forms.MultipleChoiceField(  # nosec
         label=mark_safe(
             "Acquisition types to include<br/>in acquisition-level chart<br/>calculations"
         ),
