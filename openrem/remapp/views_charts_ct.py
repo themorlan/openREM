@@ -480,7 +480,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
     if any(charts_of_interest):
 
         name_fields = ["ctradiationdose__ctirradiationeventdata__acquisition_protocol"]
-        name_fields.append("ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning")
+        name_fields.append(
+            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning"
+        )
 
         value_fields = []
         if (
@@ -543,7 +545,11 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         if user_profile.plotCTFreeAcquisition:
             types_to_keep.append(CommonVariables.CT_FREE_ACQUISITION_TYPE)
 
-        df = df[df.ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning.isin(types_to_keep)]
+        df = df[
+            df.ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning.isin(
+                types_to_keep
+            )
+        ]
         #######################################################################
 
         #######################################################################
@@ -1774,27 +1780,42 @@ def ct_chart_form_processing(request, user_profile):
                 "plotCTAcquisitionDLPOverTime"
             ]
 
-            if CommonVariables.CT_SEQUENCED_ACQUISITION_TYPE in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]:
+            if (
+                CommonVariables.CT_SEQUENCED_ACQUISITION_TYPE
+                in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]
+            ):
                 user_profile.plotCTSequencedAcquisition = True
             else:
                 user_profile.plotCTSequencedAcquisition = False
 
-            if CommonVariables.CT_SPIRAL_ACQUISITION_TYPE in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]:
+            if (
+                CommonVariables.CT_SPIRAL_ACQUISITION_TYPE
+                in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]
+            ):
                 user_profile.plotCTSpiralAcquisition = True
             else:
                 user_profile.plotCTSpiralAcquisition = False
 
-            if CommonVariables.CT_CONSTANT_ANGLE_ACQUISITION_TYPE in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]:
+            if (
+                CommonVariables.CT_CONSTANT_ANGLE_ACQUISITION_TYPE
+                in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]
+            ):
                 user_profile.plotCTConstantAngleAcquisition = True
             else:
                 user_profile.plotCTConstantAngleAcquisition = False
 
-            if CommonVariables.CT_STATIONARY_ACQUISITION_TYPE in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]:
+            if (
+                CommonVariables.CT_STATIONARY_ACQUISITION_TYPE
+                in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]
+            ):
                 user_profile.plotCTStationaryAcquisition = True
             else:
                 user_profile.plotCTStationaryAcquisition = False
 
-            if CommonVariables.CT_FREE_ACQUISITION_TYPE in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]:
+            if (
+                CommonVariables.CT_FREE_ACQUISITION_TYPE
+                in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]
+            ):
                 user_profile.plotCTFreeAcquisition = True
             else:
                 user_profile.plotCTFreeAcquisition = False
@@ -1848,17 +1869,26 @@ def ct_chart_form_processing(request, user_profile):
                 "plotInitialSortingDirection"
             ]
 
-            if CommonVariables.MEAN in chart_options_form.cleaned_data["plotAverageChoice"]:
+            if (
+                CommonVariables.MEAN
+                in chart_options_form.cleaned_data["plotAverageChoice"]
+            ):
                 user_profile.plotMean = True
             else:
                 user_profile.plotMean = False
 
-            if CommonVariables.MEDIAN in chart_options_form.cleaned_data["plotAverageChoice"]:
+            if (
+                CommonVariables.MEDIAN
+                in chart_options_form.cleaned_data["plotAverageChoice"]
+            ):
                 user_profile.plotMedian = True
             else:
                 user_profile.plotMedian = False
 
-            if CommonVariables.BOXPLOT in chart_options_form.cleaned_data["plotAverageChoice"]:
+            if (
+                CommonVariables.BOXPLOT
+                in chart_options_form.cleaned_data["plotAverageChoice"]
+            ):
                 user_profile.plotBoxplots = True
             else:
                 user_profile.plotBoxplots = False
@@ -1876,13 +1906,19 @@ def ct_chart_form_processing(request, user_profile):
 
             ct_acquisition_types = []
             if user_profile.plotCTSequencedAcquisition:
-                ct_acquisition_types.append(CommonVariables.CT_SEQUENCED_ACQUISITION_TYPE)
+                ct_acquisition_types.append(
+                    CommonVariables.CT_SEQUENCED_ACQUISITION_TYPE
+                )
             if user_profile.plotCTSpiralAcquisition:
                 ct_acquisition_types.append(CommonVariables.CT_SPIRAL_ACQUISITION_TYPE)
             if user_profile.plotCTConstantAngleAcquisition:
-                ct_acquisition_types.append(CommonVariables.CT_CONSTANT_ANGLE_ACQUISITION_TYPE)
+                ct_acquisition_types.append(
+                    CommonVariables.CT_CONSTANT_ANGLE_ACQUISITION_TYPE
+                )
             if user_profile.plotCTStationaryAcquisition:
-                ct_acquisition_types.append(CommonVariables.CT_STATIONARY_ACQUISITION_TYPE)
+                ct_acquisition_types.append(
+                    CommonVariables.CT_STATIONARY_ACQUISITION_TYPE
+                )
             if user_profile.plotCTFreeAcquisition:
                 ct_acquisition_types.append(CommonVariables.CT_FREE_ACQUISITION_TYPE)
 

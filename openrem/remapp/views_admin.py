@@ -1330,7 +1330,10 @@ def chart_options_view(request):
             else:
                 user_profile.plotMedian = False
 
-            if CommonVariables.BOXPLOT in general_form.cleaned_data["plotAverageChoice"]:
+            if (
+                CommonVariables.BOXPLOT
+                in general_form.cleaned_data["plotAverageChoice"]
+            ):
                 user_profile.plotBoxplots = True
             else:
                 user_profile.plotBoxplots = False
@@ -1357,27 +1360,42 @@ def chart_options_view(request):
                 "plotCTAcquisitionDLPOverTime"
             ]
 
-            if CommonVariables.CT_SEQUENCED_ACQUISITION_TYPE in ct_form.cleaned_data["plotCTAcquisitionTypes"]:
+            if (
+                CommonVariables.CT_SEQUENCED_ACQUISITION_TYPE
+                in ct_form.cleaned_data["plotCTAcquisitionTypes"]
+            ):
                 user_profile.plotCTSequencedAcquisition = True
             else:
                 user_profile.plotCTSequencedAcquisition = False
 
-            if CommonVariables.CT_SPIRAL_ACQUISITION_TYPE in ct_form.cleaned_data["plotCTAcquisitionTypes"]:
+            if (
+                CommonVariables.CT_SPIRAL_ACQUISITION_TYPE
+                in ct_form.cleaned_data["plotCTAcquisitionTypes"]
+            ):
                 user_profile.plotCTSpiralAcquisition = True
             else:
                 user_profile.plotCTSpiralAcquisition = False
 
-            if CommonVariables.CT_CONSTANT_ANGLE_ACQUISITION_TYPE in ct_form.cleaned_data["plotCTAcquisitionTypes"]:
+            if (
+                CommonVariables.CT_CONSTANT_ANGLE_ACQUISITION_TYPE
+                in ct_form.cleaned_data["plotCTAcquisitionTypes"]
+            ):
                 user_profile.plotCTConstantAngleAcquisition = True
             else:
                 user_profile.plotCTConstantAngleAcquisition = False
 
-            if CommonVariables.CT_STATIONARY_ACQUISITION_TYPE in ct_form.cleaned_data["plotCTAcquisitionTypes"]:
+            if (
+                CommonVariables.CT_STATIONARY_ACQUISITION_TYPE
+                in ct_form.cleaned_data["plotCTAcquisitionTypes"]
+            ):
                 user_profile.plotCTStationaryAcquisition = True
             else:
                 user_profile.plotCTStationaryAcquisition = False
 
-            if CommonVariables.CT_FREE_ACQUISITION_TYPE in ct_form.cleaned_data["plotCTAcquisitionTypes"]:
+            if (
+                CommonVariables.CT_FREE_ACQUISITION_TYPE
+                in ct_form.cleaned_data["plotCTAcquisitionTypes"]
+            ):
                 user_profile.plotCTFreeAcquisition = True
             else:
                 user_profile.plotCTFreeAcquisition = False

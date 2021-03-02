@@ -485,6 +485,7 @@ class CommonVariables:
         (CT_FREE_ACQUISITION_TYPE, "Free"),
     )
 
+
 class UserProfile(models.Model, CommonVariables):
     """
     Table to store user profile settings
@@ -587,7 +588,6 @@ class UserProfile(models.Model, CommonVariables):
     plotCTConstantAngleAcquisition = models.BooleanField(default=False)
     plotCTStationaryAcquisition = models.BooleanField(default=False)
     plotCTFreeAcquisition = models.BooleanField(default=False)
-
 
     plotRFStudyPerDayAndHour = models.BooleanField(default=False)
     plotRFStudyFreq = models.BooleanField(default=False)

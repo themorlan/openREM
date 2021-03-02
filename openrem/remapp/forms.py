@@ -203,7 +203,9 @@ class CTChartOptionsForm(forms.Form):
         label=mark_safe("Acquisition CTDI<sub>vol</sub> vs mass"), required=False
     )
     plotCTAcquisitionTypes = forms.MultipleChoiceField(  # nosec
-        label=mark_safe("Acquisition types to include<br/>in acquisition-level chart<br/>calculations"),
+        label=mark_safe(
+            "Acquisition types to include<br/>in acquisition-level chart<br/>calculations"
+        ),
         choices=CommonVariables.CT_ACQUISITION_TYPES,
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
@@ -525,7 +527,9 @@ class CTChartOptionsDisplayForm(forms.Form):
         label="Acquisition CTDI vs mass", required=False
     )
     plotCTAcquisitionTypes = forms.MultipleChoiceField(
-        label=mark_safe("Acquisition types to include<br/>in acquisition-level chart<br/>calculations"),
+        label=mark_safe(
+            "Acquisition types to include<br/>in acquisition-level chart<br/>calculations"
+        ),
         choices=CommonVariables.CT_ACQUISITION_TYPES,
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
