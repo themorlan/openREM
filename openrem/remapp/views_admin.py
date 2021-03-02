@@ -93,6 +93,7 @@ from .models import (
     UniqueEquipmentNames,
     UpgradeStatus,
     create_user_profile,
+    CommonVariables,
 )
 from .tools.get_values import get_keys_by_value
 from .tools.hash_id import hash_id
@@ -1319,17 +1320,17 @@ def chart_options_view(request):
                 general_form.cleaned_data["plotRemoveCategoryWhitespacePadding"]
             )
 
-            if "mean" in general_form.cleaned_data["plotAverageChoice"]:
+            if CommonVariables.MEAN in general_form.cleaned_data["plotAverageChoice"]:
                 user_profile.plotMean = True
             else:
                 user_profile.plotMean = False
 
-            if "median" in general_form.cleaned_data["plotAverageChoice"]:
+            if CommonVariables.MEDIAN in general_form.cleaned_data["plotAverageChoice"]:
                 user_profile.plotMedian = True
             else:
                 user_profile.plotMedian = False
 
-            if "boxplot" in general_form.cleaned_data["plotAverageChoice"]:
+            if CommonVariables.BOXPLOT in general_form.cleaned_data["plotAverageChoice"]:
                 user_profile.plotBoxplots = True
             else:
                 user_profile.plotBoxplots = False
@@ -1355,6 +1356,32 @@ def chart_options_view(request):
             user_profile.plotCTAcquisitionDLPOverTime = ct_form.cleaned_data[
                 "plotCTAcquisitionDLPOverTime"
             ]
+
+            if CommonVariables.CT_SEQUENCED_ACQUISITION_TYPE in ct_form.cleaned_data["plotCTAcquisitionTypes"]:
+                user_profile.plotCTSequencedAcquisition = True
+            else:
+                user_profile.plotCTSequencedAcquisition = False
+
+            if CommonVariables.CT_SPIRAL_ACQUISITION_TYPE in ct_form.cleaned_data["plotCTAcquisitionTypes"]:
+                user_profile.plotCTSpiralAcquisition = True
+            else:
+                user_profile.plotCTSpiralAcquisition = False
+
+            if CommonVariables.CT_CONSTANT_ANGLE_ACQUISITION_TYPE in ct_form.cleaned_data["plotCTAcquisitionTypes"]:
+                user_profile.plotCTConstantAngleAcquisition = True
+            else:
+                user_profile.plotCTConstantAngleAcquisition = False
+
+            if CommonVariables.CT_STATIONARY_ACQUISITION_TYPE in ct_form.cleaned_data["plotCTAcquisitionTypes"]:
+                user_profile.plotCTStationaryAcquisition = True
+            else:
+                user_profile.plotCTStationaryAcquisition = False
+
+            if CommonVariables.CT_FREE_ACQUISITION_TYPE in ct_form.cleaned_data["plotCTAcquisitionTypes"]:
+                user_profile.plotCTFreeAcquisition = True
+            else:
+                user_profile.plotCTFreeAcquisition = False
+
             user_profile.plotCTStudyMeanDLP = ct_form.cleaned_data["plotCTStudyMeanDLP"]
             user_profile.plotCTStudyMeanCTDI = ct_form.cleaned_data[
                 "plotCTStudyMeanCTDI"
@@ -1503,11 +1530,11 @@ def chart_options_view(request):
 
     average_choices = []
     if user_profile.plotMean:
-        average_choices.append("mean")
+        average_choices.append(CommonVariables.MEAN)
     if user_profile.plotMedian:
-        average_choices.append("median")
+        average_choices.append(CommonVariables.MEDIAN)
     if user_profile.plotBoxplots:
-        average_choices.append("boxplot")
+        average_choices.append(CommonVariables.BOXPLOT)
 
     general_form_data = {
         "plotCharts": user_profile.plotCharts,
@@ -1524,6 +1551,18 @@ def chart_options_view(request):
         "plotFacetColWrapVal": user_profile.plotFacetColWrapVal,
     }
 
+    ct_acquisition_types = []
+    if user_profile.plotCTSequencedAcquisition:
+        ct_acquisition_types.append(CommonVariables.CT_SEQUENCED_ACQUISITION_TYPE)
+    if user_profile.plotCTSpiralAcquisition:
+        ct_acquisition_types.append(CommonVariables.CT_SPIRAL_ACQUISITION_TYPE)
+    if user_profile.plotCTConstantAngleAcquisition:
+        ct_acquisition_types.append(CommonVariables.CT_CONSTANT_ANGLE_ACQUISITION_TYPE)
+    if user_profile.plotCTStationaryAcquisition:
+        ct_acquisition_types.append(CommonVariables.CT_STATIONARY_ACQUISITION_TYPE)
+    if user_profile.plotCTFreeAcquisition:
+        ct_acquisition_types.append(CommonVariables.CT_FREE_ACQUISITION_TYPE)
+
     ct_form_data = {
         "plotCTAcquisitionMeanDLP": user_profile.plotCTAcquisitionMeanDLP,
         "plotCTAcquisitionMeanCTDI": user_profile.plotCTAcquisitionMeanCTDI,
@@ -1532,6 +1571,7 @@ def chart_options_view(request):
         "plotCTAcquisitionDLPvsMass": user_profile.plotCTAcquisitionDLPvsMass,
         "plotCTAcquisitionCTDIOverTime": user_profile.plotCTAcquisitionCTDIOverTime,
         "plotCTAcquisitionDLPOverTime": user_profile.plotCTAcquisitionDLPOverTime,
+        "plotCTAcquisitionTypes": ct_acquisition_types,
         "plotCTStudyMeanDLP": user_profile.plotCTStudyMeanDLP,
         "plotCTStudyMeanCTDI": user_profile.plotCTStudyMeanCTDI,
         "plotCTStudyFreq": user_profile.plotCTStudyFreq,

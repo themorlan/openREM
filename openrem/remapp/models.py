@@ -471,6 +471,19 @@ class CommonVariables:
     BOXPLOT = "boxplot"
     AVERAGES = ((MEAN, "Mean"), (MEDIAN, "Median"), (BOXPLOT, "Boxplot"))
 
+    CT_SEQUENCED_ACQUISITION_TYPE = "Sequenced Acquisition"
+    CT_SPIRAL_ACQUISITION_TYPE = "Spiral Acquisition"
+    CT_CONSTANT_ANGLE_ACQUISITION_TYPE = "Constant Angle Acquisition"
+    CT_STATIONARY_ACQUISITION_TYPE = "Stationary Acquisition"
+    CT_FREE_ACQUISITION_TYPE = "Free Acquisition"
+
+    CT_ACQUISITION_TYPES = (
+        (CT_SEQUENCED_ACQUISITION_TYPE, "Sequenced"),
+        (CT_SPIRAL_ACQUISITION_TYPE, "Spiral"),
+        (CT_CONSTANT_ANGLE_ACQUISITION_TYPE, "Constant angle"),
+        (CT_STATIONARY_ACQUISITION_TYPE, "Stationary"),
+        (CT_FREE_ACQUISITION_TYPE, "Free"),
+    )
 
 class UserProfile(models.Model, CommonVariables):
     """
@@ -569,6 +582,12 @@ class UserProfile(models.Model, CommonVariables):
         choices=CommonVariables.SORTING_CHOICES,
         default=CommonVariables.FREQ,
     )
+    plotCTSequencedAcquisition = models.BooleanField(default=True)
+    plotCTSpiralAcquisition = models.BooleanField(default=True)
+    plotCTConstantAngleAcquisition = models.BooleanField(default=False)
+    plotCTStationaryAcquisition = models.BooleanField(default=False)
+    plotCTFreeAcquisition = models.BooleanField(default=False)
+
 
     plotRFStudyPerDayAndHour = models.BooleanField(default=False)
     plotRFStudyFreq = models.BooleanField(default=False)

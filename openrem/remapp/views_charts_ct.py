@@ -8,7 +8,10 @@ from django.utils.safestring import mark_safe
 from openremproject import settings
 from remapp.forms import CTChartOptionsForm
 from remapp.interface.mod_filters import ct_acq_filter
-from remapp.models import create_user_profile
+from remapp.models import (
+    create_user_profile,
+    CommonVariables,
+)
 from .interface.chart_functions import (
     create_dataframe,
     create_dataframe_weekdays,
@@ -450,9 +453,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
     average_choices = []
     if user_profile.plotMean:
-        average_choices.append("mean")
+        average_choices.append(CommonVariables.MEAN)
     if user_profile.plotMedian:
-        average_choices.append("median")
+        average_choices.append(CommonVariables.MEDIAN)
 
     charts_of_interest = [
         user_profile.plotCTAcquisitionDLPOverTime,
@@ -477,6 +480,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
     if any(charts_of_interest):
 
         name_fields = ["ctradiationdose__ctirradiationeventdata__acquisition_protocol"]
+        name_fields.append("ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning")
 
         value_fields = []
         if (
@@ -525,6 +529,21 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
             uid="ctradiationdose__ctirradiationeventdata__pk",
         )
+
+        # Only keep the required acquisition types
+        types_to_keep = []
+        if user_profile.plotCTSequencedAcquisition:
+            types_to_keep.append(CommonVariables.CT_SEQUENCED_ACQUISITION_TYPE)
+        if user_profile.plotCTSpiralAcquisition:
+            types_to_keep.append(CommonVariables.CT_SPIRAL_ACQUISITION_TYPE)
+        if user_profile.plotCTConstantAngleAcquisition:
+            types_to_keep.append(CommonVariables.CT_CONSTANT_ANGLE_ACQUISITION_TYPE)
+        if user_profile.plotCTStationaryAcquisition:
+            types_to_keep.append(CommonVariables.CT_STATIONARY_ACQUISITION_TYPE)
+        if user_profile.plotCTFreeAcquisition:
+            types_to_keep.append(CommonVariables.CT_FREE_ACQUISITION_TYPE)
+
+        df = df[df.ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning.isin(types_to_keep)]
         #######################################################################
 
         #######################################################################
@@ -1754,6 +1773,32 @@ def ct_chart_form_processing(request, user_profile):
             user_profile.plotCTAcquisitionDLPOverTime = chart_options_form.cleaned_data[
                 "plotCTAcquisitionDLPOverTime"
             ]
+
+            if CommonVariables.CT_SEQUENCED_ACQUISITION_TYPE in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]:
+                user_profile.plotCTSequencedAcquisition = True
+            else:
+                user_profile.plotCTSequencedAcquisition = False
+
+            if CommonVariables.CT_SPIRAL_ACQUISITION_TYPE in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]:
+                user_profile.plotCTSpiralAcquisition = True
+            else:
+                user_profile.plotCTSpiralAcquisition = False
+
+            if CommonVariables.CT_CONSTANT_ANGLE_ACQUISITION_TYPE in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]:
+                user_profile.plotCTConstantAngleAcquisition = True
+            else:
+                user_profile.plotCTConstantAngleAcquisition = False
+
+            if CommonVariables.CT_STATIONARY_ACQUISITION_TYPE in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]:
+                user_profile.plotCTStationaryAcquisition = True
+            else:
+                user_profile.plotCTStationaryAcquisition = False
+
+            if CommonVariables.CT_FREE_ACQUISITION_TYPE in chart_options_form.cleaned_data["plotCTAcquisitionTypes"]:
+                user_profile.plotCTFreeAcquisition = True
+            else:
+                user_profile.plotCTFreeAcquisition = False
+
             user_profile.plotCTStudyMeanDLP = chart_options_form.cleaned_data[
                 "plotCTStudyMeanDLP"
             ]
@@ -1803,17 +1848,17 @@ def ct_chart_form_processing(request, user_profile):
                 "plotInitialSortingDirection"
             ]
 
-            if "mean" in chart_options_form.cleaned_data["plotAverageChoice"]:
+            if CommonVariables.MEAN in chart_options_form.cleaned_data["plotAverageChoice"]:
                 user_profile.plotMean = True
             else:
                 user_profile.plotMean = False
 
-            if "median" in chart_options_form.cleaned_data["plotAverageChoice"]:
+            if CommonVariables.MEDIAN in chart_options_form.cleaned_data["plotAverageChoice"]:
                 user_profile.plotMedian = True
             else:
                 user_profile.plotMedian = False
 
-            if "boxplot" in chart_options_form.cleaned_data["plotAverageChoice"]:
+            if CommonVariables.BOXPLOT in chart_options_form.cleaned_data["plotAverageChoice"]:
                 user_profile.plotBoxplots = True
             else:
                 user_profile.plotBoxplots = False
@@ -1823,11 +1868,23 @@ def ct_chart_form_processing(request, user_profile):
         else:
             average_choices = []
             if user_profile.plotMean:
-                average_choices.append("mean")
+                average_choices.append(CommonVariables.MEAN)
             if user_profile.plotMedian:
-                average_choices.append("median")
+                average_choices.append(CommonVariables.MEDIAN)
             if user_profile.plotBoxplots:
-                average_choices.append("boxplot")
+                average_choices.append(CommonVariables.BOXPLOT)
+
+            ct_acquisition_types = []
+            if user_profile.plotCTSequencedAcquisition:
+                ct_acquisition_types.append(CommonVariables.CT_SEQUENCED_ACQUISITION_TYPE)
+            if user_profile.plotCTSpiralAcquisition:
+                ct_acquisition_types.append(CommonVariables.CT_SPIRAL_ACQUISITION_TYPE)
+            if user_profile.plotCTConstantAngleAcquisition:
+                ct_acquisition_types.append(CommonVariables.CT_CONSTANT_ANGLE_ACQUISITION_TYPE)
+            if user_profile.plotCTStationaryAcquisition:
+                ct_acquisition_types.append(CommonVariables.CT_STATIONARY_ACQUISITION_TYPE)
+            if user_profile.plotCTFreeAcquisition:
+                ct_acquisition_types.append(CommonVariables.CT_FREE_ACQUISITION_TYPE)
 
             form_data = {
                 "plotCharts": user_profile.plotCharts,
@@ -1838,6 +1895,7 @@ def ct_chart_form_processing(request, user_profile):
                 "plotCTAcquisitionDLPvsMass": user_profile.plotCTAcquisitionDLPvsMass,
                 "plotCTAcquisitionCTDIOverTime": user_profile.plotCTAcquisitionCTDIOverTime,
                 "plotCTAcquisitionDLPOverTime": user_profile.plotCTAcquisitionDLPOverTime,
+                "plotCTAcquisitionTypes": ct_acquisition_types,
                 "plotCTStudyMeanDLP": user_profile.plotCTStudyMeanDLP,
                 "plotCTStudyMeanCTDI": user_profile.plotCTStudyMeanCTDI,
                 "plotCTStudyFreq": user_profile.plotCTStudyFreq,
