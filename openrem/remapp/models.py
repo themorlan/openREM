@@ -471,11 +471,13 @@ class CommonVariables:
     BOXPLOT = "boxplot"
     AVERAGES = ((MEAN, "Mean"), (MEDIAN, "Median"), (BOXPLOT, "Boxplot"))
 
+    # Using DICOM code meanings from http://dicom.nema.org/medical/dicom/current/output/chtml/part16/sect_CID_10013.html
     CT_SEQUENCED_ACQUISITION_TYPE = "Sequenced Acquisition"
     CT_SPIRAL_ACQUISITION_TYPE = "Spiral Acquisition"
     CT_CONSTANT_ANGLE_ACQUISITION_TYPE = "Constant Angle Acquisition"
     CT_STATIONARY_ACQUISITION_TYPE = "Stationary Acquisition"
     CT_FREE_ACQUISITION_TYPE = "Free Acquisition"
+    CT_CONE_BEAM_ACQUISITION = "Cone Beam Acquisition"
 
     CT_ACQUISITION_TYPES = (
         (CT_SEQUENCED_ACQUISITION_TYPE, "Sequenced"),
@@ -483,6 +485,7 @@ class CommonVariables:
         (CT_CONSTANT_ANGLE_ACQUISITION_TYPE, "Constant angle"),
         (CT_STATIONARY_ACQUISITION_TYPE, "Stationary"),
         (CT_FREE_ACQUISITION_TYPE, "Free"),
+        (CT_CONE_BEAM_ACQUISITION, "Cone beam"),
     )
 
 
@@ -588,6 +591,7 @@ class UserProfile(models.Model, CommonVariables):
     plotCTConstantAngleAcquisition = models.BooleanField(default=False)
     plotCTStationaryAcquisition = models.BooleanField(default=False)
     plotCTFreeAcquisition = models.BooleanField(default=False)
+    plotCTConeBeamAcquisition = models.BooleanField(default=False)
 
     plotRFStudyPerDayAndHour = models.BooleanField(default=False)
     plotRFStudyFreq = models.BooleanField(default=False)

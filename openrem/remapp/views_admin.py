@@ -1665,6 +1665,13 @@ def set_ct_chart_options(ct_form, user_profile):
         user_profile.plotCTFreeAcquisition = True
     else:
         user_profile.plotCTFreeAcquisition = False
+    if (
+            CommonVariables.CT_CONE_BEAM_ACQUISITION
+            in ct_form.cleaned_data["plotCTAcquisitionTypes"]
+    ):
+        user_profile.plotCTConeBeamAcquisition = True
+    else:
+        user_profile.plotCTConeBeamAcquisition = False
     user_profile.plotCTStudyMeanDLP = ct_form.cleaned_data[
         "plotCTStudyMeanDLP"
     ]
@@ -1741,6 +1748,8 @@ def required_ct_acquisition_types(user_profile):
         ct_acquisition_types.append(CommonVariables.CT_STATIONARY_ACQUISITION_TYPE)
     if user_profile.plotCTFreeAcquisition:
         ct_acquisition_types.append(CommonVariables.CT_FREE_ACQUISITION_TYPE)
+    if user_profile.plotCTConeBeamAcquisition:
+        ct_acquisition_types.append(CommonVariables.CT_CONE_BEAM_ACQUISITION)
 
     if user_profile.plotCaseInsensitiveCategories:
         ct_acquisition_types = [entry.lower() for entry in ct_acquisition_types]
