@@ -1741,6 +1741,10 @@ def required_ct_acquisition_types(user_profile):
         ct_acquisition_types.append(CommonVariables.CT_STATIONARY_ACQUISITION_TYPE)
     if user_profile.plotCTFreeAcquisition:
         ct_acquisition_types.append(CommonVariables.CT_FREE_ACQUISITION_TYPE)
+
+    if user_profile.plotCaseInsensitiveCategories:
+        ct_acquisition_types = [entry.lower() for entry in ct_acquisition_types]
+
     return ct_acquisition_types
 
 
