@@ -644,6 +644,9 @@ def plotly_barchart(
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if params["return_as_dict"] is
              True); or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
+    if df.empty:
+        return empty_dataframe_msg(), None
+
     chart_height = 500
     n_facet_rows = 1
 
@@ -739,6 +742,9 @@ def plotly_histogram_barchart(
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
+    if df.empty:
+        return empty_dataframe_msg()
+
     chart_height, n_facet_rows = calc_facet_rows_and_height(
         df, params["df_facet_col"], params["facet_col_wrap"]
     )
@@ -914,6 +920,9 @@ def plotly_binned_statistic_barchart(
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
+    if df.empty:
+        return empty_dataframe_msg()
+
     chart_height, n_facet_rows = calc_facet_rows_and_height(
         df, params["df_facet_col"], params["facet_col_wrap"]
     )
@@ -1084,6 +1093,9 @@ def plotly_timeseries_linechart(
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
              or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
+    if df.empty:
+        return empty_dataframe_msg()
+
     chart_height, n_facet_rows = calc_facet_rows_and_height(
         df, params["facet_col"], params["facet_col_wrap"]
     )
@@ -1177,6 +1189,9 @@ def plotly_scatter(
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
              or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
+    if df.empty:
+        return empty_dataframe_msg()
+
     sorted_category_list = create_sorted_category_list(
         df, params["df_name_col"], params["df_y_col"], params["sorting"]
     )
@@ -1275,6 +1290,9 @@ def plotly_barchart_weekdays(
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
              or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
+    if df.empty:
+        return empty_dataframe_msg()
+
     chart_height, n_facet_rows = calc_facet_rows_and_height(
         df, "x_ray_system_name", facet_col_wrap
     )
@@ -1366,6 +1384,9 @@ def plotly_frequency_barchart(
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
              or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
+    if df.empty:
+        return empty_dataframe_msg(), None
+
     if params["groupby_cols"] is None:
         params["groupby_cols"] = [params["df_name_col"]]
 
