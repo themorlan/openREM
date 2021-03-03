@@ -34,7 +34,7 @@
 
 """
 from datetime import datetime
-from decimal import Decimal
+from decimal import Decimal, DecimalException
 import logging
 import os
 from random import random
@@ -627,6 +627,12 @@ def _patientstudymoduleattributes(dataset, g):  # C.7.2.2
     patientatt.patient_age = get_value_kw("PatientAge", dataset)
     patientatt.patient_weight = get_value_kw("PatientWeight", dataset)
     patientatt.patient_size = get_value_kw("PatientSize", dataset)
+    try:
+        Decimal(patientatt.patient_size)
+    except DecimalException:
+        patientatt.patient_size = None
+    except TypeError:
+        pass
     patientatt.save()
 
 
