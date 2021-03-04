@@ -1292,9 +1292,7 @@ def chart_options_view(request):
                 )
                 user_profile = request.user.userprofile
 
-            user_profile.plotThemeChoice = general_form.cleaned_data[
-                "plotThemeChoice"
-            ]
+            user_profile.plotThemeChoice = general_form.cleaned_data["plotThemeChoice"]
             user_profile.plotColourMapChoice = general_form.cleaned_data[
                 "plotColourMapChoice"
             ]
@@ -1392,18 +1390,10 @@ def chart_options_view(request):
 
 
 def set_common_chart_options(general_form, user_profile):
-    user_profile.plotCharts = general_form.cleaned_data[
-        "plotCharts"
-    ]
-    user_profile.plotGroupingChoice = general_form.cleaned_data[
-        "plotGrouping"
-    ]
-    user_profile.plotSeriesPerSystem = general_form.cleaned_data[
-        "plotSeriesPerSystem"
-    ]
-    user_profile.plotHistograms = general_form.cleaned_data[
-        "plotHistograms"
-    ]
+    user_profile.plotCharts = general_form.cleaned_data["plotCharts"]
+    user_profile.plotGroupingChoice = general_form.cleaned_data["plotGrouping"]
+    user_profile.plotSeriesPerSystem = general_form.cleaned_data["plotSeriesPerSystem"]
+    user_profile.plotHistograms = general_form.cleaned_data["plotHistograms"]
     user_profile.plotInitialSortingDirection = general_form.cleaned_data[
         "plotInitialSortingDirection"
     ]
@@ -1413,30 +1403,16 @@ def set_rf_chart_options(rf_form, user_profile):
     user_profile.plotRFStudyPerDayAndHour = rf_form.cleaned_data[
         "plotRFStudyPerDayAndHour"
     ]
-    user_profile.plotRFStudyFreq = rf_form.cleaned_data[
-        "plotRFStudyFreq"
-    ]
-    user_profile.plotRFStudyDAP = rf_form.cleaned_data[
-        "plotRFStudyDAP"
-    ]
-    user_profile.plotRFStudyDAPOverTime = rf_form.cleaned_data[
-        "plotRFStudyDAPOverTime"
-    ]
-    user_profile.plotRFRequestFreq = rf_form.cleaned_data[
-        "plotRFRequestFreq"
-    ]
-    user_profile.plotRFRequestDAP = rf_form.cleaned_data[
-        "plotRFRequestDAP"
-    ]
+    user_profile.plotRFStudyFreq = rf_form.cleaned_data["plotRFStudyFreq"]
+    user_profile.plotRFStudyDAP = rf_form.cleaned_data["plotRFStudyDAP"]
+    user_profile.plotRFStudyDAPOverTime = rf_form.cleaned_data["plotRFStudyDAPOverTime"]
+    user_profile.plotRFRequestFreq = rf_form.cleaned_data["plotRFRequestFreq"]
+    user_profile.plotRFRequestDAP = rf_form.cleaned_data["plotRFRequestDAP"]
     user_profile.plotRFRequestDAPOverTime = rf_form.cleaned_data[
         "plotRFRequestDAPOverTime"
     ]
-    user_profile.plotRFOverTimePeriod = rf_form.cleaned_data[
-        "plotRFOverTimePeriod"
-    ]
-    user_profile.plotRFSplitByPhysician = rf_form.cleaned_data[
-        "plotRFSplitByPhysician"
-    ]
+    user_profile.plotRFOverTimePeriod = rf_form.cleaned_data["plotRFOverTimePeriod"]
+    user_profile.plotRFSplitByPhysician = rf_form.cleaned_data["plotRFSplitByPhysician"]
     user_profile.plotRFInitialSortingChoice = rf_form.cleaned_data[
         "plotRFInitialSortingChoice"
     ]
@@ -1459,33 +1435,21 @@ def initialise_rf_form_data(user_profile):
 
 
 def set_mg_chart_options(mg_form, user_profile):
-    user_profile.plotMGacquisitionFreq = mg_form.cleaned_data[
-        "plotMGacquisitionFreq"
-    ]
-    user_profile.plotMGaverageAGD = mg_form.cleaned_data[
-        "plotMGaverageAGD"
-    ]
+    user_profile.plotMGacquisitionFreq = mg_form.cleaned_data["plotMGacquisitionFreq"]
+    user_profile.plotMGaverageAGD = mg_form.cleaned_data["plotMGaverageAGD"]
     user_profile.plotMGaverageAGDvsThickness = mg_form.cleaned_data[
         "plotMGaverageAGDvsThickness"
     ]
     user_profile.plotMGAcquisitionAGDOverTime = mg_form.cleaned_data[
         "plotMGAcquisitionAGDOverTime"
     ]
-    user_profile.plotMGAGDvsThickness = mg_form.cleaned_data[
-        "plotMGAGDvsThickness"
-    ]
-    user_profile.plotMGkVpvsThickness = mg_form.cleaned_data[
-        "plotMGkVpvsThickness"
-    ]
-    user_profile.plotMGmAsvsThickness = mg_form.cleaned_data[
-        "plotMGmAsvsThickness"
-    ]
+    user_profile.plotMGAGDvsThickness = mg_form.cleaned_data["plotMGAGDvsThickness"]
+    user_profile.plotMGkVpvsThickness = mg_form.cleaned_data["plotMGkVpvsThickness"]
+    user_profile.plotMGmAsvsThickness = mg_form.cleaned_data["plotMGmAsvsThickness"]
     user_profile.plotMGStudyPerDayAndHour = mg_form.cleaned_data[
         "plotMGStudyPerDayAndHour"
     ]
-    user_profile.plotMGOverTimePeriod = mg_form.cleaned_data[
-        "plotMGOverTimePeriod"
-    ]
+    user_profile.plotMGOverTimePeriod = mg_form.cleaned_data["plotMGOverTimePeriod"]
     user_profile.plotMGInitialSortingChoice = mg_form.cleaned_data[
         "plotMGInitialSortingChoice"
     ]
@@ -1511,21 +1475,11 @@ def set_dx_chart_options(dx_form, user_profile):
     user_profile.plotDXAcquisitionMeanDAP = dx_form.cleaned_data[
         "plotDXAcquisitionMeanDAP"
     ]
-    user_profile.plotDXAcquisitionFreq = dx_form.cleaned_data[
-        "plotDXAcquisitionFreq"
-    ]
-    user_profile.plotDXStudyMeanDAP = dx_form.cleaned_data[
-        "plotDXStudyMeanDAP"
-    ]
-    user_profile.plotDXStudyFreq = dx_form.cleaned_data[
-        "plotDXStudyFreq"
-    ]
-    user_profile.plotDXRequestMeanDAP = dx_form.cleaned_data[
-        "plotDXRequestMeanDAP"
-    ]
-    user_profile.plotDXRequestFreq = dx_form.cleaned_data[
-        "plotDXRequestFreq"
-    ]
+    user_profile.plotDXAcquisitionFreq = dx_form.cleaned_data["plotDXAcquisitionFreq"]
+    user_profile.plotDXStudyMeanDAP = dx_form.cleaned_data["plotDXStudyMeanDAP"]
+    user_profile.plotDXStudyFreq = dx_form.cleaned_data["plotDXStudyFreq"]
+    user_profile.plotDXRequestMeanDAP = dx_form.cleaned_data["plotDXRequestMeanDAP"]
+    user_profile.plotDXRequestFreq = dx_form.cleaned_data["plotDXRequestFreq"]
     user_profile.plotDXAcquisitionMeankVp = dx_form.cleaned_data[
         "plotDXAcquisitionMeankVp"
     ]
@@ -1550,12 +1504,8 @@ def set_dx_chart_options(dx_form, user_profile):
     user_profile.plotDXAcquisitionDAPvsMass = dx_form.cleaned_data[
         "plotDXAcquisitionDAPvsMass"
     ]
-    user_profile.plotDXStudyDAPvsMass = dx_form.cleaned_data[
-        "plotDXStudyDAPvsMass"
-    ]
-    user_profile.plotDXRequestDAPvsMass = dx_form.cleaned_data[
-        "plotDXRequestDAPvsMass"
-    ]
+    user_profile.plotDXStudyDAPvsMass = dx_form.cleaned_data["plotDXStudyDAPvsMass"]
+    user_profile.plotDXRequestDAPvsMass = dx_form.cleaned_data["plotDXRequestDAPvsMass"]
     user_profile.plotDXInitialSortingChoice = dx_form.cleaned_data[
         "plotDXInitialSortingChoice"
     ]
@@ -1585,24 +1535,15 @@ def initialise_dx_form_data(user_profile):
 
 
 def set_average_chart_options(general_form, user_profile):
-    if (
-            CommonVariables.MEAN
-            in general_form.cleaned_data["plotAverageChoice"]
-    ):
+    if CommonVariables.MEAN in general_form.cleaned_data["plotAverageChoice"]:
         user_profile.plotMean = True
     else:
         user_profile.plotMean = False
-    if (
-            CommonVariables.MEDIAN
-            in general_form.cleaned_data["plotAverageChoice"]
-    ):
+    if CommonVariables.MEDIAN in general_form.cleaned_data["plotAverageChoice"]:
         user_profile.plotMedian = True
     else:
         user_profile.plotMedian = False
-    if (
-            CommonVariables.BOXPLOT
-            in general_form.cleaned_data["plotAverageChoice"]
-    ):
+    if CommonVariables.BOXPLOT in general_form.cleaned_data["plotAverageChoice"]:
         user_profile.plotBoxplots = True
     else:
         user_profile.plotBoxplots = False
@@ -1615,9 +1556,7 @@ def set_ct_chart_options(ct_form, user_profile):
     user_profile.plotCTAcquisitionMeanCTDI = ct_form.cleaned_data[
         "plotCTAcquisitionMeanCTDI"
     ]
-    user_profile.plotCTAcquisitionFreq = ct_form.cleaned_data[
-        "plotCTAcquisitionFreq"
-    ]
+    user_profile.plotCTAcquisitionFreq = ct_form.cleaned_data["plotCTAcquisitionFreq"]
     user_profile.plotCTAcquisitionCTDIvsMass = ct_form.cleaned_data[
         "plotCTAcquisitionCTDIvsMass"
     ]
@@ -1631,80 +1570,64 @@ def set_ct_chart_options(ct_form, user_profile):
         "plotCTAcquisitionDLPOverTime"
     ]
     if (
-            CommonVariables.CT_SEQUENCED_ACQUISITION_TYPE
-            in ct_form.cleaned_data["plotCTAcquisitionTypes"]
+        CommonVariables.CT_SEQUENCED_ACQUISITION_TYPE
+        in ct_form.cleaned_data["plotCTAcquisitionTypes"]
     ):
         user_profile.plotCTSequencedAcquisition = True
     else:
         user_profile.plotCTSequencedAcquisition = False
     if (
-            CommonVariables.CT_SPIRAL_ACQUISITION_TYPE
-            in ct_form.cleaned_data["plotCTAcquisitionTypes"]
+        CommonVariables.CT_SPIRAL_ACQUISITION_TYPE
+        in ct_form.cleaned_data["plotCTAcquisitionTypes"]
     ):
         user_profile.plotCTSpiralAcquisition = True
     else:
         user_profile.plotCTSpiralAcquisition = False
     if (
-            CommonVariables.CT_CONSTANT_ANGLE_ACQUISITION_TYPE
-            in ct_form.cleaned_data["plotCTAcquisitionTypes"]
+        CommonVariables.CT_CONSTANT_ANGLE_ACQUISITION_TYPE
+        in ct_form.cleaned_data["plotCTAcquisitionTypes"]
     ):
         user_profile.plotCTConstantAngleAcquisition = True
     else:
         user_profile.plotCTConstantAngleAcquisition = False
     if (
-            CommonVariables.CT_STATIONARY_ACQUISITION_TYPE
-            in ct_form.cleaned_data["plotCTAcquisitionTypes"]
+        CommonVariables.CT_STATIONARY_ACQUISITION_TYPE
+        in ct_form.cleaned_data["plotCTAcquisitionTypes"]
     ):
         user_profile.plotCTStationaryAcquisition = True
     else:
         user_profile.plotCTStationaryAcquisition = False
     if (
-            CommonVariables.CT_FREE_ACQUISITION_TYPE
-            in ct_form.cleaned_data["plotCTAcquisitionTypes"]
+        CommonVariables.CT_FREE_ACQUISITION_TYPE
+        in ct_form.cleaned_data["plotCTAcquisitionTypes"]
     ):
         user_profile.plotCTFreeAcquisition = True
     else:
         user_profile.plotCTFreeAcquisition = False
     if (
-            CommonVariables.CT_CONE_BEAM_ACQUISITION
-            in ct_form.cleaned_data["plotCTAcquisitionTypes"]
+        CommonVariables.CT_CONE_BEAM_ACQUISITION
+        in ct_form.cleaned_data["plotCTAcquisitionTypes"]
     ):
         user_profile.plotCTConeBeamAcquisition = True
     else:
         user_profile.plotCTConeBeamAcquisition = False
-    user_profile.plotCTStudyMeanDLP = ct_form.cleaned_data[
-        "plotCTStudyMeanDLP"
-    ]
-    user_profile.plotCTStudyMeanCTDI = ct_form.cleaned_data[
-        "plotCTStudyMeanCTDI"
-    ]
-    user_profile.plotCTStudyFreq = ct_form.cleaned_data[
-        "plotCTStudyFreq"
-    ]
-    user_profile.plotCTStudyNumEvents = ct_form.cleaned_data[
-        "plotCTStudyNumEvents"
-    ]
+    user_profile.plotCTStudyMeanDLP = ct_form.cleaned_data["plotCTStudyMeanDLP"]
+    user_profile.plotCTStudyMeanCTDI = ct_form.cleaned_data["plotCTStudyMeanCTDI"]
+    user_profile.plotCTStudyFreq = ct_form.cleaned_data["plotCTStudyFreq"]
+    user_profile.plotCTStudyNumEvents = ct_form.cleaned_data["plotCTStudyNumEvents"]
     user_profile.plotCTStudyPerDayAndHour = ct_form.cleaned_data[
         "plotCTStudyPerDayAndHour"
     ]
     user_profile.plotCTStudyMeanDLPOverTime = ct_form.cleaned_data[
         "plotCTStudyMeanDLPOverTime"
     ]
-    user_profile.plotCTRequestMeanDLP = ct_form.cleaned_data[
-        "plotCTRequestMeanDLP"
-    ]
-    user_profile.plotCTRequestFreq = ct_form.cleaned_data[
-        "plotCTRequestFreq"
-    ]
-    user_profile.plotCTRequestNumEvents = ct_form.cleaned_data[
-        "plotCTRequestNumEvents"
-    ]
+    user_profile.plotCTRequestMeanDLP = ct_form.cleaned_data["plotCTRequestMeanDLP"]
+    user_profile.plotCTRequestFreq = ct_form.cleaned_data["plotCTRequestFreq"]
+    user_profile.plotCTRequestNumEvents = ct_form.cleaned_data["plotCTRequestNumEvents"]
     user_profile.plotCTRequestDLPOverTime = ct_form.cleaned_data[
         "plotCTRequestDLPOverTime"
     ]
-    user_profile.plotCTOverTimePeriod = ct_form.cleaned_data[
-        "plotCTOverTimePeriod"
-    ]
+    user_profile.plotCTOverTimePeriod = ct_form.cleaned_data["plotCTOverTimePeriod"]
     user_profile.plotCTInitialSortingChoice = ct_form.cleaned_data[
         "plotCTInitialSortingChoice"
     ]
