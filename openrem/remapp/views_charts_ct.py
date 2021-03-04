@@ -491,6 +491,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         name_fields.append(
             "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning"
         )
+        name_fields.append(
+            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_value"
+        )
 
         value_fields = []
         if (
@@ -540,13 +543,19 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             uid="ctradiationdose__ctirradiationeventdata__pk",
         )
 
-        # Only keep the required acquisition types
-        types_to_keep = required_ct_acquisition_types(user_profile)
+        # Only keep the required acquisition type code meanings and values
+        code_meanings_to_keep = required_ct_acquisition_types(user_profile)
+
+        code_values_to_keep = [CommonVariables.CT_ACQUISITION_TYPE_CODES[k.title()] for k in code_meanings_to_keep]
+        code_values_to_keep = [j for sub in code_values_to_keep for j in sub]
 
         df = df[
-            df.ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning.isin(
-                types_to_keep
-            )
+            df.isin(
+                {
+                    "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_value": code_values_to_keep,
+                    "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning": code_meanings_to_keep
+                }
+            ).any(axis=1)
         ]
         #######################################################################
 

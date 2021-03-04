@@ -488,6 +488,15 @@ class CommonVariables:
         (CT_CONE_BEAM_ACQUISITION, "Cone beam"),
     )
 
+    CT_ACQUISITION_TYPE_CODES = {
+        CT_SEQUENCED_ACQUISITION_TYPE: ["113804"],
+        CT_SPIRAL_ACQUISITION_TYPE: ["116152004", "P5-08001", "C0860888"],
+        CT_CONSTANT_ANGLE_ACQUISITION_TYPE: ["113805"],
+        CT_STATIONARY_ACQUISITION_TYPE: ["113806"],
+        CT_FREE_ACQUISITION_TYPE: ["113807"],
+        CT_CONE_BEAM_ACQUISITION: ["702569007", "R-FB8F1", "C3839509"],
+    }
+
 
 class UserProfile(models.Model, CommonVariables):
     """
