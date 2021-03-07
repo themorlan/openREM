@@ -36,6 +36,7 @@ import base64
 from builtins import range  # pylint: disable=redefined-builtin
 from datetime import datetime
 from django.conf import settings
+from django.utils.translation import gettext as _
 import numpy as np
 import pandas as pd
 import matplotlib.cm
@@ -325,7 +326,7 @@ def empty_dataframe_msg(params=None):
             msg_line = params["custom_msg_line"]
 
     msg = "<div class='alert alert-warning' role='alert'>"
-    msg += "No data left after excluding missing values."
+    msg += _("No data left after excluding missing values.")
     msg += msg_line
     msg += "</div>"
 

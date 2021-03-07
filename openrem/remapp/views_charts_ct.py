@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext as _
 from openremproject import settings
 from remapp.forms import CTChartOptionsForm
 from remapp.interface.mod_filters import ct_acq_filter
@@ -553,8 +554,8 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         code_values_to_keep = [j for sub in code_values_to_keep for j in sub]
 
         if not code_values_to_keep and not code_meanings_to_keep:
-            chart_message = "<br/>This may be because there are no acquisition types selected in "
-            chart_message += "the chart options. Try selecting at least one acquisition type."
+            chart_message = _("<br/>This may be because there are no acquisition types selected in the chart options. "
+                              "Try selecting at least one acquisition type.")
         else:
             chart_message = ""
 
