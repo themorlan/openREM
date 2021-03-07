@@ -312,14 +312,22 @@ def calculate_colour_sequence(scale_name="RdYlBu", n_colours=10):
     return colour_seq
 
 
-def empty_dataframe_msg():
+def empty_dataframe_msg(params=None):
     """
     Returns a string containing an HTML DIV with a message warning that the DataFrame is empty
 
+    :param params: parameters which may contain a custom_msg_line
     :return: string containing an html div with the empty DataFrame message
     """
+    msg_line = ""
+    if params:
+        if "custom_msg_line" in params:
+            msg_line = params["custom_msg_line"]
+
     msg = "<div class='alert alert-warning' role='alert'>"
-    msg += "No data left after excluding missing values.</div>"
+    msg += "No data left after excluding missing values."
+    msg += msg_line
+    msg += "</div>"
 
     return msg
 
@@ -490,10 +498,10 @@ def plotly_boxplot(
     n_facet_rows = 1
 
     try:
-        # Drop any rows with nan values in x or y
+        # Drop any rows with nan values in the df_value column
         df = df.dropna(subset=[params["df_value_col"]])
         if df.empty:
-            return empty_dataframe_msg()
+            return empty_dataframe_msg(params)
 
         if params["facet_col"]:
             chart_height, n_facet_rows = calc_facet_rows_and_height(
@@ -645,7 +653,7 @@ def plotly_barchart(
              True); or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     if df.empty:
-        return empty_dataframe_msg(), None
+        return empty_dataframe_msg(params), None
 
     chart_height = 500
     n_facet_rows = 1
@@ -743,7 +751,7 @@ def plotly_histogram_barchart(
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
     if df.empty:
-        return empty_dataframe_msg()
+        return empty_dataframe_msg(params)
 
     chart_height, n_facet_rows = calc_facet_rows_and_height(
         df, params["df_facet_col"], params["facet_col_wrap"]
@@ -921,7 +929,7 @@ def plotly_binned_statistic_barchart(
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
     if df.empty:
-        return empty_dataframe_msg()
+        return empty_dataframe_msg(params)
 
     chart_height, n_facet_rows = calc_facet_rows_and_height(
         df, params["df_facet_col"], params["facet_col_wrap"]
@@ -1094,7 +1102,7 @@ def plotly_timeseries_linechart(
              or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     if df.empty:
-        return empty_dataframe_msg()
+        return empty_dataframe_msg(params)
 
     chart_height, n_facet_rows = calc_facet_rows_and_height(
         df, params["facet_col"], params["facet_col_wrap"]
@@ -1190,7 +1198,7 @@ def plotly_scatter(
              or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     if df.empty:
-        return empty_dataframe_msg()
+        return empty_dataframe_msg(params)
 
     sorted_category_list = create_sorted_category_list(
         df, params["df_name_col"], params["df_y_col"], params["sorting"]
@@ -1207,7 +1215,7 @@ def plotly_scatter(
         # Drop any rows with nan values in x or y
         df = df.dropna(subset=[params["df_x_col"], params["df_y_col"]])
         if df.empty:
-            return empty_dataframe_msg()
+            return empty_dataframe_msg(params)
 
         chart_height, n_facet_rows = calc_facet_rows_and_height(
             df, params["df_group_col"], params["facet_col_wrap"]
@@ -1385,7 +1393,7 @@ def plotly_frequency_barchart(
              or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     if df.empty:
-        return empty_dataframe_msg(), None
+        return empty_dataframe_msg(params)
 
     if params["groupby_cols"] is None:
         params["groupby_cols"] = [params["df_name_col"]]
@@ -1508,9 +1516,9 @@ def construct_over_time_charts(
     if df.empty:
         return_value = {}
         if "mean" in params["average_choices"]:
-            return_value["mean"] = empty_dataframe_msg()
+            return_value["mean"] = empty_dataframe_msg(params)
         if "median" in params["average_choices"]:
-            return_value["median"] = empty_dataframe_msg()
+            return_value["median"] = empty_dataframe_msg(params)
         return return_value
 
     df_time_series = create_dataframe_time_series(

@@ -552,6 +552,11 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         ]
         code_values_to_keep = [j for sub in code_values_to_keep for j in sub]
 
+        if not code_values_to_keep and not code_meanings_to_keep:
+            chart_message = "<br/>No acquisition types selected for acquisition-level charts."
+        else:
+            chart_message = ""
+
         df = df[
             df.isin(
                 {
@@ -592,6 +597,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
+                    "custom_msg_line": chart_message,
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean DLP (mGy.cm)"
@@ -635,6 +641,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
+                    "custom_msg_line": chart_message,
                 }
                 return_structure["acquisitionBoxplotDLPData"] = plotly_boxplot(
                     df,
@@ -673,6 +680,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "df_category_name_list": category_names,
                     "global_max_min": user_profile.plotHistogramGlobalBins,
                     "return_as_dict": return_as_dict,
+                    "custom_msg_line": chart_message,
                 }
                 return_structure[
                     "acquisitionHistogramDLPData"
@@ -709,6 +717,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
+                    "custom_msg_line": chart_message,
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean CTDI<sub>vol</sub> (mGy)"
@@ -754,6 +763,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
+                    "custom_msg_line": chart_message,
                 }
                 return_structure["acquisitionBoxplotCTDIData"] = plotly_boxplot(
                     df,
@@ -792,6 +802,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "df_category_name_list": category_names,
                     "global_max_min": user_profile.plotHistogramGlobalBins,
                     "return_as_dict": return_as_dict,
+                    "custom_msg_line": chart_message,
                 }
                 return_structure[
                     "acquisitionHistogramCTDIData"
@@ -824,6 +835,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col": None,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "return_as_dict": return_as_dict,
+                "custom_msg_line": chart_message,
             }
             (
                 return_structure["acquisitionFrequencyData"],
@@ -851,6 +863,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "y_axis_title": "CTDI<sub>vol</sub> (mGy)",
                 "filename": "OpenREM CT acquisition protocol CTDI vs patient mass",
                 "return_as_dict": return_as_dict,
+                "custom_msg_line": chart_message,
             }
             return_structure["acquisitionScatterCTDIvsMass"] = plotly_scatter(
                 df,
@@ -874,6 +887,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "y_axis_title": "DLP (mGy.cm)",
                 "filename": "OpenREM CT acquisition protocol DLP vs patient mass",
                 "return_as_dict": return_as_dict,
+                "custom_msg_line": chart_message,
             }
             return_structure["acquisitionScatterDLPvsMass"] = plotly_scatter(
                 df,
@@ -905,6 +919,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "filename": "OpenREM CT acquisition protocol CTDI over time",
                 "return_as_dict": return_as_dict,
+                "custom_msg_line": chart_message,
             }
             result = construct_over_time_charts(
                 df,
@@ -941,6 +956,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "filename": "OpenREM CT acquisition protocol DLP over time",
                 "return_as_dict": return_as_dict,
+                "custom_msg_line": chart_message,
             }
             result = construct_over_time_charts(
                 df,
