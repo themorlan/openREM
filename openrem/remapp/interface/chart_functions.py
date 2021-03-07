@@ -1393,7 +1393,7 @@ def plotly_frequency_barchart(
              or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     if df.empty:
-        return empty_dataframe_msg(params)
+        return empty_dataframe_msg(params), None
 
     if params["groupby_cols"] is None:
         params["groupby_cols"] = [params["df_name_col"]]
