@@ -553,7 +553,8 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         code_values_to_keep = [j for sub in code_values_to_keep for j in sub]
 
         if not code_values_to_keep and not code_meanings_to_keep:
-            chart_message = "<br/>No acquisition types selected for acquisition-level charts."
+            chart_message = "<br/>This may be because there are no acquisition types selected in "
+            chart_message += "the chart options. Try selecting at least one acquisition type."
         else:
             chart_message = ""
 
