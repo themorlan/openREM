@@ -1,10 +1,10 @@
 # pylint: disable=too-many-lines
 import logging
 from datetime import datetime
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
-from openremproject import settings
 from remapp.forms import MGChartOptionsForm
 from remapp.interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
 from remapp.models import GeneralStudyModuleAttr, create_user_profile
