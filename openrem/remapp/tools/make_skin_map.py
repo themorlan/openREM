@@ -63,7 +63,6 @@ def make_skin_map(study_pk=None):
     from django.core.exceptions import ObjectDoesNotExist
     import numpy as np
 
-
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
         HighDoseMetricAlertSettings.objects.get()

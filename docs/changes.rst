@@ -10,6 +10,7 @@ OpenREM version history
 * :issue:`886`  Code quality: addressed some SonarCloud issues
 * :issue:`881`  Charts: add option to remove multiple and trailing whitespace in category names
 * :issue:`879`  Charts: fixed sorting of fluoroscopy charts when split by physician
+* :issue:`877`  Charts: added acquisition type restrictions to acquisition-level CT charts
 * :issue:`872`  Charts: added ability to split fluoroscopy over-time and histogram charts by physician
 * :issue:`871`  Charts: corrected RF chart x-axis labels
 * :issue:`870`  Charts: reduced memory footprint of Pandas DataFrame creation
