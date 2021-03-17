@@ -71,6 +71,12 @@ class ChartsCT(TestCase):
         self.user.userprofile.plotCTAcquisitionCTDIOverTime = False
         self.user.userprofile.plotCTAcquisitionDLPOverTime = False
 
+        self.user.userprofile.plotCTSequencedAcquisition = True
+        self.user.userprofile.plotCTSpiralAcquisition = True
+        self.user.userprofile.plotCTConstantAngleAcquisition = True
+        self.user.userprofile.plotCTStationaryAcquisition = True
+        self.user.userprofile.plotCTFreeAcquisition = True
+
         self.user.userprofile.plotCTStudyMeanDLP = False
         self.user.userprofile.plotCTStudyMeanCTDI = False
         self.user.userprofile.plotCTStudyFreq = False

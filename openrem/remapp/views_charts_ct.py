@@ -1,14 +1,26 @@
 # pylint: disable=too-many-lines
 import logging
 from datetime import datetime
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.utils.safestring import mark_safe
-from openremproject import settings
+from django.utils.translation import gettext as _
 from remapp.forms import CTChartOptionsForm
 from remapp.interface.mod_filters import ct_acq_filter
-from remapp.models import create_user_profile
+from remapp.models import (
+    create_user_profile,
+    CommonVariables,
+)
+from remapp.views_admin import (
+    required_average_choices,
+    required_ct_acquisition_types,
+    initialise_ct_form_data,
+    set_ct_chart_options,
+    set_average_chart_options,
+    set_common_chart_options,
+)
 from .interface.chart_functions import (
     create_dataframe,
     create_dataframe_weekdays,
@@ -450,9 +462,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
     average_choices = []
     if user_profile.plotMean:
-        average_choices.append("mean")
+        average_choices.append(CommonVariables.MEAN)
     if user_profile.plotMedian:
-        average_choices.append("median")
+        average_choices.append(CommonVariables.MEDIAN)
 
     charts_of_interest = [
         user_profile.plotCTAcquisitionDLPOverTime,
@@ -477,6 +489,12 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
     if any(charts_of_interest):
 
         name_fields = ["ctradiationdose__ctirradiationeventdata__acquisition_protocol"]
+        name_fields.append(
+            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning"
+        )
+        name_fields.append(
+            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_value"
+        )
 
         value_fields = []
         if (
@@ -525,6 +543,30 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
             uid="ctradiationdose__ctirradiationeventdata__pk",
         )
+
+        # Only keep the required acquisition type code meanings and values
+        code_meanings_to_keep = required_ct_acquisition_types(user_profile)
+
+        code_values_to_keep = [
+            CommonVariables.CT_ACQUISITION_TYPE_CODES[k.title()]
+            for k in code_meanings_to_keep
+        ]
+        code_values_to_keep = [j for sub in code_values_to_keep for j in sub]
+
+        if not code_values_to_keep and not code_meanings_to_keep:
+            chart_message = _("<br/>This may be because there are no acquisition types selected in the chart options. "
+                              "Try selecting at least one acquisition type.")
+        else:
+            chart_message = ""
+
+        df = df[
+            df.isin(
+                {
+                    "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_value": code_values_to_keep,
+                    "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning": code_meanings_to_keep,
+                }
+            ).any(axis=1)
+        ]
         #######################################################################
 
         #######################################################################
@@ -557,6 +599,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
+                    "custom_msg_line": chart_message,
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean DLP (mGy.cm)"
@@ -600,6 +643,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
+                    "custom_msg_line": chart_message,
                 }
                 return_structure["acquisitionBoxplotDLPData"] = plotly_boxplot(
                     df,
@@ -638,6 +682,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "df_category_name_list": category_names,
                     "global_max_min": user_profile.plotHistogramGlobalBins,
                     "return_as_dict": return_as_dict,
+                    "custom_msg_line": chart_message,
                 }
                 return_structure[
                     "acquisitionHistogramDLPData"
@@ -674,6 +719,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
+                    "custom_msg_line": chart_message,
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean CTDI<sub>vol</sub> (mGy)"
@@ -719,6 +765,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
+                    "custom_msg_line": chart_message,
                 }
                 return_structure["acquisitionBoxplotCTDIData"] = plotly_boxplot(
                     df,
@@ -757,6 +804,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "df_category_name_list": category_names,
                     "global_max_min": user_profile.plotHistogramGlobalBins,
                     "return_as_dict": return_as_dict,
+                    "custom_msg_line": chart_message,
                 }
                 return_structure[
                     "acquisitionHistogramCTDIData"
@@ -789,6 +837,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col": None,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "return_as_dict": return_as_dict,
+                "custom_msg_line": chart_message,
             }
             (
                 return_structure["acquisitionFrequencyData"],
@@ -816,6 +865,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "y_axis_title": "CTDI<sub>vol</sub> (mGy)",
                 "filename": "OpenREM CT acquisition protocol CTDI vs patient mass",
                 "return_as_dict": return_as_dict,
+                "custom_msg_line": chart_message,
             }
             return_structure["acquisitionScatterCTDIvsMass"] = plotly_scatter(
                 df,
@@ -839,6 +889,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "y_axis_title": "DLP (mGy.cm)",
                 "filename": "OpenREM CT acquisition protocol DLP vs patient mass",
                 "return_as_dict": return_as_dict,
+                "custom_msg_line": chart_message,
             }
             return_structure["acquisitionScatterDLPvsMass"] = plotly_scatter(
                 df,
@@ -870,6 +921,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "filename": "OpenREM CT acquisition protocol CTDI over time",
                 "return_as_dict": return_as_dict,
+                "custom_msg_line": chart_message,
             }
             result = construct_over_time_charts(
                 df,
@@ -906,6 +958,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "filename": "OpenREM CT acquisition protocol DLP over time",
                 "return_as_dict": return_as_dict,
+                "custom_msg_line": chart_message,
             }
             result = construct_over_time_charts(
                 df,
@@ -1732,129 +1785,32 @@ def ct_chart_form_processing(request, user_profile):
         # Use the form data if the user clicked on the submit button
         if "submit" in request.GET:
             # process the data in form.cleaned_data as required
-            user_profile.plotCharts = chart_options_form.cleaned_data["plotCharts"]
-            user_profile.plotCTAcquisitionMeanDLP = chart_options_form.cleaned_data[
-                "plotCTAcquisitionMeanDLP"
-            ]
-            user_profile.plotCTAcquisitionMeanCTDI = chart_options_form.cleaned_data[
-                "plotCTAcquisitionMeanCTDI"
-            ]
-            user_profile.plotCTAcquisitionFreq = chart_options_form.cleaned_data[
-                "plotCTAcquisitionFreq"
-            ]
-            user_profile.plotCTAcquisitionCTDIvsMass = chart_options_form.cleaned_data[
-                "plotCTAcquisitionCTDIvsMass"
-            ]
-            user_profile.plotCTAcquisitionDLPvsMass = chart_options_form.cleaned_data[
-                "plotCTAcquisitionDLPvsMass"
-            ]
-            user_profile.plotCTAcquisitionCTDIOverTime = (
-                chart_options_form.cleaned_data["plotCTAcquisitionCTDIOverTime"]
-            )
-            user_profile.plotCTAcquisitionDLPOverTime = chart_options_form.cleaned_data[
-                "plotCTAcquisitionDLPOverTime"
-            ]
-            user_profile.plotCTStudyMeanDLP = chart_options_form.cleaned_data[
-                "plotCTStudyMeanDLP"
-            ]
-            user_profile.plotCTStudyMeanCTDI = chart_options_form.cleaned_data[
-                "plotCTStudyMeanCTDI"
-            ]
-            user_profile.plotCTStudyFreq = chart_options_form.cleaned_data[
-                "plotCTStudyFreq"
-            ]
-            user_profile.plotCTStudyNumEvents = chart_options_form.cleaned_data[
-                "plotCTStudyNumEvents"
-            ]
-            user_profile.plotCTStudyPerDayAndHour = chart_options_form.cleaned_data[
-                "plotCTStudyPerDayAndHour"
-            ]
-            user_profile.plotCTStudyMeanDLPOverTime = chart_options_form.cleaned_data[
-                "plotCTStudyMeanDLPOverTime"
-            ]
-            user_profile.plotCTRequestMeanDLP = chart_options_form.cleaned_data[
-                "plotCTRequestMeanDLP"
-            ]
-            user_profile.plotCTRequestFreq = chart_options_form.cleaned_data[
-                "plotCTRequestFreq"
-            ]
-            user_profile.plotCTRequestNumEvents = chart_options_form.cleaned_data[
-                "plotCTRequestNumEvents"
-            ]
-            user_profile.plotCTRequestDLPOverTime = chart_options_form.cleaned_data[
-                "plotCTRequestDLPOverTime"
-            ]
-            user_profile.plotCTOverTimePeriod = chart_options_form.cleaned_data[
-                "plotCTOverTimePeriod"
-            ]
-            user_profile.plotGroupingChoice = chart_options_form.cleaned_data[
-                "plotGrouping"
-            ]
-            user_profile.plotSeriesPerSystem = chart_options_form.cleaned_data[
-                "plotSeriesPerSystem"
-            ]
-            user_profile.plotHistograms = chart_options_form.cleaned_data[
-                "plotHistograms"
-            ]
-            user_profile.plotCTInitialSortingChoice = chart_options_form.cleaned_data[
-                "plotCTInitialSortingChoice"
-            ]
-            user_profile.plotInitialSortingDirection = chart_options_form.cleaned_data[
-                "plotInitialSortingDirection"
-            ]
 
-            if "mean" in chart_options_form.cleaned_data["plotAverageChoice"]:
-                user_profile.plotMean = True
-            else:
-                user_profile.plotMean = False
+            set_common_chart_options(chart_options_form, user_profile)
 
-            if "median" in chart_options_form.cleaned_data["plotAverageChoice"]:
-                user_profile.plotMedian = True
-            else:
-                user_profile.plotMedian = False
+            set_average_chart_options(chart_options_form, user_profile)
 
-            if "boxplot" in chart_options_form.cleaned_data["plotAverageChoice"]:
-                user_profile.plotBoxplots = True
-            else:
-                user_profile.plotBoxplots = False
+            set_ct_chart_options(chart_options_form, user_profile)
 
             user_profile.save()
 
         else:
-            average_choices = []
-            if user_profile.plotMean:
-                average_choices.append("mean")
-            if user_profile.plotMedian:
-                average_choices.append("median")
-            if user_profile.plotBoxplots:
-                average_choices.append("boxplot")
+            average_choices = required_average_choices(user_profile)
+
+            ct_acquisition_types = required_ct_acquisition_types(user_profile)
+
+            ct_form_data = initialise_ct_form_data(ct_acquisition_types, user_profile)
 
             form_data = {
                 "plotCharts": user_profile.plotCharts,
-                "plotCTAcquisitionMeanDLP": user_profile.plotCTAcquisitionMeanDLP,
-                "plotCTAcquisitionMeanCTDI": user_profile.plotCTAcquisitionMeanCTDI,
-                "plotCTAcquisitionFreq": user_profile.plotCTAcquisitionFreq,
-                "plotCTAcquisitionCTDIvsMass": user_profile.plotCTAcquisitionCTDIvsMass,
-                "plotCTAcquisitionDLPvsMass": user_profile.plotCTAcquisitionDLPvsMass,
-                "plotCTAcquisitionCTDIOverTime": user_profile.plotCTAcquisitionCTDIOverTime,
-                "plotCTAcquisitionDLPOverTime": user_profile.plotCTAcquisitionDLPOverTime,
-                "plotCTStudyMeanDLP": user_profile.plotCTStudyMeanDLP,
-                "plotCTStudyMeanCTDI": user_profile.plotCTStudyMeanCTDI,
-                "plotCTStudyFreq": user_profile.plotCTStudyFreq,
-                "plotCTStudyNumEvents": user_profile.plotCTStudyNumEvents,
-                "plotCTRequestMeanDLP": user_profile.plotCTRequestMeanDLP,
-                "plotCTRequestFreq": user_profile.plotCTRequestFreq,
-                "plotCTRequestNumEvents": user_profile.plotCTRequestNumEvents,
-                "plotCTRequestDLPOverTime": user_profile.plotCTRequestDLPOverTime,
-                "plotCTStudyPerDayAndHour": user_profile.plotCTStudyPerDayAndHour,
-                "plotCTStudyMeanDLPOverTime": user_profile.plotCTStudyMeanDLPOverTime,
-                "plotCTOverTimePeriod": user_profile.plotCTOverTimePeriod,
                 "plotGrouping": user_profile.plotGroupingChoice,
                 "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
                 "plotHistograms": user_profile.plotHistograms,
-                "plotCTInitialSortingChoice": user_profile.plotCTInitialSortingChoice,
                 "plotInitialSortingDirection": user_profile.plotInitialSortingDirection,
                 "plotAverageChoice": average_choices,
             }
+
+            form_data = {**form_data, **ct_form_data}
+
             chart_options_form = CTChartOptionsForm(form_data)
     return chart_options_form
