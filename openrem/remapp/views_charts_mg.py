@@ -233,6 +233,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
         ]
 
         value_fields = []
+        value_multipliers = []
         charts_of_interest = [
             user_profile.plotMGAGDvsThickness,
             user_profile.plotMGaverageAGDvsThickness,
@@ -243,14 +244,17 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             value_fields.append(
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose"
             )
+            value_multipliers.append(1)
         if user_profile.plotMGkVpvsThickness:
             value_fields.append(
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp"
             )
+            value_multipliers.append(1)
         if user_profile.plotMGmAsvsThickness:
             value_fields.append(
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"
             )
+            value_multipliers.append(0.001)
         charts_of_interest = [
             user_profile.plotMGAGDvsThickness,
             user_profile.plotMGkVpvsThickness,
@@ -261,6 +265,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             value_fields.append(
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness"
             )
+            value_multipliers.append(1)
 
         date_fields = []
         if user_profile.plotMGAcquisitionAGDOverTime:
@@ -286,6 +291,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
+            data_point_value_multipliers=value_multipliers,
             uid="projectionxrayradiationdose__irradeventxraydata__pk",
         )
 
