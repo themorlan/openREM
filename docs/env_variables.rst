@@ -1,6 +1,8 @@
 Docker env configuration
 ========================
 
+**Document not ready for translation**
+
 Edit the ``.env.prod`` file to customise your installation. There should be no space between the variable name, the
 ``=`` and the value. Everything after the ``=`` until the end of the line is transferred as the value. These settings
 take effect when docker-compose is started or restarted.
@@ -15,12 +17,17 @@ http://www.miniwebtool.com/django-secret-key-generator/ for this:
 
         SECRET_KEY=
 
-Should be a single string of hosts with a space between each. For example:
-``DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1] myservername``
+``DJANGO_ALLOWED_HOSTS`` is a string of hostnames or IPs with a space between each:
+
+* ``nginx`` is required for internal use
+* ``localhost 127.0.0.1 [::]`` allows access on the server using the localhost name or IP (using IPv4 or IPv6)
+* add the name and/or IP address of your server so it can be accessed from other computers on your network.
+
+For example: ``DJANGO_ALLOWED_HOSTS=nginx localhost 127.0.0.1 [::1] myservername``
 
     .. code-block:: none
 
-        DJANGO_ALLOWED_HOSTS=
+        DJANGO_ALLOWED_HOSTS=nginx localhost 127.0.0.1 [::1]
 
 
 Variables to help with debugging problems

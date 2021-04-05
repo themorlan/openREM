@@ -2,6 +2,8 @@
 Installation
 ************
 
+**Document not ready for translation**
+
 Windows or Linux: Docker install
 =================================
 
@@ -15,8 +17,13 @@ Preparation
 Install
 -------
 * Extract the ZIP file and open a shell (command prompt) in the new folder
-* Customise any variables in ``.env.prod`` and in the ``orthanc_1`` section
-  in ``docker-compose.yml`` as necessary. A full description of the options are found in:
+* Customise variables in the following three files:
+
+    * ``.env.prod``
+    * the ``orthanc_1`` section of ``docker-compose.yml``
+    * ``orthanc_1.json``
+
+A full description of the options are found in:
 
 ..  toctree::
     :maxdepth: 1
@@ -49,7 +56,7 @@ We recommend all installations to use the Docker method described above. However
 Docker, but only on Linux. The instructions are a prescriptive install on Ubuntu:
 
 ..  toctree::
-    :maxdepth: 1
+    :maxdepth: 2
 
     quick_start_linux
 
@@ -77,25 +84,20 @@ Upgrading an existing installation
 Databases
 =========
 
-To be removed here, but we need some of the content in other pages, so leaving for now
+..  toctree::
+    :maxdepth: 2
+
+    database
+
+.. _webservers:
+
+Advanced server configuration
+=============================
 
 ..  toctree::
     :maxdepth: 2
 
-    postgresql
-    postgresql_windows
-    backupRestorePostgreSQL
-    backupMySQLWindows
-
-.. _webservers:
-
-Web servers
-===========
-
-..  toctree::
-    :maxdepth: 1
-
     webserver_config
     virtual_directory
-
+    celery
 

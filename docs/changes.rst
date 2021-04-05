@@ -5,9 +5,12 @@ OpenREM version history
 
 1.0.0b1 (2020-xx-xx)
 --------------------
+* :issue:`896`  Imports: enabling import of DX with text string in PatientSize field
+* :issue:`893`  Charts: fixed issue with over-time charts with many sub-plots failing to plot correctly
 * :issue:`886`  Code quality: addressed some SonarCloud issues
 * :issue:`881`  Charts: add option to remove multiple and trailing whitespace in category names
 * :issue:`879`  Charts: fixed sorting of fluoroscopy charts when split by physician
+* :issue:`877`  Charts: added acquisition type restrictions to acquisition-level CT charts
 * :issue:`872`  Charts: added ability to split fluoroscopy over-time and histogram charts by physician
 * :issue:`871`  Charts: corrected RF chart x-axis labels
 * :issue:`870`  Charts: reduced memory footprint of Pandas DataFrame creation
@@ -20,6 +23,7 @@ OpenREM version history
 * :issue:`863`  Interface: removed height and weight from CT study delete
 * :issue:`861`  Interface: added ability to filter mammography on view code, compressed breast thickness and exposure control mode
 * :issue:`860`  DICOM Networking: removed built-in DICOM Store SCP functionality
+* :issue:`858`  DICOM Networking: query-retrieve logging, filtering and error handling improved
 * :issue:`856`  Interface: removed CT acquisition type restriction tick boxes
 * :issue:`854`  Interface: added date constraints to links on homepage
 * :issue:`853`  Testing: reduced Bitbucket pipeline minutes usage
