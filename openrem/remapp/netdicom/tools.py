@@ -30,10 +30,10 @@ import logging
 
 from pynetdicom import AE, VerificationPresentationContexts
 
+from remapp.models import DicomRemoteQR, DicomStoreSCP
+
 logger = logging.getLogger(__name__)
 qr_logger = logging.getLogger("remapp.netdicom.qrscu")
-
-from remapp.models import DicomRemoteQR, DicomStoreSCP
 
 
 def echoscu(scp_pk=None, store_scp=False, qr_scp=False):
