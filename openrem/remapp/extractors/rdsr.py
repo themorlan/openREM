@@ -337,7 +337,7 @@ def _xraytubecurrent(current_value, source):
 
 
 def _exposure(exposure_value, source):
-    """Takes exposure (mAs) values and populates Exposure table
+    """Takes exposure (uA.s) values and populates Exposure table
 
     :param exposure_value: Decimal or list of decimals
     :param source: database object in IrradEventXRaySourceData table
