@@ -5,6 +5,7 @@ OpenREM version history
 
 1.0.0b1 (2020-xx-xx)
 --------------------
+* :issue:`897`  Docker: fixed permissions for PixelMed - now using root throughout
 * :issue:`896`  Imports: enabling import of DX with text string in PatientSize field
 * :issue:`893`  Charts: fixed issue with over-time charts with many sub-plots failing to plot correctly
 * :issue:`886`  Code quality: addressed some SonarCloud issues
