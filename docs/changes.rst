@@ -24,6 +24,7 @@ OpenREM version history
 * :issue:`863`  Interface: removed height and weight from CT study delete
 * :issue:`861`  Interface: added ability to filter mammography on view code, compressed breast thickness and exposure control mode
 * :issue:`860`  DICOM Networking: removed built-in DICOM Store SCP functionality
+* :issue:`858`  DICOM Networking: query-retrieve logging, filtering and error handling improved
 * :issue:`856`  Interface: removed CT acquisition type restriction tick boxes
 * :issue:`854`  Interface: added date constraints to links on homepage
 * :issue:`853`  Testing: reduced Bitbucket pipeline minutes usage
