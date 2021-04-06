@@ -1402,7 +1402,7 @@ class XrayTubeCurrent(models.Model):  # EV 113734
 
 
 class Exposure(models.Model):  # EV 113736
-    """In TID 10003b. Code value 113736 (uAs)"""
+    """In TID 10003b. Code value 113736 (uA.s)"""
 
     irradiation_event_xray_source_data = models.ForeignKey(
         IrradEventXRaySourceData, on_delete=models.CASCADE
