@@ -56,6 +56,8 @@ from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from packaging import version
+
 from .extractors.extract_common import populate_rf_delta_weeks_summary
 from .forms import (
     CTChartOptionsDisplayForm,
@@ -93,6 +95,7 @@ from .models import (
     UniqueEquipmentNames,
     UpgradeStatus,
     create_user_profile,
+    OpenSkinSafeList,
 )
 from .tools.get_values import get_keys_by_value
 from .tools.hash_id import hash_id
@@ -553,6 +556,52 @@ def display_name_last_date_and_count(request):
         return_html = {"count_html": count_html, "latest_html": latest_html}
         html_dict = json.dumps(return_html)
         return HttpResponse(html_dict, content_type="application/json")
+
+
+def display_name_skin_enabled(request):
+    """AJAX view to return whether an entry in the equipment database is enabled for skin dose map calculations
+
+    :param request: Request object containing modality and equipment table ID
+    :return: HTML table data element
+    """
+
+    if request.is_ajax():
+        data = request.POST
+        equip_name_pk = data.get("equip_name_pk")
+
+        equipment = UniqueEquipmentNames.objects.get(pk=int(equip_name_pk))
+        try:
+            entry = OpenSkinSafeList.objects.get(
+                manufacturer=equipment.manufacturer,
+                manufacturer_model_name=equipment.manufacturer_model_name,
+            )
+        except ObjectDoesNotExist:
+            entry = None
+        # When a software version is specified in the fixture file, check whether its equal or newer
+        if entry is not None and entry.software_version:
+            if version.parse(
+                    equipment.software_versions
+            ) <= version.parse(entry.software_version):
+                entry = None
+
+        if entry:
+            skin_map_enabled = True
+        else:
+            skin_map_enabled = False
+
+        template = "remapp/displayname-skinmap.html"
+
+        return render(
+            request,
+            template,
+            {"skin_map_enabled": skin_map_enabled},
+        )
+    else:
+        return render(
+            request,
+            "remapp/displayname-skinmap.html",
+            {"skin_map_enabled": True},
+        )
 
 
 @login_required

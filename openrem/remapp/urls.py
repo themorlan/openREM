@@ -165,6 +165,11 @@ review_patterns = [
         name="display_name_last_date_and_count",
     ),
     path(
+        "equipmentskinmapenabled",
+        views_admin.display_name_skin_enabled,
+        name="display_name_skin_enabled",
+    ),
+    path(
         "studiesequipdelete",
         views_admin.review_studies_equip_delete,
         name="review_studies_equip_delete",
