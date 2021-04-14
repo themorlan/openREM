@@ -2,6 +2,8 @@
 DICOM Query Retrieve Service
 ############################
 
+**Document not ready for translation**
+
 
 To query retrieve dose related objects from a remote server, you need to review the :doc:`netdicom-store` documents
 first to make sure you have created a DICOM Store node which will import objects to OpenREM.
@@ -90,10 +92,11 @@ The progress of the retrieve is displayed in the same place until the retrieve i
 Query-retrieve using the command line interface
 ***********************************************
 
-In a command window/shell, ``python openrem_qr.py -h`` should present you with the following output:
+In a command window/shell, navigate to the folder containing ``docker-compose.yml`` etc.
 
 .. sourcecode:: console
 
+    $ docker-compose exec openrem openrem_qr.py -h
     usage: openrem_qr.py [-h] [-ct] [-mg] [-fl] [-dx] [-f yyyy-mm-dd]
                          [-t yyyy-mm-dd] [-sd yyyy-mm-dd] [-tf hhmm] [-tt hhmm]
                          [-e string] [-i string] [-sne string] [-sni string]
@@ -139,6 +142,9 @@ In a command window/shell, ``python openrem_qr.py -h`` should present you with t
       -dup                  Advanced: Retrieve duplicates (objects that have been processed before)
       -emptysr              Advanced: Get SR series that return nothing at image level query
 
+If you are not using docker, you will need to activate your virtual environment and use the same command from
+``openrem_qr.py`` onward.
+
 As an example, if you wanted to query the PACS for DX images on the 5th and 6th April 2010 with any study descriptions
 including ``imported`` excluded, first you need to know the database IDs of the remote node and the local node you want
 the images sent to. To find these, go to the :doc:`netdicom-nodes` page where the database ID is listed among the other
@@ -148,7 +154,7 @@ Assuming the PACS database ID is 2, and the store node ID is 1, the command woul
 
 .. sourcecode:: console
 
-    python openrem_qr.py 2 1 -dx -f 2010-04-05 -t 2010-04-06 -e "imported"
+    $ docker-compose exec openrem openrem_qr.py 2 1 -dx -f 2010-04-05 -t 2010-04-06 -e "imported"
 
 If you want to do this regularly to catch new studies, you might like to use a script something like this on linux:
 
@@ -156,15 +162,14 @@ If you want to do this regularly to catch new studies, you might like to use a s
 
     #!/bin/bash
 
-    . /var/dose/veopenrem/bin/activate  # activate virtualenv if you are using one, modify or delete this line
-
     ONEHOURAGO=$(date -d "1 hour ago" "+%Y-%m-%d")
 
-    python openrem_qr.py 2 1 -dx -f $ONEHOURAGO -t $ONEHOURAGO  -e "Imported"
+    docker-compose -f /path/to/docker-compose.yml exec openrem openrem_qr.py 2 1 -dx -f $ONEHOURAGO -t $ONEHOURAGO  -e "Imported"
 
 
 This script could be run once an hour using a cron job. By asking for the date an hour ago, you shouldn't miss exams
-taking place in the last hour of the day.
+taking place in the last hour of the day. As the script won't run from the folder containing ``docker-compose.yml``
+the location of that file needs to be passed to ``docker-compose`` with the ``-f`` option.
 
 A similar script could be created as a batch file or PowerShell script on Windows and run using the scheduler. An
 example PowerShell script is shown below:
@@ -174,9 +179,12 @@ example PowerShell script is shown below:
     # Script to obtain all CT studies from a DICOM node on the day prior to the
     # date the script is run and import them into OpenREM.
     # Get yesterday's date
+
     $dateString = "{0:yyyy-MM-dd}" -f (get-date).AddDays(-1)
+
     # Run the openrem_qr.py script with yesterday's date as the to and from date
-    python D:\Server_Apps\python27\Scripts\openrem_qr.py 2 1 -ct -f $dateString -t $dateString
+
+    docker-compose -f C:\Path\To\docker-compose.yml exec openrem openrem_qr.py 2 1 -ct -f $dateString -t $dateString
 
 The above PowerShell script could be run on a regular basis by adding a task to the Windows ``Task Scheduler`` that
 executes the ``powershell`` program with an argument of ``-file C:\path\to\script.ps1``.
@@ -205,7 +213,7 @@ database ID 1:
 
 .. sourcecode:: bash
 
-    python openrem_qr.py 2 1 -ct -sd 2018-03-19 -tf 1200 -tt 1500
+    $ docker-compose exec openrem openrem_qr.py 2 1 -ct -sd 2018-03-19 -tf 1200 -tt 1500
 
 
 
@@ -309,7 +317,7 @@ Troubleshooting: openrem_qr.log
 *******************************
 
 If the default logging settings haven't been changed then there will be a log files to refer to. The default
-location is within your ``MEDIAROOT`` folder:
+location is within your ``logs`` folder:
 
 This file contains information about the query, the status of the remote node, the C-Find response, the
 analysis of the response, and the individual C-Move requests.

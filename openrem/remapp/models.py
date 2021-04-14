@@ -485,6 +485,32 @@ class CommonVariables:
     BOXPLOT = "boxplot"
     AVERAGES = ((MEAN, "Mean"), (MEDIAN, "Median"), (BOXPLOT, "Boxplot"))
 
+    # Using DICOM code meanings from http://dicom.nema.org/medical/dicom/current/output/chtml/part16/sect_CID_10013.html
+    CT_SEQUENCED_ACQUISITION_TYPE = "Sequenced Acquisition"
+    CT_SPIRAL_ACQUISITION_TYPE = "Spiral Acquisition"
+    CT_CONSTANT_ANGLE_ACQUISITION_TYPE = "Constant Angle Acquisition"
+    CT_STATIONARY_ACQUISITION_TYPE = "Stationary Acquisition"
+    CT_FREE_ACQUISITION_TYPE = "Free Acquisition"
+    CT_CONE_BEAM_ACQUISITION = "Cone Beam Acquisition"
+
+    CT_ACQUISITION_TYPES = (
+        (CT_SEQUENCED_ACQUISITION_TYPE, "Sequenced"),
+        (CT_SPIRAL_ACQUISITION_TYPE, "Spiral"),
+        (CT_CONSTANT_ANGLE_ACQUISITION_TYPE, "Constant angle"),
+        (CT_STATIONARY_ACQUISITION_TYPE, "Stationary"),
+        (CT_FREE_ACQUISITION_TYPE, "Free"),
+        (CT_CONE_BEAM_ACQUISITION, "Cone beam"),
+    )
+
+    CT_ACQUISITION_TYPE_CODES = {
+        CT_SEQUENCED_ACQUISITION_TYPE: ["113804"],
+        CT_SPIRAL_ACQUISITION_TYPE: ["116152004", "P5-08001", "C0860888"],
+        CT_CONSTANT_ANGLE_ACQUISITION_TYPE: ["113805"],
+        CT_STATIONARY_ACQUISITION_TYPE: ["113806"],
+        CT_FREE_ACQUISITION_TYPE: ["113807"],
+        CT_CONE_BEAM_ACQUISITION: ["702569007", "R-FB8F1", "C3839509"],
+    }
+
 
 class UserProfile(models.Model, CommonVariables):
     """
@@ -583,6 +609,12 @@ class UserProfile(models.Model, CommonVariables):
         choices=CommonVariables.SORTING_CHOICES,
         default=CommonVariables.FREQ,
     )
+    plotCTSequencedAcquisition = models.BooleanField(default=True)
+    plotCTSpiralAcquisition = models.BooleanField(default=True)
+    plotCTConstantAngleAcquisition = models.BooleanField(default=False)
+    plotCTStationaryAcquisition = models.BooleanField(default=False)
+    plotCTFreeAcquisition = models.BooleanField(default=False)
+    plotCTConeBeamAcquisition = models.BooleanField(default=False)
 
     plotRFStudyPerDayAndHour = models.BooleanField(default=False)
     plotRFStudyFreq = models.BooleanField(default=False)
@@ -1384,7 +1416,7 @@ class XrayTubeCurrent(models.Model):  # EV 113734
 
 
 class Exposure(models.Model):  # EV 113736
-    """In TID 10003b. Code value 113736 (uAs)"""
+    """In TID 10003b. Code value 113736 (uA.s)"""
 
     irradiation_event_xray_source_data = models.ForeignKey(
         IrradEventXRaySourceData, on_delete=models.CASCADE

@@ -101,7 +101,7 @@ def _exposure(dataset, source):
     from remapp.tools.get_values import get_value_kw
 
     try:
-        exp.exposure = get_value_kw("ExposureInuAs", dataset).decode()  # uAs
+        exp.exposure = get_value_kw("ExposureInuAs", dataset).decode()  # uA.s
     except AttributeError:
         exp.exposure = get_value_kw("ExposureInuAs", dataset)
     exp.save()

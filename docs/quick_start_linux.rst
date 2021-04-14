@@ -1,6 +1,8 @@
 One page complete Ubuntu install
 ================================
 
+**Document not ready for translation**
+
 This setup is no longer recommended - the Docker :doc:`installation` method is instead. If a non-Docker installation is
 required then this guide can be followed.
 
@@ -154,6 +156,8 @@ Add orthanc and www-data users to openrem group
 
     $ sudo adduser www-data openrem
 
+.. _Linux-DB:
+
 Database and OpenREM config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -191,6 +195,8 @@ Reload postgres:
 .. code-block:: console
 
     $ sudo systemctl reload postgresql
+
+.. _updatelinuxconfig:
 
 Configure OpenREM
 -----------------
@@ -435,8 +441,7 @@ First, create a Celery configuration file:
     CELERYD_MULTI="multi"
 
     # Extra command-line arguments to the worker
-    # Adjust the concurrency as appropriate
-    CELERYD_OPTS="-O=fair --concurrency=4 --queues=default"
+    CELERYD_OPTS="-O=fair --queues=default"
 
     # - %n will be replaced with the first part of the nodename.
     # - %I will be replaced with the current child process index
