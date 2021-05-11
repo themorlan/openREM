@@ -338,7 +338,7 @@ def display_name_update(request):
                     )[0].modality_type
                 except:
                     modality = ""
-                if modality in {"DX", "CR", "PX", "RF", "dual", "OT"}:
+                if modality in {"DX", "CR", "RF", "dual", "OT"}:
                     display_name_data.user_defined_modality = new_user_defined_modality
                     # We can't reimport as new modality type, instead we just change the modality type value
                     if new_user_defined_modality == "dual":
@@ -360,8 +360,9 @@ def display_name_update(request):
                         error_message + "Modality type change is not allowed for"
                         " "
                         + display_name_data.display_name
-                        + " (only changing from DX "
-                        "to RF and vice versa is allowed).\n"
+                        + ", modality " + modality
+                        + ". Only changing from DX "
+                        "to RF and vice versa is allowed.\n"
                     )
             display_name_data.save()
 
