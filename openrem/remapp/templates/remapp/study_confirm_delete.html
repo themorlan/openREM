@@ -25,7 +25,7 @@
         <th scope="col">Number of events</th>
         <th scope="col">Laterality</th>
         <th scope="col">Accumulated AGD (mGy)</th>
-{% elif exam.modality_type == "DX" or exam.modality_type == "CR" %}
+{% elif exam.modality_type == "DX" or exam.modality_type == "CR" or exam.modality_type == "PX" %}
         <th scope="col">Protocol | Accession number</th>
         <th scope="col">Number of events</th>
         <th scope="col">DAP Total cGy.cm<sup>2</sup></th>
@@ -72,7 +72,7 @@
             </td>
 
             <td>{{ exam.performing_physician_name }}</td>
-{% elif exam.modality_type == "DX" or exam.modality_type == "CR" %}
+{% elif exam.modality_type == "DX" or exam.modality_type == "CR" or exam.modality_type == "PX" %}
             <td>
                 <a href="{% url 'dx_detail_view' pk=exam.id %}">{{ exam.study_description }}</a> |
                 {{ exam.accession_number }}
