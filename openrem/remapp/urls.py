@@ -165,7 +165,7 @@ review_patterns = [
         name="display_name_last_date_and_count",
     ),
     path(
-        "equipmentskinmapenabled",
+        "equipmentskinmapenabled/",
         views_admin.display_name_skin_enabled,
         name="display_name_skin_enabled",
     ),
@@ -188,6 +188,21 @@ review_patterns = [
         "studiesdeletefailed",
         views_admin.review_failed_studies_delete,
         name="review_failed_studies_delete",
+    ),
+    path(
+        "openskinsafelist/add/<int:equip_name_pk>/",
+        views_admin.SkinSafeListCreate.as_view(),
+        name="skinsafelist_add",
+    ),
+    path(
+        "openskinsafelist/<int:pk>/<int:equip_name_pk>/",
+        views_admin.SkinSafeListUpdate.as_view(),
+        name="skinsafelist_update",
+    ),
+    path(
+        "openskinsafelist/<int:pk>/delete/",
+        views_admin.SkinSafeListDelete.as_view(),
+        name="skinsafelist_delete",
     ),
 ]
 

@@ -1,0 +1,172 @@
+{% extends "remapp/base.html" %}
+
+{% block navhelp %}
+    <li>
+        <a
+                href="https://docs.openrem.org/en/{{ admin.docsversion }}/i_not_patient_indicator.html"
+                target="_blank" rel="noopener noreferrer"
+                data-toggle="tooltip" title="Not-patient indicators documentation - opens in a new tab">
+            Not-patient indicator documentation
+        </a>
+    </li>
+{% endblock %}
+
+{% block confnav %}
+    <li class="dropdown active">{% endblock %}
+
+{% block mainblock %}
+    <div class="row">
+        <div class="col-md-offset-3 col-md-6">
+            <h3>Enable or modify a unit's entry on the openSkin calculation safe list</h3>
+
+            {% if admin.admingroup %}
+                <p>
+                    This unit is on the safe list because it matches the manufacturer <b>{{ object.manufacturer }}</b>
+                    and model <b>{{ object.manufacturer_model_name }}</b>
+                    {% if not object.software_version %}
+                        </p><p>The software version (<b>{{ equipment.software_versions }}</b>) is not currently considered.
+                    {% else %}
+                        as well as the software version <b>{{ object.software_version }}</b>.
+                    {% endif %}
+                </p>
+                <div class="col-md-8 col-md-offset-2">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.manufacturer.as_hidden }}
+                        {{ form.manufacturer_model_name.as_hidden }}
+                        {{ form.software_version.as_hidden }}
+                        {% if not object.software_version %}
+                            <input type="submit" value="Add software version restriction" class="btn btn-default">
+                        {% else %}
+                            <input type="submit" value="Remove software version restriction" class="btn btn-default">
+                        {% endif %}
+                        <a href="{% url 'display_names_view' %}" role="button" class="btn btn-default">
+                            Cancel and return to display names page
+                        </a>
+                    </form>
+
+                </div>
+
+            {% else %}
+                <p>
+                    <strong>Only users in the Admin group can modify the openSkin safe list.</strong>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-offset-3 col-md-6">
+            <h4>Display name units that are currently on the openSkin safe list with this rule</h4>
+            {% if not object.software_version %}
+                <table class="table table-bordered table-hover sortable">
+                    <th scope="col">Display name</th>
+                    <th scope="col">Institution</th>
+                    <th scope="col">Department</th>
+                    <th scope="col">Manufacturer</th>
+                    <th scope="col">Model</th>
+                    <th scope="col">Station name</th>
+                    <th scope="col">Serial no.</th>
+                    <th scope="col">Software version</th>
+                    <th scope="col">Gantry ID</th>
+
+                    {% for eachrow in manufacturer_model %}
+                        <tr>
+                            <td>{{ eachrow.display_name }}</td>
+                            <td>{{ eachrow.institution_name }}</td>
+                            <td>{{ eachrow.institutional_department_name }}</td>
+                            <td>{{ eachrow.manufacturer }}</td>
+                            <td>{{ eachrow.manufacturer_model_name }}</td>
+                            <td>{{ eachrow.station_name }}</td>
+                            <td>{{ eachrow.device_serial_number }}</td>
+                            <td>{{ eachrow.software_versions }}</td>
+                            <td>{{ eachrow.gantry_id }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+
+                <h4>If you add the software version into the safe list entry, only the following units will be
+                    marked as safe</h4>
+                <table class="table table-bordered table-hover sortable">
+                    <th scope="col">Display name</th>
+                    <th scope="col">Institution</th>
+                    <th scope="col">Department</th>
+                    <th scope="col">Manufacturer</th>
+                    <th scope="col">Model</th>
+                    <th scope="col">Station name</th>
+                    <th scope="col">Serial no.</th>
+                    <th scope="col">Software version</th>
+                    <th scope="col">Gantry ID</th>
+
+                    {% for eachrow in manufacturer_model_version %}
+                        <tr>
+                            <td>{{ eachrow.display_name }}</td>
+                            <td>{{ eachrow.institution_name }}</td>
+                            <td>{{ eachrow.institutional_department_name }}</td>
+                            <td>{{ eachrow.manufacturer }}</td>
+                            <td>{{ eachrow.manufacturer_model_name }}</td>
+                            <td>{{ eachrow.station_name }}</td>
+                            <td>{{ eachrow.device_serial_number }}</td>
+                            <td>{{ eachrow.software_versions }}</td>
+                            <td>{{ eachrow.gantry_id }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <table class="table table-bordered table-hover sortable">
+                    <th scope="col">Display name</th>
+                    <th scope="col">Institution</th>
+                    <th scope="col">Department</th>
+                    <th scope="col">Manufacturer</th>
+                    <th scope="col">Model</th>
+                    <th scope="col">Station name</th>
+                    <th scope="col">Serial no.</th>
+                    <th scope="col">Software version</th>
+                    <th scope="col">Gantry ID</th>
+
+                    {% for eachrow in manufacturer_model_version %}
+                        <tr>
+                            <td>{{ eachrow.display_name }}</td>
+                            <td>{{ eachrow.institution_name }}</td>
+                            <td>{{ eachrow.institutional_department_name }}</td>
+                            <td>{{ eachrow.manufacturer }}</td>
+                            <td>{{ eachrow.manufacturer_model_name }}</td>
+                            <td>{{ eachrow.station_name }}</td>
+                            <td>{{ eachrow.device_serial_number }}</td>
+                            <td>{{ eachrow.software_versions }}</td>
+                            <td>{{ eachrow.gantry_id }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <h4>If you remove the software version from the safe list entry, the following units will also be
+                    marked as safe</h4>
+                <table class="table table-bordered table-hover sortable">
+                    <th scope="col">Display name</th>
+                    <th scope="col">Institution</th>
+                    <th scope="col">Department</th>
+                    <th scope="col">Manufacturer</th>
+                    <th scope="col">Model</th>
+                    <th scope="col">Station name</th>
+                    <th scope="col">Serial no.</th>
+                    <th scope="col">Software version</th>
+                    <th scope="col">Gantry ID</th>
+
+                    {% for eachrow in manufacturer_model %}
+                        <tr>
+                            <td>{{ eachrow.display_name }}</td>
+                            <td>{{ eachrow.institution_name }}</td>
+                            <td>{{ eachrow.institutional_department_name }}</td>
+                            <td>{{ eachrow.manufacturer }}</td>
+                            <td>{{ eachrow.manufacturer_model_name }}</td>
+                            <td>{{ eachrow.station_name }}</td>
+                            <td>{{ eachrow.device_serial_number }}</td>
+                            <td>{{ eachrow.software_versions }}</td>
+                            <td>{{ eachrow.gantry_id }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endif %}
+        </div>
+    </div>
+
+
+{% endblock %}

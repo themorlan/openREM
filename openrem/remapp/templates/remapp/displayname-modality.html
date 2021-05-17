@@ -18,7 +18,7 @@
     <th scope="col">Gantry ID</th>
     <th scope="col">How many studies</th>
     <th scope="col">Date of last study</th>
-    {% if dual %}
+    {% if modality == 'RF' %}
       <th scope="col">Skin map enabled</th>
     {% endif %}
     {% if admin.admingroup %}
@@ -27,6 +27,7 @@
   </tr>
   {% for eachrow in name_set %}
     <tr class="clickable-row" row_name="{{ eachrow.id }}">
+{#    <tr row_name="{{ eachrow.id }}">#}
       {% if admin.admingroup %}
         <td style="text-align: center; vertical-align: middle;"><input type="checkbox" title="" name="{{ eachrow.id }}" value="{{ eachrow.id }}" onclick="$(this).prop('checked', !$(this).prop('checked'))"/></td>
       {% endif %}
@@ -72,18 +73,18 @@
                 }
             )
         </script>
-      {% if dual %}
+      {% if modality == 'RF' %}
           <td id="{{ modality }}-skin-{{ eachrow.pk }}"></td>
             <script>
                 $(document).ready(
-                    function get_latest_studies(json) {
+                    function manage_skin_safe(json) {
                         $.ajax(
                             {
                                 url: "{% url 'display_name_skin_enabled' %}",
                                 data: {
                                     modality: '{{ modality }}',
                                     equip_name_pk: '{{ eachrow.pk }}',
-                                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                                    csrfmiddlewaretoken: '{{ csrf_token }}',
                                 },
                                 type: "POST",
                                 success: function (data) {
@@ -93,7 +94,7 @@
                         )
 
                     }
-                )
+                );
             </script>
         {% endif %}
     {% if admin.admingroup %}

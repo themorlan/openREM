@@ -1,5 +1,8 @@
 {% if skin_map_enabled %}
 Yes
+<a href="{% url 'skinsafelist_update' pk=safe_list_pk equip_name_pk=equip_name_pk %}">Modify</a>
+    or <a href="{% url 'skinsafelist_delete' pk=safe_list_pk %}">delete</a>
 {% else %}
-No
+    <p>No</p>
+    <a href="{% url 'skinsafelist_add' equip_name_pk=equip_name_pk %}">add</a>
 {% endif %}

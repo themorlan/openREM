@@ -56,7 +56,6 @@ from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from packaging import version
 
 from .extractors.extract_common import populate_rf_delta_weeks_summary
 from .forms import (
@@ -72,6 +71,7 @@ from .forms import (
     RFChartOptionsDisplayForm,
     RFHighDoseFluoroAlertsForm,
     SkinDoseMapCalcSettingsForm,
+    SkinSafeListForm,
     UpdateDisplayNamesForm,
 )
 from .models import (
@@ -559,14 +559,14 @@ def display_name_last_date_and_count(request):
         return HttpResponse(html_dict, content_type="application/json")
 
 
+@login_required
 def display_name_skin_enabled(request):
     """AJAX view to return whether an entry in the equipment database is enabled for skin dose map calculations
 
     :param request: Request object containing modality and equipment table ID
     :return: HTML table data element
     """
-
-    if request.is_ajax():
+    if request.is_ajax() and request.method == "POST":
         data = request.POST
         equip_name_pk = data.get("equip_name_pk")
 
@@ -578,30 +578,29 @@ def display_name_skin_enabled(request):
             )
         except ObjectDoesNotExist:
             entry = None
-        # When a software version is specified in the fixture file, check whether its equal or newer
         if entry is not None and entry.software_version:
-            if version.parse(
-                    equipment.software_versions
-            ) <= version.parse(entry.software_version):
+            if equipment.software_versions != entry.software_version:
                 entry = None
 
         if entry:
             skin_map_enabled = True
+            safe_list_pk = entry.pk
         else:
             skin_map_enabled = False
+            safe_list_pk = None
 
         template = "remapp/displayname-skinmap.html"
 
+        context = {
+            "skin_map_enabled": skin_map_enabled,
+            "safe_list_pk": safe_list_pk,
+            "equip_name_pk": equip_name_pk,
+            "modality": "RF",
+        }
         return render(
             request,
             template,
-            {"skin_map_enabled": skin_map_enabled},
-        )
-    else:
-        return render(
-            request,
-            "remapp/displayname-skinmap.html",
-            {"skin_map_enabled": True},
+            context,
         )
 
 
@@ -2506,6 +2505,84 @@ class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-varia
         else:
             messages.info(self.request, "No changes made")
         return super(SkinDoseMapCalcSettingsUpdate, self).form_valid(form)
+
+
+class SkinSafeListCreate(CreateView):
+    model = OpenSkinSafeList
+    form_class = SkinSafeListForm
+
+    def get_context_data(self, **context):
+        context = super(SkinSafeListCreate, self).get_context_data(**context)
+        admin = {
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
+        }
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context
+
+
+class SkinSafeListUpdate(UpdateView):
+    model = OpenSkinSafeList
+    form_class = SkinSafeListForm
+
+    def get_context_data(self, **context):
+        context = super(SkinSafeListUpdate, self).get_context_data(**context)
+        equipment = None
+        if self.kwargs["equip_name_pk"]:
+            equipment = UniqueEquipmentNames.objects.get(pk=int(self.kwargs["equip_name_pk"]))
+            if not context["form"].initial['software_version']:
+                context["form"].initial['software_version'] = equipment.software_versions
+            else:
+                context["form"].initial['software_version'] = None
+        context["equipment"] = equipment
+
+        rf_names = UniqueEquipmentNames.objects.order_by("display_name").filter(
+            Q(user_defined_modality="RF")
+            | Q(user_defined_modality="dual")
+            | (
+                    Q(user_defined_modality__isnull=True)
+                    & Q(
+                generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
+            )
+            )
+        ).distinct()
+        manufacturer_model = rf_names.filter(
+            manufacturer__exact=self.object.manufacturer
+        ).filter(
+            manufacturer_model_name__exact=self.object.manufacturer_model_name
+        )
+        manufacturer_model_version = manufacturer_model.filter(
+            software_versions__exact=equipment.software_versions
+        )
+        context["manufacturer_model"] = manufacturer_model
+        context["manufacturer_model_version"] = manufacturer_model_version
+        admin = {
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
+        }
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context
+
+
+class SkinSafeListDelete(DeleteView):  # pylint: disable=unused-variable
+
+    model = OpenSkinSafeList
+    success_url = reverse_lazy("display_names_view")
+
+    def get_context_data(self, **context):
+        context[self.context_object_name] = self.object
+        admin = {
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
+        }
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context
 
 
 class NotPatientNameCreate(CreateView):  # pylint: disable=unused-variable

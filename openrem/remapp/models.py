@@ -121,6 +121,9 @@ class OpenSkinSafeList(models.Model):
     manufacturer_model_name = models.TextField(blank=True, null=True)
     software_version = models.TextField(blank=True, null=True)
 
+    def get_absolute_url(self):
+        return reverse("display_names_view")
+
 
 class HighDoseMetricAlertSettings(SingletonModel):
     """
