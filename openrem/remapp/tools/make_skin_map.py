@@ -32,7 +32,6 @@ import os
 import sys
 import logging
 import django
-from packaging import version
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -75,11 +74,8 @@ def make_skin_map(study_pk=None):
                 )
             except ObjectDoesNotExist:
                 entry = None
-            # When a software version is specified in the fixture file, check whether its equal or newer
             if entry is not None and entry.software_version:
-                if version.parse(
-                    study.generalequipmentmoduleattr_set.get().software_versions
-                ) <= version.parse(entry.software_version):
+                if study.generalequipmentmoduleattr_set.get().software_versions != entry.software_version:
                     entry = None
             if entry is None:
                 save_openskin_structure(
