@@ -2510,9 +2510,38 @@ class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-varia
 class SkinSafeListCreate(CreateView):
     model = OpenSkinSafeList
     form_class = SkinSafeListForm
+    template_name_suffix = '_add'
 
     def get_context_data(self, **context):
         context = super(SkinSafeListCreate, self).get_context_data(**context)
+        equipment = None
+        if self.kwargs["equip_name_pk"]:
+            equipment = UniqueEquipmentNames.objects.get(pk=int(self.kwargs["equip_name_pk"]))
+            context["form"].initial["manufacturer"] = equipment.manufacturer
+            context["form"].initial["manufacturer_model_name"] = equipment.manufacturer_model_name
+            context["form"].initial["software_version"] = equipment.software_versions
+        context["equipment"] = equipment
+
+        rf_names = UniqueEquipmentNames.objects.order_by("display_name").filter(
+            Q(user_defined_modality="RF")
+            | Q(user_defined_modality="dual")
+            | (
+                    Q(user_defined_modality__isnull=True)
+                    & Q(
+                generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
+            )
+            )
+        ).distinct()
+        manufacturer_model = rf_names.filter(
+            manufacturer__exact=equipment.manufacturer
+        ).filter(
+            manufacturer_model_name__exact=equipment.manufacturer_model_name
+        )
+        manufacturer_model_version = manufacturer_model.filter(
+            software_versions__exact=equipment.software_versions
+        )
+        context["manufacturer_model"] = manufacturer_model
+        context["manufacturer_model_version"] = manufacturer_model_version
         admin = {
             "openremversion": __version__,
             "docsversion": __docs_version__,
@@ -2521,6 +2550,11 @@ class SkinSafeListCreate(CreateView):
             admin[group.name] = True
         context["admin"] = admin
         return context
+
+    def form_valid(self, form):
+        if self.request.POST.get("model"):
+            form.instance.software_version = None
+        return super().form_valid(form)
 
 
 class SkinSafeListUpdate(UpdateView):
