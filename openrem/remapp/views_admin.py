@@ -44,7 +44,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User  # pylint: disable=all
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, Sum
 from django.db.utils import OperationalError as AvoidDataMigrationErrorSQLite
@@ -570,24 +570,31 @@ def display_name_skin_enabled(request):
         data = request.POST
         equip_name_pk = data.get("equip_name_pk")
 
+        skin_map_enabled = False
+        safe_list_pk = None
         equipment = UniqueEquipmentNames.objects.get(pk=int(equip_name_pk))
-        try:
-            entry = OpenSkinSafeList.objects.get(
-                manufacturer=equipment.manufacturer,
-                manufacturer_model_name=equipment.manufacturer_model_name,
-            )
-        except ObjectDoesNotExist:
-            entry = None
-        if entry is not None and entry.software_version:
-            if equipment.software_versions != entry.software_version:
-                entry = None
-
-        if entry:
-            skin_map_enabled = True
-            safe_list_pk = entry.pk
-        else:
-            skin_map_enabled = False
-            safe_list_pk = None
+        skin_safe_models = OpenSkinSafeList.objects.filter(
+            manufacturer=equipment.manufacturer,
+            manufacturer_model_name=equipment.manufacturer_model_name,
+        )
+        if skin_safe_models:
+            try:
+                skin_safe_version = skin_safe_models.get(software_version=equipment.software_versions)
+                skin_map_enabled = True
+                safe_list_pk = skin_safe_version.pk
+            except ObjectDoesNotExist:
+                try:
+                    safe_list_pk = skin_safe_models.get(software_version=None).pk
+                except ObjectDoesNotExist:
+                    skin_map_enabled = False
+                    safe_list_pk = None
+                except MultipleObjectsReturned:
+                    skin_map_enabled = True
+                    safe_list_pk = skin_safe_models.filter(software_version=None).order_by("pk").first().pk
+            except MultipleObjectsReturned:
+                skin_map_enabled = True
+                safe_list_pk = skin_safe_models.filter(
+                    software_version=equipment.software_versions).order_by("pk").first().pk
 
         template = "remapp/displayname-skinmap.html"
 
@@ -2609,6 +2616,24 @@ class SkinSafeListDelete(DeleteView):  # pylint: disable=unused-variable
 
     def get_context_data(self, **context):
         context[self.context_object_name] = self.object
+
+        rf_names = UniqueEquipmentNames.objects.order_by("display_name").filter(
+            Q(user_defined_modality="RF")
+            | Q(user_defined_modality="dual")
+            | (
+                    Q(user_defined_modality__isnull=True)
+                    & Q(
+                generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
+            )
+            )
+        ).distinct().filter(
+            manufacturer__exact=self.object.manufacturer
+        ).filter(
+            manufacturer_model_name__exact=self.object.manufacturer_model_name
+        )
+        if self.object.software_version:
+            rf_names = rf_names.filter(software_versions__exact=self.object.software_version)
+        context["equipment"] = rf_names
         admin = {
             "openremversion": __version__,
             "docsversion": __docs_version__,
