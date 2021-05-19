@@ -22,30 +22,31 @@
             {% if admin.admingroup %}
                 <h4>This unit</h4>
                 <table class="table table-bordered sortable" aria-describedby="This unit details">
-                <thead>
-                <tr>
-                    <th scope="col">Manufacturer</th>
-                    <th scope="col">Model</th>
-                    <th scope="col">Software version</th>
-                </tr>
-                </thead>
-                <tr>
-                    <td>{{ equipment.manufacturer }}</td>
-                    <td>{{ equipment.manufacturer_model_name }}</td>
-                    <td>{{ equipment.software_versions }}</td>
-                </tr>
+                    <thead>
+                    <tr>
+                        <th scope="col">Manufacturer</th>
+                        <th scope="col">Model</th>
+                        <th scope="col">Software version</th>
+                    </tr>
+                    </thead>
+                    <tr>
+                        <td>{{ equipment.manufacturer }}</td>
+                        <td>{{ equipment.manufacturer_model_name }}</td>
+                        <td>{{ equipment.software_versions }}</td>
+                    </tr>
                 </table>
-                    <form method="post">
-                        {% csrf_token %}
-                        {{ form.manufacturer.as_hidden }}
-                        {{ form.manufacturer_model_name.as_hidden }}
-                        {{ form.software_version.as_hidden }}
-                            <input type="submit" value="Add model and this version to list" name="version" class="btn btn-default">
-                            <input type="submit" value="Add the model to safe list" name="model" class="btn btn-default">
-                        <a href="{% url 'display_names_view' %}" role="button" class="btn btn-default">
-                            Cancel and return to display names page
-                        </a>
-                    </form>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.manufacturer.as_hidden }}
+                    {{ form.manufacturer_model_name.as_hidden }}
+                    {{ form.software_version.as_hidden }}
+                    <input type="submit" value="Add model and this version to list" name="version"
+                           class="btn btn-default">
+                    <input type="submit" value="Add the model to safe list" name="model" class="btn btn-default">
+                    <a href="{% url 'display_names_view' %}" role="button" class="btn btn-default">
+                        Cancel and return to display names page
+                    </a>
+                </form>
             {% else %}
                 <p>
                     <strong>Only users in the Admin group can modify the openSkin safe list.</strong>
@@ -53,11 +54,13 @@
             {% endif %}
         </div>
     </div>
+    <div class="row">&nbsp;</div>
     <div class="row">
         <div class="col-md-offset-3 col-md-6">
-                <h4>If you add the model and software version into the safe list entry, only the following units will be
-                    marked as safe</h4>
-                <table class="table table-bordered table-hover sortable">
+            <h4>If you add the <b>model and software version</b> into the safe list entry, only the following units will
+                be
+                marked as safe</h4>
+            <table class="table table-bordered table-hover sortable">
                 <thead>
                 <tr>
                     <th scope="col">Display name</th>
@@ -72,24 +75,24 @@
                 </tr>
                 </thead>
                 <tbody>
-                    {% for eachrow in manufacturer_model_version %}
-                        <tr>
-                            <td>{{ eachrow.display_name }}</td>
-                            <td>{{ eachrow.institution_name }}</td>
-                            <td>{{ eachrow.institutional_department_name }}</td>
-                            <td>{{ eachrow.manufacturer }}</td>
-                            <td>{{ eachrow.manufacturer_model_name }}</td>
-                            <td>{{ eachrow.station_name }}</td>
-                            <td>{{ eachrow.device_serial_number }}</td>
-                            <td>{{ eachrow.software_versions }}</td>
-                            <td>{{ eachrow.gantry_id }}</td>
-                        </tr>
-                    {% endfor %}
+                {% for eachrow in manufacturer_model_version %}
+                    <tr>
+                        <td>{{ eachrow.display_name }}</td>
+                        <td>{{ eachrow.institution_name }}</td>
+                        <td>{{ eachrow.institutional_department_name }}</td>
+                        <td>{{ eachrow.manufacturer }}</td>
+                        <td>{{ eachrow.manufacturer_model_name }}</td>
+                        <td>{{ eachrow.station_name }}</td>
+                        <td>{{ eachrow.device_serial_number }}</td>
+                        <td>{{ eachrow.software_versions }}</td>
+                        <td>{{ eachrow.gantry_id }}</td>
+                    </tr>
+                {% endfor %}
                 </tbody>
 
-                </table>
-            <h4>If you add the model to the safe list, all the following units will be marked as safe</h4>
-                <table class="table table-bordered table-hover sortable">
+            </table>
+            <h4>If you add the <b>model</b> to the safe list, all the following units will be marked as safe</h4>
+            <table class="table table-bordered table-hover sortable">
                 <thead>
                 <tr>
                     <th scope="col">Display name</th>
@@ -104,20 +107,20 @@
                 </tr>
                 </thead>
 
-                    {% for eachrow in manufacturer_model %}
-                        <tr>
-                            <td>{{ eachrow.display_name }}</td>
-                            <td>{{ eachrow.institution_name }}</td>
-                            <td>{{ eachrow.institutional_department_name }}</td>
-                            <td>{{ eachrow.manufacturer }}</td>
-                            <td>{{ eachrow.manufacturer_model_name }}</td>
-                            <td>{{ eachrow.station_name }}</td>
-                            <td>{{ eachrow.device_serial_number }}</td>
-                            <td>{{ eachrow.software_versions }}</td>
-                            <td>{{ eachrow.gantry_id }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
+                {% for eachrow in manufacturer_model %}
+                    <tr>
+                        <td>{{ eachrow.display_name }}</td>
+                        <td>{{ eachrow.institution_name }}</td>
+                        <td>{{ eachrow.institutional_department_name }}</td>
+                        <td>{{ eachrow.manufacturer }}</td>
+                        <td>{{ eachrow.manufacturer_model_name }}</td>
+                        <td>{{ eachrow.station_name }}</td>
+                        <td>{{ eachrow.device_serial_number }}</td>
+                        <td>{{ eachrow.software_versions }}</td>
+                        <td>{{ eachrow.gantry_id }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
 
         </div>
     </div>
