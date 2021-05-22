@@ -17,16 +17,30 @@
 {% block mainblock %}
     <div class="row">
         <div class="col-md-offset-3 col-md-6">
-            <h3>Enable or modify a unit's entry on the openSkin calculation safe list</h3>
+            <h3>Modify a unit's entry on the openSkin calculation safe list</h3>
 
             {% if admin.admingroup %}
+                <h4>This unit</h4>
+                <table class="table table-bordered sortable" aria-describedby="This unit details">
+                    <thead>
+                    <tr>
+                        <th scope="col">Manufacturer</th>
+                        <th scope="col">Model</th>
+                        <th scope="col">Software version</th>
+                    </tr>
+                    </thead>
+                    <tr>
+                        <td>{{ equipment.manufacturer }}</td>
+                        <td>{{ equipment.manufacturer_model_name }}</td>
+                        <td>{{ equipment.software_versions }}</td>
+                    </tr>
+                </table>
                 <p>
-                    This unit is on the safe list because it matches the manufacturer <b>{{ object.manufacturer }}</b>
-                    and model <b>{{ object.manufacturer_model_name }}</b>
+                    This unit is on the safe list because it matches the
                     {% if not object.software_version %}
-                        </p><p>The software version (<b>{{ equipment.software_versions }}</b>) is not currently considered.
+                        manufacturer and model.
                     {% else %}
-                        as well as the software version <b>{{ object.software_version }}</b>.
+                        manufacturer, model and the software version.
                     {% endif %}
                 </p>
                 <div class="col-md-8 col-md-offset-2">
@@ -55,10 +69,12 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-offset-3 col-md-6">
+        <div class="col-md-offset-1 col-md-10">
             <h4>Display name units that are currently on the openSkin safe list with this rule</h4>
             {% if not object.software_version %}
-                <table class="table table-bordered table-hover sortable">
+                <table class="table table-bordered table-hover sortable small">
+                <thead>
+                <tr>
                     <th scope="col">Display name</th>
                     <th scope="col">Institution</th>
                     <th scope="col">Department</th>
@@ -68,7 +84,9 @@
                     <th scope="col">Serial no.</th>
                     <th scope="col">Software version</th>
                     <th scope="col">Gantry ID</th>
-
+                </tr>
+                </thead>
+                <tbody>
                     {% for eachrow in manufacturer_model %}
                         <tr>
                             <td>{{ eachrow.display_name }}</td>
@@ -82,11 +100,14 @@
                             <td>{{ eachrow.gantry_id }}</td>
                         </tr>
                     {% endfor %}
+                </tbody>
                 </table>
 
-                <h4>If you add the software version into the safe list entry, only the following units will be
-                    marked as safe</h4>
-                <table class="table table-bordered table-hover sortable">
+                <h4>If you add the software version restriction, only the following units will be
+                    marked as safe by this entry.</h4>
+                <table class="table table-bordered table-hover sortable small">
+                <thead>
+                <tr>
                     <th scope="col">Display name</th>
                     <th scope="col">Institution</th>
                     <th scope="col">Department</th>
@@ -96,7 +117,9 @@
                     <th scope="col">Serial no.</th>
                     <th scope="col">Software version</th>
                     <th scope="col">Gantry ID</th>
-
+                </tr>
+                </thead>
+                <tbody>
                     {% for eachrow in manufacturer_model_version %}
                         <tr>
                             <td>{{ eachrow.display_name }}</td>
@@ -110,9 +133,12 @@
                             <td>{{ eachrow.gantry_id }}</td>
                         </tr>
                     {% endfor %}
+                </tbody>
                 </table>
             {% else %}
-                <table class="table table-bordered table-hover sortable">
+                <table class="table table-bordered table-hover sortable small">
+                <thead>
+                <tr>
                     <th scope="col">Display name</th>
                     <th scope="col">Institution</th>
                     <th scope="col">Department</th>
@@ -122,7 +148,9 @@
                     <th scope="col">Serial no.</th>
                     <th scope="col">Software version</th>
                     <th scope="col">Gantry ID</th>
-
+                </tr>
+                </thead>
+                <tbody>
                     {% for eachrow in manufacturer_model_version %}
                         <tr>
                             <td>{{ eachrow.display_name }}</td>
@@ -136,10 +164,18 @@
                             <td>{{ eachrow.gantry_id }}</td>
                         </tr>
                     {% endfor %}
+                </tbody>
                 </table>
-                <h4>If you remove the software version from the safe list entry, the following units will also be
+
+                {% if model_exists %}
+                    The model already exists without the software version
+                {% endif %}
+
+                <h4>If you remove the version restriction from the safe list entry, the following units will also be
                     marked as safe</h4>
-                <table class="table table-bordered table-hover sortable">
+                <table class="table table-bordered table-hover sortable small">
+                <thead>
+                <tr>
                     <th scope="col">Display name</th>
                     <th scope="col">Institution</th>
                     <th scope="col">Department</th>
@@ -149,6 +185,8 @@
                     <th scope="col">Serial no.</th>
                     <th scope="col">Software version</th>
                     <th scope="col">Gantry ID</th>
+                </tr>
+                </thead>
 
                     {% for eachrow in manufacturer_model %}
                         <tr>

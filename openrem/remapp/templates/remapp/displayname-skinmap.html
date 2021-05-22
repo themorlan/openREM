@@ -1,8 +1,7 @@
-{% if skin_map_enabled %}
-Yes
-<a href="{% url 'skinsafelist_update' pk=safe_list_pk equip_name_pk=equip_name_pk %}">Modify</a>
-    or <a href="{% url 'skinsafelist_delete' pk=safe_list_pk %}">delete</a>
-{% else %}
-    <p>No</p>
-    <a href="{% url 'skinsafelist_add' equip_name_pk=equip_name_pk %}">add</a>
+{% if all_model %}
+by model and version <a href="{% url 'skinsafelist_delete' pk=safe_list_pk %}">remove version restriction</a>
+{% elif skin_map_enabled %}
+by model <a href="{% url 'skinsafelist_update' pk=safe_list_pk equip_name_pk=equip_name_pk %}">add version restriction</a>
+    <a href="{% url 'skinsafelist_delete' pk=safe_list_pk %}">or remove</a>
+{% else %}<a href="{% url 'skinsafelist_add' equip_name_pk=equip_name_pk %}">No - add</a>
 {% endif %}

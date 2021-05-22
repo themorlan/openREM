@@ -559,6 +559,19 @@ def display_name_last_date_and_count(request):
         return HttpResponse(html_dict, content_type="application/json")
 
 
+def check_no_version(skin_safe_models):
+    try:
+        safe_list_pk = skin_safe_models.get(software_version=None).pk
+        skin_map_enabled = True
+    except ObjectDoesNotExist:
+        skin_map_enabled = False
+        safe_list_pk = None
+    except MultipleObjectsReturned:
+        skin_map_enabled = True
+        safe_list_pk = skin_safe_models.filter(software_version=None).order_by("pk").first().pk
+    return safe_list_pk, skin_map_enabled
+
+
 @login_required
 def display_name_skin_enabled(request):
     """AJAX view to return whether an entry in the equipment database is enabled for skin dose map calculations
@@ -572,6 +585,7 @@ def display_name_skin_enabled(request):
 
         skin_map_enabled = False
         safe_list_pk = None
+        all_model = False
         equipment = UniqueEquipmentNames.objects.get(pk=int(equip_name_pk))
         skin_safe_models = OpenSkinSafeList.objects.filter(
             manufacturer=equipment.manufacturer,
@@ -582,15 +596,11 @@ def display_name_skin_enabled(request):
                 skin_safe_version = skin_safe_models.get(software_version=equipment.software_versions)
                 skin_map_enabled = True
                 safe_list_pk = skin_safe_version.pk
+                all_model_safe_list_pk = check_no_version(skin_safe_models)
+                if all_model_safe_list_pk:
+                    all_model = True
             except ObjectDoesNotExist:
-                try:
-                    safe_list_pk = skin_safe_models.get(software_version=None).pk
-                except ObjectDoesNotExist:
-                    skin_map_enabled = False
-                    safe_list_pk = None
-                except MultipleObjectsReturned:
-                    skin_map_enabled = True
-                    safe_list_pk = skin_safe_models.filter(software_version=None).order_by("pk").first().pk
+                safe_list_pk, skin_map_enabled = check_no_version(skin_safe_models)
             except MultipleObjectsReturned:
                 skin_map_enabled = True
                 safe_list_pk = skin_safe_models.filter(
@@ -602,7 +612,7 @@ def display_name_skin_enabled(request):
             "skin_map_enabled": skin_map_enabled,
             "safe_list_pk": safe_list_pk,
             "equip_name_pk": equip_name_pk,
-            "modality": "RF",
+            "all_model": all_model,
         }
         return render(
             request,
@@ -2597,8 +2607,15 @@ class SkinSafeListUpdate(UpdateView):
         manufacturer_model_version = manufacturer_model.filter(
             software_versions__exact=equipment.software_versions
         )
+        model_exists = False
+        if self.object.software_version:
+            model_exists = bool(OpenSkinSafeList.objects.filter(
+                manufacturer=self.object.manufacturer).filter(
+                manufacturer_model_name=self.object.manufacturer_model_name).filter(
+                software_version=None))
         context["manufacturer_model"] = manufacturer_model
         context["manufacturer_model_version"] = manufacturer_model_version
+        context["model_exists"] = model_exists
         admin = {
             "openremversion": __version__,
             "docsversion": __docs_version__,
@@ -2617,6 +2634,7 @@ class SkinSafeListDelete(DeleteView):  # pylint: disable=unused-variable
     def get_context_data(self, **context):
         context[self.context_object_name] = self.object
 
+        all_model = False
         rf_names = UniqueEquipmentNames.objects.order_by("display_name").filter(
             Q(user_defined_modality="RF")
             | Q(user_defined_modality="dual")
@@ -2633,7 +2651,15 @@ class SkinSafeListDelete(DeleteView):  # pylint: disable=unused-variable
         )
         if self.object.software_version:
             rf_names = rf_names.filter(software_versions__exact=self.object.software_version)
+            skin_safe_models = OpenSkinSafeList.objects.filter(
+                manufacturer=self.object.manufacturer,
+                manufacturer_model_name=self.object.manufacturer_model_name,
+            )
+            all_model_safe_list_pk = check_no_version(skin_safe_models)
+            if all_model_safe_list_pk:
+                all_model = True
         context["equipment"] = rf_names
+        context["all_model"] = all_model
         admin = {
             "openremversion": __version__,
             "docsversion": __docs_version__,
