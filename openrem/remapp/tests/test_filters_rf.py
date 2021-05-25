@@ -73,3 +73,44 @@ class FilterViewTests(TestCase):
         self.assertContains(response, one_responses_text)
         accession_number = u"01234.1234"  # Accession number of study with matching acquisition protocol
         self.assertContains(response, accession_number)
+
+    def test_filter_patient_weight(self):
+        """
+        Apply patient weight filter
+        """
+        self.client.login(username="temporary", password="temporary")
+
+        # The Philips test study has patient weight of 86.2 kg
+        # The Siemens test study does not have patient weight data
+
+        # Test filtering using min weight of 80 kg and max weight of 90 kg - this should exclude the Siemens study
+        response = self.client.get(
+            reverse_lazy("rf_summary_list_filter")
+            + "?patientstudymoduleattr__patient_weight__gte=80&patientstudymoduleattr__patient_weight__lte=90",
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        one_responses_text = u"There are 1 studies in this list."
+        self.assertContains(response, one_responses_text)
+        accession_number = u"01234.1234"  # Accession number of the Allura study which has patient weight of 86.2 kg
+        self.assertContains(response, accession_number)
+
+        # Test filtering using min weight of 90 kg - this should exclude both studies
+        response = self.client.get(
+            reverse_lazy("rf_summary_list_filter")
+            + "?patientstudymoduleattr__patient_weight__gte=90",
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        one_responses_text = u"There are 0 studies in this list."
+        self.assertContains(response, one_responses_text)
+
+        # Test filtering using max weight of 80 kg - this should exclude both studies
+        response = self.client.get(
+            reverse_lazy("rf_summary_list_filter")
+            + "?patientstudymoduleattr__patient_weight__lte=80",
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        one_responses_text = u"There are 0 studies in this list."
+        self.assertContains(response, one_responses_text)
