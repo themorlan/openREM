@@ -102,8 +102,8 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 0 studies in this list."
-        self.assertContains(response, one_responses_text)
+        zero_responses_text = u"There are 0 studies in this list."
+        self.assertContains(response, zero_responses_text)
 
         # Test filtering using max weight of 80 kg - this should exclude both studies
         response = self.client.get(
@@ -112,5 +112,5 @@ class FilterViewTests(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        one_responses_text = u"There are 0 studies in this list."
-        self.assertContains(response, one_responses_text)
+        zero_responses_text = u"There are 0 studies in this list."
+        self.assertContains(response, zero_responses_text)
