@@ -880,6 +880,16 @@ class DXSummaryListFilter(django_filters.FilterSet):
         label="Max age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
     )
+    patientstudymoduleattr__patient_weight__gte = django_filters.NumberFilter(
+        lookup_expr="gte",
+        label="Min weight (kg)",
+        field_name="patientstudymoduleattr__patient_weight",
+    )
+    patientstudymoduleattr__patient_weight__lte = django_filters.NumberFilter(
+        lookup_expr="lte",
+        label="Max weight (kg)",
+        field_name="patientstudymoduleattr__patient_weight",
+    )
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(
         lookup_expr="icontains", label="Hospital"
     )
@@ -943,6 +953,8 @@ class DXSummaryListFilter(django_filters.FilterSet):
             "generalequipmentmoduleattr__station_name",
             "patientstudymoduleattr__patient_age_decimal__gte",
             "patientstudymoduleattr__patient_age_decimal__lte",
+            "patientstudymoduleattr__patient_weight__gte",
+            "patientstudymoduleattr__patient_weight__lte",
             "accession_number",
             "study_dap_min",
             "study_dap_max",
