@@ -561,14 +561,14 @@ def display_name_last_date_and_count(request):
 
 def check_no_version(skin_safe_models):
     try:
-        safe_list_pk = skin_safe_models.get(software_version=None).pk
+        safe_list_pk = skin_safe_models.get(software_version="").pk
         skin_map_enabled = True
     except ObjectDoesNotExist:
         skin_map_enabled = False
         safe_list_pk = None
     except MultipleObjectsReturned:
         skin_map_enabled = True
-        safe_list_pk = skin_safe_models.filter(software_version=None).order_by("pk").first().pk
+        safe_list_pk = skin_safe_models.filter(software_version="").order_by("pk").first().pk
     return safe_list_pk, skin_map_enabled
 
 
@@ -583,9 +583,10 @@ def display_name_skin_enabled(request):
         data = request.POST
         equip_name_pk = data.get("equip_name_pk")
 
-        skin_map_enabled = False
+        model_only = False
+        version_only = False
+        model_and_version = False
         safe_list_pk = None
-        all_model = False
         equipment = UniqueEquipmentNames.objects.get(pk=int(equip_name_pk))
         skin_safe_models = OpenSkinSafeList.objects.filter(
             manufacturer=equipment.manufacturer,
@@ -594,25 +595,31 @@ def display_name_skin_enabled(request):
         if skin_safe_models:
             try:
                 skin_safe_version = skin_safe_models.get(software_version=equipment.software_versions)
-                skin_map_enabled = True
                 safe_list_pk = skin_safe_version.pk
                 all_model_safe_list_pk = check_no_version(skin_safe_models)
-                if all_model_safe_list_pk:
-                    all_model = True
+                if all_model_safe_list_pk[0]:
+                    model_and_version = True
+                else:
+                    version_only = True
             except ObjectDoesNotExist:
-                safe_list_pk, skin_map_enabled = check_no_version(skin_safe_models)
+                safe_list_pk, model_only = check_no_version(skin_safe_models)
             except MultipleObjectsReturned:
-                skin_map_enabled = True
                 safe_list_pk = skin_safe_models.filter(
                     software_version=equipment.software_versions).order_by("pk").first().pk
+                all_model_safe_list_pk = check_no_version(skin_safe_models)
+                if all_model_safe_list_pk[0]:
+                    model_and_version = True
+                else:
+                    version_only = True
 
         template = "remapp/displayname-skinmap.html"
 
         context = {
-            "skin_map_enabled": skin_map_enabled,
             "safe_list_pk": safe_list_pk,
             "equip_name_pk": equip_name_pk,
-            "all_model": all_model,
+            "model_only": model_only,
+            "version_only": version_only,
+            "model_and_version": model_and_version,
         }
         return render(
             request,
@@ -2570,7 +2577,7 @@ class SkinSafeListCreate(CreateView):
 
     def form_valid(self, form):
         if self.request.POST.get("model"):
-            form.instance.software_version = None
+            form.instance.software_version = ""
         return super().form_valid(form)
 
 
@@ -2656,7 +2663,7 @@ class SkinSafeListDelete(DeleteView):  # pylint: disable=unused-variable
                 manufacturer_model_name=self.object.manufacturer_model_name,
             )
             all_model_safe_list_pk = check_no_version(skin_safe_models)
-            if all_model_safe_list_pk:
+            if all_model_safe_list_pk[0]:
                 all_model = True
         context["equipment"] = rf_names
         context["all_model"] = all_model

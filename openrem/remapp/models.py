@@ -119,7 +119,7 @@ class OpenSkinSafeList(models.Model):
 
     manufacturer = models.TextField(blank=True, null=True)
     manufacturer_model_name = models.TextField(blank=True, null=True)
-    software_version = models.TextField(blank=True, null=True)
+    software_version = models.TextField(blank=True, default="")
 
     def get_absolute_url(self):
         return reverse("display_names_view")
