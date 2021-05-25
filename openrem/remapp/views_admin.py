@@ -559,17 +559,17 @@ def display_name_last_date_and_count(request):
         return HttpResponse(html_dict, content_type="application/json")
 
 
-def check_no_version(skin_safe_models):
+def check_skin_safe_model(skin_safe_models):
     try:
-        safe_list_pk = skin_safe_models.get(software_version="").pk
-        skin_map_enabled = True
+        safe_list_model_pk = skin_safe_models.get(software_version="").pk
+        model_enabled = True
     except ObjectDoesNotExist:
-        skin_map_enabled = False
-        safe_list_pk = None
+        model_enabled = False
+        safe_list_model_pk = None
     except MultipleObjectsReturned:
-        skin_map_enabled = True
-        safe_list_pk = skin_safe_models.filter(software_version="").order_by("pk").first().pk
-    return safe_list_pk, skin_map_enabled
+        model_enabled = True
+        safe_list_model_pk = skin_safe_models.filter(software_version="").order_by("pk").first().pk
+    return safe_list_model_pk, model_enabled
 
 
 @login_required
@@ -596,17 +596,17 @@ def display_name_skin_enabled(request):
             try:
                 skin_safe_version = skin_safe_models.get(software_version=equipment.software_versions)
                 safe_list_pk = skin_safe_version.pk
-                all_model_safe_list_pk = check_no_version(skin_safe_models)
+                all_model_safe_list_pk = check_skin_safe_model(skin_safe_models)
                 if all_model_safe_list_pk[0]:
                     model_and_version = True
                 else:
                     version_only = True
             except ObjectDoesNotExist:
-                safe_list_pk, model_only = check_no_version(skin_safe_models)
+                safe_list_pk, model_only = check_skin_safe_model(skin_safe_models)
             except MultipleObjectsReturned:
                 safe_list_pk = skin_safe_models.filter(
                     software_version=equipment.software_versions).order_by("pk").first().pk
-                all_model_safe_list_pk = check_no_version(skin_safe_models)
+                all_model_safe_list_pk = check_skin_safe_model(skin_safe_models)
                 if all_model_safe_list_pk[0]:
                     model_and_version = True
                 else:
@@ -2641,7 +2641,7 @@ class SkinSafeListDelete(DeleteView):  # pylint: disable=unused-variable
     def get_context_data(self, **context):
         context[self.context_object_name] = self.object
 
-        all_model = False
+        model_and_version = False
         rf_names = UniqueEquipmentNames.objects.order_by("display_name").filter(
             Q(user_defined_modality="RF")
             | Q(user_defined_modality="dual")
@@ -2662,11 +2662,11 @@ class SkinSafeListDelete(DeleteView):  # pylint: disable=unused-variable
                 manufacturer=self.object.manufacturer,
                 manufacturer_model_name=self.object.manufacturer_model_name,
             )
-            all_model_safe_list_pk = check_no_version(skin_safe_models)
+            all_model_safe_list_pk = check_skin_safe_model(skin_safe_models)
             if all_model_safe_list_pk[0]:
-                all_model = True
+                model_and_version = True
         context["equipment"] = rf_names
-        context["all_model"] = all_model
+        context["model_and_version"] = model_and_version
         admin = {
             "openremversion": __version__,
             "docsversion": __docs_version__,

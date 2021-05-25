@@ -1,9 +1,9 @@
 {% if model_only %}
     <a href="{% url 'skinsafelist_update' pk=safe_list_pk equip_name_pk=equip_name_pk %}">add version restriction</a>
-    <a href="{% url 'skinsafelist_delete' pk=safe_list_pk %}">or remove</a>
+    <a href="{% url 'skinsafelist_delete' pk=safe_list_pk %}">or disable</a>
 {% elif version_only %}
     <a href="{% url 'skinsafelist_update' pk=safe_list_pk equip_name_pk=equip_name_pk %}">remove version restriction</a>
-    <a href="{% url 'skinsafelist_delete' pk=safe_list_pk %}">or remove</a>
+    <a href="{% url 'skinsafelist_delete' pk=safe_list_pk %}">or disable</a>
 {% elif model_and_version %}
     <a href="{% url 'skinsafelist_delete' pk=safe_list_pk %}">remove version restriction</a>
 {% else %}<a href="{% url 'skinsafelist_add' equip_name_pk=equip_name_pk %}">No - add</a>
