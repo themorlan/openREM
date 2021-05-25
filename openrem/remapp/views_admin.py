@@ -44,7 +44,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User  # pylint: disable=all
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, Sum
 from django.db.utils import OperationalError as AvoidDataMigrationErrorSQLite
@@ -70,8 +70,6 @@ from .forms import (
     NotPatientNameForm,
     RFChartOptionsDisplayForm,
     RFHighDoseFluoroAlertsForm,
-    SkinDoseMapCalcSettingsForm,
-    SkinSafeListForm,
     UpdateDisplayNamesForm,
 )
 from .models import (
@@ -90,12 +88,10 @@ from .models import (
     PKsForSummedRFDoseStudiesInDeltaWeeks,
     PatientIDSettings,
     SizeUpload,
-    SkinDoseMapCalcSettings,
     SummaryFields,
     UniqueEquipmentNames,
     UpgradeStatus,
     create_user_profile,
-    OpenSkinSafeList,
     CommonVariables,
 )
 from .tools.get_values import get_keys_by_value
@@ -557,75 +553,6 @@ def display_name_last_date_and_count(request):
         return_html = {"count_html": count_html, "latest_html": latest_html}
         html_dict = json.dumps(return_html)
         return HttpResponse(html_dict, content_type="application/json")
-
-
-def check_skin_safe_model(skin_safe_models):
-    try:
-        safe_list_model_pk = skin_safe_models.get(software_version="").pk
-        model_enabled = True
-    except ObjectDoesNotExist:
-        model_enabled = False
-        safe_list_model_pk = None
-    except MultipleObjectsReturned:
-        model_enabled = True
-        safe_list_model_pk = skin_safe_models.filter(software_version="").order_by("pk").first().pk
-    return safe_list_model_pk, model_enabled
-
-
-@login_required
-def display_name_skin_enabled(request):
-    """AJAX view to return whether an entry in the equipment database is enabled for skin dose map calculations
-
-    :param request: Request object containing modality and equipment table ID
-    :return: HTML table data element
-    """
-    if request.is_ajax() and request.method == "POST":
-        data = request.POST
-        equip_name_pk = data.get("equip_name_pk")
-
-        model_only = False
-        version_only = False
-        model_and_version = False
-        safe_list_pk = None
-        equipment = UniqueEquipmentNames.objects.get(pk=int(equip_name_pk))
-        skin_safe_models = OpenSkinSafeList.objects.filter(
-            manufacturer=equipment.manufacturer,
-            manufacturer_model_name=equipment.manufacturer_model_name,
-        )
-        if skin_safe_models:
-            try:
-                skin_safe_version = skin_safe_models.get(software_version=equipment.software_versions)
-                safe_list_pk = skin_safe_version.pk
-                all_model_safe_list_pk = check_skin_safe_model(skin_safe_models)
-                if all_model_safe_list_pk[0]:
-                    model_and_version = True
-                else:
-                    version_only = True
-            except ObjectDoesNotExist:
-                safe_list_pk, model_only = check_skin_safe_model(skin_safe_models)
-            except MultipleObjectsReturned:
-                safe_list_pk = skin_safe_models.filter(
-                    software_version=equipment.software_versions).order_by("pk").first().pk
-                all_model_safe_list_pk = check_skin_safe_model(skin_safe_models)
-                if all_model_safe_list_pk[0]:
-                    model_and_version = True
-                else:
-                    version_only = True
-
-        template = "remapp/displayname-skinmap.html"
-
-        context = {
-            "safe_list_pk": safe_list_pk,
-            "equip_name_pk": equip_name_pk,
-            "model_only": model_only,
-            "version_only": version_only,
-            "model_and_version": model_and_version,
-        }
-        return render(
-            request,
-            template,
-            context,
-        )
 
 
 @login_required
@@ -2499,182 +2426,6 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
         return_structure = {"success": True, "messages": django_messages}
 
         return JsonResponse(return_structure, safe=False)
-
-
-class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
-    """UpdateView for configuring the skin dose map calculation choices"""
-
-    try:
-        SkinDoseMapCalcSettings.get_solo()  # will create item if it doesn't exist
-    except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
-        pass
-
-    model = SkinDoseMapCalcSettings
-    form_class = SkinDoseMapCalcSettingsForm
-
-    def get_context_data(self, **context):
-        context = super(SkinDoseMapCalcSettingsUpdate, self).get_context_data(**context)
-        admin = {
-            "openremversion": __version__,
-            "docsversion": __docs_version__,
-        }
-        for group in self.request.user.groups.all():
-            admin[group.name] = True
-        context["admin"] = admin
-        return context
-
-    def form_valid(self, form):
-        if form.has_changed():
-            messages.success(self.request, "Skin dose map settings have been updated")
-        else:
-            messages.info(self.request, "No changes made")
-        return super(SkinDoseMapCalcSettingsUpdate, self).form_valid(form)
-
-
-class SkinSafeListCreate(CreateView):
-    model = OpenSkinSafeList
-    form_class = SkinSafeListForm
-    template_name_suffix = '_add'
-
-    def get_context_data(self, **context):
-        context = super(SkinSafeListCreate, self).get_context_data(**context)
-        equipment = None
-        if self.kwargs["equip_name_pk"]:
-            equipment = UniqueEquipmentNames.objects.get(pk=int(self.kwargs["equip_name_pk"]))
-            context["form"].initial["manufacturer"] = equipment.manufacturer
-            context["form"].initial["manufacturer_model_name"] = equipment.manufacturer_model_name
-            context["form"].initial["software_version"] = equipment.software_versions
-        context["equipment"] = equipment
-
-        rf_names = UniqueEquipmentNames.objects.order_by("display_name").filter(
-            Q(user_defined_modality="RF")
-            | Q(user_defined_modality="dual")
-            | (
-                    Q(user_defined_modality__isnull=True)
-                    & Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
-            )
-            )
-        ).distinct()
-        manufacturer_model = rf_names.filter(
-            manufacturer__exact=equipment.manufacturer
-        ).filter(
-            manufacturer_model_name__exact=equipment.manufacturer_model_name
-        )
-        manufacturer_model_version = manufacturer_model.filter(
-            software_versions__exact=equipment.software_versions
-        )
-        context["manufacturer_model"] = manufacturer_model
-        context["manufacturer_model_version"] = manufacturer_model_version
-        admin = {
-            "openremversion": __version__,
-            "docsversion": __docs_version__,
-        }
-        for group in self.request.user.groups.all():
-            admin[group.name] = True
-        context["admin"] = admin
-        return context
-
-    def form_valid(self, form):
-        if self.request.POST.get("model"):
-            form.instance.software_version = ""
-        return super().form_valid(form)
-
-
-class SkinSafeListUpdate(UpdateView):
-    model = OpenSkinSafeList
-    form_class = SkinSafeListForm
-
-    def get_context_data(self, **context):
-        context = super(SkinSafeListUpdate, self).get_context_data(**context)
-        equipment = None
-        if self.kwargs["equip_name_pk"]:
-            equipment = UniqueEquipmentNames.objects.get(pk=int(self.kwargs["equip_name_pk"]))
-            if not context["form"].initial['software_version']:
-                context["form"].initial['software_version'] = equipment.software_versions
-            else:
-                context["form"].initial['software_version'] = None
-        context["equipment"] = equipment
-
-        rf_names = UniqueEquipmentNames.objects.order_by("display_name").filter(
-            Q(user_defined_modality="RF")
-            | Q(user_defined_modality="dual")
-            | (
-                    Q(user_defined_modality__isnull=True)
-                    & Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
-            )
-            )
-        ).distinct()
-        manufacturer_model = rf_names.filter(
-            manufacturer__exact=self.object.manufacturer
-        ).filter(
-            manufacturer_model_name__exact=self.object.manufacturer_model_name
-        )
-        manufacturer_model_version = manufacturer_model.filter(
-            software_versions__exact=equipment.software_versions
-        )
-        model_exists = False
-        if self.object.software_version:
-            model_exists = bool(OpenSkinSafeList.objects.filter(
-                manufacturer=self.object.manufacturer).filter(
-                manufacturer_model_name=self.object.manufacturer_model_name).filter(
-                software_version=None))
-        context["manufacturer_model"] = manufacturer_model
-        context["manufacturer_model_version"] = manufacturer_model_version
-        context["model_exists"] = model_exists
-        admin = {
-            "openremversion": __version__,
-            "docsversion": __docs_version__,
-        }
-        for group in self.request.user.groups.all():
-            admin[group.name] = True
-        context["admin"] = admin
-        return context
-
-
-class SkinSafeListDelete(DeleteView):  # pylint: disable=unused-variable
-
-    model = OpenSkinSafeList
-    success_url = reverse_lazy("display_names_view")
-
-    def get_context_data(self, **context):
-        context[self.context_object_name] = self.object
-
-        model_and_version = False
-        rf_names = UniqueEquipmentNames.objects.order_by("display_name").filter(
-            Q(user_defined_modality="RF")
-            | Q(user_defined_modality="dual")
-            | (
-                    Q(user_defined_modality__isnull=True)
-                    & Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
-            )
-            )
-        ).distinct().filter(
-            manufacturer__exact=self.object.manufacturer
-        ).filter(
-            manufacturer_model_name__exact=self.object.manufacturer_model_name
-        )
-        if self.object.software_version:
-            rf_names = rf_names.filter(software_versions__exact=self.object.software_version)
-            skin_safe_models = OpenSkinSafeList.objects.filter(
-                manufacturer=self.object.manufacturer,
-                manufacturer_model_name=self.object.manufacturer_model_name,
-            )
-            all_model_safe_list_pk = check_skin_safe_model(skin_safe_models)
-            if all_model_safe_list_pk[0]:
-                model_and_version = True
-        context["equipment"] = rf_names
-        context["model_and_version"] = model_and_version
-        admin = {
-            "openremversion": __version__,
-            "docsversion": __docs_version__,
-        }
-        for group in self.request.user.groups.all():
-            admin[group.name] = True
-        context["admin"] = admin
-        return context
 
 
 class NotPatientNameCreate(CreateView):  # pylint: disable=unused-variable
