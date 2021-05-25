@@ -70,6 +70,7 @@ def display_name_skin_enabled(request):
     :param request: Request object containing modality and equipment table ID
     :return: HTML table data element
     """
+    template = "remapp/displayname-skinmap.html"
     if request.is_ajax() and request.method == "POST":
         data = request.POST
         equip_name_pk = data.get("equip_name_pk")
@@ -103,8 +104,6 @@ def display_name_skin_enabled(request):
                 else:
                     version_only = True
 
-        template = "remapp/displayname-skinmap.html"
-
         context = {
             "safe_list_pk": safe_list_pk,
             "equip_name_pk": equip_name_pk,
@@ -117,6 +116,8 @@ def display_name_skin_enabled(request):
             template,
             context,
         )
+    else:
+        return render(request, template, {"illegal": True})
 
 
 class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
