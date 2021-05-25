@@ -63,6 +63,22 @@ def check_skin_safe_model(skin_safe_models):
     return safe_list_model_pk, model_enabled
 
 
+def get_matching_equipment_names(manufacturer, model_name):
+    rf_names = UniqueEquipmentNames.objects.order_by("display_name").filter(
+        Q(user_defined_modality="RF")
+        | Q(user_defined_modality="dual")
+        | (
+                Q(user_defined_modality__isnull=True)
+                & Q(generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF")
+        )
+    ).distinct().filter(
+        manufacturer__exact=manufacturer
+    ).filter(
+        manufacturer_model_name__exact=model_name
+    )
+    return rf_names
+
+
 @login_required
 def display_name_skin_enabled(request):
     """AJAX view to return whether an entry in the equipment database is enabled for skin dose map calculations
@@ -165,21 +181,7 @@ class SkinSafeListCreate(CreateView):
             context["form"].initial["software_version"] = equipment.software_versions
         context["equipment"] = equipment
 
-        rf_names = UniqueEquipmentNames.objects.order_by("display_name").filter(
-            Q(user_defined_modality="RF")
-            | Q(user_defined_modality="dual")
-            | (
-                    Q(user_defined_modality__isnull=True)
-                    & Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
-            )
-            )
-        ).distinct()
-        manufacturer_model = rf_names.filter(
-            manufacturer__exact=equipment.manufacturer
-        ).filter(
-            manufacturer_model_name__exact=equipment.manufacturer_model_name
-        )
+        manufacturer_model = get_matching_equipment_names(equipment.manufacturer, equipment.manufacturer_model_name)
         manufacturer_model_version = manufacturer_model.filter(
             software_versions__exact=equipment.software_versions
         )
@@ -215,20 +217,9 @@ class SkinSafeListUpdate(UpdateView):
                 context["form"].initial['software_version'] = None
         context["equipment"] = equipment
 
-        rf_names = UniqueEquipmentNames.objects.order_by("display_name").filter(
-            Q(user_defined_modality="RF")
-            | Q(user_defined_modality="dual")
-            | (
-                    Q(user_defined_modality__isnull=True)
-                    & Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
-            )
-            )
-        ).distinct()
-        manufacturer_model = rf_names.filter(
-            manufacturer__exact=self.object.manufacturer
-        ).filter(
-            manufacturer_model_name__exact=self.object.manufacturer_model_name
+        manufacturer_model = get_matching_equipment_names(
+            manufacturer=self.object.manufacturer,
+            model_name=self.object.manufacturer_model_name
         )
         manufacturer_model_version = manufacturer_model.filter(
             software_versions__exact=equipment.software_versions
@@ -261,19 +252,9 @@ class SkinSafeListDelete(DeleteView):  # pylint: disable=unused-variable
         context[self.context_object_name] = self.object
 
         model_and_version = False
-        rf_names = UniqueEquipmentNames.objects.order_by("display_name").filter(
-            Q(user_defined_modality="RF")
-            | Q(user_defined_modality="dual")
-            | (
-                    Q(user_defined_modality__isnull=True)
-                    & Q(
-                generalequipmentmoduleattr__general_study_module_attributes__modality_type="RF"
-            )
-            )
-        ).distinct().filter(
-            manufacturer__exact=self.object.manufacturer
-        ).filter(
-            manufacturer_model_name__exact=self.object.manufacturer_model_name
+        rf_names = get_matching_equipment_names(
+            manufacturer=self.object.manufacturer,
+            model_name=self.object.manufacturer_model_name
         )
         if self.object.software_version:
             rf_names = rf_names.filter(software_versions__exact=self.object.software_version)
