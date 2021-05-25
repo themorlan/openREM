@@ -1,5 +1,5 @@
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
-#    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
+#    Copyright (C) 2021 The Royal Marsden NHS Foundation Trust
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -131,7 +131,7 @@ class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-varia
     form_class = SkinDoseMapCalcSettingsForm
 
     def get_context_data(self, **context):
-        context = super(SkinDoseMapCalcSettingsUpdate, self).get_context_data(**context)
+        context = super().get_context_data(**context)
         admin = {
             "openremversion": __version__,
             "docsversion": __docs_version__,
@@ -146,7 +146,7 @@ class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-varia
             messages.success(self.request, "Skin dose map settings have been updated")
         else:
             messages.info(self.request, "No changes made")
-        return super(SkinDoseMapCalcSettingsUpdate, self).form_valid(form)
+        return super().form_valid(form)
 
 
 class SkinSafeListCreate(CreateView):
@@ -155,7 +155,7 @@ class SkinSafeListCreate(CreateView):
     template_name_suffix = '_add'
 
     def get_context_data(self, **context):
-        context = super(SkinSafeListCreate, self).get_context_data(**context)
+        context = super().get_context_data(**context)
         equipment = None
         if self.kwargs["equip_name_pk"]:
             equipment = UniqueEquipmentNames.objects.get(pk=int(self.kwargs["equip_name_pk"]))
@@ -204,7 +204,7 @@ class SkinSafeListUpdate(UpdateView):
     form_class = SkinSafeListForm
 
     def get_context_data(self, **context):
-        context = super(SkinSafeListUpdate, self).get_context_data(**context)
+        context = super().get_context_data(**context)
         equipment = None
         if self.kwargs["equip_name_pk"]:
             equipment = UniqueEquipmentNames.objects.get(pk=int(self.kwargs["equip_name_pk"]))
