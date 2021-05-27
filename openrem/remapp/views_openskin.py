@@ -91,6 +91,11 @@ def display_name_skin_enabled(request):
         data = request.POST
         equip_name_pk = data.get("equip_name_pk")
 
+        try:
+            SkinDoseMapCalcSettings.get_solo()  # will create item if it doesn't exist
+        except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
+            pass
+        allow_safelist_modify = SkinDoseMapCalcSettings.get_solo().allow_safelist_modify
         model_only = False
         version_only = False
         model_and_version = False
@@ -121,6 +126,7 @@ def display_name_skin_enabled(request):
                     version_only = True
 
         context = {
+            "allow_safelist_modify": allow_safelist_modify,
             "safe_list_pk": safe_list_pk,
             "equip_name_pk": equip_name_pk,
             "model_only": model_only,

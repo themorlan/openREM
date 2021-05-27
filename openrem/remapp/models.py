@@ -107,6 +107,7 @@ class SkinDoseMapCalcSettings(SingletonModel):
     overrule_safelist = models.BooleanField(
         default=False, verbose_name="Ignore systems safelist?"
     )
+    allow_safelist_modify = models.BooleanField(default=False, verbose_name="Allow safelist to be updated?")
 
     def get_absolute_url(self):
         return reverse("skin_dose_map_settings_update", kwargs={"pk": 1})
