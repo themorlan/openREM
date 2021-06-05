@@ -157,7 +157,7 @@ class ChartsMG(TestCase):
             chart_y_data = sorted(chart_y_data)
 
             np.testing.assert_array_equal(std_x_data, chart_x_data)
-            np.testing.assert_array_almost_equal(std_y_data, chart_y_data, decimal=6)
+            np.testing.assert_array_almost_equal(std_y_data, chart_y_data, decimal=4)
 
     def check_avg_and_counts(self, comparison_data, chart_data):
         for idx in range(len(comparison_data)):
@@ -1161,19 +1161,19 @@ class ChartsMG(TestCase):
                     "system": "All systems",
                     "name": "Blank",
                     "x": np.array([43.0, 43.0]),
-                    "y": np.array([88.8000, 90.2000]),
+                    "y": np.array([88.8, 90.2]),
                 },
                 {
                     "system": "All systems",
                     "name": "Flat Field Tomo",
                     "x": np.array([18.0]),
-                    "y": np.array([6.0000]),
+                    "y": np.array([6.0]),
                 },
                 {
                     "system": "All systems",
                     "name": "ROUTINE",
                     "x": np.array([53.0]),
-                    "y": np.array([51.8000]),
+                    "y": np.array([51.8]),
                 },
             ]
         }

@@ -123,14 +123,14 @@ class ChartsDX(TestCase):
                 self.assertTrue(math.isnan(chart_data[idx][1]))
             # Otherwise compare the values
             else:
-                self.assertAlmostEqual(chart_data[idx][1], comparison_data[idx][1], places=6)
+                self.assertAlmostEqual(chart_data[idx][1], comparison_data[idx][1], places=2)
             self.assertEqual(chart_data[idx][2], comparison_data[idx][2])
 
     def check_average_data(self, chart_data, standard_data):
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(dataset["name"], chart_data[idx]["name"])
             np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=6)
+            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=2)
 
             # Check the system names
             np.testing.assert_array_equal(
@@ -142,14 +142,14 @@ class ChartsDX(TestCase):
             np.testing.assert_array_almost_equal(
                 [i[1] for i in dataset["customdata"]],
                 [i[1] for i in chart_data[idx]["customdata"]],
-                decimal=6
+                decimal=2
             )
 
             # Check the frequency values
             np.testing.assert_array_almost_equal(
                 [i[2] for i in dataset["customdata"]],
                 [i[2] for i in chart_data[idx]["customdata"]],
-                decimal=6
+                decimal=2
             )
 
     def check_frequencies(self, comparison_data, chart_data):
@@ -173,7 +173,7 @@ class ChartsDX(TestCase):
             chart_y_data = sorted(chart_y_data)
 
             np.testing.assert_equal(chart_x_data, std_x_data)
-            np.testing.assert_almost_equal(chart_y_data, std_y_data, decimal=6)
+            np.testing.assert_almost_equal(chart_y_data, std_y_data, decimal=2)
 
     def test_required_charts(self):
         from remapp.views_charts_dx import generate_required_dx_charts_list
@@ -491,7 +491,7 @@ class ChartsDX(TestCase):
 
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(chart_data[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=6)
+            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=4)
             np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
 
     def test_acq_mas(self):
@@ -704,7 +704,7 @@ class ChartsDX(TestCase):
 
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(chart_data[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=6)
+            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=2)
             np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
 
     def test_acq_kvp(self):
@@ -961,7 +961,7 @@ class ChartsDX(TestCase):
 
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(chart_data[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=6)
+            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=4)
             np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
 
     def test_acq_freq(self):
@@ -1223,7 +1223,7 @@ class ChartsDX(TestCase):
 
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(chart_data[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=6)
+            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=4)
             np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
 
     def test_request_freq(self):
@@ -1538,7 +1538,7 @@ class ChartsDX(TestCase):
 
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(chart_data[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=6)
+            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=4)
             np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
 
     def test_study_freq(self):
@@ -2029,7 +2029,7 @@ class ChartsDX(TestCase):
         for idx, dataset in enumerate(standard_data):
             np.testing.assert_array_equal(dataset["name"], chart_data[idx]["name"])
             np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=6)
+            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=2)
 
         # Now test the median data
         standard_data = [
@@ -2292,7 +2292,7 @@ class ChartsDX(TestCase):
         for idx, dataset in enumerate(standard_data):
             np.testing.assert_array_equal(dataset["name"], chart_data[idx]["name"])
             np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=6)
+            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=2)
 
     def test_acquisition_kvp_over_time(self):
         from datetime import datetime
@@ -2568,7 +2568,7 @@ class ChartsDX(TestCase):
         for idx, dataset in enumerate(standard_data):
             np.testing.assert_array_equal(dataset["name"], chart_data[idx]["name"])
             np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=6)
+            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=1)
 
         # Now test the median data
         standard_data = [
@@ -2831,7 +2831,7 @@ class ChartsDX(TestCase):
         for idx, dataset in enumerate(standard_data):
             np.testing.assert_array_equal(dataset["name"], chart_data[idx]["name"])
             np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=6)
+            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=1)
 
     def test_acquisition_mas_over_time(self):
         from datetime import datetime
@@ -3134,7 +3134,7 @@ class ChartsDX(TestCase):
         for idx, dataset in enumerate(standard_data):
             np.testing.assert_array_equal(dataset["name"], chart_data[idx]["name"])
             np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=6)
+            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=1)
 
         # Now test the median data
         standard_data = [
@@ -3424,7 +3424,7 @@ class ChartsDX(TestCase):
         for idx, dataset in enumerate(standard_data):
             np.testing.assert_array_equal(dataset["name"], chart_data[idx]["name"])
             np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=6)
+            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=1)
 
     def test_empty_acquisition_dap_vs_mass(self):
         f = self.login_get_filterset()
