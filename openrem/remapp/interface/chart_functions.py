@@ -138,7 +138,7 @@ def create_dataframe(
         df.info()
 
     if uid:
-        df[uid] = df[uid].astype("uint32")
+        df[uid] = df[uid].astype("UInt32")
 
     # Replace any NaN values in the names columns with "Blank"
     df[field_dict["names"]] = df[field_dict["names"]].apply(lambda x: x.fillna("Blank"))

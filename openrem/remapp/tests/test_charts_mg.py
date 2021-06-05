@@ -98,7 +98,7 @@ class ChartsMG(TestCase):
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(dataset["name"], chart_data[idx]["name"])
             np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"])
+            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=6)
 
             # Check the system names
             np.testing.assert_array_equal(
@@ -110,12 +110,14 @@ class ChartsMG(TestCase):
             np.testing.assert_array_almost_equal(
                 [i[1] for i in dataset["customdata"]],
                 [i[1] for i in chart_data[idx]["customdata"]],
+                decimal = 6
             )
 
             # Check the frequency values
             np.testing.assert_array_almost_equal(
                 [i[2] for i in dataset["customdata"]],
                 [i[2] for i in chart_data[idx]["customdata"]],
+                decimal = 6
             )
 
     def check_frequency_data(self, chart_data, standard_data):
@@ -155,7 +157,7 @@ class ChartsMG(TestCase):
             chart_y_data = sorted(chart_y_data)
 
             np.testing.assert_array_equal(std_x_data, chart_x_data)
-            np.testing.assert_array_almost_equal(std_y_data, chart_y_data)
+            np.testing.assert_array_almost_equal(std_y_data, chart_y_data, decimal=6)
 
     def check_avg_and_counts(self, comparison_data, chart_data):
         for idx in range(len(comparison_data)):
@@ -164,7 +166,7 @@ class ChartsMG(TestCase):
                 self.assertTrue(math.isnan(chart_data[idx][1]))
             # Otherwise compare the values
             else:
-                self.assertAlmostEqual(chart_data[idx][1], comparison_data[idx][1])
+                self.assertAlmostEqual(chart_data[idx][1], comparison_data[idx][1], places=6)
             self.assertEqual(chart_data[idx][2], comparison_data[idx][2])
 
     def check_frequencies(self, comparison_data, chart_data):
@@ -193,7 +195,7 @@ class ChartsMG(TestCase):
             chart_y_data = sorted(chart_y_data)
 
             np.testing.assert_equal(chart_x_data, std_x_data)
-            np.testing.assert_almost_equal(chart_y_data, std_y_data)
+            np.testing.assert_almost_equal(chart_y_data, std_y_data, decimal=6)
 
     def test_required_charts(self):
         from remapp.views_charts_mg import generate_required_mg_charts_list
@@ -512,7 +514,7 @@ class ChartsMG(TestCase):
 
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(chart_data[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"])
+            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=6)
             np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
 
     def test_acq_freq(self):
