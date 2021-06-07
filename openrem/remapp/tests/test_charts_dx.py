@@ -8,8 +8,15 @@ from remapp.extractors import dx
 from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
 from django.db.models import Q
 from remapp.interface.mod_filters import DXSummaryListFilter
+from remapp.tests.test_charts_common import (
+    check_series_and_category_names,
+    check_frequencies,
+    check_boxplot_xy,
+    check_average_data,
+    check_avg_and_counts,
+    user_profile_reset
+)
 import numpy as np
-import math
 
 
 class ChartsDX(TestCase):
@@ -50,44 +57,6 @@ class ChartsDX(TestCase):
         dx.dx(os.path.join(root_tests, dx_carestream_dr7500_1))
         dx.dx(os.path.join(root_tests, dx_carestream_dr7500_2))
 
-    def user_profile_reset(self):
-        self.user.userprofile.plotCharts = True
-
-        self.user.userprofile.plotGroupingChoice = "system"
-        self.user.userprofile.plotSeriesPerSystem = False
-        self.user.userprofile.plotCaseInsensitiveCategories = False
-
-        self.user.userprofile.plotInitialSortingDirection = 0
-        self.user.userprofile.plotDXInitialSortingChoice = "frequency"
-
-        self.user.userprofile.plotAverageChoice = "mean"
-        self.user.userprofile.plotMean = False
-        self.user.userprofile.plotMedian = False
-        self.user.userprofile.plotBoxplots = False
-
-        self.user.userprofile.plotHistograms = False
-        self.user.userprofile.plotHistogramBins = 10
-
-        self.user.userprofile.plotDXAcquisitionMeanDAP = False
-        self.user.userprofile.plotDXAcquisitionMeankVp = False
-        self.user.userprofile.plotDXAcquisitionMeanmAs = False
-        self.user.userprofile.plotDXAcquisitionFreq = False
-        self.user.userprofile.plotDXAcquisitionDAPvsMass = False
-        self.user.userprofile.plotDXAcquisitionMeankVpOverTime = False
-        self.user.userprofile.plotDXAcquisitionMeanmAsOverTime = False
-        self.user.userprofile.plotDXAcquisitionMeanDAPOverTime = False
-
-        self.user.userprofile.plotDXStudyMeanDAP = False
-        self.user.userprofile.plotDXStudyFreq = False
-        self.user.userprofile.plotDXStudyDAPvsMass = False
-        self.user.userprofile.plotDXStudyPerDayAndHour = False
-
-        self.user.userprofile.plotDXRequestMeanDAP = False
-        self.user.userprofile.plotDXRequestFreq = False
-        self.user.userprofile.plotDXRequestDAPvsMass = False
-
-        self.user.userprofile.save()
-
     def login_get_filterset(self):
         self.client.login(username="jacob", password="top_secret")
         # I can add to the filter_set to control what type of chart data is calculated
@@ -101,7 +70,7 @@ class ChartsDX(TestCase):
             .distinct(),
         )
         # Reset the user profile
-        self.user_profile_reset()
+        user_profile_reset(self)
         return f
 
     def obtain_chart_data(self, f):
@@ -110,70 +79,6 @@ class ChartsDX(TestCase):
         self.chart_data = dx_plot_calculations(
             f, self.user.userprofile, return_as_dict=True
         )
-
-    def check_series_and_category_names(self, category_names, series_names, chart_data):
-        for idx, series_name in enumerate(series_names):
-            self.assertEqual(chart_data[idx]["name"], series_name)
-            self.assertListEqual(list(chart_data[idx]["x"]), category_names)
-
-    def check_avg_and_counts(self, comparison_data, chart_data):
-        for idx in range(len(comparison_data)):
-            # If the comparison value is a nan then check that the chart value is too
-            if math.isnan(comparison_data[idx][1]):
-                self.assertTrue(math.isnan(chart_data[idx][1]))
-            # Otherwise compare the values
-            else:
-                self.assertAlmostEqual(chart_data[idx][1], comparison_data[idx][1], places=2)
-            self.assertEqual(chart_data[idx][2], comparison_data[idx][2])
-
-    def check_average_data(self, chart_data, standard_data):
-        for idx, dataset in enumerate(standard_data):
-            self.assertEqual(dataset["name"], chart_data[idx]["name"])
-            np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=2)
-
-            # Check the system names
-            np.testing.assert_array_equal(
-                [i[0] for i in dataset["customdata"]],
-                [i[0] for i in chart_data[idx]["customdata"]],
-            )
-
-            # Check the average values
-            np.testing.assert_array_almost_equal(
-                [i[1] for i in dataset["customdata"]],
-                [i[1] for i in chart_data[idx]["customdata"]],
-                decimal=2
-            )
-
-            # Check the frequency values
-            np.testing.assert_array_almost_equal(
-                [i[2] for i in dataset["customdata"]],
-                [i[2] for i in chart_data[idx]["customdata"]],
-                decimal=2
-            )
-
-    def check_frequencies(self, comparison_data, chart_data):
-        for idx, values in enumerate(comparison_data):
-            self.assertListEqual(list(chart_data[idx]["y"]), comparison_data[idx])
-
-    def check_boxplot_xy(self, x_data, y_data, chart_data):
-        for i in range(len(x_data)):
-            std_x_data = x_data[i]
-            std_y_data = y_data[i]
-            std_y_data = [y for y, _ in sorted(zip(std_y_data, std_x_data))]
-            std_x_data = sorted(std_x_data)
-            std_x_data = [x for _, x in sorted(zip(std_y_data, std_x_data))]
-            std_y_data = sorted(std_y_data)
-
-            chart_y_data = chart_data[i]["y"]
-            chart_x_data = chart_data[i]["x"]
-            chart_y_data = [y for y, _ in sorted(zip(chart_y_data, chart_x_data))]
-            chart_x_data = sorted(chart_x_data)
-            chart_x_data = [x for _, x in sorted(zip(chart_y_data, chart_x_data))]
-            chart_y_data = sorted(chart_y_data)
-
-            np.testing.assert_equal(chart_x_data, std_x_data)
-            np.testing.assert_almost_equal(chart_y_data, std_y_data, decimal=2)
 
     def test_required_charts(self):
         from remapp.views_charts_dx import generate_required_dx_charts_list
@@ -267,19 +172,19 @@ class ChartsDX(TestCase):
         acq_system_names = ["All systems"]
         acq_names = ["ABD_1_VIEW", "AEC", "AP"]
         chart_data = self.chart_data["acquisitionMeanDAPData"]["data"]
-        self.check_series_and_category_names(acq_names, acq_system_names, chart_data)
+        check_series_and_category_names(self, acq_names, acq_system_names, chart_data)
 
         # Check on mean DAP values and counts
-        acq_data = [[0.0, 10.93333333, 3.0], [0.0, 105.85, 2.0], [0.0, 6.33, 1.0]]
+        acq_data = [[0.0, 10.93, 3.0], [0.0, 105.85, 2.0], [0.0, 6.33, 1.0]]
         chart_data = self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"]
-        self.check_avg_and_counts(acq_data, chart_data)
+        check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on median DAP values and counts
         acq_data = [[0.0, 8.2, 3.0], [0.0, 105.85, 2.0], [0.0, 6.33, 1.0]]
         chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][0][
             "customdata"
         ]
-        self.check_avg_and_counts(acq_data, chart_data)
+        check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on the boxplot data system names
         acq_data = "All systems"
@@ -291,7 +196,7 @@ class ChartsDX(TestCase):
         acq_x_data = [["ABD_1_VIEW", "AP", "ABD_1_VIEW", "ABD_1_VIEW", "AEC", "AEC"]]
         acq_y_data = [[4.1, 6.33, 8.2, 20.5, 101.57, 110.13]]
         chart_data = self.chart_data["acquisitionBoxplotDAPData"]["data"]
-        self.check_boxplot_xy(acq_x_data, acq_y_data, chart_data)
+        check_boxplot_xy(self, acq_x_data, acq_y_data, chart_data)
 
         # Repeat the above, but plot a series per system
         self.user.userprofile.plotSeriesPerSystem = True
@@ -308,43 +213,43 @@ class ChartsDX(TestCase):
         ]
         acq_names = ["ABD_1_VIEW", "AEC", "AP"]
         chart_data = self.chart_data["acquisitionMeanDAPData"]["data"]
-        self.check_series_and_category_names(acq_names, acq_system_names, chart_data)
+        check_series_and_category_names(self, acq_names, acq_system_names, chart_data)
 
         # Check on mean data of series 0
         acq_data = [[0.0, np.nan, 0.0], [0.0, 105.85, 2.0], [0.0, np.nan, 0.0]]
         chart_data = self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"]
-        self.check_avg_and_counts(acq_data, chart_data)
+        check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on mean data of series 1
-        acq_data = [[1.0, 10.93333333, 3.0], [1.0, np.nan, 0.0], [1.0, np.nan, 0.0]]
+        acq_data = [[1.0, 10.93, 3.0], [1.0, np.nan, 0.0], [1.0, np.nan, 0.0]]
         chart_data = self.chart_data["acquisitionMeanDAPData"]["data"][1]["customdata"]
-        self.check_avg_and_counts(acq_data, chart_data)
+        check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on mean data of series 2
         acq_data = [[2.0, np.nan, 0.0], [2.0, np.nan, 0.0], [2.0, 6.33, 1.0]]
         chart_data = self.chart_data["acquisitionMeanDAPData"]["data"][2]["customdata"]
-        self.check_avg_and_counts(acq_data, chart_data)
+        check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on median values of series 0
         acq_data = [[0.0, np.nan, 0.0], [0.0, 105.85, 2.0], [0.0, np.nan, 0.0]]
         chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][0][
             "customdata"
         ]
-        self.check_avg_and_counts(acq_data, chart_data)
+        check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on median values of series 1
         acq_data = [[1.0, 8.2, 3.0], [1.0, np.nan, 0.0], [1.0, np.nan, 0.0]]
         chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][1][
             "customdata"
         ]
-        self.check_avg_and_counts(acq_data, chart_data)
+        check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on median values of series 2
         acq_data = [[2.0, np.nan, 0.0], [2.0, np.nan, 0.0], [2.0, 6.33, 1.0]]
         chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][2][
             "customdata"
         ]
-        self.check_avg_and_counts(acq_data, chart_data)
+        check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on the boxplot data system names
         acq_data = [
@@ -370,7 +275,7 @@ class ChartsDX(TestCase):
         ]
         acq_y_data = [[101.57, 110.13], [4.1, 8.2, 20.5], [6.33]]
         chart_data = self.chart_data["acquisitionBoxplotDAPData"]["data"]
-        self.check_boxplot_xy(acq_x_data, acq_y_data, chart_data)
+        check_boxplot_xy(self, acq_x_data, acq_y_data, chart_data)
 
     def test_acq_dap_histogram(self):
         # Test of DAP histogram
@@ -513,19 +418,19 @@ class ChartsDX(TestCase):
         acq_system_names = ["All systems"]
         acq_names = ["ABD_1_VIEW", "AEC", "AP"]
         chart_data = self.chart_data["acquisitionMeanmAsData"]["data"]
-        self.check_series_and_category_names(acq_names, acq_system_names, chart_data)
+        check_series_and_category_names(self, acq_names, acq_system_names, chart_data)
 
         # Check on mean data
-        acq_data = [[0.0, 2.70666667, 3.0], [0.0, 9.5, 2.0], [0.0, 1.0, 1.0]]
+        acq_data = [[0.0, 2.71, 3.0], [0.0, 9.5, 2.0], [0.0, 1.0, 1.0]]
         chart_data = self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"]
-        self.check_avg_and_counts(acq_data, chart_data)
+        check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on median values
         acq_data = [[0.0, 2.04, 3.0], [0.0, 9.5, 2.0], [0.0, 1.0, 1.0]]
         chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][0][
             "customdata"
         ]
-        self.check_avg_and_counts(acq_data, chart_data)
+        check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on the boxplot system names
         acq_data = "All systems"
@@ -537,7 +442,7 @@ class ChartsDX(TestCase):
         acq_x_data = [["AP", "ABD_1_VIEW", "ABD_1_VIEW", "ABD_1_VIEW", "AEC", "AEC"]]
         acq_y_data = [[1.00, 1.04, 2.04, 5.04, 9.0, 10.0]]
         chart_data = self.chart_data["acquisitionBoxplotmAsData"]["data"]
-        self.check_boxplot_xy(acq_x_data, acq_y_data, chart_data)
+        check_boxplot_xy(self, acq_x_data, acq_y_data, chart_data)
 
         # Repeat the above, but plot a series per system
         self.user.userprofile.plotSeriesPerSystem = True
@@ -554,43 +459,43 @@ class ChartsDX(TestCase):
         ]
         acq_names = ["ABD_1_VIEW", "AEC", "AP"]
         chart_data = self.chart_data["acquisitionMeanmAsData"]["data"]
-        self.check_series_and_category_names(acq_names, acq_system_names, chart_data)
+        check_series_and_category_names(self, acq_names, acq_system_names, chart_data)
 
         # Check on mean data of series 0
         acq_data = [[0.0, np.nan, 0.0], [0.0, 9.5, 2.0], [0.0, np.nan, 0.0]]
         chart_data = self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"]
-        self.check_avg_and_counts(acq_data, chart_data)
+        check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on mean data of series 1
-        acq_data = [[1.0, 2.70666667, 3.0], [1.0, np.nan, 0.0], [1.0, np.nan, 0.0]]
+        acq_data = [[1.0, 2.71, 3.0], [1.0, np.nan, 0.0], [1.0, np.nan, 0.0]]
         chart_data = self.chart_data["acquisitionMeanmAsData"]["data"][1]["customdata"]
-        self.check_avg_and_counts(acq_data, chart_data)
+        check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on mean data of series 2
         acq_data = [[2.0, np.nan, 0.0], [2.0, np.nan, 0.0], [2.0, 1.00, 1.0]]
         chart_data = self.chart_data["acquisitionMeanmAsData"]["data"][2]["customdata"]
-        self.check_avg_and_counts(acq_data, chart_data)
+        check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on median values of series 0
         acq_data = [[0.0, np.nan, 0.0], [0.0, 9.5, 2.0], [0.0, np.nan, 0.0]]
         chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][0][
             "customdata"
         ]
-        self.check_avg_and_counts(acq_data, chart_data)
+        check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on median values of series 1
         acq_data = [[1.0, 2.04, 3.0], [1.0, np.nan, 0.0], [1.0, np.nan, 0.0]]
         chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][1][
             "customdata"
         ]
-        self.check_avg_and_counts(acq_data, chart_data)
+        check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on median data of series 2
         acq_data = [[2.0, np.nan, 0.0], [2.0, np.nan, 0.0], [2.0, 1.00, 1.0]]
         chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][2][
             "customdata"
         ]
-        self.check_avg_and_counts(acq_data, chart_data)
+        check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on the boxplot data system names
         acq_data = [
@@ -616,7 +521,7 @@ class ChartsDX(TestCase):
         ]
         acq_y_data = [[9.0, 10.0], [1.04, 2.04, 5.04], [1.0]]
         chart_data = self.chart_data["acquisitionBoxplotmAsData"]["data"]
-        self.check_boxplot_xy(acq_x_data, acq_y_data, chart_data)
+        check_boxplot_xy(self, acq_x_data, acq_y_data, chart_data)
 
     def test_acq_mas_histogram(self):
         # Test of mAs histogram
@@ -729,7 +634,7 @@ class ChartsDX(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["All systems", 69.81999967, 3.0],
+                        ["All systems", 69.82, 3.0],
                         ["All systems", 80.0, 2.0],
                         ["All systems", 100.0, 1.0],
                     ],
@@ -737,11 +642,11 @@ class ChartsDX(TestCase):
                 ),
                 "name": "All systems",
                 "x": np.array(["ABD_1_VIEW", "AEC", "AP"], dtype=object),
-                "y": np.array([69.81999967, 80.0, 100.0]),
+                "y": np.array([69.82, 80.0, 100.0]),
             }
         ]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Check on the boxplot data
         chart_data = self.chart_data["acquisitionBoxplotkVpData"]["data"]
@@ -753,14 +658,12 @@ class ChartsDX(TestCase):
                     ["ABD_1_VIEW", "ABD_1_VIEW", "ABD_1_VIEW", "AEC", "AEC", "AP"],
                     dtype=object,
                 ),
-                "y": np.array([69.639999, 69.860001, 69.959999, 80.0, 80.0, 100.0]),
+                "y": np.array([69.64, 69.86, 69.96, 80.0, 80.0, 100.0]),
             }
         ]
 
         np.testing.assert_equal(chart_data[0]["name"], standard_data[0]["name"])
-        self.check_boxplot_xy(
-            [standard_data[0]["x"]], [standard_data[0]["y"]], chart_data
-        )
+        check_boxplot_xy(self, [standard_data[0]["x"]], [standard_data[0]["y"]], chart_data)
 
         # Repeat the above, but plot a series per system
         self.user.userprofile.plotSeriesPerSystem = True
@@ -788,7 +691,7 @@ class ChartsDX(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["Digital Mobile Hospital 01234MOB54", 69.81999967, 3.0],
+                        ["Digital Mobile Hospital 01234MOB54", 69.82, 3.0],
                         ["Digital Mobile Hospital 01234MOB54", np.nan, 0.0],
                         ["Digital Mobile Hospital 01234MOB54", np.nan, 0.0],
                     ],
@@ -796,7 +699,7 @@ class ChartsDX(TestCase):
                 ),
                 "name": "Digital Mobile Hospital 01234MOB54",
                 "x": np.array(["ABD_1_VIEW", "AEC", "AP"], dtype=object),
-                "y": np.array([69.81999967, np.nan, np.nan]),
+                "y": np.array([69.82, np.nan, np.nan]),
             },
             {
                 "customdata": np.array(
@@ -813,7 +716,7 @@ class ChartsDX(TestCase):
             },
         ]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Check on the boxplot data
         chart_data = self.chart_data["acquisitionBoxplotkVpData"]["data"]
@@ -827,7 +730,7 @@ class ChartsDX(TestCase):
             {
                 "name": "Digital Mobile Hospital 01234MOB54",
                 "x": np.array(["ABD_1_VIEW", "ABD_1_VIEW", "ABD_1_VIEW"], dtype=object),
-                "y": np.array([69.639999, 69.860001, 69.959999]),
+                "y": np.array([69.64, 69.86, 69.96]),
             },
             {
                 "name": "LICARDR0004",
@@ -838,9 +741,7 @@ class ChartsDX(TestCase):
 
         for idx, dataset in enumerate(standard_data):
             np.testing.assert_equal(chart_data[idx]["name"], dataset["name"])
-            self.check_boxplot_xy(
-                [list(dataset["x"])], [list(dataset["y"])], [chart_data[idx]]
-            )
+            check_boxplot_xy(self, [list(dataset["x"])], [list(dataset["y"])], [chart_data[idx]])
 
     def test_acq_kvp_histogram(self):
         # Test of kVp histogram
@@ -980,12 +881,12 @@ class ChartsDX(TestCase):
         acq_system_names = ["All systems"]
         acq_names = ["ABD_1_VIEW", "AEC", "AP"]
         chart_data = self.chart_data["acquisitionFrequencyData"]["data"]
-        self.check_series_and_category_names(acq_system_names, acq_names, chart_data)
+        check_series_and_category_names(self, acq_system_names, acq_names, chart_data)
 
         # The frequency chart - frequencies
         acq_data = [[3], [2], [1]]
         chart_data = self.chart_data["acquisitionFrequencyData"]["data"]
-        self.check_frequencies(acq_data, chart_data)
+        check_frequencies(self, acq_data, chart_data)
 
         # Repeat the above, but plot a series per system
         self.user.userprofile.plotSeriesPerSystem = True
@@ -1002,12 +903,12 @@ class ChartsDX(TestCase):
         ]
         acq_names = ["ABD_1_VIEW", "AEC", "AP"]
         chart_data = self.chart_data["acquisitionFrequencyData"]["data"]
-        self.check_series_and_category_names(acq_system_names, acq_names, chart_data)
+        check_series_and_category_names(self, acq_system_names, acq_names, chart_data)
 
         # The frequency chart - frequencies
         acq_data = [[0, 3, 0], [2, 0, 0], [0, 0, 1]]
         chart_data = self.chart_data["acquisitionFrequencyData"]["data"]
-        self.check_frequencies(acq_data, chart_data)
+        check_frequencies(self, acq_data, chart_data)
 
     def test_request_dap(self):
         # Test of mean and median DAP, count, system and requested procedure protocol names
@@ -1028,19 +929,17 @@ class ChartsDX(TestCase):
         request_system_names = ["All systems"]
         request_names = ["Blank", "XR CHEST"]
         chart_data = self.chart_data["requestMeanDAPData"]["data"]
-        self.check_series_and_category_names(
-            request_names, request_system_names, chart_data
-        )
+        check_series_and_category_names(self, request_names, request_system_names, chart_data)
 
         # Check on mean DAP values and counts
         request_data = [["All systems", 122.25, 2.0], ["All systems", 6.33, 1.0]]
         chart_data = self.chart_data["requestMeanDAPData"]["data"][0]["customdata"]
-        self.check_avg_and_counts(request_data, chart_data)
+        check_avg_and_counts(self, request_data, chart_data)
 
         # Check on median DAP values and counts - series 0
         request_data = [["All systems", 122.25, 2.0], ["All systems", 6.33, 1.0]]
         chart_data = self.chart_data["requestMedianDAPData"]["data"][0]["customdata"]
-        self.check_avg_and_counts(request_data, chart_data)
+        check_avg_and_counts(self, request_data, chart_data)
 
         # Check on the boxplot data system names
         request_data = "All systems"
@@ -1052,7 +951,7 @@ class ChartsDX(TestCase):
         request_x_data = [["XR CHEST", "Blank", "Blank"]]
         request_y_data = [[6.33, 32.8, 211.7]]
         chart_data = self.chart_data["requestBoxplotDAPData"]["data"]
-        self.check_boxplot_xy(request_x_data, request_y_data, chart_data)
+        check_boxplot_xy(self, request_x_data, request_y_data, chart_data)
 
         # Repeat the above, but plot a series per system
         self.user.userprofile.plotSeriesPerSystem = True
@@ -1069,9 +968,7 @@ class ChartsDX(TestCase):
         ]
         request_names = ["Blank", "XR CHEST"]
         chart_data = self.chart_data["requestMeanDAPData"]["data"]
-        self.check_series_and_category_names(
-            request_names, request_system_names, chart_data
-        )
+        check_series_and_category_names(self, request_names, request_system_names, chart_data)
 
         # Check on mean data of series 0
         request_data = [
@@ -1079,7 +976,7 @@ class ChartsDX(TestCase):
             ["Carestream Clinic KODAK7500", np.nan, 0.0],
         ]
         chart_data = self.chart_data["requestMeanDAPData"]["data"][0]["customdata"]
-        self.check_avg_and_counts(request_data, chart_data)
+        check_avg_and_counts(self, request_data, chart_data)
 
         # Check on mean data of series 1
         request_data = [
@@ -1087,12 +984,12 @@ class ChartsDX(TestCase):
             ["Digital Mobile Hospital 01234MOB54", np.nan, 0.0],
         ]
         chart_data = self.chart_data["requestMeanDAPData"]["data"][1]["customdata"]
-        self.check_avg_and_counts(request_data, chart_data)
+        check_avg_and_counts(self, request_data, chart_data)
 
         # Check on mean data of series 2
         request_data = [["LICARDR0004", np.nan, 0.0], ["LICARDR0004", 6.33, 1.0]]
         chart_data = self.chart_data["requestMeanDAPData"]["data"][2]["customdata"]
-        self.check_avg_and_counts(request_data, chart_data)
+        check_avg_and_counts(self, request_data, chart_data)
 
         # Check on median values of series 0
         request_data = [
@@ -1100,7 +997,7 @@ class ChartsDX(TestCase):
             ["Carestream Clinic KODAK7500", np.nan, 0.0],
         ]
         chart_data = self.chart_data["requestMedianDAPData"]["data"][0]["customdata"]
-        self.check_avg_and_counts(request_data, chart_data)
+        check_avg_and_counts(self, request_data, chart_data)
 
         # Check on median values of series 1
         request_data = [
@@ -1108,12 +1005,12 @@ class ChartsDX(TestCase):
             ["Digital Mobile Hospital 01234MOB54", np.nan, 0.0],
         ]
         chart_data = self.chart_data["requestMedianDAPData"]["data"][1]["customdata"]
-        self.check_avg_and_counts(request_data, chart_data)
+        check_avg_and_counts(self, request_data, chart_data)
 
         # Check on median data of series 2
         request_data = [["LICARDR0004", np.nan, 0.0], ["LICARDR0004", 6.33, 1.0]]
         chart_data = self.chart_data["requestMedianDAPData"]["data"][2]["customdata"]
-        self.check_avg_and_counts(request_data, chart_data)
+        check_avg_and_counts(self, request_data, chart_data)
 
         # Check on the boxplot data system names
         request_data = [
@@ -1135,7 +1032,7 @@ class ChartsDX(TestCase):
         request_x_data = [["Blank"], ["Blank"], ["XR CHEST"]]
         request_y_data = [[211.7], [32.8], [6.33]]
         chart_data = self.chart_data["requestBoxplotDAPData"]["data"]
-        self.check_boxplot_xy(request_x_data, request_y_data, chart_data)
+        check_boxplot_xy(self, request_x_data, request_y_data, chart_data)
 
     def test_request_dap_histogram(self):
         # Test of DAP histogram
@@ -1242,14 +1139,12 @@ class ChartsDX(TestCase):
         request_system_names = ["All systems"]
         request_names = ["Blank", "XR CHEST"]
         chart_data = self.chart_data["requestFrequencyData"]["data"]
-        self.check_series_and_category_names(
-            request_system_names, request_names, chart_data
-        )
+        check_series_and_category_names(self, request_system_names, request_names, chart_data)
 
         # The frequency chart - frequencies
         request_data = [[2], [1]]
         chart_data = self.chart_data["requestFrequencyData"]["data"]
-        self.check_frequencies(request_data, chart_data)
+        check_frequencies(self, request_data, chart_data)
 
         # Repeat the above, but plot a series per system
         self.user.userprofile.plotSeriesPerSystem = True
@@ -1266,14 +1161,12 @@ class ChartsDX(TestCase):
         ]
         request_names = ["Blank", "XR CHEST"]
         chart_data = self.chart_data["requestFrequencyData"]["data"]
-        self.check_series_and_category_names(
-            request_system_names, request_names, chart_data
-        )
+        check_series_and_category_names(self, request_system_names, request_names, chart_data)
 
         # The frequency chart - frequencies
         request_data = [[1, 1, 0], [0, 0, 1]]
         chart_data = self.chart_data["requestFrequencyData"]["data"]
-        self.check_frequencies(request_data, chart_data)
+        check_frequencies(self, request_data, chart_data)
 
     def test_study_dap(self):
         # Test of mean and median DAP, count, system and study description protocol names
@@ -1294,9 +1187,7 @@ class ChartsDX(TestCase):
         study_system_names = ["All systems"]
         study_names = ["AEC", "Abdomen", "XR CHEST"]
         chart_data = self.chart_data["studyMeanDAPData"]["data"]
-        self.check_series_and_category_names(
-            study_names, study_system_names, chart_data
-        )
+        check_series_and_category_names(self, study_names, study_system_names, chart_data)
 
         # Check on mean DAP values and counts
         study_data = [
@@ -1305,7 +1196,7 @@ class ChartsDX(TestCase):
             ["All systems", 6.33, 1.0],
         ]
         chart_data = self.chart_data["studyMeanDAPData"]["data"][0]["customdata"]
-        self.check_avg_and_counts(study_data, chart_data)
+        check_avg_and_counts(self, study_data, chart_data)
 
         # Check on median DAP values and counts
         study_data = [
@@ -1314,7 +1205,7 @@ class ChartsDX(TestCase):
             ["All systems", 6.33, 1.0],
         ]
         chart_data = self.chart_data["studyMedianDAPData"]["data"][0]["customdata"]
-        self.check_avg_and_counts(study_data, chart_data)
+        check_avg_and_counts(self, study_data, chart_data)
 
         # Check on the boxplot data system names
         study_data = "All systems"
@@ -1326,7 +1217,7 @@ class ChartsDX(TestCase):
         study_x_data = [["XR CHEST", "Abdomen", "AEC"]]
         study_y_data = [[6.33, 32.8, 211.7]]
         chart_data = self.chart_data["studyBoxplotDAPData"]["data"]
-        self.check_boxplot_xy(study_x_data, study_y_data, chart_data)
+        check_boxplot_xy(self, study_x_data, study_y_data, chart_data)
 
         # Repeat the above, but plot a series per system
         self.user.userprofile.plotSeriesPerSystem = True
@@ -1343,9 +1234,7 @@ class ChartsDX(TestCase):
         ]
         study_names = ["AEC", "Abdomen", "XR CHEST"]
         chart_data = self.chart_data["studyMeanDAPData"]["data"]
-        self.check_series_and_category_names(
-            study_names, study_system_names, chart_data
-        )
+        check_series_and_category_names(self, study_names, study_system_names, chart_data)
 
         # Check on mean data of series 0
         study_data = [
@@ -1354,7 +1243,7 @@ class ChartsDX(TestCase):
             ["Carestream Clinic KODAK7500", np.nan, 0.0],
         ]
         chart_data = self.chart_data["studyMeanDAPData"]["data"][0]["customdata"]
-        self.check_avg_and_counts(study_data, chart_data)
+        check_avg_and_counts(self, study_data, chart_data)
 
         # Check on mean data of series 1
         study_data = [
@@ -1363,7 +1252,7 @@ class ChartsDX(TestCase):
             ["Digital Mobile Hospital 01234MOB54", np.nan, 0.0],
         ]
         chart_data = self.chart_data["studyMeanDAPData"]["data"][1]["customdata"]
-        self.check_avg_and_counts(study_data, chart_data)
+        check_avg_and_counts(self, study_data, chart_data)
 
         # Check on mean data of series 2
         study_data = [
@@ -1372,7 +1261,7 @@ class ChartsDX(TestCase):
             ["LICARDR0004", 6.33, 1.0],
         ]
         chart_data = self.chart_data["studyMeanDAPData"]["data"][2]["customdata"]
-        self.check_avg_and_counts(study_data, chart_data)
+        check_avg_and_counts(self, study_data, chart_data)
 
         # Check on median values of series 0
         study_data = [
@@ -1381,7 +1270,7 @@ class ChartsDX(TestCase):
             ["Carestream Clinic KODAK7500", np.nan, 0.0],
         ]
         chart_data = self.chart_data["studyMedianDAPData"]["data"][0]["customdata"]
-        self.check_avg_and_counts(study_data, chart_data)
+        check_avg_and_counts(self, study_data, chart_data)
 
         # Check on median values of series 1
         study_data = [
@@ -1390,7 +1279,7 @@ class ChartsDX(TestCase):
             ["Digital Mobile Hospital 01234MOB54", np.nan, 0.0],
         ]
         chart_data = self.chart_data["studyMedianDAPData"]["data"][1]["customdata"]
-        self.check_avg_and_counts(study_data, chart_data)
+        check_avg_and_counts(self, study_data, chart_data)
 
         # Check on median data of series 2
         study_data = [
@@ -1399,7 +1288,7 @@ class ChartsDX(TestCase):
             ["LICARDR0004", 6.33, 1.0],
         ]
         chart_data = self.chart_data["studyMedianDAPData"]["data"][2]["customdata"]
-        self.check_avg_and_counts(study_data, chart_data)
+        check_avg_and_counts(self, study_data, chart_data)
 
         # Check on the boxplot data system names
         study_data = [
@@ -1417,7 +1306,7 @@ class ChartsDX(TestCase):
         study_x_data = [["AEC"], ["Abdomen"]]
         study_y_data = [[211.7], [32.8]]
         chart_data = self.chart_data["studyBoxplotDAPData"]["data"]
-        self.check_boxplot_xy(study_x_data, study_y_data, chart_data)
+        check_boxplot_xy(self, study_x_data, study_y_data, chart_data)
 
     def test_study_dap_histogram(self):
         # Test of DAP histogram
@@ -1557,14 +1446,12 @@ class ChartsDX(TestCase):
         study_system_names = ["All systems"]
         study_names = ["AEC", "Abdomen", "XR CHEST"]
         chart_data = self.chart_data["studyFrequencyData"]["data"]
-        self.check_series_and_category_names(
-            study_system_names, study_names, chart_data
-        )
+        check_series_and_category_names(self, study_system_names, study_names, chart_data)
 
         # The frequency chart - frequencies
         study_data = [[1], [1], [1]]
         chart_data = self.chart_data["studyFrequencyData"]["data"]
-        self.check_frequencies(study_data, chart_data)
+        check_frequencies(self, study_data, chart_data)
 
         # Repeat the above, but plot a series per system
         self.user.userprofile.plotSeriesPerSystem = True
@@ -1581,14 +1468,12 @@ class ChartsDX(TestCase):
         ]
         study_names = ["AEC", "Abdomen", "XR CHEST"]
         chart_data = self.chart_data["studyFrequencyData"]["data"]
-        self.check_series_and_category_names(
-            study_system_names, study_names, chart_data
-        )
+        check_series_and_category_names(self, study_system_names, study_names, chart_data)
 
         # The frequency chart - frequencies
         study_data = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
         chart_data = self.chart_data["studyFrequencyData"]["data"]
-        self.check_frequencies(study_data, chart_data)
+        check_frequencies(self, study_data, chart_data)
 
     def test_study_workload(self):
         # Test of study workload
