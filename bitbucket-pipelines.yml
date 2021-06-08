@@ -65,9 +65,7 @@ definitions:
           - >-
             sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
           - mv openrem/openremproject/wsgi.py{.example,}
-#          - pip install -U tox
           - pip install -e .
-#          - pip install -r requirements.txt
           - pip install coverage
           - pip install coveralls
           - pip install tblib
@@ -76,7 +74,6 @@ definitions:
           - coverage combine
           - coveralls
           - coverage xml
-#          - tox -e ci
         artifacts:
           - coverage.xml
         services:
