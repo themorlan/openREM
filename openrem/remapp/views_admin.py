@@ -1674,9 +1674,6 @@ def required_ct_acquisition_types(user_profile):
     if user_profile.plotCTConeBeamAcquisition:
         ct_acquisition_types.append(CommonVariables.CT_CONE_BEAM_ACQUISITION)
 
-    if user_profile.plotCaseInsensitiveCategories:
-        ct_acquisition_types = [entry.lower() for entry in ct_acquisition_types]
-
     return ct_acquisition_types
 
 

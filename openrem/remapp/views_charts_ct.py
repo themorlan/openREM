@@ -559,6 +559,14 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         else:
             chart_message = ""
 
+        # Make the code meanings and values lower case if the user has selected case-insensitive categories. The
+        # create_dataframe method will make all the code meaning and value categories in the queryset lower case,
+        # so the meanings and values to keep also have to be made lower case otherwise the df.isin command on the
+        # next line does not work as expected.
+        if user_profile.plotCaseInsensitiveCategories:
+            code_meanings_to_keep = [each_string.lower() for each_string in code_meanings_to_keep]
+            code_values_to_keep = [each_string.lower() for each_string in code_values_to_keep]
+
         df = df[
             df.isin(
                 {
