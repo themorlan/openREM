@@ -21,6 +21,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
+
 ..  module:: views_openskin.
     :synopsis: Module to render views relating to openSkin.
 
@@ -82,7 +83,8 @@ def get_matching_equipment_names(manufacturer, model_name):
 
 @login_required
 def display_name_skin_enabled(request):
-    """AJAX view to return whether an entry in the equipment database is enabled for skin dose map calculations
+    """
+    AJAX view to return whether an entry in the equipment database is enabled for skin dose map calculations
 
     :param request: Request object containing modality and equipment table ID
     :return: HTML table data element
@@ -144,6 +146,7 @@ def display_name_skin_enabled(request):
 
 
 class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
+
     """UpdateView for configuring the skin dose map calculation choices"""
 
     try:

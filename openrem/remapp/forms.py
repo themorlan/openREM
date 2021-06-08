@@ -1095,6 +1095,7 @@ class NotPatientIDForm(forms.ModelForm):
 
 
 class SkinSafeListForm(forms.ModelForm):
+
     """Form for adding/updating/removing system from openSkin safe list"""
 
     class Meta(object):
