@@ -34,8 +34,9 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db.models import Q
 from django.db.utils import OperationalError as AvoidDataMigrationErrorSQLite
 from django.db.utils import ProgrammingError as AvoidDataMigrationErrorPostgres
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
+from django.utils.translation import gettext as _
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from .forms import (
@@ -166,9 +167,9 @@ class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-varia
 
     def form_valid(self, form):
         if form.has_changed():
-            messages.success(self.request, "Skin dose map settings have been updated")
+            messages.success(self.request, _("Skin dose map settings have been updated"))
         else:
-            messages.info(self.request, "No changes made")
+            messages.info(self.request, _("No changes made"))
         return super().form_valid(form)
 
 
@@ -203,9 +204,13 @@ class SkinSafeListCreate(CreateView):
         return context
 
     def form_valid(self, form):
-        if self.request.POST.get("model"):
-            form.instance.software_version = ""
-        return super().form_valid(form)
+        if self.request.user.groups.filter(name="admingroup"):
+            if self.request.POST.get("model"):
+                form.instance.software_version = ""
+            return super().form_valid(form)
+        else:
+            messages.error(self.request, _("Only members of the admin group can change the openSkin safe list"))
+            return redirect(reverse_lazy("display_names_view"))
 
 
 class SkinSafeListUpdate(UpdateView):
