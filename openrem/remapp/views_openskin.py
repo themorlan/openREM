@@ -31,7 +31,7 @@ def check_skin_safe_model(skin_safe_models):
     """Check if device matches on manufacturer and model without version restriction
 
     openSkin safe list 'OpenSkinSafeList' is checked against manufacturer and model. This function is then used to check
-    if there are any entries on the list where software_version is blank.
+    if there are any entries on the list where 'software_version' is blank.
 
     Parameters
     ----------
@@ -43,7 +43,7 @@ def check_skin_safe_model(skin_safe_models):
     safe_list_model_pk: int or None
         Primary key of entry if match found, ``None`` otherwise
     model_enabled: bool
-        ``True`` if match found with blank 'software_version'
+        ``True`` if match found with blank 'software_version', otherwise ``False``
 
     """
     try:
@@ -59,6 +59,24 @@ def check_skin_safe_model(skin_safe_models):
 
 
 def get_matching_equipment_names(manufacturer, model_name):
+    """Get queryset of unique equipment names that match the manufacturer and model name being reviewed
+
+    Filters the `UniqueEquipmentNames` table for fluoroscopy entries (or dual fluoro + radiography) that match the
+    manufacturer and model that has been selected.
+
+    Parameters
+    ----------
+    manufacturer : str
+        Name of manufacturer from 'UniqueEquipmentNames' table
+    model_name : str
+        Model name from 'UniqueEquipmentNames' table
+
+    Returns
+    -------
+    UniqueEquipmentNames queryset
+        Queryset filtered for fluoro systems matching the manufacturer and model name
+
+    """
     rf_names = UniqueEquipmentNames.objects.order_by("display_name").filter(
         Q(user_defined_modality="RF")
         | Q(user_defined_modality="dual")
