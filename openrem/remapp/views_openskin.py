@@ -1,6 +1,6 @@
 # Copyright 2012-2021 The Royal Marsden NHS Foundation Trust. See LICENSE file for details.
 
-"""openSkin related views"""
+"""openSkin related views."""
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -26,7 +26,7 @@ from .version import __version__, __docs_version__
 
 
 def check_skin_safe_model(skin_safe_models):
-    """Check if device matches on manufacturer and model without version restriction
+    """Check if device matches on manufacturer and model without version restriction.
 
     openSkin safe list `OpenSkinSafeList` is checked against manufacturer and model. This function is then used to check
     if there are any entries on the list where `software_version` is blank.
@@ -57,7 +57,7 @@ def check_skin_safe_model(skin_safe_models):
 
 
 def get_matching_equipment_names(manufacturer, model_name):
-    """Get queryset of unique equipment names that match the manufacturer and model name being reviewed
+    """Get queryset of unique equipment names that match the manufacturer and model name being reviewed.
 
     Filters the `UniqueEquipmentNames` table for fluoroscopy entries (or dual fluoro + radiography) that match the
     manufacturer and model that has been selected.
@@ -92,7 +92,7 @@ def get_matching_equipment_names(manufacturer, model_name):
 
 @login_required
 def display_name_skin_enabled(request):
-    """AJAX view to display if skin map calculations are enabled and links to change the configuration"""
+    """AJAX view to display if skin map calculations are enabled and links to change the configuration."""
     template = "remapp/displayname-skinmap.html"
     if request.is_ajax() and request.method == "POST":
         data = request.POST
@@ -150,7 +150,8 @@ def display_name_skin_enabled(request):
 
 
 class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
-    """Update skin dose map calculation settings"""
+
+    """Update skin dose map calculation settings."""
 
     try:
         SkinDoseMapCalcSettings.get_solo()  # will create item if it doesn't exist
@@ -180,7 +181,8 @@ class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-varia
 
 
 class SkinSafeListCreate(CreateView):
-    """Enable skin map calculations by adding model, or model and software version to `OpenSkinSafeList`"""
+
+    """Enable skin map calculations by adding model, or model and software version to `OpenSkinSafeList`."""
 
     model = OpenSkinSafeList
     form_class = SkinSafeListForm
@@ -222,7 +224,8 @@ class SkinSafeListCreate(CreateView):
 
 
 class SkinSafeListUpdate(UpdateView):
-    """Add or remove the software version restriction"""
+
+    """Add or remove the software version restriction."""
 
     model = OpenSkinSafeList
     form_class = SkinSafeListForm
@@ -265,7 +268,8 @@ class SkinSafeListUpdate(UpdateView):
 
 
 class SkinSafeListDelete(DeleteView):  # pylint: disable=unused-variable
-    """Disable skin map calculations for particular model or model and software version"""
+
+    """Disable skin map calculations for particular model or model and software version."""
 
     model = OpenSkinSafeList
     success_url = reverse_lazy("display_names_view")
