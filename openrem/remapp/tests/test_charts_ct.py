@@ -7,8 +7,15 @@ from django.test import TestCase, RequestFactory
 from remapp.extractors import rdsr
 from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
 from remapp.interface.mod_filters import CTSummaryListFilter
+from remapp.tests.test_charts_common import (
+    check_series_and_category_names,
+    check_frequencies,
+    check_boxplot_data,
+    check_boxplot_xy,
+    check_average_data,
+    user_profile_reset
+)
 import numpy as np
-import math
 
 
 class ChartsCT(TestCase):
@@ -45,52 +52,6 @@ class ChartsCT(TestCase):
         rdsr.rdsr(os.path.join(root_tests, ct5))
         rdsr.rdsr(os.path.join(root_tests, ct6))
 
-    def user_profile_reset(self):
-        self.user.userprofile.plotCharts = True
-
-        self.user.userprofile.plotGroupingChoice = "system"
-        self.user.userprofile.plotSeriesPerSystem = False
-        self.user.userprofile.plotCaseInsensitiveCategories = False
-
-        self.user.userprofile.plotInitialSortingDirection = 0
-        self.user.userprofile.plotCTInitialSortingChoice = "frequency"
-
-        self.user.userprofile.plotAverageChoice = "mean"
-        self.user.userprofile.plotMean = False
-        self.user.userprofile.plotMedian = False
-        self.user.userprofile.plotBoxplots = False
-
-        self.user.userprofile.plotHistograms = False
-        self.user.userprofile.plotHistogramBins = 10
-
-        self.user.userprofile.plotCTAcquisitionMeanDLP = False
-        self.user.userprofile.plotCTAcquisitionMeanCTDI = False
-        self.user.userprofile.plotCTAcquisitionFreq = False
-        self.user.userprofile.plotCTAcquisitionCTDIvsMass = False
-        self.user.userprofile.plotCTAcquisitionDLPvsMass = False
-        self.user.userprofile.plotCTAcquisitionCTDIOverTime = False
-        self.user.userprofile.plotCTAcquisitionDLPOverTime = False
-
-        self.user.userprofile.plotCTSequencedAcquisition = True
-        self.user.userprofile.plotCTSpiralAcquisition = True
-        self.user.userprofile.plotCTConstantAngleAcquisition = True
-        self.user.userprofile.plotCTStationaryAcquisition = True
-        self.user.userprofile.plotCTFreeAcquisition = True
-
-        self.user.userprofile.plotCTStudyMeanDLP = False
-        self.user.userprofile.plotCTStudyMeanCTDI = False
-        self.user.userprofile.plotCTStudyFreq = False
-        self.user.userprofile.plotCTStudyNumEvents = False
-        self.user.userprofile.plotCTStudyPerDayAndHour = False
-        self.user.userprofile.plotCTStudyMeanDLPOverTime = False
-
-        self.user.userprofile.plotCTRequestMeanDLP = False
-        self.user.userprofile.plotCTRequestFreq = False
-        self.user.userprofile.plotCTRequestNumEvents = False
-        self.user.userprofile.plotCTRequestDLPOverTime = False
-
-        self.user.userprofile.save()
-
     def login_get_filterset(self):
         self.client.login(username="jacob", password="top_secret")
         # I can add to the filter_set to control what type of chart data is calculated
@@ -102,7 +63,7 @@ class ChartsCT(TestCase):
             .distinct(),
         )
         # Reset the user profile
-        self.user_profile_reset()
+        user_profile_reset(self)
         return f
 
     def obtain_chart_data(self, f):
@@ -111,112 +72,6 @@ class ChartsCT(TestCase):
         self.chart_data = ct_plot_calculations(
             f, self.user.userprofile, return_as_dict=True
         )
-
-    def check_series_and_category_names(self, category_names, series_names, chart_data):
-        for idx, series_name in enumerate(series_names):
-            self.assertEqual(chart_data[idx]["name"], series_name)
-            self.assertListEqual(list(chart_data[idx]["x"]), category_names)
-
-    def check_average_data(self, chart_data, standard_data):
-        for idx, dataset in enumerate(standard_data):
-            self.assertEqual(dataset["name"], chart_data[idx]["name"])
-            np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"])
-
-            # Check the system names
-            np.testing.assert_array_equal(
-                [i[0] for i in dataset["customdata"]],
-                [i[0] for i in chart_data[idx]["customdata"]],
-            )
-
-            # Check the average values
-            np.testing.assert_array_almost_equal(
-                [i[1] for i in dataset["customdata"]],
-                [i[1] for i in chart_data[idx]["customdata"]],
-            )
-
-            # Check the frequency values
-            np.testing.assert_array_almost_equal(
-                [i[2] for i in dataset["customdata"]],
-                [i[2] for i in chart_data[idx]["customdata"]],
-            )
-
-    def check_frequency_data(self, chart_data, standard_data):
-        for idx, dataset in enumerate(standard_data["data"]):
-            np.testing.assert_equal(dataset["name"], chart_data["data"][idx]["name"])
-            np.testing.assert_equal(dataset["x"], chart_data["data"][idx]["x"])
-            np.testing.assert_equal(dataset["y"], chart_data["data"][idx]["y"])
-
-    def check_workload_data(self, chart_data, standard_data):
-        for idx, dataset in enumerate(standard_data):
-            np.testing.assert_array_equal(
-                dataset["customdata"], chart_data[idx]["customdata"]
-            )
-            np.testing.assert_array_equal(
-                dataset["hovertext"], chart_data[idx]["hovertext"]
-            )
-            np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_equal(dataset["y"], chart_data[idx]["y"])
-
-    def check_sys_name_x_y_data(self, chart_data, standard_data):
-        for idx, dataset in enumerate(standard_data["data"]):
-            self.assertTrue(dataset["system"] in chart_data[idx]["hovertemplate"])
-            np.testing.assert_array_equal(dataset["name"], chart_data[idx]["name"])
-
-            std_x_data = dataset["x"]
-            std_y_data = dataset["y"]
-            std_y_data = [y for y, _ in sorted(zip(std_y_data, std_x_data))]
-            std_x_data = sorted(std_x_data)
-            std_x_data = [x for _, x in sorted(zip(std_y_data, std_x_data))]
-            std_y_data = sorted(std_y_data)
-
-            chart_y_data = chart_data[idx]["y"]
-            chart_x_data = chart_data[idx]["x"]
-            chart_y_data = [y for y, _ in sorted(zip(chart_y_data, chart_x_data))]
-            chart_x_data = sorted(chart_x_data)
-            chart_x_data = [x for _, x in sorted(zip(chart_y_data, chart_x_data))]
-            chart_y_data = sorted(chart_y_data)
-
-            np.testing.assert_array_equal(std_x_data, chart_x_data)
-            np.testing.assert_array_almost_equal(std_y_data, chart_y_data)
-
-    def check_avg_and_counts(self, comparison_data, chart_data):
-        for idx in range(len(comparison_data)):
-            # If the comparison value is a nan then check that the chart value is too
-            if math.isnan(comparison_data[idx][1]):
-                self.assertTrue(math.isnan(chart_data[idx][1]))
-            # Otherwise compare the values
-            else:
-                self.assertAlmostEqual(chart_data[idx][1], comparison_data[idx][1])
-            self.assertEqual(chart_data[idx][2], comparison_data[idx][2])
-
-    def check_frequencies(self, comparison_data, chart_data):
-        for idx, values in enumerate(comparison_data):
-            self.assertListEqual(list(chart_data[idx]["y"]), comparison_data[idx])
-
-    def check_boxplot_data(self, chart_data, standard_data):
-        for idx, dataset in enumerate(standard_data):
-            self.assertEqual(dataset["name"], chart_data[idx]["name"])
-            self.check_boxplot_xy([dataset["x"]], [dataset["y"]], [chart_data[idx]])
-
-    def check_boxplot_xy(self, x_data, y_data, chart_data):
-        for i in range(len(x_data)):
-            std_x_data = x_data[i]
-            std_y_data = y_data[i]
-            std_y_data = [y for y, _ in sorted(zip(std_y_data, std_x_data))]
-            std_x_data = sorted(std_x_data)
-            std_x_data = [x for _, x in sorted(zip(std_y_data, std_x_data))]
-            std_y_data = sorted(std_y_data)
-
-            chart_y_data = chart_data[i]["y"]
-            chart_x_data = chart_data[i]["x"]
-            chart_y_data = [y for y, _ in sorted(zip(chart_y_data, chart_x_data))]
-            chart_x_data = sorted(chart_x_data)
-            chart_x_data = [x for _, x in sorted(zip(chart_y_data, chart_x_data))]
-            chart_y_data = sorted(chart_y_data)
-
-            np.testing.assert_equal(chart_x_data, std_x_data)
-            np.testing.assert_almost_equal(chart_y_data, std_y_data)
 
     def test_required_charts(self):
         from remapp.views_charts_ct import generate_required_ct_charts_list
@@ -324,7 +179,7 @@ class ChartsCT(TestCase):
                 "customdata": np.array(
                     [
                         ["All systems", 111.3, 1.0],
-                        ["All systems", 202.684375, 16.0],
+                        ["All systems", 202.684, 16.0],
                         ["All systems", 29.67, 1.0],
                         ["All systems", 50.58, 1.0],
                         ["All systems", 129.89, 1.0],
@@ -363,7 +218,7 @@ class ChartsCT(TestCase):
                 "y": np.array(
                     [
                         111.3,
-                        202.684375,
+                        202.684,
                         29.67,
                         50.58,
                         129.89,
@@ -383,7 +238,7 @@ class ChartsCT(TestCase):
 
         chart_data = self.chart_data["acquisitionMeanDLPData"]["data"]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Test the median data
         standard_data = [
@@ -450,7 +305,7 @@ class ChartsCT(TestCase):
 
         chart_data = self.chart_data["acquisitionMedianDLPData"]["data"]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Check the boxplot data
         standard_data = [
@@ -530,7 +385,7 @@ class ChartsCT(TestCase):
 
         chart_data = self.chart_data["acquisitionBoxplotDLPData"]["data"]
 
-        self.check_boxplot_data(chart_data, standard_data)
+        check_boxplot_data(self, chart_data, standard_data)
 
         # Repeat the above, but plot a series per system
         self.user.userprofile.plotSeriesPerSystem = True
@@ -545,7 +400,7 @@ class ChartsCT(TestCase):
                 "customdata": np.array(
                     [
                         ["A VCT Hospital VCTScanner", np.nan, 0],
-                        ["A VCT Hospital VCTScanner", 182.03545455, 11.0],
+                        ["A VCT Hospital VCTScanner", 182.035, 11.0],
                         ["A VCT Hospital VCTScanner", np.nan, 0],
                         ["A VCT Hospital VCTScanner", np.nan, 0],
                         ["A VCT Hospital VCTScanner", np.nan, 0],
@@ -584,7 +439,7 @@ class ChartsCT(TestCase):
                 "y": np.array(
                     [
                         np.nan,
-                        182.03545455,
+                        182.035,
                         np.nan,
                         np.nan,
                         np.nan,
@@ -899,7 +754,7 @@ class ChartsCT(TestCase):
 
         chart_data = self.chart_data["acquisitionMeanDLPData"]["data"]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Test the median data
         standard_data = [
@@ -1261,7 +1116,7 @@ class ChartsCT(TestCase):
 
         chart_data = self.chart_data["acquisitionMedianDLPData"]["data"]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Check the boxplot data
         standard_data = [
@@ -1345,7 +1200,7 @@ class ChartsCT(TestCase):
 
         chart_data = self.chart_data["acquisitionBoxplotDLPData"]["data"]
 
-        self.check_boxplot_data(chart_data, standard_data)
+        check_boxplot_data(self, chart_data, standard_data)
 
         # Check the histogram data
         standard_data = [
@@ -1965,7 +1820,7 @@ class ChartsCT(TestCase):
         chart_data = self.chart_data["acquisitionHistogramDLPData"]["data"]
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(chart_data[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"])
+            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=6)
             np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
 
     def test_study_dlp(self):
@@ -2016,7 +1871,7 @@ class ChartsCT(TestCase):
 
         chart_data = self.chart_data["studyMeanDLPData"]["data"]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Test the median data
         standard_data = [
@@ -2056,7 +1911,7 @@ class ChartsCT(TestCase):
 
         chart_data = self.chart_data["studyMedianDLPData"]["data"]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Check the boxplot data
         standard_data = [
@@ -2078,7 +1933,7 @@ class ChartsCT(TestCase):
         ]
 
         chart_data = self.chart_data["studyBoxplotDLPData"]["data"]
-        self.check_boxplot_data(chart_data, standard_data)
+        check_boxplot_data(self, chart_data, standard_data)
 
         # Check the histogram data
         standard_data = [
@@ -2263,7 +2118,7 @@ class ChartsCT(TestCase):
         chart_data1 = self.chart_data["studyHistogramDLPData"]["data"]
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(chart_data1[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data1[idx]["x"], dataset["x"])
+            np.testing.assert_almost_equal(chart_data1[idx]["x"], dataset["x"], decimal=6)
             np.testing.assert_equal(chart_data1[idx]["y"], dataset["y"])
 
             # Repeat the above, but plot a series per system
@@ -2461,7 +2316,7 @@ class ChartsCT(TestCase):
                 },
             ]
             chart_data = self.chart_data["studyMeanDLPData"]["data"]
-            self.check_average_data(chart_data, standard_data)
+            check_average_data(self, chart_data, standard_data)
 
             # Test the median data
             standard_data = [
@@ -2652,7 +2507,7 @@ class ChartsCT(TestCase):
             ]
             chart_data = self.chart_data["studyMedianDLPData"]["data"]
 
-            self.check_average_data(chart_data, standard_data)
+            check_average_data(self, chart_data, standard_data)
 
             # Check the boxplot data
             standard_data = [
@@ -2719,7 +2574,7 @@ class ChartsCT(TestCase):
             ]
         chart_data = self.chart_data["studyBoxplotDLPData"]["data"]
 
-        self.check_boxplot_data(chart_data, standard_data)
+        check_boxplot_data(self, chart_data, standard_data)
 
         # Check the histogram data
         standard_data = [
@@ -2943,7 +2798,7 @@ class ChartsCT(TestCase):
         chart_data2 = self.chart_data["studyHistogramDLPData"]["data"]
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(chart_data2[idx]["name"], dataset["name"])
-        np.testing.assert_almost_equal(chart_data2[idx]["x"], dataset["x"])
+        np.testing.assert_almost_equal(chart_data2[idx]["x"], dataset["x"], decimal=6)
         np.testing.assert_equal(chart_data2[idx]["y"], dataset["y"])
 
     def test_request_dlp(self):
@@ -2969,7 +2824,7 @@ class ChartsCT(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["All systems", 735.4649999999999, 4],
+                        ["All systems", 735.465, 4],
                         ["All systems", 724.52, 1],
                         ["All systems", 2002.39, 1],
                     ],
@@ -2990,14 +2845,14 @@ class ChartsCT(TestCase):
 
         chart_data = self.chart_data["requestMeanDLPData"]["data"]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Test the median data
         standard_data = [
             {
                 "customdata": np.array(
                     [
-                        ["All systems", 501.08000000000004, 4],
+                        ["All systems", 501.08, 4],
                         ["All systems", 724.52, 1],
                         ["All systems", 2002.39, 1],
                     ],
@@ -3018,7 +2873,7 @@ class ChartsCT(TestCase):
 
         chart_data = self.chart_data["requestMedianDLPData"]["data"]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Check the boxplot data
         standard_data = [
@@ -3040,7 +2895,7 @@ class ChartsCT(TestCase):
         ]
 
         chart_data = self.chart_data["requestBoxplotDLPData"]["data"]
-        self.check_boxplot_data(chart_data, standard_data)
+        check_boxplot_data(self, chart_data, standard_data)
 
         # Check the histogram data
         standard_data1 = [
@@ -3156,7 +3011,7 @@ class ChartsCT(TestCase):
 
         for idx, dataset in enumerate(standard_data1):
             self.assertEqual(chart_data1[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data1[idx]["x"], dataset["x"])
+            np.testing.assert_almost_equal(chart_data1[idx]["x"], dataset["x"], decimal=6)
             np.testing.assert_equal(chart_data1[idx]["y"], dataset["y"])
 
             # Almost equal used for equivalence because the chart data isn't equal to the standard data
@@ -3296,7 +3151,7 @@ class ChartsCT(TestCase):
             ]
             chart_data = self.chart_data["requestMeanDLPData"]["data"]
 
-            self.check_average_data(chart_data, standard_data)
+            check_average_data(self, chart_data, standard_data)
 
             # Test the median data
             standard_data = [
@@ -3423,7 +3278,7 @@ class ChartsCT(TestCase):
             ]
             chart_data = self.chart_data["requestMedianDLPData"]["data"]
 
-            self.check_average_data(chart_data, standard_data)
+            check_average_data(self, chart_data, standard_data)
 
             # Check the boxplot data
             standard_data = [
@@ -3490,7 +3345,7 @@ class ChartsCT(TestCase):
             ]
             chart_data = self.chart_data["requestBoxplotDLPData"]["data"]
 
-            self.check_boxplot_data(chart_data, standard_data)
+            check_boxplot_data(self, chart_data, standard_data)
 
             # Check the histogram data
             standard_data = [
@@ -3714,7 +3569,7 @@ class ChartsCT(TestCase):
             chart_data = self.chart_data["requestHistogramDLPData"]["data"]
             for idx, dataset in enumerate(standard_data):
                 self.assertEqual(chart_data[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"])
+            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=6)
             np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
 
     def test_acq_ctdi(self):
@@ -3741,7 +3596,7 @@ class ChartsCT(TestCase):
                 "customdata": np.array(
                     [
                         ["All systems", 222.59, 1],
-                        ["All systems", 31.193749999999998, 16],
+                        ["All systems", 31.194, 16],
                         ["All systems", 15.45, 1],
                         ["All systems", 13.17, 1],
                         ["All systems", 33.83, 1],
@@ -3800,7 +3655,7 @@ class ChartsCT(TestCase):
 
         chart_data = self.chart_data["acquisitionMeanCTDIData"]["data"]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Test the median data
         standard_data = [
@@ -3808,7 +3663,7 @@ class ChartsCT(TestCase):
                 "customdata": np.array(
                     [
                         ["All systems", 222.59, 1],
-                        ["All systems", 25.049999999999997, 16],
+                        ["All systems", 25.05, 16],
                         ["All systems", 15.45, 1],
                         ["All systems", 13.17, 1],
                         ["All systems", 33.83, 1],
@@ -3867,7 +3722,7 @@ class ChartsCT(TestCase):
 
         chart_data = self.chart_data["acquisitionMedianCTDIData"]["data"]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Check the boxplot data
         standard_data = [
@@ -3946,7 +3801,7 @@ class ChartsCT(TestCase):
         ]
 
         chart_data = self.chart_data["acquisitionBoxplotCTDIData"]["data"]
-        self.check_boxplot_data(chart_data, standard_data)
+        check_boxplot_data(self, chart_data, standard_data)
 
         # Check the histogram data
         standard_data1 = [
@@ -4447,7 +4302,7 @@ class ChartsCT(TestCase):
 
         for idx, dataset in enumerate(standard_data1):
             self.assertEqual(chart_data1[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data1[idx]["x"], dataset["x"])
+            np.testing.assert_almost_equal(chart_data1[idx]["x"], dataset["x"], decimal=6)
             np.testing.assert_equal(chart_data1[idx]["y"], dataset["y"])
 
             # Almost equal used for equivalence because the chart data isn't equal to the standard data
@@ -4468,7 +4323,7 @@ class ChartsCT(TestCase):
                     "customdata": np.array(
                         [
                             ["A VCT Hospital VCTScanner", np.nan, 0],
-                            ["A VCT Hospital VCTScanner", 34.550909090909094, 11],
+                            ["A VCT Hospital VCTScanner", 34.55, 11],
                             ["A VCT Hospital VCTScanner", np.nan, 0],
                             ["A VCT Hospital VCTScanner", np.nan, 0],
                             ["A VCT Hospital VCTScanner", np.nan, 0],
@@ -4507,7 +4362,7 @@ class ChartsCT(TestCase):
                     "y": np.array(
                         [
                             np.nan,
-                            34.55090909,
+                            34.55,
                             np.nan,
                             np.nan,
                             np.nan,
@@ -4765,7 +4620,7 @@ class ChartsCT(TestCase):
                             ["Oxbridge County Hospital CTTOSHIBA1", np.nan, 0],
                             [
                                 "Oxbridge County Hospital CTTOSHIBA1",
-                                25.049999999999997,
+                                25.05,
                                 2,
                             ],
                             ["Oxbridge County Hospital CTTOSHIBA1", np.nan, 0],
@@ -4826,7 +4681,7 @@ class ChartsCT(TestCase):
 
             chart_data = self.chart_data["acquisitionMeanCTDIData"]["data"]
 
-            self.check_average_data(chart_data, standard_data)
+            check_average_data(self, chart_data, standard_data)
 
             # Test the median data
             standard_data = [
@@ -5131,7 +4986,7 @@ class ChartsCT(TestCase):
                             ["Oxbridge County Hospital CTTOSHIBA1", np.nan, 0],
                             [
                                 "Oxbridge County Hospital CTTOSHIBA1",
-                                25.049999999999997,
+                                25.05,
                                 2,
                             ],
                             ["Oxbridge County Hospital CTTOSHIBA1", np.nan, 0],
@@ -5192,7 +5047,7 @@ class ChartsCT(TestCase):
 
             chart_data = self.chart_data["acquisitionMedianCTDIData"]["data"]
 
-            self.check_average_data(chart_data, standard_data)
+            check_average_data(self, chart_data, standard_data)
 
             # Check the boxplot data
             standard_data = [
@@ -5285,7 +5140,7 @@ class ChartsCT(TestCase):
             ]
 
             chart_data = self.chart_data["acquisitionBoxplotCTDIData"]["data"]
-            self.check_boxplot_data(chart_data, standard_data)
+            check_boxplot_data(self, chart_data, standard_data)
 
             # Check the histogram data
             standard_data1 = [
@@ -5907,7 +5762,7 @@ class ChartsCT(TestCase):
 
             for idx, dataset in enumerate(standard_data1):
                 self.assertEqual(chart_data2[idx]["name"], dataset["name"])
-                np.testing.assert_almost_equal(chart_data2[idx]["x"], dataset["x"])
+                np.testing.assert_almost_equal(chart_data2[idx]["x"], dataset["x"], decimal=6)
                 np.testing.assert_equal(chart_data2[idx]["y"], dataset["y"])
 
     def test_study_ctdi(self):
@@ -5935,8 +5790,8 @@ class ChartsCT(TestCase):
                     [
                         ["All systems", 83.275, 4],
                         ["All systems", 4.265, 2],
-                        ["All systems", 35.324444444444445, 9],
-                        ["All systems", 23.157777777777778, 9],
+                        ["All systems", 35.324, 9],
+                        ["All systems", 23.158, 9],
                         ["All systems", 3.715, 4],
                     ],
                     dtype=object,
@@ -5952,13 +5807,13 @@ class ChartsCT(TestCase):
                     ],
                     dtype=object,
                 ),
-                "y": np.array([83.275, 4.265, 35.32444444, 23.15777778, 3.715]),
+                "y": np.array([83.275, 4.265, 35.324, 23.158, 3.715]),
             }
         ]
 
         chart_data = self.chart_data["studyMeanCTDIData"]["data"]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Test the median data
         standard_data = [
@@ -5990,7 +5845,7 @@ class ChartsCT(TestCase):
 
         chart_data = self.chart_data["studyMedianCTDIData"]["data"]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Check the boxplot data
         standard_data = [
@@ -6065,7 +5920,7 @@ class ChartsCT(TestCase):
         ]
 
         chart_data = self.chart_data["studyBoxplotCTDIData"]["data"]
-        self.check_boxplot_data(chart_data, standard_data)
+        check_boxplot_data(self, chart_data, standard_data)
 
         # Check the histogram data
         standard_data1 = [
@@ -6251,7 +6106,7 @@ class ChartsCT(TestCase):
 
         for idx, dataset in enumerate(standard_data1):
             self.assertEqual(chart_data1[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data1[idx]["x"], dataset["x"])
+            np.testing.assert_almost_equal(chart_data1[idx]["x"], dataset["x"], decimal=6)
             np.testing.assert_equal(chart_data1[idx]["y"], dataset["y"])
 
             # Repeat the above, but plot a series per system
@@ -6268,7 +6123,7 @@ class ChartsCT(TestCase):
                         [
                             ["A VCT Hospital VCTScanner", np.nan, 0],
                             ["A VCT Hospital VCTScanner", np.nan, 0],
-                            ["A VCT Hospital VCTScanner", 35.324444444444445, 9],
+                            ["A VCT Hospital VCTScanner", 35.324, 9],
                             ["A VCT Hospital VCTScanner", np.nan, 0],
                             ["A VCT Hospital VCTScanner", np.nan, 0],
                         ],
@@ -6285,7 +6140,7 @@ class ChartsCT(TestCase):
                         ],
                         dtype=object,
                     ),
-                    "y": np.array([np.nan, np.nan, 35.32444444, np.nan, np.nan]),
+                    "y": np.array([np.nan, np.nan, 35.324, np.nan, np.nan]),
                 },
                 {
                     "customdata": np.array(
@@ -6317,7 +6172,7 @@ class ChartsCT(TestCase):
                             ["Gnats Bottom Hospital CTAWP91919", np.nan, 0],
                             ["Gnats Bottom Hospital CTAWP91919", np.nan, 0],
                             ["Gnats Bottom Hospital CTAWP91919", np.nan, 0],
-                            ["Gnats Bottom Hospital CTAWP91919", 23.157777777777774, 9],
+                            ["Gnats Bottom Hospital CTAWP91919", 23.158, 9],
                             ["Gnats Bottom Hospital CTAWP91919", np.nan, 0],
                         ],
                         dtype=object,
@@ -6333,7 +6188,7 @@ class ChartsCT(TestCase):
                         ],
                         dtype=object,
                     ),
-                    "y": np.array([np.nan, np.nan, np.nan, 23.15777778, np.nan]),
+                    "y": np.array([np.nan, np.nan, np.nan, 23.158, np.nan]),
                 },
                 {
                     "customdata": np.array(
@@ -6388,7 +6243,7 @@ class ChartsCT(TestCase):
                         [
                             [
                                 "Oxbridge County Hospital CTTOSHIBA1",
-                                25.049999999999997,
+                                25.05,
                                 2,
                             ],
                             ["Oxbridge County Hospital CTTOSHIBA1", np.nan, 0],
@@ -6415,7 +6270,7 @@ class ChartsCT(TestCase):
 
             chart_data = self.chart_data["studyMeanCTDIData"]["data"]
 
-            self.check_average_data(chart_data, standard_data)
+            check_average_data(self, chart_data, standard_data)
 
             # Test the median data
             standard_data = [
@@ -6544,7 +6399,7 @@ class ChartsCT(TestCase):
                         [
                             [
                                 "Oxbridge County Hospital CTTOSHIBA1",
-                                25.049999999999997,
+                                25.05,
                                 2,
                             ],
                             ["Oxbridge County Hospital CTTOSHIBA1", np.nan, 0],
@@ -6571,7 +6426,7 @@ class ChartsCT(TestCase):
 
             chart_data = self.chart_data["studyMedianCTDIData"]["data"]
 
-            self.check_average_data(chart_data, standard_data)
+            check_average_data(self, chart_data, standard_data)
 
             # Check the boxplot data
             standard_data = [
@@ -6655,7 +6510,7 @@ class ChartsCT(TestCase):
             ]
 
             chart_data = self.chart_data["studyBoxplotCTDIData"]["data"]
-            self.check_boxplot_data(chart_data, standard_data)
+            check_boxplot_data(self, chart_data, standard_data)
 
             # Check the histogram data
             standard_data1 = [
@@ -6876,7 +6731,7 @@ class ChartsCT(TestCase):
         chart_data2 = self.chart_data["studyHistogramCTDIData"]["data"]
         for idx, dataset in enumerate(standard_data1):
             self.assertEqual(chart_data2[idx]["name"], dataset["name"])
-        np.testing.assert_almost_equal(chart_data2[idx]["x"], dataset["x"])
+        np.testing.assert_almost_equal(chart_data2[idx]["x"], dataset["x"], decimal=6)
         np.testing.assert_equal(chart_data2[idx]["y"], dataset["y"])
 
     def test_study_freq(self):
@@ -6901,14 +6756,12 @@ class ChartsCT(TestCase):
             "Thorax^TAP (Adult)",
         ]
         chart_data = self.chart_data["studyFrequencyData"]["data"]
-        self.check_series_and_category_names(
-            study_system_names, study_names, chart_data
-        )
+        check_series_and_category_names(self, study_system_names, study_names, chart_data)
 
         # The frequency chart - frequencies
         study_data = [[2], [1], [1], [1], [1]]
         chart_data = self.chart_data["studyFrequencyData"]["data"]
-        self.check_frequencies(study_data, chart_data)
+        check_frequencies(self, study_data, chart_data)
 
         # Repeat the above, but plot a series per system
         self.user.userprofile.plotSeriesPerSystem = True
@@ -6934,9 +6787,7 @@ class ChartsCT(TestCase):
             "Thorax^TAP (Adult)",
         ]
         chart_data = self.chart_data["studyFrequencyData"]["data"]
-        self.check_series_and_category_names(
-            study_system_names, study_names, chart_data
-        )
+        check_series_and_category_names(self, study_system_names, study_names, chart_data)
 
         # The frequency chart - frequencies
         study_data = [
@@ -6947,7 +6798,7 @@ class ChartsCT(TestCase):
             [0, 0, 0, 1, 0, 0],
         ]
         chart_data = self.chart_data["studyFrequencyData"]["data"]
-        self.check_frequencies(study_data, chart_data)
+        check_frequencies(self, study_data, chart_data)
 
     def test_study_numevents(self):
         # Test of mean and median study number of events,
@@ -6997,7 +6848,7 @@ class ChartsCT(TestCase):
 
         chart_data = self.chart_data["studyMeanNumEventsData"]["data"]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Test the median data
         standard_data = [
@@ -7029,7 +6880,7 @@ class ChartsCT(TestCase):
 
         chart_data = self.chart_data["studyMedianNumEventsData"]["data"]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Check the boxplot data
         standard_data = [
@@ -7051,7 +6902,7 @@ class ChartsCT(TestCase):
         ]
 
         chart_data = self.chart_data["studyBoxplotNumEventsData"]["data"]
-        self.check_boxplot_data(chart_data, standard_data)
+        check_boxplot_data(self, chart_data, standard_data)
 
         # Check the histogram data
         standard_data1 = [
@@ -7182,5 +7033,5 @@ class ChartsCT(TestCase):
 
         for idx, dataset in enumerate(standard_data1):
             self.assertEqual(chart_data1[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data1[idx]["x"], dataset["x"])
+            np.testing.assert_almost_equal(chart_data1[idx]["x"], dataset["x"], decimal=6)
             np.testing.assert_equal(chart_data1[idx]["y"], dataset["y"])
