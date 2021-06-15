@@ -927,7 +927,7 @@ def openrem_home(request):
     modalities["DX"] = {
         "name": _("Radiography"),
         "count": allstudies.filter(
-            Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
+            Q(modality_type__exact="DX") | Q(modality_type__exact="CR") | Q(modality_type__exact="PX")
         ).count(),
     }
 
@@ -1046,7 +1046,7 @@ def update_modality_totals(request):
             "total_ct": allstudies.filter(modality_type__exact="CT").count(),
             "total_rf": allstudies.filter(modality_type__contains="RF").count(),
             "total_dx": allstudies.filter(
-                Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
+                Q(modality_type__exact="DX") | Q(modality_type__exact="CR") | Q(modality_type__exact="PX")
             ).count(),
         }
 
@@ -1065,7 +1065,7 @@ def update_latest_studies(request):
         modality = data.get("modality")
         if modality == "DX":
             studies = GeneralStudyModuleAttr.objects.filter(
-                Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
+                Q(modality_type__exact="DX") | Q(modality_type__exact="CR") | Q(modality_type__exact="PX")
             ).all()
         else:
             studies = GeneralStudyModuleAttr.objects.filter(
@@ -1162,7 +1162,7 @@ def update_study_workload(request):
         modality = data.get("modality")
         if modality == "DX":
             studies = GeneralStudyModuleAttr.objects.filter(
-                Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
+                Q(modality_type__exact="DX") | Q(modality_type__exact="CR") | Q(modality_type__exact="PX")
             ).all()
         else:
             studies = GeneralStudyModuleAttr.objects.filter(
