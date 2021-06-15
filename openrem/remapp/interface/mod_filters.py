@@ -1092,7 +1092,7 @@ def dx_acq_filter(filters, pid=False):
         ).distinct()
 
     studies = GeneralStudyModuleAttr.objects.filter(
-        Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
+        Q(modality_type__exact="DX") | Q(modality_type__exact="CR") | Q(modality_type__exact="PX")
     )
 
     if filteredInclude:

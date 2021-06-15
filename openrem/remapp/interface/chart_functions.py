@@ -137,6 +137,9 @@ def create_dataframe(
         print("Initial DataFrame info, including memory use, is:")
         df.info()
 
+    if uid:
+        df[uid] = df[uid].astype("UInt32")
+
     # Replace any NaN values in the names columns with "Blank"
     df[field_dict["names"]] = df[field_dict["names"]].apply(lambda x: x.fillna("Blank"))
 
@@ -168,6 +171,7 @@ def create_dataframe(
     for idx, value_field in enumerate(field_dict["values"]):
         if data_point_value_multipliers:
             df[value_field] *= data_point_value_multipliers[idx]
+            df[value_field] = df[value_field].astype("float32")
 
     # Convert each date field to a pd datetime using a specific date format
     for date_field in field_dict["dates"]:
