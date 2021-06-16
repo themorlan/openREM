@@ -77,7 +77,7 @@ end
 function ReceivedInstanceFilter(dicom)
     -- Only allow incoming objects we can use
     local mod = dicom.Modality
-    if (mod ~= 'SR') and (mod ~= 'CT') and (mod ~= 'MG') and (mod ~= 'CR') and (mod ~= 'DX') then
+    if (mod ~= 'SR') and (mod ~= 'CT') and (mod ~= 'MG') and (mod ~= 'CR') and (mod ~= 'DX') and (mod ~= 'PX') then
         return false
     else
         return true
@@ -192,7 +192,7 @@ function OnStoredInstance(instanceId)
     if (instance_tags.Modality ~= nil) and (import_script == '') then
         if instance_tags.Modality == 'MG' then
             import_script = 'openrem_mg.py'
-        elseif (instance_tags.Modality == 'CR') or (instance_tags.Modality == 'DX') then
+        elseif (instance_tags.Modality == 'CR') or (instance_tags.Modality == 'DX') or (instance_tags.Modality == 'PX') then
             import_script = 'openrem_dx.py'
         end
     end
