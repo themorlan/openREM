@@ -4,7 +4,6 @@
 import os
 from collections import Counter
 import datetime
-from decimal import Decimal
 from django.contrib.auth.models import User, Group
 from django.test import TestCase
 from pydicom.dataset import Dataset
@@ -12,15 +11,17 @@ from pydicom.dataelem import DataElement
 from pydicom.multival import MultiValue
 import logging
 from testfixtures import LogCapture
-from remapp.extractors.dx import _xray_filters_prep
+
+from remapp.extractors import dx
 from remapp.models import (
     GeneralStudyModuleAttr,
     ProjectionXRayRadiationDose,
     IrradEventXRayData,
     IrradEventXRaySourceData,
+    PatientIDSettings,
+    XrayFilters,
 )
 from openremproject import settings
-
 
 settings.LOGGING["loggers"]["remapp"]["level"] = "DEBUG"
 
@@ -50,7 +51,7 @@ class DXFilterTests(TestCase):
         )
         source.save()
 
-        _xray_filters_prep(ds, source)
+        dx._xray_filters_prep(ds, source)
 
         self.assertEqual(
             source.xrayfilters_set.order_by("id").count(),
@@ -88,7 +89,7 @@ class DXFilterTests(TestCase):
         )
         source.save()
 
-        _xray_filters_prep(ds, source)
+        dx._xray_filters_prep(ds, source)
 
         self.assertEqual(source.xrayfilters_set.order_by("id").count(), 1)
         self.assertEqual(
@@ -99,8 +100,6 @@ class DXFilterTests(TestCase):
 
 class ImportCarestreamDR7500(TestCase):
     def setUp(self):
-        from remapp.extractors import dx
-        from remapp.models import PatientIDSettings
 
         self.user = User.objects.create_user(
             username="jacob", email="jacob@…", password="top_secret"
@@ -138,7 +137,6 @@ class ImportCarestreamDR7500(TestCase):
             dx.dx(os.path.join(root_tests, dx_ge_xr220_2))
 
     def test_dr7500_and_xr220(self):
-
         studies = GeneralStudyModuleAttr.objects.order_by("id")
 
         # Test that two studies have been imported
@@ -256,515 +254,514 @@ class ImportCarestreamDR7500(TestCase):
             datetime.date(2014, 6, 20),
         )
         self.assertAlmostEqual(
-            studies[0].patientstudymoduleattr_set.get().patient_age_decimal,
-            Decimal(56.9),
+            float(studies[0].patientstudymoduleattr_set.get().patient_age_decimal),
+            56.9,
         )
 
         # Test that irradiation event data is stored correctly
         self.assertEqual(
             studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .acquisition_protocol,
+                .projectionxrayradiationdose_set.get()
+                .irradeventxraydata_set.order_by("id")[0]
+                .acquisition_protocol,
             "ABD_1_VIEW",
         )
         self.assertEqual(
             studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .acquisition_protocol,
+                .projectionxrayradiationdose_set.get()
+                .irradeventxraydata_set.order_by("id")[1]
+                .acquisition_protocol,
             "ABD_1_VIEW",
         )
         self.assertEqual(
             studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[2]
-            .acquisition_protocol,
+                .projectionxrayradiationdose_set.get()
+                .irradeventxraydata_set.order_by("id")[2]
+                .acquisition_protocol,
             "ABD_1_VIEW",
         )
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .dose_area_product,
-            Decimal(0.41 / 100000),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .dose_area_product),
+            (0.41 / 100000),
         )
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .dose_area_product,
-            Decimal(0.82 / 100000),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .dose_area_product),
+            (0.82 / 100000),
         )
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[2]
-            .dose_area_product,
-            Decimal(2.05 / 100000),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[2]
+                  .dose_area_product),
+            (2.05 / 100000),
         )
 
         self.assertEqual(
             studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .acquisition_protocol,
+                .projectionxrayradiationdose_set.get()
+                .irradeventxraydata_set.order_by("id")[0]
+                .acquisition_protocol,
             "AEC",
         )
         self.assertEqual(
             studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .acquisition_protocol,
+                .projectionxrayradiationdose_set.get()
+                .irradeventxraydata_set.order_by("id")[1]
+                .acquisition_protocol,
             "AEC",
         )
         self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .dose_area_product,
-            Decimal(11.013 / 100000),
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .dose_area_product),
+            (11.013 / 100000),
         )
         self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .dose_area_product,
-            Decimal(10.157 / 100000),
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .dose_area_product),
+            (10.157 / 100000),
         )
 
         # Check that dose related distance measurement data is stored correctly
         self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .irradeventxraymechanicaldata_set.get()
-            .doserelateddistancemeasurements_set.get()
-            .distance_source_to_detector,
-            Decimal(11.5 * 100),
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraymechanicaldata_set.get()
+                  .doserelateddistancemeasurements_set.get()
+                  .distance_source_to_detector),
+            (11.5 * 100),
         )
         self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraymechanicaldata_set.get()
-            .doserelateddistancemeasurements_set.get()
-            .distance_source_to_detector,
-            Decimal(11.5 * 100),
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .irradeventxraymechanicaldata_set.get()
+                  .doserelateddistancemeasurements_set.get()
+                  .distance_source_to_detector),
+            (11.5 * 100),
         )
 
         # Test that irradiation event source data is stored correctly
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .irradeventxraysourcedata_set.get()
-            .exposure_time,
-            Decimal(6),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraysourcedata_set.get()
+                  .exposure_time),
+            6,
         )
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraysourcedata_set.get()
-            .exposure_time,
-            Decimal(11),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .irradeventxraysourcedata_set.get()
+                  .exposure_time),
+            11,
         )
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[2]
-            .irradeventxraysourcedata_set.get()
-            .exposure_time,
-            Decimal(27),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[2]
+                  .irradeventxraysourcedata_set.get()
+                  .exposure_time),
+            27,
         )
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .irradeventxraysourcedata_set.get()
-            .average_xray_tube_current,
-            Decimal(189),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraysourcedata_set.get()
+                  .average_xray_tube_current),
+            189,
         )
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .irradeventxraysourcedata_set.get()
-            .focal_spot_size,
-            Decimal(0.6),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraysourcedata_set.get()
+                  .focal_spot_size),
+            0.6,
         )
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraysourcedata_set.get()
-            .focal_spot_size,
-            Decimal(0.6),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .irradeventxraysourcedata_set.get()
+                  .focal_spot_size),
+            0.6,
         )
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[2]
-            .irradeventxraysourcedata_set.get()
-            .focal_spot_size,
-            Decimal(0.6),
-        )
-
-        self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .irradeventxraysourcedata_set.get()
-            .exposure_time,
-            Decimal(19),
-        )
-        self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraysourcedata_set.get()
-            .exposure_time,
-            Decimal(18),
-        )
-        self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .irradeventxraysourcedata_set.get()
-            .focal_spot_size,
-            Decimal(1.2),
-        )
-        self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraysourcedata_set.get()
-            .focal_spot_size,
-            Decimal(1.2),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[2]
+                  .irradeventxraysourcedata_set.get()
+                  .focal_spot_size),
+            0.6,
         )
 
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .irradeventxraysourcedata_set.get()
-            .average_xray_tube_current,
-            Decimal(189),
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraysourcedata_set.get()
+                  .exposure_time),
+            19,
         )
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraysourcedata_set.get()
-            .average_xray_tube_current,
-            Decimal(192),
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .irradeventxraysourcedata_set.get()
+                  .exposure_time),
+            18,
         )
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[2]
-            .irradeventxraysourcedata_set.get()
-            .average_xray_tube_current,
-            Decimal(190),
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraysourcedata_set.get()
+                  .focal_spot_size),
+            1.2,
+        )
+        self.assertAlmostEqual(
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .irradeventxraysourcedata_set.get()
+                  .focal_spot_size),
+            1.2,
         )
 
         self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .irradeventxraysourcedata_set.get()
-            .average_xray_tube_current,
-            Decimal(500),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraysourcedata_set.get()
+                  .average_xray_tube_current),
+            189,
         )
         self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraysourcedata_set.get()
-            .average_xray_tube_current,
-            Decimal(500),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .irradeventxraysourcedata_set.get()
+                  .average_xray_tube_current),
+            192,
+        )
+        self.assertAlmostEqual(
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[2]
+                  .irradeventxraysourcedata_set.get()
+                  .average_xray_tube_current),
+            190,
+        )
+
+        self.assertAlmostEqual(
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraysourcedata_set.get()
+                  .average_xray_tube_current),
+            500,
+        )
+        self.assertAlmostEqual(
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .irradeventxraysourcedata_set.get()
+                  .average_xray_tube_current),
+            500,
         )
 
         self.assertEqual(
             studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .irradeventxraysourcedata_set.get()
-            .xrayfilters_set.get()
-            .xray_filter_material.code_meaning,
+                .projectionxrayradiationdose_set.get()
+                .irradeventxraydata_set.order_by("id")[0]
+                .irradeventxraysourcedata_set.get()
+                .xrayfilters_set.get()
+                .xray_filter_material.code_meaning,
             "Aluminum or Aluminum compound",
         )
         self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .irradeventxraysourcedata_set.get()
-            .xrayfilters_set.get()
-            .xray_filter_thickness_minimum,
-            Decimal(0.94),
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraysourcedata_set.get()
+                  .xrayfilters_set.get()
+                  .xray_filter_thickness_minimum),
+            0.94,
         )
         self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .irradeventxraysourcedata_set.get()
-            .xrayfilters_set.get()
-            .xray_filter_thickness_maximum,
-            Decimal(1.06),
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraysourcedata_set.get()
+                  .xrayfilters_set.get()
+                  .xray_filter_thickness_maximum),
+            1.06,
         )
 
         self.assertEqual(
             studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraysourcedata_set.get()
-            .xrayfilters_set.order_by("id")[0]
-            .xray_filter_material.code_meaning,
+                .projectionxrayradiationdose_set.get()
+                .irradeventxraydata_set.order_by("id")[1]
+                .irradeventxraysourcedata_set.get()
+                .xrayfilters_set.order_by("id")[0]
+                .xray_filter_material.code_meaning,
             "Aluminum or Aluminum compound",
         )
         self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraysourcedata_set.get()
-            .xrayfilters_set.order_by("id")[0]
-            .xray_filter_thickness_minimum,
-            Decimal(0.94),
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .irradeventxraysourcedata_set.get()
+                  .xrayfilters_set.order_by("id")[0]
+                  .xray_filter_thickness_minimum),
+            0.94,
         )
         self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraysourcedata_set.get()
-            .xrayfilters_set.order_by("id")[0]
-            .xray_filter_thickness_maximum,
-            Decimal(1.06),
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .irradeventxraysourcedata_set.get()
+                  .xrayfilters_set.order_by("id")[0]
+                  .xray_filter_thickness_maximum),
+            1.06,
         )
 
         self.assertEqual(
             studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraysourcedata_set.get()
-            .xrayfilters_set.order_by("id")[1]
-            .xray_filter_material.code_meaning,
+                .projectionxrayradiationdose_set.get()
+                .irradeventxraydata_set.order_by("id")[1]
+                .irradeventxraysourcedata_set.get()
+                .xrayfilters_set.order_by("id")[1]
+                .xray_filter_material.code_meaning,
             "Copper or Copper compound",
         )
         self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraysourcedata_set.get()
-            .xrayfilters_set.order_by("id")[1]
-            .xray_filter_thickness_minimum,
-            Decimal(0.194),
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .irradeventxraysourcedata_set.get()
+                  .xrayfilters_set.order_by("id")[1]
+                  .xray_filter_thickness_minimum),
+            0.194,
         )
         self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraysourcedata_set.get()
-            .xrayfilters_set.order_by("id")[1]
-            .xray_filter_thickness_maximum,
-            Decimal(0.206),
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .irradeventxraysourcedata_set.get()
+                  .xrayfilters_set.order_by("id")[1]
+                  .xray_filter_thickness_maximum),
+            0.206,
         )
 
         self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .irradeventxraysourcedata_set.get()
-            .grid_focal_distance,
-            Decimal(1828.8),
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraysourcedata_set.get()
+                  .grid_focal_distance),
+            1828.8,
         )
         self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraysourcedata_set.get()
-            .grid_focal_distance,
-            Decimal(1828.8),
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .irradeventxraysourcedata_set.get()
+                  .grid_focal_distance),
+            1828.8,
         )
 
         # Test exposure data is stored correctly
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .irradeventxraysourcedata_set.get()
-            .exposure_set.get()
-            .exposure,
-            Decimal(1040),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraysourcedata_set.get()
+                  .exposure_set.get()
+                  .exposure),
+            1040,
         )
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraysourcedata_set.get()
-            .exposure_set.get()
-            .exposure,
-            Decimal(2040),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .irradeventxraysourcedata_set.get()
+                  .exposure_set.get()
+                  .exposure),
+            2040,
         )
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[2]
-            .irradeventxraysourcedata_set.get()
-            .exposure_set.get()
-            .exposure,
-            Decimal(5040),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[2]
+                  .irradeventxraysourcedata_set.get()
+                  .exposure_set.get()
+                  .exposure),
+            5040,
         )
 
         self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .irradeventxraysourcedata_set.get()
-            .exposure_set.get()
-            .exposure,
-            Decimal(10 * 1000),
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraysourcedata_set.get()
+                  .exposure_set.get()
+                  .exposure),
+            (10 * 1000),
         )
         self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraysourcedata_set.get()
-            .exposure_set.get()
-            .exposure,
-            Decimal(9 * 1000),
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .irradeventxraysourcedata_set.get()
+                  .exposure_set.get()
+                  .exposure),
+            (9 * 1000),
         )
 
         # Test that irradiation event detector data is stored correctly
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .irradeventxraydetectordata_set.get()
-            .exposure_index,
-            Decimal(51.745061),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraydetectordata_set.get()
+                  .exposure_index),
+            51.745061,
         )
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraydetectordata_set.get()
-            .exposure_index,
-            Decimal(108.843060),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .irradeventxraydetectordata_set.get()
+                  .exposure_index),
+            108.843060,
         )
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[2]
-            .irradeventxraydetectordata_set.get()
-            .exposure_index,
-            Decimal(286.828227),
-        )
-
-        self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .irradeventxraydetectordata_set.get()
-            .target_exposure_index,
-            Decimal(438.469173),
-        )
-        self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraydetectordata_set.get()
-            .target_exposure_index,
-            Decimal(438.469173),
-        )
-        self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[2]
-            .irradeventxraydetectordata_set.get()
-            .target_exposure_index,
-            Decimal(438.469173),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[2]
+                  .irradeventxraydetectordata_set.get()
+                  .exposure_index),
+            286.828227,
         )
 
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .irradeventxraydetectordata_set.get()
-            .deviation_index,
-            Decimal(-9.3),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraydetectordata_set.get()
+                  .target_exposure_index),
+            438.469173,
         )
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraydetectordata_set.get()
-            .deviation_index,
-            Decimal(-6.1),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .irradeventxraydetectordata_set.get()
+                  .target_exposure_index),
+            438.469173,
         )
         self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[2]
-            .irradeventxraydetectordata_set.get()
-            .deviation_index,
-            Decimal(-1.8),
-        )
-
-        self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .irradeventxraydetectordata_set.get()
-            .sensitivity,
-            Decimal(97.213916),
-        )
-        self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraydetectordata_set.get()
-            .sensitivity,
-            Decimal(97.213916),
-        )
-        self.assertAlmostEqual(
-            studies[0]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[2]
-            .irradeventxraydetectordata_set.get()
-            .sensitivity,
-            Decimal(97.213916),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[2]
+                  .irradeventxraydetectordata_set.get()
+                  .target_exposure_index),
+            438.469173,
         )
 
         self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[0]
-            .irradeventxraydetectordata_set.get()
-            .relative_xray_exposure,
-            Decimal(1460),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraydetectordata_set.get()
+                  .deviation_index),
+            (-9.3),
         )
         self.assertAlmostEqual(
-            studies[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraydetectordata_set.get()
-            .relative_xray_exposure,
-            Decimal(1430),
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .irradeventxraydetectordata_set.get()
+                  .deviation_index),
+            (-6.1),
+        )
+        self.assertAlmostEqual(
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[2]
+                  .irradeventxraydetectordata_set.get()
+                  .deviation_index),
+            (-1.8),
+        )
+
+        self.assertAlmostEqual(
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraydetectordata_set.get()
+                  .sensitivity),
+            97.213916,
+        )
+        self.assertAlmostEqual(
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .irradeventxraydetectordata_set.get()
+                  .sensitivity),
+            97.213916,
+        )
+        self.assertAlmostEqual(
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[2]
+                  .irradeventxraydetectordata_set.get()
+                  .sensitivity),
+            97.213916,
+        )
+
+        self.assertAlmostEqual(
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraydetectordata_set.get()
+                  .relative_xray_exposure),
+            1460,
+        )
+        self.assertAlmostEqual(
+            float(studies[1]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[1]
+                  .irradeventxraydetectordata_set.get()
+                  .relative_xray_exposure),
+            1430,
         )
 
         # Test summary fields
-        self.assertAlmostEqual(studies[0].total_dap_a, Decimal(3.28 / 100000))
-        self.assertAlmostEqual(studies[0].total_dap, Decimal(3.28 / 100000))
+        self.assertAlmostEqual(float(studies[0].total_dap_a), (3.28 / 100000))
+        self.assertAlmostEqual(float(studies[0].total_dap), (3.28 / 100000))
         self.assertEqual(studies[0].number_of_events, 3)
         self.assertEqual(studies[0].number_of_planes, 1)
-        self.assertAlmostEqual(studies[1].total_dap_a, Decimal(21.17 / 100000))
-        self.assertAlmostEqual(studies[1].total_dap, Decimal(21.17 / 100000))
+        self.assertAlmostEqual(float(studies[1].total_dap_a), (21.17 / 100000))
+        self.assertAlmostEqual(float(studies[1].total_dap), (21.17 / 100000))
         self.assertEqual(studies[1].number_of_events, 2)
         self.assertEqual(studies[1].number_of_planes, 1)
 
     def test_filter_thickness_order(self):
-        from remapp.models import XrayFilters
 
         all_filters = XrayFilters.objects.order_by("id")
         for exposure in all_filters:
@@ -783,8 +780,8 @@ class ImportCarestreamDR7500(TestCase):
 
         source = (
             study.projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.order_by("id")[1]
-            .irradeventxraysourcedata_set.get()
+                .irradeventxraydata_set.order_by("id")[1]
+                .irradeventxraysourcedata_set.get()
         )
 
         self.assertEqual(
@@ -799,16 +796,16 @@ class ImportCarestreamDR7500(TestCase):
             "Aluminum or Aluminum compound",
         )
         self.assertAlmostEqual(
-            source.xrayfilters_set.order_by("id")[0].xray_filter_thickness_minimum,
-            Decimal(0.94),
+            float(source.xrayfilters_set.order_by("id")[0].xray_filter_thickness_minimum),
+            0.94,
         )
         self.assertEqual(
             source.xrayfilters_set.order_by("id")[1].xray_filter_material.code_meaning,
             "Copper or Copper compound",
         )
         self.assertAlmostEqual(
-            source.xrayfilters_set.order_by("id")[1].xray_filter_thickness_minimum,
-            Decimal(0.194),
+            float(source.xrayfilters_set.order_by("id")[1].xray_filter_thickness_minimum),
+            0.194,
         )
 
 
@@ -817,8 +814,6 @@ class ImportCarestreamDRXRevolution(TestCase):
         """
         Imports a known radigraphic image file derived from a Carestream DRX Revolution image.
         """
-        from remapp.extractors import dx
-        from remapp.models import PatientIDSettings
 
         pid = PatientIDSettings.objects.create()
         pid.name_stored = True
@@ -846,7 +841,6 @@ class ImportCarestreamDRXRevolution(TestCase):
 class ImportDuplicateDX(TestCase):
     def setUp(self):
         """"""
-        from remapp.models import PatientIDSettings
 
         pid = PatientIDSettings.objects.create()
         pid.name_stored = True
@@ -856,8 +850,6 @@ class ImportDuplicateDX(TestCase):
         pid.dob_stored = True
         pid.save()
 
-        from remapp.extractors import dx
-
         dx_ge_xr220_1 = os.path.join("test_files", "DX-Im-GE_XR220-1.dcm")
         root_tests = os.path.dirname(os.path.abspath(__file__))
 
@@ -866,8 +858,8 @@ class ImportDuplicateDX(TestCase):
         original_study_uid = study_one.study_instance_uid
         original_sop_instance_uid = (
             study_one.projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.get()
-            .irradiation_event_uid
+                .irradeventxraydata_set.get()
+                .irradiation_event_uid
         )
         study_one.study_instance_uid = "1.2.3.4.5.6.7.8"
         study_one.projectionxrayradiationdose_set.get().irradeventxraydata_set.get().irradiation_event_uid = (
@@ -894,7 +886,6 @@ class ImportDuplicateDX(TestCase):
 
     def test_duplicate_study_dx(self):
         """Imports second image, original two both have modality set."""
-        from remapp.extractors import dx
 
         dx_ge_xr220_2 = os.path.join("test_files", "DX-Im-GE_XR220-2.dcm")
         root_tests = os.path.dirname(os.path.abspath(__file__))
@@ -924,23 +915,22 @@ class ImportDuplicateDX(TestCase):
 
         number_of_events_study_1 = (
             GeneralStudyModuleAttr.objects.order_by("pk")
-            .first()
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.all()
-            .count()
+                .first()
+                .projectionxrayradiationdose_set.get()
+                .irradeventxraydata_set.all()
+                .count()
         )
         self.assertEqual(number_of_events_study_1, 2)
         number_of_events_study_2 = (
             GeneralStudyModuleAttr.objects.order_by("pk")[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.all()
-            .count()
+                .projectionxrayradiationdose_set.get()
+                .irradeventxraydata_set.all()
+                .count()
         )
         self.assertEqual(number_of_events_study_2, 1)
 
     def test_duplicate_study_dx_second_mod(self):
         """Imports second image, later existing has modality set."""
-        from remapp.extractors import dx
 
         dx_ge_xr220_2 = os.path.join("test_files", "DX-Im-GE_XR220-2.dcm")
         root_tests = os.path.dirname(os.path.abspath(__file__))
@@ -975,23 +965,22 @@ class ImportDuplicateDX(TestCase):
 
         number_of_events_study_1 = (
             GeneralStudyModuleAttr.objects.order_by("pk")
-            .first()
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.all()
-            .count()
+                .first()
+                .projectionxrayradiationdose_set.get()
+                .irradeventxraydata_set.all()
+                .count()
         )
         self.assertEqual(number_of_events_study_1, 1)
         number_of_events_study_2 = (
             GeneralStudyModuleAttr.objects.order_by("pk")[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.all()
-            .count()
+                .projectionxrayradiationdose_set.get()
+                .irradeventxraydata_set.all()
+                .count()
         )
         self.assertEqual(number_of_events_study_2, 2)
 
     def test_duplicate_study_dx_no_mod(self):
         """Imports second image, original two don't have modality set."""
-        from remapp.extractors import dx
 
         dx_ge_xr220_2 = os.path.join("test_files", "DX-Im-GE_XR220-2.dcm")
         root_tests = os.path.dirname(os.path.abspath(__file__))
@@ -1023,16 +1012,71 @@ class ImportDuplicateDX(TestCase):
 
         number_of_events_study_1 = (
             GeneralStudyModuleAttr.objects.order_by("pk")
-            .first()
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.all()
-            .count()
+                .first()
+                .projectionxrayradiationdose_set.get()
+                .irradeventxraydata_set.all()
+                .count()
         )
         self.assertEqual(number_of_events_study_1, 2)
         number_of_events_study_2 = (
             GeneralStudyModuleAttr.objects.order_by("pk")[1]
-            .projectionxrayradiationdose_set.get()
-            .irradeventxraydata_set.all()
-            .count()
+                .projectionxrayradiationdose_set.get()
+                .irradeventxraydata_set.all()
+                .count()
         )
         self.assertEqual(number_of_events_study_2, 1)
+
+class ImportSiemensDX(TestCase):
+    def setUp(self):
+        """
+        Imports a known radigraphic image file derived from a Siemens MultixFD image.
+        """
+
+        pid = PatientIDSettings.objects.create()
+        pid.name_stored = True
+        pid.name_hashed = False
+        pid.id_stored = True
+        pid.id_hashed = False
+        pid.dob_stored = True
+        pid.save()
+
+        dx_siemens_multix = os.path.join(
+            "test_files", "DX-Im-SiemensMultix.dcm"
+        )
+        root_tests = os.path.dirname(os.path.abspath(__file__))
+        dx.dx(os.path.join(root_tests, dx_siemens_multix))
+
+    def test_siemens_dx_filter_data(self):
+        """Check filter type and thickness is extracted"""
+        studies = GeneralStudyModuleAttr.objects.order_by("id")
+
+        # Test that one study have been imported
+        self.assertEqual(studies.count(), 1)
+
+        self.assertEqual(
+            studies[0]
+                .projectionxrayradiationdose_set.get()
+                .irradeventxraydata_set.order_by("id")[0]
+                .irradeventxraysourcedata_set.get()
+                .xrayfilters_set.get()
+                .xray_filter_material.code_meaning,
+            "Copper or Copper compound",
+        )
+        self.assertAlmostEqual(
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraysourcedata_set.get()
+                  .xrayfilters_set.get()
+                  .xray_filter_thickness_minimum),
+            0.2,
+        )
+        self.assertAlmostEqual(
+            float(studies[0]
+                  .projectionxrayradiationdose_set.get()
+                  .irradeventxraydata_set.order_by("id")[0]
+                  .irradeventxraysourcedata_set.get()
+                  .xrayfilters_set.get()
+                  .xray_filter_thickness_maximum),
+            0.2,
+        )
