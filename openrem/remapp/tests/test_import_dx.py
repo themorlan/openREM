@@ -37,6 +37,7 @@ class DXFilterTests(TestCase):
         ds[0x187050] = data_el
         ds.FilterThicknessMinimum = "1.0\\0.1"
         ds.FilterThicknessMaximum = "1.0\\0.1"
+        ds.FilterType = "WEDGE"
 
         g = GeneralStudyModuleAttr.objects.create()
         g.save()
@@ -72,6 +73,7 @@ class DXFilterTests(TestCase):
         Test the material extraction process when there is just one filter
         """
         ds = Dataset()
+        ds.FilterType = "FLAT"
         ds.FilterMaterial = "lead"
         ds.FilterThicknessMinimum = "1.0"
         ds.FilterThicknessMaximum = "1.0"
