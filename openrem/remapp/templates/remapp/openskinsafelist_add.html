@@ -1,4 +1,5 @@
 {% extends "remapp/base.html" %}
+{% load i18n %}
 
 {% block navhelp %}
     <li>
@@ -19,7 +20,7 @@
         <div class="col-md-offset-3 col-md-6">
             <h3>Add a unit's entry to the openSkin calculation safe list</h3>
 
-            {% if admin.admingroup %}
+            {% if admin.admingroup and allow_safelist_modify %}
                 <h4>This unit</h4>
                 <table class="table table-bordered sortable" aria-describedby="This unit details">
                     <thead>
@@ -49,9 +50,13 @@
                     </a>
                 </form>
                 </div>
+            {% elif not admin.admingroup %}
+                <p>
+                    <h4>{% trans "Only users in the Admin group can modify the openSkin safe list." %}</h4>
+                </p>
             {% else %}
                 <p>
-                    <strong>Only users in the Admin group can modify the openSkin safe list.</strong>
+                    <h4>{% trans "Skin dose map settings do not allow safelist to be updated" %}</h4>
                 </p>
             {% endif %}
         </div>

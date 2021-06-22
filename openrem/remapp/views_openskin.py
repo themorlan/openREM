@@ -204,6 +204,7 @@ class SkinSafeListCreate(CreateView):
         )
         context["manufacturer_model"] = manufacturer_model
         context["manufacturer_model_version"] = manufacturer_model_version
+        context["allow_safelist_modify"] = SkinDoseMapCalcSettings.get_solo().allow_safelist_modify
         admin = {
             "openremversion": __version__,
             "docsversion": __docs_version__,
@@ -214,6 +215,10 @@ class SkinSafeListCreate(CreateView):
         return context
 
     def form_valid(self, form):
+        allow_safelist_modify = SkinDoseMapCalcSettings.get_solo().allow_safelist_modify
+        if not allow_safelist_modify:
+            messages.error(self.request, _("Skin dose map set to not allow safelist modification"))
+            return redirect(reverse_lazy("display_names_view"))
         if self.request.user.groups.filter(name="admingroup"):
             if self.request.POST.get("model"):
                 form.instance.software_version = ""
