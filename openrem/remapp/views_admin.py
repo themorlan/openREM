@@ -360,7 +360,8 @@ def display_name_update(request):
                         error_message + "Modality type change is not allowed for"
                         " "
                         + display_name_data.display_name
-                        + ", modality " + modality
+                        + ", modality "
+                        + modality
                         + ". Only changing from DX "
                         "to RF and vice versa is allowed.\n"
                     )
@@ -1190,7 +1191,9 @@ def _get_broken_studies(modality=None):
     """
     if modality == "DX":
         all_mod = GeneralStudyModuleAttr.objects.filter(
-            Q(modality_type__exact="DX") | Q(modality_type__exact="CR") | Q(modality_type__exact="PX")
+            Q(modality_type__exact="DX")
+            | Q(modality_type__exact="CR")
+            | Q(modality_type__exact="PX")
         )
     else:
         all_mod = GeneralStudyModuleAttr.objects.filter(modality_type__exact=modality)
@@ -2714,7 +2717,9 @@ def populate_summary_progress(request):
                 mg_pc = 0
             try:
                 dx = GeneralStudyModuleAttr.objects.filter(
-                    Q(modality_type__exact="DX") | Q(modality_type__exact="CR") | Q(modality_type__exact="PX")
+                    Q(modality_type__exact="DX")
+                    | Q(modality_type__exact="CR")
+                    | Q(modality_type__exact="PX")
                 )
                 if dx.filter(number_of_events_a__isnull=True).count() > 0:
                     dx_complete = dx.filter(number_of_events_a__isnull=False).count()

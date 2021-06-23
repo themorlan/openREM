@@ -14,7 +14,7 @@ from remapp.tests.test_charts_common import (
     check_boxplot_xy,
     check_average_data,
     check_avg_and_counts,
-    user_profile_reset
+    user_profile_reset,
 )
 import numpy as np
 
@@ -396,7 +396,9 @@ class ChartsDX(TestCase):
 
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(chart_data[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=4)
+            np.testing.assert_almost_equal(
+                chart_data[idx]["x"], dataset["x"], decimal=4
+            )
             np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
 
     def test_acq_mas(self):
@@ -609,7 +611,9 @@ class ChartsDX(TestCase):
 
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(chart_data[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=2)
+            np.testing.assert_almost_equal(
+                chart_data[idx]["x"], dataset["x"], decimal=2
+            )
             np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
 
     def test_acq_kvp(self):
@@ -663,7 +667,9 @@ class ChartsDX(TestCase):
         ]
 
         np.testing.assert_equal(chart_data[0]["name"], standard_data[0]["name"])
-        check_boxplot_xy(self, [standard_data[0]["x"]], [standard_data[0]["y"]], chart_data)
+        check_boxplot_xy(
+            self, [standard_data[0]["x"]], [standard_data[0]["y"]], chart_data
+        )
 
         # Repeat the above, but plot a series per system
         self.user.userprofile.plotSeriesPerSystem = True
@@ -741,7 +747,9 @@ class ChartsDX(TestCase):
 
         for idx, dataset in enumerate(standard_data):
             np.testing.assert_equal(chart_data[idx]["name"], dataset["name"])
-            check_boxplot_xy(self, [list(dataset["x"])], [list(dataset["y"])], [chart_data[idx]])
+            check_boxplot_xy(
+                self, [list(dataset["x"])], [list(dataset["y"])], [chart_data[idx]]
+            )
 
     def test_acq_kvp_histogram(self):
         # Test of kVp histogram
@@ -862,7 +870,9 @@ class ChartsDX(TestCase):
 
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(chart_data[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=4)
+            np.testing.assert_almost_equal(
+                chart_data[idx]["x"], dataset["x"], decimal=4
+            )
             np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
 
     def test_acq_freq(self):
@@ -929,7 +939,9 @@ class ChartsDX(TestCase):
         request_system_names = ["All systems"]
         request_names = ["Blank", "XR CHEST"]
         chart_data = self.chart_data["requestMeanDAPData"]["data"]
-        check_series_and_category_names(self, request_names, request_system_names, chart_data)
+        check_series_and_category_names(
+            self, request_names, request_system_names, chart_data
+        )
 
         # Check on mean DAP values and counts
         request_data = [["All systems", 122.25, 2.0], ["All systems", 6.33, 1.0]]
@@ -968,7 +980,9 @@ class ChartsDX(TestCase):
         ]
         request_names = ["Blank", "XR CHEST"]
         chart_data = self.chart_data["requestMeanDAPData"]["data"]
-        check_series_and_category_names(self, request_names, request_system_names, chart_data)
+        check_series_and_category_names(
+            self, request_names, request_system_names, chart_data
+        )
 
         # Check on mean data of series 0
         request_data = [
@@ -1120,7 +1134,9 @@ class ChartsDX(TestCase):
 
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(chart_data[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=4)
+            np.testing.assert_almost_equal(
+                chart_data[idx]["x"], dataset["x"], decimal=4
+            )
             np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
 
     def test_request_freq(self):
@@ -1139,7 +1155,9 @@ class ChartsDX(TestCase):
         request_system_names = ["All systems"]
         request_names = ["Blank", "XR CHEST"]
         chart_data = self.chart_data["requestFrequencyData"]["data"]
-        check_series_and_category_names(self, request_system_names, request_names, chart_data)
+        check_series_and_category_names(
+            self, request_system_names, request_names, chart_data
+        )
 
         # The frequency chart - frequencies
         request_data = [[2], [1]]
@@ -1161,7 +1179,9 @@ class ChartsDX(TestCase):
         ]
         request_names = ["Blank", "XR CHEST"]
         chart_data = self.chart_data["requestFrequencyData"]["data"]
-        check_series_and_category_names(self, request_system_names, request_names, chart_data)
+        check_series_and_category_names(
+            self, request_system_names, request_names, chart_data
+        )
 
         # The frequency chart - frequencies
         request_data = [[1, 1, 0], [0, 0, 1]]
@@ -1187,7 +1207,9 @@ class ChartsDX(TestCase):
         study_system_names = ["All systems"]
         study_names = ["AEC", "Abdomen", "XR CHEST"]
         chart_data = self.chart_data["studyMeanDAPData"]["data"]
-        check_series_and_category_names(self, study_names, study_system_names, chart_data)
+        check_series_and_category_names(
+            self, study_names, study_system_names, chart_data
+        )
 
         # Check on mean DAP values and counts
         study_data = [
@@ -1234,7 +1256,9 @@ class ChartsDX(TestCase):
         ]
         study_names = ["AEC", "Abdomen", "XR CHEST"]
         chart_data = self.chart_data["studyMeanDAPData"]["data"]
-        check_series_and_category_names(self, study_names, study_system_names, chart_data)
+        check_series_and_category_names(
+            self, study_names, study_system_names, chart_data
+        )
 
         # Check on mean data of series 0
         study_data = [
@@ -1427,7 +1451,9 @@ class ChartsDX(TestCase):
 
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(chart_data[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=4)
+            np.testing.assert_almost_equal(
+                chart_data[idx]["x"], dataset["x"], decimal=4
+            )
             np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
 
     def test_study_freq(self):
@@ -1446,7 +1472,9 @@ class ChartsDX(TestCase):
         study_system_names = ["All systems"]
         study_names = ["AEC", "Abdomen", "XR CHEST"]
         chart_data = self.chart_data["studyFrequencyData"]["data"]
-        check_series_and_category_names(self, study_system_names, study_names, chart_data)
+        check_series_and_category_names(
+            self, study_system_names, study_names, chart_data
+        )
 
         # The frequency chart - frequencies
         study_data = [[1], [1], [1]]
@@ -1468,7 +1496,9 @@ class ChartsDX(TestCase):
         ]
         study_names = ["AEC", "Abdomen", "XR CHEST"]
         chart_data = self.chart_data["studyFrequencyData"]["data"]
-        check_series_and_category_names(self, study_system_names, study_names, chart_data)
+        check_series_and_category_names(
+            self, study_system_names, study_names, chart_data
+        )
 
         # The frequency chart - frequencies
         study_data = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
@@ -1914,7 +1944,9 @@ class ChartsDX(TestCase):
         for idx, dataset in enumerate(standard_data):
             np.testing.assert_array_equal(dataset["name"], chart_data[idx]["name"])
             np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=2)
+            np.testing.assert_array_almost_equal(
+                dataset["y"], chart_data[idx]["y"], decimal=2
+            )
 
         # Now test the median data
         standard_data = [
@@ -2177,7 +2209,9 @@ class ChartsDX(TestCase):
         for idx, dataset in enumerate(standard_data):
             np.testing.assert_array_equal(dataset["name"], chart_data[idx]["name"])
             np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=2)
+            np.testing.assert_array_almost_equal(
+                dataset["y"], chart_data[idx]["y"], decimal=2
+            )
 
     def test_acquisition_kvp_over_time(self):
         from datetime import datetime
@@ -2453,7 +2487,9 @@ class ChartsDX(TestCase):
         for idx, dataset in enumerate(standard_data):
             np.testing.assert_array_equal(dataset["name"], chart_data[idx]["name"])
             np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=1)
+            np.testing.assert_array_almost_equal(
+                dataset["y"], chart_data[idx]["y"], decimal=1
+            )
 
         # Now test the median data
         standard_data = [
@@ -2716,7 +2752,9 @@ class ChartsDX(TestCase):
         for idx, dataset in enumerate(standard_data):
             np.testing.assert_array_equal(dataset["name"], chart_data[idx]["name"])
             np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=1)
+            np.testing.assert_array_almost_equal(
+                dataset["y"], chart_data[idx]["y"], decimal=1
+            )
 
     def test_acquisition_mas_over_time(self):
         from datetime import datetime
@@ -3019,7 +3057,9 @@ class ChartsDX(TestCase):
         for idx, dataset in enumerate(standard_data):
             np.testing.assert_array_equal(dataset["name"], chart_data[idx]["name"])
             np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=1)
+            np.testing.assert_array_almost_equal(
+                dataset["y"], chart_data[idx]["y"], decimal=1
+            )
 
         # Now test the median data
         standard_data = [
@@ -3309,7 +3349,9 @@ class ChartsDX(TestCase):
         for idx, dataset in enumerate(standard_data):
             np.testing.assert_array_equal(dataset["name"], chart_data[idx]["name"])
             np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=1)
+            np.testing.assert_array_almost_equal(
+                dataset["y"], chart_data[idx]["y"], decimal=1
+            )
 
     def test_empty_acquisition_dap_vs_mass(self):
         f = self.login_get_filterset()

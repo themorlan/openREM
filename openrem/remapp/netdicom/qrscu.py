@@ -1700,7 +1700,11 @@ def qrscu(
                 )
             )
         if filter_pruning_logs:
-            query.stage += _("<br>Filtering for {pruning_logs}.".format(pruning_logs=filter_pruning_logs[:-2]))
+            query.stage += _(
+                "<br>Filtering for {pruning_logs}.".format(
+                    pruning_logs=filter_pruning_logs[:-2]
+                )
+            )
         if remove_duplicates:
             query.stage += _(
                 "<br>Removing duplicates of previous objects removed {duplicates_removed} studies.".format(
@@ -1708,7 +1712,7 @@ def qrscu(
                 )
             )
         query.save()
-        stage_text = query.stage.replace('<br>', '\n -- ')
+        stage_text = query.stage.replace("<br>", "\n -- ")
         logger.info(f"{query_id_8} {stage_text}")
 
         logger.debug(

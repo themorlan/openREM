@@ -4,7 +4,10 @@
 import numpy as np
 import math
 
-def check_series_and_category_names(chartTests, category_names, series_names, chart_data):
+
+def check_series_and_category_names(
+    chartTests, category_names, series_names, chart_data
+):
     for idx, series_name in enumerate(series_names):
         chartTests.assertEqual(chart_data[idx]["name"], series_name)
         chartTests.assertListEqual(list(chart_data[idx]["x"]), category_names)
@@ -52,7 +55,9 @@ def check_average_data(chartTests, chart_data, standard_data):
     for idx, dataset in enumerate(standard_data):
         chartTests.assertEqual(dataset["name"], chart_data[idx]["name"])
         np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-        np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"], decimal=3)
+        np.testing.assert_array_almost_equal(
+            dataset["y"], chart_data[idx]["y"], decimal=3
+        )
 
         # Check the system names
         np.testing.assert_array_equal(
@@ -64,14 +69,14 @@ def check_average_data(chartTests, chart_data, standard_data):
         np.testing.assert_array_almost_equal(
             [i[1] for i in dataset["customdata"]],
             [i[1] for i in chart_data[idx]["customdata"]],
-            decimal=3
+            decimal=3,
         )
 
         # Check the frequency values
         np.testing.assert_array_almost_equal(
             [i[2] for i in dataset["customdata"]],
             [i[2] for i in chart_data[idx]["customdata"]],
-            decimal=0
+            decimal=0,
         )
 
 
@@ -117,7 +122,9 @@ def check_avg_and_counts(chartTests, comparison_data, chart_data):
             chartTests.assertTrue(math.isnan(chart_data[idx][1]))
         # Otherwise compare the values
         else:
-            chartTests.assertAlmostEqual(chart_data[idx][1], comparison_data[idx][1], places=2)
+            chartTests.assertAlmostEqual(
+                chart_data[idx][1], comparison_data[idx][1], places=2
+            )
         chartTests.assertEqual(chart_data[idx][2], comparison_data[idx][2])
 
 
