@@ -26,7 +26,6 @@ settings.LOGGING["loggers"]["remapp"]["level"] = "DEBUG"
 
 
 class PXFilterTests(TestCase):
-
     def setUp(self):
         from remapp.extractors import dx
         from remapp.models import PatientIDSettings
@@ -62,14 +61,8 @@ class PXFilterTests(TestCase):
         self.assertEqual(studies.count(), 1)
 
         # Test that study level data is recorded correctly
-        self.assertEqual(
-            studies[0].study_date,
-            datetime.date(2021, 4, 12)
-        )
-        self.assertEqual(
-            studies[0].study_time,
-            datetime.time(15, 14, 20)
-        )
+        self.assertEqual(studies[0].study_date, datetime.date(2021, 4, 12))
+        self.assertEqual(studies[0].study_time, datetime.time(15, 14, 20))
         self.assertEqual(
             studies[0].generalequipmentmoduleattr_set.get().institution_name,
             "A County Hospital",
@@ -160,7 +153,6 @@ class PXFilterTests(TestCase):
             .kvp,
             Decimal(85),
         )
-
 
         # Test summary fields
         self.assertAlmostEqual(studies[0].total_dap_a, Decimal(0.81 / 100000))
