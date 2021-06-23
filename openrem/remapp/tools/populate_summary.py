@@ -159,7 +159,9 @@ def populate_summary_dx():
     except ObjectDoesNotExist:
         task = SummaryFields.objects.create(modality_type="DX")
     all_dx = GeneralStudyModuleAttr.objects.filter(
-        Q(modality_type__exact="DX") | Q(modality_type__exact="CR") | Q(modality_type__exact="PX")
+        Q(modality_type__exact="DX")
+        | Q(modality_type__exact="CR")
+        | Q(modality_type__exact="PX")
     ).order_by("pk")
     task.total_studies = all_dx.count()
     to_process_dx = all_dx.filter(number_of_events_a__isnull=True)
