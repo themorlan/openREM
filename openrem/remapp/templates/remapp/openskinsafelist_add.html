@@ -51,13 +51,9 @@
                 </form>
                 </div>
             {% elif not admin.admingroup %}
-                <p>
                     <h4>{% trans "Only users in the Admin group can modify the openSkin safe list." %}</h4>
-                </p>
             {% else %}
-                <p>
                     <h4>{% trans "Skin dose map settings do not allow safelist to be updated" %}</h4>
-                </p>
             {% endif %}
         </div>
     </div>

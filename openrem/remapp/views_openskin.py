@@ -262,6 +262,7 @@ class SkinSafeListUpdate(UpdateView):
         context["manufacturer_model"] = manufacturer_model
         context["manufacturer_model_version"] = manufacturer_model_version
         context["model_exists"] = model_exists
+        context["allow_safelist_modify"] = SkinDoseMapCalcSettings.get_solo().allow_safelist_modify
         admin = {
             "openremversion": __version__,
             "docsversion": __docs_version__,
@@ -270,6 +271,17 @@ class SkinSafeListUpdate(UpdateView):
             admin[group.name] = True
         context["admin"] = admin
         return context
+
+    def form_valid(self, form):
+        allow_safelist_modify = SkinDoseMapCalcSettings.get_solo().allow_safelist_modify
+        if not allow_safelist_modify:
+            messages.error(self.request, _("Skin dose map set to not allow safelist modification"))
+            return redirect(reverse_lazy("display_names_view"))
+        if self.request.user.groups.filter(name="admingroup"):
+            return super().form_valid(form)
+        else:
+            messages.error(self.request, _("Only members of the admin group can change the openSkin safe list"))
+            return redirect(reverse_lazy("display_names_view"))
 
 
 class SkinSafeListDelete(DeleteView):  # pylint: disable=unused-variable
