@@ -15,7 +15,7 @@ from remapp.tests.test_charts_common import (
     check_average_data,
     check_workload_data,
     check_sys_name_x_y_data,
-    user_profile_reset
+    user_profile_reset,
 )
 
 import numpy as np
@@ -387,7 +387,9 @@ class ChartsMG(TestCase):
 
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(chart_data[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=6)
+            np.testing.assert_almost_equal(
+                chart_data[idx]["x"], dataset["x"], decimal=6
+            )
             np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
 
     def test_acq_freq(self):

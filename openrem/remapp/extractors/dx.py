@@ -202,29 +202,37 @@ def _xray_filters_prep(dataset, source):
         _xrayfiltersnone(source)
         return
     # Implicit no filter, just ignore
-    if xray_filter_material is None:
+    if xray_filter_type is None:
         return
 
     # Get multiple filters into pydicom MultiValue or lists
-    if "," in xray_filter_material and not isinstance(xray_filter_material, MultiValue):
+    if (
+        xray_filter_material
+        and "," in xray_filter_material
+        and not isinstance(xray_filter_material, MultiValue)
+    ):
         xray_filter_material = xray_filter_material.split(",")
 
     xray_filter_thickness_minimum = get_value_kw("FilterThicknessMinimum", dataset)
     xray_filter_thickness_maximum = get_value_kw("FilterThicknessMaximum", dataset)
-    if not isinstance(xray_filter_thickness_minimum, (MultiValue, list)):
+    if xray_filter_thickness_minimum and not isinstance(
+        xray_filter_thickness_minimum, (MultiValue, list)
+    ):
         try:
             float(xray_filter_thickness_minimum)
         except ValueError:
             if "," in xray_filter_thickness_minimum:
                 xray_filter_thickness_minimum = xray_filter_thickness_minimum.split(",")
-    if not isinstance(xray_filter_thickness_maximum, (MultiValue, list)):
+    if xray_filter_thickness_maximum and not isinstance(
+        xray_filter_thickness_maximum, (MultiValue, list)
+    ):
         try:
             float(xray_filter_thickness_maximum)
         except ValueError:
             if "," in xray_filter_thickness_maximum:
                 xray_filter_thickness_maximum = xray_filter_thickness_maximum.split(",")
 
-    if isinstance(xray_filter_material, (MultiValue, list)):
+    if xray_filter_material and isinstance(xray_filter_material, (MultiValue, list)):
         _xray_filters_multiple(
             xray_filter_material,
             xray_filter_thickness_maximum,
