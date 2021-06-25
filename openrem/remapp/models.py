@@ -103,10 +103,6 @@ class SkinDoseMapCalcSettings(SingletonModel):
     calc_on_import = models.BooleanField(
         default=True, verbose_name="Calculate skin dose map on import?"
     )
-
-    overrule_safelist = models.BooleanField(
-        default=False, verbose_name="Ignore systems safelist?"
-    )
     allow_safelist_modify = models.BooleanField(default=False, verbose_name="Allow safelist to be updated?")
 
     def get_absolute_url(self):
