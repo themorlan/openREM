@@ -72,7 +72,10 @@ def make_skin_map(study_pk=None):
         except ObjectDoesNotExist:
             entry = None
         if entry is not None and entry.software_version:
-            if study.generalequipmentmoduleattr_set.get().software_versions != entry.software_version:
+            if (
+                study.generalequipmentmoduleattr_set.get().software_versions
+                != entry.software_version
+            ):
                 entry = None
         if entry is None:
             save_openskin_structure(
