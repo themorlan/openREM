@@ -310,6 +310,7 @@ class SkinSafeListDelete(DeleteView):  # pylint: disable=unused-variable
                 model_and_version = True
         context["equipment"] = rf_names
         context["model_and_version"] = model_and_version
+        context["allow_safelist_modify"] = SkinDoseMapCalcSettings.get_solo().allow_safelist_modify
         admin = {
             "openremversion": __version__,
             "docsversion": __docs_version__,
@@ -318,3 +319,16 @@ class SkinSafeListDelete(DeleteView):  # pylint: disable=unused-variable
             admin[group.name] = True
         context["admin"] = admin
         return context
+
+    def delete(self, request, *args, **kwargs):
+        allow_safelist_modify = SkinDoseMapCalcSettings.get_solo().allow_safelist_modify
+        if not allow_safelist_modify:
+            messages.error(self.request, _("Skin dose map set to not allow safelist modification"))
+            return redirect(reverse_lazy("display_names_view"))
+        if self.request.user.groups.filter(name="admingroup"):
+            self.object = self.get_object()
+            self.object.delete()
+            return redirect(reverse_lazy("display_names_view"))
+        else:
+            messages.error(self.request, _("Only members of the admin group can change the openSkin safe list"))
+            return redirect(reverse_lazy("display_names_view"))
