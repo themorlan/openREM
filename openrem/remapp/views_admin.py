@@ -238,6 +238,9 @@ def display_names_view(request):
                 | Q(
                     generalequipmentmoduleattr__general_study_module_attributes__modality_type="CR"
                 )
+                | Q(
+                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
+                )
             )
         )
     ).distinct()
@@ -268,6 +271,9 @@ def display_names_view(request):
             )
             & ~Q(
                 generalequipmentmoduleattr__general_study_module_attributes__modality_type="CR"
+            )
+            & ~Q(
+                generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
             )
         )
     ).distinct()
@@ -357,8 +363,10 @@ def display_name_update(request):
                         error_message + "Modality type change is not allowed for"
                         " "
                         + display_name_data.display_name
-                        + " (only changing from DX "
-                        "to RF and vice versa is allowed).\n"
+                        + ", modality "
+                        + modality
+                        + ". Only changing from DX "
+                        "to RF and vice versa is allowed.\n"
                     )
             display_name_data.save()
 
@@ -437,6 +445,9 @@ def display_name_populate(request):
                         | Q(
                             generalequipmentmoduleattr__general_study_module_attributes__modality_type="CR"
                         )
+                        | Q(
+                            generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
+                        )
                     )
                 )
             ).distinct()
@@ -469,6 +480,9 @@ def display_name_populate(request):
                 )
                 & ~Q(
                     generalequipmentmoduleattr__general_study_module_attributes__modality_type="CR"
+                )
+                & ~Q(
+                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
                 )
             ).distinct()
             dual = False
@@ -515,6 +529,9 @@ def display_name_modality_filter(equip_name_pk=None, modality=None):
             | Q(
                 generalequipmentmoduleattr__general_study_module_attributes__modality_type__exact="CR"
             )
+            | Q(
+                generalequipmentmoduleattr__general_study_module_attributes__modality_type__exact="PX"
+            )
         )
     else:  # modality == 'OT'
         studies = (
@@ -522,6 +539,7 @@ def display_name_modality_filter(equip_name_pk=None, modality=None):
             .exclude(modality_type__exact="MG")
             .exclude(modality_type__exact="DX")
             .exclude(modality_type__exact="CR")
+            .exclude(modality_type__exact="PX")
             .exclude(modality_type__exact="RF")
         )
     return studies, count_all
@@ -804,14 +822,16 @@ def reset_dual(pk=None):
         studies.exclude(modality_type__exact="DX")
         .exclude(modality_type__exact="RF")
         .exclude(modality_type__exact="CR")
+        .exclude(modality_type__exact="PX")
     )
-    message_start = "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are " "DX, {3} are CR, {4} are RF and {5} are something else before processing,".format(  # pylint: disable=line-too-long
+    message_start = "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are " "DX, {3} are CR, {4} are PX, {5} are RF and {6} are something else before processing,".format(  # pylint: disable=line-too-long
         studies[0]
         .generalequipmentmoduleattr_set.get()
         .unique_equipment_name.display_name,
         studies.count(),
         studies.filter(modality_type__exact="DX").count(),
         studies.filter(modality_type__exact="CR").count(),
+        studies.filter(modality_type__exact="PX").count(),
         studies.filter(modality_type__exact="RF").count(),
         not_dx_rf_cr.count(),
     )
@@ -885,10 +905,12 @@ def reset_dual(pk=None):
         studies.exclude(modality_type__exact="DX")
         .exclude(modality_type__exact="RF")
         .exclude(modality_type__exact="CR")
+        .exclude(modality_type__exact="PX")
     )
-    message_finish = "and after processing  {0} are DX, {1} are CR, {2} are RF and {3} are something else".format(
+    message_finish = "and after processing  {0} are DX, {1} are CR, {2} are PX, {3} are RF and {4} are something else".format(
         studies.filter(modality_type="DX").count(),
         studies.filter(modality_type="CR").count(),
+        studies.filter(modality_type="PX").count(),
         studies.filter(modality_type="RF").count(),
         not_dx_rf_cr.count(),
     )
@@ -1218,7 +1240,9 @@ def _get_broken_studies(modality=None):
     """
     if modality == "DX":
         all_mod = GeneralStudyModuleAttr.objects.filter(
-            Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
+            Q(modality_type__exact="DX")
+            | Q(modality_type__exact="CR")
+            | Q(modality_type__exact="PX")
         )
     else:
         all_mod = GeneralStudyModuleAttr.objects.filter(modality_type__exact=modality)
@@ -1722,9 +1746,6 @@ def required_ct_acquisition_types(user_profile):
         ct_acquisition_types.append(CommonVariables.CT_FREE_ACQUISITION_TYPE)
     if user_profile.plotCTConeBeamAcquisition:
         ct_acquisition_types.append(CommonVariables.CT_CONE_BEAM_ACQUISITION)
-
-    if user_profile.plotCaseInsensitiveCategories:
-        ct_acquisition_types = [entry.lower() for entry in ct_acquisition_types]
 
     return ct_acquisition_types
 
@@ -2745,7 +2766,9 @@ def populate_summary_progress(request):
                 mg_pc = 0
             try:
                 dx = GeneralStudyModuleAttr.objects.filter(
-                    Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
+                    Q(modality_type__exact="DX")
+                    | Q(modality_type__exact="CR")
+                    | Q(modality_type__exact="PX")
                 )
                 if dx.filter(number_of_events_a__isnull=True).count() > 0:
                     dx_complete = dx.filter(number_of_events_a__isnull=False).count()

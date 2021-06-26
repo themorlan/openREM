@@ -3,8 +3,10 @@ OpenREM version history
 =======================
 
 
-1.0.0b1 (2020-xx-xx)
+1.0.0b1 (2021-xx-xx)
 --------------------
+* :issue:`905`  Imports: fixed filter extraction code not working for Siemens Multix DX
+* :issue:`904`  Testing: bumped Python image from 3.6 to 3.8
 * :issue:`901`  Charts: fixed issue where mammography mAs values were displayed 1000x too high on scatter plot
 * :issue:`897`  Docker: fixed permissions for PixelMed - now using root throughout
 * :issue:`896`  Imports: enabling import of DX with text string in PatientSize field
@@ -76,6 +78,7 @@ OpenREM version history
 * :issue:`787`  Interface: fixed login error
 * :issue:`777`  Updated OpenREM to use pydicom 1.3
 * :issue:`744`  Added overwrite mode to size import
+* :issue:`678`  Enabled import of PX modality panoramic exam data - they appear in the Radiographic section
 * :issue:`530`  Updated OpenREM to use pynetdicom 1.4
 * :issue:`513`  Internationalization: first translation strings added to documentation
 * :issue:`512`  Internationalization: first translation strings added to interface

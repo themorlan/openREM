@@ -554,10 +554,24 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         code_values_to_keep = [j for sub in code_values_to_keep for j in sub]
 
         if not code_values_to_keep and not code_meanings_to_keep:
-            chart_message = _("<br/>This may be because there are no acquisition types selected in the chart options. "
-                              "Try selecting at least one acquisition type.")
+            chart_message = _(
+                "<br/>This may be because there are no acquisition types selected in the chart options. "
+                "Try selecting at least one acquisition type."
+            )
         else:
             chart_message = ""
+
+        # Make the code meanings and values lower case if the user has selected case-insensitive categories. The
+        # create_dataframe method will make all the code meaning and value categories in the queryset lower case,
+        # so the meanings and values to keep also have to be made lower case otherwise the df.isin command on the
+        # next line does not work as expected.
+        if user_profile.plotCaseInsensitiveCategories:
+            code_meanings_to_keep = [
+                each_string.lower() for each_string in code_meanings_to_keep
+            ]
+            code_values_to_keep = [
+                each_string.lower() for each_string in code_values_to_keep
+            ]
 
         df = df[
             df.isin(
