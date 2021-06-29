@@ -56,7 +56,6 @@ from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from packaging import version
 
 from .extractors.extract_common import populate_rf_delta_weeks_summary
 from .forms import (
@@ -71,7 +70,6 @@ from .forms import (
     NotPatientNameForm,
     RFChartOptionsDisplayForm,
     RFHighDoseFluoroAlertsForm,
-    SkinDoseMapCalcSettingsForm,
     UpdateDisplayNamesForm,
 )
 from .models import (
@@ -90,12 +88,10 @@ from .models import (
     PKsForSummedRFDoseStudiesInDeltaWeeks,
     PatientIDSettings,
     SizeUpload,
-    SkinDoseMapCalcSettings,
     SummaryFields,
     UniqueEquipmentNames,
     UpgradeStatus,
     create_user_profile,
-    OpenSkinSafeList,
     CommonVariables,
 )
 from .tools.get_values import get_keys_by_value
@@ -575,52 +571,6 @@ def display_name_last_date_and_count(request):
         return_html = {"count_html": count_html, "latest_html": latest_html}
         html_dict = json.dumps(return_html)
         return HttpResponse(html_dict, content_type="application/json")
-
-
-def display_name_skin_enabled(request):
-    """AJAX view to return whether an entry in the equipment database is enabled for skin dose map calculations
-
-    :param request: Request object containing modality and equipment table ID
-    :return: HTML table data element
-    """
-
-    if request.is_ajax():
-        data = request.POST
-        equip_name_pk = data.get("equip_name_pk")
-
-        equipment = UniqueEquipmentNames.objects.get(pk=int(equip_name_pk))
-        try:
-            entry = OpenSkinSafeList.objects.get(
-                manufacturer=equipment.manufacturer,
-                manufacturer_model_name=equipment.manufacturer_model_name,
-            )
-        except ObjectDoesNotExist:
-            entry = None
-        # When a software version is specified in the fixture file, check whether its equal or newer
-        if entry is not None and entry.software_version:
-            if version.parse(
-                    equipment.software_versions
-            ) <= version.parse(entry.software_version):
-                entry = None
-
-        if entry:
-            skin_map_enabled = True
-        else:
-            skin_map_enabled = False
-
-        template = "remapp/displayname-skinmap.html"
-
-        return render(
-            request,
-            template,
-            {"skin_map_enabled": skin_map_enabled},
-        )
-    else:
-        return render(
-            request,
-            "remapp/displayname-skinmap.html",
-            {"skin_map_enabled": True},
-        )
 
 
 @login_required
@@ -2497,36 +2447,6 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
         return_structure = {"success": True, "messages": django_messages}
 
         return JsonResponse(return_structure, safe=False)
-
-
-class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
-    """UpdateView for configuring the skin dose map calculation choices"""
-
-    try:
-        SkinDoseMapCalcSettings.get_solo()  # will create item if it doesn't exist
-    except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
-        pass
-
-    model = SkinDoseMapCalcSettings
-    form_class = SkinDoseMapCalcSettingsForm
-
-    def get_context_data(self, **context):
-        context = super(SkinDoseMapCalcSettingsUpdate, self).get_context_data(**context)
-        admin = {
-            "openremversion": __version__,
-            "docsversion": __docs_version__,
-        }
-        for group in self.request.user.groups.all():
-            admin[group.name] = True
-        context["admin"] = admin
-        return context
-
-    def form_valid(self, form):
-        if form.has_changed():
-            messages.success(self.request, "Skin dose map settings have been updated")
-        else:
-            messages.info(self.request, "No changes made")
-        return super(SkinDoseMapCalcSettingsUpdate, self).form_valid(form)
 
 
 class NotPatientNameCreate(CreateView):  # pylint: disable=unused-variable

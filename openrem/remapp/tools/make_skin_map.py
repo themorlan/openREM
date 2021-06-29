@@ -32,7 +32,6 @@ import os
 import sys
 import logging
 import django
-from packaging import version
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -65,31 +64,28 @@ def make_skin_map(study_pk=None):
 
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
-        if not SkinDoseMapCalcSettings.objects.values_list(
-            "overrule_safelist", flat=True
-        )[0]:
-            try:
-                entry = OpenSkinSafeList.objects.get(
-                    manufacturer=study.generalequipmentmoduleattr_set.get().manufacturer,
-                    manufacturer_model_name=study.generalequipmentmoduleattr_set.get().manufacturer_model_name,
-                )
-            except ObjectDoesNotExist:
+        try:
+            entry = OpenSkinSafeList.objects.get(
+                manufacturer=study.generalequipmentmoduleattr_set.get().manufacturer,
+                manufacturer_model_name=study.generalequipmentmoduleattr_set.get().manufacturer_model_name,
+            )
+        except ObjectDoesNotExist:
+            entry = None
+        if entry is not None and entry.software_version:
+            if (
+                study.generalequipmentmoduleattr_set.get().software_versions
+                != entry.software_version
+            ):
                 entry = None
-            # When a software version is specified in the fixture file, check whether its equal or newer
-            if entry is not None and entry.software_version:
-                if version.parse(
-                    study.generalequipmentmoduleattr_set.get().software_versions
-                ) <= version.parse(entry.software_version):
-                    entry = None
-            if entry is None:
-                save_openskin_structure(
-                    study,
-                    {
-                        "skin_map": [0, 0],
-                        "skin_map_version": __skin_map_version__,
-                    },
-                )
-                return
+        if entry is None:
+            save_openskin_structure(
+                study,
+                {
+                    "skin_map": [0, 0],
+                    "skin_map_version": __skin_map_version__,
+                },
+            )
+            return
 
         pat_mass_source = "assumed"
         try:
