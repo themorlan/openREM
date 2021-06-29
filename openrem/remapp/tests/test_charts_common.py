@@ -53,38 +53,29 @@ def check_boxplot_xy(chartTests, x_data, y_data, chart_data):
 
 def check_average_data(chartTests, chart_data, standard_data):
     for idx, dataset in enumerate(standard_data):
+        # Check the name
         chartTests.assertEqual(dataset["name"], chart_data[idx]["name"])
+
+        # Check the x data labels
         np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
+
+        # Check the y average values
         np.testing.assert_array_almost_equal(
             dataset["y"], chart_data[idx]["y"], decimal=3
         )
 
-        # Check the system names
-        np.testing.assert_array_equal(
-            [i[0] for i in dataset["customdata"]],
-            [i[0] for i in chart_data[idx]["customdata"]],
-        )
-
-        # Check the average values
-        np.testing.assert_array_almost_equal(
-            [i[1] for i in dataset["customdata"]],
-            [i[1] for i in chart_data[idx]["customdata"]],
-            decimal=3,
-        )
-
-        # Check the frequency values
-        np.testing.assert_array_almost_equal(
-            [i[2] for i in dataset["customdata"]],
-            [i[2] for i in chart_data[idx]["customdata"]],
-            decimal=0,
-        )
+        # Check the system names and frequencies
+        for i, entry in enumerate(dataset["customdata"]):
+            np.testing.assert_array_equal(list(np.take(entry, [0, 2])), chart_data[idx]["customdata"][i])
 
 
 def check_workload_data(chartTests, chart_data, standard_data):
     for idx, dataset in enumerate(standard_data):
-        np.testing.assert_array_equal(
-            dataset["customdata"], chart_data[idx]["customdata"]
-        )
+        for i, entry in enumerate(dataset["customdata"]):
+            np.testing.assert_array_equal(
+                list(entry), chart_data[idx]["customdata"][i]
+            )
+
         np.testing.assert_array_equal(
             dataset["hovertext"], chart_data[idx]["hovertext"]
         )
@@ -117,15 +108,19 @@ def check_sys_name_x_y_data(chartTests, chart_data, standard_data):
 
 def check_avg_and_counts(chartTests, comparison_data, chart_data):
     for idx in range(len(comparison_data)):
-        # If the comparison value is a nan then check that the chart value is too
+
+        # If the comparison average value is a nan then check that the chart value is too
         if math.isnan(comparison_data[idx][1]):
-            chartTests.assertTrue(math.isnan(chart_data[idx][1]))
-        # Otherwise compare the values
+            chartTests.assertTrue(math.isnan(chart_data["y"][idx]))
+
+        # Otherwise compare the average values
         else:
             chartTests.assertAlmostEqual(
-                chart_data[idx][1], comparison_data[idx][1], places=2
+                chart_data["y"][idx], comparison_data[idx][1], places=2
             )
-        chartTests.assertEqual(chart_data[idx][2], comparison_data[idx][2])
+
+        # Compare the frequency (count) data
+        chartTests.assertEqual(chart_data["customdata"][idx][1], comparison_data[idx][2])
 
 
 def user_profile_reset(chartTests):

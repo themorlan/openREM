@@ -175,15 +175,13 @@ class ChartsDX(TestCase):
         check_series_and_category_names(self, acq_names, acq_system_names, chart_data)
 
         # Check on mean DAP values and counts
-        acq_data = [[0.0, 10.93, 3.0], [0.0, 105.85, 2.0], [0.0, 6.33, 1.0]]
-        chart_data = self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"]
+        acq_data = [[0.0, 10.93, 3], [0.0, 105.85, 2], [0.0, 6.33, 1]]
+        chart_data = self.chart_data["acquisitionMeanDAPData"]["data"][0]
         check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on median DAP values and counts
-        acq_data = [[0.0, 8.2, 3.0], [0.0, 105.85, 2.0], [0.0, 6.33, 1.0]]
-        chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][0][
-            "customdata"
-        ]
+        acq_data = [[0.0, 8.2, 3], [0.0, 105.85, 2], [0.0, 6.33, 1]]
+        chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][0]
         check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on the boxplot data system names
@@ -216,39 +214,33 @@ class ChartsDX(TestCase):
         check_series_and_category_names(self, acq_names, acq_system_names, chart_data)
 
         # Check on mean data of series 0
-        acq_data = [[0.0, np.nan, 0.0], [0.0, 105.85, 2.0], [0.0, np.nan, 0.0]]
-        chart_data = self.chart_data["acquisitionMeanDAPData"]["data"][0]["customdata"]
+        acq_data = [[0.0, np.nan, 0], [0.0, 105.85, 2], [0.0, np.nan, 0]]
+        chart_data = self.chart_data["acquisitionMeanDAPData"]["data"][0]
         check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on mean data of series 1
-        acq_data = [[1.0, 10.93, 3.0], [1.0, np.nan, 0.0], [1.0, np.nan, 0.0]]
-        chart_data = self.chart_data["acquisitionMeanDAPData"]["data"][1]["customdata"]
+        acq_data = [[1.0, 10.93, 3], [1.0, np.nan, 0], [1.0, np.nan, 0]]
+        chart_data = self.chart_data["acquisitionMeanDAPData"]["data"][1]
         check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on mean data of series 2
-        acq_data = [[2.0, np.nan, 0.0], [2.0, np.nan, 0.0], [2.0, 6.33, 1.0]]
-        chart_data = self.chart_data["acquisitionMeanDAPData"]["data"][2]["customdata"]
+        acq_data = [[2.0, np.nan, 0], [2.0, np.nan, 0], [2.0, 6.33, 1]]
+        chart_data = self.chart_data["acquisitionMeanDAPData"]["data"][2]
         check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on median values of series 0
-        acq_data = [[0.0, np.nan, 0.0], [0.0, 105.85, 2.0], [0.0, np.nan, 0.0]]
-        chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][0][
-            "customdata"
-        ]
+        acq_data = [[0.0, np.nan, 0], [0.0, 105.85, 2], [0.0, np.nan, 0]]
+        chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][0]
         check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on median values of series 1
-        acq_data = [[1.0, 8.2, 3.0], [1.0, np.nan, 0.0], [1.0, np.nan, 0.0]]
-        chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][1][
-            "customdata"
-        ]
+        acq_data = [[1.0, 8.2, 3], [1.0, np.nan, 0], [1.0, np.nan, 0]]
+        chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][1]
         check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on median values of series 2
-        acq_data = [[2.0, np.nan, 0.0], [2.0, np.nan, 0.0], [2.0, 6.33, 1.0]]
-        chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][2][
-            "customdata"
-        ]
+        acq_data = [[2.0, np.nan, 0], [2.0, np.nan, 0], [2.0, 6.33, 1]]
+        chart_data = self.chart_data["acquisitionMedianDAPData"]["data"][2]
         check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on the boxplot data system names
@@ -423,15 +415,13 @@ class ChartsDX(TestCase):
         check_series_and_category_names(self, acq_names, acq_system_names, chart_data)
 
         # Check on mean data
-        acq_data = [[0.0, 2.71, 3.0], [0.0, 9.5, 2.0], [0.0, 1.0, 1.0]]
-        chart_data = self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"]
+        acq_data = [[0.0, 2.71, 3], [0.0, 9.5, 2], [0.0, 1.0, 1]]
+        chart_data = self.chart_data["acquisitionMeanmAsData"]["data"][0]
         check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on median values
-        acq_data = [[0.0, 2.04, 3.0], [0.0, 9.5, 2.0], [0.0, 1.0, 1.0]]
-        chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][0][
-            "customdata"
-        ]
+        acq_data = [[0.0, 2.04, 3], [0.0, 9.5, 2], [0.0, 1.0, 1]]
+        chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][0]
         check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on the boxplot system names
@@ -464,39 +454,33 @@ class ChartsDX(TestCase):
         check_series_and_category_names(self, acq_names, acq_system_names, chart_data)
 
         # Check on mean data of series 0
-        acq_data = [[0.0, np.nan, 0.0], [0.0, 9.5, 2.0], [0.0, np.nan, 0.0]]
-        chart_data = self.chart_data["acquisitionMeanmAsData"]["data"][0]["customdata"]
+        acq_data = [[0.0, np.nan, 0], [0.0, 9.5, 2], [0.0, np.nan, 0]]
+        chart_data = self.chart_data["acquisitionMeanmAsData"]["data"][0]
         check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on mean data of series 1
-        acq_data = [[1.0, 2.71, 3.0], [1.0, np.nan, 0.0], [1.0, np.nan, 0.0]]
-        chart_data = self.chart_data["acquisitionMeanmAsData"]["data"][1]["customdata"]
+        acq_data = [[1.0, 2.71, 3], [1.0, np.nan, 0], [1.0, np.nan, 0]]
+        chart_data = self.chart_data["acquisitionMeanmAsData"]["data"][1]
         check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on mean data of series 2
-        acq_data = [[2.0, np.nan, 0.0], [2.0, np.nan, 0.0], [2.0, 1.00, 1.0]]
-        chart_data = self.chart_data["acquisitionMeanmAsData"]["data"][2]["customdata"]
+        acq_data = [[2.0, np.nan, 0], [2.0, np.nan, 0], [2.0, 1.00, 1]]
+        chart_data = self.chart_data["acquisitionMeanmAsData"]["data"][2]
         check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on median values of series 0
-        acq_data = [[0.0, np.nan, 0.0], [0.0, 9.5, 2.0], [0.0, np.nan, 0.0]]
-        chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][0][
-            "customdata"
-        ]
+        acq_data = [[0.0, np.nan, 0], [0.0, 9.5, 2], [0.0, np.nan, 0]]
+        chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][0]
         check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on median values of series 1
-        acq_data = [[1.0, 2.04, 3.0], [1.0, np.nan, 0.0], [1.0, np.nan, 0.0]]
-        chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][1][
-            "customdata"
-        ]
+        acq_data = [[1.0, 2.04, 3], [1.0, np.nan, 0], [1.0, np.nan, 0]]
+        chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][1]
         check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on median data of series 2
-        acq_data = [[2.0, np.nan, 0.0], [2.0, np.nan, 0.0], [2.0, 1.00, 1.0]]
-        chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][2][
-            "customdata"
-        ]
+        acq_data = [[2.0, np.nan, 0], [2.0, np.nan, 0], [2.0, 1.00, 1]]
+        chart_data = self.chart_data["acquisitionMedianmAsData"]["data"][2]
         check_avg_and_counts(self, acq_data, chart_data)
 
         # Check on the boxplot data system names
@@ -638,15 +622,15 @@ class ChartsDX(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["All systems", 69.82, 3.0],
-                        ["All systems", 80.0, 2.0],
-                        ["All systems", 100.0, 1.0],
+                        ["All systems", 69.82, 3],
+                        ["All systems", 80.0, 2],
+                        ["All systems", 100.0, 1],
                     ],
                     dtype=object,
                 ),
                 "name": "All systems",
                 "x": np.array(["ABD_1_VIEW", "AEC", "AP"], dtype=object),
-                "y": np.array([69.82, 80.0, 100.0]),
+                "y": np.array([69.82, 80.0, 100]),
             }
         ]
 
@@ -684,9 +668,9 @@ class ChartsDX(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["Carestream Clinic KODAK7500", np.nan, 0.0],
-                        ["Carestream Clinic KODAK7500", 80.0, 2.0],
-                        ["Carestream Clinic KODAK7500", np.nan, 0.0],
+                        ["Carestream Clinic KODAK7500", np.nan, 0],
+                        ["Carestream Clinic KODAK7500", 80.0, 2],
+                        ["Carestream Clinic KODAK7500", np.nan, 0],
                     ],
                     dtype=object,
                 ),
@@ -697,9 +681,9 @@ class ChartsDX(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["Digital Mobile Hospital 01234MOB54", 69.82, 3.0],
-                        ["Digital Mobile Hospital 01234MOB54", np.nan, 0.0],
-                        ["Digital Mobile Hospital 01234MOB54", np.nan, 0.0],
+                        ["Digital Mobile Hospital 01234MOB54", 69.82, 3],
+                        ["Digital Mobile Hospital 01234MOB54", np.nan, 0],
+                        ["Digital Mobile Hospital 01234MOB54", np.nan, 0],
                     ],
                     dtype=object,
                 ),
@@ -710,9 +694,9 @@ class ChartsDX(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["LICARDR0004", np.nan, 0.0],
-                        ["LICARDR0004", np.nan, 0.0],
-                        ["LICARDR0004", 100.0, 1.0],
+                        ["LICARDR0004", np.nan, 0],
+                        ["LICARDR0004", np.nan, 0],
+                        ["LICARDR0004", 100.0, 1],
                     ],
                     dtype=object,
                 ),
@@ -944,13 +928,13 @@ class ChartsDX(TestCase):
         )
 
         # Check on mean DAP values and counts
-        request_data = [["All systems", 122.25, 2.0], ["All systems", 6.33, 1.0]]
-        chart_data = self.chart_data["requestMeanDAPData"]["data"][0]["customdata"]
+        request_data = [["All systems", 122.25, 2], ["All systems", 6.33, 1]]
+        chart_data = self.chart_data["requestMeanDAPData"]["data"][0]
         check_avg_and_counts(self, request_data, chart_data)
 
         # Check on median DAP values and counts - series 0
-        request_data = [["All systems", 122.25, 2.0], ["All systems", 6.33, 1.0]]
-        chart_data = self.chart_data["requestMedianDAPData"]["data"][0]["customdata"]
+        request_data = [["All systems", 122.25, 2], ["All systems", 6.33, 1]]
+        chart_data = self.chart_data["requestMedianDAPData"]["data"][0]
         check_avg_and_counts(self, request_data, chart_data)
 
         # Check on the boxplot data system names
@@ -986,44 +970,44 @@ class ChartsDX(TestCase):
 
         # Check on mean data of series 0
         request_data = [
-            ["Carestream Clinic KODAK7500", 211.7, 1.0],
-            ["Carestream Clinic KODAK7500", np.nan, 0.0],
+            ["Carestream Clinic KODAK7500", 211.7, 1],
+            ["Carestream Clinic KODAK7500", np.nan, 0],
         ]
-        chart_data = self.chart_data["requestMeanDAPData"]["data"][0]["customdata"]
+        chart_data = self.chart_data["requestMeanDAPData"]["data"][0]
         check_avg_and_counts(self, request_data, chart_data)
 
         # Check on mean data of series 1
         request_data = [
-            ["Digital Mobile Hospital 01234MOB54", 32.8, 1.0],
-            ["Digital Mobile Hospital 01234MOB54", np.nan, 0.0],
+            ["Digital Mobile Hospital 01234MOB54", 32.8, 1],
+            ["Digital Mobile Hospital 01234MOB54", np.nan, 0],
         ]
-        chart_data = self.chart_data["requestMeanDAPData"]["data"][1]["customdata"]
+        chart_data = self.chart_data["requestMeanDAPData"]["data"][1]
         check_avg_and_counts(self, request_data, chart_data)
 
         # Check on mean data of series 2
-        request_data = [["LICARDR0004", np.nan, 0.0], ["LICARDR0004", 6.33, 1.0]]
-        chart_data = self.chart_data["requestMeanDAPData"]["data"][2]["customdata"]
+        request_data = [["LICARDR0004", np.nan, 0], ["LICARDR0004", 6.33, 1]]
+        chart_data = self.chart_data["requestMeanDAPData"]["data"][2]
         check_avg_and_counts(self, request_data, chart_data)
 
         # Check on median values of series 0
         request_data = [
-            ["Carestream Clinic KODAK7500", 211.7, 1.0],
-            ["Carestream Clinic KODAK7500", np.nan, 0.0],
+            ["Carestream Clinic KODAK7500", 211.7, 1],
+            ["Carestream Clinic KODAK7500", np.nan, 0],
         ]
-        chart_data = self.chart_data["requestMedianDAPData"]["data"][0]["customdata"]
+        chart_data = self.chart_data["requestMedianDAPData"]["data"][0]
         check_avg_and_counts(self, request_data, chart_data)
 
         # Check on median values of series 1
         request_data = [
-            ["Digital Mobile Hospital 01234MOB54", 32.8, 1.0],
-            ["Digital Mobile Hospital 01234MOB54", np.nan, 0.0],
+            ["Digital Mobile Hospital 01234MOB54", 32.8, 1],
+            ["Digital Mobile Hospital 01234MOB54", np.nan, 0],
         ]
-        chart_data = self.chart_data["requestMedianDAPData"]["data"][1]["customdata"]
+        chart_data = self.chart_data["requestMedianDAPData"]["data"][1]
         check_avg_and_counts(self, request_data, chart_data)
 
         # Check on median data of series 2
-        request_data = [["LICARDR0004", np.nan, 0.0], ["LICARDR0004", 6.33, 1.0]]
-        chart_data = self.chart_data["requestMedianDAPData"]["data"][2]["customdata"]
+        request_data = [["LICARDR0004", np.nan, 0], ["LICARDR0004", 6.33, 1]]
+        chart_data = self.chart_data["requestMedianDAPData"]["data"][2]
         check_avg_and_counts(self, request_data, chart_data)
 
         # Check on the boxplot data system names
@@ -1213,20 +1197,20 @@ class ChartsDX(TestCase):
 
         # Check on mean DAP values and counts
         study_data = [
-            ["All systems", 211.7, 1.0],
-            ["All systems", 32.8, 1.0],
-            ["All systems", 6.33, 1.0],
+            ["All systems", 211.7, 1],
+            ["All systems", 32.8, 1],
+            ["All systems", 6.33, 1],
         ]
-        chart_data = self.chart_data["studyMeanDAPData"]["data"][0]["customdata"]
+        chart_data = self.chart_data["studyMeanDAPData"]["data"][0]
         check_avg_and_counts(self, study_data, chart_data)
 
         # Check on median DAP values and counts
         study_data = [
-            ["All systems", 211.7, 1.0],
-            ["All systems", 32.8, 1.0],
-            ["All systems", 6.33, 1.0],
+            ["All systems", 211.7, 1],
+            ["All systems", 32.8, 1],
+            ["All systems", 6.33, 1],
         ]
-        chart_data = self.chart_data["studyMedianDAPData"]["data"][0]["customdata"]
+        chart_data = self.chart_data["studyMedianDAPData"]["data"][0]
         check_avg_and_counts(self, study_data, chart_data)
 
         # Check on the boxplot data system names
@@ -1262,56 +1246,56 @@ class ChartsDX(TestCase):
 
         # Check on mean data of series 0
         study_data = [
-            ["Carestream Clinic KODAK7500", 211.7, 1.0],
-            ["Carestream Clinic KODAK7500", np.nan, 0.0],
-            ["Carestream Clinic KODAK7500", np.nan, 0.0],
+            ["Carestream Clinic KODAK7500", 211.7, 1],
+            ["Carestream Clinic KODAK7500", np.nan, 0],
+            ["Carestream Clinic KODAK7500", np.nan, 0],
         ]
-        chart_data = self.chart_data["studyMeanDAPData"]["data"][0]["customdata"]
+        chart_data = self.chart_data["studyMeanDAPData"]["data"][0]
         check_avg_and_counts(self, study_data, chart_data)
 
         # Check on mean data of series 1
         study_data = [
-            ["Digital Mobile Hospital 01234MOB54", np.nan, 0.0],
-            ["Digital Mobile Hospital 01234MOB54", 32.8, 1.0],
-            ["Digital Mobile Hospital 01234MOB54", np.nan, 0.0],
+            ["Digital Mobile Hospital 01234MOB54", np.nan, 0],
+            ["Digital Mobile Hospital 01234MOB54", 32.8, 1],
+            ["Digital Mobile Hospital 01234MOB54", np.nan, 0],
         ]
-        chart_data = self.chart_data["studyMeanDAPData"]["data"][1]["customdata"]
+        chart_data = self.chart_data["studyMeanDAPData"]["data"][1]
         check_avg_and_counts(self, study_data, chart_data)
 
         # Check on mean data of series 2
         study_data = [
-            ["LICARDR0004", np.nan, 0.0],
-            ["LICARDR0004", np.nan, 0.0],
-            ["LICARDR0004", 6.33, 1.0],
+            ["LICARDR0004", np.nan, 0],
+            ["LICARDR0004", np.nan, 0],
+            ["LICARDR0004", 6.33, 1],
         ]
-        chart_data = self.chart_data["studyMeanDAPData"]["data"][2]["customdata"]
+        chart_data = self.chart_data["studyMeanDAPData"]["data"][2]
         check_avg_and_counts(self, study_data, chart_data)
 
         # Check on median values of series 0
         study_data = [
-            ["Carestream Clinic KODAK7500", 211.7, 1.0],
-            ["Carestream Clinic KODAK7500", np.nan, 0.0],
-            ["Carestream Clinic KODAK7500", np.nan, 0.0],
+            ["Carestream Clinic KODAK7500", 211.7, 1],
+            ["Carestream Clinic KODAK7500", np.nan, 0],
+            ["Carestream Clinic KODAK7500", np.nan, 0],
         ]
-        chart_data = self.chart_data["studyMedianDAPData"]["data"][0]["customdata"]
+        chart_data = self.chart_data["studyMedianDAPData"]["data"][0]
         check_avg_and_counts(self, study_data, chart_data)
 
         # Check on median values of series 1
         study_data = [
-            ["Digital Mobile Hospital 01234MOB54", np.nan, 0.0],
-            ["Digital Mobile Hospital 01234MOB54", 32.8, 1.0],
-            ["Digital Mobile Hospital 01234MOB54", np.nan, 0.0],
+            ["Digital Mobile Hospital 01234MOB54", np.nan, 0],
+            ["Digital Mobile Hospital 01234MOB54", 32.8, 1],
+            ["Digital Mobile Hospital 01234MOB54", np.nan, 0],
         ]
-        chart_data = self.chart_data["studyMedianDAPData"]["data"][1]["customdata"]
+        chart_data = self.chart_data["studyMedianDAPData"]["data"][1]
         check_avg_and_counts(self, study_data, chart_data)
 
         # Check on median data of series 2
         study_data = [
-            ["LICARDR0004", np.nan, 0.0],
-            ["LICARDR0004", np.nan, 0.0],
-            ["LICARDR0004", 6.33, 1.0],
+            ["LICARDR0004", np.nan, 0],
+            ["LICARDR0004", np.nan, 0],
+            ["LICARDR0004", 6.33, 1],
         ]
-        chart_data = self.chart_data["studyMedianDAPData"]["data"][2]["customdata"]
+        chart_data = self.chart_data["studyMedianDAPData"]["data"][2]
         check_avg_and_counts(self, study_data, chart_data)
 
         # Check on the boxplot data system names
@@ -1520,15 +1504,15 @@ class ChartsDX(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["All systems", "Friday", 10, 1],
-                        ["All systems", "Friday", 11, 0],
-                        ["All systems", "Friday", 14, 0],
-                        ["All systems", "Monday", 10, 0],
-                        ["All systems", "Monday", 11, 1],
-                        ["All systems", "Monday", 14, 0],
-                        ["All systems", "Tuesday", 10, 0],
-                        ["All systems", "Tuesday", 11, 0],
-                        ["All systems", "Tuesday", 14, 1],
+                        ["All systems", 10],
+                        ["All systems", 11],
+                        ["All systems", 14],
+                        ["All systems", 10],
+                        ["All systems", 11],
+                        ["All systems", 14],
+                        ["All systems", 10],
+                        ["All systems", 11],
+                        ["All systems", 14],
                     ],
                     dtype=object,
                 ),
@@ -1553,9 +1537,9 @@ class ChartsDX(TestCase):
         chart_data = self.chart_data["studyWorkloadData"]["data"]
 
         for idx, dataset in enumerate(standard_data):
-            np.testing.assert_equal(
-                dataset["customdata"], chart_data[idx]["customdata"]
-            )
+            for i, entry in enumerate(dataset["customdata"]):
+                np.testing.assert_equal(list(entry), chart_data[idx]["customdata"][i])
+
             np.testing.assert_equal(dataset["x"], chart_data[idx]["x"])
             np.testing.assert_equal(dataset["y"], chart_data[idx]["y"])
 
@@ -1569,15 +1553,15 @@ class ChartsDX(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["Carestream Clinic KODAK7500", "Friday", 10, 1],
-                        ["Carestream Clinic KODAK7500", "Friday", 11, 0],
-                        ["Carestream Clinic KODAK7500", "Friday", 14, 0],
-                        ["Carestream Clinic KODAK7500", "Monday", 10, 0],
-                        ["Carestream Clinic KODAK7500", "Monday", 11, 0],
-                        ["Carestream Clinic KODAK7500", "Monday", 14, 0],
-                        ["Carestream Clinic KODAK7500", "Tuesday", 10, 0],
-                        ["Carestream Clinic KODAK7500", "Tuesday", 11, 0],
-                        ["Carestream Clinic KODAK7500", "Tuesday", 14, 0],
+                        ["Carestream Clinic KODAK7500", 10],
+                        ["Carestream Clinic KODAK7500", 11],
+                        ["Carestream Clinic KODAK7500", 14],
+                        ["Carestream Clinic KODAK7500", 10],
+                        ["Carestream Clinic KODAK7500", 11],
+                        ["Carestream Clinic KODAK7500", 14],
+                        ["Carestream Clinic KODAK7500", 10],
+                        ["Carestream Clinic KODAK7500", 11],
+                        ["Carestream Clinic KODAK7500", 14],
                     ],
                     dtype=object,
                 ),
@@ -1600,15 +1584,15 @@ class ChartsDX(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["Digital Mobile Hospital 01234MOB54", "Friday", 10, 0],
-                        ["Digital Mobile Hospital 01234MOB54", "Friday", 11, 0],
-                        ["Digital Mobile Hospital 01234MOB54", "Friday", 14, 0],
-                        ["Digital Mobile Hospital 01234MOB54", "Monday", 10, 0],
-                        ["Digital Mobile Hospital 01234MOB54", "Monday", 11, 0],
-                        ["Digital Mobile Hospital 01234MOB54", "Monday", 14, 0],
-                        ["Digital Mobile Hospital 01234MOB54", "Tuesday", 10, 0],
-                        ["Digital Mobile Hospital 01234MOB54", "Tuesday", 11, 0],
-                        ["Digital Mobile Hospital 01234MOB54", "Tuesday", 14, 1],
+                        ["Digital Mobile Hospital 01234MOB54", 10],
+                        ["Digital Mobile Hospital 01234MOB54", 11],
+                        ["Digital Mobile Hospital 01234MOB54", 14],
+                        ["Digital Mobile Hospital 01234MOB54", 10],
+                        ["Digital Mobile Hospital 01234MOB54", 11],
+                        ["Digital Mobile Hospital 01234MOB54", 14],
+                        ["Digital Mobile Hospital 01234MOB54", 10],
+                        ["Digital Mobile Hospital 01234MOB54", 11],
+                        ["Digital Mobile Hospital 01234MOB54", 14],
                     ],
                     dtype=object,
                 ),
@@ -1631,15 +1615,15 @@ class ChartsDX(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["LICARDR0004", "Friday", 10, 0],
-                        ["LICARDR0004", "Friday", 11, 0],
-                        ["LICARDR0004", "Friday", 14, 0],
-                        ["LICARDR0004", "Monday", 10, 0],
-                        ["LICARDR0004", "Monday", 11, 1],
-                        ["LICARDR0004", "Monday", 14, 0],
-                        ["LICARDR0004", "Tuesday", 10, 0],
-                        ["LICARDR0004", "Tuesday", 11, 0],
-                        ["LICARDR0004", "Tuesday", 14, 0],
+                        ["LICARDR0004", 10],
+                        ["LICARDR0004", 11],
+                        ["LICARDR0004", 14],
+                        ["LICARDR0004", 10],
+                        ["LICARDR0004", 11],
+                        ["LICARDR0004", 14],
+                        ["LICARDR0004", 10],
+                        ["LICARDR0004", 11],
+                        ["LICARDR0004", 14],
                     ],
                     dtype=object,
                 ),
@@ -1664,9 +1648,9 @@ class ChartsDX(TestCase):
         chart_data = self.chart_data["studyWorkloadData"]["data"]
 
         for idx, dataset in enumerate(standard_data):
-            np.testing.assert_equal(
-                dataset["customdata"], chart_data[idx]["customdata"]
-            )
+            for i, entry in enumerate(dataset["customdata"]):
+                np.testing.assert_equal(list(entry), chart_data[idx]["customdata"][i])
+
             np.testing.assert_equal(dataset["x"], chart_data[idx]["x"])
             np.testing.assert_equal(dataset["y"], chart_data[idx]["y"])
 
