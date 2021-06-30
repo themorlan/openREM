@@ -136,9 +136,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["All systems", 1.29, 2.0],
-                        ["All systems", 0.26, 1.0],
-                        ["All systems", 1.373, 1.0],
+                        ["All systems", 1.29, 2],
+                        ["All systems", 0.26, 1],
+                        ["All systems", 1.373, 1],
                     ],
                     dtype=object,
                 ),
@@ -157,9 +157,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["All systems", 1.29, 2.0],
-                        ["All systems", 0.26, 1.0],
-                        ["All systems", 1.373, 1.0],
+                        ["All systems", 1.29, 2],
+                        ["All systems", 0.26, 1],
+                        ["All systems", 1.373, 1],
                     ],
                     dtype=object,
                 ),
@@ -200,9 +200,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0],
-                        ["Breast Imaging Clinic PQW_HOL_SELENIA", 0.26, 1.0],
-                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", 0.26, 1],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0],
                     ],
                     dtype=object,
                 ),
@@ -213,9 +213,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["OpenREM Dimensions", 1.29, 2.0],
-                        ["OpenREM Dimensions", np.nan, 0.0],
-                        ["OpenREM Dimensions", np.nan, 0.0],
+                        ["OpenREM Dimensions", 1.29, 2],
+                        ["OpenREM Dimensions", np.nan, 0],
+                        ["OpenREM Dimensions", np.nan, 0],
                     ],
                     dtype=object,
                 ),
@@ -226,9 +226,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["中心医院 SENODS01", np.nan, 0.0],
-                        ["中心医院 SENODS01", np.nan, 0.0],
-                        ["中心医院 SENODS01", 1.373, 1.0],
+                        ["中心医院 SENODS01", np.nan, 0],
+                        ["中心医院 SENODS01", np.nan, 0],
+                        ["中心医院 SENODS01", 1.373, 1],
                     ],
                     dtype=object,
                 ),
@@ -247,9 +247,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0],
-                        ["Breast Imaging Clinic PQW_HOL_SELENIA", 0.26, 1.0],
-                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", 0.26, 1],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0],
                     ],
                     dtype=object,
                 ),
@@ -260,9 +260,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["OpenREM Dimensions", 1.29, 2.0],
-                        ["OpenREM Dimensions", np.nan, 0.0],
-                        ["OpenREM Dimensions", np.nan, 0.0],
+                        ["OpenREM Dimensions", 1.29, 2],
+                        ["OpenREM Dimensions", np.nan, 0],
+                        ["OpenREM Dimensions", np.nan, 0],
                     ],
                     dtype=object,
                 ),
@@ -273,9 +273,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["中心医院 SENODS01", np.nan, 0.0],
-                        ["中心医院 SENODS01", np.nan, 0.0],
-                        ["中心医院 SENODS01", 1.373, 1.0],
+                        ["中心医院 SENODS01", np.nan, 0],
+                        ["中心医院 SENODS01", np.nan, 0],
+                        ["中心医院 SENODS01", 1.373, 1],
                     ],
                     dtype=object,
                 ),
@@ -494,9 +494,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["All systems", "Friday", 12, 1],
-                        ["All systems", "Sunday", 12, 1],
-                        ["All systems", "Thursday", 12, 1],
+                        ["All systems", 12],
+                        ["All systems", 12],
+                        ["All systems", 12],
                     ],
                     dtype=object,
                 ),
@@ -523,9 +523,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["Breast Imaging Clinic PQW_HOL_SELENIA", "Friday", 12, 0],
-                        ["Breast Imaging Clinic PQW_HOL_SELENIA", "Sunday", 12, 0],
-                        ["Breast Imaging Clinic PQW_HOL_SELENIA", "Thursday", 12, 1],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", 12],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", 12],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", 12],
                     ],
                     dtype=object,
                 ),
@@ -544,9 +544,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["OpenREM Dimensions", "Friday", 12, 0],
-                        ["OpenREM Dimensions", "Sunday", 12, 1],
-                        ["OpenREM Dimensions", "Thursday", 12, 0],
+                        ["OpenREM Dimensions", 12],
+                        ["OpenREM Dimensions", 12],
+                        ["OpenREM Dimensions", 12],
                     ],
                     dtype=object,
                 ),
@@ -561,9 +561,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["中心医院 SENODS01", "Friday", 12, 1],
-                        ["中心医院 SENODS01", "Sunday", 12, 0],
-                        ["中心医院 SENODS01", "Thursday", 12, 0],
+                        ["中心医院 SENODS01", 12],
+                        ["中心医院 SENODS01", 12],
+                        ["中心医院 SENODS01", 12],
                     ],
                     dtype=object,
                 ),

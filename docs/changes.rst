@@ -5,8 +5,10 @@ OpenREM version history
 
 1.0.0b1 (2021-xx-xx)
 --------------------
+* :issue:`906`  Charts: upgraded Plotly library to latest version
 * :issue:`905`  Imports: fixed filter extraction code not working for Siemens Multix DX
 * :issue:`904`  Testing: bumped Python image from 3.6 to 3.8
+* :issue:`903`  Interface: added patient weight filters to the CT, RF and DX summary pages
 * :issue:`901`  Charts: fixed issue where mammography mAs values were displayed 1000x too high on scatter plot
 * :issue:`897`  Docker: fixed permissions for PixelMed - now using root throughout
 * :issue:`896`  Imports: enabling import of DX with text string in PatientSize field
