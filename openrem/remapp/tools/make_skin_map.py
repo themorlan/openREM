@@ -31,7 +31,11 @@
 import os
 import sys
 import logging
+
+from celery import shared_task
 import django
+from django.core.exceptions import ObjectDoesNotExist
+import numpy as np
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -41,7 +45,10 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
-from celery import shared_task
+from .save_skin_map_structure import save_openskin_structure
+from .openskin.calc_exp_map import CalcExpMap
+from ..models import GeneralStudyModuleAttr, SkinDoseMapResults, OpenSkinSafeList
+from ..version import __skin_map_version__
 
 # Explicitly name logger so that it is still handled when using __main__
 logger = logging.getLogger("remapp.tools.make_skin_map")
@@ -49,18 +56,6 @@ logger = logging.getLogger("remapp.tools.make_skin_map")
 
 @shared_task(name="remapp.tools.make_skin_map", ignore_result=True)
 def make_skin_map(study_pk=None):
-    import remapp.tools.openskin.calc_exp_map as calc_exp_map
-    from remapp.models import (
-        GeneralStudyModuleAttr,
-        SkinDoseMapResults,
-        SkinDoseMapCalcSettings,
-        OpenSkinSafeList,
-    )
-    from remapp.tools.save_skin_map_structure import save_openskin_structure
-
-    from remapp.version import __skin_map_version__
-    from django.core.exceptions import ObjectDoesNotExist
-    import numpy as np
 
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
@@ -174,7 +169,7 @@ def make_skin_map(study_pk=None):
             pat_pos = "HFS"
         logger.debug(f"patPos is {pat_pos} and source is {pat_pos_source}")
 
-        my_exp_map = calc_exp_map.CalcExpMap(
+        my_exp_map = CalcExpMap(
             phantom_type="3D",
             pat_pos=pat_pos,
             pat_mass=pat_mass,

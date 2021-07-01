@@ -32,43 +32,42 @@ import gzip
 import os
 import pickle
 
-from remapp.models import HighDoseMetricAlertSettings
-from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
-from openremproject.settings import MEDIA_ROOT
+from django.conf import settings
+
+from .send_high_dose_alert_emails import send_rf_high_dose_alert_email
+from ..models import HighDoseMetricAlertSettings
 
 
 def save_openskin_structure(study, return_struct):
     # Save the return_structure as a pickle in a skin_maps sub-folder of the MEDIA_ROOT folder
-    try:
+    if study:
         study_date = study.study_date
         if study_date:
             skin_map_path = os.path.join(
-                MEDIA_ROOT,
+                settings.MEDIA_ROOT,
                 "skin_maps",
                 f"{study_date.year:0>4}",
                 f"{study_date.month:0>2}",
                 f"{study_date.day:0>2}",
             )
         else:
-            skin_map_path = os.path.join(MEDIA_ROOT, "skin_maps")
-    except:
-        skin_map_path = os.path.join(MEDIA_ROOT, "skin_maps")
+            skin_map_path = os.path.join(settings.MEDIA_ROOT, "skin_maps")
 
-    if not os.path.exists(skin_map_path):
-        os.makedirs(skin_map_path)
+        if not os.path.exists(skin_map_path):
+            os.makedirs(skin_map_path)
 
-    with gzip.open(
-        os.path.join(skin_map_path, "skin_map_" + str(study.pk) + ".p"), "wb"
-    ) as pickle_file:
-        pickle.dump(return_struct, pickle_file)
+        with gzip.open(
+            os.path.join(skin_map_path, "skin_map_" + str(study.pk) + ".p"), "wb"
+        ) as pickle_file:
+            pickle.dump(return_struct, pickle_file)
 
-    # send alert email if option toggled on
-    HighDoseMetricAlertSettings.objects.get()
-    send_alert_emails_skin = HighDoseMetricAlertSettings.objects.values_list(
-        "send_high_dose_metric_alert_emails_skin", flat=True
-    )[0]
-    send_alert_emails_ref = HighDoseMetricAlertSettings.objects.values_list(
-        "send_high_dose_metric_alert_emails_ref", flat=True
-    )[0]
-    if send_alert_emails_skin or send_alert_emails_ref:
-        send_rf_high_dose_alert_email(study.pk)
+        # send alert email if option toggled on
+        HighDoseMetricAlertSettings.objects.get()
+        send_alert_emails_skin = HighDoseMetricAlertSettings.objects.values_list(
+            "send_high_dose_metric_alert_emails_skin", flat=True
+        )[0]
+        send_alert_emails_ref = HighDoseMetricAlertSettings.objects.values_list(
+            "send_high_dose_metric_alert_emails_ref", flat=True
+        )[0]
+        if send_alert_emails_skin or send_alert_emails_ref:
+            send_rf_high_dose_alert_email(study.pk)
