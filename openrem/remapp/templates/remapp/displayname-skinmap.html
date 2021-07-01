@@ -1,0 +1,18 @@
+{% if illegal %}
+Something went wrong!
+{% elif not allow_safelist_modify %}
+    {% if safe_list_pk %}
+        <a style="text-decoration: none">Yes</a>
+    {% else %}
+        <a style="text-decoration: none">No</a>
+    {% endif %}
+{% elif model_only %}
+    <a style="text-decoration: none" href="{% url 'skinsafelist_update' pk=safe_list_pk equip_name_pk=equip_name_pk %}">add version restriction</a>
+    <a style="text-decoration: none" href="{% url 'skinsafelist_delete' pk=safe_list_pk %}">or disable</a>
+{% elif version_only %}
+    <a style="text-decoration: none" href="{% url 'skinsafelist_update' pk=safe_list_pk equip_name_pk=equip_name_pk %}">remove version restriction</a>
+    <a style="text-decoration: none" href="{% url 'skinsafelist_delete' pk=safe_list_pk %}">or disable</a>
+{% elif model_and_version %}
+    <a style="text-decoration: none" href="{% url 'skinsafelist_delete' pk=safe_list_pk %}">remove version restriction</a>
+{% else %}<a style="text-decoration: none" href="{% url 'skinsafelist_add' equip_name_pk=equip_name_pk %}">No - add</a>
+{% endif %}

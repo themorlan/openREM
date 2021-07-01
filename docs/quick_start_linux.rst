@@ -294,6 +294,10 @@ Otherwise see :ref:`activatevirtualenv` and navigate back to that folder:
 
 .. code-block:: console
 
+    $ python manage.py loaddata openskin_safelist.json
+
+.. code-block:: console
+
     $ python manage.py createsuperuser
 
 .. code-block:: console

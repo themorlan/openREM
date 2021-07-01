@@ -1,0 +1,101 @@
+{% extends "remapp/base.html" %}
+{% load i18n %}
+
+{% block navhelp %}
+        <li>
+            <a href="https://docs.openrem.org/en/{{ admin.docsversion }}/skindosemap.html"
+               target="_blank" data-toggle="tooltip" title="Skin dose map documentation - opens in a new tab">
+                Skin dose maps
+            </a>
+        </li>
+{% endblock %}
+
+{% block confnav %}
+    <li class="dropdown active">{% endblock %}
+
+{% block mainblock %}
+    <div class="row">
+        <div class="col-md-offset-3 col-md-6">
+            <h3>Delete an entry from the openSkin calculation safe list</h3>
+                        <h4>This openSkin safe list entry</h4>
+                <table class="table table-bordered sortable" aria-describedby="This safe list entry details">
+                    <thead>
+                    <tr>
+                        <th scope="col">Manufacturer</th>
+                        <th scope="col">Model</th>
+                        <th scope="col">Software version</th>
+                    </tr>
+                    </thead>
+                    <tr>
+                        <td>{{ object.manufacturer }}</td>
+                        <td>{{ object.manufacturer_model_name }}</td>
+                        <td>{{ object.software_version }}</td>
+                    </tr>
+                </table>
+
+            {% if admin.admingroup and allow_safelist_modify %}
+                <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                <form method="post">{% csrf_token %}
+                    <p>Are you sure you want to delete this entry?</p>
+                    <input type="submit" value="Confirm" role="button" class="btn btn-danger">
+                    <a href="{% url 'display_names_view' %}" role="button" class="btn btn-default">
+                        Cancel and return to display names page
+                    </a>
+                </form>
+                </div>
+                </div>
+                </div>
+                <div class="col-md-10 col-md-offset-1">
+                <div class="row">
+                {% if model_and_version %}
+                    <p>
+                    Deleting this entry will not change which systems are processed as this manufacturer
+                    and model are in the list without the software restriction.
+                    </p>
+                {% else %}
+                    <h4>The following display name units will no-longer process openSkin calculations if you
+                        proceed:</h4>
+                    <table class="table table-bordered table-hover sortable small">
+                    <thead>
+                    <tr>
+                        <th scope="col">Display name</th>
+                        <th scope="col">Institution</th>
+                        <th scope="col">Department</th>
+                        <th scope="col">Manufacturer</th>
+                        <th scope="col">Model</th>
+                        <th scope="col">Station name</th>
+                        <th scope="col">Serial no.</th>
+                        <th scope="col">Software version</th>
+                        <th scope="col">Gantry ID</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for eachrow in equipment %}
+                            <tr>
+                                <td>{{ eachrow.display_name }}</td>
+                                <td>{{ eachrow.institution_name }}</td>
+                                <td>{{ eachrow.institutional_department_name }}</td>
+                                <td>{{ eachrow.manufacturer }}</td>
+                                <td>{{ eachrow.manufacturer_model_name }}</td>
+                                <td>{{ eachrow.station_name }}</td>
+                                <td>{{ eachrow.device_serial_number }}</td>
+                                <td>{{ eachrow.software_versions }}</td>
+                                <td>{{ eachrow.gantry_id }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    </table>
+                {% endif %}
+                </div>
+                </div>
+                <div class="row">
+                <div class="col-md-offset-3 col-md-6">
+            {% elif not admin.admingroup %}
+                    <h4>{% trans "Only users in the Admin group can modify the openSkin safe list." %}</h4>
+            {% else %}
+                    <h4>{% trans "Skin dose map settings do not allow safelist to be updated" %}</h4>
+            {% endif %}
+            </div>
+            </div>
+{% endblock %}

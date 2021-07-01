@@ -56,6 +56,7 @@ from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+
 from .extractors.extract_common import populate_rf_delta_weeks_summary
 from .forms import (
     CTChartOptionsDisplayForm,
@@ -69,7 +70,6 @@ from .forms import (
     NotPatientNameForm,
     RFChartOptionsDisplayForm,
     RFHighDoseFluoroAlertsForm,
-    SkinDoseMapCalcSettingsForm,
     UpdateDisplayNamesForm,
 )
 from .models import (
@@ -88,7 +88,6 @@ from .models import (
     PKsForSummedRFDoseStudiesInDeltaWeeks,
     PatientIDSettings,
     SizeUpload,
-    SkinDoseMapCalcSettings,
     SummaryFields,
     UniqueEquipmentNames,
     UpgradeStatus,
@@ -2448,36 +2447,6 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
         return_structure = {"success": True, "messages": django_messages}
 
         return JsonResponse(return_structure, safe=False)
-
-
-class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
-    """UpdateView for configuring the skin dose map calculation choices"""
-
-    try:
-        SkinDoseMapCalcSettings.get_solo()  # will create item if it doesn't exist
-    except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
-        pass
-
-    model = SkinDoseMapCalcSettings
-    form_class = SkinDoseMapCalcSettingsForm
-
-    def get_context_data(self, **context):
-        context = super(SkinDoseMapCalcSettingsUpdate, self).get_context_data(**context)
-        admin = {
-            "openremversion": __version__,
-            "docsversion": __docs_version__,
-        }
-        for group in self.request.user.groups.all():
-            admin[group.name] = True
-        context["admin"] = admin
-        return context
-
-    def form_valid(self, form):
-        if form.has_changed():
-            messages.success(self.request, "Skin dose map settings have been updated")
-        else:
-            messages.info(self.request, "No changes made")
-        return super(SkinDoseMapCalcSettingsUpdate, self).form_valid(form)
 
 
 class NotPatientNameCreate(CreateView):  # pylint: disable=unused-variable

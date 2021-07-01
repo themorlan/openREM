@@ -103,9 +103,25 @@ class SkinDoseMapCalcSettings(SingletonModel):
     calc_on_import = models.BooleanField(
         default=True, verbose_name="Calculate skin dose map on import?"
     )
+    allow_safelist_modify = models.BooleanField(
+        default=False, verbose_name="Allow safelist to be updated?"
+    )
 
     def get_absolute_url(self):
         return reverse("skin_dose_map_settings_update", kwargs={"pk": 1})
+
+
+class OpenSkinSafeList(models.Model):
+    """
+    Table to store systems names and software versions that are suitable for OpenSkin
+    """
+
+    manufacturer = models.TextField(blank=True, null=True)
+    manufacturer_model_name = models.TextField(blank=True, null=True)
+    software_version = models.TextField(blank=True, default="")
+
+    def get_absolute_url(self):
+        return reverse("display_names_view")
 
 
 class HighDoseMetricAlertSettings(SingletonModel):
