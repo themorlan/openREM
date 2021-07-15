@@ -192,9 +192,9 @@
             <td>
                 <a href="{% url 'rf_detail_view' pk=exam.id %}">
                     <table onclick="window.location='{% url 'rf_detail_view' pk=exam.id %}';" aria-describedby="Study description, procedure and requested procedure name">
-                        <tr><td class="nowrap">{{ exam.study_description }}</td></tr>
-                        <tr><td class="nowrap">{{ exam.procedure_code_meaning }}</td></tr>
-                        <tr><td class="nowrap">{{ exam.requested_procedure_code_meaning }}</td></tr>
+                        <tr><td>{{ exam.study_description }}</td></tr>
+                        <tr><td>{{ exam.procedure_code_meaning }}</td></tr>
+                        <tr><td>{{ exam.requested_procedure_code_meaning }}</td></tr>
                   {% if not exam.accession_hashed %}
                         <tr><td class="nowrap">{{ exam.accession_number }}</td></tr>
                   {% endif %}

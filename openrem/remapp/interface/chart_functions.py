@@ -47,6 +47,7 @@ import plotly.graph_objects as go
 from plotly.offline import plot
 from plotly.subplots import make_subplots
 from scipy import stats
+import textwrap
 
 
 def global_config(
@@ -673,7 +674,7 @@ def plotly_barchart(
 
     fig = px.bar(
         df,
-        x=params["df_name_col"],
+        x=df[params["df_name_col"]].apply(lambda x: (textwrap.fill(x, 50)).replace("\n", "<br>")),
         y=params["average_choice"],
         color="x_ray_system_name",
         barmode="group",
@@ -698,7 +699,8 @@ def plotly_barchart(
     )
 
     fig.update_xaxes(
-        tickson="boundaries", ticks="outside", ticklen=5, showticklabels=True
+        tickson="boundaries", ticks="outside", ticklen=5, showticklabels=True,
+        title=params["df_name_col"]
     )
     fig.update_yaxes(showticklabels=True, matches=None)
 
