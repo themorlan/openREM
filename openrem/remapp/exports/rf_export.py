@@ -52,8 +52,8 @@ from ..exports.export_common import (
     get_patient_study_data,
 )
 from ..interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
-from ..models import GeneralStudyModuleAttr, IrradEventXRayData
 from ..tools.get_values import return_for_export
+from remapp.models import GeneralStudyModuleAttr, IrradEventXRayData
 
 logger = logging.getLogger(__name__)
 

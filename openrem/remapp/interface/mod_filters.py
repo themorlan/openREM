@@ -36,7 +36,7 @@ import django_filters
 from django import forms
 from django.db.models import Q
 
-from ..models import GeneralStudyModuleAttr, IrradEventXRayData, CtIrradiationEventData
+from remapp.models import GeneralStudyModuleAttr, IrradEventXRayData, CtIrradiationEventData
 from ..tools.hash_id import hash_id
 
 logger = logging.getLogger(__name__)
