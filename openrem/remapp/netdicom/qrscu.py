@@ -160,7 +160,7 @@ def _remove_duplicates(ae, remote, query, study_rsp, assoc):
                             study.study_instance_uid,
                             existing_sop_instance_uids,
                         )
-                    elif series_rsp.modality in ["MG", "DX", "CR"]:
+                    elif series_rsp.modality in ["MG", "DX", "CR", "PX"]:
                         logger.debug(
                             f"{query_id_8} Study {study_number} {study.study_instance_uid} about to query at "
                             f"image level to get SOPInstanceUID"
@@ -348,7 +348,7 @@ def _prune_series_responses(
             # ToDo: see if there is a mechanism to remove duplicate 'for processing' 'for presentation' images.
 
         elif all_mods["DX"]["inc"] and any(
-            mod in study.get_modalities_in_study() for mod in ("CR", "DX")
+            mod in study.get_modalities_in_study() for mod in ("CR", "DX", "PX")
         ):
             # If _check_sr_type_in_study returns an RDSR, all other SR series will have been deleted and then all images
             # are deleted. If _check_sr_type_in_study returns an ESR or no_dose_report, everything else is kept.
@@ -1413,7 +1413,7 @@ def qrscu(
         all_mods["CT"] = {"inc": False, "mods": ["CT"]}
         all_mods["MG"] = {"inc": False, "mods": ["MG"]}
         all_mods["FL"] = {"inc": False, "mods": ["RF", "XA"]}
-        all_mods["DX"] = {"inc": False, "mods": ["DX", "CR"]}
+        all_mods["DX"] = {"inc": False, "mods": ["DX", "CR", "PX"]}
         all_mods["SR"] = {"inc": False, "mods": ["SR"]}
 
         # Reasoning regarding PET-CT: Some PACS allocate study modality PT, some CT, some depending on order received.
@@ -1700,7 +1700,11 @@ def qrscu(
                 )
             )
         if filter_pruning_logs:
-            query.stage += _("<br>Filtering for {pruning_logs}.".format(pruning_logs=filter_pruning_logs[:-2]))
+            query.stage += _(
+                "<br>Filtering for {pruning_logs}.".format(
+                    pruning_logs=filter_pruning_logs[:-2]
+                )
+            )
         if remove_duplicates:
             query.stage += _(
                 "<br>Removing duplicates of previous objects removed {duplicates_removed} studies.".format(
@@ -1708,7 +1712,7 @@ def qrscu(
                 )
             )
         query.save()
-        stage_text = query.stage.replace('<br>', '\n -- ')
+        stage_text = query.stage.replace("<br>", "\n -- ")
         logger.info(f"{query_id_8} {stage_text}")
 
         logger.debug(
@@ -2086,7 +2090,7 @@ def _create_parser():
     parser.add_argument(
         "-dx",
         action="store_true",
-        help="Query for planar X-ray studies. Cannot be used with -sr",
+        help="Query for planar X-ray studies (includes panoramic X-ray studies). Cannot be used with -sr",
     )
     parser.add_argument(
         "-f",

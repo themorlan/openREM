@@ -7,8 +7,18 @@ from django.test import TestCase, RequestFactory
 from remapp.extractors import mam, rdsr
 from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
 from remapp.interface.mod_filters import MGSummaryListFilter
+from remapp.tests.test_charts_common import (
+    check_series_and_category_names,
+    check_frequency_data,
+    check_boxplot_data,
+    check_boxplot_xy,
+    check_average_data,
+    check_workload_data,
+    check_sys_name_x_y_data,
+    user_profile_reset,
+)
+
 import numpy as np
-import math
 
 
 class ChartsMG(TestCase):
@@ -39,35 +49,6 @@ class ChartsMG(TestCase):
         mam.mam(os.path.join(root_tests, mam2))
         rdsr.rdsr(os.path.join(root_tests, mam3))
 
-    def user_profile_reset(self):
-        self.user.userprofile.plotCharts = True
-
-        self.user.userprofile.plotGroupingChoice = "system"
-        self.user.userprofile.plotSeriesPerSystem = False
-        self.user.userprofile.plotCaseInsensitiveCategories = False
-
-        self.user.userprofile.plotInitialSortingDirection = 0
-        self.user.userprofile.plotMGInitialSortingChoice = "frequency"
-
-        self.user.userprofile.plotAverageChoice = "mean"
-        self.user.userprofile.plotMean = False
-        self.user.userprofile.plotMedian = False
-        self.user.userprofile.plotBoxplots = False
-
-        self.user.userprofile.plotHistograms = False
-        self.user.userprofile.plotHistogramBins = 10
-
-        self.user.userprofile.plotMGaverageAGD = False
-        self.user.userprofile.plotMGacquisitionFreq = False
-        self.user.userprofile.plotMGAGDvsThickness = False
-        self.user.userprofile.plotMGmAsvsThickness = False
-        self.user.userprofile.plotMGkVpvsThickness = False
-        self.user.userprofile.plotMGaverageAGDvsThickness = False
-
-        self.user.userprofile.plotMGStudyPerDayAndHour = False
-
-        self.user.userprofile.save()
-
     def login_get_filterset(self):
         self.client.login(username="jacob", password="top_secret")
         # I can add to the filter_set to control what type of chart data is calculated
@@ -79,7 +60,7 @@ class ChartsMG(TestCase):
             .distinct(),
         )
         # Reset the user profile
-        self.user_profile_reset()
+        user_profile_reset(self)
         return f
 
     def obtain_chart_data(self, f):
@@ -88,112 +69,6 @@ class ChartsMG(TestCase):
         self.chart_data = mg_plot_calculations(
             f, self.user.userprofile, return_as_dict=True
         )
-
-    def check_series_and_category_names(self, category_names, series_names, chart_data):
-        for idx, series_name in enumerate(series_names):
-            self.assertEqual(chart_data[idx]["name"], series_name)
-            self.assertListEqual(list(chart_data[idx]["x"]), category_names)
-
-    def check_average_data(self, chart_data, standard_data):
-        for idx, dataset in enumerate(standard_data):
-            self.assertEqual(dataset["name"], chart_data[idx]["name"])
-            np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_almost_equal(dataset["y"], chart_data[idx]["y"])
-
-            # Check the system names
-            np.testing.assert_array_equal(
-                [i[0] for i in dataset["customdata"]],
-                [i[0] for i in chart_data[idx]["customdata"]],
-            )
-
-            # Check the average values
-            np.testing.assert_array_almost_equal(
-                [i[1] for i in dataset["customdata"]],
-                [i[1] for i in chart_data[idx]["customdata"]],
-            )
-
-            # Check the frequency values
-            np.testing.assert_array_almost_equal(
-                [i[2] for i in dataset["customdata"]],
-                [i[2] for i in chart_data[idx]["customdata"]],
-            )
-
-    def check_frequency_data(self, chart_data, standard_data):
-        for idx, dataset in enumerate(standard_data["data"]):
-            np.testing.assert_equal(dataset["name"], chart_data["data"][idx]["name"])
-            np.testing.assert_equal(dataset["x"], chart_data["data"][idx]["x"])
-            np.testing.assert_equal(dataset["y"], chart_data["data"][idx]["y"])
-
-    def check_workload_data(self, chart_data, standard_data):
-        for idx, dataset in enumerate(standard_data):
-            np.testing.assert_array_equal(
-                dataset["customdata"], chart_data[idx]["customdata"]
-            )
-            np.testing.assert_array_equal(
-                dataset["hovertext"], chart_data[idx]["hovertext"]
-            )
-            np.testing.assert_array_equal(dataset["x"], chart_data[idx]["x"])
-            np.testing.assert_array_equal(dataset["y"], chart_data[idx]["y"])
-
-    def check_sys_name_x_y_data(self, chart_data, standard_data):
-        for idx, dataset in enumerate(standard_data["data"]):
-            self.assertTrue(dataset["system"] in chart_data[idx]["hovertemplate"])
-            np.testing.assert_array_equal(dataset["name"], chart_data[idx]["name"])
-
-            std_x_data = dataset["x"]
-            std_y_data = dataset["y"]
-            std_y_data = [y for y, _ in sorted(zip(std_y_data, std_x_data))]
-            std_x_data = sorted(std_x_data)
-            std_x_data = [x for _, x in sorted(zip(std_y_data, std_x_data))]
-            std_y_data = sorted(std_y_data)
-
-            chart_y_data = chart_data[idx]["y"]
-            chart_x_data = chart_data[idx]["x"]
-            chart_y_data = [y for y, _ in sorted(zip(chart_y_data, chart_x_data))]
-            chart_x_data = sorted(chart_x_data)
-            chart_x_data = [x for _, x in sorted(zip(chart_y_data, chart_x_data))]
-            chart_y_data = sorted(chart_y_data)
-
-            np.testing.assert_array_equal(std_x_data, chart_x_data)
-            np.testing.assert_array_almost_equal(std_y_data, chart_y_data)
-
-    def check_avg_and_counts(self, comparison_data, chart_data):
-        for idx in range(len(comparison_data)):
-            # If the comparison value is a nan then check that the chart value is too
-            if math.isnan(comparison_data[idx][1]):
-                self.assertTrue(math.isnan(chart_data[idx][1]))
-            # Otherwise compare the values
-            else:
-                self.assertAlmostEqual(chart_data[idx][1], comparison_data[idx][1])
-            self.assertEqual(chart_data[idx][2], comparison_data[idx][2])
-
-    def check_frequencies(self, comparison_data, chart_data):
-        for idx, values in enumerate(comparison_data):
-            self.assertListEqual(list(chart_data[idx]["y"]), comparison_data[idx])
-
-    def check_boxplot_data(self, chart_data, standard_data):
-        for idx, dataset in enumerate(standard_data):
-            self.assertEqual(dataset["name"], chart_data[idx]["name"])
-            self.check_boxplot_xy([dataset["x"]], [dataset["y"]], [chart_data[idx]])
-
-    def check_boxplot_xy(self, x_data, y_data, chart_data):
-        for i in range(len(x_data)):
-            std_x_data = x_data[i]
-            std_y_data = y_data[i]
-            std_y_data = [y for y, _ in sorted(zip(std_y_data, std_x_data))]
-            std_x_data = sorted(std_x_data)
-            std_x_data = [x for _, x in sorted(zip(std_y_data, std_x_data))]
-            std_y_data = sorted(std_y_data)
-
-            chart_y_data = chart_data[i]["y"]
-            chart_x_data = chart_data[i]["x"]
-            chart_y_data = [y for y, _ in sorted(zip(chart_y_data, chart_x_data))]
-            chart_x_data = sorted(chart_x_data)
-            chart_x_data = [x for _, x in sorted(zip(chart_y_data, chart_x_data))]
-            chart_y_data = sorted(chart_y_data)
-
-            np.testing.assert_equal(chart_x_data, std_x_data)
-            np.testing.assert_almost_equal(chart_y_data, std_y_data)
 
     def test_required_charts(self):
         from remapp.views_charts_mg import generate_required_mg_charts_list
@@ -261,9 +136,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["All systems", 1.29, 2.0],
-                        ["All systems", 0.26, 1.0],
-                        ["All systems", 1.373, 1.0],
+                        ["All systems", 1.29, 2],
+                        ["All systems", 0.26, 1],
+                        ["All systems", 1.373, 1],
                     ],
                     dtype=object,
                 ),
@@ -275,16 +150,16 @@ class ChartsMG(TestCase):
 
         chart_data = self.chart_data["acquisitionMeanAGDData"]["data"]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Test the median data
         standard_data = [
             {
                 "customdata": np.array(
                     [
-                        ["All systems", 1.29, 2.0],
-                        ["All systems", 0.26, 1.0],
-                        ["All systems", 1.373, 1.0],
+                        ["All systems", 1.29, 2],
+                        ["All systems", 0.26, 1],
+                        ["All systems", 1.373, 1],
                     ],
                     dtype=object,
                 ),
@@ -296,7 +171,7 @@ class ChartsMG(TestCase):
 
         chart_data = self.chart_data["acquisitionMedianAGDData"]["data"]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Check the boxplot data
         standard_data = [
@@ -311,7 +186,7 @@ class ChartsMG(TestCase):
 
         chart_data = self.chart_data["acquisitionBoxplotAGDData"]["data"]
 
-        self.check_boxplot_data(chart_data, standard_data)
+        check_boxplot_data(self, chart_data, standard_data)
 
         # Repeat the above, but plot a series per system
         self.user.userprofile.plotSeriesPerSystem = True
@@ -325,9 +200,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0],
-                        ["Breast Imaging Clinic PQW_HOL_SELENIA", 0.26, 1.0],
-                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", 0.26, 1],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0],
                     ],
                     dtype=object,
                 ),
@@ -338,9 +213,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["OpenREM Dimensions", 1.29, 2.0],
-                        ["OpenREM Dimensions", np.nan, 0.0],
-                        ["OpenREM Dimensions", np.nan, 0.0],
+                        ["OpenREM Dimensions", 1.29, 2],
+                        ["OpenREM Dimensions", np.nan, 0],
+                        ["OpenREM Dimensions", np.nan, 0],
                     ],
                     dtype=object,
                 ),
@@ -351,9 +226,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["中心医院 SENODS01", np.nan, 0.0],
-                        ["中心医院 SENODS01", np.nan, 0.0],
-                        ["中心医院 SENODS01", 1.373, 1.0],
+                        ["中心医院 SENODS01", np.nan, 0],
+                        ["中心医院 SENODS01", np.nan, 0],
+                        ["中心医院 SENODS01", 1.373, 1],
                     ],
                     dtype=object,
                 ),
@@ -365,16 +240,16 @@ class ChartsMG(TestCase):
 
         chart_data = self.chart_data["acquisitionMeanAGDData"]["data"]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Test the median data
         standard_data = [
             {
                 "customdata": np.array(
                     [
-                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0],
-                        ["Breast Imaging Clinic PQW_HOL_SELENIA", 0.26, 1.0],
-                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0.0],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", 0.26, 1],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", np.nan, 0],
                     ],
                     dtype=object,
                 ),
@@ -385,9 +260,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["OpenREM Dimensions", 1.29, 2.0],
-                        ["OpenREM Dimensions", np.nan, 0.0],
-                        ["OpenREM Dimensions", np.nan, 0.0],
+                        ["OpenREM Dimensions", 1.29, 2],
+                        ["OpenREM Dimensions", np.nan, 0],
+                        ["OpenREM Dimensions", np.nan, 0],
                     ],
                     dtype=object,
                 ),
@@ -398,9 +273,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["中心医院 SENODS01", np.nan, 0.0],
-                        ["中心医院 SENODS01", np.nan, 0.0],
-                        ["中心医院 SENODS01", 1.373, 1.0],
+                        ["中心医院 SENODS01", np.nan, 0],
+                        ["中心医院 SENODS01", np.nan, 0],
+                        ["中心医院 SENODS01", 1.373, 1],
                     ],
                     dtype=object,
                 ),
@@ -412,7 +287,7 @@ class ChartsMG(TestCase):
 
         chart_data = self.chart_data["acquisitionMedianAGDData"]["data"]
 
-        self.check_average_data(chart_data, standard_data)
+        check_average_data(self, chart_data, standard_data)
 
         # Check the boxplot data
         standard_data = [
@@ -436,7 +311,7 @@ class ChartsMG(TestCase):
 
         chart_data = self.chart_data["acquisitionBoxplotAGDData"]["data"]
 
-        self.check_boxplot_data(chart_data, standard_data)
+        check_boxplot_data(self, chart_data, standard_data)
 
     def test_acq_agd_histogram(self):
         # Test of AGD histogram
@@ -512,7 +387,9 @@ class ChartsMG(TestCase):
 
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(chart_data[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"])
+            np.testing.assert_almost_equal(
+                chart_data[idx]["x"], dataset["x"], decimal=6
+            )
             np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
 
     def test_acq_freq(self):
@@ -548,7 +425,7 @@ class ChartsMG(TestCase):
             ]
         }
 
-        self.check_frequency_data(chart_data, standard_data)
+        check_frequency_data(self, chart_data, standard_data)
 
         # Repeat the above, but plot a series per system
         self.user.userprofile.plotSeriesPerSystem = True
@@ -600,7 +477,7 @@ class ChartsMG(TestCase):
             ]
         }
 
-        self.check_frequency_data(chart_data, standard_data)
+        check_frequency_data(self, chart_data, standard_data)
 
     def test_study_workload(self):
         # Test of study workload
@@ -617,9 +494,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["All systems", "Friday", 12, 1],
-                        ["All systems", "Sunday", 12, 1],
-                        ["All systems", "Thursday", 12, 1],
+                        ["All systems", 12],
+                        ["All systems", 12],
+                        ["All systems", 12],
                     ],
                     dtype=object,
                 ),
@@ -634,7 +511,7 @@ class ChartsMG(TestCase):
 
         chart_data = self.chart_data["studyWorkloadData"]["data"]
 
-        self.check_workload_data(chart_data, standard_data)
+        check_workload_data(self, chart_data, standard_data)
 
         # Repeat with series per system enabled
         self.user.userprofile.plotSeriesPerSystem = True
@@ -646,9 +523,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["Breast Imaging Clinic PQW_HOL_SELENIA", "Friday", 12, 0],
-                        ["Breast Imaging Clinic PQW_HOL_SELENIA", "Sunday", 12, 0],
-                        ["Breast Imaging Clinic PQW_HOL_SELENIA", "Thursday", 12, 1],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", 12],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", 12],
+                        ["Breast Imaging Clinic PQW_HOL_SELENIA", 12],
                     ],
                     dtype=object,
                 ),
@@ -667,9 +544,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["OpenREM Dimensions", "Friday", 12, 0],
-                        ["OpenREM Dimensions", "Sunday", 12, 1],
-                        ["OpenREM Dimensions", "Thursday", 12, 0],
+                        ["OpenREM Dimensions", 12],
+                        ["OpenREM Dimensions", 12],
+                        ["OpenREM Dimensions", 12],
                     ],
                     dtype=object,
                 ),
@@ -684,9 +561,9 @@ class ChartsMG(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["中心医院 SENODS01", "Friday", 12, 1],
-                        ["中心医院 SENODS01", "Sunday", 12, 0],
-                        ["中心医院 SENODS01", "Thursday", 12, 0],
+                        ["中心医院 SENODS01", 12],
+                        ["中心医院 SENODS01", 12],
+                        ["中心医院 SENODS01", 12],
                     ],
                     dtype=object,
                 ),
@@ -701,7 +578,7 @@ class ChartsMG(TestCase):
 
         chart_data = self.chart_data["studyWorkloadData"]["data"]
 
-        self.check_workload_data(chart_data, standard_data)
+        check_workload_data(self, chart_data, standard_data)
 
     def test_avg_agd_vs_cbt(self):
         # Test of AGD histogram
@@ -783,7 +660,7 @@ class ChartsMG(TestCase):
             ]
         }
 
-        self.check_sys_name_x_y_data(chart_data, standard_data)
+        check_sys_name_x_y_data(self, chart_data, standard_data)
 
         chart_data = self.chart_data["medianAGDvsThickness"]["data"]
 
@@ -852,7 +729,7 @@ class ChartsMG(TestCase):
             ]
         }
 
-        self.check_sys_name_x_y_data(chart_data, standard_data)
+        check_sys_name_x_y_data(self, chart_data, standard_data)
 
         # Repeat with series per system enabled
         self.user.userprofile.plotSeriesPerSystem = True
@@ -927,7 +804,7 @@ class ChartsMG(TestCase):
             ]
         }
 
-        self.check_sys_name_x_y_data(chart_data, standard_data)
+        check_sys_name_x_y_data(self, chart_data, standard_data)
 
         chart_data = self.chart_data["medianAGDvsThickness"]["data"]
 
@@ -996,7 +873,7 @@ class ChartsMG(TestCase):
             ]
         }
 
-        self.check_sys_name_x_y_data(chart_data, standard_data)
+        check_sys_name_x_y_data(self, chart_data, standard_data)
 
     def test_agd_vs_cbt(self):
         # Test of AGD vs CBT scatter chart
@@ -1034,7 +911,7 @@ class ChartsMG(TestCase):
             ]
         }
 
-        self.check_sys_name_x_y_data(chart_data, standard_data)
+        check_sys_name_x_y_data(self, chart_data, standard_data)
 
         # Repeat with series per system enabled
         self.user.userprofile.plotSeriesPerSystem = True
@@ -1067,7 +944,7 @@ class ChartsMG(TestCase):
             ]
         }
 
-        self.check_sys_name_x_y_data(chart_data, standard_data)
+        check_sys_name_x_y_data(self, chart_data, standard_data)
 
     def test_kvp_vs_cbt(self):
         # Test of kVp vs CBT scatter chart
@@ -1105,7 +982,7 @@ class ChartsMG(TestCase):
             ]
         }
 
-        self.check_sys_name_x_y_data(chart_data, standard_data)
+        check_sys_name_x_y_data(self, chart_data, standard_data)
 
         # Repeat with series per system enabled
         self.user.userprofile.plotSeriesPerSystem = True
@@ -1138,7 +1015,7 @@ class ChartsMG(TestCase):
             ]
         }
 
-        self.check_sys_name_x_y_data(chart_data, standard_data)
+        check_sys_name_x_y_data(self, chart_data, standard_data)
 
     def test_mas_vs_cbt(self):
         # Test of mAs vs CBT scatter chart
@@ -1159,24 +1036,24 @@ class ChartsMG(TestCase):
                     "system": "All systems",
                     "name": "Blank",
                     "x": np.array([43.0, 43.0]),
-                    "y": np.array([88800.0, 90200.0]),
+                    "y": np.array([88.8, 90.2]),
                 },
                 {
                     "system": "All systems",
                     "name": "Flat Field Tomo",
                     "x": np.array([18.0]),
-                    "y": np.array([6000.0]),
+                    "y": np.array([6.0]),
                 },
                 {
                     "system": "All systems",
                     "name": "ROUTINE",
                     "x": np.array([53.0]),
-                    "y": np.array([51800.0]),
+                    "y": np.array([51.8]),
                 },
             ]
         }
 
-        self.check_sys_name_x_y_data(chart_data, standard_data)
+        check_sys_name_x_y_data(self, chart_data, standard_data)
 
         # Repeat with series per system enabled
         self.user.userprofile.plotSeriesPerSystem = True
@@ -1192,21 +1069,21 @@ class ChartsMG(TestCase):
                     "system": "OpenREM Dimensions",
                     "name": "Blank",
                     "x": np.array([43.0, 43.0]),
-                    "y": np.array([88800.0, 90200.0]),
+                    "y": np.array([88.8, 90.2]),
                 },
                 {
                     "system": "Breast Imaging Clinic PQW_HOL_SELENIA",
                     "name": "Flat Field Tomo",
                     "x": np.array([18.0]),
-                    "y": np.array([6000.0]),
+                    "y": np.array([6.0]),
                 },
                 {
                     "system": "中心医院 SENODS01",
                     "name": "ROUTINE",
                     "x": np.array([53.0]),
-                    "y": np.array([51800.0]),
+                    "y": np.array([51.8]),
                 },
             ]
         }
 
-        self.check_sys_name_x_y_data(chart_data, standard_data)
+        check_sys_name_x_y_data(self, chart_data, standard_data)

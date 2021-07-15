@@ -27,10 +27,6 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
-# import remapp.views_charts_ct
-# import remapp.views_charts_dx
-# import remapp.views_charts_mg
-# import remapp.views_charts_rf
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
 
@@ -41,6 +37,7 @@ from . import (
     views_charts_dx,
     views_charts_mg,
     views_charts_rf,
+    views_openskin,
 )
 from .exports import exportviews
 from .netdicom import dicomviews
@@ -184,6 +181,26 @@ review_patterns = [
         views_admin.review_failed_studies_delete,
         name="review_failed_studies_delete",
     ),
+    path(
+        "equipmentskinmapenabled/",
+        views_openskin.display_name_skin_enabled,
+        name="display_name_skin_enabled",
+    ),
+    path(
+        "openskinsafelist/add/<int:equip_name_pk>/",
+        views_openskin.SkinSafeListCreate.as_view(),
+        name="skinsafelist_add",
+    ),
+    path(
+        "openskinsafelist/<int:pk>/<int:equip_name_pk>/",
+        views_openskin.SkinSafeListUpdate.as_view(),
+        name="skinsafelist_update",
+    ),
+    path(
+        "openskinsafelist/<int:pk>/delete/",
+        views_openskin.SkinSafeListDelete.as_view(),
+        name="skinsafelist_delete",
+    ),
 ]
 
 
@@ -252,7 +269,7 @@ settings_patterns = [
     ),
     path(
         "skindosemapsettings/<int:pk>/",
-        views_admin.SkinDoseMapCalcSettingsUpdate.as_view(),
+        views_openskin.SkinDoseMapCalcSettingsUpdate.as_view(),
         name="skin_dose_map_settings_update",
     ),
     path(

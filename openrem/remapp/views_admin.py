@@ -56,6 +56,7 @@ from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+
 from .extractors.extract_common import populate_rf_delta_weeks_summary
 from .forms import (
     CTChartOptionsDisplayForm,
@@ -69,7 +70,6 @@ from .forms import (
     NotPatientNameForm,
     RFChartOptionsDisplayForm,
     RFHighDoseFluoroAlertsForm,
-    SkinDoseMapCalcSettingsForm,
     UpdateDisplayNamesForm,
 )
 from .models import (
@@ -88,7 +88,6 @@ from .models import (
     PKsForSummedRFDoseStudiesInDeltaWeeks,
     PatientIDSettings,
     SizeUpload,
-    SkinDoseMapCalcSettings,
     SummaryFields,
     UniqueEquipmentNames,
     UpgradeStatus,
@@ -235,6 +234,9 @@ def display_names_view(request):
                 | Q(
                     generalequipmentmoduleattr__general_study_module_attributes__modality_type="CR"
                 )
+                | Q(
+                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
+                )
             )
         )
     ).distinct()
@@ -265,6 +267,9 @@ def display_names_view(request):
             )
             & ~Q(
                 generalequipmentmoduleattr__general_study_module_attributes__modality_type="CR"
+            )
+            & ~Q(
+                generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
             )
         )
     ).distinct()
@@ -354,8 +359,10 @@ def display_name_update(request):
                         error_message + "Modality type change is not allowed for"
                         " "
                         + display_name_data.display_name
-                        + " (only changing from DX "
-                        "to RF and vice versa is allowed).\n"
+                        + ", modality "
+                        + modality
+                        + ". Only changing from DX "
+                        "to RF and vice versa is allowed.\n"
                     )
             display_name_data.save()
 
@@ -434,6 +441,9 @@ def display_name_populate(request):
                         | Q(
                             generalequipmentmoduleattr__general_study_module_attributes__modality_type="CR"
                         )
+                        | Q(
+                            generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
+                        )
                     )
                 )
             ).distinct()
@@ -466,6 +476,9 @@ def display_name_populate(request):
                 )
                 & ~Q(
                     generalequipmentmoduleattr__general_study_module_attributes__modality_type="CR"
+                )
+                & ~Q(
+                    generalequipmentmoduleattr__general_study_module_attributes__modality_type="PX"
                 )
             ).distinct()
             dual = False
@@ -512,6 +525,9 @@ def display_name_modality_filter(equip_name_pk=None, modality=None):
             | Q(
                 generalequipmentmoduleattr__general_study_module_attributes__modality_type__exact="CR"
             )
+            | Q(
+                generalequipmentmoduleattr__general_study_module_attributes__modality_type__exact="PX"
+            )
         )
     else:  # modality == 'OT'
         studies = (
@@ -519,6 +535,7 @@ def display_name_modality_filter(equip_name_pk=None, modality=None):
             .exclude(modality_type__exact="MG")
             .exclude(modality_type__exact="DX")
             .exclude(modality_type__exact="CR")
+            .exclude(modality_type__exact="PX")
             .exclude(modality_type__exact="RF")
         )
     return studies, count_all
@@ -755,14 +772,16 @@ def reset_dual(pk=None):
         studies.exclude(modality_type__exact="DX")
         .exclude(modality_type__exact="RF")
         .exclude(modality_type__exact="CR")
+        .exclude(modality_type__exact="PX")
     )
-    message_start = "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are " "DX, {3} are CR, {4} are RF and {5} are something else before processing,".format(  # pylint: disable=line-too-long
+    message_start = "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are " "DX, {3} are CR, {4} are PX, {5} are RF and {6} are something else before processing,".format(  # pylint: disable=line-too-long
         studies[0]
         .generalequipmentmoduleattr_set.get()
         .unique_equipment_name.display_name,
         studies.count(),
         studies.filter(modality_type__exact="DX").count(),
         studies.filter(modality_type__exact="CR").count(),
+        studies.filter(modality_type__exact="PX").count(),
         studies.filter(modality_type__exact="RF").count(),
         not_dx_rf_cr.count(),
     )
@@ -836,10 +855,12 @@ def reset_dual(pk=None):
         studies.exclude(modality_type__exact="DX")
         .exclude(modality_type__exact="RF")
         .exclude(modality_type__exact="CR")
+        .exclude(modality_type__exact="PX")
     )
-    message_finish = "and after processing  {0} are DX, {1} are CR, {2} are RF and {3} are something else".format(
+    message_finish = "and after processing  {0} are DX, {1} are CR, {2} are PX, {3} are RF and {4} are something else".format(
         studies.filter(modality_type="DX").count(),
         studies.filter(modality_type="CR").count(),
+        studies.filter(modality_type="PX").count(),
         studies.filter(modality_type="RF").count(),
         not_dx_rf_cr.count(),
     )
@@ -1169,7 +1190,9 @@ def _get_broken_studies(modality=None):
     """
     if modality == "DX":
         all_mod = GeneralStudyModuleAttr.objects.filter(
-            Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
+            Q(modality_type__exact="DX")
+            | Q(modality_type__exact="CR")
+            | Q(modality_type__exact="PX")
         )
     else:
         all_mod = GeneralStudyModuleAttr.objects.filter(modality_type__exact=modality)
@@ -1673,9 +1696,6 @@ def required_ct_acquisition_types(user_profile):
         ct_acquisition_types.append(CommonVariables.CT_FREE_ACQUISITION_TYPE)
     if user_profile.plotCTConeBeamAcquisition:
         ct_acquisition_types.append(CommonVariables.CT_CONE_BEAM_ACQUISITION)
-
-    if user_profile.plotCaseInsensitiveCategories:
-        ct_acquisition_types = [entry.lower() for entry in ct_acquisition_types]
 
     return ct_acquisition_types
 
@@ -2429,36 +2449,6 @@ def rf_recalculate_accum_doses(request):  # pylint: disable=unused-variable
         return JsonResponse(return_structure, safe=False)
 
 
-class SkinDoseMapCalcSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
-    """UpdateView for configuring the skin dose map calculation choices"""
-
-    try:
-        SkinDoseMapCalcSettings.get_solo()  # will create item if it doesn't exist
-    except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
-        pass
-
-    model = SkinDoseMapCalcSettings
-    form_class = SkinDoseMapCalcSettingsForm
-
-    def get_context_data(self, **context):
-        context = super(SkinDoseMapCalcSettingsUpdate, self).get_context_data(**context)
-        admin = {
-            "openremversion": __version__,
-            "docsversion": __docs_version__,
-        }
-        for group in self.request.user.groups.all():
-            admin[group.name] = True
-        context["admin"] = admin
-        return context
-
-    def form_valid(self, form):
-        if form.has_changed():
-            messages.success(self.request, "Skin dose map settings have been updated")
-        else:
-            messages.info(self.request, "No changes made")
-        return super(SkinDoseMapCalcSettingsUpdate, self).form_valid(form)
-
-
 class NotPatientNameCreate(CreateView):  # pylint: disable=unused-variable
     """CreateView for configuration of indicators a study might not be a patient study"""
 
@@ -2696,7 +2686,9 @@ def populate_summary_progress(request):
                 mg_pc = 0
             try:
                 dx = GeneralStudyModuleAttr.objects.filter(
-                    Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
+                    Q(modality_type__exact="DX")
+                    | Q(modality_type__exact="CR")
+                    | Q(modality_type__exact="PX")
                 )
                 if dx.filter(number_of_events_a__isnull=True).count() > 0:
                     dx_complete = dx.filter(number_of_events_a__isnull=False).count()
