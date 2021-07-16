@@ -363,13 +363,14 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 "sorted_category_list": sorted_study_categories,
                 "facet_col": facet_col,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             if user_profile.plotMean:
                 parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] = "OpenREM RF study description DAP mean"
                 parameter_dict["average_choice"] = "mean"
-                parameter_dict["label_char_wrap"] = user_profile.plotLabelCharWrap
+
                 (
                     return_structure["studyMeanData"],
                     return_structure["studyMeanDataCSV"],
@@ -383,7 +384,6 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] = "OpenREM RF study description DAP median"
                 parameter_dict["average_choice"] = "median"
-                parameter_dict["label_char_wrap"] = user_profile.plotLabelCharWrap
                 (
                     return_structure["studyMedianData"],
                     return_structure["studyMedianDataCSV"],
@@ -544,13 +544,13 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 "sorted_category_list": sorted_request_categories,
                 "facet_col": facet_col,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             if user_profile.plotMean:
                 parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] = "OpenREM RF requested procedure DAP mean"
                 parameter_dict["average_choice"] = "mean"
-                parameter_dict["label_char_wrap"] = user_profile.plotLabelCharWrap
                 (
                     return_structure["requestMeanData"],
                     return_structure["requestMeanDataCSV"],
@@ -564,7 +564,6 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] = "OpenREM RF requested procedure DAP median"
                 parameter_dict["average_choice"] = "median"
-                parameter_dict["label_char_wrap"] = user_profile.plotLabelCharWrap
                 (
                     return_structure["requestMedianData"],
                     return_structure["requestMedianDataCSV"],

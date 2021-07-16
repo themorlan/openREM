@@ -375,6 +375,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         "facet_col": None,
                         "facet_col_wrap": user_profile.plotFacetColWrapVal,
                         "return_as_dict": return_as_dict,
+                        "label_char_wrap": user_profile.plotLabelCharWrap,
                     }
                     if user_profile.plotMean:
                         parameter_dict["value_axis_title"] = "Mean AGD (mGy)"
@@ -382,7 +383,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                             "filename"
                         ] = "OpenREM MG acquisition protocol AGD mean"
                         parameter_dict["average_choice"] = "mean"
-                        parameter_dict["label_char_wrap"] = user_profile.plotLabelCharWrap
                         (
                             return_structure["acquisitionMeanAGDData"],
                             return_structure["acquisitionMeanAGDDataCSV"],
@@ -398,7 +398,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                             "filename"
                         ] = "OpenREM MG acquisition protocol AGD median"
                         parameter_dict["average_choice"] = "median"
-                        parameter_dict["label_char_wrap"] = user_profile.plotLabelCharWrap
                         (
                             return_structure["acquisitionMedianAGDData"],
                             return_structure["acquisitionMedianAGDDataCSV"],
@@ -565,6 +564,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "groupby_cols": None,
                 "facet_col": None,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             (

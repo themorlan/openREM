@@ -487,6 +487,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
+                    "label_char_wrap": user_profile.plotLabelCharWrap,
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
@@ -531,6 +532,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     "sorted_category_list": sorted_acquisition_dap_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "label_char_wrap": user_profile.plotLabelCharWrap,
                     "return_as_dict": return_as_dict,
                 }
                 return_structure["acquisitionBoxplotDAPData"] = plotly_boxplot(
@@ -565,6 +567,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     "df_facet_category_list": facet_names,
                     "df_category_name_list": category_names,
                     "global_max_min": user_profile.plotHistogramGlobalBins,
+                    "label_char_wrap": user_profile.plotLabelCharWrap,
                     "return_as_dict": return_as_dict,
                 }
                 return_structure[
@@ -604,6 +607,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
+                    "label_char_wrap": user_profile.plotLabelCharWrap,
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean kVp"
@@ -646,6 +650,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     "sorted_category_list": sorted_acquisition_kvp_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "label_char_wrap": user_profile.plotLabelCharWrap,
                     "return_as_dict": return_as_dict,
                 }
                 return_structure["acquisitionBoxplotkVpData"] = plotly_boxplot(
@@ -680,6 +685,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     "df_facet_category_list": facet_names,
                     "df_category_name_list": category_names,
                     "global_max_min": user_profile.plotHistogramGlobalBins,
+                    "label_char_wrap": user_profile.plotLabelCharWrap,
                     "return_as_dict": return_as_dict,
                 }
                 return_structure[
@@ -719,6 +725,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
+                    "label_char_wrap": user_profile.plotLabelCharWrap,
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean mAs"
@@ -761,6 +768,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     "sorted_category_list": sorted_acquisition_mas_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "label_char_wrap": user_profile.plotLabelCharWrap,
                     "return_as_dict": return_as_dict,
                 }
                 return_structure["acquisitionBoxplotmAsData"] = plotly_boxplot(
@@ -795,6 +803,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     "df_facet_category_list": facet_names,
                     "df_category_name_list": category_names,
                     "global_max_min": user_profile.plotHistogramGlobalBins,
+                    "label_char_wrap": user_profile.plotLabelCharWrap,
                     "return_as_dict": return_as_dict,
                 }
                 return_structure[
@@ -829,6 +838,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "groupby_cols": None,
                 "facet_col": None,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             (
@@ -863,6 +873,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "filename": "OpenREM DX acquisition protocol DAP over time",
                 "return_as_dict": return_as_dict,
             }
@@ -899,6 +910,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "filename": "OpenREM DX acquisition protocol kVp over time",
                 "return_as_dict": return_as_dict,
             }
@@ -935,6 +947,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "filename": "OpenREM DX acquisition protocol mAs over time",
                 "return_as_dict": return_as_dict,
             }
@@ -964,6 +977,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "x_axis_title": "Patient mass (kg)",
                 "y_axis_title": "DAP (mGy.cm<sup>2</sub>)",
                 "filename": "OpenREM DX acquisition protocol DAP vs patient mass",
+                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             return_structure["acquisitionDAPvsMass"] = plotly_scatter(
@@ -1074,6 +1088,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
+                    "label_char_wrap": user_profile.plotLabelCharWrap,
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
@@ -1116,6 +1131,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     "sorted_category_list": sorted_study_dap_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "label_char_wrap": user_profile.plotLabelCharWrap,
                     "return_as_dict": return_as_dict,
                 }
                 return_structure["studyBoxplotDAPData"] = plotly_boxplot(
@@ -1150,6 +1166,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     "df_facet_category_list": facet_names,
                     "df_category_name_list": category_names,
                     "global_max_min": user_profile.plotHistogramGlobalBins,
+                    "label_char_wrap": user_profile.plotLabelCharWrap,
                     "return_as_dict": return_as_dict,
                 }
                 return_structure["studyHistogramDAPData"] = plotly_histogram_barchart(
@@ -1174,6 +1191,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "groupby_cols": None,
                 "facet_col": None,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             (
@@ -1213,6 +1231,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
+                    "label_char_wrap": user_profile.plotLabelCharWrap,
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
@@ -1257,6 +1276,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     "sorted_category_list": sorted_request_dap_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "label_char_wrap": user_profile.plotLabelCharWrap,
                     "return_as_dict": return_as_dict,
                 }
                 return_structure["requestBoxplotDAPData"] = plotly_boxplot(
@@ -1291,6 +1311,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     "df_facet_category_list": facet_names,
                     "df_category_name_list": category_names,
                     "global_max_min": user_profile.plotHistogramGlobalBins,
+                    "label_char_wrap": user_profile.plotLabelCharWrap,
                     "return_as_dict": return_as_dict,
                 }
                 return_structure["requestHistogramDAPData"] = plotly_histogram_barchart(
@@ -1315,6 +1336,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "groupby_cols": None,
                 "facet_col": None,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             (
@@ -1340,6 +1362,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM DX study description workload",
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
+                label_char_wrap=user_profile.plotLabelCharWrap,
                 return_as_dict=return_as_dict,
             )
 
@@ -1359,6 +1382,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "x_axis_title": "Patient mass (kg)",
                 "y_axis_title": "DAP (mGy.cm<sup>2</sub>)",
                 "filename": "OpenREM DX study description DAP vs patient mass",
+                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             return_structure["studyDAPvsMass"] = plotly_scatter(
@@ -1382,6 +1406,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "x_axis_title": "Patient mass (kg)",
                 "y_axis_title": "DAP (mGy.cm<sup>2</sub>)",
                 "filename": "OpenREM DX requested procedure DAP vs patient mass",
+                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             return_structure["requestDAPvsMass"] = plotly_scatter(
