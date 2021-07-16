@@ -377,7 +377,7 @@ def csv_data_barchart(fig, params):
         )
         for data_set in fig_data_dict:
             new_col_df = pd.DataFrame(
-                data=data_set["customdata"][:, 1:],
+                data=list(zip(data_set["y"], [x[1] for x in data_set["customdata"]])),
                 columns=[
                     data_set["name"] + " " + params["value_axis_title"],
                     "Frequency",
