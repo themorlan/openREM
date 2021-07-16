@@ -648,16 +648,20 @@ def create_sorted_category_list(df, df_name_col, df_value_col, sorting):
     grouped_df.columns = grouped_df.columns.droplevel(level=0)
     grouped_df = grouped_df.reset_index()
 
-    if sorting[1] == "name":
+    if sorting[1].lower() == "name":
         sort_by = df_name_col
-    elif sorting[1] == "frequency":
+    elif sorting[1].lower() == "frequency":
         sort_by = "count"
     else:
         sort_by = "mean"
 
+    ascending_order = True
+    if sorting[0] == 0:
+        ascending_order = False
+
     categories_sorted = {
         df_name_col: list(
-            grouped_df.sort_values(by=sort_by, ascending=sorting[0])[df_name_col]
+            grouped_df.sort_values(by=sort_by, ascending=ascending_order)[df_name_col]
         )
     }
 

@@ -126,6 +126,8 @@ class ChartsMG(TestCase):
         self.user.userprofile.plotMean = True
         self.user.userprofile.plotMedian = True
         self.user.userprofile.plotBoxplots = True
+        self.user.userprofile.plotMGInitialSortingChoice = "Name"
+        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -321,6 +323,8 @@ class ChartsMG(TestCase):
         self.user.userprofile.plotMGaverageAGD = True
         self.user.userprofile.plotMean = True
         self.user.userprofile.plotHistograms = True
+        self.user.userprofile.plotMGInitialSortingChoice = "Name"
+        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -398,6 +402,8 @@ class ChartsMG(TestCase):
 
         # Set user profile options
         self.user.userprofile.plotMGacquisitionFreq = True
+        self.user.userprofile.plotMGInitialSortingChoice = "Name"
+        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -429,6 +435,8 @@ class ChartsMG(TestCase):
 
         # Repeat the above, but plot a series per system
         self.user.userprofile.plotSeriesPerSystem = True
+        self.user.userprofile.plotMGInitialSortingChoice = "Name"
+        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -485,6 +493,8 @@ class ChartsMG(TestCase):
 
         # Set user profile options
         self.user.userprofile.plotMGStudyPerDayAndHour = True
+        self.user.userprofile.plotMGInitialSortingChoice = "Name"
+        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -515,6 +525,8 @@ class ChartsMG(TestCase):
 
         # Repeat with series per system enabled
         self.user.userprofile.plotSeriesPerSystem = True
+        self.user.userprofile.plotMGInitialSortingChoice = "Name"
+        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
         self.user.userprofile.save()
 
         self.obtain_chart_data(f)
@@ -588,6 +600,8 @@ class ChartsMG(TestCase):
         self.user.userprofile.plotMGaverageAGDvsThickness = True
         self.user.userprofile.plotMean = True
         self.user.userprofile.plotMedian = True
+        self.user.userprofile.plotMGInitialSortingChoice = "Name"
+        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -733,6 +747,8 @@ class ChartsMG(TestCase):
 
         # Repeat with series per system enabled
         self.user.userprofile.plotSeriesPerSystem = True
+        self.user.userprofile.plotMGInitialSortingChoice = "Name"
+        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
         self.user.userprofile.save()
 
         self.obtain_chart_data(f)
@@ -881,6 +897,8 @@ class ChartsMG(TestCase):
 
         # Set user profile options
         self.user.userprofile.plotMGAGDvsThickness = True
+        self.user.userprofile.plotMGInitialSortingChoice = "Name"
+        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -892,12 +910,6 @@ class ChartsMG(TestCase):
             "data": [
                 {
                     "system": "All systems",
-                    "name": "Blank",
-                    "x": np.array([43.0, 43.0]),
-                    "y": np.array([1.28, 1.3]),
-                },
-                {
-                    "system": "All systems",
                     "name": "Flat Field Tomo",
                     "x": np.array([18.0]),
                     "y": np.array([0.26]),
@@ -907,6 +919,12 @@ class ChartsMG(TestCase):
                     "name": "ROUTINE",
                     "x": np.array([53.0]),
                     "y": np.array([1.373]),
+                },
+                {
+                    "system": "All systems",
+                    "name": "Blank",
+                    "x": np.array([43.0, 43.0]),
+                    "y": np.array([1.28, 1.3]),
                 },
             ]
         }
@@ -924,16 +942,16 @@ class ChartsMG(TestCase):
         standard_data = {
             "data": [
                 {
-                    "system": "OpenREM Dimensions",
-                    "name": "Blank",
-                    "x": np.array([43.0, 43.0]),
-                    "y": np.array([1.28, 1.3]),
-                },
-                {
                     "system": "Breast Imaging Clinic PQW_HOL_SELENIA",
                     "name": "Flat Field Tomo",
                     "x": np.array([18.0]),
                     "y": np.array([0.26]),
+                },
+                {
+                    "system": "OpenREM Dimensions",
+                    "name": "Blank",
+                    "x": np.array([43.0, 43.0]),
+                    "y": np.array([1.28, 1.3]),
                 },
                 {
                     "system": "中心医院 SENODS01",
@@ -952,6 +970,8 @@ class ChartsMG(TestCase):
 
         # Set user profile options
         self.user.userprofile.plotMGkVpvsThickness = True
+        self.user.userprofile.plotMGInitialSortingChoice = "Name"
+        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -986,6 +1006,8 @@ class ChartsMG(TestCase):
 
         # Repeat with series per system enabled
         self.user.userprofile.plotSeriesPerSystem = True
+        self.user.userprofile.plotMGInitialSortingChoice = "Name"
+        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
         self.user.userprofile.save()
 
         self.obtain_chart_data(f)
@@ -995,16 +1017,16 @@ class ChartsMG(TestCase):
         standard_data = {
             "data": [
                 {
-                    "system": "OpenREM Dimensions",
-                    "name": "Blank",
-                    "x": np.array([43.0, 43.0]),
-                    "y": np.array([28.0, 28.0]),
-                },
-                {
                     "system": "Breast Imaging Clinic PQW_HOL_SELENIA",
                     "name": "Flat Field Tomo",
                     "x": np.array([18.0]),
                     "y": np.array([28.0]),
+                },
+                {
+                    "system": "OpenREM Dimensions",
+                    "name": "Blank",
+                    "x": np.array([43.0, 43.0]),
+                    "y": np.array([28.0, 28.0]),
                 },
                 {
                     "system": "中心医院 SENODS01",
@@ -1023,6 +1045,8 @@ class ChartsMG(TestCase):
 
         # Set user profile options
         self.user.userprofile.plotMGmAsvsThickness = True
+        self.user.userprofile.plotMGInitialSortingChoice = "Name"
+        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -1057,6 +1081,8 @@ class ChartsMG(TestCase):
 
         # Repeat with series per system enabled
         self.user.userprofile.plotSeriesPerSystem = True
+        self.user.userprofile.plotMGInitialSortingChoice = "Name"
+        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
         self.user.userprofile.save()
 
         self.obtain_chart_data(f)
@@ -1066,16 +1092,16 @@ class ChartsMG(TestCase):
         standard_data = {
             "data": [
                 {
-                    "system": "OpenREM Dimensions",
-                    "name": "Blank",
-                    "x": np.array([43.0, 43.0]),
-                    "y": np.array([88.8, 90.2]),
-                },
-                {
                     "system": "Breast Imaging Clinic PQW_HOL_SELENIA",
                     "name": "Flat Field Tomo",
                     "x": np.array([18.0]),
                     "y": np.array([6.0]),
+                },
+                {
+                    "system": "OpenREM Dimensions",
+                    "name": "Blank",
+                    "x": np.array([43.0, 43.0]),
+                    "y": np.array([88.8, 90.2]),
                 },
                 {
                     "system": "中心医院 SENODS01",
