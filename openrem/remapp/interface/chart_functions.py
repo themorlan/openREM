@@ -984,6 +984,10 @@ def plotly_binned_statistic_barchart(
         df, params["df_facet_col"], params["facet_col_wrap"]
     )
 
+    label_char_wrap = 500
+    if "label_char_wrap" in params.keys():
+        label_char_wrap = params["label_char_wrap"]
+
     n_colours = len(df[params["df_category_col"]].unique())
     colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
 
@@ -1059,23 +1063,23 @@ def plotly_binned_statistic_barchart(
                     trace = go.Bar(
                         x=bin_labels,
                         y=binned_stats[0],
-                        name=category_name,
+                        name=(textwrap.fill(category_name, label_char_wrap)).replace("\n", "<br>"),
                         marker_color=colour_sequence[category_idx],
                         legendgroup=category_idx,
                         showlegend=show_legend,
-                        text=trace_labels,
+                        customdata=trace_labels,
                         hovertemplate=f"<b>{facet_name}</b><br>"
                         + f"{category_name}<br>"
                         + f"{params['stat_name'].capitalize()}: "
                         + "%{y:.2f}<br>"
-                        + "%{text}<br>"
+                        + "%{customdata}<br>"
                         + "<extra></extra>",
                     )
 
                     fig.append_trace(trace, row=current_row, col=current_col)
 
             fig.update_xaxes(
-                title_text=facet_name + " " + params["x_axis_title"],
+                title_text=(textwrap.fill(facet_name + " " + params["x_axis_title"], label_char_wrap)).replace("\n", "<br>"),
                 tickson="boundaries",
                 ticks="outside",
                 ticklen=5,
@@ -1251,6 +1255,10 @@ def plotly_scatter(
     if df.empty:
         return empty_dataframe_msg(params)
 
+    label_char_wrap = 500
+    if "label_char_wrap" in params.keys():
+        label_char_wrap = params["label_char_wrap"]
+
     sorted_category_list = create_sorted_category_list(
         df, params["df_name_col"], params["df_y_col"], params["sorting"]
     )
@@ -1279,7 +1287,7 @@ def plotly_scatter(
             df,
             x=params["df_x_col"],
             y=params["df_y_col"],
-            color=params["df_category_name_col"],
+            color=df[params["df_category_name_col"]].apply(lambda x: (textwrap.fill(x, label_char_wrap)).replace("\n", "<br>")),
             facet_col=params["df_group_col"],
             facet_col_wrap=params["facet_col_wrap"],
             facet_row_spacing=0.40 / n_facet_rows,
@@ -1299,6 +1307,8 @@ def plotly_scatter(
 
         fig.update_xaxes(showticklabels=True, matches=None)
         fig.update_yaxes(showticklabels=True, matches=None)
+
+        fig.update_layout(legend_title_text=params["legend_title"])
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
