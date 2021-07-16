@@ -828,12 +828,6 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 )
 
         if user_profile.plotCTAcquisitionFreq:
-            sorted_categories = None
-            if sorted_acquisition_dlp_categories:
-                sorted_categories = sorted_acquisition_dlp_categories
-            elif sorted_acquisition_ctdi_categories:
-                sorted_categories = sorted_acquisition_ctdi_categories
-
             parameter_dict = {
                 "df_name_col": "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
                 "sorting_choice": [
@@ -846,7 +840,6 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "filename": "OpenREM CT acquisition protocol frequency",
-                "sorted_categories": sorted_categories,
                 "groupby_cols": None,
                 "facet_col": None,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
@@ -1406,14 +1399,6 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 )
 
         if user_profile.plotCTStudyFreq:
-            sorted_categories = None
-            if sorted_study_dlp_categories:
-                sorted_categories = sorted_study_dlp_categories
-            elif sorted_study_ctdi_categories:
-                sorted_categories = sorted_study_ctdi_categories
-            elif sorted_study_events_categories:
-                sorted_categories = sorted_study_events_categories
-
             parameter_dict = {
                 "df_name_col": "study_description",
                 "sorting_choice": [
@@ -1426,7 +1411,6 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "filename": "OpenREM CT study description frequency",
-                "sorted_categories": sorted_categories,
                 "groupby_cols": None,
                 "facet_col": None,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
@@ -1666,12 +1650,6 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 )
 
         if user_profile.plotCTRequestFreq:
-            sorted_categories = None
-            if sorted_request_dlp_categories:
-                sorted_categories = sorted_request_dlp_categories
-            elif sorted_request_events_categories:
-                sorted_categories = sorted_request_events_categories
-
             parameter_dict = {
                 "df_name_col": "requested_procedure_code_meaning",
                 "sorting_choice": [
@@ -1684,7 +1662,6 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "filename": "OpenREM CT requested procedure frequency",
-                "sorted_categories": sorted_categories,
                 "groupby_cols": None,
                 "facet_col": None,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,

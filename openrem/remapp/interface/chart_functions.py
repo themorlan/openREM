@@ -1376,7 +1376,6 @@ def plotly_barchart_weekdays(
             df,
             x=df_name_col,
             y=df_value_col,
-            #facet_col="x_ray_system_name",
             facet_col=df["x_ray_system_name"].apply(lambda x: (textwrap.fill(x, label_char_wrap)).replace("\n", "<br>")),
             facet_col_wrap=facet_col_wrap,
             facet_row_spacing=0.40 / n_facet_rows,
@@ -1449,7 +1448,6 @@ def plotly_frequency_barchart(
     :param params["grouping_choice"]: (string) "series" or "system"
     :param params["sorting_choice"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort
     :param params["legend_title"]: (string) legend title
-    :param params["sorted_categories"]: string list of each category name
     :param params["facet_col"]: (string) DataFrame column used to create subplots
     :param params["facet_col_wrap"]: (int) number of subplots per row
     :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
@@ -1469,10 +1467,16 @@ def plotly_frequency_barchart(
         df, params["groupby_cols"], params["df_name_col"], ["count"]
     )
 
-    if not params["sorted_categories"]:
-        params["sorted_categories"] = create_freq_sorted_category_list(
-            df, params["df_name_col"], params["sorting_choice"]
-        )
+    categoryorder = {}
+    if params["sorting_choice"][1].lower() == "name":
+        categoryorder["categoryorder"] = "category"
+    else:
+        categoryorder["categoryorder"] = "total"
+
+    if params["sorting_choice"][0] == 0:
+        categoryorder["categoryorder"] = categoryorder["categoryorder"] + " descending"
+    else:
+        categoryorder["categoryorder"] = categoryorder["categoryorder"] + " ascending"
 
     df_legend_col = params["df_name_col"]
     if params["grouping_choice"] == "series":
@@ -1504,12 +1508,6 @@ def plotly_frequency_barchart(
         facet_col=params["facet_col"],
         facet_col_wrap=params["facet_col_wrap"],
         facet_row_spacing=0.50 / n_facet_rows,
-        labels={
-            "count": "Frequency",
-            df_legend_col: params["legend_title"],
-            params["df_x_axis_col"]: params["x_axis_title"],
-        },
-        category_orders=params["sorted_categories"],
         color_discrete_sequence=colour_sequence,
         height=chart_height,
     )
@@ -1523,7 +1521,14 @@ def plotly_frequency_barchart(
     )
     fig.update_yaxes(showticklabels=True, matches=None)
 
-    fig.update_layout(legend_title_text=params["legend_title"])
+    fig.update_layout(
+        legend_title_text=params["legend_title"],
+        xaxis=categoryorder,
+    )
+
+    fig.update_traces(
+        hovertemplate = "System: %{x}<br>Frequency: %{y:.0d}",
+    )
 
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
