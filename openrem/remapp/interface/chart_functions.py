@@ -394,8 +394,8 @@ def csv_data_barchart(fig, params):
         for data_set in fig_data_dict:
             series_name = (
                 data_set["hovertemplate"]
-                .split(params["facet_col"] + "=")[1]
-                .split("<br>")[0]
+                .split("facet_col=")[1]
+                .split("=")[0][:-1]
             )
             new_col_df = pd.DataFrame(
                 data=data_set["customdata"][:, 1:],  # pylint: disable=line-too-long
@@ -422,13 +422,36 @@ def csv_data_frequency(fig, params):
     """
     fig_data_dict = fig.to_dict()["data"]
 
-    df = pd.DataFrame(data=fig_data_dict[0]["x"], columns=[params["x_axis_title"]])
-    for data_set in fig_data_dict:
-        df = pd.concat(
-            [df, pd.DataFrame(data=data_set["y"], columns=[data_set["name"]])], axis=1
-        )
+    if params["df_name_col"] != "performing_physician_name":
+        df = pd.DataFrame(data=fig_data_dict[0]["x"], columns=[params["x_axis_title"]])
+        for data_set in fig_data_dict:
+            df = pd.concat(
+                [df, pd.DataFrame(data=data_set["y"], columns=[data_set["name"]])], axis=1
+            )
 
-    return df
+        return df
+
+    else:
+        df = pd.DataFrame(
+            data=fig_data_dict[0]["x"], columns=[params["x_axis_title"]]
+        )
+        for data_set in fig_data_dict:
+            series_name = (
+                data_set["hovertemplate"]
+                .split(params["facet_col"]+"=")[1]
+                .split("=")[0][:-1]
+            )
+            new_col_df = pd.DataFrame(
+                data=data_set["y"],  # pylint: disable=line-too-long
+                columns=[
+                    data_set["name"]
+                    + " "
+                    + series_name
+                    + " frequency",
+                ],  # pylint: disable=line-too-long
+            )
+            df = pd.concat([df, new_col_df], axis=1)
+        return df
 
 
 def calc_facet_rows_and_height(df, facet_col_name, facet_col_wrap):
@@ -500,6 +523,7 @@ def plotly_boxplot(
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if params["return_as_dict"] is
              True); or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
+    label_char_wrap = 500
     chart_height = 500
     n_facet_rows = 1
 
@@ -514,17 +538,20 @@ def plotly_boxplot(
                 df, params["facet_col"], params["facet_col_wrap"]
             )
 
+        if "label_char_wrap" in params.keys():
+            label_char_wrap = params["label_char_wrap"]
+
         n_colours = len(df.x_ray_system_name.unique())
         colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
 
         fig = px.box(
             df,
-            x=params["df_name_col"],
+            x=df[params["df_name_col"]].apply(lambda x: (textwrap.fill(x, label_char_wrap)).replace("\n", "<br>")),
             y=params["df_value_col"],
             facet_col=params["facet_col"],
             facet_col_wrap=params["facet_col_wrap"],
             facet_row_spacing=0.50 / n_facet_rows,
-            color="x_ray_system_name",
+            color=df["x_ray_system_name"].apply(lambda x: (textwrap.fill(x, label_char_wrap)).replace("\n", "<br>")),
             labels={
                 params["df_value_col"]: params["value_axis_title"],
                 params["df_name_col"]: params["name_axis_title"],
@@ -538,9 +565,12 @@ def plotly_boxplot(
         fig.update_traces(quartilemethod="exclusive")
 
         fig.update_xaxes(
-            tickson="boundaries", ticks="outside", ticklen=5, showticklabels=True
+            tickson="boundaries", ticks="outside", ticklen=5, showticklabels=True,
+            title=params["name_axis_title"]
         )
         fig.update_yaxes(showticklabels=True, matches=None)
+
+        fig.update_layout(legend_title_text="System")
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
@@ -661,6 +691,7 @@ def plotly_barchart(
     if df.empty:
         return empty_dataframe_msg(params), None
 
+    label_char_wrap = 500
     chart_height = 500
     n_facet_rows = 1
 
@@ -669,16 +700,21 @@ def plotly_barchart(
             df, params["facet_col"], params["facet_col_wrap"]
         )
 
+    if "label_char_wrap" in params.keys():
+        label_char_wrap = params["label_char_wrap"]
+
     n_colours = len(df.x_ray_system_name.unique())
     colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
 
+    facet_col_content = lambda input: df[params["facet_col"]].apply(lambda x: (textwrap.fill(x, label_char_wrap)).replace("\n", "<br>")) if input else None
+
     fig = px.bar(
         df,
-        x=df[params["df_name_col"]].apply(lambda x: (textwrap.fill(x, 50)).replace("\n", "<br>")),
+        x=df[params["df_name_col"]].apply(lambda x: (textwrap.fill(x, label_char_wrap)).replace("\n", "<br>")),
         y=params["average_choice"],
-        color="x_ray_system_name",
+        color=df["x_ray_system_name"].apply(lambda x: (textwrap.fill(x, label_char_wrap)).replace("\n", "<br>")),
         barmode="group",
-        facet_col=params["facet_col"],
+        facet_col=facet_col_content(params["facet_col"]),
         facet_col_wrap=params["facet_col_wrap"],
         facet_row_spacing=0.50 / n_facet_rows,
         labels={
@@ -700,9 +736,11 @@ def plotly_barchart(
 
     fig.update_xaxes(
         tickson="boundaries", ticks="outside", ticklen=5, showticklabels=True,
-        title=params["df_name_col"]
+        title=params["name_axis_title"]
     )
     fig.update_yaxes(showticklabels=True, matches=None)
+
+    fig.update_layout(legend_title_text="System")
 
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
@@ -763,6 +801,10 @@ def plotly_histogram_barchart(
     chart_height, n_facet_rows = calc_facet_rows_and_height(
         df, params["df_facet_col"], params["facet_col_wrap"]
     )
+
+    label_char_wrap = 500
+    if "label_char_wrap" in params.keys():
+        label_char_wrap = params["label_char_wrap"]
 
     n_colours = len(df[params["df_category_col"]].unique())
     colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
@@ -825,15 +867,15 @@ def plotly_histogram_barchart(
                 trace = go.Bar(
                     x=mid_bins,
                     y=histogram_data[0],
-                    name=category_name,
+                    name=(textwrap.fill(category_name, label_char_wrap)).replace("\n", "<br>"),
                     marker_color=colour_sequence[category_idx],
                     legendgroup=category_idx,
                     showlegend=show_legend,
-                    text=bin_labels,
+                    customdata=bin_labels,
                     hovertemplate=f"<b>{facet_name}</b><br>"
                     + f"{category_name}<br>"
                     + "Frequency: %{y:.0d}<br>"
-                    + "Bin range: %{text}<br>"
+                    + "Bin range: %{customdata}<br>"
                     + "Mid-bin: %{x:.2f}<br>"
                     + "<extra></extra>",
                 )
@@ -841,7 +883,7 @@ def plotly_histogram_barchart(
                 fig.append_trace(trace, row=current_row, col=current_col)
 
             fig.update_xaxes(
-                title_text=facet_name + " " + params["value_axis_title"],
+                title_text=(textwrap.fill(facet_name + " " + params["value_axis_title"], label_char_wrap)).replace("\n", "<br>"),
                 tickvals=bins,
                 ticks="outside",
                 ticklen=5,
@@ -1123,8 +1165,8 @@ def plotly_timeseries_linechart(
             df,
             x=params["df_date_col"],
             y=params["df_value_col"],
-            color=params["df_name_col"],
-            facet_col=params["facet_col"],
+            color=df[params["df_name_col"]].apply(lambda x: (textwrap.fill(x, params["label_char_wrap"])).replace("\n", "<br>")),
+            facet_col=df[params["facet_col"]].apply(lambda x: (textwrap.fill(x, params["label_char_wrap"])).replace("\n", "<br>")),
             facet_col_wrap=params["facet_col_wrap"],
             facet_row_spacing=0.40 / n_facet_rows,
             labels={
@@ -1156,6 +1198,8 @@ def plotly_timeseries_linechart(
             ticklen=5,
         )
         fig.update_yaxes(showticklabels=True, matches=None)
+
+        fig.update_layout(legend_title_text=params["legend_title"])
 
         fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
@@ -1288,6 +1332,7 @@ def plotly_barchart_weekdays(
     colourmap="RdYlBu",
     filename="OpenREM_workload_chart",
     facet_col_wrap=3,
+    label_char_wrap=500,
     return_as_dict=False,
 ):
     """
@@ -1317,7 +1362,8 @@ def plotly_barchart_weekdays(
             df,
             x=df_name_col,
             y=df_value_col,
-            facet_col="x_ray_system_name",
+            #facet_col="x_ray_system_name",
+            facet_col=df["x_ray_system_name"].apply(lambda x: (textwrap.fill(x, label_char_wrap)).replace("\n", "<br>")),
             facet_col_wrap=facet_col_wrap,
             facet_row_spacing=0.40 / n_facet_rows,
             color=df_value_col,
@@ -1421,6 +1467,7 @@ def plotly_frequency_barchart(
         params["legend_title"] = "System"
         params["df_x_axis_col"] = params["df_name_col"]
 
+    label_char_wrap = 500
     chart_height = 500
     n_facet_rows = 1
 
@@ -1429,14 +1476,17 @@ def plotly_frequency_barchart(
             df, params["facet_col"], params["facet_col_wrap"]
         )
 
+    if "label_char_wrap" in params.keys():
+        label_char_wrap = params["label_char_wrap"]
+
     n_colours = len(df_aggregated[df_legend_col].unique())
     colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
 
     fig = px.bar(
         df_aggregated,
-        x=params["df_x_axis_col"],
+        x=df_aggregated[params["df_x_axis_col"]].apply(lambda x: (textwrap.fill(x, label_char_wrap)).replace("\n", "<br>")),
         y="count",
-        color=df_legend_col,
+        color=df_aggregated[df_legend_col].apply(lambda x: (textwrap.fill(x, label_char_wrap)).replace("\n", "<br>")),
         facet_col=params["facet_col"],
         facet_col_wrap=params["facet_col_wrap"],
         facet_row_spacing=0.50 / n_facet_rows,
@@ -1455,8 +1505,11 @@ def plotly_frequency_barchart(
         ticks="outside",
         ticklen=5,
         showticklabels=True,
+        title=params["x_axis_title"],
     )
     fig.update_yaxes(showticklabels=True, matches=None)
+
+    fig.update_layout(legend_title_text=params["legend_title"])
 
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
 
@@ -1550,6 +1603,10 @@ def construct_over_time_charts(
             category_names_col = "performing_physician_name"
             params["name_title"] = "Physician"
 
+    label_char_wrap = 500
+    if "label_char_wrap" in params.keys():
+        label_char_wrap = params["label_char_wrap"]
+
     return_value = {}
 
     parameter_dict = {
@@ -1565,6 +1622,7 @@ def construct_over_time_charts(
         "filename": params["filename"],
         "facet_col_wrap": params["facet_col_wrap"],
         "sorted_category_list": sorted_categories,
+        "label_char_wrap": label_char_wrap,
         "return_as_dict": params["return_as_dict"],
     }
     if "mean" in params["average_choices"]:
@@ -1605,7 +1663,8 @@ def download_link(
 
     """
     if isinstance(object_to_download, pd.DataFrame):
-        object_to_download = object_to_download.to_csv(index=False)
+        object_to_download.columns = object_to_download.columns.str.replace("<br>", " ", regex=True)
+        object_to_download = object_to_download.replace("<br>", " ", regex=True).to_csv(index=False)
 
     # some strings <-> bytes conversions necessary here
     b64 = base64.b64encode(object_to_download.encode()).decode()

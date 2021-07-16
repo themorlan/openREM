@@ -314,6 +314,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             colourmap=user_profile.plotColourMapChoice,
             filename="OpenREM RF study description workload",
             facet_col_wrap=user_profile.plotFacetColWrapVal,
+            label_char_wrap=user_profile.plotLabelCharWrap,
             return_as_dict=return_as_dict,
         )
 
@@ -368,6 +369,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] = "OpenREM RF study description DAP mean"
                 parameter_dict["average_choice"] = "mean"
+                parameter_dict["label_char_wrap"] = user_profile.plotLabelCharWrap
                 (
                     return_structure["studyMeanData"],
                     return_structure["studyMeanDataCSV"],
@@ -381,6 +383,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] = "OpenREM RF study description DAP median"
                 parameter_dict["average_choice"] = "median"
+                parameter_dict["label_char_wrap"] = user_profile.plotLabelCharWrap
                 (
                     return_structure["studyMedianData"],
                     return_structure["studyMedianDataCSV"],
@@ -410,6 +413,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 "sorted_category_list": sorted_study_categories,
                 "facet_col": facet_col,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             return_structure["studyBoxplotData"] = plotly_boxplot(
@@ -453,6 +457,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 "df_facet_category_list": facet_names,
                 "df_category_name_list": category_names,
                 "global_max_min": user_profile.plotHistogramGlobalBins,
+                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             return_structure["studyHistogramData"] = plotly_histogram_barchart(
@@ -488,6 +493,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "groupby_cols": groupby_cols,
             "facet_col": facet_col,
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
+            "label_char_wrap": user_profile.plotLabelCharWrap,
             "return_as_dict": return_as_dict,
         }
         (
@@ -544,6 +550,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] = "OpenREM RF requested procedure DAP mean"
                 parameter_dict["average_choice"] = "mean"
+                parameter_dict["label_char_wrap"] = user_profile.plotLabelCharWrap
                 (
                     return_structure["requestMeanData"],
                     return_structure["requestMeanDataCSV"],
@@ -557,6 +564,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] = "OpenREM RF requested procedure DAP median"
                 parameter_dict["average_choice"] = "median"
+                parameter_dict["label_char_wrap"] = user_profile.plotLabelCharWrap
                 (
                     return_structure["requestMedianData"],
                     return_structure["requestMedianDataCSV"],
@@ -586,6 +594,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 "sorted_category_list": sorted_request_categories,
                 "facet_col": facet_col,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             return_structure["requestBoxplotData"] = plotly_boxplot(
@@ -629,6 +638,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 "df_facet_category_list": facet_names,
                 "df_category_name_list": category_names,
                 "global_max_min": user_profile.plotHistogramGlobalBins,
+                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             return_structure["requestHistogramData"] = plotly_histogram_barchart(
@@ -664,6 +674,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "groupby_cols": groupby_cols,
             "facet_col": facet_col,
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
+            "label_char_wrap": user_profile.plotLabelCharWrap,
             "return_as_dict": return_as_dict,
         }
         (
@@ -698,6 +709,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "grouping_choice": user_profile.plotGroupingChoice,
             "colourmap": user_profile.plotColourMapChoice,
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
+            "label_char_wrap": user_profile.plotLabelCharWrap,
             "filename": "OpenREM RF study DAP over time",
             "return_as_dict": return_as_dict,
         }
@@ -735,6 +747,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "grouping_choice": user_profile.plotGroupingChoice,
             "colourmap": user_profile.plotColourMapChoice,
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
+            "label_char_wrap": user_profile.plotLabelCharWrap,
             "filename": "OpenREM RF requested procedure DAP over time",
             "return_as_dict": return_as_dict,
         }
