@@ -1464,7 +1464,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean DLP (mGy.cm)"
-                    parameter_dict["filename"] = "OpenREM CT requested procedure DLP mean"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT requested procedure DLP mean"
                     parameter_dict["average_choice"] = "mean"
                     (
                         return_structure["requestMeanDLPData"],
@@ -1477,7 +1479,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median DLP (mGy.cm)"
-                    parameter_dict["filename"] = "OpenREM CT requested procedure DLP median"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT requested procedure DLP median"
                     parameter_dict["average_choice"] = "median"
                     (
                         return_structure["requestMedianDLPData"],

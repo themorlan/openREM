@@ -1335,9 +1335,9 @@ def chart_options_view(request):
                 general_form.cleaned_data["plotRemoveCategoryWhitespacePadding"]
             )
 
-            user_profile.plotLabelCharWrap =(
-                general_form.cleaned_data["plotLabelCharWrap"]
-            )
+            user_profile.plotLabelCharWrap = general_form.cleaned_data[
+                "plotLabelCharWrap"
+            ]
 
             set_common_chart_options(general_form, user_profile)
 

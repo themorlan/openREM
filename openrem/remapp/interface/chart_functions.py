@@ -180,10 +180,18 @@ def create_dataframe(
         df[date_field] = pd.to_datetime(df[date_field], format="%Y-%m-%d")
 
     # Character wrap the system and name fields
-    df.update(df["x_ray_system_name"].apply(lambda x: (textwrap.fill(x, char_wrap)).replace("\n", "<br>")))
+    df.update(
+        df["x_ray_system_name"].apply(
+            lambda x: (textwrap.fill(x, char_wrap)).replace("\n", "<br>")
+        )
+    )
     df["x_ray_system_name"] = df["x_ray_system_name"].astype("category")
     for field in field_dict["names"]:
-        df.update(df[field].apply(lambda x: (textwrap.fill(x, char_wrap)).replace("\n", "<br>")))
+        df.update(
+            df[field].apply(
+                lambda x: (textwrap.fill(x, char_wrap)).replace("\n", "<br>")
+            )
+        )
         df[field] = df[field].astype("category")
 
     if settings.DEBUG:
@@ -392,8 +400,8 @@ def csv_data_barchart(fig, params):
                     data_set["name"]
                     + " "
                     + params["value_axis_title"]
-                        .replace("<sup>2</sup>", "^2")
-                        .replace("<sub>vol</sub>", "vol"),
+                    .replace("<sup>2</sup>", "^2")
+                    .replace("<sub>vol</sub>", "vol"),
                     "Frequency",
                 ],  # pylint: disable=line-too-long
             )
@@ -410,8 +418,8 @@ def csv_data_barchart(fig, params):
         for data_set in fig_data_dict:
             series_name = (
                 data_set["hovertemplate"]
-                    .split(params["facet_col"] + "=")[1]
-                    .split("<br>Performing")[0]
+                .split(params["facet_col"] + "=")[1]
+                .split("<br>Performing")[0]
             ).replace("<br>", " ")
             new_col_df = pd.DataFrame(
                 data=list(zip(data_set["y"], [x[1] for x in data_set["customdata"]])),
@@ -421,8 +429,8 @@ def csv_data_barchart(fig, params):
                     + series_name
                     + " "
                     + params["value_axis_title"]
-                        .replace("<sup>2</sup>", "^2")
-                        .replace("<sub>vol</sub>", "vol"),
+                    .replace("<sup>2</sup>", "^2")
+                    .replace("<sub>vol</sub>", "vol"),
                     "Frequency",
                 ],  # pylint: disable=line-too-long
             )
@@ -444,28 +452,24 @@ def csv_data_frequency(fig, params):
         df = pd.DataFrame(data=fig_data_dict[0]["x"], columns=[params["x_axis_title"]])
         for data_set in fig_data_dict:
             df = pd.concat(
-                [df, pd.DataFrame(data=data_set["y"], columns=[data_set["name"]])], axis=1
+                [df, pd.DataFrame(data=data_set["y"], columns=[data_set["name"]])],
+                axis=1,
             )
 
         return df
 
     else:
-        df = pd.DataFrame(
-            data=fig_data_dict[0]["x"], columns=[params["x_axis_title"]]
-        )
+        df = pd.DataFrame(data=fig_data_dict[0]["x"], columns=[params["x_axis_title"]])
         for data_set in fig_data_dict:
             series_name = (
                 data_set["hovertemplate"]
-                .split(params["facet_col"]+"=")[1]
+                .split(params["facet_col"] + "=")[1]
                 .split("=")[0][:-1]
             )
             new_col_df = pd.DataFrame(
                 data=data_set["y"],  # pylint: disable=line-too-long
                 columns=[
-                    data_set["name"]
-                    + " "
-                    + series_name
-                    + " frequency",
+                    data_set["name"] + " " + series_name + " frequency",
                 ],  # pylint: disable=line-too-long
             )
             df = pd.concat([df, new_col_df], axis=1)
@@ -579,8 +583,11 @@ def plotly_boxplot(
         fig.update_traces(quartilemethod="exclusive")
 
         fig.update_xaxes(
-            tickson="boundaries", ticks="outside", ticklen=5, showticklabels=True,
-            title=params["name_axis_title"]
+            tickson="boundaries",
+            ticks="outside",
+            ticklen=5,
+            showticklabels=True,
+            title=params["name_axis_title"],
         )
         fig.update_yaxes(showticklabels=True, matches=None)
 
@@ -1516,11 +1523,14 @@ def plotly_frequency_barchart(
     )
 
     fig.update_traces(
-        hovertemplate =
-            "<b>" + params["legend_title"] + ": %{customdata}</b>" +
-            "<br>" + params["x_axis_title"] + ": %{x}" +
-            "<br>Frequency: %{y:.0d}" +
-            "<extra></extra>",
+        hovertemplate="<b>"
+        + params["legend_title"]
+        + ": %{customdata}</b>"
+        + "<br>"
+        + params["x_axis_title"]
+        + ": %{x}"
+        + "<br>Frequency: %{y:.0d}"
+        + "<extra></extra>",
     )
 
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
@@ -1670,8 +1680,12 @@ def download_link(
 
     """
     if isinstance(object_to_download, pd.DataFrame):
-        object_to_download.columns = object_to_download.columns.str.replace("<br>", " ", regex=True)
-        object_to_download = object_to_download.replace("<br>", " ", regex=True).to_csv(index=False)
+        object_to_download.columns = object_to_download.columns.str.replace(
+            "<br>", " ", regex=True
+        )
+        object_to_download = object_to_download.replace("<br>", " ", regex=True).to_csv(
+            index=False
+        )
 
     # some strings <-> bytes conversions necessary here
     b64 = base64.b64encode(object_to_download.encode()).decode()

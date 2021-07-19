@@ -127,7 +127,7 @@ class ChartsMG(TestCase):
         self.user.userprofile.plotMedian = True
         self.user.userprofile.plotBoxplots = True
         self.user.userprofile.plotMGInitialSortingChoice = "Name"
-        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
+        self.user.userprofile.plotInitialSortingDirection = 1  # Ascending
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -324,7 +324,7 @@ class ChartsMG(TestCase):
         self.user.userprofile.plotMean = True
         self.user.userprofile.plotHistograms = True
         self.user.userprofile.plotMGInitialSortingChoice = "Name"
-        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
+        self.user.userprofile.plotInitialSortingDirection = 1  # Ascending
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -403,7 +403,7 @@ class ChartsMG(TestCase):
         # Set user profile options
         self.user.userprofile.plotMGacquisitionFreq = True
         self.user.userprofile.plotMGInitialSortingChoice = "Name"
-        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
+        self.user.userprofile.plotInitialSortingDirection = 1  # Ascending
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -436,7 +436,7 @@ class ChartsMG(TestCase):
         # Repeat the above, but plot a series per system
         self.user.userprofile.plotSeriesPerSystem = True
         self.user.userprofile.plotMGInitialSortingChoice = "Name"
-        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
+        self.user.userprofile.plotInitialSortingDirection = 1  # Ascending
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -494,7 +494,7 @@ class ChartsMG(TestCase):
         # Set user profile options
         self.user.userprofile.plotMGStudyPerDayAndHour = True
         self.user.userprofile.plotMGInitialSortingChoice = "Name"
-        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
+        self.user.userprofile.plotInitialSortingDirection = 1  # Ascending
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -526,7 +526,7 @@ class ChartsMG(TestCase):
         # Repeat with series per system enabled
         self.user.userprofile.plotSeriesPerSystem = True
         self.user.userprofile.plotMGInitialSortingChoice = "Name"
-        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
+        self.user.userprofile.plotInitialSortingDirection = 1  # Ascending
         self.user.userprofile.save()
 
         self.obtain_chart_data(f)
@@ -601,7 +601,7 @@ class ChartsMG(TestCase):
         self.user.userprofile.plotMean = True
         self.user.userprofile.plotMedian = True
         self.user.userprofile.plotMGInitialSortingChoice = "Name"
-        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
+        self.user.userprofile.plotInitialSortingDirection = 1  # Ascending
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -748,7 +748,7 @@ class ChartsMG(TestCase):
         # Repeat with series per system enabled
         self.user.userprofile.plotSeriesPerSystem = True
         self.user.userprofile.plotMGInitialSortingChoice = "Name"
-        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
+        self.user.userprofile.plotInitialSortingDirection = 1  # Ascending
         self.user.userprofile.save()
 
         self.obtain_chart_data(f)
@@ -898,7 +898,7 @@ class ChartsMG(TestCase):
         # Set user profile options
         self.user.userprofile.plotMGAGDvsThickness = True
         self.user.userprofile.plotMGInitialSortingChoice = "Name"
-        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
+        self.user.userprofile.plotInitialSortingDirection = 1  # Ascending
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -971,7 +971,7 @@ class ChartsMG(TestCase):
         # Set user profile options
         self.user.userprofile.plotMGkVpvsThickness = True
         self.user.userprofile.plotMGInitialSortingChoice = "Name"
-        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
+        self.user.userprofile.plotInitialSortingDirection = 1  # Ascending
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -1007,7 +1007,7 @@ class ChartsMG(TestCase):
         # Repeat with series per system enabled
         self.user.userprofile.plotSeriesPerSystem = True
         self.user.userprofile.plotMGInitialSortingChoice = "Name"
-        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
+        self.user.userprofile.plotInitialSortingDirection = 1  # Ascending
         self.user.userprofile.save()
 
         self.obtain_chart_data(f)
@@ -1046,7 +1046,7 @@ class ChartsMG(TestCase):
         # Set user profile options
         self.user.userprofile.plotMGmAsvsThickness = True
         self.user.userprofile.plotMGInitialSortingChoice = "Name"
-        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
+        self.user.userprofile.plotInitialSortingDirection = 1  # Ascending
         self.user.userprofile.save()
 
         # Obtain chart data
@@ -1082,7 +1082,7 @@ class ChartsMG(TestCase):
         # Repeat with series per system enabled
         self.user.userprofile.plotSeriesPerSystem = True
         self.user.userprofile.plotMGInitialSortingChoice = "Name"
-        self.user.userprofile.plotInitialSortingDirection = 1 # Ascending
+        self.user.userprofile.plotInitialSortingDirection = 1  # Ascending
         self.user.userprofile.save()
 
         self.obtain_chart_data(f)
