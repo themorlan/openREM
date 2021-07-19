@@ -541,6 +541,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
+            char_wrap=user_profile.plotLabelCharWrap,
             uid="ctradiationdose__ctirradiationeventdata__pk",
         )
 
@@ -1057,6 +1058,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
+            char_wrap=user_profile.plotLabelCharWrap,
             uid="pk",
         )
         #######################################################################
@@ -1427,26 +1429,32 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
         sorted_request_dlp_categories = None
         if user_profile.plotCTRequestMeanDLP:
+            name_field = "requested_procedure_code_meaning"
+            value_field = "total_dlp"
+
             sorted_request_dlp_categories = create_sorted_category_list(
                 df,
-                "requested_procedure_code_meaning",
-                "total_dlp",
+                name_field,
+                value_field,
                 [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotCTInitialSortingChoice,
                 ],
             )
 
+            if user_profile.plotCTInitialSortingChoice.lower() == "name":
+                sorting_field = name_field
+
             if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
-                    ["requested_procedure_code_meaning"],
-                    "total_dlp",
+                    [name_field],
+                    value_field,
                     stats_to_use=average_choices + ["count"],
                 )
 
                 parameter_dict = {
-                    "df_name_col": "requested_procedure_code_meaning",
+                    "df_name_col": name_field,
                     "name_axis_title": "Requested procedure",
                     "colourmap": user_profile.plotColourMapChoice,
                     "sorted_category_list": sorted_request_dlp_categories,
@@ -1456,9 +1464,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean DLP (mGy.cm)"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM CT requested procedure DLP mean"
+                    parameter_dict["filename"] = "OpenREM CT requested procedure DLP mean"
                     parameter_dict["average_choice"] = "mean"
                     (
                         return_structure["requestMeanDLPData"],
@@ -1471,9 +1477,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median DLP (mGy.cm)"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM CT requested procedure DLP median"
+                    parameter_dict["filename"] = "OpenREM CT requested procedure DLP median"
                     parameter_dict["average_choice"] = "median"
                     (
                         return_structure["requestMedianDLPData"],
@@ -1486,8 +1490,8 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotBoxplots:
                 parameter_dict = {
-                    "df_name_col": "requested_procedure_code_meaning",
-                    "df_value_col": "total_dlp",
+                    "df_name_col": name_field,
+                    "df_value_col": value_field,
                     "value_axis_title": "DLP (mGy.cm)",
                     "name_axis_title": "Requested procedure",
                     "colourmap": user_profile.plotColourMapChoice,
@@ -1503,7 +1507,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 )
 
             if user_profile.plotHistograms:
-                category_names_col = "requested_procedure_code_meaning"
+                category_names_col = name_field
                 group_by_col = "x_ray_system_name"
                 legend_title = "Requested procedure"
                 facet_names = list(df[group_by_col].unique())
@@ -1511,7 +1515,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
-                    group_by_col = "requested_procedure_code_meaning"
+                    group_by_col = name_field
                     legend_title = "System"
                     category_names = facet_names
                     facet_names = list(sorted_request_dlp_categories.values())[0]
@@ -1519,7 +1523,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict = {
                     "df_facet_col": group_by_col,
                     "df_category_col": category_names_col,
-                    "df_value_col": "total_dlp",
+                    "df_value_col": value_field,
                     "value_axis_title": "DLP (mGy.cm)",
                     "legend_title": legend_title,
                     "n_bins": user_profile.plotHistogramBins,

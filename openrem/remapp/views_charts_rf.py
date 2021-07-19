@@ -296,6 +296,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
         data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
         data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
         data_point_value_multipliers=value_multipliers,
+        char_wrap=user_profile.plotLabelCharWrap,
         uid="pk",
     )
     #######################################################################
@@ -314,7 +315,6 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             colourmap=user_profile.plotColourMapChoice,
             filename="OpenREM RF study description workload",
             facet_col_wrap=user_profile.plotFacetColWrapVal,
-            label_char_wrap=user_profile.plotLabelCharWrap,
             return_as_dict=return_as_dict,
         )
 
@@ -363,7 +363,6 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 "sorted_category_list": sorted_study_categories,
                 "facet_col": facet_col,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             if user_profile.plotMean:
@@ -413,7 +412,6 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 "sorted_category_list": sorted_study_categories,
                 "facet_col": facet_col,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             return_structure["studyBoxplotData"] = plotly_boxplot(
@@ -457,7 +455,6 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 "df_facet_category_list": facet_names,
                 "df_category_name_list": category_names,
                 "global_max_min": user_profile.plotHistogramGlobalBins,
-                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             return_structure["studyHistogramData"] = plotly_histogram_barchart(
@@ -493,7 +490,6 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "groupby_cols": groupby_cols,
             "facet_col": facet_col,
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
-            "label_char_wrap": user_profile.plotLabelCharWrap,
             "return_as_dict": return_as_dict,
         }
         (
@@ -544,7 +540,6 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 "sorted_category_list": sorted_request_categories,
                 "facet_col": facet_col,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             if user_profile.plotMean:
@@ -593,7 +588,6 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 "sorted_category_list": sorted_request_categories,
                 "facet_col": facet_col,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             return_structure["requestBoxplotData"] = plotly_boxplot(
@@ -637,7 +631,6 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 "df_facet_category_list": facet_names,
                 "df_category_name_list": category_names,
                 "global_max_min": user_profile.plotHistogramGlobalBins,
-                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             return_structure["requestHistogramData"] = plotly_histogram_barchart(
@@ -673,7 +666,6 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "groupby_cols": groupby_cols,
             "facet_col": facet_col,
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
-            "label_char_wrap": user_profile.plotLabelCharWrap,
             "return_as_dict": return_as_dict,
         }
         (
@@ -708,7 +700,6 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "grouping_choice": user_profile.plotGroupingChoice,
             "colourmap": user_profile.plotColourMapChoice,
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
-            "label_char_wrap": user_profile.plotLabelCharWrap,
             "filename": "OpenREM RF study DAP over time",
             "return_as_dict": return_as_dict,
         }
@@ -746,7 +737,6 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "grouping_choice": user_profile.plotGroupingChoice,
             "colourmap": user_profile.plotColourMapChoice,
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
-            "label_char_wrap": user_profile.plotLabelCharWrap,
             "filename": "OpenREM RF requested procedure DAP over time",
             "return_as_dict": return_as_dict,
         }

@@ -292,6 +292,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
             data_point_value_multipliers=value_multipliers,
+            char_wrap=user_profile.plotLabelCharWrap,
             uid="projectionxrayradiationdose__irradeventxraydata__pk",
         )
 
@@ -335,7 +336,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "df_facet_category_list": facet_names,
                     "df_category_name_list": category_names,
-                    "label_char_wrap": user_profile.plotLabelCharWrap,
                     "return_as_dict": return_as_dict,
                 }
                 if user_profile.plotMean:
@@ -375,7 +375,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         "facet_col": None,
                         "facet_col_wrap": user_profile.plotFacetColWrapVal,
                         "return_as_dict": return_as_dict,
-                        "label_char_wrap": user_profile.plotLabelCharWrap,
                     }
                     if user_profile.plotMean:
                         parameter_dict["value_axis_title"] = "Mean AGD (mGy)"
@@ -418,7 +417,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         "sorted_category_list": sorted_acquisition_agd_categories,
                         "facet_col": None,
                         "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                        "label_char_wrap": user_profile.plotLabelCharWrap,
                         "return_as_dict": return_as_dict,
                     }
                     return_structure["acquisitionBoxplotAGDData"] = plotly_boxplot(
@@ -455,7 +453,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         "df_facet_category_list": facet_names,
                         "df_category_name_list": category_names,
                         "global_max_min": user_profile.plotHistogramGlobalBins,
-                        "label_char_wrap": user_profile.plotLabelCharWrap,
                         "return_as_dict": return_as_dict,
                     }
                     return_structure[
@@ -481,7 +478,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "x_axis_title": "Compressed breast thickness (mm)",
                 "y_axis_title": "AGD (mGy)",
                 "filename": "OpenREM CT acquisition protocol AGD vs thickness",
-                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             return_structure[
@@ -507,7 +503,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "x_axis_title": "Compressed breast thickness (mm)",
                 "y_axis_title": "kVp",
                 "filename": "OpenREM CT acquisition protocol kVp vs thickness",
-                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             return_structure[
@@ -533,7 +528,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "x_axis_title": "Compressed breast thickness (mm)",
                 "y_axis_title": "mAs",
                 "filename": "OpenREM CT acquisition protocol mAs vs thickness",
-                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             return_structure[
@@ -564,7 +558,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "groupby_cols": None,
                 "facet_col": None,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "return_as_dict": return_as_dict,
             }
             (
@@ -597,7 +590,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                "label_char_wrap": user_profile.plotLabelCharWrap,
                 "filename": "OpenREM MG acquisition protocol AGD over time",
                 "return_as_dict": return_as_dict,
             }
@@ -660,7 +652,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM CT study description workload",
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
-                label_char_wrap=user_profile.plotLabelCharWrap,
                 return_as_dict=return_as_dict,
             )
 

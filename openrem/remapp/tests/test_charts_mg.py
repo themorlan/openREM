@@ -910,6 +910,12 @@ class ChartsMG(TestCase):
             "data": [
                 {
                     "system": "All systems",
+                    "name": "Blank",
+                    "x": np.array([43.0, 43.0]),
+                    "y": np.array([1.28, 1.3]),
+                },
+                {
+                    "system": "All systems",
                     "name": "Flat Field Tomo",
                     "x": np.array([18.0]),
                     "y": np.array([0.26]),
@@ -919,12 +925,6 @@ class ChartsMG(TestCase):
                     "name": "ROUTINE",
                     "x": np.array([53.0]),
                     "y": np.array([1.373]),
-                },
-                {
-                    "system": "All systems",
-                    "name": "Blank",
-                    "x": np.array([43.0, 43.0]),
-                    "y": np.array([1.28, 1.3]),
                 },
             ]
         }
@@ -942,16 +942,16 @@ class ChartsMG(TestCase):
         standard_data = {
             "data": [
                 {
-                    "system": "Breast Imaging Clinic PQW_HOL_SELENIA",
-                    "name": "Flat Field Tomo",
-                    "x": np.array([18.0]),
-                    "y": np.array([0.26]),
-                },
-                {
                     "system": "OpenREM Dimensions",
                     "name": "Blank",
                     "x": np.array([43.0, 43.0]),
                     "y": np.array([1.28, 1.3]),
+                },
+                {
+                    "system": "Breast Imaging Clinic PQW_HOL_SELENIA",
+                    "name": "Flat Field Tomo",
+                    "x": np.array([18.0]),
+                    "y": np.array([0.26]),
                 },
                 {
                     "system": "中心医院 SENODS01",
@@ -1017,16 +1017,16 @@ class ChartsMG(TestCase):
         standard_data = {
             "data": [
                 {
-                    "system": "Breast Imaging Clinic PQW_HOL_SELENIA",
-                    "name": "Flat Field Tomo",
-                    "x": np.array([18.0]),
-                    "y": np.array([28.0]),
-                },
-                {
                     "system": "OpenREM Dimensions",
                     "name": "Blank",
                     "x": np.array([43.0, 43.0]),
                     "y": np.array([28.0, 28.0]),
+                },
+                {
+                    "system": "Breast Imaging Clinic PQW_HOL_SELENIA",
+                    "name": "Flat Field Tomo",
+                    "x": np.array([18.0]),
+                    "y": np.array([28.0]),
                 },
                 {
                     "system": "中心医院 SENODS01",
@@ -1092,16 +1092,16 @@ class ChartsMG(TestCase):
         standard_data = {
             "data": [
                 {
-                    "system": "Breast Imaging Clinic PQW_HOL_SELENIA",
-                    "name": "Flat Field Tomo",
-                    "x": np.array([18.0]),
-                    "y": np.array([6.0]),
-                },
-                {
                     "system": "OpenREM Dimensions",
                     "name": "Blank",
                     "x": np.array([43.0, 43.0]),
                     "y": np.array([88.8, 90.2]),
+                },
+                {
+                    "system": "Breast Imaging Clinic PQW_HOL_SELENIA",
+                    "name": "Flat Field Tomo",
+                    "x": np.array([18.0]),
+                    "y": np.array([6.0]),
                 },
                 {
                     "system": "中心医院 SENODS01",
