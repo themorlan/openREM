@@ -35,6 +35,7 @@ import math
 import base64
 from builtins import range  # pylint: disable=redefined-builtin
 from datetime import datetime
+import textwrap
 from django.conf import settings
 from django.utils.translation import gettext as _
 import numpy as np
@@ -47,7 +48,6 @@ import plotly.graph_objects as go
 from plotly.offline import plot
 from plotly.subplots import make_subplots
 from scipy import stats
-import textwrap
 
 
 def global_config(

@@ -1442,9 +1442,6 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 ],
             )
 
-            if user_profile.plotCTInitialSortingChoice.lower() == "name":
-                sorting_field = name_field
-
             if user_profile.plotMean or user_profile.plotMedian:
                 df_aggregated = create_dataframe_aggregates(
                     df,
