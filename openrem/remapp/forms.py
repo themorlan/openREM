@@ -590,7 +590,7 @@ class GeneralChartOptionsDisplayForm(forms.Form):
         label="Remove category whitespace padding", required=False
     )
     plotLabelCharWrap = forms.IntegerField(
-        label="X-label character wrap length", min_value=10, max_value=500, required=False
+        label="Chart label character wrap length", min_value=10, max_value=500, required=False
     )
     plotGrouping = forms.ChoiceField(
         label="Chart grouping", choices=CommonVariables.CHART_GROUPING, required=False
