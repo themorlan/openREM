@@ -1498,6 +1498,7 @@ def plotly_frequency_barchart(
         facet_row_spacing=0.50 / n_facet_rows,
         color_discrete_sequence=colour_sequence,
         height=chart_height,
+        custom_data=[df_legend_col],
     )
 
     fig.update_xaxes(
@@ -1515,7 +1516,11 @@ def plotly_frequency_barchart(
     )
 
     fig.update_traces(
-        hovertemplate = "System: %{x}<br>Frequency: %{y:.0d}",
+        hovertemplate =
+            "<b>" + params["legend_title"] + ": %{customdata}</b>" +
+            "<br>" + params["x_axis_title"] + ": %{x}" +
+            "<br>Frequency: %{y:.0d}" +
+            "<extra></extra>",
     )
 
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
