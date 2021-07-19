@@ -538,10 +538,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
         if user_profile.plotMGacquisitionFreq:
-            sorted_categories = None
-            if user_profile.plotMGaverageAGD:
-                sorted_categories = sorted_acquisition_agd_categories
-
             parameter_dict = {
                 "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                 "sorting_choice": [
@@ -554,7 +550,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "filename": "OpenREM MG acquisition protocol frequency",
-                "sorted_categories": sorted_categories,
                 "groupby_cols": None,
                 "facet_col": None,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,

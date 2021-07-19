@@ -806,14 +806,6 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 )
 
         if user_profile.plotDXAcquisitionFreq:
-            sorted_categories = None
-            if user_profile.plotDXAcquisitionMeanDAP:
-                sorted_categories = sorted_acquisition_dap_categories
-            elif user_profile.plotDXAcquisitionMeankVp:
-                sorted_categories = sorted_acquisition_kvp_categories
-            elif user_profile.plotDXAcquisitionMeanmAs:
-                sorted_categories = sorted_acquisition_mas_categories
-
             parameter_dict = {
                 "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                 "sorting_choice": [
@@ -826,7 +818,6 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "filename": "OpenREM DX acquisition protocol frequency",
-                "sorted_categories": sorted_categories,
                 "groupby_cols": None,
                 "facet_col": None,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
@@ -1172,7 +1163,6 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "filename": "OpenREM DX study description frequency",
-                "sorted_categories": sorted_study_dap_categories,
                 "groupby_cols": None,
                 "facet_col": None,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
@@ -1313,7 +1303,6 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "filename": "OpenREM DX requested procedure frequency",
-                "sorted_categories": sorted_request_dap_categories,
                 "groupby_cols": None,
                 "facet_col": None,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
