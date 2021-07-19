@@ -462,9 +462,7 @@ def csv_data_frequency(fig, params):
         df = pd.DataFrame(data=fig_data_dict[0]["x"], columns=[params["x_axis_title"]])
         for data_set in fig_data_dict:
             series_name = (
-                data_set["hovertemplate"]
-                .split(params["facet_col"] + "=")[1]
-                .split("=")[0][:-1]
+                data_set["customdata"][0][1]
             )
             new_col_df = pd.DataFrame(
                 data=data_set["y"],  # pylint: disable=line-too-long
@@ -1495,6 +1493,10 @@ def plotly_frequency_barchart(
     n_colours = len(df_aggregated[df_legend_col].unique())
     colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
 
+    custom_data_fields = [df_legend_col]
+    if params["facet_col"] is not None:
+        custom_data_fields.append(params["facet_col"])
+
     fig = px.bar(
         df_aggregated,
         x=params["df_x_axis_col"],
@@ -1505,7 +1507,7 @@ def plotly_frequency_barchart(
         facet_row_spacing=0.50 / n_facet_rows,
         color_discrete_sequence=colour_sequence,
         height=chart_height,
-        custom_data=[df_legend_col],
+        custom_data=custom_data_fields,
     )
 
     fig.update_xaxes(
@@ -1525,7 +1527,7 @@ def plotly_frequency_barchart(
     fig.update_traces(
         hovertemplate="<b>"
         + params["legend_title"]
-        + ": %{customdata}</b>"
+        + ": %{customdata[0]}</b>"
         + "<br>"
         + params["x_axis_title"]
         + ": %{x}"
