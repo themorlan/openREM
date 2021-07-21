@@ -68,8 +68,8 @@ $(document).ready(function() {
 
             if (isCanvasSupported()) {
 
-                skinDoseMapObj.initialise(json.skin_map, json.width, json.height, json.phantom_flat_dist,
-                json.phantom_curved_dist, json.phantom_head_height);
+                skinDoseMapObj.initialise(json.skin_map, json.width + json.phantom_head_height, json.height, json.phantom_flat_dist,
+                json.phantom_curved_dist);
 
                 if (skinDoseMapObj.maxDose !== 0 && isFinite(skinDoseMapObj.maxDose)) {
 
