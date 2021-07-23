@@ -45,10 +45,10 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
+from remapp.models import GeneralStudyModuleAttr, SkinDoseMapResults, OpenSkinSafeList
 from .save_skin_map_structure import save_openskin_structure
 from .openskin.calc_exp_map import CalcExpMap
 from ..version import __skin_map_version__
-from remapp.models import GeneralStudyModuleAttr, SkinDoseMapResults, OpenSkinSafeList
 
 # Explicitly name logger so that it is still handled when using __main__
 logger = logging.getLogger("remapp.tools.make_skin_map")

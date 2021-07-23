@@ -35,6 +35,7 @@ from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Avg, Max, Min
 
+from remapp.models import GeneralStudyModuleAttr, IrradEventXRayData
 from ..exports.export_common import (
     text_and_date_formats,
     common_headers,
@@ -53,7 +54,6 @@ from ..exports.export_common import (
 )
 from ..interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
 from ..tools.get_values import return_for_export
-from remapp.models import GeneralStudyModuleAttr, IrradEventXRayData
 
 logger = logging.getLogger(__name__)
 
