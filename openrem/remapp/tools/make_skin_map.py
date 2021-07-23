@@ -25,13 +25,17 @@
 ..  module:: make_skin_map.
     :synopsis: Module to calculate skin dose map from study data.
 
-..  moduleauthor:: Ed McDonagh, David Platten
+..  moduleauthor:: Ed McDonagh, David Platten, Wens Kong
 
 """
 import os
 import sys
 import logging
+
+from celery import shared_task
 import django
+from django.core.exceptions import ObjectDoesNotExist
+import numpy as np
 
 # setup django/OpenREM
 basepath = os.path.dirname(__file__)
@@ -41,7 +45,10 @@ if projectpath not in sys.path:
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
 django.setup()
 
-from celery import shared_task
+from remapp.models import GeneralStudyModuleAttr, SkinDoseMapResults, OpenSkinSafeList
+from .save_skin_map_structure import save_openskin_structure
+from .openskin.calc_exp_map import CalcExpMap
+from ..version import __skin_map_version__
 
 # Explicitly name logger so that it is still handled when using __main__
 logger = logging.getLogger("remapp.tools.make_skin_map")
@@ -49,30 +56,31 @@ logger = logging.getLogger("remapp.tools.make_skin_map")
 
 @shared_task(name="remapp.tools.make_skin_map", ignore_result=True)
 def make_skin_map(study_pk=None):
-    import remapp.tools.openskin.calc_exp_map as calc_exp_map
-    from remapp.models import (
-        GeneralStudyModuleAttr,
-        HighDoseMetricAlertSettings,
-        SkinDoseMapResults,
-    )
-    from remapp.tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
-    from openremproject.settings import MEDIA_ROOT
-    import pickle
-    import gzip
-    from remapp.version import __skin_map_version__
-    from django.core.exceptions import ObjectDoesNotExist
-    import numpy as np
-
 
     if study_pk:
         study = GeneralStudyModuleAttr.objects.get(pk=study_pk)
-        HighDoseMetricAlertSettings.objects.get()
-        send_alert_emails_skin = HighDoseMetricAlertSettings.objects.values_list(
-            "send_high_dose_metric_alert_emails_skin", flat=True
-        )[0]
-        send_alert_emails_ref = HighDoseMetricAlertSettings.objects.values_list(
-            "send_high_dose_metric_alert_emails_ref", flat=True
-        )[0]
+        try:
+            entry = OpenSkinSafeList.objects.get(
+                manufacturer=study.generalequipmentmoduleattr_set.get().manufacturer,
+                manufacturer_model_name=study.generalequipmentmoduleattr_set.get().manufacturer_model_name,
+            )
+        except ObjectDoesNotExist:
+            entry = None
+        if entry is not None and entry.software_version:
+            if (
+                study.generalequipmentmoduleattr_set.get().software_versions
+                != entry.software_version
+            ):
+                entry = None
+        if entry is None:
+            save_openskin_structure(
+                study,
+                {
+                    "skin_map": [0, 0],
+                    "skin_map_version": __skin_map_version__,
+                },
+            )
+            return
 
         pat_mass_source = "assumed"
         try:
@@ -161,7 +169,7 @@ def make_skin_map(study_pk=None):
             pat_pos = "HFS"
         logger.debug(f"patPos is {pat_pos} and source is {pat_pos_source}")
 
-        my_exp_map = calc_exp_map.CalcExpMap(
+        my_exp_map = CalcExpMap(
             phantom_type="3D",
             pat_pos=pat_pos,
             pat_mass=pat_mass,
@@ -358,28 +366,4 @@ def make_skin_map(study_pk=None):
         }
 
         # Save the return_structure as a pickle in a skin_maps sub-folder of the MEDIA_ROOT folder
-        try:
-            study_date = study.study_date
-            if study_date:
-                skin_map_path = os.path.join(
-                    MEDIA_ROOT,
-                    "skin_maps",
-                    f"{study_date.year:0>4}",
-                    f"{study_date.month:0>2}",
-                    f"{study_date.day:0>2}",
-                )
-            else:
-                skin_map_path = os.path.join(MEDIA_ROOT, "skin_maps")
-        except:
-            skin_map_path = os.path.join(MEDIA_ROOT, "skin_maps")
-
-        if not os.path.exists(skin_map_path):
-            os.makedirs(skin_map_path)
-
-        with gzip.open(
-            os.path.join(skin_map_path, "skin_map_" + str(study_pk) + ".p"), "wb"
-        ) as pickle_file:
-            pickle.dump(return_structure, pickle_file)
-
-        if send_alert_emails_skin or send_alert_emails_ref:
-            send_rf_high_dose_alert_email(study.pk)
+        save_openskin_structure(study, return_structure)

@@ -42,6 +42,14 @@ import django
 from django.db.models import Avg, Sum, ObjectDoesNotExist
 import pydicom
 
+# setup django/OpenREM.
+basepath = os.path.dirname(__file__)
+projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
+if projectpath not in sys.path:
+    sys.path.insert(1, projectpath)
+os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
+django.setup()
+
 from ..tools.check_uid import record_sop_instance_uid
 from ..tools.dcmdatetime import get_date, get_time, make_date, make_date_time, make_time
 from ..tools.get_values import (
@@ -56,13 +64,6 @@ from ..tools.hash_id import hash_id
 from ..tools.make_skin_map import make_skin_map
 from ..tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 
-# setup django/OpenREM.
-basepath = os.path.dirname(__file__)
-projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
-if projectpath not in sys.path:
-    sys.path.insert(1, projectpath)
-os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
-django.setup()
 
 from .extract_common import (  # pylint: disable=wrong-import-order, wrong-import-position
     ct_event_type_count,
@@ -337,7 +338,7 @@ def _xraytubecurrent(current_value, source):
 
 
 def _exposure(exposure_value, source):
-    """Takes exposure (mAs) values and populates Exposure table
+    """Takes exposure (uA.s) values and populates Exposure table
 
     :param exposure_value: Decimal or list of decimals
     :param source: database object in IrradEventXRaySourceData table

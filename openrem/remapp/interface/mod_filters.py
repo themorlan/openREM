@@ -36,7 +36,11 @@ import django_filters
 from django import forms
 from django.db.models import Q
 
-from ..models import GeneralStudyModuleAttr, IrradEventXRayData, CtIrradiationEventData
+from remapp.models import (
+    GeneralStudyModuleAttr,
+    IrradEventXRayData,
+    CtIrradiationEventData,
+)
 from ..tools.hash_id import hash_id
 
 logger = logging.getLogger(__name__)
@@ -180,6 +184,16 @@ class RFSummaryListFilter(django_filters.FilterSet):
         label="Max age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
     )
+    patientstudymoduleattr__patient_weight__gte = django_filters.NumberFilter(
+        lookup_expr="gte",
+        label="Min weight (kg)",
+        field_name="patientstudymoduleattr__patient_weight",
+    )
+    patientstudymoduleattr__patient_weight__lte = django_filters.NumberFilter(
+        lookup_expr="lte",
+        label="Max weight (kg)",
+        field_name="patientstudymoduleattr__patient_weight",
+    )
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(
         lookup_expr="icontains", label="Hospital"
     )
@@ -234,6 +248,8 @@ class RFSummaryListFilter(django_filters.FilterSet):
             "generalequipmentmoduleattr__station_name",
             "patientstudymoduleattr__patient_age_decimal__gte",
             "patientstudymoduleattr__patient_age_decimal__lte",
+            "patientstudymoduleattr__patient_weight__gte",
+            "patientstudymoduleattr__patient_weight__lte",
             "performing_physician_name",
             "accession_number",
             "study_dap_min",
@@ -398,6 +414,16 @@ class CTSummaryListFilter(django_filters.FilterSet):
         label="Max age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
     )
+    patientstudymoduleattr__patient_weight__gte = django_filters.NumberFilter(
+        lookup_expr="gte",
+        label="Min weight (kg)",
+        field_name="patientstudymoduleattr__patient_weight",
+    )
+    patientstudymoduleattr__patient_weight__lte = django_filters.NumberFilter(
+        lookup_expr="lte",
+        label="Max weight (kg)",
+        field_name="patientstudymoduleattr__patient_weight",
+    )
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(
         lookup_expr="icontains", label="Hospital"
     )
@@ -479,6 +505,8 @@ class CTSummaryListFilter(django_filters.FilterSet):
             "generalequipmentmoduleattr__station_name",
             "patientstudymoduleattr__patient_age_decimal__gte",
             "patientstudymoduleattr__patient_age_decimal__lte",
+            "patientstudymoduleattr__patient_weight__gte",
+            "patientstudymoduleattr__patient_weight__lte",
             "accession_number",
             "total_dlp__gte",
             "total_dlp__lte",
@@ -856,6 +884,16 @@ class DXSummaryListFilter(django_filters.FilterSet):
         label="Max age (yrs)",
         field_name="patientstudymoduleattr__patient_age_decimal",
     )
+    patientstudymoduleattr__patient_weight__gte = django_filters.NumberFilter(
+        lookup_expr="gte",
+        label="Min weight (kg)",
+        field_name="patientstudymoduleattr__patient_weight",
+    )
+    patientstudymoduleattr__patient_weight__lte = django_filters.NumberFilter(
+        lookup_expr="lte",
+        label="Max weight (kg)",
+        field_name="patientstudymoduleattr__patient_weight",
+    )
     generalequipmentmoduleattr__institution_name = django_filters.CharFilter(
         lookup_expr="icontains", label="Hospital"
     )
@@ -919,6 +957,8 @@ class DXSummaryListFilter(django_filters.FilterSet):
             "generalequipmentmoduleattr__station_name",
             "patientstudymoduleattr__patient_age_decimal__gte",
             "patientstudymoduleattr__patient_age_decimal__lte",
+            "patientstudymoduleattr__patient_weight__gte",
+            "patientstudymoduleattr__patient_weight__lte",
             "accession_number",
             "study_dap_min",
             "study_dap_max",
@@ -1056,7 +1096,9 @@ def dx_acq_filter(filters, pid=False):
         ).distinct()
 
     studies = GeneralStudyModuleAttr.objects.filter(
-        Q(modality_type__exact="DX") | Q(modality_type__exact="CR")
+        Q(modality_type__exact="DX")
+        | Q(modality_type__exact="CR")
+        | Q(modality_type__exact="PX")
     )
 
     if filteredInclude:

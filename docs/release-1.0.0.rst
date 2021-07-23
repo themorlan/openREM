@@ -2,6 +2,8 @@
 Upgrade to OpenREM 1.0.0
 ########################
 
+**Document not ready for translation**
+
 ****************
 Headline changes
 ****************
@@ -42,6 +44,7 @@ is in:
 * Windows: ``C:\Python27\Lib\site-packages\openrem\openremproject\local_settings.py``
 * Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\openremproject\local_settings.py``
 
+.. _release1-0upgrade:
 
 Export the database
 ===================
@@ -72,8 +75,8 @@ Set up the new installation
 * Install Docker
 * Download and extract https://bitbucket.org/openrem/docker/get/develop.zip and open a shell (command window) in the
   new folder
-* Customise variables in ``.env.prod`` and in the ``orthanc_1`` section in ``docker-compose.yml`` as necessary.
-  A full description of the options are found in:
+* Customise variables in ``.env.prod``, the ``orthanc_1`` section in ``docker-compose.yml``
+  and in ``orthanc_1.json`` as necessary.  A full description of the options are found in:
 
 ..  toctree::
     :maxdepth: 1
@@ -98,7 +101,7 @@ your backup filename.
 
 .. code-block:: console
 
-    $ docker cp /path/to/openremdump.bak db_backup/
+    $ docker cp /path/to/openremdump.bak openrem-db:/db_backup/
 
 .. code-block:: console
 
@@ -140,20 +143,17 @@ database), and create the static files:
 
 .. code-block:: console
 
+    $ docker-compose exec openrem python manage.py loaddata openskin_safelist.json
+
+.. code-block:: console
+
     $ docker-compose exec openrem python manage.py collectstatic --noinput --clear
 
 Generate translation binary files
 
 .. code-block:: console
 
-    $ docker-compose exec openrem python django-admin compilemessages
-
-Copy in any existing skin dose map pickle files from your existing ``MEDIA_ROOT/skin_maps`` folder (optional, they can
-be calculated again):
-
-.. code-block:: console
-
-    $ docker cp path/to/skin_maps/. openrem:/home/app/openrem/mediafiles/skin_maps/
+    $ docker-compose exec openrem python manage.py compilemessages
 
 The new OpenREM installation should now be ready to be used.
 
@@ -263,6 +263,10 @@ Migrate the database:
 .. code-block:: console
 
     $ python manage.py migrate
+
+.. code-block:: console
+
+    $ python manage.py loaddata openskin_safelist.json
 
 
 Update static files

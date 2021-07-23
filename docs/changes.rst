@@ -3,12 +3,22 @@ OpenREM version history
 =======================
 
 
-1.0.0b1 (2020-xx-xx)
+1.0.0b1 (2021-xx-xx)
 --------------------
+* :issue:`909`  Code quality: all model imports absolute
+* :issue:`906`  Charts: upgraded Plotly library to latest version
+* :issue:`905`  Imports: fixed filter extraction code not working for Siemens Multix DX
+* :issue:`904`  Testing: bumped Python image from 3.6 to 3.8
+* :issue:`903`  Interface: added patient weight filters to the CT, RF and DX summary pages
+* :issue:`901`  Charts: fixed issue where mammography mAs values were displayed 1000x too high on scatter plot
+* :issue:`897`  Docker: fixed permissions for PixelMed - now using root throughout
+* :issue:`896`  Imports: enabling import of DX with text string in PatientSize field
 * :issue:`893`  Charts: fixed issue with over-time charts with many sub-plots failing to plot correctly
+* :issue:`888`  SkinDose: added option to support skin dose calculations for listed systems only
 * :issue:`886`  Code quality: addressed some SonarCloud issues
 * :issue:`881`  Charts: add option to remove multiple and trailing whitespace in category names
 * :issue:`879`  Charts: fixed sorting of fluoroscopy charts when split by physician
+* :issue:`877`  Charts: added acquisition type restrictions to acquisition-level CT charts
 * :issue:`872`  Charts: added ability to split fluoroscopy over-time and histogram charts by physician
 * :issue:`871`  Charts: corrected RF chart x-axis labels
 * :issue:`870`  Charts: reduced memory footprint of Pandas DataFrame creation
@@ -21,6 +31,7 @@ OpenREM version history
 * :issue:`863`  Interface: removed height and weight from CT study delete
 * :issue:`861`  Interface: added ability to filter mammography on view code, compressed breast thickness and exposure control mode
 * :issue:`860`  DICOM Networking: removed built-in DICOM Store SCP functionality
+* :issue:`858`  DICOM Networking: query-retrieve logging, filtering and error handling improved
 * :issue:`856`  Interface: removed CT acquisition type restriction tick boxes
 * :issue:`854`  Interface: added date constraints to links on homepage
 * :issue:`853`  Testing: reduced Bitbucket pipeline minutes usage
@@ -70,6 +81,7 @@ OpenREM version history
 * :issue:`787`  Interface: fixed login error
 * :issue:`777`  Updated OpenREM to use pydicom 1.3
 * :issue:`744`  Added overwrite mode to size import
+* :issue:`678`  Enabled import of PX modality panoramic exam data - they appear in the Radiographic section
 * :issue:`530`  Updated OpenREM to use pynetdicom 1.4
 * :issue:`513`  Internationalization: first translation strings added to documentation
 * :issue:`512`  Internationalization: first translation strings added to interface

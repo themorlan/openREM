@@ -23,7 +23,7 @@
 {% endblock %}
 
 {% block toprow %}
-  <a name="#top"></a>
+  <a id="#top"></a>
   <div class="row">
     <div class="col-md-6">
       <h3>Unit display name and modality type configuration</h3>
@@ -142,52 +142,62 @@
   <input class="btn btn-default" type="submit" value="Update">
 {% endif %}
 
-<a name="ct" class="vert-offset">
+<a id="ct" class="vert-offset">
   <h3>CT</h3>
 </a>
-<span id="CT-names"><p>Querying the database for display names, please wait</p></span>
+<span id="CT-names">Querying the database for display names, please wait</span>
 {% if admin.admingroup %}
-  <input class="btn btn-default" type="submit" value="Update">
+    <p>
+      <input class="btn btn-default" type="submit" value="Update">
+    </p>
 {% endif %}
 
-<a name="fluoro" class="vert-offset">
+<a id="fluoro" class="vert-offset">
   <h3>Fluoroscopy</h3>
 </a>
-<span id="RF-names"><p>Querying the database for display names, please wait</p></span>
+<span id="RF-names">Querying the database for display names, please wait</span>
 {% if admin.admingroup %}
-  <input class="btn btn-default" type="submit" value="Update">
+    <p>
+      <input class="btn btn-default" type="submit" value="Update">
+    </p>
 {% endif %}
 
-<a name="mammo" class="vert-offset">
+<a id="mammo" class="vert-offset">
   <h3>Mammography</h3>
 </a>
-<span id="MG-names"><p>Querying the database for display names, please wait</p></span>
+<span id="MG-names">Querying the database for display names, please wait</span>
 {% if admin.admingroup %}
-  <input class="btn btn-default" type="submit" value="Update">
+    <p>
+      <input class="btn btn-default" type="submit" value="Update">
+    </p>
 {% endif %}
 
-<a name="dx" class="vert-offset">
+<a id="dx" class="vert-offset">
   <h3>DX and CR</h3>
 </a>
-<span id="DX-names"><p>Querying the database for display names, please wait</p></span>
+<span id="DX-names">Querying the database for display names, please wait</span>
 {% if admin.admingroup %}
-  <input class="btn btn-default" type="submit" value="Update">
+    <p>
+      <input class="btn btn-default" type="submit" value="Update">
+    </p>
 {% endif %}
 
-<a name="others" class="vert-offset">
+<a id="others" class="vert-offset">
   <h3>Others</h3>
 </a>
-<span id="OT-names"><p>Querying the database for display names, please wait</p></span>
+<span id="OT-names">Querying the database for display names, please wait</span>
 {% if admin.admingroup %}
-  <input class="btn btn-default" type="submit" value="Update">
+    <p>
+      <input class="btn btn-default" type="submit" value="Update">
+    </p>
 {% endif %}
 
-  {% if admin.admingroup %}
+{% if admin.admingroup %}
   </form>
 {% endif %}
 
 
-<a name="failed" class="vert-offset">
+<a id="failed" class="vert-offset">
   <h3>Review studies that failed to import</h3>
 </a>
 <p>These are studies that do not have an entry in the unique_equipment_name table, and therefore the import would have

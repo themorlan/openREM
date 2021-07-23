@@ -4,7 +4,7 @@
 import os
 from django.contrib.auth.models import User
 from django.test import TestCase
-from django.urls import reverse
+from django.urls import reverse_lazy, reverse
 from ..extractors import rdsr, ct_philips
 from ..models import PatientIDSettings
 
@@ -256,3 +256,66 @@ class FilterViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         five_responses_text = "There are 5 studies in this list."
         self.assertContains(response, five_responses_text)
+
+    def test_filter_patient_weight(self):
+        """
+        Apply patient weight filter
+        """
+        self.client.login(username="temporary", password="temporary")
+
+        # 78.2 kg: CT-ESR-GE_Optima.dcm"
+        # None:    CT-ESR-GE_VCT.dcm"
+        # None:    CT-RDSR-GEPixelMed.dcm"
+        # 75.0 kg: CT-RDSR-Siemens_Flash-QA-DS.dcm"
+        # 87.0 kg: CT-RDSR-Siemens_Flash-TAP-SS.dcm"
+        # 75.0 kg: CT-RDSR-ToshibaPixelMed.dcm"
+        # None:    CT-SC-Philips_Brilliance16P.dcm"
+
+        # Filter min weight 70 kg, max weight 90 kg
+        # This should leave the four studies that have weight data
+        response = self.client.get(
+            reverse_lazy("ct_summary_list_filter")
+            + "?patientstudymoduleattr__patient_weight__gte=70&patientstudymoduleattr__patient_weight__lte=90",
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        four_responses_text = "There are 4 studies in this list."
+        self.assertContains(response, four_responses_text)
+        accession_number_optima = "0012345.12345678"
+        self.assertContains(response, accession_number_optima)
+        accession_number_flash_qa = "74624646290"
+        self.assertContains(response, accession_number_flash_qa)
+        accession_number_flash_tap = "ACC12345601"
+        self.assertContains(response, accession_number_flash_tap)
+        accession_number_toshiba = "4935683"
+        self.assertContains(response, accession_number_toshiba)
+
+        # Filter min weight 70 kg, max weight 76 kg
+        # This should leave two studies
+        response = self.client.get(
+            reverse_lazy("ct_summary_list_filter")
+            + "?patientstudymoduleattr__patient_weight__gte=70&patientstudymoduleattr__patient_weight__lte=76",
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        two_responses_text = "There are 2 studies in this list."
+        self.assertContains(response, two_responses_text)
+        accession_number_flash_qa = "74624646290"
+        self.assertContains(response, accession_number_flash_qa)
+        accession_number_toshiba = "4935683"
+        self.assertContains(response, accession_number_toshiba)
+
+        # Filter min weight 76 kg, max weight 90 kg
+        # This should leave two studies
+        response = self.client.get(
+            reverse_lazy("ct_summary_list_filter")
+            + "?patientstudymoduleattr__patient_weight__gte=76&patientstudymoduleattr__patient_weight__lte=90",
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        two_responses_text = "There are 2 studies in this list."
+        self.assertContains(response, two_responses_text)
+        accession_number_optima = "0012345.12345678"
+        self.assertContains(response, accession_number_optima)
+        accession_number_flash_tap = "ACC12345601"
+        self.assertContains(response, accession_number_flash_tap)

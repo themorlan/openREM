@@ -1,13 +1,20 @@
 # pylint: disable=too-many-lines
 import logging
 from datetime import datetime
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
-from openremproject import settings
 from remapp.forms import MGChartOptionsForm
 from remapp.interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
 from remapp.models import GeneralStudyModuleAttr, create_user_profile
+from remapp.views_admin import (
+    required_average_choices,
+    initialise_mg_form_data,
+    set_average_chart_options,
+    set_mg_chart_options,
+    set_common_chart_options,
+)
 from .interface.chart_functions import (
     create_dataframe,
     create_dataframe_weekdays,
@@ -226,6 +233,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
         ]
 
         value_fields = []
+        value_multipliers = []
         charts_of_interest = [
             user_profile.plotMGAGDvsThickness,
             user_profile.plotMGaverageAGDvsThickness,
@@ -236,14 +244,17 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             value_fields.append(
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose"
             )
+            value_multipliers.append(1)
         if user_profile.plotMGkVpvsThickness:
             value_fields.append(
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp"
             )
+            value_multipliers.append(1)
         if user_profile.plotMGmAsvsThickness:
             value_fields.append(
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"
             )
+            value_multipliers.append(0.001)
         charts_of_interest = [
             user_profile.plotMGAGDvsThickness,
             user_profile.plotMGkVpvsThickness,
@@ -254,6 +265,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             value_fields.append(
                 "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness"
             )
+            value_multipliers.append(1)
 
         date_fields = []
         if user_profile.plotMGAcquisitionAGDOverTime:
@@ -279,6 +291,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
+            data_point_value_multipliers=value_multipliers,
             uid="projectionxrayradiationdose__irradeventxraydata__pk",
         )
 
@@ -653,93 +666,30 @@ def mg_chart_form_processing(request, user_profile):
         # Use the form data if the user clicked on the submit button
         if "submit" in request.GET:
             # process the data in form.cleaned_data as required
-            user_profile.plotCharts = chart_options_form.cleaned_data["plotCharts"]
-            user_profile.plotMGStudyPerDayAndHour = chart_options_form.cleaned_data[
-                "plotMGStudyPerDayAndHour"
-            ]
-            user_profile.plotMGaverageAGD = chart_options_form.cleaned_data[
-                "plotMGaverageAGD"
-            ]
-            user_profile.plotMGacquisitionFreq = chart_options_form.cleaned_data[
-                "plotMGacquisitionFreq"
-            ]
-            user_profile.plotMGAGDvsThickness = chart_options_form.cleaned_data[
-                "plotMGAGDvsThickness"
-            ]
-            user_profile.plotMGaverageAGDvsThickness = chart_options_form.cleaned_data[
-                "plotMGaverageAGDvsThickness"
-            ]
-            user_profile.plotMGkVpvsThickness = chart_options_form.cleaned_data[
-                "plotMGkVpvsThickness"
-            ]
-            user_profile.plotMGmAsvsThickness = chart_options_form.cleaned_data[
-                "plotMGmAsvsThickness"
-            ]
-            user_profile.plotMGAcquisitionAGDOverTime = chart_options_form.cleaned_data[
-                "plotMGAcquisitionAGDOverTime"
-            ]
-            user_profile.plotMGOverTimePeriod = chart_options_form.cleaned_data[
-                "plotMGOverTimePeriod"
-            ]
-            user_profile.plotSeriesPerSystem = chart_options_form.cleaned_data[
-                "plotSeriesPerSystem"
-            ]
-            user_profile.plotHistograms = chart_options_form.cleaned_data[
-                "plotHistograms"
-            ]
-            user_profile.plotGroupingChoice = chart_options_form.cleaned_data[
-                "plotGrouping"
-            ]
-            user_profile.plotMGInitialSortingChoice = chart_options_form.cleaned_data[
-                "plotMGInitialSortingChoice"
-            ]
-            user_profile.plotInitialSortingDirection = chart_options_form.cleaned_data[
-                "plotInitialSortingDirection"
-            ]
 
-            if "mean" in chart_options_form.cleaned_data["plotAverageChoice"]:
-                user_profile.plotMean = True
-            else:
-                user_profile.plotMean = False
+            set_common_chart_options(chart_options_form, user_profile)
 
-            if "median" in chart_options_form.cleaned_data["plotAverageChoice"]:
-                user_profile.plotMedian = True
-            else:
-                user_profile.plotMedian = False
+            set_average_chart_options(chart_options_form, user_profile)
 
-            if "boxplot" in chart_options_form.cleaned_data["plotAverageChoice"]:
-                user_profile.plotBoxplots = True
-            else:
-                user_profile.plotBoxplots = False
+            set_mg_chart_options(chart_options_form, user_profile)
 
             user_profile.save()
 
         else:
-            average_choices = []
-            if user_profile.plotMean:
-                average_choices.append("mean")
-            if user_profile.plotMedian:
-                average_choices.append("median")
-            if user_profile.plotBoxplots:
-                average_choices.append("boxplot")
+            average_choices = required_average_choices(user_profile)
+
+            mg_form_data = initialise_mg_form_data(user_profile)
 
             form_data = {
                 "plotCharts": user_profile.plotCharts,
-                "plotMGStudyPerDayAndHour": user_profile.plotMGStudyPerDayAndHour,
-                "plotMGacquisitionFreq": user_profile.plotMGacquisitionFreq,
-                "plotMGaverageAGD": user_profile.plotMGaverageAGD,
-                "plotMGAGDvsThickness": user_profile.plotMGAGDvsThickness,
-                "plotMGkVpvsThickness": user_profile.plotMGkVpvsThickness,
-                "plotMGmAsvsThickness": user_profile.plotMGmAsvsThickness,
-                "plotMGaverageAGDvsThickness": user_profile.plotMGaverageAGDvsThickness,
-                "plotMGAcquisitionAGDOverTime": user_profile.plotMGAcquisitionAGDOverTime,
-                "plotMGOverTimePeriod": user_profile.plotMGOverTimePeriod,
+                "plotGrouping": user_profile.plotGroupingChoice,
                 "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
                 "plotHistograms": user_profile.plotHistograms,
-                "plotGrouping": user_profile.plotGroupingChoice,
-                "plotMGInitialSortingChoice": user_profile.plotMGInitialSortingChoice,
                 "plotInitialSortingDirection": user_profile.plotInitialSortingDirection,
                 "plotAverageChoice": average_choices,
             }
+
+            form_data = {**form_data, **mg_form_data}
+
             chart_options_form = MGChartOptionsForm(form_data)
     return chart_options_form

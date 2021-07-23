@@ -34,7 +34,7 @@
 
 """
 from datetime import datetime
-from decimal import Decimal
+from decimal import Decimal, DecimalException
 import logging
 import os
 from random import random
@@ -202,29 +202,37 @@ def _xray_filters_prep(dataset, source):
         _xrayfiltersnone(source)
         return
     # Implicit no filter, just ignore
-    if xray_filter_material is None:
+    if xray_filter_type is None:
         return
 
     # Get multiple filters into pydicom MultiValue or lists
-    if "," in xray_filter_material and not isinstance(xray_filter_material, MultiValue):
+    if (
+        xray_filter_material
+        and "," in xray_filter_material
+        and not isinstance(xray_filter_material, MultiValue)
+    ):
         xray_filter_material = xray_filter_material.split(",")
 
     xray_filter_thickness_minimum = get_value_kw("FilterThicknessMinimum", dataset)
     xray_filter_thickness_maximum = get_value_kw("FilterThicknessMaximum", dataset)
-    if not isinstance(xray_filter_thickness_minimum, (MultiValue, list)):
+    if xray_filter_thickness_minimum and not isinstance(
+        xray_filter_thickness_minimum, (MultiValue, list)
+    ):
         try:
             float(xray_filter_thickness_minimum)
         except ValueError:
             if "," in xray_filter_thickness_minimum:
                 xray_filter_thickness_minimum = xray_filter_thickness_minimum.split(",")
-    if not isinstance(xray_filter_thickness_maximum, (MultiValue, list)):
+    if xray_filter_thickness_maximum and not isinstance(
+        xray_filter_thickness_maximum, (MultiValue, list)
+    ):
         try:
             float(xray_filter_thickness_maximum)
         except ValueError:
             if "," in xray_filter_thickness_maximum:
                 xray_filter_thickness_maximum = xray_filter_thickness_maximum.split(",")
 
-    if isinstance(xray_filter_material, (MultiValue, list)):
+    if xray_filter_material and isinstance(xray_filter_material, (MultiValue, list)):
         _xray_filters_multiple(
             xray_filter_material,
             xray_filter_thickness_maximum,
@@ -627,6 +635,12 @@ def _patientstudymoduleattributes(dataset, g):  # C.7.2.2
     patientatt.patient_age = get_value_kw("PatientAge", dataset)
     patientatt.patient_weight = get_value_kw("PatientWeight", dataset)
     patientatt.patient_size = get_value_kw("PatientSize", dataset)
+    try:
+        Decimal(patientatt.patient_size)
+    except DecimalException:
+        patientatt.patient_size = None
+    except TypeError:
+        pass
     patientatt.save()
 
 
@@ -739,7 +753,7 @@ def _generalstudymoduleattributes(dataset, g):
 # Digital x-ray image storage - for processing   (SOP UID = '1.2.840.10008.5.1.4.1.1.1.1.1')
 # These SOP UIDs were taken from http://www.dicomlibrary.com/dicom/sop/
 def _test_if_dx(dataset):
-    """ Test if dicom object passed is a DX or CR radiographic file by looking at SOP Class UID"""
+    """Test if dicom object passed is a DX or CR radiographic file by looking at SOP Class UID"""
     if (
         dataset.SOPClassUID != "1.2.840.10008.5.1.4.1.1.1"
         and dataset.SOPClassUID != "1.2.840.10008.5.1.4.1.1.1.1"
