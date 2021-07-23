@@ -66,15 +66,15 @@ def check_average_data(chartTests, chart_data, standard_data):
 
         # Check the system names and frequencies
         for i, entry in enumerate(dataset["customdata"]):
-            np.testing.assert_array_equal(list(np.take(entry, [0, 2])), chart_data[idx]["customdata"][i])
+            np.testing.assert_array_equal(
+                list(np.take(entry, [0, 2])), chart_data[idx]["customdata"][i]
+            )
 
 
 def check_workload_data(chartTests, chart_data, standard_data):
     for idx, dataset in enumerate(standard_data):
         for i, entry in enumerate(dataset["customdata"]):
-            np.testing.assert_array_equal(
-                list(entry), chart_data[idx]["customdata"][i]
-            )
+            np.testing.assert_array_equal(list(entry), chart_data[idx]["customdata"][i])
 
         np.testing.assert_array_equal(
             dataset["hovertext"], chart_data[idx]["hovertext"]
@@ -120,7 +120,9 @@ def check_avg_and_counts(chartTests, comparison_data, chart_data):
             )
 
         # Compare the frequency (count) data
-        chartTests.assertEqual(chart_data["customdata"][idx][1], comparison_data[idx][2])
+        chartTests.assertEqual(
+            chart_data["customdata"][idx][1], comparison_data[idx][2]
+        )
 
 
 def user_profile_reset(chartTests):

@@ -499,7 +499,7 @@ def _generalstudymoduleattributes(dataset, g):
 
 
 def _test_if_mammo(dataset):
-    """ Test if dicom object passed is a mammo file by looking at SOP Class UID"""
+    """Test if dicom object passed is a mammo file by looking at SOP Class UID"""
     if (
         dataset.SOPClassUID == "1.2.840.10008.5.1.4.1.1.1.2.1"
         or dataset.SOPClassUID == "1.2.840.10008.5.1.4.1.1.1.2"

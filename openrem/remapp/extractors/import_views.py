@@ -185,7 +185,9 @@ def size_process(request, *args, **kwargs):
     else:
 
         csvrecord = SizeUpload.objects.all().filter(id__exact=kwargs["pk"])
-        with open(os.path.join(settings.MEDIA_ROOT, csvrecord[0].sizefile.name), "r") as csvfile:
+        with open(
+            os.path.join(settings.MEDIA_ROOT, csvrecord[0].sizefile.name), "r"
+        ) as csvfile:
             try:
                 # dialect = csv.Sniffer().sniff(csvfile.read(1024))
                 csvfile.seek(0)
