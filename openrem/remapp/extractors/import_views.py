@@ -37,9 +37,11 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render, get_object_or_404
+from django.conf import settings
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 
+from remapp.models import SizeUpload
 from .rdsr import rdsr
 from .dx import dx
 from .mam import mam
@@ -47,8 +49,6 @@ from .ct_philips import ct_philips
 from .ct_toshiba import ct_toshiba
 from .. import __docs_version__, __version__
 from ..forms import SizeHeadersForm, SizeUploadForm
-from ..models import SizeUpload
-from openrem.openremproject.settings import MEDIA_ROOT
 
 logger = logging.getLogger(__name__)
 
@@ -185,7 +185,9 @@ def size_process(request, *args, **kwargs):
     else:
 
         csvrecord = SizeUpload.objects.all().filter(id__exact=kwargs["pk"])
-        with open(os.path.join(MEDIA_ROOT, csvrecord[0].sizefile.name), "r") as csvfile:
+        with open(
+            os.path.join(settings.MEDIA_ROOT, csvrecord[0].sizefile.name), "r"
+        ) as csvfile:
             try:
                 # dialect = csv.Sniffer().sniff(csvfile.read(1024))
                 csvfile.seek(0)
@@ -361,7 +363,7 @@ def size_download(request, task_id):
         messages.error(request, "You don't have permission to download import logs")
         return redirect(reverse_lazy("size_imports"))
 
-    file_path = os.path.join(MEDIA_ROOT, export_log.logfile.name)
+    file_path = os.path.join(settings.MEDIA_ROOT, export_log.logfile.name)
     file_wrapper = FileWrapper(open(file_path, "rb"))
     file_mimetype = mimetypes.guess_type(file_path)
     response = HttpResponse(file_wrapper, content_type=file_mimetype)

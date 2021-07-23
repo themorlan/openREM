@@ -305,7 +305,7 @@ class FilterViewTests(TestCase):
         accession_number_toshiba = "4935683"
         self.assertContains(response, accession_number_toshiba)
 
-       # Filter min weight 76 kg, max weight 90 kg
+        # Filter min weight 76 kg, max weight 90 kg
         # This should leave two studies
         response = self.client.get(
             reverse_lazy("ct_summary_list_filter")

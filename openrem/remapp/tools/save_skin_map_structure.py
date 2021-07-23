@@ -34,8 +34,8 @@ import pickle
 
 from django.conf import settings
 
+from remapp.models import HighDoseMetricAlertSettings
 from .send_high_dose_alert_emails import send_rf_high_dose_alert_email
-from ..models import HighDoseMetricAlertSettings
 
 
 def save_openskin_structure(study, return_struct):

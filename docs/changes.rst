@@ -5,6 +5,7 @@ OpenREM version history
 
 1.0.0b1 (2021-xx-xx)
 --------------------
+* :issue:`909`  Code quality: all model imports absolute
 * :issue:`906`  Charts: upgraded Plotly library to latest version
 * :issue:`905`  Imports: fixed filter extraction code not working for Siemens Multix DX
 * :issue:`904`  Testing: bumped Python image from 3.6 to 3.8
