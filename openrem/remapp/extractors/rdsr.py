@@ -2286,6 +2286,7 @@ def _rdsr2db(dataset):
     if keep_existing_sop_instance_uids:
         for sop_instance_uid in existing_sop_instance_uids:
             record_sop_instance_uid(g, sop_instance_uid)
+    g.save()
     _generalequipmentmoduleattributes(dataset, g)
     _generalstudymoduleattributes(dataset, g)
     _patientstudymoduleattributes(dataset, g)
@@ -2473,6 +2474,13 @@ def rdsr(rdsr_file):
         dataset.SOPClassUID
         in ("1.2.840.10008.5.1.4.1.1.88.67", "1.2.840.10008.5.1.4.1.1.88.22")
         and dataset.ConceptNameCodeSequence[0].CodeValue == "113701"
+    ):
+        logger.debug("rdsr.py extracting from {0}".format(rdsr_file))
+        _rdsr2db(dataset)
+    elif (
+        dataset.SOPClassUID == ("1.2.840.10008.5.1.4.1.1.88.22")
+        and dataset.ConceptNameCodeSequence[0].CodingSchemeDesignator == "99SMS_RADSUM"
+        and dataset.ConceptNameCodeSequence[0].CodeValue == "C-10"
     ):
         logger.debug("rdsr.py extracting from {0}".format(rdsr_file))
         _rdsr2db(dataset)
