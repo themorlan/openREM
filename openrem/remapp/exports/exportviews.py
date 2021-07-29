@@ -539,7 +539,7 @@ def download(request, task_id):
     from django.utils.encoding import smart_str
     from django.shortcuts import redirect
     from django.conf import settings
-    from ..models import Exports
+    from remapp.models import Exports
 
     exportperm = False
     pidperm = False

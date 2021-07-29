@@ -40,7 +40,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
 from xlsxwriter.workbook import Workbook
 
-from ..models import Exports
+from remapp.models import Exports
 
 logger = logging.getLogger(__name__)
 

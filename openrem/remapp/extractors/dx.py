@@ -753,7 +753,7 @@ def _generalstudymoduleattributes(dataset, g):
 # Digital x-ray image storage - for processing   (SOP UID = '1.2.840.10008.5.1.4.1.1.1.1.1')
 # These SOP UIDs were taken from http://www.dicomlibrary.com/dicom/sop/
 def _test_if_dx(dataset):
-    """ Test if dicom object passed is a DX or CR radiographic file by looking at SOP Class UID"""
+    """Test if dicom object passed is a DX or CR radiographic file by looking at SOP Class UID"""
     if (
         dataset.SOPClassUID != "1.2.840.10008.5.1.4.1.1.1"
         and dataset.SOPClassUID != "1.2.840.10008.5.1.4.1.1.1.1"
