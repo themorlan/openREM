@@ -727,7 +727,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 average_choices = average_choices + ["median"]
 
             name_field = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
-            value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"
+            value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"  # pylint: disable=line-too-long
 
             df_aggregated = create_dataframe_aggregates(
                 df,

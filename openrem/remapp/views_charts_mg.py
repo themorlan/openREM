@@ -230,7 +230,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
         user_profile.plotMGacquisitionFreq,
         user_profile.plotMGAcquisitionAGDOverTime,
     ]
-    if any(charts_of_interest):
+    if any(charts_of_interest):  # pylint: disable=too-many-nested-blocks
 
         name_fields = [
             "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
@@ -307,7 +307,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 average_choices = average_choices + ["median"]
 
             name_field = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
-            value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose"
+            value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose"  # pylint: disable=line-too-long
 
             df_aggregated = create_dataframe_aggregates(  # pylint: disable=line-too-long
                 df,
