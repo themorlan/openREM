@@ -663,16 +663,23 @@ def create_sorted_category_list(df, df_name_col, df_value_col, sorting):
     :return: dictionary with key df_name_col and a list of sorted categories as the value
     """
     # Calculate the required aggregates for creating a list of categories for sorting
-    grouped_df = df.groupby(df_name_col).agg({df_value_col: ["mean", "count"]})
-    grouped_df.columns = grouped_df.columns.droplevel(level=0)
-    grouped_df = grouped_df.reset_index()
+    grouped_df = df.groupby(df_name_col)
 
     if sorting[1].lower() == "name":
         sort_by = df_name_col
+        grouped_df = df
     elif sorting[1].lower() == "frequency":
         sort_by = "count"
-    else:
+    elif sorting[1].lower() == "mean":
         sort_by = "mean"
+    else:
+        sort_by = "median"
+
+    if sort_by in ["count", "mean", "median"]:
+        grouped_df = grouped_df.agg({df_value_col: [sort_by]})
+        grouped_df.columns = grouped_df.columns.droplevel(level=0)
+
+    grouped_df = grouped_df.reset_index()
 
     ascending_order = True
     if sorting[0] == 0:

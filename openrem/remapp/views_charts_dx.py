@@ -375,6 +375,11 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
     if user_profile.plotMedian:
         average_choices.append("median")
 
+    sorting_choice = user_profile.plotDXInitialSortingChoice.lower()
+    ascending_order = True
+    if user_profile.plotInitialSortingDirection == 0:
+        ascending_order = False
+
     #######################################################################
     # Prepare acquisition-level Pandas DataFrame to use for charts
     charts_of_interest = [
@@ -460,36 +465,40 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
         #######################################################################
         sorted_acquisition_dap_categories = None
         if user_profile.plotDXAcquisitionMeanDAP:
-            sorted_acquisition_dap_categories = create_sorted_category_list(
+
+            if user_profile.plotBoxplots and "median" not in average_choices:
+                average_choices = average_choices + ["median"]
+
+            name_field = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            value_field = "projectionxrayradiationdose__irradeventxraydata__dose_area_product"
+
+            df_aggregated = create_dataframe_aggregates(
                 df,
-                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
-                [
-                    user_profile.plotInitialSortingDirection,
-                    user_profile.plotDXInitialSortingChoice,
-                ],
+                [name_field],
+                value_field,
+                stats_to_use=average_choices + ["count"],
             )
 
+            if sorting_choice == "name":
+                sorted_acquisition_dap_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}
+            elif sorting_choice == "frequency":
+                sorted_acquisition_dap_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}
+
             if user_profile.plotMean or user_profile.plotMedian:
-                df_aggregated = create_dataframe_aggregates(
-                    df,
-                    [
-                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
-                    ],
-                    "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
-                    stats_to_use=average_choices + ["count"],
-                )
 
                 parameter_dict = {
-                    "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                    "df_name_col": name_field,
                     "name_axis_title": "Acquisition protocol",
                     "colourmap": user_profile.plotColourMapChoice,
-                    "sorted_category_list": sorted_acquisition_dap_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
                 if user_profile.plotMean:
+                    if sorting_choice == "value":
+                        sorted_acquisition_dap_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_acquisition_dap_categories
                     parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
                     parameter_dict[
                         "filename"
@@ -505,6 +514,10 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotMedian:
+                    if sorting_choice == "value":
+                        sorted_acquisition_dap_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_acquisition_dap_categories
                     parameter_dict[
                         "value_axis_title"
                     ] = "Median DAP (cGy.cm<sup>2</sup>)"
@@ -523,24 +536,29 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotBoxplots:
                 parameter_dict = {
-                    "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
+                    "df_name_col": name_field,
+                    "df_value_col": value_field,
                     "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
                     "name_axis_title": "Acquisition protocol",
                     "colourmap": user_profile.plotColourMapChoice,
                     "filename": "OpenREM DX acquisition protocol DAP boxplot",
-                    "sorted_category_list": sorted_acquisition_dap_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
+
+                if sorting_choice == "value":
+                    sorted_acquisition_dap_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                parameter_dict["sorted_category_list"] = sorted_acquisition_dap_categories
+
                 return_structure["acquisitionBoxplotDAPData"] = plotly_boxplot(
                     df,
                     parameter_dict,
                 )
 
             if user_profile.plotHistograms:
-                category_names_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+                category_names_col = name_field
                 group_by_col = "x_ray_system_name"
                 legend_title = "Acquisition protocol"
                 facet_names = list(df[group_by_col].unique())
@@ -548,7 +566,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
-                    group_by_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+                    group_by_col = name_field
                     legend_title = "System"
                     category_names = facet_names
                     facet_names = list(sorted_acquisition_dap_categories.values())[0]
@@ -556,7 +574,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict = {
                     "df_facet_col": group_by_col,
                     "df_category_col": category_names_col,
-                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__dose_area_product",
+                    "df_value_col": value_field,
                     "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
                     "legend_title": legend_title,
                     "n_bins": user_profile.plotHistogramBins,
@@ -577,36 +595,40 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
         sorted_acquisition_kvp_categories = None
         if user_profile.plotDXAcquisitionMeankVp:
-            sorted_acquisition_kvp_categories = create_sorted_category_list(
+
+            if user_profile.plotBoxplots and "median" not in average_choices:
+                average_choices = average_choices + ["median"]
+
+            name_field = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp"
+
+            df_aggregated = create_dataframe_aggregates(
                 df,
-                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
-                [
-                    user_profile.plotInitialSortingDirection,
-                    user_profile.plotDXInitialSortingChoice,
-                ],
+                [name_field],
+                value_field,
+                stats_to_use=average_choices + ["count"],
             )
 
+            if sorting_choice == "name":
+                sorted_acquisition_kvp_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}
+            elif sorting_choice == "frequency":
+                sorted_acquisition_kvp_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}
+
             if user_profile.plotMean or user_profile.plotMedian:
-                df_aggregated = create_dataframe_aggregates(
-                    df,
-                    [
-                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
-                    ],
-                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",
-                    stats_to_use=average_choices + ["count"],
-                )
 
                 parameter_dict = {
-                    "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                    "df_name_col": name_field,
                     "name_axis_title": "Acquisition protocol",
                     "colourmap": user_profile.plotColourMapChoice,
-                    "sorted_category_list": sorted_acquisition_kvp_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
                 if user_profile.plotMean:
+                    if sorting_choice == "value":
+                        sorted_acquisition_kvp_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_acquisition_kvp_categories
                     parameter_dict["value_axis_title"] = "Mean kVp"
                     parameter_dict[
                         "filename"
@@ -622,6 +644,10 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotMedian:
+                    if sorting_choice == "value":
+                        sorted_acquisition_kvp_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_acquisition_kvp_categories
                     parameter_dict["value_axis_title"] = "Median kVp"
                     parameter_dict[
                         "filename"
@@ -638,24 +664,29 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotBoxplots:
                 parameter_dict = {  # pylint: disable=line-too-long
-                    "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",  # pylint: disable=line-too-long
+                    "df_name_col": name_field,
+                    "df_value_col": value_field,  # pylint: disable=line-too-long
                     "value_axis_title": "kVp",
                     "name_axis_title": "Acquisition protocol",
                     "colourmap": user_profile.plotColourMapChoice,
                     "filename": "OpenREM DX acquisition protocol kVp boxplot",
-                    "sorted_category_list": sorted_acquisition_kvp_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
+
+                if sorting_choice == "value":
+                    sorted_acquisition_kvp_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                parameter_dict["sorted_category_list"] = sorted_acquisition_kvp_categories
+
                 return_structure["acquisitionBoxplotkVpData"] = plotly_boxplot(
                     df,
                     parameter_dict,
                 )
 
             if user_profile.plotHistograms:
-                category_names_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+                category_names_col = name_field
                 group_by_col = "x_ray_system_name"
                 legend_title = "Acquisition protocol"
                 facet_names = list(df[group_by_col].unique())
@@ -663,7 +694,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
-                    group_by_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+                    group_by_col = name_field
                     legend_title = "System"
                     category_names = facet_names
                     facet_names = list(sorted_acquisition_kvp_categories.values())[0]
@@ -671,7 +702,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict = {  # pylint: disable=line-too-long
                     "df_facet_col": group_by_col,
                     "df_category_col": category_names_col,
-                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",  # pylint: disable=line-too-long
+                    "df_value_col": value_field,  # pylint: disable=line-too-long
                     "value_axis_title": "kVp",
                     "legend_title": legend_title,
                     "n_bins": user_profile.plotHistogramBins,
@@ -692,36 +723,40 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
         sorted_acquisition_mas_categories = None
         if user_profile.plotDXAcquisitionMeanmAs:
-            sorted_acquisition_mas_categories = create_sorted_category_list(
+
+            if user_profile.plotBoxplots and "median" not in average_choices:
+                average_choices = average_choices + ["median"]
+
+            name_field = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"
+
+            df_aggregated = create_dataframe_aggregates(
                 df,
-                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
-                [
-                    user_profile.plotInitialSortingDirection,
-                    user_profile.plotDXInitialSortingChoice,
-                ],
+                [name_field],
+                value_field,
+                stats_to_use=average_choices + ["count"],
             )
 
+            if sorting_choice == "name":
+                sorted_acquisition_mas_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}
+            elif sorting_choice == "frequency":
+                sorted_acquisition_mas_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}
+
             if user_profile.plotMean or user_profile.plotMedian:
-                df_aggregated = create_dataframe_aggregates(
-                    df,
-                    [
-                        "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
-                    ],
-                    "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
-                    stats_to_use=average_choices + ["count"],
-                )
 
                 parameter_dict = {
-                    "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                    "df_name_col": name_field,
                     "name_axis_title": "Acquisition protocol",
                     "colourmap": user_profile.plotColourMapChoice,
-                    "sorted_category_list": sorted_acquisition_mas_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
                 if user_profile.plotMean:
+                    if sorting_choice == "value":
+                        sorted_acquisition_mas_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_acquisition_mas_categories
                     parameter_dict["value_axis_title"] = "Mean mAs"
                     parameter_dict[
                         "filename"
@@ -737,6 +772,10 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotMedian:
+                    if sorting_choice == "value":
+                        sorted_acquisition_mas_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_acquisition_mas_categories
                     parameter_dict["value_axis_title"] = "Median mAs"
                     parameter_dict[
                         "filename"
@@ -753,24 +792,29 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotBoxplots:
                 parameter_dict = {  # pylint: disable=line-too-long
-                    "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",  # pylint: disable=line-too-long
+                    "df_name_col": name_field,
+                    "df_value_col": value_field,  # pylint: disable=line-too-long
                     "value_axis_title": "mAs",
                     "name_axis_title": "Acquisition protocol",
                     "colourmap": user_profile.plotColourMapChoice,
                     "filename": "OpenREM DX acquisition protocol mAs boxplot",
-                    "sorted_category_list": sorted_acquisition_mas_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
+
+                if sorting_choice == "value":
+                    sorted_acquisition_mas_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                parameter_dict["sorted_category_list"] = sorted_acquisition_mas_categories
+
                 return_structure["acquisitionBoxplotmAsData"] = plotly_boxplot(
                     df,
                     parameter_dict,
                 )
 
             if user_profile.plotHistograms:
-                category_names_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+                category_names_col = name_field
                 group_by_col = "x_ray_system_name"
                 legend_title = "Acquisition protocol"
                 facet_names = list(df[group_by_col].unique())
@@ -778,7 +822,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
-                    group_by_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+                    group_by_col = name_field
                     legend_title = "System"
                     category_names = facet_names
                     facet_names = list(sorted_acquisition_mas_categories.values())[0]
@@ -786,7 +830,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict = {  # pylint: disable=line-too-long
                     "df_facet_col": group_by_col,
                     "df_category_col": category_names_col,
-                    "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",  # pylint: disable=line-too-long
+                    "df_value_col": value_field,  # pylint: disable=line-too-long
                     "value_axis_title": "mAs",
                     "legend_title": legend_title,
                     "n_bins": user_profile.plotHistogramBins,
@@ -1041,34 +1085,40 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
         sorted_study_dap_categories = None
         if user_profile.plotDXStudyMeanDAP:
-            sorted_study_dap_categories = create_sorted_category_list(
+
+            if user_profile.plotBoxplots and "median" not in average_choices:
+                average_choices = average_choices + ["median"]
+
+            name_field = "study_description"
+            value_field = "total_dap"
+
+            df_aggregated = create_dataframe_aggregates(
                 df,
-                "study_description",
-                "total_dap",
-                [
-                    user_profile.plotInitialSortingDirection,
-                    user_profile.plotDXInitialSortingChoice,
-                ],
+                [name_field],
+                value_field,
+                stats_to_use=average_choices + ["count"],
             )
 
+            if sorting_choice == "name":
+                sorted_study_dap_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}
+            elif sorting_choice == "frequency":
+                sorted_study_dap_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}
+
             if user_profile.plotMean or user_profile.plotMedian:
-                df_aggregated = create_dataframe_aggregates(
-                    df,
-                    ["study_description"],
-                    "total_dap",
-                    stats_to_use=average_choices + ["count"],
-                )
 
                 parameter_dict = {
-                    "df_name_col": "study_description",
+                    "df_name_col": name_field,
                     "name_axis_title": "Study description",
                     "colourmap": user_profile.plotColourMapChoice,
-                    "sorted_category_list": sorted_study_dap_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
                 if user_profile.plotMean:
+                    if sorting_choice == "value":
+                        sorted_study_dap_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_study_dap_categories
                     parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
                     parameter_dict["filename"] = "OpenREM DX study description DAP mean"
                     parameter_dict["average_choice"] = "mean"
@@ -1082,9 +1132,11 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotMedian:
-                    parameter_dict[
-                        "value_axis_title"
-                    ] = "Median DAP (cGy.cm<sup>2</sup>)"
+                    if sorting_choice == "value":
+                        sorted_study_dap_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_study_dap_categories
+                    parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
                     parameter_dict[
                         "filename"
                     ] = "OpenREM DX study description DAP median"
@@ -1100,24 +1152,29 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotBoxplots:
                 parameter_dict = {
-                    "df_name_col": "study_description",
-                    "df_value_col": "total_dap",
+                    "df_name_col": name_field,
+                    "df_value_col": value_field,
                     "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
                     "name_axis_title": "Study description",
                     "colourmap": user_profile.plotColourMapChoice,
                     "filename": "OpenREM DX study description DAP boxplot",
-                    "sorted_category_list": sorted_study_dap_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
+
+                if sorting_choice == "value":
+                    sorted_study_dap_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                parameter_dict["sorted_category_list"] = sorted_study_dap_categories
+
                 return_structure["studyBoxplotDAPData"] = plotly_boxplot(
                     df,
                     parameter_dict,
                 )
 
             if user_profile.plotHistograms:
-                category_names_col = "study_description"
+                category_names_col = name_field
                 group_by_col = "x_ray_system_name"
                 legend_title = "Study description"
                 facet_names = list(df[group_by_col].unique())
@@ -1125,7 +1182,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
-                    group_by_col = "study_description"
+                    group_by_col = name_field
                     legend_title = "System"
                     category_names = facet_names
                     facet_names = list(sorted_study_dap_categories.values())[0]
@@ -1133,7 +1190,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict = {
                     "df_facet_col": group_by_col,
                     "df_category_col": category_names_col,
-                    "df_value_col": "total_dap",
+                    "df_value_col": value_field,
                     "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
                     "legend_title": legend_title,
                     "n_bins": user_profile.plotHistogramBins,
@@ -1179,34 +1236,40 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
         sorted_request_dap_categories = None
         if user_profile.plotDXRequestMeanDAP:
-            sorted_request_dap_categories = create_sorted_category_list(
+
+            if user_profile.plotBoxplots and "median" not in average_choices:
+                average_choices = average_choices + ["median"]
+
+            name_field = "requested_procedure_code_meaning"
+            value_field = "total_dap"
+
+            df_aggregated = create_dataframe_aggregates(
                 df,
-                "requested_procedure_code_meaning",
-                "total_dap",
-                [
-                    user_profile.plotInitialSortingDirection,
-                    user_profile.plotDXInitialSortingChoice,
-                ],
+                [name_field],
+                value_field,
+                stats_to_use=average_choices + ["count"],
             )
 
+            if sorting_choice == "name":
+                sorted_request_dap_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}
+            elif sorting_choice == "frequency":
+                sorted_request_dap_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}
+
             if user_profile.plotMean or user_profile.plotMedian:
-                df_aggregated = create_dataframe_aggregates(
-                    df,
-                    ["requested_procedure_code_meaning"],
-                    "total_dap",
-                    stats_to_use=average_choices + ["count"],
-                )
 
                 parameter_dict = {
-                    "df_name_col": "requested_procedure_code_meaning",
+                    "df_name_col": name_field,
                     "name_axis_title": "Requested procedure",
                     "colourmap": user_profile.plotColourMapChoice,
-                    "sorted_category_list": sorted_request_dap_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
                 if user_profile.plotMean:
+                    if sorting_choice == "value":
+                        sorted_request_dap_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_request_dap_categories
                     parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
                     parameter_dict[
                         "filename"
@@ -1222,9 +1285,11 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotMedian:
-                    parameter_dict[
-                        "value_axis_title"
-                    ] = "Median DAP (cGy.cm<sup>2</sup>)"
+                    if sorting_choice == "value":
+                        sorted_request_dap_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_request_dap_categories
+                    parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
                     parameter_dict[
                         "filename"
                     ] = "OpenREM DX requested procedure DAP median"
@@ -1240,24 +1305,29 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotBoxplots:
                 parameter_dict = {
-                    "df_name_col": "requested_procedure_code_meaning",
-                    "df_value_col": "total_dap",
+                    "df_name_col": name_field,
+                    "df_value_col": value_field,
                     "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
                     "name_axis_title": "Requested procedure",
                     "colourmap": user_profile.plotColourMapChoice,
                     "filename": "OpenREM DX requested procedure DAP boxplot",
-                    "sorted_category_list": sorted_request_dap_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
+
+                if sorting_choice == "value":
+                    sorted_request_dap_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                parameter_dict["sorted_category_list"] = sorted_request_dap_categories
+
                 return_structure["requestBoxplotDAPData"] = plotly_boxplot(
                     df,
                     parameter_dict,
                 )
 
             if user_profile.plotHistograms:
-                category_names_col = "requested_procedure_code_meaning"
+                category_names_col = name_field
                 group_by_col = "x_ray_system_name"
                 legend_title = "Requested procedure"
                 facet_names = list(df[group_by_col].unique())
@@ -1265,7 +1335,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
-                    group_by_col = "requested_procedure_code_meaning"
+                    group_by_col = name_field
                     legend_title = "System"
                     category_names = facet_names
                     facet_names = list(sorted_request_dap_categories.values())[0]
@@ -1273,7 +1343,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict = {
                     "df_facet_col": group_by_col,
                     "df_category_col": category_names_col,
-                    "df_value_col": "total_dap",
+                    "df_value_col": value_field,
                     "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
                     "legend_title": legend_title,
                     "n_bins": user_profile.plotHistogramBins,

@@ -466,6 +466,11 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
     if user_profile.plotMedian:
         average_choices.append(CommonVariables.MEDIAN)
 
+    sorting_choice = user_profile.plotCTInitialSortingChoice.lower()
+    ascending_order = True
+    if user_profile.plotInitialSortingDirection == 0:
+        ascending_order = False
+
     charts_of_interest = [
         user_profile.plotCTAcquisitionDLPOverTime,
         user_profile.plotCTAcquisitionCTDIOverTime,
@@ -588,35 +593,41 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         # Create the required acquisition-level charts
         sorted_acquisition_dlp_categories = None
         if user_profile.plotCTAcquisitionMeanDLP:
-            sorted_acquisition_dlp_categories = create_sorted_category_list(
+
+            if user_profile.plotBoxplots and "median" not in average_choices:
+                average_choices = average_choices + ["median"]
+
+            name_field = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+            value_field = "ctradiationdose__ctirradiationeventdata__dlp"
+
+            df_aggregated = create_dataframe_aggregates(
                 df,
-                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                "ctradiationdose__ctirradiationeventdata__dlp",
-                [
-                    user_profile.plotInitialSortingDirection,
-                    user_profile.plotCTInitialSortingChoice,
-                ],
+                [name_field],
+                value_field,
+                stats_to_use=average_choices + ["count"],
             )
 
+            if sorting_choice == "name":
+                sorted_acquisition_dlp_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}
+            elif sorting_choice == "frequency":
+                sorted_acquisition_dlp_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}
+
             if user_profile.plotMean or user_profile.plotMedian:
-                df_aggregated = create_dataframe_aggregates(
-                    df,
-                    ["ctradiationdose__ctirradiationeventdata__acquisition_protocol"],
-                    "ctradiationdose__ctirradiationeventdata__dlp",
-                    stats_to_use=average_choices + ["count"],
-                )
 
                 parameter_dict = {
-                    "df_name_col": "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                    "df_name_col": name_field,
                     "name_axis_title": "Acquisition protocol",
                     "colourmap": user_profile.plotColourMapChoice,
-                    "sorted_category_list": sorted_acquisition_dlp_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                     "custom_msg_line": chart_message,
                 }
                 if user_profile.plotMean:
+                    if sorting_choice == "value":
+                        sorted_acquisition_dlp_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_acquisition_dlp_categories
                     parameter_dict["value_axis_title"] = "Mean DLP (mGy.cm)"
                     parameter_dict[
                         "filename"
@@ -632,6 +643,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotMedian:
+                    if sorting_choice == "value":
+                        sorted_acquisition_dlp_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_acquisition_dlp_categories
                     parameter_dict["value_axis_title"] = "Median DLP (mGy.cm)"
                     parameter_dict[
                         "filename"
@@ -648,27 +663,30 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotBoxplots:
                 parameter_dict = {
-                    "df_name_col": "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                    "df_value_col": "ctradiationdose__ctirradiationeventdata__dlp",
+                    "df_name_col": name_field,
+                    "df_value_col": value_field,
                     "value_axis_title": "DLP (mGy.cm)",
                     "name_axis_title": "Acquisition protocol",
                     "colourmap": user_profile.plotColourMapChoice,
                     "filename": "OpenREM CT acquisition protocol DLP boxplot",
-                    "sorted_category_list": sorted_acquisition_dlp_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                     "custom_msg_line": chart_message,
                 }
+
+                if sorting_choice == "value":
+                    sorted_acquisition_dlp_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                parameter_dict["sorted_category_list"] = sorted_acquisition_dlp_categories
+
                 return_structure["acquisitionBoxplotDLPData"] = plotly_boxplot(
                     df,
                     parameter_dict,
                 )
 
             if user_profile.plotHistograms:
-                category_names_col = (
-                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
-                )
+                category_names_col = (name_field)
                 group_by_col = "x_ray_system_name"
                 legend_title = "Acquisition protocol"
                 facet_names = list(df[group_by_col].unique())
@@ -676,9 +694,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
-                    group_by_col = (
-                        "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
-                    )
+                    group_by_col = (name_field)
                     legend_title = "System"
                     category_names = facet_names
                     facet_names = list(sorted_acquisition_dlp_categories.values())[0]
@@ -686,7 +702,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict = {
                     "df_facet_col": group_by_col,
                     "df_category_col": category_names_col,
-                    "df_value_col": "ctradiationdose__ctirradiationeventdata__dlp",
+                    "df_value_col": value_field,
                     "value_axis_title": "DLP (mGy.cm)",
                     "legend_title": legend_title,
                     "n_bins": user_profile.plotHistogramBins,
@@ -708,35 +724,41 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
         sorted_acquisition_ctdi_categories = None
         if user_profile.plotCTAcquisitionMeanCTDI:
-            sorted_acquisition_ctdi_categories = create_sorted_category_list(
+
+            if user_profile.plotBoxplots and "median" not in average_choices:
+                average_choices = average_choices + ["median"]
+
+            name_field = "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+            value_field = "ctradiationdose__ctirradiationeventdata__mean_ctdivol"
+
+            df_aggregated = create_dataframe_aggregates(
                 df,
-                "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                [
-                    user_profile.plotInitialSortingDirection,
-                    user_profile.plotCTInitialSortingChoice,
-                ],
+                [name_field],
+                value_field,
+                stats_to_use=average_choices + ["count"],
             )
 
+            if sorting_choice == "name":
+                sorted_acquisition_ctdi_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}
+            elif sorting_choice == "frequency":
+                sorted_acquisition_ctdi_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}
+
             if user_profile.plotMean or user_profile.plotMedian:
-                df_aggregated = create_dataframe_aggregates(
-                    df,
-                    ["ctradiationdose__ctirradiationeventdata__acquisition_protocol"],
-                    "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    stats_to_use=average_choices + ["count"],
-                )
 
                 parameter_dict = {
-                    "df_name_col": "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+                    "df_name_col": name_field,
                     "name_axis_title": "Acquisition protocol",
                     "colourmap": user_profile.plotColourMapChoice,
-                    "sorted_category_list": sorted_acquisition_ctdi_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                     "custom_msg_line": chart_message,
                 }
                 if user_profile.plotMean:
+                    if sorting_choice == "value":
+                        sorted_acquisition_ctdi_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_acquisition_ctdi_categories
                     parameter_dict["value_axis_title"] = "Mean CTDI<sub>vol</sub> (mGy)"
                     parameter_dict[
                         "filename"
@@ -752,6 +774,11 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotMedian:
+                    if sorting_choice == "value":
+                        sorted_acquisition_ctdi_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_acquisition_ctdi_categories
+
                     parameter_dict[
                         "value_axis_title"
                     ] = "Median CTDI<sub>vol</sub> (mGy)"
@@ -770,18 +797,23 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotBoxplots:
                 parameter_dict = {
-                    "df_name_col": "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-                    "df_value_col": "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    "df_name_col": name_field,
+                    "df_value_col": value_field,
                     "value_axis_title": "CTDI<sub>vol</sub> (mGy)",
                     "name_axis_title": "Acquisition protocol",
                     "colourmap": user_profile.plotColourMapChoice,
                     "filename": "OpenREM CT acquisition protocol CTDI boxplot",
-                    "sorted_category_list": sorted_acquisition_ctdi_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                     "custom_msg_line": chart_message,
                 }
+
+                if sorting_choice == "value":
+                    sorted_acquisition_ctdi_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                parameter_dict["sorted_category_list"] = sorted_acquisition_ctdi_categories
+
                 return_structure["acquisitionBoxplotCTDIData"] = plotly_boxplot(
                     df,
                     parameter_dict,
@@ -789,7 +821,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotHistograms:
                 category_names_col = (
-                    "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+                    name_field
                 )
                 group_by_col = "x_ray_system_name"
                 legend_title = "Acquisition protocol"
@@ -799,7 +831,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
                     group_by_col = (
-                        "ctradiationdose__ctirradiationeventdata__acquisition_protocol"
+                        name_field
                     )
                     legend_title = "System"
                     category_names = facet_names
@@ -808,7 +840,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict = {
                     "df_facet_col": group_by_col,
                     "df_category_col": category_names_col,
-                    "df_value_col": "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    "df_value_col": value_field,
                     "value_axis_title": "CTDI<sub>vol</sub> (mGy)",
                     "legend_title": legend_title,
                     "n_bins": user_profile.plotHistogramBins,
@@ -1067,34 +1099,40 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         # Create the required study- and request-level charts
         sorted_study_dlp_categories = None
         if user_profile.plotCTStudyMeanDLP:
-            sorted_study_dlp_categories = create_sorted_category_list(
+
+            if user_profile.plotBoxplots and "median" not in average_choices:
+                average_choices = average_choices + ["median"]
+
+            name_field = "study_description"
+            value_field = "total_dlp"
+
+            df_aggregated = create_dataframe_aggregates(
                 df,
-                "study_description",
-                "total_dlp",
-                [
-                    user_profile.plotInitialSortingDirection,
-                    user_profile.plotCTInitialSortingChoice,
-                ],
+                [name_field],
+                value_field,
+                stats_to_use=average_choices + ["count"],
             )
 
+            if sorting_choice == "name":
+                sorted_study_dlp_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}
+            elif sorting_choice == "frequency":
+                sorted_study_dlp_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}
+
             if user_profile.plotMean or user_profile.plotMedian:
-                df_aggregated = create_dataframe_aggregates(
-                    df,
-                    ["study_description"],
-                    "total_dlp",
-                    stats_to_use=average_choices + ["count"],
-                )
 
                 parameter_dict = {
-                    "df_name_col": "study_description",
+                    "df_name_col": name_field,
                     "name_axis_title": "Study description",
                     "colourmap": user_profile.plotColourMapChoice,
-                    "sorted_category_list": sorted_study_dlp_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
                 if user_profile.plotMean:
+                    if sorting_choice == "value":
+                        sorted_study_dlp_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_study_dlp_categories
                     parameter_dict["value_axis_title"] = "Mean DLP (mGy.cm)"
                     parameter_dict["filename"] = "OpenREM CT study description DLP mean"
                     parameter_dict["average_choice"] = "mean"
@@ -1108,6 +1146,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotMedian:
+                    if sorting_choice == "value":
+                        sorted_study_dlp_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_study_dlp_categories
                     parameter_dict["value_axis_title"] = "Median DLP (mGy.cm)"
                     parameter_dict[
                         "filename"
@@ -1124,24 +1166,29 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotBoxplots:
                 parameter_dict = {
-                    "df_name_col": "study_description",
-                    "df_value_col": "total_dlp",
+                    "df_name_col": name_field,
+                    "df_value_col": value_field,
                     "value_axis_title": "DLP (mGy.cm)",
                     "name_axis_title": "Study description",
                     "colourmap": user_profile.plotColourMapChoice,
                     "filename": "OpenREM CT study description DLP boxplot",
-                    "sorted_category_list": sorted_study_dlp_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
+
+                if sorting_choice == "value":
+                    sorted_study_dlp_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                parameter_dict["sorted_category_list"] = sorted_study_dlp_categories
+
                 return_structure["studyBoxplotDLPData"] = plotly_boxplot(
                     df,
                     parameter_dict,
                 )
 
             if user_profile.plotHistograms:
-                category_names_col = "study_description"
+                category_names_col = name_field
                 group_by_col = "x_ray_system_name"
                 legend_title = "Study description"
                 facet_names = list(df[group_by_col].unique())
@@ -1149,7 +1196,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
-                    group_by_col = "study_description"
+                    group_by_col = name_field
                     legend_title = "System"
                     category_names = facet_names
                     facet_names = list(sorted_study_dlp_categories.values())[0]
@@ -1157,7 +1204,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict = {
                     "df_facet_col": group_by_col,
                     "df_category_col": category_names_col,
-                    "df_value_col": "total_dlp",
+                    "df_value_col": value_field,
                     "value_axis_title": "DLP (mGy.cm)",
                     "legend_title": legend_title,
                     "n_bins": user_profile.plotHistogramBins,
@@ -1176,38 +1223,42 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
         sorted_study_ctdi_categories = None
         if user_profile.plotCTStudyMeanCTDI:
-            sorted_study_ctdi_categories = create_sorted_category_list(
+
+            if user_profile.plotBoxplots and "median" not in average_choices:
+                average_choices = average_choices + ["median"]
+
+            name_field = "study_description"
+            value_field = "ctradiationdose__ctirradiationeventdata__mean_ctdivol"
+
+            df_aggregated = create_dataframe_aggregates(
                 df,
-                "study_description",
-                "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                [
-                    user_profile.plotInitialSortingDirection,
-                    user_profile.plotCTInitialSortingChoice,
-                ],
+                [name_field],
+                value_field,
+                stats_to_use=average_choices + ["count"],
             )
 
+            if sorting_choice == "name":
+                sorted_study_ctdi_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}
+            elif sorting_choice == "frequency":
+                sorted_study_ctdi_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}
+
             if user_profile.plotMean or user_profile.plotMedian:
-                df_aggregated = create_dataframe_aggregates(
-                    df,
-                    ["study_description"],
-                    "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    stats_to_use=average_choices + ["count"],
-                )
 
                 parameter_dict = {
-                    "df_name_col": "study_description",
+                    "df_name_col": name_field,
                     "name_axis_title": "Study description",
                     "colourmap": user_profile.plotColourMapChoice,
-                    "sorted_category_list": sorted_study_ctdi_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
                 if user_profile.plotMean:
+                    if sorting_choice == "value":
+                        sorted_study_ctdi_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_study_ctdi_categories
                     parameter_dict["value_axis_title"] = "Mean CTDI<sub>vol</sub> (mGy)"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM CT study description CTDI mean"
+                    parameter_dict["filename"] = "OpenREM CT study description CTDI mean"
                     parameter_dict["average_choice"] = "mean"
                     (
                         return_structure["studyMeanCTDIData"],
@@ -1219,9 +1270,11 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotMedian:
-                    parameter_dict[
-                        "value_axis_title"
-                    ] = "Median CTDI<sub>vol</sub> (mGy)"
+                    if sorting_choice == "value":
+                        sorted_study_ctdi_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_study_ctdi_categories
+                    parameter_dict["value_axis_title"] = "Median CTDI<sub>vol</sub> (mGy)"
                     parameter_dict[
                         "filename"
                     ] = "OpenREM CT study description CTDI median"
@@ -1237,24 +1290,29 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotBoxplots:
                 parameter_dict = {
-                    "df_name_col": "study_description",
-                    "df_value_col": "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    "df_name_col": name_field,
+                    "df_value_col": value_field,
                     "value_axis_title": "CTDI<sub>vol</sub> (mGy)",
                     "name_axis_title": "Study description",
                     "colourmap": user_profile.plotColourMapChoice,
                     "filename": "OpenREM CT study description DLP boxplot",
-                    "sorted_category_list": sorted_study_ctdi_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
+
+                if sorting_choice == "value":
+                    sorted_study_ctdi_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                parameter_dict["sorted_category_list"] = sorted_study_ctdi_categories
+
                 return_structure["studyBoxplotCTDIData"] = plotly_boxplot(
                     df,
                     parameter_dict,
                 )
 
             if user_profile.plotHistograms:
-                category_names_col = "study_description"
+                category_names_col = name_field
                 group_by_col = "x_ray_system_name"
                 legend_title = "Study description"
                 facet_names = list(df[group_by_col].unique())
@@ -1262,7 +1320,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
-                    group_by_col = "study_description"
+                    group_by_col = name_field
                     legend_title = "System"
                     category_names = facet_names
                     facet_names = list(sorted_study_ctdi_categories.values())[0]
@@ -1270,7 +1328,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict = {
                     "df_facet_col": group_by_col,
                     "df_category_col": category_names_col,
-                    "df_value_col": "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    "df_value_col": value_field,
                     "value_axis_title": "CTDI<sub>vol</sub> (mGy)",
                     "legend_title": legend_title,
                     "n_bins": user_profile.plotHistogramBins,
@@ -1289,38 +1347,42 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
         sorted_study_events_categories = None
         if user_profile.plotCTStudyNumEvents:
-            sorted_study_events_categories = create_sorted_category_list(
+
+            if user_profile.plotBoxplots and "median" not in average_choices:
+                average_choices = average_choices + ["median"]
+
+            name_field = "study_description"
+            value_field = "number_of_events"
+
+            df_aggregated = create_dataframe_aggregates(
                 df,
-                "study_description",
-                "number_of_events",
-                [
-                    user_profile.plotInitialSortingDirection,
-                    user_profile.plotCTInitialSortingChoice,
-                ],
+                [name_field],
+                value_field,
+                stats_to_use=average_choices + ["count"],
             )
 
+            if sorting_choice == "name":
+                sorted_study_events_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}
+            elif sorting_choice == "frequency":
+                sorted_study_events_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}
+
             if user_profile.plotMean or user_profile.plotMedian:
-                df_aggregated = create_dataframe_aggregates(
-                    df,
-                    ["study_description"],
-                    "number_of_events",
-                    stats_to_use=average_choices + ["count"],
-                )
 
                 parameter_dict = {
-                    "df_name_col": "study_description",
+                    "df_name_col": name_field,
                     "name_axis_title": "Study description",
                     "colourmap": user_profile.plotColourMapChoice,
-                    "sorted_category_list": sorted_study_events_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
                 if user_profile.plotMean:
+                    if sorting_choice == "value":
+                        sorted_study_events_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_study_events_categories
                     parameter_dict["value_axis_title"] = "Mean events"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM CT study description events mean"
+                    parameter_dict["filename"] = "OpenREM CT study description events mean"
                     parameter_dict["average_choice"] = "mean"
                     (
                         return_structure["studyMeanNumEventsData"],
@@ -1332,6 +1394,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotMedian:
+                    if sorting_choice == "value":
+                        sorted_study_events_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_study_events_categories
                     parameter_dict["value_axis_title"] = "Median events"
                     parameter_dict[
                         "filename"
@@ -1348,24 +1414,29 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotBoxplots:
                 parameter_dict = {
-                    "df_name_col": "study_description",
-                    "df_value_col": "number_of_events",
+                    "df_name_col": name_field,
+                    "df_value_col": value_field,
                     "value_axis_title": "Events",
                     "name_axis_title": "Study description",
                     "colourmap": user_profile.plotColourMapChoice,
                     "filename": "OpenREM CT study description events boxplot",
-                    "sorted_category_list": sorted_study_events_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
+
+                if sorting_choice == "value":
+                    sorted_study_events_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                parameter_dict["sorted_category_list"] = sorted_study_events_categories
+
                 return_structure["studyBoxplotNumEventsData"] = plotly_boxplot(
                     df,
                     parameter_dict,
                 )
 
             if user_profile.plotHistograms:
-                category_names_col = "study_description"
+                category_names_col = name_field
                 group_by_col = "x_ray_system_name"
                 legend_title = "Study description"
                 facet_names = list(df[group_by_col].unique())
@@ -1373,7 +1444,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
-                    group_by_col = "study_description"
+                    group_by_col = name_field
                     legend_title = "System"
                     category_names = facet_names
                     facet_names = list(sorted_study_events_categories.values())[0]
@@ -1381,7 +1452,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict = {
                     "df_facet_col": group_by_col,
                     "df_category_col": category_names_col,
-                    "df_value_col": "number_of_events",
+                    "df_value_col": value_field,
                     "value_axis_title": "Events",
                     "legend_title": legend_title,
                     "n_bins": user_profile.plotHistogramBins,
@@ -1429,41 +1500,42 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
         sorted_request_dlp_categories = None
         if user_profile.plotCTRequestMeanDLP:
+
+            if user_profile.plotBoxplots and "median" not in average_choices:
+                average_choices = average_choices + ["median"]
+
             name_field = "requested_procedure_code_meaning"
             value_field = "total_dlp"
 
-            sorted_request_dlp_categories = create_sorted_category_list(
+            df_aggregated = create_dataframe_aggregates(
                 df,
-                name_field,
+                [name_field],
                 value_field,
-                [
-                    user_profile.plotInitialSortingDirection,
-                    user_profile.plotCTInitialSortingChoice,
-                ],
+                stats_to_use=average_choices + ["count"],
             )
 
+            if sorting_choice == "name":
+                sorted_request_dlp_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}
+            elif sorting_choice == "frequency":
+                sorted_request_dlp_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}
+
             if user_profile.plotMean or user_profile.plotMedian:
-                df_aggregated = create_dataframe_aggregates(
-                    df,
-                    [name_field],
-                    value_field,
-                    stats_to_use=average_choices + ["count"],
-                )
 
                 parameter_dict = {
                     "df_name_col": name_field,
                     "name_axis_title": "Requested procedure",
                     "colourmap": user_profile.plotColourMapChoice,
-                    "sorted_category_list": sorted_request_dlp_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
                 if user_profile.plotMean:
+                    if sorting_choice == "value":
+                        sorted_request_dlp_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_request_dlp_categories
                     parameter_dict["value_axis_title"] = "Mean DLP (mGy.cm)"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM CT requested procedure DLP mean"
+                    parameter_dict["filename"] = "OpenREM CT requested procedure DLP mean"
                     parameter_dict["average_choice"] = "mean"
                     (
                         return_structure["requestMeanDLPData"],
@@ -1475,6 +1547,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotMedian:
+                    if sorting_choice == "value":
+                        sorted_request_dlp_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_request_dlp_categories
                     parameter_dict["value_axis_title"] = "Median DLP (mGy.cm)"
                     parameter_dict[
                         "filename"
@@ -1497,11 +1573,16 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "name_axis_title": "Requested procedure",
                     "colourmap": user_profile.plotColourMapChoice,
                     "filename": "OpenREM CT requested procedure DLP boxplot",
-                    "sorted_category_list": sorted_request_dlp_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
+
+                if sorting_choice == "value":
+                    sorted_request_dlp_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                parameter_dict["sorted_category_list"] = sorted_request_dlp_categories
+
                 return_structure["requestBoxplotDLPData"] = plotly_boxplot(
                     df,
                     parameter_dict,
@@ -1543,38 +1624,42 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
         sorted_request_events_categories = None
         if user_profile.plotCTRequestNumEvents:
-            sorted_request_events_categories = create_sorted_category_list(
+
+            if user_profile.plotBoxplots and "median" not in average_choices:
+                average_choices = average_choices + ["median"]
+
+            name_field = "requested_procedure_code_meaning"
+            value_field = "number_of_events"
+
+            df_aggregated = create_dataframe_aggregates(
                 df,
-                "requested_procedure_code_meaning",
-                "number_of_events",
-                [
-                    user_profile.plotInitialSortingDirection,
-                    user_profile.plotCTInitialSortingChoice,
-                ],
+                [name_field],
+                value_field,
+                stats_to_use=average_choices + ["count"],
             )
 
+            if sorting_choice == "name":
+                sorted_request_events_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}
+            elif sorting_choice == "frequency":
+                sorted_request_events_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}
+
             if user_profile.plotMean or user_profile.plotMedian:
-                df_aggregated = create_dataframe_aggregates(
-                    df,
-                    ["requested_procedure_code_meaning"],
-                    "number_of_events",
-                    stats_to_use=average_choices + ["count"],
-                )
 
                 parameter_dict = {
-                    "df_name_col": "requested_procedure_code_meaning",
+                    "df_name_col": name_field,
                     "name_axis_title": "Requested procedure",
                     "colourmap": user_profile.plotColourMapChoice,
-                    "sorted_category_list": sorted_request_events_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
                 if user_profile.plotMean:
+                    if sorting_choice == "value":
+                        sorted_request_events_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_request_events_categories
                     parameter_dict["value_axis_title"] = "Mean events"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM CT requested procedure events mean"
+                    parameter_dict["filename"] = "OpenREM CT requested procedure events mean"
                     parameter_dict["average_choice"] = "mean"
                     (
                         return_structure["requestMeanNumEventsData"],
@@ -1586,6 +1671,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotMedian:
+                    if sorting_choice == "value":
+                        sorted_request_events_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                    parameter_dict["sorted_category_list"] = sorted_request_events_categories
                     parameter_dict["value_axis_title"] = "Median events"
                     parameter_dict[
                         "filename"
@@ -1602,24 +1691,29 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotBoxplots:
                 parameter_dict = {
-                    "df_name_col": "requested_procedure_code_meaning",
-                    "df_value_col": "number_of_events",
+                    "df_name_col": name_field,
+                    "df_value_col": value_field,
                     "value_axis_title": "Events",
                     "name_axis_title": "Requested procedure",
                     "colourmap": user_profile.plotColourMapChoice,
                     "filename": "OpenREM CT requested procedure events boxplot",
-                    "sorted_category_list": sorted_request_events_categories,
                     "facet_col": None,
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "return_as_dict": return_as_dict,
                 }
+
+                if sorting_choice == "value":
+                    sorted_request_events_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+
+                parameter_dict["sorted_category_list"] = sorted_request_events_categories
+
                 return_structure["requestBoxplotNumEventsData"] = plotly_boxplot(
                     df,
                     parameter_dict,
                 )
 
             if user_profile.plotHistograms:
-                category_names_col = "requested_procedure_code_meaning"
+                category_names_col = name_field
                 group_by_col = "x_ray_system_name"
                 legend_title = "Requested procedure"
                 facet_names = list(df[group_by_col].unique())
@@ -1627,7 +1721,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
-                    group_by_col = "requested_procedure_code_meaning"
+                    group_by_col = name_field
                     legend_title = "System"
                     category_names = facet_names
                     facet_names = list(sorted_request_events_categories.values())[0]
@@ -1635,7 +1729,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 parameter_dict = {
                     "df_facet_col": group_by_col,
                     "df_category_col": category_names_col,
-                    "df_value_col": "number_of_events",
+                    "df_value_col": value_field,
                     "value_axis_title": "Events",
                     "legend_title": legend_title,
                     "n_bins": user_profile.plotHistogramBins,

@@ -1313,7 +1313,7 @@ class ChartsCT(TestCase):
                 ),
             },
             {
-                "name": "DE_laser align",
+                "name": "DS_helical",
                 "text": np.array(
                     [
                         "21.18≤x<100.59",
@@ -1330,79 +1330,7 @@ class ChartsCT(TestCase):
                     dtype="<U15",
                 ),
                 "y": np.array(
-                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                ),
-                # frequency data corresponds to the 'Blank' bars on the histogram
-                "x": np.array(
-                    [
-                        60.8875,
-                        140.3025,
-                        219.7175,
-                        299.1325,
-                        378.5475,
-                        457.9625,
-                        537.3775,
-                        616.7925,
-                        696.2075,
-                        775.6225,
-                    ],
-                ),
-            },
-            {
-                "name": "DS 100kV",
-                "text": np.array(
-                    [
-                        "21.18≤x<100.59",
-                        "100.59≤x<180.01",
-                        "180.01≤x<259.43",
-                        "259.43≤x<338.84",
-                        "338.84≤x<418.26",
-                        "418.26≤x<497.67",
-                        "497.67≤x<577.09",
-                        "577.09≤x<656.50",
-                        "656.50≤x<735.91",
-                        "735.91≤x<815.33",
-                    ],
-                    dtype="<U15",
-                ),
-                "y": np.array(
-                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                ),
-                # frequency data corresponds to the 'Blank' bars on the histogram
-                "x": np.array(
-                    [
-                        60.8875,
-                        140.3025,
-                        219.7175,
-                        299.1325,
-                        378.5475,
-                        457.9625,
-                        537.3775,
-                        616.7925,
-                        696.2075,
-                        775.6225,
-                    ],
-                ),
-            },
-            {
-                "name": "DS 140kV",
-                "text": np.array(
-                    [
-                        "21.18≤x<100.59",
-                        "100.59≤x<180.01",
-                        "180.01≤x<259.43",
-                        "259.43≤x<338.84",
-                        "338.84≤x<418.26",
-                        "418.26≤x<497.67",
-                        "497.67≤x<577.09",
-                        "577.09≤x<656.50",
-                        "656.50≤x<735.91",
-                        "735.91≤x<815.33",
-                    ],
-                    dtype="<U15",
-                ),
-                "y": np.array(
-                    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
                 ),
                 # frequency data corresponds to the 'Blank' bars on the histogram
                 "x": np.array(
@@ -1493,6 +1421,42 @@ class ChartsCT(TestCase):
                 ),
             },
             {
+                "name": "DE_laser align",
+                "text": np.array(
+                    [
+                        "21.18≤x<100.59",
+                        "100.59≤x<180.01",
+                        "180.01≤x<259.43",
+                        "259.43≤x<338.84",
+                        "338.84≤x<418.26",
+                        "418.26≤x<497.67",
+                        "497.67≤x<577.09",
+                        "577.09≤x<656.50",
+                        "656.50≤x<735.91",
+                        "735.91≤x<815.33",
+                    ],
+                    dtype="<U15",
+                ),
+                "y": np.array(
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                ),
+                # frequency data corresponds to the 'Blank' bars on the histogram
+                "x": np.array(
+                    [
+                        60.8875,
+                        140.3025,
+                        219.7175,
+                        299.1325,
+                        378.5475,
+                        457.9625,
+                        537.3775,
+                        616.7925,
+                        696.2075,
+                        775.6225,
+                    ],
+                ),
+            },
+            {
                 "name": "DS_hel p 0.23",
                 "text": np.array(
                     [
@@ -1529,7 +1493,7 @@ class ChartsCT(TestCase):
                 ),
             },
             {
-                "name": "DS_helical",
+                "name": "DS 100kV",
                 "text": np.array(
                     [
                         "21.18≤x<100.59",
@@ -1546,7 +1510,7 @@ class ChartsCT(TestCase):
                     dtype="<U15",
                 ),
                 "y": np.array(
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 ),
                 # frequency data corresponds to the 'Blank' bars on the histogram
                 "x": np.array(
@@ -1565,43 +1529,43 @@ class ChartsCT(TestCase):
                 ),
             },
             {
-                "name": "Monitoring",
+                "name": "DS 140kV",
                 "text": np.array(
                     [
-                        "1.20≤x<71.90",
-                        "71.90≤x<142.60",
-                        "142.60≤x<213.30",
-                        "213.30≤x<284.00",
-                        "284.00≤x<354.70",
-                        "354.70≤x<425.40",
-                        "425.40≤x<496.10",
-                        "496.10≤x<566.80",
-                        "566.80≤x<637.50",
-                        "637.50≤x<708.20",
+                        "21.18≤x<100.59",
+                        "100.59≤x<180.01",
+                        "180.01≤x<259.43",
+                        "259.43≤x<338.84",
+                        "338.84≤x<418.26",
+                        "418.26≤x<497.67",
+                        "497.67≤x<577.09",
+                        "577.09≤x<656.50",
+                        "656.50≤x<735.91",
+                        "735.91≤x<815.33",
                     ],
                     dtype="<U15",
                 ),
                 "y": np.array(
-                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
                 ),
                 # frequency data corresponds to the 'Blank' bars on the histogram
                 "x": np.array(
                     [
-                        36.55,
-                        107.25,
-                        177.95,
-                        248.65,
-                        319.35,
-                        390.05,
-                        460.75,
-                        531.45,
-                        602.15,
-                        672.85,
+                        60.8875,
+                        140.3025,
+                        219.7175,
+                        299.1325,
+                        378.5475,
+                        457.9625,
+                        537.3775,
+                        616.7925,
+                        696.2075,
+                        775.6225,
                     ],
                 ),
             },
             {
-                "name": "PreMonitoring",
+                "name": "testÃ¦Ã¸Ã¥",
                 "text": np.array(
                     [
                         "1.20≤x<71.90",
@@ -1673,7 +1637,43 @@ class ChartsCT(TestCase):
                 ),
             },
             {
-                "name": "testÃ¦Ã¸Ã¥",
+                "name": "PreMonitoring",
+                "text": np.array(
+                    [
+                        "1.20≤x<71.90",
+                        "71.90≤x<142.60",
+                        "142.60≤x<213.30",
+                        "213.30≤x<284.00",
+                        "284.00≤x<354.70",
+                        "354.70≤x<425.40",
+                        "425.40≤x<496.10",
+                        "496.10≤x<566.80",
+                        "566.80≤x<637.50",
+                        "637.50≤x<708.20",
+                    ],
+                    dtype="<U15",
+                ),
+                "y": np.array(
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                ),
+                # frequency data corresponds to the 'Blank' bars on the histogram
+                "x": np.array(
+                    [
+                        36.55,
+                        107.25,
+                        177.95,
+                        248.65,
+                        319.35,
+                        390.05,
+                        460.75,
+                        531.45,
+                        602.15,
+                        672.85,
+                    ],
+                ),
+            },
+            {
+                "name": "Monitoring",
                 "text": np.array(
                     [
                         "1.20≤x<71.90",
@@ -5263,7 +5263,7 @@ class ChartsCT(TestCase):
                     ),
                 },
                 {
-                    "name": "DE_laser align",
+                    "name": "DS_helical",
                     "text": np.array(
                         [
                             "5.52≤x<11.52",
@@ -5280,79 +5280,7 @@ class ChartsCT(TestCase):
                         dtype="<U13",
                     ),
                     "y": np.array(
-                        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-                    ),
-                    # frequency data corresponds to the 'Blank' bars on the histogram
-                    "x": np.array(
-                        [
-                            8.5175,
-                            14.5125,
-                            20.5075,
-                            26.5025,
-                            32.4975,
-                            38.4925,
-                            44.4875,
-                            50.4825,
-                            56.4775,
-                            62.4725,
-                        ],
-                    ),
-                },
-                {
-                    "name": "DS 100kV",
-                    "text": np.array(
-                        [
-                            "5.52≤x<11.52",
-                            "11.52≤x<17.51",
-                            "17.51≤x<23.50",
-                            "23.50≤x<29.50",
-                            "29.50≤x<35.50",
-                            "35.50≤x<41.49",
-                            "41.49≤x<47.48",
-                            "47.48≤x<53.48",
-                            "53.48≤x<59.47",
-                            "59.47≤x<65.47",
-                        ],
-                        dtype="<U13",
-                    ),
-                    "y": np.array(
-                        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-                    ),
-                    # frequency data corresponds to the 'Blank' bars on the histogram
-                    "x": np.array(
-                        [
-                            8.5175,
-                            14.5125,
-                            20.5075,
-                            26.5025,
-                            32.4975,
-                            38.4925,
-                            44.4875,
-                            50.4825,
-                            56.4775,
-                            62.4725,
-                        ],
-                    ),
-                },
-                {
-                    "name": "DS 140kV",
-                    "text": np.array(
-                        [
-                            "5.52≤x<11.52",
-                            "11.52≤x<17.51",
-                            "17.51≤x<23.50",
-                            "23.50≤x<29.50",
-                            "29.50≤x<35.50",
-                            "35.50≤x<41.49",
-                            "41.49≤x<47.48",
-                            "47.48≤x<53.48",
-                            "53.48≤x<59.47",
-                            "59.47≤x<65.47",
-                        ],
-                        dtype="<U13",
-                    ),
-                    "y": np.array(
-                        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
                     ),
                     # frequency data corresponds to the 'Blank' bars on the histogram
                     "x": np.array(
@@ -5443,6 +5371,42 @@ class ChartsCT(TestCase):
                     ),
                 },
                 {
+                    "name": "DE_laser align",
+                    "text": np.array(
+                        [
+                            "5.52≤x<11.52",
+                            "11.52≤x<17.51",
+                            "17.51≤x<23.50",
+                            "23.50≤x<29.50",
+                            "29.50≤x<35.50",
+                            "35.50≤x<41.49",
+                            "41.49≤x<47.48",
+                            "47.48≤x<53.48",
+                            "53.48≤x<59.47",
+                            "59.47≤x<65.47",
+                        ],
+                        dtype="<U13",
+                    ),
+                    "y": np.array(
+                        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                    ),
+                    # frequency data corresponds to the 'Blank' bars on the histogram
+                    "x": np.array(
+                        [
+                            8.5175,
+                            14.5125,
+                            20.5075,
+                            26.5025,
+                            32.4975,
+                            38.4925,
+                            44.4875,
+                            50.4825,
+                            56.4775,
+                            62.4725,
+                        ],
+                    ),
+                },
+                {
                     "name": "DS_hel p 0.23",
                     "text": np.array(
                         [
@@ -5479,7 +5443,7 @@ class ChartsCT(TestCase):
                     ),
                 },
                 {
-                    "name": "DS_helical",
+                    "name": "DS 100kV",
                     "text": np.array(
                         [
                             "5.52≤x<11.52",
@@ -5496,7 +5460,7 @@ class ChartsCT(TestCase):
                         dtype="<U13",
                     ),
                     "y": np.array(
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
                     ),
                     # frequency data corresponds to the 'Blank' bars on the histogram
                     "x": np.array(
@@ -5515,43 +5479,43 @@ class ChartsCT(TestCase):
                     ),
                 },
                 {
-                    "name": "Monitoring",
+                    "name": "DS 140kV",
                     "text": np.array(
                         [
-                            "0.14≤x<1.12",
-                            "1.12≤x<2.09",
-                            "2.09≤x<3.07",
-                            "3.07≤x<4.05",
-                            "4.05≤x<5.02",
-                            "5.02≤x<6.00",
-                            "6.00≤x<6.98",
-                            "6.98≤x<7.96",
-                            "7.96≤x<8.93",
-                            "8.93≤x<9.91",
+                            "5.52≤x<11.52",
+                            "11.52≤x<17.51",
+                            "17.51≤x<23.50",
+                            "23.50≤x<29.50",
+                            "29.50≤x<35.50",
+                            "35.50≤x<41.49",
+                            "41.49≤x<47.48",
+                            "47.48≤x<53.48",
+                            "53.48≤x<59.47",
+                            "59.47≤x<65.47",
                         ],
-                        dtype="<U11",
+                        dtype="<U13",
                     ),
                     "y": np.array(
-                        [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
                     ),
                     # frequency data corresponds to the 'Blank' bars on the histogram
                     "x": np.array(
                         [
-                            0.6285,
-                            1.6055,
-                            2.5825,
-                            3.5595,
-                            4.5365,
-                            5.5135,
-                            6.4905,
-                            7.4675,
-                            8.4445,
-                            9.4215,
+                            8.5175,
+                            14.5125,
+                            20.5075,
+                            26.5025,
+                            32.4975,
+                            38.4925,
+                            44.4875,
+                            50.4825,
+                            56.4775,
+                            62.4725,
                         ],
                     ),
                 },
                 {
-                    "name": "PreMonitoring",
+                    "name": "testÃ¦Ã¸Ã¥",
                     "text": np.array(
                         [
                             "0.14≤x<1.12",
@@ -5568,7 +5532,7 @@ class ChartsCT(TestCase):
                         dtype="<U11",
                     ),
                     "y": np.array(
-                        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                     ),
                     # frequency data corresponds to the 'Blank' bars on the histogram
                     "x": np.array(
@@ -5623,7 +5587,7 @@ class ChartsCT(TestCase):
                     ),
                 },
                 {
-                    "name": "testÃ¦Ã¸Ã¥",
+                    "name": "PreMonitoring",
                     "text": np.array(
                         [
                             "0.14≤x<1.12",
@@ -5640,7 +5604,43 @@ class ChartsCT(TestCase):
                         dtype="<U11",
                     ),
                     "y": np.array(
-                        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                    ),
+                    # frequency data corresponds to the 'Blank' bars on the histogram
+                    "x": np.array(
+                        [
+                            0.6285,
+                            1.6055,
+                            2.5825,
+                            3.5595,
+                            4.5365,
+                            5.5135,
+                            6.4905,
+                            7.4675,
+                            8.4445,
+                            9.4215,
+                        ],
+                    ),
+                },
+                {
+                    "name": "Monitoring",
+                    "text": np.array(
+                        [
+                            "0.14≤x<1.12",
+                            "1.12≤x<2.09",
+                            "2.09≤x<3.07",
+                            "3.07≤x<4.05",
+                            "4.05≤x<5.02",
+                            "5.02≤x<6.00",
+                            "6.00≤x<6.98",
+                            "6.98≤x<7.96",
+                            "7.96≤x<8.93",
+                            "8.93≤x<9.91",
+                        ],
+                        dtype="<U11",
+                    ),
+                    "y": np.array(
+                        [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
                     ),
                     # frequency data corresponds to the 'Blank' bars on the histogram
                     "x": np.array(

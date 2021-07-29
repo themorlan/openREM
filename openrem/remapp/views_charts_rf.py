@@ -324,48 +324,57 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
     if user_profile.plotMedian:
         stats_to_include.append("median")
 
+    sorting_choice = user_profile.plotRFInitialSortingChoice.lower()
+    ascending_order = True
+    if user_profile.plotInitialSortingDirection == 0:
+        ascending_order = False
+
     sorted_study_categories = None
     if user_profile.plotRFStudyDAP:
         sorting_col = "study_description"
         if user_profile.plotRFSplitByPhysician:
             sorting_col = "performing_physician_name"
-        sorted_study_categories = create_sorted_category_list(
-            df,
-            sorting_col,
-            "total_dap",
-            [
-                user_profile.plotInitialSortingDirection,
-                user_profile.plotRFInitialSortingChoice,
-            ],
+
+        if user_profile.plotBoxplots and "median" not in stats_to_include:
+            stats_to_include = stats_to_include + ["median"]
+
+        groupby_cols = ["study_description"]
+        if user_profile.plotRFSplitByPhysician:
+            groupby_cols = groupby_cols + ["performing_physician_name"]
+
+        df_aggregated = create_dataframe_aggregates(
+            df, groupby_cols, "total_dap", stats_to_use=stats_to_include
         )
+
+        if sorting_choice == "name":
+            sorted_study_categories = {"study_description": (df_aggregated.sort_values(by="study_description", ascending=ascending_order)["study_description"]).unique().tolist()}
+        elif sorting_choice == "frequency":
+            sorted_study_categories = {"study_description": (df_aggregated.sort_values(by="count", ascending=ascending_order)["study_description"]).unique().tolist()}
 
         if user_profile.plotMean or user_profile.plotMedian:
 
             x_col = "study_description"
             x_col_title = "Study description"
-            groupby_cols = ["study_description"]
             facet_col = None
 
             if user_profile.plotRFSplitByPhysician:
-                groupby_cols = groupby_cols + ["performing_physician_name"]
                 x_col = "performing_physician_name"
                 x_col_title = "Performing physician"
                 facet_col = "study_description"
-
-            df_aggregated = create_dataframe_aggregates(
-                df, groupby_cols, "total_dap", stats_to_use=stats_to_include
-            )
 
             parameter_dict = {
                 "df_name_col": x_col,
                 "name_axis_title": x_col_title,
                 "colourmap": user_profile.plotColourMapChoice,
-                "sorted_category_list": sorted_study_categories,
                 "facet_col": facet_col,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "return_as_dict": return_as_dict,
             }
             if user_profile.plotMean:
+                if sorting_choice == "value":
+                    sorted_study_categories = {"study_description": (df_aggregated.sort_values(by="mean", ascending=ascending_order)["study_description"]).unique().tolist()}
+
+                parameter_dict["sorted_category_list"] = sorted_study_categories
                 parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] = "OpenREM RF study description DAP mean"
                 parameter_dict["average_choice"] = "mean"
@@ -380,6 +389,10 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 )
 
             if user_profile.plotMedian:
+                if sorting_choice == "value":
+                    sorted_study_categories = {"study_description": (df_aggregated.sort_values(by="median", ascending=ascending_order)["study_description"]).unique().tolist()}
+
+                parameter_dict["sorted_category_list"] = sorted_study_categories
                 parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] = "OpenREM RF study description DAP median"
                 parameter_dict["average_choice"] = "median"
@@ -393,6 +406,9 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 )
 
         if user_profile.plotBoxplots:
+            if sorting_choice == "value":
+                sorted_study_categories = {"study_description": (df_aggregated.sort_values(by="median", ascending=ascending_order)["study_description"]).unique().tolist()}
+
             x_col = "study_description"
             x_col_title = "Study description"
             facet_col = None
@@ -505,46 +521,51 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
         sorting_col = "requested_procedure_code_meaning"
         if user_profile.plotRFSplitByPhysician:
             sorting_col = "performing_physician_name"
-        sorted_request_categories = create_sorted_category_list(
-            df,
-            sorting_col,
-            "total_dap",
-            [
-                user_profile.plotInitialSortingDirection,
-                user_profile.plotRFInitialSortingChoice,
-            ],
+
+        if user_profile.plotBoxplots and "median" not in stats_to_include:
+            stats_to_include = stats_to_include + ["median"]
+
+        groupby_cols = ["requested_procedure_code_meaning"]
+        if user_profile.plotRFSplitByPhysician:
+            groupby_cols = groupby_cols + ["performing_physician_name"]
+
+        df_aggregated = create_dataframe_aggregates(
+            df, groupby_cols, "total_dap", stats_to_use=stats_to_include
         )
+
+        if sorting_choice == "name":
+            sorted_request_categories = {"requested_procedure_code_meaning": (df_aggregated.sort_values(by="requested_procedure_code_meaning", ascending=ascending_order)["requested_procedure_code_meaning"]).unique().tolist()}
+        elif sorting_choice == "frequency":
+            sorted_request_categories = {"requested_procedure_code_meaning": (df_aggregated.sort_values(by="count", ascending=ascending_order)["requested_procedure_code_meaning"]).unique().tolist()}
 
         if user_profile.plotMean or user_profile.plotMedian:
 
             x_col = "requested_procedure_code_meaning"
             x_col_title = "Requested procedure"
-            groupby_cols = ["requested_procedure_code_meaning"]
             facet_col = None
 
             if user_profile.plotRFSplitByPhysician:
-                groupby_cols = groupby_cols + ["performing_physician_name"]
                 x_col = "performing_physician_name"
                 x_col_title = "Performing physician"
                 facet_col = "requested_procedure_code_meaning"
-
-            df_aggregated = create_dataframe_aggregates(
-                df, groupby_cols, "total_dap", stats_to_use=stats_to_include
-            )
 
             parameter_dict = {
                 "df_name_col": x_col,
                 "name_axis_title": x_col_title,
                 "colourmap": user_profile.plotColourMapChoice,
-                "sorted_category_list": sorted_request_categories,
                 "facet_col": facet_col,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
                 "return_as_dict": return_as_dict,
             }
             if user_profile.plotMean:
+                if sorting_choice == "value":
+                    sorted_request_categories = {"requested_procedure_code_meaning": (df_aggregated.sort_values(by="mean", ascending=ascending_order)["requested_procedure_code_meaning"]).unique().tolist()}
+
+                parameter_dict["sorted_category_list"] = sorted_request_categories
                 parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] = "OpenREM RF requested procedure DAP mean"
                 parameter_dict["average_choice"] = "mean"
+
                 (
                     return_structure["requestMeanData"],
                     return_structure["requestMeanDataCSV"],
@@ -555,6 +576,10 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 )
 
             if user_profile.plotMedian:
+                if sorting_choice == "value":
+                    sorted_request_categories = {"requested_procedure_code_meaning": (df_aggregated.sort_values(by="median", ascending=ascending_order)["requested_procedure_code_meaning"]).unique().tolist()}
+
+                parameter_dict["sorted_category_list"] = sorted_request_categories
                 parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
                 parameter_dict["filename"] = "OpenREM RF requested procedure DAP median"
                 parameter_dict["average_choice"] = "median"
@@ -568,6 +593,9 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 )
 
         if user_profile.plotBoxplots:
+            if sorting_choice == "value":
+                sorted_request_categories = {"requested_procedure_code_meaning": (df_aggregated.sort_values(by="median", ascending=ascending_order)["requested_procedure_code_meaning"]).unique().tolist()}
+
             x_col = "requested_procedure_code_meaning"
             x_col_title = "Requested procedure"
             facet_col = None
