@@ -19,7 +19,6 @@ from .interface.chart_functions import (
     create_dataframe,
     create_dataframe_weekdays,
     create_dataframe_aggregates,
-    create_sorted_category_list,
     plotly_boxplot,
     plotly_barchart,
     plotly_histogram_barchart,
@@ -480,9 +479,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
             if sorting_choice == "name":
-                sorted_acquisition_dap_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}
+                sorted_acquisition_dap_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
             elif sorting_choice == "frequency":
-                sorted_acquisition_dap_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}
+                sorted_acquisition_dap_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
             if user_profile.plotMean or user_profile.plotMedian:
 
@@ -496,7 +495,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     if sorting_choice == "value":
-                        sorted_acquisition_dap_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}
+                        sorted_acquisition_dap_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                     parameter_dict["sorted_category_list"] = sorted_acquisition_dap_categories
                     parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
@@ -515,7 +514,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotMedian:
                     if sorting_choice == "value":
-                        sorted_acquisition_dap_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+                        sorted_acquisition_dap_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                     parameter_dict["sorted_category_list"] = sorted_acquisition_dap_categories
                     parameter_dict[
@@ -548,7 +547,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 }
 
                 if sorting_choice == "value":
-                    sorted_acquisition_dap_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+                    sorted_acquisition_dap_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                 parameter_dict["sorted_category_list"] = sorted_acquisition_dap_categories
 
@@ -610,9 +609,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
             if sorting_choice == "name":
-                sorted_acquisition_kvp_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}
+                sorted_acquisition_kvp_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
             elif sorting_choice == "frequency":
-                sorted_acquisition_kvp_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}
+                sorted_acquisition_kvp_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
             if user_profile.plotMean or user_profile.plotMedian:
 
@@ -626,7 +625,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     if sorting_choice == "value":
-                        sorted_acquisition_kvp_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}
+                        sorted_acquisition_kvp_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                     parameter_dict["sorted_category_list"] = sorted_acquisition_kvp_categories
                     parameter_dict["value_axis_title"] = "Mean kVp"
@@ -645,7 +644,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotMedian:
                     if sorting_choice == "value":
-                        sorted_acquisition_kvp_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+                        sorted_acquisition_kvp_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                     parameter_dict["sorted_category_list"] = sorted_acquisition_kvp_categories
                     parameter_dict["value_axis_title"] = "Median kVp"
@@ -676,7 +675,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 }
 
                 if sorting_choice == "value":
-                    sorted_acquisition_kvp_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+                    sorted_acquisition_kvp_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                 parameter_dict["sorted_category_list"] = sorted_acquisition_kvp_categories
 
@@ -738,9 +737,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
             if sorting_choice == "name":
-                sorted_acquisition_mas_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}
+                sorted_acquisition_mas_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
             elif sorting_choice == "frequency":
-                sorted_acquisition_mas_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}
+                sorted_acquisition_mas_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
             if user_profile.plotMean or user_profile.plotMedian:
 
@@ -754,7 +753,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     if sorting_choice == "value":
-                        sorted_acquisition_mas_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}
+                        sorted_acquisition_mas_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                     parameter_dict["sorted_category_list"] = sorted_acquisition_mas_categories
                     parameter_dict["value_axis_title"] = "Mean mAs"
@@ -773,7 +772,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotMedian:
                     if sorting_choice == "value":
-                        sorted_acquisition_mas_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+                        sorted_acquisition_mas_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                     parameter_dict["sorted_category_list"] = sorted_acquisition_mas_categories
                     parameter_dict["value_axis_title"] = "Median mAs"
@@ -804,7 +803,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 }
 
                 if sorting_choice == "value":
-                    sorted_acquisition_mas_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+                    sorted_acquisition_mas_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                 parameter_dict["sorted_category_list"] = sorted_acquisition_mas_categories
 
@@ -1100,9 +1099,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
             if sorting_choice == "name":
-                sorted_study_dap_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}
+                sorted_study_dap_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
             elif sorting_choice == "frequency":
-                sorted_study_dap_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}
+                sorted_study_dap_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
             if user_profile.plotMean or user_profile.plotMedian:
 
@@ -1116,7 +1115,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     if sorting_choice == "value":
-                        sorted_study_dap_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}
+                        sorted_study_dap_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                     parameter_dict["sorted_category_list"] = sorted_study_dap_categories
                     parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
@@ -1133,7 +1132,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotMedian:
                     if sorting_choice == "value":
-                        sorted_study_dap_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+                        sorted_study_dap_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                     parameter_dict["sorted_category_list"] = sorted_study_dap_categories
                     parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
@@ -1164,7 +1163,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 }
 
                 if sorting_choice == "value":
-                    sorted_study_dap_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+                    sorted_study_dap_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                 parameter_dict["sorted_category_list"] = sorted_study_dap_categories
 
@@ -1251,9 +1250,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
             if sorting_choice == "name":
-                sorted_request_dap_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}
+                sorted_request_dap_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
             elif sorting_choice == "frequency":
-                sorted_request_dap_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}
+                sorted_request_dap_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
             if user_profile.plotMean or user_profile.plotMedian:
 
@@ -1267,7 +1266,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     if sorting_choice == "value":
-                        sorted_request_dap_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}
+                        sorted_request_dap_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                     parameter_dict["sorted_category_list"] = sorted_request_dap_categories
                     parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
@@ -1286,7 +1285,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotMedian:
                     if sorting_choice == "value":
-                        sorted_request_dap_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+                        sorted_request_dap_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                     parameter_dict["sorted_category_list"] = sorted_request_dap_categories
                     parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
@@ -1317,7 +1316,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 }
 
                 if sorting_choice == "value":
-                    sorted_request_dap_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+                    sorted_request_dap_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                 parameter_dict["sorted_category_list"] = sorted_request_dap_categories
 

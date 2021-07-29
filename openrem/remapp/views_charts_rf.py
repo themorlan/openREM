@@ -19,7 +19,6 @@ from .interface.chart_functions import (
     create_dataframe,
     create_dataframe_weekdays,
     create_dataframe_aggregates,
-    create_sorted_category_list,
     plotly_boxplot,
     plotly_barchart,
     plotly_histogram_barchart,
@@ -331,10 +330,6 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
     sorted_study_categories = None
     if user_profile.plotRFStudyDAP:
-        sorting_col = "study_description"
-        if user_profile.plotRFSplitByPhysician:
-            sorting_col = "performing_physician_name"
-
         if user_profile.plotBoxplots and "median" not in stats_to_include:
             stats_to_include = stats_to_include + ["median"]
 
@@ -347,9 +342,9 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
         )
 
         if sorting_choice == "name":
-            sorted_study_categories = {"study_description": (df_aggregated.sort_values(by="study_description", ascending=ascending_order)["study_description"]).unique().tolist()}
+            sorted_study_categories = {"study_description": (df_aggregated.sort_values(by="study_description", ascending=ascending_order)["study_description"]).unique().tolist()}  # pylint: disable=line-too-long
         elif sorting_choice == "frequency":
-            sorted_study_categories = {"study_description": (df_aggregated.sort_values(by="count", ascending=ascending_order)["study_description"]).unique().tolist()}
+            sorted_study_categories = {"study_description": (df_aggregated.sort_values(by="count", ascending=ascending_order)["study_description"]).unique().tolist()}  # pylint: disable=line-too-long
 
         if user_profile.plotMean or user_profile.plotMedian:
 
@@ -372,7 +367,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             }
             if user_profile.plotMean:
                 if sorting_choice == "value":
-                    sorted_study_categories = {"study_description": (df_aggregated.sort_values(by="mean", ascending=ascending_order)["study_description"]).unique().tolist()}
+                    sorted_study_categories = {"study_description": (df_aggregated.sort_values(by="mean", ascending=ascending_order)["study_description"]).unique().tolist()}  # pylint: disable=line-too-long
 
                 parameter_dict["sorted_category_list"] = sorted_study_categories
                 parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
@@ -390,7 +385,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotMedian:
                 if sorting_choice == "value":
-                    sorted_study_categories = {"study_description": (df_aggregated.sort_values(by="median", ascending=ascending_order)["study_description"]).unique().tolist()}
+                    sorted_study_categories = {"study_description": (df_aggregated.sort_values(by="median", ascending=ascending_order)["study_description"]).unique().tolist()}  # pylint: disable=line-too-long
 
                 parameter_dict["sorted_category_list"] = sorted_study_categories
                 parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
@@ -407,7 +402,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
         if user_profile.plotBoxplots:
             if sorting_choice == "value":
-                sorted_study_categories = {"study_description": (df_aggregated.sort_values(by="median", ascending=ascending_order)["study_description"]).unique().tolist()}
+                sorted_study_categories = {"study_description": (df_aggregated.sort_values(by="median", ascending=ascending_order)["study_description"]).unique().tolist()}  # pylint: disable=line-too-long
 
             x_col = "study_description"
             x_col_title = "Study description"
@@ -518,10 +513,6 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
     sorted_request_categories = None
     if user_profile.plotRFRequestDAP:
-        sorting_col = "requested_procedure_code_meaning"
-        if user_profile.plotRFSplitByPhysician:
-            sorting_col = "performing_physician_name"
-
         if user_profile.plotBoxplots and "median" not in stats_to_include:
             stats_to_include = stats_to_include + ["median"]
 
@@ -534,9 +525,9 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
         )
 
         if sorting_choice == "name":
-            sorted_request_categories = {"requested_procedure_code_meaning": (df_aggregated.sort_values(by="requested_procedure_code_meaning", ascending=ascending_order)["requested_procedure_code_meaning"]).unique().tolist()}
+            sorted_request_categories = {"requested_procedure_code_meaning": (df_aggregated.sort_values(by="requested_procedure_code_meaning", ascending=ascending_order)["requested_procedure_code_meaning"]).unique().tolist()}  # pylint: disable=line-too-long
         elif sorting_choice == "frequency":
-            sorted_request_categories = {"requested_procedure_code_meaning": (df_aggregated.sort_values(by="count", ascending=ascending_order)["requested_procedure_code_meaning"]).unique().tolist()}
+            sorted_request_categories = {"requested_procedure_code_meaning": (df_aggregated.sort_values(by="count", ascending=ascending_order)["requested_procedure_code_meaning"]).unique().tolist()}  # pylint: disable=line-too-long
 
         if user_profile.plotMean or user_profile.plotMedian:
 
@@ -559,7 +550,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             }
             if user_profile.plotMean:
                 if sorting_choice == "value":
-                    sorted_request_categories = {"requested_procedure_code_meaning": (df_aggregated.sort_values(by="mean", ascending=ascending_order)["requested_procedure_code_meaning"]).unique().tolist()}
+                    sorted_request_categories = {"requested_procedure_code_meaning": (df_aggregated.sort_values(by="mean", ascending=ascending_order)["requested_procedure_code_meaning"]).unique().tolist()}  # pylint: disable=line-too-long
 
                 parameter_dict["sorted_category_list"] = sorted_request_categories
                 parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
@@ -577,7 +568,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotMedian:
                 if sorting_choice == "value":
-                    sorted_request_categories = {"requested_procedure_code_meaning": (df_aggregated.sort_values(by="median", ascending=ascending_order)["requested_procedure_code_meaning"]).unique().tolist()}
+                    sorted_request_categories = {"requested_procedure_code_meaning": (df_aggregated.sort_values(by="median", ascending=ascending_order)["requested_procedure_code_meaning"]).unique().tolist()}  # pylint: disable=line-too-long
 
                 parameter_dict["sorted_category_list"] = sorted_request_categories
                 parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
@@ -594,7 +585,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
         if user_profile.plotBoxplots:
             if sorting_choice == "value":
-                sorted_request_categories = {"requested_procedure_code_meaning": (df_aggregated.sort_values(by="median", ascending=ascending_order)["requested_procedure_code_meaning"]).unique().tolist()}
+                sorted_request_categories = {"requested_procedure_code_meaning": (df_aggregated.sort_values(by="median", ascending=ascending_order)["requested_procedure_code_meaning"]).unique().tolist()}  # pylint: disable=line-too-long
 
             x_col = "requested_procedure_code_meaning"
             x_col_title = "Requested procedure"

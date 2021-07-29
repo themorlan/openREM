@@ -27,7 +27,6 @@ from .interface.chart_functions import (
     plotly_frequency_barchart,
     construct_over_time_charts,
     plotly_set_default_theme,
-    create_sorted_category_list,
     create_dataframe_aggregates,
 )
 
@@ -318,9 +317,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
             if sorting_choice == "name":
-                sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}
+                sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
             elif sorting_choice == "frequency":
-                sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}
+                sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
             if user_profile.plotMGaverageAGDvsThickness:
                 category_names_col = name_field
@@ -348,7 +347,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     if sorting_choice == "value":
-                        sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}
+                        sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                     if user_profile.plotGroupingChoice == "series":
                         parameter_dict["df_category_name_list"] = list(df[category_names_col].unique())
@@ -367,7 +366,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotMedian:
                     if sorting_choice == "value":
-                        sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+                        sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                     if user_profile.plotGroupingChoice == "series":
                         parameter_dict["df_category_name_list"] = list(df[category_names_col].unique())
@@ -397,7 +396,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     }
                     if user_profile.plotMean:
                         if sorting_choice == "value":
-                            sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}
+                            sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                         parameter_dict["sorted_category_list"] = sorted_acquisition_agd_categories
                         parameter_dict["value_axis_title"] = "Mean AGD (mGy)"
@@ -416,7 +415,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
 
                     if user_profile.plotMedian:
                         if sorting_choice == "value":
-                            sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+                            sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                         parameter_dict["sorted_category_list"] = sorted_acquisition_agd_categories
                         parameter_dict["value_axis_title"] = "Median AGD (mGy)"
@@ -447,7 +446,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     }
 
                     if sorting_choice == "value":
-                        sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}
+                        sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
 
                     parameter_dict["sorted_category_list"] = sorted_acquisition_agd_categories
 
