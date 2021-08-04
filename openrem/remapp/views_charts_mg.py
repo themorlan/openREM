@@ -300,7 +300,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             uid="projectionxrayradiationdose__irradeventxraydata__pk",
         )
 
-        sorted_acquisition_agd_categories = None
         if user_profile.plotMGaverageAGDvsThickness or user_profile.plotMGaverageAGD:
 
             if user_profile.plotBoxplots and "median" not in average_choices:
@@ -416,7 +415,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         "facet_col": None,
                         "sorting_choice": [
                             user_profile.plotInitialSortingDirection,
-                            user_profile.plotRFInitialSortingChoice,
+                            user_profile.plotMGInitialSortingChoice,
                         ],
                         "facet_col_wrap": user_profile.plotFacetColWrapVal,
                         "return_as_dict": return_as_dict,
@@ -449,14 +448,12 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         "facet_col_wrap": user_profile.plotFacetColWrapVal,
                         "sorting_choice": [
                             user_profile.plotInitialSortingDirection,
-                            user_profile.plotRFInitialSortingChoice,
+                            user_profile.plotMGInitialSortingChoice,
                         ],
                         "global_max_min": user_profile.plotHistogramGlobalBins,
                         "return_as_dict": return_as_dict,
                     }
-                    return_structure[
-                        "acquisitionHistogramAGDData"
-                    ] = plotly_histogram_barchart(
+                    return_structure["acquisitionHistogramAGDData"] = plotly_histogram_barchart(
                         df,
                         parameter_dict,
                     )

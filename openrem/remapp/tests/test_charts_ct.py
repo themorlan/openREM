@@ -458,65 +458,6 @@ class ChartsCT(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", 207.91, 2],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                    ],
-                    dtype=object,
-                ),
-                "name": "An Optima Hospital geoptima",
-                "x": np.array(
-                    [
-                        "10.13 RADIOTHERAPY QA",
-                        "Blank",
-                        "DE_laser align",
-                        "DS 100kV",
-                        "DS 140kV",
-                        "DS 50mAs",
-                        "DS 80kV",
-                        "DS axial std",
-                        "DS_hel p 0.23",
-                        "DS_helical",
-                        "Monitoring",
-                        "PreMonitoring",
-                        "TAP",
-                        "testÃ¦Ã¸Ã¥",
-                    ],
-                    dtype=object,
-                ),
-                "y": np.array(
-                    [
-                        np.nan,
-                        207.91,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                    ]
-                ),
-            },
-            {
-                "customdata": np.array(
-                    [
                         ["Gnats Bottom Hospital CTAWP91919", np.nan, 0],
                         ["Gnats Bottom Hospital CTAWP91919", np.nan, 0],
                         ["Gnats Bottom Hospital CTAWP91919", 29.67, 1],
@@ -629,6 +570,65 @@ class ChartsCT(TestCase):
                         1.2,
                         708.2,
                         11.51,
+                    ]
+                ),
+            },
+            {
+                "customdata": np.array(
+                    [
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", 207.91, 2],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                    ],
+                    dtype=object,
+                ),
+                "name": "An Optima Hospital geoptima",
+                "x": np.array(
+                    [
+                        "10.13 RADIOTHERAPY QA",
+                        "Blank",
+                        "DE_laser align",
+                        "DS 100kV",
+                        "DS 140kV",
+                        "DS 50mAs",
+                        "DS 80kV",
+                        "DS axial std",
+                        "DS_hel p 0.23",
+                        "DS_helical",
+                        "Monitoring",
+                        "PreMonitoring",
+                        "TAP",
+                        "testÃ¦Ã¸Ã¥",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        np.nan,
+                        207.91,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
                     ]
                 ),
             },
@@ -820,65 +820,6 @@ class ChartsCT(TestCase):
             {
                 "customdata": np.array(
                     [
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", 207.91, 2],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                        ["An Optima Hospital geoptima", np.nan, 0],
-                    ],
-                    dtype=object,
-                ),
-                "name": "An Optima Hospital geoptima",
-                "x": np.array(
-                    [
-                        "10.13 RADIOTHERAPY QA",
-                        "Blank",
-                        "DE_laser align",
-                        "DS 100kV",
-                        "DS 140kV",
-                        "DS 50mAs",
-                        "DS 80kV",
-                        "DS axial std",
-                        "DS_hel p 0.23",
-                        "DS_helical",
-                        "Monitoring",
-                        "PreMonitoring",
-                        "TAP",
-                        "testÃ¦Ã¸Ã¥",
-                    ],
-                    dtype=object,
-                ),
-                "y": np.array(
-                    [
-                        np.nan,
-                        207.91,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                        np.nan,
-                    ]
-                ),
-            },
-            {
-                "customdata": np.array(
-                    [
                         ["Gnats Bottom Hospital CTAWP91919", np.nan, 0],
                         ["Gnats Bottom Hospital CTAWP91919", np.nan, 0],
                         ["Gnats Bottom Hospital CTAWP91919", 29.67, 1],
@@ -991,6 +932,65 @@ class ChartsCT(TestCase):
                         1.2,
                         708.2,
                         11.51,
+                    ]
+                ),
+            },
+            {
+                "customdata": np.array(
+                    [
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", 207.91, 2],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                        ["An Optima Hospital geoptima", np.nan, 0],
+                    ],
+                    dtype=object,
+                ),
+                "name": "An Optima Hospital geoptima",
+                "x": np.array(
+                    [
+                        "10.13 RADIOTHERAPY QA",
+                        "Blank",
+                        "DE_laser align",
+                        "DS 100kV",
+                        "DS 140kV",
+                        "DS 50mAs",
+                        "DS 80kV",
+                        "DS axial std",
+                        "DS_hel p 0.23",
+                        "DS_helical",
+                        "Monitoring",
+                        "PreMonitoring",
+                        "TAP",
+                        "testÃ¦Ã¸Ã¥",
+                    ],
+                    dtype=object,
+                ),
+                "y": np.array(
+                    [
+                        np.nan,
+                        207.91,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
+                        np.nan,
                     ]
                 ),
             },
@@ -1155,11 +1155,6 @@ class ChartsCT(TestCase):
                 ),
             },
             {
-                "name": "An Optima Hospital geoptima",
-                "x": np.array(["Blank", "Blank"], dtype=object),
-                "y": np.array([259.85, 155.97]),
-            },
-            {
                 "name": "Gnats Bottom Hospital CTAWP91919",
                 "x": np.array(
                     [
@@ -1185,6 +1180,11 @@ class ChartsCT(TestCase):
                     ["testÃ¦Ã¸Ã¥", "PreMonitoring", "Monitoring", "TAP"], dtype=object
                 ),
                 "y": np.array([11.51, 1.2, 3.61, 708.2]),
+            },
+            {
+                "name": "An Optima Hospital geoptima",
+                "x": np.array(["Blank", "Blank"], dtype=object),
+                "y": np.array([259.85, 155.97]),
             },
             {
                 "name": "OpenREM centre médical rt16",
@@ -1241,42 +1241,6 @@ class ChartsCT(TestCase):
                 ),
             },
             {
-                "name": "Blank",
-                "text": np.array(
-                    [
-                        "155.97≤x<166.36",
-                        "166.36≤x<176.75",
-                        "176.75≤x<187.13",
-                        "187.13≤x<197.52",
-                        "197.52≤x<207.91",
-                        "207.91≤x<218.30",
-                        "218.30≤x<228.69",
-                        "228.69≤x<239.07",
-                        "239.07≤x<249.46",
-                        "249.46≤x<259.85",
-                    ],
-                    dtype="<U15",
-                ),
-                "y": np.array(
-                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                ),
-                # frequency data corresponds to the 'Blank' bars on the histogram
-                "x": np.array(
-                    [
-                        161.164,
-                        171.552,
-                        181.94,
-                        192.328,
-                        202.716,
-                        213.104,
-                        223.492,
-                        233.88,
-                        244.268,
-                        254.656,
-                    ],
-                ),
-            },
-            {
                 "name": "DS axial std",
                 "text": np.array(
                     [
@@ -1313,114 +1277,6 @@ class ChartsCT(TestCase):
                 ),
             },
             {
-                "name": "DS_helical",
-                "text": np.array(
-                    [
-                        "21.18≤x<100.59",
-                        "100.59≤x<180.01",
-                        "180.01≤x<259.43",
-                        "259.43≤x<338.84",
-                        "338.84≤x<418.26",
-                        "418.26≤x<497.67",
-                        "497.67≤x<577.09",
-                        "577.09≤x<656.50",
-                        "656.50≤x<735.91",
-                        "735.91≤x<815.33",
-                    ],
-                    dtype="<U15",
-                ),
-                "y": np.array(
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                ),
-                # frequency data corresponds to the 'Blank' bars on the histogram
-                "x": np.array(
-                    [
-                        60.8875,
-                        140.3025,
-                        219.7175,
-                        299.1325,
-                        378.5475,
-                        457.9625,
-                        537.3775,
-                        616.7925,
-                        696.2075,
-                        775.6225,
-                    ],
-                ),
-            },
-            {
-                "name": "DS 50mAs",
-                "text": np.array(
-                    [
-                        "21.18≤x<100.59",
-                        "100.59≤x<180.01",
-                        "180.01≤x<259.43",
-                        "259.43≤x<338.84",
-                        "338.84≤x<418.26",
-                        "418.26≤x<497.67",
-                        "497.67≤x<577.09",
-                        "577.09≤x<656.50",
-                        "656.50≤x<735.91",
-                        "735.91≤x<815.33",
-                    ],
-                    dtype="<U15",
-                ),
-                "y": np.array(
-                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                ),
-                # frequency data corresponds to the 'Blank' bars on the histogram
-                "x": np.array(
-                    [
-                        60.8875,
-                        140.3025,
-                        219.7175,
-                        299.1325,
-                        378.5475,
-                        457.9625,
-                        537.3775,
-                        616.7925,
-                        696.2075,
-                        775.6225,
-                    ],
-                ),
-            },
-            {
-                "name": "DS 80kV",
-                "text": np.array(
-                    [
-                        "21.18≤x<100.59",
-                        "100.59≤x<180.01",
-                        "180.01≤x<259.43",
-                        "259.43≤x<338.84",
-                        "338.84≤x<418.26",
-                        "418.26≤x<497.67",
-                        "497.67≤x<577.09",
-                        "577.09≤x<656.50",
-                        "656.50≤x<735.91",
-                        "735.91≤x<815.33",
-                    ],
-                    dtype="<U15",
-                ),
-                "y": np.array(
-                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                ),
-                # frequency data corresponds to the 'Blank' bars on the histogram
-                "x": np.array(
-                    [
-                        60.8875,
-                        140.3025,
-                        219.7175,
-                        299.1325,
-                        378.5475,
-                        457.9625,
-                        537.3775,
-                        616.7925,
-                        696.2075,
-                        775.6225,
-                    ],
-                ),
-            },
-            {
                 "name": "DE_laser align",
                 "text": np.array(
                     [
@@ -1439,42 +1295,6 @@ class ChartsCT(TestCase):
                 ),
                 "y": np.array(
                     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                ),
-                # frequency data corresponds to the 'Blank' bars on the histogram
-                "x": np.array(
-                    [
-                        60.8875,
-                        140.3025,
-                        219.7175,
-                        299.1325,
-                        378.5475,
-                        457.9625,
-                        537.3775,
-                        616.7925,
-                        696.2075,
-                        775.6225,
-                    ],
-                ),
-            },
-            {
-                "name": "DS_hel p 0.23",
-                "text": np.array(
-                    [
-                        "21.18≤x<100.59",
-                        "100.59≤x<180.01",
-                        "180.01≤x<259.43",
-                        "259.43≤x<338.84",
-                        "338.84≤x<418.26",
-                        "418.26≤x<497.67",
-                        "497.67≤x<577.09",
-                        "577.09≤x<656.50",
-                        "656.50≤x<735.91",
-                        "735.91≤x<815.33",
-                    ],
-                    dtype="<U15",
-                ),
-                "y": np.array(
-                    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
                 ),
                 # frequency data corresponds to the 'Blank' bars on the histogram
                 "x": np.array(
@@ -1565,7 +1385,223 @@ class ChartsCT(TestCase):
                 ),
             },
             {
-                "name": "testÃ¦Ã¸Ã¥",
+                "name": "DS 50mAs",
+                "text": np.array(
+                    [
+                        "21.18≤x<100.59",
+                        "100.59≤x<180.01",
+                        "180.01≤x<259.43",
+                        "259.43≤x<338.84",
+                        "338.84≤x<418.26",
+                        "418.26≤x<497.67",
+                        "497.67≤x<577.09",
+                        "577.09≤x<656.50",
+                        "656.50≤x<735.91",
+                        "735.91≤x<815.33",
+                    ],
+                    dtype="<U15",
+                ),
+                "y": np.array(
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                ),
+                # frequency data corresponds to the 'Blank' bars on the histogram
+                "x": np.array(
+                    [
+                        60.8875,
+                        140.3025,
+                        219.7175,
+                        299.1325,
+                        378.5475,
+                        457.9625,
+                        537.3775,
+                        616.7925,
+                        696.2075,
+                        775.6225,
+                    ],
+                ),
+            },
+            {
+                "name": "DS 80kV",
+                "text": np.array(
+                    [
+                        "21.18≤x<100.59",
+                        "100.59≤x<180.01",
+                        "180.01≤x<259.43",
+                        "259.43≤x<338.84",
+                        "338.84≤x<418.26",
+                        "418.26≤x<497.67",
+                        "497.67≤x<577.09",
+                        "577.09≤x<656.50",
+                        "656.50≤x<735.91",
+                        "735.91≤x<815.33",
+                    ],
+                    dtype="<U15",
+                ),
+                "y": np.array(
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                ),
+                # frequency data corresponds to the 'Blank' bars on the histogram
+                "x": np.array(
+                    [
+                        60.8875,
+                        140.3025,
+                        219.7175,
+                        299.1325,
+                        378.5475,
+                        457.9625,
+                        537.3775,
+                        616.7925,
+                        696.2075,
+                        775.6225,
+                    ],
+                ),
+            },
+            {
+                "name": "DS_hel p 0.23",
+                "text": np.array(
+                    [
+                        "21.18≤x<100.59",
+                        "100.59≤x<180.01",
+                        "180.01≤x<259.43",
+                        "259.43≤x<338.84",
+                        "338.84≤x<418.26",
+                        "418.26≤x<497.67",
+                        "497.67≤x<577.09",
+                        "577.09≤x<656.50",
+                        "656.50≤x<735.91",
+                        "735.91≤x<815.33",
+                    ],
+                    dtype="<U15",
+                ),
+                "y": np.array(
+                    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+                ),
+                # frequency data corresponds to the 'Blank' bars on the histogram
+                "x": np.array(
+                    [
+                        60.8875,
+                        140.3025,
+                        219.7175,
+                        299.1325,
+                        378.5475,
+                        457.9625,
+                        537.3775,
+                        616.7925,
+                        696.2075,
+                        775.6225,
+                    ],
+                ),
+            },
+            {
+                "name": "DS_helical",
+                "text": np.array(
+                    [
+                        "21.18≤x<100.59",
+                        "100.59≤x<180.01",
+                        "180.01≤x<259.43",
+                        "259.43≤x<338.84",
+                        "338.84≤x<418.26",
+                        "418.26≤x<497.67",
+                        "497.67≤x<577.09",
+                        "577.09≤x<656.50",
+                        "656.50≤x<735.91",
+                        "735.91≤x<815.33",
+                    ],
+                    dtype="<U15",
+                ),
+                "y": np.array(
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                ),
+                # frequency data corresponds to the 'Blank' bars on the histogram
+                "x": np.array(
+                    [
+                        60.8875,
+                        140.3025,
+                        219.7175,
+                        299.1325,
+                        378.5475,
+                        457.9625,
+                        537.3775,
+                        616.7925,
+                        696.2075,
+                        775.6225,
+                    ],
+                ),
+            },
+            {
+                "name": "Blank",
+                "text": np.array(
+                    [
+                        "155.97≤x<166.36",
+                        "166.36≤x<176.75",
+                        "176.75≤x<187.13",
+                        "187.13≤x<197.52",
+                        "197.52≤x<207.91",
+                        "207.91≤x<218.30",
+                        "218.30≤x<228.69",
+                        "228.69≤x<239.07",
+                        "239.07≤x<249.46",
+                        "249.46≤x<259.85",
+                    ],
+                    dtype="<U15",
+                ),
+                "y": np.array(
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                ),
+                # frequency data corresponds to the 'Blank' bars on the histogram
+                "x": np.array(
+                    [
+                        161.164,
+                        171.552,
+                        181.94,
+                        192.328,
+                        202.716,
+                        213.104,
+                        223.492,
+                        233.88,
+                        244.268,
+                        254.656,
+                    ],
+                ),
+            },
+            {
+                "name": "Monitoring",
+                "text": np.array(
+                    [
+                        "1.20≤x<71.90",
+                        "71.90≤x<142.60",
+                        "142.60≤x<213.30",
+                        "213.30≤x<284.00",
+                        "284.00≤x<354.70",
+                        "354.70≤x<425.40",
+                        "425.40≤x<496.10",
+                        "496.10≤x<566.80",
+                        "566.80≤x<637.50",
+                        "637.50≤x<708.20",
+                    ],
+                    dtype="<U15",
+                ),
+                "y": np.array(
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                ),
+                # frequency data corresponds to the 'Blank' bars on the histogram
+                "x": np.array(
+                    [
+                        36.55,
+                        107.25,
+                        177.95,
+                        248.65,
+                        319.35,
+                        390.05,
+                        460.75,
+                        531.45,
+                        602.15,
+                        672.85,
+                    ],
+                ),
+            },
+            {
+                "name": "PreMonitoring",
                 "text": np.array(
                     [
                         "1.20≤x<71.90",
@@ -1637,7 +1673,7 @@ class ChartsCT(TestCase):
                 ),
             },
             {
-                "name": "PreMonitoring",
+                "name": "testÃ¦Ã¸Ã¥",
                 "text": np.array(
                     [
                         "1.20≤x<71.90",
@@ -1673,38 +1709,38 @@ class ChartsCT(TestCase):
                 ),
             },
             {
-                "name": "Monitoring",
+                "name": "Blank",
                 "text": np.array(
                     [
-                        "1.20≤x<71.90",
-                        "71.90≤x<142.60",
-                        "142.60≤x<213.30",
-                        "213.30≤x<284.00",
-                        "284.00≤x<354.70",
-                        "354.70≤x<425.40",
-                        "425.40≤x<496.10",
-                        "496.10≤x<566.80",
-                        "566.80≤x<637.50",
-                        "637.50≤x<708.20",
+                        "141.20≤x<147.93",
+                        "147.93≤x<154.66",
+                        "154.66≤x<161.39",
+                        "161.39≤x<168.12",
+                        "168.12≤x<174.85",
+                        "174.85≤x<181.58",
+                        "181.58≤x<188.31",
+                        "188.31≤x<195.04",
+                        "195.04≤x<201.77",
+                        "201.77≤x<208.50",
                     ],
                     dtype="<U15",
                 ),
                 "y": np.array(
-                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
                 ),
                 # frequency data corresponds to the 'Blank' bars on the histogram
                 "x": np.array(
                     [
-                        36.55,
-                        107.25,
-                        177.95,
-                        248.65,
-                        319.35,
-                        390.05,
-                        460.75,
-                        531.45,
-                        602.15,
-                        672.85,
+                        144.565,
+                        151.295,
+                        158.025,
+                        164.755,
+                        171.485,
+                        178.215,
+                        184.945,
+                        191.675,
+                        198.405,
+                        205.135,
                     ],
                 ),
             },
@@ -1777,42 +1813,6 @@ class ChartsCT(TestCase):
                         384.105,
                         420.479,
                         456.853,
-                    ],
-                ),
-            },
-            {
-                "name": "Blank",
-                "text": np.array(
-                    [
-                        "141.20≤x<147.93",
-                        "147.93≤x<154.66",
-                        "154.66≤x<161.39",
-                        "161.39≤x<168.12",
-                        "168.12≤x<174.85",
-                        "174.85≤x<181.58",
-                        "181.58≤x<188.31",
-                        "188.31≤x<195.04",
-                        "195.04≤x<201.77",
-                        "201.77≤x<208.50",
-                    ],
-                    dtype="<U15",
-                ),
-                "y": np.array(
-                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                ),
-                # frequency data corresponds to the 'Blank' bars on the histogram
-                "x": np.array(
-                    [
-                        144.565,
-                        151.295,
-                        158.025,
-                        164.755,
-                        171.485,
-                        178.215,
-                        184.945,
-                        191.675,
-                        198.405,
-                        205.135,
                     ],
                 ),
             },
@@ -2802,8 +2802,8 @@ class ChartsCT(TestCase):
         chart_data2 = self.chart_data["studyHistogramDLPData"]["data"]
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(chart_data2[idx]["name"], dataset["name"])
-        np.testing.assert_almost_equal(chart_data2[idx]["x"], dataset["x"], decimal=6)
-        np.testing.assert_equal(chart_data2[idx]["y"], dataset["y"])
+            np.testing.assert_almost_equal(chart_data2[idx]["x"], dataset["x"], decimal=6)
+            np.testing.assert_equal(chart_data2[idx]["y"], dataset["y"])
 
     def test_request_dlp(self):
         # Test of mean and median requested procedure DLP,
@@ -3575,10 +3575,8 @@ class ChartsCT(TestCase):
             chart_data = self.chart_data["requestHistogramDLPData"]["data"]
             for idx, dataset in enumerate(standard_data):
                 self.assertEqual(chart_data[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(
-                chart_data[idx]["x"], dataset["x"], decimal=6
-            )
-            np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
+                np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=6)
+                np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
 
     def test_acq_ctdi(self):
         # Test of mean and median acquisition CTDI,
@@ -4310,9 +4308,7 @@ class ChartsCT(TestCase):
 
         for idx, dataset in enumerate(standard_data1):
             self.assertEqual(chart_data1[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(
-                chart_data1[idx]["x"], dataset["x"], decimal=6
-            )
+            np.testing.assert_almost_equal(chart_data1[idx]["x"], dataset["x"], decimal=6)
             np.testing.assert_equal(chart_data1[idx]["y"], dataset["y"])
 
             # Almost equal used for equivalence because the chart data isn't equal to the standard data
@@ -4373,65 +4369,6 @@ class ChartsCT(TestCase):
                         [
                             np.nan,
                             34.55,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                        ]
-                    ),
-                },
-                {
-                    "customdata": np.array(
-                        [
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", 4.265, 2],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                        ],
-                        dtype=object,
-                    ),
-                    "name": "An Optima Hospital geoptima",
-                    "x": np.array(
-                        [
-                            "10.13 RADIOTHERAPY QA",
-                            "Blank",
-                            "DE_laser align",
-                            "DS 100kV",
-                            "DS 140kV",
-                            "DS 50mAs",
-                            "DS 80kV",
-                            "DS axial std",
-                            "DS_hel p 0.23",
-                            "DS_helical",
-                            "Monitoring",
-                            "PreMonitoring",
-                            "TAP",
-                            "testÃ¦Ã¸Ã¥",
-                        ],
-                        dtype=object,
-                    ),
-                    "y": np.array(
-                        [
-                            np.nan,
-                            4.265,
                             np.nan,
                             np.nan,
                             np.nan,
@@ -4562,6 +4499,65 @@ class ChartsCT(TestCase):
                             1.2,
                             9.91,
                             0.14,
+                        ]
+                    ),
+                },
+                {
+                    "customdata": np.array(
+                        [
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", 4.265, 2],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                        ],
+                        dtype=object,
+                    ),
+                    "name": "An Optima Hospital geoptima",
+                    "x": np.array(
+                        [
+                            "10.13 RADIOTHERAPY QA",
+                            "Blank",
+                            "DE_laser align",
+                            "DS 100kV",
+                            "DS 140kV",
+                            "DS 50mAs",
+                            "DS 80kV",
+                            "DS axial std",
+                            "DS_hel p 0.23",
+                            "DS_helical",
+                            "Monitoring",
+                            "PreMonitoring",
+                            "TAP",
+                            "testÃ¦Ã¸Ã¥",
+                        ],
+                        dtype=object,
+                    ),
+                    "y": np.array(
+                        [
+                            np.nan,
+                            4.265,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                            np.nan,
                         ]
                     ),
                 },
@@ -4757,65 +4753,6 @@ class ChartsCT(TestCase):
                 {
                     "customdata": np.array(
                         [
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", 4.265, 2],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                        ],
-                        dtype=object,
-                    ),
-                    "name": "An Optima Hospital geoptima",
-                    "x": np.array(
-                        [
-                            "10.13 RADIOTHERAPY QA",
-                            "Blank",
-                            "DE_laser align",
-                            "DS 100kV",
-                            "DS 140kV",
-                            "DS 50mAs",
-                            "DS 80kV",
-                            "DS axial std",
-                            "DS_hel p 0.23",
-                            "DS_helical",
-                            "Monitoring",
-                            "PreMonitoring",
-                            "TAP",
-                            "testÃ¦Ã¸Ã¥",
-                        ],
-                        dtype=object,
-                    ),
-                    "y": np.array(
-                        [
-                            np.nan,
-                            4.265,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                            np.nan,
-                        ]
-                    ),
-                },
-                {
-                    "customdata": np.array(
-                        [
                             ["Gnats Bottom Hospital CTAWP91919", np.nan, 0],
                             ["Gnats Bottom Hospital CTAWP91919", np.nan, 0],
                             ["Gnats Bottom Hospital CTAWP91919", 15.45, 1],
@@ -4928,6 +4865,65 @@ class ChartsCT(TestCase):
                             1.2,
                             9.91,
                             0.14,
+                        ]
+                    ),
+                },
+                {
+                    "customdata": np.array(
+                        [
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", 4.265, 2],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                        ],
+                        dtype=object,
+                    ),
+                    "name": "An Optima Hospital geoptima",
+                    "x": np.array(
+                        [
+                            "10.13 RADIOTHERAPY QA",
+                            "Blank",
+                            "DE_laser align",
+                            "DS 100kV",
+                            "DS 140kV",
+                            "DS 50mAs",
+                            "DS 80kV",
+                            "DS axial std",
+                            "DS_hel p 0.23",
+                            "DS_helical",
+                            "Monitoring",
+                            "PreMonitoring",
+                            "TAP",
+                            "testÃ¦Ã¸Ã¥",
+                        ],
+                        dtype=object,
+                    ),
+                    "y": np.array(
+                        [
+                            np.nan,
+                            4.265,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                            np.nan,
                         ]
                     ),
                 },
@@ -5096,14 +5092,6 @@ class ChartsCT(TestCase):
                     ),
                 },
                 {
-                    "name": "An Optima Hospital geoptima",
-                    "x": np.array(
-                        ["Blank", "Blank"],
-                        dtype=object,
-                    ),
-                    "y": np.array([5.3, 3.23]),
-                },
-                {
                     "name": "Gnats Bottom Hospital CTAWP91919",
                     "x": np.array(
                         [
@@ -5130,6 +5118,14 @@ class ChartsCT(TestCase):
                         dtype=object,
                     ),
                     "y": np.array([3.61, 9.91, 0.14, 1.2]),
+                },
+                {
+                    "name": "An Optima Hospital geoptima",
+                    "x": np.array(
+                        ["Blank", "Blank"],
+                        dtype=object,
+                    ),
+                    "y": np.array([5.3, 3.23]),
                 },
                 {
                     "name": "OpenREM centre médical rt16",
@@ -5191,42 +5187,6 @@ class ChartsCT(TestCase):
                     ),
                 },
                 {
-                    "name": "Blank",
-                    "text": np.array(
-                        [
-                            "3.23≤x<3.44",
-                            "3.44≤x<3.64",
-                            "3.64≤x<3.85",
-                            "3.85≤x<4.06",
-                            "4.06≤x<4.26",
-                            "4.26≤x<4.47",
-                            "4.47≤x<4.68",
-                            "4.68≤x<4.89",
-                            "4.89≤x<5.09",
-                            "5.09≤x<5.30",
-                        ],
-                        dtype="<U11",
-                    ),
-                    "y": np.array(
-                        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                    ),
-                    # frequency data corresponds to the 'Blank' bars on the histogram
-                    "x": np.array(
-                        [
-                            3.3335,
-                            3.5405,
-                            3.7475,
-                            3.9545,
-                            4.1615,
-                            4.3685,
-                            4.5755,
-                            4.7825,
-                            4.9895,
-                            5.1965,
-                        ],
-                    ),
-                },
-                {
                     "name": "DS axial std",
                     "text": np.array(
                         [
@@ -5263,114 +5223,6 @@ class ChartsCT(TestCase):
                     ),
                 },
                 {
-                    "name": "DS_helical",
-                    "text": np.array(
-                        [
-                            "5.52≤x<11.52",
-                            "11.52≤x<17.51",
-                            "17.51≤x<23.50",
-                            "23.50≤x<29.50",
-                            "29.50≤x<35.50",
-                            "35.50≤x<41.49",
-                            "41.49≤x<47.48",
-                            "47.48≤x<53.48",
-                            "53.48≤x<59.47",
-                            "59.47≤x<65.47",
-                        ],
-                        dtype="<U13",
-                    ),
-                    "y": np.array(
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                    ),
-                    # frequency data corresponds to the 'Blank' bars on the histogram
-                    "x": np.array(
-                        [
-                            8.5175,
-                            14.5125,
-                            20.5075,
-                            26.5025,
-                            32.4975,
-                            38.4925,
-                            44.4875,
-                            50.4825,
-                            56.4775,
-                            62.4725,
-                        ],
-                    ),
-                },
-                {
-                    "name": "DS 50mAs",
-                    "text": np.array(
-                        [
-                            "5.52≤x<11.52",
-                            "11.52≤x<17.51",
-                            "17.51≤x<23.50",
-                            "23.50≤x<29.50",
-                            "29.50≤x<35.50",
-                            "35.50≤x<41.49",
-                            "41.49≤x<47.48",
-                            "47.48≤x<53.48",
-                            "53.48≤x<59.47",
-                            "59.47≤x<65.47",
-                        ],
-                        dtype="<U13",
-                    ),
-                    "y": np.array(
-                        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    ),
-                    # frequency data corresponds to the 'Blank' bars on the histogram
-                    "x": np.array(
-                        [
-                            8.5175,
-                            14.5125,
-                            20.5075,
-                            26.5025,
-                            32.4975,
-                            38.4925,
-                            44.4875,
-                            50.4825,
-                            56.4775,
-                            62.4725,
-                        ],
-                    ),
-                },
-                {
-                    "name": "DS 80kV",
-                    "text": np.array(
-                        [
-                            "5.52≤x<11.52",
-                            "11.52≤x<17.51",
-                            "17.51≤x<23.50",
-                            "23.50≤x<29.50",
-                            "29.50≤x<35.50",
-                            "35.50≤x<41.49",
-                            "41.49≤x<47.48",
-                            "47.48≤x<53.48",
-                            "53.48≤x<59.47",
-                            "59.47≤x<65.47",
-                        ],
-                        dtype="<U13",
-                    ),
-                    "y": np.array(
-                        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    ),
-                    # frequency data corresponds to the 'Blank' bars on the histogram
-                    "x": np.array(
-                        [
-                            8.5175,
-                            14.5125,
-                            20.5075,
-                            26.5025,
-                            32.4975,
-                            38.4925,
-                            44.4875,
-                            50.4825,
-                            56.4775,
-                            62.4725,
-                        ],
-                    ),
-                },
-                {
                     "name": "DE_laser align",
                     "text": np.array(
                         [
@@ -5389,42 +5241,6 @@ class ChartsCT(TestCase):
                     ),
                     "y": np.array(
                         [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-                    ),
-                    # frequency data corresponds to the 'Blank' bars on the histogram
-                    "x": np.array(
-                        [
-                            8.5175,
-                            14.5125,
-                            20.5075,
-                            26.5025,
-                            32.4975,
-                            38.4925,
-                            44.4875,
-                            50.4825,
-                            56.4775,
-                            62.4725,
-                        ],
-                    ),
-                },
-                {
-                    "name": "DS_hel p 0.23",
-                    "text": np.array(
-                        [
-                            "5.52≤x<11.52",
-                            "11.52≤x<17.51",
-                            "17.51≤x<23.50",
-                            "23.50≤x<29.50",
-                            "29.50≤x<35.50",
-                            "35.50≤x<41.49",
-                            "41.49≤x<47.48",
-                            "47.48≤x<53.48",
-                            "53.48≤x<59.47",
-                            "59.47≤x<65.47",
-                        ],
-                        dtype="<U13",
-                    ),
-                    "y": np.array(
-                        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
                     ),
                     # frequency data corresponds to the 'Blank' bars on the histogram
                     "x": np.array(
@@ -5515,21 +5331,21 @@ class ChartsCT(TestCase):
                     ),
                 },
                 {
-                    "name": "testÃ¦Ã¸Ã¥",
+                    "name": "DS 50mAs",
                     "text": np.array(
                         [
-                            "0.14≤x<1.12",
-                            "1.12≤x<2.09",
-                            "2.09≤x<3.07",
-                            "3.07≤x<4.05",
-                            "4.05≤x<5.02",
-                            "5.02≤x<6.00",
-                            "6.00≤x<6.98",
-                            "6.98≤x<7.96",
-                            "7.96≤x<8.93",
-                            "8.93≤x<9.91",
+                            "5.52≤x<11.52",
+                            "11.52≤x<17.51",
+                            "17.51≤x<23.50",
+                            "23.50≤x<29.50",
+                            "29.50≤x<35.50",
+                            "35.50≤x<41.49",
+                            "41.49≤x<47.48",
+                            "47.48≤x<53.48",
+                            "53.48≤x<59.47",
+                            "59.47≤x<65.47",
                         ],
-                        dtype="<U11",
+                        dtype="<U13",
                     ),
                     "y": np.array(
                         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -5537,21 +5353,165 @@ class ChartsCT(TestCase):
                     # frequency data corresponds to the 'Blank' bars on the histogram
                     "x": np.array(
                         [
-                            0.6285,
-                            1.6055,
-                            2.5825,
-                            3.5595,
-                            4.5365,
-                            5.5135,
-                            6.4905,
-                            7.4675,
-                            8.4445,
-                            9.4215,
+                            8.5175,
+                            14.5125,
+                            20.5075,
+                            26.5025,
+                            32.4975,
+                            38.4925,
+                            44.4875,
+                            50.4825,
+                            56.4775,
+                            62.4725,
                         ],
                     ),
                 },
                 {
-                    "name": "TAP",
+                    "name": "DS 80kV",
+                    "text": np.array(
+                        [
+                            "5.52≤x<11.52",
+                            "11.52≤x<17.51",
+                            "17.51≤x<23.50",
+                            "23.50≤x<29.50",
+                            "29.50≤x<35.50",
+                            "35.50≤x<41.49",
+                            "41.49≤x<47.48",
+                            "47.48≤x<53.48",
+                            "53.48≤x<59.47",
+                            "59.47≤x<65.47",
+                        ],
+                        dtype="<U13",
+                    ),
+                    "y": np.array(
+                        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    ),
+                    # frequency data corresponds to the 'Blank' bars on the histogram
+                    "x": np.array(
+                        [
+                            8.5175,
+                            14.5125,
+                            20.5075,
+                            26.5025,
+                            32.4975,
+                            38.4925,
+                            44.4875,
+                            50.4825,
+                            56.4775,
+                            62.4725,
+                        ],
+                    ),
+                },
+                {
+                    "name": "DS_hel p 0.23",
+                    "text": np.array(
+                        [
+                            "5.52≤x<11.52",
+                            "11.52≤x<17.51",
+                            "17.51≤x<23.50",
+                            "23.50≤x<29.50",
+                            "29.50≤x<35.50",
+                            "35.50≤x<41.49",
+                            "41.49≤x<47.48",
+                            "47.48≤x<53.48",
+                            "53.48≤x<59.47",
+                            "59.47≤x<65.47",
+                        ],
+                        dtype="<U13",
+                    ),
+                    "y": np.array(
+                        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+                    ),
+                    # frequency data corresponds to the 'Blank' bars on the histogram
+                    "x": np.array(
+                        [
+                            8.5175,
+                            14.5125,
+                            20.5075,
+                            26.5025,
+                            32.4975,
+                            38.4925,
+                            44.4875,
+                            50.4825,
+                            56.4775,
+                            62.4725,
+                        ],
+                    ),
+                },
+                {
+                    "name": "DS_helical",
+                    "text": np.array(
+                        [
+                            "5.52≤x<11.52",
+                            "11.52≤x<17.51",
+                            "17.51≤x<23.50",
+                            "23.50≤x<29.50",
+                            "29.50≤x<35.50",
+                            "35.50≤x<41.49",
+                            "41.49≤x<47.48",
+                            "47.48≤x<53.48",
+                            "53.48≤x<59.47",
+                            "59.47≤x<65.47",
+                        ],
+                        dtype="<U13",
+                    ),
+                    "y": np.array(
+                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                    ),
+                    # frequency data corresponds to the 'Blank' bars on the histogram
+                    "x": np.array(
+                        [
+                            8.5175,
+                            14.5125,
+                            20.5075,
+                            26.5025,
+                            32.4975,
+                            38.4925,
+                            44.4875,
+                            50.4825,
+                            56.4775,
+                            62.4725,
+                        ],
+                    ),
+                },
+                {
+                    "name": "Blank",
+                    "text": np.array(
+                        [
+                            "3.23≤x<3.44",
+                            "3.44≤x<3.64",
+                            "3.64≤x<3.85",
+                            "3.85≤x<4.06",
+                            "4.06≤x<4.26",
+                            "4.26≤x<4.47",
+                            "4.47≤x<4.68",
+                            "4.68≤x<4.89",
+                            "4.89≤x<5.09",
+                            "5.09≤x<5.30",
+                        ],
+                        dtype="<U11",
+                    ),
+                    "y": np.array(
+                        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                    ),
+                    # frequency data corresponds to the 'Blank' bars on the histogram
+                    "x": np.array(
+                        [
+                            3.3335,
+                            3.5405,
+                            3.7475,
+                            3.9545,
+                            4.1615,
+                            4.3685,
+                            4.5755,
+                            4.7825,
+                            4.9895,
+                            5.1965,
+                        ],
+                    ),
+                },
+                {
+                    "name": "Monitoring",
                     "text": np.array(
                         [
                             "0.14≤x<1.12",
@@ -5568,7 +5528,7 @@ class ChartsCT(TestCase):
                         dtype="<U11",
                     ),
                     "y": np.array(
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                        [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
                     ),
                     # frequency data corresponds to the 'Blank' bars on the histogram
                     "x": np.array(
@@ -5623,7 +5583,7 @@ class ChartsCT(TestCase):
                     ),
                 },
                 {
-                    "name": "Monitoring",
+                    "name": "TAP",
                     "text": np.array(
                         [
                             "0.14≤x<1.12",
@@ -5640,7 +5600,7 @@ class ChartsCT(TestCase):
                         dtype="<U11",
                     ),
                     "y": np.array(
-                        [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
                     ),
                     # frequency data corresponds to the 'Blank' bars on the histogram
                     "x": np.array(
@@ -5655,6 +5615,78 @@ class ChartsCT(TestCase):
                             7.4675,
                             8.4445,
                             9.4215,
+                        ],
+                    ),
+                },
+                {
+                    "name": "testÃ¦Ã¸Ã¥",
+                    "text": np.array(
+                        [
+                            "0.14≤x<1.12",
+                            "1.12≤x<2.09",
+                            "2.09≤x<3.07",
+                            "3.07≤x<4.05",
+                            "4.05≤x<5.02",
+                            "5.02≤x<6.00",
+                            "6.00≤x<6.98",
+                            "6.98≤x<7.96",
+                            "7.96≤x<8.93",
+                            "8.93≤x<9.91",
+                        ],
+                        dtype="<U11",
+                    ),
+                    "y": np.array(
+                        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    ),
+                    # frequency data corresponds to the 'Blank' bars on the histogram
+                    "x": np.array(
+                        [
+                            0.6285,
+                            1.6055,
+                            2.5825,
+                            3.5595,
+                            4.5365,
+                            5.5135,
+                            6.4905,
+                            7.4675,
+                            8.4445,
+                            9.4215,
+                        ],
+                    ),
+                },
+                {
+                    "name": "Blank",
+                    "text": np.array(
+                        [
+                            "24.70≤x<24.77",
+                            "24.77≤x<24.84",
+                            "24.84≤x<24.91",
+                            "24.91≤x<24.98",
+                            "24.98≤x<25.05",
+                            "25.05≤x<25.12",
+                            "25.12≤x<25.19",
+                            "25.19≤x<25.26",
+                            "25.26≤x<25.33",
+                            "25.33≤x<25.40",
+                        ],
+                        dtype="<U13",
+                    ),
+                    "y": np.array(
+                        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                    ),
+                    # frequency data corresponds to the 'Blank' bars on the histogram
+                    "x": np.array(
+                        [
+                            24.735,
+                            24.805,
+                            24.875,
+                            24.945,
+                            25.015,
+                            25.085,
+                            25.155,
+                            25.225,
+                            25.295,
+                            25.365,
                         ],
                     ),
                 },
@@ -5730,51 +5762,13 @@ class ChartsCT(TestCase):
                         ],
                     ),
                 },
-                {
-                    "name": "Blank",
-                    "text": np.array(
-                        [
-                            "24.70≤x<24.77",
-                            "24.77≤x<24.84",
-                            "24.84≤x<24.91",
-                            "24.91≤x<24.98",
-                            "24.98≤x<25.05",
-                            "25.05≤x<25.12",
-                            "25.12≤x<25.19",
-                            "25.19≤x<25.26",
-                            "25.26≤x<25.33",
-                            "25.33≤x<25.40",
-                        ],
-                        dtype="<U13",
-                    ),
-                    "y": np.array(
-                        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                    ),
-                    # frequency data corresponds to the 'Blank' bars on the histogram
-                    "x": np.array(
-                        [
-                            24.735,
-                            24.805,
-                            24.875,
-                            24.945,
-                            25.015,
-                            25.085,
-                            25.155,
-                            25.225,
-                            25.295,
-                            25.365,
-                        ],
-                    ),
-                },
             ]
 
             chart_data2 = self.chart_data["acquisitionHistogramCTDIData"]["data"]
 
             for idx, dataset in enumerate(standard_data1):
                 self.assertEqual(chart_data2[idx]["name"], dataset["name"])
-                np.testing.assert_almost_equal(
-                    chart_data2[idx]["x"], dataset["x"], decimal=6
-                )
+                np.testing.assert_almost_equal(chart_data2[idx]["x"], dataset["x"], decimal=6)
                 np.testing.assert_equal(chart_data2[idx]["y"], dataset["y"])
 
     def test_study_ctdi(self):
@@ -6118,9 +6112,7 @@ class ChartsCT(TestCase):
 
         for idx, dataset in enumerate(standard_data1):
             self.assertEqual(chart_data1[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(
-                chart_data1[idx]["x"], dataset["x"], decimal=6
-            )
+            np.testing.assert_almost_equal(chart_data1[idx]["x"], dataset["x"], decimal=6)
             np.testing.assert_equal(chart_data1[idx]["y"], dataset["y"])
 
             # Repeat the above, but plot a series per system
@@ -6155,30 +6147,6 @@ class ChartsCT(TestCase):
                         dtype=object,
                     ),
                     "y": np.array([np.nan, np.nan, 35.324, np.nan, np.nan]),
-                },
-                {
-                    "customdata": np.array(
-                        [
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", 4.265, 2],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                        ],
-                        dtype=object,
-                    ),
-                    "name": "An Optima Hospital geoptima",
-                    "x": np.array(
-                        [
-                            "Blank",
-                            "Colonography",
-                            "FACIAL BONES",
-                            "Specials^PhysicsTesting (Adult)",
-                            "Thorax^TAP (Adult)",
-                        ],
-                        dtype=object,
-                    ),
-                    "y": np.array([np.nan, 4.265, np.nan, np.nan, np.nan]),
                 },
                 {
                     "customdata": np.array(
@@ -6227,6 +6195,30 @@ class ChartsCT(TestCase):
                         dtype=object,
                     ),
                     "y": np.array([np.nan, np.nan, np.nan, np.nan, 3.715]),
+                },
+                {
+                    "customdata": np.array(
+                        [
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", 4.265, 2],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                        ],
+                        dtype=object,
+                    ),
+                    "name": "An Optima Hospital geoptima",
+                    "x": np.array(
+                        [
+                            "Blank",
+                            "Colonography",
+                            "FACIAL BONES",
+                            "Specials^PhysicsTesting (Adult)",
+                            "Thorax^TAP (Adult)",
+                        ],
+                        dtype=object,
+                    ),
+                    "y": np.array([np.nan, 4.265, np.nan, np.nan, np.nan]),
                 },
                 {
                     "customdata": np.array(
@@ -6315,30 +6307,6 @@ class ChartsCT(TestCase):
                 {
                     "customdata": np.array(
                         [
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", 4.265, 2],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                            ["An Optima Hospital geoptima", np.nan, 0],
-                        ],
-                        dtype=object,
-                    ),
-                    "name": "An Optima Hospital geoptima",
-                    "x": np.array(
-                        [
-                            "Blank",
-                            "Colonography",
-                            "FACIAL BONES",
-                            "Specials^PhysicsTesting (Adult)",
-                            "Thorax^TAP (Adult)",
-                        ],
-                        dtype=object,
-                    ),
-                    "y": np.array([np.nan, 4.265, np.nan, np.nan, np.nan]),
-                },
-                {
-                    "customdata": np.array(
-                        [
                             ["Gnats Bottom Hospital CTAWP91919", np.nan, 0],
                             ["Gnats Bottom Hospital CTAWP91919", np.nan, 0],
                             ["Gnats Bottom Hospital CTAWP91919", np.nan, 0],
@@ -6383,6 +6351,30 @@ class ChartsCT(TestCase):
                         dtype=object,
                     ),
                     "y": np.array([np.nan, np.nan, np.nan, np.nan, 2.405]),
+                },
+                {
+                    "customdata": np.array(
+                        [
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", 4.265, 2],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                            ["An Optima Hospital geoptima", np.nan, 0],
+                        ],
+                        dtype=object,
+                    ),
+                    "name": "An Optima Hospital geoptima",
+                    "x": np.array(
+                        [
+                            "Blank",
+                            "Colonography",
+                            "FACIAL BONES",
+                            "Specials^PhysicsTesting (Adult)",
+                            "Thorax^TAP (Adult)",
+                        ],
+                        dtype=object,
+                    ),
+                    "y": np.array([np.nan, 4.265, np.nan, np.nan, np.nan]),
                 },
                 {
                     "customdata": np.array(
@@ -6465,14 +6457,6 @@ class ChartsCT(TestCase):
                     ),
                 },
                 {
-                    "name": "An Optima Hospital geoptima",
-                    "x": np.array(
-                        ["Colonography", "Colonography"],
-                        dtype=object,
-                    ),
-                    "y": np.array([3.23, 5.3]),
-                },
-                {
                     "name": "Gnats Bottom Hospital CTAWP91919",
                     "x": np.array(
                         [
@@ -6504,6 +6488,14 @@ class ChartsCT(TestCase):
                         dtype=object,
                     ),
                     "y": np.array([0.14, 1.2, 3.61, 9.91]),
+                },
+                {
+                    "name": "An Optima Hospital geoptima",
+                    "x": np.array(
+                        ["Colonography", "Colonography"],
+                        dtype=object,
+                    ),
+                    "y": np.array([3.23, 5.3]),
                 },
                 {
                     "name": "OpenREM centre médical rt16",
@@ -6561,42 +6553,6 @@ class ChartsCT(TestCase):
                             133.3225,
                             150.4415,
                             167.5605,
-                        ],
-                    ),
-                },
-                {
-                    "name": "Colonography",
-                    "text": np.array(
-                        [
-                            "3.23≤x<3.44",
-                            "3.44≤x<3.64",
-                            "3.64≤x<3.85",
-                            "3.85≤x<4.06",
-                            "4.06≤x<4.26",
-                            "4.26≤x<4.47",
-                            "4.47≤x<4.68",
-                            "4.68≤x<4.89",
-                            "4.89≤x<5.09",
-                            "5.09≤x<5.30",
-                        ],
-                        dtype="<U11",
-                    ),
-                    "y": np.array(
-                        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                    ),
-                    # frequency data corresponds to the 'Blank' bars on the histogram
-                    "x": np.array(
-                        [
-                            3.3335,
-                            3.5405,
-                            3.7475,
-                            3.9545,
-                            4.1615,
-                            4.3685,
-                            4.5755,
-                            4.7825,
-                            4.9895,
-                            5.1965,
                         ],
                     ),
                 },
@@ -6669,21 +6625,21 @@ class ChartsCT(TestCase):
                     ),
                 },
                 {
-                    "name": "Blank",
+                    "name": "Colonography",
                     "text": np.array(
                         [
-                            "60.41≤x<76.63",
-                            "76.63≤x<92.85",
-                            "92.85≤x<109.06",
-                            "109.06≤x<125.28",
-                            "125.28≤x<141.50",
-                            "141.50≤x<157.72",
-                            "157.72≤x<173.94",
-                            "173.94≤x<190.15",
-                            "190.15≤x<206.37",
-                            "206.37≤x<222.59",
+                            "3.23≤x<3.44",
+                            "3.44≤x<3.64",
+                            "3.64≤x<3.85",
+                            "3.85≤x<4.06",
+                            "4.06≤x<4.26",
+                            "4.26≤x<4.47",
+                            "4.47≤x<4.68",
+                            "4.68≤x<4.89",
+                            "4.89≤x<5.09",
+                            "5.09≤x<5.30",
                         ],
-                        dtype="<U15",
+                        dtype="<U11",
                     ),
                     "y": np.array(
                         [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -6691,16 +6647,16 @@ class ChartsCT(TestCase):
                     # frequency data corresponds to the 'Blank' bars on the histogram
                     "x": np.array(
                         [
-                            68.519,
-                            84.737,
-                            100.955,
-                            117.173,
-                            133.391,
-                            149.609,
-                            165.827,
-                            182.045,
-                            198.263,
-                            214.481,
+                            3.3335,
+                            3.5405,
+                            3.7475,
+                            3.9545,
+                            4.1615,
+                            4.3685,
+                            4.5755,
+                            4.7825,
+                            4.9895,
+                            5.1965,
                         ],
                     ),
                 },
@@ -6740,13 +6696,49 @@ class ChartsCT(TestCase):
                         ],
                     ),
                 },
+                {
+                    "name": "Blank",
+                    "text": np.array(
+                        [
+                            "60.41≤x<76.63",
+                            "76.63≤x<92.85",
+                            "92.85≤x<109.06",
+                            "109.06≤x<125.28",
+                            "125.28≤x<141.50",
+                            "141.50≤x<157.72",
+                            "157.72≤x<173.94",
+                            "173.94≤x<190.15",
+                            "190.15≤x<206.37",
+                            "206.37≤x<222.59",
+                        ],
+                        dtype="<U15",
+                    ),
+                    "y": np.array(
+                        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                    ),
+                    # frequency data corresponds to the 'Blank' bars on the histogram
+                    "x": np.array(
+                        [
+                            68.519,
+                            84.737,
+                            100.955,
+                            117.173,
+                            133.391,
+                            149.609,
+                            165.827,
+                            182.045,
+                            198.263,
+                            214.481,
+                        ],
+                    ),
+                },
             ]
 
         chart_data2 = self.chart_data["studyHistogramCTDIData"]["data"]
         for idx, dataset in enumerate(standard_data1):
             self.assertEqual(chart_data2[idx]["name"], dataset["name"])
-        np.testing.assert_almost_equal(chart_data2[idx]["x"], dataset["x"], decimal=6)
-        np.testing.assert_equal(chart_data2[idx]["y"], dataset["y"])
+            np.testing.assert_almost_equal(chart_data2[idx]["x"], dataset["x"], decimal=6)
+            np.testing.assert_equal(chart_data2[idx]["y"], dataset["y"])
 
     def test_study_freq(self):
 
@@ -7051,7 +7043,5 @@ class ChartsCT(TestCase):
 
         for idx, dataset in enumerate(standard_data1):
             self.assertEqual(chart_data1[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(
-                chart_data1[idx]["x"], dataset["x"], decimal=6
-            )
+            np.testing.assert_almost_equal(chart_data1[idx]["x"], dataset["x"], decimal=6)
             np.testing.assert_equal(chart_data1[idx]["y"], dataset["y"])
