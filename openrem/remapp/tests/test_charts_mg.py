@@ -300,14 +300,14 @@ class ChartsMG(TestCase):
                 "y": np.array([0.26]),
             },
             {
-                "name": "中心医院 SENODS01",
-                "x": np.array(["ROUTINE"], dtype=object),
-                "y": np.array([1.373]),
-            },
-            {
                 "name": "OpenREM Dimensions",
                 "x": np.array(["Blank", "Blank"], dtype=object),
                 "y": np.array([1.28, 1.3]),
+            },
+            {
+                "name": "中心医院 SENODS01",
+                "x": np.array(["ROUTINE"], dtype=object),
+                "y": np.array([1.373]),
             },
         ]
 
@@ -333,6 +333,24 @@ class ChartsMG(TestCase):
         chart_data = self.chart_data["acquisitionHistogramAGDData"]["data"]
 
         standard_data = [
+            {
+                "name": "Blank",
+                "x": np.array(
+                    [
+                        0.31565,
+                        0.42695,
+                        0.53825,
+                        0.64955,
+                        0.76085,
+                        0.87215,
+                        0.98345,
+                        1.09475,
+                        1.20605,
+                        1.31735,
+                    ]
+                ),
+                "y": np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 2]),
+            },
             {
                 "name": "Flat Field Tomo",
                 "x": np.array(
@@ -369,24 +387,7 @@ class ChartsMG(TestCase):
                 ),
                 "y": np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 1]),
             },
-            {
-                "name": "Blank",
-                "x": np.array(
-                    [
-                        0.31565,
-                        0.42695,
-                        0.53825,
-                        0.64955,
-                        0.76085,
-                        0.87215,
-                        0.98345,
-                        1.09475,
-                        1.20605,
-                        1.31735,
-                    ]
-                ),
-                "y": np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 2]),
-            },
+
         ]
 
         for idx, dataset in enumerate(standard_data):
