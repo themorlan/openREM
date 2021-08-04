@@ -67,9 +67,13 @@ def check_average_data(chartTests, chart_data, standard_data):
         # Check the system names and frequencies
         for i, entry in enumerate(dataset["customdata"]):
             if entry.size == 2:
-                np.testing.assert_array_equal(entry.tolist(), chart_data[idx]["customdata"][i])
+                np.testing.assert_array_equal(
+                    entry.tolist(), chart_data[idx]["customdata"][i]
+                )
             else:
-                np.testing.assert_array_equal(list(np.take(entry, [0, 2])), chart_data[idx]["customdata"][i])
+                np.testing.assert_array_equal(
+                    list(np.take(entry, [0, 2])), chart_data[idx]["customdata"][i]
+                )
 
 
 def check_workload_data(chartTests, chart_data, standard_data):

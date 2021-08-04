@@ -305,14 +305,18 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotBoxplots and "median" not in average_choices:
                 average_choices = average_choices + ["median"]
 
-            name_field = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            name_field = (
+                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            )
             value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose"  # pylint: disable=line-too-long
 
-            df_aggregated = create_dataframe_aggregates(  # pylint: disable=line-too-long
-                df,
-                [name_field],
-                value_field,  # pylint: disable=line-too-long
-                stats_to_use=average_choices + ["count"],
+            df_aggregated = (
+                create_dataframe_aggregates(  # pylint: disable=line-too-long
+                    df,
+                    [name_field],
+                    value_field,  # pylint: disable=line-too-long
+                    stats_to_use=average_choices + ["count"],
+                )
             )
 
             if user_profile.plotMGaverageAGDvsThickness:
@@ -380,7 +384,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     }
                     if user_profile.plotMean:
                         parameter_dict["value_axis_title"] = "Mean AGD (mGy)"
-                        parameter_dict["filename"] = "OpenREM MG acquisition protocol AGD mean"
+                        parameter_dict[
+                            "filename"
+                        ] = "OpenREM MG acquisition protocol AGD mean"
                         parameter_dict["average_choice"] = "mean"
                         (
                             return_structure["acquisitionMeanAGDData"],
@@ -393,7 +399,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
 
                     if user_profile.plotMedian:
                         parameter_dict["value_axis_title"] = "Median AGD (mGy)"
-                        parameter_dict["filename"] = "OpenREM MG acquisition protocol AGD median"
+                        parameter_dict[
+                            "filename"
+                        ] = "OpenREM MG acquisition protocol AGD median"
                         parameter_dict["average_choice"] = "median"
                         (
                             return_structure["acquisitionMedianAGDData"],
@@ -453,7 +461,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         "global_max_min": user_profile.plotHistogramGlobalBins,
                         "return_as_dict": return_as_dict,
                     }
-                    return_structure["acquisitionHistogramAGDData"] = plotly_histogram_barchart(
+                    return_structure[
+                        "acquisitionHistogramAGDData"
+                    ] = plotly_histogram_barchart(
                         df,
                         parameter_dict,
                     )
@@ -643,7 +653,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM CT study description workload",
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
-                sorting_choice= [
+                sorting_choice=[
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotMGInitialSortingChoice,
                 ],

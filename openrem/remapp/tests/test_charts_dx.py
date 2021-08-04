@@ -204,125 +204,138 @@ class ChartsDX(TestCase):
         # Obtain chart data
         self.obtain_chart_data(f)
 
-
         # Check the mean
         standard_data = [
             {
-                'customdata': np.array(
+                "customdata": np.array(
                     [
-                        ['Digital Mobile Hospital 01234MOB54', 3], ['Digital Mobile Hospital 01234MOB54', 0],
-                        ['Digital Mobile Hospital 01234MOB54', 0]
+                        ["Digital Mobile Hospital 01234MOB54", 3],
+                        ["Digital Mobile Hospital 01234MOB54", 0],
+                        ["Digital Mobile Hospital 01234MOB54", 0],
                     ],
                     dtype=object,
                 ),
-                'name': 'Digital Mobile Hospital 01234MOB54',
-                'x': np.array(['ABD_1_VIEW', 'AEC', 'AP'],dtype=object,),
-                'y': np.array([10.933333, np.nan, np.nan]),
+                "name": "Digital Mobile Hospital 01234MOB54",
+                "x": np.array(
+                    ["ABD_1_VIEW", "AEC", "AP"],
+                    dtype=object,
+                ),
+                "y": np.array([10.933333, np.nan, np.nan]),
             },
             {
-                'customdata': np.array([['Carestream Clinic KODAK7500', 0], ['Carestream Clinic KODAK7500', 2],
-                            ['Carestream Clinic KODAK7500', 0]],dtype=object,),
-                'name': 'Carestream Clinic KODAK7500',
-                'x': np.array(['ABD_1_VIEW', 'AEC', 'AP'],dtype=object,),
-                'y': np.array([np.nan, 105.85, np.nan]),
+                "customdata": np.array(
+                    [
+                        ["Carestream Clinic KODAK7500", 0],
+                        ["Carestream Clinic KODAK7500", 2],
+                        ["Carestream Clinic KODAK7500", 0],
+                    ],
+                    dtype=object,
+                ),
+                "name": "Carestream Clinic KODAK7500",
+                "x": np.array(
+                    ["ABD_1_VIEW", "AEC", "AP"],
+                    dtype=object,
+                ),
+                "y": np.array([np.nan, 105.85, np.nan]),
             },
             {
-                'customdata': np.array([['LICARDR0004', 0], ['LICARDR0004', 0], ['LICARDR0004', 1]],dtype=object,),
-                'name': 'LICARDR0004',
-                'x': np.array(['ABD_1_VIEW', 'AEC', 'AP'],dtype=object,),
-                'y': np.array([np.nan, np.nan, 6.33]),
-            }
+                "customdata": np.array(
+                    [["LICARDR0004", 0], ["LICARDR0004", 0], ["LICARDR0004", 1]],
+                    dtype=object,
+                ),
+                "name": "LICARDR0004",
+                "x": np.array(
+                    ["ABD_1_VIEW", "AEC", "AP"],
+                    dtype=object,
+                ),
+                "y": np.array([np.nan, np.nan, 6.33]),
+            },
         ]
 
         chart_data = self.chart_data["acquisitionMeanDAPData"]["data"]
         check_average_data(self, chart_data, standard_data)
 
-
         # Check the median
         standard_data = [
             {
-                'customdata': np.array(
-                    [['Digital Mobile Hospital 01234MOB54', 3], ['Digital Mobile Hospital 01234MOB54', 0],
-                     ['Digital Mobile Hospital 01234MOB54', 0]], dtype=object),
-                'name': 'Digital Mobile Hospital 01234MOB54',
-                'x': np.array(['ABD_1_VIEW', 'AEC', 'AP']),
-                'y': np.array([8.2, np.nan, np.nan]),
+                "customdata": np.array(
+                    [
+                        ["Digital Mobile Hospital 01234MOB54", 3],
+                        ["Digital Mobile Hospital 01234MOB54", 0],
+                        ["Digital Mobile Hospital 01234MOB54", 0],
+                    ],
+                    dtype=object,
+                ),
+                "name": "Digital Mobile Hospital 01234MOB54",
+                "x": np.array(["ABD_1_VIEW", "AEC", "AP"]),
+                "y": np.array([8.2, np.nan, np.nan]),
             },
             {
-                'customdata': np.array([[
-                    'Carestream Clinic KODAK7500',
-                    0], [
-                    'Carestream Clinic KODAK7500',
-                    2], [
-                    'Carestream Clinic KODAK7500',
-                    0]], dtype=object),
-                'name': 'Carestream Clinic KODAK7500',
-                'x': np.array(['ABD_1_VIEW', 'AEC',
-                      'AP']),
-                'y': np.array([np.nan, 105.85, np.nan],),
+                "customdata": np.array(
+                    [
+                        ["Carestream Clinic KODAK7500", 0],
+                        ["Carestream Clinic KODAK7500", 2],
+                        ["Carestream Clinic KODAK7500", 0],
+                    ],
+                    dtype=object,
+                ),
+                "name": "Carestream Clinic KODAK7500",
+                "x": np.array(["ABD_1_VIEW", "AEC", "AP"]),
+                "y": np.array(
+                    [np.nan, 105.85, np.nan],
+                ),
             },
             {
-                'customdata': np.array([['LICARDR0004', 0], ['LICARDR0004', 0], ['LICARDR0004', 1]], dtype=object),
-                'name': 'LICARDR0004',
-                'x': np.array(['ABD_1_VIEW', 'AEC', 'AP']),
-                'y': np.array([np.nan, np.nan, 6.33]),
-            }
+                "customdata": np.array(
+                    [["LICARDR0004", 0], ["LICARDR0004", 0], ["LICARDR0004", 1]],
+                    dtype=object,
+                ),
+                "name": "LICARDR0004",
+                "x": np.array(["ABD_1_VIEW", "AEC", "AP"]),
+                "y": np.array([np.nan, np.nan, 6.33]),
+            },
         ]
 
         chart_data = self.chart_data["acquisitionMedianDAPData"]["data"]
         check_average_data(self, chart_data, standard_data)
 
-
         # Check the box plot
         standard_data = [
             {
-                'name': 'Digital Mobile Hospital 01234MOB54',
-                'x': np.array(
+                "name": "Digital Mobile Hospital 01234MOB54",
+                "x": np.array(
                     [
-                        'ABD_1_VIEW',
-                        'AEC',
-                        'AP',
+                        "ABD_1_VIEW",
+                        "AEC",
+                        "AP",
                     ],
                     dtype=object,
                 ),
-                'y': np.array(
-                    [
-                        10.933333,
-                        np.nan,
-                        np.nan
-                    ],
+                "y": np.array(
+                    [10.933333, np.nan, np.nan],
                 ),
             },
             {
-                'name': 'Carestream Clinic KODAK7500',
-                'x': np.array(
-                    [
-                        'ABD_1_VIEW',
-                        'AEC',
-                        'AP'
-                    ],
+                "name": "Carestream Clinic KODAK7500",
+                "x": np.array(
+                    ["ABD_1_VIEW", "AEC", "AP"],
                     dtype=object,
                 ),
-                'y': np.array([np.nan, 105.85, np.nan]),
+                "y": np.array([np.nan, 105.85, np.nan]),
             },
             {
-                'name': 'LICARDR0004',
-                'x': np.array(
-                    [
-                        'ABD_1_VIEW',
-                        'AEC',
-                        'AP'
-                    ],
+                "name": "LICARDR0004",
+                "x": np.array(
+                    ["ABD_1_VIEW", "AEC", "AP"],
                     dtype=object,
                 ),
-                'y': np.array([np.nan, np.nan, 6.33])
-            }
+                "y": np.array([np.nan, np.nan, 6.33]),
+            },
         ]
 
         chart_data = self.chart_data["acquisitionMeanDAPData"]["data"]
 
         check_boxplot_data(self, chart_data, standard_data)
-
 
     def test_acq_dap_histogram(self):
         # Test of DAP histogram
@@ -501,22 +514,24 @@ class ChartsDX(TestCase):
         # Check the mean, frequency and names
         standard_data = [
             {
-                'customdata': np.array(
+                "customdata": np.array(
                     [
-                        ['Digital Mobile Hospital 01234MOB54', 3],
-                        ['Digital Mobile Hospital 01234MOB54', 0],
-                        ['Digital Mobile Hospital 01234MOB54', 0]
+                        ["Digital Mobile Hospital 01234MOB54", 3],
+                        ["Digital Mobile Hospital 01234MOB54", 0],
+                        ["Digital Mobile Hospital 01234MOB54", 0],
                     ],
                     dtype=object,
                 ),
-                'name': 'Digital Mobile Hospital 01234MOB54',
-                'x': np.array(
+                "name": "Digital Mobile Hospital 01234MOB54",
+                "x": np.array(
                     [
-                        'ABD_1_VIEW', 'AEC', 'AP',
+                        "ABD_1_VIEW",
+                        "AEC",
+                        "AP",
                     ],
                     dtype=object,
                 ),
-                'y': np.array(
+                "y": np.array(
                     [
                         2.7066667,
                         np.nan,
@@ -525,22 +540,20 @@ class ChartsDX(TestCase):
                 ),
             },
             {
-                'customdata': np.array(
+                "customdata": np.array(
                     [
-                        ['Carestream Clinic KODAK7500', 0],
-                        ['Carestream Clinic KODAK7500', 2],
-                        ['Carestream Clinic KODAK7500', 0]
+                        ["Carestream Clinic KODAK7500", 0],
+                        ["Carestream Clinic KODAK7500", 2],
+                        ["Carestream Clinic KODAK7500", 0],
                     ],
                     dtype=object,
                 ),
-                'name': 'Carestream Clinic KODAK7500',
-                'x': np.array(
-                    [
-                        'ABD_1_VIEW', 'AEC', 'AP'
-                    ],
+                "name": "Carestream Clinic KODAK7500",
+                "x": np.array(
+                    ["ABD_1_VIEW", "AEC", "AP"],
                     dtype=object,
                 ),
-                'y': np.array(
+                "y": np.array(
                     [
                         np.nan,
                         9.5,
@@ -549,83 +562,72 @@ class ChartsDX(TestCase):
                 ),
             },
             {
-                'customdata': np.array(
-                    [
-                        ['LICARDR0004', 0],
-                        ['LICARDR0004', 0],
-                        ['LICARDR0004', 1]
-                    ],
+                "customdata": np.array(
+                    [["LICARDR0004", 0], ["LICARDR0004", 0], ["LICARDR0004", 1]],
                     dtype=object,
                 ),
-                'name': 'LICARDR0004', 'offsetgroup': 'LICARDR0004',
-                'x': np.array(
-                    [
-                        'ABD_1_VIEW', 'AEC', 'AP'
-                    ],
+                "name": "LICARDR0004",
+                "offsetgroup": "LICARDR0004",
+                "x": np.array(
+                    ["ABD_1_VIEW", "AEC", "AP"],
                     dtype=object,
                 ),
-                'y': np.array(
+                "y": np.array(
                     [
                         np.nan,
                         np.nan,
-                        1.,
+                        1.0,
                     ]
                 ),
-            }
+            },
         ]
 
         chart_data = self.chart_data["acquisitionMeanmAsData"]["data"]
 
         check_average_data(self, chart_data, standard_data)
 
-
         # Check the median, frequency and names
         standard_data = [
             {
-                'customdata': np.array(
+                "customdata": np.array(
                     [
-                        ['Digital Mobile Hospital 01234MOB54', 3],
-                        ['Digital Mobile Hospital 01234MOB54', 0],
-                        ['Digital Mobile Hospital 01234MOB54', 0]
+                        ["Digital Mobile Hospital 01234MOB54", 3],
+                        ["Digital Mobile Hospital 01234MOB54", 0],
+                        ["Digital Mobile Hospital 01234MOB54", 0],
                     ],
                     dtype=object,
                 ),
-                'name': 'Digital Mobile Hospital 01234MOB54',
-                'x': np.array(['ABD_1_VIEW', 'AEC', 'AP']),
-                'y': np.array([2.04,  np.nan,  np.nan])
+                "name": "Digital Mobile Hospital 01234MOB54",
+                "x": np.array(["ABD_1_VIEW", "AEC", "AP"]),
+                "y": np.array([2.04, np.nan, np.nan]),
             },
             {
-                'customdata': np.array(
+                "customdata": np.array(
                     [
-                        ['Carestream Clinic KODAK7500', 0],
-                        ['Carestream Clinic KODAK7500', 2],
-                        ['Carestream Clinic KODAK7500', 0]
+                        ["Carestream Clinic KODAK7500", 0],
+                        ["Carestream Clinic KODAK7500", 2],
+                        ["Carestream Clinic KODAK7500", 0],
                     ],
                     dtype=object,
                 ),
-                'name': 'Carestream Clinic KODAK7500',
-                'x': np.array(['ABD_1_VIEW', 'AEC', 'AP']),
-                'y': np.array([np.nan, 9.5, np.nan])
+                "name": "Carestream Clinic KODAK7500",
+                "x": np.array(["ABD_1_VIEW", "AEC", "AP"]),
+                "y": np.array([np.nan, 9.5, np.nan]),
             },
             {
-                'customdata': np.array(
-                    [
-                        ['LICARDR0004', 0],
-                        ['LICARDR0004', 0],
-                        ['LICARDR0004', 1]
-                    ],
+                "customdata": np.array(
+                    [["LICARDR0004", 0], ["LICARDR0004", 0], ["LICARDR0004", 1]],
                     dtype=object,
                 ),
-                'name': 'LICARDR0004',
-                'x': np.array(['ABD_1_VIEW', 'AEC', 'AP']),
-                'y': np.array([np.nan, np.nan,  1.])
-            }
+                "name": "LICARDR0004",
+                "x": np.array(["ABD_1_VIEW", "AEC", "AP"]),
+                "y": np.array([np.nan, np.nan, 1.0]),
+            },
         ]
 
         chart_data = self.chart_data["acquisitionMedianmAsData"]["data"]
 
         check_average_data(self, chart_data, standard_data)
-
 
         # Check on the boxplot data system names
         acq_data = [
@@ -646,26 +648,25 @@ class ChartsDX(TestCase):
         # Check the boxplot data
         standard_data = [
             {
-                'name': 'Digital Mobile Hospital 01234MOB54',
-                'x': np.array(['ABD_1_VIEW', 'ABD_1_VIEW', 'ABD_1_VIEW'], dtype=object),
-                'y': np.array([2.04, 1.04, 5.04]),
+                "name": "Digital Mobile Hospital 01234MOB54",
+                "x": np.array(["ABD_1_VIEW", "ABD_1_VIEW", "ABD_1_VIEW"], dtype=object),
+                "y": np.array([2.04, 1.04, 5.04]),
             },
             {
-                'name': 'Carestream Clinic KODAK7500',
-                'x': np.array(['AEC', 'AEC'], dtype=object),
-                'y': np.array([9., 10.]),
+                "name": "Carestream Clinic KODAK7500",
+                "x": np.array(["AEC", "AEC"], dtype=object),
+                "y": np.array([9.0, 10.0]),
             },
             {
-                'name': 'LICARDR0004',
-                'x': np.array(['AP'], dtype=object),
-                'y': np.array([1.])
-            }
+                "name": "LICARDR0004",
+                "x": np.array(["AP"], dtype=object),
+                "y": np.array([1.0]),
+            },
         ]
 
         chart_data = self.chart_data["acquisitionBoxplotmAsData"]["data"]
 
         check_boxplot_data(self, chart_data, standard_data)
-
 
     def test_acq_mas_histogram(self):
         # Test of mAs histogram

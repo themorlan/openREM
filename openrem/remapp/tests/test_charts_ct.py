@@ -2802,7 +2802,9 @@ class ChartsCT(TestCase):
         chart_data2 = self.chart_data["studyHistogramDLPData"]["data"]
         for idx, dataset in enumerate(standard_data):
             self.assertEqual(chart_data2[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data2[idx]["x"], dataset["x"], decimal=6)
+            np.testing.assert_almost_equal(
+                chart_data2[idx]["x"], dataset["x"], decimal=6
+            )
             np.testing.assert_equal(chart_data2[idx]["y"], dataset["y"])
 
     def test_request_dlp(self):
@@ -3575,7 +3577,9 @@ class ChartsCT(TestCase):
             chart_data = self.chart_data["requestHistogramDLPData"]["data"]
             for idx, dataset in enumerate(standard_data):
                 self.assertEqual(chart_data[idx]["name"], dataset["name"])
-                np.testing.assert_almost_equal(chart_data[idx]["x"], dataset["x"], decimal=6)
+                np.testing.assert_almost_equal(
+                    chart_data[idx]["x"], dataset["x"], decimal=6
+                )
                 np.testing.assert_equal(chart_data[idx]["y"], dataset["y"])
 
     def test_acq_ctdi(self):
@@ -4308,7 +4312,9 @@ class ChartsCT(TestCase):
 
         for idx, dataset in enumerate(standard_data1):
             self.assertEqual(chart_data1[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data1[idx]["x"], dataset["x"], decimal=6)
+            np.testing.assert_almost_equal(
+                chart_data1[idx]["x"], dataset["x"], decimal=6
+            )
             np.testing.assert_equal(chart_data1[idx]["y"], dataset["y"])
 
             # Almost equal used for equivalence because the chart data isn't equal to the standard data
@@ -5768,7 +5774,9 @@ class ChartsCT(TestCase):
 
             for idx, dataset in enumerate(standard_data1):
                 self.assertEqual(chart_data2[idx]["name"], dataset["name"])
-                np.testing.assert_almost_equal(chart_data2[idx]["x"], dataset["x"], decimal=6)
+                np.testing.assert_almost_equal(
+                    chart_data2[idx]["x"], dataset["x"], decimal=6
+                )
                 np.testing.assert_equal(chart_data2[idx]["y"], dataset["y"])
 
     def test_study_ctdi(self):
@@ -6112,7 +6120,9 @@ class ChartsCT(TestCase):
 
         for idx, dataset in enumerate(standard_data1):
             self.assertEqual(chart_data1[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data1[idx]["x"], dataset["x"], decimal=6)
+            np.testing.assert_almost_equal(
+                chart_data1[idx]["x"], dataset["x"], decimal=6
+            )
             np.testing.assert_equal(chart_data1[idx]["y"], dataset["y"])
 
             # Repeat the above, but plot a series per system
@@ -6737,7 +6747,9 @@ class ChartsCT(TestCase):
         chart_data2 = self.chart_data["studyHistogramCTDIData"]["data"]
         for idx, dataset in enumerate(standard_data1):
             self.assertEqual(chart_data2[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data2[idx]["x"], dataset["x"], decimal=6)
+            np.testing.assert_almost_equal(
+                chart_data2[idx]["x"], dataset["x"], decimal=6
+            )
             np.testing.assert_equal(chart_data2[idx]["y"], dataset["y"])
 
     def test_study_freq(self):
@@ -7043,5 +7055,7 @@ class ChartsCT(TestCase):
 
         for idx, dataset in enumerate(standard_data1):
             self.assertEqual(chart_data1[idx]["name"], dataset["name"])
-            np.testing.assert_almost_equal(chart_data1[idx]["x"], dataset["x"], decimal=6)
+            np.testing.assert_almost_equal(
+                chart_data1[idx]["x"], dataset["x"], decimal=6
+            )
             np.testing.assert_equal(chart_data1[idx]["y"], dataset["y"])

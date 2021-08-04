@@ -470,7 +470,6 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
     if user_profile.plotInitialSortingDirection == 0:
         ascending_order = False
 
-
     charts_of_interest = [
         user_profile.plotCTAcquisitionDLPOverTime,
         user_profile.plotCTAcquisitionCTDIOverTime,
@@ -623,7 +622,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean DLP (mGy.cm)"
-                    parameter_dict["filename"] = "OpenREM CT acquisition protocol DLP mean"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT acquisition protocol DLP mean"
                     parameter_dict["average_choice"] = "mean"
                     (
                         return_structure["acquisitionMeanDLPData"],
@@ -636,7 +637,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median DLP (mGy.cm)"
-                    parameter_dict["filename"] = "OpenREM CT acquisition protocol DLP median"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT acquisition protocol DLP median"
                     parameter_dict["average_choice"] = "median"
                     (
                         return_structure["acquisitionMedianDLPData"],
@@ -671,13 +674,13 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 )
 
             if user_profile.plotHistograms:
-                category_names_col = (name_field)
+                category_names_col = name_field
                 group_by_col = "x_ray_system_name"
                 legend_title = "Acquisition protocol"
 
                 if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
-                    group_by_col = (name_field)
+                    group_by_col = name_field
                     legend_title = "System"
 
                 parameter_dict = {
@@ -737,7 +740,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean CTDI<sub>vol</sub> (mGy)"
-                    parameter_dict["filename"] = "OpenREM CT acquisition protocol CTDI mean"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT acquisition protocol CTDI mean"
                     parameter_dict["average_choice"] = "mean"
                     (
                         return_structure["acquisitionMeanCTDIData"],
@@ -749,8 +754,12 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotMedian:
-                    parameter_dict["value_axis_title"] = "Median CTDI<sub>vol</sub> (mGy)"
-                    parameter_dict["filename"] = "OpenREM CT acquisition protocol CTDI median"
+                    parameter_dict[
+                        "value_axis_title"
+                    ] = "Median CTDI<sub>vol</sub> (mGy)"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT acquisition protocol CTDI median"
                     parameter_dict["average_choice"] = "median"
                     (
                         return_structure["acquisitionMedianCTDIData"],
@@ -1100,7 +1109,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median DLP (mGy.cm)"
-                    parameter_dict["filename"] = "OpenREM CT study description DLP median"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT study description DLP median"
                     parameter_dict["average_choice"] = "median"
                     (
                         return_structure["studyMedianDLPData"],
@@ -1196,7 +1207,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean CTDI<sub>vol</sub> (mGy)"
-                    parameter_dict["filename"] = "OpenREM CT study description CTDI mean"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT study description CTDI mean"
                     parameter_dict["average_choice"] = "mean"
                     (
                         return_structure["studyMeanCTDIData"],
@@ -1208,8 +1221,12 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotMedian:
-                    parameter_dict["value_axis_title"] = "Median CTDI<sub>vol</sub> (mGy)"
-                    parameter_dict["filename"] = "OpenREM CT study description CTDI median"
+                    parameter_dict[
+                        "value_axis_title"
+                    ] = "Median CTDI<sub>vol</sub> (mGy)"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT study description CTDI median"
                     parameter_dict["average_choice"] = "median"
                     (
                         return_structure["studyMedianCTDIData"],
@@ -1305,7 +1322,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean events"
-                    parameter_dict["filename"] = "OpenREM CT study description events mean"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT study description events mean"
                     parameter_dict["average_choice"] = "mean"
                     (
                         return_structure["studyMeanNumEventsData"],
@@ -1445,7 +1464,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean DLP (mGy.cm)"
-                    parameter_dict["filename"] = "OpenREM CT requested procedure DLP mean"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT requested procedure DLP mean"
                     parameter_dict["average_choice"] = "mean"
                     (
                         return_structure["requestMeanDLPData"],
@@ -1458,7 +1479,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median DLP (mGy.cm)"
-                    parameter_dict["filename"] = "OpenREM CT requested procedure DLP median"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT requested procedure DLP median"
                     parameter_dict["average_choice"] = "median"
                     (
                         return_structure["requestMedianDLPData"],
@@ -1554,7 +1577,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean events"
-                    parameter_dict["filename"] = "OpenREM CT requested procedure events mean"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT requested procedure events mean"
                     parameter_dict["average_choice"] = "mean"
                     (
                         return_structure["requestMeanNumEventsData"],
@@ -1567,7 +1592,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median events"
-                    parameter_dict["filename"] = "OpenREM CT requested procedure events median"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT requested procedure events median"
                     parameter_dict["average_choice"] = "median"
                     (
                         return_structure["requestMedianNumEventsData"],
@@ -1627,7 +1654,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "global_max_min": user_profile.plotHistogramGlobalBins,
                     "return_as_dict": return_as_dict,
                 }
-                return_structure["requestHistogramNumEventsData"] = plotly_histogram_barchart(
+                return_structure[
+                    "requestHistogramNumEventsData"
+                ] = plotly_histogram_barchart(
                     df,
                     parameter_dict,
                 )

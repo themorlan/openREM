@@ -468,8 +468,12 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotBoxplots and "median" not in average_choices:
                 average_choices = average_choices + ["median"]
 
-            name_field = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
-            value_field = "projectionxrayradiationdose__irradeventxraydata__dose_area_product"
+            name_field = (
+                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            )
+            value_field = (
+                "projectionxrayradiationdose__irradeventxraydata__dose_area_product"
+            )
 
             df_aggregated = create_dataframe_aggregates(
                 df,
@@ -494,7 +498,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
-                    parameter_dict["filename"] = "OpenREM DX acquisition protocol DAP mean"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM DX acquisition protocol DAP mean"
                     parameter_dict["average_choice"] = "mean"
                     (
                         return_structure["acquisitionMeanDAPData"],
@@ -506,8 +512,12 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotMedian:
-                    parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
-                    parameter_dict["filename"] = "OpenREM DX acquisition protocol DAP median"
+                    parameter_dict[
+                        "value_axis_title"
+                    ] = "Median DAP (cGy.cm<sup>2</sup>)"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM DX acquisition protocol DAP median"
                     parameter_dict["average_choice"] = "median"
                     (
                         return_structure["acquisitionMedianDAPData"],
@@ -579,7 +589,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotBoxplots and "median" not in average_choices:
                 average_choices = average_choices + ["median"]
 
-            name_field = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            name_field = (
+                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            )
             value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp"
 
             df_aggregated = create_dataframe_aggregates(
@@ -605,7 +617,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean kVp"
-                    parameter_dict["filename"] = "OpenREM DX acquisition protocol kVp mean"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM DX acquisition protocol kVp mean"
                     parameter_dict["average_choice"] = "mean"
                     (
                         return_structure["acquisitionMeankVpData"],
@@ -618,7 +632,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median kVp"
-                    parameter_dict["filename"] = "OpenREM DX acquisition protocol kVp median"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM DX acquisition protocol kVp median"
                     parameter_dict["average_choice"] = "median"
                     (
                         return_structure["acquisitionMediankVpData"],
@@ -690,7 +706,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             if user_profile.plotBoxplots and "median" not in average_choices:
                 average_choices = average_choices + ["median"]
 
-            name_field = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            name_field = (
+                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            )
             value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"  # pylint: disable=line-too-long
 
             df_aggregated = create_dataframe_aggregates(
@@ -716,7 +734,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean mAs"
-                    parameter_dict["filename"] = "OpenREM DX acquisition protocol mAs mean"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM DX acquisition protocol mAs mean"
                     parameter_dict["average_choice"] = "mean"
                     (
                         return_structure["acquisitionMeanmAsData"],
@@ -729,7 +749,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotMedian:
                     parameter_dict["value_axis_title"] = "Median mAs"
-                    parameter_dict["filename"] = "OpenREM DX acquisition protocol mAs median"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM DX acquisition protocol mAs median"
                     parameter_dict["average_choice"] = "median"
                     (
                         return_structure["acquisitionMedianmAsData"],
@@ -1073,7 +1095,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotMedian:
-                    parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
+                    parameter_dict[
+                        "value_axis_title"
+                    ] = "Median DAP (cGy.cm<sup>2</sup>)"
                     parameter_dict[
                         "filename"
                     ] = "OpenREM DX study description DAP median"
@@ -1199,7 +1223,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 }
                 if user_profile.plotMean:
                     parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
-                    parameter_dict["filename"] = "OpenREM DX requested procedure DAP mean"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM DX requested procedure DAP mean"
                     parameter_dict["average_choice"] = "mean"
                     (
                         return_structure["requestMeanDAPData"],
@@ -1211,8 +1237,12 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotMedian:
-                    parameter_dict["value_axis_title"] = "Median DAP (cGy.cm<sup>2</sup>)"
-                    parameter_dict["filename"] = "OpenREM DX requested procedure DAP median"
+                    parameter_dict[
+                        "value_axis_title"
+                    ] = "Median DAP (cGy.cm<sup>2</sup>)"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM DX requested procedure DAP median"
                     parameter_dict["average_choice"] = "median"
                     (
                         return_structure["requestMedianDAPData"],

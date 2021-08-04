@@ -387,7 +387,6 @@ class ChartsMG(TestCase):
                 ),
                 "y": np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 1]),
             },
-
         ]
 
         for idx, dataset in enumerate(standard_data):
