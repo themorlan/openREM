@@ -465,11 +465,6 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
     if user_profile.plotMedian:
         average_choices.append(CommonVariables.MEDIAN)
 
-    sorting_choice = user_profile.plotCTInitialSortingChoice.lower()
-    ascending_order = True
-    if user_profile.plotInitialSortingDirection == 0:
-        ascending_order = False
-
     charts_of_interest = [
         user_profile.plotCTAcquisitionDLPOverTime,
         user_profile.plotCTAcquisitionCTDIOverTime,

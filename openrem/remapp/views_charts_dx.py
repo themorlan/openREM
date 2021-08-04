@@ -374,11 +374,6 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
     if user_profile.plotMedian:
         average_choices.append("median")
 
-    sorting_choice = user_profile.plotDXInitialSortingChoice.lower()
-    ascending_order = True
-    if user_profile.plotInitialSortingDirection == 0:
-        ascending_order = False
-
     #######################################################################
     # Prepare acquisition-level Pandas DataFrame to use for charts
     charts_of_interest = [

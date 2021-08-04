@@ -211,11 +211,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
     if user_profile.plotMedian:
         average_choices.append("median")
 
-    sorting_choice = user_profile.plotMGInitialSortingChoice.lower()
-    ascending_order = True
-    if user_profile.plotInitialSortingDirection == 0:
-        ascending_order = False
-
     if user_profile.plotMGAcquisitionAGDOverTime:
         plot_timeunit_period = user_profile.plotMGOverTimePeriod
 

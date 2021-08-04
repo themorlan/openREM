@@ -327,11 +327,6 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
     if user_profile.plotMedian:
         stats_to_include.append("median")
 
-    sorting_choice = user_profile.plotRFInitialSortingChoice.lower()
-    ascending_order = True
-    if user_profile.plotInitialSortingDirection == 0:
-        ascending_order = False
-
     if user_profile.plotRFStudyDAP:
         if user_profile.plotBoxplots and "median" not in stats_to_include:
             stats_to_include = stats_to_include + ["median"]
@@ -502,7 +497,6 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             csv_name="studyFrequencyData.csv",
         )
 
-    sorted_request_categories = None
     if user_profile.plotRFRequestDAP:
         if user_profile.plotBoxplots and "median" not in stats_to_include:
             stats_to_include = stats_to_include + ["median"]

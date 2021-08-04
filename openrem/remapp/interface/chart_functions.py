@@ -1519,7 +1519,7 @@ def plotly_scatter(
     :param params["df_name_col"]: (string) DataFrame column containing categories
     :param params["df_x_col"]: (string) DataFrame column containing x values
     :param params["df_y_col"]: (string) DataFrame column containing y values
-    :param params["sorting_choice"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort on
+    :param params["sorting_choice"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort
     :param params["grouping_choice"]: (string) "series" or "system"
     :param params["legend_title"]: (string) legend title
     :param params["facet_col_wrap"]: (int) number of subplots per row
