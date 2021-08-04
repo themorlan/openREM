@@ -1743,7 +1743,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM CT study description workload",
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
-                sorting_choice= [
+                sorting_choice=[
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotCTInitialSortingChoice,
                 ],
