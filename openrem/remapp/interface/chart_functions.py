@@ -1997,7 +1997,7 @@ def construct_over_time_charts(
     :param params["df_date_col"]: (string) DataFrame column containing dates
     :param params["date_title"]: (string) date title
     :param params["facet_title"]: (string) subplot title
-    :param params["sorting_choice"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort on
+    :param params["sorting_choice"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort
     :param params["average_choices"]: lsit of strings containing requred averages ("mean", "median")
     :param params["time_period"]: string containing the time period to average over; "A" (years), "Q" (quarters),
                                   "M" (months), "W" (weeks), "D" (days)
