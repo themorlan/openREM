@@ -1033,9 +1033,7 @@ def plotly_binned_statistic_barchart(
     :param params["facet_title"]: (string) Subplot title
     :param params["facet_col_wrap"]: (int) number of subplots per row
     :param params["user_bins"]: list of ints containing bin edges for binning
-    :param params["df_facet_category_list"]: list of df_facet_col entries for which to create subplots
     :param params["df_category_col"]: (string) DataFrame column containing categories
-    :param params["df_category_list"]: list of categories for which to create subplots
     :param params["df_x_value_col"]: (string) DataFrame column containing x data
     :param params["df_y_value_col"]: (string) DataFrame column containing y data
     :param params["x_axis_title"]: (string) Title for x-axis
@@ -1060,6 +1058,20 @@ def plotly_binned_statistic_barchart(
     n_colours = len(df[params["df_category_col"]].unique())
     colour_sequence = calculate_colour_sequence(params["colourmap"], n_colours)
 
+    sort_ascending = True
+    if params["sorting_choice"][0] == 0:
+        sort_ascending = False
+
+    if params["sorting_choice"][1].lower() == "name":
+        df_category_name_list = (df.sort_values(by=params["df_category_col"], ascending=sort_ascending)[params["df_category_col"]]).unique().tolist()
+        df_facet_category_list = (df.sort_values(by=params["df_facet_col"], ascending=sort_ascending)[params["df_facet_col"]]).unique().tolist()
+    elif params["sorting_choice"][1].lower() == "frequency":
+        df_category_name_list = df.groupby(params["df_category_col"]).agg(freq=(params["df_category_col"], "count")).sort_values(by="freq", ascending=sort_ascending).reset_index()[params["df_category_col"]].tolist()
+        df_facet_category_list = df.groupby(params["df_facet_col"]).agg(freq=(params["df_facet_col"], "count")).sort_values(by="freq", ascending=sort_ascending).reset_index()[params["df_facet_col"]].tolist()
+    else:
+        df_category_name_list = df.groupby(params["df_category_col"]).agg(avg=(params["df_y_value_col"], params["stat_name"])).sort_values(by="avg", ascending=sort_ascending).reset_index()[params["df_category_col"]].tolist()
+        df_facet_category_list = df.groupby(params["df_facet_col"]).agg(avg=(params["df_y_value_col"], params["stat_name"])).sort_values(by="avg", ascending=sort_ascending).reset_index()[params["df_facet_col"]].tolist()
+
     try:
         fig = make_subplots(
             rows=n_facet_rows,
@@ -1074,7 +1086,7 @@ def plotly_binned_statistic_barchart(
 
         bins = np.sort(np.array(params["user_bins"]))
 
-        for facet_name in params["df_facet_category_list"]:
+        for facet_name in df_facet_category_list:
             facet_subset = df[df[params["df_facet_col"]] == facet_name].dropna(
                 subset=[params["df_x_value_col"], params["df_y_value_col"]]
             )
@@ -1097,7 +1109,7 @@ def plotly_binned_statistic_barchart(
                 ["{:.0f}≤x<{:.0f}".format(i, j) for i, j in zip(bins[:-1], bins[1:])]
             )
 
-            for category_name in params["df_category_name_list"]:
+            for category_name in df_category_name_list:
                 category_subset = facet_subset[
                     facet_subset[params["df_category_col"]] == category_name
                 ].dropna(subset=[params["df_x_value_col"], params["df_y_value_col"]])
@@ -1309,7 +1321,7 @@ def plotly_scatter(
     :param params["df_name_col"]: (string) DataFrame column containing categories
     :param params["df_x_col"]: (string) DataFrame column containing x values
     :param params["df_y_col"]: (string) DataFrame column containing y values
-    :param params["sorting"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort on
+    :param params["sorting_choice"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort on
     :param params["grouping_choice"]: (string) "series" or "system"
     :param params["legend_title"]: (string) legend title
     :param params["facet_col_wrap"]: (int) number of subplots per row
@@ -1324,16 +1336,30 @@ def plotly_scatter(
     if df.empty:
         return empty_dataframe_msg(params)
 
-    sorted_category_list = create_sorted_category_list(
-        df, params["df_name_col"], params["df_y_col"], params["sorting"]
-    )
-
     params["df_category_name_col"] = params["df_name_col"]
     params["df_group_col"] = "x_ray_system_name"
     if params["grouping_choice"] == "series":
         params["df_category_name_col"] = "x_ray_system_name"
         params["df_group_col"] = params["df_name_col"]
         params["legend_title"] = "System"
+
+    sort_ascending = True
+    if params["sorting_choice"][0] == 0:
+        sort_ascending = False
+
+    sorting_categories = None
+    if params["sorting_choice"][1].lower() == "name":
+        sorting_categories = {params["df_category_name_col"]: (df.sort_values(by=params["df_category_name_col"], ascending=sort_ascending)[params["df_category_name_col"]]).unique().tolist()}
+        sorting_categories["x_ray_system_name"] = (df.sort_values(by="x_ray_system_name", ascending=sort_ascending)["x_ray_system_name"]).unique().tolist()
+        sorting_categories[params["df_group_col"]] = (df.sort_values(by=params["df_group_col"], ascending=sort_ascending)[params["df_group_col"]]).unique().tolist()
+    elif params["sorting_choice"][1].lower() == "frequency":
+        sorting_categories = {params["df_category_name_col"]: df.groupby(params["df_category_name_col"]).agg(freq=(params["df_category_name_col"], "count")).sort_values(by="freq", ascending=sort_ascending).reset_index()[params["df_category_name_col"]].tolist()}
+        sorting_categories["x_ray_system_name"] = df.groupby("x_ray_system_name").agg(freq=("x_ray_system_name", "count")).sort_values(by="freq", ascending=sort_ascending).reset_index()["x_ray_system_name"].tolist()
+        sorting_categories[params["df_group_col"]] = df.groupby(params["df_group_col"]).agg(freq=(params["df_group_col"], "count")).sort_values(by="freq", ascending=sort_ascending).reset_index()[params["df_group_col"]].tolist()
+    else:
+        sorting_categories = {params["df_category_name_col"]: df.groupby(params["df_category_name_col"]).agg(mean=(params["df_y_col"], "mean")).sort_values(by="mean", ascending=sort_ascending).reset_index()[params["df_category_name_col"]].tolist()}
+        sorting_categories["x_ray_system_name"] = df.groupby("x_ray_system_name").agg(mean=(params["df_y_col"], "mean")).sort_values(by="mean", ascending=sort_ascending).reset_index()["x_ray_system_name"].tolist()
+        sorting_categories[params["df_group_col"]] = df.groupby(params["df_group_col"]).agg(mean=(params["df_y_col"], "mean")).sort_values(by="mean", ascending=sort_ascending).reset_index()[params["df_group_col"]].tolist()
 
     try:
         # Drop any rows with nan values in x or y
@@ -1362,7 +1388,7 @@ def plotly_scatter(
                 params["df_category_name_col"]: params["legend_title"],
             },
             color_discrete_sequence=colour_sequence,
-            category_orders=sorted_category_list,
+            category_orders=sorting_categories,
             opacity=0.6,
             height=chart_height,
             render_mode="webgl",
@@ -1407,6 +1433,7 @@ def plotly_barchart_weekdays(
     colourmap="RdYlBu",
     filename="OpenREM_workload_chart",
     facet_col_wrap=3,
+    sorting_choice=[0, "name"],
     return_as_dict=False,
 ):
     """
@@ -1426,6 +1453,15 @@ def plotly_barchart_weekdays(
     """
     if df.empty:
         return empty_dataframe_msg()
+
+    sort_ascending = True
+    if sorting_choice[0] == 0:
+        sort_ascending = False
+
+    if sorting_choice[1].lower() == "name":
+        sorting_categories = {"x_ray_system_name": (df.sort_values(by="x_ray_system_name", ascending=sort_ascending)["x_ray_system_name"]).unique().tolist()}
+    else:
+        sorting_categories = {"x_ray_system_name": df.groupby("x_ray_system_name").agg(freq=(df_value_col, "sum")).sort_values(by="freq",ascending=sort_ascending).reset_index()["x_ray_system_name"].tolist()}
 
     chart_height, n_facet_rows = calc_facet_rows_and_height(
         df, "x_ray_system_name", facet_col_wrap
@@ -1447,6 +1483,7 @@ def plotly_barchart_weekdays(
                 "hour": "Hour",
             },
             color_continuous_scale=colourmap,
+            category_orders=sorting_categories,
             hover_name="x_ray_system_name",
             hover_data={
                 "x_ray_system_name": False,
@@ -1646,7 +1683,7 @@ def construct_over_time_charts(
     :param params["df_date_col"]: (string) DataFrame column containing dates
     :param params["date_title"]: (string) date title
     :param params["facet_title"]: (string) subplot title
-    :param params["sorting"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort on
+    :param params["sorting_choice"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort on
     :param params["average_choices"]: lsit of strings containing requred averages ("mean", "median")
     :param params["time_period"]: string containing the time period to average over; "A" (years), "Q" (quarters),
                                   "M" (months), "W" (weeks), "D" (days)
@@ -1661,7 +1698,7 @@ def construct_over_time_charts(
              an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
     sorted_categories = create_sorted_category_list(
-        df, params["df_name_col"], params["df_value_col"], params["sorting"]
+        df, params["df_name_col"], params["df_value_col"], params["sorting_choice"]
     )
 
     df = df.dropna(subset=[params["df_value_col"]])

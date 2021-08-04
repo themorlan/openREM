@@ -314,6 +314,10 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             colourmap=user_profile.plotColourMapChoice,
             filename="OpenREM RF study description workload",
             facet_col_wrap=user_profile.plotFacetColWrapVal,
+            sorting_choice=[
+                user_profile.plotInitialSortingDirection,
+                user_profile.plotMGInitialSortingChoice,
+            ],
             return_as_dict=return_as_dict,
         )
 
@@ -328,7 +332,6 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
     if user_profile.plotInitialSortingDirection == 0:
         ascending_order = False
 
-    sorted_study_categories = None
     if user_profile.plotRFStudyDAP:
         if user_profile.plotBoxplots and "median" not in stats_to_include:
             stats_to_include = stats_to_include + ["median"]
@@ -684,7 +687,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "value_title": "DAP (cGy.cm<sup>2</sup>)",
             "date_title": "Study date",
             "facet_title": facet_title,
-            "sorting": [
+            "sorting_choice": [
                 user_profile.plotInitialSortingDirection,
                 user_profile.plotRFInitialSortingChoice,
             ],
@@ -721,7 +724,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             "value_title": "DAP (cGy.cm<sup>2</sup>)",
             "date_title": "Study date",
             "facet_title": facet_title,
-            "sorting": [
+            "sorting_choice": [
                 user_profile.plotInitialSortingDirection,
                 user_profile.plotRFInitialSortingChoice,
             ],

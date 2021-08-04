@@ -316,11 +316,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 stats_to_use=average_choices + ["count"],
             )
 
-            if sorting_choice == "name":
-                sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by=name_field, ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
-            elif sorting_choice == "frequency":
-                sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by="count", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
-
             if user_profile.plotMGaverageAGDvsThickness:
                 category_names_col = name_field
                 group_by_col = "x_ray_system_name"
@@ -343,19 +338,13 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     "colourmap": user_profile.plotColourMapChoice,
                     "filename": "OpenREM CT acquisition protocol average AGD vs thickness",
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "sorting_choice": [
+                        user_profile.plotInitialSortingDirection,
+                        user_profile.plotMGInitialSortingChoice,
+                    ],
                     "return_as_dict": return_as_dict,
                 }
                 if user_profile.plotMean:
-                    if sorting_choice == "value":
-                        sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
-
-                    if user_profile.plotGroupingChoice == "series":
-                        parameter_dict["df_category_name_list"] = list(df[category_names_col].unique())
-                        parameter_dict["df_facet_category_list"] = list(sorted_acquisition_agd_categories.values())[0]
-                    else:
-                        parameter_dict["df_category_name_list"] = list(sorted_acquisition_agd_categories.values())[0]
-                        parameter_dict["df_facet_category_list"] = list(df[group_by_col].unique())
-
                     parameter_dict["stat_name"] = "mean"
                     return_structure[
                         "meanAGDvsThickness"
@@ -365,16 +354,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotMedian:
-                    if sorting_choice == "value":
-                        sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
-
-                    if user_profile.plotGroupingChoice == "series":
-                        parameter_dict["df_category_name_list"] = list(df[category_names_col].unique())
-                        parameter_dict["df_facet_category_list"] = list(sorted_acquisition_agd_categories.values())[0]
-                    else:
-                        parameter_dict["df_category_name_list"] = list(sorted_acquisition_agd_categories.values())[0]
-                        parameter_dict["df_facet_category_list"] = list(df[group_by_col].unique())
-
                     parameter_dict["stat_name"] = "median"
                     return_structure[
                         "medianAGDvsThickness"
@@ -385,6 +364,8 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotMGaverageAGD:
                 if user_profile.plotMean or user_profile.plotMedian:
+                    if user_profile.plotBoxplots and "median" not in average_choices:
+                        average_choices = average_choices + ["median"]
 
                     parameter_dict = {
                         "df_name_col": name_field,
@@ -393,16 +374,14 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         "facet_col": None,
                         "facet_col_wrap": user_profile.plotFacetColWrapVal,
                         "return_as_dict": return_as_dict,
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotMGInitialSortingChoice,
+                        ],
                     }
                     if user_profile.plotMean:
-                        if sorting_choice == "value":
-                            sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by="mean", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
-
-                        parameter_dict["sorted_category_list"] = sorted_acquisition_agd_categories
                         parameter_dict["value_axis_title"] = "Mean AGD (mGy)"
-                        parameter_dict[
-                            "filename"
-                        ] = "OpenREM MG acquisition protocol AGD mean"
+                        parameter_dict["filename"] = "OpenREM MG acquisition protocol AGD mean"
                         parameter_dict["average_choice"] = "mean"
                         (
                             return_structure["acquisitionMeanAGDData"],
@@ -414,14 +393,8 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         )
 
                     if user_profile.plotMedian:
-                        if sorting_choice == "value":
-                            sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
-
-                        parameter_dict["sorted_category_list"] = sorted_acquisition_agd_categories
                         parameter_dict["value_axis_title"] = "Median AGD (mGy)"
-                        parameter_dict[
-                            "filename"
-                        ] = "OpenREM MG acquisition protocol AGD median"
+                        parameter_dict["filename"] = "OpenREM MG acquisition protocol AGD median"
                         parameter_dict["average_choice"] = "median"
                         (
                             return_structure["acquisitionMedianAGDData"],
@@ -441,14 +414,13 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         "colourmap": user_profile.plotColourMapChoice,
                         "filename": "OpenREM MG acquisition protocol AGD boxplot",
                         "facet_col": None,
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotRFInitialSortingChoice,
+                        ],
                         "facet_col_wrap": user_profile.plotFacetColWrapVal,
                         "return_as_dict": return_as_dict,
                     }
-
-                    if sorting_choice == "value":
-                        sorted_acquisition_agd_categories = {name_field: (df_aggregated.sort_values(by="median", ascending=ascending_order)[name_field]).unique().tolist()}  # pylint: disable=line-too-long
-
-                    parameter_dict["sorted_category_list"] = sorted_acquisition_agd_categories
 
                     return_structure["acquisitionBoxplotAGDData"] = plotly_boxplot(
                         df,
@@ -459,15 +431,11 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     category_names_col = name_field
                     group_by_col = "x_ray_system_name"
                     legend_title = "Acquisition protocol"
-                    facet_names = list(df[group_by_col].unique())
-                    category_names = list(sorted_acquisition_agd_categories.values())[0]
 
                     if user_profile.plotGroupingChoice == "series":
                         category_names_col = "x_ray_system_name"
                         group_by_col = name_field
                         legend_title = "System"
-                        category_names = facet_names
-                        facet_names = list(sorted_acquisition_agd_categories.values())[0]
 
                     parameter_dict = {  # pylint: disable=line-too-long
                         "df_facet_col": group_by_col,
@@ -479,8 +447,10 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         "colourmap": user_profile.plotColourMapChoice,
                         "filename": "OpenREM MG acquisition protocol AGD histogram",
                         "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                        "df_facet_category_list": facet_names,
-                        "df_category_name_list": category_names,
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotRFInitialSortingChoice,
+                        ],
                         "global_max_min": user_profile.plotHistogramGlobalBins,
                         "return_as_dict": return_as_dict,
                     }
@@ -496,7 +466,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                 "df_x_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
                 "df_y_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
-                "sorting": [
+                "sorting_choice": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotMGInitialSortingChoice,
                 ],
@@ -521,7 +491,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                 "df_x_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
                 "df_y_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",  # pylint: disable=line-too-long
-                "sorting": [
+                "sorting_choice": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotMGInitialSortingChoice,
                 ],
@@ -546,7 +516,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                 "df_x_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
                 "df_y_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",  # pylint: disable=line-too-long
-                "sorting": [
+                "sorting_choice": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotMGInitialSortingChoice,
                 ],
@@ -605,7 +575,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "value_title": "AGD (mGy)",
                 "date_title": "Study date",
                 "facet_title": facet_title,
-                "sorting": [
+                "sorting_choice": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotMGInitialSortingChoice,
                 ],
@@ -676,6 +646,10 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM CT study description workload",
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
+                sorting_choice= [
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotMGInitialSortingChoice,
+                ],
                 return_as_dict=return_as_dict,
             )
 
