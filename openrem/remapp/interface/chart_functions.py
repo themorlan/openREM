@@ -960,12 +960,11 @@ def plotly_histogram_barchart(
     :param  params["df_value_col"]: (string) DataFrame column containing values
     :param  params["value_axis_title"]: (string) y-axis title
     :param  params["df_facet_col"]: (string) DataFrame column used to create subplots
-    :param  params["df_facet_category_list"]: string list of each df_facet_col entry to create a subplot for
-    :param  params["df_category_col"]: (string) DataFrame column containing categories
     :param  params["df_category_name_list"]: string list of each category name
     :param  params["df_facet_col_wrap"]: (int) number of subplots per row
     :param  params["n_bins"]: (int) number of hisgogram bins to use
     :param  params["colourmap"]: (string) colourmap to use
+    :param params["sorting_choice"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort
     :param  params["global_max_min"]: (boolean) flag to calculate global max and min or per-subplot max and min
     :param  params["legend_title"]: (string) legend title
     :param  params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
@@ -983,8 +982,10 @@ def plotly_histogram_barchart(
     if params["sorting_choice"][0] == 0:
         sort_ascending = False
 
+    df_facet_category_list = None
+    df_category_name_list = None
     if params["sorting_choice"][1].lower() == "name":
-        params["df_facet_category_list"] = (
+        df_facet_list = (
             (
                 df.sort_values(by=params["df_facet_col"], ascending=sort_ascending)[
                     params["df_facet_col"]
@@ -993,7 +994,7 @@ def plotly_histogram_barchart(
             .unique()
             .tolist()
         )
-        params["df_category_name_list"] = (
+        df_category_name_list = (
             (
                 df.sort_values(by=params["df_category_col"], ascending=sort_ascending)[
                     params["df_category_col"]
@@ -1003,14 +1004,14 @@ def plotly_histogram_barchart(
             .tolist()
         )
     elif params["sorting_choice"][1].lower() == "frequency":
-        params["df_facet_category_list"] = (
+        df_facet_list = (
             df.groupby(params["df_facet_col"])
             .agg(freq=(params["df_facet_col"], "count"))
             .sort_values(by="freq", ascending=sort_ascending)
             .reset_index()[params["df_facet_col"]]
             .tolist()
         )
-        params["df_category_name_list"] = (
+        df_category_name_list = (
             df.groupby(params["df_category_col"])
             .agg(freq=(params["df_category_col"], "count"))
             .sort_values(by="freq", ascending=sort_ascending)
@@ -1018,14 +1019,14 @@ def plotly_histogram_barchart(
             .tolist()
         )
     else:
-        params["df_facet_category_list"] = (
+        df_facet_list = (
             df.groupby(params["df_facet_col"])
             .agg(mean=(params["df_value_col"], "mean"))
             .sort_values(by="mean", ascending=sort_ascending)
             .reset_index()[params["df_facet_col"]]
             .tolist()
         )
-        params["df_category_name_list"] = (
+        df_category_name_list = (
             df.groupby(params["df_category_col"])
             .agg(mean=(params["df_value_col"], "mean"))
             .sort_values(by="mean", ascending=sort_ascending)
@@ -1060,7 +1061,7 @@ def plotly_histogram_barchart(
         current_facet = 0
         category_names = []
 
-        for facet_name in params["df_facet_category_list"]:
+        for facet_name in df_facet_list:
             facet_subset = df[df[params["df_facet_col"]] == facet_name].dropna(
                 subset=[params["df_value_col"]]
             )
@@ -1074,7 +1075,7 @@ def plotly_histogram_barchart(
                     facet_subset, params["df_value_col"], n_bins=params["n_bins"]
                 )
 
-            for category_name in params["df_category_name_list"]:
+            for category_name in df_category_name_list:
                 category_subset = facet_subset[
                     facet_subset[params["df_category_col"]] == category_name
                 ].dropna(subset=[params["df_value_col"]])
@@ -1197,6 +1198,7 @@ def plotly_binned_statistic_barchart(
     :param params["x_axis_title"]: (string) Title for x-axis
     :param params["y_axis_title"]: (string) Title for y-axis
     :param params["stat_name"]: (string) "mean" or "median"
+    :param params["sorting_choice"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort
     :param params["colourmap"]: (string) colourmap to use
     :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
     :param params["filename"]: (string) default filename to use for plot bitmap export
@@ -1705,6 +1707,7 @@ def plotly_barchart_weekdays(
     :param colourmap: (string) colourmap to use
     :param filename: (string) default filename to use for plot bitmap export
     :param facet_col_wrap: (int) number of subplots per row
+    :param sorting_choice: 2-element list. [0] sets sort direction, [1] used to determine which field to sort
     :param return_as_dict: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
              or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
