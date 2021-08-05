@@ -982,8 +982,8 @@ def plotly_histogram_barchart(
     if params["sorting_choice"][0] == 0:
         sort_ascending = False
 
-    df_facet_category_list = None
-    df_category_name_list = None
+    df_facet_list = None
+    df_category_list = None
     if params["sorting_choice"][1].lower() == "name":
         df_facet_list = (
             (
@@ -994,7 +994,7 @@ def plotly_histogram_barchart(
             .unique()
             .tolist()
         )
-        df_category_name_list = (
+        df_category_list = (
             (
                 df.sort_values(by=params["df_category_col"], ascending=sort_ascending)[
                     params["df_category_col"]
@@ -1011,7 +1011,7 @@ def plotly_histogram_barchart(
             .reset_index()[params["df_facet_col"]]
             .tolist()
         )
-        df_category_name_list = (
+        df_category_list = (
             df.groupby(params["df_category_col"])
             .agg(freq=(params["df_category_col"], "count"))
             .sort_values(by="freq", ascending=sort_ascending)
@@ -1026,7 +1026,7 @@ def plotly_histogram_barchart(
             .reset_index()[params["df_facet_col"]]
             .tolist()
         )
-        df_category_name_list = (
+        df_category_list = (
             df.groupby(params["df_category_col"])
             .agg(mean=(params["df_value_col"], "mean"))
             .sort_values(by="mean", ascending=sort_ascending)
@@ -1075,7 +1075,7 @@ def plotly_histogram_barchart(
                     facet_subset, params["df_value_col"], n_bins=params["n_bins"]
                 )
 
-            for category_name in df_category_name_list:
+            for category_name in df_category_list:
                 category_subset = facet_subset[
                     facet_subset[params["df_category_col"]] == category_name
                 ].dropna(subset=[params["df_value_col"]])
