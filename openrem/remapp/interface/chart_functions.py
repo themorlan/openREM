@@ -1693,7 +1693,7 @@ def plotly_barchart_weekdays(
     colourmap="RdYlBu",
     filename="OpenREM_workload_chart",
     facet_col_wrap=3,
-    sorting_choice=[0, "name"],
+    sorting_choice=None,
     return_as_dict=False,
 ):
     """
@@ -1714,6 +1714,10 @@ def plotly_barchart_weekdays(
     """
     if df.empty:
         return empty_dataframe_msg()
+
+    if sorting_choice is None:
+        # Set default sorting to be ascending name order
+        sorting_choice = [1, "name"]
 
     sort_ascending = True
     if sorting_choice[0] == 0:
