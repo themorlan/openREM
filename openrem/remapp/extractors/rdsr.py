@@ -36,10 +36,10 @@ import os
 import sys
 from time import sleep
 
+from django.conf import settings
 from celery import shared_task
 from defusedxml.ElementTree import fromstring, ParseError
 import django
-from django.conf import settings
 from django.db.models import Avg, Sum, ObjectDoesNotExist
 import pydicom
 
