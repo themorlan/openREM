@@ -195,7 +195,7 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
     :return: Saves csv file into Media directory for user to download
     """
 
-    from ..models import GeneralStudyModuleAttr
+    from remapp.models import GeneralStudyModuleAttr
     from ..interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
 
     datestamp = datetime.datetime.now()
