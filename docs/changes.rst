@@ -16,6 +16,7 @@ OpenREM version history
 * :issue:`893`  Charts: fixed issue with over-time charts with many sub-plots failing to plot correctly
 * :issue:`888`  SkinDose: added option to support skin dose calculations for listed systems only
 * :issue:`886`  Code quality: addressed some SonarCloud issues
+* :issue:`882`  SkinDose: added percentage of exposures that interact with phantom
 * :issue:`881`  Charts: add option to remove multiple and trailing whitespace in category names
 * :issue:`879`  Charts: fixed sorting of fluoroscopy charts when split by physician
 * :issue:`877`  Charts: added acquisition type restrictions to acquisition-level CT charts
@@ -52,7 +53,7 @@ OpenREM version history
 * :issue:`830`  Charts: fixed incorrect histogram data in charts
 * :issue:`829`  Installation: added docs for Docker install on computer without internet access
 * :issue:`828`  Docker: enabled email configuration to work
-* :issue:`827`  SkinDose: Made SkinDose results available in OpenREM and made alert triggering possible
+* :issue:`827`  SkinDose: made SkinDose results available in OpenREM and made alert triggering possible
 * :issue:`826`  Code quality: split views to make more manageable and testable
 * :issue:`824`  DICOM Networking: enabled declaration and testing of Orthanc Store SCP in Docker
 * :issue:`821`  Code quality: fixed literal comparisons Docker was complaining about
