@@ -42,11 +42,11 @@ from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
+from remapp.models import DicomDeleteSettings, DicomQuery, DicomStoreSCP, DicomRemoteQR
 from .qrscu import movescu, qrscu
 from .tools import echoscu
 from .. import __docs_version__, __version__
 from ..forms import DicomQueryForm, DicomQRForm, DicomStoreForm
-from ..models import DicomDeleteSettings, DicomQuery, DicomStoreSCP, DicomRemoteQR
 from ..views_admin import _create_admin_dict
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
