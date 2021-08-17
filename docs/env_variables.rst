@@ -132,6 +132,19 @@ Virtual directory settings
 
 See :doc:`virtual_directory` for details of these variables - normally these can be left commented out.
 
+Device Observer UID settings
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+OpenREM users have found one x-ray system which incorrectly sets the Device Observer UID to be equal to the Study
+Instance UID. In this situation a new entry is created in the display name settings for every new exam that arrives
+in OpenREM, making the display name table fill with many duplicate entries for the same system. To avoid this problem
+a list of models can be specified in a local_settings.py variable - OpenREM will ignore the Device Observer UID value
+when creating new display names for any model in this list:
+
+.. code-block:: none
+
+    IGNORE_DEVICE_OBSERVER_UID_FOR_THESE_MODELS = ['GE OEC Fluorostar']
+
 Variables that should only be changed if you know what you are doing
 --------------------------------------------------------------------
 

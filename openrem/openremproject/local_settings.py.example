@@ -134,7 +134,3 @@ EMAIL_OPENREM_URL = 'http://your.openrem.server'
 # Port that the Celery management software Flower runs on. Change if necessary to match how Flower is started.
 # See https://docs.openrem.org/en/latest/startservices.html#celery-task-management-flower
 FLOWER_PORT = 5555
-
-# Ignore the Device Observer UID of these equipment models when creating display name entries during import of DICOM
-# RDSR data using the rdsr.py extractor. See https://bitbucket.org/openrem/openrem/issues/908.
-IGNORE_DEVICE_OBSERVER_UID_FOR_THESE_MODELS = ['GE OEC Fluorostar']
