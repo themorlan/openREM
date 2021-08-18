@@ -287,5 +287,6 @@ except ImportError:
 SAVE_CHARTS_AS_HTML = False
 
 # Ignore the Device Observer UID of these equipment models when creating display name entries during import of DICOM
-# RDSR data using the rdsr.py extractor. See https://docs.openrem.org/en/latest/env_variables.html#device-observer-uid-settings.
+# RDSR data using the rdsr.py extractor.
+# See https://docs.openrem.org/en/latest/env_variables.html#device-observer-uid-settings.
 IGNORE_DEVICE_OBSERVER_UID_FOR_THESE_MODELS = []
