@@ -975,6 +975,7 @@ def plotly_histogram_barchart(
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
+    # pylint: disable=too-complex
     if df.empty:
         return empty_dataframe_msg(params)
 
@@ -1712,6 +1713,7 @@ def plotly_barchart_weekdays(
     :return: Plotly figure embedded in an HTML DIV; or Plotly figure as a dictionary (if "return_as_dict" is True);
              or an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
     """
+    # pylint: disable=too-many-locals
     if df.empty:
         return empty_dataframe_msg()
 
