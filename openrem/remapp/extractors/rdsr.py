@@ -36,6 +36,7 @@ import os
 import sys
 from time import sleep
 
+from django.conf import settings
 from celery import shared_task
 from defusedxml.ElementTree import fromstring, ParseError
 import django
@@ -1859,6 +1860,9 @@ def _generalequipmentmoduleattributes(dataset, study):
             0
         ]  # 121012 = DeviceObserverUID
     except IndexError:
+        device_observer_uid = None
+
+    if equip.manufacturer_model_name in settings.IGNORE_DEVICE_OBSERVER_UID_FOR_THESE_MODELS:
         device_observer_uid = None
 
     equip_display_name, created = UniqueEquipmentNames.objects.get_or_create(

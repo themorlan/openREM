@@ -944,6 +944,9 @@ class SkinDoseMapResults(models.Model):
     peak_skin_dose = models.DecimalField(
         max_digits=16, decimal_places=4, null=True, blank=True
     )
+    dap_fraction = models.DecimalField(
+        max_digits=16, decimal_places=4, null=True, blank=True
+    )
     skin_map_version = models.CharField(max_length=16, null=True, blank=True)
 
 

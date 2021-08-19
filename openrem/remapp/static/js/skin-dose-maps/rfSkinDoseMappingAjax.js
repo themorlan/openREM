@@ -95,6 +95,8 @@ $(document).ready(function() {
                     skinDoseMapObj.patientHeight = (json.patient_height / 100).toFixed(2);
                     skinDoseMapObj.patientMass = json.patient_mass.toFixed(1);
                     skinDoseMapObj.patientOrientation = json.patient_orientation;
+                    skinDoseMapObj.fractionDAP = json.fraction_DAP;
+
 
                     if (json.patient_height_source.indexOf("extracted") >= 0) {skinDoseMapObj.patientHeightSource = "Extracted";}
                     if (json.patient_mass_source.indexOf("extracted") >= 0) {skinDoseMapObj.patientMassSource = "Extracted";}
@@ -148,6 +150,7 @@ $(document).ready(function() {
                         skinDoseMap3dHUDObj.patientHeight = (json.patient_height / 100).toFixed(2);
                         skinDoseMap3dHUDObj.patientMass = json.patient_mass.toFixed(1);
                         skinDoseMap3dHUDObj.patientOrientation = json.patient_orientation;
+                        skinDoseMap3dHUDObj.fractionDAP = json.fraction_DAP;
                         if (json.patient_height_source.indexOf("extracted") >= 0) {skinDoseMap3dHUDObj.patientHeightSource = "Extracted";}
                         if (json.patient_mass_source.indexOf("extracted") >= 0) {skinDoseMap3dHUDObj.patientMassSource = "Extracted";}
                         if (json.patient_orientation_source.indexOf("extracted") >= 0) {skinDoseMap3dHUDObj.patientOrientationSource = "Extracted";}
