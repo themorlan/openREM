@@ -975,7 +975,6 @@ def plotly_histogram_barchart(
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
-    # pylint: disable=too-complex
     if df.empty:
         return empty_dataframe_msg(params)
 
