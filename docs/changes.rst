@@ -5,6 +5,7 @@ OpenREM version history
 
 1.0.0b1 (2021-xx-xx)
 --------------------
+* :issue:`913`  SkinDose: made 2d skin dose map overlay visible by default
 * :issue:`909`  Code quality: all model imports absolute
 * :issue:`908`  Imports: enabled Device Observer UID to be ignored for specific equipment models when creating display name data during RDSR import
 * :issue:`906`  Charts: upgraded Plotly library to latest version

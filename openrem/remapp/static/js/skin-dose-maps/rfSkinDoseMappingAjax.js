@@ -163,6 +163,13 @@ $(document).ready(function() {
                     skinDoseMapGroup.show();
                     $("#skin_map_maxmin_controls").show();
                     openskinInfo.show();
+
+                    // Show the "Hide overlay" button; hide the "Show overlay" button
+                    $("#skinDoseMapOverlayHide").show();
+                    $("#skinDoseMapOverlayShow").hide();
+
+                    // Display the 2d skin map overlay
+                    skinDoseMapObj.toggleOverlay();
                 }
 
                 else {
