@@ -1702,6 +1702,8 @@ def _projectionxrayradiationdose(dataset, g, reporttype):
         proj.general_study_module_attributes.modality_type = None
 
     if dataset.ConceptNameCodeSequence[0].CodingSchemeDesignator == "99SMS_RADSUM" and dataset.ConceptNameCodeSequence[0].CodeValue == "C-10":
+        g.modality_type = 'RF'
+        g.save()
         _import_varic(dataset, proj)
     else:
         for cont in dataset.ContentSequence:
