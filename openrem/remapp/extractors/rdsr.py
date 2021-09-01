@@ -1661,7 +1661,8 @@ def _ctaccumulateddosedata(dataset, ct):  # TID 10012
     ctacc.save()
 
 
-def _do_varic_thing(dataset, proj)
+def _import_varic(dataset, proj):
+    
     for cont in dataset.ContentSequence:
         if cont.ConceptNameCodeSequence[0].CodeValue == "C-200":
             accum = AccumXRayDose.objects.create(projection_xray_radiation_dose=proj)
@@ -1669,8 +1670,15 @@ def _do_varic_thing(dataset, proj)
             accumint = AccumIntegratedProjRadiogDose.objects.create(accumulated_xray_dose=accum)
             accumint.total_number_of_radiographic_frames = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
             accumint.save()
-        if cont.
-
+        if cont.ConceptNameCodeSequence[0].CodeValue == "C-202":
+            accumproj = AccumProjXRayDose.objects.create(accumulated_xray_dose=accum)
+            accumproj.save()
+            accumproj.total_fluoro_time = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
+            accumproj.save()
+        if cont.ConceptNameCodeSequence[0].CodeValue == "C-204":
+            accumint.dose_area_product_total = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
+            accumint.save()
+        # cumulative air kerma in dose report example is not available ("Measurement not attempted")
 
 
 def _projectionxrayradiationdose(dataset, g, reporttype):
@@ -1693,8 +1701,8 @@ def _projectionxrayradiationdose(dataset, g, reporttype):
     if proj.general_study_module_attributes.modality_type == "dual":
         proj.general_study_module_attributes.modality_type = None
 
-    if varic:
-        _do_varic_thing(dataset, proj)
+    if dataset.ConceptNameCodeSequence[0].CodingSchemeDesignator == "99SMS_RADSUM" and dataset.ConceptNameCodeSequence[0].CodeValue == "C-10":
+        _import_varic(dataset, proj)
     else:
         for cont in dataset.ContentSequence:
             if cont.ConceptNameCodeSequence[0].CodeMeaning.lower() == "procedure reported":

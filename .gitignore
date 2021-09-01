@@ -4,6 +4,7 @@ openrem/remapp/migrations/0*
 .idea
 .venv
 settings.json
+launch.json
 openrem/openremproject/local_settings.py
 openrem/openremproject/wsgi.py
 
