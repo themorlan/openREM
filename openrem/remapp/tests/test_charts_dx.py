@@ -1697,7 +1697,7 @@ class ChartsDX(TestCase):
 
         for idx, dataset in enumerate(standard_data):
             for i, entry in enumerate(dataset["customdata"]):
-                np.testing.assert_equal(list(entry), chart_data[idx]["customdata"][i])
+                np.testing.assert_equal(entry, chart_data[idx]["customdata"][i])
 
             np.testing.assert_equal(dataset["x"], chart_data[idx]["x"])
             np.testing.assert_equal(dataset["y"], chart_data[idx]["y"])
@@ -1808,7 +1808,7 @@ class ChartsDX(TestCase):
 
         for idx, dataset in enumerate(standard_data):
             for i, entry in enumerate(dataset["customdata"]):
-                np.testing.assert_equal(list(entry), chart_data[idx]["customdata"][i])
+                np.testing.assert_equal(entry, chart_data[idx]["customdata"][i])
 
             np.testing.assert_equal(dataset["x"], chart_data[idx]["x"])
             np.testing.assert_equal(dataset["y"], chart_data[idx]["y"])
