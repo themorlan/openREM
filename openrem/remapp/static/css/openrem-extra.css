@@ -394,6 +394,9 @@ ul.CheckboxSelectMultiple {
   list-style-type: none;
   margin: 0;
   padding: 0;
+}
+
+td.shaded_background {
   background-color: #DDDDDD;
 }
 
