@@ -34,8 +34,8 @@
                     <tr>
                         {% if field.name != "plotColourMapChoice" %}
                             {% ifequal field.field.widget.attrs.class 'CheckboxSelectMultiple' %}
-                                <td class="shaded_background">{{ field.label_tag }}</td>
-                                <td class="shaded_background">{{ field }}</td>
+                                <td class="shaded_top_bottom_border">{{ field.label_tag }}</td>
+                                <td class="shaded_top_bottom_border">{{ field }}</td>
                             {% else %}
                                 <td>{{ field.label_tag }}</td>
                                 <td>{{ field }}</td>
@@ -78,8 +78,8 @@
             {% for field in CTChartOptionsForm %}
                 <tr>
                 {% ifequal field.field.widget.attrs.class 'CheckboxSelectMultiple' %}
-                    <td class="shaded_background"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                    <td class="shaded_background">{{ field }}</td>
+                    <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                    <td class="shaded_top_bottom_border">{{ field }}</td>
                 {% else %}
                     <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
                     <td>{{ field }}</td>
