@@ -5,6 +5,7 @@ OpenREM version history
 
 1.0.0b1 (2021-xx-xx)
 --------------------
+* :issue:`917`  Interface: added horizintal lines between chart option groups and shaded chart option CheckboxSelectMultiple items
 * :issue:`913`  SkinDose: made 2d skin dose map overlay visible by default
 * :issue:`911`  Charts: fixed issue with chart data sorting and added label wrap option
 * :issue:`909`  Code quality: all model imports absolute
