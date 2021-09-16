@@ -406,6 +406,10 @@ td.shaded_top_bottom_border {
   border-bottom: 1px solid #D9EDF7;
 }
 
+td.top_border {
+  border-top: 1px solid #D9EDF7;
+}
+
 ul.RadioSelect {
   list-style-type: none;
   margin: 0;
