@@ -90,13 +90,16 @@
                     {% csrf_token %}
                     {% for field in chartOptionsForm %}
                         <tr>
-                        {% ifequal field.field.widget.attrs.class 'CheckboxSelectMultiple' %}
-                            <td class="shaded_background"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                            <td class="shaded_background">{{ field }}</td>
+                        {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
+                            <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                            <td class="shaded_top_bottom_border">{{ field }}</td>
+                        {% elif field.label == 'Acquisition frequency' or field.label == 'Requested procedure frequency' or field.label == 'Time period' %}
+                            <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                            <td class="top_border">{{ field }}</td>
                         {% else %}
                             <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
                             <td>{{ field }}</td>
-                        {% endifequal %}
+                        {% endif %}
                         </tr>
                     {% endfor %}
                 </table>
