@@ -87,7 +87,17 @@
             <div class="panel-body">
                 <table aria-describedby="Fluoroscopy chart options">
                     {% csrf_token %}
-                    {{ chartOptionsForm }}
+                    {% for field in chartOptionsForm %}
+                        <tr>
+                        {% ifequal field.field.widget.attrs.class 'CheckboxSelectMultiple' %}
+                            <td class="shaded_background"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                            <td class="shaded_background">{{ field }}</td>
+                        {% else %}
+                            <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                            <td>{{ field }}</td>
+                        {% endifequal %}
+                        </tr>
+                    {% endfor %}
                 </table>
                 <input class="btn btn-default" name="submit" type="submit" />
             </div>
@@ -192,9 +202,9 @@
             <td>
                 <a href="{% url 'rf_detail_view' pk=exam.id %}">
                     <table onclick="window.location='{% url 'rf_detail_view' pk=exam.id %}';" aria-describedby="Study description, procedure and requested procedure name">
-                        <tr><td class="nowrap">{{ exam.study_description }}</td></tr>
-                        <tr><td class="nowrap">{{ exam.procedure_code_meaning }}</td></tr>
-                        <tr><td class="nowrap">{{ exam.requested_procedure_code_meaning }}</td></tr>
+                        <tr><td>{{ exam.study_description }}</td></tr>
+                        <tr><td>{{ exam.procedure_code_meaning }}</td></tr>
+                        <tr><td>{{ exam.requested_procedure_code_meaning }}</td></tr>
                   {% if not exam.accession_hashed %}
                         <tr><td class="nowrap">{{ exam.accession_number }}</td></tr>
                   {% endif %}
@@ -303,7 +313,7 @@
         <div class="ajax-progress"><img src="{{ STATIC_URL }}img/ajax-loader.gif"></div>
 
         <!-- JavaScript to enable Plotly charts -->
-        <script src="{{ STATIC_URL }}js/charts/plotly-2.2.0.min.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/plotly-2.4.2.min.js"></script>
         <!-- End of JavaScript to enable Plotly charts -->
 
         <!-- JavaScript Plotly chart resizing code. -->

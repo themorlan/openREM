@@ -27,7 +27,6 @@ from .interface.chart_functions import (
     plotly_frequency_barchart,
     construct_over_time_charts,
     plotly_set_default_theme,
-    create_sorted_category_list,
     create_dataframe_aggregates,
 )
 
@@ -226,7 +225,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
         user_profile.plotMGacquisitionFreq,
         user_profile.plotMGAcquisitionAGDOverTime,
     ]
-    if any(charts_of_interest):
+    if any(charts_of_interest):  # pylint: disable=too-many-nested-blocks
 
         name_fields = [
             "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
@@ -292,38 +291,42 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
             data_point_value_multipliers=value_multipliers,
+            char_wrap=user_profile.plotLabelCharWrap,
             uid="projectionxrayradiationdose__irradeventxraydata__pk",
         )
 
-        sorted_acquisition_agd_categories = None
         if user_profile.plotMGaverageAGDvsThickness or user_profile.plotMGaverageAGD:
-            sorted_acquisition_agd_categories = create_sorted_category_list(
-                df,
-                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",
-                [
-                    user_profile.plotInitialSortingDirection,
-                    user_profile.plotMGInitialSortingChoice,
-                ],
+
+            if user_profile.plotBoxplots and "median" not in average_choices:
+                average_choices = average_choices + ["median"]
+
+            name_field = (
+                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            )
+            value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose"  # pylint: disable=line-too-long
+
+            df_aggregated = (
+                create_dataframe_aggregates(  # pylint: disable=line-too-long
+                    df,
+                    [name_field],
+                    value_field,  # pylint: disable=line-too-long
+                    stats_to_use=average_choices + ["count"],
+                )
             )
 
             if user_profile.plotMGaverageAGDvsThickness:
-                category_names_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+                category_names_col = name_field
                 group_by_col = "x_ray_system_name"
                 legend_title = "Acquisition protocol"
-                facet_names = list(df[group_by_col].unique())
-                category_names = list(sorted_acquisition_agd_categories.values())[0]
 
                 if user_profile.plotGroupingChoice == "series":
                     category_names_col = "x_ray_system_name"
-                    group_by_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+                    group_by_col = name_field
                     legend_title = "System"
-                    category_names = facet_names
-                    facet_names = list(sorted_acquisition_agd_categories.values())[0]
 
                 parameter_dict = {  # pylint: disable=line-too-long
                     "df_x_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
-                    "df_y_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
+                    "df_y_value_col": value_field,  # pylint: disable=line-too-long
                     "x_axis_title": "Compressed breast thickness (mm)",
                     "y_axis_title": "AGD (mGy)",
                     "df_category_col": category_names_col,
@@ -333,8 +336,10 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     "colourmap": user_profile.plotColourMapChoice,
                     "filename": "OpenREM CT acquisition protocol average AGD vs thickness",
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "df_facet_category_list": facet_names,
-                    "df_category_name_list": category_names,
+                    "sorting_choice": [
+                        user_profile.plotInitialSortingDirection,
+                        user_profile.plotMGInitialSortingChoice,
+                    ],
                     "return_as_dict": return_as_dict,
                 }
                 if user_profile.plotMean:
@@ -357,23 +362,20 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotMGaverageAGD:
                 if user_profile.plotMean or user_profile.plotMedian:
-                    df_aggregated = create_dataframe_aggregates(  # pylint: disable=line-too-long
-                        df,
-                        [
-                            "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
-                        ],
-                        "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
-                        stats_to_use=average_choices + ["count"],
-                    )
+                    if user_profile.plotBoxplots and "median" not in average_choices:
+                        average_choices = average_choices + ["median"]
 
                     parameter_dict = {
-                        "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
+                        "df_name_col": name_field,
                         "name_axis_title": "Acquisition protocol",
                         "colourmap": user_profile.plotColourMapChoice,
-                        "sorted_category_list": sorted_acquisition_agd_categories,
                         "facet_col": None,
                         "facet_col_wrap": user_profile.plotFacetColWrapVal,
                         "return_as_dict": return_as_dict,
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotMGInitialSortingChoice,
+                        ],
                     }
                     if user_profile.plotMean:
                         parameter_dict["value_axis_title"] = "Mean AGD (mGy)"
@@ -407,50 +409,50 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotBoxplots:
                     parameter_dict = {  # pylint: disable=line-too-long
-                        "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
-                        "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
+                        "df_name_col": name_field,
+                        "df_value_col": value_field,  # pylint: disable=line-too-long
                         "value_axis_title": "AGD (mGy)",
                         "name_axis_title": "Acquisition protocol",
                         "colourmap": user_profile.plotColourMapChoice,
                         "filename": "OpenREM MG acquisition protocol AGD boxplot",
-                        "sorted_category_list": sorted_acquisition_agd_categories,
                         "facet_col": None,
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotMGInitialSortingChoice,
+                        ],
                         "facet_col_wrap": user_profile.plotFacetColWrapVal,
                         "return_as_dict": return_as_dict,
                     }
+
                     return_structure["acquisitionBoxplotAGDData"] = plotly_boxplot(
                         df,
                         parameter_dict,
                     )
 
                 if user_profile.plotHistograms:
-                    category_names_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+                    category_names_col = name_field
                     group_by_col = "x_ray_system_name"
                     legend_title = "Acquisition protocol"
-                    facet_names = list(df[group_by_col].unique())
-                    category_names = list(sorted_acquisition_agd_categories.values())[0]
 
                     if user_profile.plotGroupingChoice == "series":
                         category_names_col = "x_ray_system_name"
-                        group_by_col = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+                        group_by_col = name_field
                         legend_title = "System"
-                        category_names = facet_names
-                        facet_names = list(sorted_acquisition_agd_categories.values())[
-                            0
-                        ]
 
                     parameter_dict = {  # pylint: disable=line-too-long
                         "df_facet_col": group_by_col,
                         "df_category_col": category_names_col,
-                        "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
+                        "df_value_col": value_field,  # pylint: disable=line-too-long
                         "value_axis_title": "AGD (mGy)",
                         "legend_title": legend_title,
                         "n_bins": user_profile.plotHistogramBins,
                         "colourmap": user_profile.plotColourMapChoice,
                         "filename": "OpenREM MG acquisition protocol AGD histogram",
                         "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                        "df_facet_category_list": facet_names,
-                        "df_category_name_list": category_names,
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotMGInitialSortingChoice,
+                        ],
                         "global_max_min": user_profile.plotHistogramGlobalBins,
                         "return_as_dict": return_as_dict,
                     }
@@ -466,7 +468,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                 "df_x_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
                 "df_y_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose",  # pylint: disable=line-too-long
-                "sorting": [
+                "sorting_choice": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotMGInitialSortingChoice,
                 ],
@@ -491,7 +493,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                 "df_x_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
                 "df_y_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp",  # pylint: disable=line-too-long
-                "sorting": [
+                "sorting_choice": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotMGInitialSortingChoice,
                 ],
@@ -516,7 +518,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                 "df_x_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness",  # pylint: disable=line-too-long
                 "df_y_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",  # pylint: disable=line-too-long
-                "sorting": [
+                "sorting_choice": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotMGInitialSortingChoice,
                 ],
@@ -537,10 +539,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             )
 
         if user_profile.plotMGacquisitionFreq:
-            sorted_categories = None
-            if user_profile.plotMGaverageAGD:
-                sorted_categories = sorted_acquisition_agd_categories
-
             parameter_dict = {
                 "df_name_col": "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol",
                 "sorting_choice": [
@@ -553,7 +551,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "grouping_choice": user_profile.plotGroupingChoice,
                 "colourmap": user_profile.plotColourMapChoice,
                 "filename": "OpenREM MG acquisition protocol frequency",
-                "sorted_categories": sorted_categories,
                 "groupby_cols": None,
                 "facet_col": None,
                 "facet_col_wrap": user_profile.plotFacetColWrapVal,
@@ -580,7 +577,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 "value_title": "AGD (mGy)",
                 "date_title": "Study date",
                 "facet_title": facet_title,
-                "sorting": [
+                "sorting_choice": [
                     user_profile.plotInitialSortingDirection,
                     user_profile.plotMGInitialSortingChoice,
                 ],
@@ -651,6 +648,10 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 colourmap=user_profile.plotColourMapChoice,
                 filename="OpenREM CT study description workload",
                 facet_col_wrap=user_profile.plotFacetColWrapVal,
+                sorting_choice=[
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotMGInitialSortingChoice,
+                ],
                 return_as_dict=return_as_dict,
             )
 

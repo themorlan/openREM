@@ -33,8 +33,13 @@
                     {{ field.errors }}
                     <tr>
                         {% if field.name != "plotColourMapChoice" %}
-                            <td>{{ field.label_tag }}</td>
-                            <td>{{ field }}</td>
+                            {% ifequal field.field.widget.attrs.class 'CheckboxSelectMultiple' %}
+                                <td class="shaded_background">{{ field.label_tag }}</td>
+                                <td class="shaded_background">{{ field }}</td>
+                            {% else %}
+                                <td>{{ field.label_tag }}</td>
+                                <td>{{ field }}</td>
+                            {% endifequal %}
                         {% endif %}
                     </tr>
                 {% endfor %}
@@ -69,8 +74,18 @@
       </div>
       <div class="panel-body">
         <table aria-describedby="CT chart options">
-          {% csrf_token %}
-          {{ CTChartOptionsForm }}
+            {% csrf_token %}
+            {% for field in CTChartOptionsForm %}
+                <tr>
+                {% ifequal field.field.widget.attrs.class 'CheckboxSelectMultiple' %}
+                    <td class="shaded_background"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                    <td class="shaded_background">{{ field }}</td>
+                {% else %}
+                    <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                    <td>{{ field }}</td>
+                {% endifequal %}
+                </tr>
+            {% endfor %}
         </table>
         <input class="btn btn-default" name="submit" type="submit" />
       </div>

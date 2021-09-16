@@ -673,6 +673,8 @@ class UserProfile(models.Model, CommonVariables):
 
     plotRemoveCategoryWhitespacePadding = models.BooleanField(default=False)
 
+    plotLabelCharWrap = models.PositiveSmallIntegerField(default=500)
+
     summaryWorkloadDaysA = models.IntegerField(
         blank=True,
         null=True,

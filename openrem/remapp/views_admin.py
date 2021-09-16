@@ -1335,6 +1335,10 @@ def chart_options_view(request):
                 general_form.cleaned_data["plotRemoveCategoryWhitespacePadding"]
             )
 
+            user_profile.plotLabelCharWrap = general_form.cleaned_data[
+                "plotLabelCharWrap"
+            ]
+
             set_common_chart_options(general_form, user_profile)
 
             set_average_chart_options(general_form, user_profile)
@@ -1379,6 +1383,7 @@ def chart_options_view(request):
         "plotHistogramGlobalBins": user_profile.plotHistogramGlobalBins,
         "plotCaseInsensitiveCategories": user_profile.plotCaseInsensitiveCategories,
         "plotRemoveCategoryWhitespacePadding": user_profile.plotRemoveCategoryWhitespacePadding,
+        "plotLabelCharWrap": user_profile.plotLabelCharWrap,
         "plotThemeChoice": user_profile.plotThemeChoice,
         "plotColourMapChoice": user_profile.plotColourMapChoice,
         "plotFacetColWrapVal": user_profile.plotFacetColWrapVal,

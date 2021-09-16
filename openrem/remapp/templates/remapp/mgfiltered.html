@@ -86,7 +86,17 @@
             <div class="panel-body">
                 <table aria-describedby="Mammography chart options">
                     {% csrf_token %}
-                    {{ chartOptionsForm }}
+                    {% for field in chartOptionsForm %}
+                        <tr>
+                        {% ifequal field.field.widget.attrs.class 'CheckboxSelectMultiple' %}
+                            <td class="shaded_background"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                            <td class="shaded_background">{{ field }}</td>
+                        {% else %}
+                            <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                            <td>{{ field }}</td>
+                        {% endifequal %}
+                        </tr>
+                    {% endfor %}
                 </table>
                 <input class="btn btn-default" name="submit" type="submit" />
             </div>
@@ -212,7 +222,7 @@
         <div class="ajax-progress"><img src="{{ STATIC_URL }}img/ajax-loader.gif"></div>
 
         <!-- JavaScript to enable Plotly charts -->
-        <script src="{{ STATIC_URL }}js/charts/plotly-2.2.0.min.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/plotly-2.4.2.min.js"></script>
         <!-- End of JavaScript to enable Plotly charts -->
 
         <!-- JavaScript Plotly chart resizing code. -->
