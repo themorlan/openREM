@@ -46,7 +46,7 @@ def mg_csv_nhsbsp(filterdict, user=None):
 
     """
 
-    from ..models import GeneralStudyModuleAttr
+    from remapp.models import GeneralStudyModuleAttr
     from ..interface.mod_filters import MGSummaryListFilter
     from .export_common import (
         create_csv,

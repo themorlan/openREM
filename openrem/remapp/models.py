@@ -673,6 +673,8 @@ class UserProfile(models.Model, CommonVariables):
 
     plotRemoveCategoryWhitespacePadding = models.BooleanField(default=False)
 
+    plotLabelCharWrap = models.PositiveSmallIntegerField(default=500)
+
     summaryWorkloadDaysA = models.IntegerField(
         blank=True,
         null=True,
@@ -940,6 +942,9 @@ class SkinDoseMapResults(models.Model):
     patient_orientation = models.CharField(max_length=16, blank=True, null=True)
     patient_orientation_assumed = models.CharField(max_length=16, null=True, blank=True)
     peak_skin_dose = models.DecimalField(
+        max_digits=16, decimal_places=4, null=True, blank=True
+    )
+    dap_fraction = models.DecimalField(
         max_digits=16, decimal_places=4, null=True, blank=True
     )
     skin_map_version = models.CharField(max_length=16, null=True, blank=True)

@@ -36,11 +36,20 @@ import os
 import sys
 from time import sleep
 
+from django.conf import settings
 from celery import shared_task
 from defusedxml.ElementTree import fromstring, ParseError
 import django
 from django.db.models import Avg, Sum, ObjectDoesNotExist
 import pydicom
+
+# setup django/OpenREM.
+basepath = os.path.dirname(__file__)
+projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
+if projectpath not in sys.path:
+    sys.path.insert(1, projectpath)
+os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
+django.setup()
 
 from ..tools.check_uid import record_sop_instance_uid
 from ..tools.dcmdatetime import get_date, get_time, make_date, make_date_time, make_time
@@ -56,13 +65,6 @@ from ..tools.hash_id import hash_id
 from ..tools.make_skin_map import make_skin_map
 from ..tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
 
-# setup django/OpenREM.
-basepath = os.path.dirname(__file__)
-projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
-if projectpath not in sys.path:
-    sys.path.insert(1, projectpath)
-os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
-django.setup()
 
 from .extract_common import (  # pylint: disable=wrong-import-order, wrong-import-position
     ct_event_type_count,
@@ -1858,6 +1860,9 @@ def _generalequipmentmoduleattributes(dataset, study):
             0
         ]  # 121012 = DeviceObserverUID
     except IndexError:
+        device_observer_uid = None
+
+    if equip.manufacturer_model_name in settings.IGNORE_DEVICE_OBSERVER_UID_FOR_THESE_MODELS:
         device_observer_uid = None
 
     equip_display_name, created = UniqueEquipmentNames.objects.get_or_create(
