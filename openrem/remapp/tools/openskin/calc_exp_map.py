@@ -147,7 +147,8 @@ class CalcExpMap:
                     self.table_width,
                     self.table_trans,
                     self.table_thick + self.matt_thick,
-                )
+                ),
+                dap,
             )
         else:
             self.my_dose.add_dose(
@@ -163,5 +164,6 @@ class CalcExpMap:
                     self.table_width,
                     self.table_trans,
                     self.table_thick + self.matt_thick,
-                )
+                ),
+                dap,
             )
