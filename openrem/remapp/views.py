@@ -411,10 +411,23 @@ def rf_detail_view(request, pk=None):
             pass
         stu_dose_totals[0] = (fluoro_dap_total, fluoro_rp_total)
         stu_dose_totals[1] = (acq_dap_total, acq_rp_total)
-        stu_time_totals[0] = stu_time_totals[0] + accum_dose_ds.total_fluoro_time
-        stu_time_totals[1] = stu_time_totals[1] + accum_dose_ds.total_acquisition_time
-        total_dap = total_dap + accum_dose_ds.dose_area_product_total
-        total_dose = total_dose + accum_dose_ds.dose_rp_total
+        try:
+            stu_time_totals[0] = stu_time_totals[0] + accum_dose_ds.total_fluoro_time
+        except TypeError:
+            pass
+        try:
+            stu_time_totals[1] = stu_time_totals[1] + accum_dose_ds.total_acquisition_time
+        except TypeError:
+            pass
+        accum_integrated = accum_dose_ds.accumulated_xray_dose.accumintegratedprojradiogdose_set.get()
+        try:
+            total_dap = total_dap + accum_integrated.dose_area_product_total
+        except TypeError:
+            pass
+        try:
+            total_dose = total_dose + accum_dose_ds.dose_rp_total
+        except TypeError:
+            pass
 
     # get info for different Acquisition Types
     stu_inc_totals = (  # pylint: disable=line-too-long
