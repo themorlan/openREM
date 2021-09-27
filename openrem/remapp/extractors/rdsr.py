@@ -1668,15 +1668,24 @@ def _import_varic(dataset, proj):
             accum = AccumXRayDose.objects.create(projection_xray_radiation_dose=proj)
             accum.save()
             accumint = AccumIntegratedProjRadiogDose.objects.create(accumulated_xray_dose=accum)
-            accumint.total_number_of_radiographic_frames = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
+            try:
+                accumint.total_number_of_radiographic_frames = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
+            except IndexError:
+                pass
             accumint.save()
         if cont.ConceptNameCodeSequence[0].CodeValue == "C-202":
             accumproj = AccumProjXRayDose.objects.create(accumulated_xray_dose=accum)
             accumproj.save()
-            accumproj.total_fluoro_time = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
+            try:
+                accumproj.total_fluoro_time = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
+            except IndexError:
+                pass
             accumproj.save()
         if cont.ConceptNameCodeSequence[0].CodeValue == "C-204":
-            accumint.dose_area_product_total = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
+            try:
+                accumint.dose_area_product_total = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue) / 10000.0
+            except (TypeError, IndexError):
+                pass
             accumint.save()
         # cumulative air kerma in dose report example is not available ("Measurement not attempted")
 
