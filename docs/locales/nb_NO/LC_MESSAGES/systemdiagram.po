@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../systemdiagram.rst:2
+msgid "Diagram of system components"
+msgstr ""
+
+#: ../../systemdiagram.rst:83
+msgid "Alternatives"
+msgstr ""
+
+#: ../../systemdiagram.rst:86
+msgid "1: Web servers"
+msgstr ""
+
+#: ../../systemdiagram.rst:87
+msgid ""
+"The recommended web server for Windows is Microsoft IIS - see "
+":doc:`iis_on_windows` for details. This has replaced the recommendation "
+"to use Apache due to difficulties in obtaining the required binary files,"
+" as described in the :ref:`webservers` section of the installation "
+"document."
+msgstr ""
+
+#: ../../systemdiagram.rst:91
+msgid ""
+"The recommended web server for Linux is Gunicorn with NGINX - see "
+":doc:`nginx_on_linux` for details."
+msgstr ""
+
+#: ../../systemdiagram.rst:93
+msgid ""
+"Alternatively, a built-in web server is included that will suffice for "
+"testing purposes and getting started."
+msgstr ""
+
+#: ../../systemdiagram.rst:96
+msgid "2: DICOM Store node"
+msgstr ""
+
+#: ../../systemdiagram.rst:97
+msgid ""
+"Any DICOM Store can be used, as long as it can be used to call the "
+"OpenREM import script. A built-in store is available, but not recommended"
+" for production use. See :doc:`netdicom-nodes` for more details. Orthanc "
+"or Conquest are the recommended DICOM Store services to use; see "
+":ref:`installdicomstore` for installation notes and the "
+":ref:`configure_third_party_DICOM` section for configuration help."
+msgstr ""
+
+#: ../../systemdiagram.rst:103
+msgid "3: Database"
+msgstr ""
+
+#: ../../systemdiagram.rst:104
+msgid ""
+"PostgreSQL is the recommended database to use with OpenREM. It is the "
+"only database that OpenREM will calculate median values for charts with. "
+"Other databases can be used with varying capabilities; see the `Django "
+"documentation <https://docs.djangoproject.com/en/1.8/ref/databases/>`_ "
+"for more details. For testing only, the built-in SQLite3 database can be "
+"used, but this is not suitable for later migration to a production "
+"database."
+msgstr ""
+

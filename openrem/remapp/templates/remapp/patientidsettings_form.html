@@ -4,7 +4,7 @@
 
 {% block navhelp %}
         <li>
-            <a href="http://docs.openrem.org/en/{{ admin.docsversion }}/patientid.html" target="_blank" data-toggle="tooltip" title="Patient ID documentation - opens in a new tab">
+            <a href="https://docs.openrem.org/en/{{ admin.docsversion }}/patientid.html" target="_blank" data-toggle="tooltip" title="Patient ID documentation - opens in a new tab">
                 Patient ID settings
             </a>
         </li>
@@ -72,7 +72,7 @@
                     </tr>
                 </table>
               <input class="btn btn-primary" type="submit" value="Submit">
-              <a class="btn btn-default" href="/" role="button">Cancel</a>
+              <a class="btn btn-default" href="{% url 'home' %}" role="button">Cancel</a>
             </form>
         {% else %}
             <p>Only users in the Admin group can modify these settings.</p>

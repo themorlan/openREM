@@ -1,0 +1,58 @@
+{% extends "remapp/base.html" %}
+
+{% block navhelp %}
+        <li>
+            <a href="https://docs.openrem.org/en/{{ admin.docsversion }}/i_homepage.html" target="_blank" data-toggle="tooltip" title="Home page configuration - opens in a new tab">
+                Home page configuration documentation
+            </a>
+        </li>
+{% endblock %}
+
+{% block confnav %}<li class="dropdown active">{% endblock %}
+
+{% block toprow %}
+{% endblock %}
+
+{% block mainblock %}
+
+  <form action="" method="post" class="form-horizontal" role="form">
+    <div class="panel panel-info">
+
+      <div class="panel-heading">
+        <h3 class="panel-title">Home page options</h3>
+      </div>
+      <div class="panel-body">
+      <h4>Display of workload data on the home page</h4>
+        <table>
+          {% csrf_token %}
+            {% for field in HomepageOptionsForm %}
+                {% if field.name == "enable_workload_stats" %}
+                    {% if admin.admingroup %}
+                        <tr>
+                            <th>{{ field.label_tag }}</th>
+                            <td>
+                                {{ field.errors }}
+                                {{ field }}
+                                {{ field.help_text }}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% else %}
+                    <tr>
+                        <th>{{ field.label_tag }}</th>
+                        <td>
+                            {{ field.errors }}
+                            {{ field }}
+                            {{ field.help_text }}
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+        <input class="btn btn-default" name="submit" type="submit" />
+      </div>
+
+    </div>
+  </form>
+
+{% endblock %}

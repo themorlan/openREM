@@ -1,0 +1,88 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../celery-linux.rst:3 55a8272f7f20437b92ad45e8dfda8226
+msgid "Daemonising Celery and Flower on Linux"
+msgstr ""
+
+#: ../../celery-linux.rst:5 ea2effeccfd3407d867beffa69962d2b
+msgid ""
+"Guides to daemonising Celery can be found in the Celery documentation at "
+"http://docs.celeryproject.org/en/latest/userguide/daemonizing.html."
+msgstr ""
+
+#: ../../celery-linux.rst:8 e9d1e6439aad465f843146346524c689
+msgid ""
+"Alternatively, if you are running Ubuntu 18.04 or another systemd based "
+"Linux operating system, the instructions below are taken from the Celery "
+"docs but customised for OpenREM."
+msgstr ""
+
+#: ../../celery-linux.rst:11 451842cefd244b91bcdce31c14221028
+msgid "In this example, the following folders have been created:"
+msgstr ""
+
+#: ../../celery-linux.rst:13 a0a35cea53a74df09152de188f5054c4
+msgid ":file:`/var/dose/celery/`"
+msgstr ""
+
+#: ../../celery-linux.rst:14 391273f9de474d8f86b719c109776eda
+msgid ":file:`/var/dose/log/`"
+msgstr ""
+
+#: ../../celery-linux.rst:15 4d24c1b963ec4c558548891eb96c87fa
+msgid ":file:`/var/dose/veopenrem/`"
+msgstr ""
+
+#: ../../celery-linux.rst:17 6be072cc58874ceb965ee0ed8efa8852
+msgid "OpenREM is installed in a virtualenv in ``/var/dose/veopenrem/``"
+msgstr ""
+
+#: ../../celery-linux.rst:19 9a498a4f2ec1474abafb06faf1497241
+msgid ""
+"Adjust all the paths as appropriate. If you change the default port from "
+"5555 then you need to make the same change in "
+"``openremproject\\local_settings.py`` to add/modify the line "
+"``FLOWER_PORT = 5555``"
+msgstr ""
+
+#: ../../celery-linux.rst:22 88a3df543fa74d5fa9816f836968290b
+msgid "First, create a Celery configuration file:"
+msgstr ""
+
+#: ../../celery-linux.rst:24 6e16880872d14805b71c7ad2d0044488
+msgid "``nano /var/dose/celery/celery.conf``"
+msgstr ""
+
+#: ../../celery-linux.rst:56 2901b55a1be14453896303de93ed7575
+msgid "Now create the systemd service files:"
+msgstr ""
+
+#: ../../celery-linux.rst:58 8389116c1388461bb490c94547d0c3f9
+msgid "``sudo nano /etc/systemd/system/celery-openrem.service``"
+msgstr ""
+
+#: ../../celery-linux.rst:85 0ceaab5f63d84cddbcc1920b90a4d33e
+msgid "``sudo nano /etc/systemd/system/flower-openrem.service``"
+msgstr ""
+
+#: ../../celery-linux.rst:106 b21f57332914461797662fa338bf5f27
+msgid "Now register, set to start on boot, and start the services:"
+msgstr ""
+

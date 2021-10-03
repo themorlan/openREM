@@ -4,8 +4,8 @@
 
 {% block navhelp %}
         <li>
-            <a href="http://docs.openrem.org/en/{{ admin.docsversion }}/i_displaynames.html#changing-x-ray-system-display-names" target="_blank" data-toggle="tooltip" title="Display name documentation - opens in a new tab">
-                Changing display names
+            <a href="https://docs.openrem.org/en/{{ admin.docsversion }}/i_displaynames.html#changing-x-ray-system-display-names" target="_blank" data-toggle="tooltip" title="Display name documentation - opens in a new tab">
+                Changing display names and / or modality type
             </a>
         </li>
 {% endblock %}
@@ -13,16 +13,26 @@
 
 {% block mainblock %}
   {% if admin.admingroup %}
-  <form action="/openrem/updatedisplaynames/" method="post">{% csrf_token %}
+  <form action="{% url 'display_name_update' %}" method="post">{% csrf_token %}
   {% endif %}
-  <table class="table table-bordered table-hover row-clickable">
-    <row>
-      <th>Display name</th><th>Institution</th><th>Department</th><th>Manufacturer</th><th>Model</th><th>Station name</th><th>Serial no.</th><th>Software version</th><th>Gantry ID</th>
-    </row>
+  <table class="table table-bordered table-hover row-clickable" aria-describedby="Display names to update">
+    <tr>
+      <th scope="col">Display name</th>
+      <th scope="col">User defined modality</th>
+      <th scope="col">Institution</th>
+      <th scope="col">Department</th>
+      <th scope="col">Manufacturer</th>
+      <th scope="col">Model</th>
+      <th scope="col">Station name</th>
+      <th scope="col">Serial no.</th>
+      <th scope="col">Software version</th>
+      <th scope="col">Gantry ID</th>
+    </tr>
 
     {% for eachname in name_list %}
       <tr>
         <td><a style="text-decoration: none">{{ eachname.display_name }}</a></td>
+        <td><a style="text-decoration: none">{{ eachname.user_defined_modality }}</a></td>
         <td><a style="text-decoration: none">{{ eachname.institution_name }}</a></td>
         <td><a style="text-decoration: none">{{ eachname.institutional_department_name }}</a></td>
         <td><a style="text-decoration: none">{{ eachname.manufacturer }}</a></td>
@@ -37,8 +47,24 @@
   </table>
 
   {% if admin.admingroup %}
-      Enter new display name to be used for all of the above systems:
-      <input name="new_display_name" type="text" value="" /><br>
+  	  <table aria-describedby="New display name details">
+  	  <tr>
+        <th scope="row">Enter new display name to be used for all of the above systems:</th>
+        <td><input name="new_display_name" type="text" value="" /></td>
+  	  </tr>
+  	  <tr>
+        <th scope="row">Enter a user defined modality type for all of the above systems:</th>
+        <td>
+          <select name="new_user_defined_modality">
+        	  <option value="">[Leave unchanged]</option>
+      		  <option value="DX">DX (planar x-ray)</option>
+      		  <option value="RF">RF (fluoroscopy)</option>
+            <option value="dual">Dual (planar x-ray and fluoroscopy)</option>
+      	  </select>
+        </td>
+      </tr>
+      </table>
+      <br>
       <input id="pks" name="pks" type="hidden" value="" />
 
       <script>
@@ -64,7 +90,7 @@
   {% if admin.admingroup %}
   <input class="btn btn-primary" type="submit" value="Update">
   {% endif %}
-  <a class="btn btn-default" href="/openrem/viewdisplaynames/" role="button">Cancel</a>
+  <a class="btn btn-default" href="{%  url 'display_names_view' %}" role="button">Cancel</a>
   </form>
 
 {% endblock %}

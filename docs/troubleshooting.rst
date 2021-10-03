@@ -2,54 +2,117 @@
 Troubleshooting
 ***************
 
-Server 500 errors
+**Document not ready for translation**
+
+General Docker troubleshooting
+==============================
+
+All commands should be run from the folder where ``docker-compose.yml`` is.
+
+To list the active containers:
+
+.. code-block:: console
+
+    $ docker-compose ps
+
+To list active containers running anywhere on the system:
+
+.. code-block:: console
+
+    $ docker ps
+
+To start the containers and detach (so you get the command prompt back instead of seeing all the logging):
+
+.. code-block:: console
+
+    $ docker-compose up -d
+
+To stop the containers:
+
+.. code-block:: console
+
+    $ docker-compose down
+
+To see logs of all the containers in follow mode (``-f``) and with timestamps (``-t``):
+
+.. code-block:: console
+
+    $ docker-compose logs -ft
+
+To see logs of just one container in follow mode - use the service name from the ``docker-compose.yml`` file, choose
+from ``openrem``, ``worker`` (Celery), ``flower`` (Flower), ``db`` (PostgreSQL), ``nginx`` (web server),
+``broker`` (RabbitMQ), ``orthanc_1`` (DICOM server):
+
+.. code-block:: console
+
+    $ docker-compose logs -f orthanc_1
+
+
+Other Docker errors
+===================
+
+.. toctree::
+    :maxdepth: 2
+
+    docker_up
+
+OpenREM log files
 =================
 
-**Turn on debug mode**
+Log file location, naming and verbosity were configured in the ``.env.prod`` configuration - see the
+:doc:`env_variables` configuration docs for details.
 
-Locate and edit your local_settings file
+The ``openrem.log`` has general logging information, the other two are specific to the DICOM store and DICOM
+query-retrieve functions if you are making use of them.
 
-* Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/openremproject/local_settings.py``
-* Other linux: ``/usr/lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
-* Linux virtualenv: ``lib/python2.7/site-packages/openrem/openremproject/local_settings.py``
-* Windows: ``C:\Python27\Lib\site-packages\openrem\openremproject\local_settings.py``
-* Windows virtualenv: ``Lib\site-packages\openrem\openremproject\local_settings.py``
+You can increase the verbosity of the log files by changing the log 'level' to ``DEBUG``, or you can decrease the
+verbosity to ``WARNING``, ``ERROR``, or ``CRITICAL``. The default is ``INFO``.
 
-* Change the line::
+To list the OpenREM log folder (with details, sorted with newest at the bottom, 'human' file sizes):
 
-    # DEBUG = True
+.. code-block:: console
 
-* to::
+    $ docker-compose exec openrem ls -rlth /logs
 
-    DEBUG = True
+To review the ``openrem.log`` file for example:
 
-This will render a debug report in the browser - usually revealing the problem.
+.. code-block:: console
 
-Once the problem is fixed, change ``DEBUG`` to ``False``, or comment it again using a ``#``. If you leave debug mode
-in place, the system is likely to run out of memory.
+    $ docker-compose exec openrem more /logs/openrem.log
 
 
-Query-retrieve issues
-=====================
+Older stuff
+===========
 
-Refer to the :ref:`qrtroubleshooting` documentation
+..  toctree::
+    :maxdepth: 1
 
-OpenREM DICOM storage nodes
-===========================
+    trouble500
+    troubledbtlaterality
 
-Refer to the :ref:`storetroubleshooting` documentation
+If you have a modality where every study has one event (usually CT), review
+
+.. toctree::
+    :maxdepth: 1
+
+    import_multirdsr
+
+If planar X-ray studies are appearing in fluoroscopy or vice-versa, review
+
+* :doc:`i_displaynames`
+
+For DICOM networking:
+
+* :ref:`qrtroubleshooting` for query retrieve
+* :ref:`storetroubleshooting` for DICOM store
+
+For RabbitMQ/task management:
+
+* :doc:`rabbitmq_management`
 
 Log files
 =========
 
-Log file location, naming and verbosity were configured in the ``local_settings.py`` configuration - see the
-:ref:`local_settings_logfile` configuration docs for details.
-
-If the defaults have not been modified, then there will be three log files in your ``MEDIAROOT`` folder which you
-configured at installation. See the install config section on :ref:`mediarootsettings` for details.
-
-The ``openrem.log`` has general logging information, the other two are specific to the DICOM store and DICOM
-query-retrieve functions if you are making use of them.
 
 Starting again!
 ===============
@@ -71,18 +134,29 @@ In a shell/command window, move into the openrem folder:
 
 * Ubuntu linux: ``cd /usr/local/lib/python2.7/dist-packages/openrem/``
 * Other linux: ``cd /usr/lib/python2.7/site-packages/openrem/``
+* Linux virtualenv: ``cd virtualenvfolder/lib/python2.7/site-packages/openrem/``
 * Windows: ``cd C:\Python27\Lib\site-packages\openrem\``
-* Virtualenv: ``cd lib/python2.7/site-packages/openrem/``
+* Windows virtualenv: ``cd virtualenvfolder\Lib\site-packages\openrem\``
 
 Run the django python shell:
 
-.. sourcecode:: python
+.. code-block:: console
 
-    python manage.py shell
+    $ python manage.py shell
 
-    from remapp.models import GeneralStudyModuleAttr
-    a = GeneralStudyModuleAttr.objects.all()
-    a.count()  # Just to see that we are doing something!
-    a.delete()
-    a.count()
-    exit()
+.. code-block:: python
+
+    >>> from remapp.models import GeneralStudyModuleAttr
+    >>> a = GeneralStudyModuleAttr.objects.all()
+    >>> a.count()  # Just to see that we are doing something!
+    53423
+
+And if you are sure you want to delete all the studies...
+
+.. code-block:: python
+
+    >>> a.delete()
+    >>> a.count()
+    0
+
+    >>> exit()

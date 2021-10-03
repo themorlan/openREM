@@ -1,0 +1,187 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../rabbitmq_management.rst:2 c30802f34d7e49d99dce2de262b433c3
+msgid "Task management"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:3 77fe6f5a45f04ca6bdbdbf1544e90cf8
+msgid "*New in 0.9*"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:5 9796cbfcaa984932974b71259dbd7a0f
+msgid "Contents"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:8 9bb6c2d3b275449788d66aa30d641718
+msgid "Enabling RabbitMQ management"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:10 626473c396ee461b9cbd58d18d2d55de
+msgid ""
+"Installation instructions were added in 0.9.0. Users upgrading from "
+"previous versions should review :ref:`enableRabbitMQ`."
+msgstr ""
+
+#: ../../rabbitmq_management.rst:15 90873836d1344b8f8c4e7aabfc583b03
+msgid "Viewing task and service statuses"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:22 c2c87f3cb7ef467b870e64464d3ba94a
+msgid "Figure 1: The ``Config`` menu (user and admin)"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:24 ba94a2be1fd946a79ad529daa9975b7e
+msgid ""
+"Users who are logged in with admin rights can use the **Config** menu and"
+" choose **Tasks** to see the following:"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:26 6132c25dc9f748c58996ec6a1b84382a
+msgid "The status of the task message broker, RabbitMQ"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:27 e20a474cc14e489ab1fe15771ed398cf
+msgid "The status of the asynchronous task queue, Celery"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:28 0cc0d227b7444f8fafdc4f02cd7bf9ae
+msgid "The status of the Celery monitoring tool, Flower"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:29 ef620f9ec8e5490bb327ae1d4f88c0ea
+msgid "How many tasks are waiting in RabbitMQ for a Celery worker to be available"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:30 18e76215ee2349119d5e4e69c2aefd4c
+msgid "A list of the tasks currently being managed by Celery"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:31 ef46f0616d664d38894ffe0f097e1a39
+msgid "A list of previous tasks and their final status"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:38 fcc50548ad0f48a18c07d69ef0c5de8d
+msgid "Figure 2: The task administration page"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:41 aad124c345894def95697f5639ba692b
+msgid "Service statuses"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:42 c2607d44e1da4069a3b9933d5c11f170
+msgid ""
+"The current status of the services necessary to execute and monitor tasks"
+" is displayed in the first section of the page."
+msgstr ""
+
+#: ../../rabbitmq_management.rst:45 0f1a3532a1f649dbbc257ac89ca2f559
+msgid "RabbitMQ message broker"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:52 1d97e85ea61e4d6e9060153b8d07b884
+msgid ""
+"Figure 3: RabbitMQ statuses: failed; running, no tasks waiting; running, "
+"two tasks waiting"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:54 17c44573f74a4995b702b891dc177790
+msgid ""
+"When tasks are created, they are sent to Celery to be processed via a "
+"message broker, RabbitMQ. Therefore this service must be running for any "
+"of the asynchronous tasks to execute - for example query-retrieve "
+"operations and exports. Normal function is indicated with a green status "
+"and a tick."
+msgstr ""
+
+#: ../../rabbitmq_management.rst:58 09cf798d134c459f85f954b08073b7ad
+msgid ""
+"When there are Celery workers available to take tasks, they will be "
+"passed through immediately and the service status be green as seen in the"
+" middle image of Figure 3. When all the Celery workers are busy any "
+"additional tasks will be held with the RabbitMQ broker, and an option to "
+"purge the queue is made available as in the bottom image in Figure 3."
+msgstr ""
+
+#: ../../rabbitmq_management.rst:63 c845b8594dc44eb5ad6057852ed42213
+msgid "Celery asynchronous task queue"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:70 d32f943095dd414aa2974fa532b51862
+msgid "Figure 4: Celery statuses: no RabbitMQ; not running; running"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:72 a1733662757642978b9f50f8f0c8aca2
+msgid ""
+"Celery is used to manage the tasks that need to be carried out "
+"asynchronously. In OpenREM, these tend to be long running tasks such as "
+"exports and query-retrieve."
+msgstr ""
+
+#: ../../rabbitmq_management.rst:75 cc96d79cd51546559a7d362b2e800999
+msgid ""
+"If RabbitMQ is not running, we can't tell if Celery is running; this is "
+"indicated by the first panel in Figure 4. If RabbitMQ is running but "
+"Celery isn't, this is indicated by the middle panel in Figure 4."
+msgstr ""
+
+#: ../../rabbitmq_management.rst:78 a06de0663c174d8788c941c0f645cca5
+msgid "Finally, when Celery is running a green panel with a tick is presented."
+msgstr ""
+
+#: ../../rabbitmq_management.rst:82 7c6f6345205640049d16ea60ae69047a
+msgid "Flower - Celery monitoring tool"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:89 63c78c03049c400ba1fa7221431aec92
+msgid "Figure 5: Flower statuses: not running; running"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:91 9e9e2e2afa7849889ad44689c3e8c4a6
+msgid ""
+"Flower enables monitoring of the Celery queues so we can see what is "
+"currently running, terminate if necessary, and maintain a log of previous"
+" tasks and how they finished. Flower logs are reset on restart of the "
+"service."
+msgstr ""
+
+#: ../../rabbitmq_management.rst:94 4d719c7dfb6a4984a32c5de239ef2474
+msgid ""
+"If Flower is not running, the Flower status panel will look like the top "
+"half of Figure 5. If it is running, the panel will look like the bottom "
+"half of Figure 5."
+msgstr ""
+
+#: ../../rabbitmq_management.rst:99 6a1160ab5ad64c9d970943728cd94686
+msgid "Terminating running tasks"
+msgstr ""
+
+#: ../../rabbitmq_management.rst:101 2b6a073d77b3400796bbf8e52d08d974
+msgid ""
+"Active tasks are listed after the service status section, as seen in "
+"Figure 2. The number of active tasks is limited by the number of workers "
+"you have configured - see :ref:`celery_concurrency` for details."
+msgstr ""
+
+#: ../../rabbitmq_management.rst:104 1d7a734ecfad48b487bd2d4d22051e95
+msgid ""
+"It is possible to terminate any running tasks by clicking the red button."
+" There is no confirmation step."
+msgstr ""
+

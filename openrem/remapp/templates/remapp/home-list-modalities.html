@@ -1,0 +1,91 @@
+{% load humanize %}
+{% load i18n %}
+
+{%  with modality|add:'_summary_list_filter' as url_name %}
+  <table class="table table-bordered table-hover row-clickable sortable" id="summary_table_{{ modality }}">
+    <tr>
+      <th>{% trans "System name" %}</th>
+      <th>{% trans "Total number of studies" %}</th>
+      <th>{% trans "Latest study" %}</th>
+      {% if home_config.display_workload_stats %}
+        <th>{% blocktrans with home_config.day_delta_a as day_delta trimmed %}
+            Number in last {{ day_delta }} days{% endblocktrans %}</th>
+        <th>{% blocktrans with home_config.day_delta_b as day_delta trimmed %}
+            Number in last {{ day_delta }} days{% endblocktrans %}</th>
+      {% endif %}
+    </tr>
+    {% for display_name,details in data.items %}
+      {% if not display_name %}
+        <tr>
+        <td style="width: 25%">
+          {% if admin.admingroup %}
+          <a href="{% url 'review_failed_imports' modality|upper %}">
+            Failed import - review here
+          </a>
+          {% else %}
+          <a href="#">
+            Failed import - ask an administrator to review
+          </a>
+          {% endif %}
+        </td>
+        <td style="width:25%">
+          {% if admin.admingroup %}
+            <a href="{% url 'review_failed_imports' modality|upper %}">
+          {% else %}
+            <a href="#">
+          {% endif %}
+            {{ details.total }}
+          </a>
+        </td>
+        <td style="width:25%" sorttable_customkey="{{ details.deltaseconds }}">
+          {% if admin.admingroup %}
+            <a href="{% url 'review_failed_imports' modality|upper %}">
+          {% else %}
+            <a href="#">
+          {% endif %}
+            {{ details.latest|naturaltime }}
+          </a>
+        </td>
+        {% if home_config.display_workload_stats %}
+          <td style="width:12.5%">
+          {% if admin.admingroup %}
+            <a href="{% url 'review_failed_imports' modality|upper %}">
+          {% endif %}
+          </td>
+          <td style="width:12.5%">
+          {% if admin.admingroup %}
+            <a href="{% url 'review_failed_imports' modality|upper %}">
+          {% endif %}
+          </td>
+        {% endif %}
+        </tr>
+      {% else %}
+      <tr>
+        <td style="width:25%">
+          <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date">
+            {{ details.displayname }}
+          </a>
+        </td>
+        <td style="width:25%">
+          <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date">
+            {{ details.total }}
+          </a>
+        </td>
+        <td style="width:25%" sorttable_customkey="{{ details.deltaseconds }}">
+          <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date">
+            {{ details.latest|naturaltime }}
+          </a>
+        </td>
+        {% if home_config.display_workload_stats %}
+          <td style="width:12.5%">
+            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date&study_date__gt={{ home_config.date_a }}" id="{{ details.displayname_pk }}_a"></a>
+          </td>
+          <td style="width:12.5%">
+            <a href="{% url url_name %}?generalequipmentmoduleattr__unique_equipment_name__display_name={{ display_name }}&o=-study_date&study_date__gt={{ home_config.date_b }}" id="{{ details.displayname_pk }}_b"></a>
+          </td>
+        {% endif %}
+      {% endif %}
+      </tr>
+    {% endfor %}
+  </table>
+{% endwith %}

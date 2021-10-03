@@ -1,10 +1,172 @@
-image: python:2.7
+image: python:3.8
 
-pipelines:
-  default:
-    - step:
-        script: # Modify the commands below to build your repository.
+clone:
+  depth: full    # SonarCloud scanner needs the full history to assign issues properly
+
+definitions:
+  caches:
+    sonar: ~/.sonar/cache  # Caching SonarCloud artifacts will speed up your build
+  services:
+    postgres:
+      image: postgres
+      environment:
+        POSTGRES_DB: openremdb
+        POSTGRES_USER: openremuser
+        POSTGRES_PASSWORD: openremuserpass
+    docker:
+      memory: 2560
+  steps:
+    - step: &flake8
+        name: run flake8
+        trigger: manual
+        script:
+          - pip install flake8
+          - mkdir test-reports
+          - flake8 --select=C,E,F,W,B,B950 --ignore=E203,E501,W503 --max-line-length=120 --exit-zero > flake8.txt
+        caches:
+          - pip
+        artifacts:
+          - test-reports/flake8.txt
+    - step: &sonarcloud
+        name: run sonarcloud scan
+        caches:
+          - sonar
+          - docker
+        script:
+          - pipe: sonarsource/sonarcloud-scan:1.2.0
+        services:
+          - docker
+    - step: &sonarcloudqualitygate
+        name: run sonarcloud quality gate
+        caches:
+          - sonar
+          - docker
+        script:
+          - pipe: sonarsource/sonarcloud-quality-gate:0.1.4
+            variables:
+              DEBUG: 'true'
+        services:
+          - docker
+    - step: &test
+        name: run django tests
+        script:
           - mv openrem/openremproject/local_settings.py{.example,}
+          - sed -i "s/INFO/DEBUG/g" openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'ENGINE':/c\        'ENGINE': 'django.db.backends.postgresql_psycopg2'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'NAME':/c\        'NAME': 'openremdb'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'USER':/c\        'USER': 'openremuser'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'PASSWORD':/c\        'PASSWORD': 'openremuserpass'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'HOST':/c\        'HOST': '127.0.0.1'," openrem/openremproject/local_settings.py
+          - >-
+            sed -i "/'PORT':/c\        'PORT': '5432'," openrem/openremproject/local_settings.py
           - mv openrem/openremproject/wsgi.py{.example,}
-          - pip install -U tox
-          - tox -e ci
+          - pip install -e .
+          - pip install coverage
+          - pip install coveralls
+          - pip install tblib
+          - python openrem/manage.py makemigrations remapp
+          - coverage run openrem/manage.py test remapp --parallel
+          - coverage combine
+          - coveralls
+          - coverage xml
+        artifacts:
+          - coverage.xml
+        services:
+          - postgres
+        caches:
+          - pip
+    - step: &deploy-to-openrem-org
+        name: deploy to $server
+        deployment: develop  # deployment has $server as a variable = dev.openrem.org
+        script:
+          - mkdir -p ~/.ssh
+          - cat deploy_tools/my_known_hosts >> ~/.ssh/known_hosts
+          - (umask  077 ; echo $BB_OPENREM_KEY | base64 --decode > ~/.ssh/id_rsa)
+          - echo $BITBUCKET_COMMIT
+          - SITE_FOLDER="/home/deploy/sites/$server/"
+          - SOURCE_FOLDER=$SITE_FOLDER"source"
+          - ssh deploy@$server "cd $SOURCE_FOLDER && git fetch"
+          - ssh deploy@$server "cd $SOURCE_FOLDER && git reset --hard $BITBUCKET_COMMIT"
+          - VENV_PIP=$SITE_FOLDER"virtualenv/bin/pip"
+          - ssh deploy@$server "$VENV_PIP install -e $SOURCE_FOLDER"
+          - VENV_PYTHON=$SITE_FOLDER"virtualenv/bin/python"
+          - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py collectstatic --noinput"
+          - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py makemigrations remapp --noinput"
+          - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py migrate --noinput"
+          - ssh deploy@$server "cd $SOURCE_FOLDER && $VENV_PYTHON openrem/manage.py compilemessages"
+          - ssh deploy@$server "sudo /usr/sbin/service gunicorn-$server restart"
+    - step: &build-and-deploy-to-docker
+        name: build and push to docker
+        script:
+          - export IMAGE_NAME=openrem/openrem:$BITBUCKET_BRANCH-$BITBUCKET_COMMIT
+          - docker build -t openrem/openrem:$BITBUCKET_BRANCH-$BITBUCKET_COMMIT -t openrem/openrem:$BITBUCKET_BRANCH .
+          - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
+          - docker push openrem/openrem
+        services:
+          - docker
+        caches:
+          - docker
+pipelines:
+  custom:
+    deploy-to-dev:
+      - step: *deploy-to-openrem-org
+    deploy-to-test:
+      - step:
+          <<: *deploy-to-openrem-org
+          deployment: testing  # deployment has $server as a variable = testing.openrem.org
+    deploy-to-docker:
+      - step: *build-and-deploy-to-docker
+  default:  # Standard commits are tested but not deployed
+    - step: *test
+    - step: *flake8
+    - step: *sonarcloud
+    - step: *sonarcloudqualitygate
+  branches:
+    develop:  # Commits to the develop branch are tested and deployed to dev.openrem.org on success
+      - step:
+          <<: *test
+          name: run django tests - develop
+      - step: *flake8
+      - step: *sonarcloud
+      - step: *sonarcloudqualitygate
+      - step: *deploy-to-openrem-org
+    master:  # Commits to the master branch are tested and pushed to Docker Hub
+      - step:
+          <<: *test
+          name: run django tests - master
+          deployment: Staging
+      - step: *flake8
+      - step: *sonarcloud
+      - step: *sonarcloudqualitygate
+    '*stage':  # Commits to any branch ending in 'stage' are tested and deployed to testing.openrem.org
+      - step:
+          <<: *test
+          name: run django tests - testing
+      - step:
+          <<: *deploy-to-openrem-org
+          deployment: testing  # deployment has $server as a variable = testing.openrem.org
+    '*docker':  # Commits to any branch ending in 'docker' are tested and deployed to docker hub. Will add to develop
+      - step:
+          <<: *test
+          name: run django tests - testing
+      - step:
+          <<: *build-and-deploy-to-docker
+          name: build and push to Docker Hub
+  tags:
+    '*':
+      - step:
+          name: retag and repush image
+          deployment: Production
+          script:
+            - export IMAGE_NAME=openrem/openrem:master-$BITBUCKET_COMMIT
+            - export NEW_IMAGE_NAME=openrem/openrem:$BITBUCKET_TAG
+            - docker login --username $DOCKER_HUB_USER --password $DOCKER_HUB_PASSWORD
+            - docker pull $IMAGE_NAME
+            - docker tag $IMAGE_NAME $NEW_IMAGE_NAME
+            - docker push $NEW_IMAGE_NAME
+

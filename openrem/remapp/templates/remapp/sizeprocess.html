@@ -2,7 +2,7 @@
 
 {% block navhelp %}
         <li>
-            <a href="http://docs.openrem.org/en/{{ admin.docsversion }}/i_patientsize.html" target="_blank" data-toggle="tooltip" title="Patient size upload documentation - opens in a new tab">
+            <a href="https://docs.openrem.org/en/{{ admin.docsversion }}/i_patientsize.html" target="_blank" data-toggle="tooltip" title="Patient size upload documentation - opens in a new tab">
                 Patient size upload documentation
             </a>
         </li>
@@ -10,7 +10,7 @@
 
 {% block importnav %}<li class="dropdown active">{% endblock %}
 
-{% block mainblock %}		
+{% block mainblock %}
 
 {% if admin.importsizegroup %}
 
@@ -22,14 +22,15 @@
                 From the select boxes below, choose the column title that
                 corresponds to each of the height (in cm), weight (in kg) and ID fields.
                 In the last select box, specify if the ID field is the
-                accession number or the study instance UID.
+                accession number or the study instance UID. Tick the checkbox if you want any existing values to be
+                overwritten, else only missing values will be updated.
             </p>
         </div>
 
 
 
 		<!-- Upload form. Note enctype attribute! -->
-		<form action="/openrem/admin/sizeprocess/{{ csvid }}/" method="post" enctype="multipart/form-data">
+		<form action="{% url 'size_process' pk=csvid %}" method="post" enctype="multipart/form-data">
 			{% csrf_token %}
             <div class="row">
             <div class="form-group">
@@ -38,6 +39,7 @@
                 <th>{{ form.weight_field.label_tag }}</th>
                 <th>{{ form.id_field.label_tag }}</th>
                 <th>{{ form.id_type.label_tag }}</th>
+                <th>{{ form.overwrite.label_tag }}</th>
                 <tr>
                     <td>
                         {{ form.height_field.errors }}
@@ -55,6 +57,10 @@
                         {{ form.id_type.errors }}
                         {{ form.id_type }}
                     </td>
+                    <td>
+                        {{ form.overwrite.errors }}
+                        {{ form.overwrite }}
+                    </td>
                 </tr>
             </table>
             </div>
@@ -66,7 +72,7 @@
             </div>
         </form>
       </div> <!-- class="col-md-8 col-md-offset-2" -->
-		
+
       <div class="row"></div>
 
 {% else %}
@@ -83,8 +89,8 @@
       </p>
       </div>
       </div>
-      
+
 {% endif %}
 
 
-{% endblock %}	
+{% endblock %}

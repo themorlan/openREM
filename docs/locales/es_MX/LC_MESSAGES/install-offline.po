@@ -1,0 +1,96 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"PO-Revision-Date: 2020-10-13 13:41+0000\n"
+"Last-Translator: Marcelo Sosa <msosa79@outlook.com>\n"
+"Language-Team: Spanish (Mexico) <https://hosted.weblate.org/projects/openrem/"
+"rtd-install-offline/es_MX/>\n"
+"Language: es_MX\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
+
+#: ../../install-offline.rst:3
+msgid "Offline Docker installation"
+msgstr "Instalación de Docker sin conexión"
+
+#: ../../install-offline.rst:5
+msgid "OpenREM can be run on a server that is not connected to the internet if required, though access to https://hub.docker.com would make installation and upgrades much easier."
+msgstr ""
+"OpenREM puede correr en un servidor sin conexión a internet de ser "
+"necesario, aunque el acceso a https://hub.docker.com haría la instalación y "
+"las actualizaciones mucho mas fáciles."
+
+#: ../../install-offline.rst:8
+msgid "The server will need to have Docker installed."
+msgstr "El servidor necesitara tener Docker instalado."
+
+#: ../../install-offline.rst:11
+msgid "Collect installation files"
+msgstr "Recolectar archivos de instalación"
+
+#: ../../install-offline.rst:13
+msgid "On a computer with internet access:"
+msgstr "En una computadora con acceso a internet:"
+
+#: ../../install-offline.rst:15
+msgid "Install Docker - this is required to download the images"
+msgstr "Instalar Docker - esto es requerido para poder descargar las imágenes"
+
+#: ../../install-offline.rst:16
+msgid "Download https://bitbucket.org/openrem/docker/get/develop.zip"
+msgstr "Descargar https://bitbucket.org/openrem/docker/get/develop.zip"
+
+#: ../../install-offline.rst:17
+msgid "Download the Docker images:"
+msgstr "Descargar las imágenes de Docker:"
+
+#: ../../install-offline.rst:39
+msgid "Now save them as tar files:"
+msgstr "Ahora guardarlas como archivos tar:"
+
+#: ../../install-offline.rst:61
+msgid "If both the computer with internet access and the target server are Linux or MacOS the images can be made smaller using gzip, for example:"
+msgstr ""
+"Si tanto la computadora con acceso a internet como la destinada para server "
+"son Linux o MacOS las imágenes se pueden comprimir mas utilizando gzip, por "
+"ejemplo:"
+
+#: ../../install-offline.rst:68
+msgid "Copy all the tar files and the zip file to the server where OpenREM is to be installed."
+msgstr ""
+"Copiar todos los archivos tar y los zip al servidor donde sera instalado "
+"OpenREM."
+
+#: ../../install-offline.rst:71
+msgid "Load the docker images"
+msgstr "Cargar las imágenes Docker"
+
+#: ../../install-offline.rst:73
+msgid "On the server where OpenREM is to be installed, in the folder containing the Docker images:"
+msgstr ""
+"En el servidor donde se instalara OpenREM, en la carpeta que contiene las "
+"imágenes Docker:"
+
+#: ../../install-offline.rst:95
+msgid "If you have compressed the images with gzip the command is the same but with the ``.gz`` suffix, for example:"
+msgstr ""
+"Si se comprimieron las imágenes con gzip el comando es el mismo pero con el "
+"sufijo ``.gz``, por ejemplo:"
+
+#: ../../install-offline.rst:101
+msgid "Check that the images have been loaded:"
+msgstr "Comprobar que las imágenes han sido cargadas:"
+
+#: ../../install-offline.rst:107
+msgid "Continue to :ref:`dockerinstall`"
+msgstr "Continuar a :ref:`dockerinstall`"

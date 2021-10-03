@@ -1,0 +1,218 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-08 21:35+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../translations.rst:3
+msgid "Translating OpenREM strings"
+msgstr ""
+
+#: ../../translations.rst:5
+msgid "OpenREM's primary language is British English (en_GB). Users and developers with knowledge of other languages can create translations of the interface strings, export file strings and the documentation. These will then be exposed when the web browser language is set to match the new translation language (OpenREM interface) or when the language is selected for the documentation."
+msgstr ""
+
+#: ../../translations.rst:11
+msgid "A web-based service for managing translations has kindly been provided to OpenREM by Weblate. Their hosting is free to OpenREM, and they `welcome donations <https://weblate.org/en-gb/donate/>`_."
+msgstr ""
+
+#: ../../translations.rst:15
+msgid "Translators"
+msgstr ""
+
+#: ../../translations.rst:17
+msgid "Create an account at https://hosted.weblate.org"
+msgstr ""
+
+#: ../../translations.rst:18
+msgid "The OpenREM project is at https://hosted.weblate.org/projects/openrem/"
+msgstr ""
+
+#: ../../translations.rst:19
+msgid "Each page in the Read The Docs documentation (https://docs.openrem.org) is a separate 'component' in Weblate, and they have been named 'RTD document name'. The web interface strings are all in one 'component'."
+msgstr ""
+
+#: ../../translations.rst:21
+msgid "Choose a component, and on the next page you can select one of the existing translations which you can review, edit and propose new translation strings."
+msgstr ""
+
+#: ../../translations.rst:23
+msgid "Once approved, they will be merged in by developers"
+msgstr ""
+
+#: ../../translations.rst:26
+msgid "Creating new language translations"
+msgstr ""
+
+#: ../../translations.rst:28
+msgid "At the component level, you will see an option to create a new translation. This might need to be done for each component individually."
+msgstr ""
+
+#: ../../translations.rst:32
+msgid "Code syntax in strings"
+msgstr ""
+
+#: ../../translations.rst:34
+msgid "Be careful not to edit code syntax within strings. For example, Python code might be:"
+msgstr ""
+
+#: ../../translations.rst:40
+msgid "This is translated into Norwegian Bokmål as:"
+msgstr ""
+
+#: ../../translations.rst:46
+msgid "Notice that the ``{}`` and their contents is unchanged - but may be moved around within the sentence to produce the correct grammar for the language being used."
+msgstr ""
+
+#: ../../translations.rst:49
+msgid "Similarly with Django HTML template strings:"
+msgstr ""
+
+#: ../../translations.rst:55
+msgid "becomes:"
+msgstr ""
+
+#: ../../translations.rst:61
+msgid "It is essential that the ``%()s`` as well as the string inside the brackets stay intact."
+msgstr ""
+
+#: ../../translations.rst:63
+msgid "For the RTD translations, there will be Sphinx codes that should be left untranslated, for example:"
+msgstr ""
+
+#: ../../translations.rst:71
+msgid "Developers"
+msgstr ""
+
+#: ../../translations.rst:74
+msgid "Install pre-requisites"
+msgstr ""
+
+#: ../../translations.rst:76
+msgid "**gettext**"
+msgstr ""
+
+#: ../../translations.rst:78
+msgid "Linux: ``sudo apt install gettext`` or equivalent for your distribution. For Windows: download `a precompiled binary installer <https://mlocati.github.io/articles/gettext-iconv-windows.html>`_"
+msgstr ""
+
+#: ../../translations.rst:81
+msgid "**sphinx-intl**"
+msgstr ""
+
+#: ../../translations.rst:83
+msgid "Activate development environment - see :doc:`code_dev_env` for details - and add the sphinx packages:"
+msgstr ""
+
+#: ../../translations.rst:91
+msgid "Update .pot and .po files"
+msgstr ""
+
+#: ../../translations.rst:93
+msgid "Activate the development environment and move to the root of the OpenREM repository - with the ``docs`` folder and ``openrem`` folder etc:"
+msgstr ""
+
+#: ../../translations.rst:106
+msgid "Adding new interface strings for translation"
+msgstr ""
+
+#: ../../translations.rst:108
+msgid "Please refer to https://docs.djangoproject.com/en/2.2/topics/i18n/translation/ for instructions."
+msgstr ""
+
+#: ../../translations.rst:110
+msgid "In brief, the following will help get you started, but does not cover lazy translations, plurals and many other things!"
+msgstr ""
+
+#: ../../translations.rst:112
+msgid "All the Sphinx/Read The Docs strings are translatable - if a page does not appear in Weblate that is because it has not been configured as a component there yet."
+msgstr ""
+
+#: ../../translations.rst:116
+msgid "Python code"
+msgstr ""
+
+#: ../../translations.rst:118
+msgid "First, import ``gettext`` from Django:"
+msgstr ""
+
+#: ../../translations.rst:124
+msgid "Then wrap strings to be translated with ``_()`` so"
+msgstr ""
+
+#: ../../translations.rst:130
+#: ../../translations.rst:166
+msgid "becomes"
+msgstr ""
+
+#: ../../translations.rst:138
+msgid "The same is done for strings that contain variables. Unfortunately ``gettext`` cannot work with f-strings so we are stuck with ``.format()`` instead. It is easier to understand how to translate the text though if we use named variables rather than position based ones, like this:"
+msgstr ""
+
+#: ../../translations.rst:148
+msgid "Remember we cannot assume the grammar of the translated string so try and pass the whole sentence or paragraph to be translated."
+msgstr ""
+
+#: ../../translations.rst:152
+msgid "Template code"
+msgstr ""
+
+#: ../../translations.rst:154
+msgid "Add the following at the top of the template file, just after any ``extends`` code:"
+msgstr ""
+
+#: ../../translations.rst:160
+msgid "This can be done with *inline* translations and *block* translations. For inline,"
+msgstr ""
+
+#: ../../translations.rst:172
+msgid "If there are variables, a block translation is required, for example:"
+msgstr ""
+
+#: ../../translations.rst:183
+msgid "Comments can be added to aid translators, for example:"
+msgstr ""
+
+#: ../../translations.rst:195
+msgid "Making use of updated strings on local system"
+msgstr ""
+
+#: ../../translations.rst:197
+msgid "Specify the language to build for Sphinx docs, eg for German:"
+msgstr ""
+
+#: ../../translations.rst:203
+msgid "For Django strings:"
+msgstr ""
+
+#: ../../translations.rst:211
+msgid "Incorporating translations into main repo"
+msgstr ""
+
+#: ../../translations.rst:213
+msgid "In the git repository:"
+msgstr ""
+
+#: ../../translations.rst:219
+msgid "Checkout the ``weblate\\develop`` branch as a new local branch"
+msgstr ""
+
+#: ../../translations.rst:220
+msgid "Push the branch to Bitbucket"
+msgstr ""
+
+#: ../../translations.rst:221
+msgid "Create a pull request to develop"
+msgstr ""

@@ -1,0 +1,643 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-04 12:05+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../code_models.rst:2 21efaa7251724a9686d250ce646b3a8f
+msgid "Models"
+msgstr ""
+
+#: 2ce7d9bac36d480587bc7ea80b1076f4 of remapp.models.AdminTaskQuestions:1
+msgid "Record if admin tasks have been dealt with"
+msgstr ""
+
+#: f59bcfd4090941178875bb385baa985a of remapp.models.NotPatientIndicatorsID:1
+msgid ""
+"Table to record strings that indicate a patient ID is really a test or QA"
+" ID"
+msgstr ""
+
+#: e303271a48ff472c86e83dcda8c83ec8 of remapp.models.NotPatientIndicatorsName:1
+msgid ""
+"Table to record strings that indicate a patient name is really a test or "
+"QA name"
+msgstr ""
+
+#: 9d63b3043b6f4adba8e38a5ff6509c87 of remapp.models.SkinDoseMapCalcSettings:1
+msgid "Table to store skin dose map calculation settings"
+msgstr ""
+
+#: 2a1b333c532448b3b55ce7431bf0f6cc of
+#: remapp.models.HighDoseMetricAlertSettings:1
+msgid "Table to store high dose fluoroscopy alert settings"
+msgstr ""
+
+#: f4760c4ba88b4b89a6c4ddd5de43713f of
+#: remapp.models.HighDoseMetricAlertRecipients:1
+msgid "Table to store whether users should receive high dose fluoroscopy alerts"
+msgstr ""
+
+#: 829c1167b6e44e369e528bac50081611 of
+#: remapp.models.create_or_save_high_dose_metric_alert_recipient_setting:1
+msgid "Function to create or save fluoroscopy high dose alert recipient settings"
+msgstr ""
+
+#: 33d9e2cb73a8459bb7293387e8dd4683 of remapp.models.HomePageAdminSettings:1
+msgid "Table to store home page settings"
+msgstr ""
+
+#: c9058fd58017461d8cf4f7be3d9b04af of
+#: remapp.models.MergeOnDeviceObserverUIDSettings:1
+msgid ""
+"Table to store setting(s) for autmoatic setting of Display Name and "
+"Modality type based on same Device observer UID"
+msgstr ""
+
+#: 8945d18de5c44ee7bf2609bf33840005 of remapp.models.DicomDeleteSettings:1
+msgid "Table to store DICOM deletion settings"
+msgstr ""
+
+#: b1ea540a003f480790f3122b6258b0eb of remapp.models.PatientIDSettings:1
+msgid "Table to store patient ID settings"
+msgstr ""
+
+#: 1c1129cc65304cc2bbbb98ecebe6cbab of remapp.models.DicomStoreSCP:1
+msgid "Table to store DICOM store settings"
+msgstr ""
+
+#: d0ae2d8187824010933ed976a35aafe6 of remapp.models.DicomRemoteQR:1
+msgid "Table to store DICOM remote QR settings"
+msgstr ""
+
+#: c601abd8900a432b872184bafaae1f41 of remapp.models.DicomQuery:1
+msgid "Table to store DICOM query settings"
+msgstr ""
+
+#: 5b6c75c75cac47528c76164101bc46fe of remapp.models.UserProfile:1
+msgid "Table to store user profile settings"
+msgstr ""
+
+#: 1a140b30bd52436b9e0073b4c0beec45 of remapp.models.UniqueEquipmentNames:1
+msgid "Table to unique equipment name information"
+msgstr ""
+
+#: ace9d81441f749d6a54182e1e2870d98 of remapp.models.SizeUpload:1
+msgid "Table to store patient size information"
+msgstr ""
+
+#: eaaa39ff70b54ab09f23024e32f1d489 of remapp.models.Exports:1
+msgid "Table to hold the export status and filenames"
+msgstr ""
+
+#: 6a1ab359b44b4d78b6b26c6719fe5a5c of remapp.models.ContextID:1
+msgid "Table to hold all the context ID code values and code meanings."
+msgstr ""
+
+#: c9711972b3594af0947f5f8dbdd0ef77 of remapp.models.ContextID:3
+msgid ""
+"Could be prefilled from the tables in DICOM 3.16, but is actually "
+"populated as the codes occur.     This assumes they are used correctly."
+msgstr ""
+
+#: 3aafc1fc328246f1b394bac2e29ca7a9 of remapp.models.GeneralStudyModuleAttr:1
+msgid "General Study Module C.7.2.1"
+msgstr ""
+
+#: 67f2b3e2c2e74e9eaa2845999d941f5d of remapp.models.GeneralStudyModuleAttr:3
+msgid ""
+"Specifies the Attributes that describe and identify the Study performed "
+"upon the Patient. From DICOM Part 3: Information Object Definitions Table"
+" C.7-3"
+msgstr ""
+
+#: 37bd85b9e2cf4b6eb7a6c4fd2607e4cf of remapp.models.GeneralStudyModuleAttr:13
+msgid "Additional to the module definition:"
+msgstr ""
+
+#: 65861b31b1194f81932ac1cc1feac669 of remapp.models.GeneralStudyModuleAttr:8
+msgid "performing_physician_name"
+msgstr ""
+
+#: 1f96dc2a73524a43a8738ba5d9d534af of remapp.models.GeneralStudyModuleAttr:9
+msgid "operator_name"
+msgstr ""
+
+#: fba44c3fe1444e51b136d4541c926311 of remapp.models.GeneralStudyModuleAttr:10
+msgid "modality_type"
+msgstr ""
+
+#: e4dd62a794db4b54acb2b9822ee04759 of remapp.models.GeneralStudyModuleAttr:11
+msgid "procedure_code_value_and_meaning"
+msgstr ""
+
+#: 56c150adb44340039adfd83e6f630669 of remapp.models.GeneralStudyModuleAttr:12
+msgid "requested_procedure_code_value_and_meaning"
+msgstr ""
+
+#: 82123483c9ff41a9acc1a44d156a6670 of
+#: remapp.models.GeneralStudyModuleAttr.dap_a_cgycm2:1
+msgid "Converts DAP A to cGy.cm2 from Gy.m2 for display or export"
+msgstr ""
+
+#: eb8ffc68916a4a8aab7afe70f956bae3 of
+#: remapp.models.GeneralStudyModuleAttr.dap_b_cgycm2:1
+msgid "Converts DAP B to cGy.cm2 from Gy.m2 for display or export"
+msgstr ""
+
+#: ff2bed0dd30d4fac8287fd3052eabff2 of
+#: remapp.models.GeneralStudyModuleAttr.dap_total_cgycm2:1
+msgid "Converts DAP A+B to cGy.cm2 from Gy.m2 for display or export"
+msgstr ""
+
+#: 01f057ff12544f7cb40b89f89e5f2d2b of
+#: remapp.models.GeneralStudyModuleAttr.dap_delta_weeks_cgycm2:1
+msgid "Converts DAP delta weeks to cGy.cm2 from Gy.m2 for display"
+msgstr ""
+
+#: c2964342449a470387d22cb02b0860ad of remapp.models.SkinDoseMapResults:1
+msgid "Table to hold the results from OpenSkin"
+msgstr ""
+
+#: 7adf98adc1c24f8f80fe421d1a40baf0 of remapp.models.ObjectUIDsProcessed:1
+msgid ""
+"Table to hold the SOP Instance UIDs of the objects that have been "
+"processed against this study to enable duplicate sorting."
+msgstr ""
+
+#: 317e748529b64aa6b268794fb368027a of
+#: remapp.models.ProjectionXRayRadiationDose:1
+msgid "Projection X-Ray Radiation Dose template TID 10001"
+msgstr ""
+
+#: 0ac5222d2aaa4945b57f08251cba88d4 0b4c61e7fcbe40b3b1b4cc7bc383e61c
+#: 11ffd33b2d3144c18ffa29c9180d340e 1c868f3c468143f097219b56d2569e02
+#: 32d922bb5e744354b800102ab3dc302e 5def8d177a6348f89b60702a6aeca7fb
+#: 62fe1677e7dd4853bcf926ce7c1ada77 7d29e54c5bb94cf996958cb3a6855361
+#: 9cd447ed5e2642998416c6ef3230088c b9a5922fc3fe494b85861e2fd1b846d0
+#: dcac42aed79e49b8b72bc059abef0f03 ee0b57de32c04ceca8f51a1ff42aab61 of
+#: remapp.models.AccumMammographyXRayDose:7 remapp.models.AccumProjXRayDose:7
+#: remapp.models.AccumXRayDose:7 remapp.models.CtAccumulatedDoseData:7
+#: remapp.models.CtDoseCheckDetails:5 remapp.models.CtIrradiationEventData:4
+#: remapp.models.CtRadiationDose:9 remapp.models.DeviceParticipant:6
+#: remapp.models.ObserverContext:5 remapp.models.PersonParticipant:7
+#: remapp.models.ProjectionXRayRadiationDose:10 remapp.models.ScanningLength:5
+msgid "From DICOM Part 16:"
+msgstr ""
+
+#: e3a6b12229284f1587444027fb59a587 of
+#: remapp.models.ProjectionXRayRadiationDose:4
+msgid ""
+"This template defines a container (the root) with subsidiary content "
+"items, each of which represents a single projection X-Ray irradiation "
+"event entry or plane-specific dose accumulations. There is a defined "
+"recording observer (the system or person responsible for recording the "
+"log, generally the system). A Biplane irradiation event will be recorded "
+"as two individual events, one for each plane. Accumulated values will be "
+"kept separate for each plane."
+msgstr ""
+
+#: ced5603f29f54a28956da71d9eb65a2b of remapp.models.AccumXRayDose:1
+msgid "Accumulated X-Ray Dose TID 10002"
+msgstr ""
+
+#: 7ea17d926afd48b4b151e7f382534132 bdbc6adeb92546758e336c8b087d5fb0 of
+#: remapp.models.AccumProjXRayDose:4 remapp.models.AccumXRayDose:4
+msgid ""
+"This general template provides detailed information on projection X-Ray "
+"dose value accumulations over several irradiation events from the same "
+"equipment (typically a study or a performed procedure step)."
+msgstr ""
+
+#: f95f89fb1b4d45fcbb5e1eb20a36d4e1 of remapp.models.Calibration:1
+msgid "Table to hold the calibration information"
+msgstr ""
+
+#: 690fcb6387c740dfafa3d376a44ed2d1 of remapp.models.Calibration:3
+msgid "Container in TID 10002 Accumulated X-ray dose"
+msgstr ""
+
+#: 3256877d1dec4443a6321862444228dd of remapp.models.IrradEventXRayData:1
+msgid "Irradiation Event X-Ray Data TID 10003"
+msgstr ""
+
+#: ed1344780fe347c695dd3d5eecd21c7f of remapp.models.IrradEventXRayData:6
+msgid "From DICOM part 16:"
+msgstr ""
+
+#: 7229f2260f774dbaa820fb958cec6f52 f4e68c48d2144ca992927631e392d5ba of
+#: remapp.models.CtIrradiationEventData:4 remapp.models.IrradEventXRayData:4
+msgid ""
+"This template conveys the dose and equipment parameters of a single "
+"irradiation event."
+msgstr ""
+
+#: 39a58737a7e342958600c1757be81f5b of remapp.models.ImageViewModifier:1
+msgid ""
+"Table to hold image view modifiers for the irradiation event x-ray data "
+"table"
+msgstr ""
+
+#: 6d05a01d88194a08b9567aa722fd24c4 of remapp.models.ImageViewModifier:7
+msgid "From DICOM Part 16 Annex D DICOM controlled Terminology Definitions"
+msgstr ""
+
+#: 0a7e9b1134344aa98a10562fd38ea9f6 of remapp.models.ImageViewModifier:4
+msgid "Code Value 111032"
+msgstr ""
+
+#: d82541020d484f7ca0859127db2d3514 of remapp.models.ImageViewModifier:5
+msgid "Code Meaning Image View Modifier"
+msgstr ""
+
+#: 57de19a6b03c4b97a814ec52a361c4a7 of remapp.models.ImageViewModifier:6
+msgid "Code Definition Modifier for image view"
+msgstr ""
+
+#: b4b4f0b789054d5da670e0f3345ae9a6 of
+#: remapp.models.IrradEventXRayDetectorData:1
+msgid "Irradiation Event X-Ray Detector Data TID 10003a"
+msgstr ""
+
+#: 0f431e82e11a4881911e894215a32070 19d99bf384d84c9d9c5e9c4246d60162
+#: 628d5119f0eb404b993f13a29c5f716c 80b488d3fa1a4b7a86e8fcc529531452
+#: d8baafc3dbb44ad6a7d753e07b3bb344 of
+#: remapp.models.AccumCassetteBsdProjRadiogDose:7
+#: remapp.models.AccumIntegratedProjRadiogDose:7
+#: remapp.models.IrradEventXRayDetectorData:6
+#: remapp.models.IrradEventXRayMechanicalData:5
+#: remapp.models.IrradEventXRaySourceData:4
+msgid "From DICOM Part 16 Correction Proposal CP-1077:"
+msgstr ""
+
+#: 28687aa1aa06429cb893424727c554b9 of
+#: remapp.models.IrradEventXRayDetectorData:4
+msgid ""
+"This template contains data which is expected to be available to the "
+"X-ray detector or plate reader component of the equipment."
+msgstr ""
+
+#: 4df2ffdd18be4b22997a99ce2314dd71 of remapp.models.IrradEventXRaySourceData:1
+msgid "Irradiation Event X-Ray Source Data TID 10003b"
+msgstr ""
+
+#: e5dacbae08334441a722e8c6ce3a0e15 of remapp.models.IrradEventXRaySourceData:4
+msgid ""
+"This template contains data which is expected to be available to the "
+"X-ray source component of the equipment."
+msgstr ""
+
+#: 25e233a3f6734637b16b921bbefc4498 9d4e55f84df84d62a90c6b4546e7da67
+#: a3c45b44812c4fbb8a41f527ef2e5ae8 of remapp.models.CtIrradiationEventData:9
+#: remapp.models.IrradEventXRayMechanicalData:10
+#: remapp.models.IrradEventXRaySourceData:10
+msgid "Additional to the template:"
+msgstr ""
+
+#: 254541a3947b4bb896c432e6b6e1a58d of remapp.models.IrradEventXRaySourceData:7
+msgid "ii_field_size"
+msgstr ""
+
+#: c8d6bb366f3c4bde86ca6098d626766d of remapp.models.IrradEventXRaySourceData:8
+msgid "exposure_control_mode"
+msgstr ""
+
+#: 65cebc2c0375494ea88b847e81344dbd of remapp.models.IrradEventXRaySourceData:9
+msgid "grid information over and above grid type"
+msgstr ""
+
+#: 579930a41b424bb282b3cfca196cb14d of
+#: remapp.models.IrradEventXRaySourceData.convert_gy_to_mgy:1
+msgid "Converts Gy to mGy for display in web interface"
+msgstr ""
+
+#: 271e565531b6496d9e918ef606f1f118 of remapp.models.XrayGrid:1
+msgid "Content ID 10017 X-Ray Grid"
+msgstr ""
+
+#: ab227f78a61442c78011539a0e9b376c of remapp.models.XrayGrid:3
+msgid "From DICOM Part 16"
+msgstr ""
+
+#: c14daaed23504cf0af85641ed4591305 of remapp.models.PulseWidth:1
+msgid "In TID 10003b. Code value 113793 (ms)"
+msgstr ""
+
+#: e79c8c80a021449ab3ae4388112e6880 of remapp.models.Kvp:1
+msgid "In TID 10003b. Code value 113733 (kV)"
+msgstr ""
+
+#: 6e3a96e0192545d080d21fe0e2c3cbaa of remapp.models.XrayTubeCurrent:1
+msgid "In TID 10003b. Code value 113734 (mA)"
+msgstr ""
+
+#: 23a5420e0bec4788983ee1855996416d of remapp.models.Exposure:1
+msgid "In TID 10003b. Code value 113736 (uAs)"
+msgstr ""
+
+#: e748f4c7ad58451281dcec5ccf42e155 of
+#: remapp.models.Exposure.convert_uAs_to_mAs:1
+msgid "Converts uAs to mAs for display in web interface"
+msgstr ""
+
+#: 60966a020bd74966a9481653af15ba55 of remapp.models.XrayFilters:1
+msgid "Container in TID 10003b. Code value 113771"
+msgstr ""
+
+#: 8626358510c84c5dace7330c653868e7 of
+#: remapp.models.IrradEventXRayMechanicalData:1
+msgid "Irradiation Event X-Ray Mechanical Data TID 10003c"
+msgstr ""
+
+#: 995e132d7a26460d93259ddc94c2ae4b of
+#: remapp.models.IrradEventXRayMechanicalData:4
+msgid ""
+"This template contains data which is expected to be available to the "
+"gantry or mechanical component of the equipment."
+msgstr ""
+
+#: 33d3b49dec0140dd85220106ac892f87 of
+#: remapp.models.IrradEventXRayMechanicalData:8
+msgid "compression_force"
+msgstr ""
+
+#: 012043e346474844950294eeea4048eb of
+#: remapp.models.IrradEventXRayMechanicalData:9
+msgid "magnification_factor"
+msgstr ""
+
+#: cf6b194f504f4747b846f87cf683e917 of
+#: remapp.models.DoseRelatedDistanceMeasurements:1
+msgid "Dose Related Distance Measurements Context ID 10008"
+msgstr ""
+
+#: 6c5e85e1a15c498281bdb9a915bf5dde of
+#: remapp.models.DoseRelatedDistanceMeasurements:3
+msgid "Called from TID 10003c"
+msgstr ""
+
+#: 509dfc07ef204589b72b5e791da9da78 of remapp.models.AccumProjXRayDose:1
+msgid "Accumulated Fluoroscopy and Acquisition Projection X-Ray Dose TID 10004"
+msgstr ""
+
+#: 802d085123564e9daa606ae1e7b55b38 of
+#: remapp.models.AccumProjXRayDose.fluoro_gym2_to_cgycm2:1
+msgid ""
+"Converts fluoroscopy DAP total from Gy.m2 to cGy.cm2 for display in web "
+"interface"
+msgstr ""
+
+#: ab6697f7671c478780cb0125a331ffd5 of
+#: remapp.models.AccumProjXRayDose.acq_gym2_to_cgycm2:1
+msgid ""
+"Converts acquisition DAP total from Gy.m2 to cGy.cm2 for display in web "
+"interface"
+msgstr ""
+
+#: adc08e27b9864ed1862d43c963f12a42 of remapp.models.AccumMammographyXRayDose:1
+msgid "Accumulated Mammography X-Ray Dose TID 10005"
+msgstr ""
+
+#: d976b170a7f4497fa2a186361d14db95 of remapp.models.AccumMammographyXRayDose:4
+msgid ""
+"This modality specific template provides detailed information on "
+"mammography X-Ray dose value accumulations over several irradiation "
+"events from the same equipment (typically a study or a performed "
+"procedure step)."
+msgstr ""
+
+#: 60ba33d20c2c4136994063a0c9fa806a of
+#: remapp.models.AccumCassetteBsdProjRadiogDose:1
+msgid "Accumulated Cassette-based Projection Radiography Dose TID 10006"
+msgstr ""
+
+#: e7574eac902842f4b56844602204c7de of
+#: remapp.models.AccumCassetteBsdProjRadiogDose:4
+msgid ""
+"This template provides information on Projection Radiography dose values "
+"accumulated on Cassette- based systems over one or more irradiation "
+"events (typically a study or a performed procedure step) from the same "
+"equipment."
+msgstr ""
+
+#: 50b38ab702cf4c32afbbfc768d2a4b62 of
+#: remapp.models.AccumIntegratedProjRadiogDose:1
+msgid "Accumulated Integrated Projection Radiography Dose TID 10007"
+msgstr ""
+
+#: 657e9b33e3e247079cef8e873e5d1272 of
+#: remapp.models.AccumIntegratedProjRadiogDose:4
+msgid ""
+"This template provides information on Projection Radiography dose values "
+"accumulated on Integrated systems over one or more irradiation events "
+"(typically a study or a performed procedure step) from the same "
+"equipment."
+msgstr ""
+
+#: 05662ca447484aadaef23b06646e45e1 of
+#: remapp.models.AccumIntegratedProjRadiogDose.convert_gym2_to_cgycm2:1
+msgid "Converts Gy.m2 to cGy.cm2 for display in web interface"
+msgstr ""
+
+#: 13606082e73e4d82acb39779bfb1d7f9 of
+#: remapp.models.AccumIntegratedProjRadiogDose.total_dap_delta_gym2_to_cgycm2:1
+msgid ""
+"Converts total DAP over delta days from Gy.m2 to cGy.cm2 for display in "
+"web interface"
+msgstr ""
+
+#: 5639ead218f343058d5f642895a2b3b3 of
+#: remapp.models.PKsForSummedRFDoseStudiesInDeltaWeeks:1
+msgid ""
+"Table to hold foreign keys of all studies that fall within the delta "
+"weeks of each RF study."
+msgstr ""
+
+#: 27a6e4c7158442c39fb66ed282420e30 of remapp.models.PatientModuleAttr:1
+msgid "Patient Module C.7.1.1"
+msgstr ""
+
+#: 541c7ad56e474cbcbd44a74da5d2a92c of remapp.models.PatientModuleAttr:8
+msgid "From DICOM Part 3: Information Object Definitions Table C.7-1:"
+msgstr ""
+
+#: 1569ba69a25b46df8f65c4785f00a775 of remapp.models.PatientModuleAttr:4
+msgid ""
+"Specifies the Attributes of the Patient that describe and identify the "
+"Patient who is the subject of a diagnostic Study. This Module contains "
+"Attributes of the patient that are needed for diagnostic interpretation "
+"of the Image and are common for all studies performed on the patient. It "
+"contains Attributes that are also included in the Patient Modules in "
+"Section C.2."
+msgstr ""
+
+#: 4b606ae4059c4f5bb42174c77a479cb4 of remapp.models.PatientStudyModuleAttr:1
+msgid "Patient Study Module C.7.2.2"
+msgstr ""
+
+#: 8e29918e928a4b03b36061af2a139b47 of remapp.models.PatientStudyModuleAttr:6
+msgid "From DICOM Part 3: Information Object Definitions Table C.7-4a:"
+msgstr ""
+
+#: c202b5b748f74ebc941df1af35d51ec8 of remapp.models.PatientStudyModuleAttr:4
+msgid ""
+"Defines Attributes that provide information about the Patient at the time"
+" the Study started."
+msgstr ""
+
+#: 4461bd3df16b4c25a71664a82552074e of
+#: remapp.models.GeneralEquipmentModuleAttr:1
+msgid "General Equipment Module C.7.5.1"
+msgstr ""
+
+#: 3b94a4a9fb2343578af5d7e143b479aa of
+#: remapp.models.GeneralEquipmentModuleAttr:6
+msgid "From DICOM Part 3: Information Object Definitions Table C.7-8:"
+msgstr ""
+
+#: a9702f4bc8944d0b934f67541d0ea60e of
+#: remapp.models.GeneralEquipmentModuleAttr:4
+msgid ""
+"Specifies the Attributes that identify and describe the piece of "
+"equipment that produced a Series of Composite Instances."
+msgstr ""
+
+#: 991eec81f72443cfb5f9100e562d776d of remapp.models.CtRadiationDose:1
+msgid "CT Radiation Dose TID 10011"
+msgstr ""
+
+#: d8e6bc535bda4a01b220f9e5c33de042 of remapp.models.CtRadiationDose:4
+msgid ""
+"This template defines a container (the root) with subsidiary content "
+"items, each of which corresponds to a single CT X-Ray irradiation event "
+"entry. There is a defined recording observer (the system or person "
+"responsible for recording the log, generally the system). Accumulated "
+"values shall be kept for a whole Study or at least a part of a Study, if "
+"the Study is divided in the workflow of the examination, or a performed "
+"procedure step. Multiple CT Radiation Dose objects may be created for one"
+" Study."
+msgstr ""
+
+#: f432f5b748e44255b167da4594dd4266 of
+#: remapp.models.SourceOfCTDoseInformation:1
+msgid "Source of CT Dose Information"
+msgstr ""
+
+#: 892948e7462645dfb6a71d67e595f562 of remapp.models.CtAccumulatedDoseData:1
+msgid "CT Accumulated Dose Data"
+msgstr ""
+
+#: a3e9bc61bebc43709a67f257fa18bd28 of remapp.models.CtAccumulatedDoseData:4
+msgid ""
+"This general template provides detailed information on CT X-Ray dose "
+"value accumulations over several irradiation events from the same "
+"equipment and over the scope of accumulation specified for the report "
+"(typically a Study or a Performed Procedure Step)."
+msgstr ""
+
+#: 15393c07f4b649f49beb84b68472e949 of remapp.models.CtIrradiationEventData:1
+msgid "CT Irradiation Event Data TID 10013"
+msgstr ""
+
+#: db778ec86d514e75bb470d2d143ff7bc of remapp.models.CtIrradiationEventData:7
+msgid "date_time_started"
+msgstr ""
+
+#: 1a37c9a856ea4ce1a3c74b4a40516b7b of remapp.models.CtIrradiationEventData:8
+msgid "series_description"
+msgstr ""
+
+#: a700a955735f42d68abc4eb72cd4a1e7 of
+#: remapp.models.CtReconstructionAlgorithm:1
+msgid "Container in TID 10013 to hold CT reconstruction methods"
+msgstr ""
+
+#: 1aac2d80c77e4f8c9dceb1e57f5cb104 of remapp.models.CtXRaySourceParameters:1
+msgid "Container in TID 10013 to hold CT x-ray source parameters"
+msgstr ""
+
+#: 4d6d1ff6b143464f930610eb1ec44fc3 of remapp.models.ScanningLength:1
+msgid "Scanning Length TID 10014"
+msgstr ""
+
+#: 42ff5433df494df79379a0fadf76f7d9 of remapp.models.ScanningLength:4
+msgid "No description"
+msgstr ""
+
+#: fe24ac08c69445f6aad5783ab8ff67f8 of
+#: remapp.models.SizeSpecificDoseEstimation:1
+msgid "Container in TID 10013 to hold size specific dose estimation details"
+msgstr ""
+
+#: 23dccafe477b4a4bbf2b3b370811aff1 of remapp.models.WEDSeriesOrInstances:1
+msgid ""
+"From TID 10013 Series or Instance used for Water Equivalent Diameter "
+"estimation"
+msgstr ""
+
+#: 47cbf97d1a6c47e68f2aab9790819a75 of remapp.models.CtDoseCheckDetails:1
+msgid "CT Dose Check Details TID 10015"
+msgstr ""
+
+#: b8075bca6ab549fbbeec4ccd8ec4f494 of remapp.models.CtDoseCheckDetails:4
+msgid ""
+"This template records details related to the use of the NEMA Dose Check "
+"Standard (NEMA XR-25-2010)."
+msgstr ""
+
+#: 05a24e6365bb409eb461e30522d8b04f of remapp.models.ObserverContext:1
+msgid "Observer Context TID 1002"
+msgstr ""
+
+#: ad336a9512dd416ca0589b6c9affd264 of remapp.models.ObserverContext:4
+msgid ""
+"The observer (person or device) that created the Content Items to which "
+"this context applies."
+msgstr ""
+
+#: 268f4ddaf3fd407791eb175f86a7fb40 of remapp.models.DeviceParticipant:1
+msgid "Device Participant TID 1021"
+msgstr ""
+
+#: bd89432ac27444a780f3cbbb5114f7c3 of remapp.models.DeviceParticipant:4
+msgid ""
+"This template describes a device participating in an activity as other "
+"than an observer or subject. E.g. for a dose report documenting an "
+"irradiating procedure, participants include the irradiating device."
+msgstr ""
+
+#: 029cf35eba7940589d1f612584c1446a of remapp.models.PersonParticipant:1
+msgid "Person Participant TID 1020"
+msgstr ""
+
+#: c0d5290db1d04cd0935501d47aad4a67 of remapp.models.PersonParticipant:4
+msgid ""
+"This template describes a person participating in an activity as other "
+"than an observer or subject. E.g. for a dose report documenting an "
+"irradiating procedure, participants include the person administering the "
+"irradiation and the person authorizing the irradiation."
+msgstr ""
+
+#: c297ef04545e42de9fcf4b71489058c6 of remapp.models.SummaryFields:1
+msgid ""
+"Status and progress of populating the summary fields in "
+"GeneralStudyModuleAttr"
+msgstr ""
+
+#: 88df9af5307447fc90049ad3782d74f4 of remapp.models.UpgradeStatus:1
+msgid "Record upgrade status activity"
+msgstr ""
+

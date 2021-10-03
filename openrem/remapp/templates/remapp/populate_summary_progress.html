@@ -1,0 +1,84 @@
+<div class="col-md-12">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h3 class="panel-title">Summary data fields migration</h3>
+        </div>
+        <div class="panel-body">
+
+            <p>
+                Progress stopped? Check the <a href="{% url 'celery_admin' %}">Tasks admin page</a> and if Celery and
+                RabbitMQ are
+                running and there are no tasks being processed, try launching the migration again:
+                <a href="{% url 'populate_summary' %}">Populate Summary fields</a>
+            </p>
+
+            <h4>CT</h4>
+            {% if not ct_status.complete %}
+                Currently processing {{ ct_complete }} of {{ ct_total }}
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped active" role="progressbar"
+                         aria-valuenow="{{ ct_pc }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ ct_pc }}%">
+                        <span class="sr-only">{{ ct_pc }}% Complete</span>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-success">
+                    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                    <span class="sr-only">Success:</span>
+                    CT migration complete
+                </div>
+            {% endif %}
+
+            <h4>RF</h4>
+            {% if not rf_status.complete %}
+                Currently processing {{ rf_complete }} of {{ rf_total }}
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped active" role="progressbar"
+                         aria-valuenow="{{ rf_pc }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ rf_pc }}%">
+                        <span class="sr-only">{{ rf_pc }}% Complete</span>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-success">
+                    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                    <span class="sr-only">Success:</span>
+                    Fluoroscopy migration complete
+                </div>
+            {% endif %}
+
+            <h4>MG</h4>
+            {% if not mg_status.complete %}
+                Currently processing {{ mg_complete }} of {{ mg_total }}
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped active" role="progressbar"
+                         aria-valuenow="{{ mg_pc }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ mg_pc }}%">
+                        <span class="sr-only">{{ mg_pc }}% Complete</span>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-success">
+                    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                    <span class="sr-only">Success:</span>
+                    Mammography migration complete
+                </div>
+            {% endif %}
+
+            <h4>DX</h4>
+            {% if not dx_status.complete %}
+                Currently processing {{ dx_complete }} of {{ dx_total }}
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped active" role="progressbar"
+                         aria-valuenow="{{ dx_pc }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ dx_pc }}%">
+                        <span class="sr-only">{{ dx_pc }}% Complete</span>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-success">
+                    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                    <span class="sr-only">Success:</span>
+                    Radiography migration complete
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

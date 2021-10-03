@@ -1,122 +1,107 @@
-*******************************
-Offline Installation on Windows
-*******************************
+***************************
+Offline Docker installation
+***************************
 
-In order to carry out an offline installation you will need to download the OpenREM package and dependencies.
-The instructions below should work for downloading on any operating system, as long as you have Python 2.7 and a
-reasonably up to date version of pip installed.
+OpenREM can be run on a server that is not connected to the internet if required, though access to
+https://hub.docker.com would make installation and upgrades much easier.
 
-If you have trouble when installing the Python packages due to incorrect architecture, you may need to either download
-on a Windows system similar to the server (matching 32-bit/64-bit), or to download the files from
-http://www.lfd.uci.edu/~gohlke/pythonlibs/ instead.
+The server will need to have Docker installed.
 
-On a computer with internet access
-==================================
+Collect installation files
+==========================
 
-Download independent binaries
------------------------------
+On a computer with internet access:
 
-**Python** from https://www.python.org/downloads/windows/
+* Install Docker - this is required to download the images
+* Download https://bitbucket.org/openrem/docker/get/develop.zip
+* Download the Docker images:
 
-* Follow the link to the 'Latest Python 2 release'
-* Download either the ``Windows x86 MSI installer`` for 32-bit Windows or
-* Download ``Windows x86-64 MSI installer`` for 64-bit Windows
+.. code-block:: console
 
-**Erlang** from https://www.erlang.org/downloads
+    $ docker pull openrem/openrem:develop
 
-* Download the latest version of Erlang/OTP. Again, choose between
-* ``Windows 32-bit Binary File`` or
-* ``Windows 64-bit Binary File``
+.. code-block:: console
 
-**RabbitMQ** from http://www.rabbitmq.com/install-windows.html
+    $ docker pull postgres:12.0-alpine
 
-* Download ``rabbitmq-server-x.x.x.exe`` from either option
+.. code-block:: console
 
-**PostgreSQL** from http://www.enterprisedb.com/products-services-training/pgdownload#windows
+    $ docker pull openrem/nginx
 
-*Note: Other databases such as MySQL are also suitable, though the median function for charts will not be available. For
-testing purposes only, you could skip this step and use SQLite3 which comes with OpenREM*
+.. code-block:: console
 
-* Download by clicking on the icon for ``Win x86-32`` or ``Win x86-64``
+    $ docker pull rabbitmq:3-management-alpine
 
-**PostgreSQL** Python connector from http://www.lfd.uci.edu/~gohlke/pythonlibs/#psycopg
+.. code-block:: console
 
-* Find the right version - look for ``psycopg2-x.x.x-cp27-cp27m-win32.whl`` for 32-bit Windows or
-* ``psycopg2-x.x.x-cp27-cp27m-win_amd64.whl`` for 64-it Windows.
-* At the time of writing, ``x.x.x`` was ``2.6.1`` - choose the latest ``cp27`` version
+    $ docker pull openrem/orthanc
 
-**NumPy** from http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
+* Now save them as tar files:
 
-* Find the right version - look for ``numpy-x.xx.x+mkl-cp27-cp27m-win32.whl`` for 32-bit Windows or
-* ``numpy-x.xx.x+mkl-cp27-cp27m-win_amd64.whl`` for 64-bit Windows.
-* At the time of writing, ``x.xx.x`` was ``1.11.0`` - choose the latest ``cp27`` version
+.. code-block:: console
 
-**Pynetdicom** from https://bitbucket.org/edmcdonagh/pynetdicom/get/default.tar.gz#egg=pynetdicom-0.8.2b2
+    $ docker save -o openrem.tar openrem/openrem:develop
 
-* The downloaded file will be named something like ``edmcdonagh-pynetdicom-2da8a57b53b3.tar.gz``
-* Note: this version is modified in comparison to the version in PyPI
+.. code-block:: console
 
-**A webserver** such as Apache, although this can be left till later - you can get started with the built-in web
-server
+    $ docker save -o openrem-postgres.tar postgres:12.0-alpine
 
-Download python packages from PyPI
-----------------------------------
+.. code-block:: console
 
-In a console, navigate to a suitable place and create a directory to collect all the packages in, then use pip to
-download them all:
+    $ docker save -o openrem-nginx.tar openrem/nginx
 
-.. sourcecode:: console
+.. code-block:: console
 
-    mkdir openremfiles
-    pip install -d openremfiles openrem==0.7.4
+    $ docker save -o openrem-rabbitmq.tar rabbitmq:3-management-alpine
 
-Copy everything to the Windows machine
---------------------------------------
+.. code-block:: console
 
-* Add the ``pynetdicom`` file, the ``psycopg2`` file and the ``numpy`` file to the directory with the other python
-  packages
-* Copy this directory plus all the binaries to the Windows server that you are using
+    $ docker save -o openrem-orthanc.tar openrem/orthanc
 
+If both the computer with internet access and the target server are Linux or MacOS the images can be made smaller using
+gzip, for example:
 
-On the Windows server without internet access
-=============================================
+.. code-block:: console
 
-Installation of binaries
-------------------------
+    $ docker save openrem/openrem:develop | gzip > openrem.tar.gz
 
-Install the binaries in the following order:
+Copy all the tar files and the zip file to the server where OpenREM is to be installed.
 
-1. Python
-2. Erlang
-3. RabbitMQ
+Load the docker images
+======================
 
-Installation of the python packages
------------------------------------
+On the server where OpenREM is to be installed, in the folder containing the Docker images:
 
-In a console, navigate to the directory that your ``openremfiles`` directory is in, and
+.. code-block:: console
 
-.. sourcecode:: console
+    $ docker load -i openrem.tar
 
-    pip install openremfiles\numpy‑1.11.0+mkl‑cp27-cp27m‑win32.whl
-    # or if you have the 64 bit version
-    pip install openremfiles\numpy‑1.11.0+mkl‑cp27-cp27m‑win_amd64.whl
-    # adjusting the version number appropriately
+.. code-block:: console
 
-    pip install --no-index --find-links=openremfiles openrem==0.7.4
+    $ docker load -i openrem-postgres.tar
 
-    pip install openremfiles\edmcdonagh-pynetdicom-2da8a57b53b3.tar.gz
+.. code-block:: console
 
-Install PostgreSQL
-------------------
+    $ docker load -i openrem-nginx.tar
 
-See the instructions to :ref:`windowspsqlinstall` on Windows.
+.. code-block:: console
 
-Install webserver
------------------
+    $ docker load -i openrem-rabbitmq.tar
 
-If you are doing so at this stage.
+.. code-block:: console
 
-Configure OpenREM ready for use
-===============================
+    $ docker load -i openrem-orthanc.tar
 
-OpenREM is now installed, so go straight to the :ref:`localsettingsconfig` section of the standard installation docs
+If you have compressed the images with gzip the command is the same but with the ``.gz`` suffix, for example:
+
+.. code-block:: console
+
+    $ docker load -i openrem.tar.gz
+
+Check that the images have been loaded:
+
+.. code-block:: console
+
+    $ docker images
+
+Continue to :ref:`dockerinstall`

@@ -1,0 +1,206 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../release-0.10.0.rst:3
+msgid "Upgrade to OpenREM 0.10.0"
+msgstr ""
+
+#: ../../release-0.10.0.rst:7
+msgid "Headline changes"
+msgstr ""
+
+#: ../../release-0.10.0.rst:9
+msgid "Database: new summary fields introduced to improve the responsiveness of the interface - requires additional migration step"
+msgstr ""
+
+#: ../../release-0.10.0.rst:11
+msgid "Imports: enabled import of GE Elite Mini View C-arm, Opera Swing R/F and Philips BigBore CT RDSRs that have issues"
+msgstr ""
+
+#: ../../release-0.10.0.rst:12
+msgid "Imports: updated event level laterality to import from new location after DICOM standard change proposal CP1676_"
+msgstr ""
+
+#: ../../release-0.10.0.rst:13
+msgid "Interface: highlight row when dose alert exceeded"
+msgstr ""
+
+#: ../../release-0.10.0.rst:14
+msgid "Exports: added fluoroscopy and radiography exports tailored for UK PHE dose survey"
+msgstr ""
+
+#: ../../release-0.10.0.rst:15
+msgid "General: Lots of fixes to imports, interface, charts etc"
+msgstr ""
+
+#: ../../release-0.10.0.rst:19
+msgid "Upgrade preparation"
+msgstr ""
+
+#: ../../release-0.10.0.rst:21
+msgid "These instructions assume you are upgrading from 0.9.1."
+msgstr ""
+
+#: ../../release-0.10.0.rst:22
+msgid "**Upgrades from 0.9.0 or earlier should review** :doc:`upgrade_previous_0.10.0`."
+msgstr ""
+
+#: ../../release-0.10.0.rst:26
+msgid "Upgrading an OpenREM server with no internet access"
+msgstr ""
+
+#: ../../release-0.10.0.rst:28
+msgid "Follow the instructions found at :doc:`upgrade-offline`, before returning here to update the configuration, migrate the database and complete the upgrade."
+msgstr ""
+
+#: ../../release-0.10.0.rst:33
+msgid "Upgrade process"
+msgstr ""
+
+#: ../../release-0.10.0.rst:36
+msgid "Upgrade"
+msgstr ""
+
+#: ../../release-0.10.0.rst:38
+msgid "Back up your database"
+msgstr ""
+
+#: ../../release-0.10.0.rst:40
+msgid "For PostgreSQL on linux you can refer to :ref:`backup-psql-db`"
+msgstr ""
+
+#: ../../release-0.10.0.rst:41
+msgid "For PostgreSQL on Windows you can refer to :doc:`backupRestorePostgreSQL`"
+msgstr ""
+
+#: ../../release-0.10.0.rst:42
+msgid "For a non-production SQLite3 database, simply make a copy of the database file"
+msgstr ""
+
+#: ../../release-0.10.0.rst:44
+msgid "Stop any Celery workers"
+msgstr ""
+
+#: ../../release-0.10.0.rst:46
+msgid "Consider temporarily disabling your DICOM Store SCP, or redirecting the data to be processed later"
+msgstr ""
+
+#: ../../release-0.10.0.rst:48
+msgid "If you are using a virtualenv, activate it"
+msgstr ""
+
+#: ../../release-0.10.0.rst:50
+#: ../../release-0.10.0.rst:114
+msgid "*Ubuntu one page instructions*::"
+msgstr ""
+
+#: ../../release-0.10.0.rst:56
+msgid "Install the new version of OpenREM:"
+msgstr ""
+
+#: ../../release-0.10.0.rst:63
+msgid "Migrate the database"
+msgstr ""
+
+#: ../../release-0.10.0.rst:65
+msgid "In a shell/command window, move into the ``openrem`` folder:"
+msgstr ""
+
+#: ../../release-0.10.0.rst:67
+msgid "Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``"
+msgstr ""
+
+#: ../../release-0.10.0.rst:68
+msgid "Other linux: ``/usr/lib/python2.7/site-packages/openrem/``"
+msgstr ""
+
+#: ../../release-0.10.0.rst:69
+msgid "Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/``"
+msgstr ""
+
+#: ../../release-0.10.0.rst:70
+msgid "Windows: ``C:\\Python27\\Lib\\site-packages\\openrem\\``"
+msgstr ""
+
+#: ../../release-0.10.0.rst:71
+msgid "Windows virtualenv: ``virtualenvfolder\\Lib\\site-packages\\openrem\\``"
+msgstr ""
+
+#: ../../release-0.10.0.rst:80
+msgid "Update static files"
+msgstr ""
+
+#: ../../release-0.10.0.rst:82
+msgid "In the same shell/command window as you used above run the following command to clear the static files belonging to your previous OpenREM version and replace them with those belonging to the version you have just installed (assuming you are using a production web server...):"
+msgstr ""
+
+#: ../../release-0.10.0.rst:90
+msgid "Virtual directory users"
+msgstr ""
+
+#: ../../release-0.10.0.rst:92
+msgid "If you are running your website in a virtual directory, you also have to update the reverse.js file. To get the file in the correct path, take care that you insert just after the declaration of ``STATIC_ROOT`` the following line in your ``local_settings.py`` (see also the sample ``local_settings.py.example``):"
+msgstr ""
+
+#: ../../release-0.10.0.rst:100
+msgid "To update the reverse.js file execute the following command:"
+msgstr ""
+
+#: ../../release-0.10.0.rst:106
+msgid "See  :doc:`virtual_directory` for more details."
+msgstr ""
+
+#: ../../release-0.10.0.rst:110
+msgid "Restart all the services"
+msgstr ""
+
+#: ../../release-0.10.0.rst:112
+msgid "Follow the guide at :doc:`startservices`."
+msgstr ""
+
+#: ../../release-0.10.0.rst:123
+msgid "Post-upgrade migration of summary fields"
+msgstr ""
+
+#: ../../release-0.10.0.rst:126
+msgid "Populate new summary fields"
+msgstr ""
+
+#: ../../release-0.10.0.rst:133
+msgid "With RabbitMQ, Celery and the web server running, log in as an administrator to start the migration process. If you have a large number of studies in your database this can take some time. A large database (several hundred studies) on slow disks might take a day or two, on faster disks or with a smaller database it could take from a few minutes to an hour or so. You will be able to monitor the progress on the home page as seen in the figure at the bottom of this page."
+msgstr ""
+
+#: ../../release-0.10.0.rst:143
+msgid "One task per modality type (CT, fluoroscopy, mammography and radiography) is generated to create a task per study in each modality to populate the new fields for that study. If the number of workers is the same or less than the number of modality types in your database then the study level tasks will all be created before any of them are executed as all the workers will be busy. Therefore there might be a delay before the progress indicators on the OpenREM front page start to update. You can review the number of tasks being created on the ``Config -> Tasks`` page."
+msgstr ""
+
+#: ../../release-0.10.0.rst:149
+msgid "Before the migration is complete, some of the information on the modality pages of OpenREM will be missing, such as the dose information for example, but otherwise everything that doesn't rely on Celery workers will work as normal. Studies sent directly to be imported will carry on during the migration, but query-retrieve tasks will get stuck behind the migration tasks."
+msgstr ""
+
+#: ../../release-0.10.0.rst:159
+msgid "When the process is complete the 'Summary data fields migration' panel will disappear and will not be seen again."
+msgstr ""
+
+#: ../../release-0.10.0.rst:162
+msgid "Post migration activity"
+msgstr ""
+
+#: ../../release-0.10.0.rst:164
+msgid "Any scheduled query-retrieve tasks may not have executed properly during the migration. If they haven't, it is worth replicating the missing tasks using the web interface 'Query remote server'."
+msgstr ""

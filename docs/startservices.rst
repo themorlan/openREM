@@ -9,9 +9,9 @@ In a shell/command window, move into the openrem folder:
 
 * Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``
 * Other linux: ``/usr/lib/python2.7/site-packages/openrem/``
-* Linux virtualenv: ``lib/python2.7/site-packages/openrem/`` (remember to activate the virtualenv)
+* Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/`` (remember to activate the virtualenv)
 * Windows: ``C:\Python27\Lib\site-packages\openrem\``
-* Windows virtualenv: ``Lib\site-packages\openrem\`` (remember to activate the virtualenv)
+* Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\`` (remember to activate the virtualenv)
 
 Web access on OpenREM server only
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -33,28 +33,11 @@ really for testing). To view the OpenREM interface on another computer, you need
 
 .. sourcecode:: console
 
-    python manage.py runserver --insecure 192.168.1.10:8000
+    python manage.py runserver --insecure 0.0.0.0:8000
 
-Make sure you **change the IP address** to the address of the server! On Windows you can find the IP address information
-by typing
-
-.. sourcecode:: console
-
-    ipconfig
-
-You are looking for a line that has ``IPv4 Address`` followed by four numbers with dots between, similar to the
-numbers before the colon in the command above.
-
-With a linux server, type
-
-.. sourcecode:: console
-
-    ip add
-
-Again you are looking for the same dotted number, this time it will be after ``inet``. In both examples, you might
-have several to choose from depending on how many network cards (real or virtual) your computer has. Determining
-which one is which is probably beyond the scope of these instructions! If you get the IP address completely wrong,
-the command will fail with the error: ``Error: That IP address can't be assigned-to.``
+This will enable the web service to be available from other computers on the network. If your server has several
+network cards and you want to restrict it to one, then you can use a real address rather than ``0.0.0.0``. Likewise you can
+specify the port (here it is ``8000``).
 
 In a web browser on a different computer on the same network, go to http://192.168.1.10:8000/ (**changing the IP address**
 to the one you are running the server on) and you should see the OpenREM interface and the message about creating users.
@@ -66,6 +49,8 @@ For full functionality start the `Celery task queue`_ before moving on to `Confi
     the test web server would serve up the static files. In this release,
     ``DEBUG`` mode is set to ``False``, which prevents the test web server
     serving those files. The ``--insecure`` option allows them to be served again.
+
+.. _celery-task-queue:
 
 Celery task queue
 =================
@@ -100,29 +85,37 @@ Move into the openrem folder:
 
 * Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``
 * Other linux: ``/usr/lib/python2.7/site-packages/openrem/``
-* Linux virtualenv: ``lib/python2.7/site-packages/openrem/`` (remember to activate the virtualenv)
+* Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/`` (remember to activate the virtualenv)
 * Windows: ``C:\Python27\Lib\site-packages\openrem\``
-* Windows virtualenv: ``Lib\site-packages\openrem\`` (remember to activate the virtualenv)
+* Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\`` (remember to activate the virtualenv)
 
 Linux - ``\`` is the line continuation character:
 
 .. sourcecode:: console
 
-    celery multi start default -A openremproject -c 4 -Q default \
+    celery multi start default -Ofair -A openremproject -c 4 -Q default \
     --pidfile=/path/to/media/celery/%N.pid --logfile=/path/to/media/celery/%N.log
 
 Windows - ``celery multi`` doesn't work on Windows, and ``^`` is the continuation character:
 
 .. sourcecode:: console
 
-    celery worker -n default -A openremproject -c 4 -Q default ^
+    celery worker -n default -Ofair -A openremproject -c 4 -Q default ^
     --pidfile=C:\path\to\media\celery\default.pid --logfile=C:\path\to\media\celery\default.log
 
-For production use, see `Daemonising Celery`_ below
+.. _celery_concurrency:
 
-Set the number of workers (concurrency, ``-c``) as you see fit. The more you have, the more processes (imports, exports,
-query-retrieve operations etc) can take place simultaneously. However, each extra worker uses extra memory and if you
-have too many they will be competing for CPU resources too.
+Celery concurrency
+^^^^^^^^^^^^^^^^^^
+
+Set the number of workers (concurrency, ``-c``) according to how many processor cores you have available. The more you
+have, the more processes (imports, exports, query-retrieve operations etc) can take place simultaneously. However, each
+extra worker uses extra memory and if you have too many they will be competing for CPU resources too.
+
+.. admonition:: Problems with Celery 4 on Windows
+
+    Full support for Celery on Windows was dropped with version 4 due to lack of Windows based developers. Therefore
+    for Windows the instructions fix Celery at version ``3.1.25`` to retain full functionality.
 
 To stop the celery queues in Linux:
 
@@ -134,6 +127,46 @@ For Windows, just press ``Ctrl+c``
 
 You will need to do this twice if there are running tasks you wish to kill.
 
+For production use, see `Daemonising Celery`_ below.
+
+.. _start_flower:
+
+Celery task management: Flower
+==============================
+
+Flower will have been automatically installed with OpenREM and enables monitoring and management of Celery tasks.
+
+You should start Flower with the same user that you started Celery with, and put the log file in the same place too.
+
+Move into the openrem folder:
+
+* Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``
+* Other linux: ``/usr/lib/python2.7/site-packages/openrem/``
+* Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/`` (remember to activate the virtualenv)
+* Windows: ``C:\Python27\Lib\site-packages\openrem\``
+* Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\`` (remember to activate the virtualenv)
+
+If you need to change the default port from 5555 then you need to make the same change in
+``openremproject\local_settings.py`` to add/modify the line ``FLOWER_PORT = 5555``
+
+If you wish to be able to use the Flower management interface independently of OpenREM, then omit the ``--address``
+part of the command. Flower will then be available from any PC on the network at http://yourdoseservernameorIP:5555/
+
+Linux - ``\`` is the line continuation character:
+
+.. sourcecode:: console
+
+    celery flower -A openremproject --port=5555 --address=127.0.0.1  --loglevel=INFO \
+    ---log-file-prefix=/path/to/media/celery/flower.log
+
+Windows - ``^`` is the line continuation character:
+
+.. sourcecode:: console
+
+    celery flower -A openremproject --port=5555 --address=127.0.0.1  --loglevel=INFO ^
+    ---log-file-prefix=C:\path\to\media\celery\flower.log
+
+For production use, see `Daemonising Celery`_ below.
 
 .. _celery-beat:
 
@@ -144,7 +177,7 @@ Celery periodic tasks: beat
 
     Celery beat is only required if you are using the :ref:`nativestore`. Please read the warnings there before deciding
     if you need to run Celery beat. At the current time, using a third party DICOM store service is recommended for
-    most users. See the :doc:`netdicom` documentation for more details
+    most users. See the :ref:`configure_third_party_DICOM` documentation for more details
 
 Celery beat is a scheduler. If it is running, then every 60 seconds a task is run to check if any of the DICOM
 Store SCP nodes are set to ``keep_alive``, and if they are, it tries to verify they are running with a DICOM echo.
@@ -154,9 +187,9 @@ To run celery beat, open a new shell and move into the openrem folder:
 
 * Ubuntu linux: ``/usr/local/lib/python2.7/dist-packages/openrem/``
 * Other linux: ``/usr/lib/python2.7/site-packages/openrem/``
-* Linux virtualenv: ``lib/python2.7/site-packages/openrem/`` (remember to activate the virtualenv)
+* Linux virtualenv: ``vitualenvfolder/lib/python2.7/site-packages/openrem/`` (remember to activate the virtualenv)
 * Windows: ``C:\Python27\Lib\site-packages\openrem\``
-* Windows virtualenv: ``Lib\site-packages\openrem\`` (remember to activate the virtualenv)
+* Windows virtualenv: ``virtualenvfolder\Lib\site-packages\openrem\`` (remember to activate the virtualenv)
 
 Linux::
 
@@ -189,11 +222,12 @@ Configure the settings
     :align: center
     :alt: Initial home page with no users in groups
 .. figure:: img/ConfigMenu.png
+    :figwidth: 30 %
     :align: right
     :alt: Configuration menu
 
 * After the first users are configured, this link will no longer be presented and instead you can go to
-  ``Config -> Manage users``.
+  ``Config -> Users``.
 * You will need the superuser username and password you created just after creating the database. The groups are
 
     + ``viewgroup`` can browse the data only
@@ -218,24 +252,22 @@ Configure the settings
     :align: center
     :alt: Link from Django user admin back to OpenREM
 
+* Follow the link to see more information about how you want OpenREM to identify non-patient exposures, such as QA.
+  See :doc:`i_not_patient_indicator`.
 * Go to ``Config -> DICOM object delete settings`` and configure appropriately (see :doc:`i_deletesettings`)
 * Go to ``Config -> Patient ID settings`` and configure appropriately (see :doc:`patientid`)
 * If you want to use OpenREM as a DICOM store, or to use OpenREM to query remote systems, go to
-  ``Config -> Dicom network configuration``. For more information go to :doc:`netdicom` (not yet up to date)
+  ``Config -> Dicom network configuration``. For more information go to :doc:`import`.
 * With data in the system, you will want to go to ``Config -> View and edit display names`` and customise
   the display names. An established system will have several entries for each device, from each time the software
   version, station name or other elements changes. See :doc:`i_displaynames` for more information
 
 
 
-Start using it!
-===============
+Start using it - add some data!
+===============================
 
-Add some data!
-
-.. sourcecode:: bash
-
-    openrem_rdsr.py rdsrfile.dcm
+See :doc:`import`
 
 
 Further instructions
@@ -246,6 +278,11 @@ Daemonising Celery
 
 In a production environment, Celery will need to start automatically and
 not depend on a particular user being logged in. Therefore, much like
-the webserver, it will need to be daemonised. For now, please refer to the
-instructions and links at http://celery.readthedocs.org/en/latest/tutorials/daemonizing.html.
+the webserver, it will need to be daemonised.
+
+..  toctree::
+    :maxdepth: 1
+
+    celery-linux
+    celery-windows
 

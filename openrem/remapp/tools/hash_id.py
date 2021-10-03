@@ -1,3 +1,4 @@
+# This Python file uses the following encoding: utf-8
 #    OpenREM - Radiation Exposure Monitoring tools for the physicist
 #    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
 #
@@ -13,8 +14,8 @@
 #
 #    Additional permission under section 7 of GPLv3:
 #    You shall not make any use of the name of The Royal Marsden NHS
-#    Foundation trust in connection with this Program in any press or 
-#    other public announcement without the prior written consent of 
+#    Foundation trust in connection with this Program in any press or
+#    other public announcement without the prior written consent of
 #    The Royal Marsden NHS Foundation Trust.
 #
 #    You should have received a copy of the GNU General Public License
@@ -29,18 +30,29 @@
 """
 
 
-def hash_id(id_string, *args, **kwargs):
+def hash_id(id_string):
     """Return a one-way hash of the provided ID value
 
     :param id_string:         ID to create hash from
     :type id_string:          str
     :returns:          str
     """
-    import dicom
+    import pydicom
     from django.utils.encoding import smart_bytes
     import hashlib
 
     if id_string:
-        if isinstance(id_string, dicom.multival.MultiValue):
-            id_string = ''.join(id_string)
-        return hashlib.sha256(smart_bytes(id_string, encoding='utf-8')).hexdigest()
+        # print("hash_id id_string before is of type {0}".format(type(id_string)))
+        if isinstance(id_string, pydicom.valuerep.PersonName):
+            id_string = str(id_string)
+        if isinstance(id_string, (pydicom.multival.MultiValue, list)):
+            try:
+                id_string = "".join(id_string)
+            except TypeError:
+                id_string_concat = ""
+                for name in id_string:
+                    id_string_concat += str(name)
+                id_string = id_string_concat
+        id_string = smart_bytes(id_string, encoding="utf-8")
+        return hashlib.sha256(id_string).hexdigest()
+    return None

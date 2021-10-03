@@ -1,6 +1,6 @@
-###################################
-Welcome to OpenREM's documentation!
-###################################
+##################################
+Welcome to OpenREM's documentation
+##################################
 
 .. image:: openrem0105.png
     :width: 105px
@@ -8,38 +8,39 @@ Welcome to OpenREM's documentation!
     :height: 105px
     :alt: OpenREM logo
 
-OpenREM is an opensource framework created for the purpose of radiation 
-exposure monitoring. The software is capable of importing and displaying 
-data from a wide variety of x-ray dose related sources, and then enables 
-easy export of the data in a form that is suitable for further analysis 
-by suitably qualified medical physics personnel.
+OpenREM is a free, open source application for patient radiation dose monitoring. The software is capable of importing
+and displaying data from a wide variety of x-ray dose related sources with filtering, charts and analysis. The software
+also enables easy export of the data in a form that is suitable for further analysis by suitably qualified medical
+physics personnel.
 
-Please see `openrem.org <http://openrem.org>`_ for more details.
+Please see `openrem.org <https://openrem.org>`_ for more details.
 
+These docs are for the version of OpenREM currently in development. For the current release version,
+see https://docs.openrem.org/
+
+These docs are in British English - if you want to help translate them into other languages please
+get in touch: `@_OpenREM <https://twitter.com/_OpenREM>`_,
+`Bitbucket <https://bitbucket.org/openrem/openrem/issues/855/add-other-languages-as-people-volunteer>`_,
+`Google Groups <mailto:openrem@googlegroups.com>`_ or head over to
+`Weblate <https://hosted.weblate.org/projects/openrem/>`_ to get started. More details: :doc:`translations`.
 
 Contents:
 
 ..  toctree::
     :maxdepth: 2
 
-    install-firsttime
-    release-0.7.0
-    release-0.7.3
-    release-0.7.4
-    release-0.8.0
+    installation
     startservices
     configuration
     import
-    netdicom
-    patientid
     i_navigate
     charts
     skindosemap
     i_exporting
-    i_administration
     troubleshooting
     code
     releasenotes
+    systemdiagram
 
 ******************
 Indices and tables

@@ -1,0 +1,129 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013-2020, The Royal Marsden NHS Foundation Trust
+# This file is distributed under the same license as the OpenREM package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenREM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-01 18:30+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../patientid.rst:3
+msgid "Patient identifiable data"
+msgstr ""
+
+#: ../../patientid.rst:5
+msgid "Prior to version 0.7, no data that is generally considered to be patient identifiable was stored in the OpenREM database."
+msgstr ""
+
+#: ../../patientid.rst:7
+msgid "The following patient descriptors have always been recorded if they were available:"
+msgstr ""
+
+#: ../../patientid.rst:9
+msgid "Patient age at the time of the study, but not date of birth (though this could be calculated from age)"
+msgstr ""
+
+#: ../../patientid.rst:10
+msgid "Patient sex"
+msgstr ""
+
+#: ../../patientid.rst:11
+msgid "Patient height"
+msgstr ""
+
+#: ../../patientid.rst:12
+msgid "Patient weight"
+msgstr ""
+
+#: ../../patientid.rst:14
+msgid "In addition, a key identifier for the exam that is normally not considered patient identifiable was stored:"
+msgstr ""
+
+#: ../../patientid.rst:16
+msgid "Study accession number"
+msgstr ""
+
+#: ../../patientid.rst:18
+msgid "It has become apparent that there are reasons where people need to store patient identifiable data to make the most of OpenREM, so this is now configurable from version 0.7 onwards."
+msgstr ""
+
+#: ../../patientid.rst:23
+msgid "Configure what is stored"
+msgstr ""
+
+#: ../../patientid.rst:30
+msgid "On the Config menu, select ``Patient ID``:"
+msgstr ""
+
+#: ../../patientid.rst:36
+msgid "The initial settings are as follows:"
+msgstr ""
+
+#: ../../patientid.rst:42
+msgid "The default for patient name, ID and date of birth is to not store them. There isn't an option currently to not store the accession number, though OpenREM continues to work if it is missing."
+msgstr ""
+
+#: ../../patientid.rst:45
+msgid "To store patient identifiable data from now on, select the relevant box and press ``Submit``. If you change the setting again later, then data already stored will remain in the database."
+msgstr ""
+
+#: ../../patientid.rst:50
+msgid "Store encrypted data only"
+msgstr ""
+
+#: ../../patientid.rst:52
+msgid "If you wish to have the patient name and/or ID available for finding studies relating to a specific patient, but do not need to identify who that patient is, then it is possible to create an 'encrypted' version of the ID or name. In this case, a one-way SHA 256 hash is generated and the hash value is stored instead."
+msgstr ""
+
+#: ../../patientid.rst:56
+msgid "If *exactly* the same name or ID (including spelling, spacing, case etc) occurs more than once, then the same hash will be generated."
+msgstr ""
+
+#: ../../patientid.rst:59
+msgid "The same applies to accession numbers if the option to encrypt the accession number is selected."
+msgstr ""
+
+#: ../../patientid.rst:63
+msgid "Using patient identifiable data"
+msgstr ""
+
+#: ../../patientid.rst:66
+msgid "Querying for patient studies"
+msgstr ""
+
+#: ../../patientid.rst:68
+msgid "In the modality pages of the OpenREM web interface, if you are in the ``pidgroup`` you will have a filter for patient name and patient ID available:"
+msgstr ""
+
+#: ../../patientid.rst:75
+msgid "If the values in the database are *not* encrypted, then partial search terms can be used as a case-insensitive 'contains' query will be applied."
+msgstr ""
+
+#: ../../patientid.rst:78
+msgid "If the values are encrypted, then only the entire string, with exactly the same case, spacing and punctuation will match. This is more likely to be successful with patient ID than with patient name."
+msgstr ""
+
+#: ../../patientid.rst:82
+msgid "Study export with patient identifiers"
+msgstr ""
+
+#: ../../patientid.rst:84
+msgid "Users in the ``pidgroup`` will have extra export buttons available in the modality pages:"
+msgstr ""
+
+#: ../../patientid.rst:90
+msgid "If the IDs or names are encrypted, then these columns will contain the hash rather than the original values. However, it will be possible to see if more than one study belongs to one patient as the values should be the same for both. Due to the nature of the algorithm however, a single change in the name or ID - such as an upper case letter instead of a lower case one - will be recorded as a completely different hash value."
+msgstr ""
+
+#: ../../patientid.rst:95
+msgid "Any exports with either patient name or patient ID included will also have a date of birth column."
+msgstr ""

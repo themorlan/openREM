@@ -1,11 +1,12 @@
 {% extends "remapp/filteredbase.html" %}
+{% load sigdig %}
+{% load update_variable %}
 
 {% block navrf %}<li class="active">{% endblock %}
 
 {% block toprow %}
-{% load pagination_tags %}
       <p>
-        There are {{ filter.count }} studies in this list.
+        There are {{ filter.qs.count }} studies in this list.
       </p>
 
 {% endblock %}
@@ -19,28 +20,32 @@
     {% if admin.exportgroup %}
         <p><strong>Note:</strong> Apply the exam filter first to refine what is exported.</p>
     <p>
-      <a href="/openrem/exportflcsv1/0/0/?{{ request.GET.urlencode }}"
+      <a href="{% url 'flcsv1' 0 0 %}?{{ request.GET.urlencode }}"
              class="btn btn-default btn-sm" role="button">Export to CSV&nbsp;</a>
           {% if admin.pidgroup %}
-              <a href="/openrem/exportflcsv1/1/0/?{{ request.GET.urlencode }}"
+              <a href="{% url 'flcsv1' 1 0 %}?{{ request.GET.urlencode }}"
                  class="btn btn-default btn-sm" role="button">With names</a>
-              <a href="/openrem/exportflcsv1/0/1/?{{ request.GET.urlencode }}"
+              <a href="{% url 'flcsv1' 0 1 %}?{{ request.GET.urlencode }}"
                  class="btn btn-default btn-sm" role="button">With ID</a>
-              <a href="/openrem/exportflcsv1/1/1/?{{ request.GET.urlencode }}"
+              <a href="{% url 'flcsv1' 1 1 %}?{{ request.GET.urlencode }}"
                  class="btn btn-default btn-sm" role="button">With both</a>
     </p>
     <p>
           {% endif %}
-          <a href="/openrem/exportrfxlsx1/0/0/?{{ request.GET.urlencode }}"
+          <a href="{% url 'rfxlsx1' 0 0 %}?{{ request.GET.urlencode }}"
              class="btn btn-default btn-sm" role="button">Export to XLSX</a>
           {% if admin.pidgroup %}
-              <a href="/openrem/exportrfxlsx1/1/0/?{{ request.GET.urlencode }}"
+              <a href="{% url 'rfxlsx1' 1 0 %}?{{ request.GET.urlencode }}"
                  class="btn btn-default btn-sm" role="button">With names</a>
-              <a href="/openrem/exportrfxlsx1/0/1/?{{ request.GET.urlencode }}"
+              <a href="{% url 'rfxlsx1' 0 1 %}?{{ request.GET.urlencode }}"
                  class="btn btn-default btn-sm" role="button">With ID</a>
-              <a href="/openrem/exportrfxlsx1/1/1/?{{ request.GET.urlencode }}"
+              <a href="{% url 'rfxlsx1' 1 1 %}?{{ request.GET.urlencode }}"
                  class="btn btn-default btn-sm" role="button">With both</a>
           {% endif %}
+    </p>
+    <p>
+        <a href="{% url 'rf_xlsx_phe2019' %}?{{ request.GET.urlencode }}"
+           class="btn btn-default btn-sm" role="button">PHE 2019 Survey</a>
     </p>
 
   {% else %}
@@ -80,81 +85,129 @@
                 <h3 class="panel-title">Chart options</h3>
             </div>
             <div class="panel-body">
-                <table>
+                <table aria-describedby="Fluoroscopy chart options">
                     {% csrf_token %}
-                    {{ chartOptionsForm }}
+                    {% for field in chartOptionsForm %}
+                        <tr>
+                        {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
+                            <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                            <td class="shaded_top_bottom_border">{{ field }}</td>
+                        {% elif field.label == 'Study frequency' or field.label == 'Requested procedure frequency' or field.label == 'Time period' %}
+                            <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                            <td class="top_border">{{ field }}</td>
+                        {% else %}
+                            <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                            <td>{{ field }}</td>
+                        {% endif %}
+                        </tr>
+                    {% endfor %}
+                </table>
+                <input class="btn btn-default" name="submit" type="submit" />
+            </div>
+            <div class="panel-heading">
+                <h3 class="panel-title">Table options</h3>
+            </div>
+            <div class="panel-body">
+                <table aria-describedby="Number of rows per page option">
+                    {{ itemsPerPageForm }}
                 </table>
                 <input class="btn btn-default" name="submit" type="submit" />
             </div>
           </div>
     </form>
 
-<script>
-$('.datepicker').datepicker({
-    format: "yyyy-mm-dd",
-    autoclose: true,
-    todayHighlight: true
-    });
-</script>
+    <script src="{{ STATIC_URL }}js/datepicker.js"></script>
+    <script src="{{ STATIC_URL }}js/formatDate.js"></script>
 
-    
+
 {% endblock %}
 
 {% block col1 %}
+{% load l10n %}
 
-    {% autopaginate filter.qs 20 as filter_list %}
-    {% paginate %}
-
-    <table class="table table-bordered table-hover row-clickable small">
+    <table class="table table-bordered table-hover row-clickable small" aria-describedby="Study summary table">
         <tr>
-            <th>Institution</th>
-            <th>
-                <table>
+            <th scope="col">Institution</th>
+            <th scope="col">
+                <table aria-describedby="Make, model and display name">
                     <tr><td>Make</td></tr>
                     <tr><td>Model</td></tr>
                     <tr><td class="nowrap">Display name</td></tr>
                 </table>
             </th>
-            <th>Date</th>
-            <th>
-                <table>
+            <th scope="col">Date</th>
+            <th scope="col">
+                <table aria-describedby="Study description, procedure, requested procedure and accession number">
                     <tr><td class="nowrap">Study description</td></tr>
+                    <tr><td class="nowrap">Procedure</td></tr>
+                    <tr><td class="nowrap">Requested Procedure</td></tr>
                     <tr><td class="nowrap">Accession number</td></tr>
                 </table>
             </th>
-            <th>Number of events</th>
-            <th>Total DAP (cGy.cm<sup>2</sup>)</th>
-            <th>Total dose at RP (Gy)</th>
-            <th>Physician</th>
+            <th scope="col">Number of events</th>
+            <th scope="col">Total DAP (cGy.cm<sup>2</sup>)</th>
+            <th scope="col">Total dose at RP (Gy)</th>
+            {% if alertLevels.show_accum_dose_over_delta_weeks %}
+                <th scope="col">Total DAP summed over <br>{{ alertLevels.accum_dose_delta_weeks }} weeks before study(cGy.cm<sup>2</sup>)</th>
+                <th scope="col">Total dose at RP summed over <br>{{ alertLevels.accum_dose_delta_weeks }} weeks before study (Gy)</th>
+            {% endif %}
+
+            <th scope="col">Physician</th>
             {% if admin.admingroup %}
-            <th>Delete?</th>
+            <th scope="col">Delete?</th>
             {% endif %}
         </tr>
-        {% for exam in filter_list %}
-        <tr>
+        {% for exam in study_list %}
+          {% with equipment=exam.generalequipmentmoduleattr_set.get %}
+          {% with n_delta_studies=exam.pksforsummedrfdosestudiesindeltaweeks_set.all.count %}
+
+
+        {% with False as use_warning %}
+            {% if exam.dap_a_cgycm2 >= alertLevels.alert_total_dap_rf or exam.dap_b_cgycm2 >= alertLevels.alert_total_dap_rf  or exam.total_rp_dose_a >= alertLevels.alert_total_rp_dose_rf or exam.total_rp_dose_b >= alertLevels.alert_total_rp_dose_rf %}
+                {% update_variable True as use_warning %}
+            {% endif %}
+
+            {% if use_warning == False %}
+                {% if alertLevels.show_accum_dose_over_delta_weeks %}
+                    {% if exam.dap_delta_weeks_cgycm2 >= alertLevels.alert_total_dap_rf or exam.total_rp_dose_delta_weeks >= alertLevels.alert_total_rp_dose_rf %}
+                        {% update_variable True as use_warning %}
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+
+            {% if use_warning == False %}
+                <tr>
+            {% else %}
+                <tr class="warning">
+            {% endif %}
+        {% endwith %}
+
+
             <td>
-                <a href="/openrem/rf/{{ exam.id }}/">
-                    {{ exam.generalequipmentmoduleattr_set.get.institution_name }}
+                <a href="{% url 'rf_detail_view' pk=exam.id %}">
+                    {{ equipment.institution_name }}
                 </a>
             </td>
             <td>
-                <a href="/openrem/rf/{{ exam.id }}/">
-                    <table onclick="window.location='/openrem/rf/{{ exam.id }}/';">
-                        <tr><td class="nowrap">{{ exam.generalequipmentmoduleattr_set.get.manufacturer }}</td></tr>
-                        <tr><td class="nowrap">{{ exam.generalequipmentmoduleattr_set.get.manufacturer_model_name }}</td></tr>
-                        <tr><td class="nowrap">{{ exam.generalequipmentmoduleattr_set.get.unique_equipment_name.display_name }}</td></tr>
+                <a href="{% url 'rf_detail_view' pk=exam.id %}">
+                    <table onclick="window.location='{% url 'rf_detail_view' pk=exam.id %}';" aria-describedby="Manufacturer, model and display name">
+                        <tr><td class="nowrap">{{ equipment.manufacturer }}</td></tr>
+                        <tr><td class="nowrap">{{ equipment.manufacturer_model_name }}</td></tr>
+                        <tr><td class="nowrap">{{ equipment.unique_equipment_name.display_name }}</td></tr>
                     </table>
                 </a>
             </td>
             <td>
-                <a href="/openrem/rf/{{ exam.id }}/">
+                <a href="{% url 'rf_detail_view' pk=exam.id %}">
                     {{ exam.study_date|date:"Y-m-d" }} {{ exam.study_time|date:"H:i" }}
                 </a>
             </td>
             <td>
-                <a href="/openrem/rf/{{ exam.id }}/">
-                    <table onclick="window.location='/openrem/rf/{{ exam.id }}/';">
-                        <tr><td class="nowrap">{{ exam.study_description }}</td></tr>
+                <a href="{% url 'rf_detail_view' pk=exam.id %}">
+                    <table onclick="window.location='{% url 'rf_detail_view' pk=exam.id %}';" aria-describedby="Study description, procedure and requested procedure name">
+                        <tr><td>{{ exam.study_description }}</td></tr>
+                        <tr><td>{{ exam.procedure_code_meaning }}</td></tr>
+                        <tr><td>{{ exam.requested_procedure_code_meaning }}</td></tr>
                   {% if not exam.accession_hashed %}
                         <tr><td class="nowrap">{{ exam.accession_number }}</td></tr>
                   {% endif %}
@@ -162,34 +215,81 @@ $('.datepicker').datepicker({
                 </a>
             </td>
             <td>
-                <a href="/openrem/rf/{{ exam.id }}/">
-                    {{ exam.projectionxrayradiationdose_set.get.irradeventxraydata_set.count }}
+                <a href="{% url 'rf_detail_view' pk=exam.id %}">
+                    {{ exam.number_of_events }}
                 </a>
             </td>
             <td>
-                <a href="/openrem/rf/{{ exam.id }}/">
-                    {% for record in exam.projectionxrayradiationdose_set.get.accumxraydose_set.all %}
-                        {% if exam.projectionxrayradiationdose_set.get.accumxraydose_set.all.count > 1 %}
-                            {{ record.acquisition_plane }}:
+                <a href="{% url 'rf_detail_view' pk=exam.id %}">
+                    {% if exam.number_of_planes == 2 %}
+                        {% if exam.dap_a_cgycm2 >= alertLevels.alert_total_dap_rf %}
+                            A: <strong style="color: red;">{{ exam.dap_a_cgycm2|floatformat:1 }}</strong>
+                        {% else %}
+                            A: {{ exam.dap_a_cgycm2|floatformat:1 }}
                         {% endif %}
-                        {{ record.accumintegratedprojradiogdose_set.get.convert_gym2_to_cgycm2|floatformat:1 }}
                         <br>
-                    {% endfor %}
-                </a>
-            </td>
-            <td>
-                <a href="/openrem/rf/{{ exam.id }}/">
-                    {% for record in exam.projectionxrayradiationdose_set.get.accumxraydose_set.all %}
-                        {% if exam.projectionxrayradiationdose_set.get.accumxraydose_set.all.count > 1 %}
-                            {{ record.acquisition_plane }}:
+                        {% if exam.dap_b_cgycm2 >= alertLevels.alert_total_dap_rf %}
+                            B: <strong style="color: red;">{{ exam.dap_b_cgycm2|floatformat:1 }}</strong>
+                        {% else %}
+                            B: {{ exam.dap_b_cgycm2|floatformat:1 }}
                         {% endif %}
-                        <script>document.write({{ record.accumintegratedprojradiogdose_set.get.dose_rp_total }}.toPrecision(3));</script>
-                        <br>
-                    {% endfor %}
+                    {% else %}
+                        {% if exam.dap_a_cgycm2 >= alertLevels.alert_total_dap_rf %}
+                            <strong style="color: red;">{{ exam.dap_a_cgycm2|floatformat:1 }}</strong>
+                        {% else %}
+                            {{ exam.dap_a_cgycm2|floatformat:1 }}
+                        {% endif %}
+                    {% endif %}
                 </a>
             </td>
             <td>
-                <a href="/openrem/rf/{{ exam.id }}/">
+                <a href="{% url 'rf_detail_view' pk=exam.id %}">
+                    {% if exam.number_of_planes == 2 %}
+                        {% if exam.total_rp_dose_a >= alertLevels.alert_total_rp_dose_rf %}
+                            A: <strong style="color: red;">{{ exam.total_rp_dose_a|sigdig }}</strong>
+                        {% else %}
+                            A: {{ exam.total_rp_dose_a|sigdig }}
+                        {% endif %}
+                        <br>
+                        {% if exam.total_rp_dose_b >= alertLevels.alert_total_rp_dose_rf %}
+                            B: <strong style="color: red;">{{ exam.total_rp_dose_b|sigdig }}</strong>
+                        {% else %}
+                            B: {{ exam.total_rp_dose_b|sigdig }}
+                        {% endif %}
+                    {% else %}
+                        {% if exam.total_rp_dose_a >= alertLevels.alert_total_rp_dose_rf %}
+                            <strong style="color: red;">{{ exam.total_rp_dose_a|sigdig }}</strong>
+                        {% else %}
+                            {{ exam.total_rp_dose_a|sigdig }}
+                        {% endif %}
+                    {% endif %}
+                </a>
+            </td>
+            {% if alertLevels.show_accum_dose_over_delta_weeks %}
+                    <td>
+                        <a href="{% url 'rf_detail_view' pk=exam.id %}">
+                            {% if exam.dap_delta_weeks_cgycm2 >= alertLevels.alert_total_dap_rf %}
+                                <strong style="color: red;">{{ exam.dap_delta_weeks_cgycm2|floatformat:1 }}</strong>
+                            {% else %}
+                                {{ exam.dap_delta_weeks_cgycm2|floatformat:1 }}
+                            {% endif %}
+
+                             ({{ n_delta_studies }} exam{{ n_delta_studies|pluralize }})
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'rf_detail_view' pk=exam.id %}">
+                            {% if exam.total_rp_dose_delta_weeks >= alertLevels.alert_total_rp_dose_rf %}
+                                <strong style="color: red;">{{ exam.total_rp_dose_delta_weeks | sigdig }}</strong>
+                            {% else %}
+                                {{ exam.total_rp_dose_delta_weeks | sigdig }}
+                            {% endif %}
+                            ({{ n_delta_studies }} exam{{ n_delta_studies|pluralize }})
+                        </a>
+                    </td>
+            {% endif %}
+            <td>
+                <a href="{% url 'rf_detail_view' pk=exam.id %}">
                     {{ exam.performing_physician_name }}
                 </a>
             </td>
@@ -199,222 +299,53 @@ $('.datepicker').datepicker({
             </td>
             {% endif %}
         </tr>
+          {% endwith %}{% endwith %}
         {% endfor %}
     </table>
 
-    {% paginate %}
 
- 
+
 {% endblock %}
 
 {% block plotdata %}
 
     {% if request.user.userprofile.plotCharts %}
 
-        <script src="{{ STATIC_URL }}js/chartFullScreen.js"></script>
-        <script src="{{ STATIC_URL }}js/chartSetExportSize.js"></script>
-        <script src="{{ STATIC_URL }}js/chroma.min.js"></script>
-        <script src="{{ STATIC_URL }}js/chartUpdateData.js"></script>
+        <script src="{{ STATIC_URL }}js/django_reverse/reverse.js"></script>
 
         <div class="ajax-progress"><img src="{{ STATIC_URL }}img/ajax-loader.gif"></div>
 
-        <!-- Include JavaScript to enable highcharts plots -->
-        <script src="{{ STATIC_URL }}js/highcharts.js"></script>
-        <script src="{{ STATIC_URL }}js/boost.js"></script>
-        <script src="{{ STATIC_URL }}js/exporting.js"></script>
-        <script src="{{ STATIC_URL }}js/offline-exporting.js"></script>
-        <script src="{{ STATIC_URL }}js/export-csv.js"></script>
-        <script src="{{ STATIC_URL }}js/drilldown.js"></script>
-        <script src="{{ STATIC_URL }}js/chartSortingRoutines.js"></script>
-        <script src="{{ STATIC_URL }}js/chartHistogramNormalise.js"></script>
-        <script src="{{ STATIC_URL }}js/chartAverageAndHistogram.js"></script>
-        <script src="{{ STATIC_URL }}js/chartAverageOverTime.js"></script>
-        <script src="{{ STATIC_URL }}js/chartFrequency.js"></script>
-        <script src="{{ STATIC_URL }}js/chartWorkload.js"></script>
-        <script>
-            var chartSorting = '{{ request.user.userprofile.plotRFInitialSortingChoice }}';
-            var chartSortingDirection = {{ request.user.userprofile.plotInitialSortingDirection }};
+        <!-- JavaScript to enable Plotly charts -->
+        <script src="{{ STATIC_URL }}js/charts/plotly-2.4.2.min.js"></script>
+        <!-- End of JavaScript to enable Plotly charts -->
 
-            var def_title, norm_btn_class, instr_class, render_div, val_label, val_units, avg_label, cat_label, cat_counter,
-                    field_name_min, field_name_max, field_multiplier, field_cat_name, tooltip_filters, href_start, result;
-        </script>
-        <!-- End of include JavaScript to enable highcharts plots -->
-
-        <!-- JavaScript to enable bootstrap tooltips -->
-        <script>
-            $(document).ready(function(){
-                $('[data-toggle="tooltip"]').tooltip();
-            });
-        </script>
-        <!-- End of JavaScript to enable bootstrap tooltips -->
-
-        <!-- JavaScript function to sort a list of objects by the 'y' or 'name' object. -->
-        <script src="{{ STATIC_URL }}js/sorting.js"></script>
-        <!-- End of JavaScript function to sort a list of objects by the 'y' or 'name' object -->
+        <!-- JavaScript Plotly chart resizing code. -->
+        <script src="{{ STATIC_URL }}js/charts/chartFullScreen.js"></script>
+        <!-- End of JavaScript Plotly chart resizing code. -->
 
         <!-- JavaScript chart AJAX code. -->
-        <script src="{{ STATIC_URL }}js/rfChartAjax.js"></script>
+        <script src="{{ STATIC_URL }}js/charts/rfChartAjax.js"></script>
         <!-- End of JavaScript chart AJAX code. -->
 
-        <script>var plotAverageChoice = '{{ request.user.userprofile.plotAverageChoice }}';</script>
-
-        {% if request.user.userprofile.plotRFStudyDAP %}
-            <!-- HTML to include div container for study plot -->
-            <div class="panel-group" id="plotRFStudyDAPAccordion">
+        {% for chart in required_charts %}
+            <div class="panel-group" id="{{ chart.var_name }}accordion">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#plotRFStudyDAPAccordion" href="#collapsePlotRFStudyDAPAccordion" onclick="setTimeout(function() {fitChartToDiv('plotRFStudyDAPContainer');}, 0);">
-                                {% if request.user.userprofile.plotAverageChoice == 'mean' %}
-                                    Plot of mean DAP for each study description.
-                                {% elif request.user.userprofile.plotAverageChoice == 'median' %}
-                                    Plot of median DAP for each study description.
-                                {% else %}
-                                    Plot of mean and median DAP for each study description.
-                                {% endif %}
+                            <a data-toggle="collapse" data-parent="#{{ chart.var_name }}accordion" href="#collapse{{ chart.var_name }}" onclick="setTimeout(function() {triggerResizeEvent();}, 0);">
+                                {{ chart.title }}
                             </a>
                         </h4>
                     </div>
-                    <div id="collapsePlotRFStudyDAPAccordion" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div id="plotRFStudyDAPContainer" style="height: auto; margin: 0 0"></div>
-
-                            <div class="stu-instructions">
-                                <table style="border:none">
-                                    <tr>
-                                        <th colspan="3" style="padding: 0px; padding-right: 10px; vertical-align: top">Sorting options</th>
-                                        <td rowspan="3" style="padding-left: 20px; vertical-align: top">
-                                            {% if request.user.userprofile.plotHistograms %}
-                                            Click on an individual column to show a histogram of data for that study description.<br>
-                                            Click on a histogram bin tooltip to see the studies that contain the study names in the bin. Note that
-                                            this will include studies at the upper bin boundary, so in some cases may display more data than
-                                            shown in the histogram bin.
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 0px; padding-right: 10px; vertical-align: top"><a onclick="anySeriesSort('#plotRFStudyDAPContainer', 'avg_value', 1, 0)" class="sorting-option" data-toggle="tooltip" title="Sort by ascending DLP">&uarr;DAP</a></td>
-                                        <td style="padding: 0px; padding-right: 10px; vertical-align: top"><a onclick="anySeriesSort('#plotRFStudyDAPContainer', 'total_counts', 1, 0)" class="sorting-option" data-toggle="tooltip" title="Sort by ascending frequency">&uarr;frequency</a></td>
-                                        <td style="padding: 0px; vertical-align: top"><a onclick="anySeriesSort('#plotRFStudyDAPContainer', 'name', 1, 0)" class="sorting-option" data-toggle="tooltip" title="Sort alphabetically">A&nbsp;to&nbsp;Z</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 0px; padding-right: 10px; vertical-align: top"><a onclick="anySeriesSort('#plotRFStudyDAPContainer', 'avg_value', -1, 0)" class="sorting-option" data-toggle="tooltip" title="Sort by descending DAP">&darr;DAP</a></td>
-                                        <td style="padding: 0px; padding-right: 10px; vertical-align: top"><a onclick="anySeriesSort('#plotRFStudyDAPContainer', 'total_counts', -1, 0)" class="sorting-option" data-toggle="tooltip" title="Sort by descending frequency">&darr;frequency</a></td>
-                                        <td style="padding: 0px; vertical-align: top"><a onclick="anySeriesSort('#plotRFStudyDAPContainer', 'name', -1, 0)" class="sorting-option" data-toggle="tooltip" title="Sort reverse alphabetically">Z&nbsp;to&nbsp;A</a></td>
-                                    </tr>
-                                </table>
-                            </div>
-                            <a onclick="$('#plotRFStudyDAPContainer').highcharts().viewData(false, false, true); enterFullScreen('collapsePlotRFStudyDAPAccordion','plotRFStudyDAPContainer'); $('#toggle_study_data_btn').toggle();" class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
-                            <a onclick="$('#plotRFStudyDAPContainer').highcharts().viewData(true, true);" class="btn btn-default btn-sm" role="button" id="toggle_study_data_btn">Toggle data table</a>
-                            <a onclick="$('#plotRFStudyDAPContainer').highcharts().zoomOut();" class="btn btn-default btn-sm" role="button">Reset zoom</a>
-                            <div class="stu-hist-norm-btn"><a onclick="normaliseHistograms('#plotRFStudyDAPContainer'); $('#plotRFStudyDAPContainer').highcharts().viewData(false, true);" class="btn btn-default btn-sm" role="button">Toggle normalised histograms</a></div>
+                    <div id="collapse{{ chart.var_name }}" class="panel-collapse collapse">
+                        <div id="{{ chart.var_name }}ChartParentDiv" class="panel-body">
+                            <div id="{{ chart.var_name }}ChartDiv"></div>
+                            <a onclick="enterFullScreenPlotly('{{ chart.var_name }}ChartDiv', '{{ chart.var_name }}ChartParentDiv');"
+                               class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- End of HTML to include div for study name plot -->
-
-            <script>
-                var plotRFStudyDAP = true;
-                $(window).resize(function() {
-                    chartSetExportSize('plotRFStudyDAPContainer');
-                    fitChartToDiv('plotRFStudyDAPContainer');
-                });
-                var tooltipFiltersStudy = '{% for field in filter.form %}{% if field.name != 'study_description' and field.name != 'o' and field.value %}&{{ field.name }}={{ field.value }}{% endif %}{% endfor %}';
-                norm_btn_class = '.stu-hist-norm-btn';
-                instr_class = '.stu-instructions';
-                render_div = 'plotRFStudyDAPContainer';
-                val_label = 'DAP';
-                val_units = 'cGy.cm<sup>2</sup>';
-                cat_label = 'Study description';
-                cat_counter = 'studies';
-                field_name_min = 'study_dap_min';
-                field_name_max = 'study_dap_max';
-                field_multiplier = 1.0;
-                field_cat_name = 'study_description';
-                tooltip_filters = tooltipFiltersStudy;
-                href_start = '/openrem/rf/?';
-
-            {% if request.user.userprofile.plotAverageChoice == 'both' %}
-                avg_label = 'Mean and median';
-            {% elif request.user.userprofile.plotAverageChoice == 'mean' %}
-                avg_label = 'Mean';
-            {% else %}
-                avg_label = 'Median';
-            {% endif %}
-
-                def_title = avg_label + ' ' + val_label + ' per ' + cat_label.toLowerCase();
-                result = chartAverageAndHistogram(def_title, norm_btn_class, instr_class, render_div, val_label,
-                        val_units, avg_label, cat_label, cat_counter, field_name_min, field_name_max, field_multiplier,
-                        field_cat_name, tooltip_filters, href_start);
-            </script>
-        {% endif %}
-
-        {% if request.user.userprofile.plotRFStudyPerDayAndHour %}
-            <!-- HTML to include div container for study workload -->
-            <div class="panel-group" id="accordion5">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion5" href="#collapseStudyWorkloadPieChart" onclick="setTimeout(function() {fitChartToDiv('piechartStudyWorkloadDIV');}, 0);">
-                                Pie chart showing a breakdown of number of studies per weekday.
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapseStudyWorkloadPieChart" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div id="piechartStudyWorkloadDIV" style="height: auto; margin: 0 0"></div>
-                            <p>Click on a segment to be taken to a pie chart showing the breakdown per hour for that weekday.</p>
-                            <a onclick="$('#piechartStudyWorkloadDIV').highcharts().viewData(false, false, true); enterFullScreen('collapseStudyWorkloadPieChart', 'piechartStudyWorkloadDIV'); $('#toggle_studywl_data_btn').toggle();" class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
-                            <a onclick="$('#piechartStudyWorkloadDIV').highcharts().viewData(true, true);" class="btn btn-default btn-sm" role="button" id="toggle_studywl_data_btn">Toggle data table</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End of HTML to include div container for studies per week day pie chart -->
-
-            <script>
-                var plotRFStudyPerDayAndHour = true;
-                $(window).resize(function() {
-                    chartSetExportSize('piechartStudyWorkloadDIV');
-                    fitChartToDiv('piechartStudyWorkloadDIV');
-                });
-                result = chartWorkload('piechartStudyWorkloadDIV', 'Studies');
-            </script>
-        {% endif %}
-
-        {% if request.user.userprofile.plotRFStudyFreq %}
-            <!-- HTML to include div container for study name pie chart -->
-            <div class="panel-group" id="accordionPiechartStudy">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordionPiechartStudy" href="#collapseStudyPieChart" onclick="setTimeout(function() {fitChartToDiv('piechartStudyDIV');}, 0);">
-                                Pie chart showing a breakdown of study name frequency.
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapseStudyPieChart" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div id="piechartStudyDIV" style="height: auto; margin: 0 0"></div>
-                            <a onclick="$('#piechartStudyDIV').highcharts().viewData(false, false, true); enterFullScreen('collapseStudyPieChart', 'piechartStudyDIV'); $('#toggle_studyf_data_btn').toggle();" class="btn btn-default btn-sm" role="button">Toggle fullscreen</a>
-                            <a onclick="$('#piechartStudyDIV').highcharts().viewData(true, true);" class="btn btn-default btn-sm" role="button" id="toggle_studyf_data_btn">Toggle data table</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End of HTML to include div container for study name pie chart -->
-
-            <script>
-                var plotRFStudyFreq = true;
-                $(window).resize(function() {
-                    chartSetExportSize('piechartStudyDIV');
-                    fitChartToDiv('piechartStudyDIV');
-                });
-                var urlStartStudy = '/openrem/rf/?{% for field in filter.form %}{% if field.name != 'study_description' and field.name != 'o' and field.value %}&{{ field.name }}={{ field.value }}{% endif %}{% endfor %}&study_description=';
-                result = chartFrequency('piechartStudyDIV', 'Study description frequency');
-            </script>
-        {% endif %}
-
+        {% endfor %}
     {% endif %}
 {% endblock %}

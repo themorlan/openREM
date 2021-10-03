@@ -1,0 +1,40 @@
+<div class="col-md-12">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h3 class="panel-title">Summary data fields migration</h3>
+        </div>
+        <div class="panel-body">
+            <p>
+                {% if not_admin %}
+                    <p>
+                        Upgrading to OpenREM release 0.10 requires a data migration. Log in as an admin user to start
+                        the process or to view the migration progress.
+                    </p>
+                    <p>
+                        During the migration you will be
+                        able to use OpenREM and import new studies, but some processes will be delayed as the migration
+                        takes place. Some of the interface views will also not work properly until the migration is
+                        complete.
+                    </p>
+                {% else %}
+                    <p>
+                        Upgrading to OpenREM release 0.10 requires a data migration. Please start the migration by
+                        <a href="{% url 'populate_summary' %}">clicking here</a>.
+                    </p>
+                    <p>
+                        During the migration you will be
+                        able to use OpenREM and import new studies, but some processes will be delayed as the migration
+                        takes place. Some of the interface views will also not work properly until the migration is
+                        complete.
+                    </p>
+                    <p>
+                        If you have already started the migration and are still seeing this message, make sure Celery
+                        and RabbitMQ are running on the <a href="{% url 'celery_admin' %}">Tasks admin page</a>.
+                    </p>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+
+
