@@ -48,6 +48,20 @@ import plotly.graph_objects as go
 from plotly.offline import plot
 from plotly.subplots import make_subplots
 from scipy import stats
+from remapp.models import CommonVariables
+
+def rename(newname):
+    def decorator(f):
+        f.__name__ = newname
+        return f
+    return decorator
+
+
+def q_at(y):
+    @rename('percentile')
+    def q(x):
+        return x.quantile(y)
+    return q
 
 
 def global_config(
@@ -290,6 +304,10 @@ def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None)
     # Make it possible to have multiple value cols (DLP, CTDI, for example)
     if stats_to_use is None:
         stats_to_use = ["count"]
+
+    if CommonVariables.PERCENTILE in stats_to_use:
+        stats_to_use.remove(CommonVariables.PERCENTILE)
+        stats_to_use.append(q_at(0.75))
 
     groupby_cols = ["x_ray_system_name"] + df_name_cols
 

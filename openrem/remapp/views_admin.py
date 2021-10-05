@@ -1571,6 +1571,10 @@ def set_average_chart_options(general_form, user_profile):
         user_profile.plotMedian = True
     else:
         user_profile.plotMedian = False
+    if CommonVariables.PERCENTILE in general_form.cleaned_data["plotAverageChoice"]:
+        user_profile.plotPercentile = True
+    else:
+        user_profile.plotPercentile = False
     if CommonVariables.BOXPLOT in general_form.cleaned_data["plotAverageChoice"]:
         user_profile.plotBoxplots = True
     else:
@@ -1711,6 +1715,8 @@ def required_average_choices(user_profile):
         average_choices.append(CommonVariables.MEAN)
     if user_profile.plotMedian:
         average_choices.append(CommonVariables.MEDIAN)
+    if user_profile.plotPercentile:
+        average_choices.append(CommonVariables.PERCENTILE)
     if user_profile.plotBoxplots:
         average_choices.append(CommonVariables.BOXPLOT)
     return average_choices

@@ -108,6 +108,10 @@ $(document).ready(function() {
                 $("#requestMedianDLPChartDiv").html(json.requestMedianDLPData);
                 $("#requestMedianDLPChartParentDiv").append(json.requestMedianDLPDataCSV);
             }
+            if(typeof json.requestPercentileDLPData !== "undefined") {
+                $("#requestPercentileDLPChartDiv").html(json.requestPercentileDLPData);
+                $("#requestPercentileDLPChartParentDiv").append(json.requestPercentileDLPDataCSV);
+            }
             if(typeof json.requestBoxplotDLPData !=="undefined") {
                 $("#requestBoxplotDLPChartDiv").html(json.requestBoxplotDLPData);
             }

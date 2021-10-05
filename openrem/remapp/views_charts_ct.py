@@ -343,6 +343,13 @@ def generate_required_ct_charts_list(profile):
                     "var_name": "requestMedianDLP",
                 }
             )
+        if profile.plotPercentile:
+            required_charts.append(
+                {
+                    "title": "Chart of requested procedure 75th percentile DLP",
+                    "var_name": "requestPercentileDLP",
+                }
+            )
         if profile.plotBoxplots:
             required_charts.append(
                 {
@@ -464,6 +471,8 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         average_choices.append(CommonVariables.MEAN)
     if user_profile.plotMedian:
         average_choices.append(CommonVariables.MEDIAN)
+    if user_profile.plotPercentile:
+        average_choices.append(CommonVariables.PERCENTILE)
 
     charts_of_interest = [
         user_profile.plotCTAcquisitionDLPOverTime,
@@ -1443,7 +1452,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 stats_to_use=average_choices + ["count"],
             )
 
-            if user_profile.plotMean or user_profile.plotMedian:
+            if user_profile.plotMean or user_profile.plotMedian or user_profile.plotPercentile:
 
                 parameter_dict = {
                     "df_name_col": name_field,
@@ -1485,6 +1494,21 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                         df_aggregated,
                         parameter_dict,
                         csv_name="requestMedianDLPData.csv",
+                    )
+
+                if user_profile.plotPercentile:
+                    parameter_dict["value_axis_title"] = "75th percentile DLP (mGy.cm)"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT requested procedure DLP 75th percentile"
+                    parameter_dict["average_choice"] = "percentile"
+                    (
+                        return_structure["requestPercentileDLPData"],
+                        return_structure["requestPercentileDLPDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
+                        df_aggregated,
+                        parameter_dict,
+                        csv_name="requestPercentileDLPData.csv",
                     )
 
             if user_profile.plotBoxplots:

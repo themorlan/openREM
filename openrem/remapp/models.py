@@ -484,8 +484,9 @@ class CommonVariables:
 
     MEAN = "mean"
     MEDIAN = "median"
+    PERCENTILE = "percentile"
     BOXPLOT = "boxplot"
-    AVERAGES = ((MEAN, "Mean"), (MEDIAN, "Median"), (BOXPLOT, "Boxplot"))
+    AVERAGES = ((MEAN, "Mean"), (MEDIAN, "Median"), (PERCENTILE, "Percentile"), (BOXPLOT, "Boxplot"))
 
     # Using DICOM code meanings from http://dicom.nema.org/medical/dicom/current/output/chtml/part16/sect_CID_10013.html
     CT_SEQUENCED_ACQUISITION_TYPE = "Sequenced Acquisition"
@@ -555,6 +556,7 @@ class UserProfile(models.Model, CommonVariables):
     plotBoxplots = models.BooleanField(default=False, editable=False)
     plotMean = models.BooleanField(default=True, editable=False)
     plotMedian = models.BooleanField(default=False, editable=False)
+    plotPercentile = models.BooleanField(default=False, editable=False)
 
     # Plotting controls
     plotCharts = models.BooleanField(default=False)
