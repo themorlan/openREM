@@ -1339,6 +1339,8 @@ def chart_options_view(request):
                 "plotLabelCharWrap"
             ]
 
+            user_profile.plotPercentileVal = general_form.cleaned_data["plotPercentileVal"]
+
             set_common_chart_options(general_form, user_profile)
 
             set_average_chart_options(general_form, user_profile)
@@ -1376,6 +1378,7 @@ def chart_options_view(request):
     general_form_data = {
         "plotCharts": user_profile.plotCharts,
         "plotAverageChoice": average_choices,
+        "plotPercentileVal": user_profile.plotPercentileVal,
         "plotInitialSortingDirection": user_profile.plotInitialSortingDirection,
         "plotSeriesPerSystem": user_profile.plotSeriesPerSystem,
         "plotHistogramBins": user_profile.plotHistogramBins,

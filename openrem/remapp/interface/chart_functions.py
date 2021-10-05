@@ -60,8 +60,24 @@ def rename(newname):
 def q_at(y):
     @rename('percentile')
     def q(x):
-        return x.quantile(y)
+        return x.quantile(y/100.0)
     return q
+
+
+def make_ordinal(n):
+    '''
+    Convert an integer into its ordinal representation::
+
+        make_ordinal(0)   => '0th'
+        make_ordinal(3)   => '3rd'
+        make_ordinal(122) => '122nd'
+        make_ordinal(213) => '213th'
+    '''
+    n = int(n)
+    suffix = ['th', 'st', 'nd', 'rd', 'th'][min(n % 10, 4)]
+    if 11 <= (n % 100) <= 13:
+        suffix = 'th'
+    return str(n) + suffix
 
 
 def global_config(
@@ -286,7 +302,7 @@ def create_dataframe_weekdays(df, df_name_col, df_date_col="study_date"):
     return df_time_series
 
 
-def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None):
+def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None, percentile=0.75):
     """
     Creates a Pandas DataFrame with the specified statistics (mean, median, count, for example) grouped by
     x-ray system name and by the list of provided df_name_cols.
@@ -295,6 +311,7 @@ def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None)
     :param df_name_cols: list of strings representing the DataFrame column names to group by
     :param df_agg_col: string containing the DataFrame column over which to calculate the statistics
     :param stats_to_use: list of strings containing the statistics to calculate, such as "mean", "median", "count"
+    :param percentile: the percentile to use
     :return: Pandas DataFrame containing the grouped aggregate data
     """
     start = None
@@ -307,7 +324,7 @@ def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None)
 
     if CommonVariables.PERCENTILE in stats_to_use:
         stats_to_use.remove(CommonVariables.PERCENTILE)
-        stats_to_use.append(q_at(0.75))
+        stats_to_use.append(q_at(percentile))
 
     groupby_cols = ["x_ray_system_name"] + df_name_cols
 

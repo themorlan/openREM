@@ -566,6 +566,9 @@ class GeneralChartOptionsDisplayForm(forms.Form):
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
+    plotPercentileVal = forms.IntegerField(
+        label="Percentile value", min_value=1, max_value=100, required=False
+    )
     plotInitialSortingDirection = forms.ChoiceField(
         label="Sorting direction",
         choices=CommonVariables.SORTING_DIRECTION,

@@ -33,6 +33,7 @@ from .interface.chart_functions import (
     plotly_frequency_barchart,
     plotly_scatter,
     construct_over_time_charts,
+    make_ordinal,
 )
 
 logger = logging.getLogger(__name__)
@@ -346,7 +347,7 @@ def generate_required_ct_charts_list(profile):
         if profile.plotPercentile:
             required_charts.append(
                 {
-                    "title": "Chart of requested procedure 75th percentile DLP",
+                    "title": "Chart of requested procedure " + make_ordinal(profile.plotPercentileVal) + " percentile DLP",
                     "var_name": "requestPercentileDLP",
                 }
             )
@@ -473,6 +474,8 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         average_choices.append(CommonVariables.MEDIAN)
     if user_profile.plotPercentile:
         average_choices.append(CommonVariables.PERCENTILE)
+
+    percentile = user_profile.plotPercentileVal
 
     charts_of_interest = [
         user_profile.plotCTAcquisitionDLPOverTime,
@@ -1450,6 +1453,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 [name_field],
                 value_field,
                 stats_to_use=average_choices + ["count"],
+                percentile=percentile,
             )
 
             if user_profile.plotMean or user_profile.plotMedian or user_profile.plotPercentile:

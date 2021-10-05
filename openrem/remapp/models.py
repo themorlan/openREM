@@ -557,6 +557,7 @@ class UserProfile(models.Model, CommonVariables):
     plotMean = models.BooleanField(default=True, editable=False)
     plotMedian = models.BooleanField(default=False, editable=False)
     plotPercentile = models.BooleanField(default=False, editable=False)
+    plotPercentileVal = models.PositiveSmallIntegerField(default=75)
 
     # Plotting controls
     plotCharts = models.BooleanField(default=False)
