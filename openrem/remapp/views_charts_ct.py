@@ -72,6 +72,13 @@ def generate_required_ct_charts_list(profile):
                     "var_name": "acquisitionMedianDLP",
                 }
             )
+        if profile.plotPercentile:
+            required_charts.append(
+                {
+                    "title": "Chart of acquisition protocol " + make_ordinal(profile.plotPercentileVal) + " percentile DLP",
+                    "var_name": "acquisitionPercentileDLP",
+                }
+            )
         if profile.plotBoxplots:
             required_charts.append(
                 {
@@ -104,6 +111,13 @@ def generate_required_ct_charts_list(profile):
                         "Chart of acquisition protocol median CTDI<sub>vol</sub>"
                     ),
                     "var_name": "acquisitionMedianCTDI",
+                }
+            )
+        if profile.plotPercentile:
+            required_charts.append(
+                {
+                    "title": mark_safe("Chart of acquisition protocol " + make_ordinal(profile.plotPercentileVal) + " percentile CTDI<sub>vol</sub>"),
+                    "var_name": "acquisitionPercentileCTDI",
                 }
             )
         if profile.plotBoxplots:
@@ -210,6 +224,13 @@ def generate_required_ct_charts_list(profile):
                     "var_name": "studyMedianDLP",
                 }
             )
+        if profile.plotPercentile:
+            required_charts.append(
+                {
+                    "title": mark_safe("Chart of study description " + make_ordinal(profile.plotPercentileVal) + " percentile DLP</sub>"),
+                    "var_name": "studyPercentileDLP",
+                }
+            )
         if profile.plotBoxplots:
             required_charts.append(
                 {
@@ -242,6 +263,13 @@ def generate_required_ct_charts_list(profile):
                         "Chart of study description median CTDI<sub>vol</sub>"
                     ),
                     "var_name": "studyMedianCTDI",
+                }
+            )
+        if profile.plotPercentile:
+            required_charts.append(
+                {
+                    "title": mark_safe("Chart of study description " + make_ordinal(profile.plotPercentileVal) + " percentile CTDI<sub>vol</sub>"),
+                    "var_name": "studyPercentileCTDI",
                 }
             )
         if profile.plotBoxplots:
@@ -284,6 +312,13 @@ def generate_required_ct_charts_list(profile):
                 {
                     "title": "Chart of study description median number of events",
                     "var_name": "studyMedianNumEvents",
+                }
+            )
+        if profile.plotPercentile:
+            required_charts.append(
+                {
+                    "title": "Chart of study description " + make_ordinal(profile.plotPercentileVal) + " percentile number of events",
+                    "var_name": "studyPercentileNumEvents",
                 }
             )
         if profile.plotBoxplots:
@@ -387,6 +422,13 @@ def generate_required_ct_charts_list(profile):
                 {
                     "title": "Chart of requested procedure median number of events",
                     "var_name": "requestMedianNumEvents",
+                }
+            )
+        if profile.plotPercentile:
+            required_charts.append(
+                {
+                    "title": "Chart of requested procedure " + make_ordinal(profile.plotPercentileVal) + " percentile number of events",
+                    "var_name": "requestPercentileNumEvents",
                 }
             )
         if profile.plotBoxplots:
@@ -610,9 +652,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 [name_field],
                 value_field,
                 stats_to_use=average_choices + ["count"],
+                percentile=percentile,
             )
 
-            if user_profile.plotMean or user_profile.plotMedian:
+            if user_profile.plotMean or user_profile.plotMedian or user_profile.plotPercentile:
 
                 parameter_dict = {
                     "df_name_col": name_field,
@@ -655,6 +698,21 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                         df_aggregated,
                         parameter_dict,
                         csv_name="acquisitionMedianDLPData.csv",
+                    )
+
+                if user_profile.plotPercentile:
+                    parameter_dict["value_axis_title"] = make_ordinal(user_profile.plotPercentileVal) + " percentile DLP (mGy.cm)"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT acquisition protocol DLP " + make_ordinal(user_profile.plotPercentileVal) + " percentile"
+                    parameter_dict["average_choice"] = "percentile"
+                    (
+                        return_structure["acquisitionPercentileDLPData"],
+                        return_structure["acquisitionPercentileDLPDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
+                        df_aggregated,
+                        parameter_dict,
+                        csv_name="acquisitionPercentileDLPData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -728,9 +786,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 [name_field],
                 value_field,
                 stats_to_use=average_choices + ["count"],
+                percentile=percentile,
             )
 
-            if user_profile.plotMean or user_profile.plotMedian:
+            if user_profile.plotMean or user_profile.plotMedian or user_profile.plotPercentile:
 
                 parameter_dict = {
                     "df_name_col": name_field,
@@ -775,6 +834,21 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                         df_aggregated,
                         parameter_dict,
                         csv_name="acquisitionMedianCTDIData.csv",
+                    )
+
+                if user_profile.plotPercentile:
+                    parameter_dict["value_axis_title"] = make_ordinal(user_profile.plotPercentileVal) + " percentile CTDI<sub>vol</sub> (mGy)"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT acquisition protocol CTDI " + make_ordinal(user_profile.plotPercentileVal) + " percentile"
+                    parameter_dict["average_choice"] = "percentile"
+                    (
+                        return_structure["acquisitionPercentileCTDIData"],
+                        return_structure["acquisitionPercentileCTDIDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
+                        df_aggregated,
+                        parameter_dict,
+                        csv_name="acquisitionPercentileCTDIData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -1085,9 +1159,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 [name_field],
                 value_field,
                 stats_to_use=average_choices + ["count"],
+                percentile=percentile,
             )
 
-            if user_profile.plotMean or user_profile.plotMedian:
+            if user_profile.plotMean or user_profile.plotMedian or user_profile.plotPercentile:
 
                 parameter_dict = {
                     "df_name_col": name_field,
@@ -1127,6 +1202,21 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                         df_aggregated,
                         parameter_dict,
                         csv_name="studyMedianDLPData.csv",
+                    )
+
+                if user_profile.plotPercentile:
+                    parameter_dict["value_axis_title"] = make_ordinal(user_profile.plotPercentileVal) + " percentile DLP (mGy.cm)"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT study description DLP " + make_ordinal(user_profile.plotPercentileVal) + " percentile"
+                    parameter_dict["average_choice"] = "percentile"
+                    (
+                        return_structure["studyPercentileDLPData"],
+                        return_structure["studyPercentileDLPDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
+                        df_aggregated,
+                        parameter_dict,
+                        csv_name="studyPercentileDLPData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -1196,9 +1286,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 [name_field],
                 value_field,
                 stats_to_use=average_choices + ["count"],
+                percentile=percentile,
             )
 
-            if user_profile.plotMean or user_profile.plotMedian:
+            if user_profile.plotMean or user_profile.plotMedian or user_profile.plotPercentile:
 
                 parameter_dict = {
                     "df_name_col": name_field,
@@ -1242,6 +1333,21 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                         df_aggregated,
                         parameter_dict,
                         csv_name="studyMedianCTDIData.csv",
+                    )
+
+                if user_profile.plotPercentile:
+                    parameter_dict["value_axis_title"] = make_ordinal(user_profile.plotPercentileVal) + " percentile CTDI<sub>vol</sub> (mGy)"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT study description CTDI " + make_ordinal(user_profile.plotPercentileVal) + " percentile"
+                    parameter_dict["average_choice"] = "percentile"
+                    (
+                        return_structure["studyPercentileCTDIData"],
+                        return_structure["studyPercentileCTDIDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
+                        df_aggregated,
+                        parameter_dict,
+                        csv_name="studyPercentileCTDIData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -1311,9 +1417,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 [name_field],
                 value_field,
                 stats_to_use=average_choices + ["count"],
+                percentile=percentile,
             )
 
-            if user_profile.plotMean or user_profile.plotMedian:
+            if user_profile.plotMean or user_profile.plotMedian or user_profile.plotPercentile:
 
                 parameter_dict = {
                     "df_name_col": name_field,
@@ -1355,6 +1462,21 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                         df_aggregated,
                         parameter_dict,
                         csv_name="studyMedianNumEventsData.csv",
+                    )
+
+                if user_profile.plotPercentile:
+                    parameter_dict["value_axis_title"] = make_ordinal(user_profile.plotPercentileVal) + " percentile events"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT study description events " + make_ordinal(user_profile.plotPercentileVal) + " percentile"
+                    parameter_dict["average_choice"] = "percentile"
+                    (
+                        return_structure["studyPercentileNumEventsData"],
+                        return_structure["studyPercentileNumEventsDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
+                        df_aggregated,
+                        parameter_dict,
+                        csv_name="studyPercentileNumEventsData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -1501,10 +1623,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotPercentile:
-                    parameter_dict["value_axis_title"] = "75th percentile DLP (mGy.cm)"
+                    parameter_dict["value_axis_title"] = make_ordinal(user_profile.plotPercentileVal) + " percentile DLP (mGy.cm)"
                     parameter_dict[
                         "filename"
-                    ] = "OpenREM CT requested procedure DLP 75th percentile"
+                    ] = "OpenREM CT requested procedure DLP " + make_ordinal(user_profile.plotPercentileVal) + " percentile"
                     parameter_dict["average_choice"] = "percentile"
                     (
                         return_structure["requestPercentileDLPData"],
@@ -1626,6 +1748,21 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                         df_aggregated,
                         parameter_dict,
                         csv_name="requestMedianNumEventsData.csv",
+                    )
+
+                if user_profile.plotPercentile:
+                    parameter_dict["value_axis_title"] = make_ordinal(user_profile.plotPercentileVal) + " percentile events"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT requested procedure events " + make_ordinal(user_profile.plotPercentileVal) + " percentile"
+                    parameter_dict["average_choice"] = "percentile"
+                    (
+                        return_structure["requestPercentileNumEventsData"],
+                        return_structure["requestPercentileNumEventsDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
+                        df_aggregated,
+                        parameter_dict,
+                        csv_name="requestPercentileNumEventsData.csv",
                     )
 
             if user_profile.plotBoxplots:

@@ -27,6 +27,10 @@ $(document).ready(function() {
                 $("#acquisitionMedianDLPChartDiv").html(json.acquisitionMedianDLPData);
                 $("#acquisitionMedianDLPChartParentDiv").append(json.acquisitionMedianDLPDataCSV);
             }
+            if(typeof json.acquisitionPercentileDLPData !== "undefined") {
+                $("#acquisitionPercentileDLPChartDiv").html(json.acquisitionPercentileDLPData);
+                $("#acquisitionPercentileDLPChartParentDiv").append(json.acquisitionPercentileDLPDataCSV);
+            }
             if(typeof json.acquisitionBoxplotDLPData !=="undefined") {
                 $("#acquisitionBoxplotDLPChartDiv").html(json.acquisitionBoxplotDLPData);
             }
@@ -42,6 +46,10 @@ $(document).ready(function() {
             if(typeof json.acquisitionMedianCTDIData !== "undefined") {
                 $("#acquisitionMedianCTDIChartDiv").html(json.acquisitionMedianCTDIData);
                 $("#acquisitionMedianCTDIChartParentDiv").append(json.acquisitionMedianCTDIDataCSV);
+            }
+            if(typeof json.acquisitionPercentileCTDIData !== "undefined") {
+                $("#acquisitionPercentileCTDIChartDiv").html(json.acquisitionPercentileCTDIData);
+                $("#acquisitionPercentileCTDIChartParentDiv").append(json.acquisitionPercentileCTDIDataCSV);
             }
             if(typeof json.acquisitionBoxplotCTDIData !=="undefined") {
                 $("#acquisitionBoxplotCTDIChartDiv").html(json.acquisitionBoxplotCTDIData);
@@ -76,6 +84,10 @@ $(document).ready(function() {
                 $("#studyMedianDLPChartDiv").html(json.studyMedianDLPData);
                 $("#studyMedianDLPChartParentDiv").append(json.studyMedianDLPDataCSV);
             }
+            if(typeof json.studyPercentileDLPData !== "undefined") {
+                $("#studyPercentileDLPChartDiv").html(json.studyPercentileDLPData);
+                $("#studyPercentileDLPChartParentDiv").append(json.studyPercentileDLPDataCSV);
+            }
             if(typeof json.studyBoxplotDLPData !=="undefined") {
                 $("#studyBoxplotDLPChartDiv").html(json.studyBoxplotDLPData);
             }
@@ -91,6 +103,10 @@ $(document).ready(function() {
             if(typeof json.studyMedianCTDIData !== "undefined") {
                 $("#studyMedianCTDIChartDiv").html(json.studyMedianCTDIData);
                 $("#studyMedianCTDIChartParentDiv").append(json.studyMedianCTDIDataCSV);
+            }
+            if(typeof json.studyPercentileCTDIData !== "undefined") {
+                $("#studyPercentileCTDIChartDiv").html(json.studyPercentileCTDIData);
+                $("#studyPercentileCTDIChartParentDiv").append(json.studyPercentileCTDIDataCSV);
             }
             if(typeof json.studyBoxplotCTDIData !=="undefined") {
                 $("#studyBoxplotCTDIChartDiv").html(json.studyBoxplotCTDIData);
@@ -128,6 +144,10 @@ $(document).ready(function() {
                 $("#studyMedianNumEventsChartDiv").html(json.studyMedianNumEventsData);
                 $("#studyMedianNumEventsChartParentDiv").append(json.studyMedianNumEventsDataCSV);
             }
+            if(typeof json.studyPercentileNumEventsData !== "undefined") {
+                $("#studyPercentileNumEventsChartDiv").html(json.studyPercentileNumEventsData);
+                $("#studyPercentileNumEventsChartParentDiv").append(json.studyPercentileNumEventsDataCSV);
+            }
             if(typeof json.studyBoxplotNumEventsData !=="undefined") {
                 $("#studyBoxplotNumEventsChartDiv").html(json.studyBoxplotNumEventsData);
             }
@@ -143,6 +163,10 @@ $(document).ready(function() {
             if(typeof json.requestMedianNumEventsData !== "undefined") {
                 $("#requestMedianNumEventsChartDiv").html(json.requestMedianNumEventsData);
                 $("#requestMedianNumEventsChartParentDiv").append(json.requestMedianNumEventsDataCSV);
+            }
+            if(typeof json.requestPercentileNumEventsData !== "undefined") {
+                $("#requestPercentileNumEventsChartDiv").html(json.requestPercentileNumEventsData);
+                $("#requestPercentileNumEventsChartParentDiv").append(json.requestPercentileNumEventsDataCSV);
             }
             if(typeof json.requestBoxplotNumEventsData !=="undefined") {
                 $("#requestBoxplotNumEventsChartDiv").html(json.requestBoxplotNumEventsData);

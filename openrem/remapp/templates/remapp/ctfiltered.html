@@ -99,7 +99,7 @@
                                     <ul id={{ field.auto_id }} class='CheckboxSelectMultiple'>
                                     {% for choice in field.field.widget.choices %}
                                         <li>
-                                            <label for={{ field.auto_id }}_{{ forloop.counter0 }}>
+                                            <label for="{{ field.auto_id }}_{{ forloop.counter0 }}">
                                                 <input
                                                         type="checkbox" class="CheckboxSelectMultiple"
                                                         name="{{ field.name }}" value="{{ choice.0 }}"
