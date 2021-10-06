@@ -1862,7 +1862,10 @@ def _generalequipmentmoduleattributes(dataset, study):
     except IndexError:
         device_observer_uid = None
 
-    if equip.manufacturer_model_name in settings.IGNORE_DEVICE_OBSERVER_UID_FOR_THESE_MODELS:
+    if (
+        equip.manufacturer_model_name
+        in settings.IGNORE_DEVICE_OBSERVER_UID_FOR_THESE_MODELS
+    ):
         device_observer_uid = None
 
     equip_display_name, created = UniqueEquipmentNames.objects.get_or_create(
