@@ -104,7 +104,7 @@
                                                         type="checkbox" class="CheckboxSelectMultiple"
                                                         name="{{ field.name }}" value="{{ choice.0 }}"
                                                         id="{{ field.auto_id }}_{{ forloop.counter0 }}"
-                                                        {% if choice.0 in field.form.data.plotAverageChoice %}
+                                                        {% if choice.0 in chartOptionsForm.cleaned_data.plotAverageChoice %}
                                                             checked
                                                         {% endif %}
                                                 >
