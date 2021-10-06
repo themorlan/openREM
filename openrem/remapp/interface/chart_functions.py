@@ -302,7 +302,7 @@ def create_dataframe_weekdays(df, df_name_col, df_date_col="study_date"):
     return df_time_series
 
 
-def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None, percentile=0.75):
+def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None, percentile=75):
     """
     Creates a Pandas DataFrame with the specified statistics (mean, median, count, for example) grouped by
     x-ray system name and by the list of provided df_name_cols.
