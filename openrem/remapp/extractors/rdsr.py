@@ -1667,6 +1667,7 @@ def _import_varic(dataset, proj):
     for cont in dataset.ContentSequence:
         if cont.ConceptNameCodeSequence[0].CodeValue == "C-200":
             accum = AccumXRayDose.objects.create(projection_xray_radiation_dose=proj)
+            accum.acquisition_plane = get_or_create_cid("113622", "Single Plane")
             accum.save()
             accumint = AccumIntegratedProjRadiogDose.objects.create(accumulated_xray_dose=accum)
             try:
