@@ -373,7 +373,9 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     summarysheet = book.add_worksheet("Summary")
     wsalldata = book.add_worksheet("All data")
 
-    book = text_and_date_formats(book, wsalldata, pid=pid, name=name, patid=patid)
+    book = text_and_date_formats(
+        book, wsalldata, pid=pid, name=name, patid=patid, modality="DX"
+    )
 
     # Some prep
     commonheaders = common_headers(pid=pid, name=name, patid=patid)
