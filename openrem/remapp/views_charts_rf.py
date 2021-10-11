@@ -7,7 +7,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from remapp.forms import RFChartOptionsForm
 from remapp.interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
-from remapp.models import GeneralStudyModuleAttr, create_user_profile
+from remapp.models import (
+    GeneralStudyModuleAttr,
+    create_user_profile,
+    CommonVariables,
+)
 from remapp.views_admin import (
     required_average_choices,
     initialise_rf_form_data,
@@ -26,6 +30,7 @@ from .interface.chart_functions import (
     plotly_set_default_theme,
     plotly_frequency_barchart,
     construct_over_time_charts,
+    make_ordinal,
 )
 
 logger = logging.getLogger(__name__)
@@ -56,6 +61,13 @@ def generate_required_rf_charts_list(profile):
                 {
                     "title": "Chart of study description median DAP",
                     "var_name": "studyMedianDAP",
+                }
+            )
+        if profile.plotPercentile:
+            required_charts.append(
+                {
+                    "title": "Chart of study description " + make_ordinal(profile.plotPercentileVal) + " percentile DAP",
+                    "var_name": "studyPercentileDAP",
                 }
             )
         if profile.plotBoxplots:
@@ -122,6 +134,13 @@ def generate_required_rf_charts_list(profile):
                 {
                     "title": "Chart of requested procedure median DAP",
                     "var_name": "requestMedianDAP",
+                }
+            )
+        if profile.plotPercentile:
+            required_charts.append(
+                {
+                    "title": "Chart of requested procedure " + make_ordinal(profile.plotPercentileVal) + " DAP",
+                    "var_name": "requestPercentileDAP",
                 }
             )
         if profile.plotBoxplots:
@@ -223,9 +242,13 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
     average_choices = []
     if user_profile.plotMean:
-        average_choices.append("mean")
+        average_choices.append(CommonVariables.MEAN)
     if user_profile.plotMedian:
-        average_choices.append("median")
+        average_choices.append(CommonVariables.MEDIAN)
+    if user_profile.plotPercentile:
+        average_choices.append(CommonVariables.PERCENTILE)
+
+    percentile = user_profile.plotPercentileVal
 
     if user_profile.plotRFStudyDAPOverTime or user_profile.plotRFRequestDAPOverTime:
         plot_timeunit_period = user_profile.plotRFOverTimePeriod
@@ -323,9 +346,11 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
 
     stats_to_include = ["count"]
     if user_profile.plotMean:
-        stats_to_include.append("mean")
+        stats_to_include.append(CommonVariables.MEAN)
     if user_profile.plotMedian:
-        stats_to_include.append("median")
+        stats_to_include.append(CommonVariables.MEDIAN)
+    if user_profile.plotPercentile:
+        stats_to_include.append(CommonVariables.PERCENTILE)
 
     if user_profile.plotRFStudyDAP:
         if user_profile.plotBoxplots and "median" not in stats_to_include:
@@ -336,10 +361,14 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             groupby_cols = groupby_cols + ["performing_physician_name"]
 
         df_aggregated = create_dataframe_aggregates(
-            df, groupby_cols, "total_dap", stats_to_use=stats_to_include
+            df,
+            groupby_cols,
+            "total_dap",
+            stats_to_use=stats_to_include,
+            percentile=percentile,
         )
 
-        if user_profile.plotMean or user_profile.plotMedian:
+        if user_profile.plotMean or user_profile.plotMedian or user_profile.plotPercentile:
 
             x_col = "study_description"
             x_col_title = "Study description"
@@ -373,7 +402,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 ) = plotly_barchart(
                     df_aggregated,
                     parameter_dict,
-                    "studyMeanDAPData.csv",
+                    csv_name="studyMeanDAPData.csv",
                 )
 
             if user_profile.plotMedian:
@@ -386,7 +415,20 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 ) = plotly_barchart(
                     df_aggregated,
                     parameter_dict,
-                    "studyMedianDAPData.csv",
+                    csv_name="studyMedianDAPData.csv",
+                )
+
+            if user_profile.plotPercentile:
+                parameter_dict["value_axis_title"] = make_ordinal(user_profile.plotPercentileVal) + " percentile DAP (cGy.cm<sup>2</sup>)"
+                parameter_dict["filename"] = "OpenREM RF study description DAP " + make_ordinal(user_profile.plotPercentileVal) + " percentile"
+                parameter_dict["average_choice"] = "percentile"
+                (
+                    return_structure["studyPercentileData"],
+                    return_structure["studyPercentileDataCSV"],
+                ) = plotly_barchart(
+                    df_aggregated,
+                    parameter_dict,
+                    csv_name="studyPercentileDAPData.csv",
                 )
 
         if user_profile.plotBoxplots:
@@ -506,10 +548,14 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
             groupby_cols = groupby_cols + ["performing_physician_name"]
 
         df_aggregated = create_dataframe_aggregates(
-            df, groupby_cols, "total_dap", stats_to_use=stats_to_include
+            df,
+            groupby_cols,
+            "total_dap",
+            stats_to_use=stats_to_include,
+            percentile=percentile,
         )
 
-        if user_profile.plotMean or user_profile.plotMedian:
+        if user_profile.plotMean or user_profile.plotMedian or user_profile.plotPercentile:
 
             x_col = "requested_procedure_code_meaning"
             x_col_title = "Requested procedure"
@@ -543,7 +589,7 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 ) = plotly_barchart(
                     df_aggregated,
                     parameter_dict,
-                    "requestMeanDAPData.csv",
+                    csv_name="requestMeanDAPData.csv",
                 )
 
             if user_profile.plotMedian:
@@ -556,7 +602,20 @@ def rf_plot_calculations(f, user_profile, return_as_dict=False):
                 ) = plotly_barchart(
                     df_aggregated,
                     parameter_dict,
-                    "requestMedianDAPData.csv",
+                    csv_name="requestMedianDAPData.csv",
+                )
+
+            if user_profile.plotPercentile:
+                parameter_dict["value_axis_title"] = make_ordinal(user_profile.plotPercentileVal) + " percentile DAP (cGy.cm<sup>2</sup>)"
+                parameter_dict["filename"] = "OpenREM RF requested procedure DAP " + make_ordinal(user_profile.plotPercentileVal) + " percentile"
+                parameter_dict["average_choice"] = "percentile"
+                (
+                    return_structure["requestPercentileData"],
+                    return_structure["requestPercentileDataCSV"],
+                ) = plotly_barchart(
+                    df_aggregated,
+                    parameter_dict,
+                    csv_name="requestPercentileDAPData.csv",
                 )
 
         if user_profile.plotBoxplots:

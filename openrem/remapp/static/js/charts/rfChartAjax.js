@@ -24,6 +24,10 @@ $(document).ready(function() {
                 $("#studyMedianDAPChartDiv").html(json.studyMedianData);
                 $("#studyMedianDAPChartParentDiv").append(json.studyMedianDataCSV);
             }
+            if(typeof json.studyPercentileData !=="undefined") {
+                $("#studyPercentileDAPChartDiv").html(json.studyPercentileData);
+                $("#studyPercentileDAPChartParentDiv").append(json.studyPercentileDataCSV);
+            }
             if(typeof json.studyBoxplotData !=="undefined") {
                 $("#studyBoxplotDAPChartDiv").html(json.studyBoxplotData);
             }
@@ -39,6 +43,10 @@ $(document).ready(function() {
             if(typeof json.requestMedianData !== "undefined") {
                 $("#requestMedianDAPChartDiv").html(json.requestMedianData);
                 $("#requestMedianDAPChartParentDiv").append(json.requestMedianDataCSV);
+            }
+            if(typeof json.requestPercentileData !== "undefined") {
+                $("#requestPercentileDAPChartDiv").html(json.requestPercentileData);
+                $("#requestPercentileDAPChartParentDiv").append(json.requestPercentileDataCSV);
             }
             if(typeof json.requestBoxplotData !=="undefined") {
                 $("#requestBoxplotDAPChartDiv").html(json.requestBoxplotData);

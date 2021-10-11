@@ -11,6 +11,8 @@
 
 {% endblock %}
 
+{% load humanize %}
+
 {% block col2 %}
   <div class="panel panel-info small">
   <div class="panel-heading">
@@ -91,7 +93,35 @@
                         <tr>
                         {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
                             <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                            <td class="shaded_top_bottom_border">{{ field }}</td>
+
+                            {% if field.name == 'plotAverageChoice' %}
+                                <td class="shaded_top_bottom_border">
+                                    <ul id={{ field.auto_id }} class='CheckboxSelectMultiple'>
+                                    {% for choice in field.field.widget.choices %}
+                                        <li>
+                                            <label for="{{ field.auto_id }}_{{ forloop.counter0 }}">
+                                                <input
+                                                        type="checkbox" class="CheckboxSelectMultiple"
+                                                        name="{{ field.name }}" value="{{ choice.0 }}"
+                                                        id="{{ field.auto_id }}_{{ forloop.counter0 }}"
+                                                        {% if choice.0 in chartOptionsForm.cleaned_data.plotAverageChoice %}
+                                                            checked
+                                                        {% endif %}
+                                                >
+                                                {% if choice.0 == 'percentile' %}
+                                                    {{ request.user.userprofile.plotPercentileVal|ordinal }} {{ choice.0 }}
+                                                {% else %}
+                                                    {{ choice.1 }}
+                                                {% endif %}
+                                            </label>
+                                        </li>
+                                    {% endfor %}
+                                    </ul>
+                                </td>
+                            {% else %}
+                                <td class="shaded_top_bottom_border">{{ field }}</td>
+                            {% endif %}
+
                         {% elif field.label == 'Study frequency' or field.label == 'Requested procedure frequency' or field.label == 'Time period' %}
                             <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
                             <td class="top_border">{{ field }}</td>
