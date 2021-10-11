@@ -30,6 +30,10 @@ $(document).ready(function() {
                 $("#acquisitionMedianAGDChartDiv").html(json.acquisitionMedianAGDData);
                 $("#acquisitionMedianAGDChartParentDiv").append(json.acquisitionMedianAGDDataCSV);
             }
+            if(typeof json.acquisitionPercentileAGDData !== "undefined") {
+                $("#acquisitionPercentileAGDChartDiv").html(json.acquisitionPercentileAGDData);
+                $("#acquisitionPercentileAGDChartParentDiv").append(json.acquisitionPercentileAGDDataCSV);
+            }
             if(typeof json.acquisitionBoxplotAGDData !=="undefined") {
                 $("#acquisitionBoxplotAGDChartDiv").html(json.acquisitionBoxplotAGDData);
             }

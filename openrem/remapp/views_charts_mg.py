@@ -7,7 +7,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from remapp.forms import MGChartOptionsForm
 from remapp.interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
-from remapp.models import GeneralStudyModuleAttr, create_user_profile
+from remapp.models import (
+    GeneralStudyModuleAttr,
+    create_user_profile,
+    CommonVariables,
+)
 from remapp.views_admin import (
     required_average_choices,
     initialise_mg_form_data,
@@ -28,6 +32,7 @@ from .interface.chart_functions import (
     construct_over_time_charts,
     plotly_set_default_theme,
     create_dataframe_aggregates,
+    make_ordinal,
 )
 
 logger = logging.getLogger(__name__)
@@ -66,6 +71,13 @@ def generate_required_mg_charts_list(profile):
                 {
                     "title": "Chart of acquisition protocol median AGD",
                     "var_name": "acquisitionMedianAGD",
+                }
+            )
+        if profile.plotPercentile:
+            required_charts.append(
+                {
+                    "title": "Chart of acquisition protocol " + make_ordinal(profile.plotPercentileVal) + " percentile AGD",
+                    "var_name": "acquisitionPercentileAGD",
                 }
             )
         if profile.plotBoxplots:
@@ -207,9 +219,13 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
 
     average_choices = []
     if user_profile.plotMean:
-        average_choices.append("mean")
+        average_choices.append(CommonVariables.MEAN)
     if user_profile.plotMedian:
-        average_choices.append("median")
+        average_choices.append(CommonVariables.MEDIAN)
+    if user_profile.plotPercentile:
+        average_choices.append(CommonVariables.PERCENTILE)
+
+    percentile = user_profile.plotPercentileVal
 
     if user_profile.plotMGAcquisitionAGDOverTime:
         plot_timeunit_period = user_profile.plotMGOverTimePeriod
@@ -311,6 +327,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     [name_field],
                     value_field,  # pylint: disable=line-too-long
                     stats_to_use=average_choices + ["count"],
+                    percentile=percentile,
                 )
             )
 
@@ -361,7 +378,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
             if user_profile.plotMGaverageAGD:
-                if user_profile.plotMean or user_profile.plotMedian:
+                if user_profile.plotMean or user_profile.plotMedian or user_profile.plotPercentile:
                     if user_profile.plotBoxplots and "median" not in average_choices:
                         average_choices = average_choices + ["median"]
 
@@ -389,7 +406,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         ) = plotly_barchart(  # pylint: disable=line-too-long
                             df_aggregated,
                             parameter_dict,
-                            "acquisitionMeanAGDData.csv",
+                            csv_name="acquisitionMeanAGDData.csv",
                         )
 
                     if user_profile.plotMedian:
@@ -404,7 +421,22 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         ) = plotly_barchart(  # pylint: disable=line-too-long
                             df_aggregated,
                             parameter_dict,
-                            "acquisitionMedianAGDData.csv",
+                            csv_name="acquisitionMedianAGDData.csv",
+                        )
+
+                    if user_profile.plotPercentile:
+                        parameter_dict["value_axis_title"] = make_ordinal(user_profile.plotPercentileVal) + " percentile AGD (mGy)"
+                        parameter_dict[
+                            "filename"
+                        ] = "OpenREM MG acquisition protocol AGD " + make_ordinal(user_profile.plotPercentileVal) + " percentile"
+                        parameter_dict["average_choice"] = "percentile"
+                        (
+                            return_structure["acquisitionPercentileAGDData"],
+                            return_structure["acquisitionPercentileAGDDataCSV"],
+                        ) = plotly_barchart(  # pylint: disable=line-too-long
+                            df_aggregated,
+                            parameter_dict,
+                            csv_name="acquisitionPercentileAGDData.csv",
                         )
 
                 if user_profile.plotBoxplots:
