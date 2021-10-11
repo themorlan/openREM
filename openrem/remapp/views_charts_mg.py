@@ -118,6 +118,13 @@ def generate_required_mg_charts_list(profile):
                     "var_name": "acquisitionMedianAGDvsThick",
                 }
             )
+        if profile.plotPercentile:
+            required_charts.append(
+                {
+                    "title": "Chart of acquisition protocol  " + make_ordinal(profile.plotPercentileVal) + " percentile AGD vs compressed breast thickness",
+                    "var_name": "acquisitionPercentileAGDvsThick",
+                }
+            )
 
     if profile.plotMGAcquisitionAGDOverTime:
         if profile.plotMean:
@@ -358,6 +365,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                         user_profile.plotMGInitialSortingChoice,
                     ],
                     "return_as_dict": return_as_dict,
+                    "percentile": percentile,
                 }
                 if user_profile.plotMean:
                     parameter_dict["stat_name"] = "mean"
@@ -372,6 +380,15 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict["stat_name"] = "median"
                     return_structure[
                         "medianAGDvsThickness"
+                    ] = plotly_binned_statistic_barchart(
+                        df,
+                        parameter_dict,
+                    )
+
+                if user_profile.plotPercentile:
+                    parameter_dict["stat_name"] = "percentile"
+                    return_structure[
+                        "percentileAGDvsThickness"
                     ] = plotly_binned_statistic_barchart(
                         df,
                         parameter_dict,

@@ -48,6 +48,9 @@ $(document).ready(function() {
             if(typeof json.medianAGDvsThickness !== "undefined") {
                 $("#acquisitionMedianAGDvsThickChartDiv").html(json.medianAGDvsThickness);
             }
+            if(typeof json.percentileAGDvsThickness !== "undefined") {
+                $("#acquisitionPercentileAGDvsThickChartDiv").html(json.percentileAGDvsThickness);
+            }
 
             // Study workload chart data
             if(typeof json.studyWorkloadData !== "undefined") {

@@ -60,7 +60,7 @@ def rename(newname):
 def q_at(y):
     @rename('percentile')
     def q(x):
-        return x.quantile(y/100.0)
+        return(np.nanpercentile(x, y))
     return q
 
 
@@ -1232,7 +1232,8 @@ def plotly_binned_statistic_barchart(
     :param params["df_y_value_col"]: (string) DataFrame column containing y data
     :param params["x_axis_title"]: (string) Title for x-axis
     :param params["y_axis_title"]: (string) Title for y-axis
-    :param params["stat_name"]: (string) "mean" or "median"
+    :param params["stat_name"]: (string) "mean", "median" or "percentile"
+    :param params["percentile"]: (int) the percentile value to use if stat_name is percentile
     :param params["sorting_choice"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort
     :param params["colourmap"]: (string) colourmap to use
     :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
@@ -1321,6 +1322,14 @@ def plotly_binned_statistic_barchart(
 
         bins = np.sort(np.array(params["user_bins"]))
 
+        stat_to_use = params["stat_name"]
+        if stat_to_use == CommonVariables.PERCENTILE:
+            stat_to_use = q_at(params["percentile"])
+
+        stat_label = params["stat_name"].capitalize()
+        if params["stat_name"] == "percentile":
+            stat_label = make_ordinal(params["percentile"]) + " percentile"
+
         for facet_name in df_facet_category_list:
             facet_subset = df[df[params["df_facet_col"]] == facet_name].dropna(
                 subset=[params["df_x_value_col"], params["df_y_value_col"]]
@@ -1365,7 +1374,7 @@ def plotly_binned_statistic_barchart(
                     binned_stats = stats.binned_statistic(
                         category_subset[params["df_x_value_col"]].values,
                         category_subset[params["df_y_value_col"]].values,
-                        statistic=params["stat_name"],
+                        statistic=stat_to_use,
                         bins=bins,
                     )
                     bin_counts = np.bincount(binned_stats[2])
@@ -1386,7 +1395,7 @@ def plotly_binned_statistic_barchart(
                         customdata=trace_labels,
                         hovertemplate=f"<b>{facet_name}</b><br>"
                         + f"{category_name}<br>"
-                        + f"{params['stat_name'].capitalize()}: "
+                        + f"{stat_label}: "
                         + "%{y:.2f}<br>"
                         + "%{customdata}<br>"
                         + "<extra></extra>",
@@ -1405,7 +1414,7 @@ def plotly_binned_statistic_barchart(
 
             if current_col == 1:
                 fig.update_yaxes(
-                    title_text=params["stat_name"].capitalize()
+                    title_text=stat_label
                     + " "
                     + params["y_axis_title"],
                     row=current_row,
