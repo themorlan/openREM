@@ -96,7 +96,13 @@
                         <tr>
                         {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
                             <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                            <td class="shaded_top_bottom_border">{{ field }}</td>
+
+                            {% if field.name == 'plotAverageChoice' %}
+                                {% include "remapp/plotAverageChoiceFormRender.html" %}
+                            {% else %}
+                                <td class="shaded_top_bottom_border">{{ field }}</td>
+                            {% endif %}
+
                         {% elif field.label == 'Acquisition frequency' or field.label == 'Study frequency' or field.label == 'Requested procedure frequency' or field.label == 'Time period' %}
                             <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
                             <td class="top_border">{{ field }}</td>

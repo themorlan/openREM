@@ -7,7 +7,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from remapp.forms import DXChartOptionsForm
 from remapp.interface.mod_filters import dx_acq_filter
-from remapp.models import create_user_profile
+from remapp.models import (
+    create_user_profile,
+    CommonVariables,
+)
 from remapp.views_admin import (
     set_average_chart_options,
     required_average_choices,
@@ -27,6 +30,7 @@ from .interface.chart_functions import (
     plotly_frequency_barchart,
     plotly_scatter,
     construct_over_time_charts,
+    make_ordinal,
 )
 
 logger = logging.getLogger(__name__)
@@ -56,28 +60,35 @@ def generate_required_dx_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean DAP for each acquisition protocol",
+                    "title": "Chart of acquisition protocol mean DAP",
                     "var_name": "acquisitionMeanDAP",
                 }
             )
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median DAP for each acquisition protocol",
+                    "title": "Chart of acquisition protocol median DAP",
                     "var_name": "acquisitionMedianDAP",
+                }
+            )
+        if profile.plotPercentile:
+            required_charts.append(
+                {
+                    "title": "Chart of acquisition protocol " + make_ordinal(profile.plotPercentileVal) + " percentile DAP",
+                    "var_name": "acquisitionPercentileDAP",
                 }
             )
         if profile.plotBoxplots:
             required_charts.append(
                 {
-                    "title": "Boxplot of DAP for each acquisition protocol",
+                    "title": "Boxplot of acquisition protocol DAP",
                     "var_name": "acquisitionBoxplotDAP",
                 }
             )
         if profile.plotHistograms:
             required_charts.append(
                 {
-                    "title": "Histogram of DAP for each acquisition protocol",
+                    "title": "Histogram of acquisition protocol DAP",
                     "var_name": "acquisitionHistogramDAP",
                 }
             )
@@ -94,28 +105,35 @@ def generate_required_dx_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean kVp for each acquisition protocol",
+                    "title": "Chart of acquisition protocol mean kVp",
                     "var_name": "acquisitionMeankVp",
                 }
             )
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median kVp for each acquisition protocol",
+                    "title": "Chart of acquisition protocol median kVp",
                     "var_name": "acquisitionMediankVp",
+                }
+            )
+        if profile.plotPercentile:
+            required_charts.append(
+                {
+                    "title": "Chart of acquisition protocol " + make_ordinal(profile.plotPercentileVal) + " percentile kVp",
+                    "var_name": "acquisitionPercentilekVp",
                 }
             )
         if profile.plotBoxplots:
             required_charts.append(
                 {
-                    "title": "Boxplot of kVp for each acquisition protocol",
+                    "title": "Boxplot of acquisition protocol kVp",
                     "var_name": "acquisitionBoxplotkVp",
                 }
             )
         if profile.plotHistograms:
             required_charts.append(
                 {
-                    "title": "Histogram of kVp for each acquisition protocol",
+                    "title": "Histogram of acquisition protocol kVp",
                     "var_name": "acquisitionHistogramkVp",
                 }
             )
@@ -124,28 +142,35 @@ def generate_required_dx_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean mAs for each acquisition protocol",
+                    "title": "Chart of acquisition protocol mean mAs",
                     "var_name": "acquisitionMeanmAs",
                 }
             )
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median mAs for each acquisition protocol",
+                    "title": "Chart of acquisition protocol median mAs",
                     "var_name": "acquisitionMedianmAs",
+                }
+            )
+        if profile.plotPercentile:
+            required_charts.append(
+                {
+                    "title": "Chart of acquisition protocol " + make_ordinal(profile.plotPercentileVal) + " percentile mAs",
+                    "var_name": "acquisitionPercentilemAs",
                 }
             )
         if profile.plotBoxplots:
             required_charts.append(
                 {
-                    "title": "Boxplot of mAs for each acquisition protocol",
+                    "title": "Boxplot of acquisition protocol mAs",
                     "var_name": "acquisitionBoxplotmAs",
                 }
             )
         if profile.plotHistograms:
             required_charts.append(
                 {
-                    "title": "Histogram of mAs for each acquisition protocol",
+                    "title": "Histogram of acquisition protocol mAs",
                     "var_name": "acquisitionHistogrammAs",
                 }
             )
@@ -154,7 +179,7 @@ def generate_required_dx_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean DAP per acquisition protocol over time ("
+                    "title": "Chart of acquisition protocol mean DAP over time ("
                     + time_period
                     + ")",
                     "var_name": "acquisitionMeanDAPOverTime",
@@ -163,7 +188,7 @@ def generate_required_dx_charts_list(profile):
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median DAP per acquisition protocol over time ("
+                    "title": "Chart of acquisition protocol median DAP over time ("
                     + time_period
                     + ")",
                     "var_name": "acquisitionMedianDAPOverTime",
@@ -174,7 +199,7 @@ def generate_required_dx_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean kVp per acquisition protocol over time ("
+                    "title": "Chart of acquisition protocol mean kVp over time ("
                     + time_period
                     + ")",
                     "var_name": "acquisitionMeankVpOverTime",
@@ -183,7 +208,7 @@ def generate_required_dx_charts_list(profile):
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median kVp per acquisition protocol over time ("
+                    "title": "Chart of acquisition protocol median kVp over time ("
                     + time_period
                     + ")",
                     "var_name": "acquisitionMediankVpOverTime",
@@ -194,7 +219,7 @@ def generate_required_dx_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean mAs per acquisition protocol over time ("
+                    "title": "Chart of acquisition protocol mean mAs over time ("
                     + time_period
                     + ")",
                     "var_name": "acquisitionMeanmAsOverTime",
@@ -203,7 +228,7 @@ def generate_required_dx_charts_list(profile):
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median mAs per acquisition protocol over time ("
+                    "title": "Chart of acquisition protocol median mAs over time ("
                     + time_period
                     + ")",
                     "var_name": "acquisitionMedianmAsOverTime",
@@ -222,28 +247,35 @@ def generate_required_dx_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean DAP for each study description",
+                    "title": "Chart of study description mean DAP",
                     "var_name": "studyMeanDAP",
                 }
             )
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median DAP for each study description",
+                    "title": "Chart of study description median DAP",
                     "var_name": "studyMedianDAP",
+                }
+            )
+        if profile.plotPercentile:
+            required_charts.append(
+                {
+                    "title": "Chart of study description " + make_ordinal(profile.plotPercentileVal) + " percentile DAP",
+                    "var_name": "studyPercentileDAP",
                 }
             )
         if profile.plotBoxplots:
             required_charts.append(
                 {
-                    "title": "Boxplot of DAP for each study description",
+                    "title": "Boxplot of study description DAP",
                     "var_name": "studyBoxplotDAP",
                 }
             )
         if profile.plotHistograms:
             required_charts.append(
                 {
-                    "title": "Histogram of DAP for each study description",
+                    "title": "Histogram of study description DAP",
                     "var_name": "studyHistogramDAP",
                 }
             )
@@ -276,28 +308,35 @@ def generate_required_dx_charts_list(profile):
         if profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of mean DAP for each requested procedure",
+                    "title": "Chart of requested procedure mean DAP",
                     "var_name": "requestMeanDAP",
                 }
             )
         if profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of median DAP for each requested procedure",
+                    "title": "Chart of requested procedure median DAP",
                     "var_name": "requestMedianDAP",
+                }
+            )
+        if profile.plotPercentile:
+            required_charts.append(
+                {
+                    "title": "Chart of requested procedure " + make_ordinal(profile.plotPercentileVal) + " percentile DAP",
+                    "var_name": "requestPercentileDAP",
                 }
             )
         if profile.plotBoxplots:
             required_charts.append(
                 {
-                    "title": "Boxplot of DAP for each requested procedure",
+                    "title": "Boxplot of requested procedure DAP",
                     "var_name": "requestBoxplotDAP",
                 }
             )
         if profile.plotHistograms:
             required_charts.append(
                 {
-                    "title": "Histogram of DAP for each requested procedure",
+                    "title": "Histogram requested procedure DAP",
                     "var_name": "requestHistogramDAP",
                 }
             )
@@ -370,9 +409,13 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
     average_choices = []
     if user_profile.plotMean:
-        average_choices.append("mean")
+        average_choices.append(CommonVariables.MEAN)
     if user_profile.plotMedian:
-        average_choices.append("median")
+        average_choices.append(CommonVariables.MEDIAN)
+    if user_profile.plotPercentile:
+        average_choices.append(CommonVariables.PERCENTILE)
+
+    percentile = user_profile.plotPercentileVal
 
     #######################################################################
     # Prepare acquisition-level Pandas DataFrame to use for charts
@@ -475,9 +518,10 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 [name_field],
                 value_field,
                 stats_to_use=average_choices + ["count"],
+                percentile=percentile,
             )
 
-            if user_profile.plotMean or user_profile.plotMedian:
+            if user_profile.plotMean or user_profile.plotMedian or user_profile.plotPercentile:
 
                 parameter_dict = {
                     "df_name_col": name_field,
@@ -503,7 +547,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     ) = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                        "acquisitionMeanDAPData.csv",
+                        csv_name="acquisitionMeanDAPData.csv",
                     )
 
                 if user_profile.plotMedian:
@@ -520,7 +564,24 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     ) = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                        "acquisitionMedianDAPData.csv",
+                        csv_name="acquisitionMedianDAPData.csv",
+                    )
+
+                if user_profile.plotPercentile:
+                    parameter_dict[
+                        "value_axis_title"
+                    ] = make_ordinal(user_profile.plotPercentileVal) + " percentile DAP (cGy.cm<sup>2</sup>)"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM DX acquisition protocol DAP " + make_ordinal(user_profile.plotPercentileVal) + " percentile"
+                    parameter_dict["average_choice"] = "percentile"
+                    (
+                        return_structure["acquisitionPercentileDAPData"],
+                        return_structure["acquisitionPercentileDAPDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
+                        df_aggregated,
+                        parameter_dict,
+                        csv_name="acquisitionPercentileDAPData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -594,9 +655,10 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 [name_field],
                 value_field,
                 stats_to_use=average_choices + ["count"],
+                percentile=percentile,
             )
 
-            if user_profile.plotMean or user_profile.plotMedian:
+            if user_profile.plotMean or user_profile.plotMedian or user_profile.plotPercentile:
 
                 parameter_dict = {
                     "df_name_col": name_field,
@@ -622,7 +684,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     ) = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                        "acquisitionMeankVpData.csv",
+                        csv_name="acquisitionMeankVpData.csv",
                     )
 
                 if user_profile.plotMedian:
@@ -637,7 +699,22 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     ) = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                        "acquisitionMediankVpData.csv",
+                        csv_name="acquisitionMediankVpData.csv",
+                    )
+
+                if user_profile.plotPercentile:
+                    parameter_dict["value_axis_title"] = make_ordinal(user_profile.plotPercentileVal) + " percentile kVp"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM DX acquisition protocol kVp " + make_ordinal(user_profile.plotPercentileVal) + " percentile"
+                    parameter_dict["average_choice"] = "percentile"
+                    (
+                        return_structure["acquisitionPercentilekVpData"],
+                        return_structure["acquisitionPercentilekVpDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
+                        df_aggregated,
+                        parameter_dict,
+                        csv_name="acquisitionPercentilekVpData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -711,9 +788,10 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 [name_field],
                 value_field,
                 stats_to_use=average_choices + ["count"],
+                percentile=percentile,
             )
 
-            if user_profile.plotMean or user_profile.plotMedian:
+            if user_profile.plotMean or user_profile.plotMedian or user_profile.plotPercentile:
 
                 parameter_dict = {
                     "df_name_col": name_field,
@@ -739,7 +817,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     ) = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                        "acquisitionMeanmAsData.csv",
+                        csv_name="acquisitionMeanmAsData.csv",
                     )
 
                 if user_profile.plotMedian:
@@ -754,7 +832,22 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     ) = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                        "acquisitionMedianmAsData.csv",
+                        csv_name="acquisitionMedianmAsData.csv",
+                    )
+
+                if user_profile.plotPercentile:
+                    parameter_dict["value_axis_title"] = make_ordinal(user_profile.plotPercentileVal) + " percentile mAs"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM DX acquisition protocol mAs " + make_ordinal(user_profile.plotPercentileVal) + " percentile"
+                    parameter_dict["average_choice"] = "percentile"
+                    (
+                        return_structure["acquisitionPercentilemAsData"],
+                        return_structure["acquisitionPercentilemAsDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
+                        df_aggregated,
+                        parameter_dict,
+                        csv_name="acquisitionPercentilemAsData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -1060,9 +1153,10 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 [name_field],
                 value_field,
                 stats_to_use=average_choices + ["count"],
+                percentile=percentile,
             )
 
-            if user_profile.plotMean or user_profile.plotMedian:
+            if user_profile.plotMean or user_profile.plotMedian or user_profile.plotPercentile:
 
                 parameter_dict = {
                     "df_name_col": name_field,
@@ -1086,7 +1180,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     ) = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
-                        "studyMeanDAPData.csv",
+                        csv_name="studyMeanDAPData.csv",
                     )
 
                 if user_profile.plotMedian:
@@ -1103,7 +1197,24 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     ) = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
-                        "studyMedianDAPData.csv",
+                        csv_name="studyMedianDAPData.csv",
+                    )
+
+                if user_profile.plotPercentile:
+                    parameter_dict[
+                        "value_axis_title"
+                    ] = make_ordinal(user_profile.plotPercentileVal) + " percentile DAP (cGy.cm<sup>2</sup>)"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM DX study description DAP " + make_ordinal(user_profile.plotPercentileVal) + " percentile"
+                    parameter_dict["average_choice"] = "percentile"
+                    (
+                        return_structure["studyPercentileDAPData"],
+                        return_structure["studyPercentileDAPDataCSV"],
+                    ) = plotly_barchart(
+                        df_aggregated,
+                        parameter_dict,
+                        csv_name="studyPercentileDAPData.csv",
                     )
 
             if user_profile.plotBoxplots:
@@ -1200,9 +1311,10 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                 [name_field],
                 value_field,
                 stats_to_use=average_choices + ["count"],
+                percentile=percentile,
             )
 
-            if user_profile.plotMean or user_profile.plotMedian:
+            if user_profile.plotMean or user_profile.plotMedian or user_profile.plotPercentile:
 
                 parameter_dict = {
                     "df_name_col": name_field,
@@ -1228,7 +1340,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     ) = plotly_barchart(
                         df_aggregated,
                         parameter_dict,
-                        "requestMeanDAPData.csv",
+                        csv_name="requestMeanDAPData.csv",
                     )
 
                 if user_profile.plotMedian:
@@ -1245,7 +1357,24 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     ) = plotly_barchart(  # pylint: disable=line-too-long
                         df_aggregated,
                         parameter_dict,
-                        "requestMedianDAPData.csv",
+                        csv_name="requestMedianDAPData.csv",
+                    )
+
+                if user_profile.plotPercentile:
+                    parameter_dict[
+                        "value_axis_title"
+                    ] = make_ordinal(user_profile.plotPercentileVal) + " percentile DAP (cGy.cm<sup>2</sup>)"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM DX requested procedure DAP " + make_ordinal(user_profile.plotPercentileVal) + " percentile"
+                    parameter_dict["average_choice"] = "percentile"
+                    (
+                        return_structure["requestPercentileDAPData"],
+                        return_structure["requestPercentileDAPDataCSV"],
+                    ) = plotly_barchart(  # pylint: disable=line-too-long
+                        df_aggregated,
+                        parameter_dict,
+                        csv_name="requestPercentileDAPData.csv",
                     )
 
             if user_profile.plotBoxplots:

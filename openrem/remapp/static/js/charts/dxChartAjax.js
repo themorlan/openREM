@@ -28,6 +28,10 @@ $(document).ready(function() {
                 $("#acquisitionMedianDAPChartDiv").html(json.acquisitionMedianDAPData);
                 $("#acquisitionMedianDAPChartParentDiv").append(json.acquisitionMedianDAPDataCSV);
             }
+            if(typeof json.acquisitionPercentileDAPData !== "undefined") {
+                $("#acquisitionPercentileDAPChartDiv").html(json.acquisitionPercentileDAPData);
+                $("#acquisitionPercentileDAPChartParentDiv").append(json.acquisitionPercentileDAPDataCSV);
+            }
             if(typeof json.acquisitionBoxplotDAPData !=="undefined") {
                 $("#acquisitionBoxplotDAPChartDiv").html(json.acquisitionBoxplotDAPData);
             }
@@ -50,6 +54,10 @@ $(document).ready(function() {
                 $("#acquisitionMediankVpChartDiv").html(json.acquisitionMediankVpData);
                 $("#acquisitionMediankVpChartParentDiv").append(json.acquisitionMediankVpDataCSV);
             }
+            if(typeof json.acquisitionPercentilekVpData !== "undefined") {
+                $("#acquisitionPercentilekVpChartDiv").html(json.acquisitionPercentilekVpData);
+                $("#acquisitionPercentilekVpChartParentDiv").append(json.acquisitionPercentilekVpDataCSV);
+            }
             if(typeof json.acquisitionBoxplotkVpData !=="undefined") {
                 $("#acquisitionBoxplotkVpChartDiv").html(json.acquisitionBoxplotkVpData);
             }
@@ -66,6 +74,10 @@ $(document).ready(function() {
                 $("#acquisitionMedianmAsChartDiv").html(json.acquisitionMedianmAsData);
                 $("#acquisitionMedianmAsChartParentDiv").append(json.acquisitionMedianmAsDataCSV);
             }
+            if(typeof json.acquisitionPercentilemAsData !== "undefined") {
+                $("#acquisitionPercentilemAsChartDiv").html(json.acquisitionPercentilemAsData);
+                $("#acquisitionPercentilemAsChartParentDiv").append(json.acquisitionPercentilemAsDataCSV);
+            }
             if(typeof json.acquisitionBoxplotmAsData !=="undefined") {
                 $("#acquisitionBoxplotmAsChartDiv").html(json.acquisitionBoxplotmAsData);
             }
@@ -81,6 +93,10 @@ $(document).ready(function() {
             if(typeof json.studyMedianDAPData !== "undefined") {
                 $("#studyMedianDAPChartDiv").html(json.studyMedianDAPData);
                 $("#studyMedianDAPChartParentDiv").append(json.studyMedianDAPDataCSV);
+            }
+            if(typeof json.studyPercentileDAPData !== "undefined") {
+                $("#studyPercentileDAPChartDiv").html(json.studyPercentileDAPData);
+                $("#studyPercentileDAPChartParentDiv").append(json.studyPercentileDAPDataCSV);
             }
             if(typeof json.studyBoxplotDAPData !=="undefined") {
                 $("#studyBoxplotDAPChartDiv").html(json.studyBoxplotDAPData);
@@ -103,6 +119,10 @@ $(document).ready(function() {
             if(typeof json.requestMedianDAPData !== "undefined") {
                 $("#requestMedianDAPChartDiv").html(json.requestMedianDAPData);
                 $("#requestMedianDAPChartParentDiv").append(json.requestMedianDAPDataCSV);
+            }
+            if(typeof json.requestPercentileDAPData !== "undefined") {
+                $("#requestPercentileDAPChartDiv").html(json.requestPercentileDAPData);
+                $("#requestPercentileDAPChartParentDiv").append(json.requestPercentileDAPDataCSV);
             }
             if(typeof json.requestBoxplotDAPData !=="undefined") {
                 $("#requestBoxplotDAPChartDiv").html(json.requestBoxplotDAPData);
