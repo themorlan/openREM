@@ -429,8 +429,13 @@ def csv_data_barchart(fig, params):
         df = df.replace("<br>", " ", regex=True)
 
         for data_set in fig_data_dict:
+            csv_data = None
+            if "customdata" in data_set.keys():
+                csv_data =  list(zip(data_set["y"], [x[2] for x in data_set["customdata"]]))
+            else:
+                csv_data = list(zip(data_set["y"], np.zeros(len(data_set["y"]), dtype=np.int8)))
             new_col_df = pd.DataFrame(
-                data=list(zip(data_set["y"], [x[2] for x in data_set["customdata"]])),
+                data=csv_data,
                 columns=[
                     data_set["name"]
                     + " "
@@ -451,13 +456,18 @@ def csv_data_barchart(fig, params):
         df = df.replace("<br>", " ", regex=True)
 
         for data_set in fig_data_dict:
+            csv_data = None
+            if "customdata" in data_set.keys():
+                csv_data =  list(zip(data_set["y"], [x[2] for x in data_set["customdata"]]))
+            else:
+                csv_data = list(zip(data_set["y"], np.zeros(len(data_set["y"]), dtype=np.int8)))
             series_name = (
                 data_set["hovertemplate"]
                 .split(params["facet_col"] + "=")[1]
                 .split("<br>Performing")[0]
             ).replace("<br>", " ")
             new_col_df = pd.DataFrame(
-                data=list(zip(data_set["y"], [x[2] for x in data_set["customdata"]])),
+                data=csv_data,
                 columns=[
                     data_set["name"]
                     + " "
