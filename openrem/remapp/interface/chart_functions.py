@@ -49,6 +49,21 @@ from plotly.offline import plot
 from plotly.subplots import make_subplots
 from scipy import stats
 
+def make_ordinal(n):
+    '''
+    Convert an integer into its ordinal representation::
+
+        make_ordinal(0)   => '0th'
+        make_ordinal(3)   => '3rd'
+        make_ordinal(122) => '122nd'
+        make_ordinal(213) => '213th'
+    '''
+    n = int(n)
+    suffix = ['th', 'st', 'nd', 'rd', 'th'][min(n % 10, 4)]
+    if 11 <= (n % 100) <= 13:
+        suffix = 'th'
+    return str(n) + suffix
+
 
 def global_config(
     filename,
@@ -394,8 +409,13 @@ def csv_data_barchart(fig, params):
         df = df.replace("<br>", " ", regex=True)
 
         for data_set in fig_data_dict:
+            csv_data = None
+            if "customdata" in data_set.keys():
+                csv_data = list(zip(data_set["y"], [x[2] for x in data_set["customdata"]]))
+            else:
+                csv_data = list(zip(data_set["y"], np.zeros(len(data_set["y"]), dtype=np.int8)))
             new_col_df = pd.DataFrame(
-                data=list(zip(data_set["y"], [x[1] for x in data_set["customdata"]])),
+                data=csv_data,
                 columns=[
                     data_set["name"]
                     + " "
@@ -416,13 +436,18 @@ def csv_data_barchart(fig, params):
         df = df.replace("<br>", " ", regex=True)
 
         for data_set in fig_data_dict:
+            csv_data = None
+            if "customdata" in data_set.keys():
+                csv_data = list(zip(data_set["y"], [x[2] for x in data_set["customdata"]]))
+            else:
+                csv_data = list(zip(data_set["y"], np.zeros(len(data_set["y"]), dtype=np.int8)))
             series_name = (
                 data_set["hovertemplate"]
                 .split(params["facet_col"] + "=")[1]
                 .split("<br>Performing")[0]
             ).replace("<br>", " ")
             new_col_df = pd.DataFrame(
-                data=list(zip(data_set["y"], [x[1] for x in data_set["customdata"]])),
+                data=csv_data,
                 columns=[
                     data_set["name"]
                     + " "
@@ -924,6 +949,34 @@ def plotly_barchart(
     fig.update_yaxes(showticklabels=True, matches=None)
 
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+
+
+    #################################################################
+    # Calculate 25th, 50th and 75th percentiles of the values in each group
+    # Need to make this a user-defined option
+    if not params["facet_col"]:
+        avg_val_array = np.array([data_set.y for data_set in fig.data])
+        required_percentiles = [25, 50, 75]
+        for percentile in required_percentiles:
+            avg_val_percentiles = np.nanpercentile(avg_val_array, percentile, axis=0)
+            scatter_trace = go.Scatter(
+                mode="markers",
+                name=make_ordinal(percentile) + " percentile of " + params["average_choice"] + "s",
+                x=fig.data[0].x,
+                y=avg_val_percentiles,
+                marker=dict(
+                    symbol="diamond-wide",
+                    color="rgb(" + str(percentile/100.0*255.0) + ",0,0)",
+                    size=12,
+                    line=dict(
+                        color="darkgrey",
+                        width=2
+                    )
+                ),
+            )
+            fig.add_trace(scatter_trace)
+    #################################################################
+
 
     save_fig_as_html_div(fig, params["filename"])
 
