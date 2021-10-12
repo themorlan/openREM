@@ -430,7 +430,7 @@ def csv_data_barchart(fig, params):
 
         for data_set in fig_data_dict:
             new_col_df = pd.DataFrame(
-                data=list(zip(data_set["y"], [x[1] for x in data_set["customdata"]])),
+                data=list(zip(data_set["y"], [x[2] for x in data_set["customdata"]])),
                 columns=[
                     data_set["name"]
                     + " "
@@ -457,7 +457,7 @@ def csv_data_barchart(fig, params):
                 .split("<br>Performing")[0]
             ).replace("<br>", " ")
             new_col_df = pd.DataFrame(
-                data=list(zip(data_set["y"], [x[1] for x in data_set["customdata"]])),
+                data=list(zip(data_set["y"], [x[2] for x in data_set["customdata"]])),
                 columns=[
                     data_set["name"]
                     + " "
