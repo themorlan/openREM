@@ -45,7 +45,7 @@ from remapp.models import Exports
 logger = logging.getLogger(__name__)
 
 
-def text_and_date_formats(book, sheet, pid=False, name=None, patid=None):
+def text_and_date_formats(book, sheet, pid=False, name=None, patid=None, modality=None):
     """
     Function to write out the headings common to each sheet and modality and format the date, time, patient ID and
     accession number columns.
@@ -54,7 +54,12 @@ def text_and_date_formats(book, sheet, pid=False, name=None, patid=None):
     :param pid: does the user have patient identifiable data permission
     :param name: has patient name been selected for export
     :param patid: has patient ID been selected for export
+    :param modality: modality
     :return: book
+
+    Parameters
+    ----------
+    modality
     """
 
     textformat = book.add_format({"num_format": "@"})
@@ -68,6 +73,8 @@ def text_and_date_formats(book, sheet, pid=False, name=None, patid=None):
     if pid and name:
         date_column += 1
         patid_column += 1
+    if modality == "RF":
+        date_column += 1
     sheet.set_column(
         date_column, date_column, 10, dateformat
     )  # allow date to be displayed.
@@ -204,7 +211,12 @@ def generate_sheets(
             }
             sheet_list[tab_text]["sheet"].write_row(0, 0, protocol_headers)
             book = text_and_date_formats(
-                book, sheet_list[tab_text]["sheet"], pid=pid, name=name, patid=patid
+                book,
+                sheet_list[tab_text]["sheet"],
+                pid=pid,
+                name=name,
+                patid=patid,
+                modality=modality,
             )
         else:
             if protocol not in sheet_list[tab_text]["protocolname"]:
