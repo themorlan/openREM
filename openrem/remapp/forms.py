@@ -53,6 +53,7 @@ from .models import (
     HighDoseMetricAlertSettings,
     CommonVariables,
     OpenSkinSafeList,
+    StandardNames,
 )
 
 logger = logging.getLogger()
@@ -1015,6 +1016,46 @@ class DicomStoreForm(forms.ModelForm):
             labels[
                 "port"
             ] = "Port: set to the same as the DICOM_PORT setting in docker-compose.yml"
+
+
+class StandardNameForm(forms.ModelForm):
+    """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
+
+    def __init__(self, *args, **kwargs):
+        super(StandardNameForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_class = "form-horizontal"
+        self.helper.label_class = "col-md-8"
+        self.helper.field_class = "col-md-4"
+        self.helper.layout = Layout(
+            Div("standard_name", "modality", "study_description", "requested_procedure_code_meaning", "procedure_code_meaning", "acquisition_protocol"),
+            FormActions(Submit("submit", "Submit")),
+            Div(
+                HTML(
+                    """
+                <div class="col-lg-4 col-lg-offset-4">
+                    <a href='"""
+                    + reverse("home")
+                    + """' role="button" class="btn btn-default">
+                    Cancel and return to OpenREM home page
+                </a>
+            </div>
+            """
+                )
+            ),
+        )
+
+    class Meta(object):
+        model = StandardNames
+        fields = ["standard_name", "modality", "study_description", "requested_procedure_code_meaning", "procedure_code_meaning", "acquisition_protocol"]
+        labels = {
+            "standard_name": "Standard name",
+            "modality": "Modality",
+            "study_description": "Study description",
+            "requested_procedure_code_meaning": "Requested procedure name",
+            "procedure_code_meaning": "Procedure name",
+            "acquisition_protocol": "Acquisition protocol",
+        }
 
 
 class SkinDoseMapCalcSettingsForm(forms.ModelForm):

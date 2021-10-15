@@ -357,6 +357,10 @@ import_patterns = [  # pylint: disable=invalid-name
     path("from_docker/", import_views.import_from_docker, name="import_docker")
 ]
 
+standard_name_patterns = [  # pylint: disable=invalid-name
+    path("add_name/", views_admin.StandardNameAdd.as_view(), name="add_name")
+]
+
 urlpatterns = [
     path("", include(main_patterns)),
     path("export/", include(export_patterns)),
@@ -366,4 +370,5 @@ urlpatterns = [
     path("review/", include(review_patterns)),
     path("tasks/", include(tasks_patterns)),
     path("import/", include(import_patterns)),
+    path("names/", include(standard_name_patterns)),
 ]

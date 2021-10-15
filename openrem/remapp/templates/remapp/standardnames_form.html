@@ -1,0 +1,36 @@
+{% extends "remapp/base.html" %}
+
+{% block navhelp %}
+        <li>
+            <a href="https://docs.openrem.org/en/{{ admin.docsversion }}/"
+               target="_blank" data-toggle="tooltip"
+               title="OpenREM documentation - opens in a new tab">
+                OpenREM documentation
+            </a>
+        </li>
+{% endblock %}
+
+{% block confnav %}<li class="dropdown active">{% endblock %}
+
+{% block mainblock %}		
+
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+            <h3>Create or modify a standard name</h3>
+            <p>
+                Use this form to create or modify the standard name associated with a study
+                description, requested procedure, procedure or acquisition protocol name.
+            </p>
+
+            {% if admin.admingroup %}
+                {% load crispy_forms_tags %}
+                {% crispy form %}
+            {% else %}
+                <p>
+                    <strong>Only users in the Admin group can create or modify standard names.</strong>
+                </p>
+            {% endif %}
+        </div>
+      </div>
+
+{% endblock %}	

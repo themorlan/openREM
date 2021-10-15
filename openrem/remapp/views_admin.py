@@ -71,6 +71,7 @@ from .forms import (
     RFChartOptionsDisplayForm,
     RFHighDoseFluoroAlertsForm,
     UpdateDisplayNamesForm,
+    StandardNameForm,
 )
 from .models import (
     AccumIntegratedProjRadiogDose,
@@ -93,6 +94,7 @@ from .models import (
     UpgradeStatus,
     create_user_profile,
     CommonVariables,
+    StandardNames,
 )
 from .tools.get_values import get_keys_by_value
 from .tools.hash_id import hash_id
@@ -2742,3 +2744,18 @@ def populate_summary_progress(request):
                 "remapp/populate_summary_progress_error.html",
                 {"not_admin": True},
             )
+
+
+class StandardNameAdd(CreateView):  # pylint: disable=unused-variable
+    """CreateView to add a standard name to the database"""
+
+    model = StandardNames
+    form_class = StandardNameForm
+
+    def get_context_data(self, **context):
+        context = super(StandardNameAdd, self).get_context_data(**context)
+        admin = {"openremversion": __version__, "docsversion": __docs_version__}
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context

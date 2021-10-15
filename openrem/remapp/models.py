@@ -749,6 +749,25 @@ class UniqueEquipmentNames(models.Model):
         return self.display_name
 
 
+class StandardNames(models.Model):
+    """
+    Table to store standard study description, requested procedure, procedure or acquisition names
+    """
+
+    standard_name = models.TextField(blank=True, null=True)
+    modality = models.CharField(max_length=16, blank=True, null=True)
+    study_description = models.TextField(blank=True, null=True)
+    requested_procedure_code_meaning = models.TextField(blank=True, null=True)
+    procedure_code_meaning = models.CharField(max_length=64, blank=True, null=True)
+    acquisition_protocol = models.TextField(blank=True, null=True)
+
+    def __unicode__(self):
+        return self.standard_name
+
+    def get_absolute_url(self):
+        return reverse("add_name")
+
+
 class SizeUpload(models.Model):
     """
     Table to store patient size information
