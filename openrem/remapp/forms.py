@@ -1056,6 +1056,14 @@ class StandardNameForm(forms.ModelForm):
             "procedure_code_meaning": "Procedure name",
             "acquisition_protocol": "Acquisition protocol",
         }
+        widgets = {
+            "standard_name": forms.TextInput,
+            "modality": forms.Select(choices=CommonVariables.MODALITIES),
+            "study_description": forms.TextInput,
+            "requested_procedure_code_meaning": forms.TextInput,
+            "procedure_code_meaning": forms.TextInput,
+            "acquisition_protocol": forms.TextInput,
+        }
 
 
 class SkinDoseMapCalcSettingsForm(forms.ModelForm):

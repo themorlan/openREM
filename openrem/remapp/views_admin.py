@@ -2746,16 +2746,17 @@ def populate_summary_progress(request):
             )
 
 
-class StandardNameAdd(CreateView):  # pylint: disable=unused-variable
+class StandardNameAddCT(CreateView):  # pylint: disable=unused-variable
     """CreateView to add a standard name to the database"""
 
     model = StandardNames
     form_class = StandardNameForm
 
     def get_context_data(self, **context):
-        context = super(StandardNameAdd, self).get_context_data(**context)
+        context = super(StandardNameAddCT, self).get_context_data(**context)
         admin = {"openremversion": __version__, "docsversion": __docs_version__}
         for group in self.request.user.groups.all():
             admin[group.name] = True
         context["admin"] = admin
+        context["modality"] = "CT"
         return context
