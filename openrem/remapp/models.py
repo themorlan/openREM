@@ -772,7 +772,10 @@ class StandardNames(models.Model):
         return self.standard_name
 
     def get_absolute_url(self):
-        return reverse("add_name_ct")
+        if self.modality == "CT":
+            return reverse("add_name_ct")
+        if self.modality == "DX":
+            return reverse("add_name_dx")
 
 
 class SizeUpload(models.Model):

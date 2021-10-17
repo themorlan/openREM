@@ -358,7 +358,8 @@ import_patterns = [  # pylint: disable=invalid-name
 ]
 
 standard_name_patterns = [  # pylint: disable=invalid-name
-    path("add_name_ct/", views_admin.StandardNameAddCT.as_view(), name="add_name_ct")
+    path("add_name_ct/", views_admin.StandardNameAddCT.as_view(), name="add_name_ct"),
+    path("add_name_dx/", views_admin.StandardNameAddDX.as_view(), name="add_name_dx")
 ]
 
 urlpatterns = [

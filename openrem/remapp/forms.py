@@ -30,6 +30,7 @@
 import logging
 
 from django import forms
+from django.db.models import Q
 from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.urls import reverse
@@ -56,6 +57,7 @@ from .models import (
     StandardNames,
     GeneralStudyModuleAttr,
     CtIrradiationEventData,
+    IrradEventXRayData,
 )
 
 logger = logging.getLogger()
@@ -1059,6 +1061,57 @@ class StandardNameFormCT(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(StandardNameFormCT, self).__init__(*args, **kwargs)
         self.fields["modality"].initial = "CT"
+
+    class Meta(object):
+        model = StandardNames
+        fields = ["standard_name", "modality", "study_description", "requested_procedure_code_meaning", "procedure_code_meaning", "acquisition_protocol"]
+        widgets = {
+            "standard_name": forms.TextInput,
+            "modality": forms.HiddenInput,
+        }
+
+
+class StandardNameFormDX(forms.ModelForm):
+    """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
+
+    all_studies = GeneralStudyModuleAttr.objects.filter(Q(modality_type__exact="DX") | Q(modality_type__exact="CR") | Q(modality_type__exact="PX"))
+
+    query = all_studies.values_list("study_description", flat=True).distinct().order_by("study_description")
+    query_choices = [('', 'None')] + [(item, item) for item in query]
+    study_description = forms.ChoiceField(
+        choices=query_choices,
+        required=False,
+        widget=forms.Select(),
+    )
+
+    query = all_studies.values_list("requested_procedure_code_meaning", flat=True).distinct().order_by("requested_procedure_code_meaning")
+    query_choices = [('', 'None')] + [(item, item) for item in query]
+    requested_procedure_code_meaning = forms.ChoiceField(
+        choices=query_choices,
+        required=False,
+        widget=forms.Select(),
+    )
+
+    query = all_studies.values_list("procedure_code_meaning", flat=True).distinct().order_by("procedure_code_meaning")
+    query_choices = [('', 'None')] + [(item, item) for item in query]
+    procedure_code_meaning = forms.ChoiceField(
+        choices=query_choices,
+        required=False,
+        widget=forms.Select(),
+    )
+
+    # Note: this below query isn't quite right as it includes mammo and fluoro things too...
+    query = IrradEventXRayData.objects.values_list("acquisition_protocol", flat=True).distinct().order_by("acquisition_protocol")
+    query_choices = [('', 'None')] + [(item, item) for item in query]
+    acquisition_protocol = forms.ChoiceField(
+        choices=query_choices,
+        required=False,
+        widget=forms.Select(),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(StandardNameFormDX, self).__init__(*args, **kwargs)
+        self.fields["modality"].initial = "DX"
 
     class Meta(object):
         model = StandardNames

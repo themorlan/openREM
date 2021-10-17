@@ -72,6 +72,7 @@ from .forms import (
     RFHighDoseFluoroAlertsForm,
     UpdateDisplayNamesForm,
     StandardNameFormCT,
+    StandardNameFormDX,
 )
 from .models import (
     AccumIntegratedProjRadiogDose,
@@ -2770,3 +2771,29 @@ class StandardNameAddCT(CreateView):  # pylint: disable=unused-variable
         else:
             messages.info(self.request, "No changes made")
             return redirect(reverse_lazy("add_name_ct"))
+
+
+class StandardNameAddDX(CreateView):  # pylint: disable=unused-variable
+    """CreateView to add a standard name to the database"""
+
+    model = StandardNames
+    form_class = StandardNameFormDX
+
+    def get_context_data(self, **context):
+
+        # The user has navigated to this page
+        context = super(StandardNameAddDX, self).get_context_data(**context)
+        admin = {"openremversion": __version__, "docsversion": __docs_version__}
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        context["modality"] = "DX"
+        return context
+
+    def form_valid(self, form):
+        if form.has_changed():
+            messages.success(self.request, "New entry added")
+            return super(StandardNameAddDX, self).form_valid(form)
+        else:
+            messages.info(self.request, "No changes made")
+            return redirect(reverse_lazy("add_name_dx"))
