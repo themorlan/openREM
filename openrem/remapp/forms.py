@@ -1058,12 +1058,14 @@ class StandardNameFormCT(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(StandardNameFormCT, self).__init__(*args, **kwargs)
+        self.fields["modality"].initial = "CT"
 
     class Meta(object):
         model = StandardNames
-        fields = ["standard_name", "study_description", "requested_procedure_code_meaning", "procedure_code_meaning", "acquisition_protocol"]
+        fields = ["standard_name", "modality", "study_description", "requested_procedure_code_meaning", "procedure_code_meaning", "acquisition_protocol"]
         widgets = {
             "standard_name": forms.TextInput,
+            "modality": forms.HiddenInput,
         }
 
 
