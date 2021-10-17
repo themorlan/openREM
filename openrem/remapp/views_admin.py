@@ -2765,8 +2765,8 @@ class StandardNameAddCT(CreateView):  # pylint: disable=unused-variable
 
     def form_valid(self, form):
         if form.has_changed():
-            messages.info(self.request, "New entry added")
+            messages.success(self.request, "New entry added")
             return super(StandardNameAddCT, self).form_valid(form)
         else:
             messages.info(self.request, "No changes made")
-        return super(StandardNameAddCT, self).form_valid(form)
+            return redirect(reverse_lazy("add_name_ct"))
