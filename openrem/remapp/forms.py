@@ -28,12 +28,14 @@
 """
 
 import logging
+import operator
 
 from django import forms
 from django.db.models import Q
 from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.urls import reverse
+from functools import reduce
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, HTML, Div
 from crispy_forms.bootstrap import (
@@ -1100,8 +1102,9 @@ class StandardNameFormDX(forms.ModelForm):
         widget=forms.Select(),
     )
 
-    # Note: this below query isn't quite right as it includes mammo and fluoro things too...
-    query = IrradEventXRayData.objects.values_list("acquisition_protocol", flat=True).distinct().order_by("acquisition_protocol")
+    q = ["DX", "CR", "PX"]
+    q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
+    query = IrradEventXRayData.objects.filter(q_criteria).values_list("acquisition_protocol", flat=True).distinct().order_by("acquisition_protocol")
     query_choices = [('', 'None')] + [(item, item) for item in query]
     acquisition_protocol = forms.ChoiceField(
         choices=query_choices,
