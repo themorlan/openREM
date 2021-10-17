@@ -54,6 +54,8 @@ from .models import (
     CommonVariables,
     OpenSkinSafeList,
     StandardNames,
+    GeneralStudyModuleAttr,
+    CtIrradiationEventData,
 )
 
 logger = logging.getLogger()
@@ -1021,48 +1023,36 @@ class DicomStoreForm(forms.ModelForm):
 class StandardNameForm(forms.ModelForm):
     """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
 
+    study_description = forms.ModelChoiceField(
+        queryset=GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT").values_list("study_description", flat=True).distinct("study_description"),
+        required=False,
+    )
+    requested_procedure_code_meaning = forms.ModelChoiceField(
+        queryset=GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT").values_list("requested_procedure_code_meaning", flat=True).distinct("requested_procedure_code_meaning"),
+        required=False,
+    )
+    procedure_code_meaning = forms.ModelChoiceField(
+        queryset=GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT").values_list("procedure_code_meaning", flat=True).distinct("procedure_code_meaning"),
+        required=False,
+    )
+    acquisition_protocol = forms.ModelChoiceField(
+        queryset=CtIrradiationEventData.objects.values_list("acquisition_protocol", flat=True).distinct("acquisition_protocol"),
+        required=False,
+    )
+
     def __init__(self, *args, **kwargs):
         super(StandardNameForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
-        self.helper.form_class = "form-horizontal"
-        self.helper.label_class = "col-md-8"
-        self.helper.field_class = "col-md-4"
-        self.helper.layout = Layout(
-            Div("standard_name", "modality", "study_description", "requested_procedure_code_meaning", "procedure_code_meaning", "acquisition_protocol"),
-            FormActions(Submit("submit", "Submit")),
-            Div(
-                HTML(
-                    """
-                <div class="col-lg-4 col-lg-offset-4">
-                    <a href='"""
-                    + reverse("home")
-                    + """' role="button" class="btn btn-default">
-                    Cancel and return to OpenREM home page
-                </a>
-            </div>
-            """
-                )
-            ),
-        )
 
     class Meta(object):
         model = StandardNames
-        fields = ["standard_name", "modality", "study_description", "requested_procedure_code_meaning", "procedure_code_meaning", "acquisition_protocol"]
+        fields = "__all__"
         labels = {
             "standard_name": "Standard name",
             "modality": "Modality",
-            "study_description": "Study description",
-            "requested_procedure_code_meaning": "Requested procedure name",
-            "procedure_code_meaning": "Procedure name",
-            "acquisition_protocol": "Acquisition protocol",
         }
         widgets = {
             "standard_name": forms.TextInput,
             "modality": forms.Select(choices=CommonVariables.MODALITIES),
-            "study_description": forms.TextInput,
-            "requested_procedure_code_meaning": forms.TextInput,
-            "procedure_code_meaning": forms.TextInput,
-            "acquisition_protocol": forms.TextInput,
         }
 
 
