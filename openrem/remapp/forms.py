@@ -1020,39 +1020,50 @@ class DicomStoreForm(forms.ModelForm):
             ] = "Port: set to the same as the DICOM_PORT setting in docker-compose.yml"
 
 
-class StandardNameForm(forms.ModelForm):
+class StandardNameFormCT(forms.ModelForm):
     """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
 
-    study_description = forms.ModelChoiceField(
-        queryset=GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT").values_list("study_description", flat=True).distinct("study_description"),
+    query = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT").values_list("study_description", flat=True).distinct()
+
+    query_choices = [('', 'None')] + [(item, item) for item in query]
+    study_description = forms.ChoiceField(
+        choices=query_choices,
         required=False,
+        widget=forms.Select(),
     )
-    requested_procedure_code_meaning = forms.ModelChoiceField(
-        queryset=GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT").values_list("requested_procedure_code_meaning", flat=True).distinct("requested_procedure_code_meaning"),
+
+    query = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT").values_list("requested_procedure_code_meaning", flat=True).distinct()
+    query_choices = [('', 'None')] + [(item, item) for item in query]
+    requested_procedure_code_meaning = forms.ChoiceField(
+        choices=query_choices,
         required=False,
+        widget=forms.Select(),
     )
-    procedure_code_meaning = forms.ModelChoiceField(
-        queryset=GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT").values_list("procedure_code_meaning", flat=True).distinct("procedure_code_meaning"),
+
+    query = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT").values_list("procedure_code_meaning", flat=True).distinct()
+    query_choices = [('', 'None')] + [(item, item) for item in query]
+    procedure_code_meaning = forms.ChoiceField(
+        choices=query_choices,
         required=False,
+        widget=forms.Select(),
     )
-    acquisition_protocol = forms.ModelChoiceField(
-        queryset=CtIrradiationEventData.objects.values_list("acquisition_protocol", flat=True).distinct("acquisition_protocol"),
+
+    query = CtIrradiationEventData.objects.values_list("acquisition_protocol", flat=True).distinct()
+    query_choices = [('', 'None')] + [(item, item) for item in query]
+    acquisition_protocol = forms.ChoiceField(
+        choices=query_choices,
         required=False,
+        widget=forms.Select(),
     )
 
     def __init__(self, *args, **kwargs):
-        super(StandardNameForm, self).__init__(*args, **kwargs)
+        super(StandardNameFormCT, self).__init__(*args, **kwargs)
 
     class Meta(object):
         model = StandardNames
-        fields = "__all__"
-        labels = {
-            "standard_name": "Standard name",
-            "modality": "Modality",
-        }
+        fields = ["standard_name", "study_description", "requested_procedure_code_meaning", "procedure_code_meaning", "acquisition_protocol"]
         widgets = {
             "standard_name": forms.TextInput,
-            "modality": forms.Select(choices=CommonVariables.MODALITIES),
         }
 
 

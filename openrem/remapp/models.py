@@ -772,7 +772,7 @@ class StandardNames(models.Model):
         return self.standard_name
 
     def get_absolute_url(self):
-        return reverse("add_name")
+        return reverse("add_name_ct")
 
 
 class SizeUpload(models.Model):

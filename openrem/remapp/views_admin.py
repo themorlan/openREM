@@ -71,7 +71,7 @@ from .forms import (
     RFChartOptionsDisplayForm,
     RFHighDoseFluoroAlertsForm,
     UpdateDisplayNamesForm,
-    StandardNameForm,
+    StandardNameFormCT,
 )
 from .models import (
     AccumIntegratedProjRadiogDose,
@@ -2750,26 +2750,23 @@ class StandardNameAddCT(CreateView):  # pylint: disable=unused-variable
     """CreateView to add a standard name to the database"""
 
     model = StandardNames
-    form_class = StandardNameForm
+    form_class = StandardNameFormCT
 
     def get_context_data(self, **context):
-        if self.request.method == "GET":
-            # The user has navigated to this page
-            context = super(StandardNameAddCT, self).get_context_data(**context)
-            admin = {"openremversion": __version__, "docsversion": __docs_version__}
-            for group in self.request.user.groups.all():
-                admin[group.name] = True
-            context["admin"] = admin
-            context["modality"] = "CT"
-            return context
 
-        if self.request.method == "POST":
-            # The user has submitted the form on this page - process the results
-            # CODE NOT WRITTEN YET
-            context = super(StandardNameAddCT, self).get_context_data(**context)
-            admin = {"openremversion": __version__, "docsversion": __docs_version__}
-            for group in self.request.user.groups.all():
-                admin[group.name] = True
-            context["admin"] = admin
-            context["modality"] = "CT"
-            return context
+        # The user has navigated to this page
+        context = super(StandardNameAddCT, self).get_context_data(**context)
+        admin = {"openremversion": __version__, "docsversion": __docs_version__}
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        context["modality"] = "CT"
+        return context
+
+    def form_valid(self, form):
+        if form.has_changed():
+            messages.info(self.request, "New entry added")
+            return super(StandardNameAddCT, self).form_valid(form)
+        else:
+            messages.info(self.request, "No changes made")
+        return super(StandardNameAddCT, self).form_valid(form)
