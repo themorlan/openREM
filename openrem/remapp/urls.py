@@ -362,6 +362,9 @@ standard_name_patterns = [  # pylint: disable=invalid-name
     path("add_name_dx/", views_admin.StandardNameAddDX.as_view(), name="add_name_dx"),
     path("add_name_rf/", views_admin.StandardNameAddRF.as_view(), name="add_name_rf"),
     path("add_name_mg/", views_admin.StandardNameAddMG.as_view(), name="add_name_mg"),
+
+    path("viewstandardnames/", views_admin.standard_names_view, name="standard_names_view"),
+    path("populatestandardnames", views_admin.standard_names_populate, name="standard_names_populate"),
 ]
 
 urlpatterns = [

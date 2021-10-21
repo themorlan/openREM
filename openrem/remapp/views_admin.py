@@ -2851,3 +2851,64 @@ class StandardNameAddRF(CreateView):  # pylint: disable=unused-variable
         else:
             messages.info(self.request, "No changes made")
             return redirect(reverse_lazy("add_name_rf"))
+
+
+@login_required
+def standard_names_view(request):
+    if request.method == "POST":
+        return HttpResponseRedirect(reverse_lazy("standard_names_view"))
+
+    f = StandardNames.objects.order_by("standard_name")
+
+    ct_names = f.filter(modality__iexact="CT").distinct()
+    mg_names = f.filter(modality__iexact="MG").distinct()
+    dx_names = f.filter(modality__iexact="DX").distinct()
+    rf_names = f.filter(modality__iexact="RF").distinct()
+
+    admin = {
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
+    }
+
+    for group in request.user.groups.all():
+        admin[group.name] = True
+
+    return_structure = {
+        "name_list": f,
+        "admin": admin,
+        "ct_names": ct_names,
+        "mg_names": mg_names,
+        "dx_names": dx_names,
+        "rf_names": rf_names,
+        "modalities": ["CT", "RF", "MG", "DX"],
+    }
+
+    return render(request, "remapp/standardnameview.html", return_structure)
+
+
+def standard_names_populate(request):
+    """AJAX view to populate the modality tables for the standard names view
+
+    :param request: Request object containing modality
+    :return: HTML table
+    """
+    if request.is_ajax():
+        data = request.POST
+        modality = data.get("modality")
+        f = StandardNames.objects.order_by("standard_name")
+        admin = {
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
+        }
+        for group in request.user.groups.all():
+            admin[group.name] = True
+
+        name_set = f.filter(modality=modality).distinct()
+
+        template = "remapp/standardname-modality.html"
+
+        return render(
+            request,
+            template,
+            {"name_set": name_set, "admin": admin, "modality": modality},
+        )
