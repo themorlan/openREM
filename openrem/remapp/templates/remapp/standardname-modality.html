@@ -1,26 +1,27 @@
 <p>There are {{ name_set.count }} entries in this table. Back to the <a href="#top">top</a>.</p>
 <table class="table table-bordered table-hover row-clickable sortable" id="standard_name_table_{{ modality }}" aria-describedby="{{ modality }} systems">
   <tr>
-    {% if admin.admingroup %}
-      <th scope="col">Update?</th>
-    {% endif %}
     <th scope="col">Standard name</th>
     <th scope="col">Study description</th>
     <th scope="col">Requested procedure name</th>
     <th scope="col">Procedure</th>
     <th scope="col">Acquisition protocol</th>
+    {% if admin.admingroup %}
+        <th scope="col">Modify</th>
+        <th scope="col">Delete</th>
+    {% endif %}
   </tr>
   {% for eachrow in name_set %}
     <tr class="clickable-row" row_name="{{ eachrow.id }}">
-{#    <tr row_name="{{ eachrow.id }}">#}
-      {% if admin.admingroup %}
-        <td style="text-align: center; vertical-align: middle;"><input type="checkbox" title="" name="{{ eachrow.id }}" value="{{ eachrow.id }}" onclick="$(this).prop('checked', !$(this).prop('checked'))"/></td>
-      {% endif %}
       <td><a style="text-decoration: none">{{ eachrow.standard_name }}</a></td>
       <td><a style="text-decoration: none">{{ eachrow.study_description }}</a></td>
       <td><a style="text-decoration: none">{{ eachrow.requested_procedure_code_meaning }}</a></td>
       <td><a style="text-decoration: none">{{ eachrow.procedure_code_meaning }}</a></td>
       <td><a style="text-decoration: none">{{ eachrow.acquisition_protocol }}</a></td>
+      {% if admin.admingroup %}
+          <td><a class="btn btn-primary" href="" role="button">Modify</a></td>
+          <td><a class="btn btn-danger" href="" role="button">Delete</a></td>
+      {% endif %}
     </tr>
   {% endfor %}
 </table>
