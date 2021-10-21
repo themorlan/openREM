@@ -769,6 +769,10 @@ class StandardNames(models.Model):
             return reverse("add_name_ct")
         if self.modality == "DX":
             return reverse("add_name_dx")
+        if self.modality == "MG":
+            return reverse("add_name_mg")
+        if self.modality == "RF":
+            return reverse("add_name_rf")
 
 
 class SizeUpload(models.Model):

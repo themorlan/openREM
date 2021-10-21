@@ -1076,7 +1076,7 @@ class StandardNameFormCT(forms.ModelForm):
 class StandardNameFormDX(forms.ModelForm):
     """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
 
-    all_studies = GeneralStudyModuleAttr.objects.filter(Q(modality_type__exact="DX") | Q(modality_type__exact="CR") | Q(modality_type__exact="PX"))
+    all_studies = GeneralStudyModuleAttr.objects.filter(Q(modality_type__iexact="DX") | Q(modality_type__iexact="CR") | Q(modality_type__iexact="PX"))
 
     query = all_studies.values_list("study_description", flat=True).distinct().order_by("study_description")
     query_choices = [('', 'None')] + [(item, item) for item in query]
@@ -1115,6 +1115,110 @@ class StandardNameFormDX(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(StandardNameFormDX, self).__init__(*args, **kwargs)
         self.fields["modality"].initial = "DX"
+
+    class Meta(object):
+        model = StandardNames
+        fields = ["standard_name", "modality", "study_description", "requested_procedure_code_meaning", "procedure_code_meaning", "acquisition_protocol"]
+        widgets = {
+            "standard_name": forms.TextInput,
+            "modality": forms.HiddenInput,
+        }
+
+
+class StandardNameFormMG(forms.ModelForm):
+    """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
+
+    all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="MG")
+
+    query = all_studies.values_list("study_description", flat=True).distinct().order_by("study_description")
+    query_choices = [('', 'None')] + [(item, item) for item in query]
+    study_description = forms.ChoiceField(
+        choices=query_choices,
+        required=False,
+        widget=forms.Select(),
+    )
+
+    query = all_studies.values_list("requested_procedure_code_meaning", flat=True).distinct().order_by("requested_procedure_code_meaning")
+    query_choices = [('', 'None')] + [(item, item) for item in query]
+    requested_procedure_code_meaning = forms.ChoiceField(
+        choices=query_choices,
+        required=False,
+        widget=forms.Select(),
+    )
+
+    query = all_studies.values_list("procedure_code_meaning", flat=True).distinct().order_by("procedure_code_meaning")
+    query_choices = [('', 'None')] + [(item, item) for item in query]
+    procedure_code_meaning = forms.ChoiceField(
+        choices=query_choices,
+        required=False,
+        widget=forms.Select(),
+    )
+
+    q = ["MG"]
+    q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
+    query = IrradEventXRayData.objects.filter(q_criteria).values_list("acquisition_protocol", flat=True).distinct().order_by("acquisition_protocol")
+    query_choices = [('', 'None')] + [(item, item) for item in query]
+    acquisition_protocol = forms.ChoiceField(
+        choices=query_choices,
+        required=False,
+        widget=forms.Select(),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(StandardNameFormMG, self).__init__(*args, **kwargs)
+        self.fields["modality"].initial = "MG"
+
+    class Meta(object):
+        model = StandardNames
+        fields = ["standard_name", "modality", "study_description", "requested_procedure_code_meaning", "procedure_code_meaning", "acquisition_protocol"]
+        widgets = {
+            "standard_name": forms.TextInput,
+            "modality": forms.HiddenInput,
+        }
+
+
+class StandardNameFormRF(forms.ModelForm):
+    """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
+
+    all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="RF")
+
+    query = all_studies.values_list("study_description", flat=True).distinct().order_by("study_description")
+    query_choices = [('', 'None')] + [(item, item) for item in query]
+    study_description = forms.ChoiceField(
+        choices=query_choices,
+        required=False,
+        widget=forms.Select(),
+    )
+
+    query = all_studies.values_list("requested_procedure_code_meaning", flat=True).distinct().order_by("requested_procedure_code_meaning")
+    query_choices = [('', 'None')] + [(item, item) for item in query]
+    requested_procedure_code_meaning = forms.ChoiceField(
+        choices=query_choices,
+        required=False,
+        widget=forms.Select(),
+    )
+
+    query = all_studies.values_list("procedure_code_meaning", flat=True).distinct().order_by("procedure_code_meaning")
+    query_choices = [('', 'None')] + [(item, item) for item in query]
+    procedure_code_meaning = forms.ChoiceField(
+        choices=query_choices,
+        required=False,
+        widget=forms.Select(),
+    )
+
+    q = ["RF"]
+    q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
+    query = IrradEventXRayData.objects.filter(q_criteria).values_list("acquisition_protocol", flat=True).distinct().order_by("acquisition_protocol")
+    query_choices = [('', 'None')] + [(item, item) for item in query]
+    acquisition_protocol = forms.ChoiceField(
+        choices=query_choices,
+        required=False,
+        widget=forms.Select(),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(StandardNameFormRF, self).__init__(*args, **kwargs)
+        self.fields["modality"].initial = "RF"
 
     class Meta(object):
         model = StandardNames

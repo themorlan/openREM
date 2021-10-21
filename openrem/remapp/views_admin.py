@@ -73,6 +73,8 @@ from .forms import (
     UpdateDisplayNamesForm,
     StandardNameFormCT,
     StandardNameFormDX,
+    StandardNameFormMG,
+    StandardNameFormRF,
 )
 from .models import (
     AccumIntegratedProjRadiogDose,
@@ -2797,3 +2799,55 @@ class StandardNameAddDX(CreateView):  # pylint: disable=unused-variable
         else:
             messages.info(self.request, "No changes made")
             return redirect(reverse_lazy("add_name_dx"))
+
+
+class StandardNameAddMG(CreateView):  # pylint: disable=unused-variable
+    """CreateView to add a standard name to the database"""
+
+    model = StandardNames
+    form_class = StandardNameFormMG
+
+    def get_context_data(self, **context):
+
+        # The user has navigated to this page
+        context = super(StandardNameAddMG, self).get_context_data(**context)
+        admin = {"openremversion": __version__, "docsversion": __docs_version__}
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        context["modality_name"] = "mammographic"
+        return context
+
+    def form_valid(self, form):
+        if form.has_changed():
+            messages.success(self.request, "New entry added")
+            return super(StandardNameAddMG, self).form_valid(form)
+        else:
+            messages.info(self.request, "No changes made")
+            return redirect(reverse_lazy("add_name_mg"))
+
+
+class StandardNameAddRF(CreateView):  # pylint: disable=unused-variable
+    """CreateView to add a standard name to the database"""
+
+    model = StandardNames
+    form_class = StandardNameFormRF
+
+    def get_context_data(self, **context):
+
+        # The user has navigated to this page
+        context = super(StandardNameAddRF, self).get_context_data(**context)
+        admin = {"openremversion": __version__, "docsversion": __docs_version__}
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        context["modality_name"] = "fluoroscopic"
+        return context
+
+    def form_valid(self, form):
+        if form.has_changed():
+            messages.success(self.request, "New entry added")
+            return super(StandardNameAddRF, self).form_valid(form)
+        else:
+            messages.info(self.request, "No changes made")
+            return redirect(reverse_lazy("add_name_rf"))
