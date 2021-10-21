@@ -1027,42 +1027,41 @@ class DicomStoreForm(forms.ModelForm):
 class StandardNameFormCT(forms.ModelForm):
     """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
 
-    query = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT").values_list("study_description", flat=True).distinct()
-
-    query_choices = [('', 'None')] + [(item, item) for item in query]
-    study_description = forms.ChoiceField(
-        choices=query_choices,
-        required=False,
-        widget=forms.Select(),
-    )
-
-    query = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT").values_list("requested_procedure_code_meaning", flat=True).distinct()
-    query_choices = [('', 'None')] + [(item, item) for item in query]
-    requested_procedure_code_meaning = forms.ChoiceField(
-        choices=query_choices,
-        required=False,
-        widget=forms.Select(),
-    )
-
-    query = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT").values_list("procedure_code_meaning", flat=True).distinct()
-    query_choices = [('', 'None')] + [(item, item) for item in query]
-    procedure_code_meaning = forms.ChoiceField(
-        choices=query_choices,
-        required=False,
-        widget=forms.Select(),
-    )
-
-    query = CtIrradiationEventData.objects.values_list("acquisition_protocol", flat=True).distinct()
-    query_choices = [('', 'None')] + [(item, item) for item in query]
-    acquisition_protocol = forms.ChoiceField(
-        choices=query_choices,
-        required=False,
-        widget=forms.Select(),
-    )
-
     def __init__(self, *args, **kwargs):
         super(StandardNameFormCT, self).__init__(*args, **kwargs)
         self.fields["modality"].initial = "CT"
+
+        query = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT").values_list("study_description", flat=True).distinct()
+        query_choices = [('', 'None')] + [(item, item) for item in query]
+        self.fields["study_description"] = forms.ChoiceField(
+            choices=query_choices,
+            required=False,
+            widget=forms.Select(),
+        )
+
+        query = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT").values_list("requested_procedure_code_meaning", flat=True).distinct()
+        query_choices = [('', 'None')] + [(item, item) for item in query]
+        self.fields["requested_procedure_code_meaning"] = forms.ChoiceField(
+            choices=query_choices,
+            required=False,
+            widget=forms.Select(),
+        )
+
+        query = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT").values_list("procedure_code_meaning", flat=True).distinct()
+        query_choices = [('', 'None')] + [(item, item) for item in query]
+        self.fields["procedure_code_meaning"] = forms.ChoiceField(
+            choices=query_choices,
+            required=False,
+            widget=forms.Select(),
+        )
+
+        query = CtIrradiationEventData.objects.values_list("acquisition_protocol", flat=True).distinct()
+        query_choices = [('', 'None')] + [(item, item) for item in query]
+        self.fields["acquisition_protocol"] = forms.ChoiceField(
+            choices=query_choices,
+            required=False,
+            widget=forms.Select(),
+        )
 
     class Meta(object):
         model = StandardNames
