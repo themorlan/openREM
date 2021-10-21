@@ -2761,7 +2761,7 @@ class StandardNameAddCT(CreateView):  # pylint: disable=unused-variable
         for group in self.request.user.groups.all():
             admin[group.name] = True
         context["admin"] = admin
-        context["modality"] = "CT"
+        context["modality_name"] = "CT"
         return context
 
     def form_valid(self, form):
@@ -2787,7 +2787,7 @@ class StandardNameAddDX(CreateView):  # pylint: disable=unused-variable
         for group in self.request.user.groups.all():
             admin[group.name] = True
         context["admin"] = admin
-        context["modality"] = "DX"
+        context["modality_name"] = "radiographic"
         return context
 
     def form_valid(self, form):

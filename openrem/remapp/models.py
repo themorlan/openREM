@@ -513,13 +513,6 @@ class CommonVariables:
         CT_CONE_BEAM_ACQUISITION: ["702569007", "R-FB8F1", "C3839509"],
     }
 
-    MODALITIES = (
-        ("CT", "CT"),
-        ("DX", "Radiography"),
-        ("MG", "Mammography"),
-        ("RF", "Fluoroscopy"),
-    )
-
 
 class UserProfile(models.Model, CommonVariables):
     """
