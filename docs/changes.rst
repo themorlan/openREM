@@ -93,6 +93,7 @@ OpenREM version history
 * :issue:`457`  Updated OpenREM to use Django 2.2
 * :issue:`477`  Charts: replaced HighCharts with open source Plotly library
 * :issue:`437`  Updated OpenREM to use django-filters v2
+* :issue:`433`  Import: Siemens Arcadis Varic dose reports are now imported
 * :issue:`404`  Ported OpenREM to Python 3
 * :issue:`233`  Charts: added charts of average CTDI and DLP over time
 
