@@ -8,6 +8,7 @@ OpenREM version history
 * :issue:`917`  Interface: added horizintal lines between chart option groups and shaded chart option CheckboxSelectMultiple items
 * :issue:`913`  SkinDose: made 2d skin dose map overlay visible by default
 * :issue:`911`  Charts: fixed issue with chart data sorting and added label wrap option
+* :issue:`910`  SkinDose: fixed rendering of 2d skin dose map with head
 * :issue:`909`  Code quality: all model imports absolute
 * :issue:`908`  Imports: enabled Device Observer UID to be ignored for specific equipment models when creating display name data during RDSR import
 * :issue:`906`  Charts: upgraded Plotly library to latest version
