@@ -365,6 +365,8 @@ standard_name_patterns = [  # pylint: disable=invalid-name
 
     path("viewstandardnames/", views_admin.standard_names_view, name="standard_names_view"),
     path("populatestandardnames", views_admin.standard_names_populate, name="standard_names_populate"),
+
+    path("standardname/<int:pk>/delete/", views_admin.StandardNameDelete.as_view(), name="standard_name_delete"),
 ]
 
 urlpatterns = [

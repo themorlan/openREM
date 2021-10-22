@@ -2912,3 +2912,17 @@ def standard_names_populate(request):
             template,
             {"name_set": name_set, "admin": admin, "modality": modality},
         )
+
+class StandardNameDelete(DeleteView):  # pylint: disable=unused-variable
+    """DeleteView to delete a standard name from the database"""
+
+    model = StandardNames
+    success_url = reverse_lazy("standard_names_view")
+
+    def get_context_data(self, **context):
+        context[self.context_object_name] = self.object
+        admin = {"openremversion": __version__, "docsversion": __docs_version__}
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context
