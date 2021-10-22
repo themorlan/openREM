@@ -7,8 +7,8 @@
     <th scope="col">Procedure</th>
     <th scope="col">Acquisition protocol</th>
     {% if admin.admingroup %}
-        <th scope="col">Modify?</th>
-        <th scope="col">Delete?</th>
+        <th style="text-align: center; vertical-align: middle;" scope="col">Modify?</th>
+        <th style="text-align: center; vertical-align: middle;" scope="col">Delete?</th>
     {% endif %}
   </tr>
   {% for eachrow in name_set %}
@@ -19,8 +19,8 @@
       <td><a style="text-decoration: none">{{ eachrow.procedure_code_meaning }}</a></td>
       <td><a style="text-decoration: none">{{ eachrow.acquisition_protocol }}</a></td>
       {% if admin.admingroup %}
-          <td><a href="" role="button">Modify</a></td>
-          <td><a href="{% url 'standard_name_delete' pk=eachrow.pk %}" role="button">Delete</a></td>
+          <td style="text-align: center; vertical-align: middle;"><a href="{% url 'update_name' std_name_pk=eachrow.pk modality=modality %}" role="button">Modify</a></td>
+          <td style="text-align: center; vertical-align: middle;"><a href="{% url 'standard_name_delete' pk=eachrow.pk %}" role="button">Delete</a></td>
       {% endif %}
     </tr>
   {% endfor %}

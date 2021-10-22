@@ -2926,3 +2926,153 @@ class StandardNameDelete(DeleteView):  # pylint: disable=unused-variable
             admin[group.name] = True
         context["admin"] = admin
         return context
+
+
+class StandardNameUpdateCT(UpdateView):  # pylint: disable=unused-variable
+    """UpdateView to update a standard CT name"""
+
+    model = StandardNames
+    form_class = StandardNameFormCT
+
+    def get_context_data(self, **context):
+        context = super(StandardNameUpdateCT, self).get_context_data(**context)
+        admin = {
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
+        }
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context
+
+    def form_valid(self, form):
+        if form.has_changed():
+            messages.success(self.request, "Entry updated")
+            return super(StandardNameUpdateCT, self).form_valid(form)
+        else:
+            messages.info(self.request, "No changes made to the entry")
+            return redirect(reverse_lazy("standard_names_view"))
+
+
+class StandardNameUpdateDX(UpdateView):  # pylint: disable=unused-variable
+    """UpdateView to update a standard DX name"""
+
+    model = StandardNames
+    form_class = StandardNameFormDX
+
+    def get_context_data(self, **context):
+        context = super(StandardNameUpdateDX, self).get_context_data(**context)
+        admin = {
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
+        }
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context
+
+    def form_valid(self, form):
+        if form.has_changed():
+            messages.success(self.request, "Entry updated")
+            return super(StandardNameUpdateDX, self).form_valid(form)
+        else:
+            messages.info(self.request, "No changes made to the entry")
+            return redirect(reverse_lazy("standard_names_view"))
+
+
+class StandardNameUpdateRF(UpdateView):  # pylint: disable=unused-variable
+    """UpdateView to update a standard RF name"""
+
+    model = StandardNames
+    form_class = StandardNameFormRF
+
+    def get_context_data(self, **context):
+        context = super(StandardNameUpdateRF, self).get_context_data(**context)
+        admin = {
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
+        }
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context
+
+    def form_valid(self, form):
+        if form.has_changed():
+            messages.success(self.request, "Entry updated")
+            return super(StandardNameUpdateRF, self).form_valid(form)
+        else:
+            messages.info(self.request, "No changes made to the entry")
+            return redirect(reverse_lazy("standard_names_view"))
+
+
+class StandardNameUpdateMG(UpdateView):  # pylint: disable=unused-variable
+    """UpdateView to update a standard MG name"""
+
+    model = StandardNames
+    form_class = StandardNameFormMG
+
+    def get_context_data(self, **context):
+        context = super(StandardNameUpdateMG, self).get_context_data(**context)
+        admin = {
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
+        }
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context
+
+    def form_valid(self, form):
+        if form.has_changed():
+            messages.success(self.request, "Entry updated")
+            return super(StandardNameUpdateMG, self).form_valid(form)
+        else:
+            messages.info(self.request, "No changes made to the entry")
+            return redirect(reverse_lazy("standard_names_view"))
+
+
+@login_required
+def standard_name_update(request, std_name_pk=None, modality=None):
+    """View to list 'failed import' studies
+
+    :param request:
+    :param modality: modality to filter by
+    :return:
+    """
+    if not modality in ["CT", "RF", "MG", "DX"]:
+        messages.error(
+            request,
+            "No modality provided.",
+        )
+        return HttpResponseRedirect(reverse_lazy("standard_names_view"))
+
+    if std_name_pk is None:
+        messages.error(
+            request,
+            "No standard name index provided.",
+        )
+        return HttpResponseRedirect(reverse_lazy("standard_names_view"))
+
+    if not request.user.groups.filter(name="admingroup"):
+        messages.error(
+            request,
+            "You are not in the administrator group - please contact your administrator",
+        )
+        return redirect(reverse_lazy("standard_names_view"))
+
+    if request.method == "GET":
+        if modality.lower() == "ct":
+            return redirect(reverse_lazy("update_name_ct", kwargs={"pk": std_name_pk}))
+
+        if modality.lower() == "dx":
+            return redirect(reverse_lazy("update_name_dx", kwargs={"pk": std_name_pk}))
+
+        if modality.lower() == "rf":
+            return redirect(reverse_lazy("update_name_rf", kwargs={"pk": std_name_pk}))
+
+        if modality.lower() == "mg":
+            return redirect(reverse_lazy("update_name_mg", kwargs={"pk": std_name_pk}))
+    else:
+        messages.error(request, "Incorrect attempt to update standard name.")
+        return redirect(reverse_lazy("standard_names_view"))

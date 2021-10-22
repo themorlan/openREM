@@ -21,15 +21,6 @@
   <div class="row">
     <div class="col-md-6">
       <h3>Standard name configuration</h3>
-      {% if admin.admingroup %}
-        <p>
-          Check one or more boxes and click an Update button to be taken to a page where you can
-          update all of the selected systems to the same display name and / or set a user defined modality type.
-        </p>
-        <p>The boxes can be checked or unchecked by clicking anywhere on the row. Tables can be sorted by clicking on
-          column headers.
-        </p>
-      {% endif %}
       <p>
         Jump to <a href="#ct">CT</a> | <a href="#fluoro">Fluoroscopy</a> | <a href="#mammo">Mammography</a> |
         <a href="#dx">Radiography</a>
@@ -73,52 +64,28 @@
   </script>
 {% endfor %}
 
-{% if admin.admingroup %}
-  <input class="btn btn-default" type="submit" value="Update">
-{% endif %}
-
 <a id="ct" class="vert-offset">
   <h3>CT</h3>
 </a>
 <span id="CT-names">Querying the database for standard names, please wait</span>
-{% if admin.admingroup %}
-    <p>
-      <input class="btn btn-default" type="submit" value="Update">
-    </p>
-{% endif %}
+<a class="btn btn-default" href="{% url 'add_name_ct' %}" role="button">Add new CT entry</a>
 
 <a id="fluoro" class="vert-offset">
   <h3>Fluoroscopy</h3>
 </a>
 <span id="RF-names">Querying the database for standard names, please wait</span>
-{% if admin.admingroup %}
-    <p>
-      <input class="btn btn-default" type="submit" value="Update">
-    </p>
-{% endif %}
+<a class="btn btn-default" href="{% url 'add_name_rf' %}" role="button">Add new fluoroscopy entry</a>
 
 <a id="mammo" class="vert-offset">
   <h3>Mammography</h3>
 </a>
 <span id="MG-names">Querying the database for standard names, please wait</span>
-{% if admin.admingroup %}
-    <p>
-      <input class="btn btn-default" type="submit" value="Update">
-    </p>
-{% endif %}
+<a class="btn btn-default" href="{% url 'add_name_mg' %}" role="button">Add new mammography entry</a>
 
 <a id="dx" class="vert-offset">
-  <h3>DX and CR</h3>
+  <h3>Radiography</h3>
 </a>
 <span id="DX-names">Querying the database for standard names, please wait</span>
-{% if admin.admingroup %}
-    <p>
-      <input class="btn btn-default" type="submit" value="Update">
-    </p>
-{% endif %}
-
-{% if admin.admingroup %}
-  </form>
-{% endif %}
+<a class="btn btn-default" href="{% url 'add_name_dx' %}" role="button">Add new radiography entry</a>
 
 {% endblock %}
