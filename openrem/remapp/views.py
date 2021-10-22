@@ -416,10 +416,14 @@ def rf_detail_view(request, pk=None):
         except TypeError:
             pass
         try:
-            stu_time_totals[1] = stu_time_totals[1] + accum_dose_ds.total_acquisition_time
+            stu_time_totals[1] = (
+                stu_time_totals[1] + accum_dose_ds.total_acquisition_time
+            )
         except TypeError:
             pass
-        accum_integrated = accum_dose_ds.accumulated_xray_dose.accumintegratedprojradiogdose_set.get()
+        accum_integrated = (
+            accum_dose_ds.accumulated_xray_dose.accumintegratedprojradiogdose_set.get()
+        )
         try:
             total_dap = total_dap + accum_integrated.dose_area_product_total
         except TypeError:

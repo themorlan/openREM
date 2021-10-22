@@ -1663,15 +1663,19 @@ def _ctaccumulateddosedata(dataset, ct):  # TID 10012
 
 
 def _import_varic(dataset, proj):
-    
+
     for cont in dataset.ContentSequence:
         if cont.ConceptNameCodeSequence[0].CodeValue == "C-200":
             accum = AccumXRayDose.objects.create(projection_xray_radiation_dose=proj)
             accum.acquisition_plane = get_or_create_cid("113622", "Single Plane")
             accum.save()
-            accumint = AccumIntegratedProjRadiogDose.objects.create(accumulated_xray_dose=accum)
+            accumint = AccumIntegratedProjRadiogDose.objects.create(
+                accumulated_xray_dose=accum
+            )
             try:
-                accumint.total_number_of_radiographic_frames = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
+                accumint.total_number_of_radiographic_frames = test_numeric_value(
+                    cont.MeasuredValueSequence[0].NumericValue
+                )
             except IndexError:
                 pass
             accumint.save()
@@ -1679,13 +1683,18 @@ def _import_varic(dataset, proj):
             accumproj = AccumProjXRayDose.objects.create(accumulated_xray_dose=accum)
             accumproj.save()
             try:
-                accumproj.total_fluoro_time = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
+                accumproj.total_fluoro_time = test_numeric_value(
+                    cont.MeasuredValueSequence[0].NumericValue
+                )
             except IndexError:
                 pass
             accumproj.save()
         if cont.ConceptNameCodeSequence[0].CodeValue == "C-204":
             try:
-                accumint.dose_area_product_total = test_numeric_value(cont.MeasuredValueSequence[0].NumericValue) / 10000.0
+                accumint.dose_area_product_total = (
+                    test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
+                    / 10000.0
+                )
             except (TypeError, IndexError):
                 pass
             accumint.save()
@@ -1712,13 +1721,19 @@ def _projectionxrayradiationdose(dataset, g, reporttype):
     if proj.general_study_module_attributes.modality_type == "dual":
         proj.general_study_module_attributes.modality_type = None
 
-    if dataset.ConceptNameCodeSequence[0].CodingSchemeDesignator == "99SMS_RADSUM" and dataset.ConceptNameCodeSequence[0].CodeValue == "C-10":
-        g.modality_type = 'RF'
+    if (
+        dataset.ConceptNameCodeSequence[0].CodingSchemeDesignator == "99SMS_RADSUM"
+        and dataset.ConceptNameCodeSequence[0].CodeValue == "C-10"
+    ):
+        g.modality_type = "RF"
         g.save()
         _import_varic(dataset, proj)
     else:
         for cont in dataset.ContentSequence:
-            if cont.ConceptNameCodeSequence[0].CodeMeaning.lower() == "procedure reported":
+            if (
+                cont.ConceptNameCodeSequence[0].CodeMeaning.lower()
+                == "procedure reported"
+            ):
                 proj.procedure_reported = get_or_create_cid(
                     cont.ConceptCodeSequence[0].CodeValue,
                     cont.ConceptCodeSequence[0].CodeMeaning,
@@ -1770,7 +1785,8 @@ def _projectionxrayradiationdose(dataset, g, reporttype):
                     cont.ConceptCodeSequence[0].CodeMeaning,
                 )
             elif (
-                cont.ConceptNameCodeSequence[0].CodeMeaning == "X-Ray Source Data Available"
+                cont.ConceptNameCodeSequence[0].CodeMeaning
+                == "X-Ray Source Data Available"
             ):
                 proj.xray_source_data_available = get_or_create_cid(
                     cont.ConceptCodeSequence[0].CodeValue,
@@ -1787,7 +1803,8 @@ def _projectionxrayradiationdose(dataset, g, reporttype):
             elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Comment":
                 proj.comment = cont.TextValue
             elif (
-                cont.ConceptNameCodeSequence[0].CodeMeaning == "Source of Dose Information"
+                cont.ConceptNameCodeSequence[0].CodeMeaning
+                == "Source of Dose Information"
             ):
                 proj.source_of_dose_information = get_or_create_cid(
                     cont.ConceptCodeSequence[0].CodeValue,
@@ -1799,7 +1816,8 @@ def _projectionxrayradiationdose(dataset, g, reporttype):
                 and proj.acquisition_device_type_cid
             ):
                 if (
-                    "Fluoroscopy-Guided" in proj.acquisition_device_type_cid.code_meaning
+                    "Fluoroscopy-Guided"
+                    in proj.acquisition_device_type_cid.code_meaning
                     or "Azurion"
                     in proj.general_study_module_attributes.generalequipmentmoduleattr_set.get().manufacturer_model_name
                 ):
@@ -2073,7 +2091,11 @@ def _generalstudymoduleattributes(dataset, g):
         try:
             if dataset.ContentSequence[0].ConceptCodeSequence[0].CodeValue == "113704":
                 template_identifier = "10001"
-            elif dataset.ConceptNameCodeSequence[0].CodingSchemeDesignator == "99SMS_RADSUM" and dataset.ConceptNameCodeSequence[0].CodeValue == "C-10":
+            elif (
+                dataset.ConceptNameCodeSequence[0].CodingSchemeDesignator
+                == "99SMS_RADSUM"
+                and dataset.ConceptNameCodeSequence[0].CodeValue == "C-10"
+            ):
                 template_identifier = "10001"
             else:
                 logger.error(

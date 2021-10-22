@@ -190,6 +190,7 @@ class ExportRFxlsx(
         task.filename.delete()  # delete file so local testing doesn't get too messy!
         task.delete()  # not necessary, by hey, why not?
 
+
 class ExportRFArcadis(TransactionTestCase):
     def setUp(self):
         self.factory = RequestFactory()
@@ -220,5 +221,3 @@ class ExportRFArcadis(TransactionTestCase):
         patient_id = True
 
         rfxlsx(filter_set, pid=pid, name=name, patid=patient_id, user=self.user)
-
-
