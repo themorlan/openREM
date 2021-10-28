@@ -34,12 +34,18 @@ import logging
 
 import django_filters
 from django import forms
-from django.db.models import Q
+from django.db.models import (
+    Q,
+    Subquery,
+    OuterRef,
+)
 
 from remapp.models import (
     GeneralStudyModuleAttr,
     IrradEventXRayData,
     CtIrradiationEventData,
+    StandardNames,
+    StandardNameSettings,
 )
 from ..tools.hash_id import hash_id
 
@@ -671,7 +677,31 @@ def ct_acq_filter(filters, pid=False):
             "ct_radiation_dose__general_study_module_attributes__study_instance_uid"
         ).distinct()
 
-    studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT")
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values("enable_standard_names",)[0]
+
+    studies = None
+    if enable_standard_names:
+        studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT").annotate(
+            standard_request_name=Subquery(
+                StandardNames.objects.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
+            )
+        ).annotate(
+            standard_study_name=Subquery(
+                StandardNames.objects.filter(study_description=OuterRef("study_description")).values("standard_name")
+            )
+        ).annotate(
+            standard_procedure_name=Subquery(
+                StandardNames.objects.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values("standard_name")
+            )
+        )
+    else:
+        studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT")
+
     if filteredInclude:
         studies = studies.filter(study_instance_uid__in=filteredInclude)
     if pid:

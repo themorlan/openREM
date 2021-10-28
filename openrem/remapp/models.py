@@ -756,10 +756,10 @@ class StandardNames(models.Model):
 
     standard_name = models.TextField(blank=True, null=True)
     modality = models.CharField(max_length=16, blank=True, null=True)
-    study_description = models.TextField(blank=True, null=True)
-    requested_procedure_code_meaning = models.TextField(blank=True, null=True)
-    procedure_code_meaning = models.CharField(max_length=64, blank=True, null=True)
-    acquisition_protocol = models.TextField(blank=True, null=True)
+    study_description = models.TextField(blank=True, null=True, unique=True)
+    requested_procedure_code_meaning = models.TextField(blank=True, null=True, unique=True)
+    procedure_code_meaning = models.CharField(max_length=64, blank=True, null=True, unique=True)
+    acquisition_protocol = models.TextField(blank=True, null=True, unique=True)
 
     def __unicode__(self):
         return self.standard_name
@@ -773,6 +773,20 @@ class StandardNames(models.Model):
             return reverse("add_name_mg")
         if self.modality == "RF":
             return reverse("add_name_rf")
+
+
+class StandardNameSettings(SingletonModel):
+    """
+    Table to store standard name mapping settings
+    """
+
+    enable_standard_names = models.BooleanField(
+        default=False,
+        verbose_name="Enable standard name mapping?",
+    )
+
+    def get_absolute_url(self):
+        return reverse("standard_name_settings", kwargs={"pk": 1})
 
 
 class SizeUpload(models.Model):

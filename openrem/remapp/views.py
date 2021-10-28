@@ -93,6 +93,7 @@ from .models import (
     AdminTaskQuestions,
     HomePageAdminSettings,
     UpgradeStatus,
+    StandardNameSettings,
 )
 from .version import __version__, __docs_version__, __skin_map_version__
 
@@ -678,6 +679,13 @@ def ct_summary_list_filter(request):
         "docsversion": __docs_version__,
     }
 
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
     for group in request.user.groups.all():
         admin[group.name] = True
 
@@ -696,6 +704,7 @@ def ct_summary_list_filter(request):
         "admin": admin,
         "chartOptionsForm": chart_options_form,
         "itemsPerPageForm": items_per_page_form,
+        "showStandardNames": enable_standard_names,
     }
 
     if user_profile.plotCharts:

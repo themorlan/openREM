@@ -57,6 +57,7 @@ from .models import (
     CommonVariables,
     OpenSkinSafeList,
     StandardNames,
+    StandardNameSettings,
     GeneralStudyModuleAttr,
     CtIrradiationEventData,
     IrradEventXRayData,
@@ -1228,6 +1229,23 @@ class StandardNameFormRF(forms.ModelForm):
         }
 
 
+class StandardNameSettingsForm(forms.ModelForm):
+    """Form for configuring whether standard names are shown / used"""
+
+    def __init__(self, *args, **kwargs):
+        super(StandardNameSettingsForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_class = "form-horizontal"
+        self.helper.layout = Layout(
+            Div("enable_standard_names"),
+            FormActions(Submit("submit", "Submit")),
+        )
+
+    class Meta(object):
+        model = StandardNameSettings
+        fields = ["enable_standard_names"]
+
+
 class SkinDoseMapCalcSettingsForm(forms.ModelForm):
     """Form for configuring whether skin dose maps are shown / calculated"""
 
@@ -1237,7 +1255,7 @@ class SkinDoseMapCalcSettingsForm(forms.ModelForm):
         self.helper.form_class = "form-horizontal"
         self.helper.layout = Layout(
             Div("enable_skin_dose_maps", "calc_on_import", "allow_safelist_modify"),
-            FormActions(Submit("submit", "submit")),
+            FormActions(Submit("submit", "Submit")),
         )
 
     class Meta(object):

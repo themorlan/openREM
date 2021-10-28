@@ -75,6 +75,7 @@ from .forms import (
     StandardNameFormDX,
     StandardNameFormMG,
     StandardNameFormRF,
+    StandardNameSettingsForm,
 )
 from .models import (
     AccumIntegratedProjRadiogDose,
@@ -98,6 +99,7 @@ from .models import (
     create_user_profile,
     CommonVariables,
     StandardNames,
+    StandardNameSettings,
 )
 from .tools.get_values import get_keys_by_value
 from .tools.hash_id import hash_id
@@ -3076,3 +3078,40 @@ def standard_name_update(request, std_name_pk=None, modality=None):
     else:
         messages.error(request, "Incorrect attempt to update standard name.")
         return redirect(reverse_lazy("standard_names_view"))
+
+
+class StandardNameSettingsUpdate(UpdateView):  # pylint: disable=unused-variable
+    """UpdateView to update the standard patient name settings"""
+
+    try:
+        StandardNameSettings.get_solo()  # will create item if it doesn't exist
+    except (AvoidDataMigrationErrorPostgres, AvoidDataMigrationErrorSQLite):
+        pass
+
+    model = StandardNameSettings
+    form_class = StandardNameSettingsForm
+
+    def get_context_data(self, **context):
+        context = super(StandardNameSettingsUpdate, self).get_context_data(**context)
+        admin = {
+            "openremversion": __version__,
+            "docsversion": __docs_version__,
+        }
+        for group in self.request.user.groups.all():
+            admin[group.name] = True
+        context["admin"] = admin
+        return context
+
+    def form_valid(self, form):
+        if form.has_changed():
+            if form.cleaned_data["enable_standard_names"]:
+                messages.success(self.request, "Standard name mapping enabled")
+            else:
+                messages.info(self.request, "Standard name mapping disabled")
+            return super(StandardNameSettingsUpdate, self).form_valid(form)
+        else:
+            status_word = "disabled"
+            if form.cleaned_data["enable_standard_names"]:
+                status_word = "enabled"
+            messages.info(self.request, "No changes made - standard name mapping remains " + status_word)
+            return redirect(reverse_lazy("standard_name_settings", kwargs={"pk": 1}))

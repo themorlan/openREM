@@ -144,6 +144,15 @@
                     <tr><th scope="col" class="nowrap">Accession number</th></tr>
                 </table>
             </th>
+        {% if showStandardNames %}
+            <th>
+                <table aria-describedby="Standard study description, procedure and requested procedure names">
+                    <tr><th scope="col" class="nowrap">Standard study name</th></tr>
+                    <tr><th scope="col" class="nowrap">Standard procedure name</th></tr>
+                    <tr><th scope="col" class="nowrap">Standard requested name</th></tr>
+                </table>
+            </th>
+        {% endif %}
             <th scope="col">Number of events</th>
             <th scope="col">Total DLP (mGy.cm)</th>
             {% if admin.admingroup %}
@@ -183,6 +192,17 @@
                         </table>
                     </a>
                 </td>
+            {% if showStandardNames %}
+                <td>
+                    <a href="{% url 'ct_detail_view' pk=exam.id %}">
+                        <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="Standard study description, procedure and requested procedure names">
+                            <tr><td class="nowrap">{{ exam.standard_study_name }}</td></tr>
+                            <tr><td class="nowrap">{{ exam.standard_procedure_name }}</td></tr>
+                            <tr><td class="nowrap">{{ exam.standard_request_name }}</td></tr>
+                        </table>
+                    </a>
+                </td>
+            {% endif %}
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
                         {{ exam.number_of_events }}
