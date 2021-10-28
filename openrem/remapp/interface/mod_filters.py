@@ -685,9 +685,9 @@ def ct_acq_filter(filters, pid=False):
         StandardNameSettings.objects.create()
     enable_standard_names = StandardNameSettings.objects.values("enable_standard_names",)[0]
 
-    studies = None
+    studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT")
     if enable_standard_names:
-        studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT").annotate(
+        studies = studies.annotate(
             standard_request_name=Subquery(
                 StandardNames.objects.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
             )
@@ -700,8 +700,6 @@ def ct_acq_filter(filters, pid=False):
                 StandardNames.objects.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values("standard_name")
             )
         )
-    else:
-        studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT")
 
     if filteredInclude:
         studies = studies.filter(study_instance_uid__in=filteredInclude)
@@ -1126,11 +1124,32 @@ def dx_acq_filter(filters, pid=False):
             "projection_xray_radiation_dose__general_study_module_attributes__study_instance_uid"
         ).distinct()
 
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values("enable_standard_names",)[0]
+
     studies = GeneralStudyModuleAttr.objects.filter(
         Q(modality_type__exact="DX")
         | Q(modality_type__exact="CR")
         | Q(modality_type__exact="PX")
     )
+    if enable_standard_names:
+        studies = studies.annotate(
+            standard_request_name=Subquery(
+                StandardNames.objects.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
+            )
+        ).annotate(
+            standard_study_name=Subquery(
+                StandardNames.objects.filter(study_description=OuterRef("study_description")).values("standard_name")
+            )
+        ).annotate(
+            standard_procedure_name=Subquery(
+                StandardNames.objects.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values("standard_name")
+            )
+        )
 
     if filteredInclude:
         studies = studies.filter(study_instance_uid__in=filteredInclude)

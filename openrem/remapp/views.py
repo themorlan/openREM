@@ -166,6 +166,13 @@ def dx_summary_list_filter(request):
             form_data = {"itemsPerPage": user_profile.itemsPerPage}
             items_per_page_form = itemsPerPageForm(form_data)
 
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
     admin = {
         "openremversion": __version__,
         "docsversion": __docs_version__,
@@ -189,6 +196,7 @@ def dx_summary_list_filter(request):
         "admin": admin,
         "chartOptionsForm": chart_options_form,
         "itemsPerPageForm": items_per_page_form,
+        "showStandardNames": enable_standard_names,
     }
 
     if user_profile.plotCharts:
@@ -203,8 +211,34 @@ def dx_summary_list_filter(request):
 def dx_detail_view(request, pk=None):
     """Detail view for a DX study"""
 
+    # Obtain the system-level enable_standard_names setting
     try:
-        study = GeneralStudyModuleAttr.objects.get(pk=pk)
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
+    try:
+        if enable_standard_names:
+            study = GeneralStudyModuleAttr.objects.filter(pk=pk).annotate(
+                standard_request_name=Subquery(
+                    StandardNames.objects.filter(
+                        requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values(
+                        "standard_name")
+                )
+            ).annotate(
+                standard_study_name=Subquery(
+                    StandardNames.objects.filter(study_description=OuterRef("study_description")).values(
+                        "standard_name")
+                )
+            ).annotate(
+                standard_procedure_name=Subquery(
+                    StandardNames.objects.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values(
+                        "standard_name")
+                )
+            )[0]
+        else:
+            study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except:
         messages.error(request, "That study was not found")
         return redirect(reverse_lazy("dx_summary_list_filter"))
@@ -226,6 +260,16 @@ def dx_detail_view(request, pk=None):
         "patient_orientation_modifier_cid",
         "acquisition_plane",
     ).all()
+
+    if enable_standard_names:
+        events_all = events_all.annotate(
+                standard_acquisition_protocol=Subquery(
+                    StandardNames.objects.filter(
+                        acquisition_protocol=OuterRef("acquisition_protocol")
+                    ).values("standard_name")
+                )
+        )
+
     accum_set = projection_set.accumxraydose_set.all()
     # accum_integrated = projection_set.accumxraydose_set.get().accumintegratedprojradiogdose_set.get()
 
@@ -238,6 +282,7 @@ def dx_detail_view(request, pk=None):
             "projection_set": projection_set,
             "events_all": events_all,
             "accum_set": accum_set,
+            "showStandardNames": enable_standard_names,
         },
     )
 
@@ -758,26 +803,21 @@ def ct_detail_view(request, pk=None):
         messages.error(request, "That study was not found")
         return redirect(reverse_lazy("ct_summary_list_filter"))
 
-    events_all = None
+    events_all = (
+        study.ctradiationdose_set.get()
+            .ctirradiationeventdata_set.select_related(
+            "ct_acquisition_type", "ctdiw_phantom_type"
+        )
+            .order_by("pk")
+    )
+
     if enable_standard_names:
-        events_all = (
-            study.ctradiationdose_set.get()
-                .ctirradiationeventdata_set.select_related("ct_acquisition_type", "ctdiw_phantom_type")
-                .annotate(
+        events_all = events_all.annotate(
                 standard_acquisition_protocol=Subquery(
                     StandardNames.objects.filter(
                         acquisition_protocol=OuterRef("acquisition_protocol")
                     ).values("standard_name")
                 )
-            ).order_by("pk")
-        )
-    else:
-        events_all = (
-            study.ctradiationdose_set.get()
-            .ctirradiationeventdata_set.select_related(
-                "ct_acquisition_type", "ctdiw_phantom_type"
-            )
-            .order_by("pk")
         )
 
     admin = {

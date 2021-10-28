@@ -147,20 +147,21 @@
             <th scope="col">Date</th>
             <th scope="col">
                 <table aria-describedby="Study description, procedure, requested procedure and accession number">
-                    <tr>
-                        <td class="nowrap">Study description</td>
-                    </tr>
-                    <tr>
-                        <td class="nowrap">Procedure</td>
-                    </tr>
-                    <tr>
-                        <td class="nowrap">Requested Procedure</td>
-                    </tr>
-                    <tr>
-                        <td class="nowrap">Accession number</td>
-                    </tr>
+                    <tr><td class="nowrap">Study description</td></tr>
+                    <tr><td class="nowrap">Procedure</td></tr>
+                    <tr><td class="nowrap">Requested Procedure</td></tr>
+                    <tr><td class="nowrap">Accession number</td></tr>
                 </table>
             </th>
+        {% if showStandardNames %}
+            <th>
+                <table aria-describedby="Standard study description, procedure and requested procedure names">
+                    <tr><th scope="col" class="nowrap">Standard study name</th></tr>
+                    <tr><th scope="col" class="nowrap">Standard procedure name</th></tr>
+                    <tr><th scope="col" class="nowrap">Standard requested name</th></tr>
+                </table>
+            </th>
+        {% endif %}
             <th scope="col">Number of events</th>
             <th scope="col">Total DAP (cGy.cm<sup>2</sup>)</th>
             {% if admin.admingroup %}
@@ -198,23 +199,26 @@
                             <td>
                                 <a href="{% url 'dx_detail_view' pk=exam.id %}">
                                     <table onclick="window.location='{% url 'dx_detail_view' pk=exam.id %}';" aria-describedby="Study description, procedure and requested procedure name">
-                                        <tr>
-                                            <td class="nowrap">{{ exam.study_description }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="nowrap">{{ exam.procedure_code_meaning }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="nowrap">{{ exam.requested_procedure_code_meaning }}</td>
-                                        </tr>
+                                        <tr><td class="nowrap">{{ exam.study_description }}</td></tr>
+                                        <tr><td class="nowrap">{{ exam.procedure_code_meaning }}</td></tr>
+                                        <tr><td class="nowrap">{{ exam.requested_procedure_code_meaning }}</td></tr>
                                         {% if not exam.accession_hashed %}
-                                            <tr>
-                                                <td class="nowrap">{{ exam.accession_number }}</td>
-                                            </tr>
+                                            <tr><td class="nowrap">{{ exam.accession_number }}</td></tr>
                                         {% endif %}
                                     </table>
                                 </a>
                             </td>
+                        {% if showStandardNames %}
+                            <td>
+                                <a href="{% url 'dx_detail_view' pk=exam.id %}">
+                                    <table onclick="window.location='{% url 'dx_detail_view' pk=exam.id %}';" aria-describedby="Standard study description, procedure and requested procedure names">
+                                        <tr><td class="nowrap">{{ exam.standard_study_name }}</td></tr>
+                                        <tr><td class="nowrap">{{ exam.standard_procedure_name }}</td></tr>
+                                        <tr><td class="nowrap">{{ exam.standard_request_name }}</td></tr>
+                                    </table>
+                                </a>
+                            </td>
+                        {% endif %}
                             <td>
                                 <a href="{% url 'dx_detail_view' pk=exam.id %}">
                 {% if exam.number_of_planes == 2 %}
