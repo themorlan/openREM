@@ -1025,7 +1025,43 @@ class DicomStoreForm(forms.ModelForm):
             ] = "Port: set to the same as the DICOM_PORT setting in docker-compose.yml"
 
 
-class StandardNameFormCT(forms.ModelForm):
+class StandardNameFormBase(forms.ModelForm):
+    """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
+
+    class Meta(object):
+        model = StandardNames
+        fields = ["standard_name", "modality", "study_description", "requested_procedure_code_meaning", "procedure_code_meaning", "acquisition_protocol"]
+        widgets = {
+            "standard_name": forms.TextInput,
+            "modality": forms.HiddenInput,
+        }
+
+    def clean_study_description(self):
+        if self.cleaned_data["study_description"] == "":
+            return None
+        else:
+            return self.cleaned_data["study_description"]
+
+    def clean_requested_procedure_code_meaning(self):
+        if self.cleaned_data["requested_procedure_code_meaning"] == "":
+            return None
+        else:
+            return self.cleaned_data["requested_procedure_code_meaning"]
+
+    def clean_procedure_code_meaning(self):
+        if self.cleaned_data["procedure_code_meaning"] == "":
+            return None
+        else:
+            return self.cleaned_data["procedure_code_meaning"]
+
+    def clean_acquisition_protocol(self):
+        if self.cleaned_data["acquisition_protocol"] == "":
+            return None
+        else:
+            return self.cleaned_data["acquisition_protocol"]
+
+
+class StandardNameFormCT(StandardNameFormBase):
     """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
 
     def __init__(self, *args, **kwargs):
@@ -1034,72 +1070,31 @@ class StandardNameFormCT(forms.ModelForm):
 
         all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT")
 
-        query = all_studies.values_list("study_description", flat=True).distinct().order_by("study_description")
+        field_names = ["study_description", "requested_procedure_code_meaning", "procedure_code_meaning"]
+
+        for field_name in field_names:
+            # Exclude items already in the standard names entries
+            items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+            query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
+            query_choices = [('', 'None')] + [(item, item) for item in query]
+            self.fields[field_name] = forms.ChoiceField(
+                choices=query_choices,
+                required=False,
+                widget=forms.Select(),
+            )
+
+        field_name = "acquisition_protocol"
+        items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+        query = CtIrradiationEventData.objects.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
-        self.fields["study_description"] = forms.ChoiceField(
+        self.fields[field_name] = forms.ChoiceField(
             choices=query_choices,
             required=False,
             widget=forms.Select(),
         )
 
-        query = all_studies.values_list("requested_procedure_code_meaning", flat=True).distinct().order_by("requested_procedure_code_meaning")
-        query_choices = [('', 'None')] + [(item, item) for item in query]
-        self.fields["requested_procedure_code_meaning"] = forms.ChoiceField(
-            choices=query_choices,
-            required=False,
-            widget=forms.Select(),
-        )
 
-        query = all_studies.values_list("procedure_code_meaning", flat=True).distinct().order_by("procedure_code_meaning")
-        query_choices = [('', 'None')] + [(item, item) for item in query]
-        self.fields["procedure_code_meaning"] = forms.ChoiceField(
-            choices=query_choices,
-            required=False,
-            widget=forms.Select(),
-        )
-
-        query = CtIrradiationEventData.objects.values_list("acquisition_protocol", flat=True).distinct().order_by("acquisition_protocol")
-        query_choices = [('', 'None')] + [(item, item) for item in query]
-        self.fields["acquisition_protocol"] = forms.ChoiceField(
-            choices=query_choices,
-            required=False,
-            widget=forms.Select(),
-        )
-
-    class Meta(object):
-        model = StandardNames
-        fields = ["standard_name", "modality", "study_description", "requested_procedure_code_meaning", "procedure_code_meaning", "acquisition_protocol"]
-        widgets = {
-            "standard_name": forms.TextInput,
-            "modality": forms.HiddenInput,
-        }
-
-    def clean_study_description(self):
-        if self.cleaned_data["study_description"] == "":
-            return None
-        else:
-            return self.cleaned_data["study_description"]
-
-    def clean_requested_procedure_code_meaning(self):
-        if self.cleaned_data["requested_procedure_code_meaning"] == "":
-            return None
-        else:
-            return self.cleaned_data["requested_procedure_code_meaning"]
-
-    def clean_procedure_code_meaning(self):
-        if self.cleaned_data["procedure_code_meaning"] == "":
-            return None
-        else:
-            return self.cleaned_data["procedure_code_meaning"]
-
-    def clean_acquisition_protocol(self):
-        if self.cleaned_data["acquisition_protocol"] == "":
-            return None
-        else:
-            return self.cleaned_data["acquisition_protocol"]
-
-
-class StandardNameFormDX(forms.ModelForm):
+class StandardNameFormDX(StandardNameFormBase):
     """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
 
     def __init__(self, *args, **kwargs):
@@ -1108,74 +1103,33 @@ class StandardNameFormDX(forms.ModelForm):
 
         all_studies = GeneralStudyModuleAttr.objects.filter(Q(modality_type__iexact="DX") | Q(modality_type__iexact="CR") | Q(modality_type__iexact="PX"))
 
-        query = all_studies.values_list("study_description", flat=True).distinct().order_by("study_description")
-        query_choices = [('', 'None')] + [(item, item) for item in query]
-        self.fields["study_description"] = forms.ChoiceField(
-            choices=query_choices,
-            required=False,
-            widget=forms.Select(),
-        )
+        field_names = ["study_description", "requested_procedure_code_meaning", "procedure_code_meaning"]
 
-        query = all_studies.values_list("requested_procedure_code_meaning", flat=True).distinct().order_by("requested_procedure_code_meaning")
-        query_choices = [('', 'None')] + [(item, item) for item in query]
-        self.fields["requested_procedure_code_meaning"] = forms.ChoiceField(
-            choices=query_choices,
-            required=False,
-            widget=forms.Select(),
-        )
-
-        query = all_studies.values_list("procedure_code_meaning", flat=True).distinct().order_by("procedure_code_meaning")
-        query_choices = [('', 'None')] + [(item, item) for item in query]
-        self.fields["procedure_code_meaning"] = forms.ChoiceField(
-            choices=query_choices,
-            required=False,
-            widget=forms.Select(),
-        )
+        for field_name in field_names:
+            # Exclude items already in the standard names entries
+            items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+            query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
+            query_choices = [('', 'None')] + [(item, item) for item in query]
+            self.fields[field_name] = forms.ChoiceField(
+                choices=query_choices,
+                required=False,
+                widget=forms.Select(),
+            )
 
         q = ["DX", "CR", "PX"]
         q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
-        query = IrradEventXRayData.objects.filter(q_criteria).values_list("acquisition_protocol", flat=True).distinct().order_by("acquisition_protocol")
+        field_name = "acquisition_protocol"
+        items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+        query = IrradEventXRayData.objects.filter(q_criteria).values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
-        self.fields["acquisition_protocol"] = forms.ChoiceField(
+        self.fields[field_name] = forms.ChoiceField(
             choices=query_choices,
             required=False,
             widget=forms.Select(),
         )
 
-    class Meta(object):
-        model = StandardNames
-        fields = ["standard_name", "modality", "study_description", "requested_procedure_code_meaning", "procedure_code_meaning", "acquisition_protocol"]
-        widgets = {
-            "standard_name": forms.TextInput,
-            "modality": forms.HiddenInput,
-        }
 
-    def clean_study_description(self):
-        if self.cleaned_data["study_description"] == "":
-            return None
-        else:
-            return self.cleaned_data["study_description"]
-
-    def clean_requested_procedure_code_meaning(self):
-        if self.cleaned_data["requested_procedure_code_meaning"] == "":
-            return None
-        else:
-            return self.cleaned_data["requested_procedure_code_meaning"]
-
-    def clean_procedure_code_meaning(self):
-        if self.cleaned_data["procedure_code_meaning"] == "":
-            return None
-        else:
-            return self.cleaned_data["procedure_code_meaning"]
-
-    def clean_acquisition_protocol(self):
-        if self.cleaned_data["acquisition_protocol"] == "":
-            return None
-        else:
-            return self.cleaned_data["acquisition_protocol"]
-
-
-class StandardNameFormMG(forms.ModelForm):
+class StandardNameFormMG(StandardNameFormBase):
     """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
 
     def __init__(self, *args, **kwargs):
@@ -1184,74 +1138,33 @@ class StandardNameFormMG(forms.ModelForm):
 
         all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="MG")
 
-        query = all_studies.values_list("study_description", flat=True).distinct().order_by("study_description")
-        query_choices = [('', 'None')] + [(item, item) for item in query]
-        self.fields["study_description"] = forms.ChoiceField(
-            choices=query_choices,
-            required=False,
-            widget=forms.Select(),
-        )
+        field_names = ["study_description", "requested_procedure_code_meaning", "procedure_code_meaning"]
 
-        query = all_studies.values_list("requested_procedure_code_meaning", flat=True).distinct().order_by("requested_procedure_code_meaning")
-        query_choices = [('', 'None')] + [(item, item) for item in query]
-        self.fields["requested_procedure_code_meaning"] = forms.ChoiceField(
-            choices=query_choices,
-            required=False,
-            widget=forms.Select(),
-        )
-
-        query = all_studies.values_list("procedure_code_meaning", flat=True).distinct().order_by("procedure_code_meaning")
-        query_choices = [('', 'None')] + [(item, item) for item in query]
-        self.fields["procedure_code_meaning"] = forms.ChoiceField(
-            choices=query_choices,
-            required=False,
-            widget=forms.Select(),
-        )
+        for field_name in field_names:
+            # Exclude items already in the standard names entries
+            items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+            query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
+            query_choices = [('', 'None')] + [(item, item) for item in query]
+            self.fields[field_name] = forms.ChoiceField(
+                choices=query_choices,
+                required=False,
+                widget=forms.Select(),
+            )
 
         q = ["MG"]
         q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
-        query = IrradEventXRayData.objects.filter(q_criteria).values_list("acquisition_protocol", flat=True).distinct().order_by("acquisition_protocol")
+        field_name = "acquisition_protocol"
+        items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+        query = IrradEventXRayData.objects.filter(q_criteria).values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
-        self.fields["acquisition_protocol"] = forms.ChoiceField(
+        self.fields[field_name] = forms.ChoiceField(
             choices=query_choices,
             required=False,
             widget=forms.Select(),
         )
 
-    class Meta(object):
-        model = StandardNames
-        fields = ["standard_name", "modality", "study_description", "requested_procedure_code_meaning", "procedure_code_meaning", "acquisition_protocol"]
-        widgets = {
-            "standard_name": forms.TextInput,
-            "modality": forms.HiddenInput,
-        }
 
-    def clean_study_description(self):
-        if self.cleaned_data["study_description"] == "":
-            return None
-        else:
-            return self.cleaned_data["study_description"]
-
-    def clean_requested_procedure_code_meaning(self):
-        if self.cleaned_data["requested_procedure_code_meaning"] == "":
-            return None
-        else:
-            return self.cleaned_data["requested_procedure_code_meaning"]
-
-    def clean_procedure_code_meaning(self):
-        if self.cleaned_data["procedure_code_meaning"] == "":
-            return None
-        else:
-            return self.cleaned_data["procedure_code_meaning"]
-
-    def clean_acquisition_protocol(self):
-        if self.cleaned_data["acquisition_protocol"] == "":
-            return None
-        else:
-            return self.cleaned_data["acquisition_protocol"]
-
-
-class StandardNameFormRF(forms.ModelForm):
+class StandardNameFormRF(StandardNameFormBase):
     """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
 
     def __init__(self, *args, **kwargs):
@@ -1260,71 +1173,30 @@ class StandardNameFormRF(forms.ModelForm):
 
         all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="RF")
 
-        query = all_studies.values_list("study_description", flat=True).distinct().order_by("study_description")
-        query_choices = [('', 'None')] + [(item, item) for item in query]
-        self.fields["study_description"] = forms.ChoiceField(
-            choices=query_choices,
-            required=False,
-            widget=forms.Select(),
-        )
+        field_names = ["study_description", "requested_procedure_code_meaning", "procedure_code_meaning"]
 
-        query = all_studies.values_list("requested_procedure_code_meaning", flat=True).distinct().order_by("requested_procedure_code_meaning")
-        query_choices = [('', 'None')] + [(item, item) for item in query]
-        self.fields["requested_procedure_code_meaning"] = forms.ChoiceField(
-            choices=query_choices,
-            required=False,
-            widget=forms.Select(),
-        )
-
-        query = all_studies.values_list("procedure_code_meaning", flat=True).distinct().order_by("procedure_code_meaning")
-        query_choices = [('', 'None')] + [(item, item) for item in query]
-        self.fields["procedure_code_meaning"] = forms.ChoiceField(
-            choices=query_choices,
-            required=False,
-            widget=forms.Select(),
-        )
+        for field_name in field_names:
+            # Exclude items already in the standard names entries
+            items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+            query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
+            query_choices = [('', 'None')] + [(item, item) for item in query]
+            self.fields[field_name] = forms.ChoiceField(
+                choices=query_choices,
+                required=False,
+                widget=forms.Select(),
+            )
 
         q = ["RF"]
         q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
-        query = IrradEventXRayData.objects.filter(q_criteria).values_list("acquisition_protocol", flat=True).distinct().order_by("acquisition_protocol")
+        field_name = "acquisition_protocol"
+        items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+        query = IrradEventXRayData.objects.filter(q_criteria).values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
-        self.fields["acquisition_protocol"] = forms.ChoiceField(
+        self.fields[field_name] = forms.ChoiceField(
             choices=query_choices,
             required=False,
             widget=forms.Select(),
         )
-
-    class Meta(object):
-        model = StandardNames
-        fields = ["standard_name", "modality", "study_description", "requested_procedure_code_meaning", "procedure_code_meaning", "acquisition_protocol"]
-        widgets = {
-            "standard_name": forms.TextInput,
-            "modality": forms.HiddenInput,
-        }
-
-    def clean_study_description(self):
-        if self.cleaned_data["study_description"] == "":
-            return None
-        else:
-            return self.cleaned_data["study_description"]
-
-    def clean_requested_procedure_code_meaning(self):
-        if self.cleaned_data["requested_procedure_code_meaning"] == "":
-            return None
-        else:
-            return self.cleaned_data["requested_procedure_code_meaning"]
-
-    def clean_procedure_code_meaning(self):
-        if self.cleaned_data["procedure_code_meaning"] == "":
-            return None
-        else:
-            return self.cleaned_data["procedure_code_meaning"]
-
-    def clean_acquisition_protocol(self):
-        if self.cleaned_data["acquisition_protocol"] == "":
-            return None
-        else:
-            return self.cleaned_data["acquisition_protocol"]
 
 
 class StandardNameSettingsForm(forms.ModelForm):
