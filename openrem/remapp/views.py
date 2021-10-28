@@ -41,7 +41,13 @@ from decimal import Decimal
 import pickle  # nosec
 from collections import OrderedDict
 
-from django.db.models import Sum, Q, Min
+from django.db.models import (
+    Sum,
+    Q,
+    Min,
+    Subquery,
+    OuterRef,
+)
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
@@ -94,6 +100,7 @@ from .models import (
     HomePageAdminSettings,
     UpgradeStatus,
     StandardNameSettings,
+    StandardNames,
 )
 from .version import __version__, __docs_version__, __skin_map_version__
 
@@ -674,17 +681,17 @@ def ct_summary_list_filter(request):
             form_data = {"itemsPerPage": user_profile.itemsPerPage}
             items_per_page_form = itemsPerPageForm(form_data)
 
-    admin = {
-        "openremversion": __version__,
-        "docsversion": __docs_version__,
-    }
-
     # Obtain the system-level enable_standard_names setting
     try:
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
     enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
+    admin = {
+        "openremversion": __version__,
+        "docsversion": __docs_version__,
+    }
 
     for group in request.user.groups.all():
         admin[group.name] = True
@@ -718,19 +725,60 @@ def ct_summary_list_filter(request):
 @login_required
 def ct_detail_view(request, pk=None):
     """Detail view for a CT study"""
+
+    # Obtain the system-level enable_standard_names setting
     try:
-        study = GeneralStudyModuleAttr.objects.get(pk=pk)
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
+    try:
+        if enable_standard_names:
+            study = GeneralStudyModuleAttr.objects.filter(pk=pk).annotate(
+                standard_request_name=Subquery(
+                    StandardNames.objects.filter(
+                        requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values(
+                        "standard_name")
+                )
+            ).annotate(
+                standard_study_name=Subquery(
+                    StandardNames.objects.filter(study_description=OuterRef("study_description")).values(
+                        "standard_name")
+                )
+            ).annotate(
+                standard_procedure_name=Subquery(
+                    StandardNames.objects.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values(
+                        "standard_name")
+                )
+            )[0]
+        else:
+            study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
         messages.error(request, "That study was not found")
         return redirect(reverse_lazy("ct_summary_list_filter"))
 
-    events_all = (
-        study.ctradiationdose_set.get()
-        .ctirradiationeventdata_set.select_related(
-            "ct_acquisition_type", "ctdiw_phantom_type"
+    events_all = None
+    if enable_standard_names:
+        events_all = (
+            study.ctradiationdose_set.get()
+                .ctirradiationeventdata_set.select_related("ct_acquisition_type", "ctdiw_phantom_type")
+                .annotate(
+                standard_acquisition_protocol=Subquery(
+                    StandardNames.objects.filter(
+                        acquisition_protocol=OuterRef("acquisition_protocol")
+                    ).values("standard_name")
+                )
+            ).order_by("pk")
         )
-        .order_by("pk")
-    )
+    else:
+        events_all = (
+            study.ctradiationdose_set.get()
+            .ctirradiationeventdata_set.select_related(
+                "ct_acquisition_type", "ctdiw_phantom_type"
+            )
+            .order_by("pk")
+        )
 
     admin = {
         "openremversion": __version__,
@@ -743,7 +791,12 @@ def ct_detail_view(request, pk=None):
     return render(
         request,
         "remapp/ctdetail.html",
-        {"generalstudymoduleattr": study, "admin": admin, "events_all": events_all},
+        {
+            "generalstudymoduleattr": study,
+            "admin": admin,
+            "events_all": events_all,
+            "showStandardNames": enable_standard_names,
+        },
     )
 
 

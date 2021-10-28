@@ -1032,7 +1032,9 @@ class StandardNameFormCT(forms.ModelForm):
         super(StandardNameFormCT, self).__init__(*args, **kwargs)
         self.fields["modality"].initial = "CT"
 
-        query = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT").values_list("study_description", flat=True).distinct()
+        all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT")
+
+        query = all_studies.values_list("study_description", flat=True).distinct().order_by("study_description")
         query_choices = [('', 'None')] + [(item, item) for item in query]
         self.fields["study_description"] = forms.ChoiceField(
             choices=query_choices,
@@ -1040,7 +1042,7 @@ class StandardNameFormCT(forms.ModelForm):
             widget=forms.Select(),
         )
 
-        query = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT").values_list("requested_procedure_code_meaning", flat=True).distinct()
+        query = all_studies.values_list("requested_procedure_code_meaning", flat=True).distinct().order_by("requested_procedure_code_meaning")
         query_choices = [('', 'None')] + [(item, item) for item in query]
         self.fields["requested_procedure_code_meaning"] = forms.ChoiceField(
             choices=query_choices,
@@ -1048,7 +1050,7 @@ class StandardNameFormCT(forms.ModelForm):
             widget=forms.Select(),
         )
 
-        query = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT").values_list("procedure_code_meaning", flat=True).distinct()
+        query = all_studies.values_list("procedure_code_meaning", flat=True).distinct().order_by("procedure_code_meaning")
         query_choices = [('', 'None')] + [(item, item) for item in query]
         self.fields["procedure_code_meaning"] = forms.ChoiceField(
             choices=query_choices,
@@ -1056,7 +1058,7 @@ class StandardNameFormCT(forms.ModelForm):
             widget=forms.Select(),
         )
 
-        query = CtIrradiationEventData.objects.values_list("acquisition_protocol", flat=True).distinct()
+        query = CtIrradiationEventData.objects.values_list("acquisition_protocol", flat=True).distinct().order_by("acquisition_protocol")
         query_choices = [('', 'None')] + [(item, item) for item in query]
         self.fields["acquisition_protocol"] = forms.ChoiceField(
             choices=query_choices,
@@ -1071,6 +1073,30 @@ class StandardNameFormCT(forms.ModelForm):
             "standard_name": forms.TextInput,
             "modality": forms.HiddenInput,
         }
+
+    def clean_study_description(self):
+        if self.cleaned_data["study_description"] == "":
+            return None
+        else:
+            return self.cleaned_data["study_description"]
+
+    def clean_requested_procedure_code_meaning(self):
+        if self.cleaned_data["requested_procedure_code_meaning"] == "":
+            return None
+        else:
+            return self.cleaned_data["requested_procedure_code_meaning"]
+
+    def clean_procedure_code_meaning(self):
+        if self.cleaned_data["procedure_code_meaning"] == "":
+            return None
+        else:
+            return self.cleaned_data["procedure_code_meaning"]
+
+    def clean_acquisition_protocol(self):
+        if self.cleaned_data["acquisition_protocol"] == "":
+            return None
+        else:
+            return self.cleaned_data["acquisition_protocol"]
 
 
 class StandardNameFormDX(forms.ModelForm):
@@ -1124,6 +1150,30 @@ class StandardNameFormDX(forms.ModelForm):
             "modality": forms.HiddenInput,
         }
 
+    def clean_study_description(self):
+        if self.cleaned_data["study_description"] == "":
+            return None
+        else:
+            return self.cleaned_data["study_description"]
+
+    def clean_requested_procedure_code_meaning(self):
+        if self.cleaned_data["requested_procedure_code_meaning"] == "":
+            return None
+        else:
+            return self.cleaned_data["requested_procedure_code_meaning"]
+
+    def clean_procedure_code_meaning(self):
+        if self.cleaned_data["procedure_code_meaning"] == "":
+            return None
+        else:
+            return self.cleaned_data["procedure_code_meaning"]
+
+    def clean_acquisition_protocol(self):
+        if self.cleaned_data["acquisition_protocol"] == "":
+            return None
+        else:
+            return self.cleaned_data["acquisition_protocol"]
+
 
 class StandardNameFormMG(forms.ModelForm):
     """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
@@ -1176,6 +1226,30 @@ class StandardNameFormMG(forms.ModelForm):
             "modality": forms.HiddenInput,
         }
 
+    def clean_study_description(self):
+        if self.cleaned_data["study_description"] == "":
+            return None
+        else:
+            return self.cleaned_data["study_description"]
+
+    def clean_requested_procedure_code_meaning(self):
+        if self.cleaned_data["requested_procedure_code_meaning"] == "":
+            return None
+        else:
+            return self.cleaned_data["requested_procedure_code_meaning"]
+
+    def clean_procedure_code_meaning(self):
+        if self.cleaned_data["procedure_code_meaning"] == "":
+            return None
+        else:
+            return self.cleaned_data["procedure_code_meaning"]
+
+    def clean_acquisition_protocol(self):
+        if self.cleaned_data["acquisition_protocol"] == "":
+            return None
+        else:
+            return self.cleaned_data["acquisition_protocol"]
+
 
 class StandardNameFormRF(forms.ModelForm):
     """Form for configuring standard names for study description, requested procedure, procedure and acquisition name"""
@@ -1227,6 +1301,30 @@ class StandardNameFormRF(forms.ModelForm):
             "standard_name": forms.TextInput,
             "modality": forms.HiddenInput,
         }
+
+    def clean_study_description(self):
+        if self.cleaned_data["study_description"] == "":
+            return None
+        else:
+            return self.cleaned_data["study_description"]
+
+    def clean_requested_procedure_code_meaning(self):
+        if self.cleaned_data["requested_procedure_code_meaning"] == "":
+            return None
+        else:
+            return self.cleaned_data["requested_procedure_code_meaning"]
+
+    def clean_procedure_code_meaning(self):
+        if self.cleaned_data["procedure_code_meaning"] == "":
+            return None
+        else:
+            return self.cleaned_data["procedure_code_meaning"]
+
+    def clean_acquisition_protocol(self):
+        if self.cleaned_data["acquisition_protocol"] == "":
+            return None
+        else:
+            return self.cleaned_data["acquisition_protocol"]
 
 
 class StandardNameSettingsForm(forms.ModelForm):
