@@ -290,19 +290,40 @@ def dx_detail_view(request, pk=None):
 @login_required
 def rf_summary_list_filter(request):
     """Obtain data for radiographic summary view"""
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values("enable_standard_names",)[0]
+
+    queryset = GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF").order_by("-study_date", "-study_time").distinct()
+
+    if enable_standard_names:
+        queryset = queryset.annotate(
+            standard_request_name=Subquery(
+                StandardNames.objects.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
+            )
+        ).annotate(
+            standard_study_name=Subquery(
+                StandardNames.objects.filter(study_description=OuterRef("study_description")).values("standard_name")
+            )
+        ).annotate(
+            standard_procedure_name=Subquery(
+                StandardNames.objects.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values("standard_name")
+            )
+        )
+
     if request.user.groups.filter(name="pidgroup"):
         f = RFFilterPlusPid(
             request.GET,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
-            .order_by("-study_date", "-study_time")
-            .distinct(),
+            queryset=queryset,
         )
     else:
         f = RFSummaryListFilter(
             request.GET,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
-            .order_by("-study_date", "-study_time")
-            .distinct(),
+            queryset=queryset,
         )
 
     try:
@@ -401,6 +422,7 @@ def rf_summary_list_filter(request):
         "chartOptionsForm": chart_options_form,
         "itemsPerPageForm": items_per_page_form,
         "alertLevels": alert_levels,
+        "showStandardNames": enable_standard_names,
     }
 
     if user_profile.plotCharts:
@@ -414,8 +436,35 @@ def rf_summary_list_filter(request):
 @login_required
 def rf_detail_view(request, pk=None):
     """Detail view for an RF study"""
+
+    # Obtain the system-level enable_standard_names setting
     try:
-        study = GeneralStudyModuleAttr.objects.get(pk=pk)
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
+    try:
+        if enable_standard_names:
+            study = GeneralStudyModuleAttr.objects.filter(pk=pk).annotate(
+                standard_request_name=Subquery(
+                    StandardNames.objects.filter(
+                        requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values(
+                        "standard_name")
+                )
+            ).annotate(
+                standard_study_name=Subquery(
+                    StandardNames.objects.filter(study_description=OuterRef("study_description")).values(
+                        "standard_name")
+                )
+            ).annotate(
+                standard_procedure_name=Subquery(
+                    StandardNames.objects.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values(
+                        "standard_name")
+                )
+            )[0]
+        else:
+            study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
         messages.error(request, "That study was not found")
         return redirect(reverse_lazy("rf_summary_list_filter"))
@@ -444,6 +493,16 @@ def rf_detail_view(request, pk=None):
         "patient_orientation_modifier_cid",
         "acquisition_plane",
     ).all()
+
+    if enable_standard_names:
+        events_all = events_all.annotate(
+                standard_acquisition_protocol=Subquery(
+                    StandardNames.objects.filter(
+                        acquisition_protocol=OuterRef("acquisition_protocol")
+                    ).values("standard_name")
+                )
+        )
+
     for dose_ds in accumxraydose_set_all_planes:
         accum_dose_ds = dose_ds.accumprojxraydose_set.get()
         try:
@@ -591,6 +650,7 @@ def rf_detail_view(request, pk=None):
             "events_all": events_all,
             "alert_levels": alert_levels,
             "studies_in_week_delta": included_studies,
+            "showStandardNames": enable_standard_names,
         },
     )
 
@@ -843,23 +903,44 @@ def ct_detail_view(request, pk=None):
 @login_required
 def mg_summary_list_filter(request):
     """Mammography data for summary view"""
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values("enable_standard_names",)[0]
+
     filter_data = request.GET.copy()
     if "page" in filter_data:
         del filter_data["page"]
 
+    queryset = GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG").order_by("-study_date", "-study_time").distinct()
+
+    if enable_standard_names:
+        queryset = queryset.annotate(
+            standard_request_name=Subquery(
+                StandardNames.objects.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
+            )
+        ).annotate(
+            standard_study_name=Subquery(
+                StandardNames.objects.filter(study_description=OuterRef("study_description")).values("standard_name")
+            )
+        ).annotate(
+            standard_procedure_name=Subquery(
+                StandardNames.objects.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values("standard_name")
+            )
+        )
+
     if request.user.groups.filter(name="pidgroup"):
         f = MGFilterPlusPid(
             filter_data,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
-            .order_by("-study_date", "-study_time")
-            .distinct(),
+            queryset=queryset,
         )
     else:
         f = MGSummaryListFilter(
             filter_data,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG")
-            .order_by("-study_date", "-study_time")
-            .distinct(),
+            queryset=queryset,
         )
 
     try:
@@ -910,6 +991,7 @@ def mg_summary_list_filter(request):
         "admin": admin,
         "chartOptionsForm": chart_options_form,
         "itemsPerPageForm": items_per_page_form,
+        "showStandardNames": enable_standard_names,
     }
 
     if user_profile.plotCharts:
@@ -923,8 +1005,35 @@ def mg_summary_list_filter(request):
 @login_required
 def mg_detail_view(request, pk=None):
     """Detail view for a CT study"""
+
+    # Obtain the system-level enable_standard_names setting
     try:
-        study = GeneralStudyModuleAttr.objects.get(pk=pk)
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
+    try:
+        if enable_standard_names:
+            study = GeneralStudyModuleAttr.objects.filter(pk=pk).annotate(
+                standard_request_name=Subquery(
+                    StandardNames.objects.filter(
+                        requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values(
+                        "standard_name")
+                )
+            ).annotate(
+                standard_study_name=Subquery(
+                    StandardNames.objects.filter(study_description=OuterRef("study_description")).values(
+                        "standard_name")
+                )
+            ).annotate(
+                standard_procedure_name=Subquery(
+                    StandardNames.objects.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values(
+                        "standard_name")
+                )
+            )[0]
+        else:
+            study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except:
         messages.error(request, "That study was not found")
         return redirect(reverse_lazy("mg_summary_list_filter"))
@@ -947,6 +1056,15 @@ def mg_detail_view(request, pk=None):
         "laterality", "image_view"
     ).all()
 
+    if enable_standard_names:
+        events_all = events_all.annotate(
+                standard_acquisition_protocol=Subquery(
+                    StandardNames.objects.filter(
+                        acquisition_protocol=OuterRef("acquisition_protocol")
+                    ).values("standard_name")
+                )
+        )
+
     return render(
         request,
         "remapp/mgdetail.html",
@@ -956,6 +1074,7 @@ def mg_detail_view(request, pk=None):
             "projection_xray_dose_set": projection_xray_dose_set,
             "accum_mammo_set": accum_mammo_set,
             "events_all": events_all,
+            "showStandardNames": enable_standard_names,
         },
     )
 

@@ -144,6 +144,15 @@
                     <tr><td class="nowrap">Accession number</td></tr>
                 </table>
             </th>
+        {% if showStandardNames %}
+            <th>
+                <table aria-describedby="Standard study description, procedure and requested procedure names">
+                    <tr><th scope="col" class="nowrap">Standard study name</th></tr>
+                    <tr><th scope="col" class="nowrap">Standard procedure name</th></tr>
+                    <tr><th scope="col" class="nowrap">Standard requested name</th></tr>
+                </table>
+            </th>
+        {% endif %}
             <th scope="col">Number of events</th>
             <th scope="col">Total DAP (cGy.cm<sup>2</sup>)</th>
             <th scope="col">Total dose at RP (Gy)</th>
@@ -214,6 +223,17 @@
                     </table>
                 </a>
             </td>
+        {% if showStandardNames %}
+            <td>
+                <a href="{% url 'rf_detail_view' pk=exam.id %}">
+                    <table onclick="window.location='{% url 'rf_detail_view' pk=exam.id %}';" aria-describedby="Standard study description, procedure and requested procedure names">
+                        <tr><td class="nowrap">{{ exam.standard_study_name }}</td></tr>
+                        <tr><td class="nowrap">{{ exam.standard_procedure_name }}</td></tr>
+                        <tr><td class="nowrap">{{ exam.standard_request_name }}</td></tr>
+                    </table>
+                </a>
+            </td>
+        {% endif %}
             <td>
                 <a href="{% url 'rf_detail_view' pk=exam.id %}">
                     {{ exam.number_of_events }}
