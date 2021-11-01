@@ -1176,8 +1176,11 @@ class StandardNameFormRF(StandardNameFormBase):
         field_names = ["study_description", "requested_procedure_code_meaning", "procedure_code_meaning"]
 
         for field_name in field_names:
-            # Exclude items already in the standard names entries
+            # Exclude items already in the standard names entries except for the current value of the field
             items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+            if field_name in self.initial:
+                items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
+
             query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
             query_choices = [('', 'None')] + [(item, item) for item in query]
             self.fields[field_name] = forms.ChoiceField(
