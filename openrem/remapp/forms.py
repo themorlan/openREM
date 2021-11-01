@@ -1070,27 +1070,33 @@ class StandardNameFormCT(StandardNameFormBase):
 
         all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT")
 
-        field_names = ["study_description", "requested_procedure_code_meaning", "procedure_code_meaning"]
+        field_names = [("study_description", "Study description"), ("requested_procedure_code_meaning", "Requested procedure name"), ("procedure_code_meaning", "Procedure name")]
 
-        for field_name in field_names:
+        for field_name, label_name in field_names:
             # Exclude items already in the standard names entries
             items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+            if field_name in self.initial:
+                items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
             query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
             query_choices = [('', 'None')] + [(item, item) for item in query]
             self.fields[field_name] = forms.ChoiceField(
                 choices=query_choices,
                 required=False,
                 widget=forms.Select(),
+                label=label_name,
             )
 
-        field_name = "acquisition_protocol"
+        field_name, label_name = ("acquisition_protocol", "Acquisition protocol name")
         items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+        if field_name in self.initial:
+            items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
         query = CtIrradiationEventData.objects.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
         self.fields[field_name] = forms.ChoiceField(
             choices=query_choices,
             required=False,
             widget=forms.Select(),
+            label=label_name,
         )
 
 
@@ -1103,29 +1109,35 @@ class StandardNameFormDX(StandardNameFormBase):
 
         all_studies = GeneralStudyModuleAttr.objects.filter(Q(modality_type__iexact="DX") | Q(modality_type__iexact="CR") | Q(modality_type__iexact="PX"))
 
-        field_names = ["study_description", "requested_procedure_code_meaning", "procedure_code_meaning"]
+        field_names = [("study_description", "Study description"), ("requested_procedure_code_meaning", "Requested procedure name"), ("procedure_code_meaning", "Procedure name")]
 
-        for field_name in field_names:
+        for field_name, label_name in field_names:
             # Exclude items already in the standard names entries
             items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+            if field_name in self.initial:
+                items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
             query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
             query_choices = [('', 'None')] + [(item, item) for item in query]
             self.fields[field_name] = forms.ChoiceField(
                 choices=query_choices,
                 required=False,
                 widget=forms.Select(),
+                label=label_name
             )
 
         q = ["DX", "CR", "PX"]
         q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
-        field_name = "acquisition_protocol"
+        field_name, label_name = ("acquisition_protocol", "Acquisition protocol name")
         items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+        if field_name in self.initial:
+            items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
         query = IrradEventXRayData.objects.filter(q_criteria).values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
         self.fields[field_name] = forms.ChoiceField(
             choices=query_choices,
             required=False,
             widget=forms.Select(),
+            label=label_name
         )
 
 
@@ -1138,29 +1150,35 @@ class StandardNameFormMG(StandardNameFormBase):
 
         all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="MG")
 
-        field_names = ["study_description", "requested_procedure_code_meaning", "procedure_code_meaning"]
+        field_names = [("study_description", "Study description"), ("requested_procedure_code_meaning", "Requested procedure name"), ("procedure_code_meaning", "Procedure name")]
 
-        for field_name in field_names:
+        for field_name, label_name in field_names:
             # Exclude items already in the standard names entries
             items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+            if field_name in self.initial:
+                items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
             query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
             query_choices = [('', 'None')] + [(item, item) for item in query]
             self.fields[field_name] = forms.ChoiceField(
                 choices=query_choices,
                 required=False,
                 widget=forms.Select(),
+                label=label_name,
             )
 
         q = ["MG"]
         q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
-        field_name = "acquisition_protocol"
+        field_name, label_name = ("acquisition_protocol", "Acquisition protocol name")
         items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+        if field_name in self.initial:
+            items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
         query = IrradEventXRayData.objects.filter(q_criteria).values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
         self.fields[field_name] = forms.ChoiceField(
             choices=query_choices,
             required=False,
             widget=forms.Select(),
+            label=label_name,
         )
 
 
@@ -1173,9 +1191,9 @@ class StandardNameFormRF(StandardNameFormBase):
 
         all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="RF")
 
-        field_names = ["study_description", "requested_procedure_code_meaning", "procedure_code_meaning"]
+        field_names = [("study_description", "Study description"), ("requested_procedure_code_meaning", "Requested procedure name"), ("procedure_code_meaning", "Procedure name")]
 
-        for field_name in field_names:
+        for field_name, label_name in field_names:
             # Exclude items already in the standard names entries except for the current value of the field
             items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
             if field_name in self.initial:
@@ -1187,18 +1205,23 @@ class StandardNameFormRF(StandardNameFormBase):
                 choices=query_choices,
                 required=False,
                 widget=forms.Select(),
+                label=label_name,
             )
 
         q = ["RF"]
         q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
-        field_name = "acquisition_protocol"
+        field_name, label_name = ("acquisition_protocol", "Acquisition protocol name")
         items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+        if field_name in self.initial:
+            items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
+
         query = IrradEventXRayData.objects.filter(q_criteria).values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
         self.fields[field_name] = forms.ChoiceField(
             choices=query_choices,
             required=False,
             widget=forms.Select(),
+            label=label_name,
         )
 
 

@@ -302,7 +302,7 @@ def rf_summary_list_filter(request):
     queryset = GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF").order_by("-study_date", "-study_time").distinct()
 
     if enable_standard_names:
-        standard_names = StandardNames.objects.filter("RF")
+        standard_names = StandardNames.objects.filter(modality__iexact="RF")
         queryset = queryset.annotate(
             standard_request_name=Subquery(
                 standard_names.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
@@ -922,7 +922,7 @@ def mg_summary_list_filter(request):
     queryset = GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG").order_by("-study_date", "-study_time").distinct()
 
     if enable_standard_names:
-        standard_names = StandardNames.objects.filter("MG")
+        standard_names = StandardNames.objects.filter(modality__iexact="MG")
         queryset = queryset.annotate(
             standard_request_name=Subquery(
                 standard_names.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
@@ -1020,7 +1020,7 @@ def mg_detail_view(request, pk=None):
 
     try:
         if enable_standard_names:
-            standard_names = StandardNames.objects.filter("MG")
+            standard_names = StandardNames.objects.filter(modality__iexact="MG")
             study = GeneralStudyModuleAttr.objects.filter(pk=pk).annotate(
                 standard_request_name=Subquery(
                     standard_names.filter(

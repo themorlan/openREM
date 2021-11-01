@@ -27,6 +27,8 @@
 
                 {% if admin.admingroup %}
                 <div class="panel-body">
+                    <p>Any study description, requested procedure, procedure or acquisition protocol name already
+                       present in a standard name mapping are excluded from the drop-down options on this form.</p>
                     <form action="" method="post" class="form-horizontal" role="form">
                         {% csrf_token %}
                         <table  class="table table-bordered table-hover" aria-describedby="Add or modify a standard name">
