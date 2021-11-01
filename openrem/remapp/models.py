@@ -765,14 +765,7 @@ class StandardNames(models.Model):
         return self.standard_name
 
     def get_absolute_url(self):
-        if self.modality == "CT":
-            return reverse("add_name_ct")
-        if self.modality == "DX":
-            return reverse("add_name_dx")
-        if self.modality == "MG":
-            return reverse("add_name_mg")
-        if self.modality == "RF":
-            return reverse("add_name_rf")
+        return reverse("standard_names_view")
 
 
 class StandardNameSettings(SingletonModel):

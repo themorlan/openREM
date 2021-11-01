@@ -14,10 +14,10 @@
   {% for eachrow in name_set %}
     <tr class="clickable-row" row_name="{{ eachrow.id }}">
       <td><a style="text-decoration: none">{{ eachrow.standard_name }}</a></td>
-      <td><a style="text-decoration: none">{{ eachrow.study_description }}</a></td>
-      <td><a style="text-decoration: none">{{ eachrow.requested_procedure_code_meaning }}</a></td>
-      <td><a style="text-decoration: none">{{ eachrow.procedure_code_meaning }}</a></td>
-      <td><a style="text-decoration: none">{{ eachrow.acquisition_protocol }}</a></td>
+      <td><a style="text-decoration: none">{{ eachrow.study_description|default_if_none:"-" }}</a></td>
+      <td><a style="text-decoration: none">{{ eachrow.requested_procedure_code_meaning|default_if_none:"-" }}</a></td>
+      <td><a style="text-decoration: none">{{ eachrow.procedure_code_meaning|default_if_none:"-" }}</a></td>
+      <td><a style="text-decoration: none">{{ eachrow.acquisition_protocol|default_if_none:"-" }}</a></td>
       {% if admin.admingroup %}
           <td style="text-align: center; vertical-align: middle;"><a href="{% url 'update_name' std_name_pk=eachrow.pk modality=modality %}" role="button">Modify</a></td>
           <td style="text-align: center; vertical-align: middle;"><a href="{% url 'standard_name_delete' pk=eachrow.pk %}" role="button">Delete</a></td>

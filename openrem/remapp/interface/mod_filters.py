@@ -687,17 +687,18 @@ def ct_acq_filter(filters, pid=False):
 
     studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT")
     if enable_standard_names:
+        standard_names = StandardNames.objects.filter(modality__iexact="CT")
         studies = studies.annotate(
             standard_request_name=Subquery(
-                StandardNames.objects.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
+                standard_names.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
             )
         ).annotate(
             standard_study_name=Subquery(
-                StandardNames.objects.filter(study_description=OuterRef("study_description")).values("standard_name")
+                standard_names.filter(study_description=OuterRef("study_description")).values("standard_name")
             )
         ).annotate(
             standard_procedure_name=Subquery(
-                StandardNames.objects.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values("standard_name")
+                standard_names.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values("standard_name")
             )
         )
 
@@ -1137,17 +1138,18 @@ def dx_acq_filter(filters, pid=False):
         | Q(modality_type__exact="PX")
     )
     if enable_standard_names:
+        standard_names = StandardNames.objects.filter(modality__iexact="DX")
         studies = studies.annotate(
             standard_request_name=Subquery(
-                StandardNames.objects.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
+                standard_names.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
             )
         ).annotate(
             standard_study_name=Subquery(
-                StandardNames.objects.filter(study_description=OuterRef("study_description")).values("standard_name")
+                standard_names.filter(study_description=OuterRef("study_description")).values("standard_name")
             )
         ).annotate(
             standard_procedure_name=Subquery(
-                StandardNames.objects.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values("standard_name")
+                standard_names.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values("standard_name")
             )
         )
 

@@ -23,9 +23,9 @@
         <li>Procedure: {{ generalstudymoduleattr.procedure_code_meaning }}</li>
         <li>Requested procedure: {{ generalstudymoduleattr.requested_procedure_code_meaning }}</li>
       {% if showStandardNames %}
-        <li>Standard study name: {{ generalstudymoduleattr.standard_study_name }}</li>
-        <li>Standard procedure name: {{ generalstudymoduleattr.standard_procedure_name }}</li>
-        <li>Standard requested name: {{ generalstudymoduleattr.standard_request_name }}</li>
+        <li>Standard study name: {{ generalstudymoduleattr.standard_study_name|default_if_none:"-" }}</li>
+        <li>Standard procedure name: {{ generalstudymoduleattr.standard_procedure_name|default_if_none:"-" }}</li>
+        <li>Standard requested name: {{ generalstudymoduleattr.standard_request_name|default_if_none:"-" }}</li>
       {% endif %}
 
         <li>Patient age: {{ patientstudy.patient_age_decimal|floatformat:1 }} years</li>
@@ -116,7 +116,7 @@
                 <td>{{ event.date_time_started|time:"H:i.s" }}</td>
                 <td>{{ event.acquisition_protocol }}</td>
         {% if showStandardNames %}
-                <td rowspan="2">{{ event.standard_acquisition_protocol }}</td>
+                <td rowspan="2">{{ event.standard_acquisition_protocol|default_if_none:"-" }}</td>
         {% endif %}
                 <td>
                   {% if event.anatomical_structure %} {{ event.anatomical_structure.code_meaning }} {% endif %}

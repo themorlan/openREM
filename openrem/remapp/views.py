@@ -220,20 +220,21 @@ def dx_detail_view(request, pk=None):
 
     try:
         if enable_standard_names:
+            standard_names = StandardNames.objects.filter(modality__iexact="DX")
             study = GeneralStudyModuleAttr.objects.filter(pk=pk).annotate(
                 standard_request_name=Subquery(
-                    StandardNames.objects.filter(
+                    standard_names.filter(
                         requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values(
                         "standard_name")
                 )
             ).annotate(
                 standard_study_name=Subquery(
-                    StandardNames.objects.filter(study_description=OuterRef("study_description")).values(
+                    standard_names.filter(study_description=OuterRef("study_description")).values(
                         "standard_name")
                 )
             ).annotate(
                 standard_procedure_name=Subquery(
-                    StandardNames.objects.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values(
+                    standard_names.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values(
                         "standard_name")
                 )
             )[0]
@@ -264,7 +265,7 @@ def dx_detail_view(request, pk=None):
     if enable_standard_names:
         events_all = events_all.annotate(
                 standard_acquisition_protocol=Subquery(
-                    StandardNames.objects.filter(
+                    StandardNames.objects.filter(modality__iexact="DX").filter(
                         acquisition_protocol=OuterRef("acquisition_protocol")
                     ).values("standard_name")
                 )
@@ -301,17 +302,18 @@ def rf_summary_list_filter(request):
     queryset = GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF").order_by("-study_date", "-study_time").distinct()
 
     if enable_standard_names:
+        standard_names = StandardNames.objects.filter("RF")
         queryset = queryset.annotate(
             standard_request_name=Subquery(
-                StandardNames.objects.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
+                standard_names.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
             )
         ).annotate(
             standard_study_name=Subquery(
-                StandardNames.objects.filter(study_description=OuterRef("study_description")).values("standard_name")
+                standard_names.filter(study_description=OuterRef("study_description")).values("standard_name")
             )
         ).annotate(
             standard_procedure_name=Subquery(
-                StandardNames.objects.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values("standard_name")
+                standard_names.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values("standard_name")
             )
         )
 
@@ -446,20 +448,21 @@ def rf_detail_view(request, pk=None):
 
     try:
         if enable_standard_names:
+            standard_names = StandardNames.objects.filter(modality__iexact="RF")
             study = GeneralStudyModuleAttr.objects.filter(pk=pk).annotate(
                 standard_request_name=Subquery(
-                    StandardNames.objects.filter(
+                    standard_names.filter(
                         requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values(
                         "standard_name")
                 )
             ).annotate(
                 standard_study_name=Subquery(
-                    StandardNames.objects.filter(study_description=OuterRef("study_description")).values(
+                    standard_names.filter(study_description=OuterRef("study_description")).values(
                         "standard_name")
                 )
             ).annotate(
                 standard_procedure_name=Subquery(
-                    StandardNames.objects.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values(
+                    standard_names.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values(
                         "standard_name")
                 )
             )[0]
@@ -497,7 +500,7 @@ def rf_detail_view(request, pk=None):
     if enable_standard_names:
         events_all = events_all.annotate(
                 standard_acquisition_protocol=Subquery(
-                    StandardNames.objects.filter(
+                    StandardNames.objects.filter(modality__iexact="RF").filter(
                         acquisition_protocol=OuterRef("acquisition_protocol")
                     ).values("standard_name")
                 )
@@ -840,20 +843,21 @@ def ct_detail_view(request, pk=None):
 
     try:
         if enable_standard_names:
+            standard_names = StandardNames.objects.filter(modality__iexact="CT")
             study = GeneralStudyModuleAttr.objects.filter(pk=pk).annotate(
                 standard_request_name=Subquery(
-                    StandardNames.objects.filter(
+                    standard_names.filter(
                         requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values(
                         "standard_name")
                 )
             ).annotate(
                 standard_study_name=Subquery(
-                    StandardNames.objects.filter(study_description=OuterRef("study_description")).values(
+                    standard_names.filter(study_description=OuterRef("study_description")).values(
                         "standard_name")
                 )
             ).annotate(
                 standard_procedure_name=Subquery(
-                    StandardNames.objects.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values(
+                    standard_names.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values(
                         "standard_name")
                 )
             )[0]
@@ -874,7 +878,7 @@ def ct_detail_view(request, pk=None):
     if enable_standard_names:
         events_all = events_all.annotate(
                 standard_acquisition_protocol=Subquery(
-                    StandardNames.objects.filter(
+                    StandardNames.objects.filter(modality__iexact="CT").filter(
                         acquisition_protocol=OuterRef("acquisition_protocol")
                     ).values("standard_name")
                 )
@@ -918,17 +922,18 @@ def mg_summary_list_filter(request):
     queryset = GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG").order_by("-study_date", "-study_time").distinct()
 
     if enable_standard_names:
+        standard_names = StandardNames.objects.filter("MG")
         queryset = queryset.annotate(
             standard_request_name=Subquery(
-                StandardNames.objects.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
+                standard_names.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
             )
         ).annotate(
             standard_study_name=Subquery(
-                StandardNames.objects.filter(study_description=OuterRef("study_description")).values("standard_name")
+                standard_names.filter(study_description=OuterRef("study_description")).values("standard_name")
             )
         ).annotate(
             standard_procedure_name=Subquery(
-                StandardNames.objects.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values("standard_name")
+                standard_names.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values("standard_name")
             )
         )
 
@@ -1015,20 +1020,21 @@ def mg_detail_view(request, pk=None):
 
     try:
         if enable_standard_names:
+            standard_names = StandardNames.objects.filter("MG")
             study = GeneralStudyModuleAttr.objects.filter(pk=pk).annotate(
                 standard_request_name=Subquery(
-                    StandardNames.objects.filter(
+                    standard_names.filter(
                         requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values(
                         "standard_name")
                 )
             ).annotate(
                 standard_study_name=Subquery(
-                    StandardNames.objects.filter(study_description=OuterRef("study_description")).values(
+                    standard_names.filter(study_description=OuterRef("study_description")).values(
                         "standard_name")
                 )
             ).annotate(
                 standard_procedure_name=Subquery(
-                    StandardNames.objects.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values(
+                    standard_names.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values(
                         "standard_name")
                 )
             )[0]
@@ -1059,7 +1065,7 @@ def mg_detail_view(request, pk=None):
     if enable_standard_names:
         events_all = events_all.annotate(
                 standard_acquisition_protocol=Subquery(
-                    StandardNames.objects.filter(
+                    StandardNames.objects.filter(modality__iexact="MG").filter(
                         acquisition_protocol=OuterRef("acquisition_protocol")
                     ).values("standard_name")
                 )

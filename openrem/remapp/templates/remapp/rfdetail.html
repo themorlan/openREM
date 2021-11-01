@@ -26,9 +26,9 @@
                 <li>Procedure: {{ study.procedure_code_meaning }}</li>
                 <li>Requested procedure: {{ study.requested_procedure_code_meaning }}</li>
               {% if showStandardNames %}
-                <li>Standard study name: {{ study.standard_study_name }}</li>
-                <li>Standard procedure name: {{ study.standard_procedure_name }}</li>
-                <li>Standard requested name: {{ study.standard_request_name }}</li>
+                <li>Standard study name: {{ study.standard_study_name|default_if_none:"-" }}</li>
+                <li>Standard procedure name: {{ study.standard_procedure_name|default_if_none:"-" }}</li>
+                <li>Standard requested name: {{ study.standard_request_name|default_if_none:"-" }}</li>
               {% endif %}
                 <li>Patient age: {{ patientstudy.patient_age_decimal|floatformat:1 }} years</li>
                 <li>Patient height and weight: {{ patientstudy.patient_size|floatformat:2 }} m, {{ patientstudy.patient_weight|floatformat:1 }} kg</li>
@@ -457,7 +457,7 @@
         <td>{{ event.date_time_started|time:"H:i.s" }}</td>
         <td>{{ event.acquisition_protocol }}</td>
 {% if showStandardNames %}
-        <td>{{ event.standard_acquisition_protocol }}</td>
+        <td>{{ event.standard_acquisition_protocol|default_if_none:"-" }}</td>
 {% endif %}
         <td>{{ event.irradiation_event_type.code_meaning }}</td>
         <td>{{ sourcedata.pulse_rate|floatformat:2 }}</td>
