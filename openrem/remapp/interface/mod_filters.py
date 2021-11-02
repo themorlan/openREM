@@ -304,6 +304,13 @@ class RFSummaryListFilter(django_filters.FilterSet):
     )
 
 
+class RFFilterPlusStdNames(RFSummaryListFilter):
+    """Adding standard name fields"""
+    standard_study_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
+    standard_procedure_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard procedure name")
+    standard_request_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard request name")
+
+
 class RFFilterPlusPid(RFSummaryListFilter):
 
     """Adding patient name and ID to filter if permissions allow"""
@@ -316,6 +323,13 @@ class RFFilterPlusPid(RFSummaryListFilter):
         self.filters["patient_id"] = django_filters.CharFilter(
             method=custom_id_filter, label="Patient ID"
         )
+
+
+class RFFilterPlusPidPlusStdNames(RFFilterPlusPid):
+    """Adding standard name fields"""
+    standard_study_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
+    standard_procedure_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard procedure name")
+    standard_request_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard request name")
 
 
 EVENT_NUMBER_CHOICES = (
@@ -563,6 +577,13 @@ class CTSummaryListFilter(django_filters.FilterSet):
     )
 
 
+class CTFilterPlusStdNames(CTSummaryListFilter):
+    """Adding standard name fields"""
+    standard_study_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
+    standard_procedure_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard procedure name")
+    standard_request_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard request name")
+
+
 class CTFilterPlusPid(CTSummaryListFilter):
 
     """Adding patient name and ID to filter if permissions allow"""
@@ -575,6 +596,13 @@ class CTFilterPlusPid(CTSummaryListFilter):
         self.filters["patient_id"] = django_filters.CharFilter(
             method=custom_id_filter, label="Patient ID"
         )
+
+
+class CTFilterPlusPidPlusStdNames(CTFilterPlusPid):
+    """Adding standard name fields"""
+    standard_study_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
+    standard_procedure_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard procedure name")
+    standard_request_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard request name")
 
 
 def ct_acq_filter(filters, pid=False):
@@ -705,12 +733,22 @@ def ct_acq_filter(filters, pid=False):
     if filteredInclude:
         studies = studies.filter(study_instance_uid__in=filteredInclude)
     if pid:
-        return CTFilterPlusPid(
+        if enable_standard_names:
+            return CTFilterPlusPidPlusStdNames(
+                filters, studies.order_by("-study_date", "-study_time").distinct()
+            )
+        else:
+            return CTFilterPlusPid(
+                filters, studies.order_by("-study_date", "-study_time").distinct()
+            )
+    if enable_standard_names:
+        return CTFilterPlusStdNames(
             filters, studies.order_by("-study_date", "-study_time").distinct()
         )
-    return CTSummaryListFilter(
-        filters, studies.order_by("-study_date", "-study_time").distinct()
-    )
+    else:
+        return CTSummaryListFilter(
+            filters, studies.order_by("-study_date", "-study_time").distinct()
+        )
 
 
 class MGSummaryListFilter(django_filters.FilterSet):
@@ -863,6 +901,13 @@ class MGSummaryListFilter(django_filters.FilterSet):
     )
 
 
+class MGFilterPlusStdNames(MGSummaryListFilter):
+    """Adding standard name fields"""
+    standard_study_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
+    standard_procedure_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard procedure name")
+    standard_request_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard request name")
+
+
 class MGFilterPlusPid(MGSummaryListFilter):
     """Adding patient name and ID to filter if permissions allow"""
 
@@ -874,6 +919,13 @@ class MGFilterPlusPid(MGSummaryListFilter):
         self.filters["patient_id"] = django_filters.CharFilter(
             method=custom_id_filter, label="Patient ID"
         )
+
+
+class MGFilterPlusPidPlusStdNames(MGFilterPlusPid):
+    """Adding standard name fields"""
+    standard_study_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
+    standard_procedure_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard procedure name")
+    standard_request_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard request name")
 
 
 class DXSummaryListFilter(django_filters.FilterSet):
@@ -1036,6 +1088,13 @@ class DXSummaryListFilter(django_filters.FilterSet):
     )
 
 
+class DXFilterPlusStdNames(DXSummaryListFilter):
+    """Adding standard name fields"""
+    standard_study_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
+    standard_procedure_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard procedure name")
+    standard_request_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard request name")
+
+
 class DXFilterPlusPid(DXSummaryListFilter):
 
     """Adding patient name and ID to filter if permissions allow"""
@@ -1048,6 +1107,13 @@ class DXFilterPlusPid(DXSummaryListFilter):
         self.filters["patient_id"] = django_filters.CharFilter(
             method=custom_id_filter, label="Patient ID"
         )
+
+
+class DXFilterPlusPidPlusStdNames(DXFilterPlusPid):
+    """Adding standard name fields"""
+    standard_study_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
+    standard_procedure_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard procedure name")
+    standard_request_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard request name")
 
 
 def dx_acq_filter(filters, pid=False):
@@ -1156,9 +1222,19 @@ def dx_acq_filter(filters, pid=False):
     if filteredInclude:
         studies = studies.filter(study_instance_uid__in=filteredInclude)
     if pid:
-        return DXFilterPlusPid(
+        if enable_standard_names:
+            return DXFilterPlusPidPlusStdNames(
+                filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
+            )
+        else:
+            return DXFilterPlusPid(
+                filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
+            )
+    if enable_standard_names:
+        return DXFilterPlusStdNames(
             filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
         )
-    return DXSummaryListFilter(
-        filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
-    )
+    else:
+        return DXSummaryListFilter(
+            filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
+        )

@@ -66,11 +66,15 @@ import numpy as np
 from .forms import itemsPerPageForm
 from .interface.mod_filters import (
     RFSummaryListFilter,
+    RFFilterPlusStdNames,
     RFFilterPlusPid,
+    RFFilterPlusPidPlusStdNames,
     dx_acq_filter,
     ct_acq_filter,
     MGSummaryListFilter,
     MGFilterPlusPid,
+    MGFilterPlusStdNames,
+    MGFilterPlusPidPlusStdNames,
 )
 from .tools.make_skin_map import make_skin_map
 from .views_charts_ct import (
@@ -318,15 +322,27 @@ def rf_summary_list_filter(request):
         )
 
     if request.user.groups.filter(name="pidgroup"):
-        f = RFFilterPlusPid(
-            request.GET,
-            queryset=queryset,
-        )
+        if enable_standard_names:
+            f = RFFilterPlusPidPlusStdNames(
+                request.GET,
+                queryset=queryset,
+            )
+        else:
+            f = RFFilterPlusPid(
+                request.GET,
+                queryset=queryset,
+            )
     else:
-        f = RFSummaryListFilter(
-            request.GET,
-            queryset=queryset,
-        )
+        if enable_standard_names:
+            f = RFFilterPlusStdNames(
+                request.GET,
+                queryset=queryset,
+            )
+        else:
+            f = RFSummaryListFilter(
+                request.GET,
+                queryset=queryset,
+            )
 
     try:
         # See if the user has plot settings in userprofile
@@ -938,15 +954,27 @@ def mg_summary_list_filter(request):
         )
 
     if request.user.groups.filter(name="pidgroup"):
-        f = MGFilterPlusPid(
-            filter_data,
-            queryset=queryset,
-        )
+        if enable_standard_names:
+            f = MGFilterPlusPidPlusStdNames(
+                filter_data,
+                queryset=queryset,
+            )
+        else:
+            f = MGFilterPlusPid(
+                filter_data,
+                queryset=queryset,
+            )
     else:
-        f = MGSummaryListFilter(
-            filter_data,
-            queryset=queryset,
-        )
+        if enable_standard_names:
+            f = MGFilterPlusStdNames(
+                filter_data,
+                queryset=queryset,
+            )
+        else:
+            f = MGSummaryListFilter(
+                filter_data,
+                queryset=queryset,
+            )
 
     try:
         # See if the user has plot settings in userprofile
