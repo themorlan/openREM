@@ -89,6 +89,36 @@ def custom_id_filter(queryset, name, value):
     return filtered
 
 
+def standard_acq_protocol_filter(queryset, name, value):
+    """Search for standard acquisition protocol"""
+    if not value:
+        return queryset
+
+    modalities = queryset.values_list("modality_type", flat=True).distinct()
+
+    modality = ""
+    field_and_search = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol__in"
+
+    if any(item in ["DX", "CR", "PX"] for item in modalities):
+        modality = "DX"
+    elif "MG" in modalities:
+        modality = "MG"
+    elif "RF" in modalities:
+        modality = "RF"
+    elif "CT" in modalities:
+        modality = "CT"
+        field_and_search = "ctradiationdose__ctirradiationeventdata__acquisition_protocol__in"
+
+    # Standard names that have an acquisition protocol name that contains value
+    acq_protocols_to_find = StandardNames.objects.filter(modality__iexact=modality).filter(
+        standard_name__icontains=value).values("acquisition_protocol")
+
+    # Filter the queryset to only include acq_protocols_to_find
+    filtered = queryset.filter(**{field_and_search:acq_protocols_to_find})
+
+    return filtered
+
+
 def _custom_acc_filter(queryset, name, value):
     """Search for accession number as plain text and encrypted"""
     if not value:
@@ -309,6 +339,11 @@ class RFFilterPlusStdNames(RFSummaryListFilter):
     standard_study_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
     standard_procedure_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard procedure name")
     standard_request_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard request name")
+    standard_acquisition_protocol = django_filters.CharFilter(
+        method=standard_acq_protocol_filter,
+        lookup_expr="icontains",
+        label="Standard acquisition protocol",
+    )
 
 
 class RFFilterPlusPid(RFSummaryListFilter):
@@ -330,6 +365,11 @@ class RFFilterPlusPidPlusStdNames(RFFilterPlusPid):
     standard_study_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
     standard_procedure_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard procedure name")
     standard_request_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard request name")
+    standard_acquisition_protocol = django_filters.CharFilter(
+        method=standard_acq_protocol_filter,
+        lookup_expr="icontains",
+        label="Standard acquisition protocol",
+    )
 
 
 EVENT_NUMBER_CHOICES = (
@@ -582,6 +622,11 @@ class CTFilterPlusStdNames(CTSummaryListFilter):
     standard_study_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
     standard_procedure_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard procedure name")
     standard_request_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard request name")
+    standard_acquisition_protocol = django_filters.CharFilter(
+        method=standard_acq_protocol_filter,
+        lookup_expr="icontains",
+        label="Standard acquisition protocol",
+    )
 
 
 class CTFilterPlusPid(CTSummaryListFilter):
@@ -603,6 +648,11 @@ class CTFilterPlusPidPlusStdNames(CTFilterPlusPid):
     standard_study_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
     standard_procedure_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard procedure name")
     standard_request_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard request name")
+    standard_acquisition_protocol = django_filters.CharFilter(
+        method=standard_acq_protocol_filter,
+        lookup_expr="icontains",
+        label="Standard acquisition protocol",
+    )
 
 
 def ct_acq_filter(filters, pid=False):
@@ -906,6 +956,11 @@ class MGFilterPlusStdNames(MGSummaryListFilter):
     standard_study_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
     standard_procedure_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard procedure name")
     standard_request_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard request name")
+    standard_acquisition_protocol = django_filters.CharFilter(
+        method=standard_acq_protocol_filter,
+        lookup_expr="icontains",
+        label="Standard acquisition protocol",
+    )
 
 
 class MGFilterPlusPid(MGSummaryListFilter):
@@ -926,6 +981,11 @@ class MGFilterPlusPidPlusStdNames(MGFilterPlusPid):
     standard_study_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
     standard_procedure_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard procedure name")
     standard_request_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard request name")
+    standard_acquisition_protocol = django_filters.CharFilter(
+        method=standard_acq_protocol_filter,
+        lookup_expr="icontains",
+        label="Standard acquisition protocol",
+    )
 
 
 class DXSummaryListFilter(django_filters.FilterSet):
@@ -1093,6 +1153,11 @@ class DXFilterPlusStdNames(DXSummaryListFilter):
     standard_study_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
     standard_procedure_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard procedure name")
     standard_request_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard request name")
+    standard_acquisition_protocol = django_filters.CharFilter(
+        method=standard_acq_protocol_filter,
+        lookup_expr="icontains",
+        label="Standard acquisition protocol",
+    )
 
 
 class DXFilterPlusPid(DXSummaryListFilter):
@@ -1114,6 +1179,11 @@ class DXFilterPlusPidPlusStdNames(DXFilterPlusPid):
     standard_study_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
     standard_procedure_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard procedure name")
     standard_request_name = django_filters.CharFilter(lookup_expr="icontains", label="Standard request name")
+    standard_acquisition_protocol = django_filters.CharFilter(
+        method=standard_acq_protocol_filter,
+        lookup_expr="icontains",
+        label="Standard acquisition protocol",
+    )
 
 
 def dx_acq_filter(filters, pid=False):
