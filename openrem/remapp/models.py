@@ -756,10 +756,23 @@ class StandardNames(models.Model):
 
     standard_name = models.TextField(blank=True, null=True)
     modality = models.CharField(max_length=16, blank=True, null=True)
-    study_description = models.TextField(blank=True, null=True, unique=True)
-    requested_procedure_code_meaning = models.TextField(blank=True, null=True, unique=True)
-    procedure_code_meaning = models.CharField(max_length=64, blank=True, null=True, unique=True)
-    acquisition_protocol = models.TextField(blank=True, null=True, unique=True)
+    study_description = models.TextField(blank=True, null=True)
+    requested_procedure_code_meaning = models.TextField(blank=True, null=True)
+    procedure_code_meaning = models.CharField(max_length=64, blank=True, null=True)
+    acquisition_protocol = models.TextField(blank=True, null=True)
+
+    class Meta(object):
+        """
+        Define unique_together Meta class to ensure that each study description, requested procedure,
+        procedure and acquisition protocol can only appear in one standard name per modality
+        """
+
+        unique_together = (
+            ("modality", "study_description"),
+            ("modality", "requested_procedure_code_meaning"),
+            ("modality", "procedure_code_meaning"),
+            ("modality", "acquisition_protocol")
+        )
 
     def __unicode__(self):
         return self.standard_name
