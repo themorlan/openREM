@@ -297,7 +297,7 @@ def rf_summary_list_filter(request):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values("enable_standard_names",)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
 
     queryset = GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF").order_by("-study_date", "-study_time").distinct()
 
@@ -913,7 +913,7 @@ def mg_summary_list_filter(request):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values("enable_standard_names",)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
 
     filter_data = request.GET.copy()
     if "page" in filter_data:

@@ -683,7 +683,7 @@ def ct_acq_filter(filters, pid=False):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values("enable_standard_names",)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
 
     studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT")
     if enable_standard_names:
@@ -1130,7 +1130,7 @@ def dx_acq_filter(filters, pid=False):
         StandardNameSettings.objects.get()
     except ObjectDoesNotExist:
         StandardNameSettings.objects.create()
-    enable_standard_names = StandardNameSettings.objects.values("enable_standard_names",)[0]
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
 
     studies = GeneralStudyModuleAttr.objects.filter(
         Q(modality_type__exact="DX")
