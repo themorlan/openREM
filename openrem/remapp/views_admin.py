@@ -60,6 +60,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .extractors.extract_common import populate_rf_delta_weeks_summary
 from .forms import (
     CTChartOptionsDisplayForm,
+    CTChartOptionsDisplayFormIncStandard,
     DXChartOptionsDisplayForm,
     DicomDeleteSettingsForm,
     GeneralChartOptionsDisplayForm,
@@ -1299,9 +1300,21 @@ def review_failed_imports(request, modality=None):
 
 @login_required
 def chart_options_view(request):
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
     if request.method == "POST":
         general_form = GeneralChartOptionsDisplayForm(request.POST)
-        ct_form = CTChartOptionsDisplayForm(request.POST)
+        ct_form = None
+        if enable_standard_names:
+            ct_form = CTChartOptionsDisplayFormIncStandard(request.POST)
+        else:
+            ct_form = CTChartOptionsDisplayForm(request.POST)
         dx_form = DXChartOptionsDisplayForm(request.POST)
         rf_form = RFChartOptionsDisplayForm(request.POST)
         mg_form = MGChartOptionsDisplayForm(request.POST)
@@ -1407,7 +1420,11 @@ def chart_options_view(request):
     mg_form_data = initialise_mg_form_data(user_profile)
 
     general_chart_options_form = GeneralChartOptionsDisplayForm(general_form_data)
-    ct_chart_options_form = CTChartOptionsDisplayForm(ct_form_data)
+    ct_chart_options_form = None
+    if enable_standard_names:
+        ct_chart_options_form = CTChartOptionsDisplayFormIncStandard(ct_form_data)
+    else:
+        ct_chart_options_form = CTChartOptionsDisplayForm(ct_form_data)
     dx_chart_options_form = DXChartOptionsDisplayForm(dx_form_data)
     rf_chart_options_form = RFChartOptionsDisplayForm(rf_form_data)
     mg_chart_options_form = MGChartOptionsDisplayForm(mg_form_data)
@@ -1585,6 +1602,14 @@ def set_average_chart_options(general_form, user_profile):
 
 
 def set_ct_chart_options(ct_form, user_profile):
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
     user_profile.plotCTAcquisitionMeanDLP = ct_form.cleaned_data[
         "plotCTAcquisitionMeanDLP"
     ]
@@ -1656,6 +1681,8 @@ def set_ct_chart_options(ct_form, user_profile):
     user_profile.plotCTStudyMeanDLPOverTime = ct_form.cleaned_data[
         "plotCTStudyMeanDLPOverTime"
     ]
+    if enable_standard_names:
+        user_profile.plotCTStandardStudyMeanDLP = ct_form.cleaned_data["plotCTStandardStudyMeanDLP"]
     user_profile.plotCTRequestMeanDLP = ct_form.cleaned_data["plotCTRequestMeanDLP"]
     user_profile.plotCTRequestFreq = ct_form.cleaned_data["plotCTRequestFreq"]
     user_profile.plotCTRequestNumEvents = ct_form.cleaned_data["plotCTRequestNumEvents"]
@@ -1669,6 +1696,7 @@ def set_ct_chart_options(ct_form, user_profile):
 
 
 def initialise_ct_form_data(ct_acquisition_types, user_profile):
+
     ct_form_data = {
         "plotCTAcquisitionMeanDLP": user_profile.plotCTAcquisitionMeanDLP,
         "plotCTAcquisitionMeanCTDI": user_profile.plotCTAcquisitionMeanCTDI,
@@ -1691,6 +1719,17 @@ def initialise_ct_form_data(ct_acquisition_types, user_profile):
         "plotCTOverTimePeriod": user_profile.plotCTOverTimePeriod,
         "plotCTInitialSortingChoice": user_profile.plotCTInitialSortingChoice,
     }
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
+    if enable_standard_names:
+        ct_form_data["plotCTStandardStudyMeanDLP"] = user_profile.plotCTStandardStudyMeanDLP
+
     return ct_form_data
 
 

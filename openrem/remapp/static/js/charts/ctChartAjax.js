@@ -83,6 +83,22 @@ $(document).ready(function() {
                 $("#studyHistogramDLPChartDiv").html(json.studyHistogramDLPData);
             }
 
+            // DLP per standard study chart data
+            if(typeof json.standardStudyMeanDLPData !== "undefined") {
+                $("#standardStudyMeanDLPChartDiv").html(json.standardStudyMeanDLPData);
+                $("#standardStudyMeanDLPChartParentDiv").append(json.standardStudyMeanDLPDataCSV);
+            }
+            if(typeof json.standardStudyMedianDLPData !== "undefined") {
+                $("#standardStudyMedianDLPChartDiv").html(json.standardStudyMedianDLPData);
+                $("#standardStudyMedianDLPChartParentDiv").append(json.standardStudyMedianDLPDataCSV);
+            }
+            if(typeof json.standardStudyBoxplotDLPData !=="undefined") {
+                $("#standardStudyBoxplotDLPChartDiv").html(json.standardStudyBoxplotDLPData);
+            }
+            if(typeof json.standardStudyHistogramDLPData !=="undefined") {
+                $("#standardStudyHistogramDLPChartDiv").html(json.standardStudyHistogramDLPData);
+            }
+
             // CTDI per study chart data
             if(typeof json.studyMeanCTDIData !== "undefined") {
                 $("#studyMeanCTDIChartDiv").html(json.studyMeanCTDIData);

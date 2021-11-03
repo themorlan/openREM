@@ -268,6 +268,35 @@ class CTChartOptionsForm(forms.Form):
     )
 
 
+class CTChartOptionsFormIncStandard(CTChartOptionsForm):
+    plotCTStandardStudyMeanDLP = forms.BooleanField(label="Standard study DLP", required=False)
+
+    field_order = [
+        "plotCharts",
+        "plotCTAcquisitionFreq",
+        "plotCTAcquisitionMeanDLP",
+        "plotCTAcquisitionMeanCTDI",
+        "plotCTAcquisitionDLPOverTime",
+        "plotCTAcquisitionCTDIOverTime",
+        "plotCTAcquisitionDLPvsMass",
+        "plotCTAcquisitionCTDIvsMass",
+        "plotCTAcquisitionTypes",
+        "plotCTStudyFreq",
+        "plotCTStudyMeanDLP",
+        "plotCTStudyMeanCTDI",
+        "plotCTStudyNumEvents",
+        "plotCTStudyMeanDLPOverTime",
+        "plotCTStudyPerDayAndHour",
+        "plotCTStandardStudyMeanDLP",
+        "plotCTRequestFreq",
+        "plotCTRequestMeanDLP",
+        "plotCTRequestNumEvents",
+        "plotCTRequestDLPOverTime",
+        "plotCTOverTimePeriod",
+        "plotCTInitialSortingChoice"
+    ]
+
+
 class RFChartOptionsForm(forms.Form):
     """Form for RF chart options"""
 
@@ -562,6 +591,33 @@ class CTChartOptionsDisplayForm(forms.Form):
     plotCTInitialSortingChoice = forms.ChoiceField(
         label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
+
+
+class CTChartOptionsDisplayFormIncStandard(CTChartOptionsDisplayForm):
+    plotCTStandardStudyMeanDLP = forms.BooleanField(label="Standard study DLP", required=False)
+
+    field_order = [
+        "plotCTAcquisitionMeanDLP",
+        "plotCTAcquisitionMeanCTDI",
+        "plotCTAcquisitionDLPOverTime",
+        "plotCTAcquisitionCTDIOverTime",
+        "plotCTAcquisitionDLPvsMass",
+        "plotCTAcquisitionCTDIvsMass",
+        "plotCTAcquisitionTypes",
+        "plotCTStudyFreq",
+        "plotCTStudyMeanDLP",
+        "plotCTStudyMeanCTDI",
+        "plotCTStudyNumEvents",
+        "plotCTStudyMeanDLPOverTime",
+        "plotCTStudyPerDayAndHour",
+        "plotCTStandardStudyMeanDLP",
+        "plotCTRequestFreq",
+        "plotCTRequestMeanDLP",
+        "plotCTRequestNumEvents",
+        "plotCTRequestDLPOverTime",
+        "plotCTOverTimePeriod",
+        "plotCTInitialSortingChoice"
+    ]
 
 
 class GeneralChartOptionsDisplayForm(forms.Form):

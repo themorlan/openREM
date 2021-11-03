@@ -7,11 +7,15 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
-from remapp.forms import CTChartOptionsForm
+from remapp.forms import (
+    CTChartOptionsForm,
+    CTChartOptionsFormIncStandard,
+)
 from remapp.interface.mod_filters import ct_acq_filter
 from remapp.models import (
     create_user_profile,
     CommonVariables,
+    StandardNameSettings,
 )
 from remapp.views_admin import (
     required_average_choices,
@@ -221,6 +225,36 @@ def generate_required_ct_charts_list(profile):
                 {
                     "title": "Histogram of study description DLP",
                     "var_name": "studyHistogramDLP",
+                }
+            )
+
+    if profile.plotCTStandardStudyMeanDLP:
+        if profile.plotMean:
+            required_charts.append(
+                {
+                    "title": "Chart of standard study name mean DLP",
+                    "var_name": "standardStudyMeanDLP",
+                }
+            )
+        if profile.plotMedian:
+            required_charts.append(
+                {
+                    "title": "Chart of standard study name median DLP",
+                    "var_name": "standardStudyMedianDLP",
+                }
+            )
+        if profile.plotBoxplots:
+            required_charts.append(
+                {
+                    "title": "Boxplot of standard study name DLP",
+                    "var_name": "standardStudyBoxplotDLP",
+                }
+            )
+        if profile.plotHistograms:
+            required_charts.append(
+                {
+                    "title": "Histogram of study description DLP",
+                    "var_name": "standardStudyHistogramDLP",
                 }
             )
 
@@ -453,6 +487,13 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
     # Return an empty structure if the queryset is empty
     if not f.qs:
         return {}
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
 
     # Set the Plotly chart theme
     plotly_set_default_theme(user_profile.plotThemeChoice)
@@ -987,8 +1028,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         user_profile.plotCTStudyMeanDLPOverTime,
         user_profile.plotCTStudyPerDayAndHour,
     ]
-    if any(charts_of_interest):
+    if enable_standard_names:
+        charts_of_interest.append(user_profile.plotCTStandardStudyMeanDLP)
 
+    if any(charts_of_interest):
         name_fields = []
         charts_of_interest = [
             user_profile.plotCTStudyMeanDLP,
@@ -1010,6 +1053,15 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         if any(charts_of_interest):
             name_fields.append("requested_procedure_code_meaning")
 
+        if enable_standard_names:
+            charts_of_interest = [
+                user_profile.plotCTStandardStudyMeanDLP,
+            ]
+            if any(charts_of_interest):
+                name_fields.append("standard_study_name")
+                name_fields.append("standard_request_name")
+                name_fields.append("standard_procedure_name")
+
         value_fields = []
         charts_of_interest = [
             user_profile.plotCTStudyMeanDLP,
@@ -1017,6 +1069,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             user_profile.plotCTRequestMeanDLP,
             user_profile.plotCTRequestDLPOverTime,
         ]
+        if enable_standard_names:
+            charts_of_interest.append(user_profile.plotCTStandardStudyMeanDLP)
+
         if any(charts_of_interest):
             value_fields.append("total_dlp")
         if user_profile.plotCTStudyMeanCTDI:
@@ -1780,8 +1835,21 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
 def ct_chart_form_processing(request, user_profile):
     # pylint: disable=too-many-statements
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
     # Obtain the chart options from the request
-    chart_options_form = CTChartOptionsForm(request.GET)
+    chart_options_form = None
+    if enable_standard_names:
+        chart_options_form = CTChartOptionsFormIncStandard(request.GET)
+    else:
+        chart_options_form = CTChartOptionsForm(request.GET)
+
     # Check whether the form data is valid
     if chart_options_form.is_valid():
         # Use the form data if the user clicked on the submit button
@@ -1814,5 +1882,10 @@ def ct_chart_form_processing(request, user_profile):
 
             form_data = {**form_data, **ct_form_data}
 
-            chart_options_form = CTChartOptionsForm(form_data)
+            chart_options_form = None
+            if enable_standard_names:
+                chart_options_form = CTChartOptionsFormIncStandard(form_data)
+            else:
+                chart_options_form = CTChartOptionsForm(form_data)
+
     return chart_options_form
