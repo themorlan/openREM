@@ -291,11 +291,33 @@ def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None)
     if stats_to_use is None:
         stats_to_use = ["count"]
 
-    groupby_cols = ["x_ray_system_name"] + df_name_cols
+    if "standard_study" in df_name_cols:
+        fields_to_include = ["standard_request_name", "standard_procedure_name", "standard_study_name", "x_ray_system_name", df_agg_col]
+        grouped_df = df[fields_to_include].reset_index().melt(
+            id_vars=["index", df_agg_col, "x_ray_system_name"], value_name="standard_study"
+        ).drop_duplicates(
+            ["index", "standard_study"]).dropna(
+            subset=["standard_study"]).groupby(
+            ["x_ray_system_name", "standard_study"]
+        ).agg({df_agg_col: stats_to_use})
 
-    grouped_df = df.groupby(groupby_cols).agg({df_agg_col: stats_to_use})
-    grouped_df.columns = grouped_df.columns.droplevel(level=0)
-    grouped_df = grouped_df.reset_index()
+        unique_names = (df['standard_study_name'].append(df['standard_request_name']).append(
+            df['standard_procedure_name'])).unique()
+
+        # Remove the blank name from the data
+        unique_names = unique_names[(unique_names != "blank") & (unique_names != "Blank")]
+
+        grouped_df = grouped_df.reset_index()
+        grouped_df = grouped_df[grouped_df["standard_study"].isin(unique_names)]
+        grouped_df.columns = grouped_df.columns.droplevel(level=1)[:2].append(grouped_df.columns.droplevel(level=0)[2:])
+        grouped_df = grouped_df.reset_index()
+
+    else:
+        groupby_cols = ["x_ray_system_name"] + df_name_cols
+
+        grouped_df = df.groupby(groupby_cols).agg({df_agg_col: stats_to_use})
+        grouped_df.columns = grouped_df.columns.droplevel(level=0)
+        grouped_df = grouped_df.reset_index()
 
     if settings.DEBUG:
         print(f"Aggregated dataframe created in {datetime.now() - start}")

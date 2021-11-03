@@ -1226,6 +1226,117 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict,
                 )
 
+        if user_profile.plotCTStandardStudyMeanDLP:
+
+            if user_profile.plotBoxplots and "median" not in average_choices:
+                average_choices = average_choices + ["median"]
+
+            name_field = "standard_study"
+            value_field = "total_dlp"
+
+            df_aggregated = create_dataframe_aggregates(
+                df,
+                [name_field],
+                value_field,
+                stats_to_use=average_choices + ["count"],
+            )
+
+            if user_profile.plotMean or user_profile.plotMedian:
+
+                parameter_dict = {
+                    "df_name_col": name_field,
+                    "name_axis_title": "Standard study name",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "facet_col": None,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                    "sorting_choice": [
+                        user_profile.plotInitialSortingDirection,
+                        user_profile.plotCTInitialSortingChoice,
+                    ],
+                }
+                if user_profile.plotMean:
+                    parameter_dict["value_axis_title"] = "Mean DLP (mGy.cm)"
+                    parameter_dict["filename"] = "OpenREM CT standard study name DLP mean"
+                    parameter_dict["average_choice"] = "mean"
+                    (
+                        return_structure["standardStudyMeanDLPData"],
+                        return_structure["standardStudyMeanDLPDataCSV"],
+                    ) = plotly_barchart(
+                        df_aggregated,
+                        parameter_dict,
+                        csv_name="standardStudyMeanDLPData.csv",
+                    )
+
+                if user_profile.plotMedian:
+                    parameter_dict["value_axis_title"] = "Median DLP (mGy.cm)"
+                    parameter_dict[
+                        "filename"
+                    ] = "OpenREM CT standard study name DLP median"
+                    parameter_dict["average_choice"] = "median"
+                    (
+                        return_structure["standardStudyMedianDLPData"],
+                        return_structure["standardStudyMedianDLPDataCSV"],
+                    ) = plotly_barchart(
+                        df_aggregated,
+                        parameter_dict,
+                        csv_name="standardStudyMedianDLPData.csv",
+                    )
+
+            if user_profile.plotBoxplots:
+                parameter_dict = {
+                    "df_name_col": name_field,
+                    "df_value_col": value_field,
+                    "value_axis_title": "DLP (mGy.cm)",
+                    "name_axis_title": "Standard study name",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM CT standard study name DLP boxplot",
+                    "facet_col": None,
+                    "sorting_choice": [
+                        user_profile.plotInitialSortingDirection,
+                        user_profile.plotCTInitialSortingChoice,
+                    ],
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                }
+
+                return_structure["standardStudyBoxplotDLPData"] = plotly_boxplot(
+                    df,
+                    parameter_dict,
+                )
+
+            if user_profile.plotHistograms:
+                category_names_col = name_field
+                group_by_col = "x_ray_system_name"
+                legend_title = "Standard study name"
+
+                if user_profile.plotGroupingChoice == "series":
+                    category_names_col = "x_ray_system_name"
+                    group_by_col = name_field
+                    legend_title = "System"
+
+                parameter_dict = {
+                    "df_facet_col": group_by_col,
+                    "df_category_col": category_names_col,
+                    "df_value_col": value_field,
+                    "value_axis_title": "DLP (mGy.cm)",
+                    "legend_title": legend_title,
+                    "n_bins": user_profile.plotHistogramBins,
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM CT study description DLP histogram",
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "sorting_choice": [
+                        user_profile.plotInitialSortingDirection,
+                        user_profile.plotCTInitialSortingChoice,
+                    ],
+                    "global_max_min": user_profile.plotHistogramGlobalBins,
+                    "return_as_dict": return_as_dict,
+                }
+                return_structure["standardStudyHistogramDLPData"] = plotly_histogram_barchart(
+                    df,
+                    parameter_dict,
+                )
+
         if user_profile.plotCTStudyMeanCTDI:
 
             if user_profile.plotBoxplots and "median" not in average_choices:
