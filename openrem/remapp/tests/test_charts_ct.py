@@ -100,6 +100,7 @@ class ChartsCT(TestCase):
         self.user.userprofile.plotCTRequestFreq = True
         self.user.userprofile.plotCTRequestNumEvents = True
         self.user.userprofile.plotCTRequestDLPOverTime = True
+        self.user.userprofile.plotCTStandardStudyMeanDLP = True
         self.user.userprofile.save()
 
         required_charts_list = generate_required_ct_charts_list(self.user.userprofile)
@@ -129,6 +130,10 @@ class ChartsCT(TestCase):
             "studyMedianDLP",
             "studyBoxplotDLP",
             "studyHistogramDLP",
+            "standardStudyMeanDLP",
+            "standardStudyMedianDLP",
+            "standardStudyBoxplotDLP",
+            "standardStudyHistogramDLP",
             "studyMeanCTDI",
             "studyMedianCTDI",
             "studyBoxplotCTDI",
