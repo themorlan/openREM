@@ -292,25 +292,14 @@ def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None)
         stats_to_use = ["count"]
 
     if "standard_study" in df_name_cols:
-        fields_to_include = ["standard_request_name", "standard_procedure_name", "standard_study_name", "x_ray_system_name", df_agg_col]
-        grouped_df = df[fields_to_include].reset_index().melt(
-            id_vars=["index", df_agg_col, "x_ray_system_name"], value_name="standard_study"
-        ).drop_duplicates(
-            ["index", "standard_study"]).dropna(
-            subset=["standard_study"]).groupby(
-            ["x_ray_system_name", "standard_study"]
-        ).agg({df_agg_col: stats_to_use})
+        df = create_standard_study_df(df, df_agg_col)
 
-        unique_names = (df['standard_study_name'].append(df['standard_request_name']).append(
-            df['standard_procedure_name'])).unique()
+        # Calculate the aggregate statistics
+        grouped_df = df.groupby(["x_ray_system_name", "standard_study"]).agg({df_agg_col: stats_to_use})
 
-        # Remove the blank name from the data
-        unique_names = unique_names[(unique_names != "blank") & (unique_names != "Blank")]
-
+        # Remove the multi-level column headings and rename them
         grouped_df = grouped_df.reset_index()
-        grouped_df = grouped_df[grouped_df["standard_study"].isin(unique_names)]
         grouped_df.columns = grouped_df.columns.droplevel(level=1)[:2].append(grouped_df.columns.droplevel(level=0)[2:])
-        grouped_df = grouped_df.reset_index()
 
     else:
         groupby_cols = ["x_ray_system_name"] + df_name_cols
@@ -323,6 +312,45 @@ def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None)
         print(f"Aggregated dataframe created in {datetime.now() - start}")
 
     return grouped_df
+
+
+def create_standard_study_df(df, df_agg_col):
+    """
+    Creates a Pandas DataFrame of standard_study names, df_agg_col values and x_ray_system_name values from entries
+    in the initial DataFrame's standard_study_name, standard_request_name and standard_procedure_name fields.
+    Args:
+        df: Pandas DataFrame containing all the data. Must include
+        df_agg_col: DataFrame column name containing values of interest
+
+    Returns:
+        df: a Pandas DataFrame with df_agg_col and x_ray_system_name values for each standard_study
+    """
+    # Generate a list of unique names in the standard name fields of the dataframe, excluding "blank" and "Blank"
+    unique_names = (df['standard_study_name'].append(df['standard_request_name']).append(df['standard_procedure_name'])).unique()
+    unique_names = unique_names[(unique_names != "blank") & (unique_names != "Blank")]
+
+    # The list of fields to use when generating the grouped dataframe
+    fields_to_include = ["standard_request_name", "standard_procedure_name", "standard_study_name", "x_ray_system_name", df_agg_col]
+
+    df = df[fields_to_include].reset_index().melt(
+        id_vars=["index", df_agg_col, "x_ray_system_name"], value_name="standard_study"
+    ).drop_duplicates(
+        ["index", "standard_study"]
+    ).dropna(
+        subset=["standard_study"]
+    )
+
+    # Drop all rows except those that are in the list of unique standard names. Doing this at this stage
+    # to save aggregating things that we're just going to throw away.
+    df = df[df["standard_study"].isin(unique_names)]
+
+    # Drop the variable column - its not needed
+    df = df.drop(columns=["variable"])
+
+    # Set the standard study column to category type to save memory
+    df["standard_study"] = df["standard_study"].astype("category")
+
+    return df
 
 
 def plotly_set_default_theme(theme_name):
