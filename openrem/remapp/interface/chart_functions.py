@@ -302,7 +302,7 @@ def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None)
     return grouped_df
 
 
-def create_standard_study_df(df, df_agg_col):
+def create_standard_study_df(df, df_agg_col=None):
     """
     Creates a Pandas DataFrame of standard_study names, df_agg_col values and x_ray_system_name values from entries
     in the initial DataFrame's standard_study_name, standard_request_name and standard_procedure_name fields.
@@ -317,23 +317,26 @@ def create_standard_study_df(df, df_agg_col):
     unique_names = (df['standard_study_name'].append(df['standard_request_name']).append(df['standard_procedure_name'])).unique()
     unique_names = unique_names[(unique_names != "blank") & (unique_names != "Blank")]
 
-    # The list of fields to use when generating the grouped dataframe
-    fields_to_include = ["standard_request_name", "standard_procedure_name", "standard_study_name", "x_ray_system_name", df_agg_col]
+    # The list of fields to use when generating the grouped dataframe and the fields for the id_vars of the melt
+    fields_to_include = ["standard_request_name", "standard_procedure_name", "standard_study_name", "x_ray_system_name"]
+    id_vars = ["index", "x_ray_system_name"]
+    if df_agg_col is not None:
+        fields_to_include.append(df_agg_col)
+        id_vars.append(df_agg_col)
 
     df = df[fields_to_include].reset_index().melt(
-        id_vars=["index", df_agg_col, "x_ray_system_name"], value_name="standard_study"
+        id_vars=id_vars, value_name="standard_study"
     ).drop_duplicates(
         ["index", "standard_study"]
     ).dropna(
         subset=["standard_study"]
+    ).drop(
+        columns=["variable"]
     )
 
     # Drop all rows except those that are in the list of unique standard names. Doing this at this stage
     # to save aggregating things that we're just going to throw away.
     df = df[df["standard_study"].isin(unique_names)]
-
-    # Drop the variable column - its not needed
-    df = df.drop(columns=["variable"])
 
     # Set the standard study column to category type to save memory
     df["standard_study"] = df["standard_study"].astype("category")

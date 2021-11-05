@@ -193,6 +193,12 @@ $(document).ready(function() {
                 $("#studyFrequencyChartParentDiv").append(json.studyFrequencyDataCSV);
             }
 
+            // Standard study name frequency chart data start
+            if(typeof json.standardStudyFrequencyData !== "undefined") {
+                $("#standardStudyFrequencyChartDiv").html(json.standardStudyFrequencyData);
+                $("#standardStudyFrequencyChartParentDiv").append(json.standardStudyFrequencyDataCSV);
+            }
+
             // Request frequency chart data start
             if(typeof json.requestFrequencyData !== "undefined") {
                 $("#requestFrequencyChartDiv").html(json.requestFrequencyData);
