@@ -37,6 +37,7 @@ from .interface.chart_functions import (
     plotly_frequency_barchart,
     plotly_scatter,
     construct_over_time_charts,
+    create_standard_study_df,
 )
 
 logger = logging.getLogger(__name__)
@@ -253,7 +254,7 @@ def generate_required_ct_charts_list(profile):
         if profile.plotHistograms:
             required_charts.append(
                 {
-                    "title": "Histogram of study description DLP",
+                    "title": "Histogram of standard study name DLP",
                     "var_name": "standardStudyHistogramDLP",
                 }
             )
@@ -1234,8 +1235,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             name_field = "standard_study"
             value_field = "total_dlp"
 
+            standard_name_df = create_standard_study_df(df, value_field)
+
             df_aggregated = create_dataframe_aggregates(
-                df,
+                standard_name_df,
                 [name_field],
                 value_field,
                 stats_to_use=average_choices + ["count"],
@@ -1301,7 +1304,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 }
 
                 return_structure["standardStudyBoxplotDLPData"] = plotly_boxplot(
-                    df,
+                    standard_name_df,
                     parameter_dict,
                 )
 
@@ -1333,7 +1336,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "return_as_dict": return_as_dict,
                 }
                 return_structure["standardStudyHistogramDLPData"] = plotly_histogram_barchart(
-                    df,
+                    standard_name_df,
                     parameter_dict,
                 )
 

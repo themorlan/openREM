@@ -291,22 +291,10 @@ def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None)
     if stats_to_use is None:
         stats_to_use = ["count"]
 
-    if "standard_study" in df_name_cols:
-        df = create_standard_study_df(df, df_agg_col)
-
-        # Calculate the aggregate statistics
-        grouped_df = df.groupby(["x_ray_system_name", "standard_study"]).agg({df_agg_col: stats_to_use})
-
-        # Remove the multi-level column headings and rename them
-        grouped_df = grouped_df.reset_index()
-        grouped_df.columns = grouped_df.columns.droplevel(level=1)[:2].append(grouped_df.columns.droplevel(level=0)[2:])
-
-    else:
-        groupby_cols = ["x_ray_system_name"] + df_name_cols
-
-        grouped_df = df.groupby(groupby_cols).agg({df_agg_col: stats_to_use})
-        grouped_df.columns = grouped_df.columns.droplevel(level=0)
-        grouped_df = grouped_df.reset_index()
+    groupby_cols = ["x_ray_system_name"] + df_name_cols
+    grouped_df = df.groupby(groupby_cols).agg({df_agg_col: stats_to_use})
+    grouped_df.columns = grouped_df.columns.droplevel(level=0)
+    grouped_df = grouped_df.reset_index()
 
     if settings.DEBUG:
         print(f"Aggregated dataframe created in {datetime.now() - start}")
