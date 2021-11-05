@@ -61,6 +61,14 @@ def generate_required_ct_charts_list(profile):
         values = list(dict(profile.TIME_PERIOD).values())
         time_period = (values[keys.index(profile.plotCTOverTimePeriod)]).lower()
 
+    if profile.plotCTAcquisitionFreq:
+        required_charts.append(
+            {
+                "title": "Chart of acquisition protocol frequency",
+                "var_name": "acquisitionFrequency",
+            }
+        )
+
     if profile.plotCTAcquisitionMeanDLP:
         if profile.plotMean:
             required_charts.append(
@@ -129,31 +137,25 @@ def generate_required_ct_charts_list(profile):
                 }
             )
 
-    if profile.plotCTAcquisitionFreq:
-        required_charts.append(
-            {
-                "title": "Chart of acquisition protocol frequency",
-                "var_name": "acquisitionFrequency",
-            }
-        )
-
-    if profile.plotCTAcquisitionCTDIvsMass:
-        required_charts.append(  # nosec
-            {
-                "title": mark_safe(
-                    "Chart of acquisition protocol CTDI<sub>vol</sub> vs patient mass"
-                ),
-                "var_name": "acquisitionScatterCTDIvsMass",
-            }
-        )
-
-    if profile.plotCTAcquisitionDLPvsMass:
-        required_charts.append(
-            {
-                "title": "Chart of acquisition protocol DLP vs patient mass",
-                "var_name": "acquisitionScatterDLPvsMass",
-            }
-        )
+    if profile.plotCTAcquisitionDLPOverTime:
+        if profile.plotMean:
+            required_charts.append(
+                {
+                    "title": "Chart of acquisition protocol mean DLP over time ("
+                    + time_period
+                    + ")",
+                    "var_name": "acquisitionMeanDLPOverTime",
+                }
+            )
+        if profile.plotMedian:
+            required_charts.append(
+                {
+                    "title": "Chart of acquisition protocol median DLP over time ("
+                    + time_period
+                    + ")",
+                    "var_name": "acquisitionMedianDLPOverTime",
+                }
+            )
 
     if profile.plotCTAcquisitionCTDIOverTime:
         if profile.plotMean:
@@ -179,25 +181,31 @@ def generate_required_ct_charts_list(profile):
                 }
             )
 
-    if profile.plotCTAcquisitionDLPOverTime:
-        if profile.plotMean:
-            required_charts.append(
-                {
-                    "title": "Chart of acquisition protocol mean DLP over time ("
-                    + time_period
-                    + ")",
-                    "var_name": "acquisitionMeanDLPOverTime",
-                }
-            )
-        if profile.plotMedian:
-            required_charts.append(
-                {
-                    "title": "Chart of acquisition protocol median DLP over time ("
-                    + time_period
-                    + ")",
-                    "var_name": "acquisitionMedianDLPOverTime",
-                }
-            )
+    if profile.plotCTAcquisitionDLPvsMass:
+        required_charts.append(
+            {
+                "title": "Chart of acquisition protocol DLP vs patient mass",
+                "var_name": "acquisitionScatterDLPvsMass",
+            }
+        )
+
+    if profile.plotCTAcquisitionCTDIvsMass:
+        required_charts.append(  # nosec
+            {
+                "title": mark_safe(
+                    "Chart of acquisition protocol CTDI<sub>vol</sub> vs patient mass"
+                ),
+                "var_name": "acquisitionScatterCTDIvsMass",
+            }
+        )
+
+    if profile.plotCTStudyFreq:
+        required_charts.append(
+            {
+                "title": "Chart of study description frequency",
+                "var_name": "studyFrequency",
+            }
+        )
 
     if profile.plotCTStudyMeanDLP:
         if profile.plotMean:
@@ -228,44 +236,6 @@ def generate_required_ct_charts_list(profile):
                     "var_name": "studyHistogramDLP",
                 }
             )
-
-    if profile.plotCTStandardStudyMeanDLP:
-        if profile.plotMean:
-            required_charts.append(
-                {
-                    "title": "Chart of standard study name mean DLP",
-                    "var_name": "standardStudyMeanDLP",
-                }
-            )
-        if profile.plotMedian:
-            required_charts.append(
-                {
-                    "title": "Chart of standard study name median DLP",
-                    "var_name": "standardStudyMedianDLP",
-                }
-            )
-        if profile.plotBoxplots:
-            required_charts.append(
-                {
-                    "title": "Boxplot of standard study name DLP",
-                    "var_name": "standardStudyBoxplotDLP",
-                }
-            )
-        if profile.plotHistograms:
-            required_charts.append(
-                {
-                    "title": "Histogram of standard study name DLP",
-                    "var_name": "standardStudyHistogramDLP",
-                }
-            )
-
-    if profile.plotCTStandardStudyFreq:
-        required_charts.append(
-            {
-                "title": "Chart of standard study name frequency",
-                "var_name": "standardStudyFrequency",
-            }
-        )
 
     if profile.plotCTStudyMeanCTDI:
         if profile.plotMean:
@@ -305,14 +275,6 @@ def generate_required_ct_charts_list(profile):
                 }
             )
 
-    if profile.plotCTStudyFreq:
-        required_charts.append(
-            {
-                "title": "Chart of study description frequency",
-                "var_name": "studyFrequency",
-            }
-        )
-
     if profile.plotCTStudyNumEvents:
         if profile.plotMean:
             required_charts.append(
@@ -343,14 +305,6 @@ def generate_required_ct_charts_list(profile):
                 }
             )
 
-    if profile.plotCTStudyPerDayAndHour:
-        required_charts.append(
-            {
-                "title": "Chart of study description workload",
-                "var_name": "studyWorkload",
-            }
-        )
-
     if profile.plotCTStudyMeanDLPOverTime:
         if profile.plotMean:
             required_charts.append(
@@ -370,6 +324,68 @@ def generate_required_ct_charts_list(profile):
                     "var_name": "studyMedianDLPOverTime",
                 }
             )
+
+    if profile.plotCTStudyPerDayAndHour:
+        required_charts.append(
+            {
+                "title": "Chart of study description workload",
+                "var_name": "studyWorkload",
+            }
+        )
+
+    if profile.plotCTStandardStudyFreq:
+        required_charts.append(
+            {
+                "title": "Chart of standard study name frequency",
+                "var_name": "standardStudyFrequency",
+            }
+        )
+
+    if profile.plotCTStandardStudyMeanDLP:
+        if profile.plotMean:
+            required_charts.append(
+                {
+                    "title": "Chart of standard study name mean DLP",
+                    "var_name": "standardStudyMeanDLP",
+                }
+            )
+        if profile.plotMedian:
+            required_charts.append(
+                {
+                    "title": "Chart of standard study name median DLP",
+                    "var_name": "standardStudyMedianDLP",
+                }
+            )
+        if profile.plotBoxplots:
+            required_charts.append(
+                {
+                    "title": "Boxplot of standard study name DLP",
+                    "var_name": "standardStudyBoxplotDLP",
+                }
+            )
+        if profile.plotHistograms:
+            required_charts.append(
+                {
+                    "title": "Histogram of standard study name DLP",
+                    "var_name": "standardStudyHistogramDLP",
+                }
+            )
+
+    if profile.plotCTStandardStudyPerDayAndHour:
+        required_charts.append(
+            {
+                "title": "Chart of standard study name workload",
+                "var_name": "standardStudyWorkload",
+            }
+        )
+
+    if profile.plotCTRequestFreq:
+        required_charts.append(
+            {
+                "title": "Chart of requested procedure frequency",
+                "var_name": "requestFrequency",
+            }
+        )
 
     if profile.plotCTRequestMeanDLP:
         if profile.plotMean:
@@ -400,14 +416,6 @@ def generate_required_ct_charts_list(profile):
                     "var_name": "requestHistogramDLP",
                 }
             )
-
-    if profile.plotCTRequestFreq:
-        required_charts.append(
-            {
-                "title": "Chart of requested procedure frequency",
-                "var_name": "requestFrequency",
-            }
-        )
 
     if profile.plotCTRequestNumEvents:
         if profile.plotMean:
@@ -1040,6 +1048,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
     if enable_standard_names:
         charts_of_interest.append(user_profile.plotCTStandardStudyMeanDLP)
         charts_of_interest.append(user_profile.plotCTStandardStudyFreq)
+        charts_of_interest.append(user_profile.plotCTStandardStudyPerDayAndHour)
 
     if any(charts_of_interest):
         name_fields = []
@@ -1067,6 +1076,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             charts_of_interest = [
                 user_profile.plotCTStandardStudyMeanDLP,
                 user_profile.plotCTStandardStudyFreq,
+                user_profile.plotCTStandardStudyPerDayAndHour,
             ]
             if any(charts_of_interest):
                 name_fields.append("standard_study_name")
@@ -1097,6 +1107,8 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             user_profile.plotCTStudyPerDayAndHour,
             user_profile.plotCTRequestDLPOverTime,
         ]
+        if enable_standard_names:
+            charts_of_interest.append(user_profile.plotCTStandardStudyPerDayAndHour)
         if any(charts_of_interest):
             date_fields.append("study_date")
             time_fields.append("study_time")
@@ -1237,16 +1249,19 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict,
                 )
 
-        if user_profile.plotCTStandardStudyMeanDLP or user_profile.plotCTStandardStudyFreq:
+        if user_profile.plotCTStandardStudyMeanDLP or user_profile.plotCTStandardStudyFreq or user_profile.plotCTStandardStudyPerDayAndHour:
 
             # Create a standard name data frame to be used by the study-level charts
             name_field = "standard_study"
             value_field = "total_dlp"
             standard_name_df = None
+            use_date_time = False
+            if user_profile.plotCTStandardStudyPerDayAndHour:
+                use_date_time = True
             if user_profile.plotCTStandardStudyMeanDLP:
-                standard_name_df = create_standard_study_df(df, value_field)
+                standard_name_df = create_standard_study_df(df, df_agg_col=value_field, use_date_time=use_date_time)
             else:
-                standard_name_df = create_standard_study_df(df)
+                standard_name_df = create_standard_study_df(df, use_date_time=use_date_time)
 
             if user_profile.plotCTStandardStudyMeanDLP:
 
@@ -1381,6 +1396,27 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     standard_name_df,
                     parameter_dict,
                     csv_name="standardStudyFrequencyData.csv",
+                )
+
+            if user_profile.plotCTStandardStudyPerDayAndHour:
+                df_time_series_per_weekday = create_dataframe_weekdays(
+                    standard_name_df, "standard_study", df_date_col="study_date"
+                )
+
+                return_structure["standardStudyWorkloadData"] = plotly_barchart_weekdays(
+                    df_time_series_per_weekday,
+                    "weekday",
+                    "standard_study",
+                    name_axis_title="Weekday",
+                    value_axis_title="Frequency",
+                    colourmap=user_profile.plotColourMapChoice,
+                    filename="OpenREM CT standard study name workload",
+                    facet_col_wrap=user_profile.plotFacetColWrapVal,
+                    sorting_choice=[
+                        user_profile.plotInitialSortingDirection,
+                        user_profile.plotCTInitialSortingChoice,
+                    ],
+                    return_as_dict=return_as_dict,
                 )
 
 

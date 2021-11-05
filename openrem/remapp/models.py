@@ -603,6 +603,7 @@ class UserProfile(models.Model, CommonVariables):
     plotCTStudyMeanDLPOverTime = models.BooleanField(default=False)
     plotCTStandardStudyMeanDLP = models.BooleanField(default=False)
     plotCTStandardStudyFreq = models.BooleanField(default=False)
+    plotCTStandardStudyPerDayAndHour = models.BooleanField(default=False)
     plotCTOverTimePeriod = models.CharField(
         max_length=13,
         choices=CommonVariables.TIME_PERIOD,

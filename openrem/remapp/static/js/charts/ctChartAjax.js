@@ -218,6 +218,11 @@ $(document).ready(function() {
                 $("#studyWorkloadChartDiv").html(json.studyWorkloadData);
             }
 
+            // Standard study workload chart data
+            if(typeof json.standardStudyWorkloadData !== "undefined") {
+                $("#standardStudyWorkloadChartDiv").html(json.standardStudyWorkloadData);
+            }
+
             $(".ajax-progress").hide();
         },
         error: function( xhr, status, errorThrown ) {

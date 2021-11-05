@@ -302,7 +302,7 @@ def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None)
     return grouped_df
 
 
-def create_standard_study_df(df, df_agg_col=None):
+def create_standard_study_df(df, df_agg_col=None, use_date_time=False):
     """
     Creates a Pandas DataFrame of standard_study names, df_agg_col values and x_ray_system_name values from entries
     in the initial DataFrame's standard_study_name, standard_request_name and standard_procedure_name fields.
@@ -323,6 +323,10 @@ def create_standard_study_df(df, df_agg_col=None):
     if df_agg_col is not None:
         fields_to_include.append(df_agg_col)
         id_vars.append(df_agg_col)
+
+    if use_date_time:
+        fields_to_include.extend(["study_date", "study_time"])
+        id_vars.extend(["study_date", "study_time"])
 
     df = df[fields_to_include].reset_index().melt(
         id_vars=id_vars, value_name="standard_study"
