@@ -302,7 +302,7 @@ def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None)
     return grouped_df
 
 
-def create_standard_study_df(df, df_agg_col=None, use_date_time=False):
+def create_standard_study_df(df, std_name="standard_study", df_agg_col=None, use_date_time=False):
     """
     Creates a Pandas DataFrame of standard_study names, df_agg_col values and x_ray_system_name values from entries
     in the initial DataFrame's standard_study_name, standard_request_name and standard_procedure_name fields.

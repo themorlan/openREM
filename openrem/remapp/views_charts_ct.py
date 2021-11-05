@@ -54,6 +54,7 @@ def generate_required_ct_charts_list(profile):
         profile.plotCTAcquisitionDLPOverTime,
         profile.plotCTAcquisitionCTDIOverTime,
         profile.plotCTStudyMeanDLPOverTime,
+        profile.plotCTStandardStudyMeanDLPOverTime,
         profile.plotCTRequestDLPOverTime,
     ]
     if any(charts_of_interest):
@@ -379,6 +380,26 @@ def generate_required_ct_charts_list(profile):
             }
         )
 
+    if profile.plotCTStandardStudyMeanDLPOverTime:
+        if profile.plotMean:
+            required_charts.append(
+                {
+                    "title": "Chart of standard study name mean DLP over time ("
+                    + time_period
+                    + ")",
+                    "var_name": "standardStudyMeanDLPOverTime",
+                }
+            )
+        if profile.plotMedian:
+            required_charts.append(
+                {
+                    "title": "Chart of standard study name median DLP over time ("
+                    + time_period
+                    + ")",
+                    "var_name": "standardStudyMedianDLPOverTime",
+                }
+            )
+
     if profile.plotCTRequestFreq:
         required_charts.append(
             {
@@ -529,6 +550,8 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         user_profile.plotCTStudyMeanDLPOverTime,
         user_profile.plotCTRequestDLPOverTime,
     ]
+    if enable_standard_names:
+        charts_of_interest.append(user_profile.plotCTStandardStudyMeanDLPOverTime)
     if any(charts_of_interest):
         plot_timeunit_period = user_profile.plotCTOverTimePeriod
 
@@ -1049,6 +1072,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         charts_of_interest.append(user_profile.plotCTStandardStudyMeanDLP)
         charts_of_interest.append(user_profile.plotCTStandardStudyFreq)
         charts_of_interest.append(user_profile.plotCTStandardStudyPerDayAndHour)
+        charts_of_interest.append(user_profile.plotCTStandardStudyMeanDLPOverTime)
 
     if any(charts_of_interest):
         name_fields = []
@@ -1077,6 +1101,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 user_profile.plotCTStandardStudyMeanDLP,
                 user_profile.plotCTStandardStudyFreq,
                 user_profile.plotCTStandardStudyPerDayAndHour,
+                user_profile.plotCTStandardStudyMeanDLPOverTime,
             ]
             if any(charts_of_interest):
                 name_fields.append("standard_study_name")
@@ -1092,6 +1117,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         ]
         if enable_standard_names:
             charts_of_interest.append(user_profile.plotCTStandardStudyMeanDLP)
+            charts_of_interest.append(user_profile.plotCTStandardStudyMeanDLPOverTime)
 
         if any(charts_of_interest):
             value_fields.append("total_dlp")
@@ -1109,6 +1135,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         ]
         if enable_standard_names:
             charts_of_interest.append(user_profile.plotCTStandardStudyPerDayAndHour)
+            charts_of_interest.append(user_profile.plotCTStandardStudyMeanDLPOverTime)
         if any(charts_of_interest):
             date_fields.append("study_date")
             time_fields.append("study_time")
@@ -1249,19 +1276,20 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict,
                 )
 
-        if user_profile.plotCTStandardStudyMeanDLP or user_profile.plotCTStandardStudyFreq or user_profile.plotCTStandardStudyPerDayAndHour:
+        if user_profile.plotCTStandardStudyMeanDLP or user_profile.plotCTStandardStudyFreq or user_profile.plotCTStandardStudyPerDayAndHour or user_profile.plotCTStandardStudyMeanDLPOverTime:
 
             # Create a standard name data frame to be used by the study-level charts
-            name_field = "standard_study"
-            value_field = "total_dlp"
-            standard_name_df = None
+            std_field_name = "standard_study"
+            value_field = None
             use_date_time = False
-            if user_profile.plotCTStandardStudyPerDayAndHour:
+
+            if user_profile.plotCTStandardStudyPerDayAndHour or user_profile.plotCTStandardStudyMeanDLPOverTime:
                 use_date_time = True
-            if user_profile.plotCTStandardStudyMeanDLP:
-                standard_name_df = create_standard_study_df(df, df_agg_col=value_field, use_date_time=use_date_time)
-            else:
-                standard_name_df = create_standard_study_df(df, use_date_time=use_date_time)
+
+            if user_profile.plotCTStandardStudyMeanDLP or user_profile.plotCTStandardStudyMeanDLPOverTime:
+                value_field = "total_dlp"
+
+            standard_name_df = create_standard_study_df(df, std_name=std_field_name, df_agg_col=value_field, use_date_time=use_date_time)
 
             if user_profile.plotCTStandardStudyMeanDLP:
 
@@ -1270,7 +1298,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 df_aggregated = create_dataframe_aggregates(
                     standard_name_df,
-                    [name_field],
+                    [std_field_name],
                     value_field,
                     stats_to_use=average_choices + ["count"],
                 )
@@ -1278,7 +1306,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 if user_profile.plotMean or user_profile.plotMedian:
 
                     parameter_dict = {
-                        "df_name_col": name_field,
+                        "df_name_col": std_field_name,
                         "name_axis_title": "Standard study name",
                         "colourmap": user_profile.plotColourMapChoice,
                         "facet_col": None,
@@ -1319,7 +1347,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotBoxplots:
                     parameter_dict = {
-                        "df_name_col": name_field,
+                        "df_name_col": std_field_name,
                         "df_value_col": value_field,
                         "value_axis_title": "DLP (mGy.cm)",
                         "name_axis_title": "Standard study name",
@@ -1340,7 +1368,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
                 if user_profile.plotHistograms:
-                    category_names_col = name_field
+                    category_names_col = std_field_name
                     group_by_col = "x_ray_system_name"
                     legend_title = "Standard study name"
 
@@ -1373,7 +1401,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotCTStandardStudyFreq:
                 parameter_dict = {
-                    "df_name_col": "standard_study",
+                    "df_name_col": std_field_name,
                     "sorting_choice": [
                         user_profile.plotInitialSortingDirection,
                         user_profile.plotCTInitialSortingChoice,
@@ -1400,13 +1428,13 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotCTStandardStudyPerDayAndHour:
                 df_time_series_per_weekday = create_dataframe_weekdays(
-                    standard_name_df, "standard_study", df_date_col="study_date"
+                    standard_name_df, std_field_name, df_date_col="study_date"
                 )
 
                 return_structure["standardStudyWorkloadData"] = plotly_barchart_weekdays(
                     df_time_series_per_weekday,
                     "weekday",
-                    "standard_study",
+                    std_field_name,
                     name_axis_title="Weekday",
                     value_axis_title="Frequency",
                     colourmap=user_profile.plotColourMapChoice,
@@ -1419,6 +1447,41 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     return_as_dict=return_as_dict,
                 )
 
+            if user_profile.plotCTStandardStudyMeanDLPOverTime:
+                facet_title = "System"
+
+                if user_profile.plotGroupingChoice == "series":
+                    facet_title = "Study description"
+
+                parameter_dict = {
+                    "df_name_col": std_field_name,
+                    "df_value_col": "total_dlp",
+                    "df_date_col": "study_date",
+                    "name_title": "Standard study name",
+                    "value_title": "DLP (mGy.cm)",
+                    "date_title": "Study date",
+                    "facet_title": facet_title,
+                    "sorting_choice": [
+                        user_profile.plotInitialSortingDirection,
+                        user_profile.plotCTInitialSortingChoice,
+                    ],
+                    "time_period": plot_timeunit_period,
+                    "average_choices": average_choices + ["count"],
+                    "grouping_choice": user_profile.plotGroupingChoice,
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "filename": "OpenREM CT standard study name DLP over time",
+                    "return_as_dict": return_as_dict,
+                }
+                result = construct_over_time_charts(
+                    standard_name_df,
+                    parameter_dict,
+                )
+
+                if user_profile.plotMean:
+                    return_structure["standardStudyMeanDLPOverTime"] = result["mean"]
+                if user_profile.plotMedian:
+                    return_structure["standardStudyMedianDLPOverTime"] = result["median"]
 
         if user_profile.plotCTStudyMeanCTDI:
 

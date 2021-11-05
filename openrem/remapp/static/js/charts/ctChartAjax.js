@@ -213,6 +213,14 @@ $(document).ready(function() {
                 $("#studyMedianDLPOverTimeChartDiv").html(json.studyMedianDLPOverTime);
             }
 
+            // DLP over time chart data
+            if(typeof json.standardStudyMeanDLPOverTime !== "undefined") {
+                $("#standardStudyMeanDLPOverTimeChartDiv").html(json.standardStudyMeanDLPOverTime);
+            }
+            if(typeof json.standardStudyMedianDLPOverTime !== "undefined") {
+                $("#standardStudyMedianDLPOverTimeChartDiv").html(json.standardStudyMedianDLPOverTime);
+            }
+
             // Study workload chart data
             if(typeof json.studyWorkloadData !== "undefined") {
                 $("#studyWorkloadChartDiv").html(json.studyWorkloadData);

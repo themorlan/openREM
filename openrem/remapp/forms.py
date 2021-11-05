@@ -272,6 +272,7 @@ class CTChartOptionsFormIncStandard(CTChartOptionsForm):
     plotCTStandardStudyMeanDLP = forms.BooleanField(label="Standard study DLP", required=False)
     plotCTStandardStudyFreq = forms.BooleanField(label="Standard study frequency", required=False)
     plotCTStandardStudyPerDayAndHour = forms.BooleanField(label="Standard study workload", required=False)
+    plotCTStandardStudyMeanDLPOverTime = forms.BooleanField(label="Standard study DLP over time", required=False)
 
 
     field_order = [
@@ -293,6 +294,7 @@ class CTChartOptionsFormIncStandard(CTChartOptionsForm):
         "plotCTStandardStudyFreq",
         "plotCTStandardStudyMeanDLP",
         "plotCTStandardStudyPerDayAndHour",
+        "plotCTStandardStudyMeanDLPOverTime",
         "plotCTRequestFreq",
         "plotCTRequestMeanDLP",
         "plotCTRequestNumEvents",
@@ -602,6 +604,7 @@ class CTChartOptionsDisplayFormIncStandard(CTChartOptionsDisplayForm):
     plotCTStandardStudyMeanDLP = forms.BooleanField(label="Standard study DLP", required=False)
     plotCTStandardStudyFreq = forms.BooleanField(label="Standard study frequency", required=False)
     plotCTStandardStudyPerDayAndHour = forms.BooleanField(label="Standard study workload", required=False)
+    plotCTStandardStudyMeanDLPOverTime = forms.BooleanField(label="Standard study DLP over time", required=False)
 
     field_order = [
         "plotCTAcquisitionMeanDLP",
@@ -620,6 +623,7 @@ class CTChartOptionsDisplayFormIncStandard(CTChartOptionsDisplayForm):
         "plotCTStandardStudyFreq",
         "plotCTStandardStudyMeanDLP",
         "plotCTStandardStudyPerDayAndHour",
+        "plotCTStandardStudyMeanDLPOverTime",
         "plotCTRequestFreq",
         "plotCTRequestMeanDLP",
         "plotCTRequestNumEvents",
