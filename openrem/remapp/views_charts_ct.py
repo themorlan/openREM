@@ -372,14 +372,6 @@ def generate_required_ct_charts_list(profile):
                 }
             )
 
-    if profile.plotCTStandardStudyPerDayAndHour:
-        required_charts.append(
-            {
-                "title": "Chart of standard study name workload",
-                "var_name": "standardStudyWorkload",
-            }
-        )
-
     if profile.plotCTStandardStudyMeanDLPOverTime:
         if profile.plotMean:
             required_charts.append(
@@ -399,6 +391,14 @@ def generate_required_ct_charts_list(profile):
                     "var_name": "standardStudyMedianDLPOverTime",
                 }
             )
+
+    if profile.plotCTStandardStudyPerDayAndHour:
+        required_charts.append(
+            {
+                "title": "Chart of standard study name workload",
+                "var_name": "standardStudyWorkload",
+            }
+        )
 
     if profile.plotCTRequestFreq:
         required_charts.append(
