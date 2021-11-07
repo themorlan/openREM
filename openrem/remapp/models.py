@@ -602,6 +602,7 @@ class UserProfile(models.Model, CommonVariables):
     plotCTStudyPerDayAndHour = models.BooleanField(default=False)
     plotCTStudyMeanDLPOverTime = models.BooleanField(default=False)
     plotCTStandardStudyMeanDLP = models.BooleanField(default=False)
+    plotCTStandardStudyNumEvents = models.BooleanField(default=False)
     plotCTStandardStudyFreq = models.BooleanField(default=False)
     plotCTStandardStudyPerDayAndHour = models.BooleanField(default=False)
     plotCTStandardStudyMeanDLPOverTime = models.BooleanField(default=False)

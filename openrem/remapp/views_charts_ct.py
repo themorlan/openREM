@@ -372,6 +372,36 @@ def generate_required_ct_charts_list(profile):
                 }
             )
 
+    if profile.plotCTStandardStudyNumEvents:
+        if profile.plotMean:
+            required_charts.append(
+                {
+                    "title": "Chart of standard study name mean number of events",
+                    "var_name": "standardStudyMeanNumEvents",
+                }
+            )
+        if profile.plotMedian:
+            required_charts.append(
+                {
+                    "title": "Chart of standard study name median number of events",
+                    "var_name": "standardStudyMedianNumEvents",
+                }
+            )
+        if profile.plotBoxplots:
+            required_charts.append(
+                {
+                    "title": "Boxplot of standard study name number of events",
+                    "var_name": "standardStudyBoxplotNumEvents",
+                }
+            )
+        if profile.plotHistograms:
+            required_charts.append(
+                {
+                    "title": "Histogram of standard study name number of events",
+                    "var_name": "standardStudyHistogramNumEvents",
+                }
+            )
+
     if profile.plotCTStandardStudyMeanDLPOverTime:
         if profile.plotMean:
             required_charts.append(
@@ -1070,6 +1100,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
     ]
     if enable_standard_names:
         charts_of_interest.append(user_profile.plotCTStandardStudyMeanDLP)
+        charts_of_interest.append(user_profile.plotCTStandardStudyNumEvents)
         charts_of_interest.append(user_profile.plotCTStandardStudyFreq)
         charts_of_interest.append(user_profile.plotCTStandardStudyPerDayAndHour)
         charts_of_interest.append(user_profile.plotCTStandardStudyMeanDLPOverTime)
@@ -1099,6 +1130,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         if enable_standard_names:
             charts_of_interest = [
                 user_profile.plotCTStandardStudyMeanDLP,
+                user_profile.plotCTStandardStudyNumEvents,
                 user_profile.plotCTStandardStudyFreq,
                 user_profile.plotCTStandardStudyPerDayAndHour,
                 user_profile.plotCTStandardStudyMeanDLPOverTime,
@@ -1121,9 +1153,18 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
         if any(charts_of_interest):
             value_fields.append("total_dlp")
+
         if user_profile.plotCTStudyMeanCTDI:
             value_fields.append("ctradiationdose__ctirradiationeventdata__mean_ctdivol")
-        if user_profile.plotCTStudyNumEvents or user_profile.plotCTRequestNumEvents:
+
+        charts_of_interest = [
+            user_profile.plotCTStudyNumEvents,
+            user_profile.plotCTRequestNumEvents
+        ]
+        if enable_standard_names:
+            charts_of_interest.append(user_profile.plotCTStandardStudyNumEvents)
+
+        if any(charts_of_interest):
             value_fields.append("number_of_events")
 
         date_fields = []
@@ -1276,20 +1317,28 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict,
                 )
 
-        if user_profile.plotCTStandardStudyMeanDLP or user_profile.plotCTStandardStudyFreq or user_profile.plotCTStandardStudyPerDayAndHour or user_profile.plotCTStandardStudyMeanDLPOverTime:
+        if (
+            user_profile.plotCTStandardStudyMeanDLP or
+            user_profile.plotCTStandardStudyFreq or
+            user_profile.plotCTStandardStudyPerDayAndHour or
+            user_profile.plotCTStandardStudyMeanDLPOverTime or
+            user_profile.plotCTStandardStudyNumEvents
+        ):
 
             # Create a standard name data frame to be used by the study-level charts
             std_field_name = "standard_study"
-            value_field = None
-            use_date_time = False
+            value_fields = []
 
             if user_profile.plotCTStandardStudyPerDayAndHour or user_profile.plotCTStandardStudyMeanDLPOverTime:
-                use_date_time = True
+                value_fields.extend(["study_date", "study_time"])
 
             if user_profile.plotCTStandardStudyMeanDLP or user_profile.plotCTStandardStudyMeanDLPOverTime:
-                value_field = "total_dlp"
+                value_fields.append("total_dlp")
 
-            standard_name_df = create_standard_study_df(df, std_name=std_field_name, df_agg_col=value_field, use_date_time=use_date_time)
+            if user_profile.plotCTStandardStudyNumEvents:
+                value_fields.append("number_of_events")
+
+            standard_name_df = create_standard_study_df(df, std_name=std_field_name, df_agg_cols=value_fields)
 
             if user_profile.plotCTStandardStudyMeanDLP:
 
@@ -1299,7 +1348,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 df_aggregated = create_dataframe_aggregates(
                     standard_name_df,
                     [std_field_name],
-                    value_field,
+                    "total_dlp",
                     stats_to_use=average_choices + ["count"],
                 )
 
@@ -1348,7 +1397,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 if user_profile.plotBoxplots:
                     parameter_dict = {
                         "df_name_col": std_field_name,
-                        "df_value_col": value_field,
+                        "df_value_col": "total_dlp",
                         "value_axis_title": "DLP (mGy.cm)",
                         "name_axis_title": "Standard study name",
                         "colourmap": user_profile.plotColourMapChoice,
@@ -1374,13 +1423,13 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                     if user_profile.plotGroupingChoice == "series":
                         category_names_col = "x_ray_system_name"
-                        group_by_col = name_field
+                        group_by_col = std_field_name
                         legend_title = "System"
 
                     parameter_dict = {
                         "df_facet_col": group_by_col,
                         "df_category_col": category_names_col,
-                        "df_value_col": value_field,
+                        "df_value_col": "total_dlp",
                         "value_axis_title": "DLP (mGy.cm)",
                         "legend_title": legend_title,
                         "n_bins": user_profile.plotHistogramBins,
@@ -1395,6 +1444,118 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                         "return_as_dict": return_as_dict,
                     }
                     return_structure["standardStudyHistogramDLPData"] = plotly_histogram_barchart(
+                        standard_name_df,
+                        parameter_dict,
+                    )
+
+            if user_profile.plotCTStandardStudyNumEvents:
+
+                if user_profile.plotBoxplots and "median" not in average_choices:
+                    average_choices = average_choices + ["median"]
+
+                df_aggregated = create_dataframe_aggregates(
+                    standard_name_df,
+                    [std_field_name],
+                    "number_of_events",
+                    stats_to_use=average_choices + ["count"],
+                )
+
+                if user_profile.plotMean or user_profile.plotMedian:
+
+                    parameter_dict = {
+                        "df_name_col": std_field_name,
+                        "name_axis_title": "Standard study name",
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "facet_col": None,
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "return_as_dict": return_as_dict,
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotCTInitialSortingChoice,
+                        ],
+                    }
+                    if user_profile.plotMean:
+                        parameter_dict["value_axis_title"] = "Mean events"
+                        parameter_dict[
+                            "filename"
+                        ] = "OpenREM CT standard study name events mean"
+                        parameter_dict["average_choice"] = "mean"
+                        (
+                            return_structure["standardStudyMeanNumEventsData"],
+                            return_structure["standardStudyMeanNumEventsDataCSV"],
+                        ) = plotly_barchart(  # pylint: disable=line-too-long
+                            df_aggregated,
+                            parameter_dict,
+                            csv_name="standardStudyMeanNumEventsData.csv",
+                        )
+
+                    if user_profile.plotMedian:
+                        parameter_dict["value_axis_title"] = "Median events"
+                        parameter_dict[
+                            "filename"
+                        ] = "OpenREM CT standard study name events median"
+                        parameter_dict["average_choice"] = "median"
+                        (
+                            return_structure["standardStudyMedianNumEventsData"],
+                            return_structure["standardStudyMedianNumEventsDataCSV"],
+                        ) = plotly_barchart(  # pylint: disable=line-too-long
+                            df_aggregated,
+                            parameter_dict,
+                            csv_name="standardStudyMedianNumEventsData.csv",
+                        )
+
+                if user_profile.plotBoxplots:
+                    parameter_dict = {
+                        "df_name_col": std_field_name,
+                        "df_value_col": "number_of_events",
+                        "value_axis_title": "Events",
+                        "name_axis_title": "Standard study name",
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "filename": "OpenREM CT standard study name events boxplot",
+                        "facet_col": None,
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotCTInitialSortingChoice,
+                        ],
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "return_as_dict": return_as_dict,
+                    }
+
+                    return_structure["standardStudyBoxplotNumEventsData"] = plotly_boxplot(
+                        standard_name_df,
+                        parameter_dict,
+                    )
+
+                if user_profile.plotHistograms:
+                    category_names_col = std_field_name
+                    group_by_col = "x_ray_system_name"
+                    legend_title = "Standard study name"
+
+                    if user_profile.plotGroupingChoice == "series":
+                        category_names_col = "x_ray_system_name"
+                        group_by_col = std_field_name
+                        legend_title = "System"
+
+                    parameter_dict = {
+                        "df_facet_col": group_by_col,
+                        "df_category_col": category_names_col,
+                        "df_value_col": "number_of_events",
+                        "value_axis_title": "Events",
+                        "legend_title": legend_title,
+                        "n_bins": user_profile.plotHistogramBins,
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "filename": "OpenREM CT standard study name events histogram",
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotCTInitialSortingChoice,
+                        ],
+                        "global_max_min": user_profile.plotHistogramGlobalBins,
+                        "return_as_dict": return_as_dict,
+                    }
+                    return_structure[
+                        "standardStudyHistogramNumEventsData"
+                    ] = plotly_histogram_barchart(
                         standard_name_df,
                         parameter_dict,
                     )
@@ -1451,7 +1612,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 facet_title = "System"
 
                 if user_profile.plotGroupingChoice == "series":
-                    facet_title = "Study description"
+                    facet_title = "Standard study name"
 
                 parameter_dict = {
                     "df_name_col": std_field_name,
@@ -1697,7 +1858,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     "legend_title": legend_title,
                     "n_bins": user_profile.plotHistogramBins,
                     "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM CT acquisition protocol events histogram",
+                    "filename": "OpenREM CT study description events histogram",
                     "facet_col_wrap": user_profile.plotFacetColWrapVal,
                     "sorting_choice": [
                         user_profile.plotInitialSortingDirection,

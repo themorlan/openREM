@@ -1683,6 +1683,7 @@ def set_ct_chart_options(ct_form, user_profile):
     ]
     if enable_standard_names:
         user_profile.plotCTStandardStudyMeanDLP = ct_form.cleaned_data["plotCTStandardStudyMeanDLP"]
+        user_profile.plotCTStandardStudyNumEvents = ct_form.cleaned_data["plotCTStandardStudyNumEvents"]
         user_profile.plotCTStandardStudyFreq = ct_form.cleaned_data["plotCTStandardStudyFreq"]
         user_profile.plotCTStandardStudyPerDayAndHour = ct_form.cleaned_data["plotCTStandardStudyPerDayAndHour"]
         user_profile.plotCTStandardStudyMeanDLPOverTime = ct_form.cleaned_data["plotCTStandardStudyMeanDLPOverTime"]
@@ -1732,6 +1733,7 @@ def initialise_ct_form_data(ct_acquisition_types, user_profile):
 
     if enable_standard_names:
         ct_form_data["plotCTStandardStudyMeanDLP"] = user_profile.plotCTStandardStudyMeanDLP
+        ct_form_data["plotCTStandardStudyNumEvents"] = user_profile.plotCTStandardStudyNumEvents
         ct_form_data["plotCTStandardStudyFreq"] = user_profile.plotCTStandardStudyFreq
         ct_form_data["plotCTStandardStudyPerDayAndHour"] = user_profile.plotCTStandardStudyPerDayAndHour
         ct_form_data["plotCTStandardStudyMeanDLPOverTime"] = user_profile.plotCTStandardStudyMeanDLPOverTime

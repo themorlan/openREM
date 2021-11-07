@@ -147,6 +147,24 @@ $(document).ready(function() {
                 $("#studyHistogramNumEventsChartDiv").html(json.studyHistogramNumEventsData);
             }
 
+
+            // Number of events per standard study name chart data
+            if(typeof json.standardStudyMeanNumEventsData !== "undefined") {
+                $("#standardStudyMeanNumEventsChartDiv").html(json.standardStudyMeanNumEventsData);
+                $("#standardStudyMeanNumEventsChartParentDiv").append(json.standardStudyMeanNumEventsDataCSV);
+            }
+            if(typeof json.standardStudyMedianNumEventsData !== "undefined") {
+                $("#standardStudyMedianNumEventsChartDiv").html(json.standardStudyMedianNumEventsData);
+                $("#standardStudyMedianNumEventsChartParentDiv").append(json.standardStudyMedianNumEventsDataCSV);
+            }
+            if(typeof json.standardStudyBoxplotNumEventsData !=="undefined") {
+                $("#standardStudyBoxplotNumEventsChartDiv").html(json.standardStudyBoxplotNumEventsData);
+            }
+            if(typeof json.standardStudyHistogramNumEventsData !=="undefined") {
+                $("#standardStudyHistogramNumEventsChartDiv").html(json.standardStudyHistogramNumEventsData);
+            }
+
+
             // Number of events per request chart data
             if(typeof json.requestMeanNumEventsData !== "undefined") {
                 $("#requestMeanNumEventsChartDiv").html(json.requestMeanNumEventsData);

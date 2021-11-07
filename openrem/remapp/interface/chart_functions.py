@@ -302,13 +302,13 @@ def create_dataframe_aggregates(df, df_name_cols, df_agg_col, stats_to_use=None)
     return grouped_df
 
 
-def create_standard_study_df(df, std_name="standard_study", df_agg_col=None, use_date_time=False):
+def create_standard_study_df(df, std_name="standard_study", df_agg_cols=None):
     """
     Creates a Pandas DataFrame of standard_study names, df_agg_col values and x_ray_system_name values from entries
     in the initial DataFrame's standard_study_name, standard_request_name and standard_procedure_name fields.
     Args:
         df: Pandas DataFrame containing all the data. Must include
-        df_agg_col: DataFrame column name containing values of interest
+        df_agg_cols: List of DataFrame column names containing values of interest
 
     Returns:
         df: a Pandas DataFrame with df_agg_col and x_ray_system_name values for each standard_study
@@ -320,13 +320,9 @@ def create_standard_study_df(df, std_name="standard_study", df_agg_col=None, use
     # The list of fields to use when generating the grouped dataframe and the fields for the id_vars of the melt
     fields_to_include = ["standard_request_name", "standard_procedure_name", "standard_study_name", "x_ray_system_name"]
     id_vars = ["index", "x_ray_system_name"]
-    if df_agg_col is not None:
-        fields_to_include.append(df_agg_col)
-        id_vars.append(df_agg_col)
-
-    if use_date_time:
-        fields_to_include.extend(["study_date", "study_time"])
-        id_vars.extend(["study_date", "study_time"])
+    if df_agg_cols:
+        fields_to_include.extend(df_agg_cols)
+        id_vars.extend(df_agg_cols)
 
     df = df[fields_to_include].reset_index().melt(
         id_vars=id_vars, value_name="standard_study"
@@ -1095,9 +1091,13 @@ def plotly_histogram_barchart(
         )
 
     try:
+        n_cols = params["facet_col_wrap"]
+        if len(df_facet_list) < n_cols:
+            n_cols = len(df_facet_list)
+
         fig = make_subplots(
             rows=n_facet_rows,
-            cols=params["facet_col_wrap"],
+            cols=n_cols,
             vertical_spacing=0.40 / n_facet_rows,
         )
 
@@ -1175,7 +1175,7 @@ def plotly_histogram_barchart(
 
             current_facet += 1
             current_col += 1
-            if current_col > params["facet_col_wrap"]:
+            if current_col > n_cols:
                 current_row += 1
                 current_col = 1
 
@@ -1318,9 +1318,13 @@ def plotly_binned_statistic_barchart(
         )
 
     try:
+        n_cols = params["facet_col_wrap"]
+        if len(df_facet_list) < n_cols:
+            n_cols = len(df_facet_list)
+
         fig = make_subplots(
             rows=n_facet_rows,
-            cols=params["facet_col_wrap"],
+            cols=n_cols,
             vertical_spacing=0.40 / n_facet_rows,
         )
 
@@ -1424,7 +1428,7 @@ def plotly_binned_statistic_barchart(
 
             current_facet += 1
             current_col += 1
-            if current_col > params["facet_col_wrap"]:
+            if current_col > n_cols:
                 current_row += 1
                 current_col = 1
 
