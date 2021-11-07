@@ -5,7 +5,11 @@ import os
 from django.contrib.auth.models import User, Group
 from django.test import TestCase, RequestFactory
 from remapp.extractors import rdsr
-from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
+from remapp.models import (
+    GeneralStudyModuleAttr,
+    PatientIDSettings,
+    StandardNameSettings,
+)
 from remapp.interface.mod_filters import CTSummaryListFilter
 from remapp.tests.test_charts_common import (
     check_series_and_category_names,
@@ -36,6 +40,14 @@ class ChartsCT(TestCase):
         pid.id_hashed = False
         pid.dob_stored = True
         pid.save()
+
+        try:
+            StandardNameSettings.objects.get()
+        except ObjectDoesNotExist:
+            StandardNameSettings.objects.create()
+        standard_name_settings = StandardNameSettings.objects.get()
+        standard_name_settings.enable_standard_names = True
+        standard_name_settings.save()
 
         ct1 = os.path.join("test_files", "CT-ESR-GE_Optima.dcm")
         ct2 = os.path.join("test_files", "CT-ESR-GE_VCT.dcm")
@@ -101,6 +113,7 @@ class ChartsCT(TestCase):
         self.user.userprofile.plotCTRequestNumEvents = True
         self.user.userprofile.plotCTRequestDLPOverTime = True
         self.user.userprofile.plotCTStandardStudyMeanDLP = True
+        self.user.userprofile.plotCTStandardStudyNumEvents = True
         self.user.userprofile.plotCTStandardStudyFreq = True
         self.user.userprofile.plotCTStandardStudyPerDayAndHour = True
         self.user.userprofile.plotCTStandardStudyMeanDLPOverTime = True
@@ -137,6 +150,10 @@ class ChartsCT(TestCase):
             "standardStudyMedianDLP",
             "standardStudyBoxplotDLP",
             "standardStudyHistogramDLP",
+            "standardStudyMeanNumEvents",
+            "standardStudyMedianNumEvents",
+            "standardStudyBoxplotNumEvents",
+            "standardStudyHistogramNumEvents",
             "standardStudyFrequency",
             "standardStudyWorkload",
             "standardStudyMeanDLPOverTime",

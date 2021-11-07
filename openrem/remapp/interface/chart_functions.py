@@ -1319,8 +1319,8 @@ def plotly_binned_statistic_barchart(
 
     try:
         n_cols = params["facet_col_wrap"]
-        if len(df_facet_list) < n_cols:
-            n_cols = len(df_facet_list)
+        if len(df_facet_category_list) < n_cols:
+            n_cols = len(df_facet_category_list)
 
         fig = make_subplots(
             rows=n_facet_rows,
