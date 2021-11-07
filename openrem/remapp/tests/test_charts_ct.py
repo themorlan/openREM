@@ -10,6 +10,7 @@ from remapp.models import (
     PatientIDSettings,
     StandardNameSettings,
 )
+from django.core.exceptions import ObjectDoesNotExist
 from remapp.interface.mod_filters import CTSummaryListFilter
 from remapp.tests.test_charts_common import (
     check_series_and_category_names,
