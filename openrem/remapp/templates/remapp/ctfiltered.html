@@ -178,8 +178,9 @@
                 </td>
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
-                        {{ exam.study_date|date:"Y-m-d" }} {{ exam.study_time|date:"H:i" }}</td>
-                </a>
+                        {{ exam.study_date|date:"Y-m-d" }} {{ exam.study_time|date:"H:i" }}
+                    </a>
+                </td>
                 <td>
                     <a href="{% url 'ct_detail_view' pk=exam.id %}">
                         <table onclick="window.location='{% url 'ct_detail_view' pk=exam.id %}';" aria-describedby="Study description, procedure and requested procedure name">
