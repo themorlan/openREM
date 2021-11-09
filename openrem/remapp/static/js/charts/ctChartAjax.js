@@ -211,6 +211,12 @@ $(document).ready(function() {
                 $("#acquisitionFrequencyChartParentDiv").append(json.acquisitionFrequencyDataCSV);
             }
 
+            // Standard acquisition name frequency chart data start
+            if(typeof json.standardAcquisitionFrequencyData !== "undefined") {
+                $("#standardAcquisitionFrequencyChartDiv").html(json.standardAcquisitionFrequencyData);
+                $("#standardAcquisitionFrequencyChartParentDiv").append(json.standardAcquisitionFrequencyDataCSV);
+            }
+
             // Acqusition scatter of CTDI vs patient mass
             if(typeof json.acquisitionScatterCTDIvsMass !== "undefined") {
                 $("#acquisitionScatterCTDIvsMassChartDiv").html(json.acquisitionScatterCTDIvsMass);

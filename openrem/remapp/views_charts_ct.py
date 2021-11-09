@@ -215,6 +215,14 @@ def generate_required_ct_charts_list(profile):
         )
 
     if enable_standard_names:
+        if profile.plotCTStandardAcquisitionFreq:
+            required_charts.append(
+                {
+                    "title": "Chart of standard acquisition name frequency",
+                    "var_name": "standardAcquisitionFrequency",
+                }
+            )
+
         if profile.plotCTStandardAcquisitionMeanDLP:
             if profile.plotMean:
                 required_charts.append(
@@ -643,6 +651,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         user_profile.plotCTAcquisitionDLPOverTime,
     ]
     if enable_standard_names:
+        charts_of_interest.append(user_profile.plotCTStandardAcquisitionFreq)
         charts_of_interest.append(user_profile.plotCTStandardAcquisitionMeanDLP)
 
     if any(charts_of_interest):
@@ -1151,7 +1160,38 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 return_structure["acquisitionMedianDLPOverTime"] = result["median"]
 
         if enable_standard_names:
-            df_without_blanks = df[(df["standard_acquisition_name"] != "blank") & (df["standard_acquisition_name"] != "Blank")]
+            # Exclude "Blank" and "blank" standard_acqusition_name data
+            df_without_blanks = df[(df["standard_acquisition_name"] != "blank") & (df["standard_acquisition_name"] != "Blank")].copy()
+            # Remove any unused categories (this will include "Blank" or "blank")
+            df_without_blanks["standard_acquisition_name"] = df_without_blanks["standard_acquisition_name"].cat.remove_unused_categories()
+
+            if user_profile.plotCTStandardAcquisitionFreq:
+                parameter_dict = {
+                    "df_name_col": "standard_acquisition_name",
+                    "sorting_choice": [
+                        user_profile.plotInitialSortingDirection,
+                        user_profile.plotCTInitialSortingChoice,
+                    ],
+                    "legend_title": "Standard acquisition name",
+                    "df_x_axis_col": "x_ray_system_name",
+                    "x_axis_title": "System",
+                    "grouping_choice": user_profile.plotGroupingChoice,
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "filename": "OpenREM CT standard acquisition name frequency",
+                    "groupby_cols": None,
+                    "facet_col": None,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "return_as_dict": return_as_dict,
+                    "custom_msg_line": chart_message,
+                }
+                (
+                    return_structure["standardAcquisitionFrequencyData"],
+                    return_structure["standardAcquisitionFrequencyDataCSV"],
+                ) = plotly_frequency_barchart(  # pylint: disable=line-too-long
+                    df_without_blanks,
+                    parameter_dict,
+                    csv_name="standardAcquisitionFrequencyData.csv",
+                )
 
             if user_profile.plotCTStandardAcquisitionMeanDLP:
 
@@ -1168,9 +1208,6 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     value_field,
                     stats_to_use=average_choices + ["count"],
                 )
-
-                # Drop blank values - I don't know why these appear
-                df_aggregated = df_aggregated[(df_aggregated["standard_acquisition_name"] != "blank") & (df_aggregated["standard_acquisition_name"] != "Blank")]
 
                 if user_profile.plotMean or user_profile.plotMedian:
 

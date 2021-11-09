@@ -298,6 +298,9 @@ class CTChartOptionsForm(forms.Form):
 
 
 class CTChartOptionsFormIncStandard(CTChartOptionsForm):
+    plotCTStandardAcquisitionFreq = forms.BooleanField(label="Standard acquisition name frequency", required=False)
+    plotCTStandardAcquisitionFreq.group = "Standard acquisition name"
+
     plotCTStandardAcquisitionMeanDLP = forms.BooleanField(label="Standard acquisition DLP", required=False)
     plotCTStandardAcquisitionMeanDLP.group = "Standard acquisition name"
 
@@ -610,6 +613,7 @@ class CTChartOptionsDisplayForm(forms.Form):
 
 
 class CTChartOptionsDisplayFormIncStandard(CTChartOptionsDisplayForm):
+    plotCTStandardAcquisitionFreq = forms.BooleanField(label="Standard acquisition name frequency", required=False)
     plotCTStandardAcquisitionMeanDLP = forms.BooleanField(label="Standard acquisition DLP", required=False)
 
     plotCTStandardStudyMeanDLP = forms.BooleanField(label="Standard study DLP", required=False)
@@ -627,6 +631,7 @@ class CTChartOptionsDisplayFormIncStandard(CTChartOptionsDisplayForm):
         "plotCTAcquisitionDLPvsMass",
         "plotCTAcquisitionCTDIvsMass",
         "plotCTAcquisitionTypes",
+        "plotCTStandardAcquisitionFreq",
         "plotCTStandardAcquisitionMeanDLP",
         "plotCTStudyFreq",
         "plotCTStudyMeanDLP",
