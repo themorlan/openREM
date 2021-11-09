@@ -1151,6 +1151,8 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 return_structure["acquisitionMedianDLPOverTime"] = result["median"]
 
         if enable_standard_names:
+            df_without_blanks = df[(df["standard_acquisition_name"] != "blank") & (df["standard_acquisition_name"] != "Blank")]
+
             if user_profile.plotCTStandardAcquisitionMeanDLP:
 
                 if user_profile.plotBoxplots and "median" not in average_choices:
@@ -1161,13 +1163,13 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 # Calculate an aggregated dataframe
                 df_aggregated = create_dataframe_aggregates(
-                    df,
+                    df_without_blanks,
                     [name_field],
                     value_field,
                     stats_to_use=average_choices + ["count"],
                 )
 
-                # Drop blank values
+                # Drop blank values - I don't know why these appear
                 df_aggregated = df_aggregated[(df_aggregated["standard_acquisition_name"] != "blank") & (df_aggregated["standard_acquisition_name"] != "Blank")]
 
                 if user_profile.plotMean or user_profile.plotMedian:
@@ -1234,7 +1236,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     }
 
                     return_structure["standardAcquisitionBoxplotDLPData"] = plotly_boxplot(
-                        df,
+                        df_without_blanks,
                         parameter_dict,
                     )
 
@@ -1269,7 +1271,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     return_structure[
                         "standardAcquisitionHistogramDLPData"
                     ] = plotly_histogram_barchart(
-                        df,
+                        df_without_blanks,
                         parameter_dict,
                     )
 
