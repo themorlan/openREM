@@ -915,6 +915,9 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
         if self.total_dap_delta_weeks:
             return 1000000 * self.total_dap_delta_weeks
 
+    class Meta:
+        indexes = [models.Index(fields=['modality_type', ]), ]
+
 
 class SkinDoseMapResults(models.Model):
     """Table to hold the results from OpenSkin"""
@@ -1800,8 +1803,8 @@ class GeneralEquipmentModuleAttr(models.Model):  # C.7.5.1
     def __unicode__(self):
         return self.station_name
 
-
-# CT
+    class Meta:
+        indexes = [models.Index(fields=['general_study_module_attributes', ]), ]
 
 
 class CtRadiationDose(models.Model):  # TID 10011
