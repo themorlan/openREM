@@ -109,7 +109,7 @@
                         <div id="{{ field_group.grouper|cut:" " }}" class="panel-collapse collapse">
                             <div class="panel-body">
 
-                                <table>
+                                <table class="table table-condensed">
                                 {% for field in field_group.list %}
                                     <tr>
                                     {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
