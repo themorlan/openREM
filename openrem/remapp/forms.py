@@ -225,31 +225,31 @@ class CTChartOptionsForm(forms.Form):
     plotCTAcquisitionFreq = forms.BooleanField(
         label="Acquisition frequency", required=False
     )
-    plotCTAcquisitionFreq.group = "Acquisition"
+    plotCTAcquisitionFreq.group = "Acquisition protocol"
     plotCTAcquisitionMeanDLP = forms.BooleanField(
         label="Acquisition DLP", required=False
     )
-    plotCTAcquisitionMeanDLP.group = "Acquisition"
+    plotCTAcquisitionMeanDLP.group = "Acquisition protocol"
     plotCTAcquisitionMeanCTDI = forms.BooleanField(  # nosec
         label=mark_safe("Acquisition CTDI<sub>vol</sub>"), required=False
     )
-    plotCTAcquisitionMeanCTDI.group = "Acquisition"
+    plotCTAcquisitionMeanCTDI.group = "Acquisition protocol"
     plotCTAcquisitionDLPOverTime = forms.BooleanField(
         label="Acquisition DLP over time", required=False
     )
-    plotCTAcquisitionDLPOverTime.group = "Acquisition"
+    plotCTAcquisitionDLPOverTime.group = "Acquisition protocol"
     plotCTAcquisitionCTDIOverTime = forms.BooleanField(  # nosec
         label=mark_safe("Acquisition CTDI<sub>vol</sub> over time"), required=False
     )
-    plotCTAcquisitionCTDIOverTime.group = "Acquisition"
+    plotCTAcquisitionCTDIOverTime.group = "Acquisition protocol"
     plotCTAcquisitionDLPvsMass = forms.BooleanField(
         label="Acquisition DLP vs mass", required=False
     )
-    plotCTAcquisitionDLPvsMass.group = "Acquisition"
+    plotCTAcquisitionDLPvsMass.group = "Acquisition protocol"
     plotCTAcquisitionCTDIvsMass = forms.BooleanField(  # nosec
         label=mark_safe("Acquisition CTDI<sub>vol</sub> vs mass"), required=False
     )
-    plotCTAcquisitionCTDIvsMass.group = "Acquisition"
+    plotCTAcquisitionCTDIvsMass.group = "Acquisition protocol"
     plotCTAcquisitionTypes = forms.MultipleChoiceField(  # nosec
         label=mark_safe(
             "Acquisition types to include<br/>in acquisition-level chart<br/>calculations"
@@ -258,56 +258,59 @@ class CTChartOptionsForm(forms.Form):
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
-    plotCTAcquisitionTypes.group = "Acquisition"
+    plotCTAcquisitionTypes.group = "Acquisition protocol"
 
     plotCTStudyFreq = forms.BooleanField(label="Study frequency", required=False)
-    plotCTStudyFreq.group = "Study"
+    plotCTStudyFreq.group = "Study description"
     plotCTStudyMeanDLP = forms.BooleanField(label="Study DLP", required=False)
-    plotCTStudyMeanDLP.group = "Study"
+    plotCTStudyMeanDLP.group = "Study description"
     plotCTStudyMeanCTDI = forms.BooleanField(  # nosec
         label=mark_safe("Study CTDI<sub>vol</sub>"), required=False
     )
-    plotCTStudyMeanCTDI.group = "Study"
+    plotCTStudyMeanCTDI.group = "Study description"
     plotCTStudyNumEvents = forms.BooleanField(label="Study events", required=False)
-    plotCTStudyNumEvents.group = "Study"
+    plotCTStudyNumEvents.group = "Study description"
     plotCTStudyMeanDLPOverTime = forms.BooleanField(
         label="Study DLP over time", required=False
     )
-    plotCTStudyMeanDLPOverTime.group = "Study"
+    plotCTStudyMeanDLPOverTime.group = "Study description"
     plotCTStudyPerDayAndHour = forms.BooleanField(
         label="Study workload", required=False
     )
-    plotCTStudyPerDayAndHour.group = "Study"
+    plotCTStudyPerDayAndHour.group = "Study description"
 
     plotCTRequestFreq = forms.BooleanField(
         label="Requested procedure frequency", required=False
     )
-    plotCTRequestFreq.group = "Request"
+    plotCTRequestFreq.group = "Requested procedure"
     plotCTRequestMeanDLP = forms.BooleanField(
         label="Requested procedure DLP", required=False
     )
-    plotCTRequestMeanDLP.group = "Request"
+    plotCTRequestMeanDLP.group = "Requested procedure"
     plotCTRequestNumEvents = forms.BooleanField(
         label="Requested procedure events", required=False
     )
-    plotCTRequestNumEvents.group = "Request"
+    plotCTRequestNumEvents.group = "Requested procedure"
     plotCTRequestDLPOverTime = forms.BooleanField(
         label="Requested procedure DLP over time", required=False
     )
-    plotCTRequestDLPOverTime.group = "Request"
+    plotCTRequestDLPOverTime.group = "Requested procedure"
 
 
 class CTChartOptionsFormIncStandard(CTChartOptionsForm):
+    plotCTStandardAcquisitionMeanDLP = forms.BooleanField(label="Standard acquisition DLP", required=False)
+    plotCTStandardAcquisitionMeanDLP.group = "Standard acquisition name"
+
     plotCTStandardStudyMeanDLP = forms.BooleanField(label="Standard study DLP", required=False)
-    plotCTStandardStudyMeanDLP.group = "Standard name"
+    plotCTStandardStudyMeanDLP.group = "Standard study name"
     plotCTStandardStudyNumEvents = forms.BooleanField(label="Standard study events", required=False)
-    plotCTStandardStudyNumEvents.group = "Standard name"
+    plotCTStandardStudyNumEvents.group = "Standard study name"
     plotCTStandardStudyFreq = forms.BooleanField(label="Standard study frequency", required=False)
-    plotCTStandardStudyFreq.group = "Standard name"
+    plotCTStandardStudyFreq.group = "Standard study name"
     plotCTStandardStudyMeanDLPOverTime = forms.BooleanField(label="Standard study DLP over time", required=False)
-    plotCTStandardStudyMeanDLPOverTime.group = "Standard name"
+    plotCTStandardStudyMeanDLPOverTime.group = "Standard study name"
     plotCTStandardStudyPerDayAndHour = forms.BooleanField(label="Standard study workload", required=False)
-    plotCTStandardStudyPerDayAndHour.group = "Standard name"
+    plotCTStandardStudyPerDayAndHour.group = "Standard study name"
 
 
 class RFChartOptionsForm(forms.Form):
@@ -607,6 +610,8 @@ class CTChartOptionsDisplayForm(forms.Form):
 
 
 class CTChartOptionsDisplayFormIncStandard(CTChartOptionsDisplayForm):
+    plotCTStandardAcquisitionMeanDLP = forms.BooleanField(label="Standard acquisition DLP", required=False)
+
     plotCTStandardStudyMeanDLP = forms.BooleanField(label="Standard study DLP", required=False)
     plotCTStandardStudyNumEvents = forms.BooleanField(label="Standard study events", required=False)
     plotCTStandardStudyFreq = forms.BooleanField(label="Standard study frequency", required=False)
@@ -614,6 +619,7 @@ class CTChartOptionsDisplayFormIncStandard(CTChartOptionsDisplayForm):
     plotCTStandardStudyPerDayAndHour = forms.BooleanField(label="Standard study workload", required=False)
 
     field_order = [
+        "plotCTAcquisitionFreq",
         "plotCTAcquisitionMeanDLP",
         "plotCTAcquisitionMeanCTDI",
         "plotCTAcquisitionDLPOverTime",
@@ -621,6 +627,7 @@ class CTChartOptionsDisplayFormIncStandard(CTChartOptionsDisplayForm):
         "plotCTAcquisitionDLPvsMass",
         "plotCTAcquisitionCTDIvsMass",
         "plotCTAcquisitionTypes",
+        "plotCTStandardAcquisitionMeanDLP",
         "plotCTStudyFreq",
         "plotCTStudyMeanDLP",
         "plotCTStudyMeanCTDI",

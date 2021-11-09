@@ -1,6 +1,10 @@
 # pylint: disable=too-many-lines
 import logging
 from datetime import datetime
+from django.db.models import (
+    Subquery,
+    OuterRef,
+)
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -15,6 +19,7 @@ from remapp.interface.mod_filters import ct_acq_filter
 from remapp.models import (
     create_user_profile,
     CommonVariables,
+    StandardNames,
     StandardNameSettings,
 )
 from remapp.views_admin import (
@@ -208,6 +213,37 @@ def generate_required_ct_charts_list(profile):
                 "var_name": "acquisitionScatterCTDIvsMass",
             }
         )
+
+    if enable_standard_names:
+        if profile.plotCTStandardAcquisitionMeanDLP:
+            if profile.plotMean:
+                required_charts.append(
+                    {
+                        "title": "Chart of standard acquisition name mean DLP",
+                        "var_name": "standardAcquisitionMeanDLP",
+                    }
+                )
+            if profile.plotMedian:
+                required_charts.append(
+                    {
+                        "title": "Chart of standard acquisition name median DLP",
+                        "var_name": "standardAcquisitionMedianDLP",
+                    }
+                )
+            if profile.plotBoxplots:
+                required_charts.append(
+                    {
+                        "title": "Boxplot of standard acquisition name DLP",
+                        "var_name": "standardAcquisitionBoxplotDLP",
+                    }
+                )
+            if profile.plotHistograms:
+                required_charts.append(
+                    {
+                        "title": "Histogram of standard acquisition name DLP",
+                        "var_name": "standardAcquisitionHistogramDLP",
+                    }
+                )
 
     if profile.plotCTStudyFreq:
         required_charts.append(
@@ -606,6 +642,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         user_profile.plotCTAcquisitionCTDIOverTime,
         user_profile.plotCTAcquisitionDLPOverTime,
     ]
+    if enable_standard_names:
+        charts_of_interest.append(user_profile.plotCTStandardAcquisitionMeanDLP)
+
     if any(charts_of_interest):
 
         name_fields = ["ctradiationdose__ctirradiationeventdata__acquisition_protocol"]
@@ -615,13 +654,18 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         name_fields.append(
             "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_value"
         )
+        if enable_standard_names:
+            name_fields.append("standard_acquisition_name")
 
         value_fields = []
-        if (
-            user_profile.plotCTAcquisitionMeanDLP
-            or user_profile.plotCTAcquisitionDLPvsMass
-            or user_profile.plotCTAcquisitionDLPOverTime
-        ):
+        charts_of_interest = [
+            user_profile.plotCTAcquisitionMeanDLP,
+            user_profile.plotCTAcquisitionDLPvsMass,
+            user_profile.plotCTAcquisitionDLPOverTime,
+        ]
+        if enable_standard_names:
+            charts_of_interest.append(user_profile.plotCTStandardAcquisitionMeanDLP)
+        if any(charts_of_interest):
             value_fields.append("ctradiationdose__ctirradiationeventdata__dlp")
         if (
             user_profile.plotCTAcquisitionMeanCTDI
@@ -656,8 +700,20 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             "times": time_fields,
             "system": system_field,
         }
+
+        query_set = f.qs
+        if enable_standard_names:
+            standard_names = StandardNames.objects.filter(modality__iexact="CT")
+            query_set = f.qs.annotate(
+                standard_acquisition_name=Subquery(
+                    standard_names.filter(
+                        acquisition_protocol=OuterRef("ctradiationdose__ctirradiationeventdata__acquisition_protocol")
+                    ).values("standard_name")
+                )
+            )
+
         df = create_dataframe(
-            f.qs,
+            query_set,
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
@@ -1093,6 +1149,129 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 return_structure["acquisitionMeanDLPOverTime"] = result["mean"]
             if user_profile.plotMedian:
                 return_structure["acquisitionMedianDLPOverTime"] = result["median"]
+
+        if enable_standard_names:
+            if user_profile.plotCTStandardAcquisitionMeanDLP:
+
+                if user_profile.plotBoxplots and "median" not in average_choices:
+                    average_choices = average_choices + ["median"]
+
+                name_field = "standard_acquisition_name"
+                value_field = "ctradiationdose__ctirradiationeventdata__dlp"
+
+                # Calculate an aggregated dataframe
+                df_aggregated = create_dataframe_aggregates(
+                    df,
+                    [name_field],
+                    value_field,
+                    stats_to_use=average_choices + ["count"],
+                )
+
+                # Drop blank values
+                df_aggregated = df_aggregated[(df_aggregated["standard_acquisition_name"] != "blank") & (df_aggregated["standard_acquisition_name"] != "Blank")]
+
+                if user_profile.plotMean or user_profile.plotMedian:
+
+                    parameter_dict = {
+                        "df_name_col": name_field,
+                        "name_axis_title": "Standard acquisition name",
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "facet_col": None,
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "return_as_dict": return_as_dict,
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotCTInitialSortingChoice,
+                        ],
+                        "custom_msg_line": chart_message,
+                    }
+                    if user_profile.plotMean:
+                        parameter_dict["value_axis_title"] = "Mean DLP (mGy.cm)"
+                        parameter_dict[
+                            "filename"
+                        ] = "OpenREM CT standard acquisition name DLP mean"
+                        parameter_dict["average_choice"] = "mean"
+                        (
+                            return_structure["standardAcquisitionMeanDLPData"],
+                            return_structure["standardAcquisitionMeanDLPDataCSV"],
+                        ) = plotly_barchart(  # pylint: disable=line-too-long
+                            df_aggregated,
+                            parameter_dict,
+                            csv_name="standardAcquisitionMeanDLPData.csv",
+                        )
+
+                    if user_profile.plotMedian:
+                        parameter_dict["value_axis_title"] = "Median DLP (mGy.cm)"
+                        parameter_dict[
+                            "filename"
+                        ] = "OpenREM CT standard acquisition name DLP median"
+                        parameter_dict["average_choice"] = "median"
+                        (
+                            return_structure["standardAcquisitionMedianDLPData"],
+                            return_structure["standardAcquisitionMedianDLPDataCSV"],
+                        ) = plotly_barchart(  # pylint: disable=line-too-long
+                            df_aggregated,
+                            parameter_dict,
+                            csv_name="standardAcquisitionMedianDLPData.csv",
+                        )
+
+                if user_profile.plotBoxplots:
+                    parameter_dict = {
+                        "df_name_col": name_field,
+                        "df_value_col": value_field,
+                        "value_axis_title": "DLP (mGy.cm)",
+                        "name_axis_title": "Standard acquisition name",
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "filename": "OpenREM CT standard acquisition name DLP boxplot",
+                        "facet_col": None,
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotCTInitialSortingChoice,
+                        ],
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "return_as_dict": return_as_dict,
+                        "custom_msg_line": chart_message,
+                    }
+
+                    return_structure["standardAcquisitionBoxplotDLPData"] = plotly_boxplot(
+                        df,
+                        parameter_dict,
+                    )
+
+                if user_profile.plotHistograms:
+                    category_names_col = name_field
+                    group_by_col = "x_ray_system_name"
+                    legend_title = "Standard acquisition name"
+
+                    if user_profile.plotGroupingChoice == "series":
+                        category_names_col = "x_ray_system_name"
+                        group_by_col = name_field
+                        legend_title = "System"
+
+                    parameter_dict = {
+                        "df_facet_col": group_by_col,
+                        "df_category_col": category_names_col,
+                        "df_value_col": value_field,
+                        "value_axis_title": "DLP (mGy.cm)",
+                        "legend_title": legend_title,
+                        "n_bins": user_profile.plotHistogramBins,
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "filename": "OpenREM CT standard acquisition name DLP histogram",
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotCTInitialSortingChoice,
+                        ],
+                        "global_max_min": user_profile.plotHistogramGlobalBins,
+                        "return_as_dict": return_as_dict,
+                        "custom_msg_line": chart_message,
+                    }
+                    return_structure[
+                        "standardAcquisitionHistogramDLPData"
+                    ] = plotly_histogram_barchart(
+                        df,
+                        parameter_dict,
+                    )
 
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts

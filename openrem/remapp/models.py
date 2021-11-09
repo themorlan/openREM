@@ -591,6 +591,7 @@ class UserProfile(models.Model, CommonVariables):
     plotCTAcquisitionDLPvsMass = models.BooleanField(default=False)
     plotCTAcquisitionCTDIOverTime = models.BooleanField(default=False)
     plotCTAcquisitionDLPOverTime = models.BooleanField(default=False)
+    plotCTStandardAcquisitionMeanDLP = models.BooleanField(default=True)
     plotCTStudyMeanDLP = models.BooleanField(default=True)
     plotCTStudyMeanCTDI = models.BooleanField(default=True)
     plotCTStudyFreq = models.BooleanField(default=False)

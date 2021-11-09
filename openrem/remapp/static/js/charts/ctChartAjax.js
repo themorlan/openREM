@@ -34,6 +34,22 @@ $(document).ready(function() {
                 $("#acquisitionHistogramDLPChartDiv").html(json.acquisitionHistogramDLPData);
             }
 
+            // DLP per standard acquisition name chart data
+            if(typeof json.standardAcquisitionMeanDLPData !== "undefined") {
+                $("#standardAcquisitionMeanDLPChartDiv").html(json.standardAcquisitionMeanDLPData);
+                $("#standardAcquisitionMeanDLPChartParentDiv").append(json.standardAcquisitionMeanDLPDataCSV);
+            }
+            if(typeof json.standardAcquisitionMedianDLPData !== "undefined") {
+                $("#standardAcquisitionMedianDLPChartDiv").html(json.standardAcquisitionMedianDLPData);
+                $("#standardAcquisitionMedianDLPChartParentDiv").append(json.standardAcquisitionMedianDLPDataCSV);
+            }
+            if(typeof json.standardAcquisitionBoxplotDLPData !=="undefined") {
+                $("#standardAcquisitionBoxplotDLPChartDiv").html(json.standardAcquisitionBoxplotDLPData);
+            }
+            if(typeof json.standardAcquisitionHistogramDLPData !=="undefined") {
+                $("#standardAcquisitionHistogramDLPChartDiv").html(json.standardAcquisitionHistogramDLPData);
+            }
+
             // CTDI per acquisition chart data
             if(typeof json.acquisitionMeanCTDIData !== "undefined") {
                 $("#acquisitionMeanCTDIChartDiv").html(json.acquisitionMeanCTDIData);
