@@ -64,8 +64,10 @@
             <div class="panel-heading">
                 <h3 class="panel-title">Exam filter</h3>
             </div>
+
             <div class="panel-body">
                 <i>Date format yyyy-mm-dd</i>
+
                 {% for field in filter.form.visible_fields %}
                     <div class="form-group">
                         <div class="col-xs-4">
@@ -77,43 +79,74 @@
                         </div>
                     </div>
                 {% endfor %}
+
                 {% for field in filter.form.hidden_fields %}
                     <div style="display:none">{{ field }}</div>
                 {% endfor %}
+
                 <input class="btn btn-default" name="submit" type="submit" />
             </div>
+
             <div class="panel-heading">
                 <h3 class="panel-title">Chart options</h3>
             </div>
+
             <div class="panel-body">
-                <table aria-describedby="CT chart options">
-                    {% csrf_token %}
-                    {% for field in chartOptionsForm %}
-                        <tr>
-                        {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
-                            <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                            <td class="shaded_top_bottom_border">{{ field }}</td>
-                        {% elif field.label == 'Acquisition frequency' or field.label == 'Standard study frequency' or field.label == 'Requested procedure frequency' or field.label == 'Time period' %}
-                            <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                            <td class="top_border">{{ field }}</td>
-                        {% else %}
-                            <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                            <td>{{ field }}</td>
-                        {% endif %}
-                        </tr>
-                    {% endfor %}
-                </table>
+
+                {% csrf_token %}
+                {% regroup chartOptionsForm by field.group as field_groups %}
+
+                {% for field_group in field_groups %}
+
+                    <div class="panel panel-default">
+
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-target="#{{ field_group.grouper|cut:" " }}">{{ field_group.grouper }}</a>
+                            </h4>
+                        </div>
+
+                        <div id="{{ field_group.grouper|cut:" " }}" class="panel-collapse collapse">
+                            <div class="panel-body">
+
+                                <table>
+                                {% for field in field_group.list %}
+                                    <tr>
+                                    {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
+                                        <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                        <td class="shaded_top_bottom_border">{{ field }}</td>
+                                    {% elif field.label == 'Acquisition frequency' or field.label == 'Standard study frequency' or field.label == 'Requested procedure frequency' or field.label == 'Time period' %}
+                                        <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                        <td class="top_border">{{ field }}</td>
+                                    {% else %}
+                                        <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                        <td>{{ field }}</td>
+                                    {% endif %}
+                                    </tr>
+                                {% endfor %}
+                                </table>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
                 <input class="btn btn-default" name="submit" type="submit" />
             </div>
+
             <div class="panel-heading">
                 <h3 class="panel-title">Table options</h3>
             </div>
+
             <div class="panel-body">
                 <table aria-describedby="Number of rows per page option">
                     {{ itemsPerPageForm }}
                 </table>
                 <input class="btn btn-default" name="submit" type="submit" />
             </div>
+
         </div>
     </form>
 

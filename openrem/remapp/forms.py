@@ -185,27 +185,71 @@ class CTChartOptionsForm(forms.Form):
     """Form for CT chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
+    plotCharts.group = "General"
+    plotCTOverTimePeriod = forms.ChoiceField(
+        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
+    )
+    plotCTOverTimePeriod.group = "General"
+    plotAverageChoice = forms.MultipleChoiceField(
+        label="Average plots",
+        choices=CommonVariables.AVERAGES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
+    )
+    plotAverageChoice.group = "General"
+    plotGrouping = forms.ChoiceField(  # nosec
+        label=mark_safe("Grouping choice"),
+        choices=CommonVariables.CHART_GROUPING,
+        required=False,
+    )
+    plotGrouping.group = "General"
+    plotSeriesPerSystem = forms.BooleanField(
+        label="Plot a series per system", required=False
+    )
+    plotSeriesPerSystem.group = "General"
+    plotHistograms = forms.BooleanField(
+        label="Calculate histogram data", required=False
+    )
+    plotHistograms.group = "General"
+    plotCTInitialSortingChoice = forms.ChoiceField(
+        label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
+    )
+    plotCTInitialSortingChoice.group = "General"
+    plotInitialSortingDirection = forms.ChoiceField(
+        label="Sorting direction",
+        choices=CommonVariables.SORTING_DIRECTION,
+        required=False,
+    )
+    plotInitialSortingDirection.group = "General"
+
     plotCTAcquisitionFreq = forms.BooleanField(
         label="Acquisition frequency", required=False
     )
+    plotCTAcquisitionFreq.group = "Acquisition"
     plotCTAcquisitionMeanDLP = forms.BooleanField(
         label="Acquisition DLP", required=False
     )
+    plotCTAcquisitionMeanDLP.group = "Acquisition"
     plotCTAcquisitionMeanCTDI = forms.BooleanField(  # nosec
         label=mark_safe("Acquisition CTDI<sub>vol</sub>"), required=False
     )
+    plotCTAcquisitionMeanCTDI.group = "Acquisition"
     plotCTAcquisitionDLPOverTime = forms.BooleanField(
         label="Acquisition DLP over time", required=False
     )
+    plotCTAcquisitionDLPOverTime.group = "Acquisition"
     plotCTAcquisitionCTDIOverTime = forms.BooleanField(  # nosec
         label=mark_safe("Acquisition CTDI<sub>vol</sub> over time"), required=False
     )
+    plotCTAcquisitionCTDIOverTime.group = "Acquisition"
     plotCTAcquisitionDLPvsMass = forms.BooleanField(
         label="Acquisition DLP vs mass", required=False
     )
+    plotCTAcquisitionDLPvsMass.group = "Acquisition"
     plotCTAcquisitionCTDIvsMass = forms.BooleanField(  # nosec
         label=mark_safe("Acquisition CTDI<sub>vol</sub> vs mass"), required=False
     )
+    plotCTAcquisitionCTDIvsMass.group = "Acquisition"
     plotCTAcquisitionTypes = forms.MultipleChoiceField(  # nosec
         label=mark_safe(
             "Acquisition types to include<br/>in acquisition-level chart<br/>calculations"
@@ -214,96 +258,56 @@ class CTChartOptionsForm(forms.Form):
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
+    plotCTAcquisitionTypes.group = "Acquisition"
+
     plotCTStudyFreq = forms.BooleanField(label="Study frequency", required=False)
+    plotCTStudyFreq.group = "Study"
     plotCTStudyMeanDLP = forms.BooleanField(label="Study DLP", required=False)
+    plotCTStudyMeanDLP.group = "Study"
     plotCTStudyMeanCTDI = forms.BooleanField(  # nosec
         label=mark_safe("Study CTDI<sub>vol</sub>"), required=False
     )
+    plotCTStudyMeanCTDI.group = "Study"
     plotCTStudyNumEvents = forms.BooleanField(label="Study events", required=False)
+    plotCTStudyNumEvents.group = "Study"
     plotCTStudyMeanDLPOverTime = forms.BooleanField(
         label="Study DLP over time", required=False
     )
+    plotCTStudyMeanDLPOverTime.group = "Study"
     plotCTStudyPerDayAndHour = forms.BooleanField(
         label="Study workload", required=False
     )
+    plotCTStudyPerDayAndHour.group = "Study"
+
     plotCTRequestFreq = forms.BooleanField(
         label="Requested procedure frequency", required=False
     )
+    plotCTRequestFreq.group = "Request"
     plotCTRequestMeanDLP = forms.BooleanField(
         label="Requested procedure DLP", required=False
     )
+    plotCTRequestMeanDLP.group = "Request"
     plotCTRequestNumEvents = forms.BooleanField(
         label="Requested procedure events", required=False
     )
+    plotCTRequestNumEvents.group = "Request"
     plotCTRequestDLPOverTime = forms.BooleanField(
         label="Requested procedure DLP over time", required=False
     )
-    plotCTOverTimePeriod = forms.ChoiceField(
-        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
-    )
-    plotAverageChoice = forms.MultipleChoiceField(
-        label="Average plots",
-        choices=CommonVariables.AVERAGES,
-        required=False,
-        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
-    )
-    plotGrouping = forms.ChoiceField(  # nosec
-        label=mark_safe("Grouping choice"),
-        choices=CommonVariables.CHART_GROUPING,
-        required=False,
-    )
-    plotSeriesPerSystem = forms.BooleanField(
-        label="Plot a series per system", required=False
-    )
-    plotHistograms = forms.BooleanField(
-        label="Calculate histogram data", required=False
-    )
-    plotCTInitialSortingChoice = forms.ChoiceField(
-        label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
-    )
-    plotInitialSortingDirection = forms.ChoiceField(
-        label="Sorting direction",
-        choices=CommonVariables.SORTING_DIRECTION,
-        required=False,
-    )
+    plotCTRequestDLPOverTime.group = "Request"
 
 
 class CTChartOptionsFormIncStandard(CTChartOptionsForm):
     plotCTStandardStudyMeanDLP = forms.BooleanField(label="Standard study DLP", required=False)
+    plotCTStandardStudyMeanDLP.group = "Standard name"
     plotCTStandardStudyNumEvents = forms.BooleanField(label="Standard study events", required=False)
+    plotCTStandardStudyNumEvents.group = "Standard name"
     plotCTStandardStudyFreq = forms.BooleanField(label="Standard study frequency", required=False)
+    plotCTStandardStudyFreq.group = "Standard name"
     plotCTStandardStudyMeanDLPOverTime = forms.BooleanField(label="Standard study DLP over time", required=False)
+    plotCTStandardStudyMeanDLPOverTime.group = "Standard name"
     plotCTStandardStudyPerDayAndHour = forms.BooleanField(label="Standard study workload", required=False)
-
-
-    field_order = [
-        "plotCharts",
-        "plotCTAcquisitionFreq",
-        "plotCTAcquisitionMeanDLP",
-        "plotCTAcquisitionMeanCTDI",
-        "plotCTAcquisitionDLPOverTime",
-        "plotCTAcquisitionCTDIOverTime",
-        "plotCTAcquisitionDLPvsMass",
-        "plotCTAcquisitionCTDIvsMass",
-        "plotCTAcquisitionTypes",
-        "plotCTStudyFreq",
-        "plotCTStudyMeanDLP",
-        "plotCTStudyMeanCTDI",
-        "plotCTStudyNumEvents",
-        "plotCTStudyMeanDLPOverTime",
-        "plotCTStudyPerDayAndHour",
-        "plotCTStandardStudyFreq",
-        "plotCTStandardStudyMeanDLP",
-        "plotCTStandardStudyNumEvents",
-        "plotCTStandardStudyMeanDLPOverTime",
-        "plotCTStandardStudyPerDayAndHour",
-        "plotCTRequestFreq",
-        "plotCTRequestMeanDLP",
-        "plotCTRequestNumEvents",
-        "plotCTRequestDLPOverTime",
-        "plotCTOverTimePeriod",
-        "plotCTInitialSortingChoice"
-    ]
+    plotCTStandardStudyPerDayAndHour.group = "Standard name"
 
 
 class RFChartOptionsForm(forms.Form):
