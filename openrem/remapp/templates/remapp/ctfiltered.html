@@ -98,38 +98,48 @@
 
                 {% for field_group in field_groups %}
 
-                    <div class="panel panel-default">
-
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a data-toggle="collapse" data-target="#{{ field_group.grouper|cut:" " }}">{{ field_group.grouper }}</a>
-                            </h4>
-                        </div>
-
-                        <div id="{{ field_group.grouper|cut:" " }}" class="panel-collapse collapse">
-                            <div class="panel-body">
-
-                                <table class="table table-condensed">
-                                {% for field in field_group.list %}
-                                    <tr>
-                                    {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
-                                        <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                                        <td class="shaded_top_bottom_border">{{ field }}</td>
-                                    {% elif field.label == 'Acquisition frequency' or field.label == 'Standard study frequency' or field.label == 'Requested procedure frequency' or field.label == 'Time period' %}
-                                        <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                                        <td class="top_border">{{ field }}</td>
-                                    {% else %}
-                                        <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
-                                        <td>{{ field }}</td>
-                                    {% endif %}
-                                    </tr>
-                                {% endfor %}
-                                </table>
-
+                    {% if field_group.grouper == 'PlotCharts' %}
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <label style="font-weight: normal" for="{{ field_group.list.0.auto_id }}">{{ field_group.list.0.label }}</label>&nbsp;{{ field_group.list.0 }}
+                                </h4>
                             </div>
                         </div>
+                    {% else %}
+                        <div class="panel panel-default">
 
-                    </div>
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a class="no-decoration" data-toggle="collapse" data-target="#{{ field_group.grouper|cut:" " }}">{{ field_group.grouper }}</a>
+                                </h4>
+                            </div>
+
+                            <div id="{{ field_group.grouper|cut:" " }}" class="panel-collapse collapse">
+                                <div class="panel-body">
+
+                                    <table class="table table-condensed">
+                                    {% for field in field_group.list %}
+                                        <tr>
+                                        {% if field.field.widget.attrs.class == 'CheckboxSelectMultiple' %}
+                                            <td class="shaded_top_bottom_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                            <td class="shaded_top_bottom_border">{{ field }}</td>
+                                        {% elif field.label == 'Acquisition frequency' or field.label == 'Standard study frequency' or field.label == 'Requested procedure frequency' or field.label == 'Time period' %}
+                                            <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                            <td class="top_border">{{ field }}</td>
+                                        {% else %}
+                                            <td><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
+                                            <td>{{ field }}</td>
+                                        {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                    </table>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    {% endif %}
 
                 {% endfor %}
 

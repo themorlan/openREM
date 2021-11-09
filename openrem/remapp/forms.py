@@ -185,7 +185,7 @@ class CTChartOptionsForm(forms.Form):
     """Form for CT chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
-    plotCharts.group = "General"
+    plotCharts.group = "PlotCharts"
     plotCTOverTimePeriod = forms.ChoiceField(
         label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
     )
