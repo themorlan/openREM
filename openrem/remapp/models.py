@@ -1039,6 +1039,9 @@ class ProjectionXRayRadiationDose(models.Model):  # TID 10001
         on_delete=models.CASCADE,
     )
 
+    class Meta:
+        indexes = [models.Index(fields=['general_study_module_attributes', ]), ]
+
 
 class AccumXRayDose(models.Model):  # TID 10002
     """Accumulated X-Ray Dose TID 10002
@@ -1055,6 +1058,9 @@ class AccumXRayDose(models.Model):  # TID 10002
     acquisition_plane = models.ForeignKey(
         ContextID, blank=True, null=True, on_delete=models.CASCADE
     )
+
+    class Meta:
+        indexes = [models.Index(fields=['projection_xray_radiation_dose', ]), ]
 
 
 class Calibration(models.Model):
@@ -1226,6 +1232,9 @@ class IrradEventXRayData(models.Model):  # TID 10003
             return 1000000 * self.dose_area_product
         except TypeError:
             return None
+
+    class Meta:
+        indexes = [models.Index(fields=['projection_xray_radiation_dose', ]), ]
 
 
 class ImageViewModifier(models.Model):  # EV 111032
@@ -1649,6 +1658,9 @@ class AccumMammographyXRayDose(models.Model):  # TID 10005
     laterality = models.ForeignKey(
         ContextID, blank=True, null=True, on_delete=models.CASCADE
     )
+
+    class Meta:
+        indexes = [models.Index(fields=['accumulated_xray_dose', ]), ]
 
 
 class AccumCassetteBsdProjRadiogDose(models.Model):  # TID 10006
