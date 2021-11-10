@@ -2169,3 +2169,119 @@ def download_link(
     b64 = base64.b64encode(object_to_download.encode()).decode()
 
     return f'<a class="btn btn-default btn-sm" role="button" href="data:file/txt;base64,{b64}" download="{download_filename}">{download_link_text}</a>'  # pylint: disable=line-too-long
+
+
+def generate_average_chart_group(average_choices, chart_message, df, modality_text, name_field, name_text,
+                                 return_as_dict, return_structure, units_text, user_profile, value_field, value_text,
+                                 variable_name_start, variable_value_name):
+
+    if user_profile.plotBoxplots and "median" not in average_choices:
+        average_choices = average_choices + ["median"]
+
+    df_aggregated = create_dataframe_aggregates(
+        df,
+        [name_field],
+        value_field,
+        stats_to_use=average_choices + ["count"],
+    )
+    if user_profile.plotMean or user_profile.plotMedian:
+
+        parameter_dict = {
+            "df_name_col": name_field,
+            "name_axis_title": name_text,
+            "colourmap": user_profile.plotColourMapChoice,
+            "facet_col": None,
+            "facet_col_wrap": user_profile.plotFacetColWrapVal,
+            "return_as_dict": return_as_dict,
+            "sorting_choice": [
+                user_profile.plotInitialSortingDirection,
+                user_profile.plotCTInitialSortingChoice,
+            ],
+            "custom_msg_line": chart_message,
+        }
+        if user_profile.plotMean:
+            parameter_dict["value_axis_title"] = "Mean " + value_text + " " + units_text
+            parameter_dict[
+                "filename"
+            ] = "OpenREM " + modality_text + " " + name_text + " " + value_text + " mean"
+            parameter_dict["average_choice"] = "mean"
+            (
+                return_structure[variable_name_start + "Mean" + variable_value_name + "Data"],
+                return_structure[variable_name_start + "Mean" + variable_value_name + "DataCSV"],
+            ) = plotly_barchart(  # pylint: disable=line-too-long
+                df_aggregated,
+                parameter_dict,
+                csv_name=variable_name_start + "Mean" + value_text + "Data.csv",
+            )
+
+        if user_profile.plotMedian:
+            parameter_dict["value_axis_title"] = "Median " + value_text + " " + units_text
+            parameter_dict[
+                "filename"
+            ] = "OpenREM " + modality_text + " " + name_text + " " + value_text + " median"
+            parameter_dict["average_choice"] = "median"
+            (
+                return_structure[variable_name_start + "Median" + variable_value_name + "Data"],
+                return_structure[variable_name_start + "Median" + variable_value_name + "DataCSV"],
+            ) = plotly_barchart(  # pylint: disable=line-too-long
+                df_aggregated,
+                parameter_dict,
+                csv_name=variable_name_start + "Median" + value_text + "Data.csv",
+            )
+    if user_profile.plotBoxplots:
+        parameter_dict = {
+            "df_name_col": name_field,
+            "df_value_col": value_field,
+            "value_axis_title": value_text + " " + units_text,
+            "name_axis_title": name_text,
+            "colourmap": user_profile.plotColourMapChoice,
+            "filename": "OpenREM " + modality_text + " " + name_text + " " + variable_value_name + " boxplot",
+            "facet_col": None,
+            "sorting_choice": [
+                user_profile.plotInitialSortingDirection,
+                user_profile.plotCTInitialSortingChoice,
+            ],
+            "facet_col_wrap": user_profile.plotFacetColWrapVal,
+            "return_as_dict": return_as_dict,
+            "custom_msg_line": chart_message,
+        }
+
+        return_structure[variable_name_start + "Boxplot" + variable_value_name + "Data"] = plotly_boxplot(
+            df,
+            parameter_dict,
+        )
+    if user_profile.plotHistograms:
+        category_names_col = name_field
+        group_by_col = "x_ray_system_name"
+        legend_title = name_text
+
+        if user_profile.plotGroupingChoice == "series":
+            category_names_col = "x_ray_system_name"
+            group_by_col = name_field
+            legend_title = "System"
+
+        parameter_dict = {
+            "df_facet_col": group_by_col,
+            "df_category_col": category_names_col,
+            "df_value_col": value_field,
+            "value_axis_title": value_text + " " + units_text,
+            "legend_title": legend_title,
+            "n_bins": user_profile.plotHistogramBins,
+            "colourmap": user_profile.plotColourMapChoice,
+            "filename": "OpenREM " + modality_text + " " + name_text + " " + variable_value_name + " histogram",
+            "facet_col_wrap": user_profile.plotFacetColWrapVal,
+            "sorting_choice": [
+                user_profile.plotInitialSortingDirection,
+                user_profile.plotCTInitialSortingChoice,
+            ],
+            "global_max_min": user_profile.plotHistogramGlobalBins,
+            "return_as_dict": return_as_dict,
+            "custom_msg_line": chart_message,
+        }
+        return_structure[
+            variable_name_start + "Histogram" + variable_value_name + "Data"
+            ] = plotly_histogram_barchart(
+            df,
+            parameter_dict,
+        )
+    return return_structure
