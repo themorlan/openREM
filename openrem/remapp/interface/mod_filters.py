@@ -90,7 +90,7 @@ def custom_id_filter(queryset, name, value):
 
 
 def standard_acq_protocol_filter(queryset, name, value):
-    """Search for standard acquisition protocol"""
+    """Search for standard acquisition name"""
     if not value:
         return queryset
 
@@ -110,41 +110,11 @@ def standard_acq_protocol_filter(queryset, name, value):
         field_and_search = "ctradiationdose__ctirradiationeventdata__acquisition_protocol__in"
 
     # Standard names that have an acquisition protocol name that contains value
-    acq_protocols_to_find = StandardNames.objects.filter(modality__iexact=modality).filter(
+    acq_protocols_to_find = StandardNames.objects.filter(modality__exact=modality).filter(
         standard_name__icontains=value).values("acquisition_protocol")
 
     # Filter the queryset to only include acq_protocols_to_find
     filtered = queryset.filter(**{field_and_search:acq_protocols_to_find})
-
-    return filtered
-
-
-def standard_study_name_filter(queryset, name, value):
-    """Search for standard acquisition protocol"""
-    if not value:
-        return queryset
-
-    modalities = queryset.values_list("modality_type", flat=True).distinct()
-
-    modality = ""
-    field_and_search = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol__in"
-
-    if any(item in ["DX", "CR", "PX"] for item in modalities):
-        modality = "DX"
-    elif "MG" in modalities:
-        modality = "MG"
-    elif "RF" in modalities:
-        modality = "RF"
-    elif "CT" in modalities:
-        modality = "CT"
-        field_and_search = "ctradiationdose__ctirradiationeventdata__acquisition_protocol__in"
-
-    # Standard study, request or procedure names that contain value
-    filtered = queryset.filter(
-        Q(standard_study_name__icontains=value) |
-        Q(standard_request_name__icontains=value) |
-        Q(standard_procedure_name__icontains=value)
-    )
 
     return filtered
 
@@ -367,7 +337,7 @@ class RFSummaryListFilter(django_filters.FilterSet):
 class RFFilterPlusStdNames(RFSummaryListFilter):
     """Adding standard name fields"""
     standard_study_name = django_filters.CharFilter(
-        method=standard_study_name_filter,
+        field="standard_study_name",
         lookup_expr="icontains",
         label="Standard study name",
     )
@@ -395,7 +365,7 @@ class RFFilterPlusPid(RFSummaryListFilter):
 class RFFilterPlusPidPlusStdNames(RFFilterPlusPid):
     """Adding standard name fields"""
     standard_study_name = django_filters.CharFilter(
-        method=standard_study_name_filter,
+        field="standard_study_name",
         lookup_expr="icontains",
         label="Standard study name",
     )
@@ -654,7 +624,7 @@ class CTSummaryListFilter(django_filters.FilterSet):
 class CTFilterPlusStdNames(CTSummaryListFilter):
     """Adding standard name fields"""
     standard_study_name = django_filters.CharFilter(
-        method=standard_study_name_filter,
+        field_name="standard_study_name",
         lookup_expr="icontains",
         label="Standard study name",
     )
@@ -682,7 +652,7 @@ class CTFilterPlusPid(CTSummaryListFilter):
 class CTFilterPlusPidPlusStdNames(CTFilterPlusPid):
     """Adding standard name fields"""
     standard_study_name = django_filters.CharFilter(
-        method=standard_study_name_filter,
+        field_name="standard_study_name",
         lookup_expr="icontains",
         label="Standard study name",
     )
@@ -803,7 +773,7 @@ def ct_acq_filter(filters, pid=False):
 
     studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT")
     if enable_standard_names:
-        standard_names = StandardNames.objects.filter(modality__iexact="CT")
+        standard_names = StandardNames.objects.filter(modality__exact="CT")
         studies = studies.annotate(
             standard_request_name=Subquery(
                 standard_names.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
@@ -992,7 +962,7 @@ class MGSummaryListFilter(django_filters.FilterSet):
 class MGFilterPlusStdNames(MGSummaryListFilter):
     """Adding standard name fields"""
     standard_study_name = django_filters.CharFilter(
-        method=standard_study_name_filter,
+        field="standard_study_name",
         lookup_expr="icontains",
         label="Standard study name",
     )
@@ -1019,7 +989,7 @@ class MGFilterPlusPid(MGSummaryListFilter):
 class MGFilterPlusPidPlusStdNames(MGFilterPlusPid):
     """Adding standard name fields"""
     standard_study_name = django_filters.CharFilter(
-        method=standard_study_name_filter,
+        field="standard_study_name",
         lookup_expr="icontains",
         label="Standard study name",
     )
@@ -1193,7 +1163,7 @@ class DXSummaryListFilter(django_filters.FilterSet):
 class DXFilterPlusStdNames(DXSummaryListFilter):
     """Adding standard name fields"""
     standard_study_name = django_filters.CharFilter(
-        method=standard_study_name_filter,
+        field="standard_study_name",
         lookup_expr="icontains",
         label="Standard study name",
     )
@@ -1221,7 +1191,7 @@ class DXFilterPlusPid(DXSummaryListFilter):
 class DXFilterPlusPidPlusStdNames(DXFilterPlusPid):
     """Adding standard name fields"""
     standard_study_name = django_filters.CharFilter(
-        method=standard_study_name_filter,
+        field="standard_study_name",
         lookup_expr="icontains",
         label="Standard study name",
     )
@@ -1320,7 +1290,7 @@ def dx_acq_filter(filters, pid=False):
         | Q(modality_type__exact="PX")
     )
     if enable_standard_names:
-        standard_names = StandardNames.objects.filter(modality__iexact="DX")
+        standard_names = StandardNames.objects.filter(modality__exact="DX")
         studies = studies.annotate(
             standard_request_name=Subquery(
                 standard_names.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
