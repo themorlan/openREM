@@ -407,58 +407,74 @@ class MGChartOptionsForm(forms.Form):
     """Form for MG chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
-    plotMGacquisitionFreq = forms.BooleanField(
-        label="Acquisition frequency", required=False
-    )
-    plotMGaverageAGD = forms.BooleanField(
-        label="Acquisition average AGD", required=False
-    )
-    plotMGaverageAGDvsThickness = forms.BooleanField(
-        label="Acquisition average AGD vs. compressed thickness", required=False
-    )
-    plotMGAcquisitionAGDOverTime = forms.BooleanField(
-        label="Acquisition AGD over time", required=False
-    )
-    plotMGAGDvsThickness = forms.BooleanField(
-        label="Acquisition AGD vs. compressed thickness", required=False
-    )
-    plotMGmAsvsThickness = forms.BooleanField(
-        label="Acquisition mAs vs. compressed thickness", required=False
-    )
-    plotMGkVpvsThickness = forms.BooleanField(
-        label="Acquisition kVp vs. compressed thickness", required=False
-    )
-    plotMGStudyPerDayAndHour = forms.BooleanField(
-        label="Study workload", required=False
-    )
+    plotCharts.group = "PlotCharts"
     plotMGOverTimePeriod = forms.ChoiceField(
         label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
     )
+    plotMGOverTimePeriod.group = "General"
     plotAverageChoice = forms.MultipleChoiceField(
         label="Average plots",
         choices=CommonVariables.AVERAGES,
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
+    plotAverageChoice.group = "General"
     plotGrouping = forms.ChoiceField(  # nosec
         label=mark_safe("Grouping choice"),
         choices=CommonVariables.CHART_GROUPING,
         required=False,
     )
+    plotGrouping.group = "General"
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
     )
+    plotSeriesPerSystem.group = "General"
     plotHistograms = forms.BooleanField(
         label="Calculate histogram data", required=False
     )
+    plotHistograms.group = "General"
     plotMGInitialSortingChoice = forms.ChoiceField(
         label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
+    plotMGInitialSortingChoice.group = "General"
     plotInitialSortingDirection = forms.ChoiceField(
         label="Sorting direction",
         choices=CommonVariables.SORTING_DIRECTION,
         required=False,
     )
+    plotInitialSortingDirection.group = "General"
+    plotMGacquisitionFreq = forms.BooleanField(
+        label="Acquisition frequency", required=False
+    )
+    plotMGacquisitionFreq.group = "Acquisition protocol"
+    plotMGaverageAGD = forms.BooleanField(
+        label="Acquisition average AGD", required=False
+    )
+    plotMGaverageAGD.group = "Acquisition protocol"
+    plotMGaverageAGDvsThickness = forms.BooleanField(
+        label="Acquisition average AGD vs. compressed thickness", required=False
+    )
+    plotMGaverageAGDvsThickness.group = "Acquisition protocol"
+    plotMGAcquisitionAGDOverTime = forms.BooleanField(
+        label="Acquisition AGD over time", required=False
+    )
+    plotMGAcquisitionAGDOverTime.group = "Acquisition protocol"
+    plotMGAGDvsThickness = forms.BooleanField(
+        label="Acquisition AGD vs. compressed thickness", required=False
+    )
+    plotMGAGDvsThickness.group = "Acquisition protocol"
+    plotMGmAsvsThickness = forms.BooleanField(
+        label="Acquisition mAs vs. compressed thickness", required=False
+    )
+    plotMGmAsvsThickness.group = "Acquisition protocol"
+    plotMGkVpvsThickness = forms.BooleanField(
+        label="Acquisition kVp vs. compressed thickness", required=False
+    )
+    plotMGkVpvsThickness.group = "Acquisition protocol"
+    plotMGStudyPerDayAndHour = forms.BooleanField(
+        label="Study workload", required=False
+    )
+    plotMGStudyPerDayAndHour.group = "Study description"
 
 
 class MGChartOptionsDisplayForm(forms.Form):

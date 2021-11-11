@@ -28,6 +28,7 @@ from .interface.chart_functions import (
     construct_over_time_charts,
     plotly_set_default_theme,
     create_dataframe_aggregates,
+    generate_average_chart_group,
 )
 
 logger = logging.getLogger(__name__)
@@ -305,15 +306,6 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             )
             value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose"  # pylint: disable=line-too-long
 
-            df_aggregated = (
-                create_dataframe_aggregates(  # pylint: disable=line-too-long
-                    df,
-                    [name_field],
-                    value_field,  # pylint: disable=line-too-long
-                    stats_to_use=average_choices + ["count"],
-                )
-            )
-
             if user_profile.plotMGaverageAGDvsThickness:
                 category_names_col = name_field
                 group_by_col = "x_ray_system_name"
@@ -361,107 +353,20 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     )
 
             if user_profile.plotMGaverageAGD:
-                if user_profile.plotMean or user_profile.plotMedian:
-                    if user_profile.plotBoxplots and "median" not in average_choices:
-                        average_choices = average_choices + ["median"]
+                value_text = "AGD"
+                units_text = "(mGy)"
+                name_text = "Acquisition protocol"
+                variable_name_start = "acquisition"
+                variable_value_name = "AGD"
+                modality_text = "CT"
+                chart_message = ""
 
-                    parameter_dict = {
-                        "df_name_col": name_field,
-                        "name_axis_title": "Acquisition protocol",
-                        "colourmap": user_profile.plotColourMapChoice,
-                        "facet_col": None,
-                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                        "return_as_dict": return_as_dict,
-                        "sorting_choice": [
-                            user_profile.plotInitialSortingDirection,
-                            user_profile.plotMGInitialSortingChoice,
-                        ],
-                    }
-                    if user_profile.plotMean:
-                        parameter_dict["value_axis_title"] = "Mean AGD (mGy)"
-                        parameter_dict[
-                            "filename"
-                        ] = "OpenREM MG acquisition protocol AGD mean"
-                        parameter_dict["average_choice"] = "mean"
-                        (
-                            return_structure["acquisitionMeanAGDData"],
-                            return_structure["acquisitionMeanAGDDataCSV"],
-                        ) = plotly_barchart(  # pylint: disable=line-too-long
-                            df_aggregated,
-                            parameter_dict,
-                            "acquisitionMeanAGDData.csv",
-                        )
+                new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
+                                                          name_field, name_text, return_as_dict, return_structure,
+                                                          units_text, user_profile, value_field, value_text,
+                                                          variable_name_start, variable_value_name)
 
-                    if user_profile.plotMedian:
-                        parameter_dict["value_axis_title"] = "Median AGD (mGy)"
-                        parameter_dict[
-                            "filename"
-                        ] = "OpenREM MG acquisition protocol AGD median"
-                        parameter_dict["average_choice"] = "median"
-                        (
-                            return_structure["acquisitionMedianAGDData"],
-                            return_structure["acquisitionMedianAGDDataCSV"],
-                        ) = plotly_barchart(  # pylint: disable=line-too-long
-                            df_aggregated,
-                            parameter_dict,
-                            "acquisitionMedianAGDData.csv",
-                        )
-
-                if user_profile.plotBoxplots:
-                    parameter_dict = {  # pylint: disable=line-too-long
-                        "df_name_col": name_field,
-                        "df_value_col": value_field,  # pylint: disable=line-too-long
-                        "value_axis_title": "AGD (mGy)",
-                        "name_axis_title": "Acquisition protocol",
-                        "colourmap": user_profile.plotColourMapChoice,
-                        "filename": "OpenREM MG acquisition protocol AGD boxplot",
-                        "facet_col": None,
-                        "sorting_choice": [
-                            user_profile.plotInitialSortingDirection,
-                            user_profile.plotMGInitialSortingChoice,
-                        ],
-                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                        "return_as_dict": return_as_dict,
-                    }
-
-                    return_structure["acquisitionBoxplotAGDData"] = plotly_boxplot(
-                        df,
-                        parameter_dict,
-                    )
-
-                if user_profile.plotHistograms:
-                    category_names_col = name_field
-                    group_by_col = "x_ray_system_name"
-                    legend_title = "Acquisition protocol"
-
-                    if user_profile.plotGroupingChoice == "series":
-                        category_names_col = "x_ray_system_name"
-                        group_by_col = name_field
-                        legend_title = "System"
-
-                    parameter_dict = {  # pylint: disable=line-too-long
-                        "df_facet_col": group_by_col,
-                        "df_category_col": category_names_col,
-                        "df_value_col": value_field,  # pylint: disable=line-too-long
-                        "value_axis_title": "AGD (mGy)",
-                        "legend_title": legend_title,
-                        "n_bins": user_profile.plotHistogramBins,
-                        "colourmap": user_profile.plotColourMapChoice,
-                        "filename": "OpenREM MG acquisition protocol AGD histogram",
-                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                        "sorting_choice": [
-                            user_profile.plotInitialSortingDirection,
-                            user_profile.plotMGInitialSortingChoice,
-                        ],
-                        "global_max_min": user_profile.plotHistogramGlobalBins,
-                        "return_as_dict": return_as_dict,
-                    }
-                    return_structure[
-                        "acquisitionHistogramAGDData"
-                    ] = plotly_histogram_barchart(
-                        df,
-                        parameter_dict,
-                    )
+                return_structure = {**return_structure, **new_charts}
 
         if user_profile.plotMGAGDvsThickness:
             parameter_dict = {  # pylint: disable=line-too-long
