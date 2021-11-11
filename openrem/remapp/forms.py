@@ -323,16 +323,17 @@ class CTChartOptionsForm(forms.Form):
 class CTChartOptionsFormIncStandard(CTChartOptionsForm):
     plotCTStandardAcquisitionFreq = forms.BooleanField(label="Standard acquisition name frequency", required=False)
     plotCTStandardAcquisitionFreq.group = "Standard acquisition name"
-
     plotCTStandardAcquisitionMeanDLP = forms.BooleanField(label="Standard acquisition DLP", required=False)
     plotCTStandardAcquisitionMeanDLP.group = "Standard acquisition name"
+    plotCTStandardAcquisitionMeanCTDI = forms.BooleanField(label=mark_safe("Standard acquisition CTDI<sub>vol</sub>"), required=False)
+    plotCTStandardAcquisitionMeanCTDI.group = "Standard acquisition name"
 
+    plotCTStandardStudyFreq = forms.BooleanField(label="Standard study frequency", required=False)
+    plotCTStandardStudyFreq.group = "Standard study name"
     plotCTStandardStudyMeanDLP = forms.BooleanField(label="Standard study DLP", required=False)
     plotCTStandardStudyMeanDLP.group = "Standard study name"
     plotCTStandardStudyNumEvents = forms.BooleanField(label="Standard study events", required=False)
     plotCTStandardStudyNumEvents.group = "Standard study name"
-    plotCTStandardStudyFreq = forms.BooleanField(label="Standard study frequency", required=False)
-    plotCTStandardStudyFreq.group = "Standard study name"
     plotCTStandardStudyMeanDLPOverTime = forms.BooleanField(label="Standard study DLP over time", required=False)
     plotCTStandardStudyMeanDLPOverTime.group = "Standard study name"
     plotCTStandardStudyPerDayAndHour = forms.BooleanField(label="Standard study workload", required=False)
@@ -654,6 +655,7 @@ class CTChartOptionsDisplayForm(forms.Form):
 class CTChartOptionsDisplayFormIncStandard(CTChartOptionsDisplayForm):
     plotCTStandardAcquisitionFreq = forms.BooleanField(label="Standard acquisition name frequency", required=False)
     plotCTStandardAcquisitionMeanDLP = forms.BooleanField(label="Standard acquisition DLP", required=False)
+    plotCTStandardAcquisitionMeanCTDI = forms.BooleanField(label=mark_safe("Standard acquisition CTDI<sub>vol</sub>"), required=False)
 
     plotCTStandardStudyMeanDLP = forms.BooleanField(label="Standard study DLP", required=False)
     plotCTStandardStudyNumEvents = forms.BooleanField(label="Standard study events", required=False)
@@ -672,6 +674,7 @@ class CTChartOptionsDisplayFormIncStandard(CTChartOptionsDisplayForm):
         "plotCTAcquisitionTypes",
         "plotCTStandardAcquisitionFreq",
         "plotCTStandardAcquisitionMeanDLP",
+        "plotCTStandardAcquisitionMeanCTDI",
         "plotCTStudyFreq",
         "plotCTStudyMeanDLP",
         "plotCTStudyMeanCTDI",

@@ -104,6 +104,7 @@ class ChartsCT(TestCase):
         self.user.userprofile.plotCTAcquisitionCTDIOverTime = True
         self.user.userprofile.plotCTAcquisitionDLPOverTime = True
         self.user.userprofile.plotCTStandardAcquisitionMeanDLP = True
+        self.user.userprofile.plotCTStandardAcquisitionMeanCTDI = True
         self.user.userprofile.plotCTStudyMeanDLP = True
         self.user.userprofile.plotCTStudyMeanCTDI = True
         self.user.userprofile.plotCTStudyFreq = True
@@ -148,6 +149,10 @@ class ChartsCT(TestCase):
             "standardAcquisitionMedianDLP",
             "standardAcquisitionBoxplotDLP",
             "standardAcquisitionHistogramDLP",
+            "standardAcquisitionMeanCTDI",
+            "standardAcquisitionMedianCTDI",
+            "standardAcquisitionBoxplotCTDI",
+            "standardAcquisitionHistogramCTDI",
             "studyMeanDLP",
             "studyMedianDLP",
             "studyBoxplotDLP",

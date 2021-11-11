@@ -26,6 +26,7 @@ from .interface.chart_functions import (
     plotly_set_default_theme,
     plotly_frequency_barchart,
     construct_over_time_charts,
+    generate_average_chart_group,
 )
 
 logger = logging.getLogger(__name__)

@@ -66,6 +66,22 @@ $(document).ready(function() {
                 $("#acquisitionHistogramCTDIChartDiv").html(json.acquisitionHistogramCTDIData);
             }
 
+            // CTDI per standard acquisition name chart data
+            if(typeof json.standardAcquisitionMeanCTDIData !== "undefined") {
+                $("#standardAcquisitionMeanCTDIChartDiv").html(json.standardAcquisitionMeanCTDIData);
+                $("#standardAcquisitionMeanCTDIChartParentDiv").append(json.standardAcquisitionMeanCTDIDataCSV);
+            }
+            if(typeof json.standardAcquisitionMedianCTDIData !== "undefined") {
+                $("#standardAcquisitionMedianCTDIChartDiv").html(json.standardAcquisitionMedianCTDIData);
+                $("#standardAcquisitionMedianCTDIChartParentDiv").append(json.standardAcquisitionMedianCTDIDataCSV);
+            }
+            if(typeof json.standardAcquisitionBoxplotCTDIData !=="undefined") {
+                $("#standardAcquisitionBoxplotCTDIChartDiv").html(json.standardAcquisitionBoxplotCTDIData);
+            }
+            if(typeof json.standardAcquisitionHistogramCTDIData !=="undefined") {
+                $("#standardAcquisitionHistogramCTDIChartDiv").html(json.standardAcquisitionHistogramCTDIData);
+            }
+
             // Acquisition CTDI over time chart data
             if(typeof json.acquisitionMeanCTDIOverTime !== "undefined") {
                 $("#acquisitionMeanCTDIOverTimeChartDiv").html(json.acquisitionMeanCTDIOverTime);

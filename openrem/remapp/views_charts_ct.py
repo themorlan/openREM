@@ -254,6 +254,36 @@ def generate_required_ct_charts_list(profile):
                     }
                 )
 
+        if profile.plotCTStandardAcquisitionMeanCTDI:
+            if profile.plotMean:
+                required_charts.append(
+                    {
+                        "title": mark_safe("Chart of standard acquisition name mean CTDI<sub>vol</sub>"),
+                        "var_name": "standardAcquisitionMeanCTDI",
+                    }
+                )
+            if profile.plotMedian:
+                required_charts.append(
+                    {
+                        "title": mark_safe("Chart of standard acquisition name median CTDI<sub>vol</sub>"),
+                        "var_name": "standardAcquisitionMedianCTDI",
+                    }
+                )
+            if profile.plotBoxplots:
+                required_charts.append(
+                    {
+                        "title": mark_safe("Boxplot of standard acquisition name CTDI<sub>vol</sub>"),
+                        "var_name": "standardAcquisitionBoxplotCTDI",
+                    }
+                )
+            if profile.plotHistograms:
+                required_charts.append(
+                    {
+                        "title": mark_safe("Histogram of standard acquisition name CTDI<sub>vol</sub>"),
+                        "var_name": "standardAcquisitionHistogramCTDI",
+                    }
+                )
+
     if profile.plotCTStudyFreq:
         required_charts.append(
             {
@@ -654,6 +684,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
     if enable_standard_names:
         charts_of_interest.append(user_profile.plotCTStandardAcquisitionFreq)
         charts_of_interest.append(user_profile.plotCTStandardAcquisitionMeanDLP)
+        charts_of_interest.append(user_profile.plotCTStandardAcquisitionMeanCTDI)
 
     if any(charts_of_interest):
 
@@ -677,12 +708,17 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             charts_of_interest.append(user_profile.plotCTStandardAcquisitionMeanDLP)
         if any(charts_of_interest):
             value_fields.append("ctradiationdose__ctirradiationeventdata__dlp")
-        if (
-            user_profile.plotCTAcquisitionMeanCTDI
-            or user_profile.plotCTAcquisitionCTDIvsMass
-            or user_profile.plotCTAcquisitionCTDIOverTime
-        ):
+
+        charts_of_interest = [
+            user_profile.plotCTAcquisitionMeanCTDI,
+            user_profile.plotCTAcquisitionCTDIvsMass,
+            user_profile.plotCTAcquisitionCTDIOverTime,
+        ]
+        if enable_standard_names:
+            charts_of_interest.append(user_profile.plotCTStandardAcquisitionMeanCTDI)
+        if any(charts_of_interest):
             value_fields.append("ctradiationdose__ctirradiationeventdata__mean_ctdivol")
+
         if (
             user_profile.plotCTAcquisitionCTDIvsMass
             or user_profile.plotCTAcquisitionDLPvsMass
@@ -1003,6 +1039,27 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 name_text = "Standard acquisition name"
                 variable_name_start = "standardAcquisition"
                 variable_value_name = "DLP"
+                modality_text = "CT"
+                chart_message = ""
+
+                new_charts = generate_average_chart_group(average_choices, chart_message, df_without_blanks,
+                                                          modality_text,
+                                                          name_field, name_text, return_as_dict, return_structure,
+                                                          units_text, user_profile, value_field, value_text,
+                                                          variable_name_start, variable_value_name,
+                                                          user_profile.plotCTInitialSortingChoice)
+
+                return_structure = {**return_structure, **new_charts}
+
+            if user_profile.plotCTStandardAcquisitionMeanCTDI:
+
+                name_field = "standard_acquisition_name"
+                value_field = "ctradiationdose__ctirradiationeventdata__mean_ctdivol"
+                value_text = "CTDI<sub>vol</sub>"
+                units_text = "(mGy)"
+                name_text = "Standard acquisition name"
+                variable_name_start = "standardAcquisition"
+                variable_value_name = "CTDI"
                 modality_text = "CT"
                 chart_message = ""
 
