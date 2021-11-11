@@ -1234,7 +1234,9 @@ class IrradEventXRayData(models.Model):  # TID 10003
             return None
 
     class Meta:
-        indexes = [models.Index(fields=['projection_xray_radiation_dose', ]), ]
+        indexes = [
+            models.Index(fields=['projection_xray_radiation_dose', ]),
+        ]
 
 
 class ImageViewModifier(models.Model):  # EV 111032
@@ -1388,6 +1390,9 @@ class IrradEventXRaySourceData(models.Model):  # TID 10003b
         if self.dose_rp:
             return 1000 * self.dose_rp
 
+    class Meta:
+        indexes = [models.Index(fields=['irradiation_event_xray_data', ]), ]
+
 
 class XrayGrid(models.Model):
     """Content ID 10017 X-Ray Grid
@@ -1413,6 +1418,9 @@ class PulseWidth(models.Model):  # EV 113793
         max_digits=16, decimal_places=8, blank=True, null=True
     )
 
+    class Meta:
+        indexes = [models.Index(fields=['irradiation_event_xray_source_data', ]), ]
+
 
 class Kvp(models.Model):  # EV 113733
     """In TID 10003b. Code value 113733 (kV)"""
@@ -1421,6 +1429,9 @@ class Kvp(models.Model):  # EV 113733
         IrradEventXRaySourceData, on_delete=models.CASCADE
     )
     kvp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
+
+    class Meta:
+        indexes = [models.Index(fields=['irradiation_event_xray_source_data', ]), ]
 
 
 class XrayTubeCurrent(models.Model):  # EV 113734
@@ -1432,6 +1443,9 @@ class XrayTubeCurrent(models.Model):  # EV 113734
     xray_tube_current = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
     )
+
+    class Meta:
+        indexes = [models.Index(fields=['irradiation_event_xray_source_data', ]), ]
 
 
 class Exposure(models.Model):  # EV 113736
@@ -1453,6 +1467,9 @@ class Exposure(models.Model):  # EV 113736
             return self.exposure / Decimal(1000.0)
         else:
             return None
+
+    class Meta:
+        indexes = [models.Index(fields=['irradiation_event_xray_source_data', ]), ]
 
 
 class XrayFilters(models.Model):  # EV 113771
@@ -1481,6 +1498,9 @@ class XrayFilters(models.Model):  # EV 113771
     xray_filter_thickness_maximum = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
     )
+
+    class Meta:
+        indexes = [models.Index(fields=['irradiation_event_xray_source_data', ]), ]
 
 
 class IrradEventXRayMechanicalData(models.Model):  # TID 10003c
@@ -1536,6 +1556,9 @@ class IrradEventXRayMechanicalData(models.Model):  # TID 10003c
         max_digits=16, decimal_places=8, blank=True, null=True
     )
 
+    class Meta:
+        indexes = [models.Index(fields=['irradiation_event_xray_data', ]), ]
+
 
 class DoseRelatedDistanceMeasurements(models.Model):  # CID 10008
     """Dose Related Distance Measurements Context ID 10008
@@ -1583,6 +1606,9 @@ class DoseRelatedDistanceMeasurements(models.Model):  # CID 10008
     radiological_thickness = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
     )
+
+    class Meta:
+        indexes = [models.Index(fields=['irradiation_event_xray_mechanical_data', ]), ]
 
 
 class AccumProjXRayDose(models.Model):  # TID 10004
@@ -1722,6 +1748,9 @@ class AccumIntegratedProjRadiogDose(models.Model):  # TID 10007
         if self.dose_area_product_total_over_delta_weeks:
             return 1000000 * self.dose_area_product_total_over_delta_weeks
 
+    class Meta:
+        indexes = [models.Index(fields=['accumulated_xray_dose', ]), ]
+
 
 class PKsForSummedRFDoseStudiesInDeltaWeeks(models.Model):
     """Table to hold foreign keys of all studies that fall within the delta
@@ -1756,6 +1785,12 @@ class PatientModuleAttr(models.Model):  # C.7.1.1
     other_patient_ids = models.TextField(blank=True, null=True)
     not_patient_indicator = models.TextField(blank=True, null=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['general_study_module_attributes', ]),
+            models.Index(fields=['patient_id', ]),
+        ]
+
 
 class PatientStudyModuleAttr(models.Model):  # C.7.2.2
     """Patient Study Module C.7.2.2
@@ -1781,6 +1816,9 @@ class PatientStudyModuleAttr(models.Model):  # C.7.2.2
         max_digits=16, decimal_places=8, blank=True, null=True
     )
     # TODO: Add patient size code sequence
+
+    class Meta:
+        indexes = [models.Index(fields=['general_study_module_attributes', ]), ]
 
 
 class GeneralEquipmentModuleAttr(models.Model):  # C.7.5.1
