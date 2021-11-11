@@ -71,6 +71,8 @@ def generate_required_ct_charts_list(profile):
     ]
     if enable_standard_names:
         charts_of_interest.append(profile.plotCTStandardStudyMeanDLPOverTime)
+        charts_of_interest.append(profile.plotCTStandardAcquisitionDLPOverTime)
+        charts_of_interest.append(profile.plotCTStandardAcquisitionCTDIOverTime)
 
     if any(charts_of_interest):
         keys = list(dict(profile.TIME_PERIOD).keys())
@@ -281,6 +283,50 @@ def generate_required_ct_charts_list(profile):
                     {
                         "title": mark_safe("Histogram of standard acquisition name CTDI<sub>vol</sub>"),
                         "var_name": "standardAcquisitionHistogramCTDI",
+                    }
+                )
+
+        if profile.plotCTStandardAcquisitionDLPOverTime:
+            if profile.plotMean:
+                required_charts.append(
+                    {
+                        "title": "Chart of standard acquisition name mean DLP over time ("
+                        + time_period
+                        + ")",
+                        "var_name": "standardAcquisitionMeanDLPOverTime",
+                    }
+                )
+            if profile.plotMedian:
+                required_charts.append(
+                    {
+                        "title": "Chart of standard acquisition name median DLP over time ("
+                        + time_period
+                        + ")",
+                        "var_name": "standardAcquisitionMedianDLPOverTime",
+                    }
+                )
+
+        if profile.plotCTStandardAcquisitionCTDIOverTime:
+            if profile.plotMean:
+                required_charts.append(  # nosec
+                    {
+                        "title": mark_safe(
+                            "Chart of standard acquisition name mean CTDI<sub>vol</sub> over time ("
+                            + time_period
+                            + ")"
+                        ),
+                        "var_name": "standardAcquisitionMeanCTDIOverTime",
+                    }
+                )
+            if profile.plotMedian:
+                required_charts.append(  # nosec
+                    {
+                        "title": mark_safe(
+                            "Chart of standard acquisition name median CTDI<sub>vol</sub> over time ("
+                            + time_period
+                            + ")"
+                        ),
+                        "var_name": "standardAcquisitionMedianCTDIOverTime",
                     }
                 )
 
@@ -667,6 +713,8 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
     ]
     if enable_standard_names:
         charts_of_interest.append(user_profile.plotCTStandardStudyMeanDLPOverTime)
+        charts_of_interest.append(user_profile.plotCTStandardAcquisitionDLPOverTime)
+        charts_of_interest.append(user_profile.plotCTStandardAcquisitionCTDIOverTime)
     if any(charts_of_interest):
         plot_timeunit_period = user_profile.plotCTOverTimePeriod
 
@@ -685,6 +733,8 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         charts_of_interest.append(user_profile.plotCTStandardAcquisitionFreq)
         charts_of_interest.append(user_profile.plotCTStandardAcquisitionMeanDLP)
         charts_of_interest.append(user_profile.plotCTStandardAcquisitionMeanCTDI)
+        charts_of_interest.append(user_profile.plotCTStandardAcquisitionDLPOverTime)
+        charts_of_interest.append(user_profile.plotCTStandardAcquisitionCTDIOverTime)
 
     if any(charts_of_interest):
 
@@ -706,6 +756,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         ]
         if enable_standard_names:
             charts_of_interest.append(user_profile.plotCTStandardAcquisitionMeanDLP)
+            charts_of_interest.append(user_profile.plotCTStandardAcquisitionDLPOverTime)
         if any(charts_of_interest):
             value_fields.append("ctradiationdose__ctirradiationeventdata__dlp")
 
@@ -716,6 +767,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         ]
         if enable_standard_names:
             charts_of_interest.append(user_profile.plotCTStandardAcquisitionMeanCTDI)
+            charts_of_interest.append(user_profile.plotCTStandardAcquisitionCTDIOverTime)
         if any(charts_of_interest):
             value_fields.append("ctradiationdose__ctirradiationeventdata__mean_ctdivol")
 
@@ -727,10 +779,15 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
         time_fields = []
         date_fields = []
-        if (
-            user_profile.plotCTAcquisitionCTDIOverTime
-            or user_profile.plotCTAcquisitionDLPOverTime
-        ):
+
+        charts_of_interest = [
+            user_profile.plotCTAcquisitionCTDIOverTime,
+            user_profile.plotCTAcquisitionDLPOverTime,
+        ]
+        if enable_standard_names:
+            charts_of_interest.append(user_profile.plotCTStandardAcquisitionDLPOverTime)
+            charts_of_interest.append(user_profile.plotCTStandardAcquisitionCTDIOverTime)
+        if any(charts_of_interest):
             date_fields.append("study_date")
 
         system_field = []
@@ -1071,6 +1128,81 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                                                           user_profile.plotCTInitialSortingChoice)
 
                 return_structure = {**return_structure, **new_charts}
+
+            if user_profile.plotCTStandardAcquisitionCTDIOverTime:
+                facet_title = "System"
+
+                if user_profile.plotGroupingChoice == "series":
+                    facet_title = "Standard acquisition name"
+
+                parameter_dict = {
+                    "df_name_col": "standard_acquisition_name",
+                    "df_value_col": "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    "df_date_col": "study_date",
+                    "name_title": "Standard acquisition name",
+                    "value_title": "CTDI<sub>vol</sub> (mGy)",
+                    "date_title": "Study date",
+                    "facet_title": facet_title,
+                    "sorting_choice": [
+                        user_profile.plotInitialSortingDirection,
+                        user_profile.plotCTInitialSortingChoice,
+                    ],
+                    "time_period": plot_timeunit_period,
+                    "average_choices": average_choices + ["count"],
+                    "grouping_choice": user_profile.plotGroupingChoice,
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "filename": "OpenREM CT standard acquisition name CTDI over time",
+                    "return_as_dict": return_as_dict,
+                    "custom_msg_line": chart_message,
+                }
+                result = construct_over_time_charts(
+                    df_without_blanks,
+                    parameter_dict,
+                )
+
+                if user_profile.plotMean:
+                    return_structure["standardAcquisitionMeanCTDIOverTime"] = result["mean"]
+                if user_profile.plotMedian:
+                    return_structure["standardAcquisitionMedianCTDIOverTime"] = result["median"]
+
+            if user_profile.plotCTStandardAcquisitionDLPOverTime:
+                facet_title = "System"
+
+                if user_profile.plotGroupingChoice == "series":
+                    facet_title = "Standard acquisition name"
+
+                parameter_dict = {
+                    "df_name_col": "standard_acquisition_name",
+                    "df_value_col": "ctradiationdose__ctirradiationeventdata__dlp",
+                    "df_date_col": "study_date",
+                    "name_title": "Standard acquisition name",
+                    "value_title": "DLP (mGy.cm)",
+                    "date_title": "Study date",
+                    "facet_title": facet_title,
+                    "sorting_choice": [
+                        user_profile.plotInitialSortingDirection,
+                        user_profile.plotCTInitialSortingChoice,
+                    ],
+                    "time_period": plot_timeunit_period,
+                    "average_choices": average_choices + ["count"],
+                    "grouping_choice": user_profile.plotGroupingChoice,
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "filename": "OpenREM CT standard acquisition name DLP over time",
+                    "return_as_dict": return_as_dict,
+                    "custom_msg_line": chart_message,
+                }
+                result = construct_over_time_charts(
+                    df_without_blanks,
+                    parameter_dict,
+                )
+
+                if user_profile.plotMean:
+                    return_structure["standardAcquisitionMeanDLPOverTime"] = result["mean"]
+                if user_profile.plotMedian:
+                    return_structure["standardAcquisitionMedianDLPOverTime"] = result["median"]
+
 
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts

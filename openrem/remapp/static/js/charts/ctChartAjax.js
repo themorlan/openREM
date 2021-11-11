@@ -90,6 +90,14 @@ $(document).ready(function() {
                 $("#acquisitionMedianCTDIOverTimeChartDiv").html(json.acquisitionMedianCTDIOverTime);
             }
 
+            // Standard acquisition name CTDI over time chart data
+            if(typeof json.standardAcquisitionMeanCTDIOverTime !== "undefined") {
+                $("#standardAcquisitionMeanCTDIOverTimeChartDiv").html(json.standardAcquisitionMeanCTDIOverTime);
+            }
+            if(typeof json.standardAcquisitionMedianCTDIOverTime !== "undefined") {
+                $("#standardAcquisitionMedianCTDIOverTimeChartDiv").html(json.standardAcquisitionMedianCTDIOverTime);
+            }
+
             // Acquisition DLP over time chart data
             if(typeof json.acquisitionMeanDLPOverTime !== "undefined") {
                 $("#acquisitionMeanDLPOverTimeChartDiv").html(json.acquisitionMeanDLPOverTime);
@@ -98,6 +106,13 @@ $(document).ready(function() {
                 $("#acquisitionMedianDLPOverTimeChartDiv").html(json.acquisitionMedianDLPOverTime);
             }
 
+            // Standard acquisition name DLP over time chart data
+            if(typeof json.standardAcquisitionMeanDLPOverTime !== "undefined") {
+                $("#standardAcquisitionMeanDLPOverTimeChartDiv").html(json.standardAcquisitionMeanDLPOverTime);
+            }
+            if(typeof json.standardAcquisitionMedianDLPOverTime !== "undefined") {
+                $("#standardAcquisitionMedianDLPOverTimeChartDiv").html(json.standardAcquisitionMedianDLPOverTime);
+            }
 
             // DLP per study chart data
             if(typeof json.studyMeanDLPData !== "undefined") {
