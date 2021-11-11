@@ -364,7 +364,8 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
                                                           name_field, name_text, return_as_dict, return_structure,
                                                           units_text, user_profile, value_field, value_text,
-                                                          variable_name_start, variable_value_name)
+                                                          variable_name_start, variable_value_name,
+                                                          user_profile.plotMGInitialSortingChoice)
 
                 return_structure = {**return_structure, **new_charts}
 

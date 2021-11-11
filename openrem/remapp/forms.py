@@ -112,73 +112,96 @@ class DXChartOptionsForm(forms.Form):
     """Form for DX chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
-    plotDXAcquisitionFreq = forms.BooleanField(
-        label="Acquisition frequency", required=False
-    )
-    plotDXAcquisitionMeanDAP = forms.BooleanField(
-        label="Acquisition DAP", required=False
-    )
-    plotDXAcquisitionMeanmAs = forms.BooleanField(
-        label="Acquisition mAs", required=False
-    )
-    plotDXAcquisitionMeankVp = forms.BooleanField(
-        label="Acquisition kVp", required=False
-    )
-    plotDXAcquisitionMeanDAPOverTime = forms.BooleanField(
-        label="Acquisition DAP over time", required=False
-    )
-    plotDXAcquisitionMeanmAsOverTime = forms.BooleanField(
-        label="Acquisition mAs over time", required=False
-    )
-    plotDXAcquisitionMeankVpOverTime = forms.BooleanField(
-        label="Acquisition kVp over time", required=False
-    )
-    plotDXAcquisitionDAPvsMass = forms.BooleanField(
-        label="Acquisition DAP vs mass", required=False
-    )
-    plotDXStudyFreq = forms.BooleanField(label="Study frequency", required=False)
-    plotDXStudyMeanDAP = forms.BooleanField(label="Study DAP", required=False)
-    plotDXStudyDAPvsMass = forms.BooleanField(label="Study DAP vs mass", required=False)
-    plotDXStudyPerDayAndHour = forms.BooleanField(
-        label="Study workload", required=False
-    )
-    plotDXRequestFreq = forms.BooleanField(
-        label="Requested procedure frequency", required=False
-    )
-    plotDXRequestMeanDAP = forms.BooleanField(
-        label="Requested procedure DAP", required=False
-    )
-    plotDXRequestDAPvsMass = forms.BooleanField(
-        label="Requested procedure DAP vs mass", required=False
-    )
+    plotCharts.group = "PlotCharts"
     plotDXAcquisitionMeanDAPOverTimePeriod = forms.ChoiceField(
         label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
     )
+    plotDXAcquisitionMeanDAPOverTimePeriod.group = "General"
     plotAverageChoice = forms.MultipleChoiceField(
         label="Average plots",
         choices=CommonVariables.AVERAGES,
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
+    plotAverageChoice.group = "General"
     plotGrouping = forms.ChoiceField(  # nosec
         label=mark_safe("Grouping choice"),
         choices=CommonVariables.CHART_GROUPING,
         required=False,
     )
+    plotGrouping.group = "General"
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
     )
+    plotSeriesPerSystem.group = "General"
     plotHistograms = forms.BooleanField(
         label="Calculate histogram data", required=False
     )
+    plotHistograms.group = "General"
     plotDXInitialSortingChoice = forms.ChoiceField(
         label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
+    plotDXInitialSortingChoice.group = "General"
     plotInitialSortingDirection = forms.ChoiceField(
         label="Sorting direction",
         choices=CommonVariables.SORTING_DIRECTION,
         required=False,
     )
+    plotInitialSortingDirection.group = "General"
+    plotDXAcquisitionFreq = forms.BooleanField(
+        label="Acquisition frequency", required=False
+    )
+    plotDXAcquisitionFreq.group = "Acquisition protocol"
+    plotDXAcquisitionMeanDAP = forms.BooleanField(
+        label="Acquisition DAP", required=False
+    )
+    plotDXAcquisitionMeanDAP.group = "Acquisition protocol"
+    plotDXAcquisitionMeanmAs = forms.BooleanField(
+        label="Acquisition mAs", required=False
+    )
+    plotDXAcquisitionMeanmAs.group = "Acquisition protocol"
+    plotDXAcquisitionMeankVp = forms.BooleanField(
+        label="Acquisition kVp", required=False
+    )
+    plotDXAcquisitionMeankVp.group = "Acquisition protocol"
+    plotDXAcquisitionMeanDAPOverTime = forms.BooleanField(
+        label="Acquisition DAP over time", required=False
+    )
+    plotDXAcquisitionMeanDAPOverTime.group = "Acquisition protocol"
+    plotDXAcquisitionMeanmAsOverTime = forms.BooleanField(
+        label="Acquisition mAs over time", required=False
+    )
+    plotDXAcquisitionMeanmAsOverTime.group = "Acquisition protocol"
+    plotDXAcquisitionMeankVpOverTime = forms.BooleanField(
+        label="Acquisition kVp over time", required=False
+    )
+    plotDXAcquisitionMeankVpOverTime.group = "Acquisition protocol"
+    plotDXAcquisitionDAPvsMass = forms.BooleanField(
+        label="Acquisition DAP vs mass", required=False
+    )
+    plotDXAcquisitionDAPvsMass.group = "Acquisition protocol"
+    plotDXStudyFreq = forms.BooleanField(label="Study frequency", required=False)
+    plotDXStudyFreq.group = "Study description"
+    plotDXStudyMeanDAP = forms.BooleanField(label="Study DAP", required=False)
+    plotDXStudyMeanDAP.group = "Study description"
+    plotDXStudyDAPvsMass = forms.BooleanField(label="Study DAP vs mass", required=False)
+    plotDXStudyDAPvsMass.group = "Study description"
+    plotDXStudyPerDayAndHour = forms.BooleanField(
+        label="Study workload", required=False
+    )
+    plotDXStudyPerDayAndHour.group = "Study description"
+    plotDXRequestFreq = forms.BooleanField(
+        label="Requested procedure frequency", required=False
+    )
+    plotDXRequestFreq.group = "Requested procedure"
+    plotDXRequestMeanDAP = forms.BooleanField(
+        label="Requested procedure DAP", required=False
+    )
+    plotDXRequestMeanDAP.group = "Requested procedure"
+    plotDXRequestDAPvsMass = forms.BooleanField(
+        label="Requested procedure DAP vs mass", required=False
+    )
+    plotDXRequestDAPvsMass.group = "Requested procedure"
 
 
 class CTChartOptionsForm(forms.Form):

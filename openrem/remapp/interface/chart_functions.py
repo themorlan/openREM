@@ -2173,7 +2173,7 @@ def download_link(
 
 def generate_average_chart_group(average_choices, chart_message, df, modality_text, name_field, name_text,
                                  return_as_dict, return_structure, units_text, user_profile, value_field, value_text,
-                                 variable_name_start, variable_value_name):
+                                 variable_name_start, variable_value_name, sorting_choice):
 
     if user_profile.plotBoxplots and "median" not in average_choices:
         average_choices = average_choices + ["median"]
@@ -2195,7 +2195,7 @@ def generate_average_chart_group(average_choices, chart_message, df, modality_te
             "return_as_dict": return_as_dict,
             "sorting_choice": [
                 user_profile.plotInitialSortingDirection,
-                user_profile.plotCTInitialSortingChoice,
+                sorting_choice,
             ],
             "custom_msg_line": chart_message,
         }
@@ -2239,7 +2239,7 @@ def generate_average_chart_group(average_choices, chart_message, df, modality_te
             "facet_col": None,
             "sorting_choice": [
                 user_profile.plotInitialSortingDirection,
-                user_profile.plotCTInitialSortingChoice,
+                sorting_choice,
             ],
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
             "return_as_dict": return_as_dict,
@@ -2272,7 +2272,7 @@ def generate_average_chart_group(average_choices, chart_message, df, modality_te
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
             "sorting_choice": [
                 user_profile.plotInitialSortingDirection,
-                user_profile.plotCTInitialSortingChoice,
+                sorting_choice,
             ],
             "global_max_min": user_profile.plotHistogramGlobalBins,
             "return_as_dict": return_as_dict,
