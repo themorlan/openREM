@@ -337,7 +337,7 @@ class RFSummaryListFilter(django_filters.FilterSet):
 class RFFilterPlusStdNames(RFSummaryListFilter):
     """Adding standard name fields"""
     standard_study_name = django_filters.CharFilter(
-        field="standard_study_name",
+        field_name="standard_study_name",
         lookup_expr="icontains",
         label="Standard study name",
     )
@@ -365,7 +365,7 @@ class RFFilterPlusPid(RFSummaryListFilter):
 class RFFilterPlusPidPlusStdNames(RFFilterPlusPid):
     """Adding standard name fields"""
     standard_study_name = django_filters.CharFilter(
-        field="standard_study_name",
+        field_name="standard_study_name",
         lookup_expr="icontains",
         label="Standard study name",
     )
@@ -962,7 +962,7 @@ class MGSummaryListFilter(django_filters.FilterSet):
 class MGFilterPlusStdNames(MGSummaryListFilter):
     """Adding standard name fields"""
     standard_study_name = django_filters.CharFilter(
-        field="standard_study_name",
+        field_name="standard_study_name",
         lookup_expr="icontains",
         label="Standard study name",
     )
@@ -989,7 +989,7 @@ class MGFilterPlusPid(MGSummaryListFilter):
 class MGFilterPlusPidPlusStdNames(MGFilterPlusPid):
     """Adding standard name fields"""
     standard_study_name = django_filters.CharFilter(
-        field="standard_study_name",
+        field_name="standard_study_name",
         lookup_expr="icontains",
         label="Standard study name",
     )
@@ -1163,7 +1163,7 @@ class DXSummaryListFilter(django_filters.FilterSet):
 class DXFilterPlusStdNames(DXSummaryListFilter):
     """Adding standard name fields"""
     standard_study_name = django_filters.CharFilter(
-        field="standard_study_name",
+        field_name="standard_study_name",
         lookup_expr="icontains",
         label="Standard study name",
     )
@@ -1191,7 +1191,7 @@ class DXFilterPlusPid(DXSummaryListFilter):
 class DXFilterPlusPidPlusStdNames(DXFilterPlusPid):
     """Adding standard name fields"""
     standard_study_name = django_filters.CharFilter(
-        field="standard_study_name",
+        field_name="standard_study_name",
         lookup_expr="icontains",
         label="Standard study name",
     )
