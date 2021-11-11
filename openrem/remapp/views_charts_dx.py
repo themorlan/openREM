@@ -27,6 +27,7 @@ from .interface.chart_functions import (
     plotly_frequency_barchart,
     plotly_scatter,
     construct_over_time_charts,
+    generate_average_chart_group,
 )
 
 logger = logging.getLogger(__name__)
@@ -460,358 +461,63 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
         if user_profile.plotDXAcquisitionMeanDAP:
 
-            if user_profile.plotBoxplots and "median" not in average_choices:
-                average_choices = average_choices + ["median"]
+            name_field = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            value_field = "projectionxrayradiationdose__irradeventxraydata__dose_area_product"
+            value_text = "DAP"
+            units_text = "(cGy.cm<sup>2</sup>)"
+            name_text = "Acquisition protocol"
+            variable_name_start = "acquisition"
+            variable_value_name = "DAP"
+            modality_text = "DX"
+            chart_message = ""
 
-            name_field = (
-                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
-            )
-            value_field = (
-                "projectionxrayradiationdose__irradeventxraydata__dose_area_product"
-            )
+            new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
+                                                      name_field, name_text, return_as_dict, return_structure,
+                                                      units_text, user_profile, value_field, value_text,
+                                                      variable_name_start, variable_value_name,
+                                                      user_profile.plotDXInitialSortingChoice)
 
-            df_aggregated = create_dataframe_aggregates(
-                df,
-                [name_field],
-                value_field,
-                stats_to_use=average_choices + ["count"],
-            )
-
-            if user_profile.plotMean or user_profile.plotMedian:
-
-                parameter_dict = {
-                    "df_name_col": name_field,
-                    "name_axis_title": "Acquisition protocol",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "facet_col": None,
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                }
-                if user_profile.plotMean:
-                    parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM DX acquisition protocol DAP mean"
-                    parameter_dict["average_choice"] = "mean"
-                    (
-                        return_structure["acquisitionMeanDAPData"],
-                        return_structure["acquisitionMeanDAPDataCSV"],
-                    ) = plotly_barchart(  # pylint: disable=line-too-long
-                        df_aggregated,
-                        parameter_dict,
-                        "acquisitionMeanDAPData.csv",
-                    )
-
-                if user_profile.plotMedian:
-                    parameter_dict[
-                        "value_axis_title"
-                    ] = "Median DAP (cGy.cm<sup>2</sup>)"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM DX acquisition protocol DAP median"
-                    parameter_dict["average_choice"] = "median"
-                    (
-                        return_structure["acquisitionMedianDAPData"],
-                        return_structure["acquisitionMedianDAPDataCSV"],
-                    ) = plotly_barchart(  # pylint: disable=line-too-long
-                        df_aggregated,
-                        parameter_dict,
-                        "acquisitionMedianDAPData.csv",
-                    )
-
-            if user_profile.plotBoxplots:
-                parameter_dict = {
-                    "df_name_col": name_field,
-                    "df_value_col": value_field,
-                    "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
-                    "name_axis_title": "Acquisition protocol",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX acquisition protocol DAP boxplot",
-                    "facet_col": None,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                }
-
-                return_structure["acquisitionBoxplotDAPData"] = plotly_boxplot(
-                    df,
-                    parameter_dict,
-                )
-
-            if user_profile.plotHistograms:
-                category_names_col = name_field
-                group_by_col = "x_ray_system_name"
-                legend_title = "Acquisition protocol"
-
-                if user_profile.plotGroupingChoice == "series":
-                    category_names_col = "x_ray_system_name"
-                    group_by_col = name_field
-                    legend_title = "System"
-
-                parameter_dict = {
-                    "df_facet_col": group_by_col,
-                    "df_category_col": category_names_col,
-                    "df_value_col": value_field,
-                    "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
-                    "legend_title": legend_title,
-                    "n_bins": user_profile.plotHistogramBins,
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX acquisition protocol DAP histogram",
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "global_max_min": user_profile.plotHistogramGlobalBins,
-                    "return_as_dict": return_as_dict,
-                }
-                return_structure[
-                    "acquisitionHistogramDAPData"
-                ] = plotly_histogram_barchart(
-                    df,
-                    parameter_dict,
-                )
+            return_structure = {**return_structure, **new_charts}
 
         if user_profile.plotDXAcquisitionMeankVp:
 
-            if user_profile.plotBoxplots and "median" not in average_choices:
-                average_choices = average_choices + ["median"]
-
-            name_field = (
-                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
-            )
+            name_field = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
             value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__kvp__kvp"
+            value_text = "kVp"
+            units_text = ""
+            name_text = "Acquisition protocol"
+            variable_name_start = "acquisition"
+            variable_value_name = "kVp"
+            modality_text = "DX"
+            chart_message = ""
 
-            df_aggregated = create_dataframe_aggregates(
-                df,
-                [name_field],
-                value_field,
-                stats_to_use=average_choices + ["count"],
-            )
+            new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
+                                                      name_field, name_text, return_as_dict, return_structure,
+                                                      units_text, user_profile, value_field, value_text,
+                                                      variable_name_start, variable_value_name,
+                                                      user_profile.plotDXInitialSortingChoice)
 
-            if user_profile.plotMean or user_profile.plotMedian:
-
-                parameter_dict = {
-                    "df_name_col": name_field,
-                    "name_axis_title": "Acquisition protocol",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "facet_col": None,
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                }
-                if user_profile.plotMean:
-                    parameter_dict["value_axis_title"] = "Mean kVp"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM DX acquisition protocol kVp mean"
-                    parameter_dict["average_choice"] = "mean"
-                    (
-                        return_structure["acquisitionMeankVpData"],
-                        return_structure["acquisitionMeankVpDataCSV"],
-                    ) = plotly_barchart(  # pylint: disable=line-too-long
-                        df_aggregated,
-                        parameter_dict,
-                        "acquisitionMeankVpData.csv",
-                    )
-
-                if user_profile.plotMedian:
-                    parameter_dict["value_axis_title"] = "Median kVp"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM DX acquisition protocol kVp median"
-                    parameter_dict["average_choice"] = "median"
-                    (
-                        return_structure["acquisitionMediankVpData"],
-                        return_structure["acquisitionMediankVpDataCSV"],
-                    ) = plotly_barchart(  # pylint: disable=line-too-long
-                        df_aggregated,
-                        parameter_dict,
-                        "acquisitionMediankVpData.csv",
-                    )
-
-            if user_profile.plotBoxplots:
-                parameter_dict = {  # pylint: disable=line-too-long
-                    "df_name_col": name_field,
-                    "df_value_col": value_field,  # pylint: disable=line-too-long
-                    "value_axis_title": "kVp",
-                    "name_axis_title": "Acquisition protocol",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX acquisition protocol kVp boxplot",
-                    "facet_col": None,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                }
-
-                return_structure["acquisitionBoxplotkVpData"] = plotly_boxplot(
-                    df,
-                    parameter_dict,
-                )
-
-            if user_profile.plotHistograms:
-                category_names_col = name_field
-                group_by_col = "x_ray_system_name"
-                legend_title = "Acquisition protocol"
-
-                if user_profile.plotGroupingChoice == "series":
-                    category_names_col = "x_ray_system_name"
-                    group_by_col = name_field
-                    legend_title = "System"
-
-                parameter_dict = {  # pylint: disable=line-too-long
-                    "df_facet_col": group_by_col,
-                    "df_category_col": category_names_col,
-                    "df_value_col": value_field,  # pylint: disable=line-too-long
-                    "value_axis_title": "kVp",
-                    "legend_title": legend_title,
-                    "n_bins": user_profile.plotHistogramBins,
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX acquisition protocol kVp histogram",
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "global_max_min": user_profile.plotHistogramGlobalBins,
-                    "return_as_dict": return_as_dict,
-                }
-                return_structure[
-                    "acquisitionHistogramkVpData"
-                ] = plotly_histogram_barchart(
-                    df,
-                    parameter_dict,
-                )
+            return_structure = {**return_structure, **new_charts}
 
         if user_profile.plotDXAcquisitionMeanmAs:
 
-            if user_profile.plotBoxplots and "median" not in average_choices:
-                average_choices = average_choices + ["median"]
+            name_field = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
+            value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"
+            value_text = "mAs"
+            units_text = ""
+            name_text = "Acquisition protocol"
+            variable_name_start = "acquisition"
+            variable_value_name = "mAs"
+            modality_text = "DX"
+            chart_message = ""
 
-            name_field = (
-                "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"
-            )
-            value_field = "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"  # pylint: disable=line-too-long
+            new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
+                                                      name_field, name_text, return_as_dict, return_structure,
+                                                      units_text, user_profile, value_field, value_text,
+                                                      variable_name_start, variable_value_name,
+                                                      user_profile.plotDXInitialSortingChoice)
 
-            df_aggregated = create_dataframe_aggregates(
-                df,
-                [name_field],
-                value_field,
-                stats_to_use=average_choices + ["count"],
-            )
-
-            if user_profile.plotMean or user_profile.plotMedian:
-
-                parameter_dict = {
-                    "df_name_col": name_field,
-                    "name_axis_title": "Acquisition protocol",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "facet_col": None,
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                }
-                if user_profile.plotMean:
-                    parameter_dict["value_axis_title"] = "Mean mAs"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM DX acquisition protocol mAs mean"
-                    parameter_dict["average_choice"] = "mean"
-                    (
-                        return_structure["acquisitionMeanmAsData"],
-                        return_structure["acquisitionMeanmAsDataCSV"],
-                    ) = plotly_barchart(  # pylint: disable=line-too-long
-                        df_aggregated,
-                        parameter_dict,
-                        "acquisitionMeanmAsData.csv",
-                    )
-
-                if user_profile.plotMedian:
-                    parameter_dict["value_axis_title"] = "Median mAs"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM DX acquisition protocol mAs median"
-                    parameter_dict["average_choice"] = "median"
-                    (
-                        return_structure["acquisitionMedianmAsData"],
-                        return_structure["acquisitionMedianmAsDataCSV"],
-                    ) = plotly_barchart(  # pylint: disable=line-too-long
-                        df_aggregated,
-                        parameter_dict,
-                        "acquisitionMedianmAsData.csv",
-                    )
-
-            if user_profile.plotBoxplots:
-                parameter_dict = {  # pylint: disable=line-too-long
-                    "df_name_col": name_field,
-                    "df_value_col": value_field,  # pylint: disable=line-too-long
-                    "value_axis_title": "mAs",
-                    "name_axis_title": "Acquisition protocol",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX acquisition protocol mAs boxplot",
-                    "facet_col": None,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                }
-
-                return_structure["acquisitionBoxplotmAsData"] = plotly_boxplot(
-                    df,
-                    parameter_dict,
-                )
-
-            if user_profile.plotHistograms:
-                category_names_col = name_field
-                group_by_col = "x_ray_system_name"
-                legend_title = "Acquisition protocol"
-
-                if user_profile.plotGroupingChoice == "series":
-                    category_names_col = "x_ray_system_name"
-                    group_by_col = name_field
-                    legend_title = "System"
-
-                parameter_dict = {  # pylint: disable=line-too-long
-                    "df_facet_col": group_by_col,
-                    "df_category_col": category_names_col,
-                    "df_value_col": value_field,  # pylint: disable=line-too-long
-                    "value_axis_title": "mAs",
-                    "legend_title": legend_title,
-                    "n_bins": user_profile.plotHistogramBins,
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX acquisition protocol mAs histogram",
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "global_max_min": user_profile.plotHistogramGlobalBins,
-                    "return_as_dict": return_as_dict,
-                }
-                return_structure[
-                    "acquisitionHistogrammAsData"
-                ] = plotly_histogram_barchart(
-                    df,
-                    parameter_dict,
-                )
+            return_structure = {**return_structure, **new_charts}
 
         if user_profile.plotDXAcquisitionFreq:
             parameter_dict = {
@@ -1049,116 +755,23 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
         if user_profile.plotDXStudyMeanDAP:
 
-            if user_profile.plotBoxplots and "median" not in average_choices:
-                average_choices = average_choices + ["median"]
-
             name_field = "study_description"
             value_field = "total_dap"
+            value_text = "DAP"
+            units_text = "(cGy.cm<sup>2</sup>)"
+            name_text = "Study description"
+            variable_name_start = "study"
+            variable_value_name = "DAP"
+            modality_text = "DX"
+            chart_message = ""
 
-            df_aggregated = create_dataframe_aggregates(
-                df,
-                [name_field],
-                value_field,
-                stats_to_use=average_choices + ["count"],
-            )
+            new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
+                                                      name_field, name_text, return_as_dict, return_structure,
+                                                      units_text, user_profile, value_field, value_text,
+                                                      variable_name_start, variable_value_name,
+                                                      user_profile.plotDXInitialSortingChoice)
 
-            if user_profile.plotMean or user_profile.plotMedian:
-
-                parameter_dict = {
-                    "df_name_col": name_field,
-                    "name_axis_title": "Study description",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "facet_col": None,
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                }
-                if user_profile.plotMean:
-                    parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
-                    parameter_dict["filename"] = "OpenREM DX study description DAP mean"
-                    parameter_dict["average_choice"] = "mean"
-                    (
-                        return_structure["studyMeanDAPData"],
-                        return_structure["studyMeanDAPDataCSV"],
-                    ) = plotly_barchart(
-                        df_aggregated,
-                        parameter_dict,
-                        "studyMeanDAPData.csv",
-                    )
-
-                if user_profile.plotMedian:
-                    parameter_dict[
-                        "value_axis_title"
-                    ] = "Median DAP (cGy.cm<sup>2</sup>)"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM DX study description DAP median"
-                    parameter_dict["average_choice"] = "median"
-                    (
-                        return_structure["studyMedianDAPData"],
-                        return_structure["studyMedianDAPDataCSV"],
-                    ) = plotly_barchart(
-                        df_aggregated,
-                        parameter_dict,
-                        "studyMedianDAPData.csv",
-                    )
-
-            if user_profile.plotBoxplots:
-                parameter_dict = {
-                    "df_name_col": name_field,
-                    "df_value_col": value_field,
-                    "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
-                    "name_axis_title": "Study description",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX study description DAP boxplot",
-                    "facet_col": None,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                }
-
-                return_structure["studyBoxplotDAPData"] = plotly_boxplot(
-                    df,
-                    parameter_dict,
-                )
-
-            if user_profile.plotHistograms:
-                category_names_col = name_field
-                group_by_col = "x_ray_system_name"
-                legend_title = "Study description"
-
-                if user_profile.plotGroupingChoice == "series":
-                    category_names_col = "x_ray_system_name"
-                    group_by_col = name_field
-                    legend_title = "System"
-
-                parameter_dict = {
-                    "df_facet_col": group_by_col,
-                    "df_category_col": category_names_col,
-                    "df_value_col": value_field,
-                    "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
-                    "legend_title": legend_title,
-                    "n_bins": user_profile.plotHistogramBins,
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX study description DAP histogram",
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "global_max_min": user_profile.plotHistogramGlobalBins,
-                    "return_as_dict": return_as_dict,
-                }
-                return_structure["studyHistogramDAPData"] = plotly_histogram_barchart(
-                    df,
-                    parameter_dict,
-                )
+            return_structure = {**return_structure, **new_charts}
 
         if user_profile.plotDXStudyFreq:
             parameter_dict = {
@@ -1189,118 +802,23 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
 
         if user_profile.plotDXRequestMeanDAP:
 
-            if user_profile.plotBoxplots and "median" not in average_choices:
-                average_choices = average_choices + ["median"]
-
             name_field = "requested_procedure_code_meaning"
             value_field = "total_dap"
+            value_text = "DAP"
+            units_text = "(cGy.cm<sup>2</sup>)"
+            name_text = "Requested procedure"
+            variable_name_start = "request"
+            variable_value_name = "DAP"
+            modality_text = "DX"
+            chart_message = ""
 
-            df_aggregated = create_dataframe_aggregates(
-                df,
-                [name_field],
-                value_field,
-                stats_to_use=average_choices + ["count"],
-            )
+            new_charts = generate_average_chart_group(average_choices, chart_message, df, modality_text,
+                                                      name_field, name_text, return_as_dict, return_structure,
+                                                      units_text, user_profile, value_field, value_text,
+                                                      variable_name_start, variable_value_name,
+                                                      user_profile.plotDXInitialSortingChoice)
 
-            if user_profile.plotMean or user_profile.plotMedian:
-
-                parameter_dict = {
-                    "df_name_col": name_field,
-                    "name_axis_title": "Requested procedure",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "facet_col": None,
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                }
-                if user_profile.plotMean:
-                    parameter_dict["value_axis_title"] = "Mean DAP (cGy.cm<sup>2</sup>)"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM DX requested procedure DAP mean"
-                    parameter_dict["average_choice"] = "mean"
-                    (
-                        return_structure["requestMeanDAPData"],
-                        return_structure["requestMeanDAPDataCSV"],
-                    ) = plotly_barchart(
-                        df_aggregated,
-                        parameter_dict,
-                        "requestMeanDAPData.csv",
-                    )
-
-                if user_profile.plotMedian:
-                    parameter_dict[
-                        "value_axis_title"
-                    ] = "Median DAP (cGy.cm<sup>2</sup>)"
-                    parameter_dict[
-                        "filename"
-                    ] = "OpenREM DX requested procedure DAP median"
-                    parameter_dict["average_choice"] = "median"
-                    (
-                        return_structure["requestMedianDAPData"],
-                        return_structure["requestMedianDAPDataCSV"],
-                    ) = plotly_barchart(  # pylint: disable=line-too-long
-                        df_aggregated,
-                        parameter_dict,
-                        "requestMedianDAPData.csv",
-                    )
-
-            if user_profile.plotBoxplots:
-                parameter_dict = {
-                    "df_name_col": name_field,
-                    "df_value_col": value_field,
-                    "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
-                    "name_axis_title": "Requested procedure",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX requested procedure DAP boxplot",
-                    "facet_col": None,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                }
-
-                return_structure["requestBoxplotDAPData"] = plotly_boxplot(
-                    df,
-                    parameter_dict,
-                )
-
-            if user_profile.plotHistograms:
-                category_names_col = name_field
-                group_by_col = "x_ray_system_name"
-                legend_title = "Requested procedure"
-
-                if user_profile.plotGroupingChoice == "series":
-                    category_names_col = "x_ray_system_name"
-                    group_by_col = name_field
-                    legend_title = "System"
-
-                parameter_dict = {
-                    "df_facet_col": group_by_col,
-                    "df_category_col": category_names_col,
-                    "df_value_col": value_field,
-                    "value_axis_title": "DAP (cGy.cm<sup>2</sup>)",
-                    "legend_title": legend_title,
-                    "n_bins": user_profile.plotHistogramBins,
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM DX requested procedure DAP histogram",
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotDXInitialSortingChoice,
-                    ],
-                    "global_max_min": user_profile.plotHistogramGlobalBins,
-                    "return_as_dict": return_as_dict,
-                }
-                return_structure["requestHistogramDAPData"] = plotly_histogram_barchart(
-                    df,
-                    parameter_dict,
-                )
+            return_structure = {**return_structure, **new_charts}
 
         if user_profile.plotDXRequestFreq:
             parameter_dict = {
