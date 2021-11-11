@@ -1687,6 +1687,8 @@ def set_ct_chart_options(ct_form, user_profile):
         user_profile.plotCTStandardAcquisitionMeanCTDI = ct_form.cleaned_data["plotCTStandardAcquisitionMeanCTDI"]
         user_profile.plotCTStandardAcquisitionDLPOverTime = ct_form.cleaned_data["plotCTStandardAcquisitionDLPOverTime"]
         user_profile.plotCTStandardAcquisitionCTDIOverTime = ct_form.cleaned_data["plotCTStandardAcquisitionCTDIOverTime"]
+        user_profile.plotCTStandardAcquisitionDLPvsMass = ct_form.cleaned_data["plotCTStandardAcquisitionDLPvsMass"]
+        user_profile.plotCTStandardAcquisitionCTDIvsMass = ct_form.cleaned_data["plotCTStandardAcquisitionCTDIvsMass"]
         user_profile.plotCTStandardStudyMeanDLP = ct_form.cleaned_data["plotCTStandardStudyMeanDLP"]
         user_profile.plotCTStandardStudyNumEvents = ct_form.cleaned_data["plotCTStandardStudyNumEvents"]
         user_profile.plotCTStandardStudyFreq = ct_form.cleaned_data["plotCTStandardStudyFreq"]
@@ -1742,6 +1744,8 @@ def initialise_ct_form_data(ct_acquisition_types, user_profile):
         ct_form_data["plotCTStandardAcquisitionMeanCTDI"] = user_profile.plotCTStandardAcquisitionMeanCTDI
         ct_form_data["plotCTStandardAcquisitionDLPOverTime"] = user_profile.plotCTStandardAcquisitionDLPOverTime
         ct_form_data["plotCTStandardAcquisitionCTDIOverTime"] = user_profile.plotCTStandardAcquisitionCTDIOverTime
+        ct_form_data["plotCTStandardAcquisitionDLPvsMass"] = user_profile.plotCTStandardAcquisitionDLPvsMass
+        ct_form_data["plotCTStandardAcquisitionCTDIvsMass"] = user_profile.plotCTStandardAcquisitionCTDIvsMass
 
         ct_form_data["plotCTStandardStudyMeanDLP"] = user_profile.plotCTStandardStudyMeanDLP
         ct_form_data["plotCTStandardStudyNumEvents"] = user_profile.plotCTStandardStudyNumEvents

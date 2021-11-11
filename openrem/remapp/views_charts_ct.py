@@ -330,6 +330,24 @@ def generate_required_ct_charts_list(profile):
                     }
                 )
 
+        if profile.plotCTStandardAcquisitionDLPvsMass:
+            required_charts.append(
+                {
+                    "title": "Chart of standard acquisition name DLP vs patient mass",
+                    "var_name": "standardAcquisitionScatterDLPvsMass",
+                }
+            )
+
+        if profile.plotCTStandardAcquisitionCTDIvsMass:
+            required_charts.append(  # nosec
+                {
+                    "title": mark_safe(
+                        "Chart of standard acquisition name CTDI<sub>vol</sub> vs patient mass"
+                    ),
+                    "var_name": "standardAcquisitionScatterCTDIvsMass",
+                }
+            )
+
     if profile.plotCTStudyFreq:
         required_charts.append(
             {
@@ -735,6 +753,8 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         charts_of_interest.append(user_profile.plotCTStandardAcquisitionMeanCTDI)
         charts_of_interest.append(user_profile.plotCTStandardAcquisitionDLPOverTime)
         charts_of_interest.append(user_profile.plotCTStandardAcquisitionCTDIOverTime)
+        charts_of_interest.append(user_profile.plotCTStandardAcquisitionDLPvsMass)
+        charts_of_interest.append(user_profile.plotCTStandardAcquisitionCTDIvsMass)
 
     if any(charts_of_interest):
 
@@ -757,6 +777,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         if enable_standard_names:
             charts_of_interest.append(user_profile.plotCTStandardAcquisitionMeanDLP)
             charts_of_interest.append(user_profile.plotCTStandardAcquisitionDLPOverTime)
+            charts_of_interest.append(user_profile.plotCTStandardAcquisitionDLPvsMass)
         if any(charts_of_interest):
             value_fields.append("ctradiationdose__ctirradiationeventdata__dlp")
 
@@ -768,13 +789,18 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         if enable_standard_names:
             charts_of_interest.append(user_profile.plotCTStandardAcquisitionMeanCTDI)
             charts_of_interest.append(user_profile.plotCTStandardAcquisitionCTDIOverTime)
+        charts_of_interest.append(user_profile.plotCTStandardAcquisitionCTDIvsMass)
         if any(charts_of_interest):
             value_fields.append("ctradiationdose__ctirradiationeventdata__mean_ctdivol")
 
-        if (
-            user_profile.plotCTAcquisitionCTDIvsMass
-            or user_profile.plotCTAcquisitionDLPvsMass
-        ):
+        charts_of_interest = [
+            user_profile.plotCTAcquisitionCTDIvsMass,
+            user_profile.plotCTAcquisitionDLPvsMass,
+        ]
+        if enable_standard_names:
+            charts_of_interest.append(user_profile.plotCTStandardAcquisitionDLPvsMass)
+            charts_of_interest.append(user_profile.plotCTStandardAcquisitionCTDIvsMass)
+        if any(charts_of_interest):
             value_fields.append("patientstudymoduleattr__patient_weight")
 
         time_fields = []
@@ -1203,6 +1229,53 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 if user_profile.plotMedian:
                     return_structure["standardAcquisitionMedianDLPOverTime"] = result["median"]
 
+            if user_profile.plotCTStandardAcquisitionCTDIvsMass:
+                parameter_dict = {
+                    "df_name_col": "standard_acquisition_name",
+                    "df_x_col": "patientstudymoduleattr__patient_weight",
+                    "df_y_col": "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                    "sorting_choice": [
+                        user_profile.plotInitialSortingDirection,
+                        user_profile.plotCTInitialSortingChoice,
+                    ],
+                    "grouping_choice": user_profile.plotGroupingChoice,
+                    "legend_title": "Standard acquisition name",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "x_axis_title": "Patient mass (kg)",
+                    "y_axis_title": "CTDI<sub>vol</sub> (mGy)",
+                    "filename": "OpenREM CT standard acquisition name CTDI vs patient mass",
+                    "return_as_dict": return_as_dict,
+                    "custom_msg_line": chart_message,
+                }
+                return_structure["standardAcquisitionScatterCTDIvsMass"] = plotly_scatter(
+                    df_without_blanks,
+                    parameter_dict,
+                )
+
+            if user_profile.plotCTStandardAcquisitionDLPvsMass:
+                parameter_dict = {
+                    "df_name_col": "standard_acquisition_name",
+                    "df_x_col": "patientstudymoduleattr__patient_weight",
+                    "df_y_col": "ctradiationdose__ctirradiationeventdata__dlp",
+                    "sorting_choice": [
+                        user_profile.plotInitialSortingDirection,
+                        user_profile.plotCTInitialSortingChoice,
+                    ],
+                    "grouping_choice": user_profile.plotGroupingChoice,
+                    "legend_title": "Standard acquisition name",
+                    "colourmap": user_profile.plotColourMapChoice,
+                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                    "x_axis_title": "Patient mass (kg)",
+                    "y_axis_title": "DLP (mGy.cm)",
+                    "filename": "OpenREM CT standard acquisition name DLP vs patient mass",
+                    "return_as_dict": return_as_dict,
+                    "custom_msg_line": chart_message,
+                }
+                return_structure["standardAcquisitionScatterDLPvsMass"] = plotly_scatter(
+                    df_without_blanks,
+                    parameter_dict,
+                )
 
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts

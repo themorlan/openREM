@@ -253,9 +253,19 @@ $(document).ready(function() {
                 $("#acquisitionScatterCTDIvsMassChartDiv").html(json.acquisitionScatterCTDIvsMass);
             }
 
+            // Standard acqusition name scatter of CTDI vs patient mass
+            if(typeof json.standardAcquisitionScatterCTDIvsMass !== "undefined") {
+                $("#standardAcquisitionScatterCTDIvsMassChartDiv").html(json.standardAcquisitionScatterCTDIvsMass);
+            }
+
             // Acqusition scatter of DLP vs patient mass
             if(typeof json.acquisitionScatterDLPvsMass !== "undefined") {
                 $("#acquisitionScatterDLPvsMassChartDiv").html(json.acquisitionScatterDLPvsMass);
+            }
+
+            // Standard acqusition name scatter of DLP vs patient mass
+            if(typeof json.standardAcquisitionScatterDLPvsMass !== "undefined") {
+                $("#standardAcquisitionScatterDLPvsMassChartDiv").html(json.standardAcquisitionScatterDLPvsMass);
             }
 
             // Study frequency chart data start

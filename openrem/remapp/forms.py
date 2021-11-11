@@ -331,6 +331,10 @@ class CTChartOptionsFormIncStandard(CTChartOptionsForm):
     plotCTStandardAcquisitionDLPOverTime.group = "Standard acquisition name"
     plotCTStandardAcquisitionCTDIOverTime = forms.BooleanField(label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> over time"), required=False)
     plotCTStandardAcquisitionCTDIOverTime.group = "Standard acquisition name"
+    plotCTStandardAcquisitionDLPvsMass = forms.BooleanField(label="Standard acquisition name DLP vs mass", required=False)
+    plotCTStandardAcquisitionDLPvsMass.group = "Standard acquisition name"
+    plotCTStandardAcquisitionCTDIvsMass = forms.BooleanField(label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> vs mass"), required=False)
+    plotCTStandardAcquisitionCTDIvsMass.group = "Standard acquisition name"
 
     plotCTStandardStudyFreq = forms.BooleanField(label="Standard study frequency", required=False)
     plotCTStandardStudyFreq.group = "Standard study name"
@@ -662,6 +666,8 @@ class CTChartOptionsDisplayFormIncStandard(CTChartOptionsDisplayForm):
     plotCTStandardAcquisitionMeanCTDI = forms.BooleanField(label=mark_safe("Standard acquisition CTDI<sub>vol</sub>"), required=False)
     plotCTStandardAcquisitionDLPOverTime = forms.BooleanField(label="Standard acquisition name DLP over time", required=False)
     plotCTStandardAcquisitionCTDIOverTime = forms.BooleanField(label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> over time"), required=False)
+    plotCTStandardAcquisitionCTDIvsMass = forms.BooleanField(label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> vs mass"), required=False)
+    plotCTStandardAcquisitionDLPvsMass = forms.BooleanField(label="Standard acquisition name DLP vs mass", required=False)
 
     plotCTStandardStudyMeanDLP = forms.BooleanField(label="Standard study DLP", required=False)
     plotCTStandardStudyNumEvents = forms.BooleanField(label="Standard study events", required=False)
@@ -683,6 +689,8 @@ class CTChartOptionsDisplayFormIncStandard(CTChartOptionsDisplayForm):
         "plotCTStandardAcquisitionMeanCTDI",
         "plotCTStandardAcquisitionDLPOverTime",
         "plotCTStandardAcquisitionCTDIOverTime",
+        "plotCTStandardAcquisitionDLPvsMass",
+        "plotCTStandardAcquisitionCTDIvsMass",
         "plotCTStudyFreq",
         "plotCTStudyMeanDLP",
         "plotCTStudyMeanCTDI",
