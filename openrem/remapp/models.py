@@ -1286,6 +1286,9 @@ class IrradEventXRayDetectorData(models.Model):  # TID 10003a
         max_digits=16, decimal_places=8, blank=True, null=True
     )
 
+    class Meta:
+        indexes = [models.Index(fields=['irradiation_event_xray_data', ]), ]
+
 
 class IrradEventXRaySourceData(models.Model):  # TID 10003b
     """Irradiation Event X-Ray Source Data TID 10003b
