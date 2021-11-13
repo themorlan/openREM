@@ -1911,6 +1911,9 @@ class CtRadiationDose(models.Model):  # TID 10011
         on_delete=models.CASCADE,
     )
 
+    class Meta:
+        indexes = [models.Index(fields=['general_study_module_attributes', ]), ]
+
 
 class SourceOfCTDoseInformation(models.Model):  # CID 10021
     """Source of CT Dose Information"""
@@ -1960,6 +1963,9 @@ class CtAccumulatedDoseData(models.Model):  # TID 10012
     effective_dose_phantom_type = models.TextField(blank=True, null=True)
     dosimeter_type = models.TextField(blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
+
+    class Meta:
+        indexes = [models.Index(fields=['ct_radiation_dose', ]), ]
 
 
 class CtIrradiationEventData(models.Model):  # TID 10013
@@ -2057,6 +2063,9 @@ class CtIrradiationEventData(models.Model):  # TID 10013
     date_time_started = models.DateTimeField(blank=True, null=True)
     series_description = models.TextField(blank=True, null=True)
 
+    class Meta:
+        indexes = [models.Index(fields=['ct_radiation_dose', ]), ]
+
 
 class CtReconstructionAlgorithm(models.Model):
     """Container in TID 10013 to hold CT reconstruction methods"""
@@ -2091,6 +2100,9 @@ class CtXRaySourceParameters(models.Model):
         max_digits=16, decimal_places=8, blank=True, null=True
     )
 
+    class Meta:
+        indexes = [models.Index(fields=['ct_irradiation_event_data', ]), ]
+
 
 class ScanningLength(models.Model):  # TID 10014
     """Scanning Length TID 10014
@@ -2124,6 +2136,9 @@ class ScanningLength(models.Model):  # TID 10014
         max_digits=16, decimal_places=8, blank=True, null=True
     )
     frame_of_reference_uid = models.TextField(blank=True, null=True)
+
+    class Meta:
+        indexes = [models.Index(fields=['ct_irradiation_event_data', ]), ]
 
 
 class SizeSpecificDoseEstimation(models.Model):
@@ -2215,6 +2230,9 @@ class CtDoseCheckDetails(models.Model):  # TID 10015
     )
     # notification_ added to allow two fields that are in different containers in std
     notification_reason_for_proceeding = models.TextField(blank=True, null=True)
+
+    class Meta:
+        indexes = [models.Index(fields=['ct_irradiation_event_data', ]), ]
 
 
 # Models common to both
