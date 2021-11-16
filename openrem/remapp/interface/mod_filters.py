@@ -623,10 +623,8 @@ class CTSummaryListFilter(django_filters.FilterSet):
 
 class CTFilterPlusStdNames(CTSummaryListFilter):
     """Adding standard name fields"""
-    standard_study_name = django_filters.CharFilter(
-        field_name="standard_study_name",
-        lookup_expr="icontains",
-        label="Standard study name",
+    standard_names__standard_name = (
+        django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
     )
     standard_acquisition_protocol = django_filters.CharFilter(
         method=standard_acq_protocol_filter,
@@ -651,10 +649,8 @@ class CTFilterPlusPid(CTSummaryListFilter):
 
 class CTFilterPlusPidPlusStdNames(CTFilterPlusPid):
     """Adding standard name fields"""
-    standard_study_name = django_filters.CharFilter(
-        field_name="standard_study_name",
-        lookup_expr="icontains",
-        label="Standard study name",
+    standard_names__standard_name = (
+        django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
     )
     standard_acquisition_protocol = django_filters.CharFilter(
         method=standard_acq_protocol_filter,
@@ -772,21 +768,6 @@ def ct_acq_filter(filters, pid=False):
     enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
 
     studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT")
-    if enable_standard_names:
-        standard_names = StandardNames.objects.filter(modality__exact="CT")
-        studies = studies.annotate(
-            standard_request_name=Subquery(
-                standard_names.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
-            )
-        ).annotate(
-            standard_study_name=Subquery(
-                standard_names.filter(study_description=OuterRef("study_description")).values("standard_name")
-            )
-        ).annotate(
-            standard_procedure_name=Subquery(
-                standard_names.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values("standard_name")
-            )
-        )
 
     if filteredInclude:
         studies = studies.filter(study_instance_uid__in=filteredInclude)

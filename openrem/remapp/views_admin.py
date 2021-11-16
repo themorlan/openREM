@@ -2833,7 +2833,22 @@ class StandardNameAddCT(CreateView):  # pylint: disable=unused-variable
     def form_valid(self, form):
         if form.has_changed():
             messages.success(self.request, "New entry added")
-            return super(StandardNameAddCT, self).form_valid(form)
+            self.object = form.save()
+
+            studies = GeneralStudyModuleAttr.objects.filter(modality_type=form.cleaned_data["modality"])
+            if form.cleaned_data["study_description"] != None:
+                for study in studies.filter(study_description=form.cleaned_data["study_description"]):
+                    study.standard_names.add(self.object.pk)
+
+            if form.cleaned_data["requested_procedure_code_meaning"] != None:
+                for study in studies.filter(requested_procedure_code_meaning=form.cleaned_data["requested_procedure_code_meaning"]):
+                    study.standard_names.add(self.object.pk)
+
+            if form.cleaned_data["procedure_code_meaning"] != None:
+                for study in studies.filter(procedure_code_meaning=form.cleaned_data["procedure_code_meaning"]):
+                    study.standard_names.add(self.object.pk)
+
+            return HttpResponseRedirect(self.get_success_url())
         else:
             messages.info(self.request, "No changes made")
             return redirect(reverse_lazy("add_name_ct"))
@@ -2991,6 +3006,18 @@ class StandardNameDelete(DeleteView):  # pylint: disable=unused-variable
         context["admin"] = admin
         return context
 
+    def delete(self, *args, **kwargs):
+        self.object = self.get_object()
+
+        # Remove all standard_names that equal self.object.pk
+        studies = GeneralStudyModuleAttr.objects.filter(modality_type=form.cleaned_data["modality"])
+        for study in studies.filter(standard_names=self.object.pk):
+            study.standard_names.remove(self.object.pk)
+
+        success_url = self.get_success_url()
+        self.object.delete()
+        return HttpResponseRedirect(success_url)
+
 
 class StandardNameUpdateCT(UpdateView):  # pylint: disable=unused-variable
     """UpdateView to update a standard CT name"""
@@ -3012,7 +3039,28 @@ class StandardNameUpdateCT(UpdateView):  # pylint: disable=unused-variable
     def form_valid(self, form):
         if form.has_changed():
             messages.success(self.request, "Entry updated")
-            return super(StandardNameUpdateCT, self).form_valid(form)
+            self.object = form.save()
+
+            studies = GeneralStudyModuleAttr.objects.filter(modality_type=form.cleaned_data["modality"])
+            # Remove all standard_names = self.object.pk as these may no longer be correct
+            for study in studies.filter(standard_names=self.object.pk):
+                study.standard_names.remove(self.object.pk)
+
+            # Add the updated standard name to the appropriate studies
+            if form.cleaned_data["study_description"] != None:
+                for study in studies.filter(study_description=form.cleaned_data["study_description"]):
+                    study.standard_names.add(self.object.pk)
+
+            if form.cleaned_data["requested_procedure_code_meaning"] != None:
+                for study in studies.filter(requested_procedure_code_meaning=form.cleaned_data["requested_procedure_code_meaning"]):
+                    study.standard_names.add(self.object.pk)
+
+            if form.cleaned_data["procedure_code_meaning"] != None:
+                for study in studies.filter(procedure_code_meaning=form.cleaned_data["procedure_code_meaning"]):
+                    study.standard_names.add(self.object.pk)
+
+            return HttpResponseRedirect(self.get_success_url())
+            #return super(StandardNameUpdateCT, self).form_valid(form)
         else:
             messages.info(self.request, "No changes made to the entry")
             return redirect(reverse_lazy("standard_names_view"))

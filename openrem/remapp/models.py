@@ -950,6 +950,8 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
     )  # for legacy
     number_of_planes = models.IntegerField(blank=True, null=True)
 
+    standard_names = models.ManyToManyField(StandardNames)
+
     def __unicode__(self):
         return self.study_instance_uid
 
