@@ -1426,18 +1426,10 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 user_profile.plotCTStandardStudyNumEvents
             ):
 
-                # Create a standard name data frame to be used by the study-level charts
-                std_field_name = "standard_names__standard_name"
-                value_fields = []
-
-                if user_profile.plotCTStandardStudyPerDayAndHour or user_profile.plotCTStandardStudyMeanDLPOverTime:
-                    value_fields.extend(["study_date", "study_time"])
-
-                if user_profile.plotCTStandardStudyMeanDLP or user_profile.plotCTStandardStudyMeanDLPOverTime:
-                    value_fields.append("total_dlp")
-
-                if user_profile.plotCTStandardStudyNumEvents:
-                    value_fields.append("number_of_events")
+                # Create a standard name data frame - remove any blank standard names
+                standard_name_df = df[(df["standard_names__standard_name"] != "blank") & (df["standard_names__standard_name"] != "Blank")].copy()
+                # Remove any unused categories (this will include "Blank" or "blank")
+                standard_name_df["standard_names__standard_name"] = standard_name_df["standard_names__standard_name"].cat.remove_unused_categories()
 
                 if user_profile.plotCTStandardStudyMeanDLP:
 
@@ -1451,7 +1443,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     modality_text = "CT"
                     chart_message = ""
 
-                    new_charts = generate_average_chart_group(average_choices, chart_message, df,
+                    new_charts = generate_average_chart_group(average_choices, chart_message, standard_name_df,
                                                               modality_text,
                                                               name_field, name_text, return_as_dict, return_structure,
                                                               units_text, user_profile, value_field, value_text,
@@ -1472,7 +1464,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     modality_text = "CT"
                     chart_message = ""
 
-                    new_charts = generate_average_chart_group(average_choices, chart_message, df,
+                    new_charts = generate_average_chart_group(average_choices, chart_message, standard_name_df,
                                                               modality_text,
                                                               name_field, name_text, return_as_dict, return_structure,
                                                               units_text, user_profile, value_field, value_text,
@@ -1503,14 +1495,14 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                         return_structure["standardStudyFrequencyData"],
                         return_structure["standardStudyFrequencyDataCSV"],
                     ) = plotly_frequency_barchart(  # pylint: disable=line-too-long
-                        df,
+                        standard_name_df,
                         parameter_dict,
                         csv_name="standardStudyFrequencyData.csv",
                     )
 
                 if user_profile.plotCTStandardStudyPerDayAndHour:
                     df_time_series_per_weekday = create_dataframe_weekdays(
-                        df, std_field_name, df_date_col="study_date"
+                        standard_name_df, std_field_name, df_date_col="study_date"
                     )
 
                     return_structure["standardStudyWorkloadData"] = plotly_barchart_weekdays(
@@ -1556,7 +1548,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                         "return_as_dict": return_as_dict,
                     }
                     result = construct_over_time_charts(
-                        df,
+                        standard_name_df,
                         parameter_dict,
                     )
 
