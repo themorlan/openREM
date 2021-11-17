@@ -2813,7 +2813,46 @@ def populate_summary_progress(request):
             )
 
 
-class StandardNameAddCT(CreateView):  # pylint: disable=unused-variable
+class StandardNameAddCore(CreateView):
+
+    success_url = reverse_lazy("standard_names_view")
+
+    def form_valid(self, form):
+        if form.has_changed():
+            messages.success(self.request, "New entry added")
+            self.object = form.save()
+
+            studies = GeneralStudyModuleAttr.objects.filter(modality_type=form.cleaned_data["modality"])
+
+            # Add the updated entry to all the required studies
+            self.add_standard_study_union(form, studies)
+
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            messages.info(self.request, "No changes made")
+            return redirect(reverse_lazy(self.get_success_url()))
+
+    def add_standard_study_union(self, form, studies):
+        study_union = None
+        if form.cleaned_data["study_description"] != None:
+            study_union = studies.filter(study_description=form.cleaned_data["study_description"])
+        if form.cleaned_data["requested_procedure_code_meaning"] != None:
+            if study_union is not None:
+                study_union = study_union | studies.filter(
+                    requested_procedure_code_meaning=form.cleaned_data["requested_procedure_code_meaning"])
+            else:
+                study_union = studies.filter(
+                    requested_procedure_code_meaning=form.cleaned_data["requested_procedure_code_meaning"])
+        if form.cleaned_data["procedure_code_meaning"] != None:
+            if study_union is not None:
+                study_union = study_union | studies.filter(
+                    procedure_code_meaning=form.cleaned_data["procedure_code_meaning"])
+            else:
+                study_union = studies.filter(procedure_code_meaning=form.cleaned_data["procedure_code_meaning"])
+        self.object.generalstudymoduleattr_set.add(*study_union.values_list("pk", flat=True))
+
+
+class StandardNameAddCT(StandardNameAddCore):  # pylint: disable=unused-variable
     """CreateView to add a standard name to the database"""
 
     model = StandardNames
@@ -2830,31 +2869,8 @@ class StandardNameAddCT(CreateView):  # pylint: disable=unused-variable
         context["modality_name"] = "CT"
         return context
 
-    def form_valid(self, form):
-        if form.has_changed():
-            messages.success(self.request, "New entry added")
-            self.object = form.save()
 
-            studies = GeneralStudyModuleAttr.objects.filter(modality_type=form.cleaned_data["modality"])
-            if form.cleaned_data["study_description"] != None:
-                for study in studies.filter(study_description=form.cleaned_data["study_description"]):
-                    study.standard_names.add(self.object.pk)
-
-            if form.cleaned_data["requested_procedure_code_meaning"] != None:
-                for study in studies.filter(requested_procedure_code_meaning=form.cleaned_data["requested_procedure_code_meaning"]):
-                    study.standard_names.add(self.object.pk)
-
-            if form.cleaned_data["procedure_code_meaning"] != None:
-                for study in studies.filter(procedure_code_meaning=form.cleaned_data["procedure_code_meaning"]):
-                    study.standard_names.add(self.object.pk)
-
-            return HttpResponseRedirect(self.get_success_url())
-        else:
-            messages.info(self.request, "No changes made")
-            return redirect(reverse_lazy("add_name_ct"))
-
-
-class StandardNameAddDX(CreateView):  # pylint: disable=unused-variable
+class StandardNameAddDX(StandardNameAddCore):  # pylint: disable=unused-variable
     """CreateView to add a standard name to the database"""
 
     model = StandardNames
@@ -2871,16 +2887,8 @@ class StandardNameAddDX(CreateView):  # pylint: disable=unused-variable
         context["modality_name"] = "radiographic"
         return context
 
-    def form_valid(self, form):
-        if form.has_changed():
-            messages.success(self.request, "New entry added")
-            return super(StandardNameAddDX, self).form_valid(form)
-        else:
-            messages.info(self.request, "No changes made")
-            return redirect(reverse_lazy("add_name_dx"))
 
-
-class StandardNameAddMG(CreateView):  # pylint: disable=unused-variable
+class StandardNameAddMG(StandardNameAddCore):  # pylint: disable=unused-variable
     """CreateView to add a standard name to the database"""
 
     model = StandardNames
@@ -2897,16 +2905,8 @@ class StandardNameAddMG(CreateView):  # pylint: disable=unused-variable
         context["modality_name"] = "mammographic"
         return context
 
-    def form_valid(self, form):
-        if form.has_changed():
-            messages.success(self.request, "New entry added")
-            return super(StandardNameAddMG, self).form_valid(form)
-        else:
-            messages.info(self.request, "No changes made")
-            return redirect(reverse_lazy("add_name_mg"))
 
-
-class StandardNameAddRF(CreateView):  # pylint: disable=unused-variable
+class StandardNameAddRF(StandardNameAddCore):  # pylint: disable=unused-variable
     """CreateView to add a standard name to the database"""
 
     model = StandardNames
@@ -2922,14 +2922,6 @@ class StandardNameAddRF(CreateView):  # pylint: disable=unused-variable
         context["admin"] = admin
         context["modality_name"] = "fluoroscopic"
         return context
-
-    def form_valid(self, form):
-        if form.has_changed():
-            messages.success(self.request, "New entry added")
-            return super(StandardNameAddRF, self).form_valid(form)
-        else:
-            messages.info(self.request, "No changes made")
-            return redirect(reverse_lazy("add_name_rf"))
 
 
 @login_required
@@ -3010,16 +3002,56 @@ class StandardNameDelete(DeleteView):  # pylint: disable=unused-variable
         self.object = self.get_object()
 
         # Remove all standard_names that equal self.object.pk
-        studies = GeneralStudyModuleAttr.objects.filter(modality_type=form.cleaned_data["modality"])
-        for study in studies.filter(standard_names=self.object.pk):
-            study.standard_names.remove(self.object.pk)
+        studies = GeneralStudyModuleAttr.objects.filter(modality_type=self.object.modality)
+        self.object.generalstudymoduleattr_set.remove(*studies.values_list("pk", flat=True))
 
-        success_url = self.get_success_url()
         self.object.delete()
-        return HttpResponseRedirect(success_url)
+        return HttpResponseRedirect(self.get_success_url())
 
 
-class StandardNameUpdateCT(UpdateView):  # pylint: disable=unused-variable
+class StandardNameUpdateCore(UpdateView):
+
+    success_url = reverse_lazy("standard_names_view")
+
+    def form_valid(self, form):
+        if form.has_changed():
+            messages.success(self.request, "New entry added")
+            self.object = form.save()
+
+            studies = GeneralStudyModuleAttr.objects.filter(modality_type=form.cleaned_data["modality"])
+
+            # Remove all standard_names = self.object.pk as these may no longer be correct
+            self.object.generalstudymoduleattr_set.remove(*studies.values_list("pk", flat=True))
+
+            # Add the updated entry to all the required studies
+            self.add_standard_study_union(form, studies)
+
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            messages.info(self.request, "No changes made")
+            return redirect(reverse_lazy(self.get_success_url()))
+
+    def add_standard_study_union(self, form, studies):
+        study_union = None
+        if form.cleaned_data["study_description"] != None:
+            study_union = studies.filter(study_description=form.cleaned_data["study_description"])
+        if form.cleaned_data["requested_procedure_code_meaning"] != None:
+            if study_union is not None:
+                study_union = study_union | studies.filter(
+                    requested_procedure_code_meaning=form.cleaned_data["requested_procedure_code_meaning"])
+            else:
+                study_union = studies.filter(
+                    requested_procedure_code_meaning=form.cleaned_data["requested_procedure_code_meaning"])
+        if form.cleaned_data["procedure_code_meaning"] != None:
+            if study_union is not None:
+                study_union = study_union | studies.filter(
+                    procedure_code_meaning=form.cleaned_data["procedure_code_meaning"])
+            else:
+                study_union = studies.filter(procedure_code_meaning=form.cleaned_data["procedure_code_meaning"])
+        self.object.generalstudymoduleattr_set.add(*study_union.values_list("pk", flat=True))
+
+
+class StandardNameUpdateCT(StandardNameUpdateCore):  # pylint: disable=unused-variable
     """UpdateView to update a standard CT name"""
 
     model = StandardNames
@@ -3036,37 +3068,8 @@ class StandardNameUpdateCT(UpdateView):  # pylint: disable=unused-variable
         context["admin"] = admin
         return context
 
-    def form_valid(self, form):
-        if form.has_changed():
-            messages.success(self.request, "Entry updated")
-            self.object = form.save()
 
-            studies = GeneralStudyModuleAttr.objects.filter(modality_type=form.cleaned_data["modality"])
-            # Remove all standard_names = self.object.pk as these may no longer be correct
-            for study in studies.filter(standard_names=self.object.pk):
-                study.standard_names.remove(self.object.pk)
-
-            # Add the updated standard name to the appropriate studies
-            if form.cleaned_data["study_description"] != None:
-                for study in studies.filter(study_description=form.cleaned_data["study_description"]):
-                    study.standard_names.add(self.object.pk)
-
-            if form.cleaned_data["requested_procedure_code_meaning"] != None:
-                for study in studies.filter(requested_procedure_code_meaning=form.cleaned_data["requested_procedure_code_meaning"]):
-                    study.standard_names.add(self.object.pk)
-
-            if form.cleaned_data["procedure_code_meaning"] != None:
-                for study in studies.filter(procedure_code_meaning=form.cleaned_data["procedure_code_meaning"]):
-                    study.standard_names.add(self.object.pk)
-
-            return HttpResponseRedirect(self.get_success_url())
-            #return super(StandardNameUpdateCT, self).form_valid(form)
-        else:
-            messages.info(self.request, "No changes made to the entry")
-            return redirect(reverse_lazy("standard_names_view"))
-
-
-class StandardNameUpdateDX(UpdateView):  # pylint: disable=unused-variable
+class StandardNameUpdateDX(StandardNameUpdateCore):  # pylint: disable=unused-variable
     """UpdateView to update a standard DX name"""
 
     model = StandardNames
@@ -3083,16 +3086,8 @@ class StandardNameUpdateDX(UpdateView):  # pylint: disable=unused-variable
         context["admin"] = admin
         return context
 
-    def form_valid(self, form):
-        if form.has_changed():
-            messages.success(self.request, "Entry updated")
-            return super(StandardNameUpdateDX, self).form_valid(form)
-        else:
-            messages.info(self.request, "No changes made to the entry")
-            return redirect(reverse_lazy("standard_names_view"))
 
-
-class StandardNameUpdateRF(UpdateView):  # pylint: disable=unused-variable
+class StandardNameUpdateRF(StandardNameUpdateCore):  # pylint: disable=unused-variable
     """UpdateView to update a standard RF name"""
 
     model = StandardNames
@@ -3109,16 +3104,8 @@ class StandardNameUpdateRF(UpdateView):  # pylint: disable=unused-variable
         context["admin"] = admin
         return context
 
-    def form_valid(self, form):
-        if form.has_changed():
-            messages.success(self.request, "Entry updated")
-            return super(StandardNameUpdateRF, self).form_valid(form)
-        else:
-            messages.info(self.request, "No changes made to the entry")
-            return redirect(reverse_lazy("standard_names_view"))
 
-
-class StandardNameUpdateMG(UpdateView):  # pylint: disable=unused-variable
+class StandardNameUpdateMG(StandardNameUpdateCore):  # pylint: disable=unused-variable
     """UpdateView to update a standard MG name"""
 
     model = StandardNames
@@ -3134,14 +3121,6 @@ class StandardNameUpdateMG(UpdateView):  # pylint: disable=unused-variable
             admin[group.name] = True
         context["admin"] = admin
         return context
-
-    def form_valid(self, form):
-        if form.has_changed():
-            messages.success(self.request, "Entry updated")
-            return super(StandardNameUpdateMG, self).form_valid(form)
-        else:
-            messages.info(self.request, "No changes made to the entry")
-            return redirect(reverse_lazy("standard_names_view"))
 
 
 @login_required
