@@ -396,6 +396,9 @@ class DicomQRRspStudy(models.Model):
     def get_modalities_in_study(self):
         return json.loads(self.modalities_in_study)
 
+    class Meta:
+        indexes = [models.Index(fields=['dicom_query', ]), ]
+
 
 class DicomQRRspSeries(models.Model):
     dicom_qr_rsp_study = models.ForeignKey(DicomQRRspStudy, on_delete=models.CASCADE)
@@ -410,6 +413,9 @@ class DicomQRRspSeries(models.Model):
     sop_class_in_series = models.TextField(blank=True, null=True)
     image_level_move = models.BooleanField(default=False)
 
+    class Meta:
+        indexes = [models.Index(fields=['dicom_qr_rsp_study', ]), ]
+
 
 class DicomQRRspImage(models.Model):
     dicom_qr_rsp_series = models.ForeignKey(DicomQRRspSeries, on_delete=models.CASCADE)
@@ -418,6 +424,8 @@ class DicomQRRspImage(models.Model):
     instance_number = models.IntegerField(blank=True, null=True)
     sop_class_uid = models.TextField(blank=True, null=True)
 
+    class Meta:
+        indexes = [models.Index(fields=['dicom_qr_rsp_series', ]), ]
 
 class CommonVariables:
     DEFAULT_COLOUR_MAP = "RdYlBu"
@@ -952,6 +960,9 @@ class SkinDoseMapResults(models.Model):
     )
     skin_map_version = models.CharField(max_length=16, null=True, blank=True)
 
+    class Meta:
+        indexes = [models.Index(fields=['general_study_module_attributes', ]), ]
+
 
 class ObjectUIDsProcessed(models.Model):
     """Table to hold the SOP Instance UIDs of the objects that have been processed against this study to enable
@@ -963,6 +974,9 @@ class ObjectUIDsProcessed(models.Model):
         GeneralStudyModuleAttr, on_delete=models.CASCADE
     )
     sop_instance_uid = models.TextField(blank=True, null=True)
+
+    class Meta:
+        indexes = [models.Index(fields=['general_study_module_attributes', ]), ]
 
 
 class ProjectionXRayRadiationDose(models.Model):  # TID 10001
@@ -1082,6 +1096,9 @@ class Calibration(models.Model):
         max_digits=16, decimal_places=8, blank=True, null=True
     )
     calibration_responsible_party = models.TextField(blank=True, null=True)
+
+    class Meta:
+        indexes = [models.Index(fields=['accumulated_xray_dose', ]), ]
 
 
 class IrradEventXRayData(models.Model):  # TID 10003
@@ -1256,6 +1273,12 @@ class ImageViewModifier(models.Model):  # EV 111032
     )  # CID 4011 "DX View Modifier" or CID 4015 "View Modifier for Mammography"
     # TODO: Add Projection Eponymous Name
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['irradiation_event_xray_data', ]),
+            models.Index(fields=['image_view_modifier', ]),
+        ]
+
 
 class IrradEventXRayDetectorData(models.Model):  # TID 10003a
     """Irradiation Event X-Ray Detector Data TID 10003a
@@ -1410,6 +1433,12 @@ class XrayGrid(models.Model):
         ContextID, blank=True, null=True, on_delete=models.CASCADE
     )  # CID 10017
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['irradiation_event_xray_source_data', ]),
+            models.Index(fields=['xray_grid', ]),
+        ]
+
 
 class PulseWidth(models.Model):  # EV 113793
     """In TID 10003b. Code value 113793 (ms)"""
@@ -1560,7 +1589,10 @@ class IrradEventXRayMechanicalData(models.Model):  # TID 10003c
     )
 
     class Meta:
-        indexes = [models.Index(fields=['irradiation_event_xray_data', ]), ]
+        indexes = [
+            models.Index(fields=['irradiation_event_xray_data', ]),
+            models.Index(fields=['crdr_mechanical_configuration', ]),
+        ]
 
 
 class DoseRelatedDistanceMeasurements(models.Model):  # CID 10008
@@ -1670,6 +1702,9 @@ class AccumProjXRayDose(models.Model):  # TID 10004
         if self.acquisition_dose_area_product_total:
             return 1000000 * self.acquisition_dose_area_product_total
 
+    class Meta:
+        indexes = [models.Index(fields=['accumulated_xray_dose', ]), ]
+
 
 class AccumMammographyXRayDose(models.Model):  # TID 10005
     """Accumulated Mammography X-Ray Dose TID 10005
@@ -1708,6 +1743,9 @@ class AccumCassetteBsdProjRadiogDose(models.Model):  # TID 10006
     total_number_of_radiographic_frames = models.DecimalField(
         max_digits=6, decimal_places=0, blank=True, null=True
     )
+
+    class Meta:
+        indexes = [models.Index(fields=['accumulated_xray_dose', ]), ]
 
 
 class AccumIntegratedProjRadiogDose(models.Model):  # TID 10007
@@ -1764,6 +1802,9 @@ class PKsForSummedRFDoseStudiesInDeltaWeeks(models.Model):
         GeneralStudyModuleAttr, on_delete=models.CASCADE
     )
     study_pk_in_delta_weeks = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        indexes = [models.Index(fields=['general_study_module_attributes', ]), ]
 
 
 class PatientModuleAttr(models.Model):  # C.7.1.1
@@ -1927,6 +1968,12 @@ class SourceOfCTDoseInformation(models.Model):  # CID 10021
         ContextID, blank=True, null=True, on_delete=models.CASCADE
     )  # CID 10021
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['ct_radiation_dose', ]),
+            models.Index(fields=['source_of_dose_information', ]),
+        ]
+
 
 class CtAccumulatedDoseData(models.Model):  # TID 10012
     """CT Accumulated Dose Data
@@ -2081,6 +2128,12 @@ class CtReconstructionAlgorithm(models.Model):
         ContextID, blank=True, null=True, on_delete=models.CASCADE
     )  # CID 10033
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['ct_irradiation_event_data', ]),
+            models.Index(fields=['reconstruction_algorithm', ]),
+        ]
+
 
 class CtXRaySourceParameters(models.Model):
     """Container in TID 10013 to hold CT x-ray source parameters"""
@@ -2181,6 +2234,12 @@ class SizeSpecificDoseEstimation(models.Model):
         max_digits=16, decimal_places=8, blank=True, null=True
     )
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['ct_irradiation_event_data', ]),
+            models.Index(fields=['measurement_method', ]),
+        ]
+
 
 class WEDSeriesOrInstances(models.Model):
     """From TID 10013 Series or Instance used for Water Equivalent Diameter estimation"""
@@ -2189,6 +2248,9 @@ class WEDSeriesOrInstances(models.Model):
         SizeSpecificDoseEstimation, on_delete=models.CASCADE
     )
     wed_series_or_instance = models.TextField(blank=True, null=True)  # referenced UID
+
+    class Meta:
+        indexes = [models.Index(fields=['size_specific_dose_estimation', ]), ]
 
 
 class CtDoseCheckDetails(models.Model):  # TID 10015
@@ -2296,6 +2358,12 @@ class ObserverContext(models.Model):  # TID 1002
     def __unicode__(self):
         return self.device_observer_name
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['projection_xray_radiation_dose', ]),
+            models.Index(fields=['ct_radiation_dose', ]),
+        ]
+
 
 class DeviceParticipant(models.Model):  # TID 1021
     """Device Participant TID 1021
@@ -2328,6 +2396,16 @@ class DeviceParticipant(models.Model):  # TID 1021
     device_model_name = models.TextField(blank=True, null=True)
     device_serial_number = models.TextField(blank=True, null=True)
     device_observer_uid = models.TextField(blank=True, null=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['accumulated_xray_dose', ]),
+            models.Index(fields=['irradiation_event_xray_detector_data', ]),
+            models.Index(fields=['irradiation_event_xray_source_data', ]),
+            models.Index(fields=['ct_accumulated_dose_data', ]),
+            models.Index(fields=['ct_irradiation_event_data', ]),
+            models.Index(fields=['device_role_in_procedure', ]),
+        ]
 
 
 class PersonParticipant(models.Model):  # TID 1020
@@ -2393,6 +2471,19 @@ class PersonParticipant(models.Model):  # TID 1020
 
     def __unicode__(self):
         return self.person_name
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['projection_xray_radiation_dose', ]),
+            models.Index(fields=['ct_radiation_dose', ]),
+            models.Index(fields=['irradiation_event_xray_data', ]),
+            models.Index(fields=['ct_accumulated_dose_data', ]),
+            models.Index(fields=['ct_irradiation_event_data', ]),
+            models.Index(fields=['ct_dose_check_details_alert', ]),
+            models.Index(fields=['ct_dose_check_details_notification', ]),
+            models.Index(fields=['person_role_in_procedure_cid', ]),
+            models.Index(fields=['person_role_in_organization_cid', ]),
+        ]
 
 
 class SummaryFields(models.Model):
