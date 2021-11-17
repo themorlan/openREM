@@ -31,9 +31,13 @@
     <li>Procedure: {{ generalstudymoduleattr.procedure_code_meaning }}</li>
     <li>Requested procedure: {{ generalstudymoduleattr.requested_procedure_code_meaning }}</li>
   {% if showStandardNames %}
-    <li>Standard study name: {{ generalstudymoduleattr.standard_study_name|default_if_none:"-" }}</li>
-    <li>Standard procedure name: {{ generalstudymoduleattr.standard_procedure_name|default_if_none:"-" }}</li>
-    <li>Standard requested name: {{ generalstudymoduleattr.standard_request_name|default_if_none:"-" }}</li>
+    <li>Standard study names:
+        <ul>
+        {% for std_name in generalstudymoduleattr.standard_names.all %}
+            <li>{{ std_name.standard_name }}</li>
+        {% endfor %}
+        </ul>
+    </li>
   {% endif %}
     <li>Patient age: {{ generalstudymoduleattr.patientstudymoduleattr_set.get.patient_age_decimal|floatformat:1 }} years</li>
     <li>Hospital: {{ equipment.institution_name }}</li>
@@ -102,7 +106,13 @@
         <td>{{ event.date_time_started|time:"H:i.s" }}</td>
         <td>{{ event.acquisition_protocol }}</td>
 {% if showStandardNames %}
-        <td>{{ event.standard_acquisition_protocol|default_if_none:"-" }}</td>
+        <td>
+            <table>
+            {% for std_name in event.standard_protocols.all %}
+                <tr><td class="nowrap">{{ std_name.standard_name|default_if_none:"-" }}</td></tr>
+            {% endfor %}
+            </table>
+        </td>
 {% endif %}
         <td>{{ event.laterality.code_meaning }}</td>
         <td>{{ event.image_view.code_meaning }}</td>

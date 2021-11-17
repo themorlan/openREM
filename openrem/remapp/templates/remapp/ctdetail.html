@@ -23,9 +23,13 @@
     <li>Procedure: {{ generalstudymoduleattr.procedure_code_meaning }}</li>
     <li>Requested procedure: {{ generalstudymoduleattr.requested_procedure_code_meaning }}</li>
   {% if showStandardNames %}
-    <li>Standard study name: {{ generalstudymoduleattr.standard_study_name|default_if_none:"-" }}</li>
-    <li>Standard procedure name: {{ generalstudymoduleattr.standard_procedure_name|default_if_none:"-" }}</li>
-    <li>Standard requested name: {{ generalstudymoduleattr.standard_request_name|default_if_none:"-" }}</li>
+    <li>Standard study names:
+        <ul>
+        {% for std_name in generalstudymoduleattr.standard_names.all %}
+            <li>{{ std_name.standard_name }}</li>
+        {% endfor %}
+        </ul>
+    </li>
   {% endif %}
     <li>Patient age: {{ patientstudy.patient_age_decimal|floatformat:1 }} years</li>
     <li>Patient height and weight: {{ patientstudy.patient_size|floatformat:2 }} m, {{ patientstudy.patient_weight|floatformat:1 }} kg</li>
@@ -86,9 +90,15 @@
 
       <tr>
         <td rowspan="2">{{ event.acquisition_protocol }}</td>
-{% if showStandardNames %}
-        <td rowspan="2">{{ event.standard_acquisition_protocol|default_if_none:"-" }}</td>
-{% endif %}
+        {% if showStandardNames %}
+            <td rowspan="2">
+                <table>
+                {% for std_name in event.standard_protocols.all %}
+                    <tr><td class="nowrap">{{ std_name.standard_name|default_if_none:"-" }}</td></tr>
+                {% endfor %}
+                </table>
+            </td>
+        {% endif %}
         <td rowspan="2">{{ event.ct_acquisition_type.code_meaning }}</td>
         <td rowspan="2">
           {{ event.mean_ctdivol|floatformat:2 }}

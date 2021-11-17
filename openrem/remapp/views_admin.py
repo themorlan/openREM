@@ -81,6 +81,7 @@ from .forms import (
 from .models import (
     AccumIntegratedProjRadiogDose,
     AdminTaskQuestions,
+    CtIrradiationEventData,
     DicomDeleteSettings,
     DicomQuery,
     Exports,
@@ -88,6 +89,7 @@ from .models import (
     HighDoseMetricAlertRecipients,
     HighDoseMetricAlertSettings,
     HomePageAdminSettings,
+    IrradEventXRayData,
     MergeOnDeviceObserverUIDSettings,
     NotPatientIndicatorsID,
     NotPatientIndicatorsName,
@@ -2822,17 +2824,24 @@ class StandardNameAddCore(CreateView):
             messages.success(self.request, "New entry added")
             self.object = form.save()
 
+            # Add the entry to all the required studies
             studies = GeneralStudyModuleAttr.objects.filter(modality_type=form.cleaned_data["modality"])
+            self.add_standard_study(form, studies)
 
-            # Add the updated entry to all the required studies
-            self.add_standard_study_union(form, studies)
+            # Add the entry to all the required acquisitions
+            acquisitions = None
+            if form.cleaned_data["modality"] == "CT":
+                acquisitions = CtIrradiationEventData.objects
+            else:
+                acquisitions = IrradEventXRayData.objects
+            self.add_standard_acquisition(form, acquisitions)
 
             return HttpResponseRedirect(self.get_success_url())
         else:
             messages.info(self.request, "No changes made")
             return redirect(reverse_lazy(self.get_success_url()))
 
-    def add_standard_study_union(self, form, studies):
+    def add_standard_study(self, form, studies):
         study_union = None
         if form.cleaned_data["study_description"] != None:
             study_union = studies.filter(study_description=form.cleaned_data["study_description"])
@@ -2849,7 +2858,17 @@ class StandardNameAddCore(CreateView):
                     procedure_code_meaning=form.cleaned_data["procedure_code_meaning"])
             else:
                 study_union = studies.filter(procedure_code_meaning=form.cleaned_data["procedure_code_meaning"])
-        self.object.generalstudymoduleattr_set.add(*study_union.values_list("pk", flat=True))
+        if study_union is not None:
+            self.object.generalstudymoduleattr_set.add(*study_union.values_list("pk", flat=True))
+
+    def add_standard_acquisition(self, form, acquisitions):
+        if form.cleaned_data["acquisition_protocol"] != None:
+            acquisitions_to_name = acquisitions.filter(acquisition_protocol=form.cleaned_data["acquisition_protocol"])
+
+            if form.cleaned_data["modality"] == "CT":
+                self.object.ctirradiationeventdata_set.add(*acquisitions_to_name.values_list("pk", flat=True))
+            else:
+                self.object.irradeventxraydata_set.add(*acquisitions_to_name.values_list("pk", flat=True))
 
 
 class StandardNameAddCT(StandardNameAddCore):  # pylint: disable=unused-variable
@@ -3005,6 +3024,15 @@ class StandardNameDelete(DeleteView):  # pylint: disable=unused-variable
         studies = GeneralStudyModuleAttr.objects.filter(modality_type=self.object.modality)
         self.object.generalstudymoduleattr_set.remove(*studies.values_list("pk", flat=True))
 
+        # Remove all standard_names from acquisition-level data
+        acquisitions = None
+        if self.object.modality == "CT":
+            acquisitions = CtIrradiationEventData.objects
+            self.object.ctirradiationeventdata_set.remove(*acquisitions.values_list("pk", flat=True))
+        else:
+            acquisitions = IrradEventXRayData.objects
+            self.object.irradeventxraydata_set.remove(*acquisitions.values_list("pk", flat=True))
+
         self.object.delete()
         return HttpResponseRedirect(self.get_success_url())
 
@@ -3023,15 +3051,27 @@ class StandardNameUpdateCore(UpdateView):
             # Remove all standard_names = self.object.pk as these may no longer be correct
             self.object.generalstudymoduleattr_set.remove(*studies.values_list("pk", flat=True))
 
+            # Remove the standard_names entries from acquisitions
+            acquisitions = None
+            if form.cleaned_data["modality"] == "CT":
+                acquisitions = CtIrradiationEventData.objects
+                self.object.ctirradiationeventdata_set.remove(*acquisitions.values_list("pk", flat=True))
+            else:
+                acquisitions = IrradEventXRayData.objects
+                self.object.irradeventxraydata_set.remove(*acquisitions.values_list("pk", flat=True))
+
             # Add the updated entry to all the required studies
-            self.add_standard_study_union(form, studies)
+            self.add_standard_study(form, studies)
+
+            # Add the updated entry to all the required acquisitions
+            self.add_standard_acquisition(form, acquisitions)
 
             return HttpResponseRedirect(self.get_success_url())
         else:
             messages.info(self.request, "No changes made")
             return redirect(reverse_lazy(self.get_success_url()))
 
-    def add_standard_study_union(self, form, studies):
+    def add_standard_study(self, form, studies):
         study_union = None
         if form.cleaned_data["study_description"] != None:
             study_union = studies.filter(study_description=form.cleaned_data["study_description"])
@@ -3049,6 +3089,15 @@ class StandardNameUpdateCore(UpdateView):
             else:
                 study_union = studies.filter(procedure_code_meaning=form.cleaned_data["procedure_code_meaning"])
         self.object.generalstudymoduleattr_set.add(*study_union.values_list("pk", flat=True))
+
+    def add_standard_acquisition(self, form, acquisitions):
+        if form.cleaned_data["acquisition_protocol"] != None:
+            acquisitions_to_name = acquisitions.filter(acquisition_protocol=form.cleaned_data["acquisition_protocol"])
+
+            if form.cleaned_data["modality"] == "CT":
+                self.object.ctirradiationeventdata_set.add(*acquisitions_to_name.values_list("pk", flat=True))
+            else:
+                self.object.irradeventxraydata_set.add(*acquisitions_to_name.values_list("pk", flat=True))
 
 
 class StandardNameUpdateCT(StandardNameUpdateCore):  # pylint: disable=unused-variable

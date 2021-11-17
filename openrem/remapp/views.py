@@ -223,27 +223,7 @@ def dx_detail_view(request, pk=None):
     enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
 
     try:
-        if enable_standard_names:
-            standard_names = StandardNames.objects.filter(modality__iexact="DX")
-            study = GeneralStudyModuleAttr.objects.filter(pk=pk).annotate(
-                standard_request_name=Subquery(
-                    standard_names.filter(
-                        requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values(
-                        "standard_name")
-                )
-            ).annotate(
-                standard_study_name=Subquery(
-                    standard_names.filter(study_description=OuterRef("study_description")).values(
-                        "standard_name")
-                )
-            ).annotate(
-                standard_procedure_name=Subquery(
-                    standard_names.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values(
-                        "standard_name")
-                )
-            )[0]
-        else:
-            study = GeneralStudyModuleAttr.objects.get(pk=pk)
+        study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except:
         messages.error(request, "That study was not found")
         return redirect(reverse_lazy("dx_summary_list_filter"))
@@ -265,15 +245,6 @@ def dx_detail_view(request, pk=None):
         "patient_orientation_modifier_cid",
         "acquisition_plane",
     ).all()
-
-    if enable_standard_names:
-        events_all = events_all.annotate(
-                standard_acquisition_protocol=Subquery(
-                    StandardNames.objects.filter(modality__iexact="DX").filter(
-                        acquisition_protocol=OuterRef("acquisition_protocol")
-                    ).values("standard_name")
-                )
-        )
 
     accum_set = projection_set.accumxraydose_set.all()
     # accum_integrated = projection_set.accumxraydose_set.get().accumintegratedprojradiogdose_set.get()
@@ -304,22 +275,6 @@ def rf_summary_list_filter(request):
     enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
 
     queryset = GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF").order_by("-study_date", "-study_time").distinct()
-
-    if enable_standard_names:
-        standard_names = StandardNames.objects.filter(modality__iexact="RF")
-        queryset = queryset.annotate(
-            standard_request_name=Subquery(
-                standard_names.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
-            )
-        ).annotate(
-            standard_study_name=Subquery(
-                standard_names.filter(study_description=OuterRef("study_description")).values("standard_name")
-            )
-        ).annotate(
-            standard_procedure_name=Subquery(
-                standard_names.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values("standard_name")
-            )
-        )
 
     if request.user.groups.filter(name="pidgroup"):
         if enable_standard_names:
@@ -463,27 +418,7 @@ def rf_detail_view(request, pk=None):
     enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
 
     try:
-        if enable_standard_names:
-            standard_names = StandardNames.objects.filter(modality__iexact="RF")
-            study = GeneralStudyModuleAttr.objects.filter(pk=pk).annotate(
-                standard_request_name=Subquery(
-                    standard_names.filter(
-                        requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values(
-                        "standard_name")
-                )
-            ).annotate(
-                standard_study_name=Subquery(
-                    standard_names.filter(study_description=OuterRef("study_description")).values(
-                        "standard_name")
-                )
-            ).annotate(
-                standard_procedure_name=Subquery(
-                    standard_names.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values(
-                        "standard_name")
-                )
-            )[0]
-        else:
-            study = GeneralStudyModuleAttr.objects.get(pk=pk)
+        study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
         messages.error(request, "That study was not found")
         return redirect(reverse_lazy("rf_summary_list_filter"))
@@ -512,15 +447,6 @@ def rf_detail_view(request, pk=None):
         "patient_orientation_modifier_cid",
         "acquisition_plane",
     ).all()
-
-    if enable_standard_names:
-        events_all = events_all.annotate(
-                standard_acquisition_protocol=Subquery(
-                    StandardNames.objects.filter(modality__iexact="RF").filter(
-                        acquisition_protocol=OuterRef("acquisition_protocol")
-                    ).values("standard_name")
-                )
-        )
 
     for dose_ds in accumxraydose_set_all_planes:
         accum_dose_ds = dose_ds.accumprojxraydose_set.get()
@@ -875,27 +801,7 @@ def ct_detail_view(request, pk=None):
     enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
 
     try:
-        if enable_standard_names:
-            standard_names = StandardNames.objects.filter(modality__iexact="CT")
-            study = GeneralStudyModuleAttr.objects.filter(pk=pk).annotate(
-                standard_request_name=Subquery(
-                    standard_names.filter(
-                        requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values(
-                        "standard_name")
-                )
-            ).annotate(
-                standard_study_name=Subquery(
-                    standard_names.filter(study_description=OuterRef("study_description")).values(
-                        "standard_name")
-                )
-            ).annotate(
-                standard_procedure_name=Subquery(
-                    standard_names.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values(
-                        "standard_name")
-                )
-            )[0]
-        else:
-            study = GeneralStudyModuleAttr.objects.get(pk=pk)
+        study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
         messages.error(request, "That study was not found")
         return redirect(reverse_lazy("ct_summary_list_filter"))
@@ -907,15 +813,6 @@ def ct_detail_view(request, pk=None):
         )
             .order_by("pk")
     )
-
-    if enable_standard_names:
-        events_all = events_all.annotate(
-                standard_acquisition_protocol=Subquery(
-                    StandardNames.objects.filter(modality__iexact="CT").filter(
-                        acquisition_protocol=OuterRef("acquisition_protocol")
-                    ).values("standard_name")
-                )
-        )
 
     admin = {
         "openremversion": __version__,
@@ -953,22 +850,6 @@ def mg_summary_list_filter(request):
         del filter_data["page"]
 
     queryset = GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG").order_by("-study_date", "-study_time").distinct()
-
-    if enable_standard_names:
-        standard_names = StandardNames.objects.filter(modality__iexact="MG")
-        queryset = queryset.annotate(
-            standard_request_name=Subquery(
-                standard_names.filter(requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values("standard_name")
-            )
-        ).annotate(
-            standard_study_name=Subquery(
-                standard_names.filter(study_description=OuterRef("study_description")).values("standard_name")
-            )
-        ).annotate(
-            standard_procedure_name=Subquery(
-                standard_names.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values("standard_name")
-            )
-        )
 
     if request.user.groups.filter(name="pidgroup"):
         if enable_standard_names:
@@ -1064,27 +945,7 @@ def mg_detail_view(request, pk=None):
     enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
 
     try:
-        if enable_standard_names:
-            standard_names = StandardNames.objects.filter(modality__iexact="MG")
-            study = GeneralStudyModuleAttr.objects.filter(pk=pk).annotate(
-                standard_request_name=Subquery(
-                    standard_names.filter(
-                        requested_procedure_code_meaning=OuterRef("requested_procedure_code_meaning")).values(
-                        "standard_name")
-                )
-            ).annotate(
-                standard_study_name=Subquery(
-                    standard_names.filter(study_description=OuterRef("study_description")).values(
-                        "standard_name")
-                )
-            ).annotate(
-                standard_procedure_name=Subquery(
-                    standard_names.filter(procedure_code_meaning=OuterRef("procedure_code_meaning")).values(
-                        "standard_name")
-                )
-            )[0]
-        else:
-            study = GeneralStudyModuleAttr.objects.get(pk=pk)
+        study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except:
         messages.error(request, "That study was not found")
         return redirect(reverse_lazy("mg_summary_list_filter"))
@@ -1106,15 +967,6 @@ def mg_detail_view(request, pk=None):
     events_all = projection_xray_dose_set.irradeventxraydata_set.select_related(
         "laterality", "image_view"
     ).all()
-
-    if enable_standard_names:
-        events_all = events_all.annotate(
-                standard_acquisition_protocol=Subquery(
-                    StandardNames.objects.filter(modality__iexact="MG").filter(
-                        acquisition_protocol=OuterRef("acquisition_protocol")
-                    ).values("standard_name")
-                )
-        )
 
     return render(
         request,

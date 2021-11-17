@@ -1274,6 +1274,7 @@ class IrradEventXRayData(models.Model):  # TID 10003
         max_digits=16, decimal_places=8, blank=True, null=True
     )  # TID 4007
     comment = models.TextField(blank=True, null=True)
+    standard_protocols = models.ManyToManyField(StandardNames)
 
     def __unicode__(self):
         return self.irradiation_event_uid
@@ -2063,6 +2064,7 @@ class CtIrradiationEventData(models.Model):  # TID 10013
     # Not in DICOM standard:
     date_time_started = models.DateTimeField(blank=True, null=True)
     series_description = models.TextField(blank=True, null=True)
+    standard_protocols = models.ManyToManyField(StandardNames)
 
 
 class CtReconstructionAlgorithm(models.Model):
