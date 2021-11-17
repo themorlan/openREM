@@ -397,7 +397,13 @@ class DicomQRRspStudy(models.Model):
         return json.loads(self.modalities_in_study)
 
     class Meta:
-        indexes = [models.Index(fields=['dicom_query', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "dicom_query",
+                ]
+            ),
+        ]
 
 
 class DicomQRRspSeries(models.Model):
@@ -414,7 +420,13 @@ class DicomQRRspSeries(models.Model):
     image_level_move = models.BooleanField(default=False)
 
     class Meta:
-        indexes = [models.Index(fields=['dicom_qr_rsp_study', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "dicom_qr_rsp_study",
+                ]
+            ),
+        ]
 
 
 class DicomQRRspImage(models.Model):
@@ -425,7 +437,14 @@ class DicomQRRspImage(models.Model):
     sop_class_uid = models.TextField(blank=True, null=True)
 
     class Meta:
-        indexes = [models.Index(fields=['dicom_qr_rsp_series', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "dicom_qr_rsp_series",
+                ]
+            ),
+        ]
+
 
 class CommonVariables:
     DEFAULT_COLOUR_MAP = "RdYlBu"
@@ -924,7 +943,13 @@ class GeneralStudyModuleAttr(models.Model):  # C.7.2.1
             return 1000000 * self.total_dap_delta_weeks
 
     class Meta:
-        indexes = [models.Index(fields=['modality_type', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "modality_type",
+                ]
+            ),
+        ]
 
 
 class SkinDoseMapResults(models.Model):
@@ -961,7 +986,13 @@ class SkinDoseMapResults(models.Model):
     skin_map_version = models.CharField(max_length=16, null=True, blank=True)
 
     class Meta:
-        indexes = [models.Index(fields=['general_study_module_attributes', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "general_study_module_attributes",
+                ]
+            ),
+        ]
 
 
 class ObjectUIDsProcessed(models.Model):
@@ -976,7 +1007,13 @@ class ObjectUIDsProcessed(models.Model):
     sop_instance_uid = models.TextField(blank=True, null=True)
 
     class Meta:
-        indexes = [models.Index(fields=['general_study_module_attributes', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "general_study_module_attributes",
+                ]
+            ),
+        ]
 
 
 class ProjectionXRayRadiationDose(models.Model):  # TID 10001
@@ -1054,7 +1091,13 @@ class ProjectionXRayRadiationDose(models.Model):  # TID 10001
     )
 
     class Meta:
-        indexes = [models.Index(fields=['general_study_module_attributes', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "general_study_module_attributes",
+                ]
+            ),
+        ]
 
 
 class AccumXRayDose(models.Model):  # TID 10002
@@ -1074,7 +1117,13 @@ class AccumXRayDose(models.Model):  # TID 10002
     )
 
     class Meta:
-        indexes = [models.Index(fields=['projection_xray_radiation_dose', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "projection_xray_radiation_dose",
+                ]
+            ),
+        ]
 
 
 class Calibration(models.Model):
@@ -1098,7 +1147,13 @@ class Calibration(models.Model):
     calibration_responsible_party = models.TextField(blank=True, null=True)
 
     class Meta:
-        indexes = [models.Index(fields=['accumulated_xray_dose', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "accumulated_xray_dose",
+                ]
+            ),
+        ]
 
 
 class IrradEventXRayData(models.Model):  # TID 10003
@@ -1252,7 +1307,11 @@ class IrradEventXRayData(models.Model):  # TID 10003
 
     class Meta:
         indexes = [
-            models.Index(fields=['projection_xray_radiation_dose', ]),
+            models.Index(
+                fields=[
+                    "projection_xray_radiation_dose",
+                ]
+            ),
         ]
 
 
@@ -1275,8 +1334,16 @@ class ImageViewModifier(models.Model):  # EV 111032
 
     class Meta:
         indexes = [
-            models.Index(fields=['irradiation_event_xray_data', ]),
-            models.Index(fields=['image_view_modifier', ]),
+            models.Index(
+                fields=[
+                    "irradiation_event_xray_data",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "image_view_modifier",
+                ]
+            ),
         ]
 
 
@@ -1310,7 +1377,13 @@ class IrradEventXRayDetectorData(models.Model):  # TID 10003a
     )
 
     class Meta:
-        indexes = [models.Index(fields=['irradiation_event_xray_data', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "irradiation_event_xray_data",
+                ]
+            ),
+        ]
 
 
 class IrradEventXRaySourceData(models.Model):  # TID 10003b
@@ -1417,7 +1490,13 @@ class IrradEventXRaySourceData(models.Model):  # TID 10003b
             return 1000 * self.dose_rp
 
     class Meta:
-        indexes = [models.Index(fields=['irradiation_event_xray_data', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "irradiation_event_xray_data",
+                ]
+            ),
+        ]
 
 
 class XrayGrid(models.Model):
@@ -1435,8 +1514,16 @@ class XrayGrid(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=['irradiation_event_xray_source_data', ]),
-            models.Index(fields=['xray_grid', ]),
+            models.Index(
+                fields=[
+                    "irradiation_event_xray_source_data",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "xray_grid",
+                ]
+            ),
         ]
 
 
@@ -1451,7 +1538,13 @@ class PulseWidth(models.Model):  # EV 113793
     )
 
     class Meta:
-        indexes = [models.Index(fields=['irradiation_event_xray_source_data', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "irradiation_event_xray_source_data",
+                ]
+            ),
+        ]
 
 
 class Kvp(models.Model):  # EV 113733
@@ -1463,7 +1556,13 @@ class Kvp(models.Model):  # EV 113733
     kvp = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
 
     class Meta:
-        indexes = [models.Index(fields=['irradiation_event_xray_source_data', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "irradiation_event_xray_source_data",
+                ]
+            ),
+        ]
 
 
 class XrayTubeCurrent(models.Model):  # EV 113734
@@ -1477,7 +1576,13 @@ class XrayTubeCurrent(models.Model):  # EV 113734
     )
 
     class Meta:
-        indexes = [models.Index(fields=['irradiation_event_xray_source_data', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "irradiation_event_xray_source_data",
+                ]
+            ),
+        ]
 
 
 class Exposure(models.Model):  # EV 113736
@@ -1501,7 +1606,13 @@ class Exposure(models.Model):  # EV 113736
             return None
 
     class Meta:
-        indexes = [models.Index(fields=['irradiation_event_xray_source_data', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "irradiation_event_xray_source_data",
+                ]
+            ),
+        ]
 
 
 class XrayFilters(models.Model):  # EV 113771
@@ -1532,7 +1643,13 @@ class XrayFilters(models.Model):  # EV 113771
     )
 
     class Meta:
-        indexes = [models.Index(fields=['irradiation_event_xray_source_data', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "irradiation_event_xray_source_data",
+                ]
+            ),
+        ]
 
 
 class IrradEventXRayMechanicalData(models.Model):  # TID 10003c
@@ -1590,8 +1707,16 @@ class IrradEventXRayMechanicalData(models.Model):  # TID 10003c
 
     class Meta:
         indexes = [
-            models.Index(fields=['irradiation_event_xray_data', ]),
-            models.Index(fields=['crdr_mechanical_configuration', ]),
+            models.Index(
+                fields=[
+                    "irradiation_event_xray_data",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "crdr_mechanical_configuration",
+                ]
+            ),
         ]
 
 
@@ -1643,7 +1768,13 @@ class DoseRelatedDistanceMeasurements(models.Model):  # CID 10008
     )
 
     class Meta:
-        indexes = [models.Index(fields=['irradiation_event_xray_mechanical_data', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "irradiation_event_xray_mechanical_data",
+                ]
+            ),
+        ]
 
 
 class AccumProjXRayDose(models.Model):  # TID 10004
@@ -1703,7 +1834,13 @@ class AccumProjXRayDose(models.Model):  # TID 10004
             return 1000000 * self.acquisition_dose_area_product_total
 
     class Meta:
-        indexes = [models.Index(fields=['accumulated_xray_dose', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "accumulated_xray_dose",
+                ]
+            ),
+        ]
 
 
 class AccumMammographyXRayDose(models.Model):  # TID 10005
@@ -1724,7 +1861,13 @@ class AccumMammographyXRayDose(models.Model):  # TID 10005
     )
 
     class Meta:
-        indexes = [models.Index(fields=['accumulated_xray_dose', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "accumulated_xray_dose",
+                ]
+            ),
+        ]
 
 
 class AccumCassetteBsdProjRadiogDose(models.Model):  # TID 10006
@@ -1745,7 +1888,13 @@ class AccumCassetteBsdProjRadiogDose(models.Model):  # TID 10006
     )
 
     class Meta:
-        indexes = [models.Index(fields=['accumulated_xray_dose', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "accumulated_xray_dose",
+                ]
+            ),
+        ]
 
 
 class AccumIntegratedProjRadiogDose(models.Model):  # TID 10007
@@ -1790,7 +1939,13 @@ class AccumIntegratedProjRadiogDose(models.Model):  # TID 10007
             return 1000000 * self.dose_area_product_total_over_delta_weeks
 
     class Meta:
-        indexes = [models.Index(fields=['accumulated_xray_dose', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "accumulated_xray_dose",
+                ]
+            ),
+        ]
 
 
 class PKsForSummedRFDoseStudiesInDeltaWeeks(models.Model):
@@ -1804,7 +1959,13 @@ class PKsForSummedRFDoseStudiesInDeltaWeeks(models.Model):
     study_pk_in_delta_weeks = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        indexes = [models.Index(fields=['general_study_module_attributes', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "general_study_module_attributes",
+                ]
+            ),
+        ]
 
 
 class PatientModuleAttr(models.Model):  # C.7.1.1
@@ -1831,8 +1992,16 @@ class PatientModuleAttr(models.Model):  # C.7.1.1
 
     class Meta:
         indexes = [
-            models.Index(fields=['general_study_module_attributes', ]),
-            models.Index(fields=['patient_id', ]),
+            models.Index(
+                fields=[
+                    "general_study_module_attributes",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "patient_id",
+                ]
+            ),
         ]
 
 
@@ -1862,7 +2031,13 @@ class PatientStudyModuleAttr(models.Model):  # C.7.2.2
     # TODO: Add patient size code sequence
 
     class Meta:
-        indexes = [models.Index(fields=['general_study_module_attributes', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "general_study_module_attributes",
+                ]
+            ),
+        ]
 
 
 class GeneralEquipmentModuleAttr(models.Model):  # C.7.5.1
@@ -1898,7 +2073,13 @@ class GeneralEquipmentModuleAttr(models.Model):  # C.7.5.1
         return self.station_name
 
     class Meta:
-        indexes = [models.Index(fields=['general_study_module_attributes', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "general_study_module_attributes",
+                ]
+            ),
+        ]
 
 
 class CtRadiationDose(models.Model):  # TID 10011
@@ -1956,7 +2137,13 @@ class CtRadiationDose(models.Model):  # TID 10011
     )
 
     class Meta:
-        indexes = [models.Index(fields=['general_study_module_attributes', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "general_study_module_attributes",
+                ]
+            ),
+        ]
 
 
 class SourceOfCTDoseInformation(models.Model):  # CID 10021
@@ -1970,8 +2157,16 @@ class SourceOfCTDoseInformation(models.Model):  # CID 10021
 
     class Meta:
         indexes = [
-            models.Index(fields=['ct_radiation_dose', ]),
-            models.Index(fields=['source_of_dose_information', ]),
+            models.Index(
+                fields=[
+                    "ct_radiation_dose",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "source_of_dose_information",
+                ]
+            ),
         ]
 
 
@@ -2015,7 +2210,13 @@ class CtAccumulatedDoseData(models.Model):  # TID 10012
     comment = models.TextField(blank=True, null=True)
 
     class Meta:
-        indexes = [models.Index(fields=['ct_radiation_dose', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "ct_radiation_dose",
+                ]
+            ),
+        ]
 
 
 class CtIrradiationEventData(models.Model):  # TID 10013
@@ -2114,7 +2315,13 @@ class CtIrradiationEventData(models.Model):  # TID 10013
     series_description = models.TextField(blank=True, null=True)
 
     class Meta:
-        indexes = [models.Index(fields=['ct_radiation_dose', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "ct_radiation_dose",
+                ]
+            ),
+        ]
 
 
 class CtReconstructionAlgorithm(models.Model):
@@ -2130,8 +2337,16 @@ class CtReconstructionAlgorithm(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=['ct_irradiation_event_data', ]),
-            models.Index(fields=['reconstruction_algorithm', ]),
+            models.Index(
+                fields=[
+                    "ct_irradiation_event_data",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "reconstruction_algorithm",
+                ]
+            ),
         ]
 
 
@@ -2157,7 +2372,13 @@ class CtXRaySourceParameters(models.Model):
     )
 
     class Meta:
-        indexes = [models.Index(fields=['ct_irradiation_event_data', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "ct_irradiation_event_data",
+                ]
+            ),
+        ]
 
 
 class ScanningLength(models.Model):  # TID 10014
@@ -2194,7 +2415,13 @@ class ScanningLength(models.Model):  # TID 10014
     frame_of_reference_uid = models.TextField(blank=True, null=True)
 
     class Meta:
-        indexes = [models.Index(fields=['ct_irradiation_event_data', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "ct_irradiation_event_data",
+                ]
+            ),
+        ]
 
 
 class SizeSpecificDoseEstimation(models.Model):
@@ -2236,8 +2463,16 @@ class SizeSpecificDoseEstimation(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=['ct_irradiation_event_data', ]),
-            models.Index(fields=['measurement_method', ]),
+            models.Index(
+                fields=[
+                    "ct_irradiation_event_data",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "measurement_method",
+                ]
+            ),
         ]
 
 
@@ -2250,7 +2485,13 @@ class WEDSeriesOrInstances(models.Model):
     wed_series_or_instance = models.TextField(blank=True, null=True)  # referenced UID
 
     class Meta:
-        indexes = [models.Index(fields=['size_specific_dose_estimation', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "size_specific_dose_estimation",
+                ]
+            ),
+        ]
 
 
 class CtDoseCheckDetails(models.Model):  # TID 10015
@@ -2297,7 +2538,13 @@ class CtDoseCheckDetails(models.Model):  # TID 10015
     notification_reason_for_proceeding = models.TextField(blank=True, null=True)
 
     class Meta:
-        indexes = [models.Index(fields=['ct_irradiation_event_data', ]), ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "ct_irradiation_event_data",
+                ]
+            ),
+        ]
 
 
 # Models common to both
@@ -2360,8 +2607,16 @@ class ObserverContext(models.Model):  # TID 1002
 
     class Meta:
         indexes = [
-            models.Index(fields=['projection_xray_radiation_dose', ]),
-            models.Index(fields=['ct_radiation_dose', ]),
+            models.Index(
+                fields=[
+                    "projection_xray_radiation_dose",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "ct_radiation_dose",
+                ]
+            ),
         ]
 
 
@@ -2399,12 +2654,36 @@ class DeviceParticipant(models.Model):  # TID 1021
 
     class Meta:
         indexes = [
-            models.Index(fields=['accumulated_xray_dose', ]),
-            models.Index(fields=['irradiation_event_xray_detector_data', ]),
-            models.Index(fields=['irradiation_event_xray_source_data', ]),
-            models.Index(fields=['ct_accumulated_dose_data', ]),
-            models.Index(fields=['ct_irradiation_event_data', ]),
-            models.Index(fields=['device_role_in_procedure', ]),
+            models.Index(
+                fields=[
+                    "accumulated_xray_dose",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "irradiation_event_xray_detector_data",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "irradiation_event_xray_source_data",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "ct_accumulated_dose_data",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "ct_irradiation_event_data",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "device_role_in_procedure",
+                ]
+            ),
         ]
 
 
@@ -2474,15 +2753,51 @@ class PersonParticipant(models.Model):  # TID 1020
 
     class Meta:
         indexes = [
-            models.Index(fields=['projection_xray_radiation_dose', ]),
-            models.Index(fields=['ct_radiation_dose', ]),
-            models.Index(fields=['irradiation_event_xray_data', ]),
-            models.Index(fields=['ct_accumulated_dose_data', ]),
-            models.Index(fields=['ct_irradiation_event_data', ]),
-            models.Index(fields=['ct_dose_check_details_alert', ]),
-            models.Index(fields=['ct_dose_check_details_notification', ]),
-            models.Index(fields=['person_role_in_procedure_cid', ]),
-            models.Index(fields=['person_role_in_organization_cid', ]),
+            models.Index(
+                fields=[
+                    "projection_xray_radiation_dose",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "ct_radiation_dose",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "irradiation_event_xray_data",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "ct_accumulated_dose_data",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "ct_irradiation_event_data",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "ct_dose_check_details_alert",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "ct_dose_check_details_notification",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "person_role_in_procedure_cid",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "person_role_in_organization_cid",
+                ]
+            ),
         ]
 
 
