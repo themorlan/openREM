@@ -1464,7 +1464,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotCTStandardStudyFreq:
                     parameter_dict = {
-                        "df_name_col": std_field_name,
+                        "df_name_col": "standard_names__standard_name",
                         "sorting_choice": [
                             user_profile.plotInitialSortingDirection,
                             user_profile.plotCTInitialSortingChoice,
@@ -1491,13 +1491,13 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
                 if user_profile.plotCTStandardStudyPerDayAndHour:
                     df_time_series_per_weekday = create_dataframe_weekdays(
-                        standard_name_df, std_field_name, df_date_col="study_date"
+                        standard_name_df, "standard_names__standard_name", df_date_col="study_date"
                     )
 
                     return_structure["standardStudyWorkloadData"] = plotly_barchart_weekdays(
                         df_time_series_per_weekday,
                         "weekday",
-                        std_field_name,
+                        "standard_names__standard_name",
                         name_axis_title="Weekday",
                         value_axis_title="Frequency",
                         colourmap=user_profile.plotColourMapChoice,
@@ -1517,7 +1517,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                         facet_title = "Standard study name"
 
                     parameter_dict = {
-                        "df_name_col": std_field_name,
+                        "df_name_col": "standard_names__standard_name",
                         "df_value_col": "total_dlp",
                         "df_date_col": "study_date",
                         "name_title": "Standard study name",
