@@ -120,7 +120,7 @@
                 <td>{{ event.date_time_started|time:"H:i.s" }}</td>
                 <td>{{ event.acquisition_protocol }}</td>
                 {% if showStandardNames %}
-                    <td rowspan="2">
+                    <td>
                         <table>
                         {% for std_name in event.standard_protocols.all %}
                             <tr><td class="nowrap">{{ std_name.standard_name|default_if_none:"-" }}</td></tr>

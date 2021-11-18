@@ -3043,7 +3043,7 @@ class StandardNameUpdateCore(UpdateView):
 
     def form_valid(self, form):
         if form.has_changed():
-            messages.success(self.request, "New entry added")
+            messages.success(self.request, "Entry updated")
             self.object = form.save()
 
             studies = GeneralStudyModuleAttr.objects.filter(modality_type=form.cleaned_data["modality"])
@@ -3088,7 +3088,8 @@ class StandardNameUpdateCore(UpdateView):
                     procedure_code_meaning=form.cleaned_data["procedure_code_meaning"])
             else:
                 study_union = studies.filter(procedure_code_meaning=form.cleaned_data["procedure_code_meaning"])
-        self.object.generalstudymoduleattr_set.add(*study_union.values_list("pk", flat=True))
+        if study_union is not None:
+            self.object.generalstudymoduleattr_set.add(*study_union.values_list("pk", flat=True))
 
     def add_standard_acquisition(self, form, acquisitions):
         if form.cleaned_data["acquisition_protocol"] != None:

@@ -89,36 +89,6 @@ def custom_id_filter(queryset, name, value):
     return filtered
 
 
-def standard_acq_protocol_filter(queryset, name, value):
-    """Search for standard acquisition name"""
-    if not value:
-        return queryset
-
-    modalities = queryset.values_list("modality_type", flat=True).distinct()
-
-    modality = ""
-    field_and_search = "projectionxrayradiationdose__irradeventxraydata__acquisition_protocol__in"
-
-    if any(item in ["DX", "CR", "PX"] for item in modalities):
-        modality = "DX"
-    elif "MG" in modalities:
-        modality = "MG"
-    elif "RF" in modalities:
-        modality = "RF"
-    elif "CT" in modalities:
-        modality = "CT"
-        field_and_search = "ctradiationdose__ctirradiationeventdata__acquisition_protocol__in"
-
-    # Standard names that have an acquisition protocol name that contains value
-    acq_protocols_to_find = StandardNames.objects.filter(modality__exact=modality).filter(
-        standard_name__icontains=value).values("acquisition_protocol")
-
-    # Filter the queryset to only include acq_protocols_to_find
-    filtered = queryset.filter(**{field_and_search:acq_protocols_to_find})
-
-    return filtered
-
-
 def _custom_acc_filter(queryset, name, value):
     """Search for accession number as plain text and encrypted"""
     if not value:
@@ -341,10 +311,8 @@ class RFFilterPlusStdNames(RFSummaryListFilter):
         lookup_expr="icontains",
         label="Standard study name",
     )
-    standard_acquisition_protocol = django_filters.CharFilter(
-        method=standard_acq_protocol_filter,
-        lookup_expr="icontains",
-        label="Standard acquisition protocol",
+    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = (
+        django_filters.CharFilter(lookup_expr="icontains", label="Standard acquisition name")
     )
 
 
@@ -369,10 +337,8 @@ class RFFilterPlusPidPlusStdNames(RFFilterPlusPid):
         lookup_expr="icontains",
         label="Standard study name",
     )
-    standard_acquisition_protocol = django_filters.CharFilter(
-        method=standard_acq_protocol_filter,
-        lookup_expr="icontains",
-        label="Standard acquisition protocol",
+    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = (
+        django_filters.CharFilter(lookup_expr="icontains", label="Standard acquisition name")
     )
 
 
@@ -626,10 +592,8 @@ class CTFilterPlusStdNames(CTSummaryListFilter):
     standard_names__standard_name = (
         django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
     )
-    standard_acquisition_protocol = django_filters.CharFilter(
-        method=standard_acq_protocol_filter,
-        lookup_expr="icontains",
-        label="Standard acquisition protocol",
+    ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name = (
+        django_filters.CharFilter(lookup_expr="icontains", label="Standard acquisition name")
     )
 
 
@@ -652,113 +616,12 @@ class CTFilterPlusPidPlusStdNames(CTFilterPlusPid):
     standard_names__standard_name = (
         django_filters.CharFilter(lookup_expr="icontains", label="Standard study name")
     )
-    standard_acquisition_protocol = django_filters.CharFilter(
-        method=standard_acq_protocol_filter,
-        lookup_expr="icontains",
-        label="Standard acquisition protocol",
+    ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name = (
+        django_filters.CharFilter(lookup_expr="icontains", label="Standard acquisition name")
     )
 
 
 def ct_acq_filter(filters, pid=False):
-
-    """Additional filters at event level"""
-
-    filteredInclude = []
-    if "acquisition_protocol" in filters and (
-        "acquisition_ctdi_min" in filters
-        or "acquisition_ctdi_max" in filters
-        or "acquisition_dlp_min" in filters
-        or "acquisition_dlp_max" in filters
-    ):
-        if ("studyhist" in filters) and ("study_description" in filters):
-            events = CtIrradiationEventData.objects.select_related().filter(
-                ct_radiation_dose_id__general_study_module_attributes__study_description=filters[
-                    "study_description"
-                ]
-            )
-        else:
-            events = CtIrradiationEventData.objects.filter(
-                acquisition_protocol__iexact=filters["acquisition_protocol"]
-            )
-        if "acquisition_ctdi_min" in filters:
-            try:
-                Decimal(filters["acquisition_ctdi_min"])
-                events = events.filter(
-                    mean_ctdivol__gte=filters["acquisition_ctdi_min"]
-                )
-            except InvalidOperation:
-                pass
-        if "acquisition_ctdi_max" in filters:
-            try:
-                Decimal(filters["acquisition_ctdi_max"])
-                events = events.filter(
-                    mean_ctdivol__lte=filters["acquisition_ctdi_max"]
-                )
-            except InvalidOperation:
-                pass
-        if "acquisition_dlp_min" in filters:
-            try:
-                Decimal(filters["acquisition_dlp_min"])
-                events = events.filter(dlp__gte=filters["acquisition_dlp_min"])
-            except InvalidOperation:
-                pass
-        if "acquisition_dlp_max" in filters:
-            try:
-                Decimal(filters["acquisition_dlp_max"])
-                events = events.filter(dlp__lte=filters["acquisition_dlp_max"])
-            except InvalidOperation:
-                pass
-        if "ct_acquisition_type" in filters:
-            try:
-                events = events.filter(
-                    ct_acquisition_type__code_meaning__iexact=filters[
-                        "ct_acquisition_type"
-                    ]
-                )
-            except InvalidOperation:
-                pass
-        filteredInclude = events.values_list(
-            "ct_radiation_dose__general_study_module_attributes__study_instance_uid"
-        ).distinct()
-
-    elif (
-        ("study_description" in filters)
-        and ("acquisition_ctdi_min" in filters)
-        and ("acquisition_ctdi_max" in filters)
-    ):
-        events = CtIrradiationEventData.objects.select_related().filter(
-            ct_radiation_dose_id__general_study_module_attributes__study_description=filters[
-                "study_description"
-            ]
-        )
-        if "acquisition_ctdi_min" in filters:
-            try:
-                Decimal(filters["acquisition_ctdi_min"])
-                events = events.filter(
-                    mean_ctdivol__gte=filters["acquisition_ctdi_min"]
-                )
-            except InvalidOperation:
-                pass
-        if "acquisition_ctdi_max" in filters:
-            try:
-                Decimal(filters["acquisition_ctdi_max"])
-                events = events.filter(
-                    mean_ctdivol__lte=filters["acquisition_ctdi_max"]
-                )
-            except InvalidOperation:
-                pass
-        if "ct_acquisition_type" in filters:
-            try:
-                events = events.filter(
-                    ct_acquisition_type__code_meaning__iexact=filters[
-                        "ct_acquisition_type"
-                    ]
-                )
-            except InvalidOperation:
-                pass
-        filteredInclude = events.values_list(
-            "ct_radiation_dose__general_study_module_attributes__study_instance_uid"
-        ).distinct()
 
     # Obtain the system-level enable_standard_names setting
     try:
@@ -769,8 +632,6 @@ def ct_acq_filter(filters, pid=False):
 
     studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT")
 
-    if filteredInclude:
-        studies = studies.filter(study_instance_uid__in=filteredInclude)
     if pid:
         if enable_standard_names:
             return CTFilterPlusPidPlusStdNames(
@@ -947,10 +808,8 @@ class MGFilterPlusStdNames(MGSummaryListFilter):
         lookup_expr="icontains",
         label="Standard study name",
     )
-    standard_acquisition_protocol = django_filters.CharFilter(
-        method=standard_acq_protocol_filter,
-        lookup_expr="icontains",
-        label="Standard acquisition protocol",
+    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = (
+        django_filters.CharFilter(lookup_expr="icontains", label="Standard acquisition name")
     )
 
 
@@ -974,10 +833,8 @@ class MGFilterPlusPidPlusStdNames(MGFilterPlusPid):
         lookup_expr="icontains",
         label="Standard study name",
     )
-    standard_acquisition_protocol = django_filters.CharFilter(
-        method=standard_acq_protocol_filter,
-        lookup_expr="icontains",
-        label="Standard acquisition protocol",
+    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = (
+        django_filters.CharFilter(lookup_expr="icontains", label="Standard acquisition name")
     )
 
 
@@ -1148,10 +1005,8 @@ class DXFilterPlusStdNames(DXSummaryListFilter):
         lookup_expr="icontains",
         label="Standard study name",
     )
-    standard_acquisition_protocol = django_filters.CharFilter(
-        method=standard_acq_protocol_filter,
-        lookup_expr="icontains",
-        label="Standard acquisition protocol",
+    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = (
+        django_filters.CharFilter(lookup_expr="icontains", label="Standard acquisition name")
     )
 
 
@@ -1176,87 +1031,12 @@ class DXFilterPlusPidPlusStdNames(DXFilterPlusPid):
         lookup_expr="icontains",
         label="Standard study name",
     )
-    standard_acquisition_protocol = django_filters.CharFilter(
-        method=standard_acq_protocol_filter,
-        lookup_expr="icontains",
-        label="Standard acquisition protocol",
+    projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name = (
+        django_filters.CharFilter(lookup_expr="icontains", label="Standard acquisition name")
     )
 
 
 def dx_acq_filter(filters, pid=False):
-
-    """Additional filters at event level"""
-    filteredInclude = []
-    if "acquisition_protocol" in filters and (
-        "acquisition_dap_min" in filters
-        or "acquisition_dap_max" in filters
-        or "acquisition_kvp_min" in filters
-        or "acquisition_kvp_max" in filters
-        or "acquisition_mas_min" in filters
-        or "acquisition_mas_max" in filters
-    ):
-        events = IrradEventXRayData.objects.filter(
-            acquisition_protocol__iexact=filters["acquisition_protocol"]
-        )
-        if "acquisition_dap_min" in filters:
-            try:
-                Decimal(filters["acquisition_dap_min"])
-                events = events.filter(
-                    dose_area_product__gte=filters["acquisition_dap_min"]
-                )
-            except InvalidOperation:
-                pass
-        if "acquisition_dap_max" in filters:
-            try:
-                Decimal(filters["acquisition_dap_max"])
-                events = events.filter(
-                    dose_area_product__lte=filters["acquisition_dap_max"]
-                )
-            except InvalidOperation:
-                pass
-        if "acquisition_kvp_min" in filters:
-            try:
-                Decimal(filters["acquisition_kvp_min"])
-                events = events.filter(
-                    irradeventxraysourcedata__kvp__kvp__gte=filters[
-                        "acquisition_kvp_min"
-                    ]
-                )
-            except InvalidOperation:
-                pass
-        if "acquisition_kvp_max" in filters:
-            try:
-                Decimal(filters["acquisition_kvp_max"])
-                events = events.filter(
-                    irradeventxraysourcedata__kvp__kvp__lte=filters[
-                        "acquisition_kvp_max"
-                    ]
-                )
-            except InvalidOperation:
-                pass
-        if "acquisition_mas_min" in filters:
-            try:
-                Decimal(filters["acquisition_mas_min"])
-                events = events.filter(
-                    irradeventxraysourcedata__exposure__exposure__gte=filters[
-                        "acquisition_mas_min"
-                    ]
-                )
-            except InvalidOperation:
-                pass
-        if "acquisition_mas_max" in filters:
-            try:
-                Decimal(filters["acquisition_mas_max"])
-                events = events.filter(
-                    irradeventxraysourcedata__exposure__exposure__lte=filters[
-                        "acquisition_mas_max"
-                    ]
-                )
-            except InvalidOperation:
-                pass
-        filteredInclude = events.values_list(
-            "projection_xray_radiation_dose__general_study_module_attributes__study_instance_uid"
-        ).distinct()
 
     # Obtain the system-level enable_standard_names setting
     try:
@@ -1286,8 +1066,6 @@ def dx_acq_filter(filters, pid=False):
             )
         )
 
-    if filteredInclude:
-        studies = studies.filter(study_instance_uid__in=filteredInclude)
     if pid:
         if enable_standard_names:
             return DXFilterPlusPidPlusStdNames(

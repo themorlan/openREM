@@ -766,7 +766,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_value"
         )
         if enable_standard_names:
-            name_fields.append("standard_acquisition_name")
+            name_fields.append("ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name")
 
         value_fields = []
         charts_of_interest = [
@@ -831,15 +831,6 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         }
 
         query_set = f.qs
-        if enable_standard_names:
-            standard_names = StandardNames.objects.filter(modality__iexact="CT")
-            query_set = f.qs.annotate(
-                standard_acquisition_name=Subquery(
-                    standard_names.filter(
-                        acquisition_protocol=OuterRef("ctradiationdose__ctirradiationeventdata__acquisition_protocol")
-                    ).values("standard_name")
-                )
-            )
 
         df = create_dataframe(
             query_set,
@@ -1081,13 +1072,13 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
         if enable_standard_names:
             # Exclude "Blank" and "blank" standard_acqusition_name data
-            df_without_blanks = df[(df["standard_acquisition_name"] != "blank") & (df["standard_acquisition_name"] != "Blank")].copy()
+            df_without_blanks = df[(df["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"] != "blank") & (df["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"] != "Blank")].copy()
             # Remove any unused categories (this will include "Blank" or "blank")
-            df_without_blanks["standard_acquisition_name"] = df_without_blanks["standard_acquisition_name"].cat.remove_unused_categories()
+            df_without_blanks["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"] = df_without_blanks["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"].cat.remove_unused_categories()
 
             if user_profile.plotCTStandardAcquisitionFreq:
                 parameter_dict = {
-                    "df_name_col": "standard_acquisition_name",
+                    "df_name_col": "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name",
                     "sorting_choice": [
                         user_profile.plotInitialSortingDirection,
                         user_profile.plotCTInitialSortingChoice,
@@ -1114,8 +1105,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 )
 
             if user_profile.plotCTStandardAcquisitionMeanDLP:
-
-                name_field = "standard_acquisition_name"
+                name_field = "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
                 value_field = "ctradiationdose__ctirradiationeventdata__dlp"
                 value_text = "DLP"
                 units_text = "(mGy.cm)"
@@ -1135,8 +1125,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 return_structure = {**return_structure, **new_charts}
 
             if user_profile.plotCTStandardAcquisitionMeanCTDI:
-
-                name_field = "standard_acquisition_name"
+                name_field = "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
                 value_field = "ctradiationdose__ctirradiationeventdata__mean_ctdivol"
                 value_text = "CTDI<sub>vol</sub>"
                 units_text = "(mGy)"
@@ -1162,7 +1151,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     facet_title = "Standard acquisition name"
 
                 parameter_dict = {
-                    "df_name_col": "standard_acquisition_name",
+                    "df_name_col": "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name",
                     "df_value_col": "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                     "df_date_col": "study_date",
                     "name_title": "Standard acquisition name",
@@ -1199,7 +1188,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                     facet_title = "Standard acquisition name"
 
                 parameter_dict = {
-                    "df_name_col": "standard_acquisition_name",
+                    "df_name_col": "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name",
                     "df_value_col": "ctradiationdose__ctirradiationeventdata__dlp",
                     "df_date_col": "study_date",
                     "name_title": "Standard acquisition name",
@@ -1231,7 +1220,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotCTStandardAcquisitionCTDIvsMass:
                 parameter_dict = {
-                    "df_name_col": "standard_acquisition_name",
+                    "df_name_col": "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name",
                     "df_x_col": "patientstudymoduleattr__patient_weight",
                     "df_y_col": "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
                     "sorting_choice": [
@@ -1255,7 +1244,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
 
             if user_profile.plotCTStandardAcquisitionDLPvsMass:
                 parameter_dict = {
-                    "df_name_col": "standard_acquisition_name",
+                    "df_name_col": "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name",
                     "df_x_col": "patientstudymoduleattr__patient_weight",
                     "df_y_col": "ctradiationdose__ctirradiationeventdata__dlp",
                     "sorting_choice": [
