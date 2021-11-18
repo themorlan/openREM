@@ -29,12 +29,12 @@
                 <div class="panel-body">
                     <p>Any study description, requested procedure, procedure or acquisition protocol name already
                        present in a standard name mapping are excluded from the drop-down options on this form.</p>
-                    <form action="" method="post" class="form-horizontal" role="form">
+                    <form action="" method="post" class="form-horizontal" role="form" id="standard_name_form">
                         {% csrf_token %}
                         <table  class="table table-bordered table-hover" aria-describedby="Add or modify a standard name">
                             {{ form }}
                         </table>
-                        <input class="btn btn-primary" name="submit" type="submit" />
+                        <input class="btn btn-primary" name="submit" type="submit" id="submit-button" />
                         <input type="button" class="btn btn-primary" value="Cancel"
                                onclick="window.location = '{% url 'standard_names_view' %}';"/>
                     </form>
@@ -48,4 +48,15 @@
             </div>
         </div>
     </div>
-{% endblock %}	
+
+    <script>
+        $(document).ready(function(e) {
+            $("#standard_name_form").submit(function() {
+                var txt = $("#submit-button");
+                txt.val("Updating the database - this may take some time").attr("disabled", true);
+                return;
+            })
+        });
+    </script>
+
+{% endblock %}

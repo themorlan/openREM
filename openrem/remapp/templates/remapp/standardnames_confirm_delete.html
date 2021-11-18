@@ -41,9 +41,9 @@
                             </tr>
                         </table>
 
-                        <form action="" method="post">
+                        <form action="" method="post" id="delete_stanard_name">
                             {% csrf_token %}
-                            <input type="submit" class="btn btn-danger" value="Delete"/>
+                            <input type="submit" class="btn btn-danger" value="Delete" id="delete-button"/>
                             <input type="button" class="btn btn-primary" value="Cancel"
                                    onclick="window.location = '{% url 'standard_names_view' %}';"/>
                         </form>
@@ -58,4 +58,14 @@
         </div>
     {% endif %}
 
-{% endblock %}	
+    <script>
+        $(document).ready(function(e) {
+            $("#delete_stanard_name").submit(function() {
+                var txt = $("#delete-button");
+                txt.val("Updating the database - this may take some time").attr("disabled", true);
+                return;
+            })
+        });
+    </script>
+
+{% endblock %}
