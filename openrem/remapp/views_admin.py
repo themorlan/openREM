@@ -2862,7 +2862,7 @@ class StandardNameAddCore(CreateView):
             return HttpResponseRedirect(self.get_success_url())
         else:
             messages.info(self.request, "No changes made")
-            return redirect(reverse_lazy(self.get_success_url()))
+            return redirect(self.success_url)
 
     def add_standard_study(self, form, studies):
         study_union = None
@@ -3114,7 +3114,7 @@ class StandardNameUpdateCore(UpdateView):
             return HttpResponseRedirect(self.get_success_url())
         else:
             messages.info(self.request, "No changes made")
-            return redirect(reverse_lazy(self.get_success_url()))
+            return redirect(self.success_url)
 
     def add_standard_study(self, form, studies):
         study_union = None

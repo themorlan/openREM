@@ -35,7 +35,7 @@
                             {{ form }}
                         </table>
                         <input class="btn btn-primary" name="submit" type="submit" id="submit-button" />
-                        <input type="button" class="btn btn-primary" value="Cancel"
+                        <input type="button" class="btn btn-danger" value="Cancel" id="cancel-button"
                                onclick="window.location = '{% url 'standard_names_view' %}';"/>
                     </form>
                 </div>
@@ -52,8 +52,8 @@
     <script>
         $(document).ready(function(e) {
             $("#standard_name_form").submit(function() {
-                var txt = $("#submit-button");
-                txt.val("Updating the database - this may take some time").attr("disabled", true);
+                $("#submit-button").val("Updating the database - this may take some time").attr("disabled", true);
+                $("#cancel-button").attr("disabled", true);
                 return;
             })
         });
