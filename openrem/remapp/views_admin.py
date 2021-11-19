@@ -36,6 +36,7 @@ from __future__ import absolute_import
 import os
 import json
 import logging
+import operator
 from datetime import datetime, timedelta
 import requests
 from builtins import map  # pylint: disable=redefined-builtin
@@ -56,7 +57,7 @@ from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-
+from functools import reduce
 from .extractors.extract_common import populate_rf_delta_weeks_summary
 from .forms import (
     CTChartOptionsDisplayForm,
@@ -2825,7 +2826,20 @@ class StandardNameAddCore(CreateView):
             self.object = form.save()
 
             # Add the entry to all the required studies
-            studies = GeneralStudyModuleAttr.objects.filter(modality_type=form.cleaned_data["modality"])
+            studies = GeneralStudyModuleAttr.objects
+            if self.object.modality == "CT":
+                studies = studies.filter(modality_type="CT")
+            elif self.object.modality == "MG":
+                studies = studies.filter(modality_type="MG")
+            elif self.object.modality == "RF":
+                studies = studies.filter(modality_type="RF")
+            else:
+                studies = studies.filter(
+                    Q(modality_type__exact="DX")
+                    | Q(modality_type__exact="CR")
+                    | Q(modality_type__exact="PX")
+                )
+
             self.add_standard_study(form, studies)
 
             # Add the entry to all the required acquisitions
@@ -2833,7 +2847,16 @@ class StandardNameAddCore(CreateView):
             if form.cleaned_data["modality"] == "CT":
                 acquisitions = CtIrradiationEventData.objects
             else:
-                acquisitions = IrradEventXRayData.objects
+                # Filter the IrradEventXRayData.objects to just contain the required modality
+                q = ["DX", "CR", "PX"]
+                if self.object.modality == "MG":
+                    q = ["MG"]
+                elif self.object.modality == "RF":
+                    q = ["RF"]
+
+                q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
+                acquisitions = IrradEventXRayData.objects.filter(q_criteria)
+
             self.add_standard_acquisition(form, acquisitions)
 
             return HttpResponseRedirect(self.get_success_url())
@@ -3046,19 +3069,41 @@ class StandardNameUpdateCore(UpdateView):
             messages.success(self.request, "Entry updated")
             self.object = form.save()
 
-            studies = GeneralStudyModuleAttr.objects.filter(modality_type=form.cleaned_data["modality"])
+            studies = GeneralStudyModuleAttr.objects
+            if self.object.modality == "CT":
+                studies = studies.filter(modality_type="CT")
+            elif self.object.modality == "MG":
+                studies = studies.filter(modality_type="MG")
+            elif self.object.modality == "RF":
+                studies = studies.filter(modality_type="RF")
+            else:
+                studies = studies.filter(
+                    Q(modality_type__exact="DX")
+                    | Q(modality_type__exact="CR")
+                    | Q(modality_type__exact="PX")
+                )
 
             # Remove all standard_names = self.object.pk as these may no longer be correct
-            self.object.generalstudymoduleattr_set.remove(*studies.values_list("pk", flat=True))
+            self.object.generalstudymoduleattr_set.remove(*studies.filter(standard_names__pk=self.object.pk).values_list("pk", flat=True))
 
             # Remove the standard_names entries from acquisitions
             acquisitions = None
             if form.cleaned_data["modality"] == "CT":
                 acquisitions = CtIrradiationEventData.objects
-                self.object.ctirradiationeventdata_set.remove(*acquisitions.values_list("pk", flat=True))
+                self.object.ctirradiationeventdata_set.remove(*acquisitions.filter(standard_protocols__pk=self.object.pk).values_list("pk", flat=True))
             else:
-                acquisitions = IrradEventXRayData.objects
-                self.object.irradeventxraydata_set.remove(*acquisitions.values_list("pk", flat=True))
+                # Filter the IrradEventXRayData.objects to just contain the required modality
+                q = ["DX", "CR", "PX"]
+                if self.object.modality == "MG":
+                    q = ["MG"]
+                elif self.object.modality == "RF":
+                    q = ["RF"]
+
+                q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
+                acquisitions = IrradEventXRayData.objects.filter(q_criteria)
+
+                # Remove the standard names from the acquisitions
+                self.object.irradeventxraydata_set.remove(*acquisitions.filter(standard_protocols__pk=self.object.pk).values_list("pk", flat=True))
 
             # Add the updated entry to all the required studies
             self.add_standard_study(form, studies)
