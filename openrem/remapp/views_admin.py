@@ -2823,15 +2823,55 @@ class StandardNameAddCore(CreateView):
     def form_valid(self, form):
         if form.has_changed():
             messages.success(self.request, "New entry added")
-            self.object = form.save()
 
-            # Add the entry to all the required studies
+            # Add new entries to the StandardNames table
+            new_ids_study = []
+            for item in form.cleaned_data["study_description"]:
+                new_entry = StandardNames(
+                    standard_name=form.cleaned_data["standard_name"],
+                    modality=form.cleaned_data["modality"],
+                    study_description=item
+                )
+                new_entry.save()
+                new_ids_study.append(new_entry.pk)
+
+            new_ids_request = []
+            for item in form.cleaned_data["requested_procedure_code_meaning"]:
+                new_entry = StandardNames(
+                    standard_name=form.cleaned_data["standard_name"],
+                    modality=form.cleaned_data["modality"],
+                    requested_procedure_code_meaning=item
+                )
+                new_entry.save()
+                new_ids_request.append(new_entry.pk)
+
+            new_ids_procedure = []
+            for item in form.cleaned_data["procedure_code_meaning"]:
+                new_entry = StandardNames(
+                    standard_name=form.cleaned_data["standard_name"],
+                    modality=form.cleaned_data["modality"],
+                    procedure_code_meaning=item
+                )
+                new_entry.save()
+                new_ids_procedure.append(new_entry.pk)
+
+            new_ids_acquisition = []
+            for item in form.cleaned_data["acquisition_protocol"]:
+                new_entry = StandardNames(
+                    standard_name=form.cleaned_data["standard_name"],
+                    modality=form.cleaned_data["modality"],
+                    acquisition_protocol=item
+                )
+                new_entry.save()
+                new_ids_acquisition.append(new_entry.pk)
+
+            # Obtain a list of the required studies
             studies = GeneralStudyModuleAttr.objects
-            if self.object.modality == "CT":
+            if form.cleaned_data["modality"] == "CT":
                 studies = studies.filter(modality_type="CT")
-            elif self.object.modality == "MG":
+            elif form.cleaned_data["modality"] == "MG":
                 studies = studies.filter(modality_type="MG")
-            elif self.object.modality == "RF":
+            elif form.cleaned_data["modality"] == "RF":
                 studies = studies.filter(modality_type="RF")
             else:
                 studies = studies.filter(
@@ -2840,9 +2880,10 @@ class StandardNameAddCore(CreateView):
                     | Q(modality_type__exact="PX")
                 )
 
-            self.add_standard_study(form, studies)
+            # Add the standard names to the studies
+            self.add_multiple_standard_studies(form, studies, new_ids_study, new_ids_request, new_ids_procedure)
 
-            # Add the entry to all the required acquisitions
+            # Obtain a list of the required acquisitions
             acquisitions = None
             if form.cleaned_data["modality"] == "CT":
                 acquisitions = CtIrradiationEventData.objects
@@ -2857,41 +2898,70 @@ class StandardNameAddCore(CreateView):
                 q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
                 acquisitions = IrradEventXRayData.objects.filter(q_criteria)
 
-            self.add_standard_acquisition(form, acquisitions)
+            # Add the standard names to the acquisitions
+            self.add_multiple_standard_acquisitions(form, acquisitions, new_ids_acquisition)
 
-            return HttpResponseRedirect(self.get_success_url())
+            return redirect(self.success_url)
         else:
             messages.info(self.request, "No changes made")
             return redirect(self.success_url)
 
-    def add_standard_study(self, form, studies):
-        study_union = None
-        if form.cleaned_data["study_description"] != None:
-            study_union = studies.filter(study_description=form.cleaned_data["study_description"])
-        if form.cleaned_data["requested_procedure_code_meaning"] != None:
-            if study_union is not None:
-                study_union = study_union | studies.filter(
-                    requested_procedure_code_meaning=form.cleaned_data["requested_procedure_code_meaning"])
-            else:
-                study_union = studies.filter(
-                    requested_procedure_code_meaning=form.cleaned_data["requested_procedure_code_meaning"])
-        if form.cleaned_data["procedure_code_meaning"] != None:
-            if study_union is not None:
-                study_union = study_union | studies.filter(
-                    procedure_code_meaning=form.cleaned_data["procedure_code_meaning"])
-            else:
-                study_union = studies.filter(procedure_code_meaning=form.cleaned_data["procedure_code_meaning"])
-        if study_union is not None:
-            self.object.generalstudymoduleattr_set.add(*study_union.values_list("pk", flat=True))
+    def add_multiple_standard_studies(self, form, studies,
+                                      std_name_study_ids,
+                                      std_name_request_ids,
+                                      std_name_procedure_ids
+                                      ):
 
-    def add_standard_acquisition(self, form, acquisitions):
-        if form.cleaned_data["acquisition_protocol"] != None:
-            acquisitions_to_name = acquisitions.filter(acquisition_protocol=form.cleaned_data["acquisition_protocol"])
+        if form.cleaned_data["study_description"] is not None:
+            for pk in std_name_study_ids:
+                standard_name = StandardNames.objects.get(pk=pk)
+                standard_name.generalstudymoduleattr_set.add(
+                    *studies.filter(
+                        study_description=standard_name.study_description
+                    ).values_list(
+                        "pk", flat=True
+                    )
+                )
 
-            if form.cleaned_data["modality"] == "CT":
-                self.object.ctirradiationeventdata_set.add(*acquisitions_to_name.values_list("pk", flat=True))
-            else:
-                self.object.irradeventxraydata_set.add(*acquisitions_to_name.values_list("pk", flat=True))
+        if form.cleaned_data["requested_procedure_code_meaning"] is not None:
+            for pk in std_name_request_ids:
+                standard_name = StandardNames.objects.get(pk=pk)
+                standard_name.generalstudymoduleattr_set.add(
+                    *studies.filter(
+                        requested_procedure_code_meaning=standard_name.requested_procedure_code_meaning
+                    ).values_list(
+                        "pk", flat=True
+                    )
+                )
+
+        if form.cleaned_data["procedure_code_meaning"] is not None:
+            for pk in std_name_procedure_ids:
+                standard_name = StandardNames.objects.get(pk=pk)
+                standard_name.generalstudymoduleattr_set.add(
+                    *studies.filter(
+                        procedure_code_meaning=standard_name.procedure_code_meaning
+                    ).values_list(
+                        "pk", flat=True
+                    )
+                )
+
+    def add_multiple_standard_acquisitions(self, form, acquisitions, std_name_acquisition_ids):
+
+        if form.cleaned_data["acquisition_protocol"] is not None:
+            for pk in std_name_acquisition_ids:
+                standard_name = StandardNames.objects.get(pk=pk)
+                if form.cleaned_data["modality"] == "CT":
+                    standard_name.ctirradiationeventdata_set.add(
+                        *acquisitions.filter(
+                            acquisition_protocol=standard_name.acquisition_protocol
+                        ).values_list("pk", flat=True)
+                    )
+                else:
+                    standard_name.irradeventxraydata_set.add(
+                        *acquisitions.filter(
+                            acquisition_protocol=standard_name.acquisition_protocol
+                        ).values_list("pk", flat=True)
+                    )
 
 
 class StandardNameAddCT(StandardNameAddCore):  # pylint: disable=unused-variable
@@ -3066,9 +3136,7 @@ class StandardNameUpdateCore(UpdateView):
 
     def form_valid(self, form):
         if form.has_changed():
-            messages.success(self.request, "Entry updated")
-            self.object = form.save()
-
+            # Obtain a list of relevant studies
             studies = GeneralStudyModuleAttr.objects
             if self.object.modality == "CT":
                 studies = studies.filter(modality_type="CT")
@@ -3083,7 +3151,7 @@ class StandardNameUpdateCore(UpdateView):
                     | Q(modality_type__exact="PX")
                 )
 
-            # Remove all standard_names = self.object.pk as these may no longer be correct
+            # Remove this standard_name reference to these studies as the standard name may have changed
             self.object.generalstudymoduleattr_set.remove(*studies.filter(standard_names__pk=self.object.pk).values_list("pk", flat=True))
 
             # Remove the standard_names entries from acquisitions
@@ -3105,45 +3173,118 @@ class StandardNameUpdateCore(UpdateView):
                 # Remove the standard names from the acquisitions
                 self.object.irradeventxraydata_set.remove(*acquisitions.filter(standard_protocols__pk=self.object.pk).values_list("pk", flat=True))
 
-            # Add the updated entry to all the required studies
-            self.add_standard_study(form, studies)
+            # Remove this entry from the StandardNames table
+            self.object.delete()
 
-            # Add the updated entry to all the required acquisitions
-            self.add_standard_acquisition(form, acquisitions)
+            # Add new entries to the StandardNames table
+            new_ids_study = []
+            for item in form.cleaned_data["study_description"]:
+                new_entry = StandardNames(
+                    standard_name=form.cleaned_data["standard_name"],
+                    modality=form.cleaned_data["modality"],
+                    study_description=item
+                )
+                new_entry.save()
+                new_ids_study.append(new_entry.pk)
 
-            return HttpResponseRedirect(self.get_success_url())
+            new_ids_request = []
+            for item in form.cleaned_data["requested_procedure_code_meaning"]:
+                new_entry = StandardNames(
+                    standard_name=form.cleaned_data["standard_name"],
+                    modality=form.cleaned_data["modality"],
+                    requested_procedure_code_meaning=item
+                )
+                new_entry.save()
+                new_ids_request.append(new_entry.pk)
+
+            new_ids_procedure = []
+            for item in form.cleaned_data["procedure_code_meaning"]:
+                new_entry = StandardNames(
+                    standard_name=form.cleaned_data["standard_name"],
+                    modality=form.cleaned_data["modality"],
+                    procedure_code_meaning=item
+                )
+                new_entry.save()
+                new_ids_procedure.append(new_entry.pk)
+
+            new_ids_acquisition = []
+            for item in form.cleaned_data["acquisition_protocol"]:
+                new_entry = StandardNames(
+                    standard_name=form.cleaned_data["standard_name"],
+                    modality=form.cleaned_data["modality"],
+                    acquisition_protocol=item
+                )
+                new_entry.save()
+                new_ids_acquisition.append(new_entry.pk)
+
+            # Add the standard names to the studies
+            self.add_multiple_standard_studies(form, studies, new_ids_study, new_ids_request, new_ids_procedure)
+
+            # Add the standard names to the acquisitions
+            self.add_multiple_standard_acquisitions(form, acquisitions, new_ids_acquisition)
+
+            messages.success(self.request, "Entry updated")
+            return redirect(self.success_url)
         else:
             messages.info(self.request, "No changes made")
             return redirect(self.success_url)
 
-    def add_standard_study(self, form, studies):
-        study_union = None
-        if form.cleaned_data["study_description"] != None:
-            study_union = studies.filter(study_description=form.cleaned_data["study_description"])
-        if form.cleaned_data["requested_procedure_code_meaning"] != None:
-            if study_union is not None:
-                study_union = study_union | studies.filter(
-                    requested_procedure_code_meaning=form.cleaned_data["requested_procedure_code_meaning"])
-            else:
-                study_union = studies.filter(
-                    requested_procedure_code_meaning=form.cleaned_data["requested_procedure_code_meaning"])
-        if form.cleaned_data["procedure_code_meaning"] != None:
-            if study_union is not None:
-                study_union = study_union | studies.filter(
-                    procedure_code_meaning=form.cleaned_data["procedure_code_meaning"])
-            else:
-                study_union = studies.filter(procedure_code_meaning=form.cleaned_data["procedure_code_meaning"])
-        if study_union is not None:
-            self.object.generalstudymoduleattr_set.add(*study_union.values_list("pk", flat=True))
+    def add_multiple_standard_studies(self, form, studies,
+                                      std_name_study_ids,
+                                      std_name_request_ids,
+                                      std_name_procedure_ids
+                                      ):
 
-    def add_standard_acquisition(self, form, acquisitions):
-        if form.cleaned_data["acquisition_protocol"] != None:
-            acquisitions_to_name = acquisitions.filter(acquisition_protocol=form.cleaned_data["acquisition_protocol"])
+        if form.cleaned_data["study_description"] is not None:
+            for pk in std_name_study_ids:
+                standard_name = StandardNames.objects.get(pk=pk)
+                standard_name.generalstudymoduleattr_set.add(
+                    *studies.filter(
+                        study_description=standard_name.study_description
+                    ).values_list(
+                        "pk", flat=True
+                    )
+                )
 
-            if form.cleaned_data["modality"] == "CT":
-                self.object.ctirradiationeventdata_set.add(*acquisitions_to_name.values_list("pk", flat=True))
-            else:
-                self.object.irradeventxraydata_set.add(*acquisitions_to_name.values_list("pk", flat=True))
+        if form.cleaned_data["requested_procedure_code_meaning"] is not None:
+            for pk in std_name_request_ids:
+                standard_name = StandardNames.objects.get(pk=pk)
+                standard_name.generalstudymoduleattr_set.add(
+                    *studies.filter(
+                        requested_procedure_code_meaning=standard_name.requested_procedure_code_meaning
+                    ).values_list(
+                        "pk", flat=True
+                    )
+                )
+
+        if form.cleaned_data["procedure_code_meaning"] is not None:
+            for pk in std_name_procedure_ids:
+                standard_name = StandardNames.objects.get(pk=pk)
+                standard_name.generalstudymoduleattr_set.add(
+                    *studies.filter(
+                        procedure_code_meaning=standard_name.procedure_code_meaning
+                    ).values_list(
+                        "pk", flat=True
+                    )
+                )
+
+    def add_multiple_standard_acquisitions(self, form, acquisitions, std_name_acquisition_ids):
+
+        if form.cleaned_data["acquisition_protocol"] is not None:
+            for pk in std_name_acquisition_ids:
+                standard_name = StandardNames.objects.get(pk=pk)
+                if form.cleaned_data["modality"] == "CT":
+                    standard_name.ctirradiationeventdata_set.add(
+                        *acquisitions.filter(
+                            acquisition_protocol=standard_name.acquisition_protocol
+                        ).values_list("pk", flat=True)
+                    )
+                else:
+                    standard_name.irradeventxraydata_set.add(
+                        *acquisitions.filter(
+                            acquisition_protocol=standard_name.acquisition_protocol
+                        ).values_list("pk", flat=True)
+                    )
 
 
 class StandardNameUpdateCT(StandardNameUpdateCore):  # pylint: disable=unused-variable
