@@ -189,3 +189,35 @@ class ExportRFxlsx(
         # cleanup
         task.filename.delete()  # delete file so local testing doesn't get too messy!
         task.delete()  # not necessary, by hey, why not?
+
+
+class ExportRFArcadis(TransactionTestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username="jacob", email="jacob@…", password="top_secret"
+        )
+        eg = Group(name="exportgroup")
+        eg.save()
+        eg.user_set.add(self.user)
+        eg.save()
+
+        pid = PatientIDSettings.objects.create()
+        pid.name_stored = True
+        pid.name_hashed = False
+        pid.id_stored = True
+        pid.id_hashed = False
+        pid.dob_stored = True
+        pid.save()
+
+        rf_siemens_arcadis = os.path.join("test_files", "RF-ESR-Siemens-Varic.dcm")
+        root_tests = os.path.dirname(os.path.abspath(__file__))
+        rdsr.rdsr(os.path.join(root_tests, rf_siemens_arcadis))
+
+    def test_export_arcadis(self):
+        filter_set = {"o": "-study_date"}
+        pid = True
+        name = False
+        patient_id = True
+
+        rfxlsx(filter_set, pid=pid, name=name, patid=patient_id, user=self.user)
