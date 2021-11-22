@@ -1229,7 +1229,7 @@ class StandardNameFormCT(StandardNameFormBase):
             self.fields[field_name] = forms.MultipleChoiceField(
                 choices=query_choices,
                 required=False,
-                widget=forms.SelectMultiple(attrs={"size": 10}),
+                widget=forms.SelectMultiple(attrs={"class": "searchable"}),
                 label=label_name,
             )
 
@@ -1242,7 +1242,7 @@ class StandardNameFormCT(StandardNameFormBase):
         self.fields[field_name] = forms.MultipleChoiceField(
             choices=query_choices,
             required=False,
-            widget=forms.SelectMultiple(attrs={"size": 10}),
+            widget=forms.SelectMultiple(attrs={"class": "searchable"}),
             label=label_name,
         )
 
@@ -1265,10 +1265,10 @@ class StandardNameFormDX(StandardNameFormBase):
                 items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
             query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
             query_choices = [('', 'None')] + [(item, item) for item in query]
-            self.fields[field_name] = forms.ChoiceField(
+            self.fields[field_name] = forms.MultipleChoiceField(
                 choices=query_choices,
                 required=False,
-                widget=forms.Select(),
+                widget=forms.SelectMultiple(attrs={"class": "searchable"}),
                 label=label_name
             )
 
@@ -1280,10 +1280,10 @@ class StandardNameFormDX(StandardNameFormBase):
             items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
         query = IrradEventXRayData.objects.filter(q_criteria).values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
-        self.fields[field_name] = forms.ChoiceField(
+        self.fields[field_name] = forms.MultipleChoiceField(
             choices=query_choices,
             required=False,
-            widget=forms.Select(),
+            widget=forms.SelectMultiple(attrs={"class": "searchable"}),
             label=label_name
         )
 
@@ -1306,10 +1306,10 @@ class StandardNameFormMG(StandardNameFormBase):
                 items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
             query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
             query_choices = [('', 'None')] + [(item, item) for item in query]
-            self.fields[field_name] = forms.ChoiceField(
+            self.fields[field_name] = forms.MultipleChoiceField(
                 choices=query_choices,
                 required=False,
-                widget=forms.Select(),
+                widget=forms.SelectMultiple(attrs={"class": "searchable"}),
                 label=label_name,
             )
 
@@ -1321,10 +1321,10 @@ class StandardNameFormMG(StandardNameFormBase):
             items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
         query = IrradEventXRayData.objects.filter(q_criteria).values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
-        self.fields[field_name] = forms.ChoiceField(
+        self.fields[field_name] = forms.MultipleChoiceField(
             choices=query_choices,
             required=False,
-            widget=forms.Select(),
+            widget=forms.SelectMultiple(attrs={"class": "searchable"}),
             label=label_name,
         )
 
@@ -1348,10 +1348,10 @@ class StandardNameFormRF(StandardNameFormBase):
 
             query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
             query_choices = [('', 'None')] + [(item, item) for item in query]
-            self.fields[field_name] = forms.ChoiceField(
+            self.fields[field_name] = forms.MultipleChoiceField(
                 choices=query_choices,
                 required=False,
-                widget=forms.Select(),
+                widget=forms.SelectMultiple(attrs={"class": "searchable"}),
                 label=label_name,
             )
 
@@ -1364,10 +1364,10 @@ class StandardNameFormRF(StandardNameFormBase):
 
         query = IrradEventXRayData.objects.filter(q_criteria).values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
-        self.fields[field_name] = forms.ChoiceField(
+        self.fields[field_name] = forms.MultipleChoiceField(
             choices=query_choices,
             required=False,
-            widget=forms.Select(),
+            widget=forms.SelectMultiple(attrs={"class": "searchable"}),
             label=label_name,
         )
 
