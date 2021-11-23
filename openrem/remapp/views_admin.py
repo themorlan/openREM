@@ -2822,7 +2822,9 @@ class StandardNameAddCore(CreateView):
 
     def form_valid(self, form):
         if form.has_changed():
-            messages.success(self.request, "New entry added")
+            if not form.cleaned_data["standard_name"]:
+                messages.warning(self.request, "Blank standard name - no update made")
+                return redirect(self.success_url)
 
             # Add new entries to the StandardNames table
             new_ids_study = []

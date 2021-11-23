@@ -1,7 +1,9 @@
 {% extends "remapp/base.html" %}
 
 {% block headextras %}
-    <link href="{{ STATIC_URL }}css/multi-select.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/base.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css" />
+    <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/ie.css" /><![endif]-->
 {% endblock %}
 
 {% block navhelp %}
@@ -33,58 +35,28 @@
                 <div class="panel-body">
                     <p>Any study description, requested procedure, procedure or acquisition protocol name already
                        present in another standard name mapping are excluded from the options on this form.</p>
-                    <form action="" method="post" class="form-horizontal" role="form" id="standard_name_form">
-                        {% csrf_token %}
-                        <table  class="table table-bordered table-hover" aria-describedby="Add or modify a standard name">
-                            {{ form }}
-                        </table>
 
-                        <script src="{{ STATIC_URL }}js/jquery.multi-select.js"></script>
-                        <script src="{{ STATIC_URL }}js/jquery.quicksearch.js"></script>
-                        <script>
-                            $('.searchable').multiSelect({
-                              selectableHeader: "<div class='panel-title'>Available items: <input type='text' class='search-input' autocomplete='off' placeholder='type to filter'></div>",
-                              selectionHeader: "<div class='panel-title'>Selected items: <input type='text' class='search-input' autocomplete='off' placeholder='type to filter'></div>",
-                              afterInit: function(ms){
-                                var that = this,
-                                    $selectableSearch = that.$selectableUl.prev(),
-                                    $selectionSearch = that.$selectionUl.prev(),
-                                    selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
-                                    selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
 
-                                that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
-                                .on('keydown', function(e){
-                                  if (e.which === 40){
-                                    that.$selectableUl.focus();
-                                    return false;
-                                  }
-                                });
+                    <div id="frame">
+                        <form action="" method="post" id="standard_name_form">
+                            <div id="sk_body">
+                                <fieldset>
+                                    <form>
+                                        {% csrf_token %}
+                                        <table>
+                                            {{ form.media }}
+                                            {{ form.as_table }}
+                                            <script type="text/javascript" src="{% url 'jsi18n' %}"></script>
+                                        </table>
 
-                                that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
-                                .on('keydown', function(e){
-                                  if (e.which == 40){
-                                    that.$selectionUl.focus();
-                                    return false;
-                                  }
-                                });
-                              },
-                              afterSelect: function(){
-                                this.qs1.cache();
-                                this.qs2.cache();
-                              },
-                              afterDeselect: function(){
-                                this.qs1.cache();
-                                this.qs2.cache();
-                              }
-                            });
-
-                        </script>
-
-                        <input class="btn btn-primary" name="submit" type="submit" id="submit-button" />
-                        <input type="button" class="btn btn-danger" value="Cancel" id="cancel-button"
-                               onclick="window.location = '{% url 'standard_names_view' %}';"/>
-                    </form>
-                </div>
+                                        <input class="btn btn-primary" name="submit" type="submit" id="submit-button" />
+                                        <input type="button" class="btn btn-danger" value="Cancel" id="cancel-button"
+                                               onclick="window.location = '{% url 'standard_names_view' %}';"/>
+                                    </form>
+                                </fieldset>
+                            </div>
+                        </form>
+                    </div>
 
                 {% else %}
                 <div class="row col-md-offset-2">

@@ -29,6 +29,8 @@
 """
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
+from django.conf.urls import url
+from django import views as django_views
 
 from . import (
     views,
@@ -388,4 +390,5 @@ urlpatterns = [
     path("tasks/", include(tasks_patterns)),
     path("import/", include(import_patterns)),
     path("names/", include(standard_name_patterns)),
+    url(r'^jsi18n/$', django_views.i18n.JavaScriptCatalog.as_view(), name='jsi18n'),
 ]

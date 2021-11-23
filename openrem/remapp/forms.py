@@ -27,11 +27,13 @@
     :synopsis: Django forms definitions
 """
 
+import os
 import logging
 import operator
 
 from django import forms
 from django.db.models import Q
+from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.urls import reverse
@@ -1229,8 +1231,7 @@ class StandardNameFormCT(StandardNameFormBase):
             self.fields[field_name] = forms.MultipleChoiceField(
                 choices=query_choices,
                 required=False,
-                widget=forms.SelectMultiple(attrs={"class": "searchable"}),
-                label=label_name,
+                widget=FilteredSelectMultiple(label_name.lower() + "s", is_stacked=False),
             )
 
         field_name, label_name = ("acquisition_protocol", "Acquisition protocol name")
@@ -1242,9 +1243,14 @@ class StandardNameFormCT(StandardNameFormBase):
         self.fields[field_name] = forms.MultipleChoiceField(
             choices=query_choices,
             required=False,
-            widget=forms.SelectMultiple(attrs={"class": "searchable"}),
-            label=label_name,
+            widget=FilteredSelectMultiple(label_name.lower() + "s", is_stacked=False),
         )
+
+        class Media:
+            css = {
+                'all': (os.path.join(settings.BASE_DIR, '/static/admin/css/widgets.css'),),
+            }
+            js = ('/admin/jsi18n',)
 
 
 class StandardNameFormDX(StandardNameFormBase):
