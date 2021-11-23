@@ -1223,11 +1223,20 @@ class StandardNameFormCT(StandardNameFormBase):
 
         for field_name, label_name in field_names:
             # Exclude items already in the CT standard names entries except for the current value of the field
-            items_to_exclude = StandardNames.objects.all().filter(modality__iexact="CT").values(field_name).exclude(**{field_name: None})
-            if field_name in self.initial:
-                items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
+            items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+            if "standard_name" in self.initial:
+                items_to_exclude = items_to_exclude.exclude(standard_name=self.initial["standard_name"])
+
             query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
             query_choices = [('', 'None')] + [(item, item) for item in query]
+
+
+            initial_choices = StandardNames.objects.all().exclude(**{field_name: None}).order_by(field_name)
+            if "standard_name" in self.initial:
+                initial_choices = initial_choices.filter(standard_name=self.initial["standard_name"])
+
+            self.initial[field_name] = list(initial_choices.values_list(field_name, flat=True))
+
             self.fields[field_name] = forms.MultipleChoiceField(
                 choices=query_choices,
                 required=False,
@@ -1236,10 +1245,17 @@ class StandardNameFormCT(StandardNameFormBase):
 
         field_name, label_name = ("acquisition_protocol", "Acquisition protocol name")
         items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
-        if field_name in self.initial:
-            items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
+        if "standard_name" in self.initial:
+            items_to_exclude = items_to_exclude.exclude(standard_name=self.initial["standard_name"])
         query = CtIrradiationEventData.objects.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
+
+        initial_choices = StandardNames.objects.all().exclude(**{field_name: None}).order_by(field_name)
+        if "standard_name" in self.initial:
+            initial_choices = initial_choices.filter(standard_name=self.initial["standard_name"])
+
+        self.initial[field_name] = list(initial_choices.values_list(field_name, flat=True))
+
         self.fields[field_name] = forms.MultipleChoiceField(
             choices=query_choices,
             required=False,

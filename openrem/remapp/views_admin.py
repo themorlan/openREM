@@ -3115,20 +3115,46 @@ class StandardNameDelete(DeleteView):  # pylint: disable=unused-variable
     def delete(self, *args, **kwargs):
         self.object = self.get_object()
 
-        # Remove all standard_names that equal self.object.pk
-        studies = GeneralStudyModuleAttr.objects.filter(modality_type=self.object.modality)
-        self.object.generalstudymoduleattr_set.remove(*studies.values_list("pk", flat=True))
+        # Obtain a list of relevant studies
+        studies = GeneralStudyModuleAttr.objects
+        if self.object.modality == "CT":
+            studies = studies.filter(modality_type="CT")
+        elif self.object.modality == "MG":
+            studies = studies.filter(modality_type="MG")
+        elif self.object.modality == "RF":
+            studies = studies.filter(modality_type="RF")
+        else:
+            studies = studies.filter(
+                Q(modality_type__exact="DX")
+                | Q(modality_type__exact="CR")
+                | Q(modality_type__exact="PX")
+            )
 
-        # Remove all standard_names from acquisition-level data
+        # Remove this standard_name reference to these studies as the standard name may have changed
+        self.object.generalstudymoduleattr_set.remove(*studies.filter(standard_names__standard_name=self.object.standard_name).values_list("pk", flat=True))
+
+        # Remove the standard_names entries from acquisitions
         acquisitions = None
         if self.object.modality == "CT":
             acquisitions = CtIrradiationEventData.objects
-            self.object.ctirradiationeventdata_set.remove(*acquisitions.values_list("pk", flat=True))
+            self.object.ctirradiationeventdata_set.remove(*acquisitions.filter(standard_protocols__standard_name=self.object.standard_name).values_list("pk", flat=True))
         else:
-            acquisitions = IrradEventXRayData.objects
-            self.object.irradeventxraydata_set.remove(*acquisitions.values_list("pk", flat=True))
+            # Filter the IrradEventXRayData.objects to just contain the required modality
+            q = ["DX", "CR", "PX"]
+            if self.object.modality == "MG":
+                q = ["MG"]
+            elif self.object.modality == "RF":
+                q = ["RF"]
 
-        self.object.delete()
+            q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
+            acquisitions = IrradEventXRayData.objects.filter(q_criteria)
+
+            # Remove the standard names from the acquisitions
+            self.object.irradeventxraydata_set.remove(*acquisitions.filter(standard_protocols__standard_name=self.object.standard_name).values_list("pk", flat=True))
+
+        # Remove entries with standard_name = self.object.standard_name from the StandardNames table
+        StandardNames.objects.filter(standard_name=self.object.standard_name).delete()
+
         return HttpResponseRedirect(self.get_success_url())
 
 
@@ -3154,13 +3180,13 @@ class StandardNameUpdateCore(UpdateView):
                 )
 
             # Remove this standard_name reference to these studies as the standard name may have changed
-            self.object.generalstudymoduleattr_set.remove(*studies.filter(standard_names__pk=self.object.pk).values_list("pk", flat=True))
+            self.object.generalstudymoduleattr_set.remove(*studies.filter(standard_names__standard_name=self.object.standard_name).values_list("pk", flat=True))
 
             # Remove the standard_names entries from acquisitions
             acquisitions = None
-            if form.cleaned_data["modality"] == "CT":
+            if self.object.modality == "CT":
                 acquisitions = CtIrradiationEventData.objects
-                self.object.ctirradiationeventdata_set.remove(*acquisitions.filter(standard_protocols__pk=self.object.pk).values_list("pk", flat=True))
+                self.object.ctirradiationeventdata_set.remove(*acquisitions.filter(standard_protocols__standard_name=self.object.standard_name).values_list("pk", flat=True))
             else:
                 # Filter the IrradEventXRayData.objects to just contain the required modality
                 q = ["DX", "CR", "PX"]
@@ -3173,10 +3199,10 @@ class StandardNameUpdateCore(UpdateView):
                 acquisitions = IrradEventXRayData.objects.filter(q_criteria)
 
                 # Remove the standard names from the acquisitions
-                self.object.irradeventxraydata_set.remove(*acquisitions.filter(standard_protocols__pk=self.object.pk).values_list("pk", flat=True))
+                self.object.irradeventxraydata_set.remove(*acquisitions.filter(standard_protocols__standard_name=self.object.standard_name).values_list("pk", flat=True))
 
-            # Remove this entry from the StandardNames table
-            self.object.delete()
+            # Remove entries with standard_name = self.object.standard_name from the StandardNames table
+            StandardNames.objects.filter(standard_name=self.object.standard_name).delete()
 
             # Add new entries to the StandardNames table
             new_ids_study = []
