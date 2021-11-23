@@ -1223,15 +1223,14 @@ class StandardNameFormCT(StandardNameFormBase):
 
         for field_name, label_name in field_names:
             # Exclude items already in the CT standard names entries except for the current value of the field
-            items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
+            items_to_exclude = StandardNames.objects.all().filter(modality="CT").values(field_name).exclude(**{field_name: None})
             if "standard_name" in self.initial:
                 items_to_exclude = items_to_exclude.exclude(standard_name=self.initial["standard_name"])
 
             query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
             query_choices = [('', 'None')] + [(item, item) for item in query]
 
-
-            initial_choices = StandardNames.objects.all().exclude(**{field_name: None}).order_by(field_name)
+            initial_choices = StandardNames.objects.all().filter(modality="CT").exclude(**{field_name: None}).order_by(field_name)
             if "standard_name" in self.initial:
                 initial_choices = initial_choices.filter(standard_name=self.initial["standard_name"])
 
@@ -1250,7 +1249,7 @@ class StandardNameFormCT(StandardNameFormBase):
         query = CtIrradiationEventData.objects.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
 
-        initial_choices = StandardNames.objects.all().exclude(**{field_name: None}).order_by(field_name)
+        initial_choices = StandardNames.objects.all().filter(modality="CT").exclude(**{field_name: None}).order_by(field_name)
         if "standard_name" in self.initial:
             initial_choices = initial_choices.filter(standard_name=self.initial["standard_name"])
 
@@ -1282,32 +1281,51 @@ class StandardNameFormDX(StandardNameFormBase):
 
         for field_name, label_name in field_names:
             # Exclude items already in the DX standard names entries except for the current value of the field
-            items_to_exclude = StandardNames.objects.all().filter(modality__iexact="DX").values(field_name).exclude(**{field_name: None})
-            if field_name in self.initial:
-                items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
+            items_to_exclude = StandardNames.objects.all().filter(modality="DX").values(field_name).exclude(**{field_name: None})
+            if "standard_name" in self.initial:
+                items_to_exclude = items_to_exclude.exclude(standard_name=self.initial["standard_name"])
+
             query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
             query_choices = [('', 'None')] + [(item, item) for item in query]
+
+            initial_choices = StandardNames.objects.all().filter(modality="DX").exclude(**{field_name: None}).order_by(field_name)
+            if "standard_name" in self.initial:
+                initial_choices = initial_choices.filter(standard_name=self.initial["standard_name"])
+
+            self.initial[field_name] = list(initial_choices.values_list(field_name, flat=True))
+
             self.fields[field_name] = forms.MultipleChoiceField(
                 choices=query_choices,
                 required=False,
-                widget=forms.SelectMultiple(attrs={"class": "searchable"}),
-                label=label_name
+                widget=FilteredSelectMultiple(label_name.lower() + "s", is_stacked=False),
             )
 
         q = ["DX", "CR", "PX"]
         q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
         field_name, label_name = ("acquisition_protocol", "Acquisition protocol name")
         items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
-        if field_name in self.initial:
-            items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
+        if "standard_name" in self.initial:
+            items_to_exclude = items_to_exclude.exclude(standard_name=self.initial["standard_name"])
         query = IrradEventXRayData.objects.filter(q_criteria).values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
+
+        initial_choices = StandardNames.objects.all().filter(modality="DX").exclude(**{field_name: None}).order_by(field_name)
+        if "standard_name" in self.initial:
+            initial_choices = initial_choices.filter(standard_name=self.initial["standard_name"])
+
+        self.initial[field_name] = list(initial_choices.values_list(field_name, flat=True))
+
         self.fields[field_name] = forms.MultipleChoiceField(
             choices=query_choices,
             required=False,
-            widget=forms.SelectMultiple(attrs={"class": "searchable"}),
-            label=label_name
+            widget=FilteredSelectMultiple(label_name.lower() + "s", is_stacked=False),
         )
+
+        class Media:
+            css = {
+                'all': (os.path.join(settings.BASE_DIR, '/static/admin/css/widgets.css'),),
+            }
+            js = ('/admin/jsi18n',)
 
 
 class StandardNameFormMG(StandardNameFormBase):
@@ -1323,32 +1341,51 @@ class StandardNameFormMG(StandardNameFormBase):
 
         for field_name, label_name in field_names:
             # Exclude items already in the MG standard names entries except for the current value of the field
-            items_to_exclude = StandardNames.objects.all().filter(modality__iexact="MG").values(field_name).exclude(**{field_name: None})
-            if field_name in self.initial:
-                items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
+            items_to_exclude = StandardNames.objects.all().filter(modality="MG").values(field_name).exclude(**{field_name: None})
+            if "standard_name" in self.initial:
+                items_to_exclude = items_to_exclude.exclude(standard_name=self.initial["standard_name"])
+
             query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
             query_choices = [('', 'None')] + [(item, item) for item in query]
+
+            initial_choices = StandardNames.objects.all().filter(modality="MG").exclude(**{field_name: None}).order_by(field_name)
+            if "standard_name" in self.initial:
+                initial_choices = initial_choices.filter(standard_name=self.initial["standard_name"])
+
+            self.initial[field_name] = list(initial_choices.values_list(field_name, flat=True))
+
             self.fields[field_name] = forms.MultipleChoiceField(
                 choices=query_choices,
                 required=False,
-                widget=forms.SelectMultiple(attrs={"class": "searchable"}),
-                label=label_name,
+                widget=FilteredSelectMultiple(label_name.lower() + "s", is_stacked=False),
             )
 
         q = ["MG"]
         q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
         field_name, label_name = ("acquisition_protocol", "Acquisition protocol name")
         items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
-        if field_name in self.initial:
-            items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
+        if "standard_name" in self.initial:
+            items_to_exclude = items_to_exclude.exclude(standard_name=self.initial["standard_name"])
         query = IrradEventXRayData.objects.filter(q_criteria).values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
+
+        initial_choices = StandardNames.objects.all().filter(modality="MG").exclude(**{field_name: None}).order_by(field_name)
+        if "standard_name" in self.initial:
+            initial_choices = initial_choices.filter(standard_name=self.initial["standard_name"])
+
+        self.initial[field_name] = list(initial_choices.values_list(field_name, flat=True))
+
         self.fields[field_name] = forms.MultipleChoiceField(
             choices=query_choices,
             required=False,
-            widget=forms.SelectMultiple(attrs={"class": "searchable"}),
-            label=label_name,
+            widget=FilteredSelectMultiple(label_name.lower() + "s", is_stacked=False),
         )
+
+        class Media:
+            css = {
+                'all': (os.path.join(settings.BASE_DIR, '/static/admin/css/widgets.css'),),
+            }
+            js = ('/admin/jsi18n',)
 
 
 class StandardNameFormRF(StandardNameFormBase):
@@ -1364,34 +1401,51 @@ class StandardNameFormRF(StandardNameFormBase):
 
         for field_name, label_name in field_names:
             # Exclude items already in the RF standard names entries except for the current value of the field
-            items_to_exclude = StandardNames.objects.all().filter(modality__iexact="RF").values(field_name).exclude(**{field_name: None})
-            if field_name in self.initial:
-                items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
+            items_to_exclude = StandardNames.objects.all().filter(modality="RF").values(field_name).exclude(**{field_name: None})
+            if "standard_name" in self.initial:
+                items_to_exclude = items_to_exclude.exclude(standard_name=self.initial["standard_name"])
 
             query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
             query_choices = [('', 'None')] + [(item, item) for item in query]
+
+            initial_choices = StandardNames.objects.all().filter(modality="RF").exclude(**{field_name: None}).order_by(field_name)
+            if "standard_name" in self.initial:
+                initial_choices = initial_choices.filter(standard_name=self.initial["standard_name"])
+
+            self.initial[field_name] = list(initial_choices.values_list(field_name, flat=True))
+
             self.fields[field_name] = forms.MultipleChoiceField(
                 choices=query_choices,
                 required=False,
-                widget=forms.SelectMultiple(attrs={"class": "searchable"}),
-                label=label_name,
+                widget=FilteredSelectMultiple(label_name.lower() + "s", is_stacked=False),
             )
 
         q = ["RF"]
         q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
         field_name, label_name = ("acquisition_protocol", "Acquisition protocol name")
         items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
-        if field_name in self.initial:
-            items_to_exclude = items_to_exclude.exclude(**{field_name: self.initial[field_name]})
-
+        if "standard_name" in self.initial:
+            items_to_exclude = items_to_exclude.exclude(standard_name=self.initial["standard_name"])
         query = IrradEventXRayData.objects.filter(q_criteria).values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
+
+        initial_choices = StandardNames.objects.all().filter(modality="RF").exclude(**{field_name: None}).order_by(field_name)
+        if "standard_name" in self.initial:
+            initial_choices = initial_choices.filter(standard_name=self.initial["standard_name"])
+
+        self.initial[field_name] = list(initial_choices.values_list(field_name, flat=True))
+
         self.fields[field_name] = forms.MultipleChoiceField(
             choices=query_choices,
             required=False,
-            widget=forms.SelectMultiple(attrs={"class": "searchable"}),
-            label=label_name,
+            widget=FilteredSelectMultiple(label_name.lower() + "s", is_stacked=False),
         )
+
+        class Media:
+            css = {
+                'all': (os.path.join(settings.BASE_DIR, '/static/admin/css/widgets.css'),),
+            }
+            js = ('/admin/jsi18n',)
 
 
 class StandardNameSettingsForm(forms.ModelForm):

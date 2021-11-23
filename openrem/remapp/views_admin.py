@@ -2892,9 +2892,9 @@ class StandardNameAddCore(CreateView):
             else:
                 # Filter the IrradEventXRayData.objects to just contain the required modality
                 q = ["DX", "CR", "PX"]
-                if self.object.modality == "MG":
+                if form.cleaned_data["modality"] == "MG":
                     q = ["MG"]
-                elif self.object.modality == "RF":
+                elif form.cleaned_data["modality"] == "RF":
                     q = ["RF"]
 
                 q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
