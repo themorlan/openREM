@@ -354,54 +354,72 @@ class RFChartOptionsForm(forms.Form):
     """Form for RF chart options"""
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
-    plotRFStudyFreq = forms.BooleanField(label="Study frequency", required=False)
-    plotRFStudyDAP = forms.BooleanField(label="Study DAP", required=False)
-    plotRFStudyDAPOverTime = forms.BooleanField(
-        label="Study DAP over time", required=False
-    )
-    plotRFStudyPerDayAndHour = forms.BooleanField(
-        label="Study workload", required=False
-    )
-    plotRFRequestFreq = forms.BooleanField(
-        label="Requested procedure frequency", required=False
-    )
-    plotRFRequestDAP = forms.BooleanField(
-        label="Requested procedure DAP", required=False
-    )
-    plotRFRequestDAPOverTime = forms.BooleanField(
-        label="Requested procedure DAP over time", required=False
-    )
+    plotCharts.group = "PlotCharts"
     plotRFOverTimePeriod = forms.ChoiceField(
         label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
     )
+    plotRFOverTimePeriod.group = "General"
     plotAverageChoice = forms.MultipleChoiceField(
         label="Average plots",
         choices=CommonVariables.AVERAGES,
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
     )
+    plotAverageChoice.group = "General"
     plotRFSplitByPhysician = forms.BooleanField(
         label="Split plots by physician", required=False
     )
+    plotRFSplitByPhysician.group = "General"
     plotGrouping = forms.ChoiceField(  # nosec
         label=mark_safe("Grouping choice"),
         choices=CommonVariables.CHART_GROUPING_RF,
         required=False,
     )
+    plotGrouping.group = "General"
     plotSeriesPerSystem = forms.BooleanField(
         label="Plot a series per system", required=False
     )
+    plotSeriesPerSystem.group = "General"
     plotHistograms = forms.BooleanField(
         label="Calculate histogram data", required=False
     )
+    plotHistograms.group = "General"
     plotRFInitialSortingChoice = forms.ChoiceField(
         label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
+    plotRFInitialSortingChoice.group = "General"
     plotInitialSortingDirection = forms.ChoiceField(
         label="Sorting direction",
         choices=CommonVariables.SORTING_DIRECTION,
         required=False,
     )
+    plotInitialSortingDirection.group = "General"
+
+    plotRFStudyFreq = forms.BooleanField(label="Study frequency", required=False)
+    plotRFStudyFreq.group = "Study description"
+    plotRFStudyDAP = forms.BooleanField(label="Study DAP", required=False)
+    plotRFStudyDAP.group = "Study description"
+    plotRFStudyDAPOverTime = forms.BooleanField(
+        label="Study DAP over time", required=False
+    )
+    plotRFStudyDAPOverTime.group = "Study description"
+    plotRFStudyPerDayAndHour = forms.BooleanField(
+        label="Study workload", required=False
+    )
+    plotRFStudyPerDayAndHour.group = "Study description"
+
+    plotRFRequestFreq = forms.BooleanField(
+        label="Requested procedure frequency", required=False
+    )
+    plotRFRequestFreq.group = "Requested procedure"
+    plotRFRequestDAP = forms.BooleanField(
+        label="Requested procedure DAP", required=False
+    )
+    plotRFRequestDAP.group = "Requested procedure"
+    plotRFRequestDAPOverTime = forms.BooleanField(
+        label="Requested procedure DAP over time", required=False
+    )
+    plotRFRequestDAPOverTime.group = "Requested procedure"
 
 
 class RFChartOptionsDisplayForm(forms.Form):
