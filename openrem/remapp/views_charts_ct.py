@@ -54,6 +54,7 @@ def generate_required_ct_charts_list(profile):
     # pylint: disable=too-many-statements
     """Obtain a list of dictionaries containing the title string and base
     variable name for each required chart"""
+
     # Obtain the system-level enable_standard_names setting
     try:
         StandardNameSettings.objects.get()
@@ -757,7 +758,6 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         charts_of_interest.append(user_profile.plotCTStandardAcquisitionCTDIvsMass)
 
     if any(charts_of_interest):
-
         name_fields = ["ctradiationdose__ctirradiationeventdata__acquisition_protocol"]
         name_fields.append(
             "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning"

@@ -104,7 +104,7 @@
             {% csrf_token %}
             {% for field in DXChartOptionsForm %}
                 <tr>
-                {% if field.label == 'Study frequency' or field.label == 'Requested procedure frequency' or field.label == 'Time period' %}
+                {% if field.label == 'Study frequency' or field.label == 'Requested procedure frequency' or field.label == 'Standard acquisition name frequency' or field.label == 'Time period' %}
                     <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
                     <td class="top_border">{{ field }}</td>
                 {% else %}

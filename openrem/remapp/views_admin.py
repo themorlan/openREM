@@ -64,6 +64,7 @@ from .forms import (
     CTChartOptionsDisplayForm,
     CTChartOptionsDisplayFormIncStandard,
     DXChartOptionsDisplayForm,
+    DXChartOptionsDisplayFormIncStandard,
     DicomDeleteSettingsForm,
     GeneralChartOptionsDisplayForm,
     HomepageOptionsForm,
@@ -1315,11 +1316,13 @@ def chart_options_view(request):
     if request.method == "POST":
         general_form = GeneralChartOptionsDisplayForm(request.POST)
         ct_form = None
+        dx_form = None
         if enable_standard_names:
             ct_form = CTChartOptionsDisplayFormIncStandard(request.POST)
+            dx_form = DXChartOptionsDisplayFormIncStandard(request.POST)
         else:
             ct_form = CTChartOptionsDisplayForm(request.POST)
-        dx_form = DXChartOptionsDisplayForm(request.POST)
+            dx_form = DXChartOptionsDisplayForm(request.POST)
         rf_form = RFChartOptionsDisplayForm(request.POST)
         mg_form = MGChartOptionsDisplayForm(request.POST)
         if (
@@ -1425,11 +1428,13 @@ def chart_options_view(request):
 
     general_chart_options_form = GeneralChartOptionsDisplayForm(general_form_data)
     ct_chart_options_form = None
+    dx_chart_options_form = None
     if enable_standard_names:
         ct_chart_options_form = CTChartOptionsDisplayFormIncStandard(ct_form_data)
+        dx_chart_options_form = DXChartOptionsDisplayFormIncStandard(dx_form_data)
     else:
         ct_chart_options_form = CTChartOptionsDisplayForm(ct_form_data)
-    dx_chart_options_form = DXChartOptionsDisplayForm(dx_form_data)
+        dx_chart_options_form = DXChartOptionsDisplayForm(dx_form_data)
     rf_chart_options_form = RFChartOptionsDisplayForm(rf_form_data)
     mg_chart_options_form = MGChartOptionsDisplayForm(mg_form_data)
 
@@ -1528,6 +1533,14 @@ def initialise_mg_form_data(user_profile):
 
 
 def set_dx_chart_options(dx_form, user_profile):
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
     user_profile.plotDXAcquisitionMeanDAP = dx_form.cleaned_data[
         "plotDXAcquisitionMeanDAP"
     ]
@@ -1565,6 +1578,15 @@ def set_dx_chart_options(dx_form, user_profile):
     user_profile.plotDXInitialSortingChoice = dx_form.cleaned_data[
         "plotDXInitialSortingChoice"
     ]
+    if enable_standard_names:
+        user_profile.plotDXStandardAcquisitionFreq = dx_form.cleaned_data["plotDXStandardAcquisitionFreq"]
+        user_profile.plotDXStandardAcquisitionMeanDAP = dx_form.cleaned_data["plotDXStandardAcquisitionMeanDAP"]
+        user_profile.plotDXStandardAcquisitionMeanmAs = dx_form.cleaned_data["plotDXStandardAcquisitionMeanmAs"]
+        user_profile.plotDXStandardAcquisitionMeankVp = dx_form.cleaned_data["plotDXStandardAcquisitionMeankVp"]
+        user_profile.plotDXStandardAcquisitionMeanDAPOverTime = dx_form.cleaned_data["plotDXStandardAcquisitionMeanDAPOverTime"]
+        user_profile.plotDXStandardAcquisitionMeanmAsOverTime = dx_form.cleaned_data["plotDXStandardAcquisitionMeanmAsOverTime"]
+        user_profile.plotDXStandardAcquisitionMeankVpOverTime = dx_form.cleaned_data["plotDXStandardAcquisitionMeankVpOverTime"]
+        user_profile.plotDXStandardAcquisitionDAPvsMass = dx_form.cleaned_data["plotDXStandardAcquisitionDAPvsMass"]
 
 
 def initialise_dx_form_data(user_profile):
@@ -1587,6 +1609,24 @@ def initialise_dx_form_data(user_profile):
         "plotDXRequestDAPvsMass": user_profile.plotDXRequestDAPvsMass,
         "plotDXInitialSortingChoice": user_profile.plotDXInitialSortingChoice,
     }
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
+    if enable_standard_names:
+        dx_form_data["plotDXStandardAcquisitionFreq"] = user_profile.plotDXStandardAcquisitionFreq
+        dx_form_data["plotDXStandardAcquisitionMeanDAP"] = user_profile.plotDXStandardAcquisitionMeanDAP
+        dx_form_data["plotDXStandardAcquisitionMeanmAs"] = user_profile.plotDXStandardAcquisitionMeanmAs
+        dx_form_data["plotDXStandardAcquisitionMeankVp"] = user_profile.plotDXStandardAcquisitionMeankVp
+        dx_form_data["plotDXStandardAcquisitionMeanDAPOverTime"] = user_profile.plotDXStandardAcquisitionMeanDAPOverTime
+        dx_form_data["plotDXStandardAcquisitionMeanmAsOverTime"] = user_profile.plotDXStandardAcquisitionMeanmAsOverTime
+        dx_form_data["plotDXStandardAcquisitionMeankVpOverTime"] = user_profile.plotDXStandardAcquisitionMeankVpOverTime
+        dx_form_data["plotDXStandardAcquisitionDAPvsMass"] = user_profile.plotDXStandardAcquisitionDAPvsMass
+
     return dx_form_data
 
 

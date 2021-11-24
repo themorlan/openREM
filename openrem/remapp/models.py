@@ -585,21 +585,32 @@ class UserProfile(models.Model, CommonVariables):
 
     # Plotting controls
     plotCharts = models.BooleanField(default=False)
+
     plotDXAcquisitionMeanDAP = models.BooleanField(default=True)
+    plotDXAcquisitionMeankVp = models.BooleanField(default=False)
+    plotDXAcquisitionMeanmAs = models.BooleanField(default=False)
     plotDXAcquisitionFreq = models.BooleanField(default=False)
     plotDXAcquisitionDAPvsMass = models.BooleanField(default=False)
+    plotDXAcquisitionMeanDAPOverTime = models.BooleanField(default=False)
+    plotDXAcquisitionMeankVpOverTime = models.BooleanField(default=False)
+    plotDXAcquisitionMeanmAsOverTime = models.BooleanField(default=False)
+
+    plotDXStandardAcquisitionMeanDAP = models.BooleanField(default=False)
+    plotDXStandardAcquisitionMeankVp = models.BooleanField(default=False)
+    plotDXStandardAcquisitionMeanmAs = models.BooleanField(default=False)
+    plotDXStandardAcquisitionFreq = models.BooleanField(default=False)
+    plotDXStandardAcquisitionDAPvsMass = models.BooleanField(default=False)
+    plotDXStandardAcquisitionMeanDAPOverTime = models.BooleanField(default=False)
+    plotDXStandardAcquisitionMeankVpOverTime = models.BooleanField(default=False)
+    plotDXStandardAcquisitionMeanmAsOverTime = models.BooleanField(default=False)
+
     plotDXStudyMeanDAP = models.BooleanField(default=True)
     plotDXStudyFreq = models.BooleanField(default=True)
     plotDXStudyDAPvsMass = models.BooleanField(default=False)
+    plotDXStudyPerDayAndHour = models.BooleanField(default=False)
     plotDXRequestMeanDAP = models.BooleanField(default=True)
     plotDXRequestFreq = models.BooleanField(default=True)
     plotDXRequestDAPvsMass = models.BooleanField(default=False)
-    plotDXAcquisitionMeankVp = models.BooleanField(default=False)
-    plotDXAcquisitionMeanmAs = models.BooleanField(default=False)
-    plotDXStudyPerDayAndHour = models.BooleanField(default=False)
-    plotDXAcquisitionMeankVpOverTime = models.BooleanField(default=False)
-    plotDXAcquisitionMeanmAsOverTime = models.BooleanField(default=False)
-    plotDXAcquisitionMeanDAPOverTime = models.BooleanField(default=False)
     plotDXAcquisitionMeanDAPOverTimePeriod = models.CharField(
         max_length=13,
         choices=CommonVariables.TIME_PERIOD,

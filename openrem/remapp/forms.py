@@ -206,6 +206,41 @@ class DXChartOptionsForm(forms.Form):
     plotDXRequestDAPvsMass.group = "Requested procedure"
 
 
+class DXChartOptionsFormIncStandard(DXChartOptionsForm):
+    plotDXStandardAcquisitionFreq = forms.BooleanField(
+        label="Standard acquisition name frequency", required=False
+    )
+    plotDXStandardAcquisitionFreq.group = "Standard acquisition name"
+    plotDXStandardAcquisitionMeanDAP = forms.BooleanField(
+        label="Standard acquisition name DAP", required=False
+    )
+    plotDXStandardAcquisitionMeanDAP.group = "Standard acquisition name"
+    plotDXStandardAcquisitionMeanmAs = forms.BooleanField(
+        label="Standard acquisition name mAs", required=False
+    )
+    plotDXStandardAcquisitionMeanmAs.group = "Standard acquisition name"
+    plotDXStandardAcquisitionMeankVp = forms.BooleanField(
+        label="Standard acquisition name kVp", required=False
+    )
+    plotDXStandardAcquisitionMeankVp.group = "Standard acquisition name"
+    plotDXStandardAcquisitionMeanDAPOverTime = forms.BooleanField(
+        label="Standard acquisition name DAP over time", required=False
+    )
+    plotDXStandardAcquisitionMeanDAPOverTime.group = "Standard acquisition name"
+    plotDXStandardAcquisitionMeanmAsOverTime = forms.BooleanField(
+        label="Standard acquisition name mAs over time", required=False
+    )
+    plotDXStandardAcquisitionMeanmAsOverTime.group = "Standard acquisition name"
+    plotDXStandardAcquisitionMeankVpOverTime = forms.BooleanField(
+        label="Standard acquisition name kVp over time", required=False
+    )
+    plotDXStandardAcquisitionMeankVpOverTime.group = "Standard acquisition name"
+    plotDXStandardAcquisitionDAPvsMass = forms.BooleanField(
+        label="Standard acquisition name DAP vs mass", required=False
+    )
+    plotDXStandardAcquisitionDAPvsMass.group = "Standard acquisition name"
+
+
 class CTChartOptionsForm(forms.Form):
     """Form for CT chart options"""
 
@@ -614,6 +649,61 @@ class DXChartOptionsDisplayForm(forms.Form):
         choices=CommonVariables.SORTING_CHOICES,
         required=False,
     )
+
+
+class DXChartOptionsDisplayFormIncStandard(DXChartOptionsDisplayForm):
+    plotDXStandardAcquisitionFreq = forms.BooleanField(
+        label="Standard acquisition name frequency", required=False
+    )
+    plotDXStandardAcquisitionMeanDAP = forms.BooleanField(
+        label="Standard acquisition name DAP", required=False
+    )
+    plotDXStandardAcquisitionMeanmAs = forms.BooleanField(
+        label="Standard acquisition name mAs", required=False
+    )
+    plotDXStandardAcquisitionMeankVp = forms.BooleanField(
+        label="Standard acquisition name kVp", required=False
+    )
+    plotDXStandardAcquisitionMeanDAPOverTime = forms.BooleanField(
+        label="Standard acquisition name DAP over time", required=False
+    )
+    plotDXStandardAcquisitionMeanmAsOverTime = forms.BooleanField(
+        label="Standard acquisition name mAs over time", required=False
+    )
+    plotDXStandardAcquisitionMeankVpOverTime = forms.BooleanField(
+        label="Standard acquisition name kVp over time", required=False
+    )
+    plotDXStandardAcquisitionDAPvsMass = forms.BooleanField(
+        label="Standard acquisition name DAP vs mass", required=False
+    )
+
+    field_order = [
+        "plotDXAcquisitionFreq",
+        "plotDXAcquisitionMeanDAP",
+        "plotDXAcquisitionMeanmAs",
+        "plotDXAcquisitionMeankVp",
+        "plotDXAcquisitionMeanDAPOverTime",
+        "plotDXAcquisitionMeanmAsOverTime",
+        "plotDXAcquisitionMeankVpOverTime",
+        "plotDXAcquisitionDAPvsMass",
+        "plotDXStandardAcquisitionFreq",
+        "plotDXStandardAcquisitionMeanDAP",
+        "plotDXStandardAcquisitionMeanmAs",
+        "plotDXStandardAcquisitionMeankVp",
+        "plotDXStandardAcquisitionMeanDAPOverTime",
+        "plotDXStandardAcquisitionMeanmAsOverTime",
+        "plotDXStandardAcquisitionMeankVpOverTime",
+        "plotDXStandardAcquisitionDAPvsMass",
+        "plotDXStudyFreq",
+        "plotDXStudyMeanDAP",
+        "plotDXStudyDAPvsMass",
+        "plotDXStudyPerDayAndHour",
+        "plotDXRequestFreq",
+        "plotDXRequestMeanDAP",
+        "plotDXRequestDAPvsMass",
+        "plotDXAcquisitionMeanDAPOverTimePeriod",
+        "plotDXInitialSortingChoice"
+    ]
 
 
 class CTChartOptionsDisplayForm(forms.Form):
