@@ -73,8 +73,6 @@ $(document).ready(function() {
                 $("#acquisitionMedianAGDOverTimeChartDiv").html(json.acquisitionMedianAGDOverTime);
             }
 
-
-
             // Acquisition frequency chart data
             if(typeof json.standardAcquisitionFrequencyData !== "undefined") {
                 $("#standardAcquisitionFrequencyChartDiv").html(json.standardAcquisitionFrequencyData);
@@ -128,6 +126,10 @@ $(document).ready(function() {
                 $("#standardAcquisitionMedianAGDOverTimeChartDiv").html(json.standardAcquisitionMedianAGDOverTime);
             }
 
+            // Standard study name workload chart data
+            if(typeof json.standardStudyWorkloadData !== "undefined") {
+                $("#standardStudyWorkloadChartDiv").html(json.standardStudyWorkloadData);
+            }
 
             $(".ajax-progress").hide();
         },

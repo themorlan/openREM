@@ -605,7 +605,7 @@ class MGChartOptionsFormIncStandard(MGChartOptionsForm):
     )
     plotMGStandardkVpvsThickness.group = "Standard acquisition name"
     plotMGStandardStudyPerDayAndHour = forms.BooleanField(
-        label="Standard study name", required=False
+        label="Standard study name workload", required=False
     )
     plotMGStandardStudyPerDayAndHour.group = "Standard study name"
 

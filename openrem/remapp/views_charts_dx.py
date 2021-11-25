@@ -1516,7 +1516,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             ]
 
             if any(charts_of_interest):
-                
+
                 # Create a standard name data frame - remove any blank standard names
                 standard_name_df = df[(df["standard_names__standard_name"] != "blank") & (df["standard_names__standard_name"] != "Blank")].copy()
                 # Remove any unused categories (this will include "Blank" or "blank")

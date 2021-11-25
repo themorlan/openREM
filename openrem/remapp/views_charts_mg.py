@@ -950,15 +950,30 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
 
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts
-    if user_profile.plotMGStudyPerDayAndHour:
+    charts_of_interest = [user_profile.plotMGStudyPerDayAndHour]
+    if enable_standard_names:
+        charts_of_interest.append(user_profile.plotMGStandardStudyPerDayAndHour)
 
-        name_fields = ["study_description"]
+    if any(charts_of_interest):
+
+        name_fields = []
+        charts_of_interest = [user_profile.plotMGStudyPerDayAndHour]
+        if any(charts_of_interest):
+            name_fields.append("study_description")
+
+        if enable_standard_names:
+            charts_of_interest = [user_profile.plotMGStandardStudyPerDayAndHour]
+            if any(charts_of_interest):
+                name_fields.append("standard_names__standard_name")
 
         value_fields = []
 
         date_fields = []
         time_fields = []
-        if user_profile.plotMGStudyPerDayAndHour:
+        charts_of_interest = [user_profile.plotMGStudyPerDayAndHour]
+        if enable_standard_names:
+            charts_of_interest.append(user_profile.plotMGStandardStudyPerDayAndHour)
+        if any(charts_of_interest):
             date_fields.append("study_date")
             time_fields.append("study_time")
 
@@ -975,8 +990,15 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             "times": time_fields,
             "system": system_field,
         }
+
+        # If only standard_names__standard_name is required then exclude all entries where these are None as these are
+        # not required for standard name charts.
+        queryset = f.qs
+        if name_fields == ["standard_names__standard_name"]:
+            queryset = queryset.exclude(standard_names__standard_name__isnull=True)
+
         df = create_dataframe(
-            f.qs,
+            queryset,
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
@@ -1003,6 +1025,37 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                 ],
                 return_as_dict=return_as_dict,
             )
+
+        if enable_standard_names:
+            charts_of_interest = [user_profile.plotMGStandardStudyPerDayAndHour]
+
+            if any(charts_of_interest):
+
+                # Create a standard name data frame - remove any blank standard names
+                standard_name_df = df[(df["standard_names__standard_name"] != "blank") & (df["standard_names__standard_name"] != "Blank")].copy()
+                # Remove any unused categories (this will include "Blank" or "blank")
+                standard_name_df["standard_names__standard_name"] = standard_name_df["standard_names__standard_name"].cat.remove_unused_categories()
+
+                if user_profile.plotMGStandardStudyPerDayAndHour:
+                    df_time_series_per_weekday = create_dataframe_weekdays(
+                        standard_name_df, "standard_names__standard_name", df_date_col="study_date"
+                    )
+
+                    return_structure["standardStudyWorkloadData"] = plotly_barchart_weekdays(
+                        df_time_series_per_weekday,
+                        "weekday",
+                        "standard_names__standard_name",
+                        name_axis_title="Weekday",
+                        value_axis_title="Frequency",
+                        colourmap=user_profile.plotColourMapChoice,
+                        filename="OpenREM CT standard study name workload",
+                        facet_col_wrap=user_profile.plotFacetColWrapVal,
+                        sorting_choice=[
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotMGInitialSortingChoice,
+                        ],
+                        return_as_dict=return_as_dict,
+                    )
 
     return return_structure
 
