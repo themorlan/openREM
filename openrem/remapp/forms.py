@@ -575,6 +575,41 @@ class MGChartOptionsForm(forms.Form):
     plotMGStudyPerDayAndHour.group = "Study description"
 
 
+class MGChartOptionsFormIncStandard(MGChartOptionsForm):
+    plotMGStandardAcquisitionFreq = forms.BooleanField(
+        label="Standard acquisition name frequency", required=False
+    )
+    plotMGStandardAcquisitionFreq.group = "Standard acquisition name"
+    plotMGStandardAverageAGD = forms.BooleanField(
+        label="Standard acquisition name average AGD", required=False
+    )
+    plotMGStandardAverageAGD.group = "Standard acquisition name"
+    plotMGStandardAverageAGDvsThickness = forms.BooleanField(
+        label="Standard acquisition name average AGD vs. compressed thickness", required=False
+    )
+    plotMGStandardAverageAGDvsThickness.group = "Standard acquisition name"
+    plotMGStandardAcquisitionAGDOverTime = forms.BooleanField(
+        label="Standard acquisition name AGD over time", required=False
+    )
+    plotMGStandardAcquisitionAGDOverTime.group = "Standard acquisition name"
+    plotMGStandardAGDvsThickness = forms.BooleanField(
+        label="Standard acquisition name AGD vs. compressed thickness", required=False
+    )
+    plotMGStandardAGDvsThickness.group = "Standard acquisition name"
+    plotMGStandardmAsvsThickness = forms.BooleanField(
+        label="Standard acquisition name mAs vs. compressed thickness", required=False
+    )
+    plotMGStandardmAsvsThickness.group = "Standard acquisition name"
+    plotMGStandardkVpvsThickness = forms.BooleanField(
+        label="Standard acquisition name kVp vs. compressed thickness", required=False
+    )
+    plotMGStandardkVpvsThickness.group = "Standard acquisition name"
+    plotMGStandardStudyPerDayAndHour = forms.BooleanField(
+        label="Standard study name", required=False
+    )
+    plotMGStandardStudyPerDayAndHour.group = "Standard study name"
+
+
 class MGChartOptionsDisplayForm(forms.Form):
     """Form for MG chart display options"""
 
@@ -608,6 +643,54 @@ class MGChartOptionsDisplayForm(forms.Form):
     plotMGInitialSortingChoice = forms.ChoiceField(
         label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
+
+
+class MGChartOptionsDisplayFormIncStandard(MGChartOptionsDisplayForm):
+    plotMGStandardAcquisitionFreq = forms.BooleanField(
+        label="Standard acquisition name frequency", required=False
+    )
+    plotMGStandardAverageAGD = forms.BooleanField(
+        label="Standard acquisition name average AGD", required=False
+    )
+    plotMGStandardAverageAGDvsThickness = forms.BooleanField(
+        label="Standard acquisition name average AGD vs. compressed thickness", required=False
+    )
+    plotMGStandardAcquisitionAGDOverTime = forms.BooleanField(
+        label="Standard acquisition name AGD over time", required=False
+    )
+    plotMGStandardAGDvsThickness = forms.BooleanField(
+        label="Standard acquisition name AGD vs. compressed thickness", required=False
+    )
+    plotMGStandardmAsvsThickness = forms.BooleanField(
+        label="Standard acquisition name mAs vs. compressed thickness", required=False
+    )
+    plotMGStandardkVpvsThickness = forms.BooleanField(
+        label="Standard acquisition name kVp vs. compressed thickness", required=False
+    )
+    plotMGStandardStudyPerDayAndHour = forms.BooleanField(
+        label="Standard study name", required=False
+    )
+
+    field_order = [
+        "plotMGacquisitionFreq",
+        "plotMGaverageAGD",
+        "plotMGaverageAGDvsThickness",
+        "plotMGAcquisitionAGDOverTime",
+        "plotMGAGDvsThickness",
+        "plotMGmAsvsThickness",
+        "plotMGkVpvsThickness",
+        "plotMGStandardAcquisitionFreq",
+        "plotMGStandardAverageAGD",
+        "plotMGStandardAverageAGDvsThickness",
+        "plotMGStandardAcquisitionAGDOverTime",
+        "plotMGStandardAGDvsThickness",
+        "plotMGStandardmAsvsThickness",
+        "plotMGStandardkVpvsThickness",
+        "plotMGStudyPerDayAndHour",
+        "plotMGStandardStudyPerDayAndHour",
+        "plotMGOverTimePeriod",
+        "plotMGInitialSortingChoice",
+    ]
 
 
 class DXChartOptionsDisplayForm(forms.Form):

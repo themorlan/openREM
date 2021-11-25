@@ -146,7 +146,7 @@
             {% csrf_token %}
             {% for field in MGChartOptionsForm %}
                 <tr>
-                {% if field.label == 'Study workload' or field.label == 'Time period' %}
+                {% if field.label == 'Study workload' or field.label == 'Time period' or field.label == 'Standard acquisition name frequency' %}
                     <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
                     <td class="top_border">{{ field }}</td>
                 {% else %}

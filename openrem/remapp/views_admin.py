@@ -69,6 +69,7 @@ from .forms import (
     GeneralChartOptionsDisplayForm,
     HomepageOptionsForm,
     MGChartOptionsDisplayForm,
+    MGChartOptionsDisplayFormIncStandard,
     MergeOnDeviceObserverUIDForm,
     NotPatientIDForm,
     NotPatientNameForm,
@@ -1317,14 +1318,16 @@ def chart_options_view(request):
         general_form = GeneralChartOptionsDisplayForm(request.POST)
         ct_form = None
         dx_form = None
+        mg_form = None
         if enable_standard_names:
             ct_form = CTChartOptionsDisplayFormIncStandard(request.POST)
             dx_form = DXChartOptionsDisplayFormIncStandard(request.POST)
+            mg_form = MGChartOptionsDisplayFormIncStandard(request.POST)
         else:
             ct_form = CTChartOptionsDisplayForm(request.POST)
             dx_form = DXChartOptionsDisplayForm(request.POST)
+            mg_form = MGChartOptionsDisplayForm(request.POST)
         rf_form = RFChartOptionsDisplayForm(request.POST)
-        mg_form = MGChartOptionsDisplayForm(request.POST)
         if (
             general_form.is_valid()
             and ct_form.is_valid()
@@ -1429,14 +1432,16 @@ def chart_options_view(request):
     general_chart_options_form = GeneralChartOptionsDisplayForm(general_form_data)
     ct_chart_options_form = None
     dx_chart_options_form = None
+    mg_chart_options_form = None
     if enable_standard_names:
         ct_chart_options_form = CTChartOptionsDisplayFormIncStandard(ct_form_data)
         dx_chart_options_form = DXChartOptionsDisplayFormIncStandard(dx_form_data)
+        mg_chart_options_form = MGChartOptionsDisplayFormIncStandard(mg_form_data)
     else:
         ct_chart_options_form = CTChartOptionsDisplayForm(ct_form_data)
         dx_chart_options_form = DXChartOptionsDisplayForm(dx_form_data)
+        mg_chart_options_form = MGChartOptionsDisplayForm(mg_form_data)
     rf_chart_options_form = RFChartOptionsDisplayForm(rf_form_data)
-    mg_chart_options_form = MGChartOptionsDisplayForm(mg_form_data)
 
     return_structure = {
         "admin": admin,
@@ -1496,6 +1501,14 @@ def initialise_rf_form_data(user_profile):
 
 
 def set_mg_chart_options(mg_form, user_profile):
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
     user_profile.plotMGacquisitionFreq = mg_form.cleaned_data["plotMGacquisitionFreq"]
     user_profile.plotMGaverageAGD = mg_form.cleaned_data["plotMGaverageAGD"]
     user_profile.plotMGaverageAGDvsThickness = mg_form.cleaned_data[
@@ -1514,6 +1527,15 @@ def set_mg_chart_options(mg_form, user_profile):
     user_profile.plotMGInitialSortingChoice = mg_form.cleaned_data[
         "plotMGInitialSortingChoice"
     ]
+    if enable_standard_names:
+        user_profile.plotMGStandardAcquisitionFreq = mg_form.cleaned_data["plotMGStandardAcquisitionFreq"]
+        user_profile.plotMGStandardAverageAGD = mg_form.cleaned_data["plotMGStandardAverageAGD"]
+        user_profile.plotMGStandardAverageAGDvsThickness = mg_form.cleaned_data["plotMGStandardAverageAGDvsThickness"]
+        user_profile.plotMGStandardAcquisitionAGDOverTime = mg_form.cleaned_data["plotMGStandardAcquisitionAGDOverTime"]
+        user_profile.plotMGStandardAGDvsThickness = mg_form.cleaned_data["plotMGStandardAGDvsThickness"]
+        user_profile.plotMGStandardkVpvsThickness = mg_form.cleaned_data["plotMGStandardkVpvsThickness"]
+        user_profile.plotMGStandardmAsvsThickness = mg_form.cleaned_data["plotMGStandardmAsvsThickness"]
+        user_profile.plotMGStandardStudyPerDayAndHour = mg_form.cleaned_data["plotMGStandardStudyPerDayAndHour"]
 
 
 def initialise_mg_form_data(user_profile):
@@ -1529,6 +1551,24 @@ def initialise_mg_form_data(user_profile):
         "plotMGOverTimePeriod": user_profile.plotMGOverTimePeriod,
         "plotMGInitialSortingChoice": user_profile.plotMGInitialSortingChoice,
     }
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
+    if enable_standard_names:
+        mg_form_data["plotMGStandardAcquisitionFreq"] = user_profile.plotMGStandardAcquisitionFreq
+        mg_form_data["plotMGStandardAverageAGD"] = user_profile.plotMGStandardAverageAGD
+        mg_form_data["plotMGStandardAverageAGDvsThickness"] = user_profile.plotMGStandardAverageAGDvsThickness
+        mg_form_data["plotMGStandardAcquisitionAGDOverTime"] = user_profile.plotMGStandardAcquisitionAGDOverTime
+        mg_form_data["plotMGStandardAGDvsThickness"] = user_profile.plotMGStandardAGDvsThickness
+        mg_form_data["plotMGStandardkVpvsThickness"] = user_profile.plotMGStandardkVpvsThickness
+        mg_form_data["plotMGStandardmAsvsThickness"] = user_profile.plotMGStandardmAsvsThickness
+        mg_form_data["plotMGStandardStudyPerDayAndHour"] = user_profile.plotMGStandardStudyPerDayAndHour
+
     return mg_form_data
 
 

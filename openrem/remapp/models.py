@@ -701,6 +701,16 @@ class UserProfile(models.Model, CommonVariables):
     plotMGaverageAGD = models.BooleanField(default=False)
     plotMGacquisitionFreq = models.BooleanField(default=False)
     plotMGAcquisitionAGDOverTime = models.BooleanField(default=False)
+
+    plotMGStandardStudyPerDayAndHour = models.BooleanField(default=False)
+    plotMGStandardAGDvsThickness = models.BooleanField(default=False)
+    plotMGStandardkVpvsThickness = models.BooleanField(default=False)
+    plotMGStandardmAsvsThickness = models.BooleanField(default=False)
+    plotMGStandardAverageAGDvsThickness = models.BooleanField(default=False)
+    plotMGStandardAverageAGD = models.BooleanField(default=False)
+    plotMGStandardAcquisitionFreq = models.BooleanField(default=False)
+    plotMGStandardAcquisitionAGDOverTime = models.BooleanField(default=False)
+
     plotMGOverTimePeriod = models.CharField(
         max_length=13,
         choices=CommonVariables.TIME_PERIOD,
