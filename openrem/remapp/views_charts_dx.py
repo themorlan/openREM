@@ -651,9 +651,34 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
         charts_of_interest.append(user_profile.plotDXStandardAcquisitionDAPvsMass)
 
     if any(charts_of_interest):
-        name_fields = ["projectionxrayradiationdose__irradeventxraydata__acquisition_protocol"]
+
+        name_fields = []
+        charts_of_interest = [
+            user_profile.plotDXAcquisitionMeanDAP,
+            user_profile.plotDXAcquisitionFreq,
+            user_profile.plotDXAcquisitionMeankVp,
+            user_profile.plotDXAcquisitionMeanmAs,
+            user_profile.plotDXAcquisitionMeankVpOverTime,
+            user_profile.plotDXAcquisitionMeanmAsOverTime,
+            user_profile.plotDXAcquisitionMeanDAPOverTime,
+            user_profile.plotDXAcquisitionDAPvsMass,
+        ]
+        if any(charts_of_interest):
+            name_fields.append("projectionxrayradiationdose__irradeventxraydata__acquisition_protocol")
+
         if enable_standard_names:
-            name_fields.append("projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name")
+            charts_of_interest = [
+                user_profile.plotDXStandardAcquisitionMeanDAP,
+                user_profile.plotDXStandardAcquisitionFreq,
+                user_profile.plotDXStandardAcquisitionMeankVp,
+                user_profile.plotDXStandardAcquisitionMeanmAs,
+                user_profile.plotDXStandardAcquisitionMeankVpOverTime,
+                user_profile.plotDXStandardAcquisitionMeanmAsOverTime,
+                user_profile.plotDXStandardAcquisitionMeanDAPOverTime,
+                user_profile.plotDXStandardAcquisitionDAPvsMass,
+            ]
+            if any(charts_of_interest):
+                name_fields.append("projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name")
 
         value_fields = []
         value_multipliers = []
@@ -733,8 +758,14 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             "system": system_field,
         }
 
+        # If only projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name is required then
+        # exclude all entries where these are None as these are not required for standard name charts.
+        queryset = f.qs
+        if name_fields == ["projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"]:
+            queryset = queryset.exclude(projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name__isnull=True)
+
         df = create_dataframe(
-            f.qs,
+            queryset,
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
@@ -1297,8 +1328,15 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             "times": time_fields,
             "system": system_field,
         }
+
+        # If only standard_names__standard_name is required then exclude all entries where these are None as these are
+        # not required for standard name charts.
+        queryset = f.qs
+        if name_fields == ["standard_names__standard_name"]:
+            queryset = queryset.exclude(standard_names__standard_name__isnull=True)
+
         df = create_dataframe(
-            f.qs,
+            queryset,
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,

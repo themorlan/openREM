@@ -758,15 +758,36 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
         charts_of_interest.append(user_profile.plotCTStandardAcquisitionCTDIvsMass)
 
     if any(charts_of_interest):
-        name_fields = ["ctradiationdose__ctirradiationeventdata__acquisition_protocol"]
-        name_fields.append(
-            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning"
-        )
-        name_fields.append(
-            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_value"
-        )
+
+        name_fields = [
+            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning",
+            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_value",
+        ]
+
+        charts_of_interest = [
+            user_profile.plotCTAcquisitionFreq,
+            user_profile.plotCTAcquisitionMeanCTDI,
+            user_profile.plotCTAcquisitionMeanDLP,
+            user_profile.plotCTAcquisitionCTDIvsMass,
+            user_profile.plotCTAcquisitionDLPvsMass,
+            user_profile.plotCTAcquisitionCTDIOverTime,
+            user_profile.plotCTAcquisitionDLPOverTime,
+        ]
+        if any(charts_of_interest):
+            name_fields.append("ctradiationdose__ctirradiationeventdata__acquisition_protocol")
+
         if enable_standard_names:
-            name_fields.append("ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name")
+            charts_of_interest = [
+                user_profile.plotCTStandardAcquisitionFreq,
+                user_profile.plotCTStandardAcquisitionMeanDLP,
+                user_profile.plotCTStandardAcquisitionMeanCTDI,
+                user_profile.plotCTStandardAcquisitionDLPOverTime,
+                user_profile.plotCTStandardAcquisitionCTDIOverTime,
+                user_profile.plotCTStandardAcquisitionDLPvsMass,
+                user_profile.plotCTStandardAcquisitionCTDIvsMass,
+            ]
+            if any(charts_of_interest):
+                name_fields.append("ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name")
 
         value_fields = []
         charts_of_interest = [
@@ -830,10 +851,16 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             "system": system_field,
         }
 
-        query_set = f.qs
+        queryset = f.qs
+        if name_fields == [
+            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning",
+            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_value",
+            "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
+        ]:
+            queryset = queryset.exclude(ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name__isnull=True)
 
         df = create_dataframe(
-            query_set,
+            queryset,
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
@@ -1374,8 +1401,15 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             "times": time_fields,
             "system": system_field,
         }
+
+        # If only standard_names__standard_name is required then exclude all entries where these are None as these are
+        # not required for standard name charts.
+        queryset = f.qs
+        if name_fields == ["standard_names__standard_name"]:
+            queryset = queryset.exclude(standard_names__standard_name__isnull=True)
+
         df = create_dataframe(
-            f.qs,
+            queryset,
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
