@@ -1098,200 +1098,210 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
                 return_structure["acquisitionMedianDLPOverTime"] = result["median"]
 
         if enable_standard_names:
-            # Exclude "Blank" and "blank" standard_acqusition_name data
-            df_without_blanks = df[(df["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"] != "blank") & (df["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"] != "Blank")].copy()
-            # Remove any unused categories (this will include "Blank" or "blank")
-            df_without_blanks["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"] = df_without_blanks["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"].cat.remove_unused_categories()
+            charts_of_interest = [
+                user_profile.plotCTStandardAcquisitionFreq,
+                user_profile.plotCTStandardAcquisitionMeanDLP,
+                user_profile.plotCTStandardAcquisitionMeanCTDI,
+                user_profile.plotCTStandardAcquisitionDLPOverTime,
+                user_profile.plotCTStandardAcquisitionCTDIOverTime,
+                user_profile.plotCTStandardAcquisitionDLPvsMass,
+                user_profile.plotCTStandardAcquisitionCTDIvsMass,
+            ]
+            if any(charts_of_interest):
+                # Exclude "Blank" and "blank" standard_acqusition_name data
+                df_without_blanks = df[(df["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"] != "blank") & (df["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"] != "Blank")].copy()
+                # Remove any unused categories (this will include "Blank" or "blank")
+                df_without_blanks["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"] = df_without_blanks["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"].cat.remove_unused_categories()
 
-            if user_profile.plotCTStandardAcquisitionFreq:
-                parameter_dict = {
-                    "df_name_col": "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name",
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotCTInitialSortingChoice,
-                    ],
-                    "legend_title": "Standard acquisition name",
-                    "df_x_axis_col": "x_ray_system_name",
-                    "x_axis_title": "System",
-                    "grouping_choice": user_profile.plotGroupingChoice,
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "filename": "OpenREM CT standard acquisition name frequency",
-                    "groupby_cols": None,
-                    "facet_col": None,
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "return_as_dict": return_as_dict,
-                    "custom_msg_line": chart_message,
-                }
-                (
-                    return_structure["standardAcquisitionFrequencyData"],
-                    return_structure["standardAcquisitionFrequencyDataCSV"],
-                ) = plotly_frequency_barchart(  # pylint: disable=line-too-long
-                    df_without_blanks,
-                    parameter_dict,
-                    csv_name="standardAcquisitionFrequencyData.csv",
-                )
+                if user_profile.plotCTStandardAcquisitionFreq:
+                    parameter_dict = {
+                        "df_name_col": "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name",
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotCTInitialSortingChoice,
+                        ],
+                        "legend_title": "Standard acquisition name",
+                        "df_x_axis_col": "x_ray_system_name",
+                        "x_axis_title": "System",
+                        "grouping_choice": user_profile.plotGroupingChoice,
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "filename": "OpenREM CT standard acquisition name frequency",
+                        "groupby_cols": None,
+                        "facet_col": None,
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "return_as_dict": return_as_dict,
+                        "custom_msg_line": chart_message,
+                    }
+                    (
+                        return_structure["standardAcquisitionFrequencyData"],
+                        return_structure["standardAcquisitionFrequencyDataCSV"],
+                    ) = plotly_frequency_barchart(  # pylint: disable=line-too-long
+                        df_without_blanks,
+                        parameter_dict,
+                        csv_name="standardAcquisitionFrequencyData.csv",
+                    )
 
-            if user_profile.plotCTStandardAcquisitionMeanDLP:
-                name_field = "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
-                value_field = "ctradiationdose__ctirradiationeventdata__dlp"
-                value_text = "DLP"
-                units_text = "(mGy.cm)"
-                name_text = "Standard acquisition name"
-                variable_name_start = "standardAcquisition"
-                variable_value_name = "DLP"
-                modality_text = "CT"
-                chart_message = ""
+                if user_profile.plotCTStandardAcquisitionMeanDLP:
+                    name_field = "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
+                    value_field = "ctradiationdose__ctirradiationeventdata__dlp"
+                    value_text = "DLP"
+                    units_text = "(mGy.cm)"
+                    name_text = "Standard acquisition name"
+                    variable_name_start = "standardAcquisition"
+                    variable_value_name = "DLP"
+                    modality_text = "CT"
+                    chart_message = ""
 
-                new_charts = generate_average_chart_group(average_choices, chart_message, df_without_blanks,
-                                                          modality_text,
-                                                          name_field, name_text, return_as_dict, return_structure,
-                                                          units_text, user_profile, value_field, value_text,
-                                                          variable_name_start, variable_value_name,
-                                                          user_profile.plotCTInitialSortingChoice)
+                    new_charts = generate_average_chart_group(average_choices, chart_message, df_without_blanks,
+                                                              modality_text,
+                                                              name_field, name_text, return_as_dict, return_structure,
+                                                              units_text, user_profile, value_field, value_text,
+                                                              variable_name_start, variable_value_name,
+                                                              user_profile.plotCTInitialSortingChoice)
 
-                return_structure = {**return_structure, **new_charts}
+                    return_structure = {**return_structure, **new_charts}
 
-            if user_profile.plotCTStandardAcquisitionMeanCTDI:
-                name_field = "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
-                value_field = "ctradiationdose__ctirradiationeventdata__mean_ctdivol"
-                value_text = "CTDI<sub>vol</sub>"
-                units_text = "(mGy)"
-                name_text = "Standard acquisition name"
-                variable_name_start = "standardAcquisition"
-                variable_value_name = "CTDI"
-                modality_text = "CT"
-                chart_message = ""
+                if user_profile.plotCTStandardAcquisitionMeanCTDI:
+                    name_field = "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
+                    value_field = "ctradiationdose__ctirradiationeventdata__mean_ctdivol"
+                    value_text = "CTDI<sub>vol</sub>"
+                    units_text = "(mGy)"
+                    name_text = "Standard acquisition name"
+                    variable_name_start = "standardAcquisition"
+                    variable_value_name = "CTDI"
+                    modality_text = "CT"
+                    chart_message = ""
 
-                new_charts = generate_average_chart_group(average_choices, chart_message, df_without_blanks,
-                                                          modality_text,
-                                                          name_field, name_text, return_as_dict, return_structure,
-                                                          units_text, user_profile, value_field, value_text,
-                                                          variable_name_start, variable_value_name,
-                                                          user_profile.plotCTInitialSortingChoice)
+                    new_charts = generate_average_chart_group(average_choices, chart_message, df_without_blanks,
+                                                              modality_text,
+                                                              name_field, name_text, return_as_dict, return_structure,
+                                                              units_text, user_profile, value_field, value_text,
+                                                              variable_name_start, variable_value_name,
+                                                              user_profile.plotCTInitialSortingChoice)
 
-                return_structure = {**return_structure, **new_charts}
+                    return_structure = {**return_structure, **new_charts}
 
-            if user_profile.plotCTStandardAcquisitionCTDIOverTime:
-                facet_title = "System"
+                if user_profile.plotCTStandardAcquisitionCTDIOverTime:
+                    facet_title = "System"
 
-                if user_profile.plotGroupingChoice == "series":
-                    facet_title = "Standard acquisition name"
+                    if user_profile.plotGroupingChoice == "series":
+                        facet_title = "Standard acquisition name"
 
-                parameter_dict = {
-                    "df_name_col": "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name",
-                    "df_value_col": "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    "df_date_col": "study_date",
-                    "name_title": "Standard acquisition name",
-                    "value_title": "CTDI<sub>vol</sub> (mGy)",
-                    "date_title": "Study date",
-                    "facet_title": facet_title,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotCTInitialSortingChoice,
-                    ],
-                    "time_period": plot_timeunit_period,
-                    "average_choices": average_choices + ["count"],
-                    "grouping_choice": user_profile.plotGroupingChoice,
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "filename": "OpenREM CT standard acquisition name CTDI over time",
-                    "return_as_dict": return_as_dict,
-                    "custom_msg_line": chart_message,
-                }
-                result = construct_over_time_charts(
-                    df_without_blanks,
-                    parameter_dict,
-                )
+                    parameter_dict = {
+                        "df_name_col": "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name",
+                        "df_value_col": "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                        "df_date_col": "study_date",
+                        "name_title": "Standard acquisition name",
+                        "value_title": "CTDI<sub>vol</sub> (mGy)",
+                        "date_title": "Study date",
+                        "facet_title": facet_title,
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotCTInitialSortingChoice,
+                        ],
+                        "time_period": plot_timeunit_period,
+                        "average_choices": average_choices + ["count"],
+                        "grouping_choice": user_profile.plotGroupingChoice,
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "filename": "OpenREM CT standard acquisition name CTDI over time",
+                        "return_as_dict": return_as_dict,
+                        "custom_msg_line": chart_message,
+                    }
+                    result = construct_over_time_charts(
+                        df_without_blanks,
+                        parameter_dict,
+                    )
 
-                if user_profile.plotMean:
-                    return_structure["standardAcquisitionMeanCTDIOverTime"] = result["mean"]
-                if user_profile.plotMedian:
-                    return_structure["standardAcquisitionMedianCTDIOverTime"] = result["median"]
+                    if user_profile.plotMean:
+                        return_structure["standardAcquisitionMeanCTDIOverTime"] = result["mean"]
+                    if user_profile.plotMedian:
+                        return_structure["standardAcquisitionMedianCTDIOverTime"] = result["median"]
 
-            if user_profile.plotCTStandardAcquisitionDLPOverTime:
-                facet_title = "System"
+                if user_profile.plotCTStandardAcquisitionDLPOverTime:
+                    facet_title = "System"
 
-                if user_profile.plotGroupingChoice == "series":
-                    facet_title = "Standard acquisition name"
+                    if user_profile.plotGroupingChoice == "series":
+                        facet_title = "Standard acquisition name"
 
-                parameter_dict = {
-                    "df_name_col": "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name",
-                    "df_value_col": "ctradiationdose__ctirradiationeventdata__dlp",
-                    "df_date_col": "study_date",
-                    "name_title": "Standard acquisition name",
-                    "value_title": "DLP (mGy.cm)",
-                    "date_title": "Study date",
-                    "facet_title": facet_title,
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotCTInitialSortingChoice,
-                    ],
-                    "time_period": plot_timeunit_period,
-                    "average_choices": average_choices + ["count"],
-                    "grouping_choice": user_profile.plotGroupingChoice,
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "filename": "OpenREM CT standard acquisition name DLP over time",
-                    "return_as_dict": return_as_dict,
-                    "custom_msg_line": chart_message,
-                }
-                result = construct_over_time_charts(
-                    df_without_blanks,
-                    parameter_dict,
-                )
+                    parameter_dict = {
+                        "df_name_col": "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name",
+                        "df_value_col": "ctradiationdose__ctirradiationeventdata__dlp",
+                        "df_date_col": "study_date",
+                        "name_title": "Standard acquisition name",
+                        "value_title": "DLP (mGy.cm)",
+                        "date_title": "Study date",
+                        "facet_title": facet_title,
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotCTInitialSortingChoice,
+                        ],
+                        "time_period": plot_timeunit_period,
+                        "average_choices": average_choices + ["count"],
+                        "grouping_choice": user_profile.plotGroupingChoice,
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "filename": "OpenREM CT standard acquisition name DLP over time",
+                        "return_as_dict": return_as_dict,
+                        "custom_msg_line": chart_message,
+                    }
+                    result = construct_over_time_charts(
+                        df_without_blanks,
+                        parameter_dict,
+                    )
 
-                if user_profile.plotMean:
-                    return_structure["standardAcquisitionMeanDLPOverTime"] = result["mean"]
-                if user_profile.plotMedian:
-                    return_structure["standardAcquisitionMedianDLPOverTime"] = result["median"]
+                    if user_profile.plotMean:
+                        return_structure["standardAcquisitionMeanDLPOverTime"] = result["mean"]
+                    if user_profile.plotMedian:
+                        return_structure["standardAcquisitionMedianDLPOverTime"] = result["median"]
 
-            if user_profile.plotCTStandardAcquisitionCTDIvsMass:
-                parameter_dict = {
-                    "df_name_col": "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name",
-                    "df_x_col": "patientstudymoduleattr__patient_weight",
-                    "df_y_col": "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotCTInitialSortingChoice,
-                    ],
-                    "grouping_choice": user_profile.plotGroupingChoice,
-                    "legend_title": "Standard acquisition name",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "x_axis_title": "Patient mass (kg)",
-                    "y_axis_title": "CTDI<sub>vol</sub> (mGy)",
-                    "filename": "OpenREM CT standard acquisition name CTDI vs patient mass",
-                    "return_as_dict": return_as_dict,
-                    "custom_msg_line": chart_message,
-                }
-                return_structure["standardAcquisitionScatterCTDIvsMass"] = plotly_scatter(
-                    df_without_blanks,
-                    parameter_dict,
-                )
+                if user_profile.plotCTStandardAcquisitionCTDIvsMass:
+                    parameter_dict = {
+                        "df_name_col": "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name",
+                        "df_x_col": "patientstudymoduleattr__patient_weight",
+                        "df_y_col": "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotCTInitialSortingChoice,
+                        ],
+                        "grouping_choice": user_profile.plotGroupingChoice,
+                        "legend_title": "Standard acquisition name",
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "x_axis_title": "Patient mass (kg)",
+                        "y_axis_title": "CTDI<sub>vol</sub> (mGy)",
+                        "filename": "OpenREM CT standard acquisition name CTDI vs patient mass",
+                        "return_as_dict": return_as_dict,
+                        "custom_msg_line": chart_message,
+                    }
+                    return_structure["standardAcquisitionScatterCTDIvsMass"] = plotly_scatter(
+                        df_without_blanks,
+                        parameter_dict,
+                    )
 
-            if user_profile.plotCTStandardAcquisitionDLPvsMass:
-                parameter_dict = {
-                    "df_name_col": "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name",
-                    "df_x_col": "patientstudymoduleattr__patient_weight",
-                    "df_y_col": "ctradiationdose__ctirradiationeventdata__dlp",
-                    "sorting_choice": [
-                        user_profile.plotInitialSortingDirection,
-                        user_profile.plotCTInitialSortingChoice,
-                    ],
-                    "grouping_choice": user_profile.plotGroupingChoice,
-                    "legend_title": "Standard acquisition name",
-                    "colourmap": user_profile.plotColourMapChoice,
-                    "facet_col_wrap": user_profile.plotFacetColWrapVal,
-                    "x_axis_title": "Patient mass (kg)",
-                    "y_axis_title": "DLP (mGy.cm)",
-                    "filename": "OpenREM CT standard acquisition name DLP vs patient mass",
-                    "return_as_dict": return_as_dict,
-                    "custom_msg_line": chart_message,
-                }
-                return_structure["standardAcquisitionScatterDLPvsMass"] = plotly_scatter(
-                    df_without_blanks,
-                    parameter_dict,
-                )
+                if user_profile.plotCTStandardAcquisitionDLPvsMass:
+                    parameter_dict = {
+                        "df_name_col": "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name",
+                        "df_x_col": "patientstudymoduleattr__patient_weight",
+                        "df_y_col": "ctradiationdose__ctirradiationeventdata__dlp",
+                        "sorting_choice": [
+                            user_profile.plotInitialSortingDirection,
+                            user_profile.plotCTInitialSortingChoice,
+                        ],
+                        "grouping_choice": user_profile.plotGroupingChoice,
+                        "legend_title": "Standard acquisition name",
+                        "colourmap": user_profile.plotColourMapChoice,
+                        "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                        "x_axis_title": "Patient mass (kg)",
+                        "y_axis_title": "DLP (mGy.cm)",
+                        "filename": "OpenREM CT standard acquisition name DLP vs patient mass",
+                        "return_as_dict": return_as_dict,
+                        "custom_msg_line": chart_message,
+                    }
+                    return_structure["standardAcquisitionScatterDLPvsMass"] = plotly_scatter(
+                        df_without_blanks,
+                        parameter_dict,
+                    )
 
     #######################################################################
     # Prepare study- and request-level Pandas DataFrame to use for charts
@@ -1441,13 +1451,14 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             return_structure = {**return_structure, **new_charts}
 
         if enable_standard_names:
-            if (
-                user_profile.plotCTStandardStudyMeanDLP or
-                user_profile.plotCTStandardStudyFreq or
-                user_profile.plotCTStandardStudyPerDayAndHour or
-                user_profile.plotCTStandardStudyMeanDLPOverTime or
-                user_profile.plotCTStandardStudyNumEvents
-            ):
+            charts_of_interest = [
+                user_profile.plotCTStandardStudyMeanDLP,
+                user_profile.plotCTStandardStudyNumEvents,
+                user_profile.plotCTStandardStudyFreq,
+                user_profile.plotCTStandardStudyPerDayAndHour,
+                user_profile.plotCTStandardStudyMeanDLPOverTime,
+            ]
+            if any(charts_of_interest):
 
                 # Create a standard name data frame - remove any blank standard names
                 standard_name_df = df[(df["standard_names__standard_name"] != "blank") & (df["standard_names__standard_name"] != "Blank")].copy()
