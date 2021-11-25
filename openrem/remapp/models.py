@@ -2157,6 +2157,11 @@ class GeneralEquipmentModuleAttr(models.Model):  # C.7.5.1
                     "general_study_module_attributes",
                 ]
             ),
+            models.Index(
+                fields=[
+                    "unique_equipment_name",
+                ]
+            ),
         ]
 
 
