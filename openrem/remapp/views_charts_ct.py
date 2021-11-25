@@ -703,7 +703,7 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
     """CT chart data calculations"""
 
     # Return an empty structure if the queryset is empty
-    if not f.qs:
+    if not f.qs.exists():
         return {}
 
     # Obtain the system-level enable_standard_names setting

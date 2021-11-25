@@ -161,8 +161,6 @@ $(document).ready(function() {
                 $("#requestDAPvsMassChartDiv").html(json.requestDAPvsMass);
             }
 
-
-
             // DAP per standard acquisition name chart data
             if(typeof json.standardAcquisitionMeanDAPData !== "undefined") {
                 $("#standardAcquisitionMeanDAPChartDiv").html(json.standardAcquisitionMeanDAPData);
@@ -244,6 +242,38 @@ $(document).ready(function() {
             // Standard acquisition name DAP vs mass
             if(typeof json.standardAcquisitionDAPvsMass !== "undefined") {
                 $("#standardAcquisitionDAPvsMassChartDiv").html(json.standardAcquisitionDAPvsMass);
+            }
+
+            // DAP per standard study name chart data
+            if(typeof json.standardStudyMeanDAPData !== "undefined") {
+                $("#standardStudyMeanDAPChartDiv").html(json.standardStudyMeanDAPData);
+                $("#standardStudyMeanDAPChartParentDiv").append(json.standardStudyMeanDAPDataCSV);
+            }
+            if(typeof json.standardStudyMedianDAPData !== "undefined") {
+                $("#standardStudyMedianDAPChartDiv").html(json.standardStudyMedianDAPData);
+                $("#standardStudyMedianDAPChartParentDiv").append(json.standardStudyMedianDAPDataCSV);
+            }
+            if(typeof json.standardStudyBoxplotDAPData !=="undefined") {
+                $("#standardStudyBoxplotDAPChartDiv").html(json.standardStudyBoxplotDAPData);
+            }
+            if(typeof json.standardStudyHistogramDAPData !=="undefined") {
+                $("#standardStudyHistogramDAPChartDiv").html(json.standardStudyHistogramDAPData);
+            }
+
+            // Standard study name frequency chart data start
+            if(typeof json.standardStudyFrequencyData !== "undefined") {
+                $("#standardStudyFrequencyChartDiv").html(json.standardStudyFrequencyData);
+                $("#standardStudyFrequencyChartParentDiv").append(json.standardStudyFrequencyDataCSV);
+            }
+
+            // Standard study name workload chart data
+            if(typeof json.standardStudyWorkloadData !== "undefined") {
+                $("#standardStudyWorkloadChartDiv").html(json.standardStudyWorkloadData);
+            }
+
+            // Standard study name DAP vs mass
+            if(typeof json.standardStudyDAPvsMass !== "undefined") {
+                $("#standardStudyDAPvsMassChartDiv").html(json.standardStudyDAPvsMass);
             }
 
             $(".ajax-progress").hide();

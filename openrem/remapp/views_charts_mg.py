@@ -198,7 +198,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
     # pylint: disable=too-many-statements
     """Calculations for mammography charts"""
     # Return an empty structure if the queryset is empty
-    if not f.qs:
+    if not f.qs.exists():
         return {}
 
     # Set the Plotly chart theme

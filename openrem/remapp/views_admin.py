@@ -1587,6 +1587,10 @@ def set_dx_chart_options(dx_form, user_profile):
         user_profile.plotDXStandardAcquisitionMeanmAsOverTime = dx_form.cleaned_data["plotDXStandardAcquisitionMeanmAsOverTime"]
         user_profile.plotDXStandardAcquisitionMeankVpOverTime = dx_form.cleaned_data["plotDXStandardAcquisitionMeankVpOverTime"]
         user_profile.plotDXStandardAcquisitionDAPvsMass = dx_form.cleaned_data["plotDXStandardAcquisitionDAPvsMass"]
+        user_profile.plotDXStandardStudyMeanDAP = dx_form.cleaned_data["plotDXStandardStudyMeanDAP"]
+        user_profile.plotDXStandardStudyFreq = dx_form.cleaned_data["plotDXStandardStudyFreq"]
+        user_profile.plotDXStandardStudyDAPvsMass = dx_form.cleaned_data["plotDXStandardStudyDAPvsMass"]
+        user_profile.plotDXStandardStudyPerDayAndHour = dx_form.cleaned_data["plotDXStandardStudyPerDayAndHour"]
 
 
 def initialise_dx_form_data(user_profile):
@@ -1626,6 +1630,10 @@ def initialise_dx_form_data(user_profile):
         dx_form_data["plotDXStandardAcquisitionMeanmAsOverTime"] = user_profile.plotDXStandardAcquisitionMeanmAsOverTime
         dx_form_data["plotDXStandardAcquisitionMeankVpOverTime"] = user_profile.plotDXStandardAcquisitionMeankVpOverTime
         dx_form_data["plotDXStandardAcquisitionDAPvsMass"] = user_profile.plotDXStandardAcquisitionDAPvsMass
+        dx_form_data["plotDXStandardStudyMeanDAP"] = user_profile.plotDXStandardStudyMeanDAP
+        dx_form_data["plotDXStandardStudyFreq"] = user_profile.plotDXStandardStudyFreq
+        dx_form_data["plotDXStandardStudyDAPvsMass"] = user_profile.plotDXStandardStudyDAPvsMass
+        dx_form_data["plotDXStandardStudyPerDayAndHour"] = user_profile.plotDXStandardStudyPerDayAndHour
 
     return dx_form_data
 

@@ -240,6 +240,17 @@ class DXChartOptionsFormIncStandard(DXChartOptionsForm):
     )
     plotDXStandardAcquisitionDAPvsMass.group = "Standard acquisition name"
 
+    plotDXStandardStudyFreq = forms.BooleanField(label="Standard study name frequency", required=False)
+    plotDXStandardStudyFreq.group = "Standard study name"
+    plotDXStandardStudyMeanDAP = forms.BooleanField(label="Standard study name DAP", required=False)
+    plotDXStandardStudyMeanDAP.group = "Standard study name"
+    plotDXStandardStudyDAPvsMass = forms.BooleanField(label="Standard study name DAP vs mass", required=False)
+    plotDXStandardStudyDAPvsMass.group = "Standard study name"
+    plotDXStandardStudyPerDayAndHour = forms.BooleanField(
+        label="Standard study name workload", required=False
+    )
+    plotDXStandardStudyPerDayAndHour.group = "Standard study name"
+
 
 class CTChartOptionsForm(forms.Form):
     """Form for CT chart options"""
@@ -676,6 +687,18 @@ class DXChartOptionsDisplayFormIncStandard(DXChartOptionsDisplayForm):
     plotDXStandardAcquisitionDAPvsMass = forms.BooleanField(
         label="Standard acquisition name DAP vs mass", required=False
     )
+    plotDXStandardStudyFreq = forms.BooleanField(
+        label="Standard study name frequency", required=False
+    )
+    plotDXStandardStudyMeanDAP = forms.BooleanField(
+        label="Standard study name DAP", required=False
+    )
+    plotDXStandardStudyDAPvsMass = forms.BooleanField(
+        label="Standard study name DAP vs mass", required=False
+    )
+    plotDXStandardStudyPerDayAndHour = forms.BooleanField(
+        label="Standard study name workload", required=False
+    )
 
     field_order = [
         "plotDXAcquisitionFreq",
@@ -701,6 +724,10 @@ class DXChartOptionsDisplayFormIncStandard(DXChartOptionsDisplayForm):
         "plotDXRequestFreq",
         "plotDXRequestMeanDAP",
         "plotDXRequestDAPvsMass",
+        "plotDXStandardStudyFreq",
+        "plotDXStandardStudyMeanDAP",
+        "plotDXStandardStudyDAPvsMass",
+        "plotDXStandardStudyPerDayAndHour",
         "plotDXAcquisitionMeanDAPOverTimePeriod",
         "plotDXInitialSortingChoice"
     ]
@@ -807,15 +834,15 @@ class CTChartOptionsDisplayFormIncStandard(CTChartOptionsDisplayForm):
         "plotCTStudyNumEvents",
         "plotCTStudyMeanDLPOverTime",
         "plotCTStudyPerDayAndHour",
+        "plotCTRequestFreq",
+        "plotCTRequestMeanDLP",
+        "plotCTRequestNumEvents",
+        "plotCTRequestDLPOverTime",
         "plotCTStandardStudyFreq",
         "plotCTStandardStudyMeanDLP",
         "plotCTStandardStudyNumEvents",
         "plotCTStandardStudyMeanDLPOverTime",
         "plotCTStandardStudyPerDayAndHour",
-        "plotCTRequestFreq",
-        "plotCTRequestMeanDLP",
-        "plotCTRequestNumEvents",
-        "plotCTRequestDLPOverTime",
         "plotCTOverTimePeriod",
         "plotCTInitialSortingChoice"
     ]

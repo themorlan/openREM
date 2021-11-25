@@ -611,6 +611,12 @@ class UserProfile(models.Model, CommonVariables):
     plotDXRequestMeanDAP = models.BooleanField(default=True)
     plotDXRequestFreq = models.BooleanField(default=True)
     plotDXRequestDAPvsMass = models.BooleanField(default=False)
+
+    plotDXStandardStudyMeanDAP = models.BooleanField(default=False)
+    plotDXStandardStudyFreq = models.BooleanField(default=False)
+    plotDXStandardStudyDAPvsMass = models.BooleanField(default=False)
+    plotDXStandardStudyPerDayAndHour = models.BooleanField(default=False)
+
     plotDXAcquisitionMeanDAPOverTimePeriod = models.CharField(
         max_length=13,
         choices=CommonVariables.TIME_PERIOD,
