@@ -468,6 +468,21 @@ class RFChartOptionsForm(forms.Form):
     plotRFRequestDAPOverTime.group = "Requested procedure"
 
 
+class RFChartOptionsFormIncStandard(RFChartOptionsForm):
+    plotRFStandardStudyFreq = forms.BooleanField(label="Standard study name frequency", required=False)
+    plotRFStandardStudyFreq.group = "Standard study name"
+    plotRFStandardStudyDAP = forms.BooleanField(label="Standard study name DAP", required=False)
+    plotRFStandardStudyDAP.group = "Standard study name"
+    plotRFStandardStudyDAPOverTime = forms.BooleanField(
+        label="Standard study name DAP over time", required=False
+    )
+    plotRFStandardStudyDAPOverTime.group = "Standard study name"
+    plotRFStandardStudyPerDayAndHour = forms.BooleanField(
+        label="Standard study name workload", required=False
+    )
+    plotRFStandardStudyPerDayAndHour.group = "Standard study name"
+
+
 class RFChartOptionsDisplayForm(forms.Form):
     """Form for RF chart display options"""
 
@@ -499,6 +514,30 @@ class RFChartOptionsDisplayForm(forms.Form):
         choices=CommonVariables.SORTING_CHOICES,
         required=False,
     )
+
+
+class RFChartOptionsDisplayFormIncStandard(RFChartOptionsDisplayForm):
+    plotRFStandardStudyFreq = forms.BooleanField(label="Standard study name frequency", required=False)
+    plotRFStandardStudyDAP = forms.BooleanField(label="Standard study name DAP", required=False)
+    plotRFStandardStudyDAPOverTime = forms.BooleanField(label="Standard study name DAP over time", required=False)
+    plotRFStandardStudyPerDayAndHour = forms.BooleanField(label="Standard study name workload", required=False)
+
+    field_order = [
+        "plotRFStudyFreq",
+        "plotRFStudyDAP",
+        "plotRFStudyDAPOverTime",
+        "plotRFStudyPerDayAndHour",
+        "plotRFRequestFreq",
+        "plotRFRequestDAP",
+        "plotRFRequestDAPOverTime",
+        "plotRFStandardStudyFreq",
+        "plotRFStandardStudyDAP",
+        "plotRFStandardStudyDAPOverTime",
+        "plotRFStandardStudyPerDayAndHour",
+        "plotRFOverTimePeriod",
+        "plotRFSplitByPhysician",
+        "plotRFInitialSortingChoice",
+    ]
 
 
 class MGChartOptionsForm(forms.Form):

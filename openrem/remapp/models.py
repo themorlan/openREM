@@ -681,6 +681,12 @@ class UserProfile(models.Model, CommonVariables):
     plotRFRequestDAP = models.BooleanField(default=True)
     plotRFRequestFreq = models.BooleanField(default=True)
     plotRFRequestDAPOverTime = models.BooleanField(default=False)
+
+    plotRFStandardStudyFreq = models.BooleanField(default=False)
+    plotRFStandardStudyDAP = models.BooleanField(default=False)
+    plotRFStandardStudyDAPOverTime = models.BooleanField(default=False)
+    plotRFStandardStudyPerDayAndHour = models.BooleanField(default=False)
+
     plotRFOverTimePeriod = models.CharField(
         max_length=13,
         choices=CommonVariables.TIME_PERIOD,

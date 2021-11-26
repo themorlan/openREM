@@ -74,6 +74,8 @@ from .forms import (
     NotPatientIDForm,
     NotPatientNameForm,
     RFChartOptionsDisplayForm,
+    RFChartOptionsDisplayFormIncStandard,
+    RFChartOptionsFormIncStandard,
     RFHighDoseFluoroAlertsForm,
     UpdateDisplayNamesForm,
     StandardNameFormCT,
@@ -1319,15 +1321,17 @@ def chart_options_view(request):
         ct_form = None
         dx_form = None
         mg_form = None
+        rf_form = None
         if enable_standard_names:
             ct_form = CTChartOptionsDisplayFormIncStandard(request.POST)
             dx_form = DXChartOptionsDisplayFormIncStandard(request.POST)
             mg_form = MGChartOptionsDisplayFormIncStandard(request.POST)
+            rf_form = RFChartOptionsDisplayFormIncStandard(request.POST)
         else:
             ct_form = CTChartOptionsDisplayForm(request.POST)
             dx_form = DXChartOptionsDisplayForm(request.POST)
             mg_form = MGChartOptionsDisplayForm(request.POST)
-        rf_form = RFChartOptionsDisplayForm(request.POST)
+            rf_form = RFChartOptionsDisplayForm(request.POST)
         if (
             general_form.is_valid()
             and ct_form.is_valid()
@@ -1433,15 +1437,17 @@ def chart_options_view(request):
     ct_chart_options_form = None
     dx_chart_options_form = None
     mg_chart_options_form = None
+    rf_chart_options_form = None
     if enable_standard_names:
         ct_chart_options_form = CTChartOptionsDisplayFormIncStandard(ct_form_data)
         dx_chart_options_form = DXChartOptionsDisplayFormIncStandard(dx_form_data)
         mg_chart_options_form = MGChartOptionsDisplayFormIncStandard(mg_form_data)
+        rf_chart_options_form = RFChartOptionsDisplayFormIncStandard(rf_form_data)
     else:
         ct_chart_options_form = CTChartOptionsDisplayForm(ct_form_data)
         dx_chart_options_form = DXChartOptionsDisplayForm(dx_form_data)
         mg_chart_options_form = MGChartOptionsDisplayForm(mg_form_data)
-    rf_chart_options_form = RFChartOptionsDisplayForm(rf_form_data)
+        rf_chart_options_form = RFChartOptionsDisplayForm(rf_form_data)
 
     return_structure = {
         "admin": admin,
@@ -1466,6 +1472,14 @@ def set_common_chart_options(general_form, user_profile):
 
 
 def set_rf_chart_options(rf_form, user_profile):
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
     user_profile.plotRFStudyPerDayAndHour = rf_form.cleaned_data[
         "plotRFStudyPerDayAndHour"
     ]
@@ -1482,7 +1496,12 @@ def set_rf_chart_options(rf_form, user_profile):
     user_profile.plotRFInitialSortingChoice = rf_form.cleaned_data[
         "plotRFInitialSortingChoice"
     ]
-
+    if enable_standard_names:
+        user_profile.plotRFStandardStudyFreq = rf_form.cleaned_data["plotRFStandardStudyFreq"]
+        user_profile.plotRFStandardStudyDAP = rf_form.cleaned_data["plotRFStandardStudyDAP"]
+        user_profile.plotRFStandardStudyDAPOverTime = rf_form.cleaned_data["plotRFStandardStudyDAPOverTime"]
+        user_profile.plotRFStandardStudyPerDayAndHour = rf_form.cleaned_data["plotRFStandardStudyPerDayAndHour"]
+        
 
 def initialise_rf_form_data(user_profile):
     rf_form_data = {
@@ -1497,6 +1516,20 @@ def initialise_rf_form_data(user_profile):
         "plotRFSplitByPhysician": user_profile.plotRFSplitByPhysician,
         "plotRFInitialSortingChoice": user_profile.plotRFInitialSortingChoice,
     }
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
+    if enable_standard_names:
+        rf_form_data["plotRFStandardStudyFreq"] = user_profile.plotRFStandardStudyFreq
+        rf_form_data["plotRFStandardStudyDAP"] = user_profile.plotRFStandardStudyDAP
+        rf_form_data["plotRFStandardStudyDAPOverTime"] = user_profile.plotRFStandardStudyDAPOverTime
+        rf_form_data["plotRFStandardStudyPerDayAndHour"] = user_profile.plotRFStandardStudyPerDayAndHour
+
     return rf_form_data
 
 

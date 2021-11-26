@@ -125,7 +125,7 @@
             {% csrf_token %}
             {% for field in RFChartOptionsForm %}
                 <tr>
-                {% if field.label == 'Requested procedure frequency' or field.label == 'Time period' %}
+                {% if field.label == 'Requested procedure frequency' or field.label == 'Time period' or field.label == 'Standard study name frequency' %}
                     <td class="top_border"><label for="{{ field.auto_id }}">{{ field.label }}</label></td>
                     <td class="top_border">{{ field }}</td>
                 {% else %}
