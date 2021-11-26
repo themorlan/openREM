@@ -9,7 +9,12 @@ from remapp.forms import (
     RFChartOptionsForm,
     RFChartOptionsFormIncStandard,
 )
-from remapp.interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
+from remapp.interface.mod_filters import (
+    RFSummaryListFilter,
+    RFFilterPlusPid,
+    RFFilterPlusStdNames,
+    RFFilterPlusPidPlusStdNames,
+)
 from remapp.models import (
     GeneralStudyModuleAttr,
     create_user_profile,
@@ -263,21 +268,45 @@ def generate_required_rf_charts_list(profile):
 @login_required
 def rf_summary_chart_data(request):
     """Obtain data for Ajax chart call"""
-    if request.user.groups.filter(name="pidgroup"):
-        f = RFFilterPlusPid(
-            request.GET,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
-            .order_by()
-            .distinct(),
-        )
-    else:
-        f = RFSummaryListFilter(
-            request.GET,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
-            .order_by()
-            .distinct(),
-        )
 
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
+
+    if request.user.groups.filter(name="pidgroup"):
+        if enable_standard_names:
+            f = RFFilterPlusPidPlusStdNames(
+                request.GET,
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
+                .order_by()
+                .distinct(),
+            )
+        else:
+            f = RFFilterPlusPid(
+                request.GET,
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
+                    .order_by()
+                    .distinct(),
+            )
+    else:
+        if enable_standard_names:
+            f = RFFilterPlusStdNames(
+                request.GET,
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
+                .order_by()
+                .distinct(),
+            )
+        else:
+            f = RFFSummaryListFilter(
+                request.GET,
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
+                .order_by()
+                .distinct(),
+            )
     try:
         # See if the user has plot settings in userprofile
         user_profile = request.user.userprofile
