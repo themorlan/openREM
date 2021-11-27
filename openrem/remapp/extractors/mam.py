@@ -498,6 +498,9 @@ def _generalstudymoduleattributes(dataset, g):
     )
     g.save()
 
+    # Add standard names
+    add_standard_names(g)
+
 
 def _test_if_mammo(dataset):
     """Test if dicom object passed is a mammo file by looking at SOP Class UID"""
@@ -617,10 +620,6 @@ def _mammo2db(dataset):
                         _irradiationeventxraydata(
                             dataset, this_study.projectionxrayradiationdose_set.get()
                         )
-
-    # Add standard names
-    g = GeneralStudyModuleAttr.objects.get(study_instance_uid=study_uid)
-    add_standard_names(g)
 
 
 @shared_task(name="remapp.extractors.mam.mam")

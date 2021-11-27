@@ -747,6 +747,9 @@ def _generalstudymoduleattributes(dataset, g):
     )
     g.save()
 
+    # Add standard names
+    add_standard_names(g)
+
 
 # The routine will accept three types of image:
 # CR image storage                               (SOP UID = '1.2.840.10008.5.1.4.1.1.1')
@@ -860,10 +863,6 @@ def _dx2db(dataset):
                             dataset,
                             this_study.projectionxrayradiationdose_set.get(),
                         )
-
-    # Add standard names
-    g = GeneralStudyModuleAttr.objects.get(study_instance_uid=study_uid)
-    add_standard_names(g)
 
 
 def _fix_kodak_filters(dataset):
