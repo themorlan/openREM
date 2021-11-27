@@ -72,6 +72,7 @@ from .extract_common import (  # pylint: disable=wrong-import-order, wrong-impor
     populate_mammo_agd_summary,
     populate_dx_rf_summary,
     populate_rf_delta_weeks_summary,
+    add_standard_names,
 )
 from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-position
     AccumCassetteBsdProjRadiogDose,
@@ -2475,6 +2476,9 @@ def _rdsr2db(dataset):
         )[0]
         if send_alert_emails_ref and not send_alert_emails_skin:
             send_rf_high_dose_alert_email(g.pk)
+
+    # Add standard names
+    add_standard_names(g)
 
 
 def _fix_toshiba_vhp(dataset):

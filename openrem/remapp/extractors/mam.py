@@ -48,6 +48,7 @@ from celery import shared_task
 
 from .extract_common import (  # pylint: disable=wrong-import-order, wrong-import-position
     patient_module_attributes,
+    add_standard_names,
 )
 
 
@@ -616,6 +617,10 @@ def _mammo2db(dataset):
                         _irradiationeventxraydata(
                             dataset, this_study.projectionxrayradiationdose_set.get()
                         )
+
+    # Add standard names
+    g = GeneralStudyModuleAttr.objects.get(study_instance_uid=study_uid)
+    add_standard_names(g)
 
 
 @shared_task(name="remapp.extractors.mam.mam")

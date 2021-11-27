@@ -71,6 +71,7 @@ from .extract_common import (  # pylint: disable=wrong-import-order, wrong-impor
     get_study_check_dup,
     populate_dx_rf_summary,
     patient_module_attributes,
+    add_standard_names,
 )
 from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-position
     AccumXRayDose,
@@ -859,6 +860,10 @@ def _dx2db(dataset):
                             dataset,
                             this_study.projectionxrayradiationdose_set.get(),
                         )
+
+    # Add standard names
+    g = GeneralStudyModuleAttr.objects.get(study_instance_uid=study_uid)
+    add_standard_names(g)
 
 
 def _fix_kodak_filters(dataset):
