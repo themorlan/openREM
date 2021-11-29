@@ -389,6 +389,7 @@ def _specify_event_numbers(queryset, name, value):
             filtered = queryset.filter(number_of_stationary__gt=min_value)
         else:
             return queryset
+        return filtered
     if "num_events" in name:
         filtered = queryset.filter(number_of_events__exact=value)
     elif "num_spiral_events" in name:
@@ -401,7 +402,7 @@ def _specify_event_numbers(queryset, name, value):
         filtered = queryset.filter(number_of_stationary__exact=value)
     else:
         return queryset
-
+    return filtered
 
 class CTSummaryListFilter(django_filters.FilterSet):
 
