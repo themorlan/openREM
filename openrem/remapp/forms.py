@@ -373,15 +373,20 @@ class CTChartOptionsFormIncStandard(CTChartOptionsForm):
     plotCTStandardAcquisitionFreq.group = "Standard acquisition name"
     plotCTStandardAcquisitionMeanDLP = forms.BooleanField(label="Standard acquisition name DLP", required=False)
     plotCTStandardAcquisitionMeanDLP.group = "Standard acquisition name"
-    plotCTStandardAcquisitionMeanCTDI = forms.BooleanField(label=mark_safe("Standard acquisition name CTDI<sub>vol</sub>"), required=False)
+    plotCTStandardAcquisitionMeanCTDI = forms.BooleanField(
+        label=mark_safe("Standard acquisition name CTDI<sub>vol</sub>"), required=False)  # nosec
     plotCTStandardAcquisitionMeanCTDI.group = "Standard acquisition name"
-    plotCTStandardAcquisitionDLPOverTime = forms.BooleanField(label="Standard acquisition name DLP over time", required=False)
+    plotCTStandardAcquisitionDLPOverTime = forms.BooleanField(label="Standard acquisition name DLP over time",
+                                                              required=False)
     plotCTStandardAcquisitionDLPOverTime.group = "Standard acquisition name"
-    plotCTStandardAcquisitionCTDIOverTime = forms.BooleanField(label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> over time"), required=False)
+    plotCTStandardAcquisitionCTDIOverTime = forms.BooleanField(
+        label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> over time"), required=False)  # nosec
     plotCTStandardAcquisitionCTDIOverTime.group = "Standard acquisition name"
-    plotCTStandardAcquisitionDLPvsMass = forms.BooleanField(label="Standard acquisition name DLP vs mass", required=False)
+    plotCTStandardAcquisitionDLPvsMass = forms.BooleanField(label="Standard acquisition name DLP vs mass",
+                                                            required=False)
     plotCTStandardAcquisitionDLPvsMass.group = "Standard acquisition name"
-    plotCTStandardAcquisitionCTDIvsMass = forms.BooleanField(label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> vs mass"), required=False)
+    plotCTStandardAcquisitionCTDIvsMass = forms.BooleanField(
+        label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> vs mass"), required=False)  # nosec
     plotCTStandardAcquisitionCTDIvsMass.group = "Standard acquisition name"
 
     plotCTStandardStudyFreq = forms.BooleanField(label="Standard study frequency", required=False)
@@ -922,11 +927,16 @@ class CTChartOptionsDisplayForm(forms.Form):
 class CTChartOptionsDisplayFormIncStandard(CTChartOptionsDisplayForm):
     plotCTStandardAcquisitionFreq = forms.BooleanField(label="Standard acquisition name frequency", required=False)
     plotCTStandardAcquisitionMeanDLP = forms.BooleanField(label="Standard acquisition DLP", required=False)
-    plotCTStandardAcquisitionMeanCTDI = forms.BooleanField(label=mark_safe("Standard acquisition CTDI<sub>vol</sub>"), required=False)
-    plotCTStandardAcquisitionDLPOverTime = forms.BooleanField(label="Standard acquisition name DLP over time", required=False)
-    plotCTStandardAcquisitionCTDIOverTime = forms.BooleanField(label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> over time"), required=False)
-    plotCTStandardAcquisitionCTDIvsMass = forms.BooleanField(label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> vs mass"), required=False)
-    plotCTStandardAcquisitionDLPvsMass = forms.BooleanField(label="Standard acquisition name DLP vs mass", required=False)
+    plotCTStandardAcquisitionMeanCTDI = forms.BooleanField(label=mark_safe("Standard acquisition CTDI<sub>vol</sub>"),
+                                                           required=False)  # nosec
+    plotCTStandardAcquisitionDLPOverTime = forms.BooleanField(label="Standard acquisition name DLP over time",
+                                                              required=False)
+    plotCTStandardAcquisitionCTDIOverTime = forms.BooleanField(
+        label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> over time"), required=False)  # nosec
+    plotCTStandardAcquisitionCTDIvsMass = forms.BooleanField(
+        label=mark_safe("Standard acquisition name CTDI<sub>vol</sub> vs mass"), required=False)  # nosec
+    plotCTStandardAcquisitionDLPvsMass = forms.BooleanField(label="Standard acquisition name DLP vs mass",
+                                                            required=False)
 
     plotCTStandardStudyMeanDLP = forms.BooleanField(label="Standard study DLP", required=False)
     plotCTStandardStudyNumEvents = forms.BooleanField(label="Standard study events", required=False)
@@ -1436,7 +1446,8 @@ class StandardNameFormBase(forms.ModelForm):
 
     class Meta(object):
         model = StandardNames
-        fields = ["standard_name", "modality", "study_description", "requested_procedure_code_meaning", "procedure_code_meaning", "acquisition_protocol"]
+        fields = ["standard_name", "modality", "study_description", "requested_procedure_code_meaning",
+                  "procedure_code_meaning", "acquisition_protocol"]
         widgets = {
             "standard_name": forms.TextInput,
             "modality": forms.HiddenInput,
@@ -1476,18 +1487,23 @@ class StandardNameFormCT(StandardNameFormBase):
 
         all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="CT")
 
-        field_names = [("study_description", "Study description"), ("requested_procedure_code_meaning", "Requested procedure name"), ("procedure_code_meaning", "Procedure name")]
+        field_names = [("study_description", "Study description"),
+                       ("requested_procedure_code_meaning", "Requested procedure name"),
+                       ("procedure_code_meaning", "Procedure name")]
 
         for field_name, label_name in field_names:
             # Exclude items already in the CT standard names entries except for the current value of the field
-            items_to_exclude = StandardNames.objects.all().filter(modality="CT").values(field_name).exclude(**{field_name: None})
+            items_to_exclude = StandardNames.objects.all().filter(modality="CT").values(field_name).exclude(
+                **{field_name: None})
             if "standard_name" in self.initial:
                 items_to_exclude = items_to_exclude.exclude(standard_name=self.initial["standard_name"])
 
-            query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
+            query = all_studies.values_list(field_name, flat=True).exclude(
+                **{field_name + "__in": items_to_exclude}).distinct().order_by(field_name)
             query_choices = [('', 'None')] + [(item, item) for item in query]
 
-            initial_choices = StandardNames.objects.all().filter(modality="CT").exclude(**{field_name: None}).order_by(field_name)
+            initial_choices = StandardNames.objects.all().filter(modality="CT").exclude(**{field_name: None}).order_by(
+                field_name)
             if "standard_name" in self.initial:
                 initial_choices = initial_choices.filter(standard_name=self.initial["standard_name"])
 
@@ -1503,10 +1519,12 @@ class StandardNameFormCT(StandardNameFormBase):
         items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
         if "standard_name" in self.initial:
             items_to_exclude = items_to_exclude.exclude(standard_name=self.initial["standard_name"])
-        query = CtIrradiationEventData.objects.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
+        query = CtIrradiationEventData.objects.values_list(field_name, flat=True).exclude(
+            **{field_name + "__in": items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
 
-        initial_choices = StandardNames.objects.all().filter(modality="CT").exclude(**{field_name: None}).order_by(field_name)
+        initial_choices = StandardNames.objects.all().filter(modality="CT").exclude(**{field_name: None}).order_by(
+            field_name)
         if "standard_name" in self.initial:
             initial_choices = initial_choices.filter(standard_name=self.initial["standard_name"])
 
@@ -1532,20 +1550,26 @@ class StandardNameFormDX(StandardNameFormBase):
         super(StandardNameFormDX, self).__init__(*args, **kwargs)
         self.fields["modality"].initial = "DX"
 
-        all_studies = GeneralStudyModuleAttr.objects.filter(Q(modality_type__iexact="DX") | Q(modality_type__iexact="CR") | Q(modality_type__iexact="PX"))
+        all_studies = GeneralStudyModuleAttr.objects.filter(
+            Q(modality_type__iexact="DX") | Q(modality_type__iexact="CR") | Q(modality_type__iexact="PX"))
 
-        field_names = [("study_description", "Study description"), ("requested_procedure_code_meaning", "Requested procedure name"), ("procedure_code_meaning", "Procedure name")]
+        field_names = [("study_description", "Study description"),
+                       ("requested_procedure_code_meaning", "Requested procedure name"),
+                       ("procedure_code_meaning", "Procedure name")]
 
         for field_name, label_name in field_names:
             # Exclude items already in the DX standard names entries except for the current value of the field
-            items_to_exclude = StandardNames.objects.all().filter(modality="DX").values(field_name).exclude(**{field_name: None})
+            items_to_exclude = StandardNames.objects.all().filter(modality="DX").values(field_name).exclude(
+                **{field_name: None})
             if "standard_name" in self.initial:
                 items_to_exclude = items_to_exclude.exclude(standard_name=self.initial["standard_name"])
 
-            query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
+            query = all_studies.values_list(field_name, flat=True).exclude(
+                **{field_name + "__in": items_to_exclude}).distinct().order_by(field_name)
             query_choices = [('', 'None')] + [(item, item) for item in query]
 
-            initial_choices = StandardNames.objects.all().filter(modality="DX").exclude(**{field_name: None}).order_by(field_name)
+            initial_choices = StandardNames.objects.all().filter(modality="DX").exclude(**{field_name: None}).order_by(
+                field_name)
             if "standard_name" in self.initial:
                 initial_choices = initial_choices.filter(standard_name=self.initial["standard_name"])
 
@@ -1558,15 +1582,19 @@ class StandardNameFormDX(StandardNameFormBase):
             )
 
         q = ["DX", "CR", "PX"]
-        q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
+        q_criteria = reduce(operator.or_, (
+        Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in
+        q))
         field_name, label_name = ("acquisition_protocol", "Acquisition protocol name")
         items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
         if "standard_name" in self.initial:
             items_to_exclude = items_to_exclude.exclude(standard_name=self.initial["standard_name"])
-        query = IrradEventXRayData.objects.filter(q_criteria).values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
+        query = IrradEventXRayData.objects.filter(q_criteria).values_list(field_name, flat=True).exclude(
+            **{field_name + "__in": items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
 
-        initial_choices = StandardNames.objects.all().filter(modality="DX").exclude(**{field_name: None}).order_by(field_name)
+        initial_choices = StandardNames.objects.all().filter(modality="DX").exclude(**{field_name: None}).order_by(
+            field_name)
         if "standard_name" in self.initial:
             initial_choices = initial_choices.filter(standard_name=self.initial["standard_name"])
 
@@ -1594,18 +1622,23 @@ class StandardNameFormMG(StandardNameFormBase):
 
         all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="MG")
 
-        field_names = [("study_description", "Study description"), ("requested_procedure_code_meaning", "Requested procedure name"), ("procedure_code_meaning", "Procedure name")]
+        field_names = [("study_description", "Study description"),
+                       ("requested_procedure_code_meaning", "Requested procedure name"),
+                       ("procedure_code_meaning", "Procedure name")]
 
         for field_name, label_name in field_names:
             # Exclude items already in the MG standard names entries except for the current value of the field
-            items_to_exclude = StandardNames.objects.all().filter(modality="MG").values(field_name).exclude(**{field_name: None})
+            items_to_exclude = StandardNames.objects.all().filter(modality="MG").values(field_name).exclude(
+                **{field_name: None})
             if "standard_name" in self.initial:
                 items_to_exclude = items_to_exclude.exclude(standard_name=self.initial["standard_name"])
 
-            query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
+            query = all_studies.values_list(field_name, flat=True).exclude(
+                **{field_name + "__in": items_to_exclude}).distinct().order_by(field_name)
             query_choices = [('', 'None')] + [(item, item) for item in query]
 
-            initial_choices = StandardNames.objects.all().filter(modality="MG").exclude(**{field_name: None}).order_by(field_name)
+            initial_choices = StandardNames.objects.all().filter(modality="MG").exclude(**{field_name: None}).order_by(
+                field_name)
             if "standard_name" in self.initial:
                 initial_choices = initial_choices.filter(standard_name=self.initial["standard_name"])
 
@@ -1618,15 +1651,19 @@ class StandardNameFormMG(StandardNameFormBase):
             )
 
         q = ["MG"]
-        q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
+        q_criteria = reduce(operator.or_, (
+        Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in
+        q))
         field_name, label_name = ("acquisition_protocol", "Acquisition protocol name")
         items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
         if "standard_name" in self.initial:
             items_to_exclude = items_to_exclude.exclude(standard_name=self.initial["standard_name"])
-        query = IrradEventXRayData.objects.filter(q_criteria).values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
+        query = IrradEventXRayData.objects.filter(q_criteria).values_list(field_name, flat=True).exclude(
+            **{field_name + "__in": items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
 
-        initial_choices = StandardNames.objects.all().filter(modality="MG").exclude(**{field_name: None}).order_by(field_name)
+        initial_choices = StandardNames.objects.all().filter(modality="MG").exclude(**{field_name: None}).order_by(
+            field_name)
         if "standard_name" in self.initial:
             initial_choices = initial_choices.filter(standard_name=self.initial["standard_name"])
 
@@ -1654,18 +1691,23 @@ class StandardNameFormRF(StandardNameFormBase):
 
         all_studies = GeneralStudyModuleAttr.objects.filter(modality_type__iexact="RF")
 
-        field_names = [("study_description", "Study description"), ("requested_procedure_code_meaning", "Requested procedure name"), ("procedure_code_meaning", "Procedure name")]
+        field_names = [("study_description", "Study description"),
+                       ("requested_procedure_code_meaning", "Requested procedure name"),
+                       ("procedure_code_meaning", "Procedure name")]
 
         for field_name, label_name in field_names:
             # Exclude items already in the RF standard names entries except for the current value of the field
-            items_to_exclude = StandardNames.objects.all().filter(modality="RF").values(field_name).exclude(**{field_name: None})
+            items_to_exclude = StandardNames.objects.all().filter(modality="RF").values(field_name).exclude(
+                **{field_name: None})
             if "standard_name" in self.initial:
                 items_to_exclude = items_to_exclude.exclude(standard_name=self.initial["standard_name"])
 
-            query = all_studies.values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
+            query = all_studies.values_list(field_name, flat=True).exclude(
+                **{field_name + "__in": items_to_exclude}).distinct().order_by(field_name)
             query_choices = [('', 'None')] + [(item, item) for item in query]
 
-            initial_choices = StandardNames.objects.all().filter(modality="RF").exclude(**{field_name: None}).order_by(field_name)
+            initial_choices = StandardNames.objects.all().filter(modality="RF").exclude(**{field_name: None}).order_by(
+                field_name)
             if "standard_name" in self.initial:
                 initial_choices = initial_choices.filter(standard_name=self.initial["standard_name"])
 
@@ -1678,15 +1720,19 @@ class StandardNameFormRF(StandardNameFormBase):
             )
 
         q = ["RF"]
-        q_criteria = reduce(operator.or_, (Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in q))
+        q_criteria = reduce(operator.or_, (
+        Q(projection_xray_radiation_dose__general_study_module_attributes__modality_type__icontains=item) for item in
+        q))
         field_name, label_name = ("acquisition_protocol", "Acquisition protocol name")
         items_to_exclude = StandardNames.objects.all().values(field_name).exclude(**{field_name: None})
         if "standard_name" in self.initial:
             items_to_exclude = items_to_exclude.exclude(standard_name=self.initial["standard_name"])
-        query = IrradEventXRayData.objects.filter(q_criteria).values_list(field_name, flat=True).exclude(**{field_name+"__in":items_to_exclude}).distinct().order_by(field_name)
+        query = IrradEventXRayData.objects.filter(q_criteria).values_list(field_name, flat=True).exclude(
+            **{field_name + "__in": items_to_exclude}).distinct().order_by(field_name)
         query_choices = [('', 'None')] + [(item, item) for item in query]
 
-        initial_choices = StandardNames.objects.all().filter(modality="RF").exclude(**{field_name: None}).order_by(field_name)
+        initial_choices = StandardNames.objects.all().filter(modality="RF").exclude(**{field_name: None}).order_by(
+            field_name)
         if "standard_name" in self.initial:
             initial_choices = initial_choices.filter(standard_name=self.initial["standard_name"])
 

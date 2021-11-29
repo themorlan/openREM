@@ -18,7 +18,6 @@ from remapp.interface.mod_filters import (
 from remapp.models import (
     GeneralStudyModuleAttr,
     create_user_profile,
-    StandardNames,
     StandardNameSettings,
 )
 from remapp.views_admin import (
@@ -431,7 +430,7 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             ]
             if any(charts_of_interest):
                 name_fields.append("projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name")
-                
+
         value_fields = []
         value_multipliers = []
         charts_of_interest = [
@@ -446,7 +445,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             charts_of_interest.append(user_profile.plotMGStandardAverageAGD)
             charts_of_interest.append(user_profile.plotMGStandardAcquisitionAGDOverTime)
         if any(charts_of_interest):
-            value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose")
+            value_fields.append(
+                "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__average_glandular_dose"
+            )
             value_multipliers.append(1)
 
         charts_of_interest = [user_profile.plotMGkVpvsThickness]
@@ -460,7 +461,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
         if enable_standard_names:
             charts_of_interest.append(user_profile.plotMGStandardmAsvsThickness)
         if any(charts_of_interest):
-            value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure")
+            value_fields.append(
+                "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure"
+            )
             value_multipliers.append(0.001)
 
         charts_of_interest = [
@@ -475,7 +478,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             charts_of_interest.append(user_profile.plotMGStandardmAsvsThickness)
             charts_of_interest.append(user_profile.plotMGStandardAverageAGDvsThickness)
         if any(charts_of_interest):
-            value_fields.append("projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness")
+            value_fields.append(
+                "projectionxrayradiationdose__irradeventxraydata__irradeventxraymechanicaldata__compression_thickness"
+            )
             value_multipliers.append(1)
 
         date_fields = []
@@ -505,7 +510,9 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
         # exclude all entries where these are None as these are not required for standard name charts.
         queryset = f.qs
         if name_fields == ["projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"]:
-            queryset = queryset.exclude(projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name__isnull=True)
+            queryset = queryset.exclude(
+                projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name__isnull=True
+            )
 
         df = create_dataframe(
             queryset,
@@ -737,9 +744,16 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
 
         if any(charts_of_interest):
             # Exclude "Blank" and "blank" standard_acquisition_name data
-            df_without_blanks = df[(df["projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"] != "blank") & (df["projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"] != "Blank")].copy()
+            df_without_blanks = df[
+                (df["projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"] != "blank") &
+                (df["projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"] != "Blank")
+                ].copy()
             # Remove any unused categories (this will include "Blank" or "blank")
-            df_without_blanks["projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"] = df_without_blanks["projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"].cat.remove_unused_categories()
+            df_without_blanks[
+                "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+            ] = df_without_blanks[
+                "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+            ].cat.remove_unused_categories()
 
             if user_profile.plotMGStandardAverageAGDvsThickness or user_profile.plotMGStandardAverageAGD:
     
@@ -804,10 +818,10 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
                     modality_text = "CT"
                     chart_message = ""
     
-                    new_charts = generate_average_chart_group(average_choices, chart_message, df_without_blanks, modality_text,
-                                                              name_field, name_text, return_as_dict, return_structure,
-                                                              units_text, user_profile, value_field, value_text,
-                                                              variable_name_start, variable_value_name,
+                    new_charts = generate_average_chart_group(average_choices, chart_message, df_without_blanks,
+                                                              modality_text, name_field, name_text, return_as_dict,
+                                                              return_structure, units_text, user_profile, value_field,
+                                                              value_text, variable_name_start, variable_value_name,
                                                               user_profile.plotMGInitialSortingChoice)
     
                     return_structure = {**return_structure, **new_charts}
@@ -1032,9 +1046,15 @@ def mg_plot_calculations(f, user_profile, return_as_dict=False):
             if any(charts_of_interest):
 
                 # Create a standard name data frame - remove any blank standard names
-                standard_name_df = df[(df["standard_names__standard_name"] != "blank") & (df["standard_names__standard_name"] != "Blank")].copy()
+                standard_name_df = df[
+                    (df["standard_names__standard_name"] != "blank") &
+                    (df["standard_names__standard_name"] != "Blank")].copy()
                 # Remove any unused categories (this will include "Blank" or "blank")
-                standard_name_df["standard_names__standard_name"] = standard_name_df["standard_names__standard_name"].cat.remove_unused_categories()
+                standard_name_df[
+                    "standard_names__standard_name"
+                ] = standard_name_df[
+                    "standard_names__standard_name"
+                ].cat.remove_unused_categories()
 
                 if user_profile.plotMGStandardStudyPerDayAndHour:
                     df_time_series_per_weekday = create_dataframe_weekdays(

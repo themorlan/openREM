@@ -1,10 +1,6 @@
 # pylint: disable=too-many-lines
 import logging
 from datetime import datetime
-from django.db.models import (
-    Subquery,
-    OuterRef,
-)
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -19,7 +15,6 @@ from remapp.interface.mod_filters import ct_acq_filter
 from remapp.models import (
     create_user_profile,
     CommonVariables,
-    StandardNames,
     StandardNameSettings,
 )
 from remapp.views_admin import (
@@ -52,6 +47,7 @@ logger = logging.getLogger(__name__)
 def generate_required_ct_charts_list(profile):
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
+
     """Obtain a list of dictionaries containing the title string and base
     variable name for each required chart"""
 
@@ -259,28 +255,28 @@ def generate_required_ct_charts_list(profile):
 
         if profile.plotCTStandardAcquisitionMeanCTDI:
             if profile.plotMean:
-                required_charts.append(
+                required_charts.append(  # nosec
                     {
                         "title": mark_safe("Chart of standard acquisition name mean CTDI<sub>vol</sub>"),
                         "var_name": "standardAcquisitionMeanCTDI",
                     }
                 )
             if profile.plotMedian:
-                required_charts.append(
+                required_charts.append(  # nosec
                     {
                         "title": mark_safe("Chart of standard acquisition name median CTDI<sub>vol</sub>"),
                         "var_name": "standardAcquisitionMedianCTDI",
                     }
                 )
             if profile.plotBoxplots:
-                required_charts.append(
+                required_charts.append(  # nosec
                     {
                         "title": mark_safe("Boxplot of standard acquisition name CTDI<sub>vol</sub>"),
                         "var_name": "standardAcquisitionBoxplotCTDI",
                     }
                 )
             if profile.plotHistograms:
-                required_charts.append(
+                required_charts.append(  # nosec
                     {
                         "title": mark_safe("Histogram of standard acquisition name CTDI<sub>vol</sub>"),
                         "var_name": "standardAcquisitionHistogramCTDI",
@@ -673,7 +669,7 @@ def generate_required_ct_charts_list(profile):
 
 @login_required
 def ct_summary_chart_data(request):
-    """Obtain data for CT charts Ajax call"""
+    """Obtain data for CT charts Ajax call."""
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = ct_acq_filter(request.GET, pid=pid)
 
@@ -857,7 +853,9 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_value",
             "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
         ]:
-            queryset = queryset.exclude(ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name__isnull=True)
+            queryset = queryset.exclude(
+                ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name__isnull=True
+            )
 
         df = create_dataframe(
             queryset,
@@ -1109,9 +1107,16 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             ]
             if any(charts_of_interest):
                 # Exclude "Blank" and "blank" standard_acqusition_name data
-                df_without_blanks = df[(df["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"] != "blank") & (df["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"] != "Blank")].copy()
+                df_without_blanks = df[
+                    (df["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"] != "blank") &
+                    (df["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"] != "Blank")
+                    ].copy()
                 # Remove any unused categories (this will include "Blank" or "blank")
-                df_without_blanks["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"] = df_without_blanks["ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"].cat.remove_unused_categories()
+                df_without_blanks[
+                    "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
+                ] = df_without_blanks[
+                    "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
+                ].cat.remove_unused_categories()
 
                 if user_profile.plotCTStandardAcquisitionFreq:
                     parameter_dict = {
@@ -1461,9 +1466,15 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             if any(charts_of_interest):
 
                 # Create a standard name data frame - remove any blank standard names
-                standard_name_df = df[(df["standard_names__standard_name"] != "blank") & (df["standard_names__standard_name"] != "Blank")].copy()
+                standard_name_df = df[
+                    (df["standard_names__standard_name"] != "blank") &
+                    (df["standard_names__standard_name"] != "Blank")].copy()
                 # Remove any unused categories (this will include "Blank" or "blank")
-                standard_name_df["standard_names__standard_name"] = standard_name_df["standard_names__standard_name"].cat.remove_unused_categories()
+                standard_name_df[
+                    "standard_names__standard_name"
+                ] = standard_name_df[
+                    "standard_names__standard_name"
+                ].cat.remove_unused_categories()
 
                 if user_profile.plotCTStandardStudyMeanDLP:
 

@@ -12,7 +12,6 @@ from remapp.forms import (
 from remapp.interface.mod_filters import dx_acq_filter
 from remapp.models import (
     create_user_profile,
-    StandardNames,
     StandardNameSettings,
 )
 from remapp.views_admin import (
@@ -435,7 +434,7 @@ def generate_required_dx_charts_list(profile):
                         "var_name": "standardStudyHistogramDAP",
                     }
                 )
-    
+
         if profile.plotDXStandardStudyFreq:
             required_charts.append(
                 {
@@ -565,7 +564,7 @@ def generate_required_dx_charts_list(profile):
 
 @login_required
 def dx_summary_chart_data(request):
-    """Obtain data for Ajax chart call"""
+    """Obtain data for Ajax chart call."""
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = dx_acq_filter(request.GET, pid=pid)
 
@@ -592,7 +591,7 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
-    """Calculations for radiographic charts"""
+    """Calculations for radiographic charts."""
 
     # Return an empty structure if the queryset is empty
     if not f.qs.exists():
@@ -762,7 +761,9 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
         # exclude all entries where these are None as these are not required for standard name charts.
         queryset = f.qs
         if name_fields == ["projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"]:
-            queryset = queryset.exclude(projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name__isnull=True)
+            queryset = queryset.exclude(
+                projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name__isnull=True
+            )
 
         df = create_dataframe(
             queryset,
@@ -1023,10 +1024,10 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     modality_text = "DX"
                     chart_message = ""
     
-                    new_charts = generate_average_chart_group(average_choices, chart_message, df_without_blanks, modality_text,
-                                                              name_field, name_text, return_as_dict, return_structure,
-                                                              units_text, user_profile, value_field, value_text,
-                                                              variable_name_start, variable_value_name,
+                    new_charts = generate_average_chart_group(average_choices, chart_message, df_without_blanks,
+                                                              modality_text, name_field, name_text, return_as_dict,
+                                                              return_structure, units_text, user_profile, value_field,
+                                                              value_text, variable_name_start, variable_value_name,
                                                               user_profile.plotDXInitialSortingChoice)
     
                     return_structure = {**return_structure, **new_charts}
@@ -1061,10 +1062,10 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     modality_text = "DX"
                     chart_message = ""
     
-                    new_charts = generate_average_chart_group(average_choices, chart_message, df_without_blanks, modality_text,
-                                                              name_field, name_text, return_as_dict, return_structure,
-                                                              units_text, user_profile, value_field, value_text,
-                                                              variable_name_start, variable_value_name,
+                    new_charts = generate_average_chart_group(average_choices, chart_message, df_without_blanks,
+                                                              modality_text, name_field, name_text, return_as_dict,
+                                                              return_structure, units_text, user_profile, value_field,
+                                                              value_text, variable_name_start, variable_value_name,
                                                               user_profile.plotDXInitialSortingChoice)
     
                     return_structure = {**return_structure, **new_charts}
@@ -1177,7 +1178,6 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     parameter_dict = {  # pylint: disable=line-too-long
                         "df_name_col": "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name",
                         "df_value_col": "projectionxrayradiationdose__irradeventxraydata__irradeventxraysourcedata__exposure__exposure",
-                        # pylint: disable=line-too-long
                         "df_date_col": "study_date",
                         "name_title": "Standard acquisition name",
                         "value_title": "mAs",
@@ -1518,9 +1518,15 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             if any(charts_of_interest):
 
                 # Create a standard name data frame - remove any blank standard names
-                standard_name_df = df[(df["standard_names__standard_name"] != "blank") & (df["standard_names__standard_name"] != "Blank")].copy()
+                standard_name_df = df[
+                    (df["standard_names__standard_name"] != "blank") &
+                    (df["standard_names__standard_name"] != "Blank")].copy()
                 # Remove any unused categories (this will include "Blank" or "blank")
-                standard_name_df["standard_names__standard_name"] = standard_name_df["standard_names__standard_name"].cat.remove_unused_categories()
+                standard_name_df[
+                    "standard_names__standard_name"
+                ] = standard_name_df[
+                    "standard_names__standard_name"
+                ].cat.remove_unused_categories()
 
                 if user_profile.plotDXStandardStudyMeanDAP:
         
@@ -1534,10 +1540,10 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
                     modality_text = "DX"
                     chart_message = ""
         
-                    new_charts = generate_average_chart_group(average_choices, chart_message, standard_name_df, modality_text,
-                                                              name_field, name_text, return_as_dict, return_structure,
-                                                              units_text, user_profile, value_field, value_text,
-                                                              variable_name_start, variable_value_name,
+                    new_charts = generate_average_chart_group(average_choices, chart_message, standard_name_df,
+                                                              modality_text, name_field, name_text, return_as_dict,
+                                                              return_structure, units_text, user_profile, value_field,
+                                                              value_text, variable_name_start, variable_value_name,
                                                               user_profile.plotDXInitialSortingChoice)
         
                     return_structure = {**return_structure, **new_charts}

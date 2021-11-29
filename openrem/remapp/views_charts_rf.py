@@ -18,7 +18,6 @@ from remapp.interface.mod_filters import (
 from remapp.models import (
     GeneralStudyModuleAttr,
     create_user_profile,
-    StandardNames,
     StandardNameSettings,
 )
 from remapp.views_admin import (
@@ -301,7 +300,7 @@ def rf_summary_chart_data(request):
                 .distinct(),
             )
         else:
-            f = RFFSummaryListFilter(
+            f = RFSummaryListFilter(
                 request.GET,
                 queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF")
                 .order_by()
