@@ -32,18 +32,13 @@
 from decimal import Decimal, InvalidOperation
 import logging
 
-import django_filters
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import (
-    Q,
-    Subquery,
-    OuterRef,
-)
+from django.db.models import Q
+import django_filters
 
 from remapp.models import (
     GeneralStudyModuleAttr,
-    IrradEventXRayData,
     CtIrradiationEventData,
     StandardNames,
     StandardNameSettings,
@@ -394,8 +389,6 @@ def _specify_event_numbers(queryset, name, value):
             filtered = queryset.filter(number_of_stationary__gt=min_value)
         else:
             return queryset
-        return filtered
-        return queryset
     if "num_events" in name:
         filtered = queryset.filter(number_of_events__exact=value)
     elif "num_spiral_events" in name:
@@ -408,7 +401,6 @@ def _specify_event_numbers(queryset, name, value):
         filtered = queryset.filter(number_of_stationary__exact=value)
     else:
         return queryset
-    return filtered
 
 
 class CTSummaryListFilter(django_filters.FilterSet):

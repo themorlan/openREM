@@ -442,7 +442,7 @@ def generate_required_dx_charts_list(profile):
                     "var_name": "standardStudyFrequency",
                 }
             )
-    
+
         if profile.plotDXStandardStudyPerDayAndHour:
             required_charts.append(
                 {
@@ -450,7 +450,7 @@ def generate_required_dx_charts_list(profile):
                     "var_name": "standardStudyWorkload",
                 }
             )
-    
+
         if profile.plotDXStandardStudyDAPvsMass:
             required_charts.append(
                 {
@@ -592,7 +592,6 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
     """Calculations for radiographic charts."""
-
     # Return an empty structure if the queryset is empty
     if not f.qs.exists():
         return {}

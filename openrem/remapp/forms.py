@@ -927,8 +927,8 @@ class CTChartOptionsDisplayForm(forms.Form):
 class CTChartOptionsDisplayFormIncStandard(CTChartOptionsDisplayForm):
     plotCTStandardAcquisitionFreq = forms.BooleanField(label="Standard acquisition name frequency", required=False)
     plotCTStandardAcquisitionMeanDLP = forms.BooleanField(label="Standard acquisition DLP", required=False)
-    plotCTStandardAcquisitionMeanCTDI = forms.BooleanField(label=mark_safe("Standard acquisition CTDI<sub>vol</sub>"),
-                                                           required=False)  # nosec
+    plotCTStandardAcquisitionMeanCTDI = forms.BooleanField(label=mark_safe("Standard acquisition CTDI<sub>vol</sub>"),  # nosec
+                                                           required=False)
     plotCTStandardAcquisitionDLPOverTime = forms.BooleanField(label="Standard acquisition name DLP over time",
                                                               required=False)
     plotCTStandardAcquisitionCTDIOverTime = forms.BooleanField(

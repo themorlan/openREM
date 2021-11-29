@@ -697,7 +697,6 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
     """CT chart data calculations"""
-
     # Return an empty structure if the queryset is empty
     if not f.qs.exists():
         return {}
