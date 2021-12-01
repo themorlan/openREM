@@ -38,9 +38,14 @@ import uuid
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
+from django.db.models import Q
 from xlsxwriter.workbook import Workbook
 
-from remapp.models import Exports
+from remapp.models import (
+    Exports,
+    StandardNames,
+    StandardNameSettings,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -105,6 +110,14 @@ def common_headers(modality=None, pid=False, name=None, patid=None):
     :param patid: has patient ID been selected for export
     :return: list of strings
     """
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
     pid_headings = []
     if pid and name:
         pid_headings += ["Patient name"]
@@ -131,7 +144,15 @@ def common_headers(modality=None, pid=False, name=None, patid=None):
     headers += [
         "Test patient?",
         "Study description",
+    ]
+    if enable_standard_names:
+        headers += ["Standard study name (study)",]
+    headers += [
         "Requested procedure",
+    ]
+    if enable_standard_names:
+        headers += ["Standard study name (request)",]
+    headers += [
         "Study Comments",
         "No. events",
     ]
@@ -262,6 +283,13 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
     :param patid: has patient ID been selected for export
     :return: the common data for that exam
     """
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
 
     patient_birth_date = None
     patient_name = None
@@ -402,7 +430,44 @@ def get_common_data(modality, exams, pid=None, name=None, patid=None):
     examdata += [
         not_patient_indicator,
         exams.study_description,
+    ]
+
+    std_name_modality = modality
+    if std_name_modality in ["CR", "PX"]:
+        std_name_modality = "DX"
+
+    std_name = None
+    if enable_standard_names:
+        std_names = StandardNames.objects.filter(modality=std_name_modality)
+
+        # Get standard name that matches study_description
+        std_name = std_names.filter(
+            Q(study_description=exams.study_description) &
+            Q(study_description__isnull=False)
+        ).values_list("standard_name", flat=True)
+
+        if std_name:
+            examdata += [list(std_name)[0],]
+        else:
+            examdata += ["",]
+
+    examdata += [
         exams.requested_procedure_code_meaning,
+    ]
+
+    if enable_standard_names:
+        # Get standard name that matches requested_procedure_code_meaning
+        std_name = std_names.filter(
+            Q(requested_procedure_code_meaning=exams.requested_procedure_code_meaning) &
+            Q(requested_procedure_code_meaning__isnull=False)
+        ).values_list("standard_name", flat=True)
+
+        if std_name:
+            examdata += [list(std_name)[0],]
+        else:
+            examdata += ["",]
+
+    examdata += [
         comment,
     ]
     if modality in "CT":
