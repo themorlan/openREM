@@ -33,6 +33,8 @@ import logging
 from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
 
+from remapp.models import StandardNameSettings
+
 from .export_common import (
     text_and_date_formats,
     common_headers,
@@ -149,10 +151,22 @@ def _series_headers(max_events):
     :param max_events: number of series
     :return: headers as a list of strings
     """
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
     series_headers = []
     for series_number in range(int(max_events)):
+        series_headers += ["E" + str(series_number + 1) + " Protocol"]
+
+        if enable_standard_names:
+            series_headers += ["E" + str(series_number + 1) + " Standard acquisition name"]
+
         series_headers += [
-            "E" + str(series_number + 1) + " Protocol",
             "E" + str(series_number + 1) + " Anatomy",
             "E" + str(series_number + 1) + " Image view",
             "E" + str(series_number + 1) + " Exposure control mode",
@@ -183,6 +197,14 @@ def _dx_get_series_data(s):
     :param s: series
     :return: series data
     """
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
     source_data = _get_source_data(s)
     detector_data = _get_detector_data(s)
 
@@ -196,7 +218,21 @@ def _dx_get_series_data(s):
     except AttributeError:
         anatomical_structure = ""
 
-    series_data = [s.acquisition_protocol, anatomical_structure]
+    series_data = [s.acquisition_protocol]
+
+    if enable_standard_names:
+        try:
+            standard_protocol = s.standard_protocols.first().standard_name
+        except AttributeError:
+            standard_protocol = ""
+
+        if standard_protocol:
+            series_data += [standard_protocol]
+        else:
+            series_data += [""]
+
+    series_data += [anatomical_structure]
+
     try:
         series_data += [s.image_view.code_meaning]
     except AttributeError:
@@ -380,8 +416,13 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     # Some prep
     commonheaders = common_headers(pid=pid, name=name, patid=patid)
     commonheaders += ["DAP total (cGy.cm^2)"]
-    protocolheaders = commonheaders + [
-        "Protocol",
+
+    protocolheaders = commonheaders + ["Protocol"]
+
+    if enable_standard_names:
+        protocolheaders +=  ["Standard acquisition name"]
+
+    protocolheaders = protocolheaders + [
         "Anatomy",
         "Image view",
         "Exposure control mode",

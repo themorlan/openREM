@@ -34,6 +34,8 @@ import logging
 from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
 
+from remapp.models import StandardNameSettings
+
 from .export_common import (
     common_headers,
     text_and_date_formats,
@@ -59,12 +61,27 @@ def _series_headers(max_events):
     :param max_events: number of series
     :return: headers as a list of strings
     """
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
+
     series_headers = []
     for series_number in range(max_events):
         series_headers += [
             "E" + str(series_number + 1) + " View",
             "E" + str(series_number + 1) + " Laterality",
             "E" + str(series_number + 1) + " Acquisition",
+        ]
+
+        if enable_standard_names:
+            series_headers += ["E" + str(series_number + 1) + " Standard acquisition name"]
+
+        series_headers += [
             "E" + str(series_number + 1) + " Thickness",
             "E" + str(series_number + 1) + " Radiological thickness",
             "E" + str(series_number + 1) + " Force",
@@ -160,6 +177,21 @@ def _mg_get_series_data(event):
         view,
         laterality,
         event.acquisition_protocol,
+    ]
+
+    if enable_standard_names:
+        try:
+            standard_protocol = event.standard_protocols.first().standard_name
+        except AttributeError:
+            standard_protocol = ""
+
+        if standard_protocol:
+            series_data += [standard_protocol]
+        else:
+            series_data += [""]
+
+
+    series_data += [
         compression_thickness,
         radiological_thickness,
         compression_force,
@@ -197,6 +229,13 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
 
     from remapp.models import GeneralStudyModuleAttr
     from ..interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
 
     datestamp = datetime.datetime.now()
     if xlsx:
@@ -266,6 +305,12 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
         "View",
         "Laterality",
         "Acquisition",
+    ]
+
+    if enable_standard_names:
+        headings += ["Standard acquisition name"]
+
+    headings += [
         "Thickness",
         "Radiological thickness",
         "Force",

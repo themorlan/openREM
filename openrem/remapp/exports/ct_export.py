@@ -33,6 +33,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext as _
 from celery import shared_task
 
+from remapp.models import StandardNameSettings
+
 from .export_common import (
     get_common_data,
     common_headers,
@@ -63,6 +65,13 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     from django.db.models import Max
     from .export_common import text_and_date_formats, generate_sheets, sheet_name
     from ..interface.mod_filters import ct_acq_filter
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
 
     datestamp = datetime.datetime.now()
     tsk = create_export_task(
@@ -97,8 +106,12 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     # Some prep
     commonheaders = common_headers(pid=pid, name=name, patid=patid)
     commonheaders += ["DLP total (mGy.cm)"]
-    protocolheaders = commonheaders + [
-        "Protocol",
+    protocolheaders = commonheaders + ["Protocol"]
+
+    if enable_standard_names:
+        protocolheaders += ["Standard acquisition name"]
+
+    protocolheaders = protocolheaders + [
         "Type",
         "Exposure time",
         "Scanning length",
@@ -320,10 +333,21 @@ def _generate_all_data_headers_ct(max_events):
     :return: list of headers
     """
 
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
     repeating_series_headers = []
     for h in range(int(max_events)):
+        repeating_series_headers += ["E" + str(h + 1) + " Protocol"]
+
+        if enable_standard_names:
+            repeating_series_headers += ["E" + str(h + 1) + " Standard acquisition name"]
+
         repeating_series_headers += [
-            "E" + str(h + 1) + " Protocol",
             "E" + str(h + 1) + " Type",
             "E" + str(h + 1) + " Exposure time",
             "E" + str(h + 1) + " Scanning length",
@@ -355,6 +379,13 @@ def _generate_all_data_headers_ct(max_events):
 def _ct_get_series_data(s):
     from collections import OrderedDict
 
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
     try:
         if s.ctdiw_phantom_type.code_value == "113691":
             phantom = "32 cm"
@@ -372,6 +403,20 @@ def _ct_get_series_data(s):
 
     seriesdata = [
         s.acquisition_protocol,
+    ]
+
+    if enable_standard_names:
+        try:
+            standard_protocol = s.standard_protocols.first().standard_name
+        except AttributeError:
+            standard_protocol = ""
+
+        if standard_protocol:
+            seriesdata += [standard_protocol]
+        else:
+            seriesdata += [""]
+
+    seriesdata = seriesdata + [
         ct_acquisition_type,
         s.exposure_time,
         s.scanninglength_set.get().scanning_length,

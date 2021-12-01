@@ -773,6 +773,25 @@ def create_summary_sheet(task, studies, book, summary_sheet, sheet_list):
         summary_sheet.write(row + 6, 7, item[1]["count"])
     summary_sheet.set_column("G:G", 15)
 
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
+    if enable_standard_names:
+        # Generate list of standard study names
+        summary_sheet.write(5, 9, "Standard study name")
+        summary_sheet.write(5, 10, "Frequency")
+        standard_names = studies.values("standard_names__standard_name").annotate(
+            n=Count("pk")
+        )
+        for row, item in enumerate(standard_names.order_by("n").reverse()):
+            summary_sheet.write(row + 6, 9, item["standard_names__standard_name"])
+            summary_sheet.write(row + 6, 10, item["n"])
+        summary_sheet.set_column("J:J", 25)
+
 
 def abort_if_zero_studies(num_studies, tsk):
     """Function to update progress and status if filter is empty

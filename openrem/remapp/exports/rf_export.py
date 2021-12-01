@@ -35,7 +35,12 @@ from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Avg, Max, Min
 
-from remapp.models import GeneralStudyModuleAttr, IrradEventXRayData
+from remapp.models import (
+    GeneralStudyModuleAttr,
+    IrradEventXRayData,
+    StandardNameSettings,
+)
+
 from ..exports.export_common import (
     text_and_date_formats,
     common_headers,
@@ -156,6 +161,14 @@ def _get_series_data(event, filter_data):
     :param event: evnt in question
     :return: list of data
     """
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
     try:
         source_data = event.irradeventxraysourcedata_set.get()
         pulse_rate = source_data.pulse_rate
@@ -190,6 +203,20 @@ def _get_series_data(event, filter_data):
         str(event.date_time_started),
         event.irradiation_event_type.code_meaning,
         event.acquisition_protocol,
+    ]
+
+    if enable_standard_names:
+        try:
+            standard_protocol = event.standard_protocols.first().standard_name
+        except AttributeError:
+            standard_protocol = ""
+
+        if standard_protocol:
+            series_data += [standard_protocol]
+        else:
+            series_data += [""]
+
+    series_data = series_data + [
         event.acquisition_plane.code_meaning,
         ii_field_size,
         filter_data["filter_material"],
@@ -255,6 +282,13 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     :return: Saves xlsx file into Media directory for user to download
     """
 
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
     datestamp = datetime.datetime.now()
     tsk = create_export_task(
         celery_uuid=rfxlsx.request.id,
@@ -304,6 +338,12 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Time",
         "Type",
         "Protocol",
+    ]
+
+    if enable_standard_names:
+        protocolheaders += ["Standard acquisition name",]
+
+    protocolheaders += [
         "Plane",
         "Field size",
         "Filter material",
@@ -479,6 +519,20 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
                 examdata += [
                     event_type,
                     protocol,
+                ]
+
+                if enable_standard_names:
+                    try:
+                        standard_protocol = inst[0].standard_protocols.first().standard_name
+                    except AttributeError:
+                        standard_protocol = ""
+
+                    if standard_protocol:
+                        examdata += [standard_protocol]
+                    else:
+                        examdata += [""]
+
+                examdata += [
                     similarexposures.count(),
                     plane,
                     pulse_rate,
@@ -574,6 +628,12 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         all_data_headers += [
             "G" + str(h + 1) + " Type",
             "G" + str(h + 1) + " Protocol",
+        ]
+
+        if enable_standard_names:
+            all_data_headers += ["G" + str(h + 1) + " Standard acquisition name"]
+
+        all_data_headers += [
             "G" + str(h + 1) + " No. exposures",
             "G" + str(h + 1) + " Plane",
             "G" + str(h + 1) + " Pulse rate",
