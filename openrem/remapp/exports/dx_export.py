@@ -384,6 +384,13 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     from ..interface.mod_filters import dx_acq_filter
 
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
     datestamp = datetime.datetime.now()
     tsk = create_export_task(
         celery_uuid=dxxlsx.request.id,

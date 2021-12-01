@@ -110,6 +110,14 @@ def _mg_get_series_data(event):
     :param event: event level object
     :return: series data as list of strings
     """
+
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
     try:
         mechanical_data = event.irradeventxraymechanicaldata_set.get()
         compression_thickness = mechanical_data.compression_thickness
