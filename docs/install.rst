@@ -7,9 +7,13 @@ Install specific package versions
 
 *Activate virtualenv if you are using one*
 
+Several packages have moved on and we need to pin old versions:
+
 .. sourcecode:: bash
 
     pip install django-crispy-forms==1.8.1
+    pip install django-solo==1.1.5
+    pip install flower==0.9.5
 
 Windows only - install Celery
 =============================
