@@ -57,7 +57,12 @@ from ..exports.export_common import (
     create_export_task,
     get_patient_study_data,
 )
-from ..interface.mod_filters import RFSummaryListFilter, RFFilterPlusPid
+from ..interface.mod_filters import (
+    RFSummaryListFilter,
+    RFFilterPlusPid,
+    RFFilterPlusStdNames,
+    RFFilterPlusPidPlusStdNames,
+)
 from ..tools.get_values import return_for_export
 
 logger = logging.getLogger(__name__)
@@ -306,15 +311,28 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     # Get the data
     if pid:
-        df_filtered_qs = RFFilterPlusPid(
-            filterdict,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
-        )
+        if enable_standard_names:
+            df_filtered_qs = RFFilterPlusPidPlusStdNames(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
+            )
+        else:
+            df_filtered_qs = RFFilterPlusPid(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
+            )
     else:
-        df_filtered_qs = RFSummaryListFilter(
-            filterdict,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
-        )
+        if enable_standard_names:
+            df_filtered_qs = RFFilterPlusStdNames(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
+            )
+        else:
+            df_filtered_qs = RFSummaryListFilter(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
+            )
+
     e = df_filtered_qs.qs
 
     tsk.num_records = e.count()
@@ -421,6 +439,14 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
                     filter_thick = None
 
                 protocol = inst[0].acquisition_protocol
+
+                standard_protocol = ""
+                if enable_standard_names:
+                    try:
+                        standard_protocol = inst[0].standard_protocols.first().standard_name
+                    except AttributeError:
+                        standard_protocol = ""
+
                 event_type = inst[0].irradiation_event_type.code_meaning
 
                 similarexposures = inst
@@ -522,11 +548,6 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
                 ]
 
                 if enable_standard_names:
-                    try:
-                        standard_protocol = inst[0].standard_protocols.first().standard_name
-                    except AttributeError:
-                        standard_protocol = ""
-
                     if standard_protocol:
                         examdata += [standard_protocol]
                     else:
@@ -692,6 +713,13 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
     :return: Saves csv file into Media directory for user to download
     """
 
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
     datestamp = datetime.datetime.now()
     tsk = create_export_task(
         celery_uuid=exportFL2excel.request.id,
@@ -709,15 +737,28 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
 
     # Get the data!
     if pid:
-        df_filtered_qs = RFFilterPlusPid(
-            filterdict,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
-        )
+        if enable_standard_names:
+            df_filtered_qs = RFFilterPlusPidPlusStdNames(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
+            )
+        else:
+            df_filtered_qs = RFFilterPlusPid(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
+            )
     else:
-        df_filtered_qs = RFSummaryListFilter(
-            filterdict,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
-        )
+        if enable_standard_names:
+            df_filtered_qs = RFFilterPlusStdNames(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
+            )
+        else:
+            df_filtered_qs = RFSummaryListFilter(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
+            )
+
     e = df_filtered_qs.qs
 
     tsk.num_records = e.count()
