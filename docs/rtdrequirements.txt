@@ -17,5 +17,5 @@ testfixtures==6.0
 mock
 https://bitbucket.org/edmcdonagh/pynetdicom/get/default.tar.gz#egg=pynetdicom-0.8.2b2
 sphinxcontrib-programoutput
-sphinxcontrib-autoprogram
+sphinxcontrib-autoprogram==0.1.5
 sphinx-argparse
