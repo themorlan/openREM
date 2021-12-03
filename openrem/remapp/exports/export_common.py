@@ -743,7 +743,7 @@ def create_summary_sheet(task, studies, book, summary_sheet, sheet_list):
     # Generate list of Study Descriptions
     summary_sheet.write(5, 0, "Study Description")
     summary_sheet.write(5, 1, "Frequency")
-    study_descriptions = studies.values("study_description").annotate(n=Count("pk"))
+    study_descriptions = studies.values("study_description").annotate(n=Count("pk", distinct=True))
     for row, item in enumerate(study_descriptions.order_by("n").reverse()):
         summary_sheet.write(row + 6, 0, item["study_description"])
         summary_sheet.write(row + 6, 1, item["n"])
@@ -753,7 +753,7 @@ def create_summary_sheet(task, studies, book, summary_sheet, sheet_list):
     summary_sheet.write(5, 3, "Requested Procedure")
     summary_sheet.write(5, 4, "Frequency")
     requested_procedure = studies.values("requested_procedure_code_meaning").annotate(
-        n=Count("pk")
+        n=Count("pk", distinct=True)
     )
     for row, item in enumerate(requested_procedure.order_by("n").reverse()):
         summary_sheet.write(row + 6, 3, item["requested_procedure_code_meaning"])
@@ -785,7 +785,7 @@ def create_summary_sheet(task, studies, book, summary_sheet, sheet_list):
         summary_sheet.write(5, 9, "Standard study name")
         summary_sheet.write(5, 10, "Frequency")
         standard_names = studies.values("standard_names__standard_name").annotate(
-            n=Count("pk")
+            n=Count("pk", distinct=True)
         )
         for row, item in enumerate(standard_names.order_by("n").reverse()):
             summary_sheet.write(row + 6, 9, item["standard_names__standard_name"])
