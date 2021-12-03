@@ -314,23 +314,23 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         if enable_standard_names:
             df_filtered_qs = RFFilterPlusPidPlusStdNames(
                 filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF").distinct(),
             )
         else:
             df_filtered_qs = RFFilterPlusPid(
                 filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF").distinct(),
             )
     else:
         if enable_standard_names:
             df_filtered_qs = RFFilterPlusStdNames(
                 filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF").distinct(),
             )
         else:
             df_filtered_qs = RFSummaryListFilter(
                 filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF").distinct(),
             )
 
     e = df_filtered_qs.qs
@@ -740,23 +740,23 @@ def exportFL2excel(filterdict, pid=False, name=None, patid=None, user=None):
         if enable_standard_names:
             df_filtered_qs = RFFilterPlusPidPlusStdNames(
                 filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF").distinct(),
             )
         else:
             df_filtered_qs = RFFilterPlusPid(
                 filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF").distinct(),
             )
     else:
         if enable_standard_names:
             df_filtered_qs = RFFilterPlusStdNames(
                 filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF").distinct(),
             )
         else:
             df_filtered_qs = RFSummaryListFilter(
                 filterdict,
-                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF"),
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="RF").distinct(),
             )
 
     e = df_filtered_qs.qs

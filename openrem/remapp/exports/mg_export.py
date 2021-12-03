@@ -236,7 +236,12 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
     """
 
     from remapp.models import GeneralStudyModuleAttr
-    from ..interface.mod_filters import MGSummaryListFilter, MGFilterPlusPid
+    from ..interface.mod_filters import (
+        MGSummaryListFilter,
+        MGFilterPlusPid,
+        MGFilterPlusStdNames,
+        MGFilterPlusPidPlusStdNames,
+    )
 
     # Obtain the system-level enable_standard_names setting
     try:
@@ -281,15 +286,28 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
 
     # Get the data!
     if pid:
-        df_filtered_qs = MGFilterPlusPid(
-            filterdict,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG"),
-        )
+        if enable_standard_names:
+            df_filtered_qs = MGFilterPlusPidPlusStdNames(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG").distinct(),
+            )
+        else:
+            df_filtered_qs = MGFilterPlusPid(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG").distinct(),
+            )
     else:
-        df_filtered_qs = MGSummaryListFilter(
-            filterdict,
-            queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG"),
-        )
+        if enable_standard_names:
+            df_filtered_qs = MGFilterPlusStdNames(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG").distinct(),
+            )
+        else:
+            df_filtered_qs = MGSummaryListFilter(
+                filterdict,
+                queryset=GeneralStudyModuleAttr.objects.filter(modality_type__exact="MG").distinct(),
+            )
+
     studies = df_filtered_qs.qs
 
     tsk.progress = "Required study filter complete."
