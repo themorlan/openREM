@@ -756,16 +756,8 @@ def dx_plot_calculations(f, user_profile, return_as_dict=False):
             "system": system_field,
         }
 
-        # If only projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name is required then
-        # exclude all entries where these are None as these are not required for standard name charts.
-        queryset = f.qs
-        if name_fields == ["projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"]:
-            queryset = queryset.exclude(
-                projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name__isnull=True
-            )
-
         df = create_dataframe(
-            queryset,
+            f.qs,
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,

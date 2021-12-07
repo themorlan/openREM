@@ -846,18 +846,8 @@ def ct_plot_calculations(f, user_profile, return_as_dict=False):
             "system": system_field,
         }
 
-        queryset = f.qs
-        if name_fields == [
-            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning",
-            "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_value",
-            "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
-        ]:
-            queryset = queryset.exclude(
-                ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name__isnull=True
-            )
-
         df = create_dataframe(
-            queryset,
+            f.qs,
             fields,
             data_point_name_lowercase=user_profile.plotCaseInsensitiveCategories,
             data_point_name_remove_whitespace_padding=user_profile.plotRemoveCategoryWhitespacePadding,
