@@ -2215,6 +2215,13 @@ def generate_average_chart_group(average_choices, chart_message, df, modality_te
                 csv_name=variable_name_start + "Mean" + value_text + "Data.csv",
             )
 
+            tableName = variable_name_start + "Mean" + variable_value_name + "DataTable"
+            return_structure[tableName] = df_aggregated[["x_ray_system_name", name_field, "mean", "count"]].to_html(
+                classes="table sortable",
+                table_id=tableName,
+                index=False,
+            )
+
         if user_profile.plotMedian:
             parameter_dict["value_axis_title"] = "Median " + value_text + " " + units_text
             parameter_dict[
@@ -2228,6 +2235,13 @@ def generate_average_chart_group(average_choices, chart_message, df, modality_te
                 df_aggregated,
                 parameter_dict,
                 csv_name=variable_name_start + "Median" + value_text + "Data.csv",
+            )
+
+            tableName = variable_name_start + "Median" + variable_value_name + "DataTable"
+            return_structure[tableName] = df_aggregated[["x_ray_system_name", name_field, "median", "count"]].to_html(
+                classes="table sortable",
+                table_id=tableName,
+                index=False,
             )
 
     if user_profile.plotBoxplots:
