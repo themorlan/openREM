@@ -1662,6 +1662,45 @@ def _ctaccumulateddosedata(dataset, ct):  # TID 10012
     ctacc.save()
 
 
+def _import_varic(dataset, proj):
+
+    for cont in dataset.ContentSequence:
+        if cont.ConceptNameCodeSequence[0].CodeValue == "C-200":
+            accum = AccumXRayDose.objects.create(projection_xray_radiation_dose=proj)
+            accum.acquisition_plane = get_or_create_cid("113622", "Single Plane")
+            accum.save()
+            accumint = AccumIntegratedProjRadiogDose.objects.create(
+                accumulated_xray_dose=accum
+            )
+            try:
+                accumint.total_number_of_radiographic_frames = test_numeric_value(
+                    cont.MeasuredValueSequence[0].NumericValue
+                )
+            except IndexError:
+                pass
+            accumint.save()
+        if cont.ConceptNameCodeSequence[0].CodeValue == "C-202":
+            accumproj = AccumProjXRayDose.objects.create(accumulated_xray_dose=accum)
+            accumproj.save()
+            try:
+                accumproj.total_fluoro_time = test_numeric_value(
+                    cont.MeasuredValueSequence[0].NumericValue
+                )
+            except IndexError:
+                pass
+            accumproj.save()
+        if cont.ConceptNameCodeSequence[0].CodeValue == "C-204":
+            try:
+                accumint.dose_area_product_total = (
+                    test_numeric_value(cont.MeasuredValueSequence[0].NumericValue)
+                    / 10000.0
+                )
+            except (TypeError, IndexError):
+                pass
+            accumint.save()
+        # cumulative air kerma in dose report example is not available ("Measurement not attempted")
+
+
 def _projectionxrayradiationdose(dataset, g, reporttype):
 
     if reporttype == "projection":
@@ -1682,140 +1721,154 @@ def _projectionxrayradiationdose(dataset, g, reporttype):
     if proj.general_study_module_attributes.modality_type == "dual":
         proj.general_study_module_attributes.modality_type = None
 
-    for cont in dataset.ContentSequence:
-        if cont.ConceptNameCodeSequence[0].CodeMeaning.lower() == "procedure reported":
-            proj.procedure_reported = get_or_create_cid(
-                cont.ConceptCodeSequence[0].CodeValue,
-                cont.ConceptCodeSequence[0].CodeMeaning,
-            )
+    if (
+        dataset.ConceptNameCodeSequence[0].CodingSchemeDesignator == "99SMS_RADSUM"
+        and dataset.ConceptNameCodeSequence[0].CodeValue == "C-10"
+    ):
+        g.modality_type = "RF"
+        g.save()
+        _import_varic(dataset, proj)
+    else:
+        for cont in dataset.ContentSequence:
             if (
-                "ContentSequence" in cont
-            ):  # Extra if statement to allow for non-conformant GE RDSR that don't have this mandatory field.
-                for cont2 in cont.ContentSequence:
-                    if cont2.ConceptNameCodeSequence[0].CodeMeaning == "Has Intent":
-                        proj.has_intent = get_or_create_cid(
-                            cont2.ConceptCodeSequence[0].CodeValue,
-                            cont2.ConceptCodeSequence[0].CodeMeaning,
+                cont.ConceptNameCodeSequence[0].CodeMeaning.lower()
+                == "procedure reported"
+            ):
+                proj.procedure_reported = get_or_create_cid(
+                    cont.ConceptCodeSequence[0].CodeValue,
+                    cont.ConceptCodeSequence[0].CodeMeaning,
+                )
+                if (
+                    "ContentSequence" in cont
+                ):  # Extra if statement to allow for non-conformant GE RDSR that don't have this mandatory field.
+                    for cont2 in cont.ContentSequence:
+                        if cont2.ConceptNameCodeSequence[0].CodeMeaning == "Has Intent":
+                            proj.has_intent = get_or_create_cid(
+                                cont2.ConceptCodeSequence[0].CodeValue,
+                                cont2.ConceptCodeSequence[0].CodeMeaning,
+                            )
+                if "Mammography" in proj.procedure_reported.code_meaning:
+                    proj.general_study_module_attributes.modality_type = "MG"
+                elif (not proj.general_study_module_attributes.modality_type) and (
+                    "Projection X-Ray" in proj.procedure_reported.code_meaning
+                ):
+                    proj.general_study_module_attributes.modality_type = "RF,DX"
+            elif (
+                cont.ConceptNameCodeSequence[0].CodeMeaning.lower()
+                == "acquisition device type"
+            ):
+                proj.acquisition_device_type_cid = get_or_create_cid(
+                    cont.ConceptCodeSequence[0].CodeValue,
+                    cont.ConceptCodeSequence[0].CodeMeaning,
+                )
+            elif (
+                cont.ConceptNameCodeSequence[0].CodeMeaning.lower()
+                == "start of x-ray irradiation"
+            ):
+                proj.start_of_xray_irradiation = make_date_time(cont.DateTime)
+            elif (
+                cont.ConceptNameCodeSequence[0].CodeMeaning.lower()
+                == "end of x-ray irradiation"
+            ):
+                proj.end_of_xray_irradiation = make_date_time(cont.DateTime)
+            elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Scope of Accumulation":
+                proj.scope_of_accumulation = get_or_create_cid(
+                    cont.ConceptCodeSequence[0].CodeValue,
+                    cont.ConceptCodeSequence[0].CodeMeaning,
+                )
+            elif (
+                cont.ConceptNameCodeSequence[0].CodeMeaning
+                == "X-Ray Detector Data Available"
+            ):
+                proj.xray_detector_data_available = get_or_create_cid(
+                    cont.ConceptCodeSequence[0].CodeValue,
+                    cont.ConceptCodeSequence[0].CodeMeaning,
+                )
+            elif (
+                cont.ConceptNameCodeSequence[0].CodeMeaning
+                == "X-Ray Source Data Available"
+            ):
+                proj.xray_source_data_available = get_or_create_cid(
+                    cont.ConceptCodeSequence[0].CodeValue,
+                    cont.ConceptCodeSequence[0].CodeMeaning,
+                )
+            elif (
+                cont.ConceptNameCodeSequence[0].CodeMeaning
+                == "X-Ray Mechanical Data Available"
+            ):
+                proj.xray_mechanical_data_available = get_or_create_cid(
+                    cont.ConceptCodeSequence[0].CodeValue,
+                    cont.ConceptCodeSequence[0].CodeMeaning,
+                )
+            elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Comment":
+                proj.comment = cont.TextValue
+            elif (
+                cont.ConceptNameCodeSequence[0].CodeMeaning
+                == "Source of Dose Information"
+            ):
+                proj.source_of_dose_information = get_or_create_cid(
+                    cont.ConceptCodeSequence[0].CodeValue,
+                    cont.ConceptCodeSequence[0].CodeMeaning,
+                )
+            if (
+                (not equip.unique_equipment_name.user_defined_modality)
+                and (reporttype == "projection")
+                and proj.acquisition_device_type_cid
+            ):
+                if (
+                    "Fluoroscopy-Guided"
+                    in proj.acquisition_device_type_cid.code_meaning
+                    or "Azurion"
+                    in proj.general_study_module_attributes.generalequipmentmoduleattr_set.get().manufacturer_model_name
+                ):
+                    proj.general_study_module_attributes.modality_type = "RF"
+                elif any(
+                    x in proj.acquisition_device_type_cid.code_meaning
+                    for x in ["Integrated", "Cassette-based"]
+                ):
+                    proj.general_study_module_attributes.modality_type = "DX"
+                else:
+                    logging.error(
+                        "Acquisition device type code exists, but the value wasn't matched. Study UID: {0}, "
+                        "Station name: {1}, Study date, time: {2}, {3}, device type: {4} ".format(
+                            proj.general_study_module_attributes.study_instance_uid,
+                            proj.general_study_module_attributes.generalequipmentmoduleattr_set.get().station_name,
+                            proj.general_study_module_attributes.study_date,
+                            proj.general_study_module_attributes.study_time,
+                            proj.acquisition_device_type_cid.code_meaning,
                         )
-            if "Mammography" in proj.procedure_reported.code_meaning:
-                proj.general_study_module_attributes.modality_type = "MG"
-            elif (not proj.general_study_module_attributes.modality_type) and (
-                "Projection X-Ray" in proj.procedure_reported.code_meaning
-            ):
-                proj.general_study_module_attributes.modality_type = "RF,DX"
-        elif (
-            cont.ConceptNameCodeSequence[0].CodeMeaning.lower()
-            == "acquisition device type"
-        ):
-            proj.acquisition_device_type_cid = get_or_create_cid(
-                cont.ConceptCodeSequence[0].CodeValue,
-                cont.ConceptCodeSequence[0].CodeMeaning,
-            )
-        elif (
-            cont.ConceptNameCodeSequence[0].CodeMeaning.lower()
-            == "start of x-ray irradiation"
-        ):
-            proj.start_of_xray_irradiation = make_date_time(cont.DateTime)
-        elif (
-            cont.ConceptNameCodeSequence[0].CodeMeaning.lower()
-            == "end of x-ray irradiation"
-        ):
-            proj.end_of_xray_irradiation = make_date_time(cont.DateTime)
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Scope of Accumulation":
-            proj.scope_of_accumulation = get_or_create_cid(
-                cont.ConceptCodeSequence[0].CodeValue,
-                cont.ConceptCodeSequence[0].CodeMeaning,
-            )
-        elif (
-            cont.ConceptNameCodeSequence[0].CodeMeaning
-            == "X-Ray Detector Data Available"
-        ):
-            proj.xray_detector_data_available = get_or_create_cid(
-                cont.ConceptCodeSequence[0].CodeValue,
-                cont.ConceptCodeSequence[0].CodeMeaning,
-            )
-        elif (
-            cont.ConceptNameCodeSequence[0].CodeMeaning == "X-Ray Source Data Available"
-        ):
-            proj.xray_source_data_available = get_or_create_cid(
-                cont.ConceptCodeSequence[0].CodeValue,
-                cont.ConceptCodeSequence[0].CodeMeaning,
-            )
-        elif (
-            cont.ConceptNameCodeSequence[0].CodeMeaning
-            == "X-Ray Mechanical Data Available"
-        ):
-            proj.xray_mechanical_data_available = get_or_create_cid(
-                cont.ConceptCodeSequence[0].CodeValue,
-                cont.ConceptCodeSequence[0].CodeMeaning,
-            )
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Comment":
-            proj.comment = cont.TextValue
-        elif (
-            cont.ConceptNameCodeSequence[0].CodeMeaning == "Source of Dose Information"
-        ):
-            proj.source_of_dose_information = get_or_create_cid(
-                cont.ConceptCodeSequence[0].CodeValue,
-                cont.ConceptCodeSequence[0].CodeMeaning,
-            )
-        if (
-            (not equip.unique_equipment_name.user_defined_modality)
-            and (reporttype == "projection")
-            and proj.acquisition_device_type_cid
-        ):
-            if (
-                "Fluoroscopy-Guided" in proj.acquisition_device_type_cid.code_meaning
-                or "Azurion"
-                in proj.general_study_module_attributes.generalequipmentmoduleattr_set.get().manufacturer_model_name
-            ):
-                proj.general_study_module_attributes.modality_type = "RF"
-            elif any(
-                x in proj.acquisition_device_type_cid.code_meaning
-                for x in ["Integrated", "Cassette-based"]
-            ):
-                proj.general_study_module_attributes.modality_type = "DX"
-            else:
-                logging.error(
-                    "Acquisition device type code exists, but the value wasn't matched. Study UID: {0}, "
-                    "Station name: {1}, Study date, time: {2}, {3}, device type: {4} ".format(
-                        proj.general_study_module_attributes.study_instance_uid,
-                        proj.general_study_module_attributes.generalequipmentmoduleattr_set.get().station_name,
-                        proj.general_study_module_attributes.study_date,
-                        proj.general_study_module_attributes.study_time,
-                        proj.acquisition_device_type_cid.code_meaning,
                     )
-                )
 
-        proj.save()
+            proj.save()
 
-        if cont.ConceptNameCodeSequence[0].CodeMeaning == "Observer Type":
-            if reporttype == "projection":
-                obs = ObserverContext.objects.create(
-                    projection_xray_radiation_dose=proj
-                )
-            else:
-                obs = ObserverContext.objects.create(ct_radiation_dose=proj)
-            _observercontext(dataset, obs)
+            if cont.ConceptNameCodeSequence[0].CodeMeaning == "Observer Type":
+                if reporttype == "projection":
+                    obs = ObserverContext.objects.create(
+                        projection_xray_radiation_dose=proj
+                    )
+                else:
+                    obs = ObserverContext.objects.create(ct_radiation_dose=proj)
+                _observercontext(dataset, obs)
 
-        if cont.ValueType == "CONTAINER":
-            if (
-                cont.ConceptNameCodeSequence[0].CodeMeaning
-                == "Accumulated X-Ray Dose Data"
-            ):
-                _accumulatedxraydose(cont, proj)
-            if (
-                cont.ConceptNameCodeSequence[0].CodeMeaning
-                == "Irradiation Event X-Ray Data"
-            ):
-                _irradiationeventxraydata(cont, proj, dataset)
-            if (
-                cont.ConceptNameCodeSequence[0].CodeMeaning
-                == "CT Accumulated Dose Data"
-            ):
-                proj.general_study_module_attributes.modality_type = "CT"
-                _ctaccumulateddosedata(cont, proj)
-            if cont.ConceptNameCodeSequence[0].CodeMeaning == "CT Acquisition":
-                _ctirradiationeventdata(cont, proj)
+            if cont.ValueType == "CONTAINER":
+                if (
+                    cont.ConceptNameCodeSequence[0].CodeMeaning
+                    == "Accumulated X-Ray Dose Data"
+                ):
+                    _accumulatedxraydose(cont, proj)
+                if (
+                    cont.ConceptNameCodeSequence[0].CodeMeaning
+                    == "Irradiation Event X-Ray Data"
+                ):
+                    _irradiationeventxraydata(cont, proj, dataset)
+                if (
+                    cont.ConceptNameCodeSequence[0].CodeMeaning
+                    == "CT Accumulated Dose Data"
+                ):
+                    proj.general_study_module_attributes.modality_type = "CT"
+                    _ctaccumulateddosedata(cont, proj)
+                if cont.ConceptNameCodeSequence[0].CodeMeaning == "CT Acquisition":
+                    _ctirradiationeventdata(cont, proj)
 
 
 def _generalequipmentmoduleattributes(dataset, study):
@@ -1862,7 +1915,10 @@ def _generalequipmentmoduleattributes(dataset, study):
     except IndexError:
         device_observer_uid = None
 
-    if equip.manufacturer_model_name in settings.IGNORE_DEVICE_OBSERVER_UID_FOR_THESE_MODELS:
+    if (
+        equip.manufacturer_model_name
+        in settings.IGNORE_DEVICE_OBSERVER_UID_FOR_THESE_MODELS
+    ):
         device_observer_uid = None
 
     equip_display_name, created = UniqueEquipmentNames.objects.get_or_create(
@@ -2034,6 +2090,12 @@ def _generalstudymoduleattributes(dataset, g):
     except AttributeError:
         try:
             if dataset.ContentSequence[0].ConceptCodeSequence[0].CodeValue == "113704":
+                template_identifier = "10001"
+            elif (
+                dataset.ConceptNameCodeSequence[0].CodingSchemeDesignator
+                == "99SMS_RADSUM"
+                and dataset.ConceptNameCodeSequence[0].CodeValue == "C-10"
+            ):
                 template_identifier = "10001"
             else:
                 logger.error(
@@ -2291,6 +2353,7 @@ def _rdsr2db(dataset):
     if keep_existing_sop_instance_uids:
         for sop_instance_uid in existing_sop_instance_uids:
             record_sop_instance_uid(g, sop_instance_uid)
+    g.save()
     _generalequipmentmoduleattributes(dataset, g)
     _generalstudymoduleattributes(dataset, g)
     _patientstudymoduleattributes(dataset, g)
@@ -2478,6 +2541,13 @@ def rdsr(rdsr_file):
         dataset.SOPClassUID
         in ("1.2.840.10008.5.1.4.1.1.88.67", "1.2.840.10008.5.1.4.1.1.88.22")
         and dataset.ConceptNameCodeSequence[0].CodeValue == "113701"
+    ):
+        logger.debug("rdsr.py extracting from {0}".format(rdsr_file))
+        _rdsr2db(dataset)
+    elif (
+        dataset.SOPClassUID == ("1.2.840.10008.5.1.4.1.1.88.22")
+        and dataset.ConceptNameCodeSequence[0].CodingSchemeDesignator == "99SMS_RADSUM"
+        and dataset.ConceptNameCodeSequence[0].CodeValue == "C-10"
     ):
         logger.debug("rdsr.py extracting from {0}".format(rdsr_file))
         _rdsr2db(dataset)

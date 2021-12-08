@@ -68,8 +68,8 @@ $(document).ready(function() {
 
             if (isCanvasSupported()) {
 
-                skinDoseMapObj.initialise(json.skin_map, json.width, json.height, json.phantom_flat_dist,
-                json.phantom_curved_dist, json.phantom_head_height);
+                skinDoseMapObj.initialise(json.skin_map, json.width, json.height + json.phantom_head_height, json.phantom_flat_dist,
+                json.phantom_curved_dist);
 
                 if (skinDoseMapObj.maxDose !== 0 && isFinite(skinDoseMapObj.maxDose)) {
 
@@ -163,6 +163,13 @@ $(document).ready(function() {
                     skinDoseMapGroup.show();
                     $("#skin_map_maxmin_controls").show();
                     openskinInfo.show();
+
+                    // Show the "Hide overlay" button; hide the "Show overlay" button
+                    $("#skinDoseMapOverlayHide").show();
+                    $("#skinDoseMapOverlayShow").hide();
+
+                    // Display the 2d skin map overlay
+                    skinDoseMapObj.toggleOverlay();
                 }
 
                 else {
@@ -172,6 +179,7 @@ $(document).ready(function() {
                         "<p>Sorry, the skin dose map could not be calculated for this study. Possible reasons for this are shown below:</p>" +
                         "<ul>";
 
+                    errorMessage += "<li>Skin maps are diabled for this system: check the settings in Config -> Display names & modality.</li>";
                     errorMessage += "<li>The openSkin code currently only works for Siemens equipment.</li>";
                     if (skinDoseMapObj.maxDose === 0) {errorMessage += "<li>The maximum calculated dose was zero: it may be that every exposure has missed the phantom. This may be due to the way in which this x-ray system has defined the table and x-ray beam geometry.</li>";}
                     if (!isFinite(skinDoseMapObj.maxDose)) {errorMessage +=  "<li>There is no data in skin dose map: the x-ray source to isocentre distance or dose at reference point are not present.</li>";}
