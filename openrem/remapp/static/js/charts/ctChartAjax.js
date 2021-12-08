@@ -8,29 +8,29 @@ urlStartReq, urlStartStudy, updateOverTimeChart, chartSortingDirection*/
 function updateBarCharts(namePrefix, json) {
     var parentDiv = $("#" + namePrefix + "ChartParentDiv");
 
+    // Add the Plotly chart to the ChartDiv
     $("#"+namePrefix+"ChartDiv").html(json[namePrefix+"Data"]);
+
+    // Add the "Download csv" button
     parentDiv.append(json[namePrefix+"DataCSV"]);
 
-    var nameStart = namePrefix; // "requestMeanDLPDataTable";
-    parentDiv.append("<a class='btn btn-default btn-sm' role='button' id='"+nameStart+"DataTableShow'>Show datatable</a>");
-    parentDiv.append("<a class='btn btn-default btn-sm' role='button' id='"+nameStart+"DataTableHide'>Hide datatable</a>");
+    // Add a show and hide data table button
+    parentDiv.append("<a class='btn btn-default btn-sm' role='button' id='"+namePrefix+"DataTableBtnShow'>Show data table</a>");
+    parentDiv.append("<a class='btn btn-default btn-sm' role='button' id='"+namePrefix+"DataTableBtnHide'>Hide data table</a>");
 
-    $("#"+nameStart+"DataTableHide").hide();
+    // Hide the "Hide data table" button
+    $("#"+namePrefix+"DataTableBtnHide").hide();
 
-    $("#"+nameStart+"DataTableHide").click(function () {
-        $("#"+nameStart+"DataTableDiv").toggle();
-        $("#"+nameStart+"DataTableHide").toggle();
-        $("#"+nameStart+"DataTableShow").toggle();
+    // Add a function to both buttons that toggles the visiblity of the buttons and the data table
+    $("a[id^="+namePrefix+"DataTableBtn").click(function () {
+        $("#"+namePrefix+"DataTableDiv").toggle();
+        $("#"+namePrefix+"DataTableBtnHide").toggle();
+        $("#"+namePrefix+"DataTableBtnShow").toggle();
     })
 
-    $("#"+nameStart+"DataTableShow").click(function () {
-        $("#"+nameStart+"DataTableDiv").toggle();
-        $("#"+nameStart+"DataTableHide").toggle();
-        $("#"+nameStart+"DataTableShow").toggle();
-    })
-
-    parentDiv.append("<div id='"+nameStart+"DataTableDiv'>"+json[namePrefix+"DataTable"]+"</div>");
-    $("#"+nameStart+"DataTableDiv").hide();
+    // Add the data table to a div and make the table sortable
+    parentDiv.append("<div id='"+namePrefix+"DataTableDiv'>"+json[namePrefix+"DataTable"]+"</div>");
+    $("#"+namePrefix+"DataTableDiv").hide();
     var table = document.getElementById(namePrefix+"DataTable");
     sorttable.makeSortable(table);
 }
