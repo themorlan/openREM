@@ -2178,13 +2178,14 @@ def generate_average_chart_group(average_choices, chart_message, df, modality_te
     if user_profile.plotBoxplots and "median" not in average_choices:
         average_choices = average_choices + ["median"]
 
-    df_aggregated = create_dataframe_aggregates(
-        df,
-        [name_field],
-        value_field,
-        stats_to_use=average_choices + ["count"],
-    )
     if user_profile.plotMean or user_profile.plotMedian:
+
+        df_aggregated = create_dataframe_aggregates(
+            df,
+            [name_field],
+            value_field,
+            stats_to_use=average_choices + ["count"],
+        )
 
         parameter_dict = {
             "df_name_col": name_field,
@@ -2228,6 +2229,7 @@ def generate_average_chart_group(average_choices, chart_message, df, modality_te
                 parameter_dict,
                 csv_name=variable_name_start + "Median" + value_text + "Data.csv",
             )
+
     if user_profile.plotBoxplots:
         parameter_dict = {
             "df_name_col": name_field,
@@ -2250,6 +2252,7 @@ def generate_average_chart_group(average_choices, chart_message, df, modality_te
             df,
             parameter_dict,
         )
+
     if user_profile.plotHistograms:
         category_names_col = name_field
         group_by_col = "x_ray_system_name"
