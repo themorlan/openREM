@@ -29,7 +29,7 @@ function updateBarCharts(namePrefix, json) {
     })
 
     // Add the data table to a div and make the table sortable
-    parentDiv.append("<div id='"+namePrefix+"DataTableDiv'>"+json[namePrefix+"DataTable"]+"</div>");
+    parentDiv.append("<div id='"+namePrefix+"DataTableDiv' class='chart-data-table'>"+json[namePrefix+"DataTable"]+"</div>");
     $("#"+namePrefix+"DataTableDiv").hide();
     var table = document.getElementById(namePrefix+"DataTable");
     sorttable.makeSortable(table);

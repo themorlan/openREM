@@ -2200,6 +2200,7 @@ def generate_average_chart_group(average_choices, chart_message, df, modality_te
             ],
             "custom_msg_line": chart_message,
         }
+
         if user_profile.plotMean:
             parameter_dict["value_axis_title"] = "Mean " + value_text + " " + units_text
             parameter_dict[
@@ -2215,11 +2216,21 @@ def generate_average_chart_group(average_choices, chart_message, df, modality_te
                 csv_name=variable_name_start + "Mean" + value_text + "Data.csv",
             )
 
-            table_df = df_aggregated[["x_ray_system_name", name_field, "mean", "count"]]
+            # Create a data frame to use to display the data to the user in an html table
+            table_df = df_aggregated[["x_ray_system_name", name_field, "mean", "count"]].round({"mean": 2})
+
+            # Rename the data frame columns to have user-friendly names
             table_df.columns = ["X-ray system name", name_text, "Mean " + value_text + " " + units_text, "Count"]
+
+            # Pivot the table so that there is a column per system for the median and count
+            table_df = table_df.pivot(index=name_text, columns="X-ray system name")
+            table_df.columns = ['<br>'.join((col[1], str(col[0]))) for col in table_df.columns]
+            table_df = table_df.reset_index()
+
+            # Add a html table version of the data frame to the return structure
             tableName = variable_name_start + "Mean" + variable_value_name + "DataTable"
             return_structure[tableName] = table_df.to_html(
-                classes="table sortable",
+                classes="table table-bordered table-sm small sortable chart-data-table-contents",
                 table_id=tableName,
                 index=False,
                 na_rep="-",
@@ -2241,11 +2252,21 @@ def generate_average_chart_group(average_choices, chart_message, df, modality_te
                 csv_name=variable_name_start + "Median" + value_text + "Data.csv",
             )
 
-            table_df = df_aggregated[["x_ray_system_name", name_field, "median", "count"]]
+            # Create a data frame to use to display the data to the user in an html table
+            table_df = df_aggregated[["x_ray_system_name", name_field, "median", "count"]].round({"median": 2})
+
+            # Rename the data frame columns to have user-friendly names
             table_df.columns = ["X-ray system name", name_text, "Median " + value_text + " " + units_text, "Count"]
+
+            # Pivot the table so that there is a column per system for the median and count
+            table_df = table_df.pivot(index=name_text, columns="X-ray system name")
+            table_df.columns = ['<br>'.join((col[1], str(col[0]))) for col in table_df.columns]
+            table_df = table_df.reset_index()
+
+            # Add a html table version of the data frame to the return structure
             tableName = variable_name_start + "Median" + variable_value_name + "DataTable"
             return_structure[tableName] = table_df.to_html(
-                classes="table sortable",
+                classes="table table-bordered table-sm small sortable chart-data-table-contents",
                 table_id=tableName,
                 index=False,
                 na_rep="-",
