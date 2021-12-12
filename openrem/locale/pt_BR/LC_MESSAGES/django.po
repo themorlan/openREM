@@ -8,13 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-12-05 21:13+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2021-12-13 04:50+0000\n"
+"Last-Translator: Gabriel Cardoso <g.cardoso@mailfence.com>\n"
+"Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
+"openrem/web-interface/pt_BR/>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.10-dev\n"
 
 #: remapp/exports/ct_export.py:159
 #, python-brace-format
@@ -38,19 +41,23 @@ msgstr ""
 msgid ""
 "Getting series and image level information and deleting series we can't use"
 msgstr ""
+"Leitura de informações sobre série e nível de imagem e exclusão de séries "
+"que não podem ser usadas"
 
 #: remapp/netdicom/qrscu.py:807
 msgid "Image level matching for this study is complete (there many be more)"
 msgstr ""
+"A correspondência no nível da imagem está completa para este estudo (pode "
+"haver mais)"
 
 #: remapp/netdicom/qrscu.py:817
 msgid "Image level matches are continuing."
-msgstr ""
+msgstr "As correspondências de nível de imagem continuam."
 
 #: remapp/netdicom/qrscu.py:858 remapp/netdicom/qrscu.py:975
 #: remapp/netdicom/qrscu.py:1080
 msgid "Connection timed out, was aborted or received invalid response"
-msgstr ""
+msgstr "A conexão expirou, foi abortada ou recebeu uma resposta inválida"
 
 #: remapp/netdicom/qrscu.py:906
 msgid "Series level matching for this study is complete (there may be more)"
@@ -85,7 +92,7 @@ msgstr ""
 
 #: remapp/netdicom/qrscu.py:1557
 msgid "Deleting studies we didn't ask for"
-msgstr ""
+msgstr "Excluindo estudos que não pedimos"
 
 #: remapp/netdicom/qrscu.py:1599
 msgid "Pruning series responses"
@@ -94,6 +101,8 @@ msgstr ""
 #: remapp/netdicom/qrscu.py:1658
 msgid "Removing any responses that match data we already have in the database"
 msgstr ""
+"Remover todas as respostas que correspondem aos dados que já temos no banco "
+"de dados"
 
 #: remapp/netdicom/qrscu.py:1686
 #, python-brace-format
@@ -101,6 +110,9 @@ msgid ""
 "Query complete. Query took {time} and we are left with {studies_left} "
 "studies to move.<br>Of the original {studies_initial} study responses, "
 msgstr ""
+"Consulta concluída. A consulta levou {time} e ficamos com {studies_left} "
+"estudos para mover. <br> Das {studies_initial} respostas originais do "
+"estudo, "
 
 #: remapp/netdicom/qrscu.py:1697
 #, python-brace-format
@@ -132,62 +144,64 @@ msgstr ""
 msgid ""
 "Removing duplicates of previous objects removed {duplicates_removed} studies."
 msgstr ""
+"A remoção de duplicatas de objetos anteriores removeu {duplicates_removed} "
+"estudos."
 
 #: remapp/templates/base.html:52 remapp/views.py:917
 msgid "CT"
-msgstr ""
+msgstr "CT"
 
 #: remapp/templates/base.html:56 remapp/views.py:921
 msgid "Fluoroscopy"
-msgstr ""
+msgstr "Fluoroscopia"
 
 #: remapp/templates/base.html:60 remapp/views.py:925
 msgid "Mammography"
-msgstr ""
+msgstr "Mamografia"
 
 #: remapp/templates/base.html:64 remapp/views.py:929
 msgid "Radiography"
-msgstr ""
+msgstr "Radiografia"
 
 #: remapp/templates/base.html:76
 msgid "Imports"
-msgstr ""
+msgstr "Importações"
 
 #: remapp/templates/base.html:80
 msgid "Import patient size info"
-msgstr ""
+msgstr "Importar informações sobre o tamanho do paciente"
 
 #: remapp/templates/base.html:83
 msgid "Previous patient size imports"
-msgstr ""
+msgstr "Importações de tamanho de paciente anterior"
 
 #: remapp/templates/base.html:86
 msgid "Query remote server"
-msgstr ""
+msgstr "Consultar servidor remoto"
 
 #: remapp/templates/base.html:95
 msgid "Exports"
-msgstr ""
+msgstr "Exportações"
 
 #: remapp/templates/base.html:102
 msgid "Config"
-msgstr ""
+msgstr "Config"
 
 #: remapp/templates/base.html:105
 msgid "User level config"
-msgstr ""
+msgstr "Configuração de nível de usuário"
 
 #: remapp/templates/base.html:106
 msgid "Chart options"
-msgstr ""
+msgstr "Opções de gráfico"
 
 #: remapp/templates/base.html:109
 msgid "Switch charts off"
-msgstr ""
+msgstr "Desligue os gráficos"
 
 #: remapp/templates/base.html:111
 msgid "Switch charts on"
-msgstr ""
+msgstr "Ligue os gráficos"
 
 #: remapp/templates/base.html:115
 msgid "View display names & modality"
@@ -195,19 +209,19 @@ msgstr ""
 
 #: remapp/templates/base.html:116
 msgid "View not-patient indicators"
-msgstr ""
+msgstr "Mostrar indicadores não relacionados ao paciente"
 
 #: remapp/templates/base.html:120
 msgid "Home page options"
-msgstr ""
+msgstr "Opções da página inicial"
 
 #: remapp/templates/base.html:125
 msgid "System level settings"
-msgstr ""
+msgstr "Configurações de nível de sistema"
 
 #: remapp/templates/base.html:126
 msgid "Users"
-msgstr ""
+msgstr "Usuários"
 
 #: remapp/templates/base.html:127
 msgid "Display names & modality"
@@ -223,11 +237,11 @@ msgstr ""
 
 #: remapp/templates/base.html:130
 msgid "Patient ID"
-msgstr ""
+msgstr "ID do paciente"
 
 #: remapp/templates/base.html:131
 msgid "Not-patient indicators"
-msgstr ""
+msgstr "Indicadores não relacionados ao paciente"
 
 #: remapp/templates/base.html:132
 msgid "Skin dose map"
@@ -243,58 +257,58 @@ msgstr ""
 
 #: remapp/templates/base.html:135
 msgid "Tasks"
-msgstr ""
+msgstr "Tarefas"
 
 #: remapp/templates/base.html:150
 msgid "User"
-msgstr ""
+msgstr "Usuário"
 
 #: remapp/templates/base.html:156
 msgid "Change password"
-msgstr ""
+msgstr "Alterar a senha"
 
 #: remapp/templates/base.html:157
 msgid "Logout"
-msgstr ""
+msgstr "Sair"
 
 #: remapp/templates/base.html:160
 msgid "Login"
-msgstr ""
+msgstr "Entrar"
 
 #: remapp/templates/base.html:167
 msgid "Docs"
-msgstr ""
+msgstr "Documentação"
 
 #: remapp/templates/base.html:174
 msgid "OpenREM documentation - opens in a new tab"
-msgstr ""
+msgstr "Documentação OpenREM - abre em uma nova guia"
 
 #: remapp/templates/base.html:175
 #, python-format
 msgid "OpenREM Documentation (%(docsversion)s)"
-msgstr ""
+msgstr "Documentação OpenREM (%(docsversion)s)"
 
 #: remapp/templates/remapp/home-list-modalities.html:7
 #: remapp/templates/remapp/home.html:202
 msgid "System name"
-msgstr ""
+msgstr "Nome do sistema"
 
 #: remapp/templates/remapp/home-list-modalities.html:8
 #: remapp/templates/remapp/home.html:203
 msgid "Total number of studies"
-msgstr ""
+msgstr "Número total de estudos"
 
 #: remapp/templates/remapp/home-list-modalities.html:9
 #: remapp/templates/remapp/home.html:204
 msgid "Latest study"
-msgstr ""
+msgstr "Último estudo"
 
 #: remapp/templates/remapp/home-list-modalities.html:11
 #: remapp/templates/remapp/home-list-modalities.html:13
 #: remapp/templates/remapp/home.html:206 remapp/templates/remapp/home.html:208
 #, python-format
 msgid "Number in last %(day_delta)s days"
-msgstr ""
+msgstr "Número nos últimos %(day_delta)s dias"
 
 #: remapp/templates/remapp/home.html:64
 #, python-format
@@ -302,15 +316,17 @@ msgid ""
 "There are %(total_studies)s studies in this database. Page last refreshed on "
 "%(current_time)s"
 msgstr ""
+"Existem %(total_studies)s estudos neste banco de dados. Página atualizada "
+"pela última vez em %(current_time)s"
 
 #: remapp/templates/remapp/home.html:69
 msgid "Chart plotting on."
-msgstr ""
+msgstr "A plotagem do gráfico está ativada."
 
 #: remapp/templates/remapp/home.html:71
 msgid "Chart plotting off."
-msgstr ""
+msgstr "A plotagem do gráfico está desativada."
 
 #: remapp/templates/remapp/home.html:214
 msgid "Please wait - querying the database"
-msgstr ""
+msgstr "Aguarde - consultando o banco de dados"
