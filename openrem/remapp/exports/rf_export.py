@@ -624,10 +624,26 @@ def rfxlsx(filterdict, pid=False, name=None, patid=None, user=None):
                         sheetlist[tab_text]["count"], 0, common_exam_data + series_data
                     )
 
+                if enable_standard_names:
+                    if standard_protocol:
+                        tab_text = sheet_name("[standard] " + standard_protocol)
+                        filter_data = {
+                            "filter_material": filter_material,
+                            "filter_thick": filter_thick,
+                        }
+                        for exposure in similarexposures:
+                            series_data = _get_series_data(exposure, filter_data)
+                            sheetlist[tab_text]["count"] += 1
+                            sheetlist[tab_text]["sheet"].write_row(
+                                sheetlist[tab_text]["count"], 0, common_exam_data + series_data
+                            )
+
+
             if num_groups_this_exam > num_groups_max:
                 num_groups_max = num_groups_this_exam
 
             wsalldata.write_row(row + 1, 0, examdata)
+
         except ObjectDoesNotExist:
             error_message = (
                 "DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number"

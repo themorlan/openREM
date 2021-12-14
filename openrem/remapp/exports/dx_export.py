@@ -511,8 +511,10 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
             ):
                 # Get series data
                 series_data = _dx_get_series_data(s)
+
                 # Add series to all data
                 all_exam_data += series_data
+
                 # Add series data to series tab
                 protocol = s.acquisition_protocol
                 if not protocol:
@@ -523,7 +525,20 @@ def dxxlsx(filterdict, pid=False, name=None, patid=None, user=None):
                     sheet_list[tabtext]["count"], 0, common_exam_data + series_data
                 )
 
+                if enable_standard_names:
+                    try:
+                        protocol = s.standard_protocols.first().standard_name
+                        if protocol:
+                            tabtext = sheet_name("[standard] " + protocol)
+                            sheet_list[tabtext]["count"] += 1
+                            sheet_list[tabtext]["sheet"].write_row(
+                                sheet_list[tabtext]["count"], 0, common_exam_data + series_data
+                            )
+                    except AttributeError:
+                        pass
+
             wsalldata.write_row(row + 1, 0, all_exam_data)
+
         except ObjectDoesNotExist:
             error_message = (
                 "DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number"

@@ -402,6 +402,7 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
                     writer.writerow([str(data_string) for data_string in series_data])
                 else:
                     all_exam_data += series_data  # For all data
+
                     protocol = series.acquisition_protocol
                     if not protocol:
                         protocol = "Unknown"
@@ -420,6 +421,29 @@ def exportMG2excel(filterdict, pid=False, name=None, patid=None, user=None, xlsx
                             )
                         )
                         exit()
+
+                    if enable_standard_names:
+                        try:
+                            protocol = series.standard_protocols.first().standard_name
+                            if protocol:
+                                tabtext = sheet_name("[standard] " + protocol)
+                                sheet_list[tabtext]["count"] += 1
+                                try:
+                                    sheet_list[tabtext]["sheet"].write_row(
+                                        sheet_list[tabtext]["count"],
+                                        0,
+                                        common_exam_data + series_data,
+                                    )
+                                except TypeError:
+                                    logger.error(
+                                        "Common is |{0}| series is |{1}|".format(
+                                            common_exam_data, series_data
+                                        )
+                                    )
+                                    exit()
+                        except AttributeError:
+                            pass
+
             if xlsx:
                 wsalldata.write_row(study_index + 1, 0, all_exam_data)
         except ObjectDoesNotExist:

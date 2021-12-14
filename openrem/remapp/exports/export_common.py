@@ -195,6 +195,13 @@ def generate_sheets(
     :param patid: has patient ID been selected for export
     :return: book
     """
+    # Obtain the system-level enable_standard_names setting
+    try:
+        StandardNameSettings.objects.get()
+    except ObjectDoesNotExist:
+        StandardNameSettings.objects.create()
+    enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
+
     sheet_list = {}
     protocols_list = []
     for exams in studies:
@@ -214,6 +221,21 @@ def generate_sheets(
                     safe_protocol = "Unknown"
                 if safe_protocol not in protocols_list:
                     protocols_list.append(safe_protocol)
+
+                if enable_standard_names:
+                    try:
+                        if s.standard_protocols.first().standard_name:
+                            safe_protocol = "[standard] " + s.standard_protocols.first().standard_name
+
+                        if safe_protocol not in protocols_list:
+                            protocols_list.append(safe_protocol)
+
+                    except AttributeError:
+                        pass
+
+                    if safe_protocol not in protocols_list:
+                        protocols_list.append(safe_protocol)
+
         except ObjectDoesNotExist:
             logger.error(
                 "Study missing during generation of sheet names; most likely due to study being deleted "
@@ -766,11 +788,15 @@ def create_summary_sheet(task, studies, book, summary_sheet, sheet_list):
     sorted_protocols = sorted(
         iter(sheet_list.items()), key=lambda k_v: k_v[1]["count"], reverse=True
     )
-    for row, item in enumerate(sorted_protocols):
-        summary_sheet.write(
-            row + 6, 6, ", ".join(item[1]["protocolname"])
-        )  # Join - can't write list to a single cell.
-        summary_sheet.write(row + 6, 7, item[1]["count"])
+
+    # Exclude any [standard] protocols
+    protocols = [x for x in sorted_protocols if not x[1]["protocolname"][0].startswith("[standard]")]
+    for row, item in enumerate(protocols):
+        if not item[1]["protocolname"][0].startswith("[standard]"):
+            summary_sheet.write(
+                row + 6, 6, ", ".join(item[1]["protocolname"])
+            )  # Join - can't write list to a single cell.
+            summary_sheet.write(row + 6, 7, item[1]["count"])
     summary_sheet.set_column("G:G", 15)
 
     # Obtain the system-level enable_standard_names setting
@@ -781,31 +807,26 @@ def create_summary_sheet(task, studies, book, summary_sheet, sheet_list):
     enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
 
     if enable_standard_names:
-        table_and_field = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
-        if studies.first().modality_type == "CT":
-            table_and_field = "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
-
-        # Generate a list of standard acquisition names
-        summary_sheet.write(5, 9, "Standard acquisition name")
+        # Generate list of standard study names
+        summary_sheet.write(5, 9, "Standard study name")
         summary_sheet.write(5, 10, "Frequency")
-        standard_acquisition_names = studies.order_by().values(
-            table_and_field).annotate(
-            n=Count(table_and_field))
+        standard_names = studies.exclude(standard_names__standard_name__isnull=True).values(
+            "standard_names__standard_name").annotate(n=Count("pk", distinct=True))
 
-        for row, item in enumerate(standard_acquisition_names.order_by("n").reverse()):
-            summary_sheet.write(row + 6, 9, item[table_and_field])
+        for row, item in enumerate(standard_names.order_by("n").reverse()):
+            summary_sheet.write(row + 6, 9, item["standard_names__standard_name"])
             summary_sheet.write(row + 6, 10, item["n"])
         summary_sheet.set_column("J:J", 25)
 
-        # Generate list of standard study names
-        summary_sheet.write(5, 12, "Standard study name")
+        # Write standard acquisition names
+        # Only include [standard] protocols
+        summary_sheet.write(5, 12, "Standard acquisition name")
         summary_sheet.write(5, 13, "Frequency")
-        standard_names = studies.values("standard_names__standard_name").annotate(
-            n=Count("pk", distinct=True)
-        )
-        for row, item in enumerate(standard_names.order_by("n").reverse()):
-            summary_sheet.write(row + 6, 12, item["standard_names__standard_name"])
-            summary_sheet.write(row + 6, 13, item["n"])
+        protocols = [x for x in sorted_protocols if x[1]["protocolname"][0].startswith("[standard]")]
+
+        for row, item in enumerate(protocols):
+            summary_sheet.write(row + 6, 12, item[1]["protocolname"][0])
+            summary_sheet.write(row + 6, 13, item[1]["count"])
         summary_sheet.set_column("M:M", 25)
 
 
