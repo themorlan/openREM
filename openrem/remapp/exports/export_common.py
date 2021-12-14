@@ -781,16 +781,32 @@ def create_summary_sheet(task, studies, book, summary_sheet, sheet_list):
     enable_standard_names = StandardNameSettings.objects.values_list("enable_standard_names", flat=True)[0]
 
     if enable_standard_names:
-        # Generate list of standard study names
-        summary_sheet.write(5, 9, "Standard study name")
+        table_and_field = "projectionxrayradiationdose__irradeventxraydata__standard_protocols__standard_name"
+        if studies.first().modality_type == "CT":
+            table_and_field = "ctradiationdose__ctirradiationeventdata__standard_protocols__standard_name"
+
+        # Generate a list of standard acquisition names
+        summary_sheet.write(5, 9, "Standard acquisition name")
         summary_sheet.write(5, 10, "Frequency")
+        standard_acquisition_names = studies.order_by().values(
+            table_and_field).annotate(
+            n=Count(table_and_field))
+
+        for row, item in enumerate(standard_acquisition_names.order_by("n").reverse()):
+            summary_sheet.write(row + 6, 9, item[table_and_field])
+            summary_sheet.write(row + 6, 10, item["n"])
+        summary_sheet.set_column("J:J", 25)
+
+        # Generate list of standard study names
+        summary_sheet.write(5, 12, "Standard study name")
+        summary_sheet.write(5, 13, "Frequency")
         standard_names = studies.values("standard_names__standard_name").annotate(
             n=Count("pk", distinct=True)
         )
         for row, item in enumerate(standard_names.order_by("n").reverse()):
-            summary_sheet.write(row + 6, 9, item["standard_names__standard_name"])
-            summary_sheet.write(row + 6, 10, item["n"])
-        summary_sheet.set_column("J:J", 25)
+            summary_sheet.write(row + 6, 12, item["standard_names__standard_name"])
+            summary_sheet.write(row + 6, 13, item["n"])
+        summary_sheet.set_column("M:M", 25)
 
 
 def abort_if_zero_studies(num_studies, tsk):
