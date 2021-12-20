@@ -1576,7 +1576,7 @@ class QRSCUScriptArgParsing(TestCase):
             "stationname_exc": None,
             "study_desc_inc": None,
             "stationname_inc": None,
-            "stationname_ser": False,
+            "stationname_study": False,
         }
         self.assertEqual(parsed_args["filters"], filters)
 
@@ -1602,7 +1602,7 @@ class QRSCUScriptArgParsing(TestCase):
             "study_desc_inc": None,
             "stationname_exc": None,
             "stationname_inc": None,
-            "stationname_ser": False,
+            "stationname_study": False,
         }
         self.assertEqual(parsed_args["filters"], filters)
 
@@ -1631,7 +1631,7 @@ class QRSCUScriptArgParsing(TestCase):
             "study_desc_inc": None,
             "stationname_exc": None,
             "stationname_inc": ["mystn"],
-            "stationname_ser": False,
+            "stationname_study": False,
         }
         self.assertEqual(parsed_args["filters"], filters)
 

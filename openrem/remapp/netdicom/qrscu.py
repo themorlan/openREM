@@ -285,7 +285,7 @@ def _prune_series_responses(
     kept_ct = {"SR": 0, "philips": 0, "toshiba": 0, "maybe_philips": 0}
     deleted_studies_filters = {"stationname_inc": 0, "stationname_exc": 0}
 
-    if filters["stationname_inc"]:
+    if filters["stationname_inc"] and not filters["stationname_study"]:
         before_count = query.dicomqrrspstudy_set.all().count()
         _filter(
             query,
@@ -301,7 +301,7 @@ def _prune_series_responses(
                 f"{query_id_8} stationname_inc removed {deleted_studies_filters['stationname_inc']} studies"
             )
 
-    if filters["stationname_exc"]:
+    if filters["stationname_exc"] and not filters["stationname_study"]:
         before_count = query.dicomqrrspstudy_set.all().count()
         _filter(
             query,
@@ -612,7 +612,7 @@ def _prune_study_responses(query, filters):
                 f"{query_id_8} study_desc_exc removed "
                 f"{deleted_studies_filters['study_desc_exc']} studies"
             )
-    if filters["stationname_inc"] and not filters['stationname_ser']:
+    if filters["stationname_inc"] and filters['stationname_study']:
         before_count = query.dicomqrrspstudy_set.all().count()
         logger.debug(
             f"{query_id_8} About to filter on stationname_inc: {filters['stationname_inc']}, "
@@ -631,7 +631,7 @@ def _prune_study_responses(query, filters):
             logger.debug(
                 f"{query_id_8} stationname_inc removed {deleted_studies_filters['stationname_inc']} studies"
             )
-    if filters["stationname_exc"] and not filters['stationname_ser']:
+    if filters["stationname_exc"] and filters['stationname_study']:
         before_count = query.dicomqrrspstudy_set.all().count()
         logger.debug(
             f"{query_id_8} About to filter on stationname_exc: {filters['stationname_exc']}, "
@@ -2147,8 +2147,8 @@ def _create_parser():
         metavar="string",
     )
     parser.add_argument(
-        "--stationname_series_level",
-        help="Advanced: Only filter station name at Series level, not at Study level",
+        "--stationname_study_level",
+        help="Advanced: Filter station name at Study level, instead of at Series level",
         action="store_true",
     )
     parser.add_argument(
@@ -2275,7 +2275,7 @@ def _process_args(parser_args, parser):
         "stationname_exc": stationname_exc,
         "study_desc_inc": study_desc_inc,
         "study_desc_exc": study_desc_exc,
-        "stationname_ser": parser_args.stationname_series_level,
+        "stationname_study": parser_args.stationname_study_level,
     }
 
     remove_duplicates = not parser_args.dup  # if flag, duplicates will be retrieved.
