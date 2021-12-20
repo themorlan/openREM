@@ -245,6 +245,11 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
     # Get the data!
     e = ct_acq_filter(filterdict, pid=pid).qs
 
+
+    # Export the data using the new Pandas method
+    export_csv_using_pandas(e)
+
+
     tsk.num_records = e.count()
     if abort_if_zero_studies(tsk.num_records, tsk):
         return
@@ -680,3 +685,197 @@ def ct_phe_2019(filterdict, user=None):
     xlsxfilename = "PHE_CT2019{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
 
     write_export(tsk, xlsxfilename, tmp_xlsx, datestamp)
+
+
+def export_csv_using_pandas(qs, qs_chunk_size=50000):
+    """
+
+    Args:
+        qs: The Django queryset containing data to be written to a csv file
+        qs_chunk_size: The number of records in each queryset chunk
+
+    """
+    import datetime
+    import os
+    import pandas as pd
+    from django.conf import settings
+
+    datestamp = datetime.datetime.now()
+    export_filename = "ct_export_{0}.csv".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
+
+    # Exam-level integer field names
+    exam_int_fields = [
+        "pk",
+        "number_of_events",
+    ]
+
+    # Friendly exam-level integer field names
+    exam_int_field_names = [
+        "pk",
+        "Number of events"
+    ]
+
+    # Exam-level object field names (string data, little or no repetition)
+    exam_obj_fields = [
+        "accession_number",
+    ]
+
+    # Friendly exam-level object field names
+    exam_obj_field_names = [
+        "Accession",
+    ]
+
+    # Exam-level category field names
+    exam_cat_fields = [
+        "generalequipmentmoduleattr__institution_name",
+        "generalequipmentmoduleattr__manufacturer",
+        "generalequipmentmoduleattr__manufacturer_model_name",
+        "generalequipmentmoduleattr__station_name",
+        "generalequipmentmoduleattr__unique_equipment_name__display_name",
+        "operator_name",
+        "patientmoduleattr__patient_sex",
+        "study_description",
+        "requested_procedure_code_meaning",
+    ]
+
+    # Friendly exam-level category field names
+    exam_cat_field_names = [
+        "Institution",
+        "Manufacturer",
+        "Model",
+        "Station name",
+        "Display name",
+        "Operator",
+        "Patient sex",
+        "Study description",
+        "Requested procedure",
+    ]
+
+    # Exam-level date field names
+    exam_date_fields = ["study_date"]
+
+    # Friendly exam-level date field names
+    exam_date_field_names = ["Study date"]
+
+    # Exam-level time field names
+    exam_time_fields = ["study_time"]
+
+    # Friendly exam-level time field names
+    exam_time_field_names = ["Study time"]
+
+    # Exam-level category value names
+    exam_val_fields = [
+        "patientstudymoduleattr__patient_age_decimal",
+        "patientstudymoduleattr__patient_size",
+        "patientstudymoduleattr__patient_weight",
+        "total_dlp"
+    ]
+
+    # Friendly exam-level value field names
+    exam_val_field_names = [
+        "Patient age",
+        "Patient height (m)",
+        "Patient weight (kg)",
+        "Total DLP (mGy.cm)"
+    ]
+
+    # Required acquisition-level category field names
+    acquisition_cat_fields = [
+        "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+        "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning",
+        "ctradiationdose__ctirradiationeventdata__ctdiw_phantom_type__code_meaning",
+    ]
+
+    # Friendly acquisition-level category field names
+    acquisition_cat_field_names = [
+        "Acquisition protocol",
+        "Acquisition type",
+        "CTDI phantom type"
+    ]
+
+    # Required acquisition-level value field names
+    acquisition_val_fields = [
+        "ctradiationdose__ctirradiationeventdata__dlp",
+        "ctradiationdose__ctirradiationeventdata__exposure_time",
+        "ctradiationdose__ctirradiationeventdata__scanninglength__scanning_length",
+        "ctradiationdose__ctirradiationeventdata__nominal_single_collimation_width",
+        "ctradiationdose__ctirradiationeventdata__nominal_total_collimation_width",
+        "ctradiationdose__ctirradiationeventdata__pitch_factor",
+        "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+    ]
+
+    # Friendly acquisition-level value field names
+    acquisition_val_field_names = [
+        "DLP (mGy.cm)",
+        "Exposure time (s)",
+        "Scanning length (mm)",
+        "Slice thickness (mm)",
+        "Total collimation (mm)",
+        "Pitch",
+        "CTDIvol (mGy)"
+    ]
+
+    all_fields = exam_int_fields + exam_obj_fields + exam_cat_fields + exam_date_fields + exam_time_fields + exam_val_fields + acquisition_cat_fields + acquisition_val_fields
+    all_field_names = exam_int_field_names + exam_obj_field_names + exam_cat_field_names + exam_date_field_names + exam_time_field_names + exam_val_field_names + acquisition_cat_field_names + acquisition_val_field_names
+
+    # Create a series of DataFrames by chunking the queryset. Chunking saves server memory at the expense of speed.
+    n_entries = qs.values_list(*all_fields).count()
+
+    for iteration, chunk_min_idx in enumerate(range(0, n_entries, qs_chunk_size)):
+
+        chunk_max_idx = chunk_min_idx + qs_chunk_size
+        if chunk_max_idx > n_entries:
+            chunk_max_idx = n_entries
+
+        df = pd.DataFrame.from_records(
+            data=qs.order_by().values_list(*all_fields)[chunk_min_idx:chunk_max_idx],
+            columns=all_field_names, coerce_float=True,
+        )
+
+        if settings.DEBUG:
+            print("Initial DataFrame created")
+            df.info()
+
+        # Make DataFrame columns category type where appropriate
+        cat_field_names = exam_cat_field_names + acquisition_cat_field_names
+        df[cat_field_names] = df[cat_field_names].astype("category")
+
+        # Make DataFrame columns datetime type where appropriate
+        for date_field in exam_date_field_names:
+            df[date_field] = pd.to_datetime(df[date_field], format="%Y-%m-%d")
+
+        # Make DataFrame columns float32 type where appropriate
+        val_field_names = exam_val_field_names + acquisition_val_field_names
+        df[val_field_names] = df[val_field_names].astype("float32")
+
+        # Make DataFrame columns UInt32 type where appropriate
+        int_field_names = exam_int_field_names
+        df[exam_int_field_names] = df[exam_int_field_names].astype("UInt32")
+
+        if settings.DEBUG:
+            print("DataFrame column types changed to reduce memory consumption")
+            df.info()
+
+        # Reformat the DataFrame so that we have one row per exam, with sets of columns for each acquisition data
+        g = df.groupby("pk").cumcount().add(1)
+
+        exam_field_names = exam_obj_field_names + exam_int_field_names + exam_cat_field_names + exam_date_field_names + exam_time_field_names + exam_val_field_names
+        exam_field_names.append(g)
+
+        df = df.set_index(exam_field_names).unstack().sort_index(axis=1, level=1)
+        df.columns = ["E{} {}".format(b, a) for a, b in df.columns]
+        df = df.reset_index()
+
+        # Set datatypes of the exam-level integer and value fields again because the reformat undoes the earlier changes
+        df[exam_int_field_names] = df[exam_int_field_names].astype("UInt32")
+        df[exam_val_field_names] = df[exam_val_field_names].astype("float32")
+
+        if settings.DEBUG:
+            print("DataFrame reformatted")
+            df.info()
+
+        # Write the DataFrame to a csv file
+        write_headers = False
+        if iteration == 0:
+            write_headers = True
+        df.drop(['pk'], axis=1).to_csv(os.path.join(settings.MEDIA_ROOT, export_filename), index=False, mode="a", header=write_headers)
