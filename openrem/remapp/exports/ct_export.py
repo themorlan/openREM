@@ -779,18 +779,32 @@ def export_csv_using_pandas(qs, qs_chunk_size=50000):
         "Total DLP (mGy.cm)"
     ]
 
+    # Required acquisition-level integer field names
+    acquisition_int_fields = [
+        "ctradiationdose__ctirradiationeventdata__number_of_xray_sources",
+    ]
+
+    # Friendly acquisition-level integer field names
+    acquisition_int_field_names = [
+        "Number of sources",
+    ]
+
     # Required acquisition-level category field names
     acquisition_cat_fields = [
         "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
         "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning",
         "ctradiationdose__ctirradiationeventdata__ctdiw_phantom_type__code_meaning",
+        "ctradiationdose__ctirradiationeventdata__xray_modulation_type",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__identification_of_the_xray_source",
     ]
 
     # Friendly acquisition-level category field names
     acquisition_cat_field_names = [
         "Acquisition protocol",
         "Acquisition type",
-        "CTDI phantom type"
+        "CTDI phantom type",
+        "mA modulation type",
+        "Source name"
     ]
 
     # Required acquisition-level value field names
@@ -802,6 +816,10 @@ def export_csv_using_pandas(qs, qs_chunk_size=50000):
         "ctradiationdose__ctirradiationeventdata__nominal_total_collimation_width",
         "ctradiationdose__ctirradiationeventdata__pitch_factor",
         "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__kvp",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__maximum_xray_tube_current",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__xray_tube_current",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__exposure_time_per_rotation",
     ]
 
     # Friendly acquisition-level value field names
@@ -812,11 +830,15 @@ def export_csv_using_pandas(qs, qs_chunk_size=50000):
         "Slice thickness (mm)",
         "Total collimation (mm)",
         "Pitch",
-        "CTDIvol (mGy)"
+        "CTDIvol (mGy)",
+        "kVp",
+        "Maximum mA",
+        "mA",
+        "Exposure time per rotation",
     ]
 
-    all_fields = exam_int_fields + exam_obj_fields + exam_cat_fields + exam_date_fields + exam_time_fields + exam_val_fields + acquisition_cat_fields + acquisition_val_fields
-    all_field_names = exam_int_field_names + exam_obj_field_names + exam_cat_field_names + exam_date_field_names + exam_time_field_names + exam_val_field_names + acquisition_cat_field_names + acquisition_val_field_names
+    all_fields = exam_int_fields + exam_obj_fields + exam_cat_fields + exam_date_fields + exam_time_fields + exam_val_fields + acquisition_int_fields + acquisition_cat_fields + acquisition_val_fields
+    all_field_names = exam_int_field_names + exam_obj_field_names + exam_cat_field_names + exam_date_field_names + exam_time_field_names + exam_val_field_names + acquisition_int_field_names + acquisition_cat_field_names + acquisition_val_field_names
 
     # Create a series of DataFrames by chunking the queryset. Chunking saves server memory at the expense of speed.
     n_entries = qs.values_list(*all_fields).count()
@@ -849,7 +871,7 @@ def export_csv_using_pandas(qs, qs_chunk_size=50000):
         df[val_field_names] = df[val_field_names].astype("float32")
 
         # Make DataFrame columns UInt32 type where appropriate
-        int_field_names = exam_int_field_names
+        int_field_names = exam_int_field_names + acquisition_int_field_names
         df[exam_int_field_names] = df[exam_int_field_names].astype("UInt32")
 
         if settings.DEBUG:
