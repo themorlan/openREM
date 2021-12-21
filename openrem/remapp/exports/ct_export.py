@@ -36,6 +36,10 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext as _
 from celery import shared_task
+from zipfile import (
+    ZipFile,
+    ZIP_DEFLATED,
+)
 
 from .export_common import (
     get_common_data,
@@ -706,6 +710,7 @@ def export_csv_using_pandas(qs, qs_chunk_size=20000):
 
     datestamp = datetime.datetime.now()
     export_filename = "ct_export_{0}.csv".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
+    export_path_and_filename = os.path.join(settings.MEDIA_ROOT, export_filename)
 
     # Exam-level integer field names
     exam_int_fields = [
@@ -869,7 +874,7 @@ def export_csv_using_pandas(qs, qs_chunk_size=20000):
         write_headers = False
         if iteration == 0:
             write_headers = True
-        df.drop(['pk'], axis=1).to_csv(os.path.join(settings.MEDIA_ROOT, export_filename), index=False, mode="a", header=write_headers)
+        df.drop(['pk'], axis=1).to_csv(export_path_and_filename, index=False, mode="a", header=write_headers)
 
     # Now write out any None accession number data if any such data is present
     data = qs.order_by().filter(accession_number__isnull=True).values_list(*all_fields)
@@ -888,7 +893,16 @@ def export_csv_using_pandas(qs, qs_chunk_size=20000):
             pass
 
         # Write the None values to the csv file
-        df.drop(['pk'], axis=1).to_csv(os.path.join(settings.MEDIA_ROOT, export_filename), index=False, mode="a", header=write_headers)
+        df.drop(['pk'], axis=1).to_csv(export_path_and_filename, index=False, mode="a", header=write_headers)
+
+
+    # Zip up the csv results file to save server space, and delete the uncompressed csv file
+    if os.path.exists(export_path_and_filename):
+        with ZipFile(export_path_and_filename+".zip", "w", compression=ZIP_DEFLATED, compresslevel=9) as myzip:
+            myzip.write(export_path_and_filename, arcname=export_filename)
+            myzip.close()
+
+        os.remove(export_path_and_filename)
 
 
 def create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
