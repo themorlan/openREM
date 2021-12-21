@@ -27,8 +27,12 @@
 ..  moduleauthor:: Ed McDonagh
 
 """
+import datetime
 import logging
+import pandas as pd
 
+from django.db.models import Q
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext as _
 from celery import shared_task
@@ -59,7 +63,6 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     :return: Saves xlsx file into Media directory for user to download
     """
 
-    import datetime
     from django.db.models import Max
     from .export_common import text_and_date_formats, generate_sheets, sheet_name
     from ..interface.mod_filters import ct_acq_filter
@@ -223,7 +226,6 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
     :return: Saves csv file into Media directory for user to download
     """
 
-    import datetime
     from django.db.models import Max
     from ..interface.mod_filters import ct_acq_filter
 
@@ -247,7 +249,13 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
 
 
     # Export the data using the new Pandas method
+    if settings.DEBUG:
+        start = datetime.datetime.now()
+
     export_csv_using_pandas(e)
+
+    if settings.DEBUG:
+        print("CSV export using Pandas DataFrames took {} s".format(datetime.datetime.now() - start))
 
 
     tsk.num_records = e.count()
@@ -538,7 +546,6 @@ def ct_phe_2019(filterdict, user=None):
     :return: Saves Excel file into Media directory for user to download
     """
 
-    import datetime
     from decimal import Decimal
     from ..interface.mod_filters import ct_acq_filter
 
@@ -687,7 +694,7 @@ def ct_phe_2019(filterdict, user=None):
     write_export(tsk, xlsxfilename, tmp_xlsx, datestamp)
 
 
-def export_csv_using_pandas(qs, qs_chunk_size=50000):
+def export_csv_using_pandas(qs, qs_chunk_size=20000):
     """
 
     Args:
@@ -695,10 +702,7 @@ def export_csv_using_pandas(qs, qs_chunk_size=50000):
         qs_chunk_size: The number of records in each queryset chunk
 
     """
-    import datetime
     import os
-    import pandas as pd
-    from django.conf import settings
 
     datestamp = datetime.datetime.now()
     export_filename = "ct_export_{0}.csv".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
@@ -840,8 +844,13 @@ def export_csv_using_pandas(qs, qs_chunk_size=50000):
     all_fields = exam_int_fields + exam_obj_fields + exam_cat_fields + exam_date_fields + exam_time_fields + exam_val_fields + acquisition_int_fields + acquisition_cat_fields + acquisition_val_fields
     all_field_names = exam_int_field_names + exam_obj_field_names + exam_cat_field_names + exam_date_field_names + exam_time_field_names + exam_val_field_names + acquisition_int_field_names + acquisition_cat_field_names + acquisition_val_field_names
 
-    # Create a series of DataFrames by chunking the queryset. Chunking saves server memory at the expense of speed.
-    n_entries = qs.values_list(*all_fields).count()
+    # Create a series of DataFrames by chunking the queryset into groups of accession numbers.
+    # Chunking saves server memory at the expense of speed.
+
+    # Generate a list of non-null accession numbers (if I don't include pk then some accession numbers are missing
+    # from the list - I don't know why).
+    accession_numbers = [x[0] for x in qs.filter(accession_number__isnull=False).values_list("accession_number", "pk")]
+    n_entries = len(accession_numbers)
 
     for iteration, chunk_min_idx in enumerate(range(0, n_entries, qs_chunk_size)):
 
@@ -849,55 +858,86 @@ def export_csv_using_pandas(qs, qs_chunk_size=50000):
         if chunk_max_idx > n_entries:
             chunk_max_idx = n_entries
 
-        df = pd.DataFrame.from_records(
-            data=qs.order_by().values_list(*all_fields)[chunk_min_idx:chunk_max_idx],
-            columns=all_field_names, coerce_float=True,
-        )
+        data = qs.order_by().filter(accession_number__in=accession_numbers[chunk_min_idx:chunk_max_idx]).values_list(*all_fields)
 
-        if settings.DEBUG:
-            print("Initial DataFrame created")
-            df.info()
-
-        # Make DataFrame columns category type where appropriate
-        cat_field_names = exam_cat_field_names + acquisition_cat_field_names
-        df[cat_field_names] = df[cat_field_names].astype("category")
-
-        # Make DataFrame columns datetime type where appropriate
-        for date_field in exam_date_field_names:
-            df[date_field] = pd.to_datetime(df[date_field], format="%Y-%m-%d")
-
-        # Make DataFrame columns float32 type where appropriate
-        val_field_names = exam_val_field_names + acquisition_val_field_names
-        df[val_field_names] = df[val_field_names].astype("float32")
-
-        # Make DataFrame columns UInt32 type where appropriate
-        int_field_names = exam_int_field_names + acquisition_int_field_names
-        df[exam_int_field_names] = df[exam_int_field_names].astype("UInt32")
-
-        if settings.DEBUG:
-            print("DataFrame column types changed to reduce memory consumption")
-            df.info()
-
-        # Reformat the DataFrame so that we have one row per exam, with sets of columns for each acquisition data
-        g = df.groupby("pk").cumcount().add(1)
-
-        exam_field_names = exam_obj_field_names + exam_int_field_names + exam_cat_field_names + exam_date_field_names + exam_time_field_names + exam_val_field_names
-        exam_field_names.append(g)
-
-        df = df.set_index(exam_field_names).unstack().sort_index(axis=1, level=1)
-        df.columns = ["E{} {}".format(b, a) for a, b in df.columns]
-        df = df.reset_index()
-
-        # Set datatypes of the exam-level integer and value fields again because the reformat undoes the earlier changes
-        df[exam_int_field_names] = df[exam_int_field_names].astype("UInt32")
-        df[exam_val_field_names] = df[exam_val_field_names].astype("float32")
-
-        if settings.DEBUG:
-            print("DataFrame reformatted")
-            df.info()
+        df = create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
+                                  all_field_names, data, exam_cat_field_names, exam_date_field_names,
+                                  exam_int_field_names, exam_obj_field_names, exam_time_field_names,
+                                  exam_val_field_names)
 
         # Write the DataFrame to a csv file
         write_headers = False
         if iteration == 0:
             write_headers = True
         df.drop(['pk'], axis=1).to_csv(os.path.join(settings.MEDIA_ROOT, export_filename), index=False, mode="a", header=write_headers)
+
+    # Now write out any None accession number data if any such data is present
+    data = qs.order_by().filter(accession_number__isnull=True).values_list(*all_fields)
+
+    if data:
+        df = create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
+                                  all_field_names, data, exam_cat_field_names, exam_date_field_names,
+                                  exam_int_field_names, exam_obj_field_names, exam_time_field_names,
+                                  exam_val_field_names)
+
+        write_headers = True
+        try:
+            if iteration:
+                write_headers = False
+        except NameError:
+            pass
+
+        # Write the None values to the csv file
+        df.drop(['pk'], axis=1).to_csv(os.path.join(settings.MEDIA_ROOT, export_filename), index=False, mode="a", header=write_headers)
+
+
+def create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
+                         all_field_names, data, exam_cat_field_names, exam_date_field_names, exam_int_field_names,
+                         exam_obj_field_names, exam_time_field_names, exam_val_field_names):
+
+    df = pd.DataFrame.from_records(
+        data=data,
+        columns=all_field_names, coerce_float=True,
+    )
+
+    if settings.DEBUG:
+        print("Initial DataFrame created")
+        df.info()
+
+    # Make DataFrame columns category type where appropriate
+    cat_field_names = exam_cat_field_names + acquisition_cat_field_names
+    df[cat_field_names] = df[cat_field_names].astype("category")
+
+    # Make DataFrame columns datetime type where appropriate
+    for date_field in exam_date_field_names:
+        df[date_field] = pd.to_datetime(df[date_field], format="%Y-%m-%d")
+
+    # Make DataFrame columns float32 type where appropriate
+    val_field_names = exam_val_field_names + acquisition_val_field_names
+    df[val_field_names] = df[val_field_names].astype("float32")
+
+    # Make DataFrame columns UInt32 type where appropriate
+    int_field_names = exam_int_field_names + acquisition_int_field_names
+    df[exam_int_field_names] = df[exam_int_field_names].astype("UInt32")
+
+    if settings.DEBUG:
+        print("DataFrame column types changed to reduce memory consumption")
+        df.info()
+
+    # Reformat the DataFrame so that we have one row per exam, with sets of columns for each acquisition data
+    g = df.groupby("pk").cumcount().add(1)
+    exam_field_names = exam_obj_field_names + exam_int_field_names + exam_cat_field_names + exam_date_field_names + exam_time_field_names + exam_val_field_names
+    exam_field_names.append(g)
+    df = df.set_index(exam_field_names).unstack().sort_index(axis=1, level=1)
+    df.columns = ["E{} {}".format(b, a) for a, b in df.columns]
+    df = df.reset_index()
+
+    # Set datatypes of the exam-level integer and value fields again because the reformat undoes the earlier changes
+    df[exam_int_field_names] = df[exam_int_field_names].astype("UInt32")
+    df[exam_val_field_names] = df[exam_val_field_names].astype("float32")
+
+    if settings.DEBUG:
+        print("DataFrame reformatted")
+        df.info()
+
+    return df
