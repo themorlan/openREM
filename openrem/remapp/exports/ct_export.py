@@ -29,6 +29,7 @@
 """
 import datetime
 import logging
+import os
 import pandas as pd
 
 from django.db.models import Q
@@ -249,82 +250,217 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
         exit()
 
     # Get the data!
-    e = ct_acq_filter(filterdict, pid=pid).qs
+    qs = ct_acq_filter(filterdict, pid=pid).qs
 
+    qs_chunk_size=20000
 
-    # Export the data using the new Pandas method
-    if settings.DEBUG:
-        start = datetime.datetime.now()
+    # Exam-level integer field names
+    exam_int_fields = [
+        "pk",
+        "number_of_events",
+    ]
 
-    export_csv_using_pandas(e)
+    # Friendly exam-level integer field names
+    exam_int_field_names = [
+        "pk",
+        "Number of events"
+    ]
 
-    if settings.DEBUG:
-        print("CSV export using Pandas DataFrames took {} s".format(datetime.datetime.now() - start))
+    # Exam-level object field names (string data, little or no repetition)
+    exam_obj_fields = [
+        "accession_number",
+    ]
 
+    # Friendly exam-level object field names
+    exam_obj_field_names = [
+        "Accession",
+    ]
 
-    tsk.num_records = e.count()
+    # Exam-level category field names
+    exam_cat_fields = [
+        "generalequipmentmoduleattr__institution_name",
+        "generalequipmentmoduleattr__manufacturer",
+        "generalequipmentmoduleattr__manufacturer_model_name",
+        "generalequipmentmoduleattr__station_name",
+        "generalequipmentmoduleattr__unique_equipment_name__display_name",
+        "operator_name",
+        "patientmoduleattr__patient_sex",
+        "study_description",
+        "requested_procedure_code_meaning",
+    ]
+
+    # Friendly exam-level category field names
+    exam_cat_field_names = [
+        "Institution",
+        "Manufacturer",
+        "Model",
+        "Station name",
+        "Display name",
+        "Operator",
+        "Patient sex",
+        "Study description",
+        "Requested procedure",
+    ]
+
+    # Exam-level date field names
+    exam_date_fields = ["study_date"]
+
+    # Friendly exam-level date field names
+    exam_date_field_names = ["Study date"]
+
+    # Exam-level time field names
+    exam_time_fields = ["study_time"]
+
+    # Friendly exam-level time field names
+    exam_time_field_names = ["Study time"]
+
+    # Exam-level category value names
+    exam_val_fields = [
+        "patientstudymoduleattr__patient_age_decimal",
+        "patientstudymoduleattr__patient_size",
+        "patientstudymoduleattr__patient_weight",
+        "total_dlp"
+    ]
+
+    # Friendly exam-level value field names
+    exam_val_field_names = [
+        "Patient age",
+        "Patient height (m)",
+        "Patient weight (kg)",
+        "Total DLP (mGy.cm)"
+    ]
+
+    # Required acquisition-level integer field names
+    acquisition_int_fields = [
+        "ctradiationdose__ctirradiationeventdata__number_of_xray_sources",
+    ]
+
+    # Friendly acquisition-level integer field names
+    acquisition_int_field_names = [
+        "Number of sources",
+    ]
+
+    # Required acquisition-level category field names
+    acquisition_cat_fields = [
+        "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+        "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning",
+        "ctradiationdose__ctirradiationeventdata__ctdiw_phantom_type__code_meaning",
+        "ctradiationdose__ctirradiationeventdata__xray_modulation_type",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__identification_of_the_xray_source",
+    ]
+
+    # Friendly acquisition-level category field names
+    acquisition_cat_field_names = [
+        "Acquisition protocol",
+        "Acquisition type",
+        "CTDI phantom type",
+        "mA modulation type",
+        "Source name"
+    ]
+
+    # Required acquisition-level value field names
+    acquisition_val_fields = [
+        "ctradiationdose__ctirradiationeventdata__dlp",
+        "ctradiationdose__ctirradiationeventdata__exposure_time",
+        "ctradiationdose__ctirradiationeventdata__scanninglength__scanning_length",
+        "ctradiationdose__ctirradiationeventdata__nominal_single_collimation_width",
+        "ctradiationdose__ctirradiationeventdata__nominal_total_collimation_width",
+        "ctradiationdose__ctirradiationeventdata__pitch_factor",
+        "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__kvp",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__maximum_xray_tube_current",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__xray_tube_current",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__exposure_time_per_rotation",
+    ]
+
+    # Friendly acquisition-level value field names
+    acquisition_val_field_names = [
+        "DLP (mGy.cm)",
+        "Exposure time (s)",
+        "Scanning length (mm)",
+        "Slice thickness (mm)",
+        "Total collimation (mm)",
+        "Pitch",
+        "CTDIvol (mGy)",
+        "kVp",
+        "Maximum mA",
+        "mA",
+        "Exposure time per rotation",
+    ]
+
+    all_fields = exam_int_fields + exam_obj_fields + exam_cat_fields + exam_date_fields + exam_time_fields + exam_val_fields + acquisition_int_fields + acquisition_cat_fields + acquisition_val_fields
+    all_field_names = exam_int_field_names + exam_obj_field_names + exam_cat_field_names + exam_date_field_names + exam_time_field_names + exam_val_field_names + acquisition_int_field_names + acquisition_cat_field_names + acquisition_val_field_names
+
+    # Create a series of DataFrames by chunking the queryset into groups of accession numbers.
+    # Chunking saves server memory at the expense of speed.
+
+    # Generate a list of non-null accession numbers (if I don't include pk then some accession numbers are missing
+    # from the list - I don't know why).
+    accession_numbers = [x[0] for x in qs.filter(accession_number__isnull=False).values_list("accession_number", "pk")]
+    n_entries = len(accession_numbers)
+    tsk.num_records = n_entries
     if abort_if_zero_studies(tsk.num_records, tsk):
         return
 
     tsk.progress = "{0} studies in query.".format(tsk.num_records)
     tsk.save()
 
-    headings = common_headers(pid=pid, name=name, patid=patid)
-    headings += ["DLP total (mGy.cm)"]
+    write_headers = True
 
-    max_events_dict = e.aggregate(
-        Max(
-            "ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events"
-        )
-    )
-    max_events = max_events_dict[
-        "ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events__max"
-    ]
-    if not max_events:
-        max_events = 1
-    headings += _generate_all_data_headers_ct(max_events)
-    writer.writerow(headings)
+    for chunk_min_idx in range(0, n_entries, qs_chunk_size):
 
-    tsk.progress = "CSV header row written."
-    tsk.save()
-
-    for i, exams in enumerate(e):
-        tsk.progress = "{0} of {1}".format(i + 1, tsk.num_records)
+        tsk.progress = "Working on {0} entries starting at {1}".format(qs_chunk_size, chunk_min_idx)
         tsk.save()
-        try:
-            exam_data = get_common_data("CT", exams, pid, name, patid)
-            for (
-                s
-            ) in exams.ctradiationdose_set.get().ctirradiationeventdata_set.order_by(
-                "id"
-            ):
-                # Get series data
-                exam_data += _ct_get_series_data(s)
-            # Clear out any commas
-            for index, item in enumerate(exam_data):
-                if item is None:
-                    exam_data[index] = ""
-                if isinstance(item, str) and "," in item:
-                    exam_data[index] = item.replace(",", ";")
-            writer.writerow([str(data_string) for data_string in exam_data])
-        except ObjectDoesNotExist:
-            error_message = (
-                "DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number"
-                " {3} - maybe database entry was deleted as part of importing later version of same"
-                " study?".format(
-                    i + 1,
-                    tsk.num_records,
-                    exams.study_instance_uid,
-                    exams.accession_number,
-                )
-            )
-            logger.error(error_message)
-            writer.writerow([error_message])
 
-    tsk.progress = "All study data written."
+        chunk_max_idx = chunk_min_idx + qs_chunk_size
+        if chunk_max_idx > n_entries:
+            chunk_max_idx = n_entries
+
+        data = qs.order_by().filter(accession_number__in=accession_numbers[chunk_min_idx:chunk_max_idx]).values_list(*all_fields)
+
+        df = create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names,
+                                  acquisition_val_field_names,
+                                  all_field_names, data, exam_cat_field_names, exam_date_field_names,
+                                  exam_int_field_names, exam_obj_field_names, exam_time_field_names,
+                                  exam_val_field_names)
+
+        # Write the DataFrame to a csv file
+        df.drop(['pk'], axis=1).to_csv(tmpfile, index=False, mode="a", header=write_headers)
+        write_headers = False
+
+    # Now write out any None accession number data if any such data is present
+    data = qs.order_by().filter(accession_number__isnull=True).values_list(*all_fields)
+
+    if data:
+        tsk.progress = "Working on entries with blank accession numbers"
+        tsk.save()
+
+        df = create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names,
+                                  acquisition_val_field_names,
+                                  all_field_names, data, exam_cat_field_names, exam_date_field_names,
+                                  exam_int_field_names, exam_obj_field_names, exam_time_field_names,
+                                  exam_val_field_names)
+
+        # Write the None values to the csv file
+        df.drop(['pk'], axis=1).to_csv(tmpfile, index=False, mode="a", header=write_headers)
+
+    tsk.progress = "All study data written. Zipping file to save space"
     tsk.save()
 
+    # Zip up the csv results file to save server space, and delete the uncompressed csv file
+
+    if os.path.exists(tsk.filename.path):
+        with ZipFile(tsk.filename.path + ".zip", "w", compression=ZIP_DEFLATED, compresslevel=9) as myzip:
+            myzip.write(tsk.filename.path, arcname=os.path.split(tsk.filename.path)[1])
+            myzip.close()
+
+    # Remove the original csv file
     tmpfile.close()
+    os.remove(tsk.filename.path)
+
+    # Update the task filename to be the zip file
+    tsk.filename.name = tsk.filename.name + ".zip"
+
     tsk.status = "COMPLETE"
     tsk.processtime = (datetime.datetime.now() - datestamp).total_seconds()
     tsk.save()
@@ -696,205 +832,6 @@ def ct_phe_2019(filterdict, user=None):
     xlsxfilename = "PHE_CT2019{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
 
     write_export(tsk, xlsxfilename, tmp_xlsx, datestamp)
-
-
-def export_csv_using_pandas(qs, qs_chunk_size=20000):
-    """
-
-    Args:
-        qs: The Django queryset containing data to be written to a csv file
-        qs_chunk_size: The number of records in each queryset chunk
-
-    """
-    import os
-
-    datestamp = datetime.datetime.now()
-    export_filename = "ct_export_{0}.csv".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
-    export_path_and_filename = os.path.join(settings.MEDIA_ROOT, export_filename)
-
-    # Exam-level integer field names
-    exam_int_fields = [
-        "pk",
-        "number_of_events",
-    ]
-
-    # Friendly exam-level integer field names
-    exam_int_field_names = [
-        "pk",
-        "Number of events"
-    ]
-
-    # Exam-level object field names (string data, little or no repetition)
-    exam_obj_fields = [
-        "accession_number",
-    ]
-
-    # Friendly exam-level object field names
-    exam_obj_field_names = [
-        "Accession",
-    ]
-
-    # Exam-level category field names
-    exam_cat_fields = [
-        "generalequipmentmoduleattr__institution_name",
-        "generalequipmentmoduleattr__manufacturer",
-        "generalequipmentmoduleattr__manufacturer_model_name",
-        "generalequipmentmoduleattr__station_name",
-        "generalequipmentmoduleattr__unique_equipment_name__display_name",
-        "operator_name",
-        "patientmoduleattr__patient_sex",
-        "study_description",
-        "requested_procedure_code_meaning",
-    ]
-
-    # Friendly exam-level category field names
-    exam_cat_field_names = [
-        "Institution",
-        "Manufacturer",
-        "Model",
-        "Station name",
-        "Display name",
-        "Operator",
-        "Patient sex",
-        "Study description",
-        "Requested procedure",
-    ]
-
-    # Exam-level date field names
-    exam_date_fields = ["study_date"]
-
-    # Friendly exam-level date field names
-    exam_date_field_names = ["Study date"]
-
-    # Exam-level time field names
-    exam_time_fields = ["study_time"]
-
-    # Friendly exam-level time field names
-    exam_time_field_names = ["Study time"]
-
-    # Exam-level category value names
-    exam_val_fields = [
-        "patientstudymoduleattr__patient_age_decimal",
-        "patientstudymoduleattr__patient_size",
-        "patientstudymoduleattr__patient_weight",
-        "total_dlp"
-    ]
-
-    # Friendly exam-level value field names
-    exam_val_field_names = [
-        "Patient age",
-        "Patient height (m)",
-        "Patient weight (kg)",
-        "Total DLP (mGy.cm)"
-    ]
-
-    # Required acquisition-level integer field names
-    acquisition_int_fields = [
-        "ctradiationdose__ctirradiationeventdata__number_of_xray_sources",
-    ]
-
-    # Friendly acquisition-level integer field names
-    acquisition_int_field_names = [
-        "Number of sources",
-    ]
-
-    # Required acquisition-level category field names
-    acquisition_cat_fields = [
-        "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
-        "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning",
-        "ctradiationdose__ctirradiationeventdata__ctdiw_phantom_type__code_meaning",
-        "ctradiationdose__ctirradiationeventdata__xray_modulation_type",
-        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__identification_of_the_xray_source",
-    ]
-
-    # Friendly acquisition-level category field names
-    acquisition_cat_field_names = [
-        "Acquisition protocol",
-        "Acquisition type",
-        "CTDI phantom type",
-        "mA modulation type",
-        "Source name"
-    ]
-
-    # Required acquisition-level value field names
-    acquisition_val_fields = [
-        "ctradiationdose__ctirradiationeventdata__dlp",
-        "ctradiationdose__ctirradiationeventdata__exposure_time",
-        "ctradiationdose__ctirradiationeventdata__scanninglength__scanning_length",
-        "ctradiationdose__ctirradiationeventdata__nominal_single_collimation_width",
-        "ctradiationdose__ctirradiationeventdata__nominal_total_collimation_width",
-        "ctradiationdose__ctirradiationeventdata__pitch_factor",
-        "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
-        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__kvp",
-        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__maximum_xray_tube_current",
-        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__xray_tube_current",
-        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__exposure_time_per_rotation",
-    ]
-
-    # Friendly acquisition-level value field names
-    acquisition_val_field_names = [
-        "DLP (mGy.cm)",
-        "Exposure time (s)",
-        "Scanning length (mm)",
-        "Slice thickness (mm)",
-        "Total collimation (mm)",
-        "Pitch",
-        "CTDIvol (mGy)",
-        "kVp",
-        "Maximum mA",
-        "mA",
-        "Exposure time per rotation",
-    ]
-
-    all_fields = exam_int_fields + exam_obj_fields + exam_cat_fields + exam_date_fields + exam_time_fields + exam_val_fields + acquisition_int_fields + acquisition_cat_fields + acquisition_val_fields
-    all_field_names = exam_int_field_names + exam_obj_field_names + exam_cat_field_names + exam_date_field_names + exam_time_field_names + exam_val_field_names + acquisition_int_field_names + acquisition_cat_field_names + acquisition_val_field_names
-
-    # Create a series of DataFrames by chunking the queryset into groups of accession numbers.
-    # Chunking saves server memory at the expense of speed.
-
-    # Generate a list of non-null accession numbers (if I don't include pk then some accession numbers are missing
-    # from the list - I don't know why).
-    accession_numbers = [x[0] for x in qs.filter(accession_number__isnull=False).values_list("accession_number", "pk")]
-    n_entries = len(accession_numbers)
-    write_headers = True
-
-    for chunk_min_idx in range(0, n_entries, qs_chunk_size):
-
-        chunk_max_idx = chunk_min_idx + qs_chunk_size
-        if chunk_max_idx > n_entries:
-            chunk_max_idx = n_entries
-
-        data = qs.order_by().filter(accession_number__in=accession_numbers[chunk_min_idx:chunk_max_idx]).values_list(*all_fields)
-
-        df = create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-                                  all_field_names, data, exam_cat_field_names, exam_date_field_names,
-                                  exam_int_field_names, exam_obj_field_names, exam_time_field_names,
-                                  exam_val_field_names)
-
-        # Write the DataFrame to a csv file
-        df.drop(['pk'], axis=1).to_csv(export_path_and_filename, index=False, mode="a", header=write_headers)
-        write_headers = False
-
-    # Now write out any None accession number data if any such data is present
-    data = qs.order_by().filter(accession_number__isnull=True).values_list(*all_fields)
-
-    if data:
-        df = create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-                                  all_field_names, data, exam_cat_field_names, exam_date_field_names,
-                                  exam_int_field_names, exam_obj_field_names, exam_time_field_names,
-                                  exam_val_field_names)
-
-        # Write the None values to the csv file
-        df.drop(['pk'], axis=1).to_csv(export_path_and_filename, index=False, mode="a", header=write_headers)
-
-
-    # Zip up the csv results file to save server space, and delete the uncompressed csv file
-    if os.path.exists(export_path_and_filename):
-        with ZipFile(export_path_and_filename+".zip", "w", compression=ZIP_DEFLATED, compresslevel=9) as myzip:
-            myzip.write(export_path_and_filename, arcname=export_filename)
-            myzip.close()
-
-        os.remove(export_path_and_filename)
 
 
 def create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
