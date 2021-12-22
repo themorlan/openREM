@@ -856,8 +856,9 @@ def export_csv_using_pandas(qs, qs_chunk_size=20000):
     # from the list - I don't know why).
     accession_numbers = [x[0] for x in qs.filter(accession_number__isnull=False).values_list("accession_number", "pk")]
     n_entries = len(accession_numbers)
+    write_headers = True
 
-    for iteration, chunk_min_idx in enumerate(range(0, n_entries, qs_chunk_size)):
+    for chunk_min_idx in range(0, n_entries, qs_chunk_size):
 
         chunk_max_idx = chunk_min_idx + qs_chunk_size
         if chunk_max_idx > n_entries:
@@ -871,10 +872,8 @@ def export_csv_using_pandas(qs, qs_chunk_size=20000):
                                   exam_val_field_names)
 
         # Write the DataFrame to a csv file
-        write_headers = False
-        if iteration == 0:
-            write_headers = True
         df.drop(['pk'], axis=1).to_csv(export_path_and_filename, index=False, mode="a", header=write_headers)
+        write_headers = False
 
     # Now write out any None accession number data if any such data is present
     data = qs.order_by().filter(accession_number__isnull=True).values_list(*all_fields)
@@ -884,13 +883,6 @@ def export_csv_using_pandas(qs, qs_chunk_size=20000):
                                   all_field_names, data, exam_cat_field_names, exam_date_field_names,
                                   exam_int_field_names, exam_obj_field_names, exam_time_field_names,
                                   exam_val_field_names)
-
-        write_headers = True
-        try:
-            if iteration:
-                write_headers = False
-        except NameError:
-            pass
 
         # Write the None values to the csv file
         df.drop(['pk'], axis=1).to_csv(export_path_and_filename, index=False, mode="a", header=write_headers)
