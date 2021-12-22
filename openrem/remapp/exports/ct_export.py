@@ -409,7 +409,7 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
 
     for chunk_min_idx in range(0, n_entries, qs_chunk_size):
 
-        tsk.progress = "Working on {0} entries starting at {1}".format(qs_chunk_size, chunk_min_idx)
+        tsk.progress = "Working on entries {0} to {1}".format(chunk_min_idx, chunk_min_idx + qs_chunk_size - 1)
         tsk.save()
 
         chunk_max_idx = chunk_min_idx + qs_chunk_size
