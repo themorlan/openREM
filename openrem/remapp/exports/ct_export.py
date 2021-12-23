@@ -393,11 +393,7 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
 
     # Create a series of DataFrames by chunking the queryset into groups of accession numbers.
     # Chunking saves server memory at the expense of speed.
-
-    # Generate a list of non-null accession numbers (if I don't include pk then some accession numbers are missing
-    # from the list - I don't know why).
-    accession_numbers = [x[0] for x in qs.filter(accession_number__isnull=False).values_list("accession_number", "pk")]
-    n_entries = len(accession_numbers)
+    n_entries = qs.count()
     tsk.num_records = n_entries
     if abort_if_zero_studies(tsk.num_records, tsk):
         return
@@ -407,14 +403,18 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
 
     write_headers = True
 
-    for chunk_min_idx in range(0, n_entries, qs_chunk_size):
+    # Generate a list of non-null accession numbers (if I don't include pk then some accession numbers are missing
+    # from the list - I don't know why).
+    accession_numbers = [x[0] for x in qs.filter(accession_number__isnull=False).values_list("accession_number", "pk")]
 
-        tsk.progress = "Working on entries {0} to {1}".format(chunk_min_idx, chunk_min_idx + qs_chunk_size - 1)
-        tsk.save()
+    for chunk_min_idx in range(0, n_entries, qs_chunk_size):
 
         chunk_max_idx = chunk_min_idx + qs_chunk_size
         if chunk_max_idx > n_entries:
             chunk_max_idx = n_entries
+
+        tsk.progress = "Working on entries {0} to {1}".format(chunk_min_idx + 1, chunk_max_idx)
+        tsk.save()
 
         data = qs.order_by().filter(accession_number__in=accession_numbers[chunk_min_idx:chunk_max_idx]).values_list(*all_fields)
 
@@ -429,10 +429,11 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
         write_headers = False
 
     # Now write out any None accession number data if any such data is present
+    n_entries = qs.filter(accession_number__isnull=True).count()
     data = qs.order_by().filter(accession_number__isnull=True).values_list(*all_fields)
 
     if data:
-        tsk.progress = "Working on entries with blank accession numbers"
+        tsk.progress = "Working on {0} entries with blank accession numbers".format(n_entries)
         tsk.save()
 
         df = create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names,
