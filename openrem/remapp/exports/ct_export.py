@@ -862,7 +862,7 @@ def create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_name
 
     # Make DataFrame columns UInt32 type where appropriate
     int_field_names = exam_int_field_names + acquisition_int_field_names
-    df[exam_int_field_names] = df[exam_int_field_names].astype("UInt32")
+    df[int_field_names] = df[int_field_names].astype("UInt32")
 
     if settings.DEBUG:
         print("DataFrame column types changed to reduce memory consumption")
