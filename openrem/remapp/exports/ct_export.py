@@ -89,9 +89,9 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         exit()
 
     # Get the data!
-    e = ct_acq_filter(filterdict, pid=pid).qs
+    qs = ct_acq_filter(filterdict, pid=pid).qs
 
-    tsk.num_records = e.count()
+    tsk.num_records = qs.count()
     if abort_if_zero_studies(tsk.num_records, tsk):
         return
 
@@ -103,8 +103,15 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         book, wsalldata, pid=pid, name=name, patid=patid, modality="CT"
     )
 
+    textformat = book.add_format({"num_format": "@"})
+    dateformat = book.add_format({"num_format": settings.XLSX_DATE})
+    timeformat = book.add_format({"num_format": settings.XLSX_TIME})
 
-    # Write the summary data
+    wsalldata.set_column(11, 11, 10, dateformat)  # Study date
+    wsalldata.set_column(12, 12, 10, timeformat)  # Study time
+
+    #====================================================================================
+    # Write the summary data sheet
     vers = pkg_resources.require("openrem")[0].version
     version = vers
     titleformat = book.add_format()
@@ -121,13 +128,12 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     summarysheet.write(0, 0, toplinestring, titleformat)
     summarysheet.write(1, 0, linetwostring)
 
-
     # Number of exams
     summarysheet.write(3, 0, "Total number of exams")
-    summarysheet.write(3, 1, e.count())
+    summarysheet.write(3, 1, qs.count())
 
     # DataFrame containing study description and requested procedure data
-    df = pd.DataFrame.from_records(data=e.values_list("pk", "study_description", "requested_procedure_code_meaning"),
+    df = pd.DataFrame.from_records(data=qs.values_list("pk", "study_description", "requested_procedure_code_meaning"),
                                    columns=["pk", "Study description", "Requested procedure"])
 
     # Write the study description data
@@ -161,13 +167,12 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
             pass
         summarysheet.write(idx + 6, 4, requested_procedure_frequency["Frequency"][idx])
 
-
     # Write the acquisition protocol data
     summarysheet.write(5, 6, "Acquisition protocol")
     summarysheet.write(5, 7, "Frequency")
     summarysheet.set_column("G:G", 25)
 
-    acquisition_protocol_frequency = pd.DataFrame.from_records(data=e.values_list("ctradiationdose__ctirradiationeventdata__pk", "ctradiationdose__ctirradiationeventdata__acquisition_protocol"), columns=["pk", "Acquisition protocol"])["Acquisition protocol"].value_counts(dropna=False).reset_index()
+    acquisition_protocol_frequency = pd.DataFrame.from_records(data=qs.values_list("ctradiationdose__ctirradiationeventdata__pk", "ctradiationdose__ctirradiationeventdata__acquisition_protocol"), columns=["pk", "Acquisition protocol"])["Acquisition protocol"].value_counts(dropna=False).reset_index()
     acquisition_protocol_frequency.columns = ["Acquisition protocol", "Frequency"]
     for idx in acquisition_protocol_frequency.index:
         try:
@@ -175,7 +180,305 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         except TypeError:
             pass
         summarysheet.write(idx + 6, 7, acquisition_protocol_frequency["Frequency"][idx])
+    #====================================================================================
 
+
+    #====================================================================================
+    # Write the all data sheet
+    # This code is taken from the ct_csv method...
+    qs_chunk_size=20000
+
+    # Exam-level integer field names
+    exam_int_fields = [
+        "pk",
+        "number_of_events",
+    ]
+
+    # Friendly exam-level integer field names
+    exam_int_field_names = [
+        "pk",
+        "Number of events"
+    ]
+
+    # Exam-level object field names (string data, little or no repetition)
+    exam_obj_fields = [
+        "accession_number",
+    ]
+
+    # Friendly exam-level object field names
+    exam_obj_field_names = [
+        "Accession",
+    ]
+
+    # Exam-level category field names
+    exam_cat_fields = [
+        "generalequipmentmoduleattr__institution_name",
+        "generalequipmentmoduleattr__manufacturer",
+        "generalequipmentmoduleattr__manufacturer_model_name",
+        "generalequipmentmoduleattr__station_name",
+        "generalequipmentmoduleattr__unique_equipment_name__display_name",
+        "operator_name",
+        "patientmoduleattr__patient_sex",
+        "study_description",
+        "requested_procedure_code_meaning",
+    ]
+
+    # Friendly exam-level category field names
+    exam_cat_field_names = [
+        "Institution",
+        "Manufacturer",
+        "Model",
+        "Station name",
+        "Display name",
+        "Operator",
+        "Patient sex",
+        "Study description",
+        "Requested procedure",
+    ]
+
+    # Exam-level date field names
+    exam_date_fields = ["study_date"]
+
+    # Friendly exam-level date field names
+    exam_date_field_names = ["Study date"]
+
+    # Exam-level time field names
+    exam_time_fields = ["study_time"]
+
+    # Friendly exam-level time field names
+    exam_time_field_names = ["Study time"]
+
+    # Exam-level category value names
+    exam_val_fields = [
+        "patientstudymoduleattr__patient_age_decimal",
+        "patientstudymoduleattr__patient_size",
+        "patientstudymoduleattr__patient_weight",
+        "total_dlp"
+    ]
+
+    # Friendly exam-level value field names
+    exam_val_field_names = [
+        "Patient age",
+        "Patient height (m)",
+        "Patient weight (kg)",
+        "Total DLP (mGy.cm)"
+    ]
+
+    # Required acquisition-level integer field names
+    acquisition_int_fields = [
+        "ctradiationdose__ctirradiationeventdata__number_of_xray_sources",
+    ]
+
+    # Friendly acquisition-level integer field names
+    acquisition_int_field_names = [
+        "Number of sources",
+    ]
+
+    # Required acquisition-level category field names
+    acquisition_cat_fields = [
+        "ctradiationdose__ctirradiationeventdata__acquisition_protocol",
+        "ctradiationdose__ctirradiationeventdata__ct_acquisition_type__code_meaning",
+        "ctradiationdose__ctirradiationeventdata__ctdiw_phantom_type__code_meaning",
+        "ctradiationdose__ctirradiationeventdata__xray_modulation_type",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__identification_of_the_xray_source",
+    ]
+
+    # Friendly acquisition-level category field names
+    acquisition_cat_field_names = [
+        "Acquisition protocol",
+        "Acquisition type",
+        "CTDI phantom type",
+        "mA modulation type",
+        "Source name"
+    ]
+
+    # Required acquisition-level value field names
+    acquisition_val_fields = [
+        "ctradiationdose__ctirradiationeventdata__dlp",
+        "ctradiationdose__ctirradiationeventdata__exposure_time",
+        "ctradiationdose__ctirradiationeventdata__scanninglength__scanning_length",
+        "ctradiationdose__ctirradiationeventdata__nominal_single_collimation_width",
+        "ctradiationdose__ctirradiationeventdata__nominal_total_collimation_width",
+        "ctradiationdose__ctirradiationeventdata__pitch_factor",
+        "ctradiationdose__ctirradiationeventdata__mean_ctdivol",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__kvp",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__maximum_xray_tube_current",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__xray_tube_current",
+        "ctradiationdose__ctirradiationeventdata__ctxraysourceparameters__exposure_time_per_rotation",
+    ]
+
+    # Friendly acquisition-level value field names
+    acquisition_val_field_names = [
+        "DLP (mGy.cm)",
+        "Exposure time (s)",
+        "Scanning length (mm)",
+        "Slice thickness (mm)",
+        "Total collimation (mm)",
+        "Pitch",
+        "CTDIvol (mGy)",
+        "kVp",
+        "Maximum mA",
+        "mA",
+        "Exposure time per rotation",
+    ]
+
+    exam_fields = exam_int_fields + exam_obj_fields + exam_cat_fields + exam_date_fields + exam_time_fields + exam_val_fields
+    acquisition_fields = acquisition_int_fields + acquisition_cat_fields + acquisition_val_fields
+    all_fields = exam_fields + acquisition_fields
+
+    exam_field_names = exam_int_field_names + exam_obj_field_names + exam_cat_field_names + exam_date_field_names + exam_time_field_names + exam_val_field_names
+    acquisition_field_names = acquisition_int_field_names + acquisition_cat_field_names + acquisition_val_field_names
+    all_field_names = exam_field_names + acquisition_field_names
+
+    # Create a series of DataFrames by chunking the queryset into groups of accession numbers.
+    # Chunking saves server memory at the expense of speed.
+    n_entries = qs.count()
+    tsk.num_records = n_entries
+    if abort_if_zero_studies(tsk.num_records, tsk):
+        return
+
+    tsk.progress = "{0} studies in query.".format(tsk.num_records)
+    tsk.save()
+
+    write_headers = True
+
+    # Generate a list of non-null accession numbers (if I don't include pk then some accession numbers are missing
+    # from the list - I don't know why).
+    accession_numbers = [x[0] for x in qs.filter(accession_number__isnull=False).values_list("accession_number", "pk")]
+
+    # Create a work sheet for each acquisition protocol present in the data in alphabetical order
+    # and a dictionary to hold the number of rows that have been written to each protocol sheet
+    required_sheets = qs.values_list("ctradiationdose__ctirradiationeventdata__acquisition_protocol", flat=True).order_by("ctradiationdose__ctirradiationeventdata__acquisition_protocol").distinct()
+    worksheet_log = {}
+    for name in required_sheets:
+        if name is None:
+            name = "Unknown"
+
+        name = sheet_name(name)
+
+        if name not in book.sheetnames.keys():
+            new_sheet = book.add_worksheet(name)
+            new_sheet.set_column(11, 11, 10, dateformat)  # Study date
+            new_sheet.set_column(12, 12, 10, timeformat)  # Study time
+
+            worksheet_log[name] = 0
+
+    current_row = 1
+
+    for chunk_min_idx in range(0, n_entries, qs_chunk_size):
+
+        chunk_max_idx = chunk_min_idx + qs_chunk_size
+        if chunk_max_idx > n_entries:
+            chunk_max_idx = n_entries
+
+        tsk.progress = "Working on entries {0} to {1}".format(chunk_min_idx + 1, chunk_max_idx)
+        tsk.save()
+
+        data = qs.order_by().filter(accession_number__in=accession_numbers[chunk_min_idx:chunk_max_idx]).values_list(*all_fields)
+
+        df = create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names,
+                                  acquisition_val_field_names,
+                                  all_field_names, data, exam_cat_field_names, exam_date_field_names,
+                                  exam_int_field_names, exam_obj_field_names, exam_time_field_names,
+                                  exam_val_field_names)
+
+        # Write the headings to the sheet (over-writing each time, but this ensures we'll include the study
+        # with the most events without doing anything complicated to generate the headings)
+        wsalldata.write_row(0, 0, df.drop(["pk"], axis=1).columns)
+
+        # Write the DataFrame to the all data sheet
+        for idx, row in df.drop(['pk'], axis=1).iterrows():
+            wsalldata.write_row(current_row, 0, row.fillna(""))
+            current_row = current_row + 1
+
+
+        # Write out data to the acquisition protocol sheets
+        df = pd.DataFrame.from_records(data=data, columns=all_field_names, coerce_float=True)
+        all_acquisitions_in_df = df["Acquisition protocol"].unique()
+
+        for acquisition in all_acquisitions_in_df:
+
+            acq_df = df[df["Acquisition protocol"] == acquisition]
+
+            if acquisition == None:
+                acquisition = "Unknown"
+                acq_df = df[df["Acquisition protocol"].isnull()]
+
+            # Make the acquisition name safe for an Excel sheet name
+            acquisition = sheet_name(acquisition)
+
+            sheet = book.get_worksheet_by_name(acquisition)
+
+            sheet_row = worksheet_log[acquisition]
+
+            if sheet_row == 0:
+                sheet.write_row(0, 0, acq_df.drop(["pk"], axis=1).columns)
+                sheet_row = 1
+                worksheet_log[acquisition] = sheet_row
+
+            for idx, row in acq_df.drop(["pk"], axis=1).iterrows():
+                sheet.write_row(sheet_row, 0, row.fillna(""))
+                sheet_row = sheet_row + 1
+
+            worksheet_log[acquisition] = sheet_row
+
+
+    # Now write out any None accession number data if any such data is present
+    n_entries = qs.filter(accession_number__isnull=True).count()
+    data = qs.order_by().filter(accession_number__isnull=True).values_list(*all_fields)
+
+    if data:
+        tsk.progress = "Working on {0} entries with blank accession numbers".format(n_entries)
+        tsk.save()
+
+        df = create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names,
+                                  acquisition_val_field_names,
+                                  all_field_names, data, exam_cat_field_names, exam_date_field_names,
+                                  exam_int_field_names, exam_obj_field_names, exam_time_field_names,
+                                  exam_val_field_names)
+
+        # Write the headings to the sheet (over-writing each time, but this ensures we'll include the study
+        # with the most events without doing anything complicated to generate the headings)
+        wsalldata.write_row(0, 0, df.drop(["pk"], axis=1).columns)
+
+        # Write the DataFrame to the all data sheet
+        for idx, row in df.drop(["pk"], axis=1).iterrows():
+            wsalldata.write_row(current_row, 0, row.fillna(""))
+            current_row = current_row + 1
+
+
+        # Write out data to the acquisition protocol sheets
+        df = pd.DataFrame.from_records(data=data, columns=all_field_names, coerce_float=True)
+        all_acquisitions_in_df = df["Acquisition protocol"].unique()
+
+        for acquisition in all_acquisitions_in_df:
+
+            acq_df = df[df["Acquisition protocol"] == acquisition]
+
+            if acquisition == None:
+                acquisition = "Unknown"
+                acq_df = df[df["Acquisition protocol"].isnull()]
+
+            # Make the acquisition name safe for an Excel sheet name
+            acquisition = sheet_name(acquisition)
+
+            sheet = book.get_worksheet_by_name(acquisition)
+
+            sheet_row = worksheet_log[acquisition]
+
+            if sheet_row == 0:
+                sheet.write_row(0, 0, acq_df.drop(["pk"], axis=1).columns)
+                sheet_row = 1
+                worksheet_log[acquisition] = sheet_row
+
+            for idx, row in acq_df.drop(["pk"], axis=1).iterrows():
+                sheet.write_row(sheet_row, 0, row.fillna(""))
+                sheet_row = sheet_row + 1
+
+            worksheet_log[acquisition] = sheet_row
+
+
+    #====================================================================================
     # Close the book
     book.close()
     tsk.progress = "XLSX book written."
@@ -184,124 +487,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     xlsxfilename = "ctexport{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
 
     write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
-
-
-    #
-    # # Some prep
-    # commonheaders = common_headers(pid=pid, name=name, patid=patid)
-    # commonheaders += ["DLP total (mGy.cm)"]
-    # protocolheaders = commonheaders + [
-    #     "Protocol",
-    #     "Type",
-    #     "Exposure time",
-    #     "Scanning length",
-    #     "Slice thickness",
-    #     "Total collimation",
-    #     "Pitch",
-    #     "No. sources",
-    #     "CTDIvol",
-    #     "Phantom",
-    #     "DLP",
-    #     "S1 name",
-    #     "S1 kVp",
-    #     "S1 max mA",
-    #     "S1 mA",
-    #     "S1 Exposure time/rotation",
-    #     "S2 name",
-    #     "S2 kVp",
-    #     "S2 max mA",
-    #     "S2 mA",
-    #     "S2 Exposure time/rotation",
-    #     "mA Modulation type",
-    #     "Dose check details",
-    #     "Comments",
-    # ]
-    #
-    # # Generate list of protocols in queryset and create worksheets for each
-    # tsk.progress = "Generating list of protocols in the dataset..."
-    # tsk.save()
-    #
-    # book, sheet_list = generate_sheets(
-    #     e, book, protocolheaders, modality="CT", pid=pid, name=name, patid=patid
-    # )
-    #
-    # max_events_dict = e.aggregate(
-    #     Max(
-    #         "ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events"
-    #     )
-    # )
-    # max_events = max_events_dict[
-    #     "ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events__max"
-    # ]
-    #
-    # alldataheaders = list(commonheaders)
-    #
-    # tsk.progress = "Generating headers for the all data sheet..."
-    # tsk.save()
-    #
-    # if not max_events:
-    #     max_events = 1
-    # alldataheaders += _generate_all_data_headers_ct(max_events)
-    #
-    # wsalldata.write_row("A1", alldataheaders)
-    # numcolumns = len(alldataheaders) - 1
-    # numrows = e.count()
-    # wsalldata.autofilter(0, 0, numrows, numcolumns)
-    #
-    # for row, exams in enumerate(e):
-    #     # Translators: CT xlsx export progress
-    #     tsk.progress = _(
-    #         "Writing study {row} of {numrows} to All data sheet and individual protocol sheets".format(
-    #             row=row + 1, numrows=numrows
-    #         )
-    #     )
-    #     # tsk.progress = f"Writing study {row + 1} of {numrows} to All data sheet and individual protocol sheets"
-    #     tsk.save()
-    #
-    #     try:
-    #         common_exam_data = get_common_data("CT", exams, pid, name, patid)
-    #         all_exam_data = list(common_exam_data)
-    #
-    #         for (
-    #             s
-    #         ) in exams.ctradiationdose_set.get().ctirradiationeventdata_set.order_by(
-    #             "id"
-    #         ):
-    #             # Get series data
-    #             series_data = _ct_get_series_data(s)
-    #             # Add series to all data
-    #             all_exam_data += series_data
-    #             # Add series data to series tab
-    #             protocol = s.acquisition_protocol
-    #             if not protocol:
-    #                 protocol = "Unknown"
-    #             tabtext = sheet_name(protocol)
-    #             sheet_list[tabtext]["count"] += 1
-    #             sheet_list[tabtext]["sheet"].write_row(
-    #                 sheet_list[tabtext]["count"], 0, common_exam_data + series_data
-    #             )
-    #
-    #         wsalldata.write_row(row + 1, 0, all_exam_data)
-    #     except ObjectDoesNotExist:
-    #         error_message = (
-    #             "DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number"
-    #             " {3} - maybe database entry was deleted as part of importing later version of same"
-    #             " study?".format(
-    #                 row + 1, numrows, exams.study_instance_uid, exams.accession_number
-    #             )
-    #         )
-    #         logger.error(error_message)
-    #         wsalldata.write(row + 1, 0, error_message)
-    #
-    # create_summary_sheet(tsk, e, book, summarysheet, sheet_list)
-    #
-    # book.close()
-    # tsk.progress = "XLSX book written."
-    # tsk.save()
-    #
-    # xlsxfilename = "ctexport{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
-    #
-    # write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
+    #====================================================================================
 
 
 @shared_task
