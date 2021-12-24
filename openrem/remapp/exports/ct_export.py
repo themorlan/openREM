@@ -266,11 +266,13 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     # Required acquisition-level integer field names
     acquisition_int_fields = [
+        "ctradiationdose__ctirradiationeventdata__pk",
         "ctradiationdose__ctirradiationeventdata__number_of_xray_sources",
     ]
 
     # Friendly acquisition-level integer field names
     acquisition_int_field_names = [
+        "acq_pk",
         "Number of sources",
     ]
 
@@ -384,10 +386,10 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
         # Write the headings to the sheet (over-writing each time, but this ensures we'll include the study
         # with the most events without doing anything complicated to generate the headings)
-        wsalldata.write_row(0, 0, df.drop(["pk"], axis=1).columns)
+        wsalldata.write_row(0, 0, df.columns)
 
         # Write the DataFrame to the all data sheet
-        for idx, row in df.drop(['pk'], axis=1).iterrows():
+        for idx, row in df.iterrows():
             wsalldata.write_row(current_row, 0, row.fillna(""))
             current_row = current_row + 1
 
@@ -411,12 +413,16 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
             sheet_row = worksheet_log[acquisition]
 
+            # Drop any pk columns
+            pk_cols = [i for i in acq_df.columns if "pk" in i]
+            acq_df = acq_df.drop(pk_cols, axis=1)
+
             if sheet_row == 0:
-                sheet.write_row(0, 0, acq_df.drop(["pk"], axis=1).columns)
+                sheet.write_row(0, 0, acq_df.columns)
                 sheet_row = 1
                 worksheet_log[acquisition] = sheet_row
 
-            for idx, row in acq_df.drop(["pk"], axis=1).iterrows():
+            for idx, row in acq_df.iterrows():
                 sheet.write_row(sheet_row, 0, row.fillna(""))
                 sheet_row = sheet_row + 1
 
@@ -439,10 +445,10 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
         # Write the headings to the sheet (over-writing each time, but this ensures we'll include the study
         # with the most events without doing anything complicated to generate the headings)
-        wsalldata.write_row(0, 0, df.drop(["pk"], axis=1).columns)
+        wsalldata.write_row(0, 0, df.columns)
 
         # Write the DataFrame to the all data sheet
-        for idx, row in df.drop(["pk"], axis=1).iterrows():
+        for idx, row in df.iterrows():
             wsalldata.write_row(current_row, 0, row.fillna(""))
             current_row = current_row + 1
 
@@ -466,12 +472,16 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
             sheet_row = worksheet_log[acquisition]
 
+            # Drop any pk columns
+            pk_cols = [i for i in acq_df.columns if "pk" in i]
+            acq_df = acq_df.drop(pk_cols, axis=1)
+
             if sheet_row == 0:
-                sheet.write_row(0, 0, acq_df.drop(["pk"], axis=1).columns)
+                sheet.write_row(0, 0, acq_df.columns)
                 sheet_row = 1
                 worksheet_log[acquisition] = sheet_row
 
-            for idx, row in acq_df.drop(["pk"], axis=1).iterrows():
+            for idx, row in acq_df.iterrows():
                 sheet.write_row(sheet_row, 0, row.fillna(""))
                 sheet_row = sheet_row + 1
 
@@ -696,7 +706,7 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
                                   exam_val_field_names)
 
         # Write the DataFrame to a csv file
-        df.drop(['pk'], axis=1).to_csv(tmpfile, index=False, mode="a", header=write_headers)
+        df.to_csv(tmpfile, index=False, mode="a", header=write_headers)
         write_headers = False
 
     # Now write out any None accession number data if any such data is present
@@ -714,7 +724,7 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
                                   exam_val_field_names)
 
         # Write the None values to the csv file
-        df.drop(['pk'], axis=1).to_csv(tmpfile, index=False, mode="a", header=write_headers)
+        df.to_csv(tmpfile, index=False, mode="a", header=write_headers)
 
     # Close the csv file - we've finished writing data
     tmpfile.close()
@@ -1151,6 +1161,10 @@ def create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_name
     # Set datatypes of the exam-level integer and value fields again because the reformat undoes the earlier changes
     df[exam_int_field_names] = df[exam_int_field_names].astype("UInt32")
     df[exam_val_field_names] = df[exam_val_field_names].astype("float32")
+
+    # Drop all pk columns
+    pk_list = [i for i in df.columns if "pk" in i]
+    df = df.drop(pk_list, axis=1)
 
     if settings.DEBUG:
         print("DataFrame reformatted")
