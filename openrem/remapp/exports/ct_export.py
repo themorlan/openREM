@@ -31,6 +31,7 @@ import datetime
 import logging
 import os
 import pandas as pd
+import pkg_resources
 
 from django.db.models import Q
 from django.conf import settings
@@ -102,114 +103,80 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         book, wsalldata, pid=pid, name=name, patid=patid, modality="CT"
     )
 
-    # Some prep
-    commonheaders = common_headers(pid=pid, name=name, patid=patid)
-    commonheaders += ["DLP total (mGy.cm)"]
-    protocolheaders = commonheaders + [
-        "Protocol",
-        "Type",
-        "Exposure time",
-        "Scanning length",
-        "Slice thickness",
-        "Total collimation",
-        "Pitch",
-        "No. sources",
-        "CTDIvol",
-        "Phantom",
-        "DLP",
-        "S1 name",
-        "S1 kVp",
-        "S1 max mA",
-        "S1 mA",
-        "S1 Exposure time/rotation",
-        "S2 name",
-        "S2 kVp",
-        "S2 max mA",
-        "S2 mA",
-        "S2 Exposure time/rotation",
-        "mA Modulation type",
-        "Dose check details",
-        "Comments",
-    ]
 
-    # Generate list of protocols in queryset and create worksheets for each
-    tsk.progress = "Generating list of protocols in the dataset..."
-    tsk.save()
-
-    book, sheet_list = generate_sheets(
-        e, book, protocolheaders, modality="CT", pid=pid, name=name, patid=patid
+    # Write the summary data
+    vers = pkg_resources.require("openrem")[0].version
+    version = vers
+    titleformat = book.add_format()
+    titleformat.set_font_size = 22
+    titleformat.set_font_color = "#FF0000"
+    titleformat.set_bold()
+    toplinestring = "XLSX Export from OpenREM version {0} on {1}".format(
+        version, str(datetime.datetime.now())
     )
-
-    max_events_dict = e.aggregate(
-        Max(
-            "ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events"
-        )
+    linetwostring = (
+        "OpenREM is copyright 2019 The Royal Marsden NHS Foundation Trust, and available under the GPL. "
+        "See http://openrem.org"
     )
-    max_events = max_events_dict[
-        "ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events__max"
-    ]
+    summarysheet.write(0, 0, toplinestring, titleformat)
+    summarysheet.write(1, 0, linetwostring)
 
-    alldataheaders = list(commonheaders)
 
-    tsk.progress = "Generating headers for the all data sheet..."
-    tsk.save()
+    # Number of exams
+    summarysheet.write(3, 0, "Total number of exams")
+    summarysheet.write(3, 1, e.count())
 
-    if not max_events:
-        max_events = 1
-    alldataheaders += _generate_all_data_headers_ct(max_events)
+    # DataFrame containing study description and requested procedure data
+    df = pd.DataFrame.from_records(data=e.values_list("pk", "study_description", "requested_procedure_code_meaning"),
+                                   columns=["pk", "Study description", "Requested procedure"])
 
-    wsalldata.write_row("A1", alldataheaders)
-    numcolumns = len(alldataheaders) - 1
-    numrows = e.count()
-    wsalldata.autofilter(0, 0, numrows, numcolumns)
+    # Write the study description data
+    summarysheet.write(5, 0, "Study Description")
+    summarysheet.write(5, 1, "Frequency")
+    summarysheet.set_column("A:A", 25)
 
-    for row, exams in enumerate(e):
-        # Translators: CT xlsx export progress
-        tsk.progress = _(
-            "Writing study {row} of {numrows} to All data sheet and individual protocol sheets".format(
-                row=row + 1, numrows=numrows
-            )
-        )
-        # tsk.progress = f"Writing study {row + 1} of {numrows} to All data sheet and individual protocol sheets"
-        tsk.save()
-
+    study_description_frequency = df["Study description"].value_counts(dropna=False)
+    study_description_frequency = study_description_frequency.reset_index()
+    study_description_frequency.columns = ["Study description", "Frequency"]
+    for idx in study_description_frequency.index:
         try:
-            common_exam_data = get_common_data("CT", exams, pid, name, patid)
-            all_exam_data = list(common_exam_data)
+            summarysheet.write(idx + 6, 0, study_description_frequency["Study description"][idx])
+        except TypeError:
+            pass
+        summarysheet.write(idx + 6, 1, study_description_frequency["Frequency"][idx])
 
-            for (
-                s
-            ) in exams.ctradiationdose_set.get().ctirradiationeventdata_set.order_by(
-                "id"
-            ):
-                # Get series data
-                series_data = _ct_get_series_data(s)
-                # Add series to all data
-                all_exam_data += series_data
-                # Add series data to series tab
-                protocol = s.acquisition_protocol
-                if not protocol:
-                    protocol = "Unknown"
-                tabtext = sheet_name(protocol)
-                sheet_list[tabtext]["count"] += 1
-                sheet_list[tabtext]["sheet"].write_row(
-                    sheet_list[tabtext]["count"], 0, common_exam_data + series_data
-                )
+    # Write the requested procedure data
+    summarysheet.write(5, 3, "Requested Procedure")
+    summarysheet.write(5, 4, "Frequency")
+    summarysheet.set_column("D:D", 25)
 
-            wsalldata.write_row(row + 1, 0, all_exam_data)
-        except ObjectDoesNotExist:
-            error_message = (
-                "DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number"
-                " {3} - maybe database entry was deleted as part of importing later version of same"
-                " study?".format(
-                    row + 1, numrows, exams.study_instance_uid, exams.accession_number
-                )
-            )
-            logger.error(error_message)
-            wsalldata.write(row + 1, 0, error_message)
+    requested_procedure_frequency = df["Requested procedure"].value_counts(dropna=False)
+    requested_procedure_frequency = requested_procedure_frequency.reset_index()
+    requested_procedure_frequency.columns = ["Requested procedure", "Frequency"]
 
-    create_summary_sheet(tsk, e, book, summarysheet, sheet_list)
+    for idx in requested_procedure_frequency.index:
+        try:
+            summarysheet.write(idx + 6, 3, requested_procedure_frequency["Requested procedure"][idx])
+        except TypeError:
+            pass
+        summarysheet.write(idx + 6, 4, requested_procedure_frequency["Frequency"][idx])
 
+
+    # Write the acquisition protocol data
+    summarysheet.write(5, 6, "Acquisition protocol")
+    summarysheet.write(5, 7, "Frequency")
+    summarysheet.set_column("G:G", 25)
+
+    acquisition_protocol_frequency = pd.DataFrame.from_records(data=e.values_list("ctradiationdose__ctirradiationeventdata__pk", "ctradiationdose__ctirradiationeventdata__acquisition_protocol"), columns=["pk", "Acquisition protocol"])["Acquisition protocol"].value_counts(dropna=False).reset_index()
+    acquisition_protocol_frequency.columns = ["Acquisition protocol", "Frequency"]
+    for idx in acquisition_protocol_frequency.index:
+        try:
+            summarysheet.write(idx + 6, 6, acquisition_protocol_frequency["Acquisition protocol"][idx])
+        except TypeError:
+            pass
+        summarysheet.write(idx + 6, 7, acquisition_protocol_frequency["Frequency"][idx])
+
+    # Close the book
     book.close()
     tsk.progress = "XLSX book written."
     tsk.save()
@@ -217,6 +184,124 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     xlsxfilename = "ctexport{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
 
     write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
+
+
+    #
+    # # Some prep
+    # commonheaders = common_headers(pid=pid, name=name, patid=patid)
+    # commonheaders += ["DLP total (mGy.cm)"]
+    # protocolheaders = commonheaders + [
+    #     "Protocol",
+    #     "Type",
+    #     "Exposure time",
+    #     "Scanning length",
+    #     "Slice thickness",
+    #     "Total collimation",
+    #     "Pitch",
+    #     "No. sources",
+    #     "CTDIvol",
+    #     "Phantom",
+    #     "DLP",
+    #     "S1 name",
+    #     "S1 kVp",
+    #     "S1 max mA",
+    #     "S1 mA",
+    #     "S1 Exposure time/rotation",
+    #     "S2 name",
+    #     "S2 kVp",
+    #     "S2 max mA",
+    #     "S2 mA",
+    #     "S2 Exposure time/rotation",
+    #     "mA Modulation type",
+    #     "Dose check details",
+    #     "Comments",
+    # ]
+    #
+    # # Generate list of protocols in queryset and create worksheets for each
+    # tsk.progress = "Generating list of protocols in the dataset..."
+    # tsk.save()
+    #
+    # book, sheet_list = generate_sheets(
+    #     e, book, protocolheaders, modality="CT", pid=pid, name=name, patid=patid
+    # )
+    #
+    # max_events_dict = e.aggregate(
+    #     Max(
+    #         "ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events"
+    #     )
+    # )
+    # max_events = max_events_dict[
+    #     "ctradiationdose__ctaccumulateddosedata__total_number_of_irradiation_events__max"
+    # ]
+    #
+    # alldataheaders = list(commonheaders)
+    #
+    # tsk.progress = "Generating headers for the all data sheet..."
+    # tsk.save()
+    #
+    # if not max_events:
+    #     max_events = 1
+    # alldataheaders += _generate_all_data_headers_ct(max_events)
+    #
+    # wsalldata.write_row("A1", alldataheaders)
+    # numcolumns = len(alldataheaders) - 1
+    # numrows = e.count()
+    # wsalldata.autofilter(0, 0, numrows, numcolumns)
+    #
+    # for row, exams in enumerate(e):
+    #     # Translators: CT xlsx export progress
+    #     tsk.progress = _(
+    #         "Writing study {row} of {numrows} to All data sheet and individual protocol sheets".format(
+    #             row=row + 1, numrows=numrows
+    #         )
+    #     )
+    #     # tsk.progress = f"Writing study {row + 1} of {numrows} to All data sheet and individual protocol sheets"
+    #     tsk.save()
+    #
+    #     try:
+    #         common_exam_data = get_common_data("CT", exams, pid, name, patid)
+    #         all_exam_data = list(common_exam_data)
+    #
+    #         for (
+    #             s
+    #         ) in exams.ctradiationdose_set.get().ctirradiationeventdata_set.order_by(
+    #             "id"
+    #         ):
+    #             # Get series data
+    #             series_data = _ct_get_series_data(s)
+    #             # Add series to all data
+    #             all_exam_data += series_data
+    #             # Add series data to series tab
+    #             protocol = s.acquisition_protocol
+    #             if not protocol:
+    #                 protocol = "Unknown"
+    #             tabtext = sheet_name(protocol)
+    #             sheet_list[tabtext]["count"] += 1
+    #             sheet_list[tabtext]["sheet"].write_row(
+    #                 sheet_list[tabtext]["count"], 0, common_exam_data + series_data
+    #             )
+    #
+    #         wsalldata.write_row(row + 1, 0, all_exam_data)
+    #     except ObjectDoesNotExist:
+    #         error_message = (
+    #             "DoesNotExist error whilst exporting study {0} of {1},  study UID {2}, accession number"
+    #             " {3} - maybe database entry was deleted as part of importing later version of same"
+    #             " study?".format(
+    #                 row + 1, numrows, exams.study_instance_uid, exams.accession_number
+    #             )
+    #         )
+    #         logger.error(error_message)
+    #         wsalldata.write(row + 1, 0, error_message)
+    #
+    # create_summary_sheet(tsk, e, book, summarysheet, sheet_list)
+    #
+    # book.close()
+    # tsk.progress = "XLSX book written."
+    # tsk.save()
+    #
+    # xlsxfilename = "ctexport{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
+    #
+    # write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
 
 
 @shared_task
@@ -445,18 +530,19 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
         # Write the None values to the csv file
         df.drop(['pk'], axis=1).to_csv(tmpfile, index=False, mode="a", header=write_headers)
 
+    # Close the csv file - we've finished writing data
+    tmpfile.close()
+
     tsk.progress = "All study data written. Zipping file to save space"
     tsk.save()
 
     # Zip up the csv results file to save server space, and delete the uncompressed csv file
-
     if os.path.exists(tsk.filename.path):
         with ZipFile(tsk.filename.path + ".zip", "w", compression=ZIP_DEFLATED, compresslevel=9) as myzip:
             myzip.write(tsk.filename.path, arcname=os.path.split(tsk.filename.path)[1])
             myzip.close()
 
     # Remove the original csv file
-    tmpfile.close()
     os.remove(tsk.filename.path)
 
     # Update the task filename to be the zip file
