@@ -1296,6 +1296,15 @@ def qrscu(
     except AttributeError:
         query_id_8 = query_id[:8]
 
+    if filters is None:
+        filters = {
+            "stationname_inc": None,
+            "stationname_exc": None,
+            "study_desc_inc": None,
+            "study_desc_exc": None,
+            "stationname_study": None,
+        }
+
     logger.debug(f"Query_id is {query_id_8}")
     logger.debug(
         "{12} qrscu args passed: qr_scp_pk={0}, store_scp_pk={1}, implicit={2}, explicit={3}, move={4}, "
@@ -1317,6 +1326,8 @@ def qrscu(
         )
     )
     celery_task_uuid = qrscu.request.id
+    if celery_task_uuid is None:
+        celery_task_uuid = uuid.uuid4()
     logger.debug(f"Celery task UUID is {celery_task_uuid}")
 
     # Currently, if called from qrscu_script modalities will either be a list of modalities or it will be "SR".
@@ -1401,8 +1412,12 @@ def qrscu(
 
     if assoc.is_established:
 
+        try:
+            celery_task_uuid_8 = celery_task_uuid.hex[:8]
+        except AttributeError:
+            celery_task_uuid_8 = celery_task_uuid[:8]
         logger.info(
-            f"{query_id_8} Celery {celery_task_uuid[:8]} "
+            f"{query_id_8} Celery {celery_task_uuid_8} "
             f"DICOM FindSCU: {query_summary_1} \n    {query_summary_2} \n    {query_summary_3}"
         )
         d = Dataset()

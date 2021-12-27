@@ -7,8 +7,10 @@ import uuid
 
 from pydicom.dataset import Dataset
 from django.test import TestCase
-from mock import patch
+from mock import patch, MagicMock
 from testfixtures import LogCapture
+from pynetdicom import AE, VerificationPresentationContexts
+from pynetdicom.sop_class import VerificationSOPClass
 
 from ..extractors import rdsr
 from ..models import (
@@ -1981,3 +1983,97 @@ class DuplicatesInStudyResponse(TestCase):
         current_count = _remove_duplicates_in_study_response(query, 3)
         self.assertEqual(current_count, 2)
         self.assertEqual(query.dicomqrrspstudy_set.count(), 2)
+
+
+def _fake_query_each_mod(all_mods, query, d, assoc, ae, remote):
+    rsp1 = DicomQRRspStudy.objects.create(dicom_query=query)
+    rsp1.query_id = uuid.uuid4()
+    rsp1.study_instance_uid = uuid.uuid4()
+    rsp1.station_name = "MIXEDCTNM"
+    rsp1.set_modalities_in_study(['PT', 'CT', 'SR'])
+    rsp1.modality = None
+    rsp1.save()
+    print("Finished fake _query_for_each_modality")
+    return True, True
+
+
+def _fake_associate(*args, **kwargs):
+    associate = MagicMock()
+    associate.is_established = True
+    return associate
+
+
+def _fake_query_series(ae, remote, assoc, d2, rsp, query):
+    st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rsp)
+    st1_se1.query_id = query.query_id
+    st1_se1.series_instance_uid = uuid.uuid4()
+    st1_se1.modality = "CT"
+    st1_se1.series_number = 1
+    st1_se1.number_of_series_related_instances = 100
+    st1_se1.station_name = "MEDPC"
+    st1_se1.save()
+
+    st1_se2 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rsp)
+    st1_se2.query_id = query.query_id
+    st1_se2.series_instance_uid = uuid.uuid4()
+    st1_se2.modality = "PET"
+    st1_se2.series_number = 2
+    st1_se2.number_of_series_related_instances = 100
+    st1_se2.station_name = "SYMBIAT16"
+    st1_se2.save()
+
+    st1_se3 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=rsp)
+    st1_se3.query_id = query.query_id
+    st1_se3.series_instance_uid = uuid.uuid4()
+    st1_se3.modality = "SR"
+    st1_se3.series_number = 3
+    st1_se3.number_of_series_related_instances = 1
+    st1_se3.station_name = "MEDPC"
+    st1_se3.save()
+
+    st1_se3_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se3)
+    st1_se3_im1.query_id = query.query_id
+    st1_se3_im1.sop_instance_uid = uuid.uuid4()
+    st1_se3_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.67"
+    st1_se3_im1.save()
+
+
+class DifferentStationNamesAtStudySeriesLevel(TestCase):
+    """Test fix for issue #772 with differing station names at study and series level"""
+
+    def setUp(self):
+        # Remote find/move node details
+        qr_scp = DicomRemoteQR.objects.create()
+        qr_scp.hostname = "localhost"
+        qr_scp.port = 11112
+        qr_scp.aetitle = "teststnnameqrsvr"
+        qr_scp.callingaet = "openrem"
+        qr_scp.save()
+        # Local store node details
+        store_scp = DicomStoreSCP.objects.create()
+        store_scp.aetitle = "openremstore"
+        store_scp.port = 104
+        store_scp.save()
+
+    @patch("remapp.netdicom.qrscu._query_for_each_modality", _fake_query_each_mod)
+    @patch("pynetdicom.ae.ApplicationEntity.associate", _fake_associate)
+    @patch("remapp.netdicom.qrscu._query_series", _fake_query_series)
+    @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
+    def test_mixed_ct_nm(self):
+        """Test study level MIXEDCTNM, series level CT MEDPC and series level PET SYMBIAT16"""
+        from ..netdicom.qrscu import qrscu
+
+        qr_scp = DicomRemoteQR.objects.last()
+        store_scp = DicomStoreSCP.objects.last()
+
+        qrscu(qr_scp.pk, store_scp.pk, query_id="testmixed_ct_nm", modalities="CT")
+
+        query = DicomQuery.objects.filter(query_id__exact="testmixed_ct_nm").last()
+        studies = query.dicomqrrspstudy_set.all()
+
+        self.assertEqual(studies.count(), 1)
+        self.assertEqual(studies[0].dicomqrrspseries_set.count(), 1)
+
+        qr_scp.delete()
+        store_scp.delete()
+
