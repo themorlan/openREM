@@ -9,8 +9,6 @@ from pydicom.dataset import Dataset
 from django.test import TestCase
 from mock import patch, MagicMock
 from testfixtures import LogCapture
-from pynetdicom import AE, VerificationPresentationContexts
-from pynetdicom.sop_class import VerificationSOPClass
 
 from ..extractors import rdsr
 from ..models import (
