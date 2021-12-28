@@ -1988,7 +1988,7 @@ def _fake_query_each_mod(all_mods, query, d, assoc, ae, remote):
     rsp1.query_id = uuid.uuid4()
     rsp1.study_instance_uid = uuid.uuid4()
     rsp1.station_name = "MIXEDCTNM"
-    rsp1.set_modalities_in_study(['PT', 'CT', 'SR'])
+    rsp1.set_modalities_in_study(["PT", "CT", "SR"])
     rsp1.modality = None
     rsp1.save()
     print("Finished fake _query_for_each_modality")
@@ -2087,14 +2087,22 @@ class DifferentStationNamesAtStudySeriesLevel(TestCase):
         store_scp = DicomStoreSCP.objects.last()
 
         filters = {
-            "stationname_inc": ["medpc", ],
+            "stationname_inc": [
+                "medpc",
+            ],
             "stationname_exc": None,
             "study_desc_inc": None,
             "study_desc_exc": None,
             "stationname_study": None,
         }
 
-        qrscu(qr_scp.pk, store_scp.pk, query_id="ser_medpc", modalities="CT", filters=filters)
+        qrscu(
+            qr_scp.pk,
+            store_scp.pk,
+            query_id="ser_medpc",
+            modalities="CT",
+            filters=filters,
+        )
 
         query = DicomQuery.objects.filter(query_id__exact="ser_medpc").last()
         studies = query.dicomqrrspstudy_set.all()
@@ -2104,7 +2112,6 @@ class DifferentStationNamesAtStudySeriesLevel(TestCase):
 
         qr_scp.delete()
         store_scp.delete()
-
 
     @patch("remapp.netdicom.qrscu._query_for_each_modality", _fake_query_each_mod)
     @patch("pynetdicom.ae.ApplicationEntity.associate", _fake_associate)
@@ -2118,14 +2125,22 @@ class DifferentStationNamesAtStudySeriesLevel(TestCase):
         store_scp = DicomStoreSCP.objects.last()
 
         filters = {
-            "stationname_inc": ["mixedctnm", ],
+            "stationname_inc": [
+                "mixedctnm",
+            ],
             "stationname_exc": None,
             "study_desc_inc": None,
             "study_desc_exc": None,
             "stationname_study": None,
         }
 
-        qrscu(qr_scp.pk, store_scp.pk, query_id="ser_mixed", modalities="CT", filters=filters)
+        qrscu(
+            qr_scp.pk,
+            store_scp.pk,
+            query_id="ser_mixed",
+            modalities="CT",
+            filters=filters,
+        )
 
         query = DicomQuery.objects.filter(query_id__exact="ser_mixed").last()
         studies = query.dicomqrrspstudy_set.all()
@@ -2147,14 +2162,22 @@ class DifferentStationNamesAtStudySeriesLevel(TestCase):
         store_scp = DicomStoreSCP.objects.last()
 
         filters = {
-            "stationname_inc": ["mixedctnm", ],
+            "stationname_inc": [
+                "mixedctnm",
+            ],
             "stationname_exc": None,
             "study_desc_inc": None,
             "study_desc_exc": None,
             "stationname_study": True,
         }
 
-        qrscu(qr_scp.pk, store_scp.pk, query_id="stdy_mix", modalities="CT", filters=filters)
+        qrscu(
+            qr_scp.pk,
+            store_scp.pk,
+            query_id="stdy_mix",
+            modalities="CT",
+            filters=filters,
+        )
 
         query = DicomQuery.objects.filter(query_id__exact="stdy_mix").last()
         studies = query.dicomqrrspstudy_set.all()
@@ -2177,14 +2200,22 @@ class DifferentStationNamesAtStudySeriesLevel(TestCase):
         store_scp = DicomStoreSCP.objects.last()
 
         filters = {
-            "stationname_inc": ["medpc", ],
+            "stationname_inc": [
+                "medpc",
+            ],
             "stationname_exc": None,
             "study_desc_inc": None,
             "study_desc_exc": None,
             "stationname_study": True,
         }
 
-        qrscu(qr_scp.pk, store_scp.pk, query_id="stdy_medpc", modalities="CT", filters=filters)
+        qrscu(
+            qr_scp.pk,
+            store_scp.pk,
+            query_id="stdy_medpc",
+            modalities="CT",
+            filters=filters,
+        )
 
         query = DicomQuery.objects.filter(query_id__exact="stdy_medpc").last()
         studies = query.dicomqrrspstudy_set.all()
@@ -2193,4 +2224,3 @@ class DifferentStationNamesAtStudySeriesLevel(TestCase):
 
         qr_scp.delete()
         store_scp.delete()
-

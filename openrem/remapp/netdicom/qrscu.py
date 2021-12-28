@@ -612,7 +612,7 @@ def _prune_study_responses(query, filters):
                 f"{query_id_8} study_desc_exc removed "
                 f"{deleted_studies_filters['study_desc_exc']} studies"
             )
-    if filters["stationname_inc"] and filters['stationname_study']:
+    if filters["stationname_inc"] and filters["stationname_study"]:
         before_count = query.dicomqrrspstudy_set.all().count()
         logger.debug(
             f"{query_id_8} About to filter on stationname_inc: {filters['stationname_inc']}, "
@@ -631,7 +631,7 @@ def _prune_study_responses(query, filters):
             logger.debug(
                 f"{query_id_8} stationname_inc removed {deleted_studies_filters['stationname_inc']} studies"
             )
-    if filters["stationname_exc"] and filters['stationname_study']:
+    if filters["stationname_exc"] and filters["stationname_study"]:
         before_count = query.dicomqrrspstudy_set.all().count()
         logger.debug(
             f"{query_id_8} About to filter on stationname_exc: {filters['stationname_exc']}, "
