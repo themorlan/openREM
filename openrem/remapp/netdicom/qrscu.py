@@ -1393,7 +1393,6 @@ def qrscu(
     else:
         modality_text = f"Modalities = {modalities}"
     active_filters = {k: v for k, v in filters.items() if v is not None}
-    # active_filters_text = "<br/>".join(": ".join(_) for _ in active_filters.items())
     query_summary_1 = (
         f"QR SCP PK = {qr_scp_pk} ({qr_scp.name}). "
         f"Store SCP PK = {store_scp_pk} ({query.store_scp_fk.name})."
@@ -1686,6 +1685,9 @@ def qrscu(
         )
         query.stage += series_pruning_log
         filter_pruning_logs = ""
+        filter_level = "series"
+        if filters["stationname_study"]:
+            filter_level = "study"
         if filters["study_desc_inc"]:
             filter_pruning_logs += _(
                 "only studies with description that include '{text}' removed {num} studies, ".format(
@@ -1702,14 +1704,18 @@ def qrscu(
             )
         if filters["stationname_inc"]:
             filter_pruning_logs += _(
-                "only studies with station names that include '{text}' removed {num} studies, ".format(
+                "only studies with station names that include '{text}' at {filter_level} level"
+                " removed {num} studies, ".format(
+                    filter_level=filter_level,
                     text=", ".join(filters["stationname_inc"]),
                     num=deleted_studies_filters["stationname_inc"],
                 )
             )
         if filters["stationname_exc"]:
             filter_pruning_logs += _(
-                "studies with station names that do not include '{text}' removed {num} studies, ".format(
+                "studies with station names that do not include '{text}' at {filter_level} level"
+                " removed {num} studies, ".format(
+                    filter_level=filter_level,
                     text=", ".join(filters["stationname_exc"]),
                     num=deleted_studies_filters["stationname_exc"],
                 )
@@ -1733,22 +1739,6 @@ def qrscu(
         logger.debug(
             f"{query_id_8} Query complete. Move is {move}. Query took {time_took}"
         )
-
-        # if logger.isEnabledFor(logging.DEBUG):
-        #     logger.debug(
-        #         f"{query_id_8} Query result contains the following studies / series:"
-        #     )
-        #     studies = query.dicomqrrspstudy_set.all()
-        #     for study in studies:
-        #         for series in study.dicomqrrspseries_set.all():
-        #             logger.debug(
-        #                 f"{query_id_8}    "
-        #                 f"Study: {study.study_description} ({study.study_instance_uid}) "
-        #                 f"modalities: {study.get_modalities_in_study()}, "
-        #                 f"Series: {series.series_instance_uid}, "
-        #                 f"modality: {series.modality} "
-        #                 f"containing {series.number_of_series_related_instances} objects."
-        #             )
 
         if move:
             movescu.delay(str(query.query_id))
