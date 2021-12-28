@@ -2057,20 +2057,139 @@ class DifferentStationNamesAtStudySeriesLevel(TestCase):
     @patch("pynetdicom.ae.ApplicationEntity.associate", _fake_associate)
     @patch("remapp.netdicom.qrscu._query_series", _fake_query_series)
     @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
-    def test_mixed_ct_nm(self):
+    def test_mixed_ct_nm_no_filter(self):
         """Test study level MIXEDCTNM, series level CT MEDPC and series level PET SYMBIAT16"""
         from ..netdicom.qrscu import qrscu
 
         qr_scp = DicomRemoteQR.objects.last()
         store_scp = DicomStoreSCP.objects.last()
 
-        qrscu(qr_scp.pk, store_scp.pk, query_id="testmixed_ct_nm", modalities="CT")
+        qrscu(qr_scp.pk, store_scp.pk, query_id="no_filter", modalities="CT")
 
-        query = DicomQuery.objects.filter(query_id__exact="testmixed_ct_nm").last()
+        query = DicomQuery.objects.filter(query_id__exact="no_filter").last()
         studies = query.dicomqrrspstudy_set.all()
 
         self.assertEqual(studies.count(), 1)
         self.assertEqual(studies[0].dicomqrrspseries_set.count(), 1)
+
+        qr_scp.delete()
+        store_scp.delete()
+
+    @patch("remapp.netdicom.qrscu._query_for_each_modality", _fake_query_each_mod)
+    @patch("pynetdicom.ae.ApplicationEntity.associate", _fake_associate)
+    @patch("remapp.netdicom.qrscu._query_series", _fake_query_series)
+    @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
+    def test_mixed_ct_nm_series_filter_medpc(self):
+        """Test study level MIXEDCTNM, series level CT MEDPC and series level PET SYMBIAT16"""
+        from ..netdicom.qrscu import qrscu
+
+        qr_scp = DicomRemoteQR.objects.last()
+        store_scp = DicomStoreSCP.objects.last()
+
+        filters = {
+            "stationname_inc": ["medpc", ],
+            "stationname_exc": None,
+            "study_desc_inc": None,
+            "study_desc_exc": None,
+            "stationname_study": None,
+        }
+
+        qrscu(qr_scp.pk, store_scp.pk, query_id="ser_medpc", modalities="CT", filters=filters)
+
+        query = DicomQuery.objects.filter(query_id__exact="ser_medpc").last()
+        studies = query.dicomqrrspstudy_set.all()
+
+        self.assertEqual(1, studies.count())
+        self.assertEqual(1, studies[0].dicomqrrspseries_set.count())
+
+        qr_scp.delete()
+        store_scp.delete()
+
+
+    @patch("remapp.netdicom.qrscu._query_for_each_modality", _fake_query_each_mod)
+    @patch("pynetdicom.ae.ApplicationEntity.associate", _fake_associate)
+    @patch("remapp.netdicom.qrscu._query_series", _fake_query_series)
+    @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
+    def test_mixed_ct_nm_series_filter_mixedctnm(self):
+        """Test study level MIXEDCTNM, series level CT MEDPC and series level PET SYMBIAT16"""
+        from ..netdicom.qrscu import qrscu
+
+        qr_scp = DicomRemoteQR.objects.last()
+        store_scp = DicomStoreSCP.objects.last()
+
+        filters = {
+            "stationname_inc": ["mixedctnm", ],
+            "stationname_exc": None,
+            "study_desc_inc": None,
+            "study_desc_exc": None,
+            "stationname_study": None,
+        }
+
+        qrscu(qr_scp.pk, store_scp.pk, query_id="ser_mixed", modalities="CT", filters=filters)
+
+        query = DicomQuery.objects.filter(query_id__exact="ser_mixed").last()
+        studies = query.dicomqrrspstudy_set.all()
+
+        self.assertEqual(studies.count(), 0)
+
+        qr_scp.delete()
+        store_scp.delete()
+
+    @patch("remapp.netdicom.qrscu._query_for_each_modality", _fake_query_each_mod)
+    @patch("pynetdicom.ae.ApplicationEntity.associate", _fake_associate)
+    @patch("remapp.netdicom.qrscu._query_series", _fake_query_series)
+    @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
+    def test_mixed_ct_nm_study_filter_mixedctnm(self):
+        """Test study level MIXEDCTNM, series level CT MEDPC and series level PET SYMBIAT16"""
+        from ..netdicom.qrscu import qrscu
+
+        qr_scp = DicomRemoteQR.objects.last()
+        store_scp = DicomStoreSCP.objects.last()
+
+        filters = {
+            "stationname_inc": ["mixedctnm", ],
+            "stationname_exc": None,
+            "study_desc_inc": None,
+            "study_desc_exc": None,
+            "stationname_study": True,
+        }
+
+        qrscu(qr_scp.pk, store_scp.pk, query_id="stdy_mix", modalities="CT", filters=filters)
+
+        query = DicomQuery.objects.filter(query_id__exact="stdy_mix").last()
+        studies = query.dicomqrrspstudy_set.all()
+
+        self.assertEqual(studies.count(), 1)
+        self.assertEqual(studies[0].dicomqrrspseries_set.count(), 1)
+
+        qr_scp.delete()
+        store_scp.delete()
+
+    @patch("remapp.netdicom.qrscu._query_for_each_modality", _fake_query_each_mod)
+    @patch("pynetdicom.ae.ApplicationEntity.associate", _fake_associate)
+    @patch("remapp.netdicom.qrscu._query_series", _fake_query_series)
+    @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
+    def test_mixed_ct_nm_study_filter_medpc(self):
+        """Test study level MIXEDCTNM, series level CT MEDPC and series level PET SYMBIAT16"""
+        from ..netdicom.qrscu import qrscu
+
+        qr_scp = DicomRemoteQR.objects.last()
+        store_scp = DicomStoreSCP.objects.last()
+
+        filters = {
+            "stationname_inc": ["medpc", ],
+            "stationname_exc": None,
+            "study_desc_inc": None,
+            "study_desc_exc": None,
+            "stationname_study": True,
+        }
+
+        qrscu(qr_scp.pk, store_scp.pk, query_id="stdy_medpc", modalities="CT", filters=filters)
+
+        query = DicomQuery.objects.filter(query_id__exact="stdy_medpc").last()
+        studies = query.dicomqrrspstudy_set.all()
+
+        self.assertEqual(studies.count(), 0)
 
         qr_scp.delete()
         store_scp.delete()
