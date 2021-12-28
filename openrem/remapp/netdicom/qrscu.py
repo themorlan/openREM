@@ -238,7 +238,7 @@ def _filter(query, level, filter_name, filter_list, filter_type):
             for s in series:
                 if (
                     getattr(s, filter_name) is not None
-                    and getattr(study, filter_name) != ""
+                    and getattr(s, filter_name) != ""
                     and (
                         any(
                             term in getattr(s, filter_name).lower()
@@ -1278,7 +1278,7 @@ def qrscu(
       modalities(list, optional): Modalities to search for, options are CT, MG, DX and FL (Default value = None)
       inc_sr(bool, optional): Only include studies that only have structured reports in (unknown modality) (Default value = False)
       remove_duplicates(bool, optional): If True, studies that already exist in the database are removed from the query results (Default value = True)
-      filters(dictionary list, optional): include and exclude lists for StationName and StudyDescription (Default value = None)
+      filters(dictionary list, optional): lowercase include and exclude lists for StationName and StudyDescription (Default value = None)
       get_toshiba_images(bool, optional): Whether to try to get Toshiba dose summary images
       get_empty_sr(bool, optional): Whether to get SR series that return nothing at image level
 
