@@ -217,6 +217,7 @@ def q_process(request, *args, **kwargs):
             desc_include = form.cleaned_data.get("desc_include_field")
             stationname_exclude = form.cleaned_data.get("stationname_exclude_field")
             stationname_include = form.cleaned_data.get("stationname_include_field")
+            stationname_study_level = form.cleaned_data.get("stationname_study_level_field")
             get_toshiba_images = form.cleaned_data.get("get_toshiba_images_field")
             get_empty_sr = form.cleaned_data.get("get_empty_sr_field")
 
@@ -257,6 +258,7 @@ def q_process(request, *args, **kwargs):
                 "stationname_exc": stationname_exc,
                 "study_desc_inc": study_desc_inc,
                 "study_desc_exc": study_desc_exc,
+                "stationname_study": stationname_study_level,
             }
 
             qrscu.delay(
