@@ -48,7 +48,8 @@ Query-retrieve using the web interface
 * Alternatively, you might want to only **keep studies** with particular terms in the study description. If so, enter them
   in the next box, comma separated.
 * You can also **exclude studies by station name**, or only keep them if they match the station name. This is only
-  effective if the remote system (the PACS) supports sending back station name information.
+  effective if the remote system (the PACS) supports sending back station name information. By default, this is only
+  checked against series level responses *(changed in OpenREM 1.0)*.
 
 Advanced query options
 ======================
@@ -70,6 +71,10 @@ Advanced query options
   with this behavior, any non-RDSR structured report series (such as a radiologists report encoded as a structured
   report) will be retrieved instead of images that could actually be used (for example with mammography and digital
   radiographs). Therefore this option should be used with caution!
+* **Check station name include/exclude at study level** *default not ticked*: Change this setting to enable checking of
+  station name include/exclude at study level instead of series level. This addresses :issue:`772` as some studies will
+  have different station name information at study level than at series level - if both levels are checked it is
+  impossible to get the desired response.
 
 When you have finished the query parameters, click ``Submit``
 
@@ -97,9 +102,11 @@ In a command window/shell, navigate to the folder containing ``docker-compose.ym
 .. sourcecode:: console
 
     $ docker-compose exec openrem openrem_qr.py -h
-    usage: openrem_qr.py [-h] [-ct] [-mg] [-fl] [-dx] [-f yyyy-mm-dd]
-                         [-t yyyy-mm-dd] [-sd yyyy-mm-dd] [-tf hhmm] [-tt hhmm]
-                         [-e string] [-i string] [-sne string] [-sni string]
+    usage: openrem_qr.py [-h] [-ct] [-mg] [-fl] [-dx]
+                         [-f yyyy-mm-dd] [-t yyyy-mm-dd] [-sd yyyy-mm-dd]
+                         [-tf hhmm] [-tt hhmm]
+                         [-e string] [-i string]
+                         [-sne string] [-sni string] [--stationname_study_level]
                          [-toshiba] [-sr] [-dup] [-emptysr]
                          qr_id store_id
 
@@ -114,7 +121,7 @@ In a command window/shell, navigate to the folder containing ``docker-compose.ym
       -ct                   Query for CT studies. Cannot be used with -sr
       -mg                   Query for mammography studies. Cannot be used with -sr
       -fl                   Query for fluoroscopy studies. Cannot be used with -sr
-      -dx                   Query for planar X-ray studies. Cannot be used with -sr
+      -dx                   Query for planar X-ray studies (includes panoramic X-ray studies). Cannot be used with -sr
       -f yyyy-mm-dd, --dfrom yyyy-mm-dd
                             Date from, format yyyy-mm-dd. Cannot be used with --single_date
       -t yyyy-mm-dd, --duntil yyyy-mm-dd
@@ -126,19 +133,17 @@ In a command window/shell, navigate to the folder containing ``docker-compose.ym
       -tt hhmm, --tuntil hhmm
                             Time until, format hhmm. Requires --single_date.
       -e string, --desc_exclude string
-                            Terms to exclude in study description, comma separated, quote whole
-                            string
+                            Terms to exclude in study description, comma separated, quote whole string
       -i string, --desc_include string
-                            Terms that must be included in study description, comma separated,
-                            quote whole string
+                            Terms that must be included in study description, comma separated, quote whole string
       -sne string, --stationname_exclude string
                             Terms to exclude in station name, comma separated, quote whole string
       -sni string, --stationname_include string
                             Terms to include in station name, comma separated, quote whole string
-      -toshiba              Advanced: Attempt to retrieve CT dose summary objects and one image
-                            from each series
-      -sr                   Advanced: Use if store has RDSRs only, no images. Cannot be used with
-                            -ct, -mg, -fl, -dx
+      --stationname_study_level
+                            Advanced: Filter station name at Study level, instead of at Series level
+      -toshiba              Advanced: Attempt to retrieve CT dose summary objects and one image from each series
+      -sr                   Advanced: Use if store has RDSRs only, no images. Cannot be used with -ct, -mg, -fl, -dx
       -dup                  Advanced: Retrieve duplicates (objects that have been processed before)
       -emptysr              Advanced: Get SR series that return nothing at image level query
 
@@ -228,8 +233,9 @@ Study level query response processing
 * If the optional ``ModalitiesInStudy`` has been populated in the response, and if you have ticked
   ``Include SR only studies``, then any studies with anything other than just ``SR`` studies is removed from the
   response list.
-* If any study description or station name filters have been added, and if the ``StudyDescription`` and/or
-  ``StationName`` tags are returned by the remote server, the study response list is filtered accordingly.
+* If any study description filters have been added, and if the ``StudyDescription`` tags are returned by the remote
+  server, the study response list is filtered accordingly. The same applies to the station name filter *if* the option
+  to check station names at study level has been selected.
 * For the remaining study level responses, each series is queried.
 * If ``ModalitiesInStudy`` was not returned, it is now built from the series level responses.
 * If the remote server returned everything rather than just the modalities we asked for, the study level responses are
@@ -238,7 +244,8 @@ Study level query response processing
 Series level query processing
 =============================
 
-* Another attempt is made to exclude or only-include if station name filters have been set
+* If station name filters have been added, and if the ``StationName`` tags are returned by the remote server, the series
+  list is filtered accordingly — unless the option to check station names at study level has been selected.
 
 If **mammography** exams were requested, and a study has ``MG`` in:
 
@@ -396,6 +403,4 @@ responses will already have been imported):
     [04/May/2016 11:30:29] INFO [remapp.netdicom.qrscu:48] gg is Pending
     [04/May/2016 11:30:30] INFO [remapp.netdicom.qrscu:53] Move association released
     ...etc
-
-If you are using an OpenREM native storage node, then you might also like to review :ref:`storetroubleshooting`
 
