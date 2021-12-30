@@ -72,7 +72,7 @@ Advanced query options
   report) will be retrieved instead of images that could actually be used (for example with mammography and digital
   radiographs). Therefore this option should be used with caution!
 * **Check station name include/exclude at study level** *default not ticked*: Change this setting to enable checking of
-  station name include/exclude at study level instead of series level. This addresses :issue:`772` as some studies will
+  station name include/exclude at study level instead of series level. This addresses issue :issue:`772` as some studies will
   have different station name information at study level than at series level - if both levels are checked it is
   impossible to get the desired response.
 
@@ -196,8 +196,6 @@ executes the ``powershell`` program with an argument of ``-file C:\path\to\scrip
 
 Querying with time range
 ========================
-
-*New to OpenREM 0.9.0*
 
 It is now possible to query for studies in a time window when using query-retrieve from the command line (web interface
 version will be introduced later). This can be particularly useful where PACS query responses are limited or null if the
