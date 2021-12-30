@@ -13,6 +13,7 @@ Headline changes
 * Docker
 
 * Performing physician added to standard fluoroscopy exports (:issue:`840`)
+* Station name checked at series level only, option to check at study level only instead (:issue:`772`)
 
 *******************
 Upgrade preparation

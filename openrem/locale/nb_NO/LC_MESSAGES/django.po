@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-05 21:13+0000\n"
+"POT-Creation-Date: 2021-12-28 21:54+0000\n"
 "PO-Revision-Date: 2020-10-07 10:39+0000\n"
 "Last-Translator: Ed McDonagh <ed@mcdonagh.org.uk>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/openrem/"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 4.3-dev\n"
 
-#: remapp/exports/ct_export.py:159
+#: remapp/exports/ct_export.py:161
 #, python-brace-format
 msgid ""
 "Writing study {row} of {numrows} to All data sheet and individual protocol "
@@ -28,129 +28,185 @@ msgstr ""
 "Skriver studie av {row} av {numrows} til alle datablad og individuelle "
 "protokollblader"
 
-#: remapp/netdicom/qrscu.py:79
+#: remapp/interface/chart_functions.py:350
+msgid "No data left after excluding missing values."
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:126
 msgid ""
 "Checking to see if any response studies are already in the OpenREM database"
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:204
+#: remapp/netdicom/qrscu.py:212
 #, python-brace-format
 msgid ""
 "Filter at {level} level on {filter_name} that {filter_type} {filter_list}"
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:257
+#: remapp/netdicom/qrscu.py:271
 msgid ""
 "Getting series and image level information and deleting series we can't use"
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:807
+#: remapp/netdicom/qrscu.py:760
+msgid "Association aborted twice in succession. Aborting query"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:762
+msgid "Association rejected after being aborted. Aborting query"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:764
+msgid "Association failed. Aborting query."
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:827
 msgid "Image level matching for this study is complete (there many be more)"
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:817
+#: remapp/netdicom/qrscu.py:836
 msgid "Image level matches are continuing."
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:858 remapp/netdicom/qrscu.py:975
-#: remapp/netdicom/qrscu.py:1080
+#: remapp/netdicom/qrscu.py:872 remapp/netdicom/qrscu.py:989
+#: remapp/netdicom/qrscu.py:1105
 msgid "Connection timed out, was aborted or received invalid response"
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:906
+#: remapp/netdicom/qrscu.py:929
 msgid "Series level matching for this study is complete (there may be more)"
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:916
+#: remapp/netdicom/qrscu.py:938
 msgid "Series level matches are continuing."
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:1008
+#: remapp/netdicom/qrscu.py:1039
 #, python-brace-format
 msgid "Study level matching for {modalities} is complete"
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:1021
+#: remapp/netdicom/qrscu.py:1051
 #, python-brace-format
 msgid "Matches are continuing for {modalities} studies"
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:1142
+#: remapp/netdicom/qrscu.py:1137
 #, python-brace-format
 msgid "Currently querying for {modality} studies…"
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:1501
+#: remapp/netdicom/qrscu.py:1507
 msgid "Pruning study responses based on inc/exc options"
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:1529
+#: remapp/netdicom/qrscu.py:1532
 msgid "Querying at series level to get more details about studies"
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:1557
+#: remapp/netdicom/qrscu.py:1556
 msgid "Deleting studies we didn't ask for"
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:1599
+#: remapp/netdicom/qrscu.py:1589
 msgid "Pruning series responses"
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:1658
+#: remapp/netdicom/qrscu.py:1617
+#, python-brace-format
+msgid ""
+"{num_del_studies} RF studies were deleted from query due to no suitable RDSR "
+"being found. "
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1623
+#, python-brace-format
+msgid ""
+"{ct_del_studies} CT studies were deleted from query due to no suitable "
+"images or reports being found. Of the remaining CT studies, {kept_ct_sr} "
+"have RDSR or ESR, {kept_ct_philips} have Philips dose images, "
+"{kept_ct_toshiba} have been prepared for the Toshiba import option and "
+"{kept_ct_maybe_philips} have been prepared as possibly containing Philips "
+"dose images. "
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1636
+#, python-brace-format
+msgid ""
+"{del_sr_studies} SR studies were deleted from query due to no suitable SR "
+"being found. "
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1655
 msgid "Removing any responses that match data we already have in the database"
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:1686
+#: remapp/netdicom/qrscu.py:1679
 #, python-brace-format
 msgid ""
 "Query complete. Query took {time} and we are left with {studies_left} "
 "studies to move.<br>Of the original {studies_initial} study responses, "
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:1697
+#: remapp/netdicom/qrscu.py:1693
 #, python-brace-format
 msgid ""
 "only studies with description that include '{text}' removed {num} studies, "
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:1704
+#: remapp/netdicom/qrscu.py:1700
 #, python-brace-format
 msgid ""
 "studies with description that do not include '{text}' removed {num} studies, "
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:1711
+#: remapp/netdicom/qrscu.py:1707
 #, python-brace-format
 msgid ""
-"only studies with station names that include '{text}' removed {num} studies, "
+"only studies with station names that include '{text}' at {filter_level} "
+"level removed {num} studies, "
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:1718
+#: remapp/netdicom/qrscu.py:1715
 #, python-brace-format
 msgid ""
-"studies with station names that do not include '{text}' removed {num} "
-"studies, "
+"studies with station names that do not include '{text}' at {filter_level} "
+"level removed {num} studies, "
 msgstr ""
 
-#: remapp/netdicom/qrscu.py:1726
+#: remapp/netdicom/qrscu.py:1723
+#, python-brace-format
+msgid "<br>Filtering for {pruning_logs}."
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1729
 #, python-brace-format
 msgid ""
-"Removing duplicates of previous objects removed {duplicates_removed} studies."
+"<br>Removing duplicates of previous objects removed {duplicates_removed} "
+"studies."
 msgstr ""
 
-#: remapp/templates/base.html:52 remapp/views.py:917
+#: remapp/netdicom/qrscu.py:1770
+msgid "Association aborted or never connected"
+msgstr ""
+
+#: remapp/netdicom/qrscu.py:1775
+msgid "Association Failed"
+msgstr ""
+
+#: remapp/templates/base.html:52 remapp/views.py:933
 msgid "CT"
 msgstr ""
 
-#: remapp/templates/base.html:56 remapp/views.py:921
+#: remapp/templates/base.html:56 remapp/views.py:937
 msgid "Fluoroscopy"
 msgstr ""
 
-#: remapp/templates/base.html:60 remapp/views.py:925
+#: remapp/templates/base.html:60 remapp/views.py:941
 msgid "Mammography"
 msgstr ""
 
-#: remapp/templates/base.html:64 remapp/views.py:929
+#: remapp/templates/base.html:64 remapp/views.py:945
 msgid "Radiography"
 msgstr ""
 
@@ -321,3 +377,39 @@ msgstr "Diagramplotting avslått."
 #: remapp/templates/remapp/home.html:214
 msgid "Please wait - querying the database"
 msgstr "Vent - utfører spørring til database"
+
+#: remapp/templates/remapp/openskinsafelist_add.html:52
+#: remapp/templates/remapp/openskinsafelist_confirm_delete.html:95
+#: remapp/templates/remapp/openskinsafelist_form.html:62
+msgid "Only users in the Admin group can modify the openSkin safe list."
+msgstr ""
+
+#: remapp/templates/remapp/openskinsafelist_add.html:54
+#: remapp/templates/remapp/openskinsafelist_confirm_delete.html:97
+#: remapp/templates/remapp/openskinsafelist_form.html:64
+msgid "Skin dose map settings do not allow safelist to be updated"
+msgstr ""
+
+#: remapp/views_charts_ct.py:558
+msgid ""
+"<br/>This may be because there are no acquisition types selected in the "
+"chart options. Try selecting at least one acquisition type."
+msgstr ""
+
+#: remapp/views_openskin.py:192
+msgid "Skin dose map settings have been updated"
+msgstr ""
+
+#: remapp/views_openskin.py:195
+msgid "No changes made"
+msgstr ""
+
+#: remapp/views_openskin.py:245 remapp/views_openskin.py:315
+#: remapp/views_openskin.py:372
+msgid "Skin dose map set to not allow safelist modification"
+msgstr ""
+
+#: remapp/views_openskin.py:255 remapp/views_openskin.py:323
+#: remapp/views_openskin.py:382
+msgid "Only members of the admin group can change the openSkin safe list"
+msgstr ""
