@@ -30,6 +30,8 @@
 import datetime
 import logging
 import os
+
+import django.db
 import pandas as pd
 import pkg_resources
 
@@ -186,7 +188,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     #====================================================================================
     # Write the all data sheet
     # This code is taken from the ct_csv method...
-    qs_chunk_size=20000
+    qs_chunk_size=10000
 
     # Exam-level integer field names
     exam_int_fields = [
@@ -378,6 +380,9 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
         data = qs.order_by().filter(accession_number__in=accession_numbers[chunk_min_idx:chunk_max_idx]).values_list(*all_fields)
 
+        # Clear the query cache
+        django.db.reset_queries()
+
         df = create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names,
                                   acquisition_val_field_names,
                                   all_field_names, data, exam_cat_field_names, exam_date_field_names,
@@ -533,7 +538,7 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
     # Get the data!
     qs = ct_acq_filter(filterdict, pid=pid).qs
 
-    qs_chunk_size=20000
+    qs_chunk_size=10000
 
     # Exam-level integer field names
     exam_int_fields = [
@@ -709,9 +714,15 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
         df.to_csv(tmpfile, index=False, mode="a", header=write_headers)
         write_headers = False
 
+        # Flush the csv data to the file
+        tmpfile.flush()
+
     # Now write out any None accession number data if any such data is present
     n_entries = qs.filter(accession_number__isnull=True).count()
     data = qs.order_by().filter(accession_number__isnull=True).values_list(*all_fields)
+
+    # Clear the query cache
+    django.db.reset_queries()
 
     if data:
         tsk.progress = "Working on {0} entries with blank accession numbers".format(n_entries)
@@ -725,6 +736,9 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
 
         # Write the None values to the csv file
         df.to_csv(tmpfile, index=False, mode="a", header=write_headers)
+
+        # Flush the csv data to the file
+        tmpfile.flush()
 
     # Close the csv file - we've finished writing data
     tmpfile.close()
