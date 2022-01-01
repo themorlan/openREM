@@ -205,11 +205,19 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     exam_obj_fields = [
         "accession_number",
     ]
+    if pid and name:
+        exam_obj_fields.append("patientmoduleattr__patient_name")
+    if pid and patid:
+        exam_obj_fields.append("patientmoduleattr__patient_id")
 
     # Friendly exam-level object field names
     exam_obj_field_names = [
-        "Accession",
+        "Accession number",
     ]
+    if pid and name:
+        exam_obj_field_names.append("Patient name")
+    if pid and patid:
+        exam_obj_field_names.append("Patient ID")
 
     # Exam-level category field names
     exam_cat_fields = [
@@ -554,11 +562,19 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
     exam_obj_fields = [
         "accession_number",
     ]
+    if pid and name:
+        exam_obj_fields.append("patientmoduleattr__patient_name")
+    if pid and patid:
+        exam_obj_fields.append("patientmoduleattr__patient_id")
 
     # Friendly exam-level object field names
     exam_obj_field_names = [
-        "Accession",
+        "Accession number",
     ]
+    if pid and name:
+        exam_obj_field_names.append("Patient name")
+    if pid and patid:
+        exam_obj_field_names.append("Patient ID")
 
     # Exam-level category field names
     exam_cat_fields = [

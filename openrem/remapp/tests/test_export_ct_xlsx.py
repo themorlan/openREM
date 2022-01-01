@@ -9,6 +9,8 @@ from remapp.extractors import rdsr
 from remapp.exports.ct_export import ctxlsx, ct_csv, ct_phe_2019
 from remapp.models import PatientIDSettings, Exports
 
+xlrd.xlsx.ensure_elementtree_imported(False, None)
+xlrd.xlsx.Element_has_iter = True
 
 class ExportCTxlsx(TestCase):
     """Test class for CT exports to XLSX"""
@@ -67,7 +69,7 @@ class ExportCTxlsx(TestCase):
             i for i, x in enumerate(headers) if x.value == "Accession number"
         ][0]
         dlp_total_col = [
-            i for i, x in enumerate(headers) if x.value == "DLP total (mGy.cm)"
+            i for i, x in enumerate(headers) if x.value == "Total DLP (mGy.cm)"
         ][0]
         e1_dose_check_col = [
             i for i, x in enumerate(headers) if x.value == "E1 Dose check details"
