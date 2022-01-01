@@ -138,50 +138,49 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     df = pd.DataFrame.from_records(data=qs.values_list("pk", "study_description", "requested_procedure_code_meaning"),
                                    columns=["pk", "Study description", "Requested procedure"])
 
-    # Write the study description data
-    summarysheet.write(5, 0, "Study Description")
-    summarysheet.write(5, 1, "Frequency")
-    summarysheet.set_column("A:A", 25)
-
     study_description_frequency = df["Study description"].value_counts(dropna=False)
     study_description_frequency = study_description_frequency.reset_index()
     study_description_frequency.columns = ["Study description", "Frequency"]
-    for idx in study_description_frequency.index:
-        try:
-            summarysheet.write(idx + 6, 0, study_description_frequency["Study description"][idx])
-        except TypeError:
-            pass
-        summarysheet.write(idx + 6, 1, study_description_frequency["Frequency"][idx])
-
-    # Write the requested procedure data
-    summarysheet.write(5, 3, "Requested Procedure")
-    summarysheet.write(5, 4, "Frequency")
-    summarysheet.set_column("D:D", 25)
+    study_description_frequency["Frequency"] = study_description_frequency["Frequency"].astype("UInt32")
 
     requested_procedure_frequency = df["Requested procedure"].value_counts(dropna=False)
     requested_procedure_frequency = requested_procedure_frequency.reset_index()
     requested_procedure_frequency.columns = ["Requested procedure", "Frequency"]
+    requested_procedure_frequency["Frequency"] = requested_procedure_frequency["Frequency"].astype("UInt32")
 
-    for idx in requested_procedure_frequency.index:
-        try:
-            summarysheet.write(idx + 6, 3, requested_procedure_frequency["Requested procedure"][idx])
-        except TypeError:
-            pass
-        summarysheet.write(idx + 6, 4, requested_procedure_frequency["Frequency"][idx])
+    acquisition_protocol_frequency = pd.DataFrame.from_records(
+        data=qs.values_list("ctradiationdose__ctirradiationeventdata__pk",
+                            "ctradiationdose__ctirradiationeventdata__acquisition_protocol"),
+        columns=["pk", "Acquisition protocol"])["Acquisition protocol"].value_counts(dropna=False).reset_index()
+    acquisition_protocol_frequency.columns = ["Acquisition protocol", "Frequency"]
+    acquisition_protocol_frequency["Frequency"] = acquisition_protocol_frequency["Frequency"].astype("UInt32")
 
-    # Write the acquisition protocol data
-    summarysheet.write(5, 6, "Acquisition protocol")
-    summarysheet.write(5, 7, "Frequency")
+    # Write the column titles
+    col_titles = [
+        "Study Description", "Frequency", "",
+        "Requested Procedure", "Frequency", "",
+        "Acquisition protocol", "Frequency"
+    ]
+    summarysheet.write_row(5, 0, col_titles)
+
+    # Widen the name columns
+    summarysheet.set_column("A:A", 25)
+    summarysheet.set_column("D:D", 25)
     summarysheet.set_column("G:G", 25)
 
-    acquisition_protocol_frequency = pd.DataFrame.from_records(data=qs.values_list("ctradiationdose__ctirradiationeventdata__pk", "ctradiationdose__ctirradiationeventdata__acquisition_protocol"), columns=["pk", "Acquisition protocol"])["Acquisition protocol"].value_counts(dropna=False).reset_index()
-    acquisition_protocol_frequency.columns = ["Acquisition protocol", "Frequency"]
-    for idx in acquisition_protocol_frequency.index:
-        try:
-            summarysheet.write(idx + 6, 6, acquisition_protocol_frequency["Acquisition protocol"][idx])
-        except TypeError:
-            pass
-        summarysheet.write(idx + 6, 7, acquisition_protocol_frequency["Frequency"][idx])
+    # Write the frequency data to the xlsx file
+    study_description_frequency["BlankCol"] = None
+    requested_procedure_frequency["BlankCol"] = None
+    combined_df = pd.concat([
+        study_description_frequency,
+        requested_procedure_frequency,
+        acquisition_protocol_frequency
+    ], axis=1)
+
+    combined_df = combined_df.where(pd.notnull(combined_df), None)
+
+    for idx in combined_df.index:
+        summarysheet.write_row(idx+6, 0, [None if x is pd.NA else x for x in combined_df.iloc[idx].to_list()])
     #====================================================================================
 
 
