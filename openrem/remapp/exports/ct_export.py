@@ -346,9 +346,8 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     write_headers = True
 
-    # Generate a list of non-null accession numbers (if I don't include pk then some accession numbers are missing
-    # from the list - I don't know why).
-    accession_numbers = [x[0] for x in qs.filter(accession_number__isnull=False).values_list("accession_number", "pk")]
+    # Generate a list of non-null accession numbers
+    accession_numbers = [x[0] for x in qs.order_by("-study_date", "-study_time").filter(accession_number__isnull=False).values_list("accession_number")]
 
     # Create a work sheet for each acquisition protocol present in the data in alphabetical order
     # and a dictionary to hold the number of rows that have been written to each protocol sheet
@@ -689,9 +688,8 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
 
     write_headers = True
 
-    # Generate a list of non-null accession numbers (if I don't include pk then some accession numbers are missing
-    # from the list - I don't know why).
-    accession_numbers = [x[0] for x in qs.filter(accession_number__isnull=False).values_list("accession_number", "pk")]
+    # Generate a list of non-null accession numbers
+    accession_numbers = [x[0] for x in qs.order_by("-study_date", "-study_time").filter(accession_number__isnull=False).values_list("accession_number")]
 
     for chunk_min_idx in range(0, n_entries, qs_chunk_size):
 
@@ -718,6 +716,8 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
         write_headers = False
 
         # Flush the csv data to the file
+        tsk.progress = "Writing entries {0} to {1} to csv file".format(chunk_min_idx + 1, chunk_max_idx)
+        tsk.save()
         tmpfile.flush()
 
     # Now write out any None accession number data if any such data is present
@@ -741,6 +741,8 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
         df.to_csv(tmpfile, index=False, mode="a", header=write_headers)
 
         # Flush the csv data to the file
+        tsk.progress = "Writing {0} entries with blank accession numbers to csv file".format(n_entries)
+        tsk.save()
         tmpfile.flush()
 
     # Close the csv file - we've finished writing data
