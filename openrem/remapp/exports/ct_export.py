@@ -704,6 +704,9 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
 
         data = qs.order_by().filter(accession_number__in=accession_numbers[chunk_min_idx:chunk_max_idx]).values_list(*all_fields)
 
+        # Clear the query cache
+        django.db.reset_queries()
+
         df = create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names,
                                   acquisition_val_field_names,
                                   all_field_names, data, exam_cat_field_names, exam_date_field_names,
