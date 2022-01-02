@@ -333,6 +333,28 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         "Exposure time per rotation",
     ]
 
+    ct_dose_check_fields = [
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__dlp_alert_value_configured",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__dlp_alert_value",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__accumulated_dlp_forward_estimate",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__ctdivol_alert_value_configured",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__ctdivol_alert_value",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__accumulated_ctdivol_forward_estimate",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__alert_reason_for_proceeding",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__tid1020_alert__person_name",
+    ]
+
+    ct_dose_check_field_names = [
+        "DLP alert configured",
+        "DLP alert value",
+        "DLP forward estimate",
+        "CTDIvol alert configured",
+        "CTDIvol alert value",
+        "CTDIvol forward estimate",
+        "Reason for proceeding",
+        "Person name",
+    ]
+
     exam_fields = exam_int_fields + exam_obj_fields + exam_cat_fields + exam_date_fields + exam_time_fields + exam_val_fields
     acquisition_fields = acquisition_int_fields + acquisition_cat_fields + acquisition_val_fields
     all_fields = exam_fields + acquisition_fields
@@ -340,6 +362,9 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     exam_field_names = exam_int_field_names + exam_obj_field_names + exam_cat_field_names + exam_date_field_names + exam_time_field_names + exam_val_field_names
     acquisition_field_names = acquisition_int_field_names + acquisition_cat_field_names + acquisition_val_field_names
     all_field_names = exam_field_names + acquisition_field_names
+
+    # Add the Dose check alert column to the acquisition category field names
+    acquisition_cat_field_names.append("Dose check alerts")
 
     # Create a series of DataFrames by chunking the queryset into groups of accession numbers.
     # Chunking saves server memory at the expense of speed.
@@ -384,14 +409,23 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         tsk.progress = "Working on entries {0} to {1}".format(chunk_min_idx + 1, chunk_max_idx)
         tsk.save()
 
-        data = qs.order_by().filter(accession_number__in=accession_numbers[chunk_min_idx:chunk_max_idx]).values_list(*all_fields)
+        data = qs.order_by().filter(accession_number__in=accession_numbers[chunk_min_idx:chunk_max_idx]).values_list(*(all_fields + ct_dose_check_fields))
 
         # Clear the query cache
         django.db.reset_queries()
 
+        df = pd.DataFrame.from_records(
+            data=data,
+            columns=(all_field_names + ct_dose_check_field_names), coerce_float=True,
+        )
+
+        # Create the CT dose check column
+        df = create_ct_dose_check_column(ct_dose_check_field_names, df)
+
+
         df = create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names,
                                   acquisition_val_field_names,
-                                  all_field_names, data, exam_cat_field_names, exam_date_field_names,
+                                  all_field_names, df, exam_cat_field_names, exam_date_field_names,
                                   exam_int_field_names, exam_obj_field_names, exam_time_field_names,
                                   exam_val_field_names)
 
@@ -406,7 +440,11 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
 
         # Write out data to the acquisition protocol sheets
-        df = pd.DataFrame.from_records(data=data, columns=all_field_names, coerce_float=True)
+        df = pd.DataFrame.from_records(data=data, columns=(all_field_names + ct_dose_check_field_names), coerce_float=True)
+
+        # Create the CT dose check column
+        df = create_ct_dose_check_column(ct_dose_check_field_names, df)
+
         all_acquisitions_in_df = df["Acquisition protocol"].unique()
 
         for acquisition in all_acquisitions_in_df:
@@ -442,7 +480,18 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     # Now write out any None accession number data if any such data is present
     n_entries = qs.filter(accession_number__isnull=True).count()
-    data = qs.order_by().filter(accession_number__isnull=True).values_list(*all_fields)
+    data = qs.order_by().filter(accession_number__isnull=True).values_list(*(all_fields + ct_dose_check_fields))
+
+    df = pd.DataFrame.from_records(
+        data=data,
+        columns=(all_field_names + ct_dose_check_field_names), coerce_float=True,
+    )
+
+    # Create the CT dose check column
+    df = create_ct_dose_check_column(ct_dose_check_field_names, df)
+
+    # Clear the query cache
+    django.db.reset_queries()
 
     if data:
         tsk.progress = "Working on {0} entries with blank accession numbers".format(n_entries)
@@ -450,7 +499,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
         df = create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names,
                                   acquisition_val_field_names,
-                                  all_field_names, data, exam_cat_field_names, exam_date_field_names,
+                                  all_field_names, df, exam_cat_field_names, exam_date_field_names,
                                   exam_int_field_names, exam_obj_field_names, exam_time_field_names,
                                   exam_val_field_names)
 
@@ -465,7 +514,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
 
         # Write out data to the acquisition protocol sheets
-        df = pd.DataFrame.from_records(data=data, columns=all_field_names, coerce_float=True)
+        df = pd.DataFrame.from_records(data=data, columns=(all_field_names + ct_dose_check_field_names), coerce_float=True)
         all_acquisitions_in_df = df["Acquisition protocol"].unique()
 
         for acquisition in all_acquisitions_in_df:
@@ -509,6 +558,62 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     write_export(tsk, xlsxfilename, tmpxlsx, datestamp)
     #====================================================================================
+
+
+def create_ct_dose_check_column(ct_dose_check_field_names, df):
+    # Combine the dose alert fields
+    # The title if either DLP or CTDIvol alerts are configured
+    indices = df[(df["DLP alert configured"] == True) | (df["CTDIvol alert configured"] == True)].index
+    df.loc[indices, "Dose check alerts"] = "Dose check alerts:"
+    # The DLP alert value
+    indices = df[(df["DLP alert configured"] == True)].index
+    df.loc[indices, "Dose check alerts"] = (
+            df.loc[indices, "Dose check alerts"] +
+            "\nDLP alert is configured at " +
+            df.loc[indices, "DLP alert value"].astype("str") +
+            " mGy.cm"
+    )
+    # The DLP forward estimate
+    indices = df[(df["DLP forward estimate"].notnull())].index
+    df.loc[indices, "Dose check alerts"] = (
+            df.loc[indices, "Dose check alerts"] +
+            "\nwith an accumulated forward estimate of " +
+            df.loc[indices, "DLP forward estimate"].astype("str") +
+            " mGy.cm"
+    )
+    # The CTDIvol alert value
+    indices = df[(df["CTDIvol alert configured"] == True)].index
+    df.loc[indices, "Dose check alerts"] = (
+            df.loc[indices, "Dose check alerts"] +
+            "\nCTDIvol alert is configured at " +
+            df.loc[indices, "CTDIvol alert value"].astype("str") +
+            " mGy"
+    )
+    # The CTDIvol forward estimate
+    indices = df[(df["CTDIvol forward estimate"].notnull())].index
+    df.loc[indices, "Dose check alerts"] = (
+            df.loc[indices, "Dose check alerts"] +
+            "\nwith an accumulated forward estimate of " +
+            df.loc[indices, "CTDIvol forward estimate"].astype("str") +
+            " mGy"
+    )
+    # The reason for proceeding
+    indices = df[(df["Reason for proceeding"].notnull())].index
+    df.loc[indices, "Dose check alerts"] = (
+            df.loc[indices, "Dose check alerts"] +
+            "\nReason for proceeding: " +
+            df.loc[indices, "Reason for proceeding"]
+    )
+    # The person authorizing the exposure
+    indices = df[(df["Person name"].notnull())].index
+    df.loc[indices, "Dose check alerts"] = (
+            df.loc[indices, "Dose check alerts"] +
+            "\nPerson authorizing irradiation: " +
+            df.loc[indices, "Person name"]
+    )
+    # Remove the individual dose check columns from the dataframe
+    df = df.drop(columns=ct_dose_check_field_names)
+    return df
 
 
 @shared_task
@@ -688,8 +793,33 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
         "Exposure time per rotation",
     ]
 
+    ct_dose_check_fields = [
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__dlp_alert_value_configured",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__dlp_alert_value",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__accumulated_dlp_forward_estimate",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__ctdivol_alert_value_configured",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__ctdivol_alert_value",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__accumulated_ctdivol_forward_estimate",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__alert_reason_for_proceeding",
+        "ctradiationdose__ctirradiationeventdata__ctdosecheckdetails__tid1020_alert__person_name",
+    ]
+
+    ct_dose_check_field_names = [
+        "DLP alert configured",
+        "DLP alert value",
+        "DLP forward estimate",
+        "CTDIvol alert configured",
+        "CTDIvol alert value",
+        "CTDIvol forward estimate",
+        "Reason for proceeding",
+        "Person name",
+    ]
+
     all_fields = exam_int_fields + exam_obj_fields + exam_cat_fields + exam_date_fields + exam_time_fields + exam_val_fields + acquisition_int_fields + acquisition_cat_fields + acquisition_val_fields
     all_field_names = exam_int_field_names + exam_obj_field_names + exam_cat_field_names + exam_date_field_names + exam_time_field_names + exam_val_field_names + acquisition_int_field_names + acquisition_cat_field_names + acquisition_val_field_names
+
+    # Add the Dose check alert column to the acquisition category field names
+    acquisition_cat_field_names.append("Dose check alerts")
 
     # Create a series of DataFrames by chunking the queryset into groups of accession numbers.
     # Chunking saves server memory at the expense of speed.
@@ -715,14 +845,22 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
         tsk.progress = "Working on entries {0} to {1}".format(chunk_min_idx + 1, chunk_max_idx)
         tsk.save()
 
-        data = qs.order_by().filter(accession_number__in=accession_numbers[chunk_min_idx:chunk_max_idx]).values_list(*all_fields)
+        data = qs.order_by().filter(accession_number__in=accession_numbers[chunk_min_idx:chunk_max_idx]).values_list(*(all_fields + ct_dose_check_fields))
 
         # Clear the query cache
         django.db.reset_queries()
 
+        df = pd.DataFrame.from_records(
+            data=data,
+            columns=(all_field_names + ct_dose_check_field_names), coerce_float=True,
+        )
+
+        # Create the CT dose check column
+        df = create_ct_dose_check_column(ct_dose_check_field_names, df)
+
         df = create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names,
                                   acquisition_val_field_names,
-                                  all_field_names, data, exam_cat_field_names, exam_date_field_names,
+                                  all_field_names, df, exam_cat_field_names, exam_date_field_names,
                                   exam_int_field_names, exam_obj_field_names, exam_time_field_names,
                                   exam_val_field_names)
 
@@ -737,7 +875,15 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
 
     # Now write out any None accession number data if any such data is present
     n_entries = qs.filter(accession_number__isnull=True).count()
-    data = qs.order_by().filter(accession_number__isnull=True).values_list(*all_fields)
+    data = qs.order_by().filter(accession_number__isnull=True).values_list(*(all_fields + ct_dose_check_fields))
+
+    df = pd.DataFrame.from_records(
+        data=data,
+        columns=(all_field_names + ct_dose_check_field_names), coerce_float=True,
+    )
+
+    # Create the CT dose check column
+    df = create_ct_dose_check_column(ct_dose_check_field_names, df)
 
     # Clear the query cache
     django.db.reset_queries()
@@ -748,7 +894,7 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
 
         df = create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names,
                                   acquisition_val_field_names,
-                                  all_field_names, data, exam_cat_field_names, exam_date_field_names,
+                                  all_field_names, df, exam_cat_field_names, exam_date_field_names,
                                   exam_int_field_names, exam_obj_field_names, exam_time_field_names,
                                   exam_val_field_names)
 
@@ -1152,13 +1298,13 @@ def ct_phe_2019(filterdict, user=None):
 
 
 def create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-                         all_field_names, data, exam_cat_field_names, exam_date_field_names, exam_int_field_names,
+                         all_field_names, df, exam_cat_field_names, exam_date_field_names, exam_int_field_names,
                          exam_obj_field_names, exam_time_field_names, exam_val_field_names):
 
-    df = pd.DataFrame.from_records(
-        data=data,
-        columns=all_field_names, coerce_float=True,
-    )
+    # df = pd.DataFrame.from_records(
+    #     data=data,
+    #     columns=all_field_names, coerce_float=True,
+    # )
 
     if settings.DEBUG:
         print("Initial DataFrame created")
