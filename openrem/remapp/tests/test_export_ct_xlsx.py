@@ -62,60 +62,63 @@ class ExportCTxlsx(TestCase):
         all_data_sheet = book.sheet_by_name("All data")
         headers = all_data_sheet.row(0)
 
-        patient_id_col = [i for i, x in enumerate(headers) if x.value == "Patient ID"][
-            0
-        ]
-        accession_number_col = [
-            i for i, x in enumerate(headers) if x.value == "Accession number"
-        ][0]
-        dlp_total_col = [
-            i for i, x in enumerate(headers) if x.value == "Total DLP (mGy.cm)"
-        ][0]
-        e1_dose_check_col = [
-            i for i, x in enumerate(headers) if x.value == "E1 Dose check details"
-        ][0]
-        e2_dose_check_col = [
-            i for i, x in enumerate(headers) if x.value == "E2 Dose check details"
-        ][0]
-
-        self.assertEqual(all_data_sheet.cell_type(2, patient_id_col), xlrd.XL_CELL_TEXT)
-        self.assertEqual(all_data_sheet.cell_type(3, patient_id_col), xlrd.XL_CELL_TEXT)
-        self.assertEqual(
-            all_data_sheet.cell_type(2, accession_number_col), xlrd.XL_CELL_TEXT
-        )
-        self.assertEqual(
-            all_data_sheet.cell_type(3, accession_number_col), xlrd.XL_CELL_TEXT
-        )
-        self.assertEqual(
-            all_data_sheet.cell_type(2, dlp_total_col), xlrd.XL_CELL_NUMBER
-        )
-
-        self.assertEqual(all_data_sheet.cell_value(2, patient_id_col), "008F/g234")
-        self.assertEqual(all_data_sheet.cell_value(3, patient_id_col), "00001234")
-        self.assertEqual(
-            all_data_sheet.cell_value(2, accession_number_col), "001234512345678"
-        )
-        self.assertEqual(
-            all_data_sheet.cell_value(3, accession_number_col), "0012345.12345678"
-        )
-        self.assertEqual(all_data_sheet.cell_value(2, dlp_total_col), 2002.39)
+        patient_id_col = [i for i, x in enumerate(headers) if x.value == "Patient ID"][0]
+        accession_number_col = [i for i, x in enumerate(headers) if x.value == "Accession number"][0]
+        dlp_total_col = [i for i, x in enumerate(headers) if x.value == "Total DLP (mGy.cm)"][0]
+        e1_dose_check_col = [i for i, x in enumerate(headers) if x.value == "E1 Dose check alerts"][0]
+        e2_dose_check_col = [i for i, x in enumerate(headers) if x.value == "E2 Dose check alerts"][0]
 
         e1_dose_check_string = (
-            u"Dose Check Alerts: DLP alert is configured at 100.00 mGy.cm with an accumulated "
-            u"forward estimate of 251.20 mGy.cm. CTDIvol alert is configured at 10.00 mGy with no "
-            u"accumulated forward estimate recorded. Person authorizing irradiation: Luuk. "
+            u"Dose check alerts:\n"
+            u"DLP alert is configured at 100.0 mGy.cm\n"
+            u"with an accumulated forward estimate of 251.2 mGy.cm\n"
+            u"CTDIvol alert is configured at 10.0 mGy\n"
+            u"Person authorizing irradiation: Luuk"
         )
         e2_dose_check_string = (
-            u"Dose Check Alerts: DLP alert is configured at 100.00 mGy.cm with an accumulated "
-            u"forward estimate of 502.40 mGy.cm. CTDIvol alert is configured at 10.00 mGy with an "
-            u"accumulated forward estimate of 10.60 mGy. Person authorizing irradiation: Luuk. "
+            u"Dose check alerts:\n"
+            u"DLP alert is configured at 100.0 mGy.cm\n"
+            u"with an accumulated forward estimate of 502.4 mGy.cm\n"
+            u"CTDIvol alert is configured at 10.0 mGy\n"
+            u"with an accumulated forward estimate of 10.6 mGy\n"
+            u"Person authorizing irradiation: Luuk"
         )
-        self.assertEqual(
-            all_data_sheet.cell_value(1, e1_dose_check_col), e1_dose_check_string
-        )
-        self.assertEqual(
-            all_data_sheet.cell_value(1, e2_dose_check_col), e2_dose_check_string
-        )
+
+        self.assertEqual(all_data_sheet.cell_type(1, patient_id_col), xlrd.XL_CELL_TEXT)
+        self.assertEqual(all_data_sheet.cell_type(1, accession_number_col), xlrd.XL_CELL_TEXT)
+        self.assertEqual(all_data_sheet.cell_type(1, dlp_total_col), xlrd.XL_CELL_NUMBER)
+        self.assertEqual(all_data_sheet.cell_value(1, patient_id_col), "00001234")
+        self.assertEqual(all_data_sheet.cell_value(1, accession_number_col), "0012345.12345678")
+        self.assertAlmostEqual(all_data_sheet.cell_value(1, dlp_total_col), 415.82, 2)
+        self.assertEqual(all_data_sheet.cell_value(1, e1_dose_check_col), "")
+        self.assertEqual(all_data_sheet.cell_value(1, e2_dose_check_col), "")
+
+        self.assertEqual(all_data_sheet.cell_type(2, patient_id_col), xlrd.XL_CELL_TEXT)
+        self.assertEqual(all_data_sheet.cell_type(2, accession_number_col), xlrd.XL_CELL_TEXT)
+        self.assertEqual(all_data_sheet.cell_type(2, dlp_total_col), xlrd.XL_CELL_NUMBER)
+        self.assertEqual(all_data_sheet.cell_value(2, patient_id_col), "008F/g234")
+        self.assertEqual(all_data_sheet.cell_value(2, accession_number_col), "001234512345678")
+        self.assertAlmostEqual(all_data_sheet.cell_value(2, dlp_total_col), 2002.39, 2)
+        self.assertEqual(all_data_sheet.cell_value(2, e1_dose_check_col), "")
+        self.assertEqual(all_data_sheet.cell_value(2, e2_dose_check_col), "")
+
+        self.assertEqual(all_data_sheet.cell_type(3, patient_id_col), xlrd.XL_CELL_TEXT)
+        self.assertEqual(all_data_sheet.cell_type(3, accession_number_col), xlrd.XL_CELL_TEXT)
+        self.assertEqual(all_data_sheet.cell_type(3, dlp_total_col), xlrd.XL_CELL_NUMBER)
+        self.assertEqual(all_data_sheet.cell_value(3, patient_id_col), "4018119567876617")
+        self.assertEqual(all_data_sheet.cell_value(3, accession_number_col), "3599305798462538")
+        self.assertAlmostEqual(all_data_sheet.cell_value(3, dlp_total_col), 502.40, 2)
+        self.assertEqual(all_data_sheet.cell_value(3, e1_dose_check_col), e1_dose_check_string)
+        self.assertEqual(all_data_sheet.cell_value(3, e2_dose_check_col), e2_dose_check_string)
+
+        self.assertEqual(all_data_sheet.cell_type(4, patient_id_col), xlrd.XL_CELL_TEXT)
+        self.assertEqual(all_data_sheet.cell_type(4, accession_number_col), xlrd.XL_CELL_TEXT)
+        self.assertEqual(all_data_sheet.cell_type(4, dlp_total_col), xlrd.XL_CELL_NUMBER)
+        self.assertEqual(all_data_sheet.cell_value(4, patient_id_col), "123456")
+        self.assertEqual(all_data_sheet.cell_value(4, accession_number_col), "ACC12345601")
+        self.assertAlmostEqual(all_data_sheet.cell_value(4, dlp_total_col), 724.52, 2)
+        self.assertEqual(all_data_sheet.cell_value(4, e1_dose_check_col), "")
+        self.assertEqual(all_data_sheet.cell_value(4, e2_dose_check_col), "")
 
         # cleanup
         task.filename.delete()  # delete file so local testing doesn't get too messy!

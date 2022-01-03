@@ -180,7 +180,9 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     combined_df = combined_df.where(pd.notnull(combined_df), None)
 
     for idx in combined_df.index:
-        summarysheet.write_row(idx+6, 0, [None if x is pd.NA else x for x in combined_df.iloc[idx].to_list()])
+        summarysheet.write_row(
+            idx + 6, 0, [None if x is pd.NA or not pd.notna(x) else x for x in combined_df.iloc[idx].to_list()]
+        )
     #====================================================================================
 
 
@@ -561,6 +563,9 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
 
 def create_ct_dose_check_column(ct_dose_check_field_names, df):
+    if df.empty:
+        return None
+
     # Combine the dose alert fields
     # The title if either DLP or CTDIvol alerts are configured
     indices = df[(df["DLP alert configured"] == True) | (df["CTDIvol alert configured"] == True)].index
