@@ -238,7 +238,7 @@ def _filter(query, level, filter_name, filter_list, filter_type):
             for s in series:
                 if (
                     getattr(s, filter_name) is not None
-                    and getattr(study, filter_name) != ""
+                    and getattr(s, filter_name) != ""
                     and (
                         any(
                             term in getattr(s, filter_name).lower()
@@ -285,7 +285,7 @@ def _prune_series_responses(
     kept_ct = {"SR": 0, "philips": 0, "toshiba": 0, "maybe_philips": 0}
     deleted_studies_filters = {"stationname_inc": 0, "stationname_exc": 0}
 
-    if filters["stationname_inc"]:
+    if filters["stationname_inc"] and not filters["stationname_study"]:
         before_count = query.dicomqrrspstudy_set.all().count()
         _filter(
             query,
@@ -301,7 +301,7 @@ def _prune_series_responses(
                 f"{query_id_8} stationname_inc removed {deleted_studies_filters['stationname_inc']} studies"
             )
 
-    if filters["stationname_exc"]:
+    if filters["stationname_exc"] and not filters["stationname_study"]:
         before_count = query.dicomqrrspstudy_set.all().count()
         _filter(
             query,
@@ -612,7 +612,7 @@ def _prune_study_responses(query, filters):
                 f"{query_id_8} study_desc_exc removed "
                 f"{deleted_studies_filters['study_desc_exc']} studies"
             )
-    if filters["stationname_inc"]:
+    if filters["stationname_inc"] and filters["stationname_study"]:
         before_count = query.dicomqrrspstudy_set.all().count()
         logger.debug(
             f"{query_id_8} About to filter on stationname_inc: {filters['stationname_inc']}, "
@@ -631,7 +631,7 @@ def _prune_study_responses(query, filters):
             logger.debug(
                 f"{query_id_8} stationname_inc removed {deleted_studies_filters['stationname_inc']} studies"
             )
-    if filters["stationname_exc"]:
+    if filters["stationname_exc"] and filters["stationname_study"]:
         before_count = query.dicomqrrspstudy_set.all().count()
         logger.debug(
             f"{query_id_8} About to filter on stationname_exc: {filters['stationname_exc']}, "
@@ -1278,7 +1278,7 @@ def qrscu(
       modalities(list, optional): Modalities to search for, options are CT, MG, DX and FL (Default value = None)
       inc_sr(bool, optional): Only include studies that only have structured reports in (unknown modality) (Default value = False)
       remove_duplicates(bool, optional): If True, studies that already exist in the database are removed from the query results (Default value = True)
-      filters(dictionary list, optional): include and exclude lists for StationName and StudyDescription (Default value = None)
+      filters(dictionary list, optional): lowercase include and exclude lists for StationName and StudyDescription (Default value = None)
       get_toshiba_images(bool, optional): Whether to try to get Toshiba dose summary images
       get_empty_sr(bool, optional): Whether to get SR series that return nothing at image level
 
@@ -1295,6 +1295,15 @@ def qrscu(
         query_id_8 = query_id.hex[:8]
     except AttributeError:
         query_id_8 = query_id[:8]
+
+    if filters is None:
+        filters = {
+            "stationname_inc": None,
+            "stationname_exc": None,
+            "study_desc_inc": None,
+            "study_desc_exc": None,
+            "stationname_study": None,
+        }
 
     logger.debug(f"Query_id is {query_id_8}")
     logger.debug(
@@ -1317,6 +1326,8 @@ def qrscu(
         )
     )
     celery_task_uuid = qrscu.request.id
+    if celery_task_uuid is None:
+        celery_task_uuid = uuid.uuid4()
     logger.debug(f"Celery task UUID is {celery_task_uuid}")
 
     # Currently, if called from qrscu_script modalities will either be a list of modalities or it will be "SR".
@@ -1382,7 +1393,6 @@ def qrscu(
     else:
         modality_text = f"Modalities = {modalities}"
     active_filters = {k: v for k, v in filters.items() if v is not None}
-    # active_filters_text = "<br/>".join(": ".join(_) for _ in active_filters.items())
     query_summary_1 = (
         f"QR SCP PK = {qr_scp_pk} ({qr_scp.name}). "
         f"Store SCP PK = {store_scp_pk} ({query.store_scp_fk.name})."
@@ -1401,8 +1411,12 @@ def qrscu(
 
     if assoc.is_established:
 
+        try:
+            celery_task_uuid_8 = celery_task_uuid.hex[:8]
+        except AttributeError:
+            celery_task_uuid_8 = celery_task_uuid[:8]
         logger.info(
-            f"{query_id_8} Celery {celery_task_uuid[:8]} "
+            f"{query_id_8} Celery {celery_task_uuid_8} "
             f"DICOM FindSCU: {query_summary_1} \n    {query_summary_2} \n    {query_summary_3}"
         )
         d = Dataset()
@@ -1671,6 +1685,9 @@ def qrscu(
         )
         query.stage += series_pruning_log
         filter_pruning_logs = ""
+        filter_level = "series"
+        if filters["stationname_study"]:
+            filter_level = "study"
         if filters["study_desc_inc"]:
             filter_pruning_logs += _(
                 "only studies with description that include '{text}' removed {num} studies, ".format(
@@ -1687,14 +1704,18 @@ def qrscu(
             )
         if filters["stationname_inc"]:
             filter_pruning_logs += _(
-                "only studies with station names that include '{text}' removed {num} studies, ".format(
+                "only studies with station names that include '{text}' at {filter_level} level"
+                " removed {num} studies, ".format(
+                    filter_level=filter_level,
                     text=", ".join(filters["stationname_inc"]),
                     num=deleted_studies_filters["stationname_inc"],
                 )
             )
         if filters["stationname_exc"]:
             filter_pruning_logs += _(
-                "studies with station names that do not include '{text}' removed {num} studies, ".format(
+                "studies with station names that do not include '{text}' at {filter_level} level"
+                " removed {num} studies, ".format(
+                    filter_level=filter_level,
                     text=", ".join(filters["stationname_exc"]),
                     num=deleted_studies_filters["stationname_exc"],
                 )
@@ -1718,22 +1739,6 @@ def qrscu(
         logger.debug(
             f"{query_id_8} Query complete. Move is {move}. Query took {time_took}"
         )
-
-        # if logger.isEnabledFor(logging.DEBUG):
-        #     logger.debug(
-        #         f"{query_id_8} Query result contains the following studies / series:"
-        #     )
-        #     studies = query.dicomqrrspstudy_set.all()
-        #     for study in studies:
-        #         for series in study.dicomqrrspseries_set.all():
-        #             logger.debug(
-        #                 f"{query_id_8}    "
-        #                 f"Study: {study.study_description} ({study.study_instance_uid}) "
-        #                 f"modalities: {study.get_modalities_in_study()}, "
-        #                 f"Series: {series.series_instance_uid}, "
-        #                 f"modality: {series.modality} "
-        #                 f"containing {series.number_of_series_related_instances} objects."
-        #             )
 
         if move:
             movescu.delay(str(query.query_id))
@@ -2147,6 +2152,11 @@ def _create_parser():
         metavar="string",
     )
     parser.add_argument(
+        "--stationname_study_level",
+        help="Advanced: Filter station name at Study level, instead of at Series level",
+        action="store_true",
+    )
+    parser.add_argument(
         "-toshiba",
         action="store_true",
         help="Advanced: Attempt to retrieve CT dose summary objects and one image from each series",
@@ -2270,6 +2280,7 @@ def _process_args(parser_args, parser):
         "stationname_exc": stationname_exc,
         "study_desc_inc": study_desc_inc,
         "study_desc_exc": study_desc_exc,
+        "stationname_study": parser_args.stationname_study_level,
     }
 
     remove_duplicates = not parser_args.dup  # if flag, duplicates will be retrieved.
