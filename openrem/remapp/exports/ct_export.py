@@ -273,13 +273,11 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
 
     # Required acquisition-level integer field names
     acquisition_int_fields = [
-        "ctradiationdose__ctirradiationeventdata__pk",
         "ctradiationdose__ctirradiationeventdata__number_of_xray_sources",
     ]
 
     # Friendly acquisition-level integer field names
     acquisition_int_field_names = [
-        "acq_pk",
         "Number of sources",
     ]
 
