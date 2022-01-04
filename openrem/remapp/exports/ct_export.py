@@ -35,10 +35,8 @@ import django.db
 import pandas as pd
 import pkg_resources
 
-from django.db.models import Q
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.translation import gettext as _
 from celery import shared_task
 from zipfile import (
     ZipFile,
@@ -46,14 +44,12 @@ from zipfile import (
 )
 
 from .export_common import (
-    get_common_data,
-    common_headers,
     create_xlsx,
     create_csv,
     write_export,
-    create_summary_sheet,
     abort_if_zero_studies,
     create_export_task,
+    transform_to_one_row_per_exam,
 )
 
 logger = logging.getLogger(__name__)
@@ -72,7 +68,7 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
     """
 
     from django.db.models import Max
-    from .export_common import text_and_date_formats, generate_sheets, sheet_name
+    from .export_common import text_and_date_formats, sheet_name
     from ..interface.mod_filters import ct_acq_filter
 
     datestamp = datetime.datetime.now()
@@ -425,11 +421,12 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         df = create_ct_dose_check_column(ct_dose_check_field_names, df)
 
 
-        df = create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names,
-                                  acquisition_val_field_names,
-                                  all_field_names, df, exam_cat_field_names, exam_date_field_names,
-                                  exam_int_field_names, exam_obj_field_names, exam_time_field_names,
-                                  exam_val_field_names)
+        df = transform_to_one_row_per_exam(
+            df,
+            acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
+            exam_cat_field_names, exam_date_field_names, exam_int_field_names,
+            exam_obj_field_names, exam_time_field_names, exam_val_field_names,
+            all_field_names)
 
         # Write the headings to the sheet (over-writing each time, but this ensures we'll include the study
         # with the most events without doing anything complicated to generate the headings)
@@ -499,11 +496,12 @@ def ctxlsx(filterdict, pid=False, name=None, patid=None, user=None):
         tsk.progress = "Working on {0} entries with blank accession numbers".format(n_entries)
         tsk.save()
 
-        df = create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names,
-                                  acquisition_val_field_names,
-                                  all_field_names, df, exam_cat_field_names, exam_date_field_names,
-                                  exam_int_field_names, exam_obj_field_names, exam_time_field_names,
-                                  exam_val_field_names)
+        df = transform_to_one_row_per_exam(
+            df,
+            acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
+            exam_cat_field_names, exam_date_field_names, exam_int_field_names,
+            exam_obj_field_names, exam_time_field_names, exam_val_field_names,
+            all_field_names)
 
         # Write the headings to the sheet (over-writing each time, but this ensures we'll include the study
         # with the most events without doing anything complicated to generate the headings)
@@ -863,11 +861,12 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
         # Create the CT dose check column
         df = create_ct_dose_check_column(ct_dose_check_field_names, df)
 
-        df = create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names,
-                                  acquisition_val_field_names,
-                                  all_field_names, df, exam_cat_field_names, exam_date_field_names,
-                                  exam_int_field_names, exam_obj_field_names, exam_time_field_names,
-                                  exam_val_field_names)
+        df = transform_to_one_row_per_exam(
+            df,
+            acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
+            exam_cat_field_names, exam_date_field_names, exam_int_field_names,
+            exam_obj_field_names, exam_time_field_names, exam_val_field_names,
+            all_field_names)
 
         # Write the DataFrame to a csv file
         df.to_csv(tmpfile, index=False, mode="a", header=write_headers)
@@ -897,11 +896,12 @@ def ct_csv(filterdict, pid=False, name=None, patid=None, user=None):
         tsk.progress = "Working on {0} entries with blank accession numbers".format(n_entries)
         tsk.save()
 
-        df = create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names,
-                                  acquisition_val_field_names,
-                                  all_field_names, df, exam_cat_field_names, exam_date_field_names,
-                                  exam_int_field_names, exam_obj_field_names, exam_time_field_names,
-                                  exam_val_field_names)
+        df = transform_to_one_row_per_exam(
+            df,
+            acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
+            exam_cat_field_names, exam_date_field_names, exam_int_field_names,
+            exam_obj_field_names, exam_time_field_names, exam_val_field_names,
+            all_field_names)
 
         # Write the None values to the csv file
         df.to_csv(tmpfile, index=False, mode="a", header=write_headers)
@@ -1300,59 +1300,3 @@ def ct_phe_2019(filterdict, user=None):
     xlsxfilename = "PHE_CT2019{0}.xlsx".format(datestamp.strftime("%Y%m%d-%H%M%S%f"))
 
     write_export(tsk, xlsxfilename, tmp_xlsx, datestamp)
-
-
-def create_csv_dataframe(acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
-                         all_field_names, df, exam_cat_field_names, exam_date_field_names, exam_int_field_names,
-                         exam_obj_field_names, exam_time_field_names, exam_val_field_names):
-
-    # df = pd.DataFrame.from_records(
-    #     data=data,
-    #     columns=all_field_names, coerce_float=True,
-    # )
-
-    if settings.DEBUG:
-        print("Initial DataFrame created")
-        df.info()
-
-    # Make DataFrame columns category type where appropriate
-    cat_field_names = exam_cat_field_names + acquisition_cat_field_names
-    df[cat_field_names] = df[cat_field_names].astype("category")
-
-    # Make DataFrame columns datetime type where appropriate
-    for date_field in exam_date_field_names:
-        df[date_field] = pd.to_datetime(df[date_field], format="%Y-%m-%d")
-
-    # Make DataFrame columns float32 type where appropriate
-    val_field_names = exam_val_field_names + acquisition_val_field_names
-    df[val_field_names] = df[val_field_names].astype("float32")
-
-    # Make DataFrame columns UInt32 type where appropriate
-    int_field_names = exam_int_field_names + acquisition_int_field_names
-    df[int_field_names] = df[int_field_names].astype("UInt32")
-
-    if settings.DEBUG:
-        print("DataFrame column types changed to reduce memory consumption")
-        df.info()
-
-    # Reformat the DataFrame so that we have one row per exam, with sets of columns for each acquisition data
-    g = df.groupby("pk").cumcount().add(1)
-    exam_field_names = exam_obj_field_names + exam_int_field_names + exam_cat_field_names + exam_date_field_names + exam_time_field_names + exam_val_field_names
-    exam_field_names.append(g)
-    df = df.set_index(exam_field_names).unstack().sort_index(axis=1, level=1)
-    df.columns = ["E{} {}".format(b, a) for a, b in df.columns]
-    df = df.reset_index()
-
-    # Set datatypes of the exam-level integer and value fields again because the reformat undoes the earlier changes
-    df[exam_int_field_names] = df[exam_int_field_names].astype("UInt32")
-    df[exam_val_field_names] = df[exam_val_field_names].astype("float32")
-
-    # Drop all pk columns
-    pk_list = [i for i in df.columns if "pk" in i]
-    df = df.drop(pk_list, axis=1)
-
-    if settings.DEBUG:
-        print("DataFrame reformatted")
-        df.info()
-
-    return df

@@ -35,6 +35,7 @@ import sys
 from tempfile import TemporaryFile
 import uuid
 
+import pandas as pd
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
@@ -776,3 +777,59 @@ def create_export_task(
     task.save()
 
     return task
+
+
+def transform_to_one_row_per_exam(df,
+                                  acquisition_cat_field_names, acquisition_int_field_names, acquisition_val_field_names,
+                                  exam_cat_field_names, exam_date_field_names, exam_int_field_names,
+                                  exam_obj_field_names, exam_time_field_names, exam_val_field_names,
+                                  all_field_names):
+    """Transform a DataFrame with one acquisition per row into a DataFrame with
+    one exam per row, including all acquisitions for that exam.
+    """
+
+    if settings.DEBUG:
+        print("Initial DataFrame created")
+        df.info()
+
+    # Make DataFrame columns category type where appropriate
+    cat_field_names = exam_cat_field_names + acquisition_cat_field_names
+    df[cat_field_names] = df[cat_field_names].astype("category")
+
+    # Make DataFrame columns datetime type where appropriate
+    for date_field in exam_date_field_names:
+        df[date_field] = pd.to_datetime(df[date_field], format="%Y-%m-%d")
+
+    # Make DataFrame columns float32 type where appropriate
+    val_field_names = exam_val_field_names + acquisition_val_field_names
+    df[val_field_names] = df[val_field_names].astype("float32")
+
+    # Make DataFrame columns UInt32 type where appropriate
+    int_field_names = exam_int_field_names + acquisition_int_field_names
+    df[int_field_names] = df[int_field_names].astype("UInt32")
+
+    if settings.DEBUG:
+        print("DataFrame column types changed to reduce memory consumption")
+        df.info()
+
+    # Reformat the DataFrame so that we have one row per exam, with sets of columns for each acquisition data
+    g = df.groupby("pk").cumcount().add(1)
+    exam_field_names = exam_obj_field_names + exam_int_field_names + exam_cat_field_names + exam_date_field_names + exam_time_field_names + exam_val_field_names
+    exam_field_names.append(g)
+    df = df.set_index(exam_field_names).unstack().sort_index(axis=1, level=1)
+    df.columns = ["E{} {}".format(b, a) for a, b in df.columns]
+    df = df.reset_index()
+
+    # Set datatypes of the exam-level integer and value fields again because the reformat undoes the earlier changes
+    df[exam_int_field_names] = df[exam_int_field_names].astype("UInt32")
+    df[exam_val_field_names] = df[exam_val_field_names].astype("float32")
+
+    # Drop all pk columns
+    pk_list = [i for i in df.columns if "pk" in i]
+    df = df.drop(pk_list, axis=1)
+
+    if settings.DEBUG:
+        print("DataFrame reformatted")
+        df.info()
+
+    return df
