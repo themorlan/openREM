@@ -1187,21 +1187,26 @@ class DicomQueryForm(forms.Form):
     stationname_exclude_field = forms.CharField(
         required=False,
         label="Exclude studies or series with these terms in the station name:",
-        help_text="Comma separated list of terms",
+        help_text="Comma separated list of terms, tested at series level — see Advanced",
     )
     stationname_include_field = forms.CharField(
         required=False,
         label="Only keep studies or series with these terms in the station name:",
-        help_text="Comma separated list of terms",
+        help_text="Comma separated list of terms, tested at series level — see Advanced",
     )
     get_toshiba_images_field = forms.BooleanField(
-        label=u"Attempt to get Toshiba dose images",
+        label="Attempt to get Toshiba dose images",
         required=False,
         help_text="Only applicable if using Toshiba RDSR generator extension, see docs",
     )
     get_empty_sr_field = forms.BooleanField(
-        label=u"Get SR series that return nothing at image level query",
-        help_text=u"Only use if suggested in qrscu log, see docs",
+        label="Get SR series that return nothing at image level query",
+        help_text="Only use if suggested in qrscu log, see docs",
+        required=False,
+    )
+    stationname_study_level_field = forms.BooleanField(
+        label="Check station name include/exclude at study level",
+        help_text="Default from v1.0 is to check at series level only",
         required=False,
     )
 
@@ -1241,6 +1246,7 @@ class DicomQueryForm(forms.Form):
                         "duplicates_field",
                         "inc_sr_field",
                         "get_empty_sr_field",
+                        "stationname_study_level_field",
                         active=False,
                     )
                 ),
