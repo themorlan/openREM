@@ -87,6 +87,7 @@ OpenREM version history
 * :issue:`788`  Python 3: Docker only installs for Windows fixes Celery 3/Python 3.7 incompatibility
 * :issue:`787`  Interface: fixed login error
 * :issue:`777`  Updated OpenREM to use pydicom 1.3
+* :issue:`772`  DICOM Networking: check for station name at series level or study, not both
 * :issue:`744`  Added overwrite mode to size import
 * :issue:`678`  Enabled import of PX modality panoramic exam data - they appear in the Radiographic section
 * :issue:`530`  Updated OpenREM to use pynetdicom 1.4
