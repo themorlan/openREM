@@ -48,4 +48,23 @@ If there are no errors, check that the containers are up and which ports are in 
 
     $ docker-compose ps
 
+Connection was reset, Orthanc restarting
+----------------------------------------
+* After installation, browsing to the webservice reports "The connection was reset".
+* ``docker-compose ps`` reports:
 
+.. code-block::
+
+    openrem-orthanc-1                      /docker-entrypoint.sh /tmp ...   Restarting
+
+* Orthanc Docker logs include:
+
+.. code-block::
+
+    openrem-orthanc-1 | E1208 12:51:29.599961 OrthancException.cpp:57] The specified path does not point to a regular file: The path does not point to a regular file: /etc/share/orthanc/scripts/openrem_orthanc_config_docker.lua
+    openrem-orthanc-1 | E1208 12:51:29.600051 ServerIndex.cpp:706] INTERNAL ERROR: ServerIndex::Stop() should be invoked manually to avoid mess in the destruction order!
+
+This might indicate that the bind mounts have not worked. This might be due to SELinux, particularly if you are using
+Red Hat or Fedora or related distributions.
+
+See :doc:`docker_selinux`
