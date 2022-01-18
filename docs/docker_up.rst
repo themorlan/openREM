@@ -50,6 +50,7 @@ If there are no errors, check that the containers are up and which ports are in 
 
 Connection was reset, Orthanc restarting
 ----------------------------------------
+
 * After installation, browsing to the webservice reports "The connection was reset".
 * ``docker-compose ps`` reports:
 
