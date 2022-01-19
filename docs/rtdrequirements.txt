@@ -24,8 +24,8 @@ scipy==1.5.4
 defusedxml==0.6.0
 psycopg2-binary==2.8.4
 gunicorn==20.0.4
-sphinx==3.2.1
-sphinx-rtd-theme==0.5.0
+sphinx>=4.3.0
+sphinx-rtd-theme>=0.5.1
 readthedocs-sphinx-ext==2.1.1
 sphinx-issues==1.2.0
 sphinxcontrib-programoutput
