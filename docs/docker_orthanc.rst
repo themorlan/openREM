@@ -86,7 +86,7 @@ DICOM Application Entity Title
 Application Entity Title of the Store Server. Should be up to 16 characters, no spaces. This server isn't fussy
 by default, so if remote nodes connect using a different AETitle that is ok.
 
-.. code-block:: json
+.. code-block:: yaml
 
     ORTHANC_JSON: |
       {
@@ -123,7 +123,7 @@ section. The first number in the port configuration can be changed if required:
     # Othanc web interface
       - 8042:8042
 
-.. code-block:: json
+.. code-block:: yaml
 
     ORTHANC_JSON: |
       {
@@ -141,7 +141,7 @@ Lua script path
 The path within the Orthanc container for the OpenREM Lua script is specified here - this should not be changed
 (see below for advanced options).
 
-.. code-block:: json
+.. code-block:: yaml
 
     ORTHANC_JSON: |
       {
@@ -173,5 +173,7 @@ documentation as to how they are used.
 
 A custom version of the ``openrem_orthanc_config_docker.lua`` script can be used if required. Copy the existing one
 and place the new one, with a new name, in the ``orthanc/`` folder, and set the ``LuaScripts`` value in
-``ORTHANC_JSON`` to match. **Pay special attention to the first sections**, up to the ``ToAscii`` function,
+``ORTHANC_JSON`` to match.
+
+**Pay special attention to the first sections**, up to the ``ToAscii`` function,
 these sections have been changed for the Docker implementation.

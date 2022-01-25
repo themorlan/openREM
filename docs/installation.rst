@@ -21,7 +21,6 @@ Install
 
     * ``.env.prod``
     * the ``orthanc_1`` section of ``docker-compose.yml``
-    * ``orthanc_1.json``
 
 * If you are using SELinux, you will also need to edit the nginx and orthanc bind mounts in ``docker-compose.yml``
 
