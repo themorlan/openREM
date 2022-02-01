@@ -5,7 +5,7 @@ Offline Docker installation
 OpenREM can be run on a server that is not connected to the internet if required, though access to
 https://hub.docker.com would make installation and upgrades much easier.
 
-The server will need to have Docker installed.
+The server will need to have Docker and Docker Compose installed.
 
 Collect installation files
 ==========================

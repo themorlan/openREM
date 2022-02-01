@@ -169,12 +169,13 @@ If you want to do this regularly to catch new studies, you might like to use a s
 
     ONEHOURAGO=$(date -d "1 hour ago" "+%Y-%m-%d")
 
-    docker-compose -f /path/to/docker-compose.yml exec openrem openrem_qr.py 2 1 -dx -f $ONEHOURAGO -t $ONEHOURAGO  -e "Imported"
+    /usr/local/bin/docker-compose -f /path/to/docker-compose.yml exec -T openrem openrem_qr.py 2 1 -dx -f $ONEHOURAGO -t $ONEHOURAGO  -e "Imported"
 
 
 This script could be run once an hour using a cron job. By asking for the date an hour ago, you shouldn't miss exams
 taking place in the last hour of the day. As the script won't run from the folder containing ``docker-compose.yml``
-the location of that file needs to be passed to ``docker-compose`` with the ``-f`` option.
+the location of that file needs to be passed to ``docker-compose`` with the ``-f`` option. You can check the path to
+``docker-compose`` on your system using ``which docker-compose``.
 
 A similar script could be created as a batch file or PowerShell script on Windows and run using the scheduler. An
 example PowerShell script is shown below:
