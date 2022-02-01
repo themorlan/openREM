@@ -830,7 +830,7 @@ class StandardNames(models.Model):
     modality = models.CharField(max_length=16, blank=True, null=True)
     study_description = models.TextField(blank=True, null=True)
     requested_procedure_code_meaning = models.TextField(blank=True, null=True)
-    procedure_code_meaning = models.CharField(max_length=64, blank=True, null=True)
+    procedure_code_meaning = models.TextField(blank=True, null=True)
     acquisition_protocol = models.TextField(blank=True, null=True)
 
     class Meta(object):
