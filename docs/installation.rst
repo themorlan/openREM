@@ -17,11 +17,12 @@ Preparation
 Install
 -------
 * Extract the ZIP file and open a shell (command prompt) in the new folder
-* Customise variables in the following three files:
+* Customise variables in the following two files:
 
     * ``.env.prod``
     * the ``orthanc_1`` section of ``docker-compose.yml``
-    * ``orthanc_1.json``
+
+* If you are using SELinux, you will also need to edit the nginx and orthanc bind mounts in ``docker-compose.yml``
 
 A full description of the options are found in:
 
@@ -30,6 +31,7 @@ A full description of the options are found in:
 
     env_variables
     docker_orthanc
+    docker_selinux
 
 Start the containers with:
 

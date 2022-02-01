@@ -5,6 +5,7 @@ OpenREM version history
 
 1.0.0b1 (2021-xx-xx)
 --------------------
+* :issue:`925`  Docker: docs and config file for enabling bind mounts with SELinux
 * :issue:`922`  Database: optimise indexes and duplicate queries
 * :issue:`917`  Interface: added horizintal lines between chart option groups and shaded chart option CheckboxSelectMultiple items
 * :issue:`913`  SkinDose: made 2d skin dose map overlay visible by default
