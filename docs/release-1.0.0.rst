@@ -33,6 +33,35 @@ Upgrade preparation
 Upgrade process from a PostgresQL database
 ******************************************
 
+Stop the existing services
+==========================
+
+* Linux: assuming an Ubuntu install that followed the instructions in the previous releases, with the *openrem-function*
+  format that changed in the 0.9.1 release (:ref:`service_name_change`).
+
+    .. code-block:: console
+
+        $ sudo systemctl stop orthanc
+        $ sudo systemctl stop nginx
+        $ sudo systemctl stop openrem-gunicorn
+        $ sudo systemctl stop openrem-flower
+        $ sudo systemctl stop openrem-celery
+        $ sudo systemctl stop rabbitmq-server
+        $ sudo systemctl disable orthanc
+        $ sudo systemctl disable nginx
+        $ sudo systemctl disable openrem-gunicorn
+        $ sudo systemctl disable openrem-flower
+        $ sudo systemctl disable openrem-celery
+        $ sudo systemctl disable_qr rabbitmq-server
+
+* Windows: stop the following services
+
+    * Orthanc or Conquest
+    * IIS OpenREM site or other webserver
+    * Flower
+    * Celery
+    * RabbitMQ
+
 Establish existing database details
 ===================================
 
