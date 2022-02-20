@@ -190,7 +190,7 @@ example PowerShell script is shown below:
 
     # Run the openrem_qr.py script with yesterday's date as the to and from date
 
-    docker-compose -f C:\Path\To\docker-compose.yml exec openrem openrem_qr.py 2 1 -ct -f $dateString -t $dateString
+    docker-compose -f C:\Path\To\docker-compose.yml exec -T openrem openrem_qr.py 2 1 -ct -f $dateString -t $dateString
 
 The above PowerShell script could be run on a regular basis by adding a task to the Windows ``Task Scheduler`` that
 executes the ``powershell`` program with an argument of ``-file C:\path\to\script.ps1``.
