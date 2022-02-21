@@ -263,6 +263,7 @@ enable multiple tasks to run concurrently and it will be possible to terminate t
 If you are a Windows user you may also wish to review :doc:`celery-windows` as the example control batch files have
 been updated.
 
+.. _service_name_change:
 
 Ubuntu installs that followed :doc:`quick_start_linux`
 ======================================================
