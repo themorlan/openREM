@@ -2123,8 +2123,6 @@ class RadiopharmaceuticalAdministrationEventData(models.Model):  # TID 10022
     radionuclide_half_life = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
     radiopharmaceutical_specific_activity = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
     radiopharmaceutical_administration_event_uid = models.TextField(blank=True, null=True)
-    intravenous_extravasation_symptoms = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10022_symptoms', on_delete=models.CASCADE)  # CID 10043
     estimated_extravasation_activity = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
     radiopharmaceutical_start_datetime = models.DateTimeField(blank=True, null=True)
     radiopharmaceutical_stop_datetime = models.DateTimeField(blank=True, null=True)
@@ -2147,6 +2145,11 @@ class RadiopharmaceuticalAdministrationEventData(models.Model):  # TID 10022
     prescription_identifier = models.TextField(blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
 
+class IntravenousExtravasationSymptoms(models.Model):
+    radiopharmaceutical_administration_event_data = models.ForeignKey(RadiopharmaceuticalAdministrationEventData,
+        on_delete=models.CASCADE)
+    intravenous_extravasation_symptoms = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10022_symptoms', on_delete=models.CASCADE)  # CID 10043
 
 class BillingCode(models.Model):
      radiopharmaceutical_administration_event_data = models.ForeignKey(RadiopharmaceuticalAdministrationEventData,
@@ -2714,6 +2717,7 @@ class ObserverContext(models.Model):  # TID 1002
     )
     radiopharmaceutical_administration_event_data = models.ForeignKey(RadiopharmaceuticalAdministrationEventData, 
         blank=True, null=True, on_delete=models.CASCADE)
+    radiopharmaceutical_administration_is_pre_observer = models.BooleanField(blank=True, null=True)
     observer_type = models.ForeignKey(
         ContextID,
         blank=True,
