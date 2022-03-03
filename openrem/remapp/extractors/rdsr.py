@@ -96,6 +96,7 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
     GlomerularFiltrationRate,
     HighDoseMetricAlertSettings,
     ImageViewModifier,
+    IntravenousExtravasationSymptoms,
     IrradEventXRayData,
     IrradEventXRayDetectorData,
     IrradEventXRayMechanicalData,
@@ -1803,7 +1804,12 @@ def _radiopharmaceutical_administration_patient_characteristics(dataset, radioph
     patient_character.save()
 
 def _intravenous_extravasation_symptoms(dataset, radiopharmaceutical_administration_event):
-    pass # TODO
+    intravenous_extravasation_symptoms : IntravenousExtravasationSymptoms = IntravenousExtravasationSymptoms.objects.create(
+        radiopharmaceutical_administration_event_data=radiopharmaceutical_administration_event)
+    intravenous_extravasation_symptoms.intravenous_extravasation_symptoms = get_or_create_cid(
+        dataset.ConceptCodeSequence[0].CodeValue,
+        dataset.ConceptCodeSequence[0].CodeMeaning)
+    intravenous_extravasation_symptoms.save()
 
 def _organ_dose(dataset, radiopharmaceutical_administration_event):
     organ_dose : OrganDose = OrganDose.objects.create(
@@ -1869,7 +1875,8 @@ def _radionuclide_identifier(dataset, radiopharmaceutical_administration_event):
 def _radiopharmaceutical_administration_event_data(dataset, radiopharmaceutical_dose):
     rad_event : RadiopharmaceuticalAdministrationEventData = RadiopharmaceuticalAdministrationEventData.objects.create(
         radiopharmaceutical_radiation_dose=radiopharmaceutical_dose)
-    pre_activity_measurement_device_code_set = False
+    is_pre_activity_measurement_device_code_set = False
+    is_pre_observer_context_set = False
 
     rad_event.save()
 
@@ -1890,6 +1897,9 @@ def _radiopharmaceutical_administration_event_data(dataset, radiopharmaceutical_
             )
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Radiopharmaceutical Administration Event UID":
             rad_event.radiopharmaceutical_administration_event_uid = cont.UID
+        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Intravenous Extravasation Symptoms":
+            for cont2 in cont.ContentSequence:
+                _intravenous_extravasation_symptoms(cont2, rad_event)
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Estimated Extravasation Activity":
             rad_event.estimated_extravasation_activity = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue
@@ -1911,10 +1921,10 @@ def _radiopharmaceutical_administration_event_data(dataset, radiopharmaceutical_
                 cont.MeasuredValueSequence[0].NumericValue
             )
         elif (cont.ConceptNameCodeSequence[0].CodeMeaning == "Activity Measurement Device"):
-            if not pre_activity_measurement_device_code_set:
+            if not is_pre_activity_measurement_device_code_set:
                 rad_event.pre_activity_measurement_device = get_or_create_cid(cont.ConceptCodeSequence[0].CodeValue,
                     cont.ConceptCodeSequence[0].CodeMeaning)
-                pre_activity_measurement_device_code_set = True
+                is_pre_activity_measurement_device_code_set = True
             else:
                 rad_event.post_activity_measurement_device = get_or_create_cid(cont.ConceptCodeSequence[0].CodeValue,
                     cont.ConceptCodeSequence[0].CodeMeaning)
@@ -1941,7 +1951,9 @@ def _radiopharmaceutical_administration_event_data(dataset, radiopharmaceutical_
             rad_event.comment = cont.TextValue
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Observer Context":
             for cont2 in cont.ContentSequence:
-                observer = ObserverContext.objects().create(radiopharmaceutical_administration_event_data=rad_event)
+                observer: ObserverContext = ObserverContext.objects().create(
+                    radiopharmaceutical_administration_event_data=rad_event)
+                observer.radiopharmaceutical_administration_is_pre_observer = not is_pre_observer_context_set
                 _observercontext(cont2, observer)
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Organ Dose":
             for cont2 in cont.ContentSequence:

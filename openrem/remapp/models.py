@@ -2717,7 +2717,8 @@ class ObserverContext(models.Model):  # TID 1002
     )
     radiopharmaceutical_administration_event_data = models.ForeignKey(RadiopharmaceuticalAdministrationEventData, 
         blank=True, null=True, on_delete=models.CASCADE)
-    radiopharmaceutical_administration_is_pre_observer = models.BooleanField(blank=True, null=True)
+    radiopharmaceutical_administration_is_pre_observer = models.BooleanField(
+        blank=True, null=True) # Not in DICOM; Store wheter this is pre or post for a radiopharmaceutical Event
     observer_type = models.ForeignKey(
         ContextID,
         blank=True,
