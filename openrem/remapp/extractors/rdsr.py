@@ -1728,16 +1728,17 @@ def _radiopharmaceutical_glomerular_filtration_rate(dataset, radiopharmaceutical
     glomerular_filtration_rate : GlomerularFiltrationRate = GlomerularFiltrationRate.objects.create(
         radiopharmaceutical_administration_patient_characteristics=radiopharmaceutical_administration_patient_characteristics)
     glomerular_filtration_rate.glomerular_filtration_rate = test_numeric_value(dataset.MeasuredValueSequence[0].NumericValue)
-    """
-    elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Measurement Method":
-            patient_character.measurement_method = get_or_create_cid(
-                cont.ConceptCodeSequence[0].CodeValue,
-                cont.ConceptCodeSequence[0].CodeMeaning)
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Equivalent meaning of concept name":
-            patient_character.equivalent_meaning_of_concept_name = get_or_create_cid(
-                cont.ConceptCodeSequence[0].CodeValue,
-                cont.ConceptCodeSequence[0].CodeMeaning)
-    """
+    if hasattr(dataset, "ContentSequence"):
+        for cont in dataset.ContentSequence:
+            if cont.ConceptNameCodeSequence[0].CodeMeaning == "Measurement Method":
+                glomerular_filtration_rate.measurement_method = get_or_create_cid(
+                    cont.ConceptCodeSequence[0].CodeValue,
+                    cont.ConceptCodeSequence[0].CodeMeaning)
+            elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Equivalent meaning of concept name":
+                glomerular_filtration_rate.equivalent_meaning_of_concept_name = get_or_create_cid(
+                    cont.ConceptCodeSequence[0].CodeValue,
+                    cont.ConceptCodeSequence[0].CodeMeaning)
+    
     glomerular_filtration_rate.save()
 
 def _radiopharmaceutical_administration_patient_characteristics(dataset, radiopharmaceutical_dose):
@@ -1870,13 +1871,13 @@ def _radiopharmaceutical_lot_identifier(dataset, radiopharmaceutical_administrat
 def _reagent_vial_identifier(dataset, radiopharmaceutical_administration_event):
     reagent_vial_identifier : ReagentVialIdentifier = ReagentVialIdentifier.objects.create(
         radiopharmaceutical_administration_event_data=radiopharmaceutical_administration_event)
-    reagent_vial_identifier.radiopharmaceutical_lot_identifier = dataset.TextValue
+    reagent_vial_identifier.reagent_vial_identifier = dataset.TextValue
     reagent_vial_identifier.save()
 
 def _radionuclide_identifier(dataset, radiopharmaceutical_administration_event):
     radionuclide_identifier : RadionuclideIdentifier = RadionuclideIdentifier.objects.create(
         radiopharmaceutical_administration_event_data=radiopharmaceutical_administration_event)
-    radionuclide_identifier.radiopharmaceutical_lot_identifier = dataset.TextValue
+    radionuclide_identifier.radionuclide_identifier = dataset.TextValue
     radionuclide_identifier.save()
 
 def _radiopharmaceutical_administration_event_data(dataset, radiopharmaceutical_dose):
@@ -1928,8 +1929,7 @@ def _radiopharmaceutical_administration_event_data(dataset, radiopharmaceutical_
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Radiopharmaceutical Administration Event UID":
             rad_event.radiopharmaceutical_administration_event_uid = cont.UID
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Intravenous Extravasation Symptoms":
-            for cont2 in cont.ContentSequence:
-                _intravenous_extravasation_symptoms(cont2, rad_event)
+            _intravenous_extravasation_symptoms(cont, rad_event)
         elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Estimated Extravasation Activity":
             rad_event.estimated_extravasation_activity = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue
@@ -1988,14 +1988,15 @@ def _radiopharmaceutical_administration_event_data(dataset, radiopharmaceutical_
     rad_event.save()
 
 def _language_of_content(dataset, radiopharmaceutical_dose):
-    language: LanguageofContentItemandDescendants = LanguageofContentItemandDescendants().objects.create(radiopharmaceutical_dose=radiopharmaceutical_dose)
+    language: LanguageofContentItemandDescendants = LanguageofContentItemandDescendants.objects.create(
+        radiopharmaceutical_radiation_dose=radiopharmaceutical_dose)
     language.language_of_contentitem_and_descendants = get_or_create_cid(dataset.ConceptCodeSequence[0].CodeValue,
         dataset.ConceptCodeSequence[0].CodeMeaning)
     subcont = dataset.ContentSequence if hasattr(dataset, "ContentSequence") else []
     for cont in subcont:
         if cont.ConceptNameCodeSequence[0].CodeMeaning == "Country of Language":
-            language.country_of_language = get_or_create_cid(dataset.ConceptCodeSequence[0].CodeValue,
-                dataset.ConceptCodeSequence[0].CodeMeaning)
+            language.country_of_language = get_or_create_cid(cont.ConceptCodeSequence[0].CodeValue,
+                cont.ConceptCodeSequence[0].CodeMeaning)
     language.save()
 
 def _radiopharmaceuticalradiationdose(dataset, g):

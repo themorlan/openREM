@@ -161,3 +161,186 @@ class ImportNMRDSR(TestCase):
         }
 
         self._check_values(study, expected_data)
+
+    def test_import_generated_full_nm(self):
+        u: PatientIDSettings = PatientIDSettings.objects.create()
+        u.name_stored = True
+        u.name_hashed = False
+        u.save()
+
+        dicom_file = "PET_RRDSR_generated.dcm"
+        root_tests = os.path.dirname(os.path.abspath(__file__))
+        root_tests = "/home/medphys/Schreibtisch/jannis_local/DICOM-Daten"
+        dicom_path = os.path.join(root_tests, dicom_file)
+
+        rdsr.rdsr(dicom_path)
+
+        study = GeneralStudyModuleAttr.objects.first()
+
+        expected_data = {
+            "patientmoduleattr_set": {
+                "get": {
+                    "not_patient_indicator": None,
+                    "patient_name": "REMOVED2",
+                }
+            },
+            "study_date": date(2000, 3, 23),
+            "study_time": time(9, 32, 12, 576000),
+            "accession_number": "XYZ123",
+            "study_description": "PET/CT Herz FDG",
+            "modality_type": "NM",
+            "referring_physician_name": "REMOVED",
+            "generalequipmentmoduleattr_set": {
+                "get": {
+                    "institution_name": "REMOVED",
+                    "manufacturer": "SIEMENS",
+                    "manufacturer_model_name": "Biograph64_Vision 600_Vision 600-1208",
+                    "station_name": "REMOVED",
+                }
+            },
+            "patientstudymoduleattr_set": {
+                "get": {
+                    "patient_age": "047Y",
+                }
+            },
+            "radiopharmaceuticalradiationdose_set": {
+                "get": {
+                    "languageofcontentitemanddescendants_set": {
+                        "get": {
+                            "language_of_contentitem_and_descendants": {
+                                "code_meaning": "German"
+                            },
+                            "country_of_language": {
+                                "code_meaning": "Bahrain"
+                            }
+                        }
+                    },
+                    "associated_procedure": {
+                        "code_meaning": "PET study for localization of tumor"
+                    },
+                    "has_intent": {
+                        "code_meaning": "Diagnostic Intent"
+                    },
+                    "radiopharmaceuticaladministrationeventdata_set": {
+                        "get": {
+                            "radiopharmaceutical_agent": {
+                                "code_meaning": "Fluorodeoxyglucose F^18^"
+                            },
+                            "radionuclide": {
+                                "code_meaning": "^18^Fluorine"
+                            },
+                            "radionuclide_half_life": Decimal(6586.2),
+                            "radiopharmaceutical_specific_activity": Decimal(10.1),
+                            "radiopharmaceutical_administration_event_uid": "1.3.12.2.1107.5.1.4.11090.20220223082918.000000",
+                            "intravenousextravasationsymptoms_set": {
+                                "first": {
+                                    "intravenous_extravasation_symptoms": {
+                                        "code_meaning": "Injection site abscess"
+                                    }
+                                },
+                                "last": {
+                                    "intravenous_extravasation_symptoms": {
+                                        "code_meaning": "Injection site anesthesia"
+                                    }
+                                }
+                            },
+                            "estimated_extravasation_activity": Decimal(10.0),
+                            "radiopharmaceutical_volume": Decimal(100),
+                            "radiopharmaceutical_start_datetime": datetime(2000, 3, 23, 8, 29, 18, 0),
+                            "radiopharmaceutical_stop_datetime": datetime(2000, 3, 23, 8, 29, 18, 0),
+                            "administered_activity": Decimal(250.0),
+                            "route_of_administration": {
+                                "code_meaning": "Intravenous route"
+                            },
+                            "site_of": {
+                                "code_meaning": "Via vein"
+                            },
+                            "personparticipant_set": {
+                                "get": {
+                                    "person_name": "Unknown",
+                                    "person_role_in_procedure_cid": {
+                                        "code_meaning": "Irradiation Administering"
+                                    }
+                                }
+                            },
+                            "billingcode_set": {
+                                "get": {
+                                    "billing_code": {
+                                        "code_meaning": "Nuclear Medicine Procedure and Services"
+                                    }
+                                }
+                            },
+                            "drugproductidentifier_set": {
+                                "get": {
+                                    "drug_product_identifier": {
+                                        "code_meaning": "Aconitum radix"
+                                    }
+                                }
+                            },
+                            "brand_name": "Some Brand",
+                            "radiopharmaceutical_dispense_unit_identifier": "Dispenser",
+                            "radiopharmaceuticallotidentifier_set": {
+                                "get": {
+                                    "radiopharmaceutical_lot_identifier": "lot id"
+                                }
+                            },
+                            "reagentvialidentifier_set": {
+                                "get" : {
+                                    "reagent_vial_identifier": "vial id"
+                                }
+                            },
+                            "radionuclideidentifier_set": {
+                                "get": {
+                                    "radionuclide_identifier": "radio id"
+                                }
+                            },
+                            "prescription_identifier": "pres id",
+                            "comment": "any comment"
+                        }
+                    },
+                    "radiopharmaceuticaladministrationpatientcharacteristics_set": {
+                        "get": {
+                            "patientstate_set": {
+                                "get": {
+                                    "patient_state": {
+                                        "code_meaning": "Acute unilateral renal blockage"
+                                    }
+                                }
+                            },
+                            "subject_age": Decimal(47),
+                            "subject_sex": {
+                                "code_value": "F"
+                            },
+                            "patient_height": Decimal(1.68),
+                            "patient_weight": Decimal(68),
+                            "body_surface_area": Decimal(1.5),
+                            "body_surface_area_formula": {
+                                "code_value": "122240"
+                            },
+                            "body_mass_index": Decimal(23.0),
+                            "equation": {
+                                "code_value": "122265"
+                            },
+                            "glucose": Decimal(0.87),
+                            "fasting_duration": Decimal(4.0),
+                            "hydration_volume": Decimal(310),
+                            "recent_physical_activity": "None",
+                            "serum_creatinine": Decimal(4.3),
+                            "glomerularfiltrationrate_set": {
+                                "get": {
+                                    "glomerular_filtration_rate": Decimal(12.21),
+                                    "equivalent_meaning_of_concept_name": {
+                                        "code_meaning": "Glomerular Filtration Rate Cystatin-based formula"
+                                    },
+                                    "measurement_method": {
+                                        "code_meaning": "Glomerular Filtration Rate black (MDRD)"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        self._check_values(study, expected_data)
