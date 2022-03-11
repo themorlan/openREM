@@ -2213,10 +2213,6 @@ class RadiopharmaceuticalAdministrationPatientCharacteristics(models.Model):
     hydration_volume = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
     recent_physical_activity = models.TextField(blank=True, null=True)
     serum_creatinine = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-    measurement_method = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10023_measurement_method', on_delete=models.CASCADE)  # CID 10047
-    equivalent_meaning_of_concept_name = models.ForeignKey(
-        ContextID, blank=True, null=True, related_name='tid10023_equivalent_meaning_of_concept', on_delete=models.CASCADE)  # CID 10046
 
 
 class PatientState(models.Model):  # CID 10045
@@ -2229,7 +2225,10 @@ class GlomerularFiltrationRate(models.Model):
     radiopharmaceutical_administration_patient_characteristics = models.ForeignKey(RadiopharmaceuticalAdministrationPatientCharacteristics,
         on_delete=models.CASCADE)
     glomerular_filtration_rate = models.DecimalField(max_digits=16, decimal_places=8, blank=True, null=True)
-
+    measurement_method = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10023_measurement_method', on_delete=models.CASCADE)  # CID 10047
+    equivalent_meaning_of_concept_name = models.ForeignKey(
+        ContextID, blank=True, null=True, related_name='tid10023_equivalent_meaning_of_concept', on_delete=models.CASCADE)  # CID 10046
 
 # CT
 
