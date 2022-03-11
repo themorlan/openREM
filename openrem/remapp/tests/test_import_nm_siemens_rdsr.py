@@ -1,27 +1,53 @@
+# This Python file uses the following encoding: utf-8
+#    OpenREM - Radiation Exposure Monitoring tools for the physicist
+#    Copyright (C) 2012,2013  The Royal Marsden NHS Foundation Trust
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    Additional permission under section 7 of GPLv3:
+#    You shall not make any use of the name of The Royal Marsden NHS
+#    Foundation trust in connection with this Program in any press or
+#    other public announcement without the prior written consent of
+#    The Royal Marsden NHS Foundation Trust.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 from datetime import date, time, datetime
 import os
 from decimal import Decimal
-from typing import Callable, Dict, Tuple
+from typing import Dict
 from django.test import TestCase
 
 from remapp.extractors import rdsr
 from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
 
+
 class ImportNMRDSR(TestCase):
+
     def _verify_equality(self, value, expect_value, location):
         msg = f"At {location}"
         check_type = type(expect_value)
         self.assertEqual(check_type, type(value), msg)
 
-        if (check_type == date or check_type == str or
-            check_type == time or check_type == datetime):
+        if (check_type == date or check_type == str or check_type == time
+                or check_type == datetime):
             self.assertEqual(value, expect_value, msg)
         elif check_type == Decimal:
             self.assertAlmostEqual(value, expect_value, msg=msg)
         elif check_type == type(None):
             self.assertIsNone(value, msg)
         else:
-            raise NotImplementedError(f"Type {check_type} has no associated check at {location}")
+            raise NotImplementedError(
+                f"Type {check_type} has no associated check at {location}")
 
     def _check_values(self, level, data, trace=""):
         for name, subdata in data.items():
@@ -33,17 +59,21 @@ class ImportNMRDSR(TestCase):
                     location = f"{trace}.{name}"
                     current = getattr(level, name)
             except AttributeError:
-                raise ValueError(f"{name} was expected, but not found. Trace: {trace}")
+                raise ValueError(
+                    f"{name} was expected, but not found. Trace: {trace}")
             try:
-                if callable(current) and not "_set" in name: # Shortcut so one can use strings for zero parameter functions
+                if callable(
+                        current
+                ) and not "_set" in name:  # Shortcut so one can use strings for zero parameter functions
                     current = current()
             except Exception as e:
-                raise ValueError(f"{name} is a function. Only functions without parameters usable at {location}")
+                raise ValueError(
+                    f"{name} is a function. Only functions without parameters usable at {location}"
+                )
             if not isinstance(subdata, Dict):
                 self._verify_equality(current, subdata, location)
             else:
                 self._check_values(current, subdata, location)
-            
 
     def test_import_siemens_rrdsr(self):
         """Loads a Siemens RRDSR-File and checks all values against the expected ones"""
@@ -53,9 +83,8 @@ class ImportNMRDSR(TestCase):
         u.name_hashed = False
         u.save()
 
-        dicom_file = "PET_1_STUDY_0_RRDSR"
+        dicom_file = "test_files/PET_1_STUDY_0_RRDSR"
         root_tests = os.path.dirname(os.path.abspath(__file__))
-        root_tests = "/home/medphys/Schreibtisch/jannis_local/DICOM-Daten"
         dicom_path = os.path.join(root_tests, dicom_file)
 
         rdsr.rdsr(dicom_path)
@@ -80,7 +109,8 @@ class ImportNMRDSR(TestCase):
                 "get": {
                     "institution_name": "REMOVED",
                     "manufacturer": "SIEMENS",
-                    "manufacturer_model_name": "Biograph64_Vision 600_Vision 600-1208",
+                    "manufacturer_model_name":
+                    "Biograph64_Vision 600_Vision 600-1208",
                     "station_name": "CTAWP00001",
                 }
             },
@@ -105,11 +135,16 @@ class ImportNMRDSR(TestCase):
                             "radionuclide": {
                                 "code_meaning": "^18^Fluorine"
                             },
-                            "radionuclide_half_life": Decimal(6586.2),
-                            "radiopharmaceutical_administration_event_uid": "1.3.12.2.1107.5.1.4.11090.20220224104830.000000",
-                            "radiopharmaceutical_start_datetime": datetime(2000, 3, 24, 10, 40, 30, 0),
-                            "radiopharmaceutical_stop_datetime": datetime(2000, 3, 24, 10, 40, 40, 0),
-                            "administered_activity": Decimal(394.0),
+                            "radionuclide_half_life":
+                            Decimal(6586.2),
+                            "radiopharmaceutical_administration_event_uid":
+                            "1.3.12.2.1107.5.1.4.11090.20220224104830.000000",
+                            "radiopharmaceutical_start_datetime":
+                            datetime(2000, 3, 24, 10, 40, 30, 0),
+                            "radiopharmaceutical_stop_datetime":
+                            datetime(2000, 3, 24, 10, 40, 40, 0),
+                            "administered_activity":
+                            Decimal(394.0),
                             "organdose_set": {
                                 "first": {
                                     "finding_site": {
@@ -118,16 +153,21 @@ class ImportNMRDSR(TestCase):
                                     "laterality": {
                                         "code_meaning": "Right and left"
                                     },
-                                    "organ_dose": Decimal(4.73),
-                                    "reference_authority_text": "ICRP Publication 128"
+                                    "organ_dose":
+                                    Decimal(4.73),
+                                    "reference_authority_text":
+                                    "ICRP Publication 128"
                                 },
                                 "last": {
                                     "finding_site": {
                                         "code_meaning": "Bladder"
                                     },
-                                    "laterality": None,
-                                    "organ_dose": Decimal(51.22),
-                                    "reference_authority_text": "ICRP Publication 128"
+                                    "laterality":
+                                    None,
+                                    "organ_dose":
+                                    Decimal(51.22),
+                                    "reference_authority_text":
+                                    "ICRP Publication 128"
                                 }
                             },
                             "route_of_administration": {
@@ -140,13 +180,15 @@ class ImportNMRDSR(TestCase):
                                 "get": {
                                     "person_name": "Unknown",
                                     "person_role_in_procedure_cid": {
-                                        "code_meaning": "Irradiation Administering"
+                                        "code_meaning":
+                                        "Irradiation Administering"
                                     }
                                 }
                             }
                         }
                     },
-                    "radiopharmaceuticaladministrationpatientcharacteristics_set": {
+                    "radiopharmaceuticaladministrationpatientcharacteristics_set":
+                    {
                         "get": {
                             "subject_age": Decimal(63),
                             "subject_sex": {
@@ -168,9 +210,8 @@ class ImportNMRDSR(TestCase):
         u.name_hashed = False
         u.save()
 
-        dicom_file = "PET_RRDSR_generated.dcm"
+        dicom_file = "test_files/PET_RRDSR_generated.dcm"
         root_tests = os.path.dirname(os.path.abspath(__file__))
-        root_tests = "/home/medphys/Schreibtisch/jannis_local/DICOM-Daten"
         dicom_path = os.path.join(root_tests, dicom_file)
 
         rdsr.rdsr(dicom_path)
@@ -194,7 +235,8 @@ class ImportNMRDSR(TestCase):
                 "get": {
                     "institution_name": "REMOVED",
                     "manufacturer": "SIEMENS",
-                    "manufacturer_model_name": "Biograph64_Vision 600_Vision 600-1208",
+                    "manufacturer_model_name":
+                    "Biograph64_Vision 600_Vision 600-1208",
                     "station_name": "REMOVED",
                 }
             },
@@ -229,26 +271,36 @@ class ImportNMRDSR(TestCase):
                             "radionuclide": {
                                 "code_meaning": "^18^Fluorine"
                             },
-                            "radionuclide_half_life": Decimal(6586.2),
-                            "radiopharmaceutical_specific_activity": Decimal(10.1),
-                            "radiopharmaceutical_administration_event_uid": "1.3.12.2.1107.5.1.4.11090.20220223082918.000000",
+                            "radionuclide_half_life":
+                            Decimal(6586.2),
+                            "radiopharmaceutical_specific_activity":
+                            Decimal(10.1),
+                            "radiopharmaceutical_administration_event_uid":
+                            "1.3.12.2.1107.5.1.4.11090.20220223082918.000000",
                             "intravenousextravasationsymptoms_set": {
                                 "first": {
                                     "intravenous_extravasation_symptoms": {
-                                        "code_meaning": "Injection site abscess"
+                                        "code_meaning":
+                                        "Injection site abscess"
                                     }
                                 },
                                 "last": {
                                     "intravenous_extravasation_symptoms": {
-                                        "code_meaning": "Injection site anesthesia"
+                                        "code_meaning":
+                                        "Injection site anesthesia"
                                     }
                                 }
                             },
-                            "estimated_extravasation_activity": Decimal(10.0),
-                            "radiopharmaceutical_volume": Decimal(100),
-                            "radiopharmaceutical_start_datetime": datetime(2000, 3, 23, 8, 29, 18, 0),
-                            "radiopharmaceutical_stop_datetime": datetime(2000, 3, 23, 8, 29, 18, 0),
-                            "administered_activity": Decimal(250.0),
+                            "estimated_extravasation_activity":
+                            Decimal(10.0),
+                            "radiopharmaceutical_volume":
+                            Decimal(100),
+                            "radiopharmaceutical_start_datetime":
+                            datetime(2000, 3, 23, 8, 29, 18, 0),
+                            "radiopharmaceutical_stop_datetime":
+                            datetime(2000, 3, 23, 8, 29, 18, 0),
+                            "administered_activity":
+                            Decimal(250.0),
                             "route_of_administration": {
                                 "code_meaning": "Intravenous route"
                             },
@@ -259,14 +311,16 @@ class ImportNMRDSR(TestCase):
                                 "get": {
                                     "person_name": "Unknown",
                                     "person_role_in_procedure_cid": {
-                                        "code_meaning": "Irradiation Administering"
+                                        "code_meaning":
+                                        "Irradiation Administering"
                                     }
                                 }
                             },
                             "billingcode_set": {
                                 "get": {
                                     "billing_code": {
-                                        "code_meaning": "Nuclear Medicine Procedure and Services"
+                                        "code_meaning":
+                                        "Nuclear Medicine Procedure and Services"
                                     }
                                 }
                             },
@@ -277,15 +331,18 @@ class ImportNMRDSR(TestCase):
                                     }
                                 }
                             },
-                            "brand_name": "Some Brand",
-                            "radiopharmaceutical_dispense_unit_identifier": "Dispenser",
+                            "brand_name":
+                            "Some Brand",
+                            "radiopharmaceutical_dispense_unit_identifier":
+                            "Dispenser",
                             "radiopharmaceuticallotidentifier_set": {
                                 "get": {
-                                    "radiopharmaceutical_lot_identifier": "lot id"
+                                    "radiopharmaceutical_lot_identifier":
+                                    "lot id"
                                 }
                             },
                             "reagentvialidentifier_set": {
-                                "get" : {
+                                "get": {
                                     "reagent_vial_identifier": "vial id"
                                 }
                             },
@@ -294,16 +351,20 @@ class ImportNMRDSR(TestCase):
                                     "radionuclide_identifier": "radio id"
                                 }
                             },
-                            "prescription_identifier": "pres id",
-                            "comment": "any comment"
+                            "prescription_identifier":
+                            "pres id",
+                            "comment":
+                            "any comment"
                         }
                     },
-                    "radiopharmaceuticaladministrationpatientcharacteristics_set": {
+                    "radiopharmaceuticaladministrationpatientcharacteristics_set":
+                    {
                         "get": {
                             "patientstate_set": {
                                 "get": {
                                     "patient_state": {
-                                        "code_meaning": "Acute unilateral renal blockage"
+                                        "code_meaning":
+                                        "Acute unilateral renal blockage"
                                     }
                                 }
                             },
@@ -328,12 +389,15 @@ class ImportNMRDSR(TestCase):
                             "serum_creatinine": Decimal(4.3),
                             "glomerularfiltrationrate_set": {
                                 "get": {
-                                    "glomerular_filtration_rate": Decimal(12.21),
+                                    "glomerular_filtration_rate":
+                                    Decimal(12.21),
                                     "equivalent_meaning_of_concept_name": {
-                                        "code_meaning": "Glomerular Filtration Rate Cystatin-based formula"
+                                        "code_meaning":
+                                        "Glomerular Filtration Rate Cystatin-based formula"
                                     },
                                     "measurement_method": {
-                                        "code_meaning": "Glomerular Filtration Rate black (MDRD)"
+                                        "code_meaning":
+                                        "Glomerular Filtration Rate black (MDRD)"
                                     }
                                 }
                             }
