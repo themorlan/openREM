@@ -2085,7 +2085,8 @@ class GeneralEquipmentModuleAttr(models.Model):  # C.7.5.1
 
 
 class RadiopharmaceuticalRadiationDose(models.Model):  # TID 10021
-    """Radiopharmaceutical Radiation Dose TID 10021
+    """
+    Radiopharmaceutical Radiation Dose TID 10021
 
     From DICOM Part 16:
        This Template defines a container (the root) with subsidiary Content Items, each of which corresponds to a
