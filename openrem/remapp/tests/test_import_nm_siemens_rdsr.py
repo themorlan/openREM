@@ -39,7 +39,7 @@ class ImportNMRDSR(TestCase):
         self.assertEqual(check_type, type(value), msg)
 
         if (check_type == date or check_type == str or check_type == time
-                or check_type == datetime):
+                or check_type == datetime or check_type == bool):
             self.assertEqual(value, expect_value, msg)
         elif check_type == Decimal:
             self.assertAlmostEqual(value, expect_value, msg=msg)
@@ -304,6 +304,14 @@ class ImportNMRDSR(TestCase):
                             "pre_administration_measured_activity": Decimal(11.0),
                             "pre_activity_measurement_device": {
                                 "code_meaning": "Dose Calibrator"
+                            },
+                            "observercontext_set": {
+                                "first": {
+                                    "radiopharmaceutical_administration_is_pre_observer": True,
+                                    "observer_type": {
+                                        "code_meaning": "Person"
+                                    }
+                                }
                             },
                             "post_administration_measured_activity": Decimal(12.0),
                             "post_activity_measurement_device": {

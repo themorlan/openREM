@@ -1933,14 +1933,12 @@ def _record_administered_activity(administered, is_pre_activity, rad_event):
                 else:
                     rad_event.post_activity_measurement_device = measurement_device
             elif cont2.ConceptNameCodeSequence[
-                    0].CodeMeaning == "Observer Context":
-                for cont3 in cont2.ContentSequence:
-                    observer: ObserverContext = ObserverContext.objects(
-                    ).create(
-                        radiopharmaceutical_administration_event_data=rad_event
-                    )
-                    observer.radiopharmaceutical_administration_is_pre_observer = is_pre_activity
-                    _observercontext(cont3, observer)
+                    0].CodeMeaning == "Observer Type":
+                observer: ObserverContext = ObserverContext.objects.create(
+                    radiopharmaceutical_administration_event_data=rad_event
+                )
+                observer.radiopharmaceutical_administration_is_pre_observer = is_pre_activity
+                _observercontext(administered, observer)
 
 
 def _radiopharmaceutical_administration_event_data(dataset,
@@ -2506,7 +2504,7 @@ def _generalstudymoduleattributes(dataset, g):
                 and dataset.ConceptNameCodeSequence[0].CodeValue == "C-10"
             ):
                 template_identifier = "10001"
-            elif (dataset.ConceptCodeSequence[0].CodeValue == "113500"):
+            elif dataset.ConceptCodeSequence[0].CodeValue == "113500":
                 template_identifier = "10021"
             else:
                 logger.error(
@@ -2711,7 +2709,8 @@ def _rdsr2db(dataset):
                             "before trying again.".format(study_uid, sleep_time)
                         )
                         sleep(sleep_time)
-                        existing_event_uids_post_delay = _get_existing_event_uids(existing_study_uid_match.order_by("pk")[study_index])
+                        existing_event_uids_post_delay = _get_existing_event_uids(
+                            existing_study_uid_match.order_by("pk")[study_index])
 
                         logger.debug(
                             "Import match on StudyInstUID {0}. After {1} s, existing event UIDs are {2}."
