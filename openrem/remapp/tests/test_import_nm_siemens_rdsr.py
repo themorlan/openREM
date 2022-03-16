@@ -301,6 +301,14 @@ class ImportNMRDSR(TestCase):
                             datetime(2000, 3, 23, 8, 29, 18, 0),
                             "administered_activity":
                             Decimal(250.0),
+                            "pre_administration_measured_activity": Decimal(11.0),
+                            "pre_activity_measurement_device": {
+                                "code_meaning": "Dose Calibrator"
+                            },
+                            "post_administration_measured_activity": Decimal(12.0),
+                            "post_activity_measurement_device": {
+                                "code_meaning": "Dose Calibrator"
+                            },
                             "route_of_administration": {
                                 "code_meaning": "Intravenous route"
                             },

@@ -1754,7 +1754,7 @@ def _radiopharmaceutical_glomerular_filtration_rate(
 
 def _radiopharmaceutical_administration_patient_characteristics(
         dataset, radiopharmaceutical_dose):
-    patient_character: RadiopharmaceuticalAdministrationPatientCharacteristics = RadiopharmaceuticalAdministrationPatientCharacteristics.objects.create(
+    patient_character = RadiopharmaceuticalAdministrationPatientCharacteristics.objects.create(
         radiopharmaceutical_radiation_dose=radiopharmaceutical_dose)
 
     def get_content_sequence(cont):
@@ -1820,7 +1820,7 @@ def _radiopharmaceutical_administration_patient_characteristics(
 
 def _intravenous_extravasation_symptoms(
         dataset, radiopharmaceutical_administration_event):
-    intravenous_extravasation_symptoms: IntravenousExtravasationSymptoms = IntravenousExtravasationSymptoms.objects.create(
+    intravenous_extravasation_symptoms = IntravenousExtravasationSymptoms.objects.create(
         radiopharmaceutical_administration_event_data=
         radiopharmaceutical_administration_event)
     intravenous_extravasation_symptoms.intravenous_extravasation_symptoms = get_or_create_cid(
@@ -1889,7 +1889,7 @@ def _drug_product_identifier(dataset,
 
 def _radiopharmaceutical_lot_identifier(
         dataset, radiopharmaceutical_administration_event):
-    radiopharmaceutical_lot_identifier: RadiopharmaceuticalLotIdentifier = RadiopharmaceuticalLotIdentifier.objects.create(
+    radiopharmaceutical_lot_identifier = RadiopharmaceuticalLotIdentifier.objects.create(
         radiopharmaceutical_administration_event_data=
         radiopharmaceutical_administration_event)
     radiopharmaceutical_lot_identifier.radiopharmaceutical_lot_identifier = dataset.TextValue
@@ -1914,31 +1914,24 @@ def _radionuclide_identifier(dataset,
     radionuclide_identifier.save()
 
 
-def _radiopharmaceutical_administration_event_data(dataset,
-                                                   radiopharmaceutical_dose):
-    rad_event: RadiopharmaceuticalAdministrationEventData = RadiopharmaceuticalAdministrationEventData.objects.create(
-        radiopharmaceutical_radiation_dose=radiopharmaceutical_dose)
-
-    def get_content_sequence(cont):
-        return cont.ContentSequence if hasattr(cont, "ContentSequence") else []
-
-    rad_event.save()
-
-    def _record_administered_activity(cont, is_pre_activity):
-        if (is_pre_activity):
-            measured_activity = rad_event.pre_administration_measured_activity
-            measurement_device = rad_event.pre_activity_measurement_device
-        else:
-            measured_activity = rad_event.post_administration_measured_activity
-            measurement_device = rad_event.post_activity_measurement_device
-        measured_activity = test_numeric_value(
-            cont.MeasuredValueSequence[0].NumericValue)
-        for cont2 in get_content_sequence(cont):
+def _record_administered_activity(administered, is_pre_activity, rad_event):
+    measured_activity = test_numeric_value(
+        administered.MeasuredValueSequence[0].NumericValue)
+    if is_pre_activity:
+        rad_event.pre_administration_measured_activity = measured_activity
+    else:
+        rad_event.post_administration_measured_activity = measured_activity
+    if hasattr(administered, "ContentSequence"):
+        for cont2 in administered.ContentSequence:
             if (cont2.ConceptNameCodeSequence[0].CodeMeaning ==
                     "Activity Measurement Device"):
                 measurement_device = get_or_create_cid(
                     cont2.ConceptCodeSequence[0].CodeValue,
                     cont2.ConceptCodeSequence[0].CodeMeaning)
+                if is_pre_activity:
+                    rad_event.pre_activity_measurement_device = measurement_device
+                else:
+                    rad_event.post_activity_measurement_device = measurement_device
             elif cont2.ConceptNameCodeSequence[
                     0].CodeMeaning == "Observer Context":
                 for cont3 in cont2.ContentSequence:
@@ -1948,6 +1941,17 @@ def _radiopharmaceutical_administration_event_data(dataset,
                     )
                     observer.radiopharmaceutical_administration_is_pre_observer = is_pre_activity
                     _observercontext(cont3, observer)
+
+
+def _radiopharmaceutical_administration_event_data(dataset,
+                                                   radiopharmaceutical_dose):
+    rad_event = RadiopharmaceuticalAdministrationEventData.objects.create(
+        radiopharmaceutical_radiation_dose=radiopharmaceutical_dose)
+
+    def get_content_sequence(cont):
+        return cont.ContentSequence if hasattr(cont, "ContentSequence") else []
+
+    rad_event.save()
 
     for cont in dataset.ContentSequence:
         if cont.ConceptNameCodeSequence[
@@ -1997,10 +2001,10 @@ def _radiopharmaceutical_administration_event_data(dataset,
                 cont.MeasuredValueSequence[0].NumericValue)
         elif cont.ConceptNameCodeSequence[
                 0].CodeMeaning == "Pre-Administration Measured Activity":
-            _record_administered_activity(cont, True)
+            _record_administered_activity(cont, True, rad_event)
         elif cont.ConceptNameCodeSequence[
                 0].CodeMeaning == "Post-Administration Measured Activity":
-            _record_administered_activity(cont, False)
+            _record_administered_activity(cont, False, rad_event)
         elif cont.ConceptNameCodeSequence[
                 0].CodeMeaning == "Route of administration":
             rad_event.route_of_administration = get_or_create_cid(
