@@ -32,14 +32,18 @@ from remapp.models import GeneralStudyModuleAttr, PatientIDSettings
 
 
 class ImportNMRDSR(TestCase):
-
     def _verify_equality(self, value, expect_value, location):
         msg = f"At {location}"
         check_type = type(expect_value)
         self.assertEqual(check_type, type(value), msg)
 
-        if (check_type == date or check_type == str or check_type == time
-                or check_type == datetime or check_type == bool):
+        if (
+            check_type == date
+            or check_type == str
+            or check_type == time
+            or check_type == datetime
+            or check_type == bool
+        ):
             self.assertEqual(value, expect_value, msg)
         elif check_type == Decimal:
             self.assertAlmostEqual(value, expect_value, msg=msg)
@@ -47,7 +51,8 @@ class ImportNMRDSR(TestCase):
             self.assertIsNone(value, msg)
         else:
             raise NotImplementedError(
-                f"Type {check_type} has no associated check at {location}")
+                f"Type {check_type} has no associated check at {location}"
+            )
 
     def _check_values(self, level, data, trace=""):
         for name, subdata in data.items():
@@ -59,12 +64,11 @@ class ImportNMRDSR(TestCase):
                     location = f"{trace}.{name}"
                     current = getattr(level, name)
             except AttributeError:
-                raise ValueError(
-                    f"{name} was expected, but not found. Trace: {trace}")
+                raise ValueError(f"{name} was expected, but not found. Trace: {trace}")
             try:
-                if callable(
-                        current
-                ) and not "_set" in name:  # Shortcut so one can use strings for zero parameter functions
+                if (
+                    callable(current) and not "_set" in name
+                ):  # Shortcut so one can use strings for zero parameter functions
                     current = current()
             except Exception as e:
                 raise ValueError(
@@ -109,8 +113,7 @@ class ImportNMRDSR(TestCase):
                 "get": {
                     "institution_name": "REMOVED",
                     "manufacturer": "SIEMENS",
-                    "manufacturer_model_name":
-                    "Biograph64_Vision 600_Vision 600-1208",
+                    "manufacturer_model_name": "Biograph64_Vision 600_Vision 600-1208",
                     "station_name": "CTAWP00001",
                 }
             },
@@ -124,82 +127,60 @@ class ImportNMRDSR(TestCase):
                     "associated_procedure": {
                         "code_meaning": "PET study for localization of tumor"
                     },
-                    "has_intent": {
-                        "code_meaning": "Diagnostic Intent"
-                    },
+                    "has_intent": {"code_meaning": "Diagnostic Intent"},
                     "radiopharmaceuticaladministrationeventdata_set": {
                         "get": {
                             "radiopharmaceutical_agent": {
                                 "code_meaning": "Fluorodeoxyglucose F^18^"
                             },
-                            "radionuclide": {
-                                "code_meaning": "^18^Fluorine"
-                            },
-                            "radionuclide_half_life":
-                            Decimal(6586.2),
-                            "radiopharmaceutical_administration_event_uid":
-                            "1.3.12.2.1107.5.1.4.11090.20220224104830.000000",
-                            "radiopharmaceutical_start_datetime":
-                            datetime(2000, 3, 24, 10, 40, 30, 0),
-                            "radiopharmaceutical_stop_datetime":
-                            datetime(2000, 3, 24, 10, 40, 40, 0),
-                            "administered_activity":
-                            Decimal(394.0),
+                            "radionuclide": {"code_meaning": "^18^Fluorine"},
+                            "radionuclide_half_life": Decimal(6586.2),
+                            "radiopharmaceutical_administration_event_uid": "1.3.12.2.1107.5.1.4.11090.20220224104830.000000",
+                            "radiopharmaceutical_start_datetime": datetime(
+                                2000, 3, 24, 10, 40, 30, 0
+                            ),
+                            "radiopharmaceutical_stop_datetime": datetime(
+                                2000, 3, 24, 10, 40, 40, 0
+                            ),
+                            "administered_activity": Decimal(394.0),
                             "organdose_set": {
                                 "first": {
-                                    "finding_site": {
-                                        "code_meaning": "Adrenal gland"
-                                    },
-                                    "laterality": {
-                                        "code_meaning": "Right and left"
-                                    },
-                                    "organ_dose":
-                                    Decimal(4.73),
-                                    "reference_authority_text":
-                                    "ICRP Publication 128"
+                                    "finding_site": {"code_meaning": "Adrenal gland"},
+                                    "laterality": {"code_meaning": "Right and left"},
+                                    "organ_dose": Decimal(4.73),
+                                    "reference_authority_text": "ICRP Publication 128",
                                 },
                                 "last": {
-                                    "finding_site": {
-                                        "code_meaning": "Bladder"
-                                    },
-                                    "laterality":
-                                    None,
-                                    "organ_dose":
-                                    Decimal(51.22),
-                                    "reference_authority_text":
-                                    "ICRP Publication 128"
-                                }
+                                    "finding_site": {"code_meaning": "Bladder"},
+                                    "laterality": None,
+                                    "organ_dose": Decimal(51.22),
+                                    "reference_authority_text": "ICRP Publication 128",
+                                },
                             },
                             "route_of_administration": {
                                 "code_meaning": "Intravenous route"
                             },
-                            "site_of": {
-                                "code_meaning": "Via vein"
-                            },
+                            "site_of": {"code_meaning": "Via vein"},
                             "personparticipant_set": {
                                 "get": {
                                     "person_name": "Unknown",
                                     "person_role_in_procedure_cid": {
-                                        "code_meaning":
-                                        "Irradiation Administering"
-                                    }
+                                        "code_meaning": "Irradiation Administering"
+                                    },
                                 }
-                            }
+                            },
                         }
                     },
-                    "radiopharmaceuticaladministrationpatientcharacteristics_set":
-                    {
+                    "radiopharmaceuticaladministrationpatientcharacteristics_set": {
                         "get": {
                             "subject_age": Decimal(63),
-                            "subject_sex": {
-                                "code_value": "M"
-                            },
+                            "subject_sex": {"code_value": "M"},
                             "patient_height": Decimal(1.78),
                             "patient_weight": Decimal(110),
                         }
-                    }
+                    },
                 }
-            }
+            },
         }
 
         self._check_values(study, expected_data)
@@ -235,8 +216,7 @@ class ImportNMRDSR(TestCase):
                 "get": {
                     "institution_name": "REMOVED",
                     "manufacturer": "SIEMENS",
-                    "manufacturer_model_name":
-                    "Biograph64_Vision 600_Vision 600-1208",
+                    "manufacturer_model_name": "Biograph64_Vision 600_Vision 600-1208",
                     "station_name": "REMOVED",
                 }
             },
@@ -252,55 +232,43 @@ class ImportNMRDSR(TestCase):
                             "language_of_contentitem_and_descendants": {
                                 "code_meaning": "German"
                             },
-                            "country_of_language": {
-                                "code_meaning": "Bahrain"
-                            }
+                            "country_of_language": {"code_meaning": "Bahrain"},
                         }
                     },
                     "associated_procedure": {
                         "code_meaning": "PET study for localization of tumor"
                     },
-                    "has_intent": {
-                        "code_meaning": "Diagnostic Intent"
-                    },
+                    "has_intent": {"code_meaning": "Diagnostic Intent"},
                     "radiopharmaceuticaladministrationeventdata_set": {
                         "get": {
                             "radiopharmaceutical_agent": {
                                 "code_meaning": "Fluorodeoxyglucose F^18^"
                             },
-                            "radionuclide": {
-                                "code_meaning": "^18^Fluorine"
-                            },
-                            "radionuclide_half_life":
-                            Decimal(6586.2),
-                            "radiopharmaceutical_specific_activity":
-                            Decimal(10.1),
-                            "radiopharmaceutical_administration_event_uid":
-                            "1.3.12.2.1107.5.1.4.11090.20220223082918.000000",
+                            "radionuclide": {"code_meaning": "^18^Fluorine"},
+                            "radionuclide_half_life": Decimal(6586.2),
+                            "radiopharmaceutical_specific_activity": Decimal(10.1),
+                            "radiopharmaceutical_administration_event_uid": "1.3.12.2.1107.5.1.4.11090.20220223082918.000000",
                             "intravenousextravasationsymptoms_set": {
                                 "first": {
                                     "intravenous_extravasation_symptoms": {
-                                        "code_meaning":
-                                        "Injection site abscess"
+                                        "code_meaning": "Injection site abscess"
                                     }
                                 },
                                 "last": {
                                     "intravenous_extravasation_symptoms": {
-                                        "code_meaning":
-                                        "Injection site anesthesia"
+                                        "code_meaning": "Injection site anesthesia"
                                     }
-                                }
+                                },
                             },
-                            "estimated_extravasation_activity":
-                            Decimal(10.0),
-                            "radiopharmaceutical_volume":
-                            Decimal(100),
-                            "radiopharmaceutical_start_datetime":
-                            datetime(2000, 3, 23, 8, 29, 18, 0),
-                            "radiopharmaceutical_stop_datetime":
-                            datetime(2000, 3, 23, 8, 29, 18, 0),
-                            "administered_activity":
-                            Decimal(250.0),
+                            "estimated_extravasation_activity": Decimal(10.0),
+                            "radiopharmaceutical_volume": Decimal(100),
+                            "radiopharmaceutical_start_datetime": datetime(
+                                2000, 3, 23, 8, 29, 18, 0
+                            ),
+                            "radiopharmaceutical_stop_datetime": datetime(
+                                2000, 3, 23, 8, 29, 18, 0
+                            ),
+                            "administered_activity": Decimal(250.0),
                             "pre_administration_measured_activity": Decimal(11.0),
                             "pre_activity_measurement_device": {
                                 "code_meaning": "Dose Calibrator"
@@ -308,9 +276,7 @@ class ImportNMRDSR(TestCase):
                             "observercontext_set": {
                                 "first": {
                                     "radiopharmaceutical_administration_is_pre_observer": True,
-                                    "observer_type": {
-                                        "code_meaning": "Person"
-                                    }
+                                    "observer_type": {"code_meaning": "Person"},
                                 }
                             },
                             "post_administration_measured_activity": Decimal(12.0),
@@ -320,23 +286,19 @@ class ImportNMRDSR(TestCase):
                             "route_of_administration": {
                                 "code_meaning": "Intravenous route"
                             },
-                            "site_of": {
-                                "code_meaning": "Via vein"
-                            },
+                            "site_of": {"code_meaning": "Via vein"},
                             "personparticipant_set": {
                                 "get": {
                                     "person_name": "Unknown",
                                     "person_role_in_procedure_cid": {
-                                        "code_meaning":
-                                        "Irradiation Administering"
-                                    }
+                                        "code_meaning": "Irradiation Administering"
+                                    },
                                 }
                             },
                             "billingcode_set": {
                                 "get": {
                                     "billing_code": {
-                                        "code_meaning":
-                                        "Nuclear Medicine Procedure and Services"
+                                        "code_meaning": "Nuclear Medicine Procedure and Services"
                                     }
                                 }
                             },
@@ -347,57 +309,38 @@ class ImportNMRDSR(TestCase):
                                     }
                                 }
                             },
-                            "brand_name":
-                            "Some Brand",
-                            "radiopharmaceutical_dispense_unit_identifier":
-                            "Dispenser",
+                            "brand_name": "Some Brand",
+                            "radiopharmaceutical_dispense_unit_identifier": "Dispenser",
                             "radiopharmaceuticallotidentifier_set": {
-                                "get": {
-                                    "radiopharmaceutical_lot_identifier":
-                                    "lot id"
-                                }
+                                "get": {"radiopharmaceutical_lot_identifier": "lot id"}
                             },
                             "reagentvialidentifier_set": {
-                                "get": {
-                                    "reagent_vial_identifier": "vial id"
-                                }
+                                "get": {"reagent_vial_identifier": "vial id"}
                             },
                             "radionuclideidentifier_set": {
-                                "get": {
-                                    "radionuclide_identifier": "radio id"
-                                }
+                                "get": {"radionuclide_identifier": "radio id"}
                             },
-                            "prescription_identifier":
-                            "pres id",
-                            "comment":
-                            "any comment"
+                            "prescription_identifier": "pres id",
+                            "comment": "any comment",
                         }
                     },
-                    "radiopharmaceuticaladministrationpatientcharacteristics_set":
-                    {
+                    "radiopharmaceuticaladministrationpatientcharacteristics_set": {
                         "get": {
                             "patientstate_set": {
                                 "get": {
                                     "patient_state": {
-                                        "code_meaning":
-                                        "Acute unilateral renal blockage"
+                                        "code_meaning": "Acute unilateral renal blockage"
                                     }
                                 }
                             },
                             "subject_age": Decimal(47),
-                            "subject_sex": {
-                                "code_value": "F"
-                            },
+                            "subject_sex": {"code_value": "F"},
                             "patient_height": Decimal(1.68),
                             "patient_weight": Decimal(68),
                             "body_surface_area": Decimal(1.5),
-                            "body_surface_area_formula": {
-                                "code_value": "122240"
-                            },
+                            "body_surface_area_formula": {"code_value": "122240"},
                             "body_mass_index": Decimal(23.0),
-                            "equation": {
-                                "code_value": "122265"
-                            },
+                            "equation": {"code_value": "122265"},
                             "glucose": Decimal(0.87),
                             "fasting_duration": Decimal(4.0),
                             "hydration_volume": Decimal(310),
@@ -405,22 +348,19 @@ class ImportNMRDSR(TestCase):
                             "serum_creatinine": Decimal(4.3),
                             "glomerularfiltrationrate_set": {
                                 "get": {
-                                    "glomerular_filtration_rate":
-                                    Decimal(12.21),
+                                    "glomerular_filtration_rate": Decimal(12.21),
                                     "equivalent_meaning_of_concept_name": {
-                                        "code_meaning":
-                                        "Glomerular Filtration Rate Cystatin-based formula"
+                                        "code_meaning": "Glomerular Filtration Rate Cystatin-based formula"
                                     },
                                     "measurement_method": {
-                                        "code_meaning":
-                                        "Glomerular Filtration Rate black (MDRD)"
-                                    }
+                                        "code_meaning": "Glomerular Filtration Rate black (MDRD)"
+                                    },
                                 }
-                            }
+                            },
                         }
-                    }
+                    },
                 }
-            }
+            },
         }
 
         self._check_values(study, expected_data)
