@@ -1738,13 +1738,15 @@ def _radiopharmaceutical_glomerular_filtration_rate(
         dataset.MeasuredValueSequence[0].NumericValue)
     if hasattr(dataset, "ContentSequence"):
         for cont in dataset.ContentSequence:
-            if cont.ConceptNameCodeSequence[
-                    0].CodeMeaning == "Measurement Method":
+            if ((cont.ConceptNameCodeSequence[0].CodeValue == "370129005" and 
+                cont.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SCT") or
+                (cont.ConceptNameCodeSequence[0].CodeValue == "G-C036" and 
+                cont.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SRT")): # Measurement Method
                 glomerular_filtration_rate.measurement_method = get_or_create_cid(
                     cont.ConceptCodeSequence[0].CodeValue,
                     cont.ConceptCodeSequence[0].CodeMeaning)
             elif cont.ConceptNameCodeSequence[
-                    0].CodeMeaning == "Equivalent meaning of concept name":
+                    0].CodeValue == "121050": # Equivalent meaning of concept name
                 glomerular_filtration_rate.equivalent_meaning_of_concept_name = get_or_create_cid(
                     cont.ConceptCodeSequence[0].CodeValue,
                     cont.ConceptCodeSequence[0].CodeMeaning)
@@ -1762,56 +1764,61 @@ def _radiopharmaceutical_administration_patient_characteristics(
 
     patient_character.save()
     for cont in dataset.ContentSequence:
-        if cont.ConceptNameCodeSequence[0].CodeMeaning == "Subject Age":
+        if cont.ConceptNameCodeSequence[0].CodeValue == "121033": # Subject Age
             patient_character.subject_age = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue)
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Subject Sex":
+        elif cont.ConceptNameCodeSequence[0].CodeValue == "121032": # Subject Sex
             patient_character.subject_sex = get_or_create_cid(
                 cont.ConceptCodeSequence[0].CodeValue,
                 cont.ConceptCodeSequence[0].CodeMeaning)
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Patient Height":
+        elif cont.ConceptNameCodeSequence[0].CodeValue == "8302-2": # Patient Height
             patient_character.patient_height = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue)
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Patient Weight":
+        elif cont.ConceptNameCodeSequence[0].CodeValue == "29463-7": # Patient Weight
             patient_character.patient_weight = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue)
         elif cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Body Surface Area":
+                0].CodeValue == "8277-6": # Body Surface Area
             patient_character.body_surface_area = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue)
             for cont2 in get_content_sequence(cont):
                 if cont2.ConceptNameCodeSequence[
-                        0].CodeMeaning == "Body Surface Area Formula":
+                        0].CodeValue == "8278-4": # Body Surface Area Formula
                     patient_character.body_surface_area_formula = get_or_create_cid(
                         cont2.ConceptCodeSequence[0].CodeValue,
                         cont2.ConceptCodeSequence[0].CodeMeaning)
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Body Mass Index":
+        elif ((cont.ConceptNameCodeSequence[0].CodeValue == "60621009" and 
+            cont.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SCT") or
+            (cont.ConceptNameCodeSequence[0].CodeValue == "F-01860" and 
+            cont.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SRT")): # Body Mass Index
             patient_character.body_mass_index = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue)
             for cont2 in get_content_sequence(cont):
-                if cont2.ConceptNameCodeSequence[0].CodeMeaning == "Equation":
+                if cont2.ConceptNameCodeSequence[0].CodeValue == "121420": # Equation
                     patient_character.equation = get_or_create_cid(
                         cont2.ConceptCodeSequence[0].CodeValue,
                         cont2.ConceptCodeSequence[0].CodeMeaning)
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Glucose":
+        elif cont.ConceptNameCodeSequence[0].CodeValue == "14749-6": # Glucose
             patient_character.glucose = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue)
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Fasting Duration":
+        elif cont.ConceptNameCodeSequence[0].CodeValue == "113550": # Fasting Duration
             patient_character.fasting_duration = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue)
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Hydration Volume":
+        elif cont.ConceptNameCodeSequence[0].CodeValue == "113551": # Hydration Volume
             patient_character.hydration_volume = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue)
         elif cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Recent Physical Activity":
+                0].CodeValue == "113552": # Recent Physical Activity
             patient_character.recent_physical_activity = cont.TextValue
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Serum Creatinine":
+        elif cont.ConceptNameCodeSequence[0].CodeValue == "2160-0": # Serum Creatinine
             patient_character.serum_creatinine = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue)
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Patient state":
+        elif cont.ConceptNameCodeSequence[0].CodeValue == "109054": # Patient state
             _radiopharmaceutical_patient_state(cont, patient_character)
-        elif cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Glomerular Filtration Rate":
+        elif ((cont.ConceptNameCodeSequence[0].CodeValue == "80274001" and 
+            cont.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SCT") or
+            (cont.ConceptNameCodeSequence[0].CodeValue == "F-70210" and 
+            cont.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SRT")): # Glomerular Filtration Rate
             _radiopharmaceutical_glomerular_filtration_rate(
                 cont, patient_character)
 
@@ -1834,33 +1841,45 @@ def _organ_dose(dataset, radiopharmaceutical_administration_event):
         radiopharmaceutical_administration_event_data=
         radiopharmaceutical_administration_event)
     for cont in dataset.ContentSequence:
-        if cont.ConceptNameCodeSequence[0].CodeMeaning == "Finding Site":
+        if ((cont.ConceptNameCodeSequence[0].CodeValue == "363698007" and 
+            cont.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SCT") or
+            (cont.ConceptNameCodeSequence[0].CodeValue == "G-C0E3" and 
+            cont.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SRT")): # Finding Site
             organ_dose.finding_site = get_or_create_cid(
                 cont.ConceptCodeSequence[0].CodeValue,
                 cont.ConceptCodeSequence[0].CodeMeaning)
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Laterality":
+        elif ((cont.ConceptNameCodeSequence[0].CodeValue == "272741003" and 
+            cont.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SCT") or
+            (cont.ConceptNameCodeSequence[0].CodeValue == "G-C171" and 
+            cont.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SRT")): # Laterality
             organ_dose.laterality = get_or_create_cid(
                 cont.ConceptCodeSequence[0].CodeValue,
                 cont.ConceptCodeSequence[0].CodeMeaning)
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Mass":
+        elif ((cont.ConceptNameCodeSequence[0].CodeValue == "118538004" and 
+            cont.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SCT") or
+            (cont.ConceptNameCodeSequence[0].CodeValue == "G-D701" and 
+            cont.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SRT")): # Mass
             organ_dose.mass = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue)
             for cont2 in cont.ContentSequence:
-                if cont2.ConceptNameCodeSequence[
-                        0].CodeMeaning == "Measurement Method":
+                if ((cont2.ConceptNameCodeSequence[0].CodeValue == "370129005" and 
+                    cont2.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SCT") or
+                    (cont2.ConceptNameCodeSequence[0].CodeValue == "G-C036" and 
+                    cont2.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SRT")): # Measurement Method
                     organ_dose.measurement_method = cont2.TextValue
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Organ Dose":
+        elif cont.ConceptNameCodeSequence[0].CodeValue == "113518": # Organ Dose
             organ_dose.organ_dose = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue)
             for cont2 in cont.ContentSequence:
-                if (cont2.ConceptNameCodeSequence[0].CodeMeaning
-                        == "Reference Authority"
+                if (cont2.ConceptNameCodeSequence[0].CodeValue
+                        == "121406" # Reference Authority
                         and cont2.ValueType == "CODE"):
                     organ_dose.reference_authority_code = get_or_create_cid(
                         cont2.ConceptCodeSequence[0].CodeValue,
                         cont2.ConceptCodeSequence[0].CodeMeaning)
-                elif (cont2.ConceptNameCodeSequence[0].CodeMeaning
-                      == "Reference Authority" and cont2.ValueType == "TEXT"):
+                elif (cont2.ConceptNameCodeSequence[0].CodeValue
+                      == "121406" # Reference Authority
+                      and cont2.ValueType == "TEXT"):
                     organ_dose.reference_authority_text = cont2.TextValue
     organ_dose.save()
 
@@ -1923,8 +1942,8 @@ def _record_administered_activity(administered, is_pre_activity, rad_event):
         rad_event.post_administration_measured_activity = measured_activity
     if hasattr(administered, "ContentSequence"):
         for cont2 in administered.ContentSequence:
-            if (cont2.ConceptNameCodeSequence[0].CodeMeaning ==
-                    "Activity Measurement Device"):
+            if (cont2.ConceptNameCodeSequence[0].CodeValue ==
+                    "113540"): # Activity Measurement Device
                 measurement_device = get_or_create_cid(
                     cont2.ConceptCodeSequence[0].CodeValue,
                     cont2.ConceptCodeSequence[0].CodeMeaning)
@@ -1933,7 +1952,7 @@ def _record_administered_activity(administered, is_pre_activity, rad_event):
                 else:
                     rad_event.post_activity_measurement_device = measurement_device
             elif cont2.ConceptNameCodeSequence[
-                    0].CodeMeaning == "Observer Type":
+                    0].CodeValue == "121005": # Observer Type
                 observer: ObserverContext = ObserverContext.objects.create(
                     radiopharmaceutical_administration_event_data=rad_event
                 )
@@ -1952,105 +1971,118 @@ def _radiopharmaceutical_administration_event_data(dataset,
     rad_event.save()
 
     for cont in dataset.ContentSequence:
-        if cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Radiopharmaceutical agent":
+        if ((cont.ConceptNameCodeSequence[0].CodeValue == "349358000" and 
+            cont.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SCT") or
+            (cont.ConceptNameCodeSequence[0].CodeValue == "F-61FDB" and 
+            cont.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SRT")): # Radiopharmaceutical agent
             rad_event.radiopharmaceutical_agent = get_or_create_cid(
                 cont.ConceptCodeSequence[0].CodeValue,
                 cont.ConceptCodeSequence[0].CodeMeaning)
             for cont2 in get_content_sequence(cont):
-                if cont2.ConceptNameCodeSequence[
-                        0].CodeMeaning == "Radionuclide":
+                if ((cont2.ConceptNameCodeSequence[0].CodeValue == "89457008" and 
+                    cont2.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SCT") or
+                    (cont2.ConceptNameCodeSequence[0].CodeValue == "C-10072" and 
+                    cont2.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SRT")): # Radionuclide
                     rad_event.radionuclide = get_or_create_cid(
                         cont2.ConceptCodeSequence[0].CodeValue,
                         cont2.ConceptCodeSequence[0].CodeMeaning)
-                elif cont2.ConceptNameCodeSequence[
-                        0].CodeMeaning == "Radionuclide Half Life":
+                elif ((cont2.ConceptNameCodeSequence[0].CodeValue == "304283002" and 
+                    cont2.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SCT") or
+                    (cont2.ConceptNameCodeSequence[0].CodeValue == "R-42806" and 
+                    cont2.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SRT")): # Radionuclide Half Life
                     rad_event.radionuclide_half_life = test_numeric_value(
                         cont2.MeasuredValueSequence[0].NumericValue)
         elif cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Radiopharmaceutical Specific Activity":
+                0].CodeValue == "123007": # Radiopharmaceutical Specific Activity
             rad_event.radiopharmaceutical_specific_activity = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue)
         elif cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Radiopharmaceutical Administration Event UID":
+                0].CodeValue == "113503": # Radiopharmaceutical Administration Event UID
             rad_event.radiopharmaceutical_administration_event_uid = cont.UID
         elif cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Intravenous Extravasation Symptoms":
+                0].CodeValue == "113505": # Intravenous Extravasation Symptoms
             _intravenous_extravasation_symptoms(cont, rad_event)
         elif cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Estimated Extravasation Activity":
+                0].CodeValue == "113506": # Estimated Extravasation Activity
             rad_event.estimated_extravasation_activity = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue)
         elif cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Radiopharmaceutical Start DateTime":
+                0].CodeValue == "123003": # Radiopharmaceutical Start DateTime
             rad_event.radiopharmaceutical_start_datetime = make_date_time(
                 cont.DateTime)
         elif cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Radiopharmaceutical Stop DateTime":
+                0].CodeValue == "123004": # Radiopharmaceutical Stop DateTime
             rad_event.radiopharmaceutical_stop_datetime = make_date_time(
                 cont.DateTime)
         elif cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Administered activity":
+                0].CodeValue == "113507": # Administered activity
             rad_event.administered_activity = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue)
         elif cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Radiopharmaceutical Volume":
+                0].CodeValue == "123005": # Radiopharmaceutical Volume
             rad_event.radiopharmaceutical_volume = test_numeric_value(
                 cont.MeasuredValueSequence[0].NumericValue)
         elif cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Pre-Administration Measured Activity":
+                0].CodeValue == "113508": # Pre-Administration Measured Activity
             _record_administered_activity(cont, True, rad_event)
         elif cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Post-Administration Measured Activity":
+                0].CodeValue == "113509": # Post-Administration Measured Activity
             _record_administered_activity(cont, False, rad_event)
-        elif cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Route of administration":
+        elif ((cont.ConceptNameCodeSequence[0].CodeValue == "410675002" and 
+            cont.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SCT") or
+            (cont.ConceptNameCodeSequence[0].CodeValue == "G-C340" and 
+            cont.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SRT")): # Route of administration
             rad_event.route_of_administration = get_or_create_cid(
                 cont.ConceptCodeSequence[0].CodeValue,
                 cont.ConceptCodeSequence[0].CodeMeaning)
             for cont2 in get_content_sequence(cont):
-                if cont2.ConceptNameCodeSequence[0].CodeMeaning == "Site of":
+                if ((cont2.ConceptNameCodeSequence[0].CodeValue == "272737002" and 
+                    cont2.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SCT") or
+                    (cont2.ConceptNameCodeSequence[0].CodeValue == "G-C581" and 
+                    cont2.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SRT")): # Site of
                     rad_event.site_of = get_or_create_cid(
                         cont2.ConceptCodeSequence[0].CodeValue,
                         cont2.ConceptCodeSequence[0].CodeMeaning)
                     for cont3 in get_content_sequence(cont2):
-                        if cont3.ConceptNameCodeSequence[
-                                0].CodeMeaning == "Laterality":
+                        if ((cont3.ConceptNameCodeSequence[0].CodeValue == "272741003" and 
+                            cont3.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SCT") or
+                            (cont3.ConceptNameCodeSequence[0].CodeValue == "G-C171" and 
+                            cont3.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SRT")): # Laterality
                             rad_event.laterality = get_or_create_cid(
                                 cont3.ConceptCodeSequence[0].CodeValue,
                                 cont3.ConceptCodeSequence[0].CodeMeaning)
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Brand Name":
+        elif cont.ConceptNameCodeSequence[0].CodeValue == "111529": # Brand Name
             rad_event.brand_name = cont.TextValue
         elif cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Radiopharmaceutical Dispense Unit Identifier":
+                0].CodeValue == "113511": # Radiopharmaceutical Dispense Unit Identifier
             rad_event.radiopharmaceutical_dispense_unit_identifier = cont.TextValue
             for cont2 in get_content_sequence(cont):
                 if cont2.ConceptNameCodeSequence[
-                        0].CodeMeaning == "Radiopharmaceutical Lot Identifier":
+                        0].CodeValue == "113512": # Radiopharmaceutical Lot Identifier
                     _radiopharmaceutical_lot_identifier(cont2, rad_event)
                 elif cont2.ConceptNameCodeSequence[
-                        0].CodeMeaning == "Reagent Vial Identifier":
+                        0].CodeValue == "113513": # Reagent Vial Identifier
                     _reagent_vial_identifier(cont2, rad_event)
                 elif cont2.ConceptNameCodeSequence[
-                        0].CodeMeaning == "Radionuclide Identifier":
+                        0].CodeValue == "113514": # Radionuclide Identifier
                     _radionuclide_identifier(cont2, rad_event)
         elif cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Prescription Identifier":
+                0].CodeValue == "113516": # Prescription Identifier
             rad_event.prescription_identifier = cont.TextValue
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Comment":
+        elif cont.ConceptNameCodeSequence[0].CodeValue == "121106": # Comment
             rad_event.comment = cont.TextValue
         elif cont.ConceptNameCodeSequence[
                 0].CodeValue == "113517":  # Organ dose
             _organ_dose(cont, rad_event)
         elif cont.ConceptNameCodeSequence[
-                0].CodeValue == "113870":  #Person Participant
+                0].CodeValue == "113870":  # Person Participant
             _person_participant(
                 cont, "radiopharmaceutical_administration_event_data",
                 rad_event)
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Billing Code(s)":
+        elif cont.ConceptNameCodeSequence[0].CodeValue == "121147": # Billing Code(s)
             _radiopharmaceutical_billing_code(cont, rad_event)
         elif cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Drug Product Identifier":
+                0].CodeValue == "113510": # Drug Product Identifier
             _drug_product_identifier(cont, rad_event)
 
     rad_event.save()
@@ -2066,7 +2098,7 @@ def _language_of_content(dataset, radiopharmaceutical_dose):
                                                  "ContentSequence") else []
     for cont in subcont:
         if cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Country of Language":
+                0].CodeValue == "121046": # Country of Language
             language.country_of_language = get_or_create_cid(
                 cont.ConceptCodeSequence[0].CodeValue,
                 cont.ConceptCodeSequence[0].CodeMeaning)
@@ -2082,21 +2114,25 @@ def _radiopharmaceuticalradiationdose(dataset, g):
     rdose.save()
 
     for cont in dataset.ContentSequence:
-        if cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Associated Procedure":
+        if ((cont.ConceptNameCodeSequence[0].CodeValue == "363589002" and 
+            cont.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SCT") or
+            (cont.ConceptNameCodeSequence[0].CodeValue == "G-C2D0" and 
+            cont.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SRT")): # Associated Procedure
             rdose.associated_procedure = get_or_create_cid(
                 cont.ConceptCodeSequence[0].CodeValue,
                 cont.ConceptCodeSequence[0].CodeMeaning)
             for cont2 in cont.ContentSequence:
-                if cont2.ConceptNameCodeSequence[
-                        0].CodeMeaning == "Has Intent":
-                    rdose.has_intent = get_or_create_cid(
-                        cont2.ConceptCodeSequence[0].CodeValue,
-                        cont2.ConceptCodeSequence[0].CodeMeaning)
-        elif cont.ConceptNameCodeSequence[0].CodeMeaning == "Comment":
+                if ((cont2.ConceptNameCodeSequence[0].CodeValue == "363703001" and
+                    cont2.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SCT") or
+                    (cont2.ConceptNameCodeSequence[0].CodeValue == "G-C0E8" and
+                    cont2.ConceptNameCodeSequence[0].CodingSchemeDesignator == "SRT")): # Has Intent
+                        rdose.has_intent = get_or_create_cid(
+                            cont2.ConceptCodeSequence[0].CodeValue,
+                            cont2.ConceptCodeSequence[0].CodeMeaning)
+        elif cont.ConceptNameCodeSequence[0].CodeValue == "121106": # Comment
             rdose.comment = cont.TextValue
         elif cont.ConceptNameCodeSequence[
-                0].CodeMeaning == "Language of Content Item and Descendants":
+                0].CodeValue == "121049": # Language of Content Item and Descendants
             _language_of_content(cont, rdose)
         elif cont.ConceptNameCodeSequence[
                 0].CodeValue == "113502":  # Radiopharmaceutical Administration
