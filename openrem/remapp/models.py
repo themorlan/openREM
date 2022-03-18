@@ -687,6 +687,7 @@ class UserProfile(models.Model, CommonVariables):
     displayRF = models.BooleanField(default=True)
     displayMG = models.BooleanField(default=True)
     displayDX = models.BooleanField(default=True)
+    displayNM = models.BooleanField(default=True)
 
     plotSeriesPerSystem = models.BooleanField(default=False)
 

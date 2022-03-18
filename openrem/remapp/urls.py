@@ -59,6 +59,7 @@ main_patterns = [
         views.rf_detail_view_skin_map,
         name="rf_detail_view_skin_map",
     ),
+    path("nm/", views.nm_summary_list_filter, name="nm_summary_list_filter"),
     path("ct/", views.ct_summary_list_filter, name="ct_summary_list_filter"),
     path(
         "ct/chart/", views_charts_ct.ct_summary_chart_data, name="ct_summary_chart_data"

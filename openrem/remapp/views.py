@@ -658,6 +658,10 @@ def rf_detail_view_skin_map(request, pk=None):
     return_structure["primary_key"] = pk
     return JsonResponse(return_structure, safe=False)
 
+@login_required
+def nm_summary_list_filter(request):
+    """Obtain data for NM summary view"""
+    raise NotImplementedError("whoops")
 
 @login_required
 def ct_summary_list_filter(request):
@@ -948,6 +952,10 @@ def openrem_home(request):
             | Q(modality_type__exact="CR")
             | Q(modality_type__exact="PX")
         ).count(),
+    }
+    modalities["NM"] = {
+        "name": _("Nuclear Medicine"),
+        "count": allstudies.filter(modality_type__exact="NM").count(),
     }
 
     mods_to_delete = []
