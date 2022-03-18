@@ -2226,9 +2226,8 @@ def _radiopharmaceuticalradiationdose(dataset, g):
             general_study_module_attributes=g
         )
     )
-    if not rdose.general_study_module_attributes.modality_type:
-        rdose.general_study_module_attributes.modality_type = "NM"
-
+    rdose.general_study_module_attributes.modality_type = "NM"
+    rdose.general_study_module_attributes.save()
     rdose.save()
 
     for cont in dataset.ContentSequence:
@@ -2437,7 +2436,8 @@ def _projectionxrayradiationdose(dataset, g, reporttype):
                     cont.ConceptNameCodeSequence[0].CodeMeaning
                     == "CT Accumulated Dose Data"
                 ):
-                    proj.general_study_module_attributes.modality_type = "CT"
+                    if proj.general_study_module_attributes.modality_type != "NM":
+                        proj.general_study_module_attributes.modality_type = "CT"
                     _ctaccumulateddosedata(cont, proj)
                 if cont.ConceptNameCodeSequence[0].CodeMeaning == "CT Acquisition":
                     _ctirradiationeventdata(cont, proj)
@@ -2803,13 +2803,10 @@ def _rdsr2db(dataset):
                 if content.ValueType and content.ValueType == "CONTAINER":
                     if content.ConceptNameCodeSequence[0].CodeMeaning in (
                         "CT Acquisition",
-                        "Irradiation Event X-Ray Data",
-                        "Radiopharmaceutical Radiation Dose Report",
-                    ):
+                        "Irradiation Event X-Ray Data"):
                         for item in content.ContentSequence:
                             if item.ConceptNameCodeSequence[0].CodeMeaning in (
-                                "Irradiation Event UID",
-                                "Radiopharmaceutical Administration Event UID",
+                                "Irradiation Event UID"
                             ):
                                 new_event_uids.add("{0}".format(item.UID))
             logger.debug(
