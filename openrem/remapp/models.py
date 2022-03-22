@@ -611,6 +611,15 @@ class UserProfile(models.Model, CommonVariables):
         default=CommonVariables.FREQ,
     )
 
+    plotNMStudyFreq = models.BooleanField(default=False)
+    plotNMStudyNumEvents = models.BooleanField(default=False)
+    plotNMStudyPerDayAndHour = models.BooleanField(default=False)    
+    plotNMOverTimePeriod = models.CharField(
+        max_length=13,
+        choices=CommonVariables.TIME_PERIOD,
+        default=CommonVariables.MONTHS,
+    )
+
     plotCTAcquisitionMeanDLP = models.BooleanField(default=True)
     plotCTAcquisitionMeanCTDI = models.BooleanField(default=True)
     plotCTAcquisitionFreq = models.BooleanField(default=False)

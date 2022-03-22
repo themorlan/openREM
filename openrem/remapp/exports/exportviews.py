@@ -166,6 +166,16 @@ def ct_xlsx_phe2019(request):
 
 @csrf_exempt
 @login_required
+def nmcsv1(request, name=None, pat_id=None):
+    raise NotImplementedError
+
+@csrf_exempt
+@login_required
+def nmxlsx1(request, name=None, pat_id=None):
+    raise NotImplementedError
+
+@csrf_exempt
+@login_required
 def dxcsv1(request, name=None, pat_id=None):
     """View to launch celery task to export DX and CR studies to csv file
 

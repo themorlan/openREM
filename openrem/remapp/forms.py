@@ -172,6 +172,44 @@ class DXChartOptionsForm(forms.Form):
         required=False,
     )
 
+class NMChartOptionsForm(forms.Form):
+    """Form for NM chart options"""
+
+    plotCharts = forms.BooleanField(label="Plot charts?", required=False)
+    
+    plotNMStudyFreq = forms.BooleanField(label="Study frequency", required=False)
+    plotNMStudyNumEvents = forms.BooleanField(label="Study events", required=False)
+    plotNMStudyPerDayAndHour = forms.BooleanField(
+        label="Study workload", required=False
+    )
+    plotNMOverTimePeriod = forms.ChoiceField(
+        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
+    )
+    plotAverageChoice = forms.MultipleChoiceField(
+        label="Average plots",
+        choices=CommonVariables.AVERAGES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
+    )
+    plotGrouping = forms.ChoiceField(  # nosec
+        label=mark_safe("Grouping choice"),
+        choices=CommonVariables.CHART_GROUPING,
+        required=False,
+    )
+    plotSeriesPerSystem = forms.BooleanField(
+        label="Plot a series per system", required=False
+    )
+    plotHistograms = forms.BooleanField(
+        label="Calculate histogram data", required=False
+    )
+    plotInitialSortingChoice = forms.ChoiceField(
+        label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
+    )
+    plotInitialSortingDirection = forms.ChoiceField(
+        label="Sorting direction",
+        choices=CommonVariables.SORTING_DIRECTION,
+        required=False,
+    )
 
 class CTChartOptionsForm(forms.Form):
     """Form for CT chart options"""

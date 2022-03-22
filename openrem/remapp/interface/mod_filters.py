@@ -1110,3 +1110,169 @@ def dx_acq_filter(filters, pid=False):
     return DXSummaryListFilter(
         filters, queryset=studies.order_by("-study_date", "-study_time").distinct()
     )
+
+
+class NMSummaryListFilter(django_filters.FilterSet):
+
+    """Filter for NM studies to display in web interface."""
+
+    study_date__gt = django_filters.DateFilter(
+        lookup_expr="gte",
+        label="Date from",
+        field_name="study_date",
+        widget=forms.TextInput(attrs={"class": "datepicker"}),
+    )
+    study_date__lt = django_filters.DateFilter(
+        lookup_expr="lte",
+        label="Date until",
+        field_name="study_date",
+        widget=forms.TextInput(attrs={"class": "datepicker"}),
+    )
+    study_description = django_filters.CharFilter(
+        lookup_expr="icontains", label="Study description"
+    )
+    procedure_code_meaning = django_filters.CharFilter(
+        lookup_expr="icontains", label="Procedure"
+    )
+    requested_procedure_code_meaning = django_filters.CharFilter(
+        lookup_expr="icontains", label="Requested procedure"
+    )
+    patientstudymoduleattr__patient_age_decimal__gte = django_filters.NumberFilter(
+        lookup_expr="gte",
+        label="Min age (yrs)",
+        field_name="patientstudymoduleattr__patient_age_decimal",
+    )
+    patientstudymoduleattr__patient_age_decimal__lte = django_filters.NumberFilter(
+        lookup_expr="lte",
+        label="Max age (yrs)",
+        field_name="patientstudymoduleattr__patient_age_decimal",
+    )
+    patientstudymoduleattr__patient_weight__gte = django_filters.NumberFilter(
+        lookup_expr="gte",
+        label="Min weight (kg)",
+        field_name="patientstudymoduleattr__patient_weight",
+    )
+    patientstudymoduleattr__patient_weight__lte = django_filters.NumberFilter(
+        lookup_expr="lte",
+        label="Max weight (kg)",
+        field_name="patientstudymoduleattr__patient_weight",
+    )
+    generalequipmentmoduleattr__institution_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Hospital"
+    )
+    generalequipmentmoduleattr__manufacturer = django_filters.CharFilter(
+        lookup_expr="icontains", label="Make"
+    )
+    generalequipmentmoduleattr__manufacturer_model_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Model"
+    )
+    generalequipmentmoduleattr__station_name = django_filters.CharFilter(
+        lookup_expr="icontains", label="Station name"
+    )
+    accession_number = django_filters.CharFilter(
+        method=_custom_acc_filter, label="Accession number"
+    )
+    generalequipmentmoduleattr__unique_equipment_name__display_name = (
+        django_filters.CharFilter(lookup_expr="icontains", label="Display name")
+    )
+    test_data = django_filters.ChoiceFilter(
+        lookup_expr="isnull",
+        label="Include possible test data",
+        field_name="patientmoduleattr__not_patient_indicator",
+        choices=TEST_CHOICES,
+        widget=forms.Select,
+    )
+    num_events = django_filters.ChoiceFilter(
+        method=_specify_event_numbers,
+        label="Num. events total",
+        choices=EVENT_NUMBER_CHOICES,
+        widget=forms.Select,
+    )
+
+    class Meta:
+        """
+        Lists fields and order-by information for django-filter filtering
+        """
+
+        model = GeneralStudyModuleAttr
+        fields = [
+            "study_date__gt",
+            "study_date__lt",
+            "study_description",
+            "procedure_code_meaning",
+            "requested_procedure_code_meaning",
+            "generalequipmentmoduleattr__institution_name",
+            "generalequipmentmoduleattr__manufacturer",
+            "generalequipmentmoduleattr__manufacturer_model_name",
+            "generalequipmentmoduleattr__station_name",
+            "patientstudymoduleattr__patient_age_decimal__gte",
+            "patientstudymoduleattr__patient_age_decimal__lte",
+            "patientstudymoduleattr__patient_weight__gte",
+            "patientstudymoduleattr__patient_weight__lte",
+            "accession_number",
+            "generalequipmentmoduleattr__unique_equipment_name__display_name",
+            "test_data",
+            "num_events",
+        ]
+
+    o = DateTimeOrderingFilter(
+        choices=(
+            ("study_description", "Study Description"),
+            ("generalequipmentmoduleattr__institution_name", "Hospital"),
+            ("generalequipmentmoduleattr__manufacturer", "Make"),
+            ("generalequipmentmoduleattr__manufacturer_model_name", "Model"),
+            (
+                "generalequipmentmoduleattr__unique_equipment_name__display_name",
+                "Display name",
+            ),
+            ("study_description", "Study description"),
+        ),
+        fields=(
+            ("study_description", "study_description"),
+            (
+                "generalequipmentmoduleattr__institution_name",
+                "generalequipmentmoduleattr__institution_name",
+            ),
+            (
+                "generalequipmentmoduleattr__manufacturer",
+                "generalequipmentmoduleattr__manufacturer",
+            ),
+            (
+                "generalequipmentmoduleattr__manufacturer_model_name",
+                "generalequipmentmoduleattr__manufacturer_model_name",
+            ),
+            (
+                "generalequipmentmoduleattr__unique_equipment_name__display_name",
+                "generalequipmentmoduleattr__unique_equipment_name__display_name",
+            ),
+            ("study_description", "study_description"),
+        ),
+    )
+
+
+class NMFilterPlusPid(NMSummaryListFilter):
+
+    """Adding patient name and ID to filter if permissions allow"""
+
+    def __init__(self, *args, **kwargs):
+        super(NMFilterPlusPid, self).__init__(*args, **kwargs)
+        self.filters["patient_name"] = django_filters.CharFilter(
+            method=custom_name_filter, label="Patient name"
+        )
+        self.filters["patient_id"] = django_filters.CharFilter(
+            method=custom_id_filter, label="Patient ID"
+        )
+
+
+def nm_acq_filter(filters, pid=False):
+
+    """Additional filters at event level"""
+
+    studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="NM")
+    if pid:
+        return NMFilterPlusPid(
+            filters, studies.order_by("-study_date", "-study_time").distinct()
+        )
+    return NMSummaryListFilter(
+        filters, studies.order_by("-study_date", "-study_time").distinct()
+    )

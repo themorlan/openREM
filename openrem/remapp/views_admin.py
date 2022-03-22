@@ -1577,6 +1577,23 @@ def set_average_chart_options(general_form, user_profile):
         user_profile.plotBoxplots = False
 
 
+def set_nm_chart_options(nm_form, user_profile):
+    user_profile.plotNMStudyFreq = nm_form.cleaned_data["plotNMStudyFreq"]
+    user_profile.plotNMStudyNumEvents = nm_form.cleaned_data["plotNMStudyNumEvents"]
+    user_profile.plotNMStudyPerDayAndHour = nm_form.cleaned_data["plotNMStudyPerDayAndHour"]
+    user_profile.plotNMOverTimePeriod = nm_form.cleaned_data["plotNMOverTimePeriod"]
+
+
+def initialise_nm_form_data(user_profile):
+    nm_form_data = {
+        "plotNMStudyFreq": user_profile.plotNMStudyFreq,
+        "plotNMStudyNumEvents": user_profile.plotNMStudyNumEvents,
+        "plotNMStudyPerDayAndHour": user_profile.plotNMStudyPerDayAndHour,
+        "plotNMOverTimePeriod": user_profile.plotNMOverTimePeriod,
+    }
+    return nm_form_data
+
+
 def set_ct_chart_options(ct_form, user_profile):
     user_profile.plotCTAcquisitionMeanDLP = ct_form.cleaned_data[
         "plotCTAcquisitionMeanDLP"
