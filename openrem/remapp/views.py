@@ -654,8 +654,21 @@ def nm_summary_list_filter(request):
 
 @login_required
 def nm_detail_view(request, pk=None):
-    """Detail view for an nm study"""
-    raise NotImplementedError
+    """Detail view for a NM study"""
+    
+    try:
+        study = GeneralStudyModuleAttr.objects.get(pk=pk)
+    except ObjectDoesNotExist:
+        messages.error(request, "That study was not found")
+        return redirect(reverse_lazy("nm_summary_list_filter"))
+
+    admin = create_admin_info(request)
+
+    return render(
+        request,
+        "remapp/nmdetail.html",
+        {"generalstudymoduleattr": study, "admin": admin},
+    )
 
 @login_required
 def ct_summary_list_filter(request):
