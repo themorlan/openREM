@@ -1579,16 +1579,20 @@ def set_average_chart_options(general_form, user_profile):
 
 def set_nm_chart_options(nm_form, user_profile):
     user_profile.plotNMStudyFreq = nm_form.cleaned_data["plotNMStudyFreq"]
-    user_profile.plotNMStudyNumEvents = nm_form.cleaned_data["plotNMStudyNumEvents"]
     user_profile.plotNMStudyPerDayAndHour = nm_form.cleaned_data["plotNMStudyPerDayAndHour"]
+    user_profile.plotNMInjectedDosePerStudy = nm_form.cleaned_data["plotNMInjectedDosePerStudy"]
+    user_profile.plotNMInjectedDoseOverTime = nm_form.cleaned_data["plotNMInjectedDoseOverTime"]
+    user_profile.plotNMInjectedDoseOverWeight = nm_form.cleaned_data["plotNMInjectedDoseOverWeight"]
     user_profile.plotNMOverTimePeriod = nm_form.cleaned_data["plotNMOverTimePeriod"]
 
 
 def initialise_nm_form_data(user_profile):
     nm_form_data = {
         "plotNMStudyFreq": user_profile.plotNMStudyFreq,
-        "plotNMStudyNumEvents": user_profile.plotNMStudyNumEvents,
         "plotNMStudyPerDayAndHour": user_profile.plotNMStudyPerDayAndHour,
+        "plotNMInjectedDosePerStudy": user_profile.plotNMInjectedDosePerStudy,
+        "plotNMInjectedDoseOverTime": user_profile.plotNMInjectedDoseOverTime,
+        "plotNMInjectedDoseOverWeight": user_profile.plotNMInjectedDoseOverWeight,
         "plotNMOverTimePeriod": user_profile.plotNMOverTimePeriod,
     }
     return nm_form_data

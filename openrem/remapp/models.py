@@ -612,8 +612,10 @@ class UserProfile(models.Model, CommonVariables):
     )
 
     plotNMStudyFreq = models.BooleanField(default=False)
-    plotNMStudyNumEvents = models.BooleanField(default=False)
-    plotNMStudyPerDayAndHour = models.BooleanField(default=False)    
+    plotNMStudyPerDayAndHour = models.BooleanField(default=False)
+    plotNMInjectedDosePerStudy = models.BooleanField(default=False)
+    plotNMInjectedDoseOverTime = models.BooleanField(default=False)
+    plotNMInjectedDoseOverWeight = models.BooleanField(default=False)
     plotNMOverTimePeriod = models.CharField(
         max_length=13,
         choices=CommonVariables.TIME_PERIOD,

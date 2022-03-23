@@ -178,10 +178,12 @@ class NMChartOptionsForm(forms.Form):
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
     
     plotNMStudyFreq = forms.BooleanField(label="Study frequency", required=False)
-    plotNMStudyNumEvents = forms.BooleanField(label="Study events", required=False)
     plotNMStudyPerDayAndHour = forms.BooleanField(
         label="Study workload", required=False
     )
+    plotNMInjectedDosePerStudy = forms.BooleanField(label="Injected Dose per Study", required=False)
+    plotNMInjectedDoseOverTime = forms.BooleanField(label="Injected Dose over Time", required=False)
+    plotNMInjectedDoseOverWeight = forms.BooleanField(label="Injected Dose over Weight", required=False)
     plotNMOverTimePeriod = forms.ChoiceField(
         label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
     )
