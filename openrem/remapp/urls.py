@@ -34,6 +34,7 @@ from . import (
     views,
     views_admin,
     views_charts_ct,
+    views_charts_nm,
     views_charts_dx,
     views_charts_mg,
     views_charts_rf,
@@ -60,6 +61,7 @@ main_patterns = [
         name="rf_detail_view_skin_map",
     ),
     path("nm/", views.nm_summary_list_filter, name="nm_summary_list_filter"),
+    path("nm/chart/", views_charts_nm.nm_summary_chart_data, name="nm_summary_chart_data"),
     path("nm/<int:pk>/", views.nm_detail_view, name="nm_detail_view"),
     path("ct/", views.ct_summary_list_filter, name="ct_summary_list_filter"),
     path(

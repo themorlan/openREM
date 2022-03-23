@@ -1584,6 +1584,7 @@ def set_nm_chart_options(nm_form, user_profile):
     user_profile.plotNMInjectedDoseOverTime = nm_form.cleaned_data["plotNMInjectedDoseOverTime"]
     user_profile.plotNMInjectedDoseOverWeight = nm_form.cleaned_data["plotNMInjectedDoseOverWeight"]
     user_profile.plotNMOverTimePeriod = nm_form.cleaned_data["plotNMOverTimePeriod"]
+    user_profile.plotNMInitialSortingChoice = nm_form.cleaned_data["plotNMInitialSortingChoice"]
 
 
 def initialise_nm_form_data(user_profile):
@@ -1594,6 +1595,7 @@ def initialise_nm_form_data(user_profile):
         "plotNMInjectedDoseOverTime": user_profile.plotNMInjectedDoseOverTime,
         "plotNMInjectedDoseOverWeight": user_profile.plotNMInjectedDoseOverWeight,
         "plotNMOverTimePeriod": user_profile.plotNMOverTimePeriod,
+        "plotNMInitialSortingChoice": user_profile.plotNMInitialSortingChoice,
     }
     return nm_form_data
 

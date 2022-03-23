@@ -621,6 +621,11 @@ class UserProfile(models.Model, CommonVariables):
         choices=CommonVariables.TIME_PERIOD,
         default=CommonVariables.MONTHS,
     )
+    plotNMInitialSortingChoice = models.CharField(
+        max_length=9,
+        choices=CommonVariables.SORTING_CHOICES,
+        default=CommonVariables.FREQ,
+    )
 
     plotCTAcquisitionMeanDLP = models.BooleanField(default=True)
     plotCTAcquisitionMeanCTDI = models.BooleanField(default=True)

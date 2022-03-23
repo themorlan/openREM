@@ -204,7 +204,7 @@ class NMChartOptionsForm(forms.Form):
     plotHistograms = forms.BooleanField(
         label="Calculate histogram data", required=False
     )
-    plotInitialSortingChoice = forms.ChoiceField(
+    plotNMInitialSortingChoice = forms.ChoiceField(
         label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
     )
     plotInitialSortingDirection = forms.ChoiceField(
