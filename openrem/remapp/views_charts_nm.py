@@ -147,13 +147,6 @@ def generate_required_nm_charts_list(user_profile : UserProfile):
                     "var_name": "studyInjectedDoseOverTimeMedian"
                 }
             )
-        if user_profile.plotBoxplots:
-            required_charts.append(
-                {
-                    "title": f"Boxplot of injected dose over time ({time_period})",
-                    "var_name": "studyInjectedDoseOverTimeBoxplot"
-                }
-            )
     if user_profile.plotNMInjectedDoseOverWeight:
         required_charts.append(
             {
@@ -262,6 +255,8 @@ def nm_plot_calculations(f, user_profile: UserProfile, return_as_dict=False):
         return_structure.update(_generate_nm_dose_over_patient_weight(user_profile, return_as_dict, df))
     if user_profile.plotNMInjectedDosePerStudy:
         return_structure.update(_generate_nm_dose_per_study(user_profile, return_as_dict, df, average_choices))
+    if user_profile.plotNMInjectedDoseOverTime:
+        return_structure.update(_generate_nm_dose_over_time(user_profile, return_as_dict, df, average_choices))
 
     return return_structure
 
@@ -446,4 +441,47 @@ def _generate_nm_dose_per_study(user_profile, return_as_dict, df, average_choice
             df,
             parameter_dict,
         )
+    return return_structure
+
+def _generate_nm_dose_over_time(user_profile: UserProfile, return_as_dict, df, average_choices):
+    return_structure = {}
+
+    if user_profile.plotGroupingChoice == "series":
+        facet_title = "Study description"
+    else:
+        facet_title = "System"
+    name_field = "study_description"
+    value_field = "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity"
+
+    if user_profile.plotMean or user_profile.plotMedian:
+        parameter_dict = {
+            "df_name_col": name_field,
+            "df_value_col": value_field,
+            "df_date_col": "study_date",
+            "name_title": "Study description",
+            "value_title": "Administered Dose (MBq)",
+            "date_title": "Study date",
+            "facet_title": facet_title,
+            "sorting_choice": [
+                user_profile.plotInitialSortingDirection,
+                user_profile.plotNMInitialSortingChoice,
+            ],
+            "time_period": user_profile.plotNMOverTimePeriod,
+            "average_choices": average_choices + ["count"],
+            "grouping_choice": user_profile.plotGroupingChoice,
+            "colourmap": user_profile.plotColourMapChoice,
+            "facet_col_wrap": user_profile.plotFacetColWrapVal,
+            "filename": "OpenREM Nuclear medicine injected dose over time",
+            "return_as_dict": return_as_dict,
+        }
+        result = construct_over_time_charts(
+            df,
+            parameter_dict,
+        )
+
+        if user_profile.plotMean:
+            return_structure["studyInjectedDoseOverTimeMeanData"] = result["mean"]
+        if user_profile.plotMedian:
+            return_structure["studyInjectedDoseOverTimeMedianData"] = result["median"]
+    
     return return_structure

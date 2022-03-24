@@ -17,7 +17,6 @@ $(document).ready(function() {
         data: requestData,
         dataType: "json",
         success: function( json ) {
-
             if(typeof json.studyFrequencyData !== "undefined") {
                 $("#studyFrequencyChartDiv").html(json.studyFrequencyData);
                 $("#studyFrequencyChartParentDiv").append(json.studyFrequencyDataCSV);
@@ -42,7 +41,13 @@ $(document).ready(function() {
             if(typeof json.studyHistogramInjectedDoseData !== "undefined") {
                 $("#studyInjectedDoseHistogramChartDiv").html(json.studyHistogramInjectedDoseData)
             }
-            
+            if(typeof json.studyInjectedDoseOverTimeMeanData !== "undefined") {
+                $("#studyInjectedDoseOverTimeMeanChartDiv").html(json.studyInjectedDoseOverTimeMeanData)
+            }
+            if(typeof json.studyInjectedDoseOverTimeMedianData !== "undefined") {
+                $("#studyInjectedDoseOverTimeMedianChartDiv").html(json.studyInjectedDoseOverTimeMedianData)
+            }
+
             $(".ajax-progress").hide();
         },
         error: function( xhr, status, errorThrown ) {
