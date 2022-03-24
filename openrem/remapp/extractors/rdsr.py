@@ -2803,10 +2803,12 @@ def _rdsr2db(dataset):
                 if content.ValueType and content.ValueType == "CONTAINER":
                     if content.ConceptNameCodeSequence[0].CodeMeaning in (
                         "CT Acquisition",
-                        "Irradiation Event X-Ray Data"):
+                        "Irradiation Event X-Ray Data",
+                        "Radiopharmaceutical Administration"):
                         for item in content.ContentSequence:
                             if item.ConceptNameCodeSequence[0].CodeMeaning in (
-                                "Irradiation Event UID"
+                                "Irradiation Event UID",
+                                "Radiopharmaceutical Administration Event UID"
                             ):
                                 new_event_uids.add("{0}".format(item.UID))
             logger.debug(
