@@ -201,12 +201,15 @@ def nm_plot_calculations(f, user_profile: UserProfile, return_as_dict=False):
         user_profile.plotNMStudyFreq, 
         user_profile.plotNMStudyPerDayAndHour,
         user_profile.plotNMInjectedDoseOverWeight,
+        user_profile.plotNMInjectedDoseOverTime,
+        user_profile.plotNMInjectedDosePerStudy,
     ]
     if any(chart_of_interest):
         name_fields.append("study_description")
 
     charts_of_interest = [
-        user_profile.plotNMStudyPerDayAndHour
+        user_profile.plotNMStudyPerDayAndHour,
+        user_profile.plotNMInjectedDoseOverTime,
     ]
     if any(charts_of_interest):
         date_fields.append("study_date")
@@ -242,7 +245,15 @@ def nm_plot_calculations(f, user_profile: UserProfile, return_as_dict=False):
         uid="pk",
     )
 
+    # Prepare additional settings for the plots
+    average_choices = []
+    if user_profile.plotMean:
+        average_choices.append(CommonVariables.MEAN)
+    if user_profile.plotMedian:
+        average_choices.append(CommonVariables.MEDIAN)
+
     # Based on df create all the Charts that are wanted
+
     if user_profile.plotNMStudyFreq:
         parameter_dict = {
             "df_name_col": "study_description",
@@ -311,5 +322,109 @@ def nm_plot_calculations(f, user_profile: UserProfile, return_as_dict=False):
             df,
             parameter_dict,
         )
+    if user_profile.plotNMInjectedDosePerStudy:
+        name_field = "study_description"
+        value_field = "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity"
+        df_aggregated = create_dataframe_aggregates(
+            df,
+            [name_field],
+            value_field,
+            stats_to_use=average_choices + ["count"],
+        )
+
+        if user_profile.plotMean or user_profile.plotMedian:
+
+            parameter_dict = {
+                "df_name_col": "study_description",
+                "name_axis_title": "Study description",
+                "colourmap": user_profile.plotColourMapChoice,
+                "facet_col": None,
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "return_as_dict": return_as_dict,
+                "sorting_choice": [
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotNMInitialSortingChoice,
+                ],
+            }
+            if user_profile.plotMean:
+                parameter_dict["value_axis_title"] = "Mean Injected Dose (MBq)"
+                parameter_dict["filename"] = "OpenREM nuclear medicine study injected dose mean"
+                parameter_dict["average_choice"] = "mean"
+                (
+                    return_structure["studyMeanInjectedDoseData"],
+                    return_structure["studyMeanInjectedDoseDataCSV"],
+                ) = plotly_barchart(
+                    df_aggregated,
+                    parameter_dict,
+                    csv_name="studyMeanInjectedDoseData.csv",
+                )
+
+            if user_profile.plotMedian:
+                parameter_dict["value_axis_title"] = "Median Injected Dose (MBq)"
+                parameter_dict["filename"] = "OpenREM nuclear medicine study injected dose median"
+                parameter_dict["average_choice"] = "median"
+                (
+                    return_structure["studyMedianInjectedDoseData"],
+                    return_structure["studyMedianInjectedDoseDataCSV"],
+                ) = plotly_barchart(
+                    df_aggregated,
+                    parameter_dict,
+                    csv_name="studyMedianInjectedDoseData.csv",
+                )
+
+        if user_profile.plotBoxplots:
+            parameter_dict = {
+                "df_name_col": name_field,
+                "df_value_col": value_field,
+                "value_axis_title": "Injected Dose (MBq)",
+                "name_axis_title": "Study description",
+                "colourmap": user_profile.plotColourMapChoice,
+                "filename": "OpenREM nuclear medicine study injected dose boxplot",
+                "facet_col": None,
+                "sorting_choice": [
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotNMInitialSortingChoice,
+                ],
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "return_as_dict": return_as_dict,
+            }
+
+            return_structure["studyBoxplotInjectedDoseData"] = plotly_boxplot(
+                df,
+                parameter_dict,
+            )
+
+        if user_profile.plotHistograms:
+            category_names_col = name_field
+            group_by_col = "x_ray_system_name"
+            legend_title = "Study description"
+
+            if user_profile.plotGroupingChoice == "series":
+                category_names_col = "x_ray_system_name"
+                group_by_col = name_field
+                legend_title = "System"
+
+            parameter_dict = {
+                "df_facet_col": group_by_col,
+                "df_category_col": category_names_col,
+                "df_value_col": value_field,
+                "value_axis_title": "Injected Dose (MBq)",
+                "legend_title": legend_title,
+                "n_bins": user_profile.plotHistogramBins,
+                "colourmap": user_profile.plotColourMapChoice,
+                "filename": "OpenREM nuclear medicine study injected dose histogram",
+                "facet_col_wrap": user_profile.plotFacetColWrapVal,
+                "sorting_choice": [
+                    user_profile.plotInitialSortingDirection,
+                    user_profile.plotNMInitialSortingChoice,
+                ],
+                "global_max_min": user_profile.plotHistogramGlobalBins,
+                "return_as_dict": return_as_dict,
+            }
+            return_structure["studyHistogramInjectedDoseData"] = plotly_histogram_barchart(
+                df,
+                parameter_dict,
+            )
+
 
     return return_structure

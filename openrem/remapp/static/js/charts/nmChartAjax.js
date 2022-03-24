@@ -28,7 +28,21 @@ $(document).ready(function() {
             if(typeof json.studyInjectedDoseOverWeightData !== "undefined") {
                 $("#studyInjectedDoseOverWeightChartDiv").html(json.studyInjectedDoseOverWeightData);
             }
-
+            if(typeof json.studyMeanInjectedDoseData !== "undefined") {
+                $("#studyInjectedDoseMeanChartDiv").html(json.studyMeanInjectedDoseData)
+                $("#studyInjectedDoseMeanParentDiv").append(json.studyMeanInjectedDoseDataCSV)
+            }
+            if(typeof json.studyMedianInjectedDoseData !== "undefined") {
+                $("#studyInjectedDoseMedianChartDiv").html(json.studyMedianInjectedDoseData)
+                $("#studyInjectedDoseMedianParentDiv").append(json.studyMedianInjectedDoseDataCSV)
+            }
+            if(typeof json.studyBoxplotInjectedDoseData !== "undefined") {
+                $("#studyInjectedDoseBoxplotChartDiv").html(json.studyBoxplotInjectedDoseData)
+            }
+            if(typeof json.studyHistogramInjectedDoseData !== "undefined") {
+                $("#studyInjectedDoseHistogramChartDiv").html(json.studyHistogramInjectedDoseData)
+            }
+            
             $(".ajax-progress").hide();
         },
         error: function( xhr, status, errorThrown ) {
