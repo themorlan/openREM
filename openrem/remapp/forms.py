@@ -213,6 +213,23 @@ class NMChartOptionsForm(forms.Form):
         required=False,
     )
 
+class NMChartOptionsDisplayForm(forms.Form):
+    """Form for NM chart display options"""
+    
+    plotNMStudyFreq = forms.BooleanField(label="Study frequency", required=False)
+    plotNMStudyPerDayAndHour = forms.BooleanField(
+        label="Study workload", required=False
+    )
+    plotNMInjectedDosePerStudy = forms.BooleanField(label="Injected Dose per Study", required=False)
+    plotNMInjectedDoseOverTime = forms.BooleanField(label="Injected Dose over Time", required=False)
+    plotNMInjectedDoseOverWeight = forms.BooleanField(label="Injected Dose over Weight", required=False)
+    plotNMOverTimePeriod = forms.ChoiceField(
+        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
+    )
+    plotNMInitialSortingChoice = forms.ChoiceField(
+        label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
+    )
+
 class CTChartOptionsForm(forms.Form):
     """Form for CT chart options"""
 
