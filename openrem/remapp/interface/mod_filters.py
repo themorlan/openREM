@@ -1172,6 +1172,16 @@ class NMSummaryListFilter(django_filters.FilterSet):
     accession_number = django_filters.CharFilter(
         method=_custom_acc_filter, label="Accession number"
     )
+    radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity_gte = django_filters.NumberFilter(
+        lookup_expr="gte",
+        label="Min administered dose (MBq)",
+        field_name="radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity",
+    )
+    radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity_lte = django_filters.NumberFilter(
+        lookup_expr="lte",
+        label="Max administered dose (MBq)",
+        field_name="radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity",
+    )
     generalequipmentmoduleattr__unique_equipment_name__display_name = (
         django_filters.CharFilter(lookup_expr="icontains", label="Display name")
     )
@@ -1180,12 +1190,6 @@ class NMSummaryListFilter(django_filters.FilterSet):
         label="Include possible test data",
         field_name="patientmoduleattr__not_patient_indicator",
         choices=TEST_CHOICES,
-        widget=forms.Select,
-    )
-    num_events = django_filters.ChoiceFilter(
-        method=_specify_event_numbers,
-        label="Num. events total",
-        choices=EVENT_NUMBER_CHOICES,
         widget=forms.Select,
     )
 
@@ -1210,9 +1214,10 @@ class NMSummaryListFilter(django_filters.FilterSet):
             "patientstudymoduleattr__patient_weight__gte",
             "patientstudymoduleattr__patient_weight__lte",
             "accession_number",
+            "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity_gte",
+            "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity_lte",
             "generalequipmentmoduleattr__unique_equipment_name__display_name",
             "test_data",
-            "num_events",
         ]
 
     o = DateTimeOrderingFilter(
@@ -1264,10 +1269,7 @@ class NMFilterPlusPid(NMSummaryListFilter):
         )
 
 
-def nm_acq_filter(filters, pid=False):
-
-    """Additional filters at event level"""
-
+def nm_filter(filters, pid=False):
     studies = GeneralStudyModuleAttr.objects.filter(modality_type__exact="NM")
     if pid:
         return NMFilterPlusPid(

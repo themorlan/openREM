@@ -65,7 +65,7 @@ from .interface.mod_filters import (
     ct_acq_filter,
     MGSummaryListFilter,
     MGFilterPlusPid,
-    nm_acq_filter,
+    nm_filter,
 )
 from .tools.make_skin_map import make_skin_map
 from .views_charts_ct import (
@@ -630,7 +630,7 @@ def nm_summary_list_filter(request):
     """Obtain data for NM summary view"""
 
     pid = bool(request.user.groups.filter(name="pidgroup"))
-    f = nm_acq_filter(request.GET, pid=pid)
+    f = nm_filter(request.GET, pid=pid)
     user_profile = get_or_create_user(request)
     chart_options_form = nm_chart_form_processing(request, user_profile)
     items_per_page_form = update_items_per_page_form(request, user_profile)
