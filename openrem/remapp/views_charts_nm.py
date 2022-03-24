@@ -191,6 +191,7 @@ def nm_summary_chart_data(request):
 def nm_plot_calculations(f, user_profile: UserProfile, return_as_dict=False):
     return_structure = {}
 
+    # Depending on the selected charts, define all the fields we care about and load them into a Dataframe
     name_fields = []
     date_fields = []
     time_fields = []
@@ -198,7 +199,8 @@ def nm_plot_calculations(f, user_profile: UserProfile, return_as_dict=False):
     system_field = []
     chart_of_interest = [
         user_profile.plotNMStudyFreq, 
-        user_profile.plotNMStudyPerDayAndHour
+        user_profile.plotNMStudyPerDayAndHour,
+        user_profile.plotNMInjectedDoseOverWeight,
     ]
     if any(chart_of_interest):
         name_fields.append("study_description")
@@ -209,6 +211,20 @@ def nm_plot_calculations(f, user_profile: UserProfile, return_as_dict=False):
     if any(charts_of_interest):
         date_fields.append("study_date")
         time_fields.append("study_time")
+
+    charts_of_interest = [
+        user_profile.plotNMInjectedDoseOverWeight,
+        user_profile.plotNMInjectedDoseOverTime,
+        user_profile.plotNMInjectedDosePerStudy,
+    ]
+    if any(charts_of_interest):
+        value_fields.append("radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity")
+
+    charts_of_interest = [
+        user_profile.plotNMInjectedDoseOverWeight,
+    ]
+    if any(charts_of_interest):
+        value_fields.append("patientstudymoduleattr__patient_weight")
 
     fields = {
         "names": name_fields,
@@ -226,6 +242,7 @@ def nm_plot_calculations(f, user_profile: UserProfile, return_as_dict=False):
         uid="pk",
     )
 
+    # Based on df create all the Charts that are wanted
     if user_profile.plotNMStudyFreq:
         parameter_dict = {
             "df_name_col": "study_description",
@@ -271,6 +288,28 @@ def nm_plot_calculations(f, user_profile: UserProfile, return_as_dict=False):
                 user_profile.plotNMInitialSortingChoice,
             ],
             return_as_dict=return_as_dict,
+        )
+    if user_profile.plotNMInjectedDoseOverWeight:
+        parameter_dict = {
+            "df_name_col": "study_description",
+            "df_x_col": "patientstudymoduleattr__patient_weight",
+            "df_y_col": "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity",
+            "sorting_choice": [
+                user_profile.plotInitialSortingDirection,
+                user_profile.plotNMInitialSortingChoice,
+            ],
+            "grouping_choice": user_profile.plotGroupingChoice,
+            "legend_title": "Study description",
+            "colourmap": user_profile.plotColourMapChoice,
+            "facet_col_wrap": user_profile.plotFacetColWrapVal,
+            "x_axis_title": "Patient mass (kg)",
+            "y_axis_title": "Administed Activity (MBq)",
+            "filename": "OpenREM Nuclear Medicine Dose vs patient mass",
+            "return_as_dict": return_as_dict,
+        }
+        return_structure["studyInjectedDoseOverWeightData"] = plotly_scatter(
+            df,
+            parameter_dict,
         )
 
     return return_structure

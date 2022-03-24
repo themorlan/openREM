@@ -19,11 +19,14 @@ $(document).ready(function() {
         success: function( json ) {
 
             if(typeof json.studyFrequencyData !== "undefined") {
-                $("#studyFrequencyChartDiv").html(json.studyFrequencyData)
-                $("#studyFrequencyChartParentDiv").append(json.studyFrequencyDataCSV)
+                $("#studyFrequencyChartDiv").html(json.studyFrequencyData);
+                $("#studyFrequencyChartParentDiv").append(json.studyFrequencyDataCSV);
             }
             if(typeof json.studyWorkloadData !== "undefined") {
-                $("#studyWorkloadChartDiv").html(json.studyWorkloadData)
+                $("#studyWorkloadChartDiv").html(json.studyWorkloadData);
+            }
+            if(typeof json.studyInjectedDoseOverWeightData !== "undefined") {
+                $("#studyInjectedDoseOverWeightChartDiv").html(json.studyInjectedDoseOverWeightData);
             }
 
             $(".ajax-progress").hide();
