@@ -5,7 +5,6 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
-from django.utils.translation import gettext as _
 from remapp.forms import NMChartOptionsForm
 from remapp.interface.mod_filters import nm_filter
 from remapp.models import (
@@ -75,8 +74,7 @@ def nm_chart_form_processing(request, user_profile):
 
 
 def generate_required_nm_charts_list(user_profile: UserProfile):
-    """Obtain a list of dictionaries containing the title string and base
-    variable name for each required chart"""
+    """Get a list of the title string and base variable name for each required chart"""
     required_charts = []
 
     charts_requiring_time = [user_profile.plotNMInjectedDoseOverTime]

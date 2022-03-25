@@ -1113,8 +1113,9 @@ def dx_acq_filter(filters, pid=False):
 
 
 class NMSummaryListFilter(django_filters.FilterSet):
-
-    """Filter for NM studies to display in web interface."""
+    """
+    Filter for NM studies to display in web interface.
+    """
 
     study_date__gt = django_filters.DateFilter(
         lookup_expr="gte",

@@ -169,8 +169,8 @@ def create_admin_info(request):
     return admin
 
 
-def create_paginated_study_list(request, filter, user_profile):
-    paginator = Paginator(filter.qs, user_profile.itemsPerPage)
+def create_paginated_study_list(request, f, user_profile):
+    paginator = Paginator(f.qs, user_profile.itemsPerPage)
     page = request.GET.get("page")
     try:
         study_list = paginator.page(page)
@@ -543,8 +543,6 @@ def rf_detail_view_skin_map(request, pk=None):
         messages.error(request, "That study was not found")
         return redirect(reverse_lazy("rf_summary_list_filter"))
 
-    admin = create_admin_info(request)
-
     # Check to see if there is already a skin map pickle with the same study ID.
     try:
         study_date = GeneralStudyModuleAttr.objects.get(pk=pk).study_date
@@ -631,7 +629,6 @@ def rf_detail_view_skin_map(request, pk=None):
 @login_required
 def nm_summary_list_filter(request):
     """Obtain data for NM summary view"""
-
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = nm_filter(request.GET, pid=pid)
     user_profile = get_or_create_user(request)
@@ -659,7 +656,6 @@ def nm_summary_list_filter(request):
 @login_required
 def nm_detail_view(request, pk=None):
     """Detail view for a NM study"""
-
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:

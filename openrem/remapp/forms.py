@@ -174,7 +174,9 @@ class DXChartOptionsForm(forms.Form):
 
 
 class NMChartOptionsForm(forms.Form):
-    """Form for NM chart options"""
+    """
+    Form for NM chart options
+    """
 
     plotCharts = forms.BooleanField(label="Plot charts?", required=False)
 
@@ -222,7 +224,9 @@ class NMChartOptionsForm(forms.Form):
 
 
 class NMChartOptionsDisplayForm(forms.Form):
-    """Form for NM chart display options"""
+    """
+    Form for NM chart display options
+    """
 
     plotNMStudyFreq = forms.BooleanField(label="Study frequency", required=False)
     plotNMStudyPerDayAndHour = forms.BooleanField(
