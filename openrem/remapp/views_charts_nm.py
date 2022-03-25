@@ -5,10 +5,9 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
-from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
-from remapp.forms import CTChartOptionsForm, NMChartOptionsForm
-from remapp.interface.mod_filters import ct_acq_filter, nm_filter
+from remapp.forms import NMChartOptionsForm
+from remapp.interface.mod_filters import nm_filter
 from remapp.models import (
     UserProfile,
     create_user_profile,
@@ -17,9 +16,6 @@ from remapp.models import (
 from remapp.views_admin import (
     initialise_nm_form_data,
     required_average_choices,
-    required_ct_acquisition_types,
-    initialise_ct_form_data,
-    set_ct_chart_options,
     set_average_chart_options,
     set_common_chart_options,
     set_nm_chart_options,
@@ -32,13 +28,13 @@ from .interface.chart_functions import (
     plotly_barchart,
     plotly_histogram_barchart,
     plotly_barchart_weekdays,
-    plotly_set_default_theme,
     plotly_frequency_barchart,
     plotly_scatter,
     construct_over_time_charts,
 )
 
 logger = logging.getLogger(__name__)
+
 
 def nm_chart_form_processing(request, user_profile):
     # pylint: disable=too-many-statements
@@ -77,14 +73,13 @@ def nm_chart_form_processing(request, user_profile):
             chart_options_form = NMChartOptionsForm(form_data)
     return chart_options_form
 
-def generate_required_nm_charts_list(user_profile : UserProfile):
+
+def generate_required_nm_charts_list(user_profile: UserProfile):
     """Obtain a list of dictionaries containing the title string and base
     variable name for each required chart"""
     required_charts = []
 
-    charts_requiring_time = [
-        user_profile.plotNMInjectedDoseOverTime
-    ]
+    charts_requiring_time = [user_profile.plotNMInjectedDoseOverTime]
     if any(charts_requiring_time):
         keys = list(dict(user_profile.TIME_PERIOD).keys())
         values = list(dict(user_profile.TIME_PERIOD).values())
@@ -108,28 +103,28 @@ def generate_required_nm_charts_list(user_profile : UserProfile):
             required_charts.append(
                 {
                     "title": "Chart of injected dose per study mean",
-                    "var_name": "studyInjectedDoseMean"
+                    "var_name": "studyInjectedDoseMean",
                 }
             )
         if user_profile.plotMedian:
             required_charts.append(
                 {
                     "title": "Chart of injected dose per study median",
-                    "var_name": "studyInjectedDoseMedian"
+                    "var_name": "studyInjectedDoseMedian",
                 }
             )
         if user_profile.plotBoxplots:
             required_charts.append(
                 {
                     "title": "Boxplot of injected dose per study",
-                    "var_name": "studyInjectedDoseBoxplot"
+                    "var_name": "studyInjectedDoseBoxplot",
                 }
             )
         if user_profile.plotHistograms:
             required_charts.append(
                 {
                     "title": "Histogram of injected dose per study",
-                    "var_name": "studyInjectedDoseHistogram"
+                    "var_name": "studyInjectedDoseHistogram",
                 }
             )
     if user_profile.plotNMInjectedDoseOverTime:
@@ -137,25 +132,26 @@ def generate_required_nm_charts_list(user_profile : UserProfile):
             required_charts.append(
                 {
                     "title": f"Chart of injected dose mean over time ({time_period})",
-                    "var_name": "studyInjectedDoseOverTimeMean"
+                    "var_name": "studyInjectedDoseOverTimeMean",
                 }
             )
         if user_profile.plotMedian:
             required_charts.append(
                 {
                     "title": f"Chart of injected dose median over time ({time_period})",
-                    "var_name": "studyInjectedDoseOverTimeMedian"
+                    "var_name": "studyInjectedDoseOverTimeMedian",
                 }
             )
     if user_profile.plotNMInjectedDoseOverWeight:
         required_charts.append(
             {
                 "title": "Chart of injected dose versus patient weight",
-                "var_name": "studyInjectedDoseOverWeight"
+                "var_name": "studyInjectedDoseOverWeight",
             }
         )
 
     return required_charts
+
 
 @login_required
 def nm_summary_chart_data(request):
@@ -191,7 +187,7 @@ def nm_plot_calculations(f, user_profile: UserProfile, return_as_dict=False):
     value_fields = []
     system_field = []
     chart_of_interest = [
-        user_profile.plotNMStudyFreq, 
+        user_profile.plotNMStudyFreq,
         user_profile.plotNMStudyPerDayAndHour,
         user_profile.plotNMInjectedDoseOverWeight,
         user_profile.plotNMInjectedDoseOverTime,
@@ -214,7 +210,9 @@ def nm_plot_calculations(f, user_profile: UserProfile, return_as_dict=False):
         user_profile.plotNMInjectedDosePerStudy,
     ]
     if any(charts_of_interest):
-        value_fields.append("radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity")
+        value_fields.append(
+            "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity"
+        )
 
     charts_of_interest = [
         user_profile.plotNMInjectedDoseOverWeight,
@@ -248,17 +246,32 @@ def nm_plot_calculations(f, user_profile: UserProfile, return_as_dict=False):
     # Based on df create all the Charts that are wanted
 
     if user_profile.plotNMStudyFreq:
-        return_structure.update(_generate_nm_study_freq(user_profile, return_as_dict, df))
+        return_structure.update(
+            _generate_nm_study_freq(user_profile, return_as_dict, df)
+        )
     if user_profile.plotNMStudyPerDayAndHour:
-        return_structure.update(_generate_nm_study_workload(user_profile, return_as_dict, df))
+        return_structure.update(
+            _generate_nm_study_workload(user_profile, return_as_dict, df)
+        )
     if user_profile.plotNMInjectedDoseOverWeight:
-        return_structure.update(_generate_nm_dose_over_patient_weight(user_profile, return_as_dict, df))
+        return_structure.update(
+            _generate_nm_dose_over_patient_weight(user_profile, return_as_dict, df)
+        )
     if user_profile.plotNMInjectedDosePerStudy:
-        return_structure.update(_generate_nm_dose_per_study(user_profile, return_as_dict, df, average_choices))
+        return_structure.update(
+            _generate_nm_dose_per_study(
+                user_profile, return_as_dict, df, average_choices
+            )
+        )
     if user_profile.plotNMInjectedDoseOverTime:
-        return_structure.update(_generate_nm_dose_over_time(user_profile, return_as_dict, df, average_choices))
+        return_structure.update(
+            _generate_nm_dose_over_time(
+                user_profile, return_as_dict, df, average_choices
+            )
+        )
 
     return return_structure
+
 
 def _generate_nm_study_freq(user_profile, return_as_dict, df):
     return_structure = {}
@@ -266,7 +279,7 @@ def _generate_nm_study_freq(user_profile, return_as_dict, df):
         "df_name_col": "study_description",
         "sorting_choice": [
             user_profile.plotInitialSortingDirection,
-            user_profile.plotNMInitialSortingChoice
+            user_profile.plotNMInitialSortingChoice,
         ],
         "legend_title": "Study description",
         "df_x_axis_col": "x_ray_system_name",
@@ -288,6 +301,7 @@ def _generate_nm_study_freq(user_profile, return_as_dict, df):
         csv_name="studyFrequencyData.csv",
     )
     return return_structure
+
 
 def _generate_nm_study_workload(user_profile, return_as_dict, df):
     return_structure = {}
@@ -311,6 +325,7 @@ def _generate_nm_study_workload(user_profile, return_as_dict, df):
         return_as_dict=return_as_dict,
     )
     return return_structure
+
 
 def _generate_nm_dose_over_patient_weight(user_profile, return_as_dict, df):
     return_structure = {}
@@ -336,6 +351,7 @@ def _generate_nm_dose_over_patient_weight(user_profile, return_as_dict, df):
         parameter_dict,
     )
     return return_structure
+
 
 def _generate_nm_dose_per_study(user_profile, return_as_dict, df, average_choices):
     return_structure = {}
@@ -364,7 +380,9 @@ def _generate_nm_dose_per_study(user_profile, return_as_dict, df, average_choice
         }
         if user_profile.plotMean:
             parameter_dict["value_axis_title"] = "Mean Injected Dose (MBq)"
-            parameter_dict["filename"] = "OpenREM nuclear medicine study injected dose mean"
+            parameter_dict[
+                "filename"
+            ] = "OpenREM nuclear medicine study injected dose mean"
             parameter_dict["average_choice"] = "mean"
             (
                 return_structure["studyMeanInjectedDoseData"],
@@ -377,7 +395,9 @@ def _generate_nm_dose_per_study(user_profile, return_as_dict, df, average_choice
 
         if user_profile.plotMedian:
             parameter_dict["value_axis_title"] = "Median Injected Dose (MBq)"
-            parameter_dict["filename"] = "OpenREM nuclear medicine study injected dose median"
+            parameter_dict[
+                "filename"
+            ] = "OpenREM nuclear medicine study injected dose median"
             parameter_dict["average_choice"] = "median"
             (
                 return_structure["studyMedianInjectedDoseData"],
@@ -443,7 +463,10 @@ def _generate_nm_dose_per_study(user_profile, return_as_dict, df, average_choice
         )
     return return_structure
 
-def _generate_nm_dose_over_time(user_profile: UserProfile, return_as_dict, df, average_choices):
+
+def _generate_nm_dose_over_time(
+    user_profile: UserProfile, return_as_dict, df, average_choices
+):
     return_structure = {}
 
     if user_profile.plotGroupingChoice == "series":
@@ -483,5 +506,5 @@ def _generate_nm_dose_over_time(user_profile: UserProfile, return_as_dict, df, a
             return_structure["studyInjectedDoseOverTimeMeanData"] = result["mean"]
         if user_profile.plotMedian:
             return_structure["studyInjectedDoseOverTimeMedianData"] = result["median"]
-    
+
     return return_structure

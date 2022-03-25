@@ -169,10 +169,12 @@ def ct_xlsx_phe2019(request):
 def nmcsv1(request, name=None, pat_id=None):
     raise NotImplementedError
 
+
 @csrf_exempt
 @login_required
 def nmxlsx1(request, name=None, pat_id=None):
     raise NotImplementedError
+
 
 @csrf_exempt
 @login_required

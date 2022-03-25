@@ -71,7 +71,7 @@ from .forms import (
     RFChartOptionsDisplayForm,
     RFHighDoseFluoroAlertsForm,
     UpdateDisplayNamesForm,
-    NMChartOptionsDisplayForm
+    NMChartOptionsDisplayForm,
 )
 from .models import (
     AccumIntegratedProjRadiogDose,
@@ -775,16 +775,19 @@ def reset_dual(pk=None):
         .exclude(modality_type__exact="CR")
         .exclude(modality_type__exact="PX")
     )
-    message_start = "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are " "DX, {3} are CR, {4} are PX, {5} are RF and {6} are something else before processing,".format(  # pylint: disable=line-too-long
-        studies[0]
-        .generalequipmentmoduleattr_set.get()
-        .unique_equipment_name.display_name,
-        studies.count(),
-        studies.filter(modality_type__exact="DX").count(),
-        studies.filter(modality_type__exact="CR").count(),
-        studies.filter(modality_type__exact="PX").count(),
-        studies.filter(modality_type__exact="RF").count(),
-        not_dx_rf_cr.count(),
+    message_start = (
+        "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are "
+        "DX, {3} are CR, {4} are PX, {5} are RF and {6} are something else before processing,".format(  # pylint: disable=line-too-long
+            studies[0]
+            .generalequipmentmoduleattr_set.get()
+            .unique_equipment_name.display_name,
+            studies.count(),
+            studies.filter(modality_type__exact="DX").count(),
+            studies.filter(modality_type__exact="CR").count(),
+            studies.filter(modality_type__exact="PX").count(),
+            studies.filter(modality_type__exact="RF").count(),
+            not_dx_rf_cr.count(),
+        )
     )
 
     logger.debug(message_start)
@@ -1588,12 +1591,22 @@ def set_average_chart_options(general_form, user_profile):
 
 def set_nm_chart_options(nm_form, user_profile):
     user_profile.plotNMStudyFreq = nm_form.cleaned_data["plotNMStudyFreq"]
-    user_profile.plotNMStudyPerDayAndHour = nm_form.cleaned_data["plotNMStudyPerDayAndHour"]
-    user_profile.plotNMInjectedDosePerStudy = nm_form.cleaned_data["plotNMInjectedDosePerStudy"]
-    user_profile.plotNMInjectedDoseOverTime = nm_form.cleaned_data["plotNMInjectedDoseOverTime"]
-    user_profile.plotNMInjectedDoseOverWeight = nm_form.cleaned_data["plotNMInjectedDoseOverWeight"]
+    user_profile.plotNMStudyPerDayAndHour = nm_form.cleaned_data[
+        "plotNMStudyPerDayAndHour"
+    ]
+    user_profile.plotNMInjectedDosePerStudy = nm_form.cleaned_data[
+        "plotNMInjectedDosePerStudy"
+    ]
+    user_profile.plotNMInjectedDoseOverTime = nm_form.cleaned_data[
+        "plotNMInjectedDoseOverTime"
+    ]
+    user_profile.plotNMInjectedDoseOverWeight = nm_form.cleaned_data[
+        "plotNMInjectedDoseOverWeight"
+    ]
     user_profile.plotNMOverTimePeriod = nm_form.cleaned_data["plotNMOverTimePeriod"]
-    user_profile.plotNMInitialSortingChoice = nm_form.cleaned_data["plotNMInitialSortingChoice"]
+    user_profile.plotNMInitialSortingChoice = nm_form.cleaned_data[
+        "plotNMInitialSortingChoice"
+    ]
 
 
 def initialise_nm_form_data(user_profile):

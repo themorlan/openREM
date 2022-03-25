@@ -84,10 +84,7 @@ from .views_charts_rf import (
     generate_required_rf_charts_list,
     rf_chart_form_processing,
 )
-from .views_charts_nm import (
-    nm_chart_form_processing,
-    generate_required_nm_charts_list
-)
+from .views_charts_nm import nm_chart_form_processing, generate_required_nm_charts_list
 from .models import (
     GeneralStudyModuleAttr,
     create_user_profile,
@@ -131,6 +128,7 @@ def logout_page(request):
     logout(request)
     return HttpResponseRedirect(reverse_lazy("home"))
 
+
 def update_items_per_page_form(request, user_profile):
     # Obtain the number of items per page from the request
     items_per_page_form = itemsPerPageForm(request.GET)
@@ -148,6 +146,7 @@ def update_items_per_page_form(request, user_profile):
             items_per_page_form = itemsPerPageForm(form_data)
     return items_per_page_form
 
+
 def get_or_create_user(request):
     try:
         # See if the user has plot settings in userprofile
@@ -157,6 +156,7 @@ def get_or_create_user(request):
         create_user_profile(sender=request.user, instance=request.user, created=True)
         user_profile = request.user.userprofile
     return user_profile
+
 
 def create_admin_info(request):
     admin = {
@@ -168,6 +168,7 @@ def create_admin_info(request):
         admin[group.name] = True
     return admin
 
+
 def create_paginated_study_list(request, filter, user_profile):
     paginator = Paginator(filter.qs, user_profile.itemsPerPage)
     page = request.GET.get("page")
@@ -178,6 +179,7 @@ def create_paginated_study_list(request, filter, user_profile):
     except EmptyPage:
         study_list = paginator.page(paginator.num_pages)
     return study_list
+
 
 @login_required
 def dx_summary_list_filter(request):
@@ -510,8 +512,8 @@ def rf_detail_view(request, pk=None):
 
     admin = create_admin_info(request)
     admin["enable_skin_dose_maps"] = SkinDoseMapCalcSettings.objects.values_list(
-            "enable_skin_dose_maps", flat=True
-        )[0]
+        "enable_skin_dose_maps", flat=True
+    )[0]
 
     for group in request.user.groups.all():
         admin[group.name] = True
@@ -625,6 +627,7 @@ def rf_detail_view_skin_map(request, pk=None):
     return_structure["primary_key"] = pk
     return JsonResponse(return_structure, safe=False)
 
+
 @login_required
 def nm_summary_list_filter(request):
     """Obtain data for NM summary view"""
@@ -652,10 +655,11 @@ def nm_summary_list_filter(request):
 
     return render(request, "remapp/nmfiltered.html", return_structure)
 
+
 @login_required
 def nm_detail_view(request, pk=None):
     """Detail view for a NM study"""
-    
+
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
@@ -669,6 +673,7 @@ def nm_detail_view(request, pk=None):
         "remapp/nmdetail.html",
         {"generalstudymoduleattr": study, "admin": admin},
     )
+
 
 @login_required
 def ct_summary_list_filter(request):
