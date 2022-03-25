@@ -6,6 +6,7 @@ from celery import shared_task  # pylint: disable=unused-import
 
 from .exports.mg_export import exportMG2excel  # pylint: disable=unused-import
 from .exports.ct_export import ctxlsx, ct_csv  # pylint: disable=unused-import
+from .exports.nm_export import exportNM2excel, exportNM2csv # pylint: disable=unused-import
 from .exports.mg_csv_nhsbsp import mg_csv_nhsbsp  # pylint: disable=unused-import
 from .exports.dx_export import (
     exportDX2excel,

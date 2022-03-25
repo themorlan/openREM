@@ -167,13 +167,51 @@ def ct_xlsx_phe2019(request):
 @csrf_exempt
 @login_required
 def nmcsv1(request, name=None, pat_id=None):
-    raise NotImplementedError
+    """View to launch celery task to export NM studies to csv file
+
+    :param request: Contains the database filtering parameters. Also used to get user group.
+    :param name: string, 0 or 1 from URL indicating if names should be exported
+    :param pat_id: string, 0 or 1 from URL indicating if patient ID should be exported
+    :type request: GET
+    """
+    from django.shortcuts import redirect
+    from remapp.exports.nm_export import exportNM2csv
+
+    pid = include_pid(request, name, pat_id)
+
+    if request.user.groups.filter(name="exportgroup"):
+        job = exportNM2csv.delay(
+            request.GET,
+            pid["pidgroup"],
+            pid["include_names"],
+            pid["include_pat_id"],
+            request.user.id,
+        )
+        logger.debug(f"Export NM to CSV job is {job}")
+
+    return redirect(reverse_lazy("export"))
 
 
 @csrf_exempt
 @login_required
 def nmxlsx1(request, name=None, pat_id=None):
-    raise NotImplementedError
+    
+    from django.shortcuts import redirect
+    from remapp.exports.nm_export import exportNM2excel
+
+    pid = include_pid(request, name, pat_id)
+
+    if request.user.groups.filter(name="exportgroup"):
+        job = exportNM2excel.delay(
+            request.GET,
+            pid["pidgroup"],
+            pid["include_names"],
+            pid["include_pat_id"],
+            request.user.id,
+        )
+        logger.debug(f"Exprt NM to Excel job is {job}")
+
+    return redirect(reverse_lazy("export"))
 
 
 @csrf_exempt
