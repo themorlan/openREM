@@ -30,7 +30,6 @@
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.translation import gettext as _
 from celery import shared_task
 import datetime
 from ..interface.mod_filters import nm_filter
@@ -44,12 +43,12 @@ from .export_common import (
     create_csv,
     text_and_date_formats,
     write_export,
-    create_summary_sheet,
     abort_if_zero_studies,
     create_export_task,
 )
 
 logger = logging.getLogger(__name__)
+
 
 def _exit_proc(task, date_stamp, error_msg=None, force_exit=True):
     if error_msg is not None:
@@ -62,18 +61,30 @@ def _exit_proc(task, date_stamp, error_msg=None, force_exit=True):
     if force_exit:
         exit(0)
 
+
 def unknown_error(task, date_stamp):
     etype, evalue, _ = sys.exc_info()
-    logger.error(f"Failed to export NM with error: \n {''.join(traceback.format_exc())}")
+    logger.error(
+        f"Failed to export NM with error: \n {''.join(traceback.format_exc())}"
+    )
     _exit_proc(task, date_stamp, traceback.format_exception_only(etype, evalue)[-1])
+
 
 def _nm_headers(pid, name, patid):
     headings = common_headers("NM", pid, name, patid)
-    headings.remove("No. events") # There is always just one event for a study
-    headings += ["Radiopharmaceutical Agent", "Radionuclide", "Radionuclide Half Live", 
-        "Start Time", "Stop Time", "Administered activity (MBq)", "Radiopharmaceutical Volume (cm^3)"]
+    headings.remove("No. events")  # There is always just one event for a study
+    headings += [
+        "Radiopharmaceutical Agent",
+        "Radionuclide",
+        "Radionuclide Half Live",
+        "Start Time",
+        "Stop Time",
+        "Administered activity (MBq)",
+        "Radiopharmaceutical Volume (cm^3)",
+    ]
 
     return headings
+
 
 def _get_data(filterdict, pid, task):
     data = nm_filter(filterdict, pid).qs
@@ -86,12 +97,15 @@ def _get_data(filterdict, pid, task):
 
     return data
 
+
 def _extract_study_data(exams, pid, name, patid):
     exam_data = get_common_data("NM", exams, pid, name, patid)
 
     try:
         radiopharm = exams.radiopharmaceuticalradiationdose_set.get()
-        radiopharm_admin = radiopharm.radiopharmaceuticaladministrationeventdata_set.get()
+        radiopharm_admin = (
+            radiopharm.radiopharmaceuticaladministrationeventdata_set.get()
+        )
         radiopharm_agent = radiopharm_admin.radiopharmaceutical_agent.code_meaning
         radiopharm_radionuclide = radiopharm_admin.radionuclide.code_meaning
         radiopharm_radionuclide_half_life = radiopharm_admin.radionuclide_half_life
@@ -100,11 +114,17 @@ def _extract_study_data(exams, pid, name, patid):
         radiopharm_activity = radiopharm_admin.administered_activity
         radiopharm_volume = radiopharm_admin.radiopharmaceutical_volume
     except ObjectDoesNotExist:
-        raise # We handle this on the level of the export
+        raise  # We handle this on the level of the export
 
-    exam_data += [radiopharm_agent, radiopharm_radionuclide, 
-        radiopharm_radionuclide_half_life, radiopharm_start,
-        radiopharm_stop, radiopharm_activity, radiopharm_volume]
+    exam_data += [
+        radiopharm_agent,
+        radiopharm_radionuclide,
+        radiopharm_radionuclide_half_life,
+        radiopharm_start,
+        radiopharm_stop,
+        radiopharm_activity,
+        radiopharm_volume,
+    ]
 
     for i, item in enumerate(exam_data):
         if item is None:
@@ -129,12 +149,12 @@ def exportNM2csv(filterdict, pid=False, name=None, patid=None, user=None):
         user=user,
         filters_dict=filterdict,
     )
-    
+
     try:
         tmpfile, writer = create_csv(task)
         if not tmpfile:
             _exit_proc(task, date_stamp, "Failed to create the export file")
-        
+
         data = _get_data(filterdict, pid, task)
         headings = _nm_headers(pid, name, patid)
         writer.writerow(headings)
@@ -143,7 +163,7 @@ def exportNM2csv(filterdict, pid=False, name=None, patid=None, user=None):
         task.save()
 
         for i, exam in enumerate(data):
-            try: 
+            try:
                 exam_data = _extract_study_data(exam, pid, name, patid)
                 writer.writerow(exam_data)
             except ObjectDoesNotExist:
@@ -163,6 +183,7 @@ def exportNM2csv(filterdict, pid=False, name=None, patid=None, user=None):
     task.progress = "All data written."
     _exit_proc(task, date_stamp, force_exit=False)
 
+
 @shared_task
 def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
     logger.debug("Started XLSX export task for NM")
@@ -177,15 +198,15 @@ def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
         user=user,
         filters_dict=filterdict,
     )
-        
+
     try:
         tmpxlsx, book = create_xlsx(task)
         if not tmpxlsx:
             _exit_proc(task, date_stamp, "Failed to create file")
-        
+
         data = _get_data(filterdict, pid, task)
         headings = _nm_headers(pid, name, patid)
-        
+
         all_data = book.add_worksheet("All data")
         book = text_and_date_formats(book, all_data, pid, name, patid)
 
@@ -197,7 +218,7 @@ def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
         for i, exam in enumerate(data):
             try:
                 exam_data = _extract_study_data(exam, pid, name, patid)
-                all_data.write_row(i+1, 0, exam_data)
+                all_data.write_row(i + 1, 0, exam_data)
             except ObjectDoesNotExist:
                 error_message = (
                     f"DoesNotExist error whilst exporting study {i + 1} of {task.num_records},  study UID {exam.study_instance_uid}, accession number"
@@ -205,14 +226,16 @@ def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
                     " study?"
                 )
                 logger.error(error_message)
-                all_data.write_row(i+1, 0, [error_message])
-            
+                all_data.write_row(i + 1, 0, [error_message])
+
             task.progress = f"{i+1} of {task.num_records} written."
             task.save()
-        
+
         book.close()
     except Exception:
         unknown_error(task, date_stamp)
-    
+
     xlsxfilename = "nmexport{0}.xlsx".format(date_stamp.strftime("%Y%m%d-%H%M%S%f"))
-    write_export(task, xlsxfilename, tmpxlsx, date_stamp) # Does nearly the same as _exit_proc, so it's used to leave the process
+    write_export(
+        task, xlsxfilename, tmpxlsx, date_stamp
+    )  # Does nearly the same as _exit_proc, so it's used to leave the process
