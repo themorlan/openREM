@@ -21,10 +21,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-..  module:: ct_export.
-    :synopsis: Module to export database data to multi-sheet Microsoft XLSX files and single-sheet csv files
+..  module:: nm_export
+    :synopsis: Module to export database data to xlsx and csv files
 
-..  moduleauthor:: Ed McDonagh
+..  moduleauthor:: Jannis Widmer
 
 """
 import logging
@@ -34,6 +34,8 @@ from django.utils.translation import gettext as _
 from celery import shared_task
 import datetime
 from ..interface.mod_filters import nm_filter
+import traceback
+import sys
 
 from .export_common import (
     get_common_data,
@@ -49,9 +51,21 @@ from .export_common import (
 
 logger = logging.getLogger(__name__)
 
-def _exit_proc(task):
+def _exit_proc(task, date_stamp, error_msg=None, force_exit=True):
+    if error_msg is not None:
+        task.status = "ERROR"
+        task.progress = error_msg
+    else:
+        task.status = "COMPLETE"
+    task.processtime = (datetime.datetime.now() - date_stamp).total_seconds()
     task.save()
-    exit()
+    if force_exit:
+        exit(0)
+
+def unknown_error(task, date_stamp):
+    etype, evalue, _ = sys.exc_info()
+    logger.error(f"Failed to export NM with error: \n {''.join(traceback.format_exc())}")
+    _exit_proc(task, date_stamp, traceback.format_exception_only(etype, evalue)[-1])
 
 def _nm_headers(pid, name, patid):
     headings = common_headers("NM", pid, name, patid)
@@ -66,7 +80,7 @@ def _get_data(filterdict, pid, task):
 
     task.num_records = data.count()
     if abort_if_zero_studies(task.num_records, task):
-        _exit_proc(task)
+        _exit_proc(task, datetime.datetime.now(), "Zero studies marked for export")
     task.progress = f"{task.num_records} studies in query"
     task.save()
 
@@ -76,10 +90,6 @@ def _extract_study_data(exams, pid, name, patid):
     exam_data = get_common_data("NM", exams, pid, name, patid)
 
     try:
-        (radiopharm_agent, radiopharm_radionuclide, 
-        radiopharm_radionuclide_half_life, radiopharm_start,
-        radiopharm_stop, radiopharm_activity, radiopharm_volume) = ("", "", "", "", "", "", "")
-
         radiopharm = exams.radiopharmaceuticalradiationdose_set.get()
         radiopharm_admin = radiopharm.radiopharmaceuticaladministrationeventdata_set.get()
         radiopharm_agent = radiopharm_admin.radiopharmaceutical_agent.code_meaning
@@ -90,13 +100,18 @@ def _extract_study_data(exams, pid, name, patid):
         radiopharm_activity = radiopharm_admin.administered_activity
         radiopharm_volume = radiopharm_admin.radiopharmaceutical_volume
     except ObjectDoesNotExist:
-        logger.debug(
-            "Export NM; RadiopharmaceuticalAdministrationEventData set does not exists."
-            f"Accession Number: {exams.accession_number}, Date: {exams.study_date}"
-        )
+        raise # We handle this on the level of the export
+
     exam_data += [radiopharm_agent, radiopharm_radionuclide, 
         radiopharm_radionuclide_half_life, radiopharm_start,
         radiopharm_stop, radiopharm_activity, radiopharm_volume]
+
+    for i, item in enumerate(exam_data):
+        if item is None:
+            exam_data[i] = ""
+        if isinstance(item, str):
+            exam_data[i] = item.replace(",", ";")
+
     return exam_data
 
 
@@ -115,43 +130,89 @@ def exportNM2csv(filterdict, pid=False, name=None, patid=None, user=None):
         filters_dict=filterdict,
     )
     
-    tmpfile, writer = create_csv(task)
-    if not tmpfile:
-        _exit_proc(task)
-    
-    data = _get_data(filterdict, pid, task)
-    headings = _nm_headers(pid, name, patid)
-    writer.writerow(headings)
+    try:
+        tmpfile, writer = create_csv(task)
+        if not tmpfile:
+            _exit_proc(task, date_stamp, "Failed to create the export file")
+        
+        data = _get_data(filterdict, pid, task)
+        headings = _nm_headers(pid, name, patid)
+        writer.writerow(headings)
 
-    task.progress = "CSV header row written."
-    task.save()
-
-    for i, exam in enumerate(data):
-        try: 
-            exam_data = _extract_study_data(exam, pid, name, patid)
-            for i, item in enumerate(exam_data):
-                if item is None:
-                    exam_data[i] = ""
-                if isinstance(item, str):
-                    exam_data[i] = item.replace(",", ";")
-            writer.writerow(exam_data)
-        except ObjectDoesNotExist:
-            error_message = (
-                f"DoesNotExist error whilst exporting study {i + 1} of {task.num_records},  study UID {exam.study_instance_uid}, accession number"
-                f" {exam.accession_number} - maybe database entry was deleted as part of importing later version of same"
-                " study?"
-            )
-            logger.error(error_message)
-            writer.writerow([error_message])
-        task.progress = f"{i+1} of {task.num_records} written."
+        task.progress = "CSV header row written."
         task.save()
+
+        for i, exam in enumerate(data):
+            try: 
+                exam_data = _extract_study_data(exam, pid, name, patid)
+                writer.writerow(exam_data)
+            except ObjectDoesNotExist:
+                error_message = (
+                    f"DoesNotExist error whilst exporting study {i + 1} of {task.num_records},  study UID {exam.study_instance_uid}, accession number"
+                    f" {exam.accession_number} - maybe database entry was deleted as part of importing later version of same"
+                    " study?"
+                )
+                logger.error(error_message)
+                writer.writerow([error_message])
+            task.progress = f"{i+1} of {task.num_records} written."
+            task.save()
+    except Exception:
+        unknown_error(task, date_stamp)
 
     tmpfile.close()
     task.progress = "All data written."
-    task.status = "COMPLETE"
-    task.processtime = (datetime.datetime.now() - date_stamp).total_seconds()
-    task.save()
+    _exit_proc(task, date_stamp, force_exit=False)
 
 @shared_task
 def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
-    pass
+    logger.debug("Started XLSX export task for NM")
+
+    date_stamp = datetime.datetime.now()
+    task = create_export_task(
+        celery_uuid=exportNM2excel.request.id,
+        modality="NM",
+        export_type="XLSX export",
+        date_stamp=date_stamp,
+        pid=bool(pid and (name or patid)),
+        user=user,
+        filters_dict=filterdict,
+    )
+        
+    try:
+        tmpxlsx, book = create_xlsx(task)
+        if not tmpxlsx:
+            _exit_proc(task, date_stamp, "Failed to create file")
+        
+        data = _get_data(filterdict, pid, task)
+        headings = _nm_headers(pid, name, patid)
+        
+        all_data = book.add_worksheet("All data")
+        book = text_and_date_formats(book, all_data, pid, name, patid)
+
+        all_data.write_row(0, 0, headings)
+        numcolumns = len(headings) - 1
+        numrows = data.count()
+        all_data.autofilter(0, 0, numrows, numcolumns)
+
+        for i, exam in enumerate(data):
+            try:
+                exam_data = _extract_study_data(exam, pid, name, patid)
+                all_data.write_row(i+1, 0, exam_data)
+            except ObjectDoesNotExist:
+                error_message = (
+                    f"DoesNotExist error whilst exporting study {i + 1} of {task.num_records},  study UID {exam.study_instance_uid}, accession number"
+                    f" {exam.accession_number} - maybe database entry was deleted as part of importing later version of same"
+                    " study?"
+                )
+                logger.error(error_message)
+                all_data.write_row(i+1, 0, [error_message])
+            
+            task.progress = f"{i+1} of {task.num_records} written."
+            task.save()
+        
+        book.close()
+    except Exception:
+        unknown_error(task, date_stamp)
+    
+    xlsxfilename = "nmexport{0}.xlsx".format(date_stamp.strftime("%Y%m%d-%H%M%S%f"))
+    write_export(task, xlsxfilename, tmpxlsx, date_stamp) # Does nearly the same as _exit_proc, so it's used to leave the process
