@@ -87,7 +87,7 @@ class ImportNMRDSR(TestCase):
         u.name_hashed = False
         u.save()
 
-        dicom_file = "test_files/PET_1_STUDY_0_RRDSR"
+        dicom_file = "test_files/NM-RRDSR-Siemens.dcm"
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
@@ -191,7 +191,7 @@ class ImportNMRDSR(TestCase):
         u.name_hashed = False
         u.save()
 
-        dicom_file = "test_files/PET_RRDSR_generated.dcm"
+        dicom_file = "test_files/NM-RRDSR-Siemens-Extended.dcm"
         root_tests = os.path.dirname(os.path.abspath(__file__))
         dicom_path = os.path.join(root_tests, dicom_file)
 
