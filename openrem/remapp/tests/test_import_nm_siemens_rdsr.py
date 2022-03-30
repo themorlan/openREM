@@ -79,21 +79,23 @@ class ImportNMRDSR(TestCase):
             else:
                 self._check_values(current, subdata, location)
 
-    def test_import_siemens_rrdsr(self):
-        """Loads a Siemens RRDSR-File and checks all values against the expected ones"""
+    def _get_dcm_file(self, dicom_file):
+        root_tests = os.path.dirname(os.path.abspath(__file__))
+        dicom_path = os.path.join(root_tests, dicom_file)
+        return dicom_path
 
+    def setUp(self) -> None:
         u: PatientIDSettings = PatientIDSettings.objects.create()
         u.name_stored = True
         u.name_hashed = False
         u.save()
 
-        dicom_file = "test_files/NM-RRDSR-Siemens.dcm"
-        root_tests = os.path.dirname(os.path.abspath(__file__))
-        dicom_path = os.path.join(root_tests, dicom_file)
+    def test_import_siemens_rrdsr(self):
+        """Loads a Siemens RRDSR-File and checks all values against the expected ones"""
 
+        dicom_path = self._get_dcm_file("test_files/NM-RRDSR-Siemens.dcm")
         rdsr.rdsr(dicom_path)
-
-        study = GeneralStudyModuleAttr.objects.first()
+        study = GeneralStudyModuleAttr.objects.filter(modality_type__exact="NM").get()
 
         # We verify only the first and the last organ dose
         expected_data = {
@@ -186,18 +188,10 @@ class ImportNMRDSR(TestCase):
         self._check_values(study, expected_data)
 
     def test_import_generated_full_nm(self):
-        u: PatientIDSettings = PatientIDSettings.objects.create()
-        u.name_stored = True
-        u.name_hashed = False
-        u.save()
 
-        dicom_file = "test_files/NM-RRDSR-Siemens-Extended.dcm"
-        root_tests = os.path.dirname(os.path.abspath(__file__))
-        dicom_path = os.path.join(root_tests, dicom_file)
-
+        dicom_path = self._get_dcm_file("test_files/NM-RRDSR-Siemens-Extended.dcm")
         rdsr.rdsr(dicom_path)
-
-        study = GeneralStudyModuleAttr.objects.first()
+        study = GeneralStudyModuleAttr.objects.filter(modality_type__exact="NM").get()
 
         expected_data = {
             "patientmoduleattr_set": {
@@ -364,3 +358,34 @@ class ImportNMRDSR(TestCase):
         }
 
         self._check_values(study, expected_data)
+
+    def _2_associated_studies(self):
+        self.assertEqual(GeneralStudyModuleAttr.objects.count(), 2)
+        study1 = GeneralStudyModuleAttr.objects.filter(modality_type__exact="CT").get()
+        study2 = GeneralStudyModuleAttr.objects.filter(modality_type__exact="NM").get()
+        self.assertEqual(study1.study_id, study2.study_id)
+
+    def test_load_associated_ct_before(self):
+        """Check if loading the associated RDSR before the RRDSR works correctly"""
+        rdsr_path = self._get_dcm_file("test_files/NM-CT-RDSR-Siemens.dcm")
+        rdsr.rdsr(rdsr_path)
+        self.test_import_siemens_rrdsr()
+
+        self._2_associated_studies()
+
+    def test_load_associated_ct_after(self):
+        """Check if loading the associated RDSR after the RRDSR works correctly"""
+        self.test_import_siemens_rrdsr()
+        rdsr_path = self._get_dcm_file("test_files/NM-CT-RDSR-Siemens.dcm")
+        rdsr.rdsr(rdsr_path)
+
+        self._2_associated_studies()
+
+    def test_no_reimport(self):
+        self.test_import_siemens_rrdsr()
+        self.test_import_siemens_rrdsr()
+        rdsr_path = self._get_dcm_file("test_files/NM-CT-RDSR-Siemens.dcm")
+        rdsr.rdsr(rdsr_path)
+        rdsr.rdsr(rdsr_path)
+
+        self._2_associated_studies()
