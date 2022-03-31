@@ -84,6 +84,31 @@
             <td>{{radioadmin.radiopharmaceutical_stop_datetime}}</td>
         </tr>
         <tr>
+            <th scope="col">Route of Administration</th>
+            <td>{{radioadmin.route_of_administration.code_meaning}}</td>
+        </tr>
+        <tr>
+            <th scope="col">Route of Administation Laterality</th>
+            <td>{{radioadmin.laterality}}</td>
+        </tr>
+        {% for person_participant in radioadmin.personparticipant_set.all %} 
+        <tr>
+            <th scope="col">Person participant</th>
+            <td>
+                <table class="table custom_table_without_top_borders">
+                    <tr>
+                        <th>Name</th>
+                        <td>{{person_participant.person_name}}</td>
+                    </tr>
+                    <tr>
+                        <th>Role</th>
+                        <td>{{person_participant.person_role_in_procedure_cid.code_meaning}}</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        {% endfor %}
+        <tr>
             <th scope="col">Comment</th>
             <td>{{radiopharm.comment}}</td>
         </tr>
@@ -198,7 +223,7 @@
         <tr>
             <th scope="col">Glomerular Filtration Rate</th>
             <td>
-                <table>
+                <table class="table custom_table_without_top_borders">
                     <tr><td>{{glomerular.glomerular_filtration_rate|floatformat:2}} ml/min/1.73m<sup>2</sup></td></tr>
                     <tr>
                         <th>Measurement Method</th>
