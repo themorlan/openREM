@@ -38,6 +38,7 @@ import traceback
 import sys
 
 from .export_common import (
+    create_summary_sheet,
     get_common_data,
     common_headers,
     create_xlsx,
@@ -46,6 +47,7 @@ from .export_common import (
     write_export,
     abort_if_zero_studies,
     create_export_task,
+    sheet_name
 )
 
 logger = logging.getLogger(__name__)
@@ -102,8 +104,8 @@ def _get_data(filterdict, pid, task):
     ).aggregate(
         max_person_participants=Max("num_person_participants"),
         max_organ_doses=Max("num_organ_doses"),
-        max_patient_state=Max("num_patient_state"),
-        max_glomerular_filtration_rate=Max("num_glomerular_filtration_rate"),
+        max_patient_states=Max("num_patient_state"),
+        max_glomerular_filtration_rates=Max("num_glomerular_filtration_rate"),
     )
 
     return (data, statistics)
@@ -135,7 +137,7 @@ def _nm_headers(pid, name, patid, statistics):
             f"Organ Dose Measurement Method {i}",
             f"Organ Dose Reference Authority {i}"
         ]
-    for i in range(1, statistics["max_patient_state"]+1):
+    for i in range(1, statistics["max_patient_states"]+1):
         headings += [
             f"Patient state {i}"
         ]
@@ -150,7 +152,7 @@ def _nm_headers(pid, name, patid, statistics):
         "Recent Physical Activity",
         "Serum Creatinine (mg/dl)",
     ]
-    for i in range(1, statistics["max_glomerular_filtration_rate"]+1):
+    for i in range(1, statistics["max_glomerular_filtration_rates"]+1):
         headings += [
             f"Glomerular Filtration Rate {i} (ml/min/1.73m^2)",
             f"Measurement Method {i}",
@@ -165,7 +167,10 @@ def _get_code_not_none(code):
     else:
         return code.code_meaning
 
-def _extract_study_data(exams, pid, name, patid):
+def _array_to_match_maximum(len_current, len_max):
+    return [None for _ in range(len_max - len_current)]
+
+def _extract_study_data(exams, pid, name, patid, statistics):
     exam_data = get_common_data("NM", exams, pid, name, patid)
 
     try:
@@ -178,7 +183,6 @@ def _extract_study_data(exams, pid, name, patid):
         glomerular_filtration_rates = patient_charac.glomerularfiltrationrate_set.all()
     except ObjectDoesNotExist:
         raise  # We handle this on the level of the export function
-
     exam_data += [
         _get_code_not_none(radiopharm_admin.radiopharmaceutical_agent),
         _get_code_not_none(radiopharm_admin.radionuclide),
@@ -195,6 +199,7 @@ def _extract_study_data(exams, pid, name, patid):
             person_participant.person_name,
             _get_code_not_none(person_participant.person_role_in_procedure_cid),
         ]
+    exam_data += _array_to_match_maximum(len(person_participants), statistics["max_person_participants"])
     exam_data += [radiopharm.comment]
     for organ_dose in organ_doses:
         if organ_dose.reference_authority_code is not None:
@@ -209,10 +214,12 @@ def _extract_study_data(exams, pid, name, patid):
             organ_dose.measurement_method,
             organ_dose_reference_authority,
         ]
+    exam_data += _array_to_match_maximum(len(organ_doses), statistics["max_organ_doses"])
     for patient_state in patient_states:
         exam_data += [
             _get_code_not_none(patient_state.patient_state)
         ]
+    exam_data += _array_to_match_maximum(len(patient_states), statistics["max_patient_states"])
     exam_data += [
         patient_charac.body_surface_area,
         _get_code_not_none(patient_charac.body_surface_area_formula),
@@ -230,6 +237,7 @@ def _extract_study_data(exams, pid, name, patid):
             _get_code_not_none(glomerular.measurement_method),
             _get_code_not_none(glomerular.equivalent_meaning_of_concept_name)
         ]
+    exam_data += _array_to_match_maximum(len(glomerular_filtration_rates), statistics["max_glomerular_filtration_rates"])
     
     for i, item in enumerate(exam_data):
         if item is None:
@@ -288,6 +296,31 @@ def exportNM2csv(filterdict, pid=False, name=None, patid=None, user=None):
     task.progress = "All data written."
     _exit_proc(task, date_stamp, force_exit=False)
 
+def _write_nm_excel_sheet(task, sheet, data, pid, name, patid, headings, 
+    statistics, sheet_index=1, sheet_total=1):
+    sheet.write_row(0, 0, headings)
+    numcolumns = len(headings) - 1
+    if isinstance(data, list):
+        numrows = len(data)
+    else:
+        numrows = data.count()
+    sheet.autofilter(0, 0, numrows, numcolumns)
+
+    for i, exam in enumerate(data):
+        try:
+            exam_data = _extract_study_data(exam, pid, name, patid, statistics)
+            sheet.write_row(i + 1, 0, exam_data)
+        except ObjectDoesNotExist:
+            error_message = (
+                f"DoesNotExist error whilst exporting study {i + 1} of {task.num_records},  study UID {exam.study_instance_uid}, accession number"
+                f" {exam.accession_number} - maybe database entry was deleted as part of importing later version of same"
+                " study?"
+            )
+            logger.error(error_message)
+            sheet.write_row(i + 1, 0, [error_message])
+
+        task.progress = f"{i+1} of {task.num_records} written on sheet {sheet_index} of {sheet_total}"
+        task.save()
 
 @shared_task
 def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
@@ -312,29 +345,32 @@ def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
         data, statistics = _get_data(filterdict, pid, task)
         headings = _nm_headers(pid, name, patid, statistics)
 
+        summary = book.add_worksheet("Summary")
+        create_summary_sheet(task, data, book, summary, None, False)
+
+        # We create the detail sheets per study description, other than for other modalities
+        study_descriptions = {}
+        for exam in data:
+            if exam.study_description:
+                w = study_descriptions.setdefault(exam.study_description, [])
+            else:
+                w = study_descriptions.setdefault("Unknown", [])
+            w.append(exam)
+        study_descriptions = list(study_descriptions.items())
+        study_descriptions.sort(key=lambda x: x[0])
+        sheet_count = len(study_descriptions) + 1
+        
         all_data = book.add_worksheet("All data")
         book = text_and_date_formats(book, all_data, pid, name, patid)
+        _write_nm_excel_sheet(task, all_data, data, pid, name, patid, 
+            headings, statistics, 1, sheet_count)
 
-        all_data.write_row(0, 0, headings)
-        numcolumns = len(headings) - 1
-        numrows = data.count()
-        all_data.autofilter(0, 0, numrows, numcolumns)
-
-        for i, exam in enumerate(data):
-            try:
-                exam_data = _extract_study_data(exam, pid, name, patid)
-                all_data.write_row(i + 1, 0, exam_data)
-            except ObjectDoesNotExist:
-                error_message = (
-                    f"DoesNotExist error whilst exporting study {i + 1} of {task.num_records},  study UID {exam.study_instance_uid}, accession number"
-                    f" {exam.accession_number} - maybe database entry was deleted as part of importing later version of same"
-                    " study?"
-                )
-                logger.error(error_message)
-                all_data.write_row(i + 1, 0, [error_message])
-
-            task.progress = f"{i+1} of {task.num_records} written."
-            task.save()
+        for i, study_description in enumerate(study_descriptions):
+            study_description, current_data = study_description
+            current_sheet = book.add_worksheet(sheet_name(study_description))
+            book = text_and_date_formats(book, current_sheet, pid, name, patid)
+            _write_nm_excel_sheet(task, current_sheet, current_data, pid, name, patid, 
+                headings, statistics, i, sheet_count)
 
         book.close()
     except Exception:
