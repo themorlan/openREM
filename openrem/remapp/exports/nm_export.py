@@ -30,6 +30,7 @@
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Max, Count
 from celery import shared_task
 import datetime
 from ..interface.mod_filters import nm_filter
@@ -70,22 +71,6 @@ def unknown_error(task, date_stamp):
     _exit_proc(task, date_stamp, traceback.format_exception_only(etype, evalue)[-1])
 
 
-def _nm_headers(pid, name, patid):
-    headings = common_headers("NM", pid, name, patid)
-    headings.remove("No. events")  # There is always just one event for a study
-    headings += [
-        "Radiopharmaceutical Agent",
-        "Radionuclide",
-        "Radionuclide Half Live",
-        "Start Time",
-        "Stop Time",
-        "Administered activity (MBq)",
-        "Radiopharmaceutical Volume (cm^3)",
-    ]
-
-    return headings
-
-
 def _get_data(filterdict, pid, task):
     data = nm_filter(filterdict, pid).qs
 
@@ -95,37 +80,157 @@ def _get_data(filterdict, pid, task):
     task.progress = f"{task.num_records} studies in query"
     task.save()
 
-    return data
+    #num_person_participants, num_organ_doses,
+    #num_patient_state, num_glomerular_filtration_rate
+    statistics = data.annotate(
+        num_person_participants=Count(
+            "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__"
+            "personparticipant", distinct=True
+        ),
+        num_organ_doses=Count(
+            "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__"
+            "organdose", distinct=True
+        ),
+        num_patient_state=Count(
+            "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__"
+            "patientstate", distinct=True
+        ),
+        num_glomerular_filtration_rate=Count(
+            "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationpatientcharacteristics__"
+            "glomerularfiltrationrate", distinct=True
+        ),
+    ).aggregate(
+        max_person_participants=Max("num_person_participants"),
+        max_organ_doses=Max("num_organ_doses"),
+        max_patient_state=Max("num_patient_state"),
+        max_glomerular_filtration_rate=Max("num_glomerular_filtration_rate"),
+    )
 
+    return (data, statistics)
+
+def _nm_headers(pid, name, patid, statistics):
+    headings = common_headers("NM", pid, name, patid)
+    headings.remove("No. events")  # There is always just one event for a study
+    headings += [ 
+        "Radiopharmaceutical Agent",
+        "Radionuclide",
+        "Radionuclide Half Live",
+        "Administered activity (MBq)",
+        "Associated Procedure",
+        "Radiopharmaceutical Start Time",
+        "Radiopharmaceutical Stop Time",
+        "Route of Administration",
+        "Route of Administration Laterality",
+    ]
+    for i in range(1, statistics["max_person_participants"]+1):
+        headings += [f"Person participant name {i}",
+                    f"Person participant role {i}"]
+    headings += ["Comment"]
+    for i in range(1, statistics["max_organ_doses"]+1):
+        headings += [
+            f"Organ Dose Finding Site {i}",
+            f"Organ Laterality {i}",
+            f"Organ Dose {i} (mGy)",
+            f"Organ Mass {i}(g)",
+            f"Organ Dose Measurement Method {i}",
+            f"Organ Dose Reference Authority {i}"
+        ]
+    for i in range(1, statistics["max_patient_state"]+1):
+        headings += [
+            f"Patient state {i}"
+        ]
+    headings += [
+        "Body Surface Area (m^2)",
+        "Body Surface Area Formula",
+        "Body Mass Index (kg/m^2)",
+        "Body Mass Index Equation",
+        "Glucose (mmol/l)",
+        "Fasting Duration (hours)",
+        "Hydration Volume (ml)",
+        "Recent Physical Activity",
+        "Serum Creatinine (mg/dl)",
+    ]
+    for i in range(1, statistics["max_glomerular_filtration_rate"]+1):
+        headings += [
+            f"Glomerular Filtration Rate {i} (ml/min/1.73m^2)",
+            f"Measurement Method {i}",
+            f"Equivalent meaning of concept name {i}"
+        ]
+
+    return headings
+
+def _get_code_not_none(code):
+    if code is None:
+        return None
+    else:
+        return code.code_meaning
 
 def _extract_study_data(exams, pid, name, patid):
     exam_data = get_common_data("NM", exams, pid, name, patid)
 
     try:
         radiopharm = exams.radiopharmaceuticalradiationdose_set.get()
-        radiopharm_admin = (
-            radiopharm.radiopharmaceuticaladministrationeventdata_set.get()
-        )
-        radiopharm_agent = radiopharm_admin.radiopharmaceutical_agent.code_meaning
-        radiopharm_radionuclide = radiopharm_admin.radionuclide.code_meaning
-        radiopharm_radionuclide_half_life = radiopharm_admin.radionuclide_half_life
-        radiopharm_start = radiopharm_admin.radiopharmaceutical_start_datetime
-        radiopharm_stop = radiopharm_admin.radiopharmaceutical_stop_datetime
-        radiopharm_activity = radiopharm_admin.administered_activity
-        radiopharm_volume = radiopharm_admin.radiopharmaceutical_volume
+        radiopharm_admin = radiopharm.radiopharmaceuticaladministrationeventdata_set.get()
+        patient_charac = radiopharm.radiopharmaceuticaladministrationpatientcharacteristics_set.get()
+        person_participants = radiopharm_admin.personparticipant_set.all()
+        organ_doses = radiopharm_admin.organdose_set.all()
+        patient_states = patient_charac.patientstate_set.all()
+        glomerular_filtration_rates = patient_charac.glomerularfiltrationrate_set.all()
     except ObjectDoesNotExist:
-        raise  # We handle this on the level of the export
+        raise  # We handle this on the level of the export function
 
     exam_data += [
-        radiopharm_agent,
-        radiopharm_radionuclide,
-        radiopharm_radionuclide_half_life,
-        radiopharm_start,
-        radiopharm_stop,
-        radiopharm_activity,
-        radiopharm_volume,
+        _get_code_not_none(radiopharm_admin.radiopharmaceutical_agent),
+        _get_code_not_none(radiopharm_admin.radionuclide),
+        radiopharm_admin.radionuclide_half_life,
+        radiopharm_admin.administered_activity,
+        _get_code_not_none(radiopharm.associated_procedure),
+        radiopharm_admin.radiopharmaceutical_start_datetime,
+        radiopharm_admin.radiopharmaceutical_stop_datetime,
+        _get_code_not_none(radiopharm_admin.route_of_administration),
+        _get_code_not_none(radiopharm_admin.laterality),
     ]
-
+    for person_participant in person_participants:
+        exam_data += [
+            person_participant.person_name,
+            _get_code_not_none(person_participant.person_role_in_procedure_cid),
+        ]
+    exam_data += [radiopharm.comment]
+    for organ_dose in organ_doses:
+        if organ_dose.reference_authority_code is not None:
+            organ_dose_reference_authority = organ_dose.reference_authority_code.code_meaning
+        else:
+            organ_dose_reference_authority = organ_dose.reference_authority_text
+        exam_data += [
+            _get_code_not_none(organ_dose.finding_site),
+            _get_code_not_none(organ_dose.laterality),
+            organ_dose.organ_dose,
+            organ_dose.mass,
+            organ_dose.measurement_method,
+            organ_dose_reference_authority,
+        ]
+    for patient_state in patient_states:
+        exam_data += [
+            _get_code_not_none(patient_state.patient_state)
+        ]
+    exam_data += [
+        patient_charac.body_surface_area,
+        _get_code_not_none(patient_charac.body_surface_area_formula),
+        patient_charac.body_mass_index,
+        _get_code_not_none(patient_charac.equation),
+        patient_charac.glucose,
+        patient_charac.fasting_duration,
+        patient_charac.hydration_volume,
+        patient_charac.recent_physical_activity,
+        patient_charac.serum_creatinine,
+    ]
+    for glomerular in glomerular_filtration_rates:
+        exam_data += [
+            glomerular.glomerular_filtration_rate,
+            _get_code_not_none(glomerular.measurement_method),
+            _get_code_not_none(glomerular.equivalent_meaning_of_concept_name)
+        ]
+    
     for i, item in enumerate(exam_data):
         if item is None:
             exam_data[i] = ""
@@ -155,8 +260,8 @@ def exportNM2csv(filterdict, pid=False, name=None, patid=None, user=None):
         if not tmpfile:
             _exit_proc(task, date_stamp, "Failed to create the export file")
 
-        data = _get_data(filterdict, pid, task)
-        headings = _nm_headers(pid, name, patid)
+        data, statistics = _get_data(filterdict, pid, task)
+        headings = _nm_headers(pid, name, patid, statistics)
         writer.writerow(headings)
 
         task.progress = "CSV header row written."
@@ -204,8 +309,8 @@ def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
         if not tmpxlsx:
             _exit_proc(task, date_stamp, "Failed to create file")
 
-        data = _get_data(filterdict, pid, task)
-        headings = _nm_headers(pid, name, patid)
+        data, statistics = _get_data(filterdict, pid, task)
+        headings = _nm_headers(pid, name, patid, statistics)
 
         all_data = book.add_worksheet("All data")
         book = text_and_date_formats(book, all_data, pid, name, patid)
