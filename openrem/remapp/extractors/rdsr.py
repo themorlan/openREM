@@ -55,7 +55,6 @@ from ..tools.get_values import (
 )
 from ..tools.make_skin_map import make_skin_map
 from ..tools.send_high_dose_alert_emails import send_rf_high_dose_alert_email
-
 from .extract_common import (  # pylint: disable=wrong-import-order, wrong-import-position
     ct_event_type_count,
     patient_module_attributes,
@@ -66,8 +65,8 @@ from .extract_common import (  # pylint: disable=wrong-import-order, wrong-impor
     generalequipmentmoduleattributes,
     patientstudymoduleattributes,
 )
-
 from .rdsr_methods import projectionxrayradiationdose
+from .rrdsr_methods import _radiopharmaceuticalradiationdose
 from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-position
     AccumIntegratedProjRadiogDose,
     DicomDeleteSettings,
@@ -76,7 +75,6 @@ from remapp.models import (  # pylint: disable=wrong-import-order, wrong-import-
     PKsForSummedRFDoseStudiesInDeltaWeeks,
     SkinDoseMapCalcSettings,
 )
-from remapp.extractors.rrdsr_methods import _radiopharmaceuticalradiationdose
 
 logger = logging.getLogger(
     "remapp.extractors.rdsr"
