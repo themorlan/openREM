@@ -33,6 +33,9 @@ from decimal import Decimal
 
 class ImportNMImage(ImportTest):
     def test_pet_image_alone(self):
+        """
+        Loads a single PET image
+        """
         nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/PET/PET_1_SIEMENS/DICOM/ST000000/SE000002/PT000000")
 
         expected = {
@@ -76,6 +79,9 @@ class ImportNMImage(ImportTest):
 
     @patch('remapp.extractors.nm_image.logger')
     def test_pet_image_rrdsr(self, logger_mock):
+        """
+        Loads the rrdsr, followed by an associated PET-Image 
+        """
         rrdsr_file = self._get_dcm_file("test_files/NM-RRDSR-Siemens.dcm")
         rdsr(rrdsr_file)
         nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/PET/PET_1_SIEMENS/DICOM/ST000000/SE000002/PT000000")

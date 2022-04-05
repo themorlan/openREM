@@ -23,7 +23,14 @@
 
 """
 ..  module:: nm_image.
-    :synopsis: Module to extract nm specific radiation information from PET/NM Images
+    :synopsis: Module to extract nm specific radiation information from PET/NM Images. Those methods 
+        are 'careful' in the sense of not ever overwriting any data that is already present. If 
+        a study with the same id as the one used here is already present it will only update 
+        fields concerned with radiopharmaceutical administration, and also those only if they
+        are not already present.
+        The rrdsr reader on the other hand will overwrite data read by this module without futher
+        notice (at least with data present in the rrdsr). The rationale for this is that rrdsr's
+        are (assumed to be) more complete and therefore take precedence.
 
 ..  moduleauthor:: Jannis Widmer
 
