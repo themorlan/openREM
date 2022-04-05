@@ -27,6 +27,7 @@
     :synopsis: Module of functions common to multiple extractor routines
 """
 
+from datetime import datetime
 from decimal import Decimal
 import logging
 
@@ -50,7 +51,6 @@ from ..tools.dcmdatetime import (
     make_date,
     make_time,
 )
-from datetime import datetime
 from ..tools.get_values import (
     get_value_kw,
     get_or_create_cid,
