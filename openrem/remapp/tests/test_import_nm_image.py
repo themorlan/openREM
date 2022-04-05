@@ -73,3 +73,39 @@ class ImportNMImage(ImportTest):
         study = GeneralStudyModuleAttr.objects.get()
         self._check_values(study, expected)
 
+
+    @patch('remapp.extractors.nm_image.logger')
+    def test_pet_image_rrdsr(self, logger_mock):
+        rrdsr_file = self._get_dcm_file("test_files/NM-RRDSR-Siemens.dcm")
+        rdsr(rrdsr_file)
+        nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/PET/PET_1_SIEMENS/DICOM/ST000000/SE000002/PT000000")
+
+        logger_mock.warn.assert_called() # Dates are set differently, therefore logger warns
+
+        expected = {
+            "radiopharmaceuticalradiationdose_set": {
+                "get": {
+                    "radiopharmaceuticaladministrationeventdata_set": {
+                        "get": {
+                            "radiopharmaceutical_agent": {
+                                "code_meaning": "Fluorodeoxyglucose F^18^"
+                            },
+                            "radionuclide": {"code_meaning": "^18^Fluorine"},
+                            "radionuclide_half_life": Decimal(6586.2),
+                            "radiopharmaceutical_administration_event_uid": "1.3.12.2.1107.5.1.4.11090.20220224104830.000000",
+                            "administered_activity": Decimal(394.0),
+                            "radiopharmaceutical_start_datetime": datetime( # first loaded takes precedence
+                                2000, 3, 24, 10, 40, 30
+                            ),
+                            "radiopharmaceutical_stop_datetime": datetime(
+                                2000, 3, 24, 10, 40, 40
+                            ),
+                        }
+                    },
+                }
+            }
+        }
+
+        study = GeneralStudyModuleAttr.objects.get()
+        self._check_values(study, expected)
+
