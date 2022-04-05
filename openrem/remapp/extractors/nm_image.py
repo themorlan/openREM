@@ -44,7 +44,7 @@ from celery import shared_task
 from django.db.models import Q
 import pydicom
 
-from remapp.models import GeneralStudyModuleAttr, RadiopharmaceuticalAdministrationEventData, RadiopharmaceuticalRadiationDose
+from remapp.models import GeneralStudyModuleAttr, ObjectUIDsProcessed, RadiopharmaceuticalAdministrationEventData, RadiopharmaceuticalRadiationDose
 
 from ..tools.dcmdatetime import get_date_time, get_time
 from ..tools.get_values import (
@@ -144,6 +144,15 @@ def _isotope(study, dataset):
 
     radio.save()
 
+def _record_object_imported(dataset, study):
+    """
+    Saves that this object has been imported.
+    """
+    o = ObjectUIDsProcessed.objects.create(
+        general_study_module_attributes=study
+    )
+    o.sop_instance_uid = dataset.SOPInstanceUID
+    o.save()
 
 def _nm2db(dataset):
     if "StudyInstanceUID" in dataset:
@@ -151,14 +160,21 @@ def _nm2db(dataset):
             Q(study_instance_uid__exact=dataset.StudyInstanceUID) & 
             Q(modality_type__exact="NM")).first()
         if study is not None:
+            processed_count = study.objectuidsprocessed_set.filter(
+                sop_instance_uid__exact=dataset.SOPInstanceUID).count()
+            if processed_count > 0:
+                logger.info(f"The Image with {dataset.SOPInstanceUID} was already imported. Will not import.")
+                return
+
+            _record_object_imported(dataset, study)
             _isotope(study, dataset)
-            
             return
     
     study = GeneralStudyModuleAttr.objects.create()
     generalequipmentmoduleattributes(dataset, study)
     study.modality_type = "NM" # will be saved by generalstudymoduleattributes call
     generalstudymoduleattributes(dataset, study, logger)
+    _record_object_imported(dataset, study)
     patientstudymoduleattributes(dataset, study)
     patient_module_attributes(dataset, study)
     t = RadiopharmaceuticalRadiationDose.objects.create(

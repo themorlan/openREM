@@ -115,3 +115,24 @@ class ImportNMImage(ImportTest):
         study = GeneralStudyModuleAttr.objects.get()
         self._check_values(study, expected)
 
+    @patch("remapp.extractors.nm_image.logger")
+    def test_no_reloads_1(self, logger_mock):
+        """
+        Loads the image twice to verify that it is imported only once
+        """
+        nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/PET/PET_1_SIEMENS/DICOM/ST000000/SE000002/PT000000")
+        logger_mock.info.assert_not_called()
+        nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/PET/PET_1_SIEMENS/DICOM/ST000000/SE000002/PT000000")
+        logger_mock.info.assert_called_once()
+
+    @patch("remapp.extractors.nm_image.logger")
+    def test_no_reloads_2(self, logger_mock):
+        """
+        Loads the image twice to verify that it is imported only once. Same as above, but now the rrdsr has been imported previously.
+        """
+        rrdsr_file = self._get_dcm_file("test_files/NM-RRDSR-Siemens.dcm")
+        rdsr(rrdsr_file)
+        nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/PET/PET_1_SIEMENS/DICOM/ST000000/SE000002/PT000000")
+        logger_mock.info.assert_not_called()
+        nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/PET/PET_1_SIEMENS/DICOM/ST000000/SE000002/PT000000")
+        logger_mock.info.assert_called_once()
