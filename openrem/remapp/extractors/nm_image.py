@@ -103,10 +103,8 @@ def _isotope(study, dataset):
     study should contain a Study Date when already, as this is used to populate Start/Stop DateTime if no date is stored.
     The dataset is expected to be at the top of the file (such that SOPClassUID can be read)
     """
-    if dataset.SOPClassUID == "1.2.840.10008.5.1.4.1.1.20": 
-        dataset = dataset[0x54, 0x12].value[0] # NM-Image
-    else: 
-        dataset = dataset[0x54, 0x16].value[0] # PET
+    is_nm_img = dataset.SOPClassUID == "1.2.840.10008.5.1.4.1.1.20"
+    dataset = dataset[0x54, 0x16].value[0]
 
     float_not_equal = lambda x, y : abs(x - y) > 10e-5
     float_convert = lambda x: Decimal(x)
@@ -118,6 +116,7 @@ def _isotope(study, dataset):
         mod=float_convert, is_not_equal=float_not_equal)
     for ds_name in ["RadiopharmaceuticalCodeSequence", "RadiopharmaceuticalInformationSequence"]: 
         _try_set_value(radio, "radiopharmaceutical_agent", dataset, ds_name, study_id, _code_getter, _code_handler)
+    _try_set_value(radio, "radiopharmaceutical_agent_string", dataset, "Radiopharmaceutical", study_id)
     _try_set_value(radio, "radiopharmaceutical_specific_activity", dataset, 
         "RadiopharmaceuticalSpecificActivity", study_id, mod=float_convert, is_not_equal=float_not_equal)
 
@@ -136,8 +135,13 @@ def _isotope(study, dataset):
         study_id, get_time, build_datetime)
     _try_set_value(radio, "radiopharmaceutical_stop_datetime", dataset, "RadiopharmaceuticalStopTime",
         study_id, get_time, build_datetime)
+    
+    if is_nm_img:
+        conversion_func = float_convert
+    else:
+        conversion_func = lambda x: Decimal(x) / 10**6 # Convert to MBq from Bq
     _try_set_value(radio, "administered_activity", dataset, "RadionuclideTotalDose", study_id,
-        mod=lambda x: Decimal(x) / 10**6, is_not_equal=float_not_equal) # Convert to MBq from Bq
+        mod=conversion_func, is_not_equal=float_not_equal) 
     _try_set_value(radio, "radiopharmaceutical_volume", dataset, "RadiopharmaceuticalVolume", study_id)
     _try_set_value(radio, "route_of_administration", dataset, "AdministrationRouteCodeSequence",
         study_id, _code_getter, _code_handler)

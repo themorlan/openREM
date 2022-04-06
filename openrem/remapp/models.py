@@ -2150,6 +2150,8 @@ class RadiopharmaceuticalAdministrationEventData(models.Model):  # TID 10022
         related_name="tid10022_agent",
         on_delete=models.CASCADE,
     )  # CID 25 & CID 4021
+    radiopharmaceutical_agent_string = models.TextField(
+        blank=True, null=True) # In NM Images the radiopharmaceutical may only be present as string
     radionuclide = models.ForeignKey(
         ContextID,
         blank=True,

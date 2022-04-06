@@ -136,3 +136,42 @@ class ImportNMImage(ImportTest):
         logger_mock.info.assert_not_called()
         nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/PET/PET_1_SIEMENS/DICOM/ST000000/SE000002/PT000000")
         logger_mock.info.assert_called_once()
+
+    def test_load_spect_image_alone(self):
+        nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/NUK/DICOM/ST000000/SE000000/NM000000")
+
+        expected = {
+            "modality_type": "NM",
+            "study_date": datetime(2022, 2, 24).date(),
+            "patientmoduleattr_set": {
+                "get": {
+                    "not_patient_indicator": None,
+                    "patient_name": "REMOVED1",
+                    "patient_sex": "F",
+                }
+            },
+            "patientstudymoduleattr_set": {
+                "get": {
+                    "patient_age": "050Y",
+                }
+            },
+            "generalequipmentmoduleattr_set": {
+                "get": {
+                    "manufacturer": "SIEMENS NM",
+                }
+            },
+            "radiopharmaceuticalradiationdose_set": {
+                "get": {
+                    "radiopharmaceuticaladministrationeventdata_set": {
+                        "get": {
+                            "radiopharmaceutical_agent_string": "DPD",
+                            "radionuclide": {"code_meaning": "99m Technetium"},
+                            "administered_activity": Decimal(764.0),
+                        }
+                    },
+                }
+            }
+        }
+
+        study = GeneralStudyModuleAttr.objects.get()
+        self._check_values(study, expected)
