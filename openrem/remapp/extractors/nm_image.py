@@ -38,17 +38,28 @@
 from datetime import datetime
 from decimal import Decimal
 import logging
+import os
 import sys
 
 from celery import shared_task
-from django.db.models import Q
+from django.db.models import Q, ObjectDoesNotExist
+import django
 import pydicom
+
+# setup django/OpenREM.
+basepath = os.path.dirname(__file__)
+projectpath = os.path.abspath(os.path.join(basepath, "..", ".."))
+if projectpath not in sys.path:
+    sys.path.insert(1, projectpath)
+os.environ["DJANGO_SETTINGS_MODULE"] = "openremproject.settings"
+django.setup()
 
 from remapp.models import (
     GeneralStudyModuleAttr,
     ObjectUIDsProcessed,
     RadiopharmaceuticalAdministrationEventData,
     RadiopharmaceuticalRadiationDose,
+    DicomDeleteSettings
 )
 
 from ..tools.dcmdatetime import get_date_time, get_time
@@ -310,6 +321,12 @@ def nm_image(file: str):
 
     :param file: relative or absolute path to PET/DICOM Image.
     """
+    try:
+        del_settings = DicomDeleteSettings.objects.get()
+        del_nm_im = del_settings.del_nm_im
+    except ObjectDoesNotExist:
+        del_nm_im = False
+
     dataset = pydicom.dcmread(file)
     dataset.decode()
 
@@ -321,6 +338,10 @@ def nm_image(file: str):
     else:
         logger.error(f"{file} is not an NM or PET Image. Will not import.")
 
+    if del_nm_im:
+        os.remove(file)
+
+    return 0
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

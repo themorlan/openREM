@@ -248,6 +248,9 @@ class DicomDeleteSettings(SingletonModel):
         default=False,
         verbose_name="delete Philips CT dose info images after processing?",
     )
+    del_nm_im = models.BooleanField(
+        default=False, verbose_name="delete nuclear medicine images after processing?"
+    )
 
     def __unicode__(self):
         return "Delete DICOM objects settings"

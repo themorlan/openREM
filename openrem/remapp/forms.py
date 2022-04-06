@@ -876,6 +876,7 @@ class DicomDeleteSettingsForm(forms.ModelForm):
                 "del_mg_im",
                 "del_dx_im",
                 "del_ct_phil",
+                "del_nm_im",
             ),
             FormActions(Submit("submit", "Submit")),
             Div(
@@ -895,7 +896,7 @@ class DicomDeleteSettingsForm(forms.ModelForm):
 
     class Meta(object):
         model = DicomDeleteSettings
-        fields = ["del_no_match", "del_rdsr", "del_mg_im", "del_dx_im", "del_ct_phil"]
+        fields = ["del_no_match", "del_rdsr", "del_mg_im", "del_dx_im", "del_ct_phil", "del_nm_im"]
 
 
 class DicomQRForm(forms.ModelForm):
