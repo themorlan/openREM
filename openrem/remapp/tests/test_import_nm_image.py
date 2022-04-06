@@ -32,7 +32,7 @@ from datetime import datetime
 from decimal import Decimal
 
 class ImportNMImage(ImportTest):
-    def test_pet_image_alone(self):
+    def test_pet_image_siemens_alone(self):
         """
         Loads a single PET image
         """
@@ -76,6 +76,50 @@ class ImportNMImage(ImportTest):
         study = GeneralStudyModuleAttr.objects.get()
         self._check_values(study, expected)
 
+    def test_pet_image_ge_alone(self):
+        """
+        Loads a single PET Image
+        """
+        nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/PET_2_STUDY_0_IMG")
+
+        expected = {
+            "modality_type": "NM",
+            "patientmoduleattr_set": {
+                "get": {
+                    "not_patient_indicator": None,
+                    "patient_name": "REMOVED",
+                }
+            },
+            "patientstudymoduleattr_set": {
+                "get": {
+                    "patient_age": "051Y",
+                }
+            },
+            "radiopharmaceuticalradiationdose_set": {
+                "get": {
+                    "radiopharmaceuticaladministrationeventdata_set": {
+                        "get": {
+                            "radiopharmaceutical_agent": {
+                                "code_meaning": "Fluorodeoxyglucose F^18^"
+                            },
+                            "radionuclide": {"code_meaning": "^18^Fluorine"},
+                            "radiopharmaceutical_agent_string": "FDG -- fluorodeoxyglucose",
+                            "radionuclide_half_life": Decimal(6586.2001953125),
+                            "administered_activity": Decimal(221.596288),
+                            "radiopharmaceutical_start_datetime": datetime(
+                                2022, 3, 10, 12, 41, 0
+                            ),
+                            "radiopharmaceutical_stop_datetime": datetime(
+                                2022, 3, 10, 12, 42, 0
+                            ),
+                        }
+                    },
+                }
+            }
+        }
+
+        study = GeneralStudyModuleAttr.objects.get()
+        self._check_values(study, expected)
 
     @patch('remapp.extractors.nm_image.logger')
     def test_pet_image_rrdsr(self, logger_mock):
