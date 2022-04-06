@@ -115,6 +115,33 @@ class ImportNMImage(ImportTest):
         study = GeneralStudyModuleAttr.objects.get()
         self._check_values(study, expected)
 
+    def test_rrdsr_pet_image(self):
+        nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/PET/PET_1_SIEMENS/DICOM/ST000000/SE000002/PT000000")
+        rrdsr_file = self._get_dcm_file("test_files/NM-RRDSR-Siemens.dcm")
+        rdsr(rrdsr_file)
+
+        expected = {
+            "radiopharmaceuticalradiationdose_set": {
+                "get": {
+                    "radiopharmaceuticaladministrationeventdata_set": {
+                        "get": {
+                            "organdose_set": {
+                                "first": {
+                                    "finding_site": {"code_meaning": "Adrenal gland"},
+                                    "laterality": {"code_meaning": "Right and left"},
+                                    "organ_dose": Decimal(4.73),
+                                    "reference_authority_text": "ICRP Publication 128",
+                                },
+                            }
+                        }
+                    },
+                }
+            }
+        }
+
+        study = GeneralStudyModuleAttr.objects.get()
+        self._check_values(study, expected)
+
     @patch("remapp.extractors.nm_image.logger")
     def test_no_reloads_1(self, logger_mock):
         """

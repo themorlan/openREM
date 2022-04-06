@@ -279,9 +279,10 @@ def _rdsr2db(dataset):
                         existing_study_uid_match[study_index], new_sop_instance_uid
                     )
                     return
-                elif uid_list.issubset(new_event_uids):
+                elif uid_list.issubset(new_event_uids) or uid_list == set([None]):
                     # New RDSR has the existing events and more
                     # Check existing one had finished importing
+                    # uid_list == None can happen if we only imported NM Images previously
                     try:
                         existing_study_uid_match[
                             study_index

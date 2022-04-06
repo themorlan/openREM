@@ -122,7 +122,8 @@ def _isotope(study, dataset):
 
     # We don't load the Radiopharmaceutical Administration UID, even though it's present because:
     #   1: Sometimes it's wrong, for whatever reason
-    #   2: Because of the way rdsr manages duplicate imports it would abstain from importing the rrdsr after having read an image
+    #   2: By not reading it we will have None as our UID, which allows the rdsr import to recognise such studies
+    #       and reimport them
 
     _try_set_value(radio, "radiopharmaceutical_start_datetime", dataset, 
         "RadiopharmaceuticalStartDateTime", study_id, get_date_time)
