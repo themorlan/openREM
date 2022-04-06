@@ -31,6 +31,7 @@ from mock import patch
 from datetime import datetime
 from decimal import Decimal
 
+
 class ImportNMImage(ImportTest):
     def test_pet_image_siemens_alone(self):
         """
@@ -71,7 +72,7 @@ class ImportNMImage(ImportTest):
                         }
                     },
                 }
-            }
+            },
         }
 
         study = GeneralStudyModuleAttr.objects.get()
@@ -117,23 +118,23 @@ class ImportNMImage(ImportTest):
                         }
                     },
                 }
-            }
+            },
         }
 
         study = GeneralStudyModuleAttr.objects.get()
         self._check_values(study, expected)
 
-    @patch('remapp.extractors.nm_image.logger')
+    @patch("remapp.extractors.nm_image.logger")
     def test_pet_image_rrdsr(self, logger_mock):
         """
-        Loads the rrdsr, followed by an associated PET-Image 
+        Loads the rrdsr, followed by an associated PET-Image
         """
         rrdsr_file = self._get_dcm_file("test_files/NM-RRDSR-Siemens.dcm")
         rdsr(rrdsr_file)
         img_loc = self._get_dcm_file("test_files/NM-PetIm-Siemens.dcm")
         nm_image(img_loc)
 
-        logger_mock.warn.assert_called() # Dates are set differently, therefore logger warns
+        logger_mock.warn.assert_called()  # Dates are set differently, therefore logger warns
 
         expected = {
             "radiopharmaceuticalradiationdose_set": {
@@ -147,7 +148,7 @@ class ImportNMImage(ImportTest):
                             "radionuclide_half_life": Decimal(6586.2),
                             "radiopharmaceutical_administration_event_uid": "1.3.12.2.1107.5.1.4.11090.20220224104830.000000",
                             "administered_activity": Decimal(394.0),
-                            "radiopharmaceutical_start_datetime": datetime( # first loaded takes precedence
+                            "radiopharmaceutical_start_datetime": datetime(  # first loaded takes precedence
                                 2000, 3, 24, 10, 40, 30
                             ),
                             "radiopharmaceutical_stop_datetime": datetime(
@@ -248,7 +249,7 @@ class ImportNMImage(ImportTest):
                         }
                     },
                 }
-            }
+            },
         }
 
         study = GeneralStudyModuleAttr.objects.get()
