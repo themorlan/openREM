@@ -36,14 +36,15 @@ class ImportNMImage(ImportTest):
         """
         Loads a single PET image
         """
-        nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/PET/PET_1_SIEMENS/DICOM/ST000000/SE000002/PT000000")
+        img_loc = self._get_dcm_file("test_files/NM-PetIm-Siemens.dcm")
+        nm_image(img_loc)
 
         expected = {
             "modality_type": "NM",
             "patientmoduleattr_set": {
                 "get": {
                     "not_patient_indicator": None,
-                    "patient_name": "REMOVED1",
+                    "patient_name": "REMOVED",
                 }
             },
             "patientstudymoduleattr_set": {
@@ -80,7 +81,8 @@ class ImportNMImage(ImportTest):
         """
         Loads a single PET Image
         """
-        nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/PET_2_STUDY_0_IMG")
+        img_loc = self._get_dcm_file("test_files/NM-PetIm-GE.dcm")
+        nm_image(img_loc)
 
         expected = {
             "modality_type": "NM",
@@ -128,7 +130,8 @@ class ImportNMImage(ImportTest):
         """
         rrdsr_file = self._get_dcm_file("test_files/NM-RRDSR-Siemens.dcm")
         rdsr(rrdsr_file)
-        nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/PET/PET_1_SIEMENS/DICOM/ST000000/SE000002/PT000000")
+        img_loc = self._get_dcm_file("test_files/NM-PetIm-Siemens.dcm")
+        nm_image(img_loc)
 
         logger_mock.warn.assert_called() # Dates are set differently, therefore logger warns
 
@@ -160,7 +163,8 @@ class ImportNMImage(ImportTest):
         self._check_values(study, expected)
 
     def test_rrdsr_pet_image(self):
-        nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/PET/PET_1_SIEMENS/DICOM/ST000000/SE000002/PT000000")
+        img_loc = self._get_dcm_file("test_files/NM-PetIm-Siemens.dcm")
+        nm_image(img_loc)
         rrdsr_file = self._get_dcm_file("test_files/NM-RRDSR-Siemens.dcm")
         rdsr(rrdsr_file)
 
@@ -191,9 +195,10 @@ class ImportNMImage(ImportTest):
         """
         Loads the image twice to verify that it is imported only once
         """
-        nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/PET/PET_1_SIEMENS/DICOM/ST000000/SE000002/PT000000")
+        img_loc = self._get_dcm_file("test_files/NM-PetIm-Siemens.dcm")
+        nm_image(img_loc)
         logger_mock.info.assert_not_called()
-        nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/PET/PET_1_SIEMENS/DICOM/ST000000/SE000002/PT000000")
+        nm_image(img_loc)
         logger_mock.info.assert_called_once()
 
     @patch("remapp.extractors.nm_image.logger")
@@ -203,13 +208,15 @@ class ImportNMImage(ImportTest):
         """
         rrdsr_file = self._get_dcm_file("test_files/NM-RRDSR-Siemens.dcm")
         rdsr(rrdsr_file)
-        nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/PET/PET_1_SIEMENS/DICOM/ST000000/SE000002/PT000000")
+        img_loc = self._get_dcm_file("test_files/NM-PetIm-Siemens.dcm")
+        nm_image(img_loc)
         logger_mock.info.assert_not_called()
-        nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/PET/PET_1_SIEMENS/DICOM/ST000000/SE000002/PT000000")
+        nm_image(img_loc)
         logger_mock.info.assert_called_once()
 
     def test_load_spect_image_alone(self):
-        nm_image("/home/medphys/Schreibtisch/jannis_local/DICOM-Daten/NUK/DICOM/ST000000/SE000000/NM000000")
+        img_loc = self._get_dcm_file("test_files/NM-NmIm-Siemens.dcm")
+        nm_image(img_loc)
 
         expected = {
             "modality_type": "NM",
@@ -217,7 +224,7 @@ class ImportNMImage(ImportTest):
             "patientmoduleattr_set": {
                 "get": {
                     "not_patient_indicator": None,
-                    "patient_name": "REMOVED1",
+                    "patient_name": "REMOVED",
                     "patient_sex": "F",
                 }
             },
