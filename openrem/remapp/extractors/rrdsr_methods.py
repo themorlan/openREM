@@ -62,9 +62,7 @@ from .extract_common import (
 logger = logging.getLogger("remapp.extractors.rdsr")
 
 
-def _radiopharmaceutical_patient_state(
-    dataset, rad_admin_pat_charac
-):
+def _radiopharmaceutical_patient_state(dataset, rad_admin_pat_charac):
     patient_state: PatientState = PatientState.objects.create(
         radiopharmaceutical_administration_patient_characteristics=rad_admin_pat_charac
     )
@@ -75,9 +73,7 @@ def _radiopharmaceutical_patient_state(
     patient_state.save()
 
 
-def _radiopharmaceutical_glomerular_filtration_rate(
-    dataset, rad_admin_pat_charac
-):
+def _radiopharmaceutical_glomerular_filtration_rate(dataset, rad_admin_pat_charac):
     glomerular_filtration_rate: GlomerularFiltrationRate = GlomerularFiltrationRate.objects.create(
         radiopharmaceutical_administration_patient_characteristics=rad_admin_pat_charac
     )
@@ -528,9 +524,13 @@ def _radiopharmaceutical_administration_event_data(dataset, radiopharmaceutical_
             rad_event.comment = cont.TextValue
         elif cont.ConceptNameCodeSequence[0].CodeValue == "113517":  # Organ dose
             _organ_dose(cont, rad_event)
-        elif cont.ConceptNameCodeSequence[0].CodeValue == "220001":   # Effective dose information
+        elif (
+            cont.ConceptNameCodeSequence[0].CodeValue == "220001"
+        ):  # Effective dose information
             for cont2 in get_content_sequence(cont):
-                if cont2.ConceptNameCodeSequence[0].CodeValue == "113839": # Effective dose in mSv
+                if (
+                    cont2.ConceptNameCodeSequence[0].CodeValue == "113839"
+                ):  # Effective dose in mSv
                     rad_event.effective_dose = test_numeric_value(
                         cont2.MeasuredValueSequence[0].NumericValue
                     )
