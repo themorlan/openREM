@@ -30,6 +30,8 @@
 
 """
 
+import logging
+
 from remapp.models import (
     RadionuclideIdentifier,
     RadiopharmaceuticalAdministrationEventData,
@@ -46,14 +48,12 @@ from remapp.models import (
     BillingCode,
     ObserverContext,
 )
-import logging
 
 from ..tools.get_values import (
     get_or_create_cid,
     test_numeric_value,
 )
 from ..tools.dcmdatetime import make_date_time
-
 from .extract_common import (
     observercontext,
     person_participant,
