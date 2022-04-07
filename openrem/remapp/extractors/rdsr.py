@@ -182,19 +182,19 @@ def _get_existing_event_uids(study):
     Returns all event uids stored for this study
     """
     existing_event_uids = set()
-    sub = study.ctradiationdose_set.first()
-    if sub is not None:
-        for event in sub.ctirradiationeventdata_set.all():
+    s = study.ctradiationdose_set.first()
+    if s is not None:
+        for event in s.ctirradiationeventdata_set.all():
             existing_event_uids.add(event.irradiation_event_uid)
 
-    sub = study.projectionxrayradiationdose_set.first()
-    if sub is not None:
-        for event in sub.irradeventxraydata_set.all():
+    s = study.projectionxrayradiationdose_set.first()
+    if s is not None:
+        for event in s.irradeventxraydata_set.all():
             existing_event_uids.add(event.irradiation_event_uid)
 
-    sub = study.radiopharmaceuticalradiationdose_set.first()
-    if sub is not None:
-        for event in sub.radiopharmaceuticaladministrationeventdata_set.all():
+    s = study.radiopharmaceuticalradiationdose_set.first()
+    if s is not None:
+        for event in s.radiopharmaceuticaladministrationeventdata_set.all():
             existing_event_uids.add(event.radiopharmaceutical_administration_event_uid)
 
     return existing_event_uids
