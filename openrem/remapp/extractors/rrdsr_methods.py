@@ -62,9 +62,7 @@ from .extract_common import (
 logger = logging.getLogger("remapp.extractors.rdsr")
 
 
-def _radiopharmaceutical_patient_state(
-    dataset, rad_admin_pat_charac
-):
+def _radiopharmaceutical_patient_state(dataset, rad_admin_pat_charac):
     patient_state: PatientState = PatientState.objects.create(
         radiopharmaceutical_administration_patient_characteristics=rad_admin_pat_charac
     )
@@ -75,9 +73,7 @@ def _radiopharmaceutical_patient_state(
     patient_state.save()
 
 
-def _radiopharmaceutical_glomerular_filtration_rate(
-    dataset, rad_admin_pat_charac
-):
+def _radiopharmaceutical_glomerular_filtration_rate(dataset, rad_admin_pat_charac):
     glomerular_filtration_rate: GlomerularFiltrationRate = GlomerularFiltrationRate.objects.create(
         radiopharmaceutical_administration_patient_characteristics=rad_admin_pat_charac
     )

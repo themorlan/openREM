@@ -536,21 +536,28 @@ def rdsr(rdsr_file):
 
     if (
         dataset.SOPClassUID
-        in ("1.2.840.10008.5.1.4.1.1.88.67", "1.2.840.10008.5.1.4.1.1.88.22")  # X-Ray Radiation Dose SR, Enhanced SR
-        and dataset.ConceptNameCodeSequence[0].CodeValue == "113701"  # X-Ray Radiation Dose Report
+        in (
+            "1.2.840.10008.5.1.4.1.1.88.67",  # X-Ray Radiation Dose SR
+            "1.2.840.10008.5.1.4.1.1.88.22",  # Enhanced SR
+        )
+        and dataset.ConceptNameCodeSequence[0].CodeValue
+        == "113701"  # X-Ray Radiation Dose Report
     ):
         logger.debug("rdsr.py extracting from {0}".format(rdsr_file))
         _rdsr2db(dataset)
     elif (
         dataset.SOPClassUID == ("1.2.840.10008.5.1.4.1.1.88.22")  # Enhanced SR
-        and dataset.ConceptNameCodeSequence[0].CodingSchemeDesignator == "99SMS_RADSUM"  # Siemens Arcadis
+        and dataset.ConceptNameCodeSequence[0].CodingSchemeDesignator
+        == "99SMS_RADSUM"  # Siemens Arcadis
         and dataset.ConceptNameCodeSequence[0].CodeValue == "C-10"
     ):
         logger.debug("rdsr.py extracting from {0}".format(rdsr_file))
         _rdsr2db(dataset)
     elif (
-        dataset.SOPClassUID == "1.2.840.10008.5.1.4.1.1.88.68"  # Radiopharmaceutical Radiation Dose SR
-        and dataset.ConceptNameCodeSequence[0].CodeValue == "113500"  # Radiopharmaceutical Radiation Dose Report
+        dataset.SOPClassUID
+        == "1.2.840.10008.5.1.4.1.1.88.68"  # Radiopharmaceutical Radiation Dose SR
+        and dataset.ConceptNameCodeSequence[0].CodeValue
+        == "113500"  # Radiopharmaceutical Radiation Dose Report
     ):
         logger.debug(f"rdsr.py extracting from {rdsr_file}")
         _rdsr2db(dataset)
