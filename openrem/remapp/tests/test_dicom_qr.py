@@ -123,6 +123,7 @@ class StudyQueryLogic(TestCase):
             "MG": {"inc": True, "mods": ["MG"]},
             "FL": {"inc": False, "mods": ["RF", "XA"]},
             "DX": {"inc": False, "mods": ["DX", "CR"]},
+            "NM": {"inc": False, "mods": ["NM", "PT"]},
         }
         query = DicomQuery.objects.get()
 
@@ -154,6 +155,7 @@ class StudyQueryLogic(TestCase):
         all_mods["MG"] = {"inc": True, "mods": ["MG"]}
         all_mods["FL"] = {"inc": False, "mods": ["RF", "XA"]}
         all_mods["DX"] = {"inc": False, "mods": ["DX", "CR"]}
+        all_mods["NM"] = {"inc": False, "mods": ["NM", "PT"]}
 
         query = DicomQuery.objects.get()
         qr_scp = DicomRemoteQR.objects.get()
@@ -235,6 +237,7 @@ class QRPhilipsCT(TestCase):
             "MG": {"inc": False, "mods": ["MG"]},
             "FL": {"inc": False, "mods": ["RF", "XA"]},
             "DX": {"inc": False, "mods": ["DX", "CR"]},
+            "NM": {"inc": False, "mods": ["NM", "PT"]},
         }
         filters = {
             "stationname_inc": None,
@@ -278,6 +281,7 @@ class QRPhilipsCT(TestCase):
             "MG": {"inc": False, "mods": ["MG"]},
             "FL": {"inc": False, "mods": ["RF", "XA"]},
             "DX": {"inc": False, "mods": ["DX", "CR"]},
+            "NM": {"inc": False, "mods": ["NM", "PT"]},
         }
         filters = {
             "stationname_inc": None,
@@ -331,6 +335,7 @@ class QRPhilipsCT(TestCase):
             "MG": {"inc": False, "mods": ["MG"]},
             "FL": {"inc": False, "mods": ["RF", "XA"]},
             "DX": {"inc": False, "mods": ["DX", "CR"]},
+            "NM": {"inc": False, "mods": ["NM", "PT"]},
         }
         filters = {
             "stationname_inc": None,
@@ -381,6 +386,7 @@ class QRPhilipsCT(TestCase):
             "MG": {"inc": False, "mods": ["MG"]},
             "FL": {"inc": False, "mods": ["RF", "XA"]},
             "DX": {"inc": False, "mods": ["DX", "CR"]},
+            "NM": {"inc": False, "mods": ["NM", "PT"]},
         }
         filters = {
             "stationname_inc": None,
@@ -641,8 +647,20 @@ class ResponseFiltering(TestCase):
                 self.assertTrue("goodstation" in study.station_name)
 
 
-def _fake_image_query(ae, remote, assoc, sr, query):
+def _fake_image_query(ae, remote, assoc, sr, query, initial_image_only=False):
     return
+
+
+def _test_prune_ser_resp_nm_pet_image_fake_image_query(
+    ae, remote, assoc, sr, query, initial_image_only=False
+):
+    """We need a 'real' side effect because for NM/CT Studies the studies are copied
+    (but not the images that are attached)"""
+    f = DicomQRRspSeries.objects.filter(modality__exact="PT").first()
+    se_pt_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=f)
+    se_pt_im1.sop_instance_uid = uuid.uuid4()
+    se_pt_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.128"
+    se_pt_im1.save()
 
 
 class PruneSeriesResponses(TestCase):
@@ -659,6 +677,7 @@ class PruneSeriesResponses(TestCase):
             "MG": {"inc": True, "mods": ["MG"]},
             "FL": {"inc": True, "mods": ["RF", "XA"]},
             "DX": {"inc": True, "mods": ["DX", "CR"]},
+            "NM": {"inc": True, "mods": ["NM", "PT"]},
         }
         self.filters = {
             "stationname_inc": None,
@@ -1202,6 +1221,163 @@ class PruneSeriesResponses(TestCase):
         self.assertEqual(series.count(), 1)
         self.assertEqual(series[0].modality, "SR")
 
+    @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
+    def test_prune_ser_resp_nm_rrdsr(self):
+        """
+        Test _prune_series_responses with NM exam and rrdsr
+        :return: No change to response
+        """
+        from ..netdicom.qrscu import _prune_series_responses
+
+        query = DicomQuery.objects.create()
+        query.query_id = "NMSR"
+        query.save()
+
+        st1 = DicomQRRspStudy.objects.create(dicom_query=query)
+        st1.query_id = query.query_id
+        st1.study_instance_uid = uuid.uuid4()
+        st1.study_description = "NM Study with RRDSR"
+        st1.set_modalities_in_study(["PT", "SR"])
+        st1.save()
+
+        st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
+        st1_se1.query_id = query.query_id
+        st1_se1.series_instance_uid = uuid.uuid4()
+        st1_se1.modality = "SR"
+        st1_se1.series_number = 1
+        st1_se1.number_of_series_related_instances = 1
+        st1_se1.save()
+
+        st1_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se1)
+        st1_se2_im1.query_id = query.query_id
+        st1_se2_im1.sop_instance_uid = uuid.uuid4()
+        st1_se2_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.68"
+        st1_se2_im1.save()
+
+        _prune_series_responses(
+            None,
+            None,
+            None,
+            query,
+            self.all_mods,
+            self.filters,
+            get_toshiba_images=False,
+            get_empty_sr=False,
+        )
+        studies = query.dicomqrrspstudy_set.all()
+        self.assertEqual(studies.count(), 1)
+        series = studies[0].dicomqrrspseries_set.all()
+        self.assertEqual(series.count(), 1)
+
+    @patch(
+        "remapp.netdicom.qrscu._query_images",
+        _test_prune_ser_resp_nm_pet_image_fake_image_query,
+    )
+    def test_prune_ser_resp_nm_pet_image(self):
+        """
+        Test _prune_series_responses with NM exam containing PET and CT Study with RDSR
+        :return: No change to response
+        """
+        from ..netdicom.qrscu import _prune_series_responses
+
+        query = DicomQuery.objects.create()
+        query.query_id = "NMPETCT"
+        query.save()
+
+        st1 = DicomQRRspStudy.objects.create(dicom_query=query)
+        st1.query_id = query.query_id
+        st1.study_instance_uid = uuid.uuid4()
+        st1.study_description = "NM Study with PET Image and CT RDSR"
+        st1.set_modalities_in_study(["PT", "SR", "CT"])
+        st1.save()
+
+        se_rdsr = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
+        se_rdsr.query_id = query.query_id
+        se_rdsr.series_instance_uid = uuid.uuid4()
+        se_rdsr.modality = "SR"
+        se_rdsr.series_number = 1
+        se_rdsr.number_of_series_related_instances = 1
+        se_rdsr.save()
+
+        st1_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=se_rdsr)
+        st1_se2_im1.query_id = query.query_id
+        st1_se2_im1.sop_instance_uid = uuid.uuid4()
+        st1_se2_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.67"
+        st1_se2_im1.save()
+
+        se_pt = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
+        se_pt.query_id = query.query_id
+        se_pt.series_instance_uid = uuid.uuid4()
+        se_pt.modality = "PT"
+        se_pt.series_number = 1
+        se_pt.number_of_series_related_instances = 1
+        se_pt.save()
+
+        _prune_series_responses(
+            None,
+            None,
+            None,
+            query,
+            self.all_mods,
+            self.filters,
+            get_toshiba_images=False,
+            get_empty_sr=False,
+        )
+        studies = query.dicomqrrspstudy_set.all()
+        self.assertEqual(studies.count(), 2)
+        series = studies[0].dicomqrrspseries_set.all()
+        self.assertEqual(series.count(), 1)
+        series = studies[1].dicomqrrspseries_set.all()
+        self.assertEqual(series.count(), 1)
+
+    @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
+    def test_prune_ser_resp_nm_image(self):
+        """
+        Test _prune_series_responses with NM exam containing PET and CT Study with RDSR
+        :return: No change to response
+        """
+        from ..netdicom.qrscu import _prune_series_responses
+
+        query = DicomQuery.objects.create()
+        query.query_id = "NMCT"
+        query.save()
+
+        st1 = DicomQRRspStudy.objects.create(dicom_query=query)
+        st1.query_id = query.query_id
+        st1.study_instance_uid = uuid.uuid4()
+        st1.study_description = "NM Study"
+        st1.set_modalities_in_study(["NM"])
+        st1.save()
+
+        se_nm_img = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
+        se_nm_img.query_id = query.query_id
+        se_nm_img.series_instance_uid = uuid.uuid4()
+        se_nm_img.modality = "NM"
+        se_nm_img.series_number = 1
+        se_nm_img.number_of_series_related_instances = 1
+        se_nm_img.save()
+
+        st1_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=se_nm_img)
+        st1_se2_im1.query_id = query.query_id
+        st1_se2_im1.sop_instance_uid = uuid.uuid4()
+        st1_se2_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.20"
+        st1_se2_im1.save()
+
+        _prune_series_responses(
+            None,
+            None,
+            None,
+            query,
+            self.all_mods,
+            self.filters,
+            get_toshiba_images=False,
+            get_empty_sr=False,
+        )
+        studies = query.dicomqrrspstudy_set.all()
+        self.assertEqual(studies.count(), 1)
+        series = studies[0].dicomqrrspseries_set.all()
+        self.assertEqual(series.count(), 1)
+
 
 class PruneSeriesResponsesCT(TestCase):
     """
@@ -1217,6 +1393,7 @@ class PruneSeriesResponsesCT(TestCase):
             "MG": {"inc": True, "mods": ["MG"]},
             "FL": {"inc": True, "mods": ["RF", "XA"]},
             "DX": {"inc": True, "mods": ["DX", "CR"]},
+            "NM": {"inc": True, "mods": ["NM", "PT"]},
         }
         self.filters = {
             "stationname_inc": None,
