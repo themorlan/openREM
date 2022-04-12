@@ -364,14 +364,17 @@ def _generate_nm_dose_per_study(user_profile, return_as_dict, df, average_choice
     return_structure = {}
     name_field = "study_description"
     value_field = "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity"
-    df_aggregated = create_dataframe_aggregates(
+
+    if user_profile.plotMean or user_profile.plotMedian:
+        
+        t = list(average_choices)
+        t.remove("boxplot")
+        df_aggregated = create_dataframe_aggregates(
         df,
         [name_field],
         value_field,
-        stats_to_use=average_choices + ["count"],
-    )
-
-    if user_profile.plotMean or user_profile.plotMedian:
+            stats_to_use=t + ["count"],
+        )
 
         parameter_dict = {
             "df_name_col": "study_description",
