@@ -503,6 +503,8 @@ def _prune_series_responses(
                     series.exclude(
                         series_instance_uid__exact=first.series_instance_uid
                     ).delete()
+                    first.image_level_move = True # We set this so only the first img of the series is moved
+                    first.save()
 
         elif all_mods["SR"]["inc"]:
             sr_type = _check_sr_type_in_study(
