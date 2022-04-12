@@ -5,7 +5,7 @@ RDSR module
 +++++++++++
 
 Ultimately this should be the only module required as it deals with all Radiation Dose Structured Reports. This is used
-for CT, fluoroscopy, mammography and digital radiography.
+for CT, fluoroscopy, mammography, digital radiography and nuclear medicine.
 
 .. autotask:: openrem.remapp.extractors.rdsr.rdsr
 
@@ -31,6 +31,15 @@ CR IOD instead of the DX one, so both are catered for. This module makes use
 of the image headers much like the mammography module.
 
 .. autotask:: openrem.remapp.extractors.dx.dx
+
+NM Image module
++++++++++++++++
+
+This has the abilty to read information from the DICOM Headers of PET and 
+NM images. In contrast to the other import modules this may actually complement
+the data read from an RRDSR, because not all relevant data is included there.
+
+.. autotask:: openrem.remapp.extractors.nm_image.nm_image
 
 CT non-standard modules
 +++++++++++++++++++++++
