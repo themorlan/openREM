@@ -319,34 +319,6 @@ def _prune_series_responses(
                 f"{query_id_8} stationname_exc removed {deleted_studies_filters['stationname_exc']} studies"
             )
 
-    # CT and Radipharmaceutical Studies (i.e PET/CT) often occur in the same study.
-    # Even though it's the same study, it has completly different data and is stored as 2
-    # studies with same id in openREM. We start this already here by duplicating studies which
-    # contain both modalities.
-    study_rsp = query.dicomqrrspstudy_set.all()
-    for study in study_rsp:
-        has_ct = all_mods["CT"]["inc"] and "CT" in study.get_modalities_in_study()
-        has_nm = all_mods["NM"]["inc"] and (
-            any(
-                mod in study.get_modalities_in_study() for mod in all_mods["NM"]["mods"]
-            )
-        )
-        if has_ct and has_nm:
-            if "SR" in study.get_modalities_in_study():
-                base = ["SR"]
-            else:
-                base = []
-            study.set_modalities_in_study(base + ["CT"])
-            study.save()
-            study_nm = deepcopy(study)
-            study_nm.pk = None
-            study_nm.set_modalities_in_study(base + ["NM"])
-            study_nm.save()
-            for serie in study.dicomqrrspseries_set.all():
-                serie_nm = deepcopy(serie)
-                serie_nm.dicom_qr_rsp_study = study_nm
-                serie_nm.pk = None
-                serie_nm.save()
     study_rsp = query.dicomqrrspstudy_set.all()
 
     for study in study_rsp:
@@ -483,6 +455,8 @@ def _prune_series_responses(
                 mod in study.get_modalities_in_study() for mod in all_mods["NM"]["mods"]
             )
         ):
+            study.modality = "NM"
+            study.save()
             # SOP ids: RRDSR, PET Image, NM Image. Because of the order
             # we will try to get them prioritized in the same order
             # (and move on if they don't exist)
@@ -1528,12 +1502,42 @@ def qrscu(
             remote,
         )
 
-        # Now we have all our studies. Time to throw duplicates and away any we don't want
-
-        study_numbers = {"initial": query.dicomqrrspstudy_set.count()}
-        study_numbers["current"] = _remove_duplicates_in_study_response(
-            query, study_numbers["initial"]
+        study_count = query.dicomqrrspstudy_set.count()
+        removed_study = study_count - _remove_duplicates_in_study_response(
+            query, study_count
         )
+
+        # CT and Radipharmaceutical Studies (i.e PET/CT) often occur in the same study.
+        # Even though it's the same study, it has completly different data and is stored as 2
+        # studies with same id in openREM. We start this already here by duplicating studies which
+        # contain both modalities.
+        study_rsp = query.dicomqrrspstudy_set.all()
+        for study in study_rsp:
+            has_ct = all_mods["CT"]["inc"] and "CT" in study.get_modalities_in_study()
+            has_nm = all_mods["NM"]["inc"] and (
+                any(
+                    mod in study.get_modalities_in_study() for mod in all_mods["NM"]["mods"]
+                )
+            )
+            if has_ct and has_nm:
+                if "SR" in study.get_modalities_in_study():
+                    base = ["SR"]
+                else:
+                    base = []
+                study.set_modalities_in_study(base + ["CT"])
+                study.save()
+                study_nm = deepcopy(study)
+                study_nm.pk = None
+                study_nm.set_modalities_in_study(base + ["NM"])
+                study_nm.save()
+                for serie in study.dicomqrrspseries_set.all():
+                    serie_nm = deepcopy(serie)
+                    serie_nm.dicom_qr_rsp_study = study_nm
+                    serie_nm.pk = None
+                    serie_nm.save()
+        study_rsp = query.dicomqrrspstudy_set.all()
+        study_numbers = {"initial": query.dicomqrrspstudy_set.count()}
+        study_numbers["current"] = study_numbers["initial"] - removed_study
 
         # Performing some cleanup if modality_matching=True (prevents having to retrieve unnecessary series)
         # We are assuming that if remote matches on modality it will populate ModalitiesInStudy and conversely
