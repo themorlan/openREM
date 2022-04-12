@@ -707,6 +707,7 @@ class DicomQueryForm(forms.Form):
         ("FL", "Fluoroscopy (XA and RF)"),
         ("DX", "DX, including CR"),
         ("MG", "Mammography"),
+        ("NM", "Nuclear Medicine"),
     )
 
     remote_host_field = forms.ChoiceField(
