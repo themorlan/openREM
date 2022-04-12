@@ -503,7 +503,9 @@ def _prune_series_responses(
                     series.exclude(
                         series_instance_uid__exact=first.series_instance_uid
                     ).delete()
-                    first.image_level_move = True # We set this so only the first img of the series is moved
+                    first.image_level_move = (
+                        True  # We set this so only the first img of the series is moved
+                    )
                     first.save()
 
         elif all_mods["SR"]["inc"]:
@@ -1518,7 +1520,8 @@ def qrscu(
             has_ct = all_mods["CT"]["inc"] and "CT" in study.get_modalities_in_study()
             has_nm = all_mods["NM"]["inc"] and (
                 any(
-                    mod in study.get_modalities_in_study() for mod in all_mods["NM"]["mods"]
+                    mod in study.get_modalities_in_study()
+                    for mod in all_mods["NM"]["mods"]
                 )
             )
             if has_ct and has_nm:
