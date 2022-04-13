@@ -552,17 +552,19 @@ Chart name                          Chart type
 =================================== ====================================================================
 Study frequency                     Bar chart of study description frequency
 ----------------------------------- --------------------------------------------------------------------
-Study description workload          Bar chart of number of studies carried out on each day of the
-                                    week, with each bar sub-divided into hours of the day
+Study description workload          Bar chart of number of studies carried out on each |br| 
+                                    day of the  week, with each bar sub-divided |br|
+                                    into hours of the day
 ----------------------------------- --------------------------------------------------------------------
-Injected dose per study             Bar chart or boxplot of average injected dose per study
-                                    study description. If calculate histogram is enabled creates
-                                    a histogram of injected dose.
+Injected dose per study             Bar chart or boxplot of average injected dose per |br| 
+                                    study description. If calculate histogram is |br| 
+                                    enabled creates a histogram of injected dose
 ----------------------------------- --------------------------------------------------------------------
-Injected dose over time             Bar chart or boxplot of injected dose per study description
-                                    over time
+Injected dose over time             Bar chart or boxplot of injected dose per study |br| 
+                                    description over time
 ----------------------------------- --------------------------------------------------------------------
-Injected dose over weight           Show a scatter plot of injected dose versus patient weight
+Injected dose over weight           Show a scatter plot of injected dose versus |br| 
+                                    patient weight
 =================================== ====================================================================
 
 .. _Plotly: https://plotly.com/python/
