@@ -140,6 +140,13 @@ def generate_required_nm_charts_list(user_profile: UserProfile):
                     "var_name": "studyInjectedDoseOverTimeMedian",
                 }
             )
+        if user_profile.plotBoxplots:
+            required_charts.append(
+                {
+                    "title": f"Boxplot of injected dose over time ({time_period})",
+                    "var_name": "studyInjectedDoseOverTimeBoxplot",
+                }
+            )
     if user_profile.plotNMInjectedDoseOverWeight:
         required_charts.append(
             {
@@ -240,6 +247,8 @@ def nm_plot_calculations(f, user_profile: UserProfile, return_as_dict=False):
         average_choices.append(CommonVariables.MEAN)
     if user_profile.plotMedian:
         average_choices.append(CommonVariables.MEDIAN)
+    if user_profile.plotBoxplots:
+        average_choices.append(CommonVariables.BOXPLOT)
 
     # Based on df create all the Charts that are wanted
 
@@ -357,14 +366,16 @@ def _generate_nm_dose_per_study(user_profile, return_as_dict, df, average_choice
     return_structure = {}
     name_field = "study_description"
     value_field = "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity"
-    df_aggregated = create_dataframe_aggregates(
+
+    if user_profile.plotMean or user_profile.plotMedian:
+        t = list(average_choices)
+        t.remove("boxplot")
+        df_aggregated = create_dataframe_aggregates(
         df,
         [name_field],
         value_field,
-        stats_to_use=average_choices + ["count"],
-    )
-
-    if user_profile.plotMean or user_profile.plotMedian:
+            stats_to_use=t + ["count"],
+        )
 
         parameter_dict = {
             "df_name_col": "study_description",
@@ -506,5 +517,7 @@ def _generate_nm_dose_over_time(
             return_structure["studyInjectedDoseOverTimeMeanData"] = result["mean"]
         if user_profile.plotMedian:
             return_structure["studyInjectedDoseOverTimeMedianData"] = result["median"]
+        if user_profile.plotBoxplots:
+            return_structure["studyInjectedDoseOverTimeBoxplotData"] = result["boxplot"]
 
     return return_structure

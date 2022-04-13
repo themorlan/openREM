@@ -1993,7 +1993,8 @@ def construct_over_time_charts(
     group_by_physician=None,
 ):
     """
-    Construct a Plotly line chart of average values over time, optionally grouped by performing physician name
+    Construct a Plotly line chart of average values over time, optionally grouped by performing physician name.
+    For "boxplot" a plotly boxplot of values over time is returned instead of an plotly line chart.
 
     :param df: the Pandas DataFrame containing the data
     :param params: a dictionary of processing parameters
@@ -2006,7 +2007,7 @@ def construct_over_time_charts(
     :param params["date_title"]: (string) date title
     :param params["facet_title"]: (string) subplot title
     :param params["sorting_choice"]: 2-element list. [0] sets sort direction, [1] used to determine which field to sort
-    :param params["average_choices"]: lsit of strings containing requred averages ("mean", "median")
+    :param params["average_choices"]: list of strings containing requred averages ("mean", "median", "boxplot")
     :param params["time_period"]: string containing the time period to average over; "A" (years), "Q" (quarters),
                                   "M" (months), "W" (weeks), "D" (days)
     :param params["grouping_choice"]: (string) "series" or "system"
@@ -2015,9 +2016,10 @@ def construct_over_time_charts(
     :param params["facet_col_wrap"]: (int) number of subplots per row
     :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
     :param group_by_physician: boolean flag to set whether to group by physician name
-    :return: a dictionary containing a combination of ["mean"] and ["median"] entries, each of which contains a Plotly
-             figure embedded in an HTML DIV; or Plotly figure as a dictionary (if params["return_as_dict"] is True); or
-             an error message embedded in an HTML DIV if there was a ValueError when calculating the figure
+    :return: a dictionary containing a combination of ["mean"], ["median"] and ["boxplot"] entries, 
+        each of which contains a Plotly figure embedded in an HTML DIV; or Plotly figure as a
+        dictionary (if params["return_as_dict"] is True); or an error message embedded in an HTML DIV
+        if there was a ValueError when calculating the figure
     """
     sorted_categories = create_sorted_category_list(
         df, params["df_name_col"], params["df_value_col"], params["sorting_choice"]
@@ -2030,17 +2032,20 @@ def construct_over_time_charts(
             return_value["mean"] = empty_dataframe_msg(params)
         if "median" in params["average_choices"]:
             return_value["median"] = empty_dataframe_msg(params)
+        if "boxplot" in params["average_choices"]:
+            return_value["boxplot"] = empty_dataframe_msg(params)
         return return_value
 
-    df_time_series = create_dataframe_time_series(
-        df,
-        params["df_name_col"],
-        params["df_value_col"],
-        df_date_col=params["df_date_col"],
-        time_period=params["time_period"],
-        average_choices=params["average_choices"],
-        group_by_physician=group_by_physician,
-    )
+    if "mean" in params["average_choices"] or "median" in params["average_choices"]:
+        df_time_series = create_dataframe_time_series(
+            df,
+            params["df_name_col"],
+            params["df_value_col"],
+            df_date_col=params["df_date_col"],
+            time_period=params["time_period"],
+            average_choices=list(set(params["average_choices"]).intersection(["mean", "median", "count"])),
+            group_by_physician=group_by_physician,
+        )
 
     category_names_col = params["df_name_col"]
     group_by_col = "x_ray_system_name"
@@ -2084,6 +2089,23 @@ def construct_over_time_charts(
             df_time_series,
             parameter_dict,
         )
+
+    if "boxplot" in params["average_choices"]:
+        df.set_index(params["df_date_col"], inplace=True)
+        df = df.to_period(freq=params["time_period"], copy=False)
+        df.reset_index(inplace=True)
+        df[params["df_date_col"]] = df[params["df_date_col"]].map(lambda x: x.start_time)
+        df.sort_values(params["df_date_col"], inplace=True)
+
+        parameter_dict["df_name_col"] = params["df_date_col"]
+        parameter_dict["df_value_col"] = params["df_value_col"]
+        parameter_dict["sorting_choice"] = params["sorting_choice"]
+
+        return_value["boxplot"] = plotly_boxplot(
+            df,
+            parameter_dict,
+        )
+
 
     return return_value
 
