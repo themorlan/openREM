@@ -472,6 +472,7 @@ def _prune_series_responses(
             }
 
             loaded_modalities = set()
+            selected_sop_class = None
             for sop_class in nm_img_sop_ids:
                 logger.debug(f"{query_id_8} Now checking for {sop_class} available")
                 loaded_sop_classes = set()
@@ -484,20 +485,22 @@ def _prune_series_responses(
                         )
                     )
                 if sop_class in loaded_sop_classes:
+                    selected_sop_class = sop_class
                     break
 
             series = study.dicomqrrspseries_set.all()
-            series.exclude(sop_class_in_series__exact=sop_class).delete()
-            if series.count() == 0:
+            if selected_sop_class is not None:
+                series.exclude(sop_class_in_series__exact=selected_sop_class).delete()
+            else:
                 logger.debug(
                     f"{query_id_8} No usable NM information available, deleting study from query"
                 )
                 study.delete()
                 continue
             logger.debug(
-                f"{query_id_8} Found {sop_class}. Keeping it, deleting all other series."
+                f"{query_id_8} Found {selected_sop_class}. Keeping it, deleting all other series."
             )
-            if sop_class == nm_img_sop_ids[1] or sop_class == nm_img_sop_ids[2]:
+            if selected_sop_class == nm_img_sop_ids[1] or selected_sop_class == nm_img_sop_ids[2]:
                 first = series.order_by("series_instance_uid").first()
                 if first is not None:
                     series.exclude(
