@@ -28,15 +28,15 @@
 
 """
 import logging
-
-from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Max, Count
-from celery import shared_task
 import datetime
-from ..interface.mod_filters import nm_filter
 import traceback
 import sys
 
+from celery import shared_task
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Max, Count
+
+from ..interface.mod_filters import nm_filter
 from .export_common import (
     create_summary_sheet,
     get_common_data,
@@ -113,7 +113,7 @@ def _get_data(filterdict, pid, task):
 def _nm_headers(pid, name, patid, statistics):
     headings = common_headers("NM", pid, name, patid)
     headings.remove("No. events")  # There is always just one event for a study
-    headings += [ 
+    headings += [
         "Radiopharmaceutical Agent",
         "Radionuclide",
         "Radionuclide Half Live",
@@ -237,8 +237,9 @@ def _extract_study_data(exams, pid, name, patid, statistics):
             _get_code_not_none(glomerular.measurement_method),
             _get_code_not_none(glomerular.equivalent_meaning_of_concept_name)
         ]
-    exam_data += _array_to_match_maximum(len(glomerular_filtration_rates), statistics["max_glomerular_filtration_rates"])
-    
+    exam_data += _array_to_match_maximum(len(glomerular_filtration_rates),
+        statistics["max_glomerular_filtration_rates"])
+
     for i, item in enumerate(exam_data):
         if item is None:
             exam_data[i] = ""
@@ -285,13 +286,14 @@ def exportNM2csv(filterdict, pid=False, name=None, patid=None, user=None):
 
         for i, exam in enumerate(data):
             try:
-                exam_data = _extract_study_data(exam, pid, name, patid)
+                exam_data = _extract_study_data(exam, pid, name, patid, statistics)
                 writer.writerow(exam_data)
             except ObjectDoesNotExist:
                 error_message = (
-                    f"DoesNotExist error whilst exporting study {i + 1} of {task.num_records},  study UID {exam.study_instance_uid}, accession number"
-                    f" {exam.accession_number} - maybe database entry was deleted as part of importing later version of same"
-                    " study?"
+                    f"DoesNotExist error whilst exporting study {i + 1} of {task.num_records}, "
+                    f"study UID {exam.study_instance_uid}, accession number  {exam.accession_number} "
+                    f"- maybe database entry was deleted as part of importing later version of same "
+                    "study?"
                 )
                 logger.error(error_message)
                 writer.writerow([error_message])
@@ -304,7 +306,7 @@ def exportNM2csv(filterdict, pid=False, name=None, patid=None, user=None):
     task.progress = "All data written."
     _exit_proc(task, date_stamp, force_exit=False)
 
-def _write_nm_excel_sheet(task, sheet, data, pid, name, patid, headings, 
+def _write_nm_excel_sheet(task, sheet, data, pid, name, patid, headings,
     statistics, sheet_index=1, sheet_total=1):
     sheet.write_row(0, 0, headings)
     numcolumns = len(headings) - 1
@@ -378,18 +380,18 @@ def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
         
         all_data = book.add_worksheet("All data")
         book = text_and_date_formats(book, all_data, pid, name, patid)
-        _write_nm_excel_sheet(task, all_data, data, pid, name, patid, 
+        _write_nm_excel_sheet(task, all_data, data, pid, name, patid,
             headings, statistics, 1, sheet_count)
 
         for i, study_description in enumerate(study_descriptions):
             study_description, current_data = study_description
             current_sheet = book.add_worksheet(sheet_name(study_description))
             book = text_and_date_formats(book, current_sheet, pid, name, patid)
-            _write_nm_excel_sheet(task, current_sheet, current_data, pid, name, patid, 
+            _write_nm_excel_sheet(task, current_sheet, current_data, pid, name, patid,
                 headings, statistics, i, sheet_count)
 
         book.close()
-    except Exception:
+    except Exception: # pylint: disable=broad-except
         unknown_error(task, date_stamp)
 
     xlsxfilename = "nmexport{0}.xlsx".format(date_stamp.strftime("%Y%m%d-%H%M%S%f"))
