@@ -368,7 +368,6 @@ def _generate_nm_dose_per_study(user_profile, return_as_dict, df, average_choice
     value_field = "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity"
 
     if user_profile.plotMean or user_profile.plotMedian:
-        
         t = list(average_choices)
         t.remove("boxplot")
         df_aggregated = create_dataframe_aggregates(
