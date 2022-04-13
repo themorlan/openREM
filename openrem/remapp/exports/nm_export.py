@@ -250,6 +250,14 @@ def _extract_study_data(exams, pid, name, patid, statistics):
 
 @shared_task
 def exportNM2csv(filterdict, pid=False, name=None, patid=None, user=None):
+    """
+    :param filterdict: Queryset of studies to export
+    :param pid: does the user have patient identifiable data permission
+    :param name: has patient name been selected for export
+    :param patid: has patient ID been selected for export
+    :param user: User that has started the export
+    :return: Saves csv file Media directory for user to download
+    """
     logger.debug("Started csv export task for NM")
 
     date_stamp = datetime.datetime.now()
@@ -324,6 +332,14 @@ def _write_nm_excel_sheet(task, sheet, data, pid, name, patid, headings,
 
 @shared_task
 def exportNM2excel(filterdict, pid=False, name=None, patid=None, user=None):
+    """
+    :param filterdict: Queryset of studies to export
+    :param pid: does the user have patient identifiable data permission
+    :param name: has patient name been selected for export
+    :param patid: has patient ID been selected for export
+    :param user: User that has started the export
+    :return: Saves xlsx file into Media directory for user to download
+    """
     logger.debug("Started XLSX export task for NM")
 
     date_stamp = datetime.datetime.now()
