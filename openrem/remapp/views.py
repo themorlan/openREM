@@ -65,6 +65,7 @@ from .interface.mod_filters import (
     ct_acq_filter,
     MGSummaryListFilter,
     MGFilterPlusPid,
+    nm_filter,
 )
 from .tools.make_skin_map import make_skin_map
 from .views_charts_ct import (
@@ -83,6 +84,7 @@ from .views_charts_rf import (
     generate_required_rf_charts_list,
     rf_chart_form_processing,
 )
+from .views_charts_nm import nm_chart_form_processing, generate_required_nm_charts_list
 from .models import (
     GeneralStudyModuleAttr,
     create_user_profile,
@@ -120,29 +122,12 @@ def multiply(value, arg):
 
 
 def logout_page(request):
-    """
-    Log users out and re-direct them to the main page.
-    """
+    """Log users out and re-direct them to the main page."""
     logout(request)
     return HttpResponseRedirect(reverse_lazy("home"))
 
 
-@login_required
-def dx_summary_list_filter(request):
-    """Obtain data for radiographic summary view"""
-    pid = bool(request.user.groups.filter(name="pidgroup"))
-    f = dx_acq_filter(request.GET, pid=pid)
-
-    try:
-        # See if the user has plot settings in userprofile
-        user_profile = request.user.userprofile
-    except ObjectDoesNotExist:
-        # Create a default userprofile for the user if one doesn't exist
-        create_user_profile(sender=request.user, instance=request.user, created=True)
-        user_profile = request.user.userprofile
-
-    chart_options_form = dx_chart_form_processing(request, user_profile)
-
+def update_items_per_page_form(request, user_profile):
     # Obtain the number of items per page from the request
     items_per_page_form = itemsPerPageForm(request.GET)
     # check whether the form data is valid
@@ -157,7 +142,21 @@ def dx_summary_list_filter(request):
         else:
             form_data = {"itemsPerPage": user_profile.itemsPerPage}
             items_per_page_form = itemsPerPageForm(form_data)
+    return items_per_page_form
 
+
+def get_or_create_user(request):
+    try:
+        # See if the user has plot settings in userprofile
+        user_profile = request.user.userprofile
+    except ObjectDoesNotExist:
+        # Create a default userprofile for the user if one doesn't exist
+        create_user_profile(sender=request.user, instance=request.user, created=True)
+        user_profile = request.user.userprofile
+    return user_profile
+
+
+def create_admin_info(request):
     admin = {
         "openremversion": __version__,
         "docsversion": __docs_version__,
@@ -165,7 +164,10 @@ def dx_summary_list_filter(request):
 
     for group in request.user.groups.all():
         admin[group.name] = True
+    return admin
 
+
+def create_paginated_study_list(request, f, user_profile):
     paginator = Paginator(f.qs, user_profile.itemsPerPage)
     page = request.GET.get("page")
     try:
@@ -174,6 +176,20 @@ def dx_summary_list_filter(request):
         study_list = paginator.page(1)
     except EmptyPage:
         study_list = paginator.page(paginator.num_pages)
+    return study_list
+
+
+@login_required
+def dx_summary_list_filter(request):
+    """Obtain data for radiographic summary view."""
+    pid = bool(request.user.groups.filter(name="pidgroup"))
+    f = dx_acq_filter(request.GET, pid=pid)
+
+    user_profile = get_or_create_user(request)
+    chart_options_form = dx_chart_form_processing(request, user_profile)
+    items_per_page_form = update_items_per_page_form(request, user_profile)
+    admin = create_admin_info(request)
+    study_list = create_paginated_study_list(request, f, user_profile)
 
     return_structure = {
         "filter": f,
@@ -193,7 +209,7 @@ def dx_summary_list_filter(request):
 
 @login_required
 def dx_detail_view(request, pk=None):
-    """Detail view for a DX study"""
+    """Detail view for a DX study."""
 
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
@@ -201,13 +217,7 @@ def dx_detail_view(request, pk=None):
         messages.error(request, "That study was not found")
         return redirect(reverse_lazy("dx_summary_list_filter"))
 
-    admin = {
-        "openremversion": __version__,
-        "docsversion": __docs_version__,
-    }
-
-    for group in request.user.groups.all():
-        admin[group.name] = True
+    admin = create_admin_info(request)
 
     projection_set = study.projectionxrayradiationdose_set.get()
     events_all = projection_set.irradeventxraydata_set.select_related(
@@ -236,7 +246,7 @@ def dx_detail_view(request, pk=None):
 
 @login_required
 def rf_summary_list_filter(request):
-    """Obtain data for radiographic summary view"""
+    """Obtain data for radiographic summary view."""
     if request.user.groups.filter(name="pidgroup"):
         f = RFFilterPlusPid(
             request.GET,
@@ -252,30 +262,9 @@ def rf_summary_list_filter(request):
             .distinct(),
         )
 
-    try:
-        # See if the user has plot settings in userprofile
-        user_profile = request.user.userprofile
-    except ObjectDoesNotExist:
-        # Create a default userprofile for the user if one doesn't exist
-        create_user_profile(sender=request.user, instance=request.user, created=True)
-        user_profile = request.user.userprofile
-
+    user_profile = get_or_create_user(request)
     chart_options_form = rf_chart_form_processing(request, user_profile)
-
-    # Obtain the number of items per page from the request
-    items_per_page_form = itemsPerPageForm(request.GET)
-    # check whether the form data is valid
-    if items_per_page_form.is_valid():
-        # Use the form data if the user clicked on the submit button
-        if "submit" in request.GET:
-            # process the data in form.cleaned_data as required
-            user_profile.itemsPerPage = items_per_page_form.cleaned_data["itemsPerPage"]
-            user_profile.save()
-
-        # If submit was not clicked then use the settings already stored in the user's profile
-        else:
-            form_data = {"itemsPerPage": user_profile.itemsPerPage}
-            items_per_page_form = itemsPerPageForm(form_data)
+    items_per_page_form = update_items_per_page_form(request, user_profile)
 
     # Import total DAP and total dose at reference point alert levels. Create with default values if not found.
     try:
@@ -289,10 +278,7 @@ def rf_summary_list_filter(request):
         "accum_dose_delta_weeks",
     )[0]
 
-    admin = {
-        "openremversion": __version__,
-        "docsversion": __docs_version__,
-    }
+    admin = create_admin_info(request)
 
     # # Calculate skin dose map for all objects in the database
     # import cPickle as pickle
@@ -329,17 +315,7 @@ def rf_summary_list_filter(request):
     #         make_skin_map(study.pk)
     #         print str(study.pk) + " done"
 
-    for group in request.user.groups.all():
-        admin[group.name] = True
-
-    paginator = Paginator(f.qs, user_profile.itemsPerPage)
-    page = request.GET.get("page")
-    try:
-        study_list = paginator.page(page)
-    except PageNotAnInteger:
-        study_list = paginator.page(1)
-    except EmptyPage:
-        study_list = paginator.page(paginator.num_pages)
+    study_list = create_paginated_study_list(request, f, user_profile)
 
     return_structure = {
         "filter": f,
@@ -360,7 +336,7 @@ def rf_summary_list_filter(request):
 
 @login_required
 def rf_detail_view(request, pk=None):
-    """Detail view for an RF study"""
+    """Detail view for an RF study."""
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
@@ -532,13 +508,10 @@ def rf_detail_view(request, pk=None):
     else:
         included_studies = None
 
-    admin = {
-        "openremversion": __version__,
-        "docsversion": __docs_version__,
-        "enable_skin_dose_maps": SkinDoseMapCalcSettings.objects.values_list(
-            "enable_skin_dose_maps", flat=True
-        )[0],
-    }
+    admin = create_admin_info(request)
+    admin["enable_skin_dose_maps"] = SkinDoseMapCalcSettings.objects.values_list(
+        "enable_skin_dose_maps", flat=True
+    )[0]
 
     for group in request.user.groups.all():
         admin[group.name] = True
@@ -561,20 +534,12 @@ def rf_detail_view(request, pk=None):
 
 @login_required
 def rf_detail_view_skin_map(request, pk=None):
-    """View to calculate a skin dose map. Currently just a copy of rf_detail_view"""
+    """View to calculate a skin dose map. Currently just a copy of rf_detail_view."""
     try:
         GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
         messages.error(request, "That study was not found")
         return redirect(reverse_lazy("rf_summary_list_filter"))
-
-    admin = {
-        "openremversion": __version__,
-        "docsversion": __docs_version__,
-    }
-
-    for group in request.user.groups.all():
-        admin[group.name] = True
 
     # Check to see if there is already a skin map pickle with the same study ID.
     try:
@@ -660,52 +625,60 @@ def rf_detail_view_skin_map(request, pk=None):
 
 
 @login_required
-def ct_summary_list_filter(request):
-    """Obtain data for CT summary view"""
+def nm_summary_list_filter(request):
+    """Obtain data for NM summary view."""
     pid = bool(request.user.groups.filter(name="pidgroup"))
-    f = ct_acq_filter(request.GET, pid=pid)
+    f = nm_filter(request.GET, pid=pid)
+    user_profile = get_or_create_user(request)
+    chart_options_form = nm_chart_form_processing(request, user_profile)
+    items_per_page_form = update_items_per_page_form(request, user_profile)
+    admin = create_admin_info(request)
+    study_list = create_paginated_study_list(request, f, user_profile)
 
-    try:
-        # See if the user has plot settings in userprofile
-        user_profile = request.user.userprofile
-    except ObjectDoesNotExist:
-        # Create a default userprofile for the user if one doesn't exist
-        create_user_profile(sender=request.user, instance=request.user, created=True)
-        user_profile = request.user.userprofile
-
-    chart_options_form = ct_chart_form_processing(request, user_profile)
-
-    # Obtain the number of items per page from the request
-    items_per_page_form = itemsPerPageForm(request.GET)
-    # check whether the form data is valid
-    if items_per_page_form.is_valid():
-        # Use the form data if the user clicked on the submit button
-        if "submit" in request.GET:
-            # process the data in form.cleaned_data as required
-            user_profile.itemsPerPage = items_per_page_form.cleaned_data["itemsPerPage"]
-            user_profile.save()
-
-        # If submit was not clicked then use the settings already stored in the user's profile
-        else:
-            form_data = {"itemsPerPage": user_profile.itemsPerPage}
-            items_per_page_form = itemsPerPageForm(form_data)
-
-    admin = {
-        "openremversion": __version__,
-        "docsversion": __docs_version__,
+    return_structure = {
+        "filter": f,
+        "study_list": study_list,
+        "admin": admin,
+        "chartOptionsForm": chart_options_form,
+        "itemsPerPageForm": items_per_page_form,
     }
 
-    for group in request.user.groups.all():
-        admin[group.name] = True
+    if user_profile.plotCharts:
+        return_structure["required_charts"] = generate_required_nm_charts_list(
+            user_profile
+        )
 
-    paginator = Paginator(f.qs, user_profile.itemsPerPage)
-    page = request.GET.get("page")
+    return render(request, "remapp/nmfiltered.html", return_structure)
+
+
+@login_required
+def nm_detail_view(request, pk=None):
+    """Detail view for a NM study."""
     try:
-        study_list = paginator.page(page)
-    except PageNotAnInteger:
-        study_list = paginator.page(1)
-    except EmptyPage:
-        study_list = paginator.page(paginator.num_pages)
+        study = GeneralStudyModuleAttr.objects.get(pk=pk)
+    except ObjectDoesNotExist:
+        messages.error(request, "That study was not found")
+        return redirect(reverse_lazy("nm_summary_list_filter"))
+
+    admin = create_admin_info(request)
+
+    return render(
+        request,
+        "remapp/nmdetail.html",
+        {"generalstudymoduleattr": study, "admin": admin},
+    )
+
+
+@login_required
+def ct_summary_list_filter(request):
+    """Obtain data for CT summary view."""
+    pid = bool(request.user.groups.filter(name="pidgroup"))
+    f = ct_acq_filter(request.GET, pid=pid)
+    user_profile = get_or_create_user(request)
+    chart_options_form = ct_chart_form_processing(request, user_profile)
+    items_per_page_form = update_items_per_page_form(request, user_profile)
+    admin = create_admin_info(request)
+    study_list = create_paginated_study_list(request, f, user_profile)
 
     return_structure = {
         "filter": f,
@@ -725,7 +698,7 @@ def ct_summary_list_filter(request):
 
 @login_required
 def ct_detail_view(request, pk=None):
-    """Detail view for a CT study"""
+    """Detail view for a CT study."""
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
@@ -740,13 +713,7 @@ def ct_detail_view(request, pk=None):
         .order_by("pk")
     )
 
-    admin = {
-        "openremversion": __version__,
-        "docsversion": __docs_version__,
-    }
-
-    for group in request.user.groups.all():
-        admin[group.name] = True
+    admin = create_admin_info(request)
 
     return render(
         request,
@@ -757,7 +724,7 @@ def ct_detail_view(request, pk=None):
 
 @login_required
 def mg_summary_list_filter(request):
-    """Mammography data for summary view"""
+    """Mammography data for summary view."""
     filter_data = request.GET.copy()
     if "page" in filter_data:
         del filter_data["page"]
@@ -777,47 +744,11 @@ def mg_summary_list_filter(request):
             .distinct(),
         )
 
-    try:
-        # See if the user has plot settings in userprofile
-        user_profile = request.user.userprofile
-    except ObjectDoesNotExist:
-        # Create a default userprofile for the user if one doesn't exist
-        create_user_profile(sender=request.user, instance=request.user, created=True)
-        user_profile = request.user.userprofile
-
+    user_profile = get_or_create_user(request)
     chart_options_form = mg_chart_form_processing(request, user_profile)
-
-    # Obtain the number of items per page from the request
-    items_per_page_form = itemsPerPageForm(request.GET)
-    # check whether the form data is valid
-    if items_per_page_form.is_valid():
-        # Use the form data if the user clicked on the submit button
-        if "submit" in request.GET:
-            # process the data in form.cleaned_data as required
-            user_profile.itemsPerPage = items_per_page_form.cleaned_data["itemsPerPage"]
-            user_profile.save()
-
-        # If submit was not clicked then use the settings already stored in the user's profile
-        else:
-            form_data = {"itemsPerPage": user_profile.itemsPerPage}
-            items_per_page_form = itemsPerPageForm(form_data)
-
-    admin = {
-        "openremversion": __version__,
-        "docsversion": __docs_version__,
-    }
-
-    for group in request.user.groups.all():
-        admin[group.name] = True
-
-    paginator = Paginator(f.qs, user_profile.itemsPerPage)
-    page = request.GET.get("page")
-    try:
-        study_list = paginator.page(page)
-    except PageNotAnInteger:
-        study_list = paginator.page(1)
-    except EmptyPage:
-        study_list = paginator.page(paginator.num_pages)
+    items_per_page_form = update_items_per_page_form(request, user_profile)
+    admin = create_admin_info(request)
+    study_list = create_paginated_study_list(request, f, user_profile)
 
     return_structure = {
         "filter": f,
@@ -837,20 +768,14 @@ def mg_summary_list_filter(request):
 
 @login_required
 def mg_detail_view(request, pk=None):
-    """Detail view for a CT study"""
+    """Detail view for a CT study."""
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except:
         messages.error(request, "That study was not found")
         return redirect(reverse_lazy("mg_summary_list_filter"))
 
-    admin = {
-        "openremversion": __version__,
-        "docsversion": __docs_version__,
-    }
-
-    for group in request.user.groups.all():
-        admin[group.name] = True
+    admin = create_admin_info(request)
 
     projection_xray_dose_set = study.projectionxrayradiationdose_set.get()
     accum_mammo_set = (
@@ -948,6 +873,10 @@ def openrem_home(request):
             | Q(modality_type__exact="CR")
             | Q(modality_type__exact="PX")
         ).count(),
+    }
+    modalities["NM"] = {
+        "name": _("Nuclear Medicine"),
+        "count": allstudies.filter(modality_type__exact="NM").count(),
     }
 
     mods_to_delete = []
@@ -1052,7 +981,7 @@ def openrem_home(request):
 
 @csrf_exempt
 def update_modality_totals(request):
-    """AJAX function to update study numbers automatically
+    """AJAX function to update study numbers automatically.
 
     :param request: request object
     :return: dictionary of totals

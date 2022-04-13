@@ -34,6 +34,7 @@ from . import (
     views,
     views_admin,
     views_charts_ct,
+    views_charts_nm,
     views_charts_dx,
     views_charts_mg,
     views_charts_rf,
@@ -59,6 +60,11 @@ main_patterns = [
         views.rf_detail_view_skin_map,
         name="rf_detail_view_skin_map",
     ),
+    path("nm/", views.nm_summary_list_filter, name="nm_summary_list_filter"),
+    path(
+        "nm/chart/", views_charts_nm.nm_summary_chart_data, name="nm_summary_chart_data"
+    ),
+    path("nm/<int:pk>/", views.nm_detail_view, name="nm_detail_view"),
     path("ct/", views.ct_summary_list_filter, name="ct_summary_list_filter"),
     path(
         "ct/chart/", views_charts_ct.ct_summary_chart_data, name="ct_summary_chart_data"
@@ -301,6 +307,8 @@ export_patterns = [
     path("ctcsv1/<int:name>/<int:pat_id>/", exportviews.ctcsv1, name="ctcsv1"),
     path("ctxlsx1/<int:name>/<int:pat_id>/", exportviews.ctxlsx1, name="ctxlsx1"),
     path("ctphe2019/", exportviews.ct_xlsx_phe2019, name="ct_xlsx_phe2019"),
+    path("nmcsv1/<int:name>/<int:pat_id>/", exportviews.nmcsv1, name="nmcsv1"),
+    path("nmxlsx1/<int:name>/<int:pat_id>/", exportviews.nmxlsx1, name="nmxlsx1"),
     path("dxcsv1/<int:name>/<int:pat_id>/", exportviews.dxcsv1, name="dxcsv1"),
     path("dxxlsx1/<int:name>/<int:pat_id>/", exportviews.dxxlsx1, name="dxxlsx1"),
     path(

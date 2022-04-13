@@ -71,6 +71,7 @@ from .forms import (
     RFChartOptionsDisplayForm,
     RFHighDoseFluoroAlertsForm,
     UpdateDisplayNamesForm,
+    NMChartOptionsDisplayForm,
 )
 from .models import (
     AccumIntegratedProjRadiogDose,
@@ -774,16 +775,19 @@ def reset_dual(pk=None):
         .exclude(modality_type__exact="CR")
         .exclude(modality_type__exact="PX")
     )
-    message_start = "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are " "DX, {3} are CR, {4} are PX, {5} are RF and {6} are something else before processing,".format(  # pylint: disable=line-too-long
-        studies[0]
-        .generalequipmentmoduleattr_set.get()
-        .unique_equipment_name.display_name,
-        studies.count(),
-        studies.filter(modality_type__exact="DX").count(),
-        studies.filter(modality_type__exact="CR").count(),
-        studies.filter(modality_type__exact="PX").count(),
-        studies.filter(modality_type__exact="RF").count(),
-        not_dx_rf_cr.count(),
+    message_start = (
+        "Reprocessing dual for {0}. Number of studies is {1}, of which {2} are "
+        "DX, {3} are CR, {4} are PX, {5} are RF and {6} are something else before processing,".format(  # pylint: disable=line-too-long
+            studies[0]
+            .generalequipmentmoduleattr_set.get()
+            .unique_equipment_name.display_name,
+            studies.count(),
+            studies.filter(modality_type__exact="DX").count(),
+            studies.filter(modality_type__exact="CR").count(),
+            studies.filter(modality_type__exact="PX").count(),
+            studies.filter(modality_type__exact="RF").count(),
+            not_dx_rf_cr.count(),
+        )
     )
 
     logger.debug(message_start)
@@ -1298,12 +1302,14 @@ def chart_options_view(request):
         dx_form = DXChartOptionsDisplayForm(request.POST)
         rf_form = RFChartOptionsDisplayForm(request.POST)
         mg_form = MGChartOptionsDisplayForm(request.POST)
+        nm_form = NMChartOptionsDisplayForm(request.POST)
         if (
             general_form.is_valid()
             and ct_form.is_valid()
             and dx_form.is_valid()
             and rf_form.is_valid()
             and mg_form.is_valid()
+            and nm_form.is_valid()
         ):
             try:
                 # See if the user has plot settings in userprofile
@@ -1350,6 +1356,8 @@ def chart_options_view(request):
             set_rf_chart_options(rf_form, user_profile)
 
             set_mg_chart_options(mg_form, user_profile)
+
+            set_nm_chart_options(nm_form, user_profile)
 
             user_profile.save()
 
@@ -1399,11 +1407,14 @@ def chart_options_view(request):
 
     mg_form_data = initialise_mg_form_data(user_profile)
 
+    nm_form_data = initialise_nm_form_data(user_profile)
+
     general_chart_options_form = GeneralChartOptionsDisplayForm(general_form_data)
     ct_chart_options_form = CTChartOptionsDisplayForm(ct_form_data)
     dx_chart_options_form = DXChartOptionsDisplayForm(dx_form_data)
     rf_chart_options_form = RFChartOptionsDisplayForm(rf_form_data)
     mg_chart_options_form = MGChartOptionsDisplayForm(mg_form_data)
+    nm_chart_options_form = NMChartOptionsDisplayForm(nm_form_data)
 
     return_structure = {
         "admin": admin,
@@ -1412,6 +1423,7 @@ def chart_options_view(request):
         "DXChartOptionsForm": dx_chart_options_form,
         "RFChartOptionsForm": rf_chart_options_form,
         "MGChartOptionsForm": mg_chart_options_form,
+        "NMChartOptionsForm": nm_chart_options_form,
     }
 
     return render(request, "remapp/displaychartoptions.html", return_structure)
@@ -1575,6 +1587,39 @@ def set_average_chart_options(general_form, user_profile):
         user_profile.plotBoxplots = True
     else:
         user_profile.plotBoxplots = False
+
+
+def set_nm_chart_options(nm_form, user_profile):
+    user_profile.plotNMStudyFreq = nm_form.cleaned_data["plotNMStudyFreq"]
+    user_profile.plotNMStudyPerDayAndHour = nm_form.cleaned_data[
+        "plotNMStudyPerDayAndHour"
+    ]
+    user_profile.plotNMInjectedDosePerStudy = nm_form.cleaned_data[
+        "plotNMInjectedDosePerStudy"
+    ]
+    user_profile.plotNMInjectedDoseOverTime = nm_form.cleaned_data[
+        "plotNMInjectedDoseOverTime"
+    ]
+    user_profile.plotNMInjectedDoseOverWeight = nm_form.cleaned_data[
+        "plotNMInjectedDoseOverWeight"
+    ]
+    user_profile.plotNMOverTimePeriod = nm_form.cleaned_data["plotNMOverTimePeriod"]
+    user_profile.plotNMInitialSortingChoice = nm_form.cleaned_data[
+        "plotNMInitialSortingChoice"
+    ]
+
+
+def initialise_nm_form_data(user_profile):
+    nm_form_data = {
+        "plotNMStudyFreq": user_profile.plotNMStudyFreq,
+        "plotNMStudyPerDayAndHour": user_profile.plotNMStudyPerDayAndHour,
+        "plotNMInjectedDosePerStudy": user_profile.plotNMInjectedDosePerStudy,
+        "plotNMInjectedDoseOverTime": user_profile.plotNMInjectedDoseOverTime,
+        "plotNMInjectedDoseOverWeight": user_profile.plotNMInjectedDoseOverWeight,
+        "plotNMOverTimePeriod": user_profile.plotNMOverTimePeriod,
+        "plotNMInitialSortingChoice": user_profile.plotNMInitialSortingChoice,
+    }
+    return nm_form_data
 
 
 def set_ct_chart_options(ct_form, user_profile):

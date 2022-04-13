@@ -173,6 +173,82 @@ class DXChartOptionsForm(forms.Form):
     )
 
 
+class NMChartOptionsForm(forms.Form):
+    """
+    Form for NM chart options
+    """
+
+    plotCharts = forms.BooleanField(label="Plot charts?", required=False)
+
+    plotNMStudyFreq = forms.BooleanField(label="Study frequency", required=False)
+    plotNMStudyPerDayAndHour = forms.BooleanField(
+        label="Study workload", required=False
+    )
+    plotNMInjectedDosePerStudy = forms.BooleanField(
+        label="Injected Dose per Study", required=False
+    )
+    plotNMInjectedDoseOverTime = forms.BooleanField(
+        label="Injected Dose over Time", required=False
+    )
+    plotNMInjectedDoseOverWeight = forms.BooleanField(
+        label="Injected Dose over Weight", required=False
+    )
+    plotNMOverTimePeriod = forms.ChoiceField(
+        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
+    )
+    plotAverageChoice = forms.MultipleChoiceField(
+        label="Average plots",
+        choices=CommonVariables.AVERAGES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "CheckboxSelectMultiple"}),
+    )
+    plotGrouping = forms.ChoiceField(  # nosec
+        label=mark_safe("Grouping choice"),
+        choices=CommonVariables.CHART_GROUPING,
+        required=False,
+    )
+    plotSeriesPerSystem = forms.BooleanField(
+        label="Plot a series per system", required=False
+    )
+    plotHistograms = forms.BooleanField(
+        label="Calculate histogram data", required=False
+    )
+    plotNMInitialSortingChoice = forms.ChoiceField(
+        label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
+    )
+    plotInitialSortingDirection = forms.ChoiceField(
+        label="Sorting direction",
+        choices=CommonVariables.SORTING_DIRECTION,
+        required=False,
+    )
+
+
+class NMChartOptionsDisplayForm(forms.Form):
+    """
+    Form for NM chart display options
+    """
+
+    plotNMStudyFreq = forms.BooleanField(label="Study frequency", required=False)
+    plotNMStudyPerDayAndHour = forms.BooleanField(
+        label="Study workload", required=False
+    )
+    plotNMInjectedDosePerStudy = forms.BooleanField(
+        label="Injected Dose per Study", required=False
+    )
+    plotNMInjectedDoseOverTime = forms.BooleanField(
+        label="Injected Dose over Time", required=False
+    )
+    plotNMInjectedDoseOverWeight = forms.BooleanField(
+        label="Injected Dose over Weight", required=False
+    )
+    plotNMOverTimePeriod = forms.ChoiceField(
+        label="Time period", choices=CommonVariables.TIME_PERIOD, required=False
+    )
+    plotNMInitialSortingChoice = forms.ChoiceField(
+        label="Chart sorting", choices=CommonVariables.SORTING_CHOICES, required=False
+    )
+
+
 class CTChartOptionsForm(forms.Form):
     """Form for CT chart options"""
 
