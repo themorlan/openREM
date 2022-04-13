@@ -134,7 +134,7 @@ class ImportNMImage(ImportTest):
         img_loc = self._get_dcm_file("test_files/NM-PetIm-Siemens.dcm")
         nm_image(img_loc)
 
-        logger_mock.warn.assert_called()  # Dates are set differently, therefore logger warns
+        logger_mock.warning.assert_called()  # Dates are set differently, therefore logger warns
 
         expected = {
             "radiopharmaceuticalradiationdose_set": {
