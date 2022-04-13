@@ -145,6 +145,7 @@ class ImportNMRDSR(ImportTest):
                                 2000, 3, 24, 10, 40, 40, 0
                             ),
                             "administered_activity": Decimal(394.0),
+                            "effective_dose": Decimal(7.486),
                             "organdose_set": {
                                 "first": {
                                     "finding_site": {"code_meaning": "Adrenal gland"},
@@ -263,6 +264,7 @@ class ImportNMRDSR(ImportTest):
                                 2000, 3, 23, 8, 29, 18, 0
                             ),
                             "administered_activity": Decimal(250.0),
+                            "effective_dose": Decimal(4.75),
                             "pre_administration_measured_activity": Decimal(11.0),
                             "pre_activity_measurement_device": {
                                 "code_meaning": "Dose Calibrator"
