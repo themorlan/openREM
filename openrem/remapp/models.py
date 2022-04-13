@@ -2171,7 +2171,8 @@ class RadiopharmaceuticalAdministrationEventData(models.Model):  # TID 10022
         on_delete=models.CASCADE,
     )  # CID 25 & CID 4021
     radiopharmaceutical_agent_string = models.TextField(
-        blank=True, null=True) # In NM Images the radiopharmaceutical may only be present as string
+        blank=True, null=True
+    )  # In NM Images the radiopharmaceutical may only be present as string
     radionuclide = models.ForeignKey(
         ContextID,
         blank=True,
@@ -2334,6 +2335,47 @@ class OrganDose(models.Model):  # TID 10023
         on_delete=models.CASCADE,
     )  # CID 10040
     reference_authority_text = models.TextField(blank=True, null=True)
+    type_of_detector_motion = models.TextField(blank=True, null=True)
+
+
+class PETSeries(models.Model):
+    radiopharmaceutical_radiation_dose = models.ForeignKey(
+        RadiopharmaceuticalRadiationDose, on_delete=models.CASCADE
+    )
+    series_datetime = models.DateTimeField(blank=True, null=True)
+    number_of_rr_intervals = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    number_of_time_slots = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    number_of_time_slices = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    number_of_slices = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    reconstruction_method = models.TextField(blank=True, null=True)
+    coincidence_window_width = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    energy_window_lower_limit = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    energy_window_upper_limit = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
+    scan_progression_direction = models.TextField(blank=True, null=True)
+
+
+class PETSeriesCorrection(models.Model):
+    pet_series = models.ForeignKey(PETSeries, on_delete=models.CASCADE)
+    corrected_image = models.TextField(blank=True, null=True)
+
+
+class PETSeriesType(models.Model):
+    pet_series = models.ForeignKey(PETSeries, on_delete=models.CASCADE)
+    series_type = models.TextField(blank=True, null=True)
 
 
 class RadiopharmaceuticalAdministrationPatientCharacteristics(models.Model):
