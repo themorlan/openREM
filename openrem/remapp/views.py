@@ -122,9 +122,7 @@ def multiply(value, arg):
 
 
 def logout_page(request):
-    """
-    Log users out and re-direct them to the main page.
-    """
+    """Log users out and re-direct them to the main page."""
     logout(request)
     return HttpResponseRedirect(reverse_lazy("home"))
 
@@ -183,7 +181,7 @@ def create_paginated_study_list(request, f, user_profile):
 
 @login_required
 def dx_summary_list_filter(request):
-    """Obtain data for radiographic summary view"""
+    """Obtain data for radiographic summary view."""
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = dx_acq_filter(request.GET, pid=pid)
 
@@ -211,7 +209,7 @@ def dx_summary_list_filter(request):
 
 @login_required
 def dx_detail_view(request, pk=None):
-    """Detail view for a DX study"""
+    """Detail view for a DX study."""
 
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
@@ -248,7 +246,7 @@ def dx_detail_view(request, pk=None):
 
 @login_required
 def rf_summary_list_filter(request):
-    """Obtain data for radiographic summary view"""
+    """Obtain data for radiographic summary view."""
     if request.user.groups.filter(name="pidgroup"):
         f = RFFilterPlusPid(
             request.GET,
@@ -338,7 +336,7 @@ def rf_summary_list_filter(request):
 
 @login_required
 def rf_detail_view(request, pk=None):
-    """Detail view for an RF study"""
+    """Detail view for an RF study."""
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
@@ -536,7 +534,7 @@ def rf_detail_view(request, pk=None):
 
 @login_required
 def rf_detail_view_skin_map(request, pk=None):
-    """View to calculate a skin dose map. Currently just a copy of rf_detail_view"""
+    """View to calculate a skin dose map. Currently just a copy of rf_detail_view."""
     try:
         GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
@@ -628,7 +626,7 @@ def rf_detail_view_skin_map(request, pk=None):
 
 @login_required
 def nm_summary_list_filter(request):
-    """Obtain data for NM summary view"""
+    """Obtain data for NM summary view."""
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = nm_filter(request.GET, pid=pid)
     user_profile = get_or_create_user(request)
@@ -655,7 +653,7 @@ def nm_summary_list_filter(request):
 
 @login_required
 def nm_detail_view(request, pk=None):
-    """Detail view for a NM study"""
+    """Detail view for a NM study."""
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
@@ -679,7 +677,7 @@ def nm_detail_view(request, pk=None):
 
 @login_required
 def ct_summary_list_filter(request):
-    """Obtain data for CT summary view"""
+    """Obtain data for CT summary view."""
     pid = bool(request.user.groups.filter(name="pidgroup"))
     f = ct_acq_filter(request.GET, pid=pid)
     user_profile = get_or_create_user(request)
@@ -706,7 +704,7 @@ def ct_summary_list_filter(request):
 
 @login_required
 def ct_detail_view(request, pk=None):
-    """Detail view for a CT study"""
+    """Detail view for a CT study."""
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except ObjectDoesNotExist:
@@ -738,7 +736,7 @@ def ct_detail_view(request, pk=None):
 
 @login_required
 def mg_summary_list_filter(request):
-    """Mammography data for summary view"""
+    """Mammography data for summary view."""
     filter_data = request.GET.copy()
     if "page" in filter_data:
         del filter_data["page"]
@@ -782,7 +780,7 @@ def mg_summary_list_filter(request):
 
 @login_required
 def mg_detail_view(request, pk=None):
-    """Detail view for a CT study"""
+    """Detail view for a CT study."""
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except:
@@ -995,7 +993,7 @@ def openrem_home(request):
 
 @csrf_exempt
 def update_modality_totals(request):
-    """AJAX function to update study numbers automatically
+    """AJAX function to update study numbers automatically.
 
     :param request: request object
     :return: dictionary of totals
