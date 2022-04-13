@@ -1293,6 +1293,39 @@ def _remove_duplicates_in_study_response(query, initial_count):
         return initial_count
 
 
+def _duplicate_ct_pet_studies(query, all_mods):
+    """
+    CT and Radipharmaceutical Studies (i.e PET/CT) often occur in the same study.
+    Even though it's the same study, it has completly different data and is stored as 2
+    studies with same id in openREM. We start this already here by duplicating studies which
+    contain both modalities.
+    """
+    study_rsp = query.dicomqrrspstudy_set.all()
+    for study in study_rsp:
+        has_ct = all_mods["CT"]["inc"] and "CT" in study.get_modalities_in_study()
+        has_nm = all_mods["NM"]["inc"] and (
+            any(
+                mod in study.get_modalities_in_study() for mod in all_mods["NM"]["mods"]
+            )
+        )
+        if has_ct and has_nm:
+            if "SR" in study.get_modalities_in_study():
+                base = ["SR"]
+            else:
+                base = []
+            study.set_modalities_in_study(base + ["CT"])
+            study.save()
+            study_nm = deepcopy(study)
+            study_nm.pk = None
+            study_nm.set_modalities_in_study(base + ["NM"])
+            study_nm.save()
+            for serie in study.dicomqrrspseries_set.all():
+                serie_nm = deepcopy(serie)
+                serie_nm.dicom_qr_rsp_study = study_nm
+                serie_nm.pk = None
+                serie_nm.save()
+
+
 @shared_task(
     name="remapp.netdicom.qrscu.qrscu"
 )  # (name='remapp.netdicom.qrscu.qrscu', queue='qr')
@@ -1511,35 +1544,7 @@ def qrscu(
             query, study_count
         )
 
-        # CT and Radipharmaceutical Studies (i.e PET/CT) often occur in the same study.
-        # Even though it's the same study, it has completly different data and is stored as 2
-        # studies with same id in openREM. We start this already here by duplicating studies which
-        # contain both modalities.
-        study_rsp = query.dicomqrrspstudy_set.all()
-        for study in study_rsp:
-            has_ct = all_mods["CT"]["inc"] and "CT" in study.get_modalities_in_study()
-            has_nm = all_mods["NM"]["inc"] and (
-                any(
-                    mod in study.get_modalities_in_study()
-                    for mod in all_mods["NM"]["mods"]
-                )
-            )
-            if has_ct and has_nm:
-                if "SR" in study.get_modalities_in_study():
-                    base = ["SR"]
-                else:
-                    base = []
-                study.set_modalities_in_study(base + ["CT"])
-                study.save()
-                study_nm = deepcopy(study)
-                study_nm.pk = None
-                study_nm.set_modalities_in_study(base + ["NM"])
-                study_nm.save()
-                for serie in study.dicomqrrspseries_set.all():
-                    serie_nm = deepcopy(serie)
-                    serie_nm.dicom_qr_rsp_study = study_nm
-                    serie_nm.pk = None
-                    serie_nm.save()
+        _duplicate_ct_pet_studies(query, all_mods)
         study_rsp = query.dicomqrrspstudy_set.all()
         study_numbers = {"initial": query.dicomqrrspstudy_set.count()}
         study_numbers["current"] = study_numbers["initial"] - removed_study

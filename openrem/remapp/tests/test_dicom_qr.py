@@ -651,18 +651,6 @@ def _fake_image_query(ae, remote, assoc, sr, query, initial_image_only=False):
     return
 
 
-def _test_prune_ser_resp_nm_pet_image_fake_image_query(
-    ae, remote, assoc, sr, query, initial_image_only=False
-):
-    """We need a 'real' side effect because for NM/CT Studies the studies are copied
-    (but not the images that are attached)"""
-    f = DicomQRRspSeries.objects.filter(modality__exact="PT").first()
-    se_pt_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=f)
-    se_pt_im1.sop_instance_uid = uuid.uuid4()
-    se_pt_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.128"
-    se_pt_im1.save()
-
-
 class PruneSeriesResponses(TestCase):
     """
     Test case for filtering series responses depending on availability and type of SR series, including using -emptysr
@@ -1221,58 +1209,22 @@ class PruneSeriesResponses(TestCase):
         self.assertEqual(series.count(), 1)
         self.assertEqual(series[0].modality, "SR")
 
-    @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
-    def test_prune_ser_resp_nm_rrdsr(self):
-        """
-        Test _prune_series_responses with NM exam and rrdsr
-        :return: No change to response
-        """
-        from ..netdicom.qrscu import _prune_series_responses
 
-        query = DicomQuery.objects.create()
-        query.query_id = "NMSR"
-        query.save()
+class PETCTStudyDuplication(TestCase):
+    """
+    Tests the _duplicate_ct_pet_studies function which duplicates studies containing
+    both CT and PET/NM modalities
+    """
 
-        st1 = DicomQRRspStudy.objects.create(dicom_query=query)
-        st1.query_id = query.query_id
-        st1.study_instance_uid = uuid.uuid4()
-        st1.study_description = "NM Study with RRDSR"
-        st1.set_modalities_in_study(["PT", "SR"])
-        st1.save()
+    def setUp(self):
+        self.all_mods = {
+            "CT": {"inc": True, "mods": ["CT"]},
+            "MG": {"inc": True, "mods": ["MG"]},
+            "FL": {"inc": True, "mods": ["RF", "XA"]},
+            "DX": {"inc": True, "mods": ["DX", "CR"]},
+            "NM": {"inc": True, "mods": ["NM", "PT"]},
+        }
 
-        st1_se1 = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
-        st1_se1.query_id = query.query_id
-        st1_se1.series_instance_uid = uuid.uuid4()
-        st1_se1.modality = "SR"
-        st1_se1.series_number = 1
-        st1_se1.number_of_series_related_instances = 1
-        st1_se1.save()
-
-        st1_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=st1_se1)
-        st1_se2_im1.query_id = query.query_id
-        st1_se2_im1.sop_instance_uid = uuid.uuid4()
-        st1_se2_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.68"
-        st1_se2_im1.save()
-
-        _prune_series_responses(
-            None,
-            None,
-            None,
-            query,
-            self.all_mods,
-            self.filters,
-            get_toshiba_images=False,
-            get_empty_sr=False,
-        )
-        studies = query.dicomqrrspstudy_set.all()
-        self.assertEqual(studies.count(), 1)
-        series = studies[0].dicomqrrspseries_set.all()
-        self.assertEqual(series.count(), 1)
-
-    @patch(
-        "remapp.netdicom.qrscu._query_images",
-        _test_prune_ser_resp_nm_pet_image_fake_image_query,
-    )
     def test_prune_ser_resp_nm_pet_image(self):
         """
         Test _prune_series_responses with NM exam containing PET and CT Study with RDSR
@@ -1313,55 +1265,98 @@ class PruneSeriesResponses(TestCase):
         se_pt.number_of_series_related_instances = 1
         se_pt.save()
 
-        _prune_series_responses(
-            None,
-            None,
-            None,
-            query,
-            self.all_mods,
-            self.filters,
-            get_toshiba_images=False,
-            get_empty_sr=False,
-        )
-        studies = query.dicomqrrspstudy_set.all()
-        self.assertEqual(studies.count(), 2)
-        series = studies[0].dicomqrrspseries_set.all()
-        self.assertEqual(series.count(), 1)
-        series = studies[1].dicomqrrspseries_set.all()
-        self.assertEqual(series.count(), 1)
+        from ..netdicom.qrscu import _duplicate_ct_pet_studies
 
-    @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
-    def test_prune_ser_resp_nm_image(self):
-        """
-        Test _prune_series_responses with NM exam containing PET and CT Study with RDSR
-        :return: No change to response
-        """
-        from ..netdicom.qrscu import _prune_series_responses
+        _duplicate_ct_pet_studies(query, self.all_mods)
+        studies = query.dicomqrrspstudy_set.order_by("pk").all()
+        self.assertEqual(studies.count(), 2)
+        self.assertNotIn("NM", studies[0].get_modalities_in_study())
+        self.assertNotIn("CT", studies[1].get_modalities_in_study())
+
+
+class PruneSeriesResponseNM(TestCase):
+    """
+    Tests _prune_series_responses for nuclear medicine
+    """
+
+    def setUp(self):
+        self.all_mods = {
+            "CT": {"inc": True, "mods": ["CT"]},
+            "MG": {"inc": True, "mods": ["MG"]},
+            "FL": {"inc": True, "mods": ["RF", "XA"]},
+            "DX": {"inc": True, "mods": ["DX", "CR"]},
+            "NM": {"inc": True, "mods": ["NM", "PT"]},
+        }
+        self.filters = {
+            "stationname_inc": None,
+            "stationname_exc": None,
+            "study_desc_inc": None,
+            "study_desc_exc": None,
+        }
 
         query = DicomQuery.objects.create()
-        query.query_id = "NMCT"
+        query.query_id = "NMSR"
         query.save()
 
         st1 = DicomQRRspStudy.objects.create(dicom_query=query)
         st1.query_id = query.query_id
         st1.study_instance_uid = uuid.uuid4()
-        st1.study_description = "NM Study"
-        st1.set_modalities_in_study(["NM"])
+        st1.study_description = "NM Study with RRDSR"
         st1.save()
 
-        se_nm_img = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
-        se_nm_img.query_id = query.query_id
-        se_nm_img.series_instance_uid = uuid.uuid4()
-        se_nm_img.modality = "NM"
-        se_nm_img.series_number = 1
-        se_nm_img.number_of_series_related_instances = 1
-        se_nm_img.save()
+        se_sr = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
+        se_sr.query_id = query.query_id
+        se_sr.series_instance_uid = uuid.uuid4()
+        se_sr.modality = "SR"
+        se_sr.series_number = 1
+        se_sr.number_of_series_related_instances = 1
+        se_sr.save()
 
-        st1_se2_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=se_nm_img)
-        st1_se2_im1.query_id = query.query_id
-        st1_se2_im1.sop_instance_uid = uuid.uuid4()
-        st1_se2_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.20"
-        st1_se2_im1.save()
+        se_sr_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=se_sr)
+        se_sr_im1.query_id = query.query_id
+        se_sr_im1.sop_instance_uid = uuid.uuid4()
+        se_sr_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.88.68"
+        se_sr_im1.save()
+
+        se_pt = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
+        se_pt.query_id = query.query_id
+        se_pt.series_instance_uid = uuid.uuid4()
+        se_pt.modality = "PT"
+        se_pt.series_number = 1
+        se_pt.number_of_series_related_instances = 1
+        se_pt.save()
+
+        se_pt_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=se_pt)
+        se_pt_im1.query_id = query.query_id
+        se_pt_im1.sop_instance_uid = uuid.uuid4()
+        se_pt_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.128"
+        se_pt_im1.save()
+
+        se_nm = DicomQRRspSeries.objects.create(dicom_qr_rsp_study=st1)
+        se_nm.query_id = query.query_id
+        se_nm.series_instance_uid = uuid.uuid4()
+        se_nm.modality = "NM"
+        se_nm.series_number = 1
+        se_nm.number_of_series_related_instances = 1
+        se_nm.save()
+
+        se_nm_im1 = DicomQRRspImage.objects.create(dicom_qr_rsp_series=se_nm)
+        se_nm_im1.query_id = query.query_id
+        se_nm_im1.sop_instance_uid = uuid.uuid4()
+        se_nm_im1.sop_class_uid = "1.2.840.10008.5.1.4.1.1.20"
+        se_nm_im1.save()
+
+    @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
+    def test_prune_ser_resp_nm_rrdsr(self):
+        """
+        Test _prune_series_responses with NM exam containing rrdsr
+        """
+        from ..netdicom.qrscu import _prune_series_responses
+
+        query = DicomQuery.objects.get()
+        s = DicomQRRspStudy.objects.get()
+        s.set_modalities_in_study(["PT", "SR", "NM"])
+        s.save()
 
         _prune_series_responses(
             None,
@@ -1377,6 +1372,65 @@ class PruneSeriesResponses(TestCase):
         self.assertEqual(studies.count(), 1)
         series = studies[0].dicomqrrspseries_set.all()
         self.assertEqual(series.count(), 1)
+        self.assertEqual(series.get().modality, "SR")
+
+    @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
+    def test_prune_ser_resp_pt_image(self):
+        """
+        Test _prune_series_responses with NM exam containing PET and NM images
+        """
+        from ..netdicom.qrscu import _prune_series_responses
+
+        query = DicomQuery.objects.get()
+        DicomQRRspSeries.objects.filter(modality__exact="SR").delete()
+        s = DicomQRRspStudy.objects.get()
+        s.set_modalities_in_study(["PT", "NM"])
+        s.save()
+
+        _prune_series_responses(
+            None,
+            None,
+            None,
+            query,
+            self.all_mods,
+            self.filters,
+            get_toshiba_images=False,
+            get_empty_sr=False,
+        )
+        studies = query.dicomqrrspstudy_set.all()
+        self.assertEqual(studies.count(), 1)
+        series = studies[0].dicomqrrspseries_set.all()
+        self.assertEqual(series.count(), 1)
+        self.assertEqual(series.get().modality, "PT")
+
+    @patch("remapp.netdicom.qrscu._query_images", _fake_image_query)
+    def test_prune_ser_resp_nm_image(self):
+        """
+        Test _prune_series_responses with NM exam containing NM image
+        """
+        from ..netdicom.qrscu import _prune_series_responses
+
+        query = DicomQuery.objects.get()
+        DicomQRRspSeries.objects.exclude(modality__exact="NM").delete()
+        s = DicomQRRspStudy.objects.get()
+        s.set_modalities_in_study(["NM"])
+        s.save()
+
+        _prune_series_responses(
+            None,
+            None,
+            None,
+            query,
+            self.all_mods,
+            self.filters,
+            get_toshiba_images=False,
+            get_empty_sr=False,
+        )
+        studies = query.dicomqrrspstudy_set.all()
+        self.assertEqual(studies.count(), 1)
+        series = studies[0].dicomqrrspseries_set.all()
+        self.assertEqual(series.count(), 1)
+        self.assertEqual(series.get().modality, "NM")
 
 
 class PruneSeriesResponsesCT(TestCase):
