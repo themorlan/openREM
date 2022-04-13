@@ -39,10 +39,10 @@ import logging
 import os
 import sys
 
+from celery import shared_task
 import django
 import pydicom
 from django.db.models import Q, ObjectDoesNotExist
-from celery import shared_task
 
 # setup django/OpenREM.
 basepath = os.path.dirname(__file__)
@@ -131,7 +131,7 @@ def _isotope(study, dataset):
     Some of the values are only present in PET, not in NM. Some of the information is named
     differently in both models - in such a case both names are tried.
 
-    Study should contain a Study Date when this function is called, 
+    Study should contain a Study Date when this function is called,
     as this is used to populate Start/Stop DateTime if no date is stored.
     The dataset is expected to be at the top hierarchy of the file.
     (such that SOPClassUID can be read)

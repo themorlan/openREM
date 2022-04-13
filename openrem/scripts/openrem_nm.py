@@ -3,8 +3,7 @@
 # scripts/openrem_rdsr
 
 """
-Script to launch the nm_image to extract radiopharmaceutical information from
-NM or PET images.
+Script to extract data from PET or NM images.
 
 :param filename: relative or absolute path to a NM or PET image.
 :type filename: str.
