@@ -74,7 +74,7 @@ def nm_chart_form_processing(request, user_profile):
 
 
 def generate_required_nm_charts_list(user_profile: UserProfile):
-    """Get a list of the title string and base variable name for each required chart"""
+    """Get a list of the title string and base variable name for each required chart."""
     required_charts = []
 
     charts_requiring_time = [user_profile.plotNMInjectedDoseOverTime]
@@ -339,7 +339,9 @@ def _generate_nm_dose_over_patient_weight(user_profile, return_as_dict, df):
     parameter_dict = {
         "df_name_col": "study_description",
         "df_x_col": "patientstudymoduleattr__patient_weight",
-        "df_y_col": "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity",
+        "df_y_col": "radiopharmaceuticalradiationdose__"
+            "radiopharmaceuticaladministrationeventdata__"
+            "administered_activity",
         "sorting_choice": [
             user_profile.plotInitialSortingDirection,
             user_profile.plotNMInitialSortingChoice,
