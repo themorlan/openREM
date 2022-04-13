@@ -2179,6 +2179,9 @@ class RadiopharmaceuticalAdministrationEventData(models.Model):  # TID 10022
     administered_activity = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
     )
+    effective_dose = models.DecimalField(
+        max_digits=16, decimal_places=8, blank=True, null=True
+    )
     radiopharmaceutical_volume = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True
     )

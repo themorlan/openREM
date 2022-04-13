@@ -2,14 +2,11 @@
 # This Python file uses the following encoding: utf-8
 # scripts/openrem_rdsr
 
-"""Script to launch the rdsr to import information from DICOM Radiation SR objects 
+"""
+Script to extract data from PET or NM images.
 
-    :param filename: relative or absolute path to Radiation Dose Structured Report.
-    :type filename: str.
-
-    Tested with:
-        * CT: Siemens, Philips and GE RDSR, GE Enhanced SR.
-        * Fluoro: Siemens Artis Zee RDSR
+:param filename: relative or absolute path to a NM or PET image.
+:type filename: str.
 """
 
 import sys

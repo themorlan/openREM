@@ -22,18 +22,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-..  module:: nm_image.
-    :synopsis: Module to extract nm specific radiation information from PET/NM Images. Those methods 
-        are 'careful' in the sense of not ever overwriting any data that is already present. If 
-        a study with the same id as the one used here is already present it will only update 
+..module:: nm_image.
+    :synopsis: Module to extract nm specific radiation information from PET/NM Images. Those methods
+        are 'careful' in the sense of not ever overwriting any data that is already present. If
+        a study with the same id as the one used here is already present it will only update
         fields concerned with radiopharmaceutical administration, and also those only if they
         are not already present.
         The rrdsr reader on the other hand will overwrite data read by this module without futher
         notice (at least with data present in the rrdsr). The rationale for this is that rrdsr's
         are (assumed to be) more complete and therefore take precedence.
-
 ..  moduleauthor:: Jannis Widmer
-
 """
 from datetime import datetime
 from decimal import Decimal
@@ -42,9 +40,9 @@ import os
 import sys
 
 from celery import shared_task
-from django.db.models import Q, ObjectDoesNotExist
 import django
 import pydicom
+from django.db.models import Q, ObjectDoesNotExist
 
 # setup django/OpenREM.
 basepath = os.path.dirname(__file__)
@@ -82,12 +80,12 @@ logger = logging.getLogger(
 
 
 def _check_replace(study, attr, value, study_id, is_not_equal):
-    """Check if a field on db should be overwritten (will say yes when it's empty)"""
+    """Check if a field on db should be overwritten (will say yes when it's empty)."""
     current = getattr(study, attr)
     if not current:
         return True
     elif is_not_equal(current, value):
-        logger.warn(
+        logger.warning(
             f"Found different values for {attr} on image and existing object for study {study_id}"
         )
     return False
@@ -103,7 +101,7 @@ def _try_set_value(
     mod=lambda x: x,
     is_not_equal=lambda x, y: x != y,
 ):
-    """Tries to get value from dataset and write onto db if it does not exist in db"""
+    """Tries to get value from dataset and write onto db if it does not exist in db."""
     value = get_with(kw_dataset, dataset)
     if not value:
         return
@@ -128,17 +126,21 @@ def _code_getter(kw, ds):
 
 def _isotope(study, dataset):
     """
-    method should work for both NM and PET images. Some of the values are only present in PET, not in NM.
-    Some of the information is named differently in both models - in such a case both names are tried.
+    Reads the isotope section of a PET or NM image.
 
-    study should contain a Study Date when already, as this is used to populate Start/Stop DateTime if no date is stored.
-    The dataset is expected to be at the top of the file (such that SOPClassUID can be read)
+    Some of the values are only present in PET, not in NM. Some of the information is named
+    differently in both models - in such a case both names are tried.
+
+    Study should contain a Study Date when this function is called,
+    as this is used to populate Start/Stop DateTime if no date is stored.
+    The dataset is expected to be at the top hierarchy of the file.
+    (such that SOPClassUID can be read)
     """
     is_nm_img = dataset.SOPClassUID == "1.2.840.10008.5.1.4.1.1.20"
     dataset = dataset[0x54, 0x16].value[0]
 
     float_not_equal = lambda x, y: abs(x - y) > 10e-5
-    float_convert = lambda x: Decimal(x)
+    float_convert = Decimal
 
     study_id = study.study_instance_uid
     radio = (
@@ -270,15 +272,14 @@ def _isotope(study, dataset):
 
 
 def _record_object_imported(dataset, study):
-    """
-    Saves that this object has been imported.
-    """
+    """Saves that this object has been imported."""
     o = ObjectUIDsProcessed.objects.create(general_study_module_attributes=study)
     o.sop_instance_uid = dataset.SOPInstanceUID
     o.save()
 
 
 def _nm2db(dataset):
+    """Saves the dataset to the db."""
     if "StudyInstanceUID" in dataset:
         study = GeneralStudyModuleAttr.objects.filter(
             Q(study_instance_uid__exact=dataset.StudyInstanceUID)
@@ -317,9 +318,10 @@ def _nm2db(dataset):
 
 @shared_task(name="remapp.extractors.nm_image.nm_image")
 def nm_image(file: str):
-    """Extract radiation dose related data from DICOM PET/NM-Image.
+    """
+    Extract radiation dose related data from DICOM PET/NM-Image.
 
-    :param file: relative or absolute path to PET/DICOM Image.
+    :param filename: relative or absolute path to PET/NM-Image.
     """
     try:
         del_settings = DicomDeleteSettings.objects.get()
