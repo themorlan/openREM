@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
+from django.utils.translation import gettext as _
 from remapp.forms import NMChartOptionsForm
 from remapp.interface.mod_filters import nm_filter
 from remapp.models import (
@@ -85,14 +86,14 @@ def generate_required_nm_charts_list(user_profile: UserProfile):
     if user_profile.plotNMStudyFreq:
         required_charts.append(
             {
-                "title": "Chart of study description frequency",
+                "title": _("Chart of study description frequency"),
                 "var_name": "studyFrequency",
             }
         )
     if user_profile.plotNMStudyPerDayAndHour:
         required_charts.append(
             {
-                "title": "Chart of study description workload",
+                "title": _("Chart of study description workload"),
                 "var_name": "studyWorkload",
             }
         )
@@ -100,28 +101,28 @@ def generate_required_nm_charts_list(user_profile: UserProfile):
         if user_profile.plotMean:
             required_charts.append(
                 {
-                    "title": "Chart of injected dose per study mean",
+                    "title": _("Chart of injected dose per study mean"),
                     "var_name": "studyInjectedDoseMean",
                 }
             )
         if user_profile.plotMedian:
             required_charts.append(
                 {
-                    "title": "Chart of injected dose per study median",
+                    "title": _("Chart of injected dose per study median"),
                     "var_name": "studyInjectedDoseMedian",
                 }
             )
         if user_profile.plotBoxplots:
             required_charts.append(
                 {
-                    "title": "Boxplot of injected dose per study",
+                    "title": _("Boxplot of injected dose per study"),
                     "var_name": "studyInjectedDoseBoxplot",
                 }
             )
         if user_profile.plotHistograms:
             required_charts.append(
                 {
-                    "title": "Histogram of injected dose per study",
+                    "title": _("Histogram of injected dose per study"),
                     "var_name": "studyInjectedDoseHistogram",
                 }
             )
@@ -129,21 +130,21 @@ def generate_required_nm_charts_list(user_profile: UserProfile):
         if user_profile.plotMean:
             required_charts.append(
                 {
-                    "title": f"Chart of injected dose mean over time ({time_period})",
+                    "title": _("Chart of injected dose mean over time ({time_period})").format(time_period=time_period),
                     "var_name": "studyInjectedDoseOverTimeMean",
                 }
             )
         if user_profile.plotMedian:
             required_charts.append(
                 {
-                    "title": f"Chart of injected dose median over time ({time_period})",
+                    "title": _("Chart of injected dose median over time ({time_period})").format(time_period=time_period),
                     "var_name": "studyInjectedDoseOverTimeMedian",
                 }
             )
     if user_profile.plotNMInjectedDoseOverWeight:
         required_charts.append(
             {
-                "title": "Chart of injected dose versus patient weight",
+                "title": _("Chart of injected dose versus patient weight"),
                 "var_name": "studyInjectedDoseOverWeight",
             }
         )
@@ -279,12 +280,12 @@ def _generate_nm_study_freq(user_profile, return_as_dict, df):
             user_profile.plotInitialSortingDirection,
             user_profile.plotNMInitialSortingChoice,
         ],
-        "legend_title": "Study description",
+        "legend_title": _("Study description"),
         "df_x_axis_col": "x_ray_system_name",
-        "x_axis_title": "System",
+        "x_axis_title": _("System"),
         "grouping_choice": user_profile.plotGroupingChoice,
         "colourmap": user_profile.plotColourMapChoice,
-        "filename": "OpenREM NM study description frequency",
+        "filename": _("OpenREM NM study description frequency"),
         "groupby_cols": None,
         "facet_col": None,
         "facet_col_wrap": user_profile.plotFacetColWrapVal,
@@ -311,10 +312,10 @@ def _generate_nm_study_workload(user_profile, return_as_dict, df):
         df_time_series_per_weekday,
         "weekday",
         "study_description",
-        name_axis_title="Weekday",
-        value_axis_title="Frequency",
+        name_axis_title=_("Weekday"),
+        value_axis_title=_("Frequency"),
         colourmap=user_profile.plotColourMapChoice,
-        filename="OpenREM NM study description workload",
+        filename=_("OpenREM NM study description workload"),
         facet_col_wrap=user_profile.plotFacetColWrapVal,
         sorting_choice=[
             user_profile.plotInitialSortingDirection,
@@ -338,12 +339,12 @@ def _generate_nm_dose_over_patient_weight(user_profile, return_as_dict, df):
             user_profile.plotNMInitialSortingChoice,
         ],
         "grouping_choice": user_profile.plotGroupingChoice,
-        "legend_title": "Study description",
+        "legend_title": _("Study description"),
         "colourmap": user_profile.plotColourMapChoice,
         "facet_col_wrap": user_profile.plotFacetColWrapVal,
-        "x_axis_title": "Patient mass (kg)",
-        "y_axis_title": "Administed Activity (MBq)",
-        "filename": "OpenREM Nuclear Medicine Dose vs patient mass",
+        "x_axis_title": _("Patient mass (kg)"),
+        "y_axis_title": _("Administed Activity (MBq)"),
+        "filename": _("OpenREM Nuclear Medicine Dose vs patient mass"),
         "return_as_dict": return_as_dict,
     }
     return_structure["studyInjectedDoseOverWeightData"] = plotly_scatter(
@@ -368,7 +369,7 @@ def _generate_nm_dose_per_study(user_profile, return_as_dict, df, average_choice
 
         parameter_dict = {
             "df_name_col": "study_description",
-            "name_axis_title": "Study description",
+            "name_axis_title": _("Study description"),
             "colourmap": user_profile.plotColourMapChoice,
             "facet_col": None,
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
@@ -379,10 +380,10 @@ def _generate_nm_dose_per_study(user_profile, return_as_dict, df, average_choice
             ],
         }
         if user_profile.plotMean:
-            parameter_dict["value_axis_title"] = "Mean Injected Dose (MBq)"
+            parameter_dict["value_axis_title"] = _("Mean Injected Dose (MBq)")
             parameter_dict[
                 "filename"
-            ] = "OpenREM nuclear medicine study injected dose mean"
+            ] = _("OpenREM nuclear medicine study injected dose mean")
             parameter_dict["average_choice"] = "mean"
             (
                 return_structure["studyMeanInjectedDoseData"],
@@ -394,10 +395,10 @@ def _generate_nm_dose_per_study(user_profile, return_as_dict, df, average_choice
             )
 
         if user_profile.plotMedian:
-            parameter_dict["value_axis_title"] = "Median Injected Dose (MBq)"
+            parameter_dict["value_axis_title"] = _("Median Injected Dose (MBq)")
             parameter_dict[
                 "filename"
-            ] = "OpenREM nuclear medicine study injected dose median"
+            ] = _("OpenREM nuclear medicine study injected dose median")
             parameter_dict["average_choice"] = "median"
             (
                 return_structure["studyMedianInjectedDoseData"],
@@ -412,10 +413,10 @@ def _generate_nm_dose_per_study(user_profile, return_as_dict, df, average_choice
         parameter_dict = {
             "df_name_col": name_field,
             "df_value_col": value_field,
-            "value_axis_title": "Injected Dose (MBq)",
-            "name_axis_title": "Study description",
+            "value_axis_title": _("Injected Dose (MBq)"),
+            "name_axis_title": _("Study description"),
             "colourmap": user_profile.plotColourMapChoice,
-            "filename": "OpenREM nuclear medicine study injected dose boxplot",
+            "filename": _("OpenREM nuclear medicine study injected dose boxplot"),
             "facet_col": None,
             "sorting_choice": [
                 user_profile.plotInitialSortingDirection,
@@ -433,22 +434,22 @@ def _generate_nm_dose_per_study(user_profile, return_as_dict, df, average_choice
     if user_profile.plotHistograms:
         category_names_col = name_field
         group_by_col = "x_ray_system_name"
-        legend_title = "Study description"
+        legend_title = _("Study description")
 
         if user_profile.plotGroupingChoice == "series":
             category_names_col = "x_ray_system_name"
             group_by_col = name_field
-            legend_title = "System"
+            legend_title = _("System")
 
         parameter_dict = {
             "df_facet_col": group_by_col,
             "df_category_col": category_names_col,
             "df_value_col": value_field,
-            "value_axis_title": "Injected Dose (MBq)",
+            "value_axis_title": _("Injected Dose (MBq)"),
             "legend_title": legend_title,
             "n_bins": user_profile.plotHistogramBins,
             "colourmap": user_profile.plotColourMapChoice,
-            "filename": "OpenREM nuclear medicine study injected dose histogram",
+            "filename": _("OpenREM nuclear medicine study injected dose histogram"),
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
             "sorting_choice": [
                 user_profile.plotInitialSortingDirection,
@@ -470,9 +471,9 @@ def _generate_nm_dose_over_time(
     return_structure = {}
 
     if user_profile.plotGroupingChoice == "series":
-        facet_title = "Study description"
+        facet_title = _("Study description")
     else:
-        facet_title = "System"
+        facet_title = _("System")
     name_field = "study_description"
     value_field = "radiopharmaceuticalradiationdose__radiopharmaceuticaladministrationeventdata__administered_activity"
 
@@ -481,9 +482,9 @@ def _generate_nm_dose_over_time(
             "df_name_col": name_field,
             "df_value_col": value_field,
             "df_date_col": "study_date",
-            "name_title": "Study description",
-            "value_title": "Administered Dose (MBq)",
-            "date_title": "Study date",
+            "name_title": _("Study description"),
+            "value_title": _("Administered Dose (MBq)"),
+            "date_title": _("Study date"),
             "facet_title": facet_title,
             "sorting_choice": [
                 user_profile.plotInitialSortingDirection,
@@ -494,7 +495,7 @@ def _generate_nm_dose_over_time(
             "grouping_choice": user_profile.plotGroupingChoice,
             "colourmap": user_profile.plotColourMapChoice,
             "facet_col_wrap": user_profile.plotFacetColWrapVal,
-            "filename": "OpenREM Nuclear medicine injected dose over time",
+            "filename": _("OpenREM Nuclear medicine injected dose over time"),
             "return_as_dict": return_as_dict,
         }
         result = construct_over_time_charts(
