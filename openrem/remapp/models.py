@@ -614,6 +614,22 @@ class UserProfile(models.Model, CommonVariables):
         default=CommonVariables.FREQ,
     )
 
+    plotNMStudyFreq = models.BooleanField(default=False)
+    plotNMStudyPerDayAndHour = models.BooleanField(default=False)
+    plotNMInjectedDosePerStudy = models.BooleanField(default=False)
+    plotNMInjectedDoseOverTime = models.BooleanField(default=False)
+    plotNMInjectedDoseOverWeight = models.BooleanField(default=False)
+    plotNMOverTimePeriod = models.CharField(
+        max_length=13,
+        choices=CommonVariables.TIME_PERIOD,
+        default=CommonVariables.MONTHS,
+    )
+    plotNMInitialSortingChoice = models.CharField(
+        max_length=9,
+        choices=CommonVariables.SORTING_CHOICES,
+        default=CommonVariables.FREQ,
+    )
+
     plotCTAcquisitionMeanDLP = models.BooleanField(default=True)
     plotCTAcquisitionMeanCTDI = models.BooleanField(default=True)
     plotCTAcquisitionFreq = models.BooleanField(default=False)
@@ -690,6 +706,7 @@ class UserProfile(models.Model, CommonVariables):
     displayRF = models.BooleanField(default=True)
     displayMG = models.BooleanField(default=True)
     displayDX = models.BooleanField(default=True)
+    displayNM = models.BooleanField(default=True)
 
     plotSeriesPerSystem = models.BooleanField(default=False)
 
