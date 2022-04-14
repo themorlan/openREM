@@ -210,7 +210,6 @@ def dx_summary_list_filter(request):
 @login_required
 def dx_detail_view(request, pk=None):
     """Detail view for a DX study."""
-
     try:
         study = GeneralStudyModuleAttr.objects.get(pk=pk)
     except:
@@ -993,7 +992,8 @@ def openrem_home(request):
 
 @csrf_exempt
 def update_modality_totals(request):
-    """AJAX function to update study numbers automatically.
+    """
+    AJAX function to update study numbers automatically.
 
     :param request: request object
     :return: dictionary of totals
