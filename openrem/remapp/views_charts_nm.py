@@ -130,14 +130,18 @@ def generate_required_nm_charts_list(user_profile: UserProfile):
         if user_profile.plotMean:
             required_charts.append(
                 {
-                    "title": _("Chart of injected dose mean over time ({time_period})").format(time_period=time_period),
+                    "title": _(
+                        "Chart of injected dose mean over time ({time_period})"
+                    ).format(time_period=time_period),
                     "var_name": "studyInjectedDoseOverTimeMean",
                 }
             )
         if user_profile.plotMedian:
             required_charts.append(
                 {
-                    "title": _("Chart of injected dose median over time ({time_period})").format(time_period=time_period),
+                    "title": _(
+                        "Chart of injected dose median over time ({time_period})"
+                    ).format(time_period=time_period),
                     "var_name": "studyInjectedDoseOverTimeMedian",
                 }
             )
@@ -332,8 +336,8 @@ def _generate_nm_dose_over_patient_weight(user_profile, return_as_dict, df):
         "df_name_col": "study_description",
         "df_x_col": "patientstudymoduleattr__patient_weight",
         "df_y_col": "radiopharmaceuticalradiationdose__"
-            "radiopharmaceuticaladministrationeventdata__"
-            "administered_activity",
+        "radiopharmaceuticaladministrationeventdata__"
+        "administered_activity",
         "sorting_choice": [
             user_profile.plotInitialSortingDirection,
             user_profile.plotNMInitialSortingChoice,
@@ -381,9 +385,9 @@ def _generate_nm_dose_per_study(user_profile, return_as_dict, df, average_choice
         }
         if user_profile.plotMean:
             parameter_dict["value_axis_title"] = _("Mean Injected Dose (MBq)")
-            parameter_dict[
-                "filename"
-            ] = _("OpenREM nuclear medicine study injected dose mean")
+            parameter_dict["filename"] = _(
+                "OpenREM nuclear medicine study injected dose mean"
+            )
             parameter_dict["average_choice"] = "mean"
             (
                 return_structure["studyMeanInjectedDoseData"],
@@ -396,9 +400,9 @@ def _generate_nm_dose_per_study(user_profile, return_as_dict, df, average_choice
 
         if user_profile.plotMedian:
             parameter_dict["value_axis_title"] = _("Median Injected Dose (MBq)")
-            parameter_dict[
-                "filename"
-            ] = _("OpenREM nuclear medicine study injected dose median")
+            parameter_dict["filename"] = _(
+                "OpenREM nuclear medicine study injected dose median"
+            )
             parameter_dict["average_choice"] = "median"
             (
                 return_structure["studyMedianInjectedDoseData"],

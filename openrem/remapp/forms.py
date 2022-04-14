@@ -97,7 +97,9 @@ class SizeHeadersForm(forms.Form):
 
 class itemsPerPageForm(forms.Form):
     itemsPerPage = forms.ChoiceField(
-        label=_("Items per page"), choices=CommonVariables.ITEMS_PER_PAGE, required=False
+        label=_("Items per page"),
+        choices=CommonVariables.ITEMS_PER_PAGE,
+        required=False,
     )
 
 
@@ -131,7 +133,9 @@ class DXChartOptionsForm(forms.Form):
     )
     plotDXStudyFreq = forms.BooleanField(label=_("Study frequency"), required=False)
     plotDXStudyMeanDAP = forms.BooleanField(label=_("Study DAP"), required=False)
-    plotDXStudyDAPvsMass = forms.BooleanField(label=_("Study DAP vs mass"), required=False)
+    plotDXStudyDAPvsMass = forms.BooleanField(
+        label=_("Study DAP vs mass"), required=False
+    )
     plotDXStudyPerDayAndHour = forms.BooleanField(
         label=_("Study workload"), required=False
     )
@@ -165,7 +169,9 @@ class DXChartOptionsForm(forms.Form):
         label=_("Calculate histogram data"), required=False
     )
     plotDXInitialSortingChoice = forms.ChoiceField(
-        label=_("Chart sorting"), choices=CommonVariables.SORTING_CHOICES, required=False
+        label=_("Chart sorting"),
+        choices=CommonVariables.SORTING_CHOICES,
+        required=False,
     )
     plotInitialSortingDirection = forms.ChoiceField(
         label=_("Sorting direction"),
@@ -215,7 +221,9 @@ class NMChartOptionsForm(forms.Form):
         label=_("Calculate histogram data"), required=False
     )
     plotNMInitialSortingChoice = forms.ChoiceField(
-        label=_("Chart sorting"), choices=CommonVariables.SORTING_CHOICES, required=False
+        label=_("Chart sorting"),
+        choices=CommonVariables.SORTING_CHOICES,
+        required=False,
     )
     plotInitialSortingDirection = forms.ChoiceField(
         label=_("Sorting direction"),
@@ -246,7 +254,9 @@ class NMChartOptionsDisplayForm(forms.Form):
         label=_("Time period"), choices=CommonVariables.TIME_PERIOD, required=False
     )
     plotNMInitialSortingChoice = forms.ChoiceField(
-        label=_("Chart sorting"), choices=CommonVariables.SORTING_CHOICES, required=False
+        label=_("Chart sorting"),
+        choices=CommonVariables.SORTING_CHOICES,
+        required=False,
     )
 
 
@@ -277,7 +287,9 @@ class CTChartOptionsForm(forms.Form):
     )
     plotCTAcquisitionTypes = forms.MultipleChoiceField(  # nosec
         label=mark_safe(
-            _("Acquisition types to include<br/>in acquisition-level chart<br/>calculations")
+            _(
+                "Acquisition types to include<br/>in acquisition-level chart<br/>calculations"
+            )
         ),
         choices=CommonVariables.CT_ACQUISITION_TYPES,
         required=False,
@@ -328,7 +340,9 @@ class CTChartOptionsForm(forms.Form):
         label=_("Calculate histogram data"), required=False
     )
     plotCTInitialSortingChoice = forms.ChoiceField(
-        label=_("Chart sorting"), choices=CommonVariables.SORTING_CHOICES, required=False
+        label=_("Chart sorting"),
+        choices=CommonVariables.SORTING_CHOICES,
+        required=False,
     )
     plotInitialSortingDirection = forms.ChoiceField(
         label=_("Sorting direction"),
@@ -382,7 +396,9 @@ class RFChartOptionsForm(forms.Form):
         label=_("Calculate histogram data"), required=False
     )
     plotRFInitialSortingChoice = forms.ChoiceField(
-        label=_("Chart sorting"), choices=CommonVariables.SORTING_CHOICES, required=False
+        label=_("Chart sorting"),
+        choices=CommonVariables.SORTING_CHOICES,
+        required=False,
     )
     plotInitialSortingDirection = forms.ChoiceField(
         label=_("Sorting direction"),
@@ -473,7 +489,9 @@ class MGChartOptionsForm(forms.Form):
         label=_("Calculate histogram data"), required=False
     )
     plotMGInitialSortingChoice = forms.ChoiceField(
-        label=_("Chart sorting"), choices=CommonVariables.SORTING_CHOICES, required=False
+        label=_("Chart sorting"),
+        choices=CommonVariables.SORTING_CHOICES,
+        required=False,
     )
     plotInitialSortingDirection = forms.ChoiceField(
         label=_("Sorting direction"),
@@ -513,7 +531,9 @@ class MGChartOptionsDisplayForm(forms.Form):
         label=_("Time period"), choices=CommonVariables.TIME_PERIOD, required=False
     )
     plotMGInitialSortingChoice = forms.ChoiceField(
-        label=_("Chart sorting"), choices=CommonVariables.SORTING_CHOICES, required=False
+        label=_("Chart sorting"),
+        choices=CommonVariables.SORTING_CHOICES,
+        required=False,
     )
 
 
@@ -546,7 +566,9 @@ class DXChartOptionsDisplayForm(forms.Form):
     )
     plotDXStudyFreq = forms.BooleanField(label=_("Study frequency"), required=False)
     plotDXStudyMeanDAP = forms.BooleanField(label=_("Study DAP"), required=False)
-    plotDXStudyDAPvsMass = forms.BooleanField(label=_("Study DAP vs mass"), required=False)
+    plotDXStudyDAPvsMass = forms.BooleanField(
+        label=_("Study DAP vs mass"), required=False
+    )
     plotDXStudyPerDayAndHour = forms.BooleanField(
         label=_("Study workload"), required=False
     )
@@ -595,7 +617,9 @@ class CTChartOptionsDisplayForm(forms.Form):
     )
     plotCTAcquisitionTypes = forms.MultipleChoiceField(  # nosec
         label=mark_safe(
-            _("Acquisition types to include<br/>in acquisition-level chart<br/>calculations")
+            _(
+                "Acquisition types to include<br/>in acquisition-level chart<br/>calculations"
+            )
         ),
         choices=CommonVariables.CT_ACQUISITION_TYPES,
         required=False,
@@ -629,7 +653,9 @@ class CTChartOptionsDisplayForm(forms.Form):
         label=_("Time period"), choices=CommonVariables.TIME_PERIOD, required=False
     )
     plotCTInitialSortingChoice = forms.ChoiceField(
-        label=_("Chart sorting"), choices=CommonVariables.SORTING_CHOICES, required=False
+        label=_("Chart sorting"),
+        choices=CommonVariables.SORTING_CHOICES,
+        required=False,
     )
 
 
@@ -673,7 +699,9 @@ class GeneralChartOptionsDisplayForm(forms.Form):
         required=False,
     )
     plotGrouping = forms.ChoiceField(
-        label=_("Chart grouping"), choices=CommonVariables.CHART_GROUPING, required=False
+        label=_("Chart grouping"),
+        choices=CommonVariables.CHART_GROUPING,
+        required=False,
     )
     plotThemeChoice = forms.ChoiceField(
         label=_("Chart theme"), choices=CommonVariables.CHART_THEMES, required=False
@@ -685,7 +713,10 @@ class GeneralChartOptionsDisplayForm(forms.Form):
         widget=forms.RadioSelect(attrs={"id": "value"}),
     )
     plotFacetColWrapVal = forms.IntegerField(
-        label=_("Number of sub-charts per row"), min_value=1, max_value=10, required=False
+        label=_("Number of sub-charts per row"),
+        min_value=1,
+        max_value=10,
+        required=False,
     )
 
 
@@ -769,7 +800,9 @@ class MergeOnDeviceObserverUIDForm(forms.Form):
     """Form for displaying and changing the option for merging on Device Observer UID"""
 
     match_on_device_observer_uid = forms.BooleanField(
-        label=_("Set Display Name and Modality type if Device Observer UID is matching"),
+        label=_(
+            "Set Display Name and Modality type if Device Observer UID is matching"
+        ),
         required=False,
     )
 
@@ -810,21 +843,28 @@ class DicomQueryForm(forms.Form):
         widget=forms.CheckboxSelectMultiple(attrs={"checked": ""}),
         required=False,
         help_text=(
-            _("At least one modality must be ticked - if SR only is ticked (Advanced) these "
-            "modalities will be ignored")
+            _(
+                "At least one modality must be ticked - if SR only is ticked (Advanced) these "
+                "modalities will be ignored"
+            )
         ),
     )
     inc_sr_field = forms.BooleanField(
         label=_("Include SR only studies?"),
         required=False,
         initial=False,
-        help_text=_("Only use with stores containing only RDSRs, with no accompanying images"),
+        help_text=_(
+            "Only use with stores containing only RDSRs, with no accompanying images"
+        ),
     )
     duplicates_field = forms.BooleanField(
         label=_("Ignore studies already in the database?"),
         required=False,
         initial=True,
-        help_text=_("Objects that have already been processed won't be imported, so there isn't any point getting them!"),
+        help_text=_(
+            "Objects that have already been processed won't be imported, "
+            "so there isn't any point getting them!"
+        ),
     )
     desc_exclude_field = forms.CharField(
         required=False,
@@ -839,17 +879,23 @@ class DicomQueryForm(forms.Form):
     stationname_exclude_field = forms.CharField(
         required=False,
         label=_("Exclude studies or series with these terms in the station name:"),
-        help_text=_("Comma separated list of terms, tested at series level — see Advanced"),
+        help_text=_(
+            "Comma separated list of terms, tested at series level — see Advanced"
+        ),
     )
     stationname_include_field = forms.CharField(
         required=False,
         label=_("Only keep studies or series with these terms in the station name:"),
-        help_text=_("Comma separated list of terms, tested at series level — see Advanced"),
+        help_text=_(
+            "Comma separated list of terms, tested at series level — see Advanced"
+        ),
     )
     get_toshiba_images_field = forms.BooleanField(
         label=_("Attempt to get Toshiba dose images"),
         required=False,
-        help_text=_("Only applicable if using Toshiba RDSR generator extension, see docs"),
+        help_text=_(
+            "Only applicable if using Toshiba RDSR generator extension, see docs"
+        ),
     )
     get_empty_sr_field = forms.BooleanField(
         label=_("Get SR series that return nothing at image level query"),
