@@ -63,6 +63,10 @@
                     {% block navdx %}
                         <li>{% endblock %}<a href="{% url 'dx_summary_list_filter' %}">{% trans "Radiography" %}</a></li>
                 {% endif %}
+                {% if request.user.userprofile.displayNM %}
+                  {% block navnm %}
+                    <li>{% endblock %}<a href="{% url 'nm_summary_list_filter' %}">{% trans "Nuclear Medicine" %}</a></li>
+                {% endif %}
             {% endblock %}
           </ul>
           {% block loginlink %}
