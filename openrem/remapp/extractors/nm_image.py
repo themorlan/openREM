@@ -343,6 +343,11 @@ def _record_object_imported(dataset, study):
     o.sop_instance_uid = dataset.SOPInstanceUID
     o.save()
 
+def _nm_specific_imports(study, dataset, is_nm_img):
+    _record_object_imported(dataset, study)
+    _isotope(study, dataset)
+    if not is_nm_img:
+        _pet_series(study, dataset)
 
 def _nm2db(dataset):
     """Saves the dataset to the db."""
@@ -362,17 +367,13 @@ def _nm2db(dataset):
                 )
                 return
 
-            _record_object_imported(dataset, study)
-            _isotope(study, dataset)
-            if not is_nm_img:
-                _pet_series(study, dataset)
+            _nm_specific_imports(study, dataset, is_nm_img)
             return
 
     study = GeneralStudyModuleAttr.objects.create()
     generalequipmentmoduleattributes(dataset, study)
     study.modality_type = "NM"  # will be saved by generalstudymoduleattributes call
     generalstudymoduleattributes(dataset, study, logger)
-    _record_object_imported(dataset, study)
     patientstudymoduleattributes(dataset, study)
     patient_module_attributes(dataset, study)
     t = RadiopharmaceuticalRadiationDose.objects.create(
@@ -382,9 +383,7 @@ def _nm2db(dataset):
     RadiopharmaceuticalAdministrationEventData.objects.create(
         radiopharmaceutical_radiation_dose=t
     ).save()
-    _isotope(study, dataset)
-    if not is_nm_img:
-        _pet_series(study, dataset)
+    _nm_specific_imports(study, dataset, is_nm_img)
 
 
 @shared_task(name="remapp.extractors.nm_image.nm_image")
