@@ -728,7 +728,7 @@ def ct_detail_view(request, pk=None):
     return render(
         request,
         "remapp/ctdetail.html",
-        {"generalstudymoduleattr": study, "admin": admin, 
+        {"generalstudymoduleattr": study, "admin": admin,
         "events_all": events_all, "associated_nm": associated_nm},
     )
 
