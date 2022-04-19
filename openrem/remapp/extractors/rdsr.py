@@ -199,7 +199,6 @@ def _get_existing_event_uids(study):
 
     return existing_event_uids
 
-
 def _rdsr2db(dataset):
 
     existing_sop_instance_uids = set()

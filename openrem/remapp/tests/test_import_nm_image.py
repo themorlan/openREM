@@ -71,6 +71,49 @@ class ImportNMImage(ImportTest):
                             ),
                         }
                     },
+                    "petseries_set": {
+                        lambda x: x.get(): {
+                            "series_datetime": datetime(2022, 2, 24, 11, 56),
+                            "number_of_rr_intervals": None,
+                            "number_of_time_slots": None,
+                            "number_of_time_slices": None,
+                            "number_of_slices": Decimal(476),
+                            "reconstruction_method": "PSF+TOF 4i5s",
+                            "coincidence_window_width": None,
+                            "energy_window_lower_limit": Decimal(435),
+                            "energy_window_upper_limit": Decimal(585),
+                            "scan_progression_direction": None,
+                            "petseriescorrection_set": {
+                                "all": {
+                                    lambda x: x[0]: {
+                                        "corrected_image": "NORM"
+                                    },
+                                    lambda x: x[1]: {
+                                        "corrected_image": "DTIM"
+                                    },
+                                    lambda x: x[2]: {
+                                        "corrected_image": "ATTN"
+                                    },
+                                    lambda x: x[3]: {
+                                        "corrected_image": "SCAT"
+                                    },
+                                    lambda x: x[4]: {
+                                        "corrected_image": "DECY"
+                                    },
+                                    lambda x: x[5]: {
+                                        "corrected_image": "RAN"
+                                    }
+                                }
+                            },
+                            "petseriestype_set": {
+                                "all": {
+                                    lambda x: x[0]: {
+                                        "series_type": "WHOLE BODY"
+                                    },
+                                }
+                            }
+                        }
+                    }
                 }
             },
         }
@@ -117,8 +160,40 @@ class ImportNMImage(ImportTest):
                             ),
                         }
                     },
+                    "petseries_set": {
+                        "get": {
+                            "series_datetime": datetime(2022, 3, 10, 13, 31, 55),
+                            "number_of_rr_intervals": None,
+                            "number_of_time_slots": None,
+                            "number_of_time_slices": None,
+                            "number_of_slices": Decimal(313),
+                            "reconstruction_method": "VPFXS",
+                            "coincidence_window_width": Decimal(0.0),
+                            "energy_window_lower_limit": Decimal(425),
+                            "energy_window_upper_limit": Decimal(650),
+                            "scan_progression_direction": None,
+                            "petseriescorrection_set": {
+                                "all": {
+                                    lambda x: x[0]: {
+                                        "corrected_image": "DECY"
+                                    },
+                                    "last": {
+                                        "corrected_image": "NORM"
+                                    }
+                                }
+                            },
+                            "petseriestype_set": {
+                                "first": {
+                                    "series_type": "STATIC"
+                                },
+                                "last": {
+                                    "series_type": "IMAGE"
+                                }
+                            }
+                        }
+                    }
                 }
-            },
+            }
         }
 
         study = GeneralStudyModuleAttr.objects.get()
