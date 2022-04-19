@@ -199,19 +199,8 @@ class ImportNMImage(ImportTest):
         study = GeneralStudyModuleAttr.objects.get()
         self._check_values(study, expected)
 
-    @patch("remapp.extractors.nm_image.logger")
-    def test_pet_image_rrdsr(self, logger_mock):
-        """
-        Loads the rrdsr, followed by an associated PET-Image
-        """
-        rrdsr_file = self._get_dcm_file("test_files/NM-RRDSR-Siemens.dcm")
-        rdsr(rrdsr_file)
-        img_loc = self._get_dcm_file("test_files/NM-PetIm-Siemens.dcm")
-        nm_image(img_loc)
-
-        logger_mock.warning.assert_called()  # Dates are set differently, therefore logger warns
-
-        expected = {
+    def _get_pet_simens_rrdsr_one_img_combined(self):
+        return {
             "radiopharmaceuticalradiationdose_set": {
                 "get": {
                     "radiopharmaceuticaladministrationeventdata_set": {
@@ -231,12 +220,50 @@ class ImportNMImage(ImportTest):
                             ),
                         }
                     },
+                    "petseries_set": {
+                        lambda x: x.get(): {
+                            "series_datetime": datetime(2022, 2, 24, 11, 56),
+                            "number_of_rr_intervals": None,
+                            "number_of_time_slots": None,
+                            "number_of_time_slices": None,
+                            "number_of_slices": Decimal(476),
+                            "reconstruction_method": "PSF+TOF 4i5s",
+                            "coincidence_window_width": None,
+                            "energy_window_lower_limit": Decimal(435),
+                            "energy_window_upper_limit": Decimal(585),
+                            "scan_progression_direction": None,
+                            "petseriescorrection_set": {
+                                "first": {
+                                    "corrected_image": "NORM"
+                                },
+                            },
+                            "petseriestype_set": {
+                                "all": {
+                                    lambda x: x[0]: {
+                                        "series_type": "WHOLE BODY"
+                                    },
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
 
+    @patch("remapp.extractors.nm_image.logger")
+    def test_pet_image_rrdsr(self, logger_mock):
+        """
+        Loads the rrdsr, followed by an associated PET-Image
+        """
+        rrdsr_file = self._get_dcm_file("test_files/NM-RRDSR-Siemens.dcm")
+        rdsr(rrdsr_file)
+        img_loc = self._get_dcm_file("test_files/NM-PetIm-Siemens.dcm")
+        nm_image(img_loc)
+
+        logger_mock.warning.assert_called()  # Dates are set differently, therefore logger warns
+        
         study = GeneralStudyModuleAttr.objects.get()
-        self._check_values(study, expected)
+        self._check_values(study, self._get_pet_simens_rrdsr_one_img_combined())
 
     def test_rrdsr_pet_image(self):
         img_loc = self._get_dcm_file("test_files/NM-PetIm-Siemens.dcm")
@@ -244,27 +271,8 @@ class ImportNMImage(ImportTest):
         rrdsr_file = self._get_dcm_file("test_files/NM-RRDSR-Siemens.dcm")
         rdsr(rrdsr_file)
 
-        expected = {
-            "radiopharmaceuticalradiationdose_set": {
-                "get": {
-                    "radiopharmaceuticaladministrationeventdata_set": {
-                        "get": {
-                            "organdose_set": {
-                                "first": {
-                                    "finding_site": {"code_meaning": "Adrenal gland"},
-                                    "laterality": {"code_meaning": "Right and left"},
-                                    "organ_dose": Decimal(4.73),
-                                    "reference_authority_text": "ICRP Publication 128",
-                                },
-                            }
-                        }
-                    },
-                }
-            }
-        }
-
         study = GeneralStudyModuleAttr.objects.get()
-        self._check_values(study, expected)
+        self._check_values(study, self._get_pet_simens_rrdsr_one_img_combined())
 
     @patch("remapp.extractors.nm_image.logger")
     def test_no_reloads_1(self, logger_mock):
