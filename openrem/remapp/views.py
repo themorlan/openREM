@@ -1005,7 +1005,8 @@ def update_modality_totals(request):
 
 @csrf_exempt
 def update_latest_studies(request):
-    """AJAX function to calculate the latest studies for each display name for a particular modality.
+    """
+    AJAX function to calculate the latest studies for each display name for a particular modality.
 
     :param request: Request object
     :return: HTML table of modalities
@@ -1104,7 +1105,8 @@ def update_latest_studies(request):
 
 @csrf_exempt
 def update_study_workload(request):
-    """AJAX function to calculate the number of studies in two user-defined time periods for a particular modality.
+    """
+    AJAX function to calculate the number of studies in two user-defined time periods for a particular modality.
 
     :param request: Request object
     :return: HTML table of modalities
