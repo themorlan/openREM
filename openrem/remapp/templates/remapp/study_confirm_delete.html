@@ -29,6 +29,11 @@
         <th scope="col">Protocol | Accession number</th>
         <th scope="col">Number of events</th>
         <th scope="col">DAP Total cGy.cm<sup>2</sup></th>
+{% elif exam.modality_type == "NM" %} 
+        <th scope="col">Study description | Accession number</th>
+        <th scope="col">Radiopharmaceutical</th>
+        <th scope="col">Radionuclide</th>
+        <th scope="col">Administed Dose</th>
 {% endif %}
     </tr>
     <tr>
@@ -94,6 +99,16 @@
             <td>{{ exam.projectionxrayradiationdose_set.get.irradeventxraydata_set.count }}</td>
             <td>{{ exam.projectionxrayradiationdose_set.get.accumxraydose_set.get.accummammographyxraydose_set.all.0.laterality }}</td>
             <td>{{ exam.projectionxrayradiationdose_set.get.accumxraydose_set.get.accummammographyxraydose_set.all.0.accumulated_average_glandular_dose }}</td>
+{% elif exam.modality_type == "NM" %} 
+            <td>
+                <a href="{% url 'nm_detail_view' pk=exam.id %}">{{exam.procedure_code_meaning}}</a> |
+                {{ exam.accession_number }}
+            </td>
+            {% with radioadmin=exam.radiopharmaceuticalradiationdose_set.get.radiopharmaceuticaladministrationeventdata_set.get %}
+                <td>{{radioadmin.radiopharmaceutical_agent.code_meaning}}</td>
+                <td>{{radioadmin.radionuclide.code_meaning}}</td>
+                <td>{{radioadmin.administered_activity}}</td>
+            {%endwith%}
 {% endif %}
         </tr>
 {% if exam.modality_type == "MG" %}
@@ -114,7 +129,7 @@
 {% endif %}
 </table>
 
-    Are you sure you want to delete the above study with UID {{ exam }}?
+    Are you sure you want to delete the above study with UID {{ exam.study_instance_uid }}?
     <input type="hidden" name="return_url" value="{{ return_url }}" />
     <input type="submit" value="Delete" class="btn btn-primary" />
     <button id="backButton" class="btn btn-default">Cancel</button>
