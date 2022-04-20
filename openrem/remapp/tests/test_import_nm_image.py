@@ -149,10 +149,10 @@ class ImportNMImage(ImportTest):
                             "radiopharmaceutical_administration_event_uid": "1.3.12.2.1107.5.1.4.11090.20220224104830.000000",
                             "administered_activity": Decimal(394.0),
                             "radiopharmaceutical_start_datetime": datetime(  # first loaded takes precedence
-                                2000, 3, 24, 10, 40, 30
+                                2022, 2, 24, 10, 40, 30
                             ),
                             "radiopharmaceutical_stop_datetime": datetime(
-                                2000, 3, 24, 10, 40, 40
+                                2022, 2, 24, 10, 40, 30
                             ),
                         }
                     },
