@@ -105,7 +105,7 @@ class ImportNMRDSR(TestCase):
                     "patient_name": "REMOVED1",
                 }
             },
-            "study_date": date(2000, 3, 24),
+            "study_date": date(2022, 2, 24),
             "study_time": time(11, 50, 25, 472000),
             "accession_number": "TEST123456",
             "study_description": "PET/CT Ganzkoerper FDG",
@@ -139,10 +139,10 @@ class ImportNMRDSR(TestCase):
                             "radionuclide_half_life": Decimal(6586.2),
                             "radiopharmaceutical_administration_event_uid": "1.3.12.2.1107.5.1.4.11090.20220224104830.000000",
                             "radiopharmaceutical_start_datetime": datetime(
-                                2000, 3, 24, 10, 40, 30, 0
+                                2022, 2, 24, 10, 40, 30, 0
                             ),
                             "radiopharmaceutical_stop_datetime": datetime(
-                                2000, 3, 24, 10, 40, 40, 0
+                                2022, 2, 24, 10, 40, 30, 0
                             ),
                             "administered_activity": Decimal(394.0),
                             "effective_dose": Decimal(7.486),
@@ -201,7 +201,7 @@ class ImportNMRDSR(TestCase):
                     "patient_name": "REMOVED2",
                 }
             },
-            "study_date": date(2000, 3, 23),
+            "study_date": date(2022, 2, 23),
             "study_time": time(9, 32, 12, 576000),
             "accession_number": "XYZ123",
             "study_description": "PET/CT Herz FDG",
@@ -258,10 +258,10 @@ class ImportNMRDSR(TestCase):
                             "estimated_extravasation_activity": Decimal(10.0),
                             "radiopharmaceutical_volume": Decimal(100),
                             "radiopharmaceutical_start_datetime": datetime(
-                                2000, 3, 23, 8, 29, 18, 0
+                                2022, 2, 23, 8, 29, 18, 0
                             ),
                             "radiopharmaceutical_stop_datetime": datetime(
-                                2000, 3, 23, 8, 29, 18, 0
+                                2022, 2, 23, 8, 29, 18, 0
                             ),
                             "administered_activity": Decimal(250.0),
                             "effective_dose": Decimal(4.75),
