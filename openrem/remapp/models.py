@@ -2342,6 +2342,7 @@ class PETSeries(models.Model):
     radiopharmaceutical_radiation_dose = models.ForeignKey(
         RadiopharmaceuticalRadiationDose, on_delete=models.CASCADE
     )
+    series_uid = models.TextField(blank=True, null=True)
     series_datetime = models.DateTimeField(blank=True, null=True)
     number_of_rr_intervals = models.DecimalField(
         max_digits=16, decimal_places=8, blank=True, null=True

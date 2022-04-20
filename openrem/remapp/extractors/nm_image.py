@@ -279,9 +279,18 @@ def _isotope(study, dataset):
 
 def _pet_series(study, dataset):
     radiodose = study.radiopharmaceuticalradiationdose_set.get()
+    if "SeriesInstanceUID" in dataset: # Check if already imported
+        uid = dataset.SeriesInstanceUID
+        if radiodose.petseries_set.filter(series_uid__exact=uid).count() > 0:
+            logger.info(f"PET Series {uid} was already loaded to database."
+                "Will not import again.")
+            return
+    else:
+        uid = None
     ser = PETSeries.objects.create(
         radiopharmaceutical_radiation_dose=radiodose
     )
+    ser.series_uid = uid
     tmp_time = get_time("SeriesTime", dataset)
     tmp_date = get_date("SeriesDate", dataset)
     if tmp_date and tmp_time:
