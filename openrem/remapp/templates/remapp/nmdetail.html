@@ -45,7 +45,13 @@
       <table class="table table-condensed table-bordered small" aria-describedby="Radiopharmaceutical details about this study">
         <tr>
             <th scope="col">Radiopharmaceutical</th>
-            <td>{{radioadmin.radiopharmaceutical_agent.code_meaning}}</td>
+            <td>
+                {% if radioadmin.radiopharmaceutical_agent %}
+                    {{radioadmin.radiopharmaceutical_agent.code_meaning}}
+                {% else %} 
+                    {{radioadmin.radiopharmaceutical_agent_string}}
+                {% endif %}
+            </td>
         </tr>
         <tr>
             <th scope="col">Radionuclide</th>
@@ -59,6 +65,12 @@
             <th scope="col">Administered Activity</th>
             <td>{{radioadmin.administered_activity|floatformat:2}}</td>
         </tr>
+        {% if radioadmin.effective_dose %} 
+        <tr>
+            <th scope="col">Effective Dose</th>
+            <td>{{radioadmin.effective_dose|floatformat:2}}</td>
+        </tr>
+        {% endif %}
         {% if associated_ct is not None %}
         <tr>
             <th scope="col">Associated CT study</th>
@@ -142,8 +154,6 @@
             </td>
         </tr>
     {% endfor %}
-    <!--TODO Effective Dose-->
-  </table>
   {% endif %}
 
   <!--TODO PET Series-->

@@ -2016,7 +2016,7 @@ def construct_over_time_charts(
     :param params["facet_col_wrap"]: (int) number of subplots per row
     :param params["return_as_dict"]: (boolean) flag to trigger return as a dictionary rather than a HTML DIV
     :param group_by_physician: boolean flag to set whether to group by physician name
-    :return: a dictionary containing a combination of ["mean"], ["median"] and ["boxplot"] entries, 
+    :return: a dictionary containing a combination of ["mean"], ["median"] and ["boxplot"] entries,
         each of which contains a Plotly figure embedded in an HTML DIV; or Plotly figure as a
         dictionary (if params["return_as_dict"] is True); or an error message embedded in an HTML DIV
         if there was a ValueError when calculating the figure
