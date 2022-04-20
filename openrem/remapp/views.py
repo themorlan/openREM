@@ -659,12 +659,18 @@ def nm_detail_view(request, pk=None):
         messages.error(request, "That study was not found")
         return redirect(reverse_lazy("nm_summary_list_filter"))
 
+    associated_ct = GeneralStudyModuleAttr.objects.filter(
+        Q(study_instance_uid__exact=study.study_instance_uid)
+        & Q(modality_type__exact="CT")
+    ).first()
+
     admin = create_admin_info(request)
 
     return render(
         request,
         "remapp/nmdetail.html",
-        {"generalstudymoduleattr": study, "admin": admin},
+        {"generalstudymoduleattr": study, "admin": admin,
+        "associated_ct": associated_ct},
     )
 
 
@@ -712,12 +718,18 @@ def ct_detail_view(request, pk=None):
         .order_by("pk")
     )
 
+    associated_nm = GeneralStudyModuleAttr.objects.filter(
+        Q(study_instance_uid__exact=study.study_instance_uid)
+        & Q(modality_type__exact="NM")
+    ).first()
+
     admin = create_admin_info(request)
 
     return render(
         request,
         "remapp/ctdetail.html",
-        {"generalstudymoduleattr": study, "admin": admin, "events_all": events_all},
+        {"generalstudymoduleattr": study, "admin": admin,
+        "events_all": events_all, "associated_nm": associated_nm},
     )
 
 
@@ -1005,7 +1017,8 @@ def update_modality_totals(request):
 
 @csrf_exempt
 def update_latest_studies(request):
-    """AJAX function to calculate the latest studies for each display name for a particular modality.
+    """
+    AJAX function to calculate the latest studies for each display name for a particular modality.
 
     :param request: Request object
     :return: HTML table of modalities
@@ -1104,7 +1117,8 @@ def update_latest_studies(request):
 
 @csrf_exempt
 def update_study_workload(request):
-    """AJAX function to calculate the number of studies in two user-defined time periods for a particular modality.
+    """
+    AJAX function to calculate the number of studies in two user-defined time periods for a particular modality.
 
     :param request: Request object
     :return: HTML table of modalities

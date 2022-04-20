@@ -140,49 +140,63 @@
                     <tr><th scope="col" class="nowrap">Accession number</th></tr>
                 </table>
             </th>
+            <th>Radiopharmaceutical</th>
+            <th>Administered Dose (MBq)</th>
             {% if admin.admingroup %}
                 <th>Delete?</th>
             {% endif %}
         </tr>
         {% for exam in study_list %}
           {% with equipment=exam.generalequipmentmoduleattr_set.get %}
-            <tr>
-                <td>
-                    <a href="{% url 'nm_detail_view' pk=exam.id %}">
-                        {{ equipment.institution_name }}
-                    </a>
-                </td>
-                <td>
-                    <a href="{% url 'nm_detail_view' pk=exam.id %}">
-                        <table onclick="window.location='{% url 'nm_detail_view' pk=exam.id %}';" aria-describedby="Manufacturer, model and display name">
-                            <tr><td class="nowrap">{{ equipment.manufacturer }}</td></tr>
-                            <tr><td class="nowrap">{{ equipment.manufacturer_model_name }}</td></tr>
-                            <tr><td class="nowrap">{{ equipment.unique_equipment_name.display_name }}</td></tr>
-                        </table>
-                    </a>
-                </td>
-                <td>
-                    <a href="{% url 'nm_detail_view' pk=exam.id %}">
-                        {{ exam.study_date|date:"Y-m-d" }} {{ exam.study_time|date:"H:i" }}</td>
-                </a>
-                <td>
-                    <a href="{% url 'nm_detail_view' pk=exam.id %}">
-                        <table onclick="window.location='{% url 'nm_detail_view' pk=exam.id %}';" aria-describedby="Study description, procedure and requested procedure name">
-                            <tr><td class="nowrap">{{ exam.study_description }}</td></tr>
-                            <tr><td class="nowrap">{{ exam.procedure_code_meaning }}</td></tr>
-                            <tr><td class="nowrap">{{ exam.requested_procedure_code_meaning }}</td></tr>
-                            {% if not exam.accession_hashed %}
-                                <tr><td class="nowrap">{{ exam.accession_number }}</td></tr>
-                            {% endif %}
-                        </table>
-                    </a>
-                </td>
-                {% if admin.admingroup %}
+            {% with radioadmin=exam.radiopharmaceuticalradiationdose_set.get.radiopharmaceuticaladministrationeventdata_set.get %}
+                <tr>
                     <td>
-                        <a href="{% url 'study_delete' exam.id %}">Delete</a>
+                        <a href="{% url 'nm_detail_view' pk=exam.id %}">
+                            {{ equipment.institution_name }}
+                        </a>
                     </td>
-                {% endif %}
+                    <td>
+                        <a href="{% url 'nm_detail_view' pk=exam.id %}">
+                            <table onclick="window.location='{% url 'nm_detail_view' pk=exam.id %}';" aria-describedby="Manufacturer, model and display name">
+                                <tr><td class="nowrap">{{ equipment.manufacturer }}</td></tr>
+                                <tr><td class="nowrap">{{ equipment.manufacturer_model_name }}</td></tr>
+                                <tr><td class="nowrap">{{ equipment.unique_equipment_name.display_name }}</td></tr>
+                            </table>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'nm_detail_view' pk=exam.id %}">
+                            {{ exam.study_date|date:"Y-m-d" }} {{ exam.study_time|date:"H:i" }}</td>
+                    </a>
+                    <td>
+                        <a href="{% url 'nm_detail_view' pk=exam.id %}">
+                            <table onclick="window.location='{% url 'nm_detail_view' pk=exam.id %}';" aria-describedby="Study description, procedure and requested procedure name">
+                                <tr><td class="nowrap">{{ exam.study_description }}</td></tr>
+                                <tr><td class="nowrap">{{ exam.procedure_code_meaning }}</td></tr>
+                                <tr><td class="nowrap">{{ exam.requested_procedure_code_meaning }}</td></tr>
+                                {% if not exam.accession_hashed %}
+                                    <tr><td class="nowrap">{{ exam.accession_number }}</td></tr>
+                                {% endif %}
+                            </table>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'nm_detail_view' pk=exam.id %}">
+                            {{radioadmin.radiopharmaceutical_agent.code_meaning}}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'nm_detail_view' pk=exam.id %}">
+                            {{radioadmin.administered_activity|floatformat:2}}
+                        </a>
+                    </td>
+                    {% if admin.admingroup %}
+                        <td>
+                            <a href="{% url 'study_delete' exam.id %}">Delete</a>
+                        </td>
+                    {% endif %}
             </tr>
+            {% endwith %}
           {% endwith %}
         {% endfor %}
     </table>
