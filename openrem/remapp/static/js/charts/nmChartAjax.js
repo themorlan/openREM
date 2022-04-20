@@ -47,6 +47,9 @@ $(document).ready(function() {
             if(typeof json.studyInjectedDoseOverTimeMedianData !== "undefined") {
                 $("#studyInjectedDoseOverTimeMedianChartDiv").html(json.studyInjectedDoseOverTimeMedianData)
             }
+            if(typeof json.studyInjectedDoseOverTimeBoxplotData !== "undefined") {
+                $("#studyInjectedDoseOverTimeBoxplotChartDiv").html(json.studyInjectedDoseOverTimeBoxplotData)
+            }
 
             $(".ajax-progress").hide();
         },
