@@ -659,12 +659,18 @@ def nm_detail_view(request, pk=None):
         messages.error(request, "That study was not found")
         return redirect(reverse_lazy("nm_summary_list_filter"))
 
+    associated_ct = GeneralStudyModuleAttr.objects.filter(
+        Q(study_instance_uid__exact=study.study_instance_uid)
+        & Q(modality_type__exact="CT")
+    ).first()
+
     admin = create_admin_info(request)
 
     return render(
         request,
         "remapp/nmdetail.html",
-        {"generalstudymoduleattr": study, "admin": admin},
+        {"generalstudymoduleattr": study, "admin": admin,
+        "associated_ct": associated_ct},
     )
 
 
@@ -712,12 +718,18 @@ def ct_detail_view(request, pk=None):
         .order_by("pk")
     )
 
+    associated_nm = GeneralStudyModuleAttr.objects.filter(
+        Q(study_instance_uid__exact=study.study_instance_uid)
+        & Q(modality_type__exact="NM")
+    ).first()
+
     admin = create_admin_info(request)
 
     return render(
         request,
         "remapp/ctdetail.html",
-        {"generalstudymoduleattr": study, "admin": admin, "events_all": events_all},
+        {"generalstudymoduleattr": study, "admin": admin,
+        "events_all": events_all, "associated_nm": associated_nm},
     )
 
 
